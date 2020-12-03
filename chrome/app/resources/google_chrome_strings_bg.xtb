@@ -54,6 +54,7 @@
 <translation id="2309047409763057870">Тази инсталация на Google Chrome е алтернативна и не може да се зададе като браузър по подразбиране.</translation>
 <translation id="2348335408836342058">Chrome се нуждае от разрешение за достъп до камерата и микрофона ви за този сайт</translation>
 <translation id="234869673307233423">Chrome не може да провери паролите ви. Опитайте пак по-късно.</translation>
+<translation id="235650106824528204">Данните в Chrome, които са генерирани при използването на този служебен потребителски профил (напр. създаването на отметки, историята, паролите и други настройки), могат да бъдат премахнати от администратора му. <ph name="LEARN_MORE" /></translation>
 <translation id="2429317896000329049">Google Chrome не можа да синхронизира данните ви, защото синхронизирането не е налице за домейна ви.</translation>
 <translation id="2467438592969358367">Google Chrome иска да експортира паролите ви. За да разрешите това, въведете паролата си за Windows.</translation>
 <translation id="2485422356828889247">Деинсталиране</translation>
@@ -170,12 +171,14 @@
 <translation id="573759479754913123">Всичко за Chrome OS</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome не можа да се стартира. Опитайте отново.</translation>
+<translation id="5851757216820085940">Ако имате няколко профила в Google, можете да ги добавите към устройството си <ph name="DEVICE_TYPE" />. Профилите ви ще бъдат налични в браузъра Chrome, в Google Play Магазин и в други услуги, като например Gmail, Диск и YouTube. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome се опитва да редактира паролите.</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Вход в мрежата</translation>
 <translation id="5940385492829620908">Тук ще намерите посещаваните от вас места в мрежата, отметките и другите си неща в Chrome.</translation>
 <translation id="5941830788786076944">Искам Google Chrome да бъде браузърът по подразбиране</translation>
 <translation id="6070348360322141662">За повишаване на сигурността Google Chrome ще шифрова данните ви</translation>
+<translation id="608006075545470555">Добавяне на служебен потребителски профил към този браузър</translation>
 <translation id="6113794647360055231">Chrome се подобри</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome бета</translation>
@@ -187,10 +190,12 @@
 <translation id="6368958679917195344">Chrome OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome се актуализира (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6568793831116033768">Система Chrome OS</translation>
 <translation id="6650333065969705433">Трябва да рестартирате Chrome, за да използвате Rosetta за възпроизвеждане на защитено мултимедийно съдържание.</translation>
 <translation id="6676384891291319759">Достъп до интернет</translation>
 <translation id="6679975945624592337">Разрешаване на Google Chrome да се изпълнява на заден план</translation>
 <translation id="6750954913813541382">С цел поправка на правописни грешки Chrome изпраща до Google текста, който въвеждате в браузъра</translation>
+<translation id="6755885556185485672">Chrome OS не се изключи правилно.</translation>
 <translation id="677276454032249905">Искате ли да излезете от Chrome въпреки това?</translation>
 <translation id="683440813066116847">Правило за Google Chrome Canary за допускане на входящия трафик за mDNS.</translation>
 <translation id="6885412569789873916">Приложения за Chrome бета</translation>
@@ -249,6 +254,7 @@
 <translation id="8498858610309223613">Току-що бе приложена специална актуализация за сигурност за Google Chrome. Рестартирайте сега – ще възстановим разделите ви.</translation>
 <translation id="8521348052903287641">Правило за Google Chrome Dev за допускане на входящия трафик за mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8550334526674375523">Този служебен потребителски профил е изцяло отделен от личния ви.</translation>
 <translation id="8556340503434111824">Налице е нова версия на Google Chrome, която е по-бърза от всякога.</translation>
 <translation id="861359755029082151">Rosetta дава възможност на Chrome да възпроизвежда защитеното мултимедийно съдържание на тази страница.</translation>
 <translation id="8614913330719544658">Google Chrome блокира. Да се стартира ли отново сега?</translation>
@@ -267,6 +273,7 @@
 <translation id="8907709077090383765">Трябва да инсталирате Rosetta, за да може Chrome да възпроизвежда защитено мултимедийно съдържание. Искате ли да го направите сега?</translation>
 <translation id="8914504000324227558">Повторно стартиране на Chrome</translation>
 <translation id="8922193594870374009">За да изпратите номер от <ph name="ORIGIN" /> до телефона си с Android, влезте в Chrome и на двете устройства.</translation>
+<translation id="8986207147630327271">Добавяте служебен потребителски профил към този браузър и предоставяте на администратора си контрол само над него.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Налице е актуализация за Chrome}=1{Налице е актуализация за Chrome}other{Налице е актуализация за Chrome от # дни}}</translation>
 <translation id="9026991721384951619">Chrome OS не можа да синхронизира данните ви, защото потребителското име и паролата за вход в профила ви не са актуални.</translation>
 <translation id="9067395829937117663">За Google Chrome се изисква Windows 7 или по-нова версия.</translation>

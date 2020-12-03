@@ -3174,7 +3174,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4646675363240786305">Port</translation>
 <translation id="4647090755847581616">&amp;Tutup Tab</translation>
 <translation id="4647283074445570750">Langkah <ph name="CURRENT_STEP" /> dari <ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{Mulai aplikasi saat Anda login ke tablet Anda}computer{Mulai aplikasi saat Anda login ke komputer Anda}other{Mulai aplikasi saat Anda login ke perangkat Anda}}</translation>
 <translation id="4647697156028544508">Masukkan PIN untuk "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">Izin tidak mencukupi</translation>
 <translation id="4648499713050786492">Buka kunci profil sebelum menambahkan orang.</translation>
@@ -3719,6 +3718,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5319359161174645648">Google merekomendasikan Chrome</translation>
 <translation id="5320112320661303273">Sepertinya Anda sudah menyiapkan Asisten di perangkat lain. Optimalkan penggunaan Asisten Anda dengan mengaktifkan setelan berikut ini.</translation>
+<translation id="5320135788267874712">Nama baru perangkat</translation>
 <translation id="532247166573571973">Server mungkin tidak dapat dijangkau. Coba lagi nanti.</translation>
 <translation id="5324300749339591280">Daftar aplikasi</translation>
 <translation id="5324780743567488672">Setel zona waktu secara otomatis menggunakan lokasi Anda</translation>

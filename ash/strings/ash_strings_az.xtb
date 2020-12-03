@@ -122,6 +122,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2067602449040652523">Klaviatura parlaqlığı</translation>
 <translation id="2078034614700056995">Növbəti masaya keçmək üçün dörd barmaqla sağa çəkin</translation>
+<translation id="2079504693865562705">Rəfdə tətbiqləri gizlədin</translation>
 <translation id="2083190527011054446">Gecəniz xeyir, <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Şəbəkəyə qoşulmayıb</translation>
 <translation id="2126242104232412123">Yeni iş masası</translation>
@@ -238,6 +239,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /></translation>
 <translation id="3236488194889173876">Heç bir mobil şəbəkə əlçatan deyil</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> pəncərəsi <ph name="ACTIVE_DESK" /> Masasından <ph name="TARGET_DESK" /> Masasına köçürüldü</translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, Siqnal gücü: <ph name="SIGNAL_STRENGTH" /> faiz.</translation>
 <translation id="3255483164551725916">Nə edə bilərsiniz?</translation>
 <translation id="3269597722229482060">Sağ düymə ilə toxunun</translation>
 <translation id="3289674678944039601">Adapter ilə şarj edilir</translation>
@@ -369,6 +371,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4389184120735010762">Daxili böyüdücü üçün klaviatura qısayoluna basdınız. Onu aktiv etmək istəyirsiniz?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> deaktivdir.</translation>
 <translation id="4421231901400348175">Uzaqdan Yardım vasitəsilə <ph name="HELPER_NAME" /> ilə ekranın kontrolunu paylaşın</translation>
+<translation id="4427613789487709312">Defolt (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Həcm</translation>
 <translation id="4450893287417543264">Daha göstərməyin</translation>
 <translation id="445864333228800152">Axşamınız xeyir,</translation>
@@ -449,6 +452,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5078796286268621944">Yanlış PIN</translation>
 <translation id="5083553833479578423">Daha çox Assistent funksiyalarını kiliddən çıxarın.</translation>
 <translation id="5136175204352732067">Fərqli klaviatura qoşuldu</translation>
+<translation id="5155897006997040331">Oxuma sürəti</translation>
 <translation id="5168181903108465623">Mövcud Cast cihazlar</translation>
 <translation id="5170568018924773124">Qovluqda göstərin</translation>
 <translation id="5176318573511391780">Ekranın bir hissəsini çəkin</translation>
@@ -712,6 +716,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 bildiriş}other{# bildiriş}}</translation>
 <translation id="7724603315864178912">Kəsin</translation>
+<translation id="7745560842763881396">Rəfdə tətbiqləri göstərin</translation>
 <translation id="7749443890790263709">Maksimum masa sayına çatmısınız.</translation>
 <translation id="776344839111254542">Güncəlləmə detallarını görmək üçün klikləyin</translation>
 <translation id="7780159184141939021">Ekranı fırladın</translation>

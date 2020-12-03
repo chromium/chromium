@@ -3170,7 +3170,6 @@
 <translation id="4646675363240786305">പോർട്ടുകൾ</translation>
 <translation id="4647090755847581616">ടാബ് &amp;അടയ്‌ക്കുക</translation>
 <translation id="4647283074445570750"><ph name="TOTAL_STEPS" />-ൽ <ph name="CURRENT_STEP" />-ാം ഘട്ടം</translation>
-<translation id="4647420311443994946">{0,select, tablet{നിങ്ങളുടെ ടാബ്‌ലെറ്റിൽ സൈൻ ഇൻ ചെയ്യുമ്പോൾ ആപ്പ് ആരംഭിക്കുക}computer{നിങ്ങളുടെ കമ്പ്യൂട്ടറിൽ സൈൻ ഇൻ ചെയ്യുമ്പോൾ ആപ്പ് ആരംഭിക്കുക}other{നിങ്ങളുടെ ഉപകരണത്തിൽ സൈൻ ഇൻ ചെയ്യുമ്പോൾ ആപ്പ് ആരംഭിക്കുക}}</translation>
 <translation id="4647697156028544508">"<ph name="DEVICE_NAME" />" എന്നതിനായി PIN നൽകുക:</translation>
 <translation id="4648491805942548247">അപര്യാപ്‌തമായ അനുമതികൾ</translation>
 <translation id="4648499713050786492">ഒരാളെ ചേർക്കുന്നതിന് മുമ്പ് നിങ്ങളുടെ പ്രൊഫൈൽ അൺലോക്ക് ചെയ്യുക.</translation>
@@ -3715,6 +3714,7 @@
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
 <translation id="5319359161174645648">Google ശുപാർശചെയ്യുന്നത് Chrome ആണ്</translation>
 <translation id="5320112320661303273">നിങ്ങൾ മറ്റൊരു ഉപകരണത്തിൽ മുമ്പേ Assistant സജ്ജീകരിച്ചതായി തോന്നുന്നു. ഇനിപ്പറയുന്ന ക്രമീകരണം ഓണാക്കി നിങ്ങളുടെ Assistant പരമാവധി പ്രയോജനപ്പെടുത്തൂ.</translation>
+<translation id="5320135788267874712">ഉപകരണത്തിന്റെ പുതിയ പേര്</translation>
 <translation id="532247166573571973">സെർവർ ലഭ്യമല്ലായിരിക്കാം. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="5324300749339591280">ആപ്പുകളുടെ ലിസ്‌റ്റ്</translation>
 <translation id="5324780743567488672">നിങ്ങളുടെ ലൊക്കേഷൻ ഉപയോഗിച്ച് സമയ മേഖല സ്വയമേവ സജ്ജമാക്കുക</translation>

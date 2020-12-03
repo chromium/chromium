@@ -3174,7 +3174,6 @@
 <translation id="4646675363240786305">ポート</translation>
 <translation id="4647090755847581616">タブを閉じる(&amp;C)</translation>
 <translation id="4647283074445570750">ステップ <ph name="CURRENT_STEP" />/<ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{タブレットにログインしたらアプリを開始する}computer{パソコンにログインしたらアプリを開始する}other{デバイスにログインしたらアプリを開始する}}</translation>
 <translation id="4647697156028544508">「<ph name="DEVICE_NAME" />」の PIN を入力してください:</translation>
 <translation id="4648491805942548247">十分な権限がありません</translation>
 <translation id="4648499713050786492">ユーザーを追加するにはまずプロフィールのロックを解除してください。</translation>
@@ -3719,6 +3718,7 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5319359161174645648">Google は Chrome を推奨しています</translation>
 <translation id="5320112320661303273">別のデバイスですでにアシスタントを設定しているようです。以下の設定をオンにして、アシスタントをもっと活用しましょう。</translation>
+<translation id="5320135788267874712">新しいデバイス名</translation>
 <translation id="532247166573571973">サーバーへのアクセスに問題が起こっている可能性があります。しばらくしてからもう一度お試しください。</translation>
 <translation id="5324300749339591280">アプリのリスト</translation>
 <translation id="5324780743567488672">ユーザーの現在地情報を使用して自動的にタイムゾーンを設定する</translation>

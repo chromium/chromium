@@ -54,7 +54,6 @@
 <translation id="369442766917958684">अफलाइन।</translation>
 <translation id="3695446226812920698">कसरी सिक्नुहोस्</translation>
 <translation id="3776024066357219166">तपाईंको Chrome रिमोट डेस्कटप सत्र समाप्त भएको छ ।</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3897092660631435901">मेनु</translation>
 <translation id="3905196214175737742">अमान्य होस्ट मालिक डोमेन।</translation>
 <translation id="3931191050278863510">होस्ट रोकियो।</translation>
@@ -99,6 +98,7 @@
 <translation id="5419418238395129586">पछिल्लोपटक अनलाइन हुनुभएको मिति: <ph name="DATE" /></translation>
 <translation id="544077782045763683">होस्ट बन्द गरिएको छ।</translation>
 <translation id="5601503069213153581">पिन</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">तपाईंको डेस्कटप अहिले <ph name="USER" /> सँग साझा गरिएको छ ।</translation>
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> का रूपमा साइन इन गरियो।</translation>
 <translation id="579702532610384533">पुन: जडान गर्नुहोस्</translation>
@@ -118,7 +118,6 @@
 <translation id="6583902294974160967">सहायता प्रदान गर्ने सेवा</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Del पठाउनुहोस्</translation>
 <translation id="6654753848497929428">साझा गर्नुहोस्</translation>
-<translation id="6681800064886881394">प्रतिलिपिअधिकार 201३ Google संगठन। सर्वाधिकार सुरक्षित।</translation>
 <translation id="677755392401385740">यस प्रयोगकर्ताको लागि होस्ट सुरुवातकर्ता: <ph name="HOST_USERNAME" /></translation>
 <translation id="6939719207673461467">कुञ्जीपाटी देखाउनुहोस्/लुकाउनुहोस्।</translation>
 <translation id="6963936880795878952">कसैले अमान्य PIN मार्फत जडान गर्ने प्रयास गरिरहेको हुनाले दूरवर्ती कम्प्युटरमा गरिने जडानहरूलाई सदाका लागि रोक लगाइएको छ। कृपया पछि फेरि प्रयास गर्नुहोस्।</translation>

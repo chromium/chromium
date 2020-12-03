@@ -54,7 +54,6 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="369442766917958684">Çevrimdışı.</translation>
 <translation id="3695446226812920698">Nasıl yapacağınızı öğrenin</translation>
 <translation id="3776024066357219166">Chrome Uzaktan Masaüstü oturumunuz sonlandı.</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3905196214175737742">Ana makinenin sahip alan adı geçersiz.</translation>
 <translation id="3931191050278863510">Ana makine durdu.</translation>
@@ -99,6 +98,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="5419418238395129586">Son çevrimiçi olduğu tarih: <ph name="DATE" /></translation>
 <translation id="544077782045763683">Ana makine kapatıldı.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Masaüstünüz şu anda <ph name="USER" /> ile paylaşılıyor.</translation>
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> olarak oturum açtınız.</translation>
 <translation id="579702532610384533">Yeniden bağlan</translation>
@@ -118,7 +118,6 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="6583902294974160967">Destek</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Del Gönder</translation>
 <translation id="6654753848497929428">Paylaş</translation>
-<translation id="6681800064886881394">Telif Hakkı 2013 Google Inc. Tüm Hakları Saklıdır.</translation>
 <translation id="677755392401385740">Ana makine bu kullanıcı için başlatıldı: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6939719207673461467">Klavyeyi göster/gizle</translation>
 <translation id="6963936880795878952">Bir kullanıcı geçersiz PIN ile bağlanmaya çalıştığından uzak bilgisayara yapılan bağlantılar geçici olarak engellenmiştir. Lütfen daha sonra tekrar deneyin.</translation>

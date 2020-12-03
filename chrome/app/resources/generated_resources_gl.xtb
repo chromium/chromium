@@ -3173,7 +3173,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4646675363240786305">Portos</translation>
 <translation id="4647090755847581616">&amp;Pechar pestana</translation>
 <translation id="4647283074445570750">Paso <ph name="CURRENT_STEP" /> de <ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{Abrir aplicación ao iniciar sesión na tableta}computer{Abrir aplicación ao iniciar sesión no ordenador}other{Abrir aplicación ao iniciar sesión no dispositivo}}</translation>
 <translation id="4647697156028544508">Introduce o PIN de "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">Permisos insuficientes</translation>
 <translation id="4648499713050786492">Desbloquea o teu perfil antes de engadir unha persoa.</translation>
@@ -3718,6 +3717,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5319359161174645648">Google recomenda Chrome</translation>
 <translation id="5320112320661303273">Parece que xa configuraches o Asistente noutro dispositivo. Activa a opción de configuración que se indica a continuación para tirar aínda máis proveito do teu Asistente.</translation>
+<translation id="5320135788267874712">Novo nome do dispositivo</translation>
 <translation id="532247166573571973">É posible que non se poida acceder ao servidor. Téntao de novo máis tarde.</translation>
 <translation id="5324300749339591280">Lista de aplicacións</translation>
 <translation id="5324780743567488672">Definir o fuso horario automaticamente a través da túa localización</translation>

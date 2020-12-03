@@ -3174,7 +3174,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4646675363240786305">Bağlantı Noktaları</translation>
 <translation id="4647090755847581616">Sekmeyi Ka&amp;pat</translation>
 <translation id="4647283074445570750">Adım <ph name="CURRENT_STEP" />/<ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{Tabletimde oturum açtığımda uygulama başlat}computer{Bilgisayarımda oturum açtığımda uygulamayı başlat}other{Cihazımda oturum açtığımda uygulamayı başlat}}</translation>
 <translation id="4647697156028544508">Lütfen "<ph name="DEVICE_NAME" />" için PIN'i girin:</translation>
 <translation id="4648491805942548247">İzinler yetersiz</translation>
 <translation id="4648499713050786492">Lütfen bir kişiyi eklemeden önce profilinizin kilidini açın.</translation>
@@ -3719,6 +3718,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5317780077021120954">Kaydet</translation>
 <translation id="5319359161174645648">Google, Chrome'u önerir</translation>
 <translation id="5320112320661303273">Google Asistan'ı başka bir cihazda zaten kurmuş olduğunuz anlaşılıyor. Aşağıdaki ayarları etkinleştirerek Asistanınızdan daha da fazla yararlanın.</translation>
+<translation id="5320135788267874712">Yeni cihaz adı</translation>
 <translation id="532247166573571973">Sunucuya ulaşılamıyor olabilir. Daha sonra tekrar deneyin.</translation>
 <translation id="5324300749339591280">Uygulamalar listesi</translation>
 <translation id="5324780743567488672">Konumumu kullanarak saat dilimini otomatik olarak ayarla</translation>

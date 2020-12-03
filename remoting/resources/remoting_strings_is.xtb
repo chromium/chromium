@@ -54,7 +54,6 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="369442766917958684">Án nettengingar</translation>
 <translation id="3695446226812920698">Kynntu þér hvernig</translation>
 <translation id="3776024066357219166">Lotu fjarstjórnunar tölvu í Chrome er lokið.</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3897092660631435901">Valmynd</translation>
 <translation id="3905196214175737742">Ógilt lén hýsilseiganda.</translation>
 <translation id="3931191050278863510">Hýsill stöðvaður.</translation>
@@ -99,6 +98,7 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="5419418238395129586">Síðast nettengt: <ph name="DATE" /></translation>
 <translation id="544077782045763683">Slökkt hefur verið á hýslinum.</translation>
 <translation id="5601503069213153581">PIN-númer</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Þú ert að deila skjáborðinu þínu með <ph name="USER" />.</translation>
 <translation id="5750083143895808682">Skráð(ur) inn sem <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Tengjast aftur</translation>
@@ -118,7 +118,6 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="6583902294974160967">Aðstoð</translation>
 <translation id="6612717000975622067">Senda Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Deila</translation>
-<translation id="6681800064886881394">Höfundarréttur 2013 Google Inc. Allur réttur áskilinn.</translation>
 <translation id="677755392401385740">Hýsill ræstur fyrir notanda: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6939719207673461467">Sýna/fela lyklaborð.</translation>
 <translation id="6963936880795878952">Tímabundið er lokað fyrir tengingar við fjartengdu tölvuna vegna þess að einhver reyndi að tengjast henni með ógildu PIN-númeri. Reyndu aftur síðar.</translation>

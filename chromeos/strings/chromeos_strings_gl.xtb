@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Non se puido iniciar o escaneo</translation>
 <translation id="1071587090247825784">Detectouse un firewall</translation>
 <translation id="1075811647922107217">Tamaño da páxina</translation>
+<translation id="1124772482545689468">Usuario</translation>
 <translation id="1175697296044146566">Este dispositivo (<ph name="DEVICE_TYPE" />) está xestionado por <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Erro descoñecido.</translation>
 <translation id="1204296502688602597">Latencia de DNS</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402">Quédanche <ph name="ATTEMPTS_LEFT" /> intentos</translation>
 <translation id="2391082728065870591">Enviar informe de comentarios</translation>
 <translation id="2461822463642141190">Actual</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intento}other{<ph name="ERROR_MESSAGE" /> Quedan {0} intentos}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Buscar</translation>
 <translation id="2570743873672969996">Executando proba de <ph name="TEST_NAME" />...</translation>
+<translation id="2620436844016719705">Sistema</translation>
 <translation id="2805756323405976993">Aplicacións</translation>
 <translation id="2872961005593481000">Pechar</translation>
 <translation id="3008341117444806826">ACTUALIZAR</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3083667275341675831">Diagnósticos de conectividade</translation>
 <translation id="3091839911843451378">Produciuse un erro: a impresora está detida</translation>
+<translation id="3102119246920354026">Caché</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">Os meus ficheiros</translation>
 <translation id="3199982728237701504">Alimentador de documentos (a dúas caras)</translation>
 <translation id="3246869037381808805">Quitaranse os traballos de impresión de máis de 1 día</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">Novo contrasinal</translation>
 <translation id="3865414814144988605">Resolución</translation>
 <translation id="3941014780699102620">Produciuse un erro ao resolver o host</translation>
+<translation id="3942420633017001071">Diagnósticos</translation>
 <translation id="39823212440917567">Quitaranse os traballos de impresión de máis de <ph name="NUMBER_OF_DAYS" /> días</translation>
 <translation id="4003384961948020559">Produciuse un erro: a saída da impresora está chea</translation>
 <translation id="4034824040120875894">Impresora</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356">Cargouse un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Executar</translation>
+<translation id="5154917547274118687">Memoria</translation>
 <translation id="5168185087976003268">Estado da batería</translation>
 <translation id="520299634122159966">Non hai ningún escáner dispoñible</translation>
 <translation id="5212543919916444558">Non atopo nada na pantalla co que che poida axudar.
@@ -137,6 +142,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Máis información</translation>
 <translation id="6191293864534840972">Os servidores de nomes teñen un formato incorrecto</translation>
+<translation id="6232017090690406397">Batería</translation>
 <translation id="6325525973963619867">Produciuse un erro</translation>
 <translation id="636850387210749493">Inscrición corporativa</translation>
 <translation id="649050271426829538">Detívose (atasco de papel)</translation>
@@ -194,6 +200,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8910721771319628100">A rede predeterminada supera o límite de latencia</translation>
 <translation id="8919837981463578619">Produciuse un erro: falta a bandexa</translation>
 <translation id="8928727111548978589">Produciuse un erro: a impresora quedou sen papel</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Intentos restantes: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="9088306295921699330">En uso</translation>
 <translation id="910415269708673980">Actualiza o tícket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando páxina <ph name="PAGE_NUMBER" /></translation>

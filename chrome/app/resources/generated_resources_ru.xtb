@@ -3175,7 +3175,6 @@
 <translation id="4646675363240786305">Порты</translation>
 <translation id="4647090755847581616">&amp;Закрыть вкладку</translation>
 <translation id="4647283074445570750">Шаг <ph name="CURRENT_STEP" /> из <ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{Запускать приложение после моего входа в систему на планшете}computer{Запускать приложение после моего входа в систему на компьютере}other{Запускать приложение после моего входа в систему на устройстве}}</translation>
 <translation id="4647697156028544508">Введите PIN-код для "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">Недостаточно прав</translation>
 <translation id="4648499713050786492">Разблокируйте свой профиль, прежде чем добавлять ещё один.</translation>
@@ -3720,6 +3719,7 @@
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5319359161174645648">Google рекомендует браузер Chrome</translation>
 <translation id="5320112320661303273">Похоже, что вы уже настроили Google Ассистента на другом устройстве. Включите эту настройку, чтобы получить ещё больше возможностей.</translation>
+<translation id="5320135788267874712">Введите название</translation>
 <translation id="532247166573571973">Сервер недоступен. Повторите попытку позже.</translation>
 <translation id="5324300749339591280">Список приложений</translation>
 <translation id="5324780743567488672">Автоматически определять часовой пояс на основе геоданных</translation>

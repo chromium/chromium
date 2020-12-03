@@ -54,7 +54,6 @@
 <translation id="369442766917958684">ఆఫ్‌లైన్‌లో ఉన్నారు.</translation>
 <translation id="3695446226812920698">ఎలాగో తెలుసుకోండి</translation>
 <translation id="3776024066357219166">మీ Chrome రిమోట్ డెస్క్‌టాప్ సెషన్ ముగిసింది.</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3897092660631435901">మెనూ</translation>
 <translation id="3905196214175737742">చెల్లని హోస్ట్ యజమాని డొమైన్.</translation>
 <translation id="3931191050278863510">హోస్ట్ ఆగిపోయింది.</translation>
@@ -99,6 +98,7 @@
 <translation id="5419418238395129586">చివరిగా ఆన్‌లైన్‌లో ఉన్నది: <ph name="DATE" /></translation>
 <translation id="544077782045763683">హోస్ట్ షట్‌డౌన్ అయ్యింది.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">మీ డెస్క్‌టాప్ ప్రస్తుతం <ph name="USER" />తో షేర్‌ చేయబడింది.</translation>
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> వలె సైన్ ఇన్ చేసారు.</translation>
 <translation id="579702532610384533">మళ్ళీ కనెక్ట్ చేయి</translation>
@@ -118,7 +118,6 @@
 <translation id="6583902294974160967">మద్దతు</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Delని పంపు</translation>
 <translation id="6654753848497929428">షేర్ చేయి</translation>
-<translation id="6681800064886881394">కాపీరైట్ 2013 Google Inc. అన్ని హ‌క్కులు రిజ‌ర్వ్ చేయ‌బ‌డ్డాయి.</translation>
 <translation id="677755392401385740">ఈ వినియోగదారు కోసం హోస్ట్ ప్రారంభించబడింది: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6939719207673461467">కీబోర్డ్‌ని చూపు/దాచు.</translation>
 <translation id="6963936880795878952">ఒకరు చెల్లని PINతో రిమోట్ కంప్యూటర్‌కు కనెక్ట్ చేయడానికి ప్రయత్నిస్తున్నందున, దీనికి కనెక్షన్‌లు తాత్కాలికంగా బ్లాక్ చేయబడ్డాయి. దయచేసి తర్వాత మళ్లీ ప్రయత్నించండి.</translation>

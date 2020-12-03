@@ -54,7 +54,6 @@
 <translation id="369442766917958684">بلا اتصال.</translation>
 <translation id="3695446226812920698">تعرَّف على كيفية إجراء ذلك</translation>
 <translation id="3776024066357219166">‏انتهت جلسة سطح المكتب البعيد من Chrome.</translation>
-<translation id="3870154837782082782">Google Inc‎.‎</translation>
 <translation id="3897092660631435901">قائمة</translation>
 <translation id="3905196214175737742">نطاق مالك المضيف غير صالح.</translation>
 <translation id="3931191050278863510">المضيف توقف.</translation>
@@ -99,6 +98,7 @@
 <translation id="5419418238395129586">آخر اتصال بالإنترنت: <ph name="DATE" /></translation>
 <translation id="544077782045763683">تم إيقاف المضيف.</translation>
 <translation id="5601503069213153581">رقم التعريف الشخصي</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">تتم مشاركة سطح المكتب حاليًا مع <ph name="USER" />.</translation>
 <translation id="5750083143895808682">تم تسجيل الدخول باسم <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">إعادة الاتصال</translation>
@@ -118,7 +118,6 @@
 <translation id="6583902294974160967">الدعم</translation>
 <translation id="6612717000975622067">‏إرسال Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">مشاركة</translation>
-<translation id="6681800064886881394">‏حقوق الطبع والنشر لعام 2013 لشركة Google Inc. جميع الحقوق محفوظة.</translation>
 <translation id="677755392401385740">بدأ المضيف للمستخدم: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6939719207673461467">عرض/إخفاء لوحة المفاتيح</translation>
 <translation id="6963936880795878952">تم حظر الاتصالات بجهاز الكمبيوتر البعيد مؤقتًا نظرًا لأن شخصًا ما كان يحاول الاتصال به باستخدام رقم تعريف شخصي غير صالح. يُرجى إعادة المحاولة لاحقًا.</translation>

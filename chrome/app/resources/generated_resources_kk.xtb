@@ -3171,7 +3171,6 @@
 <translation id="4646675363240786305">Порттар</translation>
 <translation id="4647090755847581616">&amp;Қойындыны жабу</translation>
 <translation id="4647283074445570750">Қадам: <ph name="CURRENT_STEP" />/<ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{Планшетте есептік жазбаға кірген кезде, қолданба іске қосылсын}computer{Компьютерде есептік жазбаға кірген кезде, қолданба іске қосылсын}other{Құрылғыда есептік жазбаға кірген кезде, қолданба іске қосылсын}}</translation>
 <translation id="4647697156028544508">"<ph name="DEVICE_NAME" />" үшін PIN кодын енгізіңіз:</translation>
 <translation id="4648491805942548247">Рұқсаттар жеткіліксіз</translation>
 <translation id="4648499713050786492">Адам суретін қосу үшін профиліңіздің құлпын ашыңыз.</translation>
@@ -3716,6 +3715,7 @@
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5319359161174645648">Google қызметі Chrome браузерін ұсынады</translation>
 <translation id="5320112320661303273">Assistant қолданбасын басқа құрылғыда реттеген сияқтысыз. Assistant-тің басқа да мүмкіндіктерін пайдалану үшін осы параметрді қосыңыз.</translation>
+<translation id="5320135788267874712">Жаңа құрылғы атауы</translation>
 <translation id="532247166573571973">Сервер қолжетімді емес. Әрекетті кейінірек қайталаңыз.</translation>
 <translation id="5324300749339591280">Қолданбалар тізімі</translation>
 <translation id="5324780743567488672">Орныңызды пайдаланып, уақыт белдеуін автоматты орнату</translation>

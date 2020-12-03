@@ -54,7 +54,6 @@
 <translation id="369442766917958684">ഓഫ്‌ലൈൻ.</translation>
 <translation id="3695446226812920698">എങ്ങനെയെന്നറിയുക</translation>
 <translation id="3776024066357219166">നിങ്ങളുടെ Chrome വിദൂര ഡെസ്‌ക്‌ടോപ്പ് സെഷന്‍ അവസാനിച്ചു.</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3897092660631435901">മെനു</translation>
 <translation id="3905196214175737742">ഹോസ്റ്റ് ഉടമ ഡൊമെയ്‌ൻ അസാധുവാണ്.</translation>
 <translation id="3931191050278863510">ഹോസ്റ്റ് നിർത്തി.</translation>
@@ -99,6 +98,7 @@
 <translation id="5419418238395129586">അവസാന ഓൺലൈൻ: <ph name="DATE" /></translation>
 <translation id="544077782045763683">ഹോസ്റ്റ് ഷട്ട്‌ ഡൗൺ ചെയ്‌തു.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">നിങ്ങളുടെ ഡെസ്‌ക്‌ടോപ്പ് <ph name="USER" /> എന്നയാളുമായി നിലവിൽ പങ്കിടുന്നു.</translation>
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തു.</translation>
 <translation id="579702532610384533">വീണ്ടും ബന്ധിപ്പിക്കുക</translation>
@@ -118,7 +118,6 @@
 <translation id="6583902294974160967">പിന്തുണ</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Del അയയ്‌ക്കുക</translation>
 <translation id="6654753848497929428">പങ്കിടുക</translation>
-<translation id="6681800064886881394">പകർപ്പവകാശം 2013 Google Inc. എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്‌തം.</translation>
 <translation id="677755392401385740">ഇനിപ്പറയുന്ന ഉപയോക്താവിനായി ഹോസ്റ്റ് ആരംഭിച്ചു: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6939719207673461467">കീബോർഡ് ദൃശ്യമാക്കുക/മറയ്‌ക്കുക.</translation>
 <translation id="6963936880795878952">അസാധുവായ പിൻ ഉപയോഗിച്ച് ഒരാൾ റിമോട്ട് കമ്പ്യൂട്ടറിലേക്ക് കണക്‌റ്റ് ചെയ്യാൻ ശ്രമിച്ചതിനാൽ അതിലേക്കുള്ള കണക്ഷനുകൾ തൽക്കാലം ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>

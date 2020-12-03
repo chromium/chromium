@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">స్కానింగ్ ప్రారంభించడం సాధ్యపడలేదు</translation>
 <translation id="1071587090247825784">ఫైర్‌వాల్ గుర్తించబడింది</translation>
 <translation id="1075811647922107217">పేజీ పరిమాణం</translation>
+<translation id="1124772482545689468">వినియోగదారు</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> ద్వారా ఈ <ph name="DEVICE_TYPE" /> మేనేజ్ చేయబడుతోంది.</translation>
 <translation id="1195447618553298278">తెలియని ఎర్రర్.</translation>
 <translation id="1204296502688602597">DNS ప్రతిస్పందన సమయం</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> ప్రయత్నాలు మిగిలి ఉన్నాయి</translation>
 <translation id="2391082728065870591">ఫీడ్‌బ్యాక్ రిపోర్ట్‌ను పంపు</translation>
 <translation id="2461822463642141190">ప్రస్తుత</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ప్రయత్నం మిగిలి ఉంది}other{<ph name="ERROR_MESSAGE" /> {0} ప్రయత్నాలు మిగిలి ఉన్నాయి}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">స్కాన్ చేయి</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> పరీక్షను రన్ చేస్తోంది...</translation>
+<translation id="2620436844016719705">సిస్టమ్</translation>
 <translation id="2805756323405976993">యాప్స్</translation>
 <translation id="2872961005593481000">షట్ డౌన్ చెయ్యండి</translation>
 <translation id="3008341117444806826">రిఫ్రెష్ చేయి</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3083667275341675831">కనెక్టివిటీ సమస్య విశ్లేషణ</translation>
 <translation id="3091839911843451378">విఫలమైంది - ఆగిపోయింది</translation>
+<translation id="3102119246920354026">కాష్</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">నా ఫైల్‌లు</translation>
 <translation id="3199982728237701504">డాక్యుమెంట్ ఫీడర్ (రెండు వైపులా)</translation>
 <translation id="3246869037381808805">1 రోజుకు పైగా ఉన్న ప్రింట్ టాస్క్‌లు తీసివేయబడతాయి</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">కొత్త పాస్‌వర్డ్</translation>
 <translation id="3865414814144988605">రిజల్యూషన్</translation>
 <translation id="3941014780699102620">హోస్ట్‌ను పరిష్కరించడంలో విఫలమైంది</translation>
+<translation id="3942420633017001071">నిర్ధారణలు</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> రోజులకు పైగా ఉన్న ప్రింట్ టాస్క్‌లు తీసివేయబడతాయి</translation>
 <translation id="4003384961948020559">విఫలమైంది - అవుట్‌పుట్, ప్రింటింగ్ జాబ్‌లతో నిండి ఉంది</translation>
 <translation id="4034824040120875894">ప్రింటర్</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> ఛార్జ్ అయ్యింది.</translation>
 <translation id="4932733599132424254">తేదీ</translation>
 <translation id="4985509611418653372">రన్ చేయి</translation>
+<translation id="5154917547274118687">మెమరీ</translation>
 <translation id="5168185087976003268">బ్యాటరీ సామర్థ్యం</translation>
 <translation id="520299634122159966">స్కానర్‌లు అందుబాటులో లేవు</translation>
 <translation id="5212543919916444558">నేను సహాయం అందించగలిగేలా మీ స్క్రీన్‌పై నాకు ఏదీ కనిపించలేదు. మైక్‌ను నొక్కి, నన్ను ఏదైనా అడగడానికి ప్రయత్నించండి.</translation>
@@ -136,6 +141,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">మరింత తెలుసుకోండి</translation>
 <translation id="6191293864534840972">పేరు తప్పుగా ఉన్న సర్వర్లు</translation>
+<translation id="6232017090690406397">బ్యాటరీ</translation>
 <translation id="6325525973963619867">విఫలమైంది</translation>
 <translation id="636850387210749493">ఎంటర్‌ప్రైజ్ నమోదు</translation>
 <translation id="649050271426829538">ఆగిపోయింది - కాగితం జామ్ అయింది</translation>
@@ -193,6 +199,7 @@
 <translation id="8910721771319628100">పరిమితిని మించి ప్రతిస్పందన సమయం ఉన్న డిఫాల్ట్ నెట్‌వర్క్</translation>
 <translation id="8919837981463578619">విఫలమైంది - ట్రే అందుబాటులో లేదు</translation>
 <translation id="8928727111548978589">విఫలమైంది - పేపర్ లేదు</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> ప్రయత్నాలు మిగిలి ఉన్నాయి</translation>
 <translation id="8970109610781093811">మళ్లీ అమలు చేయి</translation>
 <translation id="9088306295921699330">ప్రస్తుత వినియోగం</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> సంబంధిత టిక్కెట్‌ను రిఫ్రెష్ చేయండి</translation>

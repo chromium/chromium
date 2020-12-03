@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">無法開始掃描</translation>
 <translation id="1071587090247825784">已偵測到防火牆</translation>
 <translation id="1075811647922107217">網頁大小</translation>
+<translation id="1124772482545689468">使用者</translation>
 <translation id="1175697296044146566">這部 <ph name="DEVICE_TYPE" /> 是由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="1195447618553298278">未知的錯誤。</translation>
 <translation id="1204296502688602597">DNS 延遲</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402">剩餘嘗試次數：<ph name="ATTEMPTS_LEFT" /> 次</translation>
 <translation id="2391082728065870591">傳送意見回饋報告</translation>
 <translation id="2461822463642141190">目前耗電量</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />剩餘嘗試次數：{0} 次}other{<ph name="ERROR_MESSAGE" />剩餘嘗試次數：{0} 次}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">掃描</translation>
 <translation id="2570743873672969996">正在執行<ph name="TEST_NAME" />測試...</translation>
+<translation id="2620436844016719705">系統</translation>
 <translation id="2805756323405976993">應用程式</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="3008341117444806826">更新</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3083667275341675831">連線診斷工具</translation>
 <translation id="3091839911843451378">失敗 - 已停止</translation>
+<translation id="3102119246920354026">快取</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">我的檔案</translation>
 <translation id="3199982728237701504">文件送紙器 (雙面)</translation>
 <translation id="3246869037381808805">系統會移除 1 天前的列印工作</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">新密碼</translation>
 <translation id="3865414814144988605">解析度</translation>
 <translation id="3941014780699102620">無法解析主機</translation>
+<translation id="3942420633017001071">診斷</translation>
 <translation id="39823212440917567">系統會移除 <ph name="NUMBER_OF_DAYS" /> 天前的列印工作</translation>
 <translation id="4003384961948020559">失敗 - 輸出紙匣已滿</translation>
 <translation id="4034824040120875894">印表機</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒內已充電 <ph name="RATE" />。</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="4985509611418653372">執行</translation>
+<translation id="5154917547274118687">記憶體</translation>
 <translation id="5168185087976003268">電池壽命</translation>
 <translation id="520299634122159966">沒有可用的掃描器</translation>
 <translation id="5212543919916444558">系統在你的畫面上找不到任何能提供協助的內容。
@@ -137,6 +142,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6191293864534840972">名稱伺服器格式錯誤</translation>
+<translation id="6232017090690406397">電池</translation>
 <translation id="6325525973963619867">失敗</translation>
 <translation id="636850387210749493">企業註冊</translation>
 <translation id="649050271426829538">已停止 - 卡紙</translation>
@@ -194,6 +200,7 @@
 <translation id="8910721771319628100">預設網路超過延遲門檻</translation>
 <translation id="8919837981463578619">失敗 - 缺少紙匣</translation>
 <translation id="8928727111548978589">失敗 - 紙張用盡</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" />剩餘嘗試次數：<ph name="ATTEMPTS_LEFT" /> 次</translation>
 <translation id="8970109610781093811">再執行一次</translation>
 <translation id="9088306295921699330">目前用量</translation>
 <translation id="910415269708673980">更新 <ph name="PRINCIPAL_NAME" /> 的票證</translation>

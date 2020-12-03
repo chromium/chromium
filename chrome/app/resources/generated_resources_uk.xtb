@@ -3177,7 +3177,6 @@
 <translation id="4646675363240786305">Порти</translation>
 <translation id="4647090755847581616">&amp;Закрити вкладку</translation>
 <translation id="4647283074445570750">Крок <ph name="CURRENT_STEP" /> з <ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{Запускати додаток, коли ви входите в обліковий запис на планшеті}computer{Запускати додаток, коли ви входите в обліковий запис на комп'ютері}other{Запускати додаток, коли ви входите в обліковий запис на пристрої}}</translation>
 <translation id="4647697156028544508">Введіть PIN-код для пристрою "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">Недостатні дозволи</translation>
 <translation id="4648499713050786492">Перш ніж додати особу, розблокуйте свій профіль.</translation>
@@ -3722,6 +3721,7 @@
 <translation id="5317780077021120954">Зберегти</translation>
 <translation id="5319359161174645648">Google рекомендує Chrome</translation>
 <translation id="5320112320661303273">Схоже, ви вже налаштували Асистента на іншому пристрої. Отримайте ще більше функцій Асистента, увімкнувши налаштування нижче.</translation>
+<translation id="5320135788267874712">Нова назва пристрою</translation>
 <translation id="532247166573571973">Можливо, сервер недоступний. Спробуйте пізніше.</translation>
 <translation id="5324300749339591280">Список додатків</translation>
 <translation id="5324780743567488672">Автоматично визначати часовий пояс на основі ваших геоданих</translation>

@@ -122,6 +122,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2067602449040652523">Lysstyrke for tastatur</translation>
 <translation id="2078034614700056995">Stryg mod højre med fire fingre for at skifte til næste skrivebord</translation>
+<translation id="2079504693865562705">Skjul apps på hylden</translation>
 <translation id="2083190527011054446">Hej <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Der er ingen netværksforbindelse</translation>
 <translation id="2126242104232412123">Nyt skrivebord</translation>
@@ -238,6 +239,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> andre</translation>
 <translation id="3236488194889173876">Der er ingen tilgængelige mobilnetværk</translation>
 <translation id="3249513730522716925">Vindue <ph name="WINDOW_TITLE" /> blev flyttet fra Skrivebord <ph name="ACTIVE_DESK" /> til Skrivebord <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> procent.</translation>
 <translation id="3255483164551725916">Hvad kan du gøre?</translation>
 <translation id="3269597722229482060">Højreklik</translation>
 <translation id="3289674678944039601">Oplader via adapter</translation>
@@ -369,6 +371,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4389184120735010762">Du trykkede på tastaturgenvejen for det fastgjorte lupvindue. Vil du aktivere indstillingen?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> er deaktiveret.</translation>
 <translation id="4421231901400348175">Skærmdeling med <ph name="HELPER_NAME" /> via Fjernsupport.</translation>
+<translation id="4427613789487709312">Standard (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Lydstyrke</translation>
 <translation id="4450893287417543264">Vis ikke igen</translation>
 <translation id="445864333228800152">Godaften</translation>
@@ -449,6 +452,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="5078796286268621944">Forkert pinkode</translation>
 <translation id="5083553833479578423">Få adgang til endnu flere Assistent-funktioner.</translation>
 <translation id="5136175204352732067">Du har tilsluttet et andet tastatur</translation>
+<translation id="5155897006997040331">Læsehastighed</translation>
 <translation id="5168181903108465623">Tilgængelige Cast-enheder</translation>
 <translation id="5170568018924773124">Vis i mappe</translation>
 <translation id="5176318573511391780">Optag dele af skærmen</translation>
@@ -713,6 +717,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifikation}one{# notifikation}other{# notifikationer}}</translation>
 <translation id="7724603315864178912">Klip</translation>
+<translation id="7745560842763881396">Vis apps på hylde</translation>
 <translation id="7749443890790263709">Det maksimale antal skriveborde er nået.</translation>
 <translation id="776344839111254542">Klik for at se opdateringsoplysninger</translation>
 <translation id="7780159184141939021">Roter skærm</translation>

@@ -119,6 +119,7 @@
 <translation id="2208919847696382164">Εγκατάσταση με Linux</translation>
 <translation id="2225536596944493418">Είστε βέβαιοι ότι θέλετε να διαγράψετε <ph name="NUMBER_OF_ITEMS" /> στοιχεία;</translation>
 <translation id="2230062665678605299">Δεν είναι δυνατή η δημιουργία του φακέλου "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2251368349685848079">Επαναφορά από τον κάδο</translation>
 <translation id="2275059641601412272">Μετακινήθηκε.</translation>
 <translation id="2288278176040912387">Πικάπ</translation>
 <translation id="2291538123825441971">Άνοιγμα <ph name="NUMBER_OF_FILES" /> αρχείων.</translation>
@@ -754,6 +755,7 @@
 <translation id="8609695766746872526">Ισλανδικά</translation>
 <translation id="8669949407341943408">Μετακίνηση…</translation>
 <translation id="8698464937041809063">Σχέδιο Google</translation>
+<translation id="8712637175834984815">Κατάλαβα!</translation>
 <translation id="8713112442029511308">Μαλτεζικά</translation>
 <translation id="8714406895390098252">Ποδήλατο</translation>
 <translation id="8719721339511222681">Επιλογή <ph name="ENTRY_NAME" />.</translation>

@@ -3177,7 +3177,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4646675363240786305">Prievadai</translation>
 <translation id="4647090755847581616">&amp;Uždaryti skirtuką</translation>
 <translation id="4647283074445570750"><ph name="CURRENT_STEP" /> veiksmas iš <ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{Paleisti programą prisijungus prie planšetinio kompiuterio}computer{Paleisti programą prisijungus prie kompiuterio}other{Paleisti programą prisijungus prie įrenginio}}</translation>
 <translation id="4647697156028544508">Įveskite „<ph name="DEVICE_NAME" />“ PIN kodą:</translation>
 <translation id="4648491805942548247">Nepakankami leidimai</translation>
 <translation id="4648499713050786492">Prieš pridėdami asmenį atrakinkite savo profilį.</translation>
@@ -3722,6 +3721,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5317780077021120954">Išsaugoti</translation>
 <translation id="5319359161174645648">„Google“ rekomenduoja „Chrome“</translation>
 <translation id="5320112320661303273">Panašu, kad jau nustatėte Padėjėją kitame įrenginyje. Dar geriau išnaudokite Padėjėjo galimybes įjungę tolesnį nustatymą.</translation>
+<translation id="5320135788267874712">Naujas įrenginio pavadinimas</translation>
 <translation id="532247166573571973">Serveris gali būti nepasiekiamas. Vėliau bandykite dar kartą.</translation>
 <translation id="5324300749339591280">Programų sąrašas</translation>
 <translation id="5324780743567488672">Automatiškai nustatyti laiko juostą pagal jūsų vietovę</translation>

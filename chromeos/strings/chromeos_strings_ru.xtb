@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Не удалось начать сканирование.</translation>
 <translation id="1071587090247825784">обнаружен брандмауэр</translation>
 <translation id="1075811647922107217">Размер страницы</translation>
+<translation id="1124772482545689468">Пользователь</translation>
 <translation id="1175697296044146566">Этим устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Неизвестная ошибка.</translation>
 <translation id="1204296502688602597">Задержка DNS</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402">Осталось попыток: <ph name="ATTEMPTS_LEFT" />.</translation>
 <translation id="2391082728065870591">Отправить отзыв с отчетом</translation>
 <translation id="2461822463642141190">Расход энергии</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Осталась {0} попытка.}one{<ph name="ERROR_MESSAGE" /> Осталась {0} попытка.}few{<ph name="ERROR_MESSAGE" /> Осталось {0} попытки.}many{<ph name="ERROR_MESSAGE" /> Осталось {0} попыток.}other{<ph name="ERROR_MESSAGE" /> Осталось {0} попытки.}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Искать</translation>
 <translation id="2570743873672969996">Запуск теста "<ph name="TEST_NAME" />"…</translation>
+<translation id="2620436844016719705">Система</translation>
 <translation id="2805756323405976993">Сервисы</translation>
 <translation id="2872961005593481000">Завершить работу</translation>
 <translation id="3008341117444806826">ОБНОВИТЬ</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> мА</translation>
 <translation id="3083667275341675831">Диагностика соединений</translation>
 <translation id="3091839911843451378">Сбой: остановка работы</translation>
+<translation id="3102119246920354026">Кеш</translation>
+<translation id="3122464029669770682">ЦПУ</translation>
 <translation id="3188257591659621405">Мои файлы</translation>
 <translation id="3199982728237701504">Автоподатчик документов (двусторонний)</translation>
 <translation id="3246869037381808805">Задания печати, хранящиеся дольше 1 дня, будут удалены</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">Новый пароль</translation>
 <translation id="3865414814144988605">Разрешение</translation>
 <translation id="3941014780699102620">Не удалось преобразовать имя хоста.</translation>
+<translation id="3942420633017001071">Диагностика</translation>
 <translation id="39823212440917567">Задания печати, хранящиеся дольше <ph name="NUMBER_OF_DAYS" /> дн., будут удалены</translation>
 <translation id="4003384961948020559">Сбой: выходной лоток заполнен</translation>
 <translation id="4034824040120875894">Принтер</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356">Батарея зарядилась на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4985509611418653372">Проверить</translation>
+<translation id="5154917547274118687">Память</translation>
 <translation id="5168185087976003268">Уровень заряда</translation>
 <translation id="520299634122159966">Нет доступных сканеров.</translation>
 <translation id="5212543919916444558">Я не нашла на экране ничего подходящего.
@@ -137,6 +142,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Подробнее</translation>
 <translation id="6191293864534840972">Некорректно указаны серверы доменных имен.</translation>
+<translation id="6232017090690406397">Аккумулятор</translation>
 <translation id="6325525973963619867">Ошибка</translation>
 <translation id="636850387210749493">Регистрация в корпоративном домене</translation>
 <translation id="649050271426829538">Печать прервана: застряла бумага</translation>
@@ -194,6 +200,7 @@
 <translation id="8910721771319628100">В сети, используемой по умолчанию, превышено пороговое значение задержки.</translation>
 <translation id="8919837981463578619">Сбой: нет лотка для бумаги</translation>
 <translation id="8928727111548978589">Сбой: закончилась бумага</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Осталось попыток: <ph name="ATTEMPTS_LEFT" />.</translation>
 <translation id="8970109610781093811">Выполнить ещё раз</translation>
 <translation id="9088306295921699330">Используется</translation>
 <translation id="910415269708673980">Обновите билет для аккаунта <ph name="PRINCIPAL_NAME" />.</translation>

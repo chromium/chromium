@@ -54,7 +54,6 @@ Jei parinktis „<ph name="SERVICE_SCRIPT_NAME" />“ jau pažymėta, atžymėki
 <translation id="369442766917958684">Neprisijungus.</translation>
 <translation id="3695446226812920698">Sužinokite kaip</translation>
 <translation id="3776024066357219166">Baigėsi „Chrome“ nuotolinio kompiuterio valdymo sesija.</translation>
-<translation id="3870154837782082782">„Google Inc.“</translation>
 <translation id="3897092660631435901">Meniu</translation>
 <translation id="3905196214175737742">Netinkamas prieglobos savininko domenas.</translation>
 <translation id="3931191050278863510">Priegloba sustabdyta.</translation>
@@ -99,6 +98,7 @@ Jei parinktis „<ph name="SERVICE_SCRIPT_NAME" />“ jau pažymėta, atžymėki
 <translation id="5419418238395129586">Paskutinį kartą prisijungta: <ph name="DATE" /></translation>
 <translation id="544077782045763683">Priegloba išjungta.</translation>
 <translation id="5601503069213153581">PIN kodas</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Šiuo metu darbalaukis bendrinamas su šiuo naudotoju: <ph name="USER" />.</translation>
 <translation id="5750083143895808682">Prisijungta kaip <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Pakartotinai prijungti</translation>
@@ -118,7 +118,6 @@ Jei parinktis „<ph name="SERVICE_SCRIPT_NAME" />“ jau pažymėta, atžymėki
 <translation id="6583902294974160967">Palaikymas</translation>
 <translation id="6612717000975622067">Siųsti „Ctrl“ + „Alt“ + „Del“</translation>
 <translation id="6654753848497929428">Bendrinti</translation>
-<translation id="6681800064886881394">Autorių teisės priklauso „Google Inc.“, 2013 m. Visos teisės saugomos.</translation>
 <translation id="677755392401385740">Pradėta naudotojo priegloba: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6939719207673461467">Rodyti / slėpti klaviatūrą.</translation>
 <translation id="6963936880795878952">Ryšiai su nuotoliniu kompiuteriu laikinai blokuojami, nes kažkas bandė prisijungti prie jo naudodamas netinkamą PIN kodą. Vėliau bandykite dar kartą.</translation>

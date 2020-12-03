@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">Sisestage märgile „<ph name="ATSIGN" />” eelnev osa. Aadress „<ph name="INVALIDADDRESS" />” pole täielik.</translation>
 <translation id="5334352251556557839">Meediasisu ei saa esitada.</translation>
 <translation id="537648784377940524">Minimaalne kuupäev (<ph name="MIN_DATE_OR_TIME" />) peab olema enne maksimaalset kuupäeva (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">laiendatud, dialoog on avatud.</translation>
 <translation id="5406322316791861025">joonis</translation>
 <translation id="5425179576310518467">praegune kuupäev</translation>
 <translation id="5453733299334684579">puuüksus</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">rohkem valikuid</translation>
 <translation id="576709008726043716">sissejuhatus</translation>
 <translation id="57838592816432529">Vaigista</translation>
+<translation id="5787939484346677755">laiendatud, automaattäite valikud on saadaval.</translation>
 <translation id="5860033963881614850">Väljas</translation>
 <translation id="588258955323874662">Täisekraan</translation>
 <translation id="5888666972993069672">Nüüd kantakse üle seadmesse <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">loendikast</translation>
 <translation id="6150588977291308318">bibliograafia</translation>
 <translation id="6164829606128959761">mõõdik</translation>
+<translation id="6165053282446038410">laiendatud, saadaval on <ph name="COUNT" /> automaattäite valikut.</translation>
 <translation id="6166809985690652833">järelsõna</translation>
 <translation id="6209276755895393898">Näib olevat: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">praegune leht</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">päis</translation>
 <translation id="6941933287844615239">laadi meedia alla</translation>
 <translation id="6981594929165378967">lisamine</translation>
+<translation id="698788488269350478">laiendatud.</translation>
 <translation id="6989848892321993519">Pikendage teksti vähemalt <ph name="MIN_CHARACTERS" /> tähemärgini (kasutate praegu ühte tähemärki).</translation>
 <translation id="7034405885550056553">soovitus</translation>
 <translation id="709897737746224366">Vastendage nõutav vorming.</translation>
 <translation id="7102274145889307184">praegune asukoht</translation>
 <translation id="7118469954320184356">Kirjeldust pole.</translation>
 <translation id="7139483182332611405">eessõna</translation>
+<translation id="7198226213493847604">menüü hüpiknupp</translation>
 <translation id="7214187073215825913">sisu teave</translation>
 <translation id="7238347055216017155">rõhutus</translation>
 <translation id="7263440858009898357">Valige loendist element.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">peatükk</translation>
 <translation id="8845239796550121995">Kantakse nüüd üle telerisse</translation>
 <translation id="8851136666856101339">pea</translation>
+<translation id="8861621546968757188">dialoogi hüpiknupp</translation>
 <translation id="8875657656876809964">Video taasesituse viga</translation>
 <translation id="8889402386540077796">Värvitoon</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>

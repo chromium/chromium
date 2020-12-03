@@ -3173,7 +3173,6 @@
 <translation id="4646675363240786305">পোর্ট</translation>
 <translation id="4647090755847581616">&amp;Close Tab</translation>
 <translation id="4647283074445570750"><ph name="TOTAL_STEPS" />টির মধ্যে <ph name="CURRENT_STEP" /> নম্বর ধাপ</translation>
-<translation id="4647420311443994946">{0,select, tablet{আপনার ট্যাবলেটে সাইন-ইন করলেই অ্যাপ চালু হয়ে যাবে}computer{আপনার কম্পিউটারে সাইন-ইন করলেই অ্যাপ চালু হয়ে যাবে}other{আপনার ডিভাইসে সাইন-ইন করলেই অ্যাপ চালু হয়ে যাবে}}</translation>
 <translation id="4647697156028544508">"<ph name="DEVICE_NAME" />"-এর PIN লিখুন:</translation>
 <translation id="4648491805942548247">অপর্যাপ্ত অনুমতিগুলি</translation>
 <translation id="4648499713050786492">কোনো ব্যক্তি যোগ করার আগে দয়া করে আপনার প্রোফাইলটি আনলক করুন।</translation>
@@ -3718,6 +3717,7 @@
 <translation id="5317780077021120954">সেভ করুন</translation>
 <translation id="5319359161174645648">Google Chrome ব্যবহার করার সুপারিশ করে</translation>
 <translation id="5320112320661303273">মনে হচ্ছে আপনি অন্য একটি ডিভাইসে আগেই Assistant সেট আপ করেছেন। নিম্নলিখিত সেটিং চালু করে Assistant-এর সর্বাধিক সুবিধা নিন।</translation>
+<translation id="5320135788267874712">নতুন ডিভাইসের নাম</translation>
 <translation id="532247166573571973">সার্ভারে সংযোগ নাও হতে পারে। পরে আবার চেষ্টা করুন।</translation>
 <translation id="5324300749339591280">অ্যাপ তালিকা</translation>
 <translation id="5324780743567488672">আপনার লোকেশন ব্যবহার করে স্বয়ংক্রিয়ভাবে সময় অঞ্চল সেট করুন</translation>

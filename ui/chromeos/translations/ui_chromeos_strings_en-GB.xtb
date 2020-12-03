@@ -117,6 +117,7 @@
 <translation id="2208919847696382164">Install with Linux</translation>
 <translation id="2225536596944493418">Are you sure that you want to delete <ph name="NUMBER_OF_ITEMS" /> items?</translation>
 <translation id="2230062665678605299">Unable to create folder "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2251368349685848079">Restore from bin</translation>
 <translation id="2275059641601412272">Moved.</translation>
 <translation id="2288278176040912387">Record player</translation>
 <translation id="2291538123825441971">Opening <ph name="NUMBER_OF_FILES" /> files.</translation>
@@ -734,6 +735,7 @@
 <translation id="8609695766746872526">Icelandic</translation>
 <translation id="8669949407341943408">Moving...</translation>
 <translation id="8698464937041809063">Google drawing</translation>
+<translation id="8712637175834984815">Got it</translation>
 <translation id="8713112442029511308">Maltese</translation>
 <translation id="8714406895390098252">Bicycle</translation>
 <translation id="8719721339511222681">Selected <ph name="ENTRY_NAME" />.</translation>

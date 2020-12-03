@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Ekki tókst að skanna</translation>
 <translation id="1071587090247825784">Eldveggur greindist</translation>
 <translation id="1075811647922107217">Síðustærð</translation>
+<translation id="1124772482545689468">Notandi</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> er í umsjón <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Óþekkt villa.</translation>
 <translation id="1204296502688602597">DNS-biðtími</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> tilraunir eftir</translation>
 <translation id="2391082728065870591">Senda ábendingaskýrslu</translation>
 <translation id="2461822463642141190">Núna</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tilraun eftir}one{<ph name="ERROR_MESSAGE" /> {0} tilraun eftir}other{<ph name="ERROR_MESSAGE" /> {0} tilraunir eftir}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Leita</translation>
 <translation id="2570743873672969996">Keyrir prófið <ph name="TEST_NAME" />...</translation>
+<translation id="2620436844016719705">Kerfi</translation>
 <translation id="2805756323405976993">Forrit</translation>
 <translation id="2872961005593481000">Slökkva</translation>
 <translation id="3008341117444806826">ENDURNÝJA</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3083667275341675831">Greining á tengigetu</translation>
 <translation id="3091839911843451378">Mistókst – stöðvaðist</translation>
+<translation id="3102119246920354026">Skyndiminni</translation>
+<translation id="3122464029669770682">Örgjörvi</translation>
 <translation id="3188257591659621405">Skrárnar mínar</translation>
 <translation id="3199982728237701504">Skjalamatari (tvíhliða)</translation>
 <translation id="3246869037381808805">Prentverk sem eru meira en 1 dags gömul verða fjarlægð</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">Nýtt aðgangsorð</translation>
 <translation id="3865414814144988605">Upplausn</translation>
 <translation id="3941014780699102620">Ekki tókst að ákvarða hýsil</translation>
+<translation id="3942420633017001071">Greining</translation>
 <translation id="39823212440917567">Prentverk sem eru eldri en <ph name="NUMBER_OF_DAYS" /> verða fjarlægð</translation>
 <translation id="4003384961948020559">Mistókst – úttakið er fullt</translation>
 <translation id="4034824040120875894">Prentari</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356">Hlóð <ph name="RATE" /> á <ph name="NUM_SECONDS" /> sekúndum.</translation>
 <translation id="4932733599132424254">Dagsetning</translation>
 <translation id="4985509611418653372">Keyra</translation>
+<translation id="5154917547274118687">Minni</translation>
 <translation id="5168185087976003268">Ástand rafhlöðu</translation>
 <translation id="520299634122159966">Engir skannar tiltækir</translation>
 <translation id="5212543919916444558">Ég finn ekkert á skjánum sem ég get aðstoðað þig með.
@@ -137,6 +142,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Frekari upplýsingar</translation>
 <translation id="6191293864534840972">Gallaðir nafnaþjónar</translation>
+<translation id="6232017090690406397">Rafhlaða</translation>
 <translation id="6325525973963619867">Mistókst</translation>
 <translation id="636850387210749493">Fyrirtækjaskráning</translation>
 <translation id="649050271426829538">Stöðvað – pappírsstífla</translation>
@@ -194,6 +200,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8910721771319628100">Sjálfgefið net er yfir biðþröskuldi</translation>
 <translation id="8919837981463578619">Mistókst – bakka vantar</translation>
 <translation id="8928727111548978589">Mistókst – pappír vantar</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> tilraunir eftir</translation>
 <translation id="9088306295921699330">Núverandi notkun</translation>
 <translation id="910415269708673980">Endurnýja miða fyrir <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skannar síðu <ph name="PAGE_NUMBER" /></translation>

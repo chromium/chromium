@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Скандалып башталган жок</translation>
 <translation id="1071587090247825784">Тармактык коргоо аныкталды</translation>
 <translation id="1075811647922107217">Барактын өлчөмү</translation>
+<translation id="1124772482545689468">Колдонуучу</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> түзмөгүн <ph name="MANAGER" /> башкарат.</translation>
 <translation id="1195447618553298278">Белгисиз ката.</translation>
 <translation id="1204296502688602597">DNS күтүү убакыты</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> аракет калды</translation>
 <translation id="2391082728065870591">Жооп пикир баяндамасын жөнөтүү</translation>
 <translation id="2461822463642141190">Учурда</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} аракет калды}other{<ph name="ERROR_MESSAGE" /> {0} аракет калды}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Скандоо</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> тести аткарылууда...</translation>
+<translation id="2620436844016719705">Тутум</translation>
 <translation id="2805756323405976993">Колдонмолор</translation>
 <translation id="2872961005593481000">Жабуу</translation>
 <translation id="3008341117444806826">ЖАҢЫРТУУ</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />мА</translation>
 <translation id="3083667275341675831">Байланыштагы мүчүлүштүктөрдү аныктоо</translation>
 <translation id="3091839911843451378">Басылып чыгарылган жок - Принтер токтоп калды</translation>
+<translation id="3102119246920354026">Кэш</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">Менин файлдарым</translation>
 <translation id="3199982728237701504">Документтерди берүүчү түзмөк (эки тараптуу)</translation>
 <translation id="3246869037381808805">1 күндөн мурунку басып чыгаруу тапшырмалары өчүрүлөт</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">Жаңы сырсөз</translation>
 <translation id="3865414814144988605">Чечилиш</translation>
 <translation id="3941014780699102620">Башкы түйүн чечилген жок</translation>
+<translation id="3942420633017001071">Мүчүлүштүктөрдү аныктоо</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> күндөн мурунку басып чыгаруу тапшырмалары өчүрүлөт</translation>
 <translation id="4003384961948020559">Басылып чыгарылган жок - Барактар тактасы толук</translation>
 <translation id="4034824040120875894">Принтер</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундда <ph name="RATE" /> кубатталды.</translation>
 <translation id="4932733599132424254">Күнү</translation>
 <translation id="4985509611418653372">Иштетүү</translation>
+<translation id="5154917547274118687">Эстутум</translation>
 <translation id="5168185087976003268">Батареянын иштөө мөөнөтү</translation>
 <translation id="520299634122159966">Жеткиликтүү сканерлер жок</translation>
 <translation id="5212543919916444558">Экраныңызда эч нерсе көрүнгөн жок.
@@ -137,6 +142,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Кошумча маалымат</translation>
 <translation id="6191293864534840972">Бурмаланган ысым серверлери</translation>
+<translation id="6232017090690406397">Батарея</translation>
 <translation id="6325525973963619867">Аткарылган жок</translation>
 <translation id="636850387210749493">Корпоративдик каттоо</translation>
 <translation id="649050271426829538">Токтоду – Кагаз чайналып калды</translation>
@@ -194,6 +200,7 @@
 <translation id="8910721771319628100">Демейки тармак күтүү убакытынын босогосунан жогору</translation>
 <translation id="8919837981463578619">Басылып чыгарылган жок - Такта ордунда эмес</translation>
 <translation id="8928727111548978589">Басылып чыгарылган жок - Кагаз түгөнүп калды</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> аракет калды</translation>
 <translation id="9088306295921699330">Учурдагы колдонулушу</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> үчүн билетти жаңыртыңыз</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-бет скандалууда</translation>

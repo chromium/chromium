@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Не ўдалося запусціць сканіраванне</translation>
 <translation id="1071587090247825784">Выяўлены брандмаўар</translation>
 <translation id="1075811647922107217">Памер старонкі</translation>
+<translation id="1124772482545689468">Карыстальнік</translation>
 <translation id="1175697296044146566">Гэтай прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" /></translation>
 <translation id="1195447618553298278">Невядомая памылка.</translation>
 <translation id="1204296502688602597">Затрымка DNS</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402">Засталося спроб: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Адправіць справаздачу з водгукам</translation>
 <translation id="2461822463642141190">Цяпер</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Засталася {0} спроба}one{<ph name="ERROR_MESSAGE" /> Засталася {0} спроба}few{<ph name="ERROR_MESSAGE" /> Засталося {0} спробы}many{<ph name="ERROR_MESSAGE" /> Засталося {0} спроб}other{<ph name="ERROR_MESSAGE" /> Засталося {0} спробы}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Пошук</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> праходзіць праверку...</translation>
+<translation id="2620436844016719705">Сістэма</translation>
 <translation id="2805756323405976993">Праграмы</translation>
 <translation id="2872961005593481000">Завяршыць працу</translation>
 <translation id="3008341117444806826">АБНАВІЦЬ</translation>
@@ -53,6 +54,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> мА</translation>
 <translation id="3083667275341675831">Дыягностыка падключэння</translation>
 <translation id="3091839911843451378">Збой: работа спынена</translation>
+<translation id="3122464029669770682">Працэсар</translation>
 <translation id="3188257591659621405">Мае файлы</translation>
 <translation id="3199982728237701504">Прылада для падачы дакументаў (абодвума бакамі)</translation>
 <translation id="3246869037381808805">Заданні друку, старэйшыя за 1 дзень, будуць выдалены</translation>
@@ -71,6 +73,7 @@
 <translation id="3838338534323494292">Новы пароль</translation>
 <translation id="3865414814144988605">Раздзяляльнасць</translation>
 <translation id="3941014780699102620">Не ўдалося супаставіць хост</translation>
+<translation id="3942420633017001071">Дыягностыка</translation>
 <translation id="39823212440917567">Заданні друку, старэйшыя за <ph name="NUMBER_OF_DAYS" /> сут, будуць выдалены</translation>
 <translation id="4003384961948020559">Збой: выхадны латок запоўнены</translation>
 <translation id="4034824040120875894">Прынтар</translation>
@@ -137,6 +140,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Даведацца больш</translation>
 <translation id="6191293864534840972">Серверы даменных імён маюць няправільны фармат</translation>
+<translation id="6232017090690406397">Акумулятар</translation>
 <translation id="6325525973963619867">Збой</translation>
 <translation id="636850387210749493">Рэгістрацыя для арганізацый</translation>
 <translation id="649050271426829538">Спынена: захрасла папера</translation>
@@ -194,6 +198,7 @@
 <translation id="8910721771319628100">Затрымка ў стандартнай сетцы перавышае парогавае значэнне</translation>
 <translation id="8919837981463578619">Збой: няма латка</translation>
 <translation id="8928727111548978589">Збой: скончылася папера</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Засталося спроб: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="9088306295921699330">Бягучае выкарыстанне</translation>
 <translation id="910415269708673980">Абнавіце білет для <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканіруецца старонка <ph name="PAGE_NUMBER" /></translation>

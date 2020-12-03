@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">اسکن شروع نشد</translation>
 <translation id="1071587090247825784">دیوار آتش شناسایی شد</translation>
 <translation id="1075811647922107217">اندازه صفحه</translation>
+<translation id="1124772482545689468">کاربر</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> این <ph name="DEVICE_TYPE" /> را مدیریت می‌کند.</translation>
 <translation id="1195447618553298278">خطای ناشناس.</translation>
 <translation id="1204296502688602597">تأخیر ساناد</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> فرصت باقی مانده است</translation>
 <translation id="2391082728065870591">ارسال گزارش بازخورد</translation>
 <translation id="2461822463642141190">فعلی</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}one{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}other{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">اسکن</translation>
 <translation id="2570743873672969996">درحال اجرای آزمایش <ph name="TEST_NAME" />…</translation>
+<translation id="2620436844016719705">سیستم</translation>
 <translation id="2805756323405976993">برنامه‌ها</translation>
 <translation id="2872961005593481000">خاموش کردن</translation>
 <translation id="3008341117444806826">بازخوانی</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> میلی‌آمپر</translation>
 <translation id="3083667275341675831">تشخیص خطای اتصال</translation>
 <translation id="3091839911843451378">انجام نشد - متوقف شده است</translation>
+<translation id="3102119246920354026">حافظه پنهان</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">فایل‌های من</translation>
 <translation id="3199982728237701504">تغذیه‌کننده سند (دورو)</translation>
 <translation id="3246869037381808805">کارهای چاپ قدیمی‌تر از ۱ روز برداشته می‌شوند</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">گذرواژه جدید</translation>
 <translation id="3865414814144988605">وضوح</translation>
 <translation id="3941014780699102620">حل کردن میزبان انجام نشد</translation>
+<translation id="3942420633017001071">تشخیص خطا</translation>
 <translation id="39823212440917567">کارهای چاپ قدیمی‌تر از <ph name="NUMBER_OF_DAYS" /> روز برداشته می‌شوند</translation>
 <translation id="4003384961948020559">انجام نشد - خروجی پُر است</translation>
 <translation id="4034824040120875894">چاپگر</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356">در <ph name="NUM_SECONDS" /> ثانیه <ph name="RATE" /> شارژ شد.</translation>
 <translation id="4932733599132424254">تاریخ</translation>
 <translation id="4985509611418653372">اجرا</translation>
+<translation id="5154917547274118687">حافظه</translation>
 <translation id="5168185087976003268">سلامت باتری</translation>
 <translation id="520299634122159966">اسکنری دردسترس نیست</translation>
 <translation id="5212543919916444558">در صفحه‌‌تان چیزی پیدا نمی‌کنم تا درمورد آن کمکتان کنم.
@@ -137,6 +142,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">بیشتر بدانید</translation>
 <translation id="6191293864534840972">سرورهای نام دامنه ناقص است</translation>
+<translation id="6232017090690406397">باتری</translation>
 <translation id="6325525973963619867">ناموفق بود</translation>
 <translation id="636850387210749493">ثبت‌نام شرکت</translation>
 <translation id="649050271426829538">متوقف شد - کاغذ گیر کرده است</translation>
@@ -194,6 +200,7 @@
 <translation id="8910721771319628100">آستانه تأخیر در شبکه پیش‌فرض خیلی زیاد است</translation>
 <translation id="8919837981463578619">انجام نشد - سینی موجود نیست</translation>
 <translation id="8928727111548978589">انجام نشد - کاغذ تمام شده است</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> فرصت باقی مانده است</translation>
 <translation id="8970109610781093811">اجرای دوباره</translation>
 <translation id="9088306295921699330">مصرف فعلی</translation>
 <translation id="910415269708673980">بازخوانی بلیت برای <ph name="PRINCIPAL_NAME" /></translation>

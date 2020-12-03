@@ -122,6 +122,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2050339315714019657">Vertikaalpaigutus</translation>
 <translation id="2067602449040652523">Klaviatuuri eredus</translation>
 <translation id="2078034614700056995">Järgmisele töölauale lülitumiseks pühkige nelja sõrmega paremale</translation>
+<translation id="2079504693865562705">Peida riiulil olevad rakendused</translation>
 <translation id="2083190527011054446">Head ööd, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Pole võrguga ühendatud</translation>
 <translation id="2126242104232412123">Uus töölaud</translation>
@@ -238,6 +239,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3226991577105957773">ja veel <ph name="COUNT" /></translation>
 <translation id="3236488194889173876">Ühtegi mobiilsidevõrku pole saadaval</translation>
 <translation id="3249513730522716925">Aken <ph name="WINDOW_TITLE" /> teisaldati töölaualt <ph name="ACTIVE_DESK" /> töölauale <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, signaalitugevus <ph name="SIGNAL_STRENGTH" /> protsenti.</translation>
 <translation id="3255483164551725916">Mida sa teha oskad?</translation>
 <translation id="3269597722229482060">Paremklikk</translation>
 <translation id="3289674678944039601">Laadimine adapteri kaudu</translation>
@@ -370,6 +372,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4389184120735010762">Vajutasite dokitud luubi otseteed. Kas soovite luubi sisse lülitada?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> on väljas.</translation>
 <translation id="4421231901400348175">Ekraani juhtimise jagamine isikuga <ph name="HELPER_NAME" /> kaugabi kaudu.</translation>
+<translation id="4427613789487709312">Vaikeseade (<ph name="RATE" />-kordne)</translation>
 <translation id="4430019312045809116">Helitugevus</translation>
 <translation id="4450893287417543264">Ära kuva uuesti</translation>
 <translation id="445864333228800152">Tere õhtust!</translation>
@@ -450,6 +453,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5078796286268621944">Vale PIN-kood</translation>
 <translation id="5083553833479578423">Avage rohkem assistendi funktsioone.</translation>
 <translation id="5136175204352732067">Ühendatud on teine klaviatuur</translation>
+<translation id="5155897006997040331">Lugemiskiirus</translation>
 <translation id="5168181903108465623">Ülekandeseadmed on saadaval</translation>
 <translation id="5170568018924773124">Kuva kaustas</translation>
 <translation id="5176318573511391780">Ekraani osa salvestamine</translation>
@@ -713,6 +717,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 märguanne}other{# märguannet}}</translation>
 <translation id="7724603315864178912">Lõika</translation>
+<translation id="7745560842763881396">Kuva riiulil olevad rakendused</translation>
 <translation id="7749443890790263709">Töölaudade maksimaalne arv on täis.</translation>
 <translation id="776344839111254542">Klõpsake värskenduse üksikasjade vaatamiseks</translation>
 <translation id="7780159184141939021">Ekraanikuva pööramine</translation>

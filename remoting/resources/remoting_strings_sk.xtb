@@ -54,7 +54,6 @@ Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknut
 <translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Ako na to</translation>
 <translation id="3776024066357219166">Vaša relácia Vzdialenej plochy Chrome bola ukončená.</translation>
-<translation id="3870154837782082782">Spoločnosť Google Inc.</translation>
 <translation id="3897092660631435901">Ponuka</translation>
 <translation id="3905196214175737742">Neplatná doména vlastníka hostiteľa</translation>
 <translation id="3931191050278863510">Hostenie bolo zastavené.</translation>
@@ -99,6 +98,7 @@ Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknut
 <translation id="5419418238395129586">Naposledy online: <ph name="DATE" /></translation>
 <translation id="544077782045763683">Hostiteľ je vypnutý</translation>
 <translation id="5601503069213153581">Kód PIN</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Pracovnú plochu momentálne zdieľate s používateľom <ph name="USER" />.</translation>
 <translation id="5750083143895808682">Prihlásený/-á ako <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Znova pripojiť</translation>
@@ -118,7 +118,6 @@ Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknut
 <translation id="6583902294974160967">Podpora</translation>
 <translation id="6612717000975622067">Odoslať akciu Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Zdieľať</translation>
-<translation id="6681800064886881394">Copyright 2013 Google Inc. Všetky práva vyhradené.</translation>
 <translation id="677755392401385740">Hostiteľ bol spustený pre používateľa: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6939719207673461467">Zobraziť/skryť klávesnicu</translation>
 <translation id="6963936880795878952">Pripojenia k vzdialenému počítaču sú dočasne zablokované, pretože sa k nemu niekto snažil pripojiť pomocou neplatného kódu PIN. Skúste to znova neskôr.</translation>

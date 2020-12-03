@@ -3173,7 +3173,6 @@
 <translation id="4646675363240786305">ਪੋਰਟ</translation>
 <translation id="4647090755847581616">&amp;ਟੈਬ ਬੰਦ ਕਰੋ</translation>
 <translation id="4647283074445570750"><ph name="TOTAL_STEPS" /> ਵਿੱਚੋਂ <ph name="CURRENT_STEP" /> ਪੜਾਅ</translation>
-<translation id="4647420311443994946">{0,select, tablet{ਜਦੋਂ ਤੁਸੀਂ ਆਪਣੇ ਟੈਬਲੈੱਟ 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰਦੇ ਹੋ ਤਾਂ ਐਪ ਸ਼ੁਰੂ ਕਰੋ}computer{ਜਦੋਂ ਤੁਸੀਂ ਆਪਣੇ ਕੰਪਿਊਟਰ 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰਦੇ ਹੋ ਤਾਂ ਐਪ ਸ਼ੁਰੂ ਕਰੋ}other{ਜਦੋਂ ਤੁਸੀਂ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰਦੇ ਹੋ ਤਾਂ ਐਪ ਸ਼ੁਰੂ ਕਰੋ}}</translation>
 <translation id="4647697156028544508">ਕਿਰਪਾ ਕਰਕੇ "<ph name="DEVICE_NAME" />" ਲਈ PIN ਦਰਜ ਕਰੋ:</translation>
 <translation id="4648491805942548247">ਨਾਕਾਫ਼ੀ ਅਨੁਮਤੀਆਂ</translation>
 <translation id="4648499713050786492">ਕਿਰਪਾ ਕਰਕੇ ਕਿਸੇ ਵਿਅਕਤੀ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਆਪਣੇ ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਅਣਲਾਕ ਕਰੋ।</translation>
@@ -3718,6 +3717,7 @@
 <translation id="5317780077021120954">ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5319359161174645648">Google, Chrome ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ</translation>
 <translation id="5320112320661303273">ਇੰਝ ਲੱਗਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ 'ਤੇ Assistant ਦਾ ਸੈੱਟਅੱਪ ਕਰ ਲਿਆ ਹੈ। ਅੱਗੇ ਦਿੱਤੀ ਗਈ ਸੈਟਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰਕੇ ਆਪਣੀ Assistant ਦਾ ਹੋਰ ਜ਼ਿਆਦਾ ਲਾਹਾ ਲਓ।</translation>
+<translation id="5320135788267874712">ਡੀਵਾਈਸ ਦਾ ਨਵਾਂ ਨਾਮ</translation>
 <translation id="532247166573571973">ਸਰਵਰ ਸ਼ਾਇਦ ਪਹੁੰਚਯੋਗ ਨਹੀਂ ਹੈ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="5324300749339591280">ਐਪ ਸੂਚੀ</translation>
 <translation id="5324780743567488672">ਆਪਣਾ ਨਿਰਧਾਰਿਤ ਸਥਾਨ ਵਰਤਦੇ ਹੋਏ ਆਟੋਮੈਟਿਕਲੀ ਸਮਾਂ ਜ਼ੋਨ ਸੈੱਟ ਕਰੋ</translation>

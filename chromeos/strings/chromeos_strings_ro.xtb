@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Nu s-a putut începe scanarea</translation>
 <translation id="1071587090247825784">S-a detectat un firewall</translation>
 <translation id="1075811647922107217">Dimensiunea paginii</translation>
+<translation id="1124772482545689468">Utilizator</translation>
 <translation id="1175697296044146566">Acest <ph name="DEVICE_TYPE" /> este gestionat de <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Eroare necunoscută.</translation>
 <translation id="1204296502688602597">Latența DNS</translation>
@@ -21,6 +22,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> gestionează acest utilizator și poate să gestioneze de la distanță setările și să monitorizeze activitatea utilizatorului.</translation>
 <translation id="150962533380566081">PUK nevalid.</translation>
 <translation id="1510238584712386396">Lansator</translation>
+<translation id="1621067168122174824">Rulează testul Încărcare</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fire)</translation>
 <translation id="1641857168437328880">Alimentator de documente (o singură față)</translation>
 <translation id="1644574205037202324">Istoric</translation>
@@ -28,6 +30,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Rezolvitor DNS prezent</translation>
 <translation id="1743558184855585519">Se consideră că bateria este consumată când atinge limita</translation>
+<translation id="1792647875738159689">Se anulează scanarea</translation>
 <translation id="1905710495812624430">Ai depășit numărul maxim de încercări permise.</translation>
 <translation id="1930797645656624981">Serviciul metodei de introducere a textului din sistemul de operare Chrome</translation>
 <translation id="1947737735496445907">Printată</translation>
@@ -42,22 +45,26 @@
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> încercări rămase</translation>
 <translation id="2391082728065870591">Trimite un raport de feedback</translation>
 <translation id="2461822463642141190">Actual</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} încercare rămasă}few{<ph name="ERROR_MESSAGE" /> {0} încercări rămase}other{<ph name="ERROR_MESSAGE" /> {0} de încercări rămase}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Scanează</translation>
 <translation id="2570743873672969996">Se rulează testul <ph name="TEST_NAME" />...</translation>
+<translation id="2620436844016719705">Sistem</translation>
 <translation id="2805756323405976993">Aplicații</translation>
 <translation id="2872961005593481000">Închide</translation>
 <translation id="3008341117444806826">ACTUALIZEAZĂ</translation>
 <translation id="3009958530611748826">Selectează un dosar în care să salvezi</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3069085583900247081">Testul nu a reușit</translation>
 <translation id="3083667275341675831">Diagnosticare pentru conectivitate</translation>
 <translation id="3091839911843451378">Nereușită – Oprită</translation>
+<translation id="3102119246920354026">Memoria cache</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">Fișierele mele</translation>
 <translation id="3199982728237701504">Alimentator de documente (față-verso)</translation>
 <translation id="3246869037381808805">Sarcinile de printare mai vechi de o zi vor fi eliminate</translation>
 <translation id="3268178239013324452">Nereușită – Ușă deschisă</translation>
 <translation id="3310640316857623290">Latența DNS depășește semnificativ pragul permisibil</translation>
+<translation id="3328783797891415197">Se rulează testul</translation>
 <translation id="3369013195428705271">Sigur vrei să ștergi tot istoricul printărilor? Sarcinile de printare în curs nu vor fi șterse.</translation>
 <translation id="3456078764689556234">S-a printat pagina <ph name="PRINTED_PAGES" /> din <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Printare</translation>
@@ -71,11 +78,13 @@
 <translation id="3838338534323494292">Parolă nouă</translation>
 <translation id="3865414814144988605">Rezoluție</translation>
 <translation id="3941014780699102620">Nu s-a putut rezolva gazda</translation>
+<translation id="3942420633017001071">Diagnosticare</translation>
 <translation id="39823212440917567">Sarcinile de printare mai vechi de <ph name="NUMBER_OF_DAYS" /> zile vor fi eliminate</translation>
 <translation id="4003384961948020559">Nereușită – Tavă de ieșire plină</translation>
 <translation id="4034824040120875894">Imprimantă</translation>
 <translation id="4131410914670010031">Alb-negru</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
+<translation id="4170700058716978431">NEREUȘIT</translation>
 <translation id="4227825898293920515">Parola expiră în <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nicio sarcină de printare în desfășurare</translation>
 <translation id="4297501883039923494">Oprită – Eroare necunoscută</translation>
@@ -100,16 +109,20 @@
 <translation id="4773299976671772492">Oprit</translation>
 <translation id="4808449224298348341">S-a anulat sarcina de printare <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">Selectează dosarul în aplicația Fișiere...</translation>
+<translation id="4848429997038228357">RULEAZĂ</translation>
 <translation id="4890353053343094602">Alege imediat una nouă</translation>
 <translation id="4917889632206600977">Oprită – Hârtie epuizată</translation>
 <translation id="4921665434385737356">S-a încărcat cu <ph name="RATE" /> în <ph name="NUM_SECONDS" /> secunde.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Rulează</translation>
+<translation id="500920857929044050">Oprește testul</translation>
+<translation id="5154917547274118687">Memorie</translation>
 <translation id="5168185087976003268">Buna funcționare a bateriei:</translation>
 <translation id="520299634122159966">Nu sunt disponibile scanere</translation>
 <translation id="5212543919916444558">Nu găsesc conținut pe ecran în privința căruia te-aș putea ajuta.
 Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5222676887888702881">Deconectează-te</translation>
+<translation id="5264277876637023664">Rulează testul CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Rulează din nou rutinele</translation>
 <translation id="5317780077021120954">Salvează</translation>
@@ -122,26 +135,33 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="54609108002486618">Gestionat</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Află mai multe din Centrul de ajutor</translation>
+<translation id="5635169860413004179">Consultă raportul</translation>
 <translation id="5719918614880940190">Indică utilizarea procesorului și este o valoare cumulată pentru toate nucleele</translation>
+<translation id="5797428682393400134">TRECUT</translation>
 <translation id="5832805196449965646">Adăugați un utilizator</translation>
 <translation id="5895138241574237353">Reîncepe</translation>
+<translation id="5931523347251946569">Fișierul nu a fost găsit</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versiunea <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Închide</translation>
 <translation id="6048107060512778456">Nereușită – Blocaj de hârtie</translation>
 <translation id="6050189528197190982">Tonuri de gri</translation>
 <translation id="6058625436358447366">Pentru a finaliza, introdu parola veche și pe cea nouă</translation>
 <translation id="6061772781719867950">Solicitări HTTPS nereușite</translation>
+<translation id="6104112872696127344">Scanarea a fost anulată</translation>
 <translation id="6106186594183574873">Pentru a finaliza, introdu vechea parolă</translation>
 <translation id="6108689792487843350">Gateway-ul nu poate fi accesat</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" /> GHz / <ph name="MAX" /> GHz</translation>
 <translation id="6146993107019042706">Pentru a finaliza, introdu noua parolă</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
 <translation id="6191293864534840972">Servere de nume cu formă incorectă</translation>
+<translation id="6232017090690406397">Baterie</translation>
 <translation id="6325525973963619867">Eșuat</translation>
 <translation id="636850387210749493">Înscriere pentru întreprindere</translation>
 <translation id="649050271426829538">Oprită – Blocaj de hârtie</translation>
 <translation id="6517239166834772319">Explorare</translation>
 <translation id="6527081081771465939">Protocol de securitate Wi-Fi necunoscut</translation>
+<translation id="6532051501443766164">Ascunde raportul</translation>
 <translation id="65587193855025101">Suport plat</translation>
 <translation id="6564646048574748301">Nereușită – Imprimanta nu poate fi accesată</translation>
 <translation id="6618744767048954150">Rulează</translation>
@@ -149,6 +169,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6643016212128521049">Șterge</translation>
 <translation id="6704062477274546131">Rezolvare DNS</translation>
 <translation id="6747215703636344499">Oprită – Tavă de ieșire plină</translation>
+<translation id="6756731097889387912">Nu s-a putut anula scanarea</translation>
 <translation id="6766275201586212568">Rezolvări DNS nereușite</translation>
 <translation id="6768237774506518020">Rată de eroare ridicată a rezolvărilor DNS</translation>
 <translation id="6839141349259399400">Nu te poți conecta la scanere?</translation>
@@ -164,6 +185,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7648838807254605802">Latență mare a solicitărilor HTTPS</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7690294790491645610">Confirmă noua parolă</translation>
+<translation id="7732651821766520760">Testul <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Stare</translation>
 <translation id="7855434858642800953">Fișierul scanat a fost salvat!</translation>
 <translation id="7928373994957558460">Afișează locația fișierului</translation>
@@ -191,12 +213,16 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Prestabilit</translation>
 <translation id="8845001906332463065">Obține ajutor</translation>
+<translation id="8881098542468797602">Testul a reușit</translation>
 <translation id="8910721771319628100">Rețeaua prestabilită depășește pragul de latență</translation>
 <translation id="8919837981463578619">Nereușită – Tavă lipsă</translation>
 <translation id="8928727111548978589">Nereușită – Hârtie epuizată</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> încercări rămase</translation>
 <translation id="8970109610781093811">Rulați din nou</translation>
 <translation id="9088306295921699330">Folosire actuală</translation>
 <translation id="910415269708673980">Actualizează tichetul pentru <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Se scanează pagina <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Deblochează</translation>
+<translation id="9149391708638971077">Rulează testul Memorie</translation>
+<translation id="982713511914535780">Rulează testul Descărcare</translation>
 </translationbundle>

@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Не вдається почати сканування</translation>
 <translation id="1071587090247825784">виявлено брандмауер</translation>
 <translation id="1075811647922107217">Розмір сторінки</translation>
+<translation id="1124772482545689468">Користувач</translation>
 <translation id="1175697296044146566">Цим пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Невідома помилка.</translation>
 <translation id="1204296502688602597">Затримка DNS</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402">Залишилося спроб: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Надіслати відгук</translation>
 <translation id="2461822463642141190">Енергоспоживання</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Залишилася {0} спроба}one{<ph name="ERROR_MESSAGE" /> Залишилася {0} спроба}few{<ph name="ERROR_MESSAGE" /> Залишилися {0} спроби}many{<ph name="ERROR_MESSAGE" /> Залишилося {0} спроб}other{<ph name="ERROR_MESSAGE" /> Залишилося {0} спроби}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Сканувати</translation>
 <translation id="2570743873672969996">Тестування (<ph name="TEST_NAME" />)…</translation>
+<translation id="2620436844016719705">Система</translation>
 <translation id="2805756323405976993">Додатки</translation>
 <translation id="2872961005593481000">Завершити роботу</translation>
 <translation id="3008341117444806826">ОНОВИТИ</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> мА</translation>
 <translation id="3083667275341675831">Діагностика з'єднання</translation>
 <translation id="3091839911843451378">Не надруковано – друк зупинено</translation>
+<translation id="3102119246920354026">Кеш</translation>
+<translation id="3122464029669770682">ЦП</translation>
 <translation id="3188257591659621405">Мої файли</translation>
 <translation id="3199982728237701504">Пристрій автоподачі документів (двосторонній)</translation>
 <translation id="3246869037381808805">Завдання друку, старіші за 1 день, буде вилучено</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">Новий пароль</translation>
 <translation id="3865414814144988605">Роздільна здатність</translation>
 <translation id="3941014780699102620">не вдалося розпізнати хост</translation>
+<translation id="3942420633017001071">Діагностика</translation>
 <translation id="39823212440917567">Завдання друку, старіші за <ph name="NUMBER_OF_DAYS" /> дн., буде вилучено</translation>
 <translation id="4003384961948020559">Не надруковано – вихідний лоток заповнений</translation>
 <translation id="4034824040120875894">Принтер</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356">Акумулятор зарядився на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4985509611418653372">Виконати</translation>
+<translation id="5154917547274118687">Пам’ять</translation>
 <translation id="5168185087976003268">Стан акумулятора</translation>
 <translation id="520299634122159966">Немає доступних сканерів</translation>
 <translation id="5212543919916444558">На екрані не знайдено елементів, проблеми з якими я можу вирішити.
@@ -137,6 +142,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6191293864534840972">Неправильні сервери імен</translation>
+<translation id="6232017090690406397">Акумулятор</translation>
 <translation id="6325525973963619867">Помилка</translation>
 <translation id="636850387210749493">Реєстрація підприємства</translation>
 <translation id="649050271426829538">Зупинено – зам'яло папір</translation>
@@ -194,6 +200,7 @@
 <translation id="8910721771319628100">Затримка мережі за умовчанням задовга</translation>
 <translation id="8919837981463578619">Не надруковано – немає лотка</translation>
 <translation id="8928727111548978589">Не надруковано – закінчився папір</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" />. Залишилося спроб: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8970109610781093811">Запустити знову</translation>
 <translation id="9088306295921699330">Використовується</translation>
 <translation id="910415269708673980">Оновити квиток для користувача <ph name="PRINCIPAL_NAME" /></translation>

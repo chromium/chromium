@@ -56,6 +56,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="2309047409763057870">Ovo je sekundarna instalacija Google Chromea, pa on ne može biti vaš zadani preglednik.</translation>
 <translation id="2348335408836342058">Chromeu treba odobrenje za pristup vašoj kameri i mikrofonu na ovoj web lokaciji</translation>
 <translation id="234869673307233423">Chrome ne može provjeravati vaše lozinke. Pokušajte ponovo kasnije.</translation>
+<translation id="235650106824528204">Sve podatke iz Chromea koji se generiraju tijekom upotrebe ovog profila (primjerice izradom oznaka, povijesti, zaporki i drugih postavki) može ukloniti administrator poslovnog profila. <ph name="LEARN_MORE" /></translation>
 <translation id="2429317896000329049">Google Chrome ne može sinhronizirati vaše podatke jer sinhronizacija nije dostupna za vašu domenu.</translation>
 <translation id="2467438592969358367">Google Chrome želi izvesti vaše lozinke. Unesite svoju lozinku za Windows da ovo omogućite.</translation>
 <translation id="2485422356828889247">Deinstaliraj</translation>
@@ -175,12 +176,14 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="573759479754913123">O Chrome OS-u</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Pokretanje Chromea nije uspjelo. Ponovite.</translation>
+<translation id="5851757216820085940">Ako imate više Google računa, možete ih dodati na uređaj <ph name="DEVICE_TYPE" />. Vaši će računi biti dostupni u pregledniku Chrome i u Trgovini Play te na uslugama kao što su Gmail, Disk i YouTube.<ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome pokušava urediti lozinke.</translation>
 <translation id="5895138241574237353">Ponovo pokreni</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – prijava na mrežu</translation>
 <translation id="5940385492829620908">Vaša aktivnost na webu, oznake i drugi sadržaji s Chromea se nalaze ovdje.</translation>
 <translation id="5941830788786076944">Postavite Google Chrome kao zadani preglednik</translation>
 <translation id="6070348360322141662">Za dodatnu sigurnost, Google Chrome će šifrirati vaše podatke</translation>
+<translation id="608006075545470555">Dodavanje poslovnog profila u ovaj preglednik</translation>
 <translation id="6113794647360055231">Chrome je upravo postao još bolji</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
@@ -192,10 +195,12 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="6368958679917195344">Chrome OS je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6566149418543181476">Ažuriranje Google Chromea (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6568793831116033768">OS Chrome</translation>
 <translation id="6650333065969705433">Da koristite Rosettu za reproduciranje zaštićenih medijskih fajlova, morate ponovo pokrenuti Chrome.</translation>
 <translation id="6676384891291319759">Pristupite internetu</translation>
 <translation id="6679975945624592337">Neka Google Chrome radi u pozadini</translation>
 <translation id="6750954913813541382">Za ispravak pravopisnih grešaka, Chrome šalje Googleu tekst koji napišete u pregledniku</translation>
+<translation id="6755885556185485672">OS Chrome nije se ispravno zatvorio.</translation>
 <translation id="677276454032249905">Ipak želite napustiti Chrome?</translation>
 <translation id="683440813066116847">Ulazno pravilo da Google Chrome Canary dozvoli mDNS saobraćaj.</translation>
 <translation id="6885412569789873916">Aplikacije za Chrome Beta</translation>
@@ -254,6 +259,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="8498858610309223613">Upravo je izvršeno posebno sigurnosno ažuriranje za Google Chrome. Sada ga ponovo pokrenite i vratićemo vaše kartice.</translation>
 <translation id="8521348052903287641">Ulazno pravilo da Google Chrome Dev dozvoli mDNS saobraćaj.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8550334526674375523">Ovaj poslovni profil potpuno je odvojen od vašeg osobnog profila.</translation>
 <translation id="8556340503434111824">Dostupna je nova verzija Google Chromea koji je brži nego ikad.</translation>
 <translation id="861359755029082151">Rosetta omogućava Chromeu da reproducira zaštićene medijske fajlove na ovoj stranici.</translation>
 <translation id="8614913330719544658">Google Chrome ne reagira. Ponovo pokrenuti sada?</translation>
@@ -272,6 +278,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="8907709077090383765">Da omogućite Chromeu da reproducira zaštićene medijske fajlove, morate instalirati Rosettu. Želite li je instalirati sada?</translation>
 <translation id="8914504000324227558">Ponovo pokreni Chrome</translation>
 <translation id="8922193594870374009">Da pošaljete broj s uređaja <ph name="ORIGIN" /> na svoj Android telefon, prijavite se u Chrome na oba uređaja.</translation>
+<translation id="8986207147630327271">Dodajete poslovni profil u ovaj preglednik i administratoru dodjeljujete kontrolu samo nad poslovnim profilom.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Dostupno je ažuriranje Chromea}=1{Dostupno je ažuriranje Chromea}one{Ažuriranje Chromea je dostupno # dan}few{Ažuriranje Chromea je dostupno # dana}other{Ažuriranje Chromea je dostupno # dana}}</translation>
 <translation id="9026991721384951619">Chrome OS nije mogao sinhronizirati vaše podatke jer su podaci o prijavi računa zastarjeli.</translation>
 <translation id="9067395829937117663">Za Google Chrome je potreban Windows 7 ili novija verzija.</translation>

@@ -3171,7 +3171,6 @@
 <translation id="4646675363240786305">પોર્ટ</translation>
 <translation id="4647090755847581616">&amp;Close Tab</translation>
 <translation id="4647283074445570750"><ph name="TOTAL_STEPS" />માંથી <ph name="CURRENT_STEP" /> પગલું</translation>
-<translation id="4647420311443994946">{0,select, tablet{તમે તમારા ટૅબ્લેટમાં સાઇન ઇન કરો, ત્યારે આ ઍપ શરૂ કરો}computer{તમે તમારા કમ્પ્યુટરમાં સાઇન ઇન કરો, ત્યારે આ ઍપ શરૂ કરો}other{તમે તમારા ડિવાઇસમાં સાઇન ઇન કરો, ત્યારે આ ઍપ શરૂ કરો}}</translation>
 <translation id="4647697156028544508">કૃપા કરીને "<ph name="DEVICE_NAME" />" માટે પિન દાખલ કરો:</translation>
 <translation id="4648491805942548247">અપર્યાપ્ત પરવાનગીઓ</translation>
 <translation id="4648499713050786492">કોઇ વ્યક્તિને ઉમેરતા પહેલાં કૃપા કરીને તમારી પ્રોફાઇલ અનલૉક કરો.</translation>
@@ -3716,6 +3715,7 @@
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5319359161174645648">Google Chromeની ભલામણ કરે છે</translation>
 <translation id="5320112320661303273">એવું લાગે છે કે તમે અન્ય ડિવાઇસ પર પહેલેથી Assistantનું સેટઅપ કર્યું છે. નીચે જણાવેલું સેટિંગ ચાલુ કરીને તમારા Assistantનો હજી પણ વધુ લાભ મેળવો.</translation>
+<translation id="5320135788267874712">ડિવાઇસનું નવું નામ</translation>
 <translation id="532247166573571973">સર્વર પહોંચની બહાર હોઇ શકે છે. પછીથી ફરી પ્રયાસ કરો.</translation>
 <translation id="5324300749339591280">ઍપની સૂચિ</translation>
 <translation id="5324780743567488672">તમારા સ્થાનનો ઉપયોગ કરીને ઑટોમૅટિક રીતે સમય ઝોન સેટ કરો</translation>

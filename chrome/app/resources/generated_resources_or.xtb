@@ -3165,7 +3165,6 @@
 <translation id="4646675363240786305">ପୋର୍ଟଗୁଡ଼ିକ</translation>
 <translation id="4647090755847581616">&amp;ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="4647283074445570750"><ph name="TOTAL_STEPS" />ର <ph name="CURRENT_STEP" /> ଷ୍ଟେପ୍</translation>
-<translation id="4647420311443994946">{0,select, tablet{ଆପଣ ଆପଣଙ୍କ ଟାବଲେଟରେ ସାଇନ୍ ଇନ୍ କରିବା ବେଳେ ଆପ୍ ଆରମ୍ଭ କରନ୍ତୁ}computer{ଆପଣ ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରରେ ସାଇନ୍ ଇନ୍ କରିବା ବେଳେ ଆପ୍ ଆରମ୍ଭ କରନ୍ତୁ}other{ଆପଣ ଆପଣଙ୍କ ଡିଭାଇସରେ ସାଇନ୍ ଇନ୍ କରିବା ବେଳେ ଆପ୍ ଆରମ୍ଭ କରନ୍ତୁ}}</translation>
 <translation id="4647697156028544508">"<ph name="DEVICE_NAME" />" ପାଇଁ ଦୟାକରି ପିନ୍‌ ଲେଖନ୍ତୁ:</translation>
 <translation id="4648491805942548247">ପର୍ଯ୍ୟାପ୍ତ ଅନୁମତି ନାହିଁ</translation>
 <translation id="4648499713050786492">ଜଣେ ବ୍ୟକ୍ତିଙ୍କୁ ଯୋଗ କରିବା ପୂର୍ବରୁ ଆପଣଙ୍କର ପ୍ରୋଫାଇଲ୍‌ ଅନ୍‌ଲକ୍‌ କରନ୍ତୁ।</translation>
@@ -3710,6 +3709,7 @@
 <translation id="5317780077021120954">ସଞ୍ଚୟ</translation>
 <translation id="5319359161174645648">Google Chromeକୁ ସୁପାରିଶ କରୁଛି</translation>
 <translation id="5320112320661303273">ଏପରି ଜଣାପଡୁଛି ଯେ, ଆପଣ ପୂର୍ବରୁ ଏକ ଭିନ୍ନ ଡିଭାଇସରେ Assistant ସେଟ୍ ଅପ୍ କରିସାରିଛନ୍ତି। ନିମ୍ନୋକ୍ତ ସେଟିଂକୁ ଚାଲୁ କରି ଆପଣଙ୍କ Assistantରୁ ଆହୁରି ଅଧିକ ସୁବିଧା ପାଆନ୍ତୁ।</translation>
+<translation id="5320135788267874712">ନୂଆ ଡିଭାଇସର ନାମ</translation>
 <translation id="532247166573571973">ସର୍ଭର୍ ହୁଏତ ପହଞ୍ଚଯୋଗ୍ୟ ନୁହେଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="5324300749339591280">ଆପଗୁଡ଼ିକର ତାଲିକା</translation>
 <translation id="5324780743567488672">ଆପଣଙ୍କର ଲୋକେସନ୍‌ ବ୍ୟବହାର କରି ସ୍ୱଚାଳିତ ଭାବେ ସମୟ କ୍ଷେତ୍ର ସେଟ୍‌ କରନ୍ତୁ</translation>

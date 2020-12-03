@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">'<ph name="ATSIGN" />' ilə davam edən hissəni daxil edin. '<ph name="INVALIDADDRESS" />' natamamdır.</translation>
 <translation id="5334352251556557839">Medianı oxutmaq mümkün deyil.</translation>
 <translation id="537648784377940524">Minimum tarix (<ph name="MIN_DATE_OR_TIME" />) Maksimum tarixdən (<ph name="MAX_DATE_OR_TIME" />) əvvəl gəlməlidir.</translation>
+<translation id="5378437566635403538">genişləndirilib, dialoq açılıb.</translation>
 <translation id="5406322316791861025">rəqəm</translation>
 <translation id="5425179576310518467">cari tarix</translation>
 <translation id="5453733299334684579">ağac elementi</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">əlavə seçimlər</translation>
 <translation id="576709008726043716">giriş</translation>
 <translation id="57838592816432529">Səssiz</translation>
+<translation id="5787939484346677755">genişləndirilib, avtomatik tamamlama seçimləri əlçatandır.</translation>
 <translation id="5860033963881614850">Deaktiv</translation>
 <translation id="588258955323874662">Tam ekran</translation>
 <translation id="5888666972993069672">İndi <ph name="DEVICE_FRIENDLY_NAME" /> cihazına yayımlanır</translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">siyahı qutusu</translation>
 <translation id="6150588977291308318">biblioqrafiya</translation>
 <translation id="6164829606128959761">metr</translation>
+<translation id="6165053282446038410">genişləndirilib, <ph name="COUNT" /> avtomatik tamamlama seçimi əlçatandır.</translation>
 <translation id="6166809985690652833">son söz</translation>
 <translation id="6209276755895393898">Ola bilər: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">cari səhifə</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">başlıq</translation>
 <translation id="6941933287844615239">medianı endirin</translation>
 <translation id="6981594929165378967">əlavə etmə</translation>
+<translation id="698788488269350478">genişləndirilib.</translation>
 <translation id="6989848892321993519">Bu mətni <ph name="MIN_CHARACTERS" /> və ya daha çox simvola qədər uzadın (hazırda 1 simvol istifadə edirsiniz).</translation>
 <translation id="7034405885550056553">təklif</translation>
 <translation id="709897737746224366">Tələb olunan formata uyğun edin.</translation>
 <translation id="7102274145889307184">cari məkan</translation>
 <translation id="7118469954320184356">Təsvir əlçatan deyil.</translation>
 <translation id="7139483182332611405">ön söz</translation>
+<translation id="7198226213493847604">menyu popap düyməsi</translation>
 <translation id="7214187073215825913">kontent məlumatı</translation>
 <translation id="7238347055216017155">vurğu</translation>
 <translation id="7263440858009898357">Lütfən, siyahıdan bir element seçin.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">fəsil</translation>
 <translation id="8845239796550121995">İndi TV-də yayımlanır</translation>
 <translation id="8851136666856101339">əsas</translation>
+<translation id="8861621546968757188">dialoq popap düyməsi</translation>
 <translation id="8875657656876809964">Video oxutma xətası</translation>
 <translation id="8889402386540077796">Rəng çaları</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

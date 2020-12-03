@@ -54,7 +54,6 @@ Si la case "<ph name="SERVICE_SCRIPT_NAME" />" est déjà cochée, décochez-la,
 <translation id="369442766917958684">Hors connexion</translation>
 <translation id="3695446226812920698">Comment procéder</translation>
 <translation id="3776024066357219166">La session du bureau à distance Google Chrome est terminée.</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3905196214175737742">Domaine propriétaire de l'hôte incorrect.</translation>
 <translation id="3931191050278863510">Hôte suspendu</translation>
@@ -99,6 +98,7 @@ Si la case "<ph name="SERVICE_SCRIPT_NAME" />" est déjà cochée, décochez-la,
 <translation id="5419418238395129586">Dernière connexion : <ph name="DATE" /></translation>
 <translation id="544077782045763683">L'hôte a été arrêté.</translation>
 <translation id="5601503069213153581">Code d'accès</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Vous partagez actuellement votre bureau avec <ph name="USER" />.</translation>
 <translation id="5750083143895808682">Connecté en tant que <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Reconnexion</translation>
@@ -118,7 +118,6 @@ Si la case "<ph name="SERVICE_SCRIPT_NAME" />" est déjà cochée, décochez-la,
 <translation id="6583902294974160967">Assistance</translation>
 <translation id="6612717000975622067">Envoyer Ctrl-Alt-Suppr</translation>
 <translation id="6654753848497929428">Partager</translation>
-<translation id="6681800064886881394">Copyright © Google Inc. 2013. Tous droits réservés.</translation>
 <translation id="677755392401385740">Hôte démarré pour l'utilisateur "<ph name="HOST_USERNAME" />"</translation>
 <translation id="6939719207673461467">Afficher/Masquer le clavier</translation>
 <translation id="6963936880795878952">Les connexions à l'ordinateur à distance sont momentanément bloquées, car un utilisateur a tenté de s'y connecter en utilisant un code erroné. Veuillez réessayer ultérieurement.</translation>

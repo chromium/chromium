@@ -3171,7 +3171,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4646675363240786305">Portat</translation>
 <translation id="4647090755847581616">&amp;Mbylle skedën</translation>
 <translation id="4647283074445570750">Hapi <ph name="CURRENT_STEP" /> nga <ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{Nis aplikacionin kur të identifikohesh në tabletin tënd}computer{Nis aplikacionin kur të identifikohesh në kompjuterin tënd}other{Nis aplikacionin kur të identifikohesh në pajisjen tënde}}</translation>
 <translation id="4647697156028544508">Fut kodin PIN për "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">Lejet e pamjaftueshme</translation>
 <translation id="4648499713050786492">Shkyçe profilin tënd para se të shtosh një person.</translation>
@@ -3716,6 +3715,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5319359161174645648">Google rekomandon Chrome</translation>
 <translation id="5320112320661303273">Me sa duket e ke konfiguruar tashmë "Asistentin" në një pajisje tjetër. Përfito edhe më shumë nga "Asistenti" yt duke e aktivizuar këtë cilësim.</translation>
+<translation id="5320135788267874712">Emri i ri i pajisjes</translation>
 <translation id="532247166573571973">Serveri mund të jetë i paarritshëm. Provo përsëri më vonë.</translation>
 <translation id="5324300749339591280">Lista e aplikacioneve</translation>
 <translation id="5324780743567488672">Caktoje automatikisht brezin orar duke përdorur vendndodhjen tënde</translation>

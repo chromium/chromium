@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">გთხოვთ შეიყვანოთ ნაწილი, რომელსაც მოსდევს „<ph name="ATSIGN" />“. „<ph name="INVALIDADDRESS" />“ არის არასრული.</translation>
 <translation id="5334352251556557839">მედიის დაკვრა ვერ მოხერხდა.</translation>
 <translation id="537648784377940524">მინიმალური თარიღი (<ph name="MIN_DATE_OR_TIME" />) წინ უნდა უსწრებდეს მაქსიმალურ თარიღს (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">გაშლილია, გახსნილია დიალოგი.</translation>
 <translation id="5406322316791861025">მონაცემი</translation>
 <translation id="5425179576310518467">ამჟამინდელი თარიღი</translation>
 <translation id="5453733299334684579">ხის ელემენტი</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">დამატებითი ვარიანტები</translation>
 <translation id="576709008726043716">შესავალი</translation>
 <translation id="57838592816432529">დადუმება</translation>
+<translation id="5787939484346677755">გაშლილია, ხელმისაწვდომია ავტომატური შევსების ვარიანტები.</translation>
 <translation id="5860033963881614850">გამორთვა</translation>
 <translation id="588258955323874662">სრული ეკრანი</translation>
 <translation id="5888666972993069672">ახლა ტრანსლირდება „<ph name="DEVICE_FRIENDLY_NAME" />“-ზე</translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">სიის ველი</translation>
 <translation id="6150588977291308318">ბიბლიოგრაფია</translation>
 <translation id="6164829606128959761">მთვლელი</translation>
+<translation id="6165053282446038410">გაშლილია, ხელმისაწვდომია ავტომატური შევსების <ph name="COUNT" /> ვარიანტი.</translation>
 <translation id="6166809985690652833">ბოლოსიტყვაობა</translation>
 <translation id="6209276755895393898">როგორც ჩანს, ეს არის <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">ამჟამინდელი გვერდი</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">ზედა კოლონტიტული</translation>
 <translation id="6941933287844615239">მედია-ფაილის ჩამოტვირთვა</translation>
 <translation id="6981594929165378967">ჩასმა</translation>
+<translation id="698788488269350478">გაშლილია.</translation>
 <translation id="6989848892321993519">გთხოვთ, გაზარდოთ ეს ტექსტი <ph name="MIN_CHARACTERS" /> ან მეტ სიმბოლომდე (ამჟამად 1 სიმბოლოს იყენებთ).</translation>
 <translation id="7034405885550056553">შემოთავაზება</translation>
 <translation id="709897737746224366">გთხოვთ, შეუსაბამეთ მოთხოვნილ ფორმატს.</translation>
 <translation id="7102274145889307184">ამჟამინდელი მდებარეობა</translation>
 <translation id="7118469954320184356">აღწერილობა მიუწვდომელია.</translation>
 <translation id="7139483182332611405">წინათქმა</translation>
+<translation id="7198226213493847604">მენიუს ამომხტარი ღილაკი</translation>
 <translation id="7214187073215825913">ინფორმაცია კონტენტის შესახებ</translation>
 <translation id="7238347055216017155">ხაზგასმა</translation>
 <translation id="7263440858009898357">გთხოვთ აირჩიოთ ელემენტი სიაში.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">თავი</translation>
 <translation id="8845239796550121995">ამჟამად ტრანსლირებს თქვენს ტელევიზორზე</translation>
 <translation id="8851136666856101339">ძირითადი</translation>
+<translation id="8861621546968757188">დიალოგის ამომხტარი ღილაკი</translation>
 <translation id="8875657656876809964">შეცდომა ვიდეოს დაკვრისას</translation>
 <translation id="8889402386540077796">შეფერილობა</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> კბ</translation>

@@ -3173,7 +3173,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4646675363240786305">Porte</translation>
 <translation id="4647090755847581616">&amp;Chiudi scheda</translation>
 <translation id="4647283074445570750">Passaggio <ph name="CURRENT_STEP" /> di <ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{Avvia l'app quando accedi al tablet}computer{Avvia l'app quando accedi al computer}other{Avvia l'app quando accedi al dispositivo}}</translation>
 <translation id="4647697156028544508">Inserisci il codice PIN per "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">Autorizzazioni insufficienti</translation>
 <translation id="4648499713050786492">Sblocca il tuo profilo prima di aggiungere una persona.</translation>
@@ -3718,6 +3717,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5319359161174645648">Google consiglia Chrome</translation>
 <translation id="5320112320661303273">Hai già configurato l'assistente su un altro dispositivo. Ottieni ancora di più dall'assistente attivando la seguente impostazione.</translation>
+<translation id="5320135788267874712">Nuovo nome dispositivo</translation>
 <translation id="532247166573571973">Il server potrebbe non essere raggiungibile. Riprova più tardi.</translation>
 <translation id="5324300749339591280">Elenco di app</translation>
 <translation id="5324780743567488672">Imposta automaticamente il fuso orario in base alla posizione</translation>

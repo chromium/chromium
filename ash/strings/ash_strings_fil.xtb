@@ -122,6 +122,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2067602449040652523">Liwanag ng keyboard</translation>
 <translation id="2078034614700056995">Mag-swipe pakanan gamit ang apat na daliri para lumipat sa susunod na desk</translation>
+<translation id="2079504693865562705">Itago ang mga app sa shelf</translation>
 <translation id="2083190527011054446">Magandang gabi <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Hindi nakakonekta sa network</translation>
 <translation id="2126242104232412123">Bagong desk</translation>
@@ -238,6 +239,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> pa</translation>
 <translation id="3236488194889173876">Walang available na mobile network</translation>
 <translation id="3249513730522716925">Inilipat ang Window na <ph name="WINDOW_TITLE" /> sa Desk na <ph name="TARGET_DESK" /> mula sa <ph name="ACTIVE_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, Lakas ng signal <ph name="SIGNAL_STRENGTH" /> porsyento.</translation>
 <translation id="3255483164551725916">Ano'ng maaari mong gawin?</translation>
 <translation id="3269597722229482060">Mag-right Click</translation>
 <translation id="3289674678944039601">Nagcha-charge sa pamamagitan ng adapter</translation>
@@ -369,6 +371,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4389184120735010762">Napindot mo ang keyboard shortcut para sa naka-dock na magnifier. Gusto mo ba itong i-on?</translation>
 <translation id="4412944820643904175">Naka-off ang <ph name="FEATURE_NAME" />.</translation>
 <translation id="4421231901400348175">Pagbabahagi ng kontrol sa iyong screen gamit ang <ph name="HELPER_NAME" /> sa pamamagitan ng Remote Assistance.</translation>
+<translation id="4427613789487709312">Default (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4450893287417543264">Huwag ipakitang muli</translation>
 <translation id="445864333228800152">Magandang gabi,</translation>
@@ -449,6 +452,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5078796286268621944">Maling PIN</translation>
 <translation id="5083553833479578423">Mag-unlock ng higit pang feature ng Assistant.</translation>
 <translation id="5136175204352732067">Ibang keyboard ang nakakonekta</translation>
+<translation id="5155897006997040331">Bilis ng pagbabasa</translation>
 <translation id="5168181903108465623">I-cast ang mga available na device</translation>
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
 <translation id="5176318573511391780">I-record ang hindi buong screen</translation>
@@ -712,6 +716,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notification}one{# notification}other{# na notification}}</translation>
 <translation id="7724603315864178912">I-cut</translation>
+<translation id="7745560842763881396">Ipakita ang mga app sa shelf</translation>
 <translation id="7749443890790263709">Naabot ang maximum na bilang ng desk.</translation>
 <translation id="776344839111254542">I-click upang tingnan ang mga detalye ng update</translation>
 <translation id="7780159184141939021">I-rotate ang Screen</translation>

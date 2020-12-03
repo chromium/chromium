@@ -122,6 +122,7 @@
 <translation id="2050339315714019657">Хөрөг зураг</translation>
 <translation id="2067602449040652523">Гарын гэрэлтүүлэг</translation>
 <translation id="2078034614700056995">Дараагийн дэлгэц рүү сэлгэхийн тулд дөрвөн хуруугаараа баруун тийш шударна уу</translation>
+<translation id="2079504693865562705">Аппуудыг тавиураас нуух</translation>
 <translation id="2083190527011054446">Сайхан амраарай <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Сүлжээнд холбогдоогүй байна</translation>
 <translation id="2126242104232412123">Шинэ ширээ</translation>
@@ -238,6 +239,7 @@
 <translation id="3226991577105957773">Бусад +<ph name="COUNT" /></translation>
 <translation id="3236488194889173876">Мобайл сүлжээ алга</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> цонхыг <ph name="ACTIVE_DESK" /> дэлгэцээс <ph name="TARGET_DESK" /> дэлгэц рүү зөөсөн</translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, Дохионы хүч <ph name="SIGNAL_STRENGTH" /> хувь.</translation>
 <translation id="3255483164551725916">Та юу хийх боломжтой вэ?</translation>
 <translation id="3269597722229482060">Баруун талыг товших</translation>
 <translation id="3289674678944039601">Адаптераар цэнэглэж байна</translation>
@@ -370,6 +372,7 @@
 <translation id="4389184120735010762">Та суурилуулсан томруулагчийн товчлуурын шууд холбоосыг дарсан байна. Үүнийг асаах уу?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> унтраалттай байна.</translation>
 <translation id="4421231901400348175">Remote Assistance ашиглан <ph name="HELPER_NAME" /> -тэй хамт өөрийн дэлгэцийн хяналтыг хуваалцах.</translation>
+<translation id="4427613789487709312">Өгөгдмөл (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Хэмжээ</translation>
 <translation id="4450893287417543264">Дахиж бүү харуул</translation>
 <translation id="445864333228800152">Оройн мэнд,</translation>
@@ -450,6 +453,7 @@
 <translation id="5078796286268621944">PIN код буруу байна</translation>
 <translation id="5083553833479578423">Tуслахын бусад онцлогийн түгжээг тайлна уу.</translation>
 <translation id="5136175204352732067">Өөр гар холбосон</translation>
+<translation id="5155897006997040331">Унших хурд</translation>
 <translation id="5168181903108465623">Бэлэн төхөөрөмжийг каст хийх</translation>
 <translation id="5170568018924773124">Хавтсанд харуул</translation>
 <translation id="5176318573511391780">Хэсэгчилсэн дэлгэцийг бичих</translation>
@@ -713,6 +717,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 мэдэгдэл}other{# мэдэгдэл}}</translation>
 <translation id="7724603315864178912">Хайчлах</translation>
+<translation id="7745560842763881396">Аппуудыг тавиур дээр харуулах</translation>
 <translation id="7749443890790263709">Дэлгэцийн тоо хамгийн дээд хэмжээнд хүрлээ.</translation>
 <translation id="776344839111254542">Шинэчлэлтийн дэлгэрэнгүйг харахын тулд товшино уу</translation>
 <translation id="7780159184141939021">Дэлгэцийг эргүүлсэн</translation>

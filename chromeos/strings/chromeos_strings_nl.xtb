@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Kan scannen niet starten</translation>
 <translation id="1071587090247825784">Firewall waargenomen</translation>
 <translation id="1075811647922107217">Paginagrootte</translation>
+<translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1175697296044146566">Deze <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Onbekende fout</translation>
 <translation id="1204296502688602597">DNS-wachttijd</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402">Nog <ph name="ATTEMPTS_LEFT" /> pogingen</translation>
 <translation id="2391082728065870591">Feedbackrapport sturen</translation>
 <translation id="2461822463642141190">Huidig</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Nog {0} poging}other{<ph name="ERROR_MESSAGE" /> Nog {0} pogingen}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Scannen</translation>
 <translation id="2570743873672969996">Test <ph name="TEST_NAME" /> wordt uitgevoerd...</translation>
+<translation id="2620436844016719705">Systeem</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
 <translation id="3008341117444806826">VERNIEUWEN</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3083667275341675831">Verbindingsdiagnose</translation>
 <translation id="3091839911843451378">Mislukt - Gestopt</translation>
+<translation id="3102119246920354026">Cachegeheugen</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">Mijn bestanden</translation>
 <translation id="3199982728237701504">Documentfeeder (dubbelzijdig)</translation>
 <translation id="3246869037381808805">Afdruktaken ouder dan 1 dag worden verwijderd</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">Nieuw wachtwoord</translation>
 <translation id="3865414814144988605">Resolutie</translation>
 <translation id="3941014780699102620">Kan host niet omzetten</translation>
+<translation id="3942420633017001071">Diagnose</translation>
 <translation id="39823212440917567">Afdruktaken ouder dan <ph name="NUMBER_OF_DAYS" /> dagen worden verwijderd</translation>
 <translation id="4003384961948020559">Mislukt - Uitvoer is vol</translation>
 <translation id="4034824040120875894">Printer</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356"><ph name="RATE" /> opgeladen in <ph name="NUM_SECONDS" /> seconden.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Uitvoeren</translation>
+<translation id="5154917547274118687">Geheugen</translation>
 <translation id="5168185087976003268">Batterijprestaties</translation>
 <translation id="520299634122159966">Geen beschikbare scanners</translation>
 <translation id="5212543919916444558">Ik heb niets gevonden op je scherm waarmee ik kan helpen.
@@ -137,6 +142,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6147514244879357420">Png</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6191293864534840972">Nameservers met onjuiste notatie</translation>
+<translation id="6232017090690406397">Batterij</translation>
 <translation id="6325525973963619867">Mislukt</translation>
 <translation id="636850387210749493">Aanmelding voor Enterprise</translation>
 <translation id="649050271426829538">Gestopt: papierstoring</translation>
@@ -194,6 +200,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8910721771319628100">Standaardnetwerk overschrijdt drempel voor wachttijd</translation>
 <translation id="8919837981463578619">Mislukt - Lade ontbreekt</translation>
 <translation id="8928727111548978589">Mislukt - Geen papier meer</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Nog <ph name="ATTEMPTS_LEFT" /> pogingen</translation>
 <translation id="8970109610781093811">Opnieuw uitvoeren</translation>
 <translation id="9088306295921699330">Huidig gebruik</translation>
 <translation id="910415269708673980">Ticket voor <ph name="PRINCIPAL_NAME" /> vernieuwen</translation>

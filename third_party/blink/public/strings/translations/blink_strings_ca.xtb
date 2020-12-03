@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">Introduïu un nom d'usuari seguit de "<ph name="ATSIGN" />". "<ph name="INVALIDADDRESS" />" no és una adreça completa.</translation>
 <translation id="5334352251556557839">No s'ha pogut reproduir el contingut multimèdia.</translation>
 <translation id="537648784377940524">La data mínima (<ph name="MIN_DATE_OR_TIME" />) ha de ser anterior a la data màxima (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">està desplegat; s'ha obert un quadre de diàleg.</translation>
 <translation id="5406322316791861025">figura</translation>
 <translation id="5425179576310518467">data actual</translation>
 <translation id="5453733299334684579">element de l'arbre</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">més opcions</translation>
 <translation id="576709008726043716">introducció</translation>
 <translation id="57838592816432529">Silencia</translation>
+<translation id="5787939484346677755">està desplegat; hi ha opcions de compleció automàtica disponibles.</translation>
 <translation id="5860033963881614850">Desactivat</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
 <translation id="5888666972993069672">S'està emetent a <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">quadre de llista</translation>
 <translation id="6150588977291308318">bibliografia</translation>
 <translation id="6164829606128959761">comptador</translation>
+<translation id="6165053282446038410">està desplegat; hi ha <ph name="COUNT" /> opcions de compleció automàtica disponibles.</translation>
 <translation id="6166809985690652833">cloenda</translation>
 <translation id="6209276755895393898">Sembla el següent: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">pàgina actual</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">capçalera</translation>
 <translation id="6941933287844615239">baixa els fitxers multimèdia</translation>
 <translation id="6981594929165378967">inserció</translation>
+<translation id="698788488269350478">està desplegat.</translation>
 <translation id="6989848892321993519">Allarga aquest text fins a <ph name="MIN_CHARACTERS" /> caràcters o més (ara n'utilitzes 1).</translation>
 <translation id="7034405885550056553">suggeriment</translation>
 <translation id="709897737746224366">Feu servir el format sol·licitat.</translation>
 <translation id="7102274145889307184">ubicació actual</translation>
 <translation id="7118469954320184356">No hi ha cap descripció disponible.</translation>
 <translation id="7139483182332611405">prefaci</translation>
+<translation id="7198226213493847604">botó emergent del menú</translation>
 <translation id="7214187073215825913">informació sobre el contingut</translation>
 <translation id="7238347055216017155">èmfasi</translation>
 <translation id="7263440858009898357">Seleccioneu un element de la llista.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">capítol</translation>
 <translation id="8845239796550121995">S'està emetent al televisor</translation>
 <translation id="8851136666856101339">principal</translation>
+<translation id="8861621546968757188">botó emergent del quadre de diàleg</translation>
 <translation id="8875657656876809964">Error de reproducció del vídeo</translation>
 <translation id="8889402386540077796">To</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

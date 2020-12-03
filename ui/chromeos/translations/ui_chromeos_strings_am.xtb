@@ -117,6 +117,7 @@
 <translation id="2208919847696382164">በLinux ይጫኑ</translation>
 <translation id="2225536596944493418">እርግጠኛ ነዎት <ph name="NUMBER_OF_ITEMS" /> ንጥሎችን መሰረዝ ይፈልጋሉ?</translation>
 <translation id="2230062665678605299">የ«<ph name="FOLDER_NAME" />» አቃፊን መፍጠር አልተቻለም። <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2251368349685848079">ከመጣያ ወደነበረበት መልስ</translation>
 <translation id="2275059641601412272">ተወስደዋል።</translation>
 <translation id="2288278176040912387">የሙዚቃ ማጫወቻ</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ፋይሎችን በመክፈት ላይ።</translation>
@@ -733,6 +734,7 @@
 <translation id="8609695766746872526">አይስላንድኛ</translation>
 <translation id="8669949407341943408">በመውሰድ ላይ...</translation>
 <translation id="8698464937041809063">Google ስዕል</translation>
+<translation id="8712637175834984815">ገባኝ</translation>
 <translation id="8713112442029511308">ማልታኛ</translation>
 <translation id="8714406895390098252">ቢስክሌት</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ተመርጧል።</translation>

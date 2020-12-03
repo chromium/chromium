@@ -54,7 +54,6 @@ Ikiwa '<ph name="SERVICE_SCRIPT_NAME" />' tayari imechaguliwa, batilisha uteuzi 
 <translation id="369442766917958684">Nje ya mtandao.</translation>
 <translation id="3695446226812920698">Pata maelezo</translation>
 <translation id="3776024066357219166">Kipindi chako cha Eneo-kazi la Mbali la Chrome kimekamilika.</translation>
-<translation id="3870154837782082782">Google LLC</translation>
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3905196214175737742">Kikoa cha mmiliki wa seva pangishi si sahihi.</translation>
 <translation id="3931191050278863510">Mpangishi amesimamishwa.</translation>
@@ -99,6 +98,7 @@ Ikiwa '<ph name="SERVICE_SCRIPT_NAME" />' tayari imechaguliwa, batilisha uteuzi 
 <translation id="5419418238395129586">Mara ya mwisho kuwa mtandaoni: <ph name="DATE" /></translation>
 <translation id="544077782045763683">Pangishi imezima.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Kwa sasa kompyuta yako inashirikiwa na <ph name="USER" />.</translation>
 <translation id="5750083143895808682">Umeingia katika akaunti ukitumia <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Unganisha upya</translation>
@@ -118,7 +118,6 @@ Ikiwa '<ph name="SERVICE_SCRIPT_NAME" />' tayari imechaguliwa, batilisha uteuzi 
 <translation id="6583902294974160967">Usaidizi</translation>
 <translation id="6612717000975622067">Tuma Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Shiriki</translation>
-<translation id="6681800064886881394">Hakimiliki 2013 Google Inc. Haki Zote Zimehifadhiwa.</translation>
 <translation id="677755392401385740">Seva pangishi ya mtumiaji: <ph name="HOST_USERNAME" /> Imeanza.</translation>
 <translation id="6939719207673461467">Onyesha/ficha kibodi.</translation>
 <translation id="6963936880795878952">Miunganisho ya kompyuta ya mbali imezuiwa kwa muda kwa sababu mtu fulani alikuwa akijaribu kuifikia kwa kutumia PIN isiyo sahihi. Tafadhali jaribu tena baadaye.</translation>

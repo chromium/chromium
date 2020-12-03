@@ -122,6 +122,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2067602449040652523">Keyboard brightness</translation>
 <translation id="2078034614700056995">Swipe right with four fingers to switch to the next desk</translation>
+<translation id="2079504693865562705">Hide apps in shelf</translation>
 <translation id="2083190527011054446">Good night <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Not connected to network</translation>
 <translation id="2126242104232412123">New desk</translation>
@@ -238,6 +239,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> more</translation>
 <translation id="3236488194889173876">No mobile network available</translation>
 <translation id="3249513730522716925">Window <ph name="WINDOW_TITLE" /> moved from Desk <ph name="ACTIVE_DESK" /> to Desk <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, signal strength <ph name="SIGNAL_STRENGTH" /> per cent.</translation>
 <translation id="3255483164551725916">What can you do?</translation>
 <translation id="3269597722229482060">Right-click</translation>
 <translation id="3289674678944039601">Charging via adaptor</translation>
@@ -369,6 +371,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4389184120735010762">You pressed the keyboard shortcut for the docked magnifier. Do you want to turn it on?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is off.</translation>
 <translation id="4421231901400348175">Sharing control of your screen with <ph name="HELPER_NAME" /> via Remote Assistance.</translation>
+<translation id="4427613789487709312">Default (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">volume</translation>
 <translation id="4450893287417543264">Don't show again</translation>
 <translation id="445864333228800152">Good evening,</translation>
@@ -449,6 +452,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5078796286268621944">Incorrect PIN</translation>
 <translation id="5083553833479578423">Unlock more Assistant features.</translation>
 <translation id="5136175204352732067">Different keyboard connected</translation>
+<translation id="5155897006997040331">Reading speed</translation>
 <translation id="5168181903108465623">Cast devices available</translation>
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="5176318573511391780">Record partial screen</translation>
@@ -712,6 +716,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notification}other{# notifications}}</translation>
 <translation id="7724603315864178912">Cut</translation>
+<translation id="7745560842763881396">Show apps in shelf</translation>
 <translation id="7749443890790263709">Maximum number of desks reached.</translation>
 <translation id="776344839111254542">Click to view update details</translation>
 <translation id="7780159184141939021">Rotate screen</translation>

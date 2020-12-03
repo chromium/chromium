@@ -54,7 +54,6 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="369442766917958684">Naka-offline.</translation>
 <translation id="3695446226812920698">Alamin kung paano</translation>
 <translation id="3776024066357219166">Natapos na ang iyong session sa Remote na Desktop ng Chrome.</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3905196214175737742">Di-wastong domain ng may-ari ng host.</translation>
 <translation id="3931191050278863510">Huminto ang host.</translation>
@@ -99,6 +98,7 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="5419418238395129586">Huling nag-online: <ph name="DATE" /></translation>
 <translation id="544077782045763683">Nag-shut down ang host.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Kasalukuyang nakabahagi ang iyong desktop kay <ph name="USER" />.</translation>
 <translation id="5750083143895808682">Naka-sign in bilang <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Muling kumonekta</translation>
@@ -118,7 +118,6 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="6583902294974160967">Suporta</translation>
 <translation id="6612717000975622067">Magpadala ng Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Ibahagi</translation>
-<translation id="6681800064886881394">Copyright 2013 Google Inc. Nakalaan ang Lahat ng Karapatan.</translation>
 <translation id="677755392401385740">Sinimulan ang host para sa user: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6939719207673461467">Ipakita/itago ang keyboard.</translation>
 <translation id="6963936880795878952">Pansamantalang naka-block ang mga koneksyon sa malayuang computer dahil may sumubok na kumonekta rito gamit ang di-wastong PIN. Pakisubukang muli sa ibang pagkakataon.</translation>

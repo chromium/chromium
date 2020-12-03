@@ -3172,7 +3172,6 @@
 <translation id="4646675363240786305">通訊埠</translation>
 <translation id="4647090755847581616">關閉分頁(&amp;C)</translation>
 <translation id="4647283074445570750">第 <ph name="CURRENT_STEP" /> 步，共 <ph name="TOTAL_STEPS" /> 步</translation>
-<translation id="4647420311443994946">{0,select, tablet{在你登入平板電腦時啟動應用程式}computer{在你登入電腦時啟動應用程式}other{在你登入裝置時啟動應用程式}}</translation>
 <translation id="4647697156028544508">請輸入「<ph name="DEVICE_NAME" />」的 PIN：</translation>
 <translation id="4648491805942548247">權限不足</translation>
 <translation id="4648499713050786492">新增任何人之前，請先取消鎖定您的個人資料。</translation>
@@ -3717,6 +3716,7 @@
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5319359161174645648">Google 推薦使用 Chrome</translation>
 <translation id="5320112320661303273">你似乎已在其他裝置上設定 Google 助理。開啟下列設定即可運用 Google 助理的更多功能。</translation>
+<translation id="5320135788267874712">新的裝置名稱</translation>
 <translation id="532247166573571973">無法連上伺服器，請稍後再試。</translation>
 <translation id="5324300749339591280">應用程式清單</translation>
 <translation id="5324780743567488672">自動使用您的位置資訊設定時區</translation>

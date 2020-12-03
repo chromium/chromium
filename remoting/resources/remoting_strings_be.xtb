@@ -54,7 +54,6 @@
 <translation id="369442766917958684">Па-за сеткай.</translation>
 <translation id="3695446226812920698">Даведацца больш</translation>
 <translation id="3776024066357219166">Сеанс Аддаленага працоўнага стала Chrome завершаны.</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3905196214175737742">Уладальнік хоста выкарыстоўвае недапушчальны дамен.</translation>
 <translation id="3931191050278863510">Хост спынены.</translation>
@@ -99,6 +98,7 @@
 <translation id="5419418238395129586">Апошні раз у інтэрнэце: <ph name="DATE" /></translation>
 <translation id="544077782045763683">Хост адключыўся.</translation>
 <translation id="5601503069213153581">PIN-код</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Ваш працоўны стол зараз абагульваецца з карыстальнікам <ph name="USER" />.</translation>
 <translation id="5750083143895808682">Вы ўвайшлі як <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Падключыцца зноў</translation>
@@ -118,7 +118,6 @@
 <translation id="6583902294974160967">Падтрымка</translation>
 <translation id="6612717000975622067">Адправіць Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Абагуліць</translation>
-<translation id="6681800064886881394">© Google Inc., 2013. Усе правы абароненыя.</translation>
 <translation id="677755392401385740">Хост запушчаны для карыстальніка: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6939719207673461467">Паказаць або схаваць клавіятуру.</translation>
 <translation id="6963936880795878952">Падключэнні да аддаленага камп'ютара часова заблакіраваны, бо нехта спрабаваў падключыцца да яго з выкарыстаннем няправільнага PIN-кода. Паўтарыце спробу пазней.</translation>

@@ -54,7 +54,6 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Postup</translation>
 <translation id="3776024066357219166">Relace Vzdálené plochy Chrome byla ukončena.</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3897092660631435901">Nabídka</translation>
 <translation id="3905196214175737742">Neplatná doména vlastníka hostitele.</translation>
 <translation id="3931191050278863510">Hostitel byl zastaven.</translation>
@@ -99,6 +98,7 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="5419418238395129586">Naposledy online: <ph name="DATE" /></translation>
 <translation id="544077782045763683">Hostitel byl vypnut.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Aktuálně sdílíte plochu s uživatelem <ph name="USER" />.</translation>
 <translation id="5750083143895808682">Jste přihlášeni pomocí účtu <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Znovu připojit</translation>
@@ -118,7 +118,6 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="6583902294974160967">Podpora</translation>
 <translation id="6612717000975622067">Odeslat akci Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Sdílet</translation>
-<translation id="6681800064886881394">Copyright 2013 Google Inc. Všechna práva vyhrazena.</translation>
 <translation id="677755392401385740">Pro následujícího uživatele bylo zahájeno hostování: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6939719207673461467">Zobrazit či skrýt klávesnici</translation>
 <translation id="6963936880795878952">Připojení ke vzdálenému počítači jsou dočasně zablokována, protože došlo k několika pokusům o připojení s nesprávným kódem PIN. Zkuste to znovu později.</translation>

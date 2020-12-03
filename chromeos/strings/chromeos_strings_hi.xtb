@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">स्कैन करने की प्रोसेस शुरू नहीं हो सकी</translation>
 <translation id="1071587090247825784">फ़ायरवॉल पहचाना गया</translation>
 <translation id="1075811647922107217">पेज का साइज़</translation>
+<translation id="1124772482545689468">उपयोगकर्ता</translation>
 <translation id="1175697296044146566">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> प्रबंधित करता है.</translation>
 <translation id="1195447618553298278">अज्ञात गड़बड़ी.</translation>
 <translation id="1204296502688602597">डिवाइस और डीएनएस के बीच के इंतज़ार का समय</translation>
@@ -21,6 +22,7 @@
 <translation id="1499900233129743732">इस उपयोगकर्ता को <ph name="MANAGER" /> प्रबंधित करता है और यह किसी दूसरी जगह पर होते हुए भी सेटिंग को प्रबंधित कर सकता है. साथ ही, यह उपयोगकर्ता की गतिविधि पर नज़र रख सकता है.</translation>
 <translation id="150962533380566081">गलत पीयूके.</translation>
 <translation id="1510238584712386396">लॉन्चर</translation>
+<translation id="1621067168122174824">चार्ज टेस्ट चलाएं</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> थ्रेड)</translation>
 <translation id="1641857168437328880">डॉक्यूमेंट फ़ीडर (एक तरफ़ वाला)</translation>
 <translation id="1644574205037202324">इतिहास</translation>
@@ -28,6 +30,7 @@
 <translation id="1703835215927279855">लेटर</translation>
 <translation id="1706391837335750954">डीएनएस रिज़ॉल्वर मौजूद है</translation>
 <translation id="1743558184855585519">सीमा पूरी होने का मतलब है कि बैटरी खत्म हो गई है</translation>
+<translation id="1792647875738159689">स्कैन करने की प्रोसेस रद्द की जा रही है</translation>
 <translation id="1905710495812624430">अधिकतम स्वीकार्य प्रयासों की सीमा पार हो गई है.</translation>
 <translation id="1930797645656624981">Chrome OS के इनपुट के तरीके की सेवा</translation>
 <translation id="1947737735496445907">प्रिंट किया गया</translation>
@@ -42,22 +45,26 @@
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> बार और कोशिश कर सकते हैं</translation>
 <translation id="2391082728065870591">सुझाव, शिकायत या राय की रिपोर्ट भेजें</translation>
 <translation id="2461822463642141190">मौजूदा</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> आप {0} बार और कोशिश कर सकते हैं}one{<ph name="ERROR_MESSAGE" /> आप {0} बार और कोशिश कर सकते हैं}other{<ph name="ERROR_MESSAGE" /> आप {0} बार और कोशिश कर सकते हैं}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">स्कैन करें</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> की जांच की जा रही है...</translation>
+<translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2805756323405976993">ऐप्स</translation>
 <translation id="2872961005593481000">शट डाउन करें</translation>
 <translation id="3008341117444806826">रीफ़्रेश करें</translation>
 <translation id="3009958530611748826">सेव करने के लिए कोई फ़ोल्डर चुनें</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
+<translation id="3069085583900247081">टेस्ट असफल रहा</translation>
 <translation id="3083667275341675831">कनेक्टिविटी डाइग्नोस्टिक्स</translation>
 <translation id="3091839911843451378">प्रिंट नहीं हो पाया - प्रिंटर बंद हो गया</translation>
+<translation id="3102119246920354026">संचय</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">मेरी फ़ाइलें</translation>
 <translation id="3199982728237701504">डॉक्यूमेंट फ़ीडर (दो तरफ़ वाला)</translation>
 <translation id="3246869037381808805">एक दिन से ज़्यादा पुरानी, प्रिंट की गई फ़ाइलों को हटा दिया जाएगा</translation>
 <translation id="3268178239013324452">प्रिंट नहीं हो पाया - प्रिंटर का दरवाज़ा खुला है</translation>
 <translation id="3310640316857623290">डीएनएस, इंतज़ार की समयसीमा से बहुत ऊपर है</translation>
+<translation id="3328783797891415197">टेस्ट चल रहा है</translation>
 <translation id="3369013195428705271">क्या आप वाकई अपना पूरा प्रिंट इतिहास मिटाना चाहते हैं? प्रिंट का जो काम अभी चल रहा है उसकी जानकारी (प्रिंट जॉब) नहीं मिटाई जाएगी.</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> में से <ph name="PRINTED_PAGES" /> पेज प्रिंट किए गए.</translation>
 <translation id="3459509316159669723">प्रिंट करना</translation>
@@ -71,11 +78,13 @@
 <translation id="3838338534323494292">नया पासवर्ड</translation>
 <translation id="3865414814144988605">रिज़ॉल्यूशन</translation>
 <translation id="3941014780699102620">होस्ट से जुड़ी समस्याओं को हल नहीं किया जा सका</translation>
+<translation id="3942420633017001071">निदान</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> से ज़्यादा पुरानी, प्रिंट की गई फ़ाइलों को हटा दिया जाएगा</translation>
 <translation id="4003384961948020559">प्रिंट नहीं हो पाया - प्रिंटर आउटपुट फ़ुल है</translation>
 <translation id="4034824040120875894">प्रिंटर</translation>
 <translation id="4131410914670010031">श्याम और श्वेत</translation>
 <translation id="4145784616224233563">एचटीटीपी फ़ायरवॉल</translation>
+<translation id="4170700058716978431">असफल</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> में पासवर्ड की समयसीमा खत्म हो जाएगी</translation>
 <translation id="4238516577297848345">फ़िलहाल, कुछ प्रिंट नहीं हो रहा</translation>
 <translation id="4297501883039923494">बंद हो गया - अज्ञात गड़बड़ी</translation>
@@ -100,16 +109,20 @@
 <translation id="4773299976671772492">रोक दिया गया</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> के प्रिंट का काम बंद किया गया</translation>
 <translation id="4832079907277790330">फ़ाइल ऐप्लिकेशन में कोई फ़ोल्डर चुनें...</translation>
+<translation id="4848429997038228357">चल रहा है</translation>
 <translation id="4890353053343094602">तुरंत कोई नया पासवर्ड चुनें</translation>
 <translation id="4917889632206600977">बंद हो गया - काग़ज़ खत्म हो गया</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकंड में <ph name="RATE" /> चार्ज हुई.</translation>
 <translation id="4932733599132424254">तारीख</translation>
 <translation id="4985509611418653372">चलाएं</translation>
+<translation id="500920857929044050">टेस्ट बंद करें</translation>
+<translation id="5154917547274118687">मेमोरी</translation>
 <translation id="5168185087976003268">बैटरी की स्थिति</translation>
 <translation id="520299634122159966">कोई भी स्कैनर उपलब्ध नहीं है</translation>
 <translation id="5212543919916444558">मुझे आपकी स्क्रीन पर ऐसा कुछ नहीं मिला जिसमें मैं आपकी सहायता कर पाऊं.
 मुझे कुछ पूछने के लिए माइक टैप करके देखें.</translation>
 <translation id="5222676887888702881">साइन आउट करें</translation>
+<translation id="5264277876637023664">सीपीयू टेस्ट चलाएं</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">रूटीन फिर से चलाएं</translation>
 <translation id="5317780077021120954">सेव करें</translation>
@@ -122,26 +135,33 @@
 <translation id="54609108002486618">प्रबंधित</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">ज़्यादा जानने के लिए, सहायता केंद्र देखें</translation>
+<translation id="5635169860413004179">रिपोर्ट देखें</translation>
 <translation id="5719918614880940190">इससे यह मापा जाता है कि सीपीयू का कितना इस्तेमाल किया गया है और यह सभी कोर का एग्रीगेट है</translation>
+<translation id="5797428682393400134">सफल</translation>
 <translation id="5832805196449965646">व्‍यक्ति जोड़ें</translation>
 <translation id="5895138241574237353">फिर से प्रारंभ करें</translation>
+<translation id="5931523347251946569">फ़ाइल नहीं मिली</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> वर्शन)</translation>
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="6048107060512778456">प्रिंट नहीं हो पाया - काग़ज़ फ़ंसा है</translation>
 <translation id="6050189528197190982">ग्रेस्‍केल</translation>
 <translation id="6058625436358447366">पूरा करने के लिए, पुराना और नया पासवर्ड डालें</translation>
 <translation id="6061772781719867950">वे एचटीटीपी अनुरोध जो नहीं किए जा सके</translation>
+<translation id="6104112872696127344">स्कैन करने की प्रोसेस रद्द कर दी गई है</translation>
 <translation id="6106186594183574873">पूरा करने के लिए, पुराना पासवर्ड डालें</translation>
 <translation id="6108689792487843350">गेटवे से कनेक्ट नहीं किया जा सका</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" />GHz / <ph name="MAX" />GHz</translation>
 <translation id="6146993107019042706">खत्म करने के लिए, नया पासवर्ड डालें</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">ज़्यादा जानें</translation>
 <translation id="6191293864534840972">इन नाम सर्वर के फ़ॉर्मैट सही नहीं हैं</translation>
+<translation id="6232017090690406397">बैटरी</translation>
 <translation id="6325525973963619867">विफल</translation>
 <translation id="636850387210749493">एंटरप्राइज़ नामांकन</translation>
 <translation id="649050271426829538">बंद हो गया - काग़ज़ फंसा है</translation>
 <translation id="6517239166834772319">एक्सप्लोर करें</translation>
 <translation id="6527081081771465939">इस वाई-फ़ाई सुरक्षा प्रोटोकॉल की जानकारी नहीं है</translation>
+<translation id="6532051501443766164">रिपोर्ट छिपाएं</translation>
 <translation id="65587193855025101">फ़्लैटबेड</translation>
 <translation id="6564646048574748301">प्रिंट नहीं हो पाया - प्रिंटर से कनेक्ट नहीं हो पा रहा है</translation>
 <translation id="6618744767048954150">जांच चल रही है</translation>
@@ -149,6 +169,7 @@
 <translation id="6643016212128521049">साफ़ करें</translation>
 <translation id="6704062477274546131">डीएनएस रिज़ॉल्यूशन</translation>
 <translation id="6747215703636344499">बंद हो गया - आउटपुट भर गया</translation>
+<translation id="6756731097889387912">स्कैन करने की प्रोसेस रद्द नहीं हो सकी</translation>
 <translation id="6766275201586212568">वे डीएनएस रिज़ॉल्यूशन जो नहीं हो पाए</translation>
 <translation id="6768237774506518020">डीएनएस रिज़ॉल्यूशन नहीं हो पाने की बढ़ी हुई दर</translation>
 <translation id="6839141349259399400">क्या आप स्कैनर से कनेक्ट नहीं कर पा रहे हैं?</translation>
@@ -164,6 +185,7 @@
 <translation id="7648838807254605802">एचटीटीपीएस अनुरोधों में इंतज़ार का समय ज़्यादा है</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
 <translation id="7690294790491645610">नए पासवर्ड की पुष्टि करें</translation>
+<translation id="7732651821766520760"><ph name="TEST_NAME" /> टेस्ट</translation>
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7855434858642800953">स्कैन की गई फ़ाइल सेव हो गई!</translation>
 <translation id="7928373994957558460">फ़ाइल की जगह की जानकारी देखें</translation>
@@ -191,12 +213,16 @@
 <translation id="877985182522063539">ए4</translation>
 <translation id="8798099450830957504">सामान्य</translation>
 <translation id="8845001906332463065">सहायता पाएं</translation>
+<translation id="8881098542468797602">टेस्ट सफल रहा</translation>
 <translation id="8910721771319628100">डिफ़ॉल्ट नेटवर्क, इंतज़ार की समयसीमा से ऊपर है</translation>
 <translation id="8919837981463578619">प्रिंट नहीं हो पाया - ट्रे मौजूद नहीं है</translation>
 <translation id="8928727111548978589">प्रिंट नहीं हो पाया - काग़ज़ खत्म हो गया</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> बार और कोशिश कर सकते हैं</translation>
 <translation id="8970109610781093811">फिर से चलाएं</translation>
 <translation id="9088306295921699330">मौजूदा इस्तेमाल</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> के लिए टिकट रीफ़्रेश करें</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> को स्कैन किया जा रहा है</translation>
 <translation id="9111102763498581341">अनलॉक करें</translation>
+<translation id="9149391708638971077">मेमोरी टेस्ट चलाएं</translation>
+<translation id="982713511914535780">डिस्चार्ज टेस्ट चलाएं</translation>
 </translationbundle>

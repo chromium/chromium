@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">Skriv inn en del etterfulgt av «<ph name="ATSIGN" />». «<ph name="INVALIDADDRESS" />» er ufullstendig.</translation>
 <translation id="5334352251556557839">Kunne ikke spille innholdet.</translation>
 <translation id="537648784377940524">Minimumsdatoen (<ph name="MIN_DATE_OR_TIME" />) må komme før maksimumsdatoen (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">vises; en dialogboks er åpnet.</translation>
 <translation id="5406322316791861025">figur</translation>
 <translation id="5425179576310518467">datoen i dag</translation>
 <translation id="5453733299334684579">treelement</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">flere alternativer</translation>
 <translation id="576709008726043716">innledning</translation>
 <translation id="57838592816432529">Kutt lyden</translation>
+<translation id="5787939484346677755">vises; alternativer for autofullføring er tilgjengelig.</translation>
 <translation id="5860033963881614850">Av</translation>
 <translation id="588258955323874662">Fullskjerm</translation>
 <translation id="5888666972993069672">Caster nå til <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">listefelt</translation>
 <translation id="6150588977291308318">bibliografi</translation>
 <translation id="6164829606128959761">måler</translation>
+<translation id="6165053282446038410">vises; <ph name="COUNT" /> alternativer for autofullføring er tilgjengelig.</translation>
 <translation id="6166809985690652833">etterord</translation>
 <translation id="6209276755895393898">Dette ser ut til å være <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">gjeldende side</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">topptekst</translation>
 <translation id="6941933287844615239">last ned medier</translation>
 <translation id="6981594929165378967">innsetting</translation>
+<translation id="698788488269350478">vises.</translation>
 <translation id="6989848892321993519">Øk lengden på denne teksten med minst <ph name="MIN_CHARACTERS" /> tegn (du bruker for øyeblikket 1 tegn).</translation>
 <translation id="7034405885550056553">forslag</translation>
 <translation id="709897737746224366">Sørg for samsvar med det forespurte formatet.</translation>
 <translation id="7102274145889307184">nåværende posisjon</translation>
 <translation id="7118469954320184356">Ingen beskrivelse er tilgjengelig.</translation>
 <translation id="7139483182332611405">forord</translation>
+<translation id="7198226213493847604">knapp som åpner meny i forgrunnen</translation>
 <translation id="7214187073215825913">innholdsinformasjon</translation>
 <translation id="7238347055216017155">utheving</translation>
 <translation id="7263440858009898357">Velg en artikkel i listen.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">kapittel</translation>
 <translation id="8845239796550121995">Caster til TV-en nå</translation>
 <translation id="8851136666856101339">main</translation>
+<translation id="8861621546968757188">knapp som åpner dialogboks i forgrunnen</translation>
 <translation id="8875657656876809964">Feil ved videoavspilling</translation>
 <translation id="8889402386540077796">Fargetone</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>

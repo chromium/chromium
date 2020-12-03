@@ -122,6 +122,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2067602449040652523">Luminozitatea tastaturii</translation>
 <translation id="2078034614700056995">Glisează spre dreapta cu patru degete pentru a comuta la desktopul următor</translation>
+<translation id="2079504693865562705">Ascunde aplicațiile din raft</translation>
 <translation id="2083190527011054446">Bună seara, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Fără conexiune la rețea</translation>
 <translation id="2126242104232412123">Desktop nou</translation>
@@ -238,6 +239,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3226991577105957773">+ încă <ph name="COUNT" /></translation>
 <translation id="3236488194889173876">Nicio rețea mobilă disponibilă</translation>
 <translation id="3249513730522716925">Fereastra <ph name="WINDOW_TITLE" /> a fost mutată de pe desktopul <ph name="ACTIVE_DESK" /> pe desktopul <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %.</translation>
 <translation id="3255483164551725916">Ce poți face?</translation>
 <translation id="3269597722229482060">Clic dreapta</translation>
 <translation id="3289674678944039601">Se încarcă prin adaptor</translation>
@@ -369,6 +371,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4389184120735010762">Ai accesat comanda rapidă de la tastatură pentru lupa andocată. Vrei să o activezi?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> este dezactivat.</translation>
 <translation id="4421231901400348175">În prezent, <ph name="HELPER_NAME" /> îți poate controla ecranul prin Asistență la distanță.</translation>
+<translation id="4427613789487709312">Prestabilită (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Volum</translation>
 <translation id="4450893287417543264">Nu mai afișa</translation>
 <translation id="445864333228800152">Bună seara!</translation>
@@ -449,6 +452,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5078796286268621944">Cod PIN incorect</translation>
 <translation id="5083553833479578423">Deblochează mai multe funcții ale Asistentului.</translation>
 <translation id="5136175204352732067">Altă tastatură conectată</translation>
+<translation id="5155897006997040331">Viteza de citire</translation>
 <translation id="5168181903108465623">Dispozitive de proiecție disponibile</translation>
 <translation id="5170568018924773124">Afișează în dosar</translation>
 <translation id="5176318573511391780">Înregistrează ecranul parțial</translation>
@@ -712,6 +716,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{O notificare}few{# notificări}other{# de notificări}}</translation>
 <translation id="7724603315864178912">Decupează</translation>
+<translation id="7745560842763881396">Afișează aplicațiile în raft</translation>
 <translation id="7749443890790263709">S-a atins numărul maxim de desktopuri.</translation>
 <translation id="776344839111254542">Dă clic pentru a vedea detaliile actualizării</translation>
 <translation id="7780159184141939021">Rotește ecranul</translation>

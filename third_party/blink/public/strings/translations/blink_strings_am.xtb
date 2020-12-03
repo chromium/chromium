@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">እባክዎ አንድ ክፍል ያስገቡና «<ph name="ATSIGN" />»ን ያስከትሉ። «<ph name="INVALIDADDRESS" />» ያልተሟላ ነው።</translation>
 <translation id="5334352251556557839">ሚዲያን ማጫወት አልተቻለም።</translation>
 <translation id="537648784377940524">አነስተኛው ቀን (<ph name="MIN_DATE_OR_TIME" />) ከከፍተኛው ቀን (<ph name="MAX_DATE_OR_TIME" />) በፊት መምጣት አለበት።</translation>
+<translation id="5378437566635403538">ተዘርግቷል፣ መገናኛ ተከፍቷል።</translation>
 <translation id="5406322316791861025">ምስል</translation>
 <translation id="5425179576310518467">የአሁኑ ቀን</translation>
 <translation id="5453733299334684579">የዛፍ ንጥል</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">ተጨማሪ አማራጮች</translation>
 <translation id="576709008726043716">መግቢያ</translation>
 <translation id="57838592816432529">ድምጽ ይዝጉ</translation>
+<translation id="5787939484346677755">ተዘርግቷል፣ የራስ-ማጠናቀቅ አማራጮች አሉ።</translation>
 <translation id="5860033963881614850">አጥፋ</translation>
 <translation id="588258955323874662">ሙሉ ገጽ ዕይታ</translation>
 <translation id="5888666972993069672">አሁን ወደ <ph name="DEVICE_FRIENDLY_NAME" /> cast በማድረግ ላይ</translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">የዝርዝር ሳጥን</translation>
 <translation id="6150588977291308318">ዋቢ መጽሐፍት</translation>
 <translation id="6164829606128959761">ሜትር</translation>
+<translation id="6165053282446038410">ተዘርግቷል፣ <ph name="COUNT" /> የራስ-ማጠናቀቅ አማራጮች አሉ።</translation>
 <translation id="6166809985690652833">ድሕረ ቃል</translation>
 <translation id="6209276755895393898">ይህ ይመስላል፦ <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">የአሁኑ ገጽ</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">ራስጌ</translation>
 <translation id="6941933287844615239">ማህደረ መረጃን አውርድ</translation>
 <translation id="6981594929165378967">ማስገባት</translation>
+<translation id="698788488269350478">ተዘርግቷል።</translation>
 <translation id="6989848892321993519">እባክዎ ይህን ጽሑፍ ወደ <ph name="MIN_CHARACTERS" /> ወይም ከዚያ በላይ ቁምፊዎች ያራዝሙት (አሁን እየተጠቀሙ ያሉት 1 ቁምፊ ነው)።</translation>
 <translation id="7034405885550056553">የአስተያየት ጥቆማ</translation>
 <translation id="709897737746224366">እባክዎ የተጠየቀውን ቅርጸት ያዛምዱ።</translation>
 <translation id="7102274145889307184">የአሁኑ አካባቢ</translation>
 <translation id="7118469954320184356">ምንም መግለጫ የለም።</translation>
 <translation id="7139483182332611405">መቅድም</translation>
+<translation id="7198226213493847604">የምናለ ብቅ-ባይ አዝራር</translation>
 <translation id="7214187073215825913">የይዘት መረጃ</translation>
 <translation id="7238347055216017155">ትኩረት</translation>
 <translation id="7263440858009898357">እባክዎ በዝርዝሩ ውስጥ አንድ ንጥል ይምረጡ።</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">ምዕራፍ</translation>
 <translation id="8845239796550121995">አሁን ወደ የእርስዎ ቴሌቪዥን cast በማድረግ ላይ</translation>
 <translation id="8851136666856101339">main</translation>
+<translation id="8861621546968757188">የመገናኛ ብቅ-ባይ አዝራር</translation>
 <translation id="8875657656876809964">የቪዲዮ መልሶ ማጫወት ስህተት</translation>
 <translation id="8889402386540077796">ለይ ቀለም</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> ኪባ</translation>

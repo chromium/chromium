@@ -54,7 +54,6 @@
 <translation id="369442766917958684">ออฟไลน์</translation>
 <translation id="3695446226812920698">เรียนรู้วิธี</translation>
 <translation id="3776024066357219166">เซสชัน Chrome Remote Desktop ของคุณสิ้นสุดแล้ว</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3897092660631435901">เมนู</translation>
 <translation id="3905196214175737742">โดเมนเจ้าของโฮสต์ไม่ถูกต้อง</translation>
 <translation id="3931191050278863510">หยุดโฮสต์แล้ว</translation>
@@ -99,6 +98,7 @@
 <translation id="5419418238395129586">ออนไลน์ครั้งล่าสุด: <ph name="DATE" /></translation>
 <translation id="544077782045763683">โฮสต์ปิดตัวลงแล้ว</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">ขณะนี้มีการแชร์เดสก์ท็อปของคุณกับ <ph name="USER" /></translation>
 <translation id="5750083143895808682">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="579702532610384533">เชื่อมต่อใหม่</translation>
@@ -118,7 +118,6 @@
 <translation id="6583902294974160967">การสนับสนุน</translation>
 <translation id="6612717000975622067">ส่ง Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">แชร์</translation>
-<translation id="6681800064886881394">ลิขสิทธิ์ 2013 Google Inc. สงวนลิขสิทธิ์</translation>
 <translation id="677755392401385740">โฮสต์เริ่มใช้งานสำหรับผู้ใช้: <ph name="HOST_USERNAME" /></translation>
 <translation id="6939719207673461467">แสดง/ซ่อนแป้นพิมพ์</translation>
 <translation id="6963936880795878952">การเชื่อมต่อกับคอมพิวเตอร์ระยะไกลถูกบล็อกไว้ชั่วคราว เนื่องจากมีผู้พยายามเชื่อมต่อกับคอมพิวเตอร์ดังกล่าวโดยใช้ PIN ที่ไม่ถูกต้อง โปรดลองอีกครั้งในภายหลัง</translation>

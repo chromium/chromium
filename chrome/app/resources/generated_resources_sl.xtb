@@ -3177,7 +3177,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4646675363240786305">Vrata</translation>
 <translation id="4647090755847581616">Zap&amp;ri zavihek</translation>
 <translation id="4647283074445570750"><ph name="CURRENT_STEP" />. korak od <ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{Zaženi aplikacijo ob prijavi v tablični računalnik}computer{Zaženi aplikacijo ob prijavi v računalnik}other{Zaženi aplikacijo ob prijavi v napravo}}</translation>
 <translation id="4647697156028544508">Vnesite PIN za napravo »<ph name="DEVICE_NAME" />«:</translation>
 <translation id="4648491805942548247">Nezadostna dovoljenja</translation>
 <translation id="4648499713050786492">Preden dodate osebo, odklenite profil.</translation>
@@ -3722,6 +3721,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="5317780077021120954">Shrani</translation>
 <translation id="5319359161174645648">Google priporoča Chrome</translation>
 <translation id="5320112320661303273">Videti je, da ste že nastavili Pomočnika v drugi napravi. Še bolje izkoristite Pomočnika tako, da vklopite naslednjo nastavitev.</translation>
+<translation id="5320135788267874712">Novo ime naprave</translation>
 <translation id="532247166573571973">Strežnik morda ni dosegljiv. Poskusite znova pozneje.</translation>
 <translation id="5324300749339591280">Seznam aplikacij</translation>
 <translation id="5324780743567488672">Samodejna nastavitev časovnega pasu na podlagi vaše lokacije</translation>

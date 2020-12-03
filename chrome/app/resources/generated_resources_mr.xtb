@@ -3171,7 +3171,6 @@
 <translation id="4646675363240786305">पोर्ट</translation>
 <translation id="4647090755847581616">टॅब &amp;बंद करा</translation>
 <translation id="4647283074445570750"><ph name="TOTAL_STEPS" /> पैकी <ph name="CURRENT_STEP" /> पायरी</translation>
-<translation id="4647420311443994946">{0,select, tablet{तुम्ही तुमच्या टॅबलेटवर साइन इन कराल तेव्हा ॲप सुरू करा}computer{तुम्ही तुमच्या कॉंप्युटरवर साइन इन कराल तेव्हा ॲप सुरू करा}other{तुम्ही तुमच्या डिव्हाइसवर साइन इन कराल तेव्हा ॲप सुरू करा}}</translation>
 <translation id="4647697156028544508">कृपया "<ph name="DEVICE_NAME" />" साठी पिन प्रविष्‍ट करा:</translation>
 <translation id="4648491805942548247">अपुर्‍या परवानग्या</translation>
 <translation id="4648499713050786492">कृपया एखाद्या व्यक्तीस जोडण्यापूर्वी तुमचे प्रोफाईल अनलॉक करा.</translation>
@@ -3716,6 +3715,7 @@
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5319359161174645648">Google Chrome ची शिफारस करते</translation>
 <translation id="5320112320661303273">तुम्ही आधीपासून Assistant एका वेगळ्या डिव्हाइसवर सेट केले आहे असे दिसते. पुढील सेटिंग सुरू करून Assistant चा पुरेपूर वापर करा.</translation>
+<translation id="5320135788267874712">नवीन डिव्हाइसचे नाव</translation>
 <translation id="532247166573571973">सर्व्हर कदाचित आवाक्याबाहेर असू शकते. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="5324300749339591280">अ‍ॅप्स सूची</translation>
 <translation id="5324780743567488672">तुमचे स्थान वापरून स्वयंचलितपणे टाइम झोन सेट करा</translation>

@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">Sila masukkan bahagian diikuti oleh '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' tidak lengkap.</translation>
 <translation id="5334352251556557839">Tidak dapat memainkan media.</translation>
 <translation id="537648784377940524">Tarikh Minimum (<ph name="MIN_DATE_OR_TIME" />) mesti lebih awal dari tarikh Maksimum (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">dikembangkan, dialog dibuka.</translation>
 <translation id="5406322316791861025">angka</translation>
 <translation id="5425179576310518467">tarikh semasa</translation>
 <translation id="5453733299334684579">item pohon</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">lagi pilihan</translation>
 <translation id="576709008726043716">pengenalan</translation>
 <translation id="57838592816432529">Redam</translation>
+<translation id="5787939484346677755">dikembangkan, pilihan autolengkap tersedia.</translation>
 <translation id="5860033963881614850">Dimatikan</translation>
 <translation id="588258955323874662">Skrin penuh</translation>
 <translation id="5888666972993069672">Sekarang menghantar ke <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">kotak senarai</translation>
 <translation id="6150588977291308318">bibliografi</translation>
 <translation id="6164829606128959761">meter</translation>
+<translation id="6165053282446038410">dikembangkan, <ph name="COUNT" /> pilihan autolengkap tersedia.</translation>
 <translation id="6166809985690652833">kata hujungan</translation>
 <translation id="6209276755895393898">Nampak seperti: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">halaman semasa</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">pengepala</translation>
 <translation id="6941933287844615239">muat turun media</translation>
 <translation id="6981594929165378967">penyisipan</translation>
+<translation id="698788488269350478">dikembangkan.</translation>
 <translation id="6989848892321993519">Sila panjangkan teks ini kepada <ph name="MIN_CHARACTERS" /> aksara atau lebih (anda sedang menggunakan 1 aksara).</translation>
 <translation id="7034405885550056553">cadangan</translation>
 <translation id="709897737746224366">Sila padankan dengan format yang diminta.</translation>
 <translation id="7102274145889307184">lokasi semasa</translation>
 <translation id="7118469954320184356">Perihalan tidak tersedia.</translation>
 <translation id="7139483182332611405">kata penghantar</translation>
+<translation id="7198226213493847604">butang timbul menu</translation>
 <translation id="7214187073215825913">maklumat kandungan</translation>
 <translation id="7238347055216017155">penekanan</translation>
 <translation id="7263440858009898357">Sila pilih item dalam senarai.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">bab</translation>
 <translation id="8845239796550121995">Menghantar ke TV anda sekarang</translation>
 <translation id="8851136666856101339">utama</translation>
+<translation id="8861621546968757188">butang timbul dialog</translation>
 <translation id="8875657656876809964">Ralat main balik video</translation>
 <translation id="8889402386540077796">Rona</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

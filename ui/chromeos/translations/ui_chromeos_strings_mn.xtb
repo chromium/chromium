@@ -117,6 +117,7 @@
 <translation id="2208919847696382164">Linux-р суулгах</translation>
 <translation id="2225536596944493418">Та <ph name="NUMBER_OF_ITEMS" /> зүйлийг устгахдаа итгэлтэй байна уу?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" /> ". <ph name="ERROR_MESSAGE" /> хавтас үүсгэх боломжгүй байна</translation>
+<translation id="2251368349685848079">Хогийн савнаас сэргээх</translation>
 <translation id="2275059641601412272">Зөөсөн.</translation>
 <translation id="2288278176040912387">Бичлэг тоглуулагч</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> файлыг нээж байна.</translation>
@@ -731,6 +732,7 @@
 <translation id="8609695766746872526">Исланд</translation>
 <translation id="8669949407341943408">Зөөж байна...</translation>
 <translation id="8698464937041809063">Google-ийн зураг</translation>
+<translation id="8712637175834984815">Ойлголоо</translation>
 <translation id="8713112442029511308">Мальта</translation>
 <translation id="8714406895390098252">Унадаг дугуй</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> сонгогдсон.</translation>

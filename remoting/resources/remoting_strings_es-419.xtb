@@ -54,7 +54,6 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 <translation id="369442766917958684">Sin conexión</translation>
 <translation id="3695446226812920698">Más información</translation>
 <translation id="3776024066357219166">Se cerró tu sesión en Escritorio remoto de Chrome.</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3905196214175737742">Dominio del propietario del host no válido</translation>
 <translation id="3931191050278863510">Se detuvo el host.</translation>
@@ -99,6 +98,7 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 <translation id="5419418238395129586">Última conexión: <ph name="DATE" /></translation>
 <translation id="544077782045763683">El host se cerró.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">En este momento, estás compartiendo tu escritorio con <ph name="USER" />.</translation>
 <translation id="5750083143895808682">Accediste como <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Volver a conectar</translation>
@@ -118,7 +118,6 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 <translation id="6583902294974160967">Asistencia</translation>
 <translation id="6612717000975622067">Enviar Ctrl-Alt-Supr</translation>
 <translation id="6654753848497929428">Compartir</translation>
-<translation id="6681800064886881394">Copyright 2013 Google Inc. Todos los derechos reservados.</translation>
 <translation id="677755392401385740">Host iniciado para usuario: <ph name="HOST_USERNAME" /></translation>
 <translation id="6939719207673461467">Mostrar u ocultar teclado</translation>
 <translation id="6963936880795878952">Las conexiones con la computadora remota se bloquearon temporalmente porque alguien intentó conectarse a ella con un PIN no válido. Vuelve a intentarlo más tarde.</translation>

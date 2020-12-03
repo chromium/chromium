@@ -3174,7 +3174,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4646675363240786305">Atakak</translation>
 <translation id="4647090755847581616">&amp;Itxi fitxa</translation>
 <translation id="4647283074445570750"><ph name="CURRENT_STEP" />/<ph name="TOTAL_STEPS" /> urratsa</translation>
-<translation id="4647420311443994946">{0,select, tablet{Abiarazi aplikazioa tabletan saioa hasten duzunean}computer{Abiarazi aplikazioa ordenagailuan saioa hasten duzunean}other{Abiarazi aplikazioa gailuan saioa hasten duzunean}}</translation>
 <translation id="4647697156028544508">Idatzi "<ph name="DEVICE_NAME" />" gailuaren PIN kodea:</translation>
 <translation id="4648491805942548247">Ez dago behar adina baimen</translation>
 <translation id="4648499713050786492">Desblokeatu profila inor gehitu aurretik.</translation>
@@ -3719,6 +3718,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5317780077021120954">Gorde</translation>
 <translation id="5319359161174645648">Google-k Chrome gomendatzen dizu</translation>
 <translation id="5320112320661303273">Laguntzailea beste gailu batean konfiguratu duzu dagoeneko. Eginbide horri are etekin handiagoa ateratzeko, aktibatu jarraian ageri den ezarpena.</translation>
+<translation id="5320135788267874712">Gailuaren izen berria</translation>
 <translation id="532247166573571973">Baliteke zerbitzarira konektatu ezin izatea. Saiatu berriro geroago.</translation>
 <translation id="5324300749339591280">Aplikazioen zerrenda</translation>
 <translation id="5324780743567488672">Ezarri ordu-zona automatikoki kokapenaren arabera</translation>

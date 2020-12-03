@@ -3174,7 +3174,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4646675363240786305">Porty</translation>
 <translation id="4647090755847581616">&amp;Zavřít kartu</translation>
 <translation id="4647283074445570750">Krok <ph name="CURRENT_STEP" /> z <ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{Spustit aplikaci, když se přihlásíte do tabletu}computer{Spustit aplikaci, když se přihlásíte do počítače}other{Spustit aplikaci, když se přihlásíte do zařízení}}</translation>
 <translation id="4647697156028544508">Zadejte prosím PIN pro zařízení <ph name="DEVICE_NAME" />:</translation>
 <translation id="4648491805942548247">Nedostatečná oprávnění</translation>
 <translation id="4648499713050786492">Před přidáním osoby prosím odemkněte svůj profil.</translation>
@@ -3719,6 +3718,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5317780077021120954">Uložit</translation>
 <translation id="5319359161174645648">Google doporučuje prohlížeč Chrome</translation>
 <translation id="5320112320661303273">Zdá se, že už jste si Asistenta nastavili na jiném zařízení. Když zapnete následující nastavení, Asistent bude ještě užitečnější.</translation>
+<translation id="5320135788267874712">Nový název zařízení</translation>
 <translation id="532247166573571973">Server pravděpodobně není dostupný. Zkuste to znovu později.</translation>
 <translation id="5324300749339591280">Seznam aplikací</translation>
 <translation id="5324780743567488672">Nastavit časové pásmo automaticky podle polohy</translation>

@@ -122,6 +122,7 @@
 <translation id="2050339315714019657">Вертикално</translation>
 <translation id="2067602449040652523">Яркост на клавиатурата</translation>
 <translation id="2078034614700056995">Прекарайте четири пръста надясно, за да превключите към следващия работен кът</translation>
+<translation id="2079504693865562705">Скриване на приложенията в лавицата</translation>
 <translation id="2083190527011054446">Добър вечер, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Няма връзка с мрежа</translation>
 <translation id="2126242104232412123">Нов работен кът</translation>
@@ -238,6 +239,7 @@
 <translation id="3226991577105957773">+ още <ph name="COUNT" /></translation>
 <translation id="3236488194889173876">Няма мобилни мрежи</translation>
 <translation id="3249513730522716925">Прозорецът <ph name="WINDOW_TITLE" /> бе преместен от работен кът <ph name="ACTIVE_DESK" /> в работен кът <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, сила на сигнала <ph name="SIGNAL_STRENGTH" /> процент(а).</translation>
 <translation id="3255483164551725916">„What can you do?“ („Какво можеш да правиш?“)</translation>
 <translation id="3269597722229482060">Кликване с десния бутон</translation>
 <translation id="3289674678944039601">Зарежда се през адаптера</translation>
@@ -369,6 +371,7 @@
 <translation id="4389184120735010762">Използвахте клавишната комбинация за лупата в прикрепен режим. Искате ли да включите функцията?</translation>
 <translation id="4412944820643904175">„<ph name="FEATURE_NAME" />“ е изключено.</translation>
 <translation id="4421231901400348175">Споделяте с/ъс <ph name="HELPER_NAME" /> контрола върху екрана си чрез отдалечено съдействие.</translation>
+<translation id="4427613789487709312">Стандартна (x<ph name="RATE" />)</translation>
 <translation id="4430019312045809116">Звук</translation>
 <translation id="4450893287417543264">Да не се показва отново</translation>
 <translation id="445864333228800152">Добър вечер,</translation>
@@ -449,6 +452,7 @@
 <translation id="5078796286268621944">Неправилен ПИН</translation>
 <translation id="5083553833479578423">Отключете още функции на Асистент.</translation>
 <translation id="5136175204352732067">Свързана е различна клавиатура</translation>
+<translation id="5155897006997040331">Скорост на четене</translation>
 <translation id="5168181903108465623">Налице са устройства Cast</translation>
 <translation id="5170568018924773124">Показване в папката</translation>
 <translation id="5176318573511391780">Записване на част от екрана</translation>
@@ -712,6 +716,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 известие}other{# известия}}</translation>
 <translation id="7724603315864178912">Изрязване</translation>
+<translation id="7745560842763881396">Показване на приложенията в лавицата</translation>
 <translation id="7749443890790263709">Достигнат е максималният брой работни кътове.</translation>
 <translation id="776344839111254542">Кликнете, за да видите подробности за актуализацията</translation>
 <translation id="7780159184141939021">Завъртане на екрана</translation>

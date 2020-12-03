@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">לא ניתן היה להתחיל את הסריקה</translation>
 <translation id="1071587090247825784">זוהתה חומת אש</translation>
 <translation id="1075811647922107217">גודל הדף</translation>
+<translation id="1124772482545689468">משתמש</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> זה מנוהל על-ידי <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">שגיאה לא ידועה.</translation>
 <translation id="1204296502688602597">‏זמן אחזור של DNS</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402">נותרו <ph name="ATTEMPTS_LEFT" /> ניסיונות</translation>
 <translation id="2391082728065870591">שליחת דוח המשוב</translation>
 <translation id="2461822463642141190">כרגע</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />. נותר ניסיון אחד ({0})}two{<ph name="ERROR_MESSAGE" />. נותרו {0} ניסיונות}many{<ph name="ERROR_MESSAGE" />. נותרו {0} ניסיונות}other{<ph name="ERROR_MESSAGE" />. נותרו {0} ניסיונות}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">סריקה</translation>
 <translation id="2570743873672969996">הבדיקה של <ph name="TEST_NAME" /> בתהליך…</translation>
+<translation id="2620436844016719705">מערכת</translation>
 <translation id="2805756323405976993">אפליקציות</translation>
 <translation id="2872961005593481000">כיבוי</translation>
 <translation id="3008341117444806826">רענון</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801">mA<ph name="CURRENT_VALUE" /></translation>
 <translation id="3083667275341675831">אבחון קישוריות</translation>
 <translation id="3091839911843451378">נכשלה – משימת ההדפסה הופסקה</translation>
+<translation id="3102119246920354026">מטמון</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">הקבצים שלי</translation>
 <translation id="3199982728237701504">הכנסת מסמכים (שני צדדים)</translation>
 <translation id="3246869037381808805">משימות הדפסה בנות יותר מיום אחד יוסרו</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">סיסמה חדשה</translation>
 <translation id="3865414814144988605">רזולוציה</translation>
 <translation id="3941014780699102620">לא ניתן היה להתאים את נתוני המארח</translation>
+<translation id="3942420633017001071">אבחון</translation>
 <translation id="39823212440917567">משימות הדפסה בנות יותר מ-<ph name="NUMBER_OF_DAYS" /> ימים יוסרו</translation>
 <translation id="4003384961948020559">נכשלה – מגש הפלט מלא</translation>
 <translation id="4034824040120875894">מדפסת</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356">התבצעה טעינה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
 <translation id="4932733599132424254">תאריך</translation>
 <translation id="4985509611418653372">הרצה</translation>
+<translation id="5154917547274118687">זיכרון</translation>
 <translation id="5168185087976003268">תקינות הסוללה</translation>
 <translation id="520299634122159966">אין סורקים זמינים</translation>
 <translation id="5212543919916444558">לא מצאתי במסך משהו שאוכל לעזור בו.
@@ -137,6 +142,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6191293864534840972">שרתי שמות שגויים</translation>
+<translation id="6232017090690406397">סוללה</translation>
 <translation id="6325525973963619867">נכשל</translation>
 <translation id="636850387210749493">‏הרשמה ל-Enterprise</translation>
 <translation id="649050271426829538">הפסיקה – חסימת נייר</translation>
@@ -194,6 +200,7 @@
 <translation id="8910721771319628100">רשת ברירת המחדל חורגת מסף זמן האחזור</translation>
 <translation id="8919837981463578619">נכשלה – המגש לא נמצא</translation>
 <translation id="8928727111548978589">נכשלה – הנייר נגמר</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> נותרו <ph name="ATTEMPTS_LEFT" /> ניסיונות</translation>
 <translation id="8970109610781093811">הפעל שוב</translation>
 <translation id="9088306295921699330">שימוש נוכחי</translation>
 <translation id="910415269708673980">רענון הכרטיס עבור <ph name="PRINCIPAL_NAME" /></translation>

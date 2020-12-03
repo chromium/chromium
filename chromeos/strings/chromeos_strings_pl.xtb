@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Nie udało się rozpocząć skanowania</translation>
 <translation id="1071587090247825784">wykryto zaporę sieciową</translation>
 <translation id="1075811647922107217">Rozmiar strony</translation>
+<translation id="1124772482545689468">Użytkownik</translation>
 <translation id="1175697296044146566">Tym urządzeniem <ph name="DEVICE_TYPE" /> zarządza <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Nieznany błąd.</translation>
 <translation id="1204296502688602597">Opóźnienie DNS</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402">Pozostałe próby: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Prześlij zgłoszenie opinii</translation>
 <translation id="2461822463642141190">Aktualnie</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Pozostała {0} próba.}few{<ph name="ERROR_MESSAGE" /> Pozostały {0} próby.}many{<ph name="ERROR_MESSAGE" /> Pozostało {0} prób.}other{<ph name="ERROR_MESSAGE" /> Pozostało {0} próby.}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Skanuj</translation>
 <translation id="2570743873672969996">Wykonuję test <ph name="TEST_NAME" />…</translation>
+<translation id="2620436844016719705">System</translation>
 <translation id="2805756323405976993">Aplikacje</translation>
 <translation id="2872961005593481000">Wyłącz</translation>
 <translation id="3008341117444806826">ODŚWIEŻ</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3083667275341675831">Diagnostyka problemów z łącznością</translation>
 <translation id="3091839911843451378">Niepowodzenie – drukarka została zatrzymana</translation>
+<translation id="3102119246920354026">Pamięć podręczna</translation>
+<translation id="3122464029669770682">Procesor</translation>
 <translation id="3188257591659621405">Moje pliki</translation>
 <translation id="3199982728237701504">Podajnik dokumentów (dwustronny)</translation>
 <translation id="3246869037381808805">Zadania drukowania starsze niż 1 dzień zostaną usunięte</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">Nowe hasło</translation>
 <translation id="3865414814144988605">Rozdzielczość</translation>
 <translation id="3941014780699102620">Nie udało się znaleźć hosta</translation>
+<translation id="3942420633017001071">Diagnostyka</translation>
 <translation id="39823212440917567">Zadania drukowania starsze niż <ph name="NUMBER_OF_DAYS" /> dni zostaną usunięte</translation>
 <translation id="4003384961948020559">Niepowodzenie – odbiornik papieru jest pełny</translation>
 <translation id="4034824040120875894">Drukarka</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356">Naładowano <ph name="RATE" /> w ciągu <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Uruchom</translation>
+<translation id="5154917547274118687">Pamięć</translation>
 <translation id="5168185087976003268">Kondycja baterii</translation>
 <translation id="520299634122159966">Brak dostępnych skanerów</translation>
 <translation id="5212543919916444558">Na Twoim ekranie nie ma nic, w czym mogę pomóc.
@@ -137,6 +142,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
 <translation id="6191293864534840972">Nieprawidłowe serwery nazw</translation>
+<translation id="6232017090690406397">Bateria</translation>
 <translation id="6325525973963619867">Niepowodzenie</translation>
 <translation id="636850387210749493">Rejestracja w firmie</translation>
 <translation id="649050271426829538">Zatrzymano – zacięcie papieru</translation>
@@ -194,6 +200,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8910721771319628100">Sieć domyślna przekroczyła próg opóźnienia</translation>
 <translation id="8919837981463578619">Niepowodzenie – nie znaleziono tacy</translation>
 <translation id="8928727111548978589">Niepowodzenie – brak papieru</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Pozostałe próby: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8970109610781093811">Uruchom ponownie</translation>
 <translation id="9088306295921699330">Obecne wykorzystanie</translation>
 <translation id="910415269708673980">Odśwież bilet przypisany do konta <ph name="PRINCIPAL_NAME" />.</translation>

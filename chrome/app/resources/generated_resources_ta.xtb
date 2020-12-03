@@ -3174,7 +3174,6 @@
 <translation id="4646675363240786305">போர்ட்கள்</translation>
 <translation id="4647090755847581616">&amp;தாவலை மூடுக</translation>
 <translation id="4647283074445570750">படி <ph name="CURRENT_STEP" />/<ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{டேப்லெட்டில் உள்நுழையும்போது ஆப்ஸைத் தொடங்கு}computer{கம்ப்யூட்டரில் உள்நுழையும்போது ஆப்ஸைத் தொடங்கு}other{சாதனத்தில் உள்நுழையும்போது ஆப்ஸைத் தொடங்கு}}</translation>
 <translation id="4647697156028544508">"<ph name="DEVICE_NAME" />" க்கான PIN ஐ உள்ளிடுக:</translation>
 <translation id="4648491805942548247">போதிய அனுமதிகள் இல்லை</translation>
 <translation id="4648499713050786492">பயனரைச் சேர்க்கும் முன், உங்கள் சுயவிவரத்தைத் திறக்கவும்.</translation>
@@ -3719,6 +3718,7 @@
 <translation id="5317780077021120954">சேமி</translation>
 <translation id="5319359161174645648">Google ஆனது Chromeஐப் பரிந்துரைக்கிறது</translation>
 <translation id="5320112320661303273">நீங்கள் ஏற்கெனவே வேறொரு சாதனத்தில் Assistantடை அமைத்துள்ளதாகத் தெரிகிறது. பின்வரும் அமைப்பை இயக்கி, Assistantடிலிருந்து அதிகப் பலன்களைப் பெறுங்கள்.</translation>
+<translation id="5320135788267874712">புதிய சாதனத்தின் பெயர்</translation>
 <translation id="532247166573571973">சேவையகத்தைத் தொடர்புகொள்ள முடியாதிருக்கலாம். மீண்டும் முயலவும்.</translation>
 <translation id="5324300749339591280">ஆப்ஸ் பட்டியல்</translation>
 <translation id="5324780743567488672">எனது இருப்பிடத்தைப் பயன்படுத்தி, தானாகவே நேர மண்டலத்தை அமை</translation>

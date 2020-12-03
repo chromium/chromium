@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Nem sikerült elindítani a szkennelést</translation>
 <translation id="1071587090247825784">Tűzfal észlelve</translation>
 <translation id="1075811647922107217">Oldal mérete</translation>
+<translation id="1124772482545689468">Felhasználó</translation>
 <translation id="1175697296044146566">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a(z) <ph name="MANAGER" /> kezeli.</translation>
 <translation id="1195447618553298278">Ismeretlen hiba.</translation>
 <translation id="1204296502688602597">DNS várakozási ideje</translation>
@@ -21,6 +22,7 @@
 <translation id="1499900233129743732">A(z) <ph name="MANAGER" /> kezeli ezt a felhasználót, és távolról kezelheti a beállításokat, illetve figyelheti a felhasználói tevékenységeket.</translation>
 <translation id="150962533380566081">Érvénytelen PUK-kód.</translation>
 <translation id="1510238584712386396">Indító</translation>
+<translation id="1621067168122174824">Töltési teszt futtatása</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> szál)</translation>
 <translation id="1641857168437328880">Dokumentumadagoló (egyoldalas)</translation>
 <translation id="1644574205037202324">Előzmények</translation>
@@ -28,6 +30,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-névfeloldó működik</translation>
 <translation id="1743558184855585519">Az akkumulátor lemerültnek tekinthető, ha elérte a korlátot</translation>
+<translation id="1792647875738159689">Beolvasás megszakítása…</translation>
 <translation id="1905710495812624430">Elérte az engedélyezett kísérletek maximális számát.</translation>
 <translation id="1930797645656624981">Chrome OS beviteli módszere szolgáltatás</translation>
 <translation id="1947737735496445907">Sikeres nyomtatás</translation>
@@ -42,22 +45,26 @@
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> próbálkozás maradt</translation>
 <translation id="2391082728065870591">Visszajelzési jelentés küldése</translation>
 <translation id="2461822463642141190">Jelenlegi</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} kísérlet maradt}other{<ph name="ERROR_MESSAGE" /> {0} kísérlet maradt}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Keresés</translation>
 <translation id="2570743873672969996">„<ph name="TEST_NAME" />” teszt futtatása…</translation>
+<translation id="2620436844016719705">Rendszer</translation>
 <translation id="2805756323405976993">Alkalmazások</translation>
 <translation id="2872961005593481000">Leállítás</translation>
 <translation id="3008341117444806826">FRISSÍTÉS</translation>
 <translation id="3009958530611748826">Válassza ki a mentés helyét</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3069085583900247081">Sikertelen teszt</translation>
 <translation id="3083667275341675831">Connectivity Diagnostics</translation>
 <translation id="3091839911843451378">Sikertelen – Leállítva</translation>
+<translation id="3102119246920354026">Gyorsítótár</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">Saját fájlok</translation>
 <translation id="3199982728237701504">Dokumentumadagoló (kétoldalas)</translation>
 <translation id="3246869037381808805">Az 1 napnál régebbi nyomtatási feladatokat eltávolítja a rendszer</translation>
 <translation id="3268178239013324452">Sikertelen – Nyitva van a nyomtató fedele</translation>
 <translation id="3310640316857623290">A DNS várakozási ideje jelentősen az engedélyezhető határérték felett van</translation>
+<translation id="3328783797891415197">A teszt fut</translation>
 <translation id="3369013195428705271">Biztosan törli a nyomtatási előzményeket? A folyamatban lévő nyomtatási feladatok nem szakadnak meg.</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> oldal kinyomtatva (összesen ennyiből: <ph name="TOTAL_PAGES" />).</translation>
 <translation id="3459509316159669723">Nyomtatás</translation>
@@ -71,11 +78,13 @@
 <translation id="3838338534323494292">Új jelszó</translation>
 <translation id="3865414814144988605">Felbontás</translation>
 <translation id="3941014780699102620">Nem sikerült a gazdagép feloldása</translation>
+<translation id="3942420633017001071">Diagnosztika</translation>
 <translation id="39823212440917567">A(z) <ph name="NUMBER_OF_DAYS" /> napnál régebbi nyomtatási feladatokat eltávolítja a rendszer</translation>
 <translation id="4003384961948020559">Sikertelen – Megtelt a kimenet</translation>
 <translation id="4034824040120875894">Nyomtató</translation>
 <translation id="4131410914670010031">Fekete-fehér</translation>
 <translation id="4145784616224233563">HTTP-tűzfal</translation>
+<translation id="4170700058716978431">SIKERTELEN</translation>
 <translation id="4227825898293920515">A jelszó <ph name="TIME" /> múlva lejár</translation>
 <translation id="4238516577297848345">Nincsenek folyamatban lévő nyomtatási feladatok</translation>
 <translation id="4297501883039923494">Leállt – Ismeretlen hiba</translation>
@@ -100,16 +109,20 @@
 <translation id="4773299976671772492">Leállítva</translation>
 <translation id="4808449224298348341">Nyomtatási feladat (<ph name="DOCUMENT_TITLE" />) megszakítva</translation>
 <translation id="4832079907277790330">Mappa kiválasztása a Fájlok alkalmazásban…</translation>
+<translation id="4848429997038228357">FUT</translation>
 <translation id="4890353053343094602">Azonnal válasszon új jelszót</translation>
 <translation id="4917889632206600977">Leállt – Kifogyott a papír</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> töltöttség <ph name="NUM_SECONDS" /> másodperc alatt.</translation>
 <translation id="4932733599132424254">Dátum</translation>
 <translation id="4985509611418653372">Futtatás</translation>
+<translation id="500920857929044050">Teszt leállítása</translation>
+<translation id="5154917547274118687">Memória</translation>
 <translation id="5168185087976003268">Akkumulátor egészsége</translation>
 <translation id="520299634122159966">Nincsenek rendelkezésre álló szkennerek</translation>
 <translation id="5212543919916444558">Nem találok semmi olyat a képernyőn, amellyel kapcsolatban segíthetnék.
 Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5222676887888702881">Kijelentkezés</translation>
+<translation id="5264277876637023664">CPU-teszt futtatása</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Rutinok újrafuttatása</translation>
 <translation id="5317780077021120954">Mentés</translation>
@@ -122,26 +135,33 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="54609108002486618">Kezelt</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">További információ a Súgóban</translation>
+<translation id="5635169860413004179">Jelentés megtekintése</translation>
 <translation id="5719918614880940190">Ez méri a processzorhasználatot, az összes magot egybevéve.</translation>
+<translation id="5797428682393400134">SIKERÜLT</translation>
 <translation id="5832805196449965646">Személy hozzáadása</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
+<translation id="5931523347251946569">A fájl nem található</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, verzió: <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6048107060512778456">Sikertelen – Papírelakadás</translation>
 <translation id="6050189528197190982">Szürkeárnyalat</translation>
 <translation id="6058625436358447366">A befejezéshez adja meg régi és új jelszavát</translation>
 <translation id="6061772781719867950">Sikertelen HTTP-kérések</translation>
+<translation id="6104112872696127344">Beolvasás megszakítva</translation>
 <translation id="6106186594183574873">A befejezéshez adja meg régi jelszavát</translation>
 <translation id="6108689792487843350">Az átjáró nem érhető el</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" /> GHz (max. <ph name="MAX" /> GHz)</translation>
 <translation id="6146993107019042706">A befejezéshez adja meg új jelszavát</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">További információ</translation>
 <translation id="6191293864534840972">Rosszul formázott névszerverek</translation>
+<translation id="6232017090690406397">Akkumulátor</translation>
 <translation id="6325525973963619867">Nem sikerült</translation>
 <translation id="636850387210749493">Vállalat rögzítése</translation>
 <translation id="649050271426829538">Leállt – Papírelakadás</translation>
 <translation id="6517239166834772319">Felfedezés</translation>
 <translation id="6527081081771465939">Ismeretlen Wi-Fi biztonsági protokoll</translation>
+<translation id="6532051501443766164">Jelentés elrejtése</translation>
 <translation id="65587193855025101">Síkágy</translation>
 <translation id="6564646048574748301">Sikertelen – Nem lehet hozzáférni a nyomtatóhoz</translation>
 <translation id="6618744767048954150">Ellenőrzés folyamatban</translation>
@@ -149,6 +169,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6643016212128521049">Törlés</translation>
 <translation id="6704062477274546131">DNS-feloldás</translation>
 <translation id="6747215703636344499">Leállt – Megtelt a kimenet</translation>
+<translation id="6756731097889387912">Nem sikerült a beolvasás megszakítása.</translation>
 <translation id="6766275201586212568">Sikertelen DNS-feloldások</translation>
 <translation id="6768237774506518020">Magas hibaarány DNS-feloldásnál</translation>
 <translation id="6839141349259399400">Nem tud szkennerhez csatlakozni?</translation>
@@ -164,6 +185,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7648838807254605802">Hosszú várakozási idő HTTPS esetén</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7690294790491645610">Új jelszó megerősítése</translation>
+<translation id="7732651821766520760"><ph name="TEST_NAME" /> tesztelése</translation>
 <translation id="7805768142964895445">Állapot</translation>
 <translation id="7855434858642800953">Sikerült a beolvasott fájl mentése</translation>
 <translation id="7928373994957558460">Fájl helyének megjelenítése</translation>
@@ -191,12 +213,16 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Alapértelmezett</translation>
 <translation id="8845001906332463065">Súgó</translation>
+<translation id="8881098542468797602">Sikeres tesztelés</translation>
 <translation id="8910721771319628100">Az alapértelmezett hálózat túllépi a várakozási idő határértékét</translation>
 <translation id="8919837981463578619">Sikertelen – Hiányzó tálca</translation>
 <translation id="8928727111548978589">Sikertelen – Kifogyott a papír</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> kísérlet maradt</translation>
 <translation id="8970109610781093811">Futtatás újra</translation>
 <translation id="9088306295921699330">Jelenleg felhasznált</translation>
 <translation id="910415269708673980">Frissítse a következőhöz tartozó jegyet: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. oldal beolvasása…</translation>
 <translation id="9111102763498581341">Feloldás</translation>
+<translation id="9149391708638971077">Memóriateszt futtatása</translation>
+<translation id="982713511914535780">Lemerítési teszt futtatása</translation>
 </translationbundle>

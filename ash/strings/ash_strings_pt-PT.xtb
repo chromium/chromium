@@ -122,6 +122,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2067602449040652523">Brilho do teclado</translation>
 <translation id="2078034614700056995">Deslize rapidamente para a direita com quatro dedos para mudar para o espaço de trabalho seguinte.</translation>
+<translation id="2079504693865562705">Ocultar apps na prateleira</translation>
 <translation id="2083190527011054446">Boa noite, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Não está ligado à rede.</translation>
 <translation id="2126242104232412123">Novo espaço de trabalho</translation>
@@ -238,6 +239,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3226991577105957773">E mais <ph name="COUNT" /></translation>
 <translation id="3236488194889173876">Nenhuma rede móvel disponível</translation>
 <translation id="3249513730522716925">A janela <ph name="WINDOW_TITLE" /> foi movida do espaço de trabalho <ph name="ACTIVE_DESK" /> para o espaço de trabalho <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, intensidade do sinal a <ph name="SIGNAL_STRENGTH" /> por cento.</translation>
 <translation id="3255483164551725916">O que podes fazer?</translation>
 <translation id="3269597722229482060">Clicar com o botão direito do rato</translation>
 <translation id="3289674678944039601">A carregar através de adaptador…</translation>
@@ -369,6 +371,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4389184120735010762">Premiu o atalho de teclado da lupa ancorada. Pretende ativá-la?</translation>
 <translation id="4412944820643904175">A funcionalidade <ph name="FEATURE_NAME" /> está desativada.</translation>
 <translation id="4421231901400348175">A partilhar o controlo do seu ecrã com <ph name="HELPER_NAME" /> através da Assistência remota.</translation>
+<translation id="4427613789487709312">Predefinição (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4450893287417543264">Não mostrar de novo</translation>
 <translation id="445864333228800152">Boa noite,</translation>
@@ -449,6 +452,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5078796286268621944">PIN incorreto</translation>
 <translation id="5083553833479578423">Desbloqueie mais funcionalidades do Assistente.</translation>
 <translation id="5136175204352732067">Teclado diferente ligado</translation>
+<translation id="5155897006997040331">Velocidade de leitura</translation>
 <translation id="5168181903108465623">Dispositivos de transmissão disponíveis</translation>
 <translation id="5170568018924773124">Mostrar numa pasta</translation>
 <translation id="5176318573511391780">Gravar ecrã parcial</translation>
@@ -712,6 +716,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificação}other{# notificações}}</translation>
 <translation id="7724603315864178912">Cortar</translation>
+<translation id="7745560842763881396">Mostrar apps na prateleira</translation>
 <translation id="7749443890790263709">Atingiu o número máximo de espaços de trabalho.</translation>
 <translation id="776344839111254542">Clique para ver os detalhes da atualização</translation>
 <translation id="7780159184141939021">Rodar ecrã</translation>

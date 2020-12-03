@@ -54,7 +54,6 @@
 <translation id="369442766917958684">অফলাইন।</translation>
 <translation id="3695446226812920698">কেনেকৈ কৰিব সেয়া জানক</translation>
 <translation id="3776024066357219166">আপোনাৰ Chrome ৰিম’ট ডেস্কটপ ছেশ্বন অন্ত পৰিছে।</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3897092660631435901">মেনু</translation>
 <translation id="3905196214175737742">অমান্য হ’ষ্টৰ গৰাকীৰ ড’মেইন।</translation>
 <translation id="3931191050278863510">হ’ষ্ট বন্ধ হ’ল৷</translation>
@@ -99,6 +98,7 @@
 <translation id="5419418238395129586">অন্তিমবাৰ অনলাইন দেখা গৈছিল: <ph name="DATE" /></translation>
 <translation id="544077782045763683">হ'ষ্টে শ্বাট ডাউন কৰিছে।</translation>
 <translation id="5601503069213153581">পিন</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">আপোনাৰ ডেস্কট’প বৰ্তমান <ph name="USER" />ৰ সৈতে শ্বেয়াৰ কৰা হৈছে৷</translation>
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> ৰূপে ছাইন ইন কৰা হৈছে।</translation>
 <translation id="579702532610384533">পুনৰ সংযোগ কৰক</translation>
@@ -118,7 +118,6 @@
 <translation id="6583902294974160967">সহায়</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Del দবাই পঠিয়াওক</translation>
 <translation id="6654753848497929428">শ্বেয়াৰ কৰক</translation>
-<translation id="6681800064886881394">স্বত্ত্বাধিকাৰ ২০১৩ Google Inc. সকলো চৰ্ত সংৰক্ষিত।</translation>
 <translation id="677755392401385740">এই ব্যৱহাৰকাৰীজনৰ বাবে হ’ষ্ট আৰম্ভ কৰা হৈছে: <ph name="HOST_USERNAME" />৷</translation>
 <translation id="6939719207673461467">কীব'র্ড দেখুৱাওক/লুকুৱাওক।</translation>
 <translation id="6963936880795878952">ৰিম’ট কম্পিউটাৰৰ সৈতে সংযোগ সাময়িকভাৱে অৱৰোধ কৰা হৈছে কাৰণ কোনোবাই এটা অমান্য পিন ব্যৱহাৰ কৰি ইয়াৰ সৈতে সংযোগ কৰাৰ চেষ্টা কৰি আছিল। অনুগ্ৰহ কৰি কিছু সময়ৰ পাছত আকৌ চেষ্টা কৰক।</translation>

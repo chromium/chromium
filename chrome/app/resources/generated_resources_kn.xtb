@@ -3175,7 +3175,6 @@
 <translation id="4646675363240786305">ಪೋರ್ಟ್‌ಗಳು</translation>
 <translation id="4647090755847581616">&amp;ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="4647283074445570750"><ph name="TOTAL_STEPS" /> ಹಂತಗಳಲ್ಲಿ <ph name="CURRENT_STEP" /> ಹಂತ</translation>
-<translation id="4647420311443994946">{0,select, tablet{ನಿಮ್ಮ ಟ್ಯಾಬ್ಲೆಟ್‌ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿದ ನಂತರ ಆ್ಯಪ್ ಪ್ರಾರಂಭಿಸಿ}computer{ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿದ ನಂತರ ಆ್ಯಪ್ ಪ್ರಾರಂಭಿಸಿ}other{ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಸೈನ್ ಇನ್ ಮಾಡಿದ ನಂತರ ಆ್ಯಪ್ ಪ್ರಾರಂಭಿಸಿ}}</translation>
 <translation id="4647697156028544508">ದಯವಿಟ್ಟು "<ph name="DEVICE_NAME" />" ಗಾಗಿ PIN ಅನ್ನು ನಮೂದಿಸಿ:</translation>
 <translation id="4648491805942548247">ಸಾಕಷ್ಟಿಲ್ಲದ ಅನುಮತಿಗಳು</translation>
 <translation id="4648499713050786492">ವ್ಯಕ್ತಿಯನ್ನು ಸೇರಿಸುವ ಮೊದಲು ದಯವಿಟ್ಟು ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ ಅನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ.</translation>
@@ -3721,6 +3720,7 @@
 <translation id="5317780077021120954">ಉಳಿಸು</translation>
 <translation id="5319359161174645648">Chrome ಅನ್ನು Google ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ</translation>
 <translation id="5320112320661303273">ನೀವು ಈಗಾಗಲೇ ಬೇರೆ ಸಾಧನದಲ್ಲಿ Assistant ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿರುವಂತೆ ತೋರುತ್ತಿದೆ. ಕೆಳಗಿನ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಆನ್ ಮಾಡುವ ಮೂಲಕ ನಿಮ್ಮ Assistant ನಿಂದ ಇನ್ನಷ್ಟು ಪ್ರಯೋಜನಗಳನ್ನು ಪಡೆಯಿರಿ.</translation>
+<translation id="5320135788267874712">ಹೊಸ ಸಾಧನದ ಹೆಸರು</translation>
 <translation id="532247166573571973">ಸರ್ವರ್ ತಲುಪಲಾಗದೇ ಇರಬಹುದು. ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="5324300749339591280">ಆ್ಯಪ್‌ಗಳ ಪಟ್ಟಿ</translation>
 <translation id="5324780743567488672">ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಬಳಸುವ ಮೂಲಕ ಸಮಯ ವಲಯವನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಹೊಂದಿಸಿ</translation>

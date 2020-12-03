@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Skanerlash ishga tushmadi</translation>
 <translation id="1071587090247825784">Himoya devori aniqlandi</translation>
 <translation id="1075811647922107217">Sahifa hajmi</translation>
+<translation id="1124772482545689468">Foydalanuvchi</translation>
 <translation id="1175697296044146566">Bu <ph name="DEVICE_TYPE" /> qurilmasi <ph name="MANAGER" /> domenida boshqariladi.</translation>
 <translation id="1195447618553298278">Noma’lum xatolik.</translation>
 <translation id="1204296502688602597">DNS kechikishi</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> ta urinish qoldi</translation>
 <translation id="2391082728065870591">Fikr va mulohaza hisobotini yuborish</translation>
 <translation id="2461822463642141190">Ayni vaqtda</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ta urinish qoldi}other{<ph name="ERROR_MESSAGE" /> {0} ta urinish qoldi}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Qidiruv</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> testi bajarilmoqda...</translation>
+<translation id="2620436844016719705">Tizim</translation>
 <translation id="2805756323405976993">Ilovalar</translation>
 <translation id="2872961005593481000">Ishni tamomlash</translation>
 <translation id="3008341117444806826">YANGILASH</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3083667275341675831">Aloqa diagnostikasi</translation>
 <translation id="3091839911843451378">Bajarilmadi - Toʻxtatildi</translation>
+<translation id="3102119246920354026">Kesh</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">Fayllarim</translation>
 <translation id="3199982728237701504">Hujjat tasmasi (Ikki tomonlama)</translation>
 <translation id="3246869037381808805">1 kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">Yangi parol</translation>
 <translation id="3865414814144988605">Piksellar sig‘imi</translation>
 <translation id="3941014780699102620">Host aniqlanmadi</translation>
+<translation id="3942420633017001071">Diagnostika</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
 <translation id="4003384961948020559">Bajarilmadi - Boʻsh joy qolmadi</translation>
 <translation id="4034824040120875894">Printer</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> soniyada <ph name="RATE" /> quvvat oldi.</translation>
 <translation id="4932733599132424254">Sana</translation>
 <translation id="4985509611418653372">Ishga tushirish</translation>
+<translation id="5154917547274118687">Operativ xotira</translation>
 <translation id="5168185087976003268">Quvvat darajasi</translation>
 <translation id="520299634122159966">Skanerlar topilmadi</translation>
 <translation id="5212543919916444558">Ekranda men yordam bera oladigan hech narsa topilmadi.
@@ -137,6 +142,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Batafsil</translation>
 <translation id="6191293864534840972">Nom serverlarida xato</translation>
+<translation id="6232017090690406397">Batareya</translation>
 <translation id="6325525973963619867">Amalga oshmadi</translation>
 <translation id="636850387210749493">Korporativ domen ro‘yxatidan o‘tish</translation>
 <translation id="649050271426829538">Toʻxtatildi – Qogʻoz tiqilib qoldi</translation>
@@ -194,6 +200,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8910721771319628100">Birlamchi tarmoq kutish vaqti baland</translation>
 <translation id="8919837981463578619">Bajarilmadi - Tarnov joyida emas</translation>
 <translation id="8928727111548978589">Bajarilmadi - Qogʻoz tugadi</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> ta urinish qoldi</translation>
 <translation id="9088306295921699330">Joriy faollik</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> uchun chiptani yangilash</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> ta sahifa skanerlandi</translation>

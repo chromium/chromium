@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">Kérjük, adja meg a „<ph name="ATSIGN" />” előtti részt is. A „<ph name="INVALIDADDRESS" />” cím nem teljes.</translation>
 <translation id="5334352251556557839">Nem sikerült a médiafájl lejátszása.</translation>
 <translation id="537648784377940524">A minimális dátumnak (<ph name="MIN_DATE_OR_TIME" />) a maximális dátum (<ph name="MAX_DATE_OR_TIME" />) elé kell esnie.</translation>
+<translation id="5378437566635403538">kibontva, párbeszédablak megnyitva.</translation>
 <translation id="5406322316791861025">alak</translation>
 <translation id="5425179576310518467">aktuális dátum</translation>
 <translation id="5453733299334684579">faelem</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">további beállítások</translation>
 <translation id="576709008726043716">bevezetés</translation>
 <translation id="57838592816432529">Némítás</translation>
+<translation id="5787939484346677755">kibontva, rendelkezésre állnak automatikus kiegészítési lehetőségek.</translation>
 <translation id="5860033963881614850">Kikapcsolva</translation>
 <translation id="588258955323874662">Teljes képernyő</translation>
 <translation id="5888666972993069672">Átküldés ide: <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">listamező</translation>
 <translation id="6150588977291308318">bibliográfia</translation>
 <translation id="6164829606128959761">mérő</translation>
+<translation id="6165053282446038410">kibontva, <ph name="COUNT" /> automatikus kiegészítési lehetőség áll rendelkezésre.</translation>
 <translation id="6166809985690652833">utószó</translation>
 <translation id="6209276755895393898">Úgy tűnik, hogy a következőről van szó: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">aktuális oldal</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">fejléc</translation>
 <translation id="6941933287844615239">médiafájlok letöltése</translation>
 <translation id="6981594929165378967">beszúrás</translation>
+<translation id="698788488269350478">kibontva.</translation>
 <translation id="6989848892321993519">Legalább <ph name="MIN_CHARACTERS" /> karakter hosszú szöveget adjon meg (jelenleg 1 karaktert használ).</translation>
 <translation id="7034405885550056553">javaslat</translation>
 <translation id="709897737746224366">Kérjük, tartsa magát a kívánt formátumhoz.</translation>
 <translation id="7102274145889307184">aktuális hely</translation>
 <translation id="7118469954320184356">Nincs leírás.</translation>
 <translation id="7139483182332611405">bevezető</translation>
+<translation id="7198226213493847604">menüt megnyitó előugró gomb</translation>
 <translation id="7214187073215825913">tartalom adatai</translation>
 <translation id="7238347055216017155">hangsúly</translation>
 <translation id="7263440858009898357">Kérjük, válasszon egyet a lista elemei közül.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">fejezet</translation>
 <translation id="8845239796550121995">Átküldés a tévére folyamatban</translation>
 <translation id="8851136666856101339">fő</translation>
+<translation id="8861621546968757188">párbeszédpanelt megnyitó előugró gomb</translation>
 <translation id="8875657656876809964">Videólejátszási hiba</translation>
 <translation id="8889402386540077796">Színárnyalat</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>

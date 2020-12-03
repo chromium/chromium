@@ -122,6 +122,7 @@
 <translation id="2050339315714019657">პორტრეტი</translation>
 <translation id="2067602449040652523">კლავიატურის სიკაშკაშე</translation>
 <translation id="2078034614700056995">შემდეგ სამუშაო მაგიდაზე გადასართველად გადაფურცლეთ მარჯვნივ ოთხი თითით</translation>
+<translation id="2079504693865562705">თაროზე აპების დამალვა</translation>
 <translation id="2083190527011054446">ღამე მშვიდობის, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">ქსელთან კავშირი არ არის</translation>
 <translation id="2126242104232412123">ახალი სამუშაო მაგიდა</translation>
@@ -238,6 +239,7 @@
 <translation id="3226991577105957773">+<ph name="COUNT" /> სხვა</translation>
 <translation id="3236488194889173876">მობილური ქსელი მიუწვდომელია</translation>
 <translation id="3249513730522716925">ფანჯარა <ph name="WINDOW_TITLE" /> გადატანილია სამუშაო მაგიდიდან <ph name="ACTIVE_DESK" /> სამუშაო მაგიდაზე <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, სიგნალის სიძლიერეა <ph name="SIGNAL_STRENGTH" /> პროცენტი.</translation>
 <translation id="3255483164551725916">რისი გაკეთება შეგიძლია?</translation>
 <translation id="3269597722229482060">მარჯვენა დაწკაპუნება</translation>
 <translation id="3289674678944039601">იტენება ადაპტერის მეშვეობით</translation>
@@ -369,6 +371,7 @@
 <translation id="4389184120735010762">თქვენ დააჭირეთ ჩამაგრებული ლუპის კლავიატურის მალსახმობს. გსურთ მისი ჩართვა?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> გამორთულია.</translation>
 <translation id="4421231901400348175">თქვენი ეკრანის მართვის გაზიარება <ph name="HELPER_NAME" /> დისტანციური დამხმარეს მეშვეობით.</translation>
+<translation id="4427613789487709312">ნაგულისხმევი (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">ხმა</translation>
 <translation id="4450893287417543264">აღარ გამოჩნდეს</translation>
 <translation id="445864333228800152">საღამო მშვიდობის,</translation>
@@ -449,6 +452,7 @@
 <translation id="5078796286268621944">არასწორი პინი</translation>
 <translation id="5083553833479578423">განბლოკეთ ასისტენტის დამატებითი ფუნქციები.</translation>
 <translation id="5136175204352732067">დაკავშირებულია განსხვავებული კლავიატურა</translation>
+<translation id="5155897006997040331">წაკითხვის სიჩქარე</translation>
 <translation id="5168181903108465623">ხელმისაწვდომია გადაცემის მოწყობილობები</translation>
 <translation id="5170568018924773124">საქაღალდეში ჩვენება</translation>
 <translation id="5176318573511391780">ეკრანის ნაწილის ჩაწერა</translation>
@@ -712,6 +716,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 შეტყობინება}other{# შეტყობინება}}</translation>
 <translation id="7724603315864178912">ამოჭრა</translation>
+<translation id="7745560842763881396">თაროზე აპების ჩვენება</translation>
 <translation id="7749443890790263709">მიღწეულია სამუშაო მაგიდების მაქსიმალური რაოდენობა.</translation>
 <translation id="776344839111254542">დააწკაპუნეთ განახლების დეტალების სანახავად</translation>
 <translation id="7780159184141939021">ეკრანის ბრუნვა</translation>

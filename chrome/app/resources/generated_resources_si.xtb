@@ -3173,7 +3173,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4646675363240786305">තොටවල්</translation>
 <translation id="4647090755847581616">ටැබය වසන්න (&amp;C)</translation>
 <translation id="4647283074445570750">පියවර <ph name="TOTAL_STEPS" />හි <ph name="CURRENT_STEP" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{ඔබ ඔබේ ටැබ්ලට් එකට පුරන විට යෙදුම ආරම්භ කරන්න}computer{ඔබ ඒබේ පරිගණකයට පුරන විට යෙදුම ආරම්භ කරන්න}other{ඔබ ඔබේ උපාංගයට පුරන විට යෙදුම ආරම්භ කරන්න}}</translation>
 <translation id="4647697156028544508">කරුණාකර "<ph name="DEVICE_NAME" />" සඳහා මුරපදය ඇතුළත් කරන්න:</translation>
 <translation id="4648491805942548247">අවසර ප්‍රමාණවත් නොවේ</translation>
 <translation id="4648499713050786492">පුද්ගලයෙකු එක් කිරීමට පෙර ඔබගේ පැතිකඩ අගුළු හරින්න.</translation>
@@ -3718,6 +3717,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5317780077021120954">සුරකින්න</translation>
 <translation id="5319359161174645648">Google විසින් Chrome නිර්දේශ කරයි</translation>
 <translation id="5320112320661303273">ඔබ දැනටමත් වෙනත් උපාංගයක සහායක පිහිටුවා ඇති බව පෙනේ. පහත සැකසීම ක්‍රියාත්මක කිරීමෙන් ඔබගේ සහායකගෙන් තවත් බොහෝ දේ ලබා ගන්න.</translation>
+<translation id="5320135788267874712">නව උපාංග නම</translation>
 <translation id="532247166573571973">සේවාදායකය වෙත ළඟාවිය නොහැක. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="5324300749339591280">යෙදුම් ලැයිස්තුව</translation>
 <translation id="5324780743567488672">ඔබගේ ස්ථානය භාවිතා කර කාල කලාපය ස්වයංක්‍රියව සකසන්න</translation>

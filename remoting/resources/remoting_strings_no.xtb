@@ -54,7 +54,6 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="369442766917958684">Utenfor nettet.</translation>
 <translation id="3695446226812920698">Sånn gjør du det</translation>
 <translation id="3776024066357219166">Chrome Eksternt skrivebord-økten din er avsluttet.</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3897092660631435901">Meny</translation>
 <translation id="3905196214175737742">Ugyldig domene for vertseieren.</translation>
 <translation id="3931191050278863510">Verten stoppet.</translation>
@@ -99,6 +98,7 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="5419418238395129586">Sist på nett: <ph name="DATE" /></translation>
 <translation id="544077782045763683">Verten har slått seg av.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Skrivebordet ditt deles for øyeblikket med <ph name="USER" />.</translation>
 <translation id="5750083143895808682">Logget på som <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Koble til på nytt</translation>
@@ -118,7 +118,6 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="6583902294974160967">Brukerstøtte</translation>
 <translation id="6612717000975622067">Send Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Del</translation>
-<translation id="6681800064886881394">Copyright 2013 Google Inc. Med enerett.</translation>
 <translation id="677755392401385740">Vert startet for brukeren: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6939719207673461467">Vis/skjul tastaturet.</translation>
 <translation id="6963936880795878952">Tilkoblinger til den eksterne datamaskinen er midlertidig blokkert fordi noen prøvde å koble seg til med en ugyldig PIN-kode. Prøv på nytt senere.</translation>

@@ -122,6 +122,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2050339315714019657">Wima</translation>
 <translation id="2067602449040652523">Ung'avu wa kibodi</translation>
 <translation id="2078034614700056995">Telezesha vidole vinne kulia ili uende kwenye eneokazi linalofuata</translation>
+<translation id="2079504693865562705">Ficha programu kwenye rafu</translation>
 <translation id="2083190527011054446">Usiku mwema <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Haijaunganishwa kwenye mtandao</translation>
 <translation id="2126242104232412123">Sehemu mpya ya kufanyia kazi</translation>
@@ -238,6 +239,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> zaidi</translation>
 <translation id="3236488194889173876">Mtandao wa simu haupatikani</translation>
 <translation id="3249513730522716925">Dirisha la <ph name="WINDOW_TITLE" /> limehamishwa kutoka Kiolesura cha <ph name="ACTIVE_DESK" /> hadi Kiolesura cha <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, Uthabiti wa mtandao, asilimia <ph name="SIGNAL_STRENGTH" />.</translation>
 <translation id="3255483164551725916">Unaweza kufanya nini?</translation>
 <translation id="3269597722229482060">Bofya Kulia</translation>
 <translation id="3289674678944039601">Inachaji kupitia adapta</translation>
@@ -369,6 +371,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4389184120735010762">Umebofya mikato ya kibodi ya kikuzaji kilichoambatishwa. Ungependa kukiwasha?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> kimezimwa.</translation>
 <translation id="4421231901400348175">Kushiriki udhibiti wa skrini yako na <ph name="HELPER_NAME" /> kupitia Usaidizi wa Mbali.</translation>
+<translation id="4427613789487709312">Chaguomsingi (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Kiwango cha sauti</translation>
 <translation id="4450893287417543264">Usionyeshe tena</translation>
 <translation id="445864333228800152">Habari za jioni,</translation>
@@ -449,6 +452,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="5078796286268621944">PIN isiyo sahihi</translation>
 <translation id="5083553833479578423">Fungua vipengele zaidi vya programu yako ya Mratibu.</translation>
 <translation id="5136175204352732067">Kibodi tofauti imeunganishwa</translation>
+<translation id="5155897006997040331">Kasi ya kusoma</translation>
 <translation id="5168181903108465623">Vifaa vinavyorusha maudhui vinapatikana</translation>
 <translation id="5170568018924773124">Onyesha katika folda</translation>
 <translation id="5176318573511391780">Rekodi sehemu ya skrini</translation>
@@ -713,6 +717,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{Arifa 1}other{Arifa #}}</translation>
 <translation id="7724603315864178912">Kata</translation>
+<translation id="7745560842763881396">Onyesha programu kwenye rafu</translation>
 <translation id="7749443890790263709">Umefikia idadi ya juu zaidi ya violesura.</translation>
 <translation id="776344839111254542">Bofya ili uone maelezo ya masasisho</translation>
 <translation id="7780159184141939021">Zungusha Skrini</translation>

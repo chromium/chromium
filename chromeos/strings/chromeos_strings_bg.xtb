@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Сканирането не бе стартирано</translation>
 <translation id="1071587090247825784">Установена е защитна стена</translation>
 <translation id="1075811647922107217">Размер на страницата</translation>
+<translation id="1124772482545689468">Потребител</translation>
 <translation id="1175697296044146566">Това устройство <ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Неизвестна грешка.</translation>
 <translation id="1204296502688602597">Забавяне на DNS</translation>
@@ -21,6 +22,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> управлява този потребител и може отдалечено да контролира настройките и да наблюдава потребителската активност.</translation>
 <translation id="150962533380566081">Невалиден PUK код.</translation>
 <translation id="1510238584712386396">Стартов панел</translation>
+<translation id="1621067168122174824">Стартиране на тест на зареждането</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> нишки)</translation>
 <translation id="1641857168437328880">Подавач на документи (едностранно)</translation>
 <translation id="1644574205037202324">История</translation>
@@ -28,6 +30,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Налице е DNS резолвер</translation>
 <translation id="1743558184855585519">Батерията се смята за изразходвана, когато достигне лимита</translation>
+<translation id="1792647875738159689">Сканирането се отменя</translation>
 <translation id="1905710495812624430">Максималният брой опити е надвишен.</translation>
 <translation id="1930797645656624981">Услуга за метод на въвеждане в Chrome OS</translation>
 <translation id="1947737735496445907">Отпечатано</translation>
@@ -42,22 +45,26 @@
 <translation id="2375079107209812402">Остават <ph name="ATTEMPTS_LEFT" /> опита</translation>
 <translation id="2391082728065870591">Изпращане на сигнал с отзиви</translation>
 <translation id="2461822463642141190">Ток</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Остава {0} опит}other{<ph name="ERROR_MESSAGE" /> Остават {0} опита}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Сканиране</translation>
 <translation id="2570743873672969996">Изпълняван тест: <ph name="TEST_NAME" /></translation>
+<translation id="2620436844016719705">Система</translation>
 <translation id="2805756323405976993">Приложения</translation>
 <translation id="2872961005593481000">Изключване</translation>
 <translation id="3008341117444806826">ОПРЕСНЯВАНЕ</translation>
 <translation id="3009958530611748826">Изберете папка, в която да запазите</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3069085583900247081">Тестването не бе успешно</translation>
 <translation id="3083667275341675831">Диагностика на свързаността</translation>
 <translation id="3091839911843451378">Неуспешно – отпечатването спря</translation>
+<translation id="3102119246920354026">Кеш</translation>
+<translation id="3122464029669770682">Процесор</translation>
 <translation id="3188257591659621405">Моите файлове</translation>
 <translation id="3199982728237701504">Подавач на документи (двустранно)</translation>
 <translation id="3246869037381808805">Заданията за отпечатване, по-стари от 1 ден, ще бъдат премахнати</translation>
 <translation id="3268178239013324452">Неуспешно – вратичката е отворена</translation>
 <translation id="3310640316857623290">Забавянето на DNS е значително над допустимия праг</translation>
+<translation id="3328783797891415197">Тестът се изпълнява</translation>
 <translation id="3369013195428705271">Наистина ли искате да изчистите цялата история на отпечатването? Текущите задания за печат няма да бъдат изтрити.</translation>
 <translation id="3456078764689556234">Отпечатана е страница <ph name="PRINTED_PAGES" /> от <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Отпечатване</translation>
@@ -71,11 +78,13 @@
 <translation id="3838338534323494292">Нова парола</translation>
 <translation id="3865414814144988605">Разделителна способност</translation>
 <translation id="3941014780699102620">Името на хоста не бе преобразувано</translation>
+<translation id="3942420633017001071">Диагностика</translation>
 <translation id="39823212440917567">Заданията за отпечатване, по-стари от <ph name="NUMBER_OF_DAYS" /> дни, ще бъдат премахнати</translation>
 <translation id="4003384961948020559">Неуспешно – изходният контейнер е пълен</translation>
 <translation id="4034824040120875894">Принтер</translation>
 <translation id="4131410914670010031">Черно-бяло</translation>
 <translation id="4145784616224233563">Защитна стена за HTTP</translation>
+<translation id="4170700058716978431">НЕУСПЕХ</translation>
 <translation id="4227825898293920515">Паролата изтича след <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Няма активни задания за отпечатване</translation>
 <translation id="4297501883039923494">Спряло – неизвестна грешка</translation>
@@ -100,16 +109,20 @@
 <translation id="4773299976671772492">Спряно</translation>
 <translation id="4808449224298348341">Заданието за отпечатване на <ph name="DOCUMENT_TITLE" /> е анулирано</translation>
 <translation id="4832079907277790330">Избиране на папка в приложението Файлове…</translation>
+<translation id="4848429997038228357">ИЗПЪЛНЯВА СЕ</translation>
 <translation id="4890353053343094602">Изберете нова незабавно</translation>
 <translation id="4917889632206600977">Спряло – няма хартия</translation>
 <translation id="4921665434385737356">За <ph name="NUM_SECONDS" /> секунди се заредиха <ph name="RATE" />.</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4985509611418653372">Стартиране</translation>
+<translation id="500920857929044050">Спиране на теста</translation>
+<translation id="5154917547274118687">Памет</translation>
 <translation id="5168185087976003268">Състояние на батерията</translation>
 <translation id="520299634122159966">Няма налични скенери</translation>
 <translation id="5212543919916444558">На екрана ви не намирам нищо, за което да мога да ви помогна.
 Докоснете иконата на микрофон, за да ме попитате каквото и да е.</translation>
 <translation id="5222676887888702881">Изход</translation>
+<translation id="5264277876637023664">Тестване на процесора</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Повторна диагностика</translation>
 <translation id="5317780077021120954">Запазване</translation>
@@ -122,26 +135,33 @@
 <translation id="54609108002486618">Управляван</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Научете повече в Помощния център</translation>
+<translation id="5635169860413004179">Преглед на отчета</translation>
 <translation id="5719918614880940190">Това измерва използването на процесора и е обща стойност за всички ядра</translation>
+<translation id="5797428682393400134">УСПЕХ</translation>
 <translation id="5832805196449965646">Добавяне на човек</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
+<translation id="5931523347251946569">Файлът не бе намерен</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, версия <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="6048107060512778456">Неуспешно – заседнала хартия</translation>
 <translation id="6050189528197190982">Сива скала</translation>
 <translation id="6058625436358447366">За да завършите процеса, въведете старата и новата си парола</translation>
 <translation id="6061772781719867950">Неуспешни HTTP заявки</translation>
+<translation id="6104112872696127344">Сканирането бе отменено</translation>
 <translation id="6106186594183574873">За да завършите процеса, въведете старата си парола</translation>
 <translation id="6108689792487843350">Шлюзът е недостъпен</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" /> GHz/<ph name="MAX" /> GHz</translation>
 <translation id="6146993107019042706">За да завършите процеса, въведете новата си парола</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Научете повече</translation>
 <translation id="6191293864534840972">Неправилно образувани сървъри за имена</translation>
+<translation id="6232017090690406397">Батерия</translation>
 <translation id="6325525973963619867">Неуспешно</translation>
 <translation id="636850387210749493">Корпоративно записване</translation>
 <translation id="649050271426829538">Спряло – заседнала хартия</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Неизвестен протокол за сигурност на Wi-Fi</translation>
+<translation id="6532051501443766164">Скриване на отчета</translation>
 <translation id="65587193855025101">Плосък скенер</translation>
 <translation id="6564646048574748301">Неуспешно – няма връзка с принтера</translation>
 <translation id="6618744767048954150">В ход</translation>
@@ -149,6 +169,7 @@
 <translation id="6643016212128521049">Изчистване</translation>
 <translation id="6704062477274546131">Преобразуване от DNS</translation>
 <translation id="6747215703636344499">Спряло – изходният контейнер е пълен</translation>
+<translation id="6756731097889387912">Сканирането не бе отменено</translation>
 <translation id="6766275201586212568">Неуспешни преобразувания от DNS</translation>
 <translation id="6768237774506518020">Голям процент неуспехи при преобразуването от DNS</translation>
 <translation id="6839141349259399400">Не можете да свържете скенерите?</translation>
@@ -164,6 +185,7 @@
 <translation id="7648838807254605802">Голямо забавяне на HTTPS</translation>
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7690294790491645610">Потвърдете новата парола</translation>
+<translation id="7732651821766520760">Тест: <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Състояние</translation>
 <translation id="7855434858642800953">Сканираният файл е запазен!</translation>
 <translation id="7928373994957558460">Показване на местоположението на файла</translation>
@@ -191,12 +213,16 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">По подразбиране</translation>
 <translation id="8845001906332463065">Получете помощ</translation>
+<translation id="8881098542468797602">Тестът бе успешен</translation>
 <translation id="8910721771319628100">Забавянето на основната мрежа е над прага</translation>
 <translation id="8919837981463578619">Неуспешно – липсваща тава</translation>
 <translation id="8928727111548978589">Неуспешно – няма хартия</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Оставащи опити: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8970109610781093811">Повторно изпълняване</translation>
 <translation id="9088306295921699330">Текущо използване</translation>
 <translation id="910415269708673980">Опресняване на пропуска за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканира се страница <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Отключване</translation>
+<translation id="9149391708638971077">Тестване на паметта</translation>
+<translation id="982713511914535780">Тестване на разреждането</translation>
 </translationbundle>

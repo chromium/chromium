@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">ກະ​ລຸ​ນາ​ໃສ່​ພາກ​ສ່ວນໜຶ່ງ​ຕາມມາ​ດ້ວຍ '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' ບໍ່ສົມບູນ.</translation>
 <translation id="5334352251556557839">ບໍ່ສາມາດຫຼິ້ນສື່ໄດ້.</translation>
 <translation id="537648784377940524">ວັນທີໜ້ອຍສຸດ (<ph name="MIN_DATE_OR_TIME" />) ຕ້ອງມາກ່ອນວັນທີຫຼາຍສຸດ (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">ຂະຫຍາຍແລ້ວ, ເປີດກ່ອງໂຕ້ຕອບແລ້ວ.</translation>
 <translation id="5406322316791861025">ຮູບ</translation>
 <translation id="5425179576310518467">ວັນທີປະຈຸບັນ</translation>
 <translation id="5453733299334684579">ລາຍການຕົ້ນໄມ້</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">ຕົວເລືອກເພີ່ມເຕີມ</translation>
 <translation id="576709008726043716">ການນຳສະເໜີ</translation>
 <translation id="57838592816432529">ປິດສຽງ</translation>
+<translation id="5787939484346677755">ຂະຫຍາຍແລ້ວ, ມີຕົວເລືອກການເຮັດສຳເລັດອັດຕະໂນມັດໃຫ້ນຳໃຊ້.</translation>
 <translation id="5860033963881614850">ປິດ</translation>
 <translation id="588258955323874662">ເຕັມໜ້າຈໍ</translation>
 <translation id="5888666972993069672">ຕອນນີ້ກຳລັງສົ່ງສັນຍານໃສ່ <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">ກ່ອງລາຍການ</translation>
 <translation id="6150588977291308318">ບັນນານຸກົມ</translation>
 <translation id="6164829606128959761">ແມັດ</translation>
+<translation id="6165053282446038410">ຂະຫຍາຍແລ້ວ, ມີຕົວເລືອກການເຮັດສຳເລັດອັດຕະໂນມັດ <ph name="COUNT" /> ລາຍການໃຫ້ນຳໃຊ້.</translation>
 <translation id="6166809985690652833">ຄຳກ່າວທ້າຍບົດ</translation>
 <translation id="6209276755895393898">ປາກົດວ່າເປັນ: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">ໜ້າປັດຈຸບັນ</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">ຫົວເຈ້ຍ</translation>
 <translation id="6941933287844615239">ດາວໂຫຼດສື່</translation>
 <translation id="6981594929165378967">ການແຊກໃສ່</translation>
+<translation id="698788488269350478">ຂະຫຍາຍແລ້ວ.</translation>
 <translation id="6989848892321993519">ກະລຸນາຂະຫຍາຍຄວາມຍາວຂອງຂໍ້ຄວາມນີ້ເປັນ <ph name="MIN_CHARACTERS" /> ຕົວອັກສອນຂຶ້ນໄປ (ໃນປັດຈຸບັນທ່ານກຳລັງໃຊ້ 1 ຕົວອັກສອນ).</translation>
 <translation id="7034405885550056553">ການແນະນຳ</translation>
 <translation id="709897737746224366">ກະລຸນາຈັບຄູ່ຮູບແບບທີ່ໄດ້ສະເໜີ.</translation>
 <translation id="7102274145889307184">ສະຖານທີ່ປັດຈຸບັນ</translation>
 <translation id="7118469954320184356">ບໍ່ມີລາຍລະອຽດ.</translation>
 <translation id="7139483182332611405">ຄຳນຳ</translation>
+<translation id="7198226213493847604">ປຸ່ມປັອບອັບຂອງເມນູ</translation>
 <translation id="7214187073215825913">ຂໍ້ມູນເນື້ອຫາ</translation>
 <translation id="7238347055216017155">ເນັ້ນໜັກ</translation>
 <translation id="7263440858009898357">ກະລຸນາເລືອກລາຍການຢູ່ໃນລາຍຊື່.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">ພາກ</translation>
 <translation id="8845239796550121995">ດຽວນີ້ກຳລັງສົ່ງສັນຍານຫາໂທລະພາບຂອງທ່ານ</translation>
 <translation id="8851136666856101339">ຕົ້ນ​ຕໍ</translation>
+<translation id="8861621546968757188">ປຸ່ມປັອບອັບກ່ອງໂຕ້ຕອບ</translation>
 <translation id="8875657656876809964">ການຫຼິ້ນວິດີໂອມີຂໍ້ຜິດພາດ</translation>
 <translation id="8889402386540077796">ສີສັນ</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

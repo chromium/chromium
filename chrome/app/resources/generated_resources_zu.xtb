@@ -3172,7 +3172,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4646675363240786305">Izimbobo</translation>
 <translation id="4647090755847581616">Vala ithebhu</translation>
 <translation id="4647283074445570750">Isinyathelo esingu-<ph name="CURRENT_STEP" /> kwezingu-<ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{Qala uhlelo lokusebenza lapho ungena ngemvume kuthebulethi yakho}computer{Qala uhlelo lokusebenza lapho ungena ngemvume kukhompuyutha yakho}other{Qala uhlelo lokusebenza lapho ungena ngemvume kudivayisi yakho}}</translation>
 <translation id="4647697156028544508">Sicela ufake iphinikhodi ye-"<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">Izimvume ezinganele</translation>
 <translation id="4648499713050786492">Sicela uvule iphrofayela yakho ngaphambi kokungeze umuntu.</translation>
@@ -3719,6 +3718,7 @@ Isibonelo, amanye amawebhusayithi angahle aphendule kulesi sicelo ngokukubonisa 
 <translation id="5317780077021120954">Londoloza</translation>
 <translation id="5319359161174645648">I-Google incoma i-Chrome</translation>
 <translation id="5320112320661303273">Kubonakala sengathi ususethe kakade Umsizi kudivayisi ehlukile. Thola okuningi nakakhulu Kumsizi wakho ngokuvula isethingi elandelayo.</translation>
+<translation id="5320135788267874712">Igama ledivayisi elisha</translation>
 <translation id="532247166573571973">Iseva kungenzeka ingafinyeleleki. Zama futhi ngemuva kwesikhathi.</translation>
 <translation id="5324300749339591280">Uhlu lwezinhlelo zokusebenza</translation>
 <translation id="5324780743567488672">Setha indawo yesikhathi ngokuzenzakalela usebenzisa indawo yakho</translation>

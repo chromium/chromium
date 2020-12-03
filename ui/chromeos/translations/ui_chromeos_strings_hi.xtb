@@ -117,6 +117,7 @@
 <translation id="2208919847696382164">Linux ऐप्लिकेशन की मदद से इंस्टॉल करें</translation>
 <translation id="2225536596944493418">क्या आप वाकई <ph name="NUMBER_OF_ITEMS" /> आइटम मिटाना चाहते हैं?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" फ़ोल्डर बनाने में असमर्थ. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2251368349685848079">ट्रैश से वापस लाएं</translation>
 <translation id="2275059641601412272">भेज दिया गया.</translation>
 <translation id="2288278176040912387">रिकॉर्ड प्‍लेयर</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> फ़ाइलें खुल रही हैं.</translation>
@@ -734,6 +735,7 @@
 <translation id="8609695766746872526">आइसलैंडिक</translation>
 <translation id="8669949407341943408">चल रहे...</translation>
 <translation id="8698464937041809063">Google ड्रॉइंग</translation>
+<translation id="8712637175834984815">समझ लिया</translation>
 <translation id="8713112442029511308">माल्टीज़</translation>
 <translation id="8714406895390098252">साइकिल</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> को चुना गया.</translation>

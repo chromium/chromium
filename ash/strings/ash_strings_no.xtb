@@ -122,6 +122,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2067602449040652523">Lysstyrke på tastaturet</translation>
 <translation id="2078034614700056995">Sveip til høyre med fire fingre for å bytte til neste skrivebord</translation>
+<translation id="2079504693865562705">Skjul apper på hyllen</translation>
 <translation id="2083190527011054446">God natt, <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Ikke koblet til nettverket</translation>
 <translation id="2126242104232412123">Nytt skrivebord</translation>
@@ -238,6 +239,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> til</translation>
 <translation id="3236488194889173876">Ingen mobilnettverk er tilgjengelige</translation>
 <translation id="3249513730522716925">Vinduet <ph name="WINDOW_TITLE" /> ble flyttet fra skrivebord <ph name="ACTIVE_DESK" /> til skrivebord <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> prosent.</translation>
 <translation id="3255483164551725916">Hva kan du gjøre?</translation>
 <translation id="3269597722229482060">Høyreklikk</translation>
 <translation id="3289674678944039601">Lader via adapter</translation>
@@ -369,6 +371,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4389184120735010762">Du trykket på hurtigtasten for den dokkede lupen. Vil du slå den på?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> er av.</translation>
 <translation id="4421231901400348175">Deler kontroll av skjermen med <ph name="HELPER_NAME" /> via fjernhjelp.</translation>
+<translation id="4427613789487709312">Standard (<ph name="RATE" /> ×)</translation>
 <translation id="4430019312045809116">Volum</translation>
 <translation id="4450893287417543264">Ikke vis igjen</translation>
 <translation id="445864333228800152">God kveld</translation>
@@ -449,6 +452,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5078796286268621944">Feil personlig kode</translation>
 <translation id="5083553833479578423">Lås opp flere Assistent-funksjoner.</translation>
 <translation id="5136175204352732067">Et annet tastatur er koblet til</translation>
+<translation id="5155897006997040331">Lesehastighet</translation>
 <translation id="5168181903108465623">Cast-enheter er tilgjengelige</translation>
 <translation id="5170568018924773124">Vis i mappen</translation>
 <translation id="5176318573511391780">Ta opp en del av skjermen</translation>
@@ -712,6 +716,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 varsel}other{# varsler}}</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
+<translation id="7745560842763881396">Vis apper på hyllen</translation>
 <translation id="7749443890790263709">Maksimalt antall skrivebord er nådd.</translation>
 <translation id="776344839111254542">Klikk for å se oppdateringsdetaljene</translation>
 <translation id="7780159184141939021">Rotér skjermen</translation>

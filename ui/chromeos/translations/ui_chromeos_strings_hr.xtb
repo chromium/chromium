@@ -117,6 +117,7 @@
 <translation id="2208919847696382164">Instaliranje uz Linux</translation>
 <translation id="2225536596944493418">Jeste li sigurni da želite izbrisati te stavke (njih <ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Nije moguće izraditi mapu "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2251368349685848079">Vrati iz otpada</translation>
 <translation id="2275059641601412272">Premješteno.</translation>
 <translation id="2288278176040912387">Gramofon</translation>
 <translation id="2291538123825441971">Otvaranje datoteka (<ph name="NUMBER_OF_FILES" />).</translation>
@@ -734,6 +735,7 @@
 <translation id="8609695766746872526">islandski</translation>
 <translation id="8669949407341943408">Premještanje...</translation>
 <translation id="8698464937041809063">Googleov crtež</translation>
+<translation id="8712637175834984815">Shvaćam</translation>
 <translation id="8713112442029511308">malteški</translation>
 <translation id="8714406895390098252">Bicikl</translation>
 <translation id="8719721339511222681">Odabrana je stavka <ph name="ENTRY_NAME" />.</translation>

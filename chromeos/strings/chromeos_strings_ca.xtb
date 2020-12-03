@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">No s'ha pogut iniciar l'escaneig</translation>
 <translation id="1071587090247825784">S'ha detectat un tallafoc</translation>
 <translation id="1075811647922107217">Mida de la pàgina</translation>
+<translation id="1124772482545689468">Usuari</translation>
 <translation id="1175697296044146566">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Error desconegut.</translation>
 <translation id="1204296502688602597">Latència de DNS</translation>
@@ -21,6 +22,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> gestiona aquest usuari i és possible que gestioni les opcions de configuració i monitori l'activitat de l'usuari de manera remota.</translation>
 <translation id="150962533380566081">El PUK no és vàlid.</translation>
 <translation id="1510238584712386396">Menú d'aplicacions</translation>
+<translation id="1621067168122174824">Executa la prova de càrrega</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fils)</translation>
 <translation id="1641857168437328880">Alimentador de documents (a una cara)</translation>
 <translation id="1644574205037202324">Historial</translation>
@@ -28,6 +30,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Solucionador de DNS present</translation>
 <translation id="1743558184855585519">La bateria es considera acabada quan arriba al límit</translation>
+<translation id="1792647875738159689">S'està cancel·lant l'escaneig</translation>
 <translation id="1905710495812624430">S'ha superat el nombre màxim d'intents permesos.</translation>
 <translation id="1930797645656624981">Servei del mètode d'introducció de text a Chrome OS</translation>
 <translation id="1947737735496445907">Imprès</translation>
@@ -42,22 +45,26 @@
 <translation id="2375079107209812402">Intents restants: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Envia un informe de suggeriments</translation>
 <translation id="2461822463642141190">Actual</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intent.}other{<ph name="ERROR_MESSAGE" /> Queden {0} intents.}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> (<ph name="SOURCE_LANGUAGE_NAME" />)</translation>
 <translation id="2517472476991765520">Escaneja</translation>
 <translation id="2570743873672969996">S'està executant la prova <ph name="TEST_NAME" />...</translation>
+<translation id="2620436844016719705">Sistema</translation>
 <translation id="2805756323405976993">Aplicacions</translation>
 <translation id="2872961005593481000">Apaga</translation>
 <translation id="3008341117444806826">ACTUALITZA</translation>
 <translation id="3009958530611748826">Selecciona en quina carpeta vols que es desi</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3069085583900247081">La prova no s'ha superat</translation>
 <translation id="3083667275341675831">Diagnòstic de connectivitat</translation>
 <translation id="3091839911843451378">Error: s'ha aturat</translation>
+<translation id="3102119246920354026">Memòria cau</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">Els meus fitxers</translation>
 <translation id="3199982728237701504">Alimentador de documents (a dues cares)</translation>
 <translation id="3246869037381808805">Se suprimiran les tasques d'impressió amb una antiguitat superior a 1 dia</translation>
 <translation id="3268178239013324452">Error: porta oberta</translation>
 <translation id="3310640316857623290">La latència DNS supera significativament el llindar permès</translation>
+<translation id="3328783797891415197">La prova s'està executant</translation>
 <translation id="3369013195428705271">Confirmes que vols esborrar tot l'historial d'impressions? Les tasques d'impressió en curs no s'esborraran.</translation>
 <translation id="3456078764689556234">S'ha imprès la pàgina <ph name="PRINTED_PAGES" /> de <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Imprimeix</translation>
@@ -71,11 +78,13 @@
 <translation id="3838338534323494292">Contrasenya nova</translation>
 <translation id="3865414814144988605">Resolució</translation>
 <translation id="3941014780699102620">No s'ha pogut resoldre l'amfitrió</translation>
+<translation id="3942420633017001071">Diagnòstic</translation>
 <translation id="39823212440917567">Se suprimiran les tasques d'impressió amb una antiguitat superior a <ph name="NUMBER_OF_DAYS" /> dies</translation>
 <translation id="4003384961948020559">Error: safata de sortida plena</translation>
 <translation id="4034824040120875894">Impressora</translation>
 <translation id="4131410914670010031">Blanc i negre</translation>
 <translation id="4145784616224233563">Tallafoc HTTP</translation>
+<translation id="4170700058716978431">NO SUPERADA</translation>
 <translation id="4227825898293920515">La contrasenya caduca d'aquí a <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No hi ha tasques d'impressió en curs</translation>
 <translation id="4297501883039923494">S'ha aturat: error desconegut</translation>
@@ -100,16 +109,20 @@
 <translation id="4773299976671772492">En pausa</translation>
 <translation id="4808449224298348341">S'ha cancel·lat la tasca d'impressió del document <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">Selecciona una carpeta a l'aplicació Fitxers...</translation>
+<translation id="4848429997038228357">EN EXECUCIÓ</translation>
 <translation id="4890353053343094602">Tria'n una de nova immediatament</translation>
 <translation id="4917889632206600977">S'ha aturat: no hi ha paper</translation>
 <translation id="4921665434385737356">S'ha carregat un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segons.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Executa</translation>
+<translation id="500920857929044050">Atura la prova</translation>
+<translation id="5154917547274118687">Memòria</translation>
 <translation id="5168185087976003268">Estat de la bateria</translation>
 <translation id="520299634122159966">No hi ha cap escàner disponible</translation>
 <translation id="5212543919916444558">No he trobat res a la pantalla amb què et pugui ajudar.
 Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5222676887888702881">Tanca la sessió</translation>
+<translation id="5264277876637023664">Executa la prova de CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Torna a executar les rutines</translation>
 <translation id="5317780077021120954">Desa</translation>
@@ -122,26 +135,33 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="54609108002486618">Gestionat</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Més informació al Centre d'ajuda</translation>
+<translation id="5635169860413004179">Mostra l'informe</translation>
 <translation id="5719918614880940190">Mesura l'ús de la CPU i és una suma de tots els nuclis</translation>
+<translation id="5797428682393400134">SUPERADA</translation>
 <translation id="5832805196449965646">Afegeix una persona</translation>
 <translation id="5895138241574237353">Reinicia</translation>
+<translation id="5931523347251946569">No s'ha trobat el fitxer</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versió <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6048107060512778456">Error: embús de paper</translation>
 <translation id="6050189528197190982">Escala de grisos</translation>
 <translation id="6058625436358447366">Per acabar, introdueix la contrasenya antiga i la nova</translation>
 <translation id="6061772781719867950">Algunes sol·licituds HTTPS han fallat</translation>
+<translation id="6104112872696127344">L'escaneig s'ha cancel·lat</translation>
 <translation id="6106186594183574873">Per acabar, introdueix la contrasenya antiga</translation>
 <translation id="6108689792487843350">No es pot accedir a la passarel·la</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" /> GHz (de <ph name="MAX" /> GHz)</translation>
 <translation id="6146993107019042706">Per acabar, introdueix la contrasenya nova</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6191293864534840972">Els servidors de noms tenen un format incorrecte</translation>
+<translation id="6232017090690406397">Bateria</translation>
 <translation id="6325525973963619867">Error</translation>
 <translation id="636850387210749493">Inscripció empresarial</translation>
 <translation id="649050271426829538">S'ha aturat: embús de paper</translation>
 <translation id="6517239166834772319">Explora</translation>
 <translation id="6527081081771465939">Protocol de seguretat Wi-Fi desconegut</translation>
+<translation id="6532051501443766164">Amaga l'informe</translation>
 <translation id="65587193855025101">Finestra plana</translation>
 <translation id="6564646048574748301">Error: no es pot accedir a la impressora</translation>
 <translation id="6618744767048954150">Comprovació en curs</translation>
@@ -149,6 +169,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6643016212128521049">Esborra</translation>
 <translation id="6704062477274546131">Resolució de DNS</translation>
 <translation id="6747215703636344499">S'ha aturat: safata de sortida plena</translation>
+<translation id="6756731097889387912">No s'ha pogut cancel·lar l'escaneig</translation>
 <translation id="6766275201586212568">Algunes resolucions de DNS han fallat</translation>
 <translation id="6768237774506518020">El percentatge d'error de la resolució de DNS és alt</translation>
 <translation id="6839141349259399400">No et pots connectar als escàners?</translation>
@@ -164,6 +185,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7648838807254605802">La latència d'HTTPS és alta</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7690294790491645610">Confirma la contrasenya nova</translation>
+<translation id="7732651821766520760">Prova <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Estat</translation>
 <translation id="7855434858642800953">El fitxer escanejat s'ha desat.</translation>
 <translation id="7928373994957558460">Mostra la ubicació del fitxer</translation>
@@ -191,12 +213,16 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predeterminat</translation>
 <translation id="8845001906332463065">Obteniu ajuda</translation>
+<translation id="8881098542468797602">La prova s'ha superat</translation>
 <translation id="8910721771319628100">La xarxa predeterminada supera el llindar de latència</translation>
 <translation id="8919837981463578619">Error: no es troba la safata</translation>
 <translation id="8928727111548978589">Error: no hi ha paper</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Intents restants: <ph name="ATTEMPTS_LEFT" />.</translation>
 <translation id="8970109610781093811">Torna a executar</translation>
 <translation id="9088306295921699330">Ús actual</translation>
 <translation id="910415269708673980">Actualitza el tiquet de: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">S'està cercant la pàgina <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloqueja</translation>
+<translation id="9149391708638971077">Executa la prova de memòria</translation>
+<translation id="982713511914535780">Executa la prova de descàrrega</translation>
 </translationbundle>

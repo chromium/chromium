@@ -122,6 +122,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2050339315714019657">Pystysuunta</translation>
 <translation id="2067602449040652523">Näppäimistön kirkkaus</translation>
 <translation id="2078034614700056995">Siirry seuraavaan työpöytään pyyhkäisemällä oikealle neljällä sormella</translation>
+<translation id="2079504693865562705">Piilota sovellukset hyllystä</translation>
 <translation id="2083190527011054446">Hyvää yötä <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Ei verkkoyhteyttä</translation>
 <translation id="2126242104232412123">Uusi työpöytä</translation>
@@ -238,6 +239,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> muuta</translation>
 <translation id="3236488194889173876">Mobiiliverkkoja ei ole käytettävissä</translation>
 <translation id="3249513730522716925">Ikkuna <ph name="WINDOW_TITLE" /> siirretty työpöydältä <ph name="ACTIVE_DESK" /> työpöydälle <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> prosenttia.</translation>
 <translation id="3255483164551725916">Mitä osaat tehdä?</translation>
 <translation id="3269597722229482060">Klikkaa kakkospainiketta</translation>
 <translation id="3289674678944039601">Ladataan virtalähteen kautta</translation>
@@ -369,6 +371,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4389184120735010762">Painoit kiinnitetyn suurennuksen pikanäppäintä. Haluatko ottaa sen käyttöön?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ei ole päällä.</translation>
 <translation id="4421231901400348175">Näyttösi hallinta jaetaan käyttäjän <ph name="HELPER_NAME" /> kanssa Etätuen kautta.</translation>
+<translation id="4427613789487709312">Oletus (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Äänenvoimakkuus</translation>
 <translation id="4450893287417543264">Älä näytä uudelleen</translation>
 <translation id="445864333228800152">Hyvää iltaa</translation>
@@ -449,6 +452,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5078796286268621944">Väärä PIN-koodi</translation>
 <translation id="5083553833479578423">Käytä lisää Assistantin ominaisuuksia.</translation>
 <translation id="5136175204352732067">Eri näppäimistö kytketty</translation>
+<translation id="5155897006997040331">Lukunopeus</translation>
 <translation id="5168181903108465623">Cast-laitteita käytettävissä</translation>
 <translation id="5170568018924773124">Näytä kansiossa</translation>
 <translation id="5176318573511391780">Tallenna osittainen näyttö</translation>
@@ -714,6 +718,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ilmoitus}other{# ilmoitusta}}</translation>
 <translation id="7724603315864178912">Leikkaa</translation>
+<translation id="7745560842763881396">Näytä sovellukset hyllyssä</translation>
 <translation id="7749443890790263709">Työpöytiä on enimmäismäärä.</translation>
 <translation id="776344839111254542">Klikkaa nähdäksesi päivityksen tiedot</translation>
 <translation id="7780159184141939021">Käännä näyttö</translation>

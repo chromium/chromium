@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">无法启动扫描</translation>
 <translation id="1071587090247825784">检测到防火墙</translation>
 <translation id="1075811647922107217">页面大小</translation>
+<translation id="1124772482545689468">用户</translation>
 <translation id="1175697296044146566">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="1195447618553298278">未知错误。</translation>
 <translation id="1204296502688602597">DNS 延迟时间</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402">剩余尝试次数：<ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">发送反馈报告</translation>
 <translation id="2461822463642141190">电流</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />剩余尝试次数：{0}}other{<ph name="ERROR_MESSAGE" />剩余尝试次数：{0}}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">扫描</translation>
 <translation id="2570743873672969996">正在运行<ph name="TEST_NAME" />测试…</translation>
+<translation id="2620436844016719705">系统</translation>
 <translation id="2805756323405976993">应用</translation>
 <translation id="2872961005593481000">关机</translation>
 <translation id="3008341117444806826">刷新</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3083667275341675831">网络连接诊断</translation>
 <translation id="3091839911843451378">失败 - 已停止</translation>
+<translation id="3102119246920354026">缓存</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">我的文件</translation>
 <translation id="3199982728237701504">文件馈送器（双面）</translation>
 <translation id="3246869037381808805">系统会自动移除存在时长已超过 1 天的打印任务</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">新密码</translation>
 <translation id="3865414814144988605">分辨率</translation>
 <translation id="3941014780699102620">未能解析主机</translation>
+<translation id="3942420633017001071">诊断</translation>
 <translation id="39823212440917567">系统会自动移除存在时长已超过 <ph name="NUMBER_OF_DAYS" /> 天的打印任务</translation>
 <translation id="4003384961948020559">失败 - 出纸盘已满</translation>
 <translation id="4034824040120875894">打印机</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒内充了 <ph name="RATE" /> 的电量。</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="4985509611418653372">运行</translation>
+<translation id="5154917547274118687">内存</translation>
 <translation id="5168185087976003268">电池寿命</translation>
 <translation id="520299634122159966">无可用的扫描器</translation>
 <translation id="5212543919916444558">无法提供与您的屏幕上可以找到的任何内容相关的帮助。
@@ -137,6 +142,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6191293864534840972">域名服务器格式不正确</translation>
+<translation id="6232017090690406397">电池</translation>
 <translation id="6325525973963619867">失败</translation>
 <translation id="636850387210749493">企业注册</translation>
 <translation id="649050271426829538">已停止 - 卡纸了</translation>
@@ -194,6 +200,7 @@
 <translation id="8910721771319628100">默认网络的延迟时间超出了阈值</translation>
 <translation id="8919837981463578619">失败 - 缺少送纸盘</translation>
 <translation id="8928727111548978589">失败 - 纸张已用完</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" />剩余尝试次数：<ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8970109610781093811">重新运行</translation>
 <translation id="9088306295921699330">目前用量</translation>
 <translation id="910415269708673980">刷新 <ph name="PRINCIPAL_NAME" /> 的票据</translation>

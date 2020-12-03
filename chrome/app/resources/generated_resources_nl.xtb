@@ -3174,7 +3174,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4646675363240786305">Poorten</translation>
 <translation id="4647090755847581616">&amp;Tabblad sluiten</translation>
 <translation id="4647283074445570750">Stap <ph name="CURRENT_STEP" /> van <ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{Start de app als je inlogt op je tablet}computer{Start de app als je inlogt op je computer}other{Start de app als je inlogt op je apparaat}}</translation>
 <translation id="4647697156028544508">Geef de pincode op voor '<ph name="DEVICE_NAME" />':</translation>
 <translation id="4648491805942548247">Onvoldoende rechten</translation>
 <translation id="4648499713050786492">Ontgrendel je profiel voordat je een persoon toevoegt.</translation>
@@ -3719,6 +3718,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5319359161174645648">Google beveelt Chrome aan</translation>
 <translation id="5320112320661303273">Zo te zien heb je de Assistent al ingesteld op een ander apparaat. Haal nog meer uit de Assistent door de volgende instelling in te schakelen.</translation>
+<translation id="5320135788267874712">Nieuwe apparaatnaam</translation>
 <translation id="532247166573571973">De server is mogelijk niet bereikbaar. Probeer het later opnieuw.</translation>
 <translation id="5324300749339591280">Lijst met apps</translation>
 <translation id="5324780743567488672">Tijdzone automatisch instellen op basis van je locatie</translation>

@@ -3170,7 +3170,6 @@
 <translation id="4646675363240786305">पोर्टहरू</translation>
 <translation id="4647090755847581616">ट्याब &amp;बन्द गर्नुहोस्</translation>
 <translation id="4647283074445570750"><ph name="TOTAL_STEPS" /> मध्ये <ph name="CURRENT_STEP" /> औँ चरण</translation>
-<translation id="4647420311443994946">{0,select, tablet{मैले आफ्नो ट्याब्लेटमा साइन इन गर्दा यो एप खोलियोस्}computer{मैले आफ्नो कम्प्युटरमा साइन इन गर्दा यो एप खोलियोस्}other{मैले आफ्नो यन्त्रमा साइन इन गर्दा यो एप खोलियोस्}}</translation>
 <translation id="4647697156028544508">कृपया "<ph name="DEVICE_NAME" />" का लागि पिन प्रविष्ट गर्नुहोस्ः</translation>
 <translation id="4648491805942548247">अपर्याप्त अनुमतिहरू</translation>
 <translation id="4648499713050786492">कृपया कुनै व्यक्तिलाई थप्नु अघि आफ्नो प्रोफाइललाई अनलक गर्नुहोस्।</translation>
@@ -3715,6 +3714,7 @@
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5319359161174645648">Google ले Chrome प्रयोग गर्ने सुझाव दिन्छ</translation>
 <translation id="5320112320661303273">तपाईंले कुनै अर्को यन्त्रमा सहायक सेटअप गरिसक्नुभएको छ जस्तो देखिन्छ। निम्न सेटिङ अन गरी आफ्नो सहायकबाट अझ बढी फाइदा लिनुहोस्।</translation>
+<translation id="5320135788267874712">यन्त्रको नयाँ नाम</translation>
 <translation id="532247166573571973">सर्भर पहुँचयोग्य नहुन सक्छ। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="5324300749339591280">एपको सूची</translation>
 <translation id="5324780743567488672">तपाईँको स्थान प्रयोग गरेर समय क्षेत्र सेट गर्नुहोस्</translation>

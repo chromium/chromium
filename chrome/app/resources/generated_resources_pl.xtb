@@ -3172,7 +3172,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="4646675363240786305">Porty</translation>
 <translation id="4647090755847581616">&amp;Zamknij kartę</translation>
 <translation id="4647283074445570750">Krok <ph name="CURRENT_STEP" /> z <ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{Uruchom aplikację po zalogowaniu się na tablecie}computer{Uruchom aplikację po zalogowaniu się na komputerze}other{Uruchom aplikację po zalogowaniu się na urządzeniu}}</translation>
 <translation id="4647697156028544508">Wpisz PIN urządzenia „<ph name="DEVICE_NAME" />”:</translation>
 <translation id="4648491805942548247">Niewystarczające uprawnienia</translation>
 <translation id="4648499713050786492">Aby dodać osobę, odblokuj swój profil.</translation>
@@ -3717,6 +3716,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5317780077021120954">Zapisz</translation>
 <translation id="5319359161174645648">Google zaleca Chrome</translation>
 <translation id="5320112320661303273">Wygląda na to, że masz już skonfigurowanego Asystenta na innym urządzeniu. Wykorzystaj go jeszcze lepiej, włączając poniższe ustawienie.</translation>
+<translation id="5320135788267874712">Nowa nazwa urządzenia</translation>
 <translation id="532247166573571973">Serwer może być niedostępny. Spróbuj ponownie później.</translation>
 <translation id="5324300749339591280">Lista aplikacji</translation>
 <translation id="5324780743567488672">Ustaw strefę czasową automatycznie na podstawie lokalizacji</translation>

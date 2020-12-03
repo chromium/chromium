@@ -54,7 +54,6 @@
 <translation id="369442766917958684">ஆஃப்லைன்.</translation>
 <translation id="3695446226812920698">எப்படி என அறிக</translation>
 <translation id="3776024066357219166">உங்கள் Chrome தொலைநிலை டெஸ்க்டாப் அமர்வு முடிந்தது.</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3897092660631435901">மெனு</translation>
 <translation id="3905196214175737742">தவறான ஹோஸ்ட் உரிமையாளர் டொமைன்.</translation>
 <translation id="3931191050278863510">ஹோஸ்ட் நிறுத்தப்பட்டது.</translation>
@@ -99,6 +98,7 @@
 <translation id="5419418238395129586">கடைசியாக ஆன்லைனில் இருந்தது: <ph name="DATE" /></translation>
 <translation id="544077782045763683">ஹோஸ்ட் இயங்கவில்லை.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">தற்போது உங்கள் டெஸ்க்டாப் <ph name="USER" /> உடன் பகிரப்படுகிறது.</translation>
 <translation id="5750083143895808682">உள்நுழைந்துள்ள முகவரி: <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">மீண்டும் இணை</translation>
@@ -118,7 +118,6 @@
 <translation id="6583902294974160967">ஆதரவு</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Del ஐ அனுப்பு</translation>
 <translation id="6654753848497929428">பகிர்</translation>
-<translation id="6681800064886881394">பதிப்புரிமை 2013 Google Inc. அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.</translation>
 <translation id="677755392401385740">ஹோஸ்ட் தொடங்கிய பயனர்: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6939719207673461467">விசைப்பலகையைக் காட்டு/மறை.</translation>
 <translation id="6963936880795878952">யாரோ ஒருவர் தவறான பின்னைப் பயன்படுத்தித் தொலைநிலையில் இயங்கக்கூடிய கம்ப்யூட்டரை இணைக்க முயன்றதால், அதற்கான இணைப்புகள் தற்காலிகமாகத் தடுக்கப்பட்டுள்ளன. பிறகு முயலவும்.</translation>

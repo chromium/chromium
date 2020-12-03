@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Scan konnte nicht gestartet werden</translation>
 <translation id="1071587090247825784">Firewall erkannt</translation>
 <translation id="1075811647922107217">Seitengröße</translation>
+<translation id="1124772482545689468">Nutzer</translation>
 <translation id="1175697296044146566">Dieses Gerät (<ph name="DEVICE_TYPE" />) wird von <ph name="MANAGER" /> verwaltet.</translation>
 <translation id="1195447618553298278">Unbekannter Fehler.</translation>
 <translation id="1204296502688602597">DNS-Latenz</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402">Noch <ph name="ATTEMPTS_LEFT" /> Versuche</translation>
 <translation id="2391082728065870591">Feedbackbericht senden</translation>
 <translation id="2461822463642141190">Aktuell</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Noch {0} Versuch}other{<ph name="ERROR_MESSAGE" /> Noch {0} Versuche}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Suchen</translation>
 <translation id="2570743873672969996">Test für <ph name="TEST_NAME" /> wird ausgeführt…</translation>
+<translation id="2620436844016719705">System</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Herunterfahren</translation>
 <translation id="3008341117444806826">AKTUALISIEREN</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3083667275341675831">Connectivity Diagnostics</translation>
 <translation id="3091839911843451378">Fehlgeschlagen – Angehalten</translation>
+<translation id="3102119246920354026">Cache</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">Meine Dateien</translation>
 <translation id="3199982728237701504">Dokumenteneinzug (beidseitig)</translation>
 <translation id="3246869037381808805">Druckaufträge, die älter als 1 Tag sind, werden entfernt</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">Neues Passwort</translation>
 <translation id="3865414814144988605">Auflösung</translation>
 <translation id="3941014780699102620">Host konnte nicht aufgelöst werden</translation>
+<translation id="3942420633017001071">Diagnose</translation>
 <translation id="39823212440917567">Druckaufträge, die älter als <ph name="NUMBER_OF_DAYS" /> Tage sind, werden entfernt</translation>
 <translation id="4003384961948020559">Fehlgeschlagen – Ausgabefach ist voll</translation>
 <translation id="4034824040120875894">Drucker</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356"><ph name="RATE" /> in <ph name="NUM_SECONDS" /> Sekunden aufgeladen.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Ausführen</translation>
+<translation id="5154917547274118687">Speicher</translation>
 <translation id="5168185087976003268">Akkuzustand</translation>
 <translation id="520299634122159966">Keine Scanner verfügbar</translation>
 <translation id="5212543919916444558">Ich finde nichts auf deinem Display, wobei ich dir helfen könnte.
@@ -137,6 +142,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6191293864534840972">Nameserver hat fehlerhaftes Format</translation>
+<translation id="6232017090690406397">Akku</translation>
 <translation id="6325525973963619867">Fehlgeschlagen</translation>
 <translation id="636850387210749493">Enterprise-Registrierung</translation>
 <translation id="649050271426829538">Angehalten – Papierstau</translation>
@@ -194,6 +200,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8910721771319628100">Das Standardnetzwerk hat den Latenzgrenzwert überschritten</translation>
 <translation id="8919837981463578619">Fehlgeschlagen – Fach fehlt</translation>
 <translation id="8928727111548978589">Fehlgeschlagen – Kein Papier</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> verbleibende Versuche</translation>
 <translation id="8970109610781093811">Erneut ausführen</translation>
 <translation id="9088306295921699330">Aktuelle Nutzung</translation>
 <translation id="910415269708673980">Aktualisieren Sie das Ticket für <ph name="PRINCIPAL_NAME" /></translation>

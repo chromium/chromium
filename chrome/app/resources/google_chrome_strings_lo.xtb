@@ -56,6 +56,7 @@
 <translation id="2309047409763057870">ນີ້ແມ່ນການຕິດຕັ້ງສຳຮອງຂອງ Google Chrome ແລະ ບໍ່ສາມາດຕັ້ງໃຫ້ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານໄດ້.</translation>
 <translation id="2348335408836342058">Chrome ຕ້ອງການການອະນຸຍາດເພື່ອເຂົ້າເຖິງກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນຂອງທ່ານສຳລັບເວັບໄຊນີ້</translation>
 <translation id="234869673307233423">Chrome ບໍ່ສາມາດກວດລະຫັດຜ່ານຂອງທ່ານໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫລັງ.</translation>
+<translation id="235650106824528204">ຜູ້ເບິ່ງແຍງລະບົບໂປຣໄຟລ໌ບ່ອນເຮັດວຽກສາມາດລຶບຂໍ້ມູນ Chrome ໃດໆກໍຕາມທີ່ສ້າງຂຶ້ນໃນລະຫວ່າງການນຳໃຊ້ໂປຣໄຟລ໌ນີ້ (ເຊັ່ນ: ການສ້າງບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນໆ) ອອກໄດ້. <ph name="LEARN_MORE" /></translation>
 <translation id="2429317896000329049">Google Chrome ບໍ່​ສາ​ມາດຊິງຄ໌ຂໍ້​ມູນ​ຂອງ​ທ່ານໄດ້ ເພາະວ່າບໍ່ມີການຊິງຄ໌ຢູ່ໃນໂດເມນຂອງທ່ານ.</translation>
 <translation id="2467438592969358367">Google Chrome ຕ້ອງການສົ່ງອອກລະຫັດຜ່ານຂອງທ່ານ. ກະລຸນາພິມລະຫັດຜ່ານ Windows ຂອງທ່ານ ເພື່ອອະນຸຍາດສິ່ງນີ້.</translation>
 <translation id="2485422356828889247">ຖອນ​ຕິດ​ຕັ້ງ</translation>
@@ -177,12 +178,14 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="573759479754913123">ກ່ຽວ​ກັບ Chrome OS</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">ບໍ່ສາມາດເປີດໃຊ້ Chrome. ກະລຸນາລອງອີກຄັ້ງ.</translation>
+<translation id="5851757216820085940">ຖ້າທ່ານມີບັນຊີ Google ຫຼາຍບັນຊີ, ທ່ານສາມາດເພີ່ມພວກມັນໃສ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານໄດ້. ບັນຊີຂອງທ່ານຈະມີໃຫ້ນຳໃຊ້ໃນໂປຣແກຣມທ່ອງເວັບ Chrome ແລະ Play Store, ເຊັ່ນດຽວກັບການບໍລິການຕ່າງໆ ເຊັ່ນ: Gmail, Drive ແລະ YouTube.<ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome ກໍາລັງພະຍາຍາມແກ້ໄຂລະຫັດຜ່ານ.</translation>
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ການເຂົ້າສູ່ລະບົບເຄືອຂ່າຍ</translation>
 <translation id="5940385492829620908">ເວັບຂອງທ່ານ, ບຸກມາກສ໌, ແລະ Chrome ອື່ນສົດຢູ່ທີ່ນີ້.</translation>
 <translation id="5941830788786076944">ເຮັດ Google Chrome ເປັນບຣາວເຊີມາດຕະຖານ</translation>
 <translation id="6070348360322141662">ເພື່ອຄວາມປອດໄພເພີ່ມເຕີມ, Google Chrome ຈະເຂົ້າລະຫັດລັບຂໍ້ມູນຂອງທ່ານ</translation>
+<translation id="608006075545470555">ເພີ່ມໂປຣໄຟລ໌ບ່ອນເຮັດວຽກໃສ່ໂປຣແກຣມທ່ອງເວັບນີ້</translation>
 <translation id="6113794647360055231">Chrome ​ດີກ​ວ່າແລ້ວ</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
@@ -194,10 +197,12 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6368958679917195344">Chrome OS ເຮັດໃຫ້ເປັນໄປໄດ້ໂດຍ <ph name="BEGIN_LINK_CROS_OSS" />ຊອບແວ open source<ph name="END_LINK_CROS_OSS" /> ເພີ່ມເຕີມ.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">ກຳລັງອັບເດດ Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6568793831116033768">ລະບົບ Chrome OS</translation>
 <translation id="6650333065969705433">ເພື່ອໃຊ້ Rosetta ຫຼິ້ນມີເດຍທີ່ມີການປ້ອງກັນ, ທ່ານຕ້ອງຣິສະຕາດ Chrome.</translation>
 <translation id="6676384891291319759">ການເຂົ້າຫາອິນເຕີເນັດ</translation>
 <translation id="6679975945624592337">ໃຫ້ Google Chrome ເປີດໃຊ້ຢູ່ໃນພື້ນຫຼັງ</translation>
 <translation id="6750954913813541382">ເພື່ອແກ້ໄຂຂໍ້ຜິດພາດກ່ຽວກັບການສະກົດຄຳ, Chrome ສົ່ງຂໍ້ຄວາມທີ່ທ່ານພິມໃນໂປຣແກຣມທ່ອງເວັບໃຫ້ Google</translation>
+<translation id="6755885556185485672">Chrome OS ປິດຢ່າງບໍ່ຖືກຕ້ອງ.</translation>
 <translation id="677276454032249905">ຢືນຢັນການອອກຈາກ Chrome ບໍ?</translation>
 <translation id="683440813066116847">ກົດລະບຽບຂາເຂົ້າສໍາລັບ Google Chrome Canary ເພື່ອອະນຸຍາດໃຫ້ການຈາລະຈອນ mDNS.</translation>
 <translation id="6885412569789873916">ແອັບ Chrome Beta</translation>
@@ -256,6 +261,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8498858610309223613">ຫາກໍນຳໃຊ້ການອັບເດດຄວາມປອດໄພພິເສດສຳລັບ Google Chrome. ກະລຸນາປິດເປີດໃໝ່ຕອນນີ້ເລີຍ ແລ້ວພວກເຮົາຈະກູ້ຄືນແຖບຂອງທ່ານ.</translation>
 <translation id="8521348052903287641">ກົດລະບຽບຂາເຂົ້າສໍາລັບ Google Chrome Dev ເພື່ອອະນຸຍາດການຮັບສົ່ງຂໍ້ມູນ mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8550334526674375523">ໂປຣໄຟລ໌ບ່ອນເຮັດວຽກນີ້ແຍກກັນຢ່າງສິ້ນເຊີງຈາກໂປຣໄຟລ໌ສ່ວນຕົວຂອງທ່ານ.</translation>
 <translation id="8556340503434111824">ມີ Google Chrome ລຸ້ນໃໝ່ຢູ່, ແລະມັນໄວກ່ວາຜ່ານມາ.</translation>
 <translation id="861359755029082151">Rosetta ເຮັດໃຫ້ Chrome ສາມາດຫຼິ້ນມີເດຍທີ່ມີການປ້ອງກັນໃນໜ້ານີ້ໄດ້.</translation>
 <translation id="8614913330719544658">Google Chrome ບໍ່ຕອບຮັບ. ເລີ່ມເປີດໃຊ້ໃໝ່ດຽວນີ້ບໍ?</translation>
@@ -274,6 +280,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8907709077090383765">ເພື່ອໃຫ້ Chrome ສາມາດຫຼິ້ນມີເດຍທີ່ມີການປ້ອງກັນໄດ້, ທ່ານຈຳເປັນຕ້ອງຕິດຕັ້ງ Rosetta. ທ່ານຕ້ອງການຕິດຕັ້ງມັນຕອນນີ້ບໍ?</translation>
 <translation id="8914504000324227558">ເປີດໃຊ້ Chrome ຄືນໃໝ່</translation>
 <translation id="8922193594870374009">ເພື່ອສົ່ງເບີຈາກ <ph name="ORIGIN" /> ໃຫ້ໂທລະສັບ Android ຂອງທ່ານ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chrome ຢູ່ໃນທັງສອງອຸປະກອນ.</translation>
+<translation id="8986207147630327271">ທ່ານກຳລັງເພີ່ມໂປຣໄຟລ໌ບ່ອນເຮັດວຽກໃສ່ໂປຣແກຣມທ່ອງເວັບນີ້ ແລະ ໃຫ້ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຄວບຄຸມໂປຣໄຟລ໌ບ່ອນເຮັດວຽກດັ່ງກ່າວເທົ່ານັ້ນ.</translation>
 <translation id="8999208279178790196">{0,plural, =0{ມີການອັບເດດ Chrome}=1{ມີການອັບເດດ Chrome}other{ມີການອັບເດດ Chrome ເປັນເວລາ # ມື້ແລ້ວ}}</translation>
 <translation id="9026991721384951619">Chrome OS ບໍ່​ສາ​ມາດຊິງຄ໌ຂໍ້​ມູນ​ຂອງ​ທ່ານໄດ້ ​ເພາະ​ວ່າ​ລາຍລະອຽດການລົງຊື່ເຂົ້າບັນ​ຊີຂອງທ່ານຫຼ້າສະໄໝແລ້ວ.</translation>
 <translation id="9067395829937117663">Google Chrome ຕ້ອງການ Windows 7 ຫຼື ສູງກວ່າ.</translation>

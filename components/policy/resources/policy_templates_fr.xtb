@@ -918,19 +918,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="2349117476121456297">Si vous définissez cette règle sur "True", les touches de la première rangée du clavier deviennent des touches de fonction. Le comportement d'origine des touches multimédias est rétabli en appuyant sur la touche de recherche.
 
       Si cette règle est définie sur "False" ou n'est pas configurée, les touches sont des touches multimédias par défaut. Elles deviennent des touches de fonction lorsque la touche de recherche est maintenue enfoncée.</translation>
-<translation id="2353442107789326507">Liste des services des connecteurs Chrome Enterprise à appliquer au connecteur Enterprise <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" />, qui se déclenche lorsqu'un fichier est ajouté en pièce jointe dans Chrome.
-
-      Les champs <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> et <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> permettent de déterminer si le connecteur doit envoyer un fichier en vue d'une analyse lorsqu'il est joint à une page spécifique, ainsi que les tags à inclure dans la demande d'analyse pour ce fichier. Un tag correspondant à un format "activer" sera inclus dans la demande d'analyse si l'URL de la page suit un format associé à ce tag, à condition qu'aucun format "désactiver" associé à ce même tag ne corresponde à l'URL de la page. L'analyse a lieu si au moins un tag doit être inclus dans la demande.
-
-      Le champ <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> permet de savoir à quel fournisseur de services d'analyse les paramètres correspondent.
-
-      Si la valeur du champ <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> est 1, Chrome attend de recevoir une réponse du service d'analyse avant de laisser la page accéder au fichier. Pour toute autre valeur entière, Chrome laisse la page accéder immédiatement au fichier.
-
-      Le champ <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> permet de définir si Chrome doit bloquer ou autoriser l'accès aux fichiers protégés par un mot de passe.
-
-      Le champ <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> permet de définir si Chrome doit bloquer ou autoriser l'accès aux fichiers trop volumineux pour être analysés (plus de 50 Mo).
-
-      Cette règle ne peut être définie que dans la Console d'administration Google.</translation>
 <translation id="2358176879566587521">Cette règle est supprimée. Elle n'est pas compatible avec cette version de <ph name="PRODUCT_NAME" />. Pour en savoir plus, rendez-vous sur https://support.google.com/chrome/a/answer/7643500.</translation>
 <translation id="2364639863953745682">Mode du processus de prise en main de l'Assistant</translation>
 <translation id="2384233438419344179">Si cette règle est activée, les éléments de page Web qui ne font pas partie du domaine indiqué dans la barre d'adresse du navigateur ne peuvent pas placer de cookies. Si cette règle est désactivée, ces éléments sont autorisés à placer des cookies, et les utilisateurs ne peuvent pas modifier ce paramètre.
@@ -4609,17 +4596,6 @@ au maximum si un utilisateur se sert de l'appareil.
 <translation id="7701341006446125684">Régler la taille du cache pour les applications et les extensions (en octets)</translation>
 <translation id="7703737669292992839">Empêcher l'affichage de boîtes de dialogue de sélection de fichiers</translation>
 <translation id="7709470712369261710">Ne pas utiliser les services Google pour qu'une description soit ajoutée automatiquement aux images</translation>
-<translation id="7710950688502974809">Liste des services des connecteurs Chrome Enterprise à appliquer au connecteur Enterprise <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" />, qui se déclenche lorsque des données sont collées dans Chrome depuis le presse-papiers ou lorsque du contenu Web est ajouté par glisser-déposer.
-
-      Les champs <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> et <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> permettent de déterminer si le connecteur doit envoyer des données en vue d'une analyse lorsque celles-ci sont saisies dans une page spécifique, ainsi que les tags à inclure dans la demande d'analyse de ces données. Un tag correspondant à un format "enable" sera inclus dans la demande d'analyse si l'URL de la page suit un format associé à ce tag, à condition qu'aucun format "disable" associé à ce même tag ne corresponde à l'URL de la page. L'analyse a lieu si au moins un tag doit être inclus dans la demande.
-
-      Le champ <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> permet de savoir à quel fournisseur de services d'analyse les paramètres correspondent.
-
-      Si la valeur du champ <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> est 1, Chrome attend de recevoir une réponse du service d'analyse avant de laisser la page accéder aux données. Pour toute autre valeur entière, Chrome laisse la page accéder immédiatement aux données.
-
-      Le champ <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indique la taille minimale (en octets) que les données saisies dans Chrome doivent atteindre ou dépasser pour être analysées. Si ce champ n'est pas renseigné, la valeur par défaut est de 100 octets.
-
-      Cette règle ne peut être définie que dans la Console d'administration Google.</translation>
 <translation id="7712109699186360774">Demander chaque fois qu'un site essaie d'accéder à la caméra et/ou au microphone</translation>
 <translation id="7713608076604149344">Restrictions de téléchargement</translation>
 <translation id="7715711044277116530">Pourcentage d'adaptation du délai d'assombrissement de l'écran en mode Présentation</translation>
@@ -4814,19 +4790,6 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
           Elle n'a aucune incidence non plus si elle est définie sur "True", qu'elle n'est pas configurée ou que la liste est vide.</translation>
 <translation id="8011935490612940798">Contrôler la fonctionnalité <ph name="PRODUCT_NAME" />.</translation>
 <translation id="802147957407376460">Faire pivoter l'écran de 0 degré</translation>
-<translation id="8027265928215448940">Liste des services des connecteurs Chrome Enterprise à appliquer au connecteur <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> Enterprise, qui se déclenche lorsqu'un fichier est téléchargé dans Chrome.
-
-      Les champs <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> et <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> permettent de déterminer si le connecteur doit envoyer un fichier en vue d'une analyse lorsqu'il est téléchargé à partir d'une page spécifique, ainsi que les tags à inclure dans la demande d'analyse pour ce fichier. Un tag correspondant à un format "activer" sera inclus dans la demande d'analyse si l'URL de la page suit un format associé à ce tag, à condition qu'aucun format "désactiver" associé à ce même tag ne corresponde à l'URL de la page. L'analyse a lieu si au moins un tag doit être inclus dans la demande.
-
-      Le champ <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> permet de savoir à quel fournisseur de services d'analyse correspondent les paramètres.
-
-      Si la valeur du champ <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> est 1, Chrome attend de recevoir une réponse du service d'analyse avant de laisser l'utilisateur accéder au fichier téléchargé. Pour toute autre valeur entière, Chrome laisse l'utilisateur accéder immédiatement au fichier.
-
-      Le champ <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> permet de définir si Chrome doit bloquer ou autoriser l'accès aux fichiers protégés par un mot de passe.
-
-      Le champ <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> permet de définir si Chrome doit bloquer ou autoriser l'accès aux fichiers trop volumineux pour être analysés (plus de 50 Mo).
-
-      Cette règle ne peut être définie que dans la Console d'administration Google.</translation>
 <translation id="8033913082323846868">Cette règle a été abandonnée dans la version M70. Veuillez utiliser les règles AutofillAddressEnabled et AutofillCreditCardEnabled à la place.
 
       Active la fonctionnalité de saisie automatique de <ph name="PRODUCT_NAME" />, qui permet à l'utilisateur de remplir automatiquement des formulaires Web à partir de données stockées précédemment, telles qu'une adresse et des informations relatives à sa carte de crédit.

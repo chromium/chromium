@@ -3177,7 +3177,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4646675363240786305">Ports</translation>
 <translation id="4647090755847581616">&amp;Fermer l'onglet</translation>
 <translation id="4647283074445570750">Étape <ph name="CURRENT_STEP" /> de <ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{Démarrer l'application lorsque vous vous connectez à votre tablette}computer{Démarrer l'application lorsque vous vous connectez à votre ordinateur}other{Démarrer l'application lorsque vous vous connectez à votre appareil}}</translation>
 <translation id="4647697156028544508">Veuillez entrer le NIP pour l'appareil « <ph name="DEVICE_NAME" /> » :</translation>
 <translation id="4648491805942548247">Autorisations insuffisantes.</translation>
 <translation id="4648499713050786492">Veuillez déverrouiller votre profil avant d'ajouter une personne.</translation>
@@ -3722,6 +3721,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5319359161174645648">Google recommande Chrome</translation>
 <translation id="5320112320661303273">On dirait que vous avez déjà configuré l'Assistant sur un autre appareil. Profitez davantage de votre Assistant en activant le paramètre suivant.</translation>
+<translation id="5320135788267874712">Nouveau nom de l'appareil</translation>
 <translation id="532247166573571973">Le serveur est peut-être inaccessible. Réessayez plus tard.</translation>
 <translation id="5324300749339591280">Liste des applications</translation>
 <translation id="5324780743567488672">Régler automatiquement le fuseau horaire en fonction de votre emplacement</translation>

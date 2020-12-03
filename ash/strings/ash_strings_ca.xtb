@@ -122,6 +122,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2067602449040652523">Brillantor del teclat</translation>
 <translation id="2078034614700056995">Fes lliscar quatre dits cap a la dreta per canviar a l'escriptori següent</translation>
+<translation id="2079504693865562705">Amaga les aplicacions del prestatge</translation>
 <translation id="2083190527011054446">Bona nit, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">No hi ha connexió a la xarxa</translation>
 <translation id="2126242104232412123">Escriptori nou</translation>
@@ -238,6 +239,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3226991577105957773"><ph name="COUNT" /> més</translation>
 <translation id="3236488194889173876">No hi ha cap xarxa mòbil disponible</translation>
 <translation id="3249513730522716925">La finestra <ph name="WINDOW_TITLE" /> ha passat de l'escriptori <ph name="ACTIVE_DESK" /> a l'escriptori <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />; intensitat del senyal: <ph name="SIGNAL_STRENGTH" /> per cent.</translation>
 <translation id="3255483164551725916">Què pots fer?</translation>
 <translation id="3269597722229482060">Clic amb el botó dret</translation>
 <translation id="3289674678944039601">S'està carregant per adaptador</translation>
@@ -369,6 +371,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4389184120735010762">Has premut la tecla de drecera de la lupa acoblada. Vols activar-la?</translation>
 <translation id="4412944820643904175">La funció <ph name="FEATURE_NAME" /> està desactivada.</translation>
 <translation id="4421231901400348175">Es comparteix el control de la pantalla amb <ph name="HELPER_NAME" /> mitjançant l'Assistència remota.</translation>
+<translation id="4427613789487709312">Predeterminada (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Volum</translation>
 <translation id="4450893287417543264">No ho tornis a mostrar</translation>
 <translation id="445864333228800152">Bon vespre,</translation>
@@ -449,6 +452,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5078796286268621944">PIN incorrecte</translation>
 <translation id="5083553833479578423">Desbloqueja més funcions de l'Assistent.</translation>
 <translation id="5136175204352732067">S'ha connectat un altre teclat</translation>
+<translation id="5155897006997040331">Velocitat de lectura</translation>
 <translation id="5168181903108465623">Dispositius d'emissió disponibles</translation>
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
 <translation id="5176318573511391780">Grava una part de la pantalla</translation>
@@ -712,6 +716,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificació}other{# notificacions}}</translation>
 <translation id="7724603315864178912">Retalla</translation>
+<translation id="7745560842763881396">Mostra les aplicacions del prestatge</translation>
 <translation id="7749443890790263709">S'ha assolit el nombre màxim d'escriptoris.</translation>
 <translation id="776344839111254542">Fes clic per veure els detalls de l'actualització</translation>
 <translation id="7780159184141939021">Gira la pantalla</translation>

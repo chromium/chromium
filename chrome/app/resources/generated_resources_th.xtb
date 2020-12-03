@@ -3174,7 +3174,6 @@
 <translation id="4646675363240786305">พอร์ต</translation>
 <translation id="4647090755847581616">&amp;ปิดแท็บ</translation>
 <translation id="4647283074445570750">ขั้นตอนที่ <ph name="CURRENT_STEP" /> จาก <ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{เริ่มแอปเมื่อคุณลงชื่อเข้าใช้แท็บเล็ต}computer{เริ่มแอปเมื่อคุณลงชื่อเข้าใช้คอมพิวเตอร์}other{เริ่มแอปเมื่อคุณลงชื่อเข้าใช้อุปกรณ์}}</translation>
 <translation id="4647697156028544508">โปรดป้อน PIN สำหรับ "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">สิทธิ์ไม่เพียงพอ</translation>
 <translation id="4648499713050786492">โปรดปลดล็อกโปรไฟล์ของคุณก่อนเพิ่มบุคคล</translation>
@@ -3719,6 +3718,7 @@
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5319359161174645648">Google ขอแนะนำ Chrome</translation>
 <translation id="5320112320661303273">ดูเหมือนว่าคุณตั้งค่า Assistant ไว้ในอุปกรณ์อื่นแล้ว ใช้ประโยชน์จาก Assistant ให้มากยิ่งขึ้นด้วยการเปิดการตั้งค่าต่อไปนี้</translation>
+<translation id="5320135788267874712">ชื่ออุปกรณ์ใหม่</translation>
 <translation id="532247166573571973">อาจไม่สามารถเข้าถึงเซิร์ฟเวอร์ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="5324300749339591280">รายชื่อแอป</translation>
 <translation id="5324780743567488672">ตั้งค่าเขตเวลาโดยอัตโนมัติโดยใช้ตำแหน่งของคุณ</translation>

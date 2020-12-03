@@ -117,6 +117,7 @@
 <translation id="2208919847696382164">Инсталиране с Linux</translation>
 <translation id="2225536596944493418">Наистина ли искате да изтриете <ph name="NUMBER_OF_ITEMS" /> елемента?</translation>
 <translation id="2230062665678605299">Не можем да създадем папката „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2251368349685848079">Възстановяване от кошчето</translation>
 <translation id="2275059641601412272">Преместено.</translation>
 <translation id="2288278176040912387">Грамофон</translation>
 <translation id="2291538123825441971">Отварят се <ph name="NUMBER_OF_FILES" /> файла.</translation>
@@ -734,6 +735,7 @@
 <translation id="8609695766746872526">Исландски</translation>
 <translation id="8669949407341943408">Извършва се преместване...</translation>
 <translation id="8698464937041809063">Рисунка в Google</translation>
+<translation id="8712637175834984815">Разбрах</translation>
 <translation id="8713112442029511308">Малтийски</translation>
 <translation id="8714406895390098252">Велосипед</translation>
 <translation id="8719721339511222681">Избрахте <ph name="ENTRY_NAME" />.</translation>

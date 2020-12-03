@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">スキャンを開始できませんでした</translation>
 <translation id="1071587090247825784">ファイアウォールが検出されました</translation>
 <translation id="1075811647922107217">ページサイズ</translation>
+<translation id="1124772482545689468">ユーザー</translation>
 <translation id="1175697296044146566">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています。</translation>
 <translation id="1195447618553298278">不明なエラーです。</translation>
 <translation id="1204296502688602597">DNS レイテンシ</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402">あと <ph name="ATTEMPTS_LEFT" /> 回</translation>
 <translation id="2391082728065870591">フィードバック レポートを送信</translation>
 <translation id="2461822463642141190">電流</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />あと {0} 回試行できます}other{<ph name="ERROR_MESSAGE" />あと {0} 回試行できます}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">スキャン</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> のテストを実行しています...</translation>
+<translation id="2620436844016719705">システム</translation>
 <translation id="2805756323405976993">アプリ</translation>
 <translation id="2872961005593481000">終了</translation>
 <translation id="3008341117444806826">更新</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3083667275341675831">接続診断</translation>
 <translation id="3091839911843451378">失敗 - 停止中です</translation>
+<translation id="3102119246920354026">キャッシュ</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">マイファイル</translation>
 <translation id="3199982728237701504">ドキュメント フィーダー（両面）</translation>
 <translation id="3246869037381808805">昨日より前の印刷ジョブは削除されます</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">新しいパスワード</translation>
 <translation id="3865414814144988605">解像度</translation>
 <translation id="3941014780699102620">ホストを解決できませんでした</translation>
+<translation id="3942420633017001071">診断</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> 日より前の印刷ジョブは削除されます</translation>
 <translation id="4003384961948020559">失敗 - 出力がいっぱいです</translation>
 <translation id="4034824040120875894">プリンタ</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒で <ph name="RATE" /> 充電しました。</translation>
 <translation id="4932733599132424254">日付</translation>
 <translation id="4985509611418653372">実行</translation>
+<translation id="5154917547274118687">メモリ</translation>
 <translation id="5168185087976003268">電池の状態</translation>
 <translation id="520299634122159966">使用できるスキャナはありません</translation>
 <translation id="5212543919916444558">画面からはサポートできる内容が見つかりませんでした。
@@ -137,6 +142,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6191293864534840972">ネームサーバーの形式が正しくありません</translation>
+<translation id="6232017090690406397">バッテリー</translation>
 <translation id="6325525973963619867">失敗しました</translation>
 <translation id="636850387210749493">企業の登録</translation>
 <translation id="649050271426829538">停止 - 紙詰まり</translation>
@@ -194,6 +200,7 @@
 <translation id="8910721771319628100">デフォルトのネットワークの応答時間がしきい値を超えています</translation>
 <translation id="8919837981463578619">失敗 - トレイがありません</translation>
 <translation id="8928727111548978589">失敗 - 用紙がありません</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" />: あと <ph name="ATTEMPTS_LEFT" /> 回</translation>
 <translation id="8970109610781093811">再実行</translation>
 <translation id="9088306295921699330">現在の使用状況</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> のチケットを更新してください</translation>

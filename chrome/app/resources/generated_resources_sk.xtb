@@ -3175,7 +3175,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4646675363240786305">Porty</translation>
 <translation id="4647090755847581616">&amp;Zavrieť kartu</translation>
 <translation id="4647283074445570750"><ph name="CURRENT_STEP" />. krok z <ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{Spustiť aplikáciu pri prihlásení sa do tabletu}computer{Spustiť aplikáciu pri prihlásení sa do počítača}other{Spustiť aplikáciu pri prihlásení sa do zariadenia}}</translation>
 <translation id="4647697156028544508">Zadajte kód PIN pre zariadenie <ph name="DEVICE_NAME" />:</translation>
 <translation id="4648491805942548247">Nedostatočné povolenia</translation>
 <translation id="4648499713050786492">Skôr ako pridáte osobu, odomknite svoj profil.</translation>
@@ -3720,6 +3719,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="5317780077021120954">Uložiť</translation>
 <translation id="5319359161174645648">Google odporúča Chrome</translation>
 <translation id="5320112320661303273">Asistenta ste už zrejme nastavili v inom zariadení. Ak chcete získať ešte viac funkcií Asistenta, zapnite nasledovné nastavenie.</translation>
+<translation id="5320135788267874712">Názov nového zariadenia</translation>
 <translation id="532247166573571973">Server môže byť nedostupný. Skúste to znova neskôr.</translation>
 <translation id="5324300749339591280">Zoznam aplikácií</translation>
 <translation id="5324780743567488672">Nastaviť časové pásmo automaticky na základe polohy</translation>

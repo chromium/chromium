@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">ಸ್ಕ್ಯಾನ್ ಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="1071587090247825784">ಫೈರ್‌ವಾಲ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="1075811647922107217">ಪುಟದ ಗಾತ್ರ</translation>
+<translation id="1124772482545689468">ಬಳಕೆದಾರ</translation>
 <translation id="1175697296044146566">ಈ <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ಇಂದ ನಿರ್ವಹಿಸಲ್ಪಡುತ್ತದೆ.</translation>
 <translation id="1195447618553298278">ಅಪರಿಚಿತ ದೋಷ.</translation>
 <translation id="1204296502688602597">DNS ವಿಳಂಬ</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> ಪ್ರಯತ್ನಗಳು ಬಾಕಿ ಉಳಿದಿವೆ</translation>
 <translation id="2391082728065870591">ಪ್ರತಿಕ್ರಿಯೆ ವರದಿ ಕಳುಹಿಸಿ</translation>
 <translation id="2461822463642141190">ಪ್ರಸ್ತುತ</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ಪ್ರಯತ್ನ ಬಾಕಿ ಉಳಿದಿದೆ}one{<ph name="ERROR_MESSAGE" /> {0} ಪ್ರಯತ್ನಗಳು ಬಾಕಿ ಉಳಿದಿವೆ}other{<ph name="ERROR_MESSAGE" /> {0} ಪ್ರಯತ್ನಗಳು ಬಾಕಿ ಉಳಿದಿವೆ}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">ಸ್ಕ್ಯಾನ್</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ಪರೀಕ್ಷೆ ರನ್ ಆಗುತ್ತಿದೆ...</translation>
+<translation id="2620436844016719705">ಸಿಸ್ಟಂ</translation>
 <translation id="2805756323405976993">ಆಪ್ಸ್‌‌</translation>
 <translation id="2872961005593481000">ಮುಚ್ಚಿಬಿಡಿ </translation>
 <translation id="3008341117444806826">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3083667275341675831">ಕನೆಕ್ಟಿವಿಟಿ ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್</translation>
 <translation id="3091839911843451378">ವಿಫಲವಾಗಿದೆ - ನಿಲ್ಲಿಸಲಾಗಿದೆ</translation>
+<translation id="3102119246920354026">ಸಂಗ್ರಹ</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">ನನ್ನ ಫೈಲ್‌ಗಳು</translation>
 <translation id="3199982728237701504">ಡಾಕ್ಯುಮೆಂಟ್ ಫೀಡರ್ (ಎರಡು-ಬದಿಯದ್ದು)</translation>
 <translation id="3246869037381808805">1 ದಿನಕ್ಕಿಂತ ಹಳೆಯದಾದ ಮುದ್ರಣ ಕಾರ್ಯಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">ಹೊಸ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="3865414814144988605">ರೆಸಲ್ಯೂಶನ್</translation>
 <translation id="3941014780699102620">ಹೋಸ್ಟ್ ಅನ್ನು ಪರಿಹರಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
+<translation id="3942420633017001071">ತಪಾಸಣೆಗಳು</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ದಿನಗಳಿಗಿಂತ ಹಳೆಯದಾದ ಮುದ್ರಣ ಕಾರ್ಯಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
 <translation id="4003384961948020559">ವಿಫಲವಾಗಿದೆ - ಔಟ್‌ಪುಟ್ ಭರ್ತಿಯಾಗಿದೆ</translation>
 <translation id="4034824040120875894">ಪ್ರಿಂಟರ್</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ <ph name="RATE" /> ಶುಲ್ಕವನ್ನು ವಿಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="4932733599132424254">ದಿನಾಂಕ</translation>
 <translation id="4985509611418653372">ರನ್‌ ಮಾಡಿ</translation>
+<translation id="5154917547274118687">ಸ್ಮರಣೆ</translation>
 <translation id="5168185087976003268">ಬ್ಯಾಟರಿ ಬಾಳಿಕೆ:</translation>
 <translation id="520299634122159966">ಯಾವುದೇ ಲಭ್ಯವಿರುವ ಸ್ಕ್ಯಾನರ್‌ಗಳಿಲ್ಲ</translation>
 <translation id="5212543919916444558">ನಾನು ನಿಮಗೆ ಸಹಾಯ ಮಾಡಬಹುದಾದ ಯಾವುದೇ ವಿಷಯ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಮೇಲೆ ನನಗೆ ಕಾಣಿಸಿಲ್ಲ. ನನ್ನ ಬಳಿ ಏನಾದರೂ ಕೇಳಬೇಕಿದ್ದರೆ, ಮೈಕ್ ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
@@ -136,6 +141,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="6191293864534840972">ದೋಷಪೂರಿತ ಹೆಸರಿನ ಸರ್ವರ್‌ಗಳು</translation>
+<translation id="6232017090690406397">ಬ್ಯಾಟರಿ</translation>
 <translation id="6325525973963619867">ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="636850387210749493">ಎಂಟರ್‌ಪ್ರೈಸ್ ದಾಖಲಾತಿ</translation>
 <translation id="649050271426829538">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಪೇಪರ್ ಜಾಮ್ ಆಗಿದೆ</translation>
@@ -193,6 +199,7 @@
 <translation id="8910721771319628100">ವಿಳಂಬ ಥ್ರೆಶ್‌ಹೋಲ್ಡ್‌ ಮೇಲಿನ ಡೀಫಾಲ್ಟ್ ನೆಟ್‌ವರ್ಕ್</translation>
 <translation id="8919837981463578619">ವಿಫಲವಾಗಿದೆ - ಟ್ರೇ ಕಾಣೆಯಾಗಿದೆ</translation>
 <translation id="8928727111548978589">ವಿಫಲವಾಗಿದೆ - ಕಾಗದ ಖಾಲಿಯಾಗಿದೆ</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> ಪ್ರಯತ್ನಗಳು ಬಾಕಿ ಉಳಿದಿವೆ</translation>
 <translation id="8970109610781093811">ಮತ್ತೆ ಚಾಲನೆ ಮಾಡಿ</translation>
 <translation id="9088306295921699330">ಪ್ರಸ್ತುತ ಬಳಕೆ</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> ಗಾಗಿ ಟಿಕೆಟ್ ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>

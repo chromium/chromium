@@ -3174,7 +3174,6 @@
 <translation id="4646675363240786305">יציאות</translation>
 <translation id="4647090755847581616">&amp;סגירת כרטיסייה</translation>
 <translation id="4647283074445570750">שלב <ph name="CURRENT_STEP" /> מתוך <ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{הפעלת האפליקציה בכניסה לחשבון בטאבלט}computer{הפעלת האפליקציה בכניסה לחשבון במחשב}other{הפעלת האפליקציה בכניסה לחשבון במכשיר}}</translation>
 <translation id="4647697156028544508">הזנת קוד אימות עבור "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">הרשאות לא מספיקות</translation>
 <translation id="4648499713050786492">יש לבטל את נעילת הפרופיל שלך לפני הוספה של משתמש מסוים.</translation>
@@ -3719,6 +3718,7 @@
 <translation id="5317780077021120954">שמירה</translation>
 <translation id="5319359161174645648">‏Google ממליצה על Chrome</translation>
 <translation id="5320112320661303273">‏נראה שכבר הגדרת את Assistant במכשיר אחר. אפשר להפיק הרבה יותר תועלת מה-Assistant אם מפעילים את ההגדרות הבאות.</translation>
+<translation id="5320135788267874712">השם החדש של המכשיר</translation>
 <translation id="532247166573571973">ייתכן שהשרת אינו נגיש. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="5324300749339591280">רשימת האפליקציות</translation>
 <translation id="5324780743567488672">היעזרות במיקום להגדרה אוטומטית של אזור הזמן</translation>

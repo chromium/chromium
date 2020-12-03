@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">Tafadhali ingiza sehemu ikifuatiwa na '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' haijakamilika.</translation>
 <translation id="5334352251556557839">Imeshindwa kucheza maudhui.</translation>
 <translation id="537648784377940524">Tarehe ya awali zaidi (<ph name="MIN_DATE_OR_TIME" />) lazima ije kabla ya Tarehe ya baadaye zaidi (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">imepanuliwa, kidirisha kimefunguliwa.</translation>
 <translation id="5406322316791861025">umbo</translation>
 <translation id="5425179576310518467">tarehe ya sasa</translation>
 <translation id="5453733299334684579">kipengee cha mti</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">chaguo zaidi</translation>
 <translation id="576709008726043716">utangulizi</translation>
 <translation id="57838592816432529">Zima sauti</translation>
+<translation id="5787939484346677755">imepanuliwa, chaguo za kukamilisha kiotomatiki zinapatikana.</translation>
 <translation id="5860033963881614850">Kimezimwa</translation>
 <translation id="588258955323874662">Skrini nzima</translation>
 <translation id="5888666972993069672">Sasa inatuma kwenye <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">kikasha cha orodha</translation>
 <translation id="6150588977291308318">bibliografia</translation>
 <translation id="6164829606128959761">mita</translation>
+<translation id="6165053282446038410">imepanuliwa, chaguo <ph name="COUNT" /> za kukamilisha kiotomatiki zinapatikana.</translation>
 <translation id="6166809985690652833">maelezo kuhusu kitabu</translation>
 <translation id="6209276755895393898">Inaonekana kuwa: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">ukurasa wa sasa</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">kichwa</translation>
 <translation id="6941933287844615239">pakua maudhui</translation>
 <translation id="6981594929165378967">uwekaji</translation>
+<translation id="698788488269350478">imepanuliwa.</translation>
 <translation id="6989848892321993519">Tafadhali refusha maandishi haya hadi herufi <ph name="MIN_CHARACTERS" /> au zaidi (kwa sasa unatumia herufi 1).</translation>
 <translation id="7034405885550056553">pendekezo</translation>
 <translation id="709897737746224366">Tafadhali linganisha umbizo lililoombwa.</translation>
 <translation id="7102274145889307184">mahali ulipo sasa</translation>
 <translation id="7118469954320184356">Hakuna maelezo yanayopatikana.</translation>
 <translation id="7139483182332611405">dibaji</translation>
+<translation id="7198226213493847604">kitufe cha dirisha ibukizi la menyu</translation>
 <translation id="7214187073215825913">maelezo ya maudhui</translation>
 <translation id="7238347055216017155">mkazo</translation>
 <translation id="7263440858009898357">Tafadhali chagua kipengee katika orodha.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">sura</translation>
 <translation id="8845239796550121995">Sasa inatuma kwenye TV yako</translation>
 <translation id="8851136666856101339">kuu</translation>
+<translation id="8861621546968757188">kitufe cha dirisha ibukizi</translation>
 <translation id="8875657656876809964">Hitilafu ya kucheza video</translation>
 <translation id="8889402386540077796">Rangi</translation>
 <translation id="8901569739625249689">KB <ph name="QUANTITY" /></translation>

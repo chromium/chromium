@@ -3167,7 +3167,6 @@
 <translation id="4646675363240786305">প’ৰ্টসমূহ</translation>
 <translation id="4647090755847581616">&amp;টেব বন্ধ কৰক</translation>
 <translation id="4647283074445570750"><ph name="TOTAL_STEPS" />টাৰ ভিতৰত <ph name="CURRENT_STEP" /> নম্বৰ পদক্ষেপ</translation>
-<translation id="4647420311443994946">{0,select, tablet{আপুনি নিজৰ টেবলেটত ছাইন ইন কৰিলে এপ্‌টো আৰম্ভ কৰক}computer{আপুনি নিজৰ কম্পিউটাৰত ছাইন ইন কৰিলে এপ্‌টো আৰম্ভ কৰক}other{আপুনি নিজৰ ডিভাইচত ছাইন ইন কৰিলে এপ্‌টো আৰম্ভ কৰক}}</translation>
 <translation id="4647697156028544508">অনুগ্ৰহ কৰি "<ph name="DEVICE_NAME" />"ৰ পিনটো দিয়ক:</translation>
 <translation id="4648491805942548247">অপর্যাপ্ত অনুমতি</translation>
 <translation id="4648499713050786492">কোনো ব্যক্তিক যোগ কৰাৰ পূর্বে আপোনাৰ প্ৰ'ফাইল আনলক কৰক।</translation>
@@ -3712,6 +3711,7 @@
 <translation id="5317780077021120954">ছেভ কৰক</translation>
 <translation id="5319359161174645648">Googleএ Chrome ব্যৱহাৰৰ চুপাৰিছ কৰে</translation>
 <translation id="5320112320661303273">আপুনি ইতিমধ্যে অন্য এটা ডিভাইচত Assistant ছেট আপ কৰিছে যেন লাগিছে। তলৰ ছেটিংটো অন কৰি আপোনাৰ Assistantৰ পৰা আৰু অধিক উপকৃত হওক।</translation>
+<translation id="5320135788267874712">নতুন ডিভাইচৰ নাম</translation>
 <translation id="532247166573571973">ছাৰ্ভাৰ প্ৰাপ্তব্য নহ’বও পাৰে৷ পিছত আকৌ চেষ্টা কৰক।</translation>
 <translation id="5324300749339591280">এপৰ সূচী</translation>
 <translation id="5324780743567488672">আপোনাৰ অৱস্থান ব্যৱহাৰ কৰি স্বয়ংক্ৰিয়ভাৱে সময় মণ্ডল ছেট কৰক</translation>

@@ -3169,7 +3169,6 @@
 <translation id="4646675363240786305">端口</translation>
 <translation id="4647090755847581616">关闭标签页(&amp;C)</translation>
 <translation id="4647283074445570750">第 <ph name="CURRENT_STEP" /> 步（共 <ph name="TOTAL_STEPS" /> 步）</translation>
-<translation id="4647420311443994946">{0,select, tablet{在您登录平板电脑时启动应用}computer{在您登录计算机时启动应用}other{在您登录设备时启动应用}}</translation>
 <translation id="4647697156028544508">请输入“<ph name="DEVICE_NAME" />”的 PIN：</translation>
 <translation id="4648491805942548247">权限不足</translation>
 <translation id="4648499713050786492">在添加用户前，请先解锁您的个人资料。</translation>
@@ -3714,6 +3713,7 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5319359161174645648">Google 推荐使用 Chrome</translation>
 <translation id="5320112320661303273">您似乎已在另一部设备上设置了 Google 助理。您只需开启以下设置，即可更充分地利用 Google 助理。</translation>
+<translation id="5320135788267874712">新的设备名称</translation>
 <translation id="532247166573571973">可能无法连接到服务器，请稍后重试。</translation>
 <translation id="5324300749339591280">应用列表</translation>
 <translation id="5324780743567488672">使用您的位置信息自动设置时区</translation>

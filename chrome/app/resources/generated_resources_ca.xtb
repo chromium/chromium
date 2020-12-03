@@ -57,6 +57,7 @@
 <translation id="1056775291175587022">Cap xarxa</translation>
 <translation id="1056898198331236512">Advertiment</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Introdueix el PIN nou. Els PIN han de tenir 1 caràcter com a mínim i poden contenir lletres, números i altres caràcters.}other{Introdueix el PIN nou. Els PIN han de tenir # caràcters com a mínim i poden contenir lletres, números i altres caràcters.}}</translation>
 <translation id="1059944192885972544">S'han trobat <ph name="NUM" /> pestanyes per a "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="1060292118287751956">Determina la freqüència d'actualització de la pantalla</translation>
 <translation id="1061904396131502319">Ja gairebé és l'hora de fer una pausa</translation>
@@ -635,9 +636,11 @@
 <translation id="1688935057616748272">Escriu una lletra</translation>
 <translation id="168991973552362966">Afegeix una impressora propera</translation>
 <translation id="1689945336726856614">Copia l'&amp;URL</translation>
+<translation id="1690248886740053041">No es pot connectar a una xarxa mòbil. Per obtenir assistència tècnica, contacta amb el teu operador.</translation>
 <translation id="1692115862433274081">Utilitza un altre compte</translation>
 <translation id="1692118695553449118">La sincronització està activada</translation>
 <translation id="1692210323591458290">Porpra fosc</translation>
+<translation id="169279809881363536">No s'ha detectat cap perfil. Per configurar una xarxa nova, escaneja el codi QR amb la càmera del dispositiu o introdueix el codi d'activació que t'ha proporcionat l'operador.</translation>
 <translation id="1697150536837697295">Art</translation>
 <translation id="1697686431566694143">Edita el fitxer</translation>
 <translation id="1698122934742150150">Només la sessió d'incògnit actual</translation>
@@ -1573,6 +1576,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2770465223704140727">Suprimeix de la llista</translation>
 <translation id="2770690685823456775">Exporta les contrasenyes a una altra carpeta</translation>
 <translation id="2770929488047004208">Resolució del monitor</translation>
+<translation id="2770954829020464827">Els detalls estan amagats mentre comparteixes la pantalla</translation>
 <translation id="2771268254788431918">Dades mòbils activades</translation>
 <translation id="2771816809568414714">Formatge</translation>
 <translation id="2772936498786524345">Ninja</translation>
@@ -1940,6 +1944,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3201422919974259695">Els dispositius USB disponibles es mostraran aquí.</translation>
 <translation id="3202131003361292969">Camí</translation>
 <translation id="3202173864863109533">S'està silenciant l'àudio d'aquesta pestanya.</translation>
+<translation id="3202218848974251205">Zona de proves de privadesa</translation>
 <translation id="3208321278970793882">Aplicació</translation>
 <translation id="3208584281581115441">Comprova ara</translation>
 <translation id="3208703785962634733">No confirmat</translation>
@@ -2160,6 +2165,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3459697287128633276">Per poder accedir a Google Play Store amb el teu compte, autentica't amb el teu proveïdor d'identitat.</translation>
 <translation id="3462311546193741693">Se't tancarà la sessió de la majoria de llocs web, però continuaràs tenint la sessió iniciada al Compte de Google. Pot ser que les dades sincronitzades s'esborrin.</translation>
 <translation id="3462413494201477527">Voleu cancel·lar la configuració del compte?</translation>
+<translation id="3464145797867108663">Afegeix un perfil de treball</translation>
 <translation id="346431825526753">Aquest és un compte infantil gestionat per <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Telèfon Android</translation>
@@ -2281,6 +2287,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="360180734785106144">Oferir funcions noves a mesura que estiguin disponibles.</translation>
 <translation id="3602290021589620013">Previsualitza</translation>
 <translation id="3603622770190368340">Obtenció del certificat de xarxa</translation>
+<translation id="3604193429970465812">Comptes secundaris</translation>
 <translation id="3604713164406837697">Canvia el fons de pantalla</translation>
 <translation id="3605780360466892872">Executiu</translation>
 <translation id="3608576286259426129">Previsualització de la imatge d'usuari</translation>
@@ -2604,6 +2611,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 
   Voleu iniciar <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="394183848452296464">No es pot crear la drecera</translation>
+<translation id="3943494825379372497">Vols restaurar les aplicacions i les pàgines?</translation>
 <translation id="3943582379552582368">&amp;Enrere</translation>
 <translation id="3943857333388298514">Enganxa</translation>
 <translation id="3948116654032448504">&amp;Cerca la imatge a <ph name="SEARCH_ENGINE" /></translation>
@@ -2689,6 +2697,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4046013316139505482">Aquestes extensions no necessiten veure ni modificar la informació d'aquest lloc web.</translation>
 <translation id="4046123991198612571">Pista següent</translation>
 <translation id="4047726037116394521">Ves a la pàgina d'inici</translation>
+<translation id="4049783682480068824">{COUNT,plural, =1{# contacte no està disponible. Per fer servir la funció Compartició Nearby amb aquest contacte, afegeix l'adreça electrònica associada al seu Compte de Google als teus contactes.}other{# contactes no estan disponibles. Per fer servir la funció Compartició Nearby amb aquests contactes, afegeix les adreces electròniques associades als seus Comptes de Google als teus contactes.}}</translation>
 <translation id="4050225813016893843">Mètode d'autenticació</translation>
 <translation id="4052120076834320548">Minúscul</translation>
 <translation id="4056908315660577142">Has arribat al límit de temps que els teus pares han definit per a l'aplicació de Chrome <ph name="APP_NAME" />. Demà podràs utilitzar-la durant <ph name="TIME_LIMIT" />.</translation>
@@ -3172,7 +3181,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4646675363240786305">Ports</translation>
 <translation id="4647090755847581616">&amp;Tanca la pestanya</translation>
 <translation id="4647283074445570750">Pas <ph name="CURRENT_STEP" /> de <ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{Obre l'aplicació en iniciar la sessió a la tauleta}computer{Obre l'aplicació en iniciar la sessió a l'ordinador}other{Obre l'aplicació en iniciar la sessió al dispositiu}}</translation>
 <translation id="4647697156028544508">Introduïu el PIN per a "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">Permisos insuficients</translation>
 <translation id="4648499713050786492">Desbloquegeu el vostre perfil per poder afegir una persona.</translation>
@@ -3336,6 +3344,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4863769717153320198">Resolució: <ph name="WIDTH" /> x <ph name="HEIGHT" /> (predeterminada)</translation>
 <translation id="4864369630010738180">S'està iniciant la sessió...</translation>
 <translation id="4864805589453749318">Selecciona quin dels teus pares concedeix el permís per afegir un compte de centre educatiu.</translation>
+<translation id="4866265760644917470">El perfil s'ha afegit correctament.</translation>
 <translation id="486635084936119914">Obre alguns tipus de fitxer automàticament després de baixar-los</translation>
 <translation id="48704129375571883">Afegeix funcions addicionals</translation>
 <translation id="4870758487381879312">Introdueix la contrasenya proporcionada per l'administrador a fi d'obtenir informació de configuració</translation>
@@ -3619,6 +3628,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="5206787458656075734">{COUNT,plural, =1{La contrasenya en perill s'ha canviat correctament. Tens # contrasenya més en perill. Chrome et recomana que comprovis aquesta contrasenya ara.}other{La contrasenya en perill s'ha canviat correctament. Tens # contrasenyes més en perill. Chrome et recomana que comprovis aquestes contrasenyes ara.}}</translation>
 <translation id="5207949376430453814">Ressalta la marca d'inserció de text</translation>
 <translation id="5209320130288484488">No s'ha trobat cap dispositiu</translation>
+<translation id="5209572028385096813">Aquest usuari està gestionat per Family Link</translation>
 <translation id="5210365745912300556">Tanca la pestanya</translation>
 <translation id="5213481667492808996">Ja pots utilitzar el servei de dades <ph name="NAME" /></translation>
 <translation id="5213891612754844763">Mostra la configuració del servidor intermediari</translation>
@@ -3705,6 +3715,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="5302048478445481009">Idioma</translation>
 <translation id="5302932258331363306">Mostra les substitucions</translation>
 <translation id="5304276686222516262">No es pot baixar la llista de contactes. Comprova la connexió a la xarxa o &lt;a href="#" id="tryAgainLink"&gt;torna-ho a provar&lt;/a&gt;.</translation>
+<translation id="5305145881844743843">Aquest compte està gestionat per <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5305688511332277257">Cap d'instal·lat</translation>
 <translation id="5307030433605830021">Aquesta font no s'admet</translation>
 <translation id="5308380583665731573">Connecta</translation>
@@ -3718,6 +3729,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5319359161174645648">Google recomana Chrome</translation>
 <translation id="5320112320661303273">Sembla que ja has configurat l'Assistent en un altre dispositiu. Treu encara més partit del teu Assistent activant l'opció de configuració següent.</translation>
+<translation id="5320135788267874712">Nom nou del dispositiu</translation>
 <translation id="532247166573571973">És possible que no es pugui accedir al servidor. Torneu-ho a provar més tard.</translation>
 <translation id="5324300749339591280">Llista d'aplicacions</translation>
 <translation id="5324780743567488672">Estableix la zona horària automàticament en funció de la meva ubicació</translation>
@@ -4086,6 +4098,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5740820643029013514">Utilitza missatges menys intrusius (opció recomanada)</translation>
 <translation id="574104302965107104">Projecció de la pantalla</translation>
 <translation id="574209121243317957">To</translation>
+<translation id="5742505912938664543">Si afegeixes un compte secundari aquí, podràs utilitzar-lo per navegar pel web, baixar aplicacions i consultar Gmail i altres serveis de Google.</translation>
 <translation id="5746169159649715125">Desa com a PDF</translation>
 <translation id="5747552184818312860">Caduca el dia</translation>
 <translation id="5747785204778348146">Desenvolupador: inestable</translation>
@@ -4426,6 +4439,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6129953537138746214">Espai</translation>
 <translation id="6130692320435119637">Afegeix una Wi‑Fi</translation>
 <translation id="6136114942382973861">Tanca la barra de baixades</translation>
+<translation id="6136287496450963112">La clau de seguretat no està protegida amb un PIN. Crea'n un per gestionar les empremtes digitals.</translation>
 <translation id="6137767437444130246">Certificat d'usuari</translation>
 <translation id="6138680304137685902">Signatura d'ECDSA X9.62 amb SHA-384</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" /> (sense xarxa)</translation>
@@ -4606,6 +4620,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6331566915566907158">Ajuda a millorar les funcions i el rendiment de Chrome OS</translation>
 <translation id="6331818708794917058">Els llocs web poden demanar permís per connectar-se a dispositius MIDI</translation>
 <translation id="6333064448949140209">El fitxer s'enviarà a Google per depurar-lo</translation>
+<translation id="6334444530352320327">Les teves aplicacions i la configuració del sistema operatiu se sincronitzaran en tots els Chromebook en què tinguis la sessió iniciada amb aquest compte. <ph name="LINK_BEGIN" />Configuració de sincronització<ph name="LINK_END" /></translation>
 <translation id="6338981933082930623">Tots els llocs web et poden mostrar qualsevol anunci</translation>
 <translation id="6339668969738228384">Crea un perfil nou per a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340017061976355871">No s'ha pogut connectar amb el servidor. Comprova la connexió a la xarxa i torna-ho a provar. Si el problema continua, reinicia Chromebook.</translation>
@@ -4907,6 +4922,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6709133671862442373">Notícies</translation>
 <translation id="6709357832553498500">Connecta mitjançant <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Anterior</translation>
+<translation id="6713233729292711163">Afegeix un perfil de treball</translation>
 <translation id="6715803357256707211">S'ha produït un error en instal·lar l'aplicació per a Linux. Fes clic a la notificació per veure'n els detalls.</translation>
 <translation id="671619610707606484">Amb aquesta acció s'esborraran dades emmagatzemades pels llocs web (<ph name="TOTAL_USAGE" />)</translation>
 <translation id="671928215901716392">Pantalla de bloqueig</translation>
@@ -5275,6 +5291,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7121362699166175603">Esborra l'historial i les complecions automàtiques a la barra d'adreces. A <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> trobaràs altres maneres d'explorar l'historial de navegació del Compte de Google.</translation>
 <translation id="7121438501124788993">Mode de desenvolupador</translation>
 <translation id="7121728544325372695">Guions intel·ligents</translation>
+<translation id="7122353087820324370">Les aplicacions i la configuració del sistema operatiu no se sincronitzen amb els comptes secundaris.</translation>
 <translation id="7123030151043029868">Amb permís per baixar automàticament diversos fitxers</translation>
 <translation id="7123360114020465152">Ja no s'admet</translation>
 <translation id="7125148293026877011">Suprimeix Crostini</translation>
@@ -5589,6 +5606,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="750509436279396091">Obre la carpeta de baixades</translation>
 <translation id="7506093026325926984">Aquesta contrasenya es desarà en aquest dispositiu</translation>
 <translation id="7506130076368211615">Configura una xarxa nova</translation>
+<translation id="7506242536428928412">Per utilitzar la nova clau de seguretat, defineix un PIN nou</translation>
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" /> s'ha inscrit correctament a la gestió empresarial.</translation>
 <translation id="7507207699631365376">Consulta la <ph name="BEGIN_LINK" />política de privadesa<ph name="END_LINK" /> d'aquest proveïdor</translation>
 <translation id="7507930499305566459">Certificat de resposta d'estat</translation>
@@ -5752,6 +5770,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7691077781194517083">Aquesta clau de seguretat no es pot restablir. Error <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Actualització de Crostini</translation>
 <translation id="7696063401938172191">A <ph name="PHONE_NAME" />:</translation>
+<translation id="7697166915480294040">Els detalls estan amagats mentre comparteixes la pantalla</translation>
 <translation id="7697598343108519171">Utilitza la càmera per escanejar el codi QR</translation>
 <translation id="7699968112832915395">No es pot afegir el compte</translation>
 <translation id="7701040980221191251">Cap</translation>
@@ -6208,6 +6227,8 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8184472985242519288">Uniforme</translation>
 <translation id="8186609076106987817">El servidor no ha pogut trobar el fitxer.</translation>
 <translation id="8188389033983459049">Comprova la configuració del dispositiu i activa'l per continuar</translation>
+<translation id="8189306097519446565">Comptes de centre educatiu</translation>
+<translation id="8189750580333936930">Zona de proves de privadesa</translation>
 <translation id="8190193592390505034">S'està connectant amb <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Gestionar les aplicacions, les extensions i els temes</translation>
 <translation id="8195027750202970175">Espai ocupat al disc</translation>
@@ -6900,6 +6921,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8986362086234534611">Oblida</translation>
 <translation id="8986494364107987395">Envia automàticament estadístiques d'ús i informes d'error a Google</translation>
 <translation id="8987927404178983737">Mes</translation>
+<translation id="8989823300731803443">Continua des d'on ho vas deixar</translation>
 <translation id="8990209962746788689">No es pot crear el codi QR</translation>
 <translation id="8991520179165052608">El lloc web pot utilitzar el micròfon</translation>
 <translation id="8992117551007229513">{COUNT,plural, =1{1 element}other{# elements}}</translation>

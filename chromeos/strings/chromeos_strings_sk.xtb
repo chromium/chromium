@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Skenovanie sa nepodarilo spustiť</translation>
 <translation id="1071587090247825784">Bol zistený firewall</translation>
 <translation id="1075811647922107217">Veľkosť stránky</translation>
+<translation id="1124772482545689468">Používateľ</translation>
 <translation id="1175697296044146566">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Neznáma chyba.</translation>
 <translation id="1204296502688602597">Latencia DNS</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402">Zostávajúce pokusy: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Odoslať správu so spätnou väzbou</translation>
 <translation id="2461822463642141190">Aktuálna</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Zostáva {0} pokus.}few{<ph name="ERROR_MESSAGE" /> Zostávajú {0} pokusy.}many{<ph name="ERROR_MESSAGE" /> {0} attempts left}other{<ph name="ERROR_MESSAGE" /> Zostáva {0} pokusov.}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Vyhľadať</translation>
 <translation id="2570743873672969996">Prebieha test <ph name="TEST_NAME" />...</translation>
+<translation id="2620436844016719705">Systém</translation>
 <translation id="2805756323405976993">Aplikácie</translation>
 <translation id="2872961005593481000">Vypnúť</translation>
 <translation id="3008341117444806826">OBNOVIŤ</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3083667275341675831">Diagnostika pripojenia</translation>
 <translation id="3091839911843451378">Nepodarilo sa – zastavené</translation>
+<translation id="3102119246920354026">Vyrovnávacia pamäť</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">Moje súbory</translation>
 <translation id="3199982728237701504">Podávač dokumentov (obojstranný)</translation>
 <translation id="3246869037381808805">Tlačové úlohy staršie ako deň budú odstránené</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">Nové heslo</translation>
 <translation id="3865414814144988605">Rozlíšenie</translation>
 <translation id="3941014780699102620">Hostiteľa sa nepodarilo vybrať</translation>
+<translation id="3942420633017001071">Diagnostika</translation>
 <translation id="39823212440917567">Tlačové úlohy staršie ako <ph name="NUMBER_OF_DAYS" /> d. budú odstránené</translation>
 <translation id="4003384961948020559">Nepodarilo sa – výstup je plný</translation>
 <translation id="4034824040120875894">Tlačiareň</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356">Nabité na <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4932733599132424254">Dátum</translation>
 <translation id="4985509611418653372">Spustiť</translation>
+<translation id="5154917547274118687">Pamäť</translation>
 <translation id="5168185087976003268">Stav batérie</translation>
 <translation id="520299634122159966">K dispozícii nie sú žiadne skenery</translation>
 <translation id="5212543919916444558">Na obrazovke nie je nič, s čím by som mohol pomôcť.
@@ -137,6 +142,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Ďalšie informácie</translation>
 <translation id="6191293864534840972">Nesprávny formát serverov DNS</translation>
+<translation id="6232017090690406397">Batéria</translation>
 <translation id="6325525973963619867">Zlyhanie</translation>
 <translation id="636850387210749493">Registrácia podniku</translation>
 <translation id="649050271426829538">Zastavené – zaseknutý papier</translation>
@@ -194,6 +200,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8910721771319628100">Predvolená sieť prekračuje prah latencie</translation>
 <translation id="8919837981463578619">Nepodarilo sa – chýba zásobník</translation>
 <translation id="8928727111548978589">Nepodarilo sa – minul sa papier</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" />. Počet zostávajúcich pokusov: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8970109610781093811">Spustiť znova</translation>
 <translation id="9088306295921699330">Aktuálne využitie</translation>
 <translation id="910415269708673980">Obnoviť tiket pre <ph name="PRINCIPAL_NAME" /></translation>

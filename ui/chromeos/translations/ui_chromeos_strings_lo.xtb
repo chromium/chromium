@@ -117,6 +117,7 @@
 <translation id="2208919847696382164">ຕິດຕັ້ງດ້ວຍ Linux</translation>
 <translation id="2225536596944493418">ທ່ານ​ແນ່​ໃຈບໍ່ວ່​າ ​ທ່ານ​ຕ້ອງ​ການ​ລຶບ <ph name="NUMBER_OF_ITEMS" /> ລາຍ​ການ​?</translation>
 <translation id="2230062665678605299">ບໍ່​ສາ​ມາດ​​ສ້າງ​ໂຟລເດີ "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /> ໄດ້</translation>
+<translation id="2251368349685848079">ກູ້ຄືນຈາກຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="2275059641601412272">ຍ້າຍແລ້ວ.</translation>
 <translation id="2288278176040912387">ເຄື່ອງຫຼິ້ນ​ບັນ​ທຶກ</translation>
 <translation id="2291538123825441971">ກຳລັງເປີດ <ph name="NUMBER_OF_FILES" /> ໄຟລ໌.</translation>
@@ -733,6 +734,7 @@
 <translation id="8609695766746872526">ພາສາໄອແລນດິກ</translation>
 <translation id="8669949407341943408">ກໍາລັງຍ້າຍ...</translation>
 <translation id="8698464937041809063">ການແຕ້ມຮູບ Google</translation>
+<translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="8713112442029511308">ພາສາມັລທີສ</translation>
 <translation id="8714406895390098252">ລົດ​ຖີບ</translation>
 <translation id="8719721339511222681">ເລືອກ <ph name="ENTRY_NAME" /> ແລ້ວ.</translation>

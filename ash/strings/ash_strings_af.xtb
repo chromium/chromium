@@ -122,6 +122,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2067602449040652523">Sleutelbordhelderheid</translation>
 <translation id="2078034614700056995">Swiep met vier vingers regs om na die volgende lessenaar toe te wissel</translation>
+<translation id="2079504693865562705">Versteek programme op rak</translation>
 <translation id="2083190527011054446">Goeienag <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Nie aan 'n netwerk gekoppel nie</translation>
 <translation id="2126242104232412123">Nuwe lessenaar</translation>
@@ -238,6 +239,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3226991577105957773">+nog <ph name="COUNT" /></translation>
 <translation id="3236488194889173876">Geen selnetwerk beskikbaar nie</translation>
 <translation id="3249513730522716925">Venster <ph name="WINDOW_TITLE" /> is geskuif van lessenaar <ph name="ACTIVE_DESK" /> af na lessenaar <ph name="TARGET_DESK" /> toe</translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />; seinsterkte <ph name="SIGNAL_STRENGTH" /> persent.</translation>
 <translation id="3255483164551725916">Wat kan jy doen?</translation>
 <translation id="3269597722229482060">Regsklik</translation>
 <translation id="3289674678944039601">Laai tans deur aansluitprop</translation>
@@ -370,6 +372,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4389184120735010762">Jy het die sleutelbordkortpad vir die gedokte vergrootglas gedruk. Wil jy dit aanskakel?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is af.</translation>
 <translation id="4421231901400348175">Deel tans beheer oor jou skerm met <ph name="HELPER_NAME" /> deur afstandbystand.</translation>
+<translation id="4427613789487709312">Verstek (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4450893287417543264">Moenie weer wys nie</translation>
 <translation id="445864333228800152">Goeienaand</translation>
@@ -450,6 +453,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5078796286268621944">Verkeerde PIN</translation>
 <translation id="5083553833479578423">Ontsluit meer Assistent-kenmerke.</translation>
 <translation id="5136175204352732067">Ander sleutelbord is gekoppel</translation>
+<translation id="5155897006997040331">Leesspoed</translation>
 <translation id="5168181903108465623">Uitsaaitoestelle is beskikbaar</translation>
 <translation id="5170568018924773124">Wys in vouer</translation>
 <translation id="5176318573511391780">Neem gedeeltelike skerm op</translation>
@@ -713,6 +717,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 kennisgewing}other{# kennisgewings}}</translation>
 <translation id="7724603315864178912">Knip</translation>
+<translation id="7745560842763881396">Wys programme op rak</translation>
 <translation id="7749443890790263709">Maksimum aantal lessenaars is bereik.</translation>
 <translation id="776344839111254542">Klik om die opdateringbesonderhede te sien</translation>
 <translation id="7780159184141939021">Draai skerm</translation>

@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Pokretanje skeniranja nije uspelo</translation>
 <translation id="1071587090247825784">Otkriven je zaštitni zid</translation>
 <translation id="1075811647922107217">Veličina stranice</translation>
+<translation id="1124772482545689468">Korisnik</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> upravlja ovim <ph name="DEVICE_TYPE" /> uređajem.</translation>
 <translation id="1195447618553298278">Nepoznata greška.</translation>
 <translation id="1204296502688602597">Kašnjenje DNS-a</translation>
@@ -21,6 +22,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> upravlja ovim korisnikom i može daljinski da upravlja podešavanjima i nadgleda aktivnosti korisnika.</translation>
 <translation id="150962533380566081">Nevažeći PUK.</translation>
 <translation id="1510238584712386396">Pokretač</translation>
+<translation id="1621067168122174824">Pokreni test punjenja</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> niti)</translation>
 <translation id="1641857168437328880">Uvlačenje dokumenta (jednostrano)</translation>
 <translation id="1644574205037202324">Istorija</translation>
@@ -28,6 +30,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Prisutan je DNS razrešivač</translation>
 <translation id="1743558184855585519">Baterija se smatra potrošenom kada dostigne ograničenje</translation>
+<translation id="1792647875738159689">Otkazuje se skeniranje</translation>
 <translation id="1905710495812624430">Premašen je maksimalni broj pokušaja.</translation>
 <translation id="1930797645656624981">Usluga metoda unosa za Chrome OS</translation>
 <translation id="1947737735496445907">Odštampano</translation>
@@ -42,22 +45,26 @@
 <translation id="2375079107209812402">Preostali pokušaji: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Pošalji izveštaj sa povratnim informacijama</translation>
 <translation id="2461822463642141190">Aktuelno</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaj}one{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaj}few{<ph name="ERROR_MESSAGE" /> Preostaju {0} pokušaja}other{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaja}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Skeniraj</translation>
 <translation id="2570743873672969996">Pokreće se test <ph name="TEST_NAME" />...</translation>
+<translation id="2620436844016719705">Sistem</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2872961005593481000">Isključi</translation>
 <translation id="3008341117444806826">OSVEŽI</translation>
 <translation id="3009958530611748826">Izaberite folder za čuvanje</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3069085583900247081">Test nije uspeo</translation>
 <translation id="3083667275341675831">Dijagnostika povezivosti</translation>
 <translation id="3091839911843451378">Nije uspelo – zaustavljeno je</translation>
+<translation id="3102119246920354026">Keš</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">Moje datoteke</translation>
 <translation id="3199982728237701504">Uvlačenje dokumenta (dvostrano)</translation>
 <translation id="3246869037381808805">Zadaci štampanja stariji od 1 dana se uklanjaju</translation>
 <translation id="3268178239013324452">Nije uspelo – vrata su otvorena</translation>
 <translation id="3310640316857623290">Kašnjenje DNS-a znatno premašuje dozvoljenu graničnu vrednost</translation>
+<translation id="3328783797891415197">Test je u toku</translation>
 <translation id="3369013195428705271">Želite li stvarno da obrišete svu istoriju štampanja? Zadaci štampanja koji su u toku se ne brišu.</translation>
 <translation id="3456078764689556234">Odštampanih stranica: <ph name="PRINTED_PAGES" /> od <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Štampanje</translation>
@@ -71,11 +78,13 @@
 <translation id="3838338534323494292">Nova lozinka</translation>
 <translation id="3865414814144988605">Rezolucija</translation>
 <translation id="3941014780699102620">Razrešenje hosta nije uspelo</translation>
+<translation id="3942420633017001071">Dijagnostika</translation>
 <translation id="39823212440917567">Zadaci štampanja stariji od <ph name="NUMBER_OF_DAYS" /> dana se uklanjaju</translation>
 <translation id="4003384961948020559">Nije uspelo – izlaz je pun</translation>
 <translation id="4034824040120875894">Štampač</translation>
 <translation id="4131410914670010031">Crno-belo</translation>
 <translation id="4145784616224233563">HTTP zaštitni zid</translation>
+<translation id="4170700058716978431">NIJE USPELO</translation>
 <translation id="4227825898293920515">Lozinka ističe za <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nijedan zadatak štampanja nije u toku</translation>
 <translation id="4297501883039923494">Zaustavljeno – nepoznata greška</translation>
@@ -100,16 +109,20 @@
 <translation id="4773299976671772492">Zaustavljeno je</translation>
 <translation id="4808449224298348341">Otkazan je zadatak štampanja <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">Izaberite folder u aplikaciji Fajlovi...</translation>
+<translation id="4848429997038228357">U TOKU</translation>
 <translation id="4890353053343094602">Odmah odaberite novu</translation>
 <translation id="4917889632206600977">Zaustavljeno – nema više papira</translation>
 <translation id="4921665434385737356">Napunjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Pokreni</translation>
+<translation id="500920857929044050">Zaustavi test</translation>
+<translation id="5154917547274118687">Memorija</translation>
 <translation id="5168185087976003268">Stanje baterije</translation>
 <translation id="520299634122159966">Nema dostupnih skenera</translation>
 <translation id="5212543919916444558">Ne mogu da pronađem na ekranu ništa oko čega mogu da pomognem.
 Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="5222676887888702881">Odjavi me</translation>
+<translation id="5264277876637023664">Pokreni test procesora</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Ponovo pokreni rutine</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
@@ -122,26 +135,33 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="54609108002486618">Upravljani</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Saznajte više u centru za pomoć</translation>
+<translation id="5635169860413004179">Prikaži izveštaj</translation>
 <translation id="5719918614880940190">Ovim se meri korišćenje procesora i zbir je svih jezgara</translation>
+<translation id="5797428682393400134">USPELO JE</translation>
 <translation id="5832805196449965646">Dodaj osobu</translation>
 <translation id="5895138241574237353">Pokreni ponovo</translation>
+<translation id="5931523347251946569">Fajl nije pronađen</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, verzija <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6048107060512778456">Nije uspelo – papir je zaglavljen</translation>
 <translation id="6050189528197190982">Sivi tonovi</translation>
 <translation id="6058625436358447366">Da biste završili, unesite staru i novu lozinku</translation>
 <translation id="6061772781719867950">Neuspešni HTTPS zahtevi</translation>
+<translation id="6104112872696127344">Skeniranje je otkazano</translation>
 <translation id="6106186594183574873">Da biste završili, unesite staru lozinku</translation>
 <translation id="6108689792487843350">Mrežni prolaz je nedostupan</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" /> GHz/<ph name="MAX" /> GHz</translation>
 <translation id="6146993107019042706">Da biste završili, unesite novu lozinku</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6191293864534840972">Serveri za imena su pogrešnog formata</translation>
+<translation id="6232017090690406397">Baterija</translation>
 <translation id="6325525973963619867">Neuspešno</translation>
 <translation id="636850387210749493">Prijavljivanje za izdanje za preduzeća</translation>
 <translation id="649050271426829538">Zaustavljeno – papir je zaglavljen</translation>
 <translation id="6517239166834772319">Istražite</translation>
 <translation id="6527081081771465939">Nepoznat bezbednosni protokol za WiFi</translation>
+<translation id="6532051501443766164">Sakrij izveštaj</translation>
 <translation id="65587193855025101">Položeno</translation>
 <translation id="6564646048574748301">Nije uspelo – štampač nije dostupan</translation>
 <translation id="6618744767048954150">U toku je</translation>
@@ -149,6 +169,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6643016212128521049">Obriši</translation>
 <translation id="6704062477274546131">DNS razrešavanje</translation>
 <translation id="6747215703636344499">Zaustavljeno – posuda za odštampani materijal je puna</translation>
+<translation id="6756731097889387912">Otkazivanje skeniranja nije uspelo</translation>
 <translation id="6766275201586212568">Neuspešna DNS razrešavanja</translation>
 <translation id="6768237774506518020">Velika stopa neuspeha DNS razrešavanja</translation>
 <translation id="6839141349259399400">Povezivanje sa skenerima nije uspelo?</translation>
@@ -164,6 +185,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7648838807254605802">Veliko HTTPS kašnjenje</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7690294790491645610">Potvrdite novu lozinku</translation>
+<translation id="7732651821766520760">Test <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7855434858642800953">Skenirani fajl je sačuvan!</translation>
 <translation id="7928373994957558460">Prikaži lokaciju datoteke</translation>
@@ -191,12 +213,16 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Podrazumevano</translation>
 <translation id="8845001906332463065">Zatražite pomoć</translation>
+<translation id="8881098542468797602">Test je uspeo</translation>
 <translation id="8910721771319628100">Podrazumevana mreža premašuje graničnu vrednost za kašnjenje</translation>
 <translation id="8919837981463578619">Nije uspelo – nedostaje fioka</translation>
 <translation id="8928727111548978589">Nije uspelo – nema više papira</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Preostali pokušaji: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8970109610781093811">Ponovo pokreni</translation>
 <translation id="9088306295921699330">Trenutna iskorišćenost</translation>
 <translation id="910415269708673980">Osvežite tiket za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenira se <ph name="PAGE_NUMBER" />. stranica</translation>
 <translation id="9111102763498581341">Otključaj</translation>
+<translation id="9149391708638971077">Pokreni test memorije</translation>
+<translation id="982713511914535780">Pokreni test pražnjenja</translation>
 </translationbundle>

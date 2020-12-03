@@ -122,6 +122,7 @@
 <translation id="2050339315714019657">በቁመት</translation>
 <translation id="2067602449040652523">የቁልፍ ሰሌዳ ብሩህነት</translation>
 <translation id="2078034614700056995">ወደ ቀጣዩ ዴስክ ለመቀየር በአራት ጣቶች ወደ ቀኝ ያንሸራትቱ</translation>
+<translation id="2079504693865562705">መተግበሪያዎችን በመደርደሪያ ላይ ደብቅ</translation>
 <translation id="2083190527011054446">ደህና አመሹ <ph name="GIVEN_NAME" />፣</translation>
 <translation id="209965399369889474">ከአውታረ መረብ ጋር አልተገናኘም</translation>
 <translation id="2126242104232412123">አዲስ ዴስክ</translation>
@@ -238,6 +239,7 @@
 <translation id="3226991577105957773">+<ph name="COUNT" /> ተጨማሪ</translation>
 <translation id="3236488194889173876">ምንም የተንቀሳቃሽ ስልክ አውታረ መረብ የለም</translation>
 <translation id="3249513730522716925">መስኮት <ph name="WINDOW_TITLE" /> ከዴስክ <ph name="ACTIVE_DESK" /> ወደ ዴስክ <ph name="TARGET_DESK" /> ይወሰዳል</translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" /> በመቶ።</translation>
 <translation id="3255483164551725916">ምን ማድረግ ይችላሉ?</translation>
 <translation id="3269597722229482060">የቀኝ ጠቅታ</translation>
 <translation id="3289674678944039601">በአስማሚ በኩል በመሙላት ላይ</translation>
@@ -369,6 +371,7 @@
 <translation id="4389184120735010762">የተተከለ የማጉያ የቁልፍ ሰሌዳ አቋራጩን ተጭነዋል። ሊያበሩት ይፈልጋሉ?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ጠፍቷል</translation>
 <translation id="4421231901400348175">የማያ ገጽዎን ቁጥጥር በርቀት እርዳታ በኩል ለ<ph name="HELPER_NAME" /> በማጋራት ላይ።</translation>
+<translation id="4427613789487709312">ነባሪ (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">ድምፅ</translation>
 <translation id="4450893287417543264">ዳግም አታሳይ</translation>
 <translation id="445864333228800152">ደህን አመሹ ፣</translation>
@@ -449,6 +452,7 @@
 <translation id="5078796286268621944">የተሳሳተ ፒን</translation>
 <translation id="5083553833479578423">ተጨማሪ የረዳት ባህሪያትን ያስከፍቱ።</translation>
 <translation id="5136175204352732067">የተለየ የቁልፍ ሰሌዳ ተገናኝቷል</translation>
+<translation id="5155897006997040331">የንባብ ፍጥነት</translation>
 <translation id="5168181903108465623">የCast መሣሪያዎች ይገኛሉ</translation>
 <translation id="5170568018924773124">በአቃፊ አሳይ</translation>
 <translation id="5176318573511391780">ከፊል የማያ ገጽን ቅረጽ</translation>
@@ -712,6 +716,7 @@
 <translation id="7705524343798198388">ቪ ፒ ኤን</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ማሳወቂያ}one{# ማሳወቂያዎች}other{# ማሳወቂያዎች}}</translation>
 <translation id="7724603315864178912">ቁረጥ</translation>
+<translation id="7745560842763881396">መተግበሪያዎችን በመደርደሪያ አሳይ</translation>
 <translation id="7749443890790263709">የተደረሰባቸው የዴስኮች ከፍተኛ ብዛት።</translation>
 <translation id="776344839111254542">የዝማኔ ዝርዝሮችን ለማየት ጠቅ ያድርጉ</translation>
 <translation id="7780159184141939021">ማያ ገጹን አሽከርክር</translation>

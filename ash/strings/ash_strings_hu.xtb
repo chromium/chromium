@@ -122,6 +122,7 @@
 <translation id="2050339315714019657">Álló</translation>
 <translation id="2067602449040652523">Billentyűzet világossága</translation>
 <translation id="2078034614700056995">Csúsztasson jobbra négy ujjal a következő asztalra váltáshoz</translation>
+<translation id="2079504693865562705">A polcon található alkalmazások elrejtése</translation>
 <translation id="2083190527011054446">Jó éjszakát, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Nincs hálózati kapcsolat</translation>
 <translation id="2126242104232412123">Új asztal</translation>
@@ -238,6 +239,7 @@
 <translation id="3226991577105957773">+<ph name="COUNT" /> további</translation>
 <translation id="3236488194889173876">Nem áll rendelkezésre mobilhálózat</translation>
 <translation id="3249513730522716925">A(z) „<ph name="WINDOW_TITLE" />” ablak át lett helyezve a(z) „<ph name="ACTIVE_DESK" />” asztalról a(z) „<ph name="TARGET_DESK" />” asztalra</translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, jelerősség: <ph name="SIGNAL_STRENGTH" /> százalék.</translation>
 <translation id="3255483164551725916">Mit lehet csinálni?</translation>
 <translation id="3269597722229482060">Kattintás jobb egérgombbal</translation>
 <translation id="3289674678944039601">Töltés adapteren keresztül…</translation>
@@ -370,6 +372,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4389184120735010762">Lenyomta a dokkolt nagyító billentyűparancsát. Bekapcsolja a funkciót?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> kikapcsolva.</translation>
 <translation id="4421231901400348175">A képernyő irányításának megosztása <ph name="HELPER_NAME" /> segítővel a Távsegítség szolgáltatás keretein belül.</translation>
+<translation id="4427613789487709312">Alapértelmezett (<ph name="RATE" />×)</translation>
 <translation id="4430019312045809116">Hangerő</translation>
 <translation id="4450893287417543264">Ne jelenjen meg többé</translation>
 <translation id="445864333228800152">Jó estét!</translation>
@@ -450,6 +453,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5078796286268621944">Helytelen PIN-kód</translation>
 <translation id="5083553833479578423">Hozzáférés a Segéd további funkcióihoz</translation>
 <translation id="5136175204352732067">Új billentyűzet lett csatlakoztatva</translation>
+<translation id="5155897006997040331">Olvasás sebessége</translation>
 <translation id="5168181903108465623">Cast-eszközök állnak rendelkezésre</translation>
 <translation id="5170568018924773124">Megjelenítés mappában</translation>
 <translation id="5176318573511391780">Részleges képernyő rögzítése</translation>
@@ -713,6 +717,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 értesítés}other{# értesítés}}</translation>
 <translation id="7724603315864178912">Kivágás</translation>
+<translation id="7745560842763881396">A polcon található alkalmazások megjelenítése</translation>
 <translation id="7749443890790263709">Elérte az asztalok maximális számát.</translation>
 <translation id="776344839111254542">Kattintson a frissítés részleteinek megtekintéséhez</translation>
 <translation id="7780159184141939021">Képernyő elforgatása</translation>

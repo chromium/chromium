@@ -3175,7 +3175,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4646675363240786305">Gáttir</translation>
 <translation id="4647090755847581616">Loka flipa</translation>
 <translation id="4647283074445570750">Skref <ph name="CURRENT_STEP" /> af <ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{Ræsa forrit þegar þú skráir þig inn í spjaldtölvuna þína}computer{Ræsa forrit þegar þú skráir þig inn í tölvuna þína}other{Ræsa forrit þegar þú skráir þig inn í tækið þitt}}</translation>
 <translation id="4647697156028544508">Sláðu inn PIN-númer fyrir „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="4648491805942548247">Ekki nægar heimildir</translation>
 <translation id="4648499713050786492">Opnaðu prófílinn þinn áður en aðila er bætt við.</translation>
@@ -3720,6 +3719,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5317780077021120954">Vista</translation>
 <translation id="5319359161174645648">Google mælir með Chrome</translation>
 <translation id="5320112320661303273">Þú virðist þegar hafa sett Hjálparann upp í öðru tæki. Fáðu enn meira út úr Hjálparanum með því að kveikja á eftirfarandi stillingu.</translation>
+<translation id="5320135788267874712">Nýtt heiti tækis</translation>
 <translation id="532247166573571973">Hugsanlega er ekki hægt að ná í þjóninn. Reyndu aftur síðar.</translation>
 <translation id="5324300749339591280">Forritalisti</translation>
 <translation id="5324780743567488672">Stilla tímabelti sjálfkrafa eftir staðsetningunni þinni</translation>

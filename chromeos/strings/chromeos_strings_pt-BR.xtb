@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Não foi possível iniciar a digitalização</translation>
 <translation id="1071587090247825784">Firewall detectado</translation>
 <translation id="1075811647922107217">Tamanho da página</translation>
+<translation id="1124772482545689468">Usuário</translation>
 <translation id="1175697296044146566">Este <ph name="DEVICE_TYPE" /> é gerenciado por <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Erro desconhecido.</translation>
 <translation id="1204296502688602597">Latência de DNS</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> tentativas restantes</translation>
 <translation id="2391082728065870591">Enviar relatório de feedback</translation>
 <translation id="2461822463642141190">Atual</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentativa restante}one{<ph name="ERROR_MESSAGE" /> {0} tentativa restante}other{<ph name="ERROR_MESSAGE" /> {0} tentativas restantes}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Verificar</translation>
 <translation id="2570743873672969996">Executando o teste <ph name="TEST_NAME" />…</translation>
+<translation id="2620436844016719705">Sistema</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Desligar</translation>
 <translation id="3008341117444806826">ATUALIZAR</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3083667275341675831">Diagnósticos de conectividade</translation>
 <translation id="3091839911843451378">Falha - Ação interrompida</translation>
+<translation id="3102119246920354026">Cache</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">Meus arquivos</translation>
 <translation id="3199982728237701504">Alimentador de documentos (frente e verso)</translation>
 <translation id="3246869037381808805">Trabalhos de impressão enviados há mais de 1 dia serão removidos</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">Nova senha</translation>
 <translation id="3865414814144988605">Resolução</translation>
 <translation id="3941014780699102620">Falha na resolução do host</translation>
+<translation id="3942420633017001071">Diagnóstico</translation>
 <translation id="39823212440917567">Trabalhos de impressão enviados há mais de <ph name="NUMBER_OF_DAYS" /> dias serão removidos</translation>
 <translation id="4003384961948020559">Falha - Saída cheia</translation>
 <translation id="4034824040120875894">Impressora</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356"><ph name="RATE" /> carregados em <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Executar</translation>
+<translation id="5154917547274118687">Memória</translation>
 <translation id="5168185087976003268">Integridade da bateria</translation>
 <translation id="520299634122159966">Não há scanners disponíveis</translation>
 <translation id="5212543919916444558">Não foi possível encontrar na sua tela nada com o que eu possa ajudar.
@@ -137,6 +142,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6191293864534840972">Servidores de nomes incorretos</translation>
+<translation id="6232017090690406397">Bateria</translation>
 <translation id="6325525973963619867">Falha</translation>
 <translation id="636850387210749493">Registro da empresa</translation>
 <translation id="649050271426829538">Parado (atolamento de papel)</translation>
@@ -194,6 +200,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8910721771319628100">Rede padrão acima do limite de latência</translation>
 <translation id="8919837981463578619">Falha - Bandeja ausente</translation>
 <translation id="8928727111548978589">Falha - Sem papel</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> tentativas restantes</translation>
 <translation id="8970109610781093811">Executar novamente</translation>
 <translation id="9088306295921699330">Uso atual</translation>
 <translation id="910415269708673980">Atualizar tíquete para <ph name="PRINCIPAL_NAME" /></translation>

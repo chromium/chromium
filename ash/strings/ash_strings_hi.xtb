@@ -122,6 +122,7 @@
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
 <translation id="2067602449040652523">कीबोर्ड की रोशनी</translation>
 <translation id="2078034614700056995">अगले डेस्क पर स्विच करने के लिए, चार उंगलियों से दाईं ओर स्वाइप करें</translation>
+<translation id="2079504693865562705">शेल्फ़ में मौजूद ऐप्लिकेशन छिपाएं</translation>
 <translation id="2083190527011054446">गुड नाइट <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">नेटवर्क से जुड़ा हुआ नहीं है</translation>
 <translation id="2126242104232412123">नया डेस्क</translation>
@@ -238,6 +239,7 @@
 <translation id="3226991577105957773">+<ph name="COUNT" /> और</translation>
 <translation id="3236488194889173876">कोई मोबाइल नेटवर्क उपलब्ध नहीं</translation>
 <translation id="3249513730522716925">Window <ph name="WINDOW_TITLE" /> को डेस्क <ph name="ACTIVE_DESK" /> से डेस्क <ph name="TARGET_DESK" /> पर सेट कर दिया गया है</translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" /> प्रतिशत है.</translation>
 <translation id="3255483164551725916">तुम क्या-क्या कर सकती हो?</translation>
 <translation id="3269597722229482060">दायां क्लिक करें</translation>
 <translation id="3289674678944039601">अडैप्टर से चार्ज हो रहा है</translation>
@@ -370,6 +372,7 @@
 <translation id="4389184120735010762">आपने 'सामग्री को बड़ा दिखाने वाली डॉक की गई सेवा' का कीबोर्ड शॉर्टकट दबाया है. क्या आप इसे चालू करना चाहते हैं?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> बंद है.</translation>
 <translation id="4421231901400348175">आपकी स्‍क्रीन का नियंत्रण दूरस्‍थ सहायक के द्वारा <ph name="HELPER_NAME" /> से शेयर किया जा रहा है.</translation>
+<translation id="4427613789487709312">डिफ़ॉल्ट (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">मात्रा</translation>
 <translation id="4450893287417543264">फिर से न दिखाएं</translation>
 <translation id="445864333228800152">गुड ईवनिंग,</translation>
@@ -450,6 +453,7 @@
 <translation id="5078796286268621944">गलत पिन</translation>
 <translation id="5083553833479578423">Assistant की और भी सुविधाओं के बारे में जानें.</translation>
 <translation id="5136175204352732067">अलग कीबोर्ड कनेक्ट किया गया</translation>
+<translation id="5155897006997040331">पढ़े जाने की रफ़्तार</translation>
 <translation id="5168181903108465623">कास्ट डिवाइस उपलब्ध हैं</translation>
 <translation id="5170568018924773124">फ़ोल्डर में दिखाएं</translation>
 <translation id="5176318573511391780">स्क्रीन के कुछ हिस्से को रिकॉर्ड करें</translation>
@@ -713,6 +717,7 @@
 <translation id="7705524343798198388">वीपीएन</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 सूचना}one{# सूचना}other{# सूचनाएं}}</translation>
 <translation id="7724603315864178912">काटें</translation>
+<translation id="7745560842763881396">शेल्फ़ में मौजूद ऐप्लिकेशन दिखाएं</translation>
 <translation id="7749443890790263709">ज़्यादा से ज़्यादा इतने ही डेस्क जोड़े जा सकते हैं.</translation>
 <translation id="776344839111254542">अपडेट के विवरण देखने के लिए क्लिक करें</translation>
 <translation id="7780159184141939021">स्क्रीन घुमाएं</translation>

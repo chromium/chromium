@@ -54,7 +54,6 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="369442766917958684">Luar talian.</translation>
 <translation id="3695446226812920698">Ketahui caranya</translation>
 <translation id="3776024066357219166">Sesi Desktop Jauh Chrome anda telah tamat.</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3905196214175737742">Domain pemilik hos tidak sah.</translation>
 <translation id="3931191050278863510">Hos dihentikan.</translation>
@@ -99,6 +98,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="5419418238395129586">Terakhir dalam talian: <ph name="DATE" /></translation>
 <translation id="544077782045763683">Hos telah ditutup.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Desktop anda sedang dikongsi dengan <ph name="USER" />.</translation>
 <translation id="5750083143895808682">Log masuk sebagai <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Sambung semula</translation>
@@ -118,7 +118,6 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="6583902294974160967">Sokongan</translation>
 <translation id="6612717000975622067">Hantar Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Kongsi</translation>
-<translation id="6681800064886881394">Hak Cipta 2013 Google Inc. Hak Cipta Terpelihara.</translation>
 <translation id="677755392401385740">Hos dimulakan untuk pengguna: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6939719207673461467">Paparkan/Sembunyikan papan kekunci.</translation>
 <translation id="6963936880795878952">Sambungan kepada komputer jauh disekat buat sementara waktu kerana seseorang sedang cuba untuk menyambung kepadanya dengan PIN yang tidak sah. Sila cuba sebentar lagi.</translation>

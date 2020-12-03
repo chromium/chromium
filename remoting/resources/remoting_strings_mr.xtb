@@ -54,7 +54,6 @@
 <translation id="369442766917958684">ऑफलाइन.</translation>
 <translation id="3695446226812920698">कसे ते जाणून घ्या</translation>
 <translation id="3776024066357219166">तुमचे Chrome रिमोट डेस्कटॉप सेशन समाप्त झाले आहे.</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3897092660631435901">मेनू</translation>
 <translation id="3905196214175737742">चुकीचे होस्ट मालक डोमेन.</translation>
 <translation id="3931191050278863510">होस्ट थांबले.</translation>
@@ -99,6 +98,7 @@
 <translation id="5419418238395129586">अखेरचे ऑनलाइन होते: <ph name="DATE" /></translation>
 <translation id="544077782045763683">होस्टने बंद केले आहे.</translation>
 <translation id="5601503069213153581">पिन</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">तुमचा डेस्कटॉप सध्या <ph name="USER" /> सह शेअर केला आहे.</translation>
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> म्हणून साइन इन केले.</translation>
 <translation id="579702532610384533">रीकनेक्ट करा</translation>
@@ -118,7 +118,6 @@
 <translation id="6583902294974160967">साहय्य</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Del पाठवा</translation>
 <translation id="6654753848497929428">शेअर करा</translation>
-<translation id="6681800064886881394">Copyright 2013 Google Inc. सर्व हक्क राखीव.</translation>
 <translation id="677755392401385740">वापरकर्त्यासाठी प्रारंभ केलेला होस्ट: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6939719207673461467">कीबोर्ड दर्शवा/लपवा.</translation>
 <translation id="6963936880795878952">रिमोट कॉंप्युटरशी कनेक्शन तात्पुरते ब्लॉक केली आहेत, कारण कोणीतरी अवैध पिन सह त्यावर कनेक्ट करण्‍याचा प्रयत्न करत होते. कृपया नंतर पुन्हा प्रयत्न करा.</translation>

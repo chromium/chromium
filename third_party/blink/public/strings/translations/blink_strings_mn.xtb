@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">'<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' нь бүрэн гүйцэд биш бөгөөд бүрэн хаягаа оруулна уу.</translation>
 <translation id="5334352251556557839">Медиа тоглуулах боломжгүй байна.</translation>
 <translation id="537648784377940524">Хамгийн бага огноо (<ph name="MIN_DATE_OR_TIME" />) нь хамгийн их огнооны (<ph name="MAX_DATE_OR_TIME" />) өмнө байх ёстой.</translation>
+<translation id="5378437566635403538">дэлгэсэн, харилцах цонхыг нээсэн.</translation>
 <translation id="5406322316791861025">дүрслэл</translation>
 <translation id="5425179576310518467">одоогийн огноо</translation>
 <translation id="5453733299334684579">салаалсан зүйл</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">бусад сонголт</translation>
 <translation id="576709008726043716">оршил</translation>
 <translation id="57838592816432529">Дууг хаах</translation>
+<translation id="5787939484346677755">дэлгэсэн, автоматаар бөглөх сонголт боломжтой.</translation>
 <translation id="5860033963881614850">Идэвхгүй байна</translation>
 <translation id="588258955323874662">Дэлгэц дүүрэн</translation>
 <translation id="5888666972993069672">Одоо <ph name="DEVICE_FRIENDLY_NAME" />-д дамжуулж байна</translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">жагсаалтын хайрцаг</translation>
 <translation id="6150588977291308318">ном зүй</translation>
 <translation id="6164829606128959761">метр</translation>
+<translation id="6165053282446038410">дэлгэсэн, автоматаар бөглөх <ph name="COUNT" /> сонголт боломжтой.</translation>
 <translation id="6166809985690652833">төгсгөлийн үг</translation>
 <translation id="6209276755895393898">Дараах шиг харагдаж байна: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">одоогийн хуудас</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">толгой хэсэг</translation>
 <translation id="6941933287844615239">медиа татах</translation>
 <translation id="6981594929165378967">оруулалт</translation>
+<translation id="698788488269350478">дэлгэсэн.</translation>
 <translation id="6989848892321993519">Энэ текстийг <ph name="MIN_CHARACTERS" /> болон түүнээс дээш тэмдэгтээр уртасгана уу (та одоогоор 1 тэмдэгт оруулсан байна).</translation>
 <translation id="7034405885550056553">зөвлөмж</translation>
 <translation id="709897737746224366">Заагдсан форматанд тааруулна уу.</translation>
 <translation id="7102274145889307184">одоогийн байршил</translation>
 <translation id="7118469954320184356">Тайлбар алга.</translation>
 <translation id="7139483182332611405">удиртгал</translation>
+<translation id="7198226213493847604">цэсийн попап товчлуур</translation>
 <translation id="7214187073215825913">контентын мэдээлэл</translation>
 <translation id="7238347055216017155">тодруулга</translation>
 <translation id="7263440858009898357">Жагсаалтаас нэг зүйлийг сонгоно уу.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">бүлэг</translation>
 <translation id="8845239796550121995">Одоо таны ТВ-д дамжуулж байна</translation>
 <translation id="8851136666856101339">Гол</translation>
+<translation id="8861621546968757188">харилцах цонхны попап товчлуур</translation>
 <translation id="8875657656876809964">Видеог дахин тоглуулахaд алдаа гарлаа</translation>
 <translation id="8889402386540077796">Hue</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> килобайт</translation>

@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">Lisää <ph name="ATSIGN" />-osaa ennen tuleva osa. <ph name="INVALIDADDRESS" /> on puutteellinen.</translation>
 <translation id="5334352251556557839">Mediaa ei voi toistaa.</translation>
 <translation id="537648784377940524">Vähimmäispäivämäärän (<ph name="MIN_DATE_OR_TIME" />) on oltava ennen enimmäispäivämäärää (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">laajennettu, valintaikkuna avattu.</translation>
 <translation id="5406322316791861025">kuva</translation>
 <translation id="5425179576310518467">nykyinen päivämäärä</translation>
 <translation id="5453733299334684579">puukohde</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">lisäasetukset</translation>
 <translation id="576709008726043716">johdanto</translation>
 <translation id="57838592816432529">Mykistä</translation>
+<translation id="5787939484346677755">laajennettu, automaattista täydennysehdotusta saatavilla.</translation>
 <translation id="5860033963881614850">Pois päältä</translation>
 <translation id="588258955323874662">Koko ruutu</translation>
 <translation id="5888666972993069672">Katsotaan TV:stä <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">luetteloruutu</translation>
 <translation id="6150588977291308318">lähdeluettelo</translation>
 <translation id="6164829606128959761">mittari</translation>
+<translation id="6165053282446038410">laajennettu, <ph name="COUNT" /> automaattista täydennysehdotusta saatavilla.</translation>
 <translation id="6166809985690652833">jälkipuhe</translation>
 <translation id="6209276755895393898">Näkyy olevan: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">nykyinen sivu</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">otsikko</translation>
 <translation id="6941933287844615239">lataa media</translation>
 <translation id="6981594929165378967">lisäys</translation>
+<translation id="698788488269350478">laajennettu.</translation>
 <translation id="6989848892321993519">Pidennä tämä teksti vähintään <ph name="MIN_CHARACTERS" /> merkkiin (tällä hetkellä käytössä 1 merkki).</translation>
 <translation id="7034405885550056553">ehdotus</translation>
 <translation id="709897737746224366">Käytä pyydettyä muotoilua.</translation>
 <translation id="7102274145889307184">nykyinen sijainti</translation>
 <translation id="7118469954320184356">Ei kuvausta saatavilla</translation>
 <translation id="7139483182332611405">johdanto</translation>
+<translation id="7198226213493847604">valikon avauspainike</translation>
 <translation id="7214187073215825913">sisältötiedot</translation>
 <translation id="7238347055216017155">korostus</translation>
 <translation id="7263440858009898357">Valitse kohde luettelosta.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">luku</translation>
 <translation id="8845239796550121995">Suoratoistetaan televisioosi</translation>
 <translation id="8851136666856101339">pää</translation>
+<translation id="8861621546968757188">valintaikkunan avauspainike</translation>
 <translation id="8875657656876809964">Videon toistovirhe</translation>
 <translation id="8889402386540077796">Sävy</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kt</translation>

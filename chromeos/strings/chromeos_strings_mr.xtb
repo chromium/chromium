@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">स्कॅनिंग सुरू करता आले नाही</translation>
 <translation id="1071587090247825784">फायरवॉल डिटेक्ट केली</translation>
 <translation id="1075811647922107217">पेजचा आकार</translation>
+<translation id="1124772482545689468">वापरकर्ता</translation>
 <translation id="1175697296044146566">हे <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे.</translation>
 <translation id="1195447618553298278">अज्ञात एरर.</translation>
 <translation id="1204296502688602597">DNS लेटंसी</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> प्रयत्न शिल्लक</translation>
 <translation id="2391082728065870591">फीडबॅक अहवाल पाठवा</translation>
 <translation id="2461822463642141190">सद्य</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} प्रयत्न शिल्लक}other{<ph name="ERROR_MESSAGE" /> {0} प्रयत्न शिल्लक}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">स्कॅन करा</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> चाचणी रन होत आहे...</translation>
+<translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2805756323405976993">ॲप्लिकेशन</translation>
 <translation id="2872961005593481000">बंद करा</translation>
 <translation id="3008341117444806826">रिफ्रेश करा</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3083667275341675831">कनेक्टिव्हिटी निदान</translation>
 <translation id="3091839911843451378">अयशस्वी झाले - थांबले आहे</translation>
+<translation id="3102119246920354026">कॅशे  </translation>
+<translation id="3122464029669770682">सीपीयू</translation>
 <translation id="3188257591659621405">माझ्या फाइल</translation>
 <translation id="3199982728237701504">दस्तऐवज फीडर (दोन बाजू असलेले)</translation>
 <translation id="3246869037381808805">एक दिवसापेक्षा जुने प्रिंट जॉब काढून टाकले जातील</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">नवीन पासवर्ड</translation>
 <translation id="3865414814144988605">रिझोल्युशन</translation>
 <translation id="3941014780699102620">होस्टचे निराकरण करता आले नाही</translation>
+<translation id="3942420633017001071">निदान</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> दिवसांपेक्षा जुने प्रिंट जॉब काढून टाकले जातील</translation>
 <translation id="4003384961948020559">अयशस्वी झाले - आउटपुट भरले आहे</translation>
 <translation id="4034824040120875894">प्रिंटर</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकंदांत <ph name="RATE" /> शुल्क आकारले.</translation>
 <translation id="4932733599132424254">तारीख</translation>
 <translation id="4985509611418653372">रन</translation>
+<translation id="5154917547274118687">मेमरी</translation>
 <translation id="5168185087976003268">बॅटरीची स्थिती</translation>
 <translation id="520299634122159966">कोणतीही स्कॅनर उपलब्ध नाही</translation>
 <translation id="5212543919916444558">मी मदत करू शकेन असे मला तुमच्या स्क्रीनवर काही आढळले नाही. 
@@ -137,6 +142,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">अधिक जाणून घ्या</translation>
 <translation id="6191293864534840972">समस्या असलेले नेम सर्व्हर</translation>
+<translation id="6232017090690406397">बॅटरी</translation>
 <translation id="6325525973963619867">अयशस्वी</translation>
 <translation id="636850387210749493">Enterprise नावनोंदणी</translation>
 <translation id="649050271426829538">थांबले - कागद अडकला</translation>
@@ -194,6 +200,7 @@
 <translation id="8910721771319628100">डीफॉल्ट नेटवर्क लेटंसी सीमेच्या वर आहे</translation>
 <translation id="8919837981463578619">अयशस्वी झाले - ट्रे सापडला नाही</translation>
 <translation id="8928727111548978589">अयशस्वी झाले - कागद संपला आहे</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> प्रयत्न शिल्लक</translation>
 <translation id="8970109610781093811">पुन्हा चालवा</translation>
 <translation id="9088306295921699330">सद्य वापर</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> चे तिकीट रिफ्रेश करा</translation>

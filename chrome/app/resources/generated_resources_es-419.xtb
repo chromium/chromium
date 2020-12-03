@@ -3171,7 +3171,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4646675363240786305">Puertos</translation>
 <translation id="4647090755847581616">&amp;Cerrar pestaña</translation>
 <translation id="4647283074445570750">Paso <ph name="CURRENT_STEP" /> de <ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{Iniciar la app cuando accedas a tu cuenta en la tablet}computer{Iniciar la app cuando accedas a tu cuenta en la computadora}other{Iniciar la app cuando accedas a tu cuenta en el dispositivo}}</translation>
 <translation id="4647697156028544508">Ingresa el PIN para "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">Permisos insuficientes</translation>
 <translation id="4648499713050786492">Desbloquea tu perfil antes de agregar una persona.</translation>
@@ -3716,6 +3715,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5319359161174645648">Google recomienda Chrome</translation>
 <translation id="5320112320661303273">Al parecer, ya configuraste Asistente en otro dispositivo. Activa la siguiente configuración para sacarle más provecho a tu Asistente.</translation>
+<translation id="5320135788267874712">Nombre del nuevo dispositivo</translation>
 <translation id="532247166573571973">Es posible que no se pueda acceder al servidor. Vuelve a intentarlo más tarde.</translation>
 <translation id="5324300749339591280">Lista de apps</translation>
 <translation id="5324780743567488672">Configurar la zona horaria automáticamente mediante la ubicación</translation>

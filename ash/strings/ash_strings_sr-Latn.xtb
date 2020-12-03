@@ -122,6 +122,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2050339315714019657">Vertikalno</translation>
 <translation id="2067602449040652523">Osvetljenost tastature</translation>
 <translation id="2078034614700056995">Prevucite udesno pomoću četiri prsta da biste prešli na sledeću radnu površinu</translation>
+<translation id="2079504693865562705">Sakrij aplikacije na polici</translation>
 <translation id="2083190527011054446">Laku noć, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Niste povezani na mrežu</translation>
 <translation id="2126242104232412123">Novi radni prostor</translation>
@@ -238,6 +239,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3226991577105957773">i još <ph name="COUNT" /></translation>
 <translation id="3236488194889173876">Nije dostupna nijedna mobilna mreža</translation>
 <translation id="3249513730522716925">Prozor <ph name="WINDOW_TITLE" /> je premešten sa radne površine <ph name="ACTIVE_DESK" /> na radnu površinu <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, jačina signala <ph name="SIGNAL_STRENGTH" /> odsto.</translation>
 <translation id="3255483164551725916">Šta možeš da radiš?</translation>
 <translation id="3269597722229482060">Desni klik</translation>
 <translation id="3289674678944039601">Puni se preko adaptera</translation>
@@ -369,6 +371,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4389184120735010762">Pritisnuli ste tastersku prečicu za montiranu lupu ekrana. Želite li da je uključite?</translation>
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> je isključena.</translation>
 <translation id="4421231901400348175">Delite kontrolu nad ekranom sa osobom <ph name="HELPER_NAME" /> preko Daljinske pomoći.</translation>
+<translation id="4427613789487709312">Podrazumevano (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Jačina zvuka</translation>
 <translation id="4450893287417543264">Ne prikazuj ponovo</translation>
 <translation id="445864333228800152">Dobro veče,</translation>
@@ -449,6 +452,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="5078796286268621944">Netačan PIN</translation>
 <translation id="5083553833479578423">Otključajte još funkcija Pomoćnika.</translation>
 <translation id="5136175204352732067">Neka druga tastatura je povezana</translation>
+<translation id="5155897006997040331">Brzina čitanja</translation>
 <translation id="5168181903108465623">Dostupni su uređaji za prebacivanje</translation>
 <translation id="5170568018924773124">Prikaži u direktorijumu</translation>
 <translation id="5176318573511391780">Snimi deo ekrana</translation>
@@ -712,6 +716,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 obaveštenje}one{# obaveštenje}few{# obaveštenja}other{# obaveštenja}}</translation>
 <translation id="7724603315864178912">Iseci</translation>
+<translation id="7745560842763881396">Prikaži aplikacije na polici</translation>
 <translation id="7749443890790263709">Dostigli ste maksimalan broj radnih površina.</translation>
 <translation id="776344839111254542">Kliknite za prikaz detalja ažuriranja</translation>
 <translation id="7780159184141939021">Rotirajte ekran</translation>

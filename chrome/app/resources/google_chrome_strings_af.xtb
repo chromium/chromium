@@ -56,6 +56,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2309047409763057870">Dit is 'n sekondêre installering van Chrome en kan nie jou verstekblaaier gemaak word nie.</translation>
 <translation id="2348335408836342058">Chrome het toestemming nodig om toegang te kry tot jou kamera en mikrofoon vir hierdie werf</translation>
 <translation id="234869673307233423">Chrome kan nie jou wagwoorde nagaan nie. Probeer later weer.</translation>
+<translation id="235650106824528204">Enige Chrome-data wat tydens die gebruik van hierdie profiel gegenereer word (soos die skepping van boekmerke, geskiedenis, wagwoorde, en ander instellings) kan deur die werkprofieladministrateur verwyder word. <ph name="LEARN_MORE" /></translation>
 <translation id="2429317896000329049">Google Chrome kon nie jou data sinkroniseer nie, omdat sinkronisering nie vir jou domein beskikbaar is nie.</translation>
 <translation id="2467438592969358367">Google Chrome wil jou wagwoorde uitvoer. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="2485422356828889247">Deïnstalleer</translation>
@@ -177,12 +178,14 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="573759479754913123">Meer oor Chrome-bedryfstelsel</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Kon nie Chrome begin nie. Probeer weer.</translation>
+<translation id="5851757216820085940">As jy veelvuldige Google-rekeninge het, kan jy hulle by jou <ph name="DEVICE_TYPE" /> voeg. Jou rekeninge sal in Chrome-blaaier en Play Winkel beskikbaar wees, asook dienste soos Gmail, Drive en YouTube.<ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome probeer tans om wagwoorde te wysig.</translation>
 <translation id="5895138241574237353">Herbegin</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Netwerkaanmelding</translation>
 <translation id="5940385492829620908">Jou web, boekmerke en ander Chrome-goed woon hier.</translation>
 <translation id="5941830788786076944">Maak Google Chrome die verstekblaaier</translation>
 <translation id="6070348360322141662">Google Chrome sal jou data enkripteer vir bykomende sekuriteit</translation>
+<translation id="608006075545470555">Voeg werkprofiel by hierdie blaaier</translation>
 <translation id="6113794647360055231">Chrome het pas beter geword</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
@@ -194,10 +197,12 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6368958679917195344">Chrome-bedryfstelsel word moontlik gemaak deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbron-sagteware<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6566149418543181476">Dateer Google Chrome tans op (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6568793831116033768">Chrome OS-stelsel</translation>
 <translation id="6650333065969705433">Om Rosetta te gebruik om beskermde media te speel, moet jy Chrome herbegin.</translation>
 <translation id="6676384891291319759">Gaan by die internet in</translation>
 <translation id="6679975945624592337">Laat Google Chrome in die agtergrond loop</translation>
 <translation id="6750954913813541382">Chrome stuur die teks wat jy in die blaaier tik na Google om spelfoute reg te maak.</translation>
+<translation id="6755885556185485672">Chrome OS het nie reg toegemaak nie.</translation>
 <translation id="677276454032249905">Verlaat Chrome in elk geval?</translation>
 <translation id="683440813066116847">Inkomende reël vir Google Chrome Kanarie om mDNS-verkeer toe te laat.</translation>
 <translation id="6885412569789873916">Chrome Beta-programme</translation>
@@ -256,6 +261,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="8498858610309223613">'n Spesiale sekuriteitsopdatering vir Google Chrome is sopas toegepas. Herbegin nou en ons sal jou oortjies teruglaai.</translation>
 <translation id="8521348052903287641">Inkomende reël vir Google Chrome Dev om mDNS-verkeer toe te laat.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8550334526674375523">Hierdie werkprofiel is heeltemal apart van jou persoonlike profiel.</translation>
 <translation id="8556340503434111824">Daar is 'n nuwe weergawe van Google Chrome beskikbaar en dit is vinniger as ooit.</translation>
 <translation id="861359755029082151">Rosetta maak dit vir Chrome moontlik om die beskemde media op hierdie bladsy te speel.</translation>
 <translation id="8614913330719544658">Google Chrome reageer nie. Herbegin nou?</translation>
@@ -274,6 +280,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="8907709077090383765">Om dit vir Chrome moontlik te maak om beskermde media te speel, moet jy Rosetta installeer. Wil jy dit nou installeer?</translation>
 <translation id="8914504000324227558">Herbegin Chrome</translation>
 <translation id="8922193594870374009">Meld op albei toestelle by Chrome aan om 'n nommer van <ph name="ORIGIN" /> af na jou Android-foon te stuur.</translation>
+<translation id="8986207147630327271">Jy voeg tans 'n werkprofiel by hierdie blaaier en gee jou administrateur beheer oor net jou werkprofiel.</translation>
 <translation id="8999208279178790196">{0,plural, =0{'n Chrome-opdatering is beskikbaar}=1{'n Chrome-opdatering is beskikbaar}other{'n Chrome-opdatering is al # dae lank beskikbaar}}</translation>
 <translation id="9026991721384951619">Chrome-bedrystelsel kon nie jou data sinkroniseer nie, omdat jou rekening se aanmeldbesonderhede verouderd is.</translation>
 <translation id="9067395829937117663">Google Chrome vereis Windows 7 of nuwer.</translation>

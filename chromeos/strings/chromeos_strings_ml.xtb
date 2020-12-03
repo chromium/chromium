@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">സ്‌കാൻ ചെയ്യൽ ആരംഭിക്കാനായില്ല</translation>
 <translation id="1071587090247825784">ഫയര്‍വാള്‍ കണ്ടെത്തി</translation>
 <translation id="1075811647922107217">പേജിന്റെ വലുപ്പം</translation>
+<translation id="1124772482545689468">ഉപയോക്താവ്</translation>
 <translation id="1175697296044146566">ഈ <ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്.</translation>
 <translation id="1195447618553298278">അജ്ഞാത പിശക്.</translation>
 <translation id="1204296502688602597">DNS പ്രതികരണ സമയം</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> ശ്രമങ്ങൾ ശേഷിക്കുന്നു</translation>
 <translation id="2391082728065870591">ഫീഡ്‌ബാക്ക് റിപ്പോർട്ട് അയയ്‌ക്കുക</translation>
 <translation id="2461822463642141190">നിലവിൽ</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ശ്രമം ശേഷിക്കുന്നു}other{<ph name="ERROR_MESSAGE" /> {0} ശ്രമങ്ങൾ ശേഷിക്കുന്നു}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> പരീക്ഷണം റൺ ചെയ്യുന്നു...</translation>
+<translation id="2620436844016719705">സിസ്റ്റം</translation>
 <translation id="2805756323405976993">ആപ്സ്</translation>
 <translation id="2872961005593481000">അടയ്ക്കുക</translation>
 <translation id="3008341117444806826">പുതുക്കിയെടുക്കുക</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3083667275341675831">കണക്റ്റിവിറ്റി തകരാർ കണ്ടെത്തൽ</translation>
 <translation id="3091839911843451378">പ്രിന്റ് ചെയ്യാനായില്ല - പ്രവർത്തനം നിർത്തി</translation>
+<translation id="3102119246920354026">കാഷെ</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">എൻ്റെ ഫയലുകൾ</translation>
 <translation id="3199982728237701504">ഡോക്യുമെന്റ് ഫീഡർ (രണ്ട് വശമുള്ളത്)</translation>
 <translation id="3246869037381808805">1 ദിവസം മുമ്പുള്ള പ്രിന്റ് ജോലികൾ നീക്കം ചെയ്യും</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">പുതിയ പാസ്‌വേഡ്</translation>
 <translation id="3865414814144988605">റെസല്യൂഷൻ</translation>
 <translation id="3941014780699102620">ഹോസ്‌റ്റ് പരിഹരിക്കാനായില്ല</translation>
+<translation id="3942420633017001071">പ്രശ്‌നനിർണ്ണയം</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ദിവസം മുമ്പുള്ള പ്രിന്റ് ജോലികൾ നീക്കം ചെയ്യും</translation>
 <translation id="4003384961948020559">പ്രിന്റ് ചെയ്യാനായില്ല - ഔട്ട്പുട്ട് നിറഞ്ഞിരിക്കുന്നു</translation>
 <translation id="4034824040120875894">പ്രിന്റർ</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> സെക്കന്റിൽ <ph name="RATE" /> ചാർജ് ചെയ്‌തു.</translation>
 <translation id="4932733599132424254">തീയതി</translation>
 <translation id="4985509611418653372">റൺ ചെയ്യുക</translation>
+<translation id="5154917547274118687">മെമ്മറി</translation>
 <translation id="5168185087976003268">ബാറ്ററിയുടെ പ്രവർത്തനക്ഷമത</translation>
 <translation id="520299634122159966">ലഭ്യമായ സ്‌കാനറുകളൊന്നുമില്ല</translation>
 <translation id="5212543919916444558">എനിക്ക് സഹായിക്കാനാവുന്ന ഒന്നും നിങ്ങളുടെ സ്‌ക്രീനിൽ കണ്ടെത്താനാവുന്നില്ല. എന്നോട് എന്തെങ്കിലും ആവശ്യപ്പെടാൻ മൈക്ക് ടാപ്പ് ചെയ്യുന്നത് പരീക്ഷിക്കൂ.</translation>
@@ -136,6 +141,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">കൂടുതലറിയുക</translation>
 <translation id="6191293864534840972">തകരാറുള്ള നെയിം സെർവറുകൾ</translation>
+<translation id="6232017090690406397">ബാറ്ററി</translation>
 <translation id="6325525973963619867">പരാജയപ്പെട്ടു</translation>
 <translation id="636850387210749493">സംരംഭ വിവരപ്പട്ടിക</translation>
 <translation id="649050271426829538">പ്രിന്റ് ജോലി നിർത്തി - പേപ്പർ ജാമായി</translation>
@@ -193,6 +199,7 @@
 <translation id="8910721771319628100">ഡിഫോൾട്ട് നെറ്റ്‌വർക്ക് പ്രതികരണ സമയം പരിധിക്ക് മുകളിലാണ്</translation>
 <translation id="8919837981463578619">പ്രിന്റ് ചെയ്യാനായില്ല - ട്രേ കാണുന്നില്ല</translation>
 <translation id="8928727111548978589">പ്രിന്റ് ചെയ്യാനായില്ല - പേപ്പറില്ല</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> ശ്രമങ്ങൾ ശേഷിക്കുന്നു</translation>
 <translation id="8970109610781093811">വീണ്ടും പ്രവർത്തിപ്പിക്കുക</translation>
 <translation id="9088306295921699330">നിലവിലെ ഉപയോഗം</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> എന്നതിനുള്ള ടിക്കറ്റ് പുതുക്കിയെടുക്കുക</translation>

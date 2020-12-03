@@ -54,7 +54,6 @@
 <translation id="369442766917958684">במצב לא מקוון.</translation>
 <translation id="3695446226812920698">איך עושים זאת</translation>
 <translation id="3776024066357219166">‏הפעילות של Chrome Remote Desktop הסתיימה.</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3897092660631435901">תפריט</translation>
 <translation id="3905196214175737742">דומיין לא חוקי של בעל המארח.</translation>
 <translation id="3931191050278863510">המארח הופסק.</translation>
@@ -99,6 +98,7 @@
 <translation id="5419418238395129586">חיבור אחרון לרשת: <ph name="DATE" /></translation>
 <translation id="544077782045763683">המארח כבה.</translation>
 <translation id="5601503069213153581">קוד אימות</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">שולחן העבודה שלך משותף כעת עם <ph name="USER" />.</translation>
 <translation id="5750083143895808682">התחברת באמצעות חשבון <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">התחברות מחדש</translation>
@@ -118,7 +118,6 @@
 <translation id="6583902294974160967">תמיכה</translation>
 <translation id="6612717000975622067">‏שליחת Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">שיתוף</translation>
-<translation id="6681800064886881394">‏Copyright © 2013 Google Inc.‎. כל הזכויות שמורות.</translation>
 <translation id="677755392401385740">המארח הופעל עבור המשתמש: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6939719207673461467">הצגה/הסתרה של המקלדת.</translation>
 <translation id="6963936880795878952">החיבורים למחשב המרוחק חסומים באופן זמני משום שמישהו ניסה להתחבר אליו עם קוד אימות לא חוקי. יש לנסות שוב מאוחר יותר.</translation>

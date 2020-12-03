@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Δεν ήταν δυνατή η έναρξη της σάρωσης</translation>
 <translation id="1071587090247825784">Εντοπίστηκε τείχος προστασίας</translation>
 <translation id="1075811647922107217">Μέγεθος σελίδας</translation>
+<translation id="1124772482545689468">Χρήστης</translation>
 <translation id="1175697296044146566">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Άγνωστο σφάλμα.</translation>
 <translation id="1204296502688602597">Λανθάνων χρόνος DNS</translation>
@@ -21,6 +22,7 @@
 <translation id="1499900233129743732">Ο τομέας <ph name="MANAGER" /> διαχειρίζεται αυτόν τον χρήστη και ενδέχεται να διαχειρίζεται απομακρυσμένα τις ρυθμίσεις και να παρακολουθεί τη δραστηριότητα του χρήστη.</translation>
 <translation id="150962533380566081">Μη έγκυρος κωδικός PUK.</translation>
 <translation id="1510238584712386396">Λειτουργία εκκίνησης</translation>
+<translation id="1621067168122174824">Εκτέλεση δοκιμής φόρτισης</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> νήματα)</translation>
 <translation id="1641857168437328880">Τροφοδότης εγγράφων (Μίας όψης)</translation>
 <translation id="1644574205037202324">Ιστορικό</translation>
@@ -28,6 +30,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Παρουσία επίλυσης DNS</translation>
 <translation id="1743558184855585519">Θεωρείται ότι η μπαταρία καταναλώθηκε μόλις φτάσει το όριο.</translation>
+<translation id="1792647875738159689">Ακύρωση σάρωσης</translation>
 <translation id="1905710495812624430">Έγινε υπέρβαση του μέγιστου αριθμού επιτρεπόμενων προσπαθειών.</translation>
 <translation id="1930797645656624981">Υπηρεσία μεθόδου εισαγωγής Chrome OS</translation>
 <translation id="1947737735496445907">Εκτυπώθηκε</translation>
@@ -42,22 +45,26 @@
 <translation id="2375079107209812402">Απομένουν <ph name="ATTEMPTS_LEFT" /> προσπάθειες</translation>
 <translation id="2391082728065870591">Αποστολή αναφοράς σχολίων</translation>
 <translation id="2461822463642141190">Τρέχουσα</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} προσπάθεια απομένει}other{<ph name="ERROR_MESSAGE" /> {0} προσπάθειες απομένουν}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Σάρωση</translation>
 <translation id="2570743873672969996">Εκτέλεση δοκιμής <ph name="TEST_NAME" />…</translation>
+<translation id="2620436844016719705">Σύστημα</translation>
 <translation id="2805756323405976993">Εφαρμογές </translation>
 <translation id="2872961005593481000">Τερματισμός λειτουργίας</translation>
 <translation id="3008341117444806826">ΑΝΑΝΕΩΣΗ</translation>
 <translation id="3009958530611748826">Επιλέξτε έναν φάκελο στον οποίο θέλετε να γίνεται αποθήκευση.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3069085583900247081">Αποτυχία δοκιμής</translation>
 <translation id="3083667275341675831">Διαγνωστικά συνδεσιμότητας</translation>
 <translation id="3091839911843451378">Σφάλμα - Σταμάτησε</translation>
+<translation id="3102119246920354026">Κρυφή μνήμη</translation>
+<translation id="3122464029669770682">Κεντρική μονάδα επεξεργασίας</translation>
 <translation id="3188257591659621405">Τα αρχεία μου</translation>
 <translation id="3199982728237701504">Τροφοδότης εγγράφων (Διπλής όψης)</translation>
 <translation id="3246869037381808805">Οι εργασίες εκτύπωσης που είναι παλαιότερες της 1 ημέρας θα καταργηθούν.</translation>
 <translation id="3268178239013324452">Σφάλμα - Η θύρα είναι ανοικτή</translation>
 <translation id="3310640316857623290">Ο λανθάνων χρόνος DNS έχει υπερβεί σημαντικά το επιτρεπόμενο ελάχιστο όριο.</translation>
+<translation id="3328783797891415197">Η δοκιμή εκτελείται</translation>
 <translation id="3369013195428705271">Είστε βέβαιοι ότι θέλετε να διαγράψετε όλο το ιστορικό εκτύπωσης; Οι τρέχουσες εργασίες εκτύπωσης δεν θα διαγραφούν.</translation>
 <translation id="3456078764689556234">Εκτυπώθηκε η σελίδα <ph name="PRINTED_PAGES" /> από <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Εκτύπωση</translation>
@@ -71,11 +78,13 @@
 <translation id="3838338534323494292">Νέος κωδικός πρόσβασης</translation>
 <translation id="3865414814144988605">Ανάλυση</translation>
 <translation id="3941014780699102620">Αποτυχία επίλυσης κεντρικού υπολογιστή</translation>
+<translation id="3942420633017001071">Διαγνωστικά</translation>
 <translation id="39823212440917567">Οι εργασίες εκτύπωσης που είναι παλαιότερες των <ph name="NUMBER_OF_DAYS" /> ημερών θα καταργηθούν.</translation>
 <translation id="4003384961948020559">Σφάλμα - Το σημείο εξόδου είναι γεμάτο</translation>
 <translation id="4034824040120875894">Εκτυπωτής</translation>
 <translation id="4131410914670010031">Ασπρόμαυρο</translation>
 <translation id="4145784616224233563">Τείχος προστασίας HTTP</translation>
+<translation id="4170700058716978431">ΑΠΕΤΥΧΕ</translation>
 <translation id="4227825898293920515">Ο κωδικός πρόσβασης λήγει σε <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Δεν υπάρχουν εργασίες εκτύπωσης σε εξέλιξη</translation>
 <translation id="4297501883039923494">Διακοπή - Άγνωστο σφάλμα</translation>
@@ -100,16 +109,20 @@
 <translation id="4773299976671772492">Διακόπηκε</translation>
 <translation id="4808449224298348341">Ακυρώθηκε η εργασία εκτύπωσης <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">Επιλογή φακέλου στην εφαρμογή Αρχεία…</translation>
+<translation id="4848429997038228357">ΕΚΤΕΛΕΙΤΑΙ</translation>
 <translation id="4890353053343094602">Επιλέξτε άμεσα έναν νέο</translation>
 <translation id="4917889632206600977">Διακοπή - Τελείωσε το χαρτί</translation>
 <translation id="4921665434385737356">Φόρτιση κατά <ph name="RATE" /> σε <ph name="NUM_SECONDS" /> δευτερόλεπτα.</translation>
 <translation id="4932733599132424254">Ημερομηνία</translation>
 <translation id="4985509611418653372">Εκτέλεση</translation>
+<translation id="500920857929044050">Διακοπή δοκιμής</translation>
+<translation id="5154917547274118687">Μνήμη</translation>
 <translation id="5168185087976003268">Κατάσταση μπαταρίας</translation>
 <translation id="520299634122159966">Δεν υπάρχουν διαθέσιμοι σαρωτές.</translation>
 <translation id="5212543919916444558">Δεν βρέθηκε κάτι με το οποίο να μπορώ να σας βοηθήσω στην οθόνη σας.
 Πατήστε στο μικρόφωνο για να ρωτήσετε οτιδήποτε θέλετε.</translation>
 <translation id="5222676887888702881">Έξοδος</translation>
+<translation id="5264277876637023664">Εκτέλεση δοκιμής CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Επανεκτέλεση ρουτινών</translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
@@ -122,26 +135,33 @@
 <translation id="54609108002486618">Διαχειριζόμενη</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Μάθετε περισσότερα στο Κέντρο βοήθειας</translation>
+<translation id="5635169860413004179">Προβολή αναφοράς</translation>
 <translation id="5719918614880940190">Αυτή η επιλογή μετρά τη χρήση CPU και είναι αθροιστική για όλους τους πυρήνες.</translation>
+<translation id="5797428682393400134">ΕΠΙΤΥΧΙΑ</translation>
 <translation id="5832805196449965646">Προσθήκη ατόμου</translation>
 <translation id="5895138241574237353">Επανεκκίνηση</translation>
+<translation id="5931523347251946569">Το αρχείο δεν βρέθηκε</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, έκδοση <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Κλείσιμο</translation>
 <translation id="6048107060512778456">Σφάλμα - Εμπλοκή χαρτιού</translation>
 <translation id="6050189528197190982">Κλίμακα του γκρι</translation>
 <translation id="6058625436358447366">Για να τελειώσετε, εισαγάγετε τον παλιό και τον νέο κωδικό πρόσβασης</translation>
 <translation id="6061772781719867950">Αποτυχημένα αιτήματα HTTP</translation>
+<translation id="6104112872696127344">Η σάρωση ακυρώθηκε</translation>
 <translation id="6106186594183574873">Για να τελειώσετε, εισαγάγετε τον παλιό κωδικό πρόσβασης</translation>
 <translation id="6108689792487843350">Μη προσβάσιμη πύλη</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" />GHz / <ph name="MAX" />GHz</translation>
 <translation id="6146993107019042706">Για να ολοκληρώσετε, εισαγάγετε τον νέο κωδικό πρόσβασης</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Μάθετε περισσότερα</translation>
 <translation id="6191293864534840972">Τα ονόματα διακομιστών έχουν λανθασμένη μορφή.</translation>
+<translation id="6232017090690406397">Μπαταρία</translation>
 <translation id="6325525973963619867">Απέτυχε</translation>
 <translation id="636850387210749493">Εγγραφή επιχείρησης</translation>
 <translation id="649050271426829538">Διακοπή - Εμπλοκή χαρτιού</translation>
 <translation id="6517239166834772319">Εξερεύνηση</translation>
 <translation id="6527081081771465939">Άγνωστο πρωτόκολλο ασφαλείας Wi-Fi</translation>
+<translation id="6532051501443766164">Απόκρυψη αναφοράς</translation>
 <translation id="65587193855025101">Επίπεδος</translation>
 <translation id="6564646048574748301">Σφάλμα - Δεν είναι δυνατή η πρόσβαση στον εκτυπωτή</translation>
 <translation id="6618744767048954150">Σε εξέλιξη</translation>
@@ -149,6 +169,7 @@
 <translation id="6643016212128521049">Διαγραφή</translation>
 <translation id="6704062477274546131">Επίλυση DNS</translation>
 <translation id="6747215703636344499">Διακοπή - Ο δίσκος εξόδου είναι γεμάτος</translation>
+<translation id="6756731097889387912">Δεν ήταν δυνατή η ακύρωση της σάρωσης.</translation>
 <translation id="6766275201586212568">Αποτυχημένες αναλύσεις DNS</translation>
 <translation id="6768237774506518020">Υψηλό ποσοστό αποτυχίας ανάλυσης DNS</translation>
 <translation id="6839141349259399400">Δεν είναι δυνατή η σύνδεση σε σαρωτές;</translation>
@@ -164,6 +185,7 @@
 <translation id="7648838807254605802">Μεγάλος λανθάνων χρόνος HTTPS</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7690294790491645610">Επιβεβαίωση νέου κωδικού πρόσβασης</translation>
+<translation id="7732651821766520760">Δοκιμή <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Κατάσταση</translation>
 <translation id="7855434858642800953">Το σαρωμένο αρχείο αποθηκεύτηκε!</translation>
 <translation id="7928373994957558460">Εμφάνιση τοποθεσίας αρχείου</translation>
@@ -191,12 +213,16 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Προεπιλογή</translation>
 <translation id="8845001906332463065">Λήψη βοήθειας</translation>
+<translation id="8881098542468797602">Επιτυχία δοκιμής</translation>
 <translation id="8910721771319628100">Ο λανθάνων χρόνος του προεπιλεγμένου δικτύου έχει υπερβεί το ελάχιστο όριο.</translation>
 <translation id="8919837981463578619">Σφάλμα - Λείπει δίσκος</translation>
 <translation id="8928727111548978589">Σφάλμα - Τελείωσε το χαρτί</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> προσπάθειες απομένουν.</translation>
 <translation id="8970109610781093811">Επανεκτέλεση</translation>
 <translation id="9088306295921699330">Τρέχουσα χρήση</translation>
 <translation id="910415269708673980">Ανανέωση εισιτηρίου για το <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Σάρωση σελίδας <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Ξεκλείδωμα</translation>
+<translation id="9149391708638971077">Εκτέλεση δοκιμής μνήμης</translation>
+<translation id="982713511914535780">Εκτέλεση δοκιμής αποφόρτισης</translation>
 </translationbundle>

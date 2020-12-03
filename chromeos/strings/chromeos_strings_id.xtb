@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Tidak dapat memulai pemindaian</translation>
 <translation id="1071587090247825784">Firewall terdeteksi</translation>
 <translation id="1075811647922107217">Ukuran halaman</translation>
+<translation id="1124772482545689468">Pengguna</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> ini dikelola oleh <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Kesalahan tak dikenal.</translation>
 <translation id="1204296502688602597">Latensi DNS</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> upaya tersisa</translation>
 <translation id="2391082728065870591">Kirim Laporan Masukan</translation>
 <translation id="2461822463642141190">Arus</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} percobaan lagi}other{<ph name="ERROR_MESSAGE" /> {0} percobaan lagi}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Pindai</translation>
 <translation id="2570743873672969996">Menjalankan pengujian <ph name="TEST_NAME" /> ...</translation>
+<translation id="2620436844016719705">Sistem</translation>
 <translation id="2805756323405976993">Apl</translation>
 <translation id="2872961005593481000">Matikan</translation>
 <translation id="3008341117444806826">PERBARUI</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3083667275341675831">Diagnostik Konektivitas</translation>
 <translation id="3091839911843451378">Gagal - Berhenti</translation>
+<translation id="3102119246920354026">Cache</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">File saya</translation>
 <translation id="3199982728237701504">Pengumpan Dokumen (Dua Sisi)</translation>
 <translation id="3246869037381808805">Tugas pencetakan yang sudah lebih dari 1 hari akan dihapus</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">Sandi baru</translation>
 <translation id="3865414814144988605">Resolusi</translation>
 <translation id="3941014780699102620">Gagal me-resolve host</translation>
+<translation id="3942420633017001071">Diagnosis</translation>
 <translation id="39823212440917567">Tugas pencetakan yang sudah lebih dari <ph name="NUMBER_OF_DAYS" /> hari akan dihapus</translation>
 <translation id="4003384961948020559">Gagal - Baki hasil cetak penuh</translation>
 <translation id="4034824040120875894">Printer</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356">Terisi <ph name="RATE" /> dalam <ph name="NUM_SECONDS" /> detik.</translation>
 <translation id="4932733599132424254">Tanggal</translation>
 <translation id="4985509611418653372">Jalankan</translation>
+<translation id="5154917547274118687">Memori</translation>
 <translation id="5168185087976003268">Kesehatan baterai</translation>
 <translation id="520299634122159966">Tidak ada pemindai yang tersedia</translation>
 <translation id="5212543919916444558">Di layar tidak ada apa pun yang membutuhkan bantuan saya.
@@ -137,6 +142,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Pelajari selengkapnya</translation>
 <translation id="6191293864534840972">Format server nama salah</translation>
+<translation id="6232017090690406397">Baterai</translation>
 <translation id="6325525973963619867">Gagal</translation>
 <translation id="636850387210749493">Pendaftaran perusahaan</translation>
 <translation id="649050271426829538">Dihentikan - Kertas macet</translation>
@@ -194,6 +200,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8910721771319628100">Jaringan default melebihi ambang batas latensi</translation>
 <translation id="8919837981463578619">Gagal - Tidak ada baki</translation>
 <translation id="8928727111548978589">Gagal - Kertas habis</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> upaya tersisa</translation>
 <translation id="8970109610781093811">Jalankan lagi</translation>
 <translation id="9088306295921699330">Penggunaan saat ini</translation>
 <translation id="910415269708673980">Perbarui tiket untuk <ph name="PRINCIPAL_NAME" /></translation>

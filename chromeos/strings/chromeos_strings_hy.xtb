@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Չհաջողվեց սկսել սկանավորումը</translation>
 <translation id="1071587090247825784">Հայտնաբերվել է հրապատ</translation>
 <translation id="1075811647922107217">Էջի չափսը</translation>
+<translation id="1124772482545689468">Օգտատեր</translation>
 <translation id="1175697296044146566">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" /> տիրույթի կողմից։</translation>
 <translation id="1195447618553298278">Անհայտ սխալ:</translation>
 <translation id="1204296502688602597">DNS-ի հապաղում</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402">Մնաց <ph name="ATTEMPTS_LEFT" /> փորձ</translation>
 <translation id="2391082728065870591">Ուղարկել կարծիքների վերաբերյալ հաշվետվություն</translation>
 <translation id="2461822463642141190">Ընթացիկ</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Մնացած փորձերի քանակը՝ {0}}one{<ph name="ERROR_MESSAGE" /> Մնացած փորձերի քանակը՝ {0}}other{<ph name="ERROR_MESSAGE" /> Մնացած փորձերի քանակը՝ {0}}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Որոնել</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" />ը ստուգվում է…</translation>
+<translation id="2620436844016719705">Համակարգ</translation>
 <translation id="2805756323405976993">Հավելվածներ</translation>
 <translation id="2872961005593481000">Անջատել</translation>
 <translation id="3008341117444806826">ԹԱՐՄԱՑՆԵԼ</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> մԱ</translation>
 <translation id="3083667275341675831">Կապի դիագնոստիկա</translation>
 <translation id="3091839911843451378">Չհաջողվեց տպել – Տպիչի աշխատանքը դադարեցվել է</translation>
+<translation id="3102119246920354026">Հիշապահեստ</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">Իմ ֆայլերը</translation>
 <translation id="3199982728237701504">Փաստաթղթերի մատակարար (երկկողմանի)</translation>
 <translation id="3246869037381808805">Տպման առաջադրանքները, որոնք 1 օրից հին են, կհեռացվեն</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">Նոր գաղտնաբառը</translation>
 <translation id="3865414814144988605">Լուծաչափ</translation>
 <translation id="3941014780699102620">Չհաջողվեց ճանաչել խնամորդը</translation>
+<translation id="3942420633017001071">Դիագնոստիկա</translation>
 <translation id="39823212440917567">Տպման առաջադրանքները, որոնք <ph name="NUMBER_OF_DAYS" /> օրից հին են, կհեռացվեն</translation>
 <translation id="4003384961948020559">Չհաջողվեց տպել – Ելքը լցված է</translation>
 <translation id="4034824040120875894">Տպիչ</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356">Լիցքավորվել է <ph name="RATE" />-ով՝ <ph name="NUM_SECONDS" /> վայրկյանում։</translation>
 <translation id="4932733599132424254">Ամսաթիվ</translation>
 <translation id="4985509611418653372">Գործարկել</translation>
+<translation id="5154917547274118687">Հիշողություն</translation>
 <translation id="5168185087976003268">Մարտկոցի կարգավիճակը</translation>
 <translation id="520299634122159966">Հասանելի սկաներներ չկան</translation>
 <translation id="5212543919916444558">Չհաջողվեց գտնել քարտեր էկրանին:
@@ -137,6 +142,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Իմանալ ավելին</translation>
 <translation id="6191293864534840972">Սխալ DNS սերվերներ</translation>
+<translation id="6232017090690406397">Մարտկոց</translation>
 <translation id="6325525973963619867">Սխալ առաջացավ</translation>
 <translation id="636850387210749493">Ձեռնարկության գրանցում</translation>
 <translation id="649050271426829538">Դադարեցվել է – Թղթի խցանում</translation>
@@ -194,6 +200,7 @@
 <translation id="8910721771319628100">Կանխադրված ցանցը հապաղման սահմանափակման նկատմամբ առավելություն ունի</translation>
 <translation id="8919837981463578619">Չհաջողվեց տպել – Դարակը բացակայում է</translation>
 <translation id="8928727111548978589">Չհաջողվեց տպել – Թուղթը սպառվել է</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Մնացած փորձերի քանակը՝ <ph name="ATTEMPTS_LEFT" />։</translation>
 <translation id="9088306295921699330">Օգտագործված տարածքը</translation>
 <translation id="910415269708673980">Թարմացրեք <ph name="PRINCIPAL_NAME" /> հաշվի տոմսը</translation>
 <translation id="9106415115617144481">Սկանավորվում է էջ <ph name="PAGE_NUMBER" />-ը</translation>

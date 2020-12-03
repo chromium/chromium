@@ -117,6 +117,7 @@
 <translation id="2208919847696382164">დააინსტალირეთ Linux-ის მეშვეობით</translation>
 <translation id="2225536596944493418">ნამდვილად გსურთ, წაშალოთ <ph name="NUMBER_OF_ITEMS" /> ერთეული?</translation>
 <translation id="2230062665678605299">ვერ შეიქმნა საქაღალდე „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2251368349685848079">წაშლილებიდან აღდგენა</translation>
 <translation id="2275059641601412272">გადატანილია.</translation>
 <translation id="2288278176040912387">ფლეიერი</translation>
 <translation id="2291538123825441971">მიმდინარეობს <ph name="NUMBER_OF_FILES" /> ფაილის გახსნა.</translation>
@@ -733,6 +734,7 @@
 <translation id="8609695766746872526">ისლანდიური</translation>
 <translation id="8669949407341943408">გადატანა...</translation>
 <translation id="8698464937041809063">Google ნახაზი</translation>
+<translation id="8712637175834984815">კარგი</translation>
 <translation id="8713112442029511308">მალტური</translation>
 <translation id="8714406895390098252">ველოსიპედი</translation>
 <translation id="8719721339511222681">არჩეულია <ph name="ENTRY_NAME" />.</translation>

@@ -117,6 +117,7 @@
 <translation id="2208919847696382164">Инсталирајте помоћу Linux-а</translation>
 <translation id="2225536596944493418">Желите ли стварно да избришете ставке (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Није могуће направити директоријум „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2251368349685848079">Врати из отпада</translation>
 <translation id="2275059641601412272">Премештено је.</translation>
 <translation id="2288278176040912387">Грамофон</translation>
 <translation id="2291538123825441971">Отварају се датотеке (<ph name="NUMBER_OF_FILES" />).</translation>
@@ -734,6 +735,7 @@
 <translation id="8609695766746872526">исландски</translation>
 <translation id="8669949407341943408">Премештање...</translation>
 <translation id="8698464937041809063">Google цртеж</translation>
+<translation id="8712637175834984815">Важи</translation>
 <translation id="8713112442029511308">малтешки</translation>
 <translation id="8714406895390098252">Бицикл</translation>
 <translation id="8719721339511222681">Изабрали сте ставку <ph name="ENTRY_NAME" />.</translation>

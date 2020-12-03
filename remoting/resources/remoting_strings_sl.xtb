@@ -52,7 +52,6 @@
 <translation id="369442766917958684">Brez povezave.</translation>
 <translation id="3695446226812920698">Oglejte si navodila</translation>
 <translation id="3776024066357219166">Seja Oddaljenega namizja za Chrome je končana.</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3897092660631435901">Meni</translation>
 <translation id="3905196214175737742">Neveljavna domena lastnika gostitelja.</translation>
 <translation id="3931191050278863510">Gostitelj se je ustavil.</translation>
@@ -91,6 +90,7 @@
 <translation id="5397086374758643919">Odstranitveni program gostitelja za Oddaljeno namizje za Chrome</translation>
 <translation id="544077782045763683">Gostitelj se je zaustavil.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Vaše namizje je trenutno v skupni rabi z uporabnikom <ph name="USER" />.</translation>
 <translation id="5750083143895808682">Prijavljen kot <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Znova poveži</translation>
@@ -106,7 +106,6 @@
 <translation id="6542902059648396432">Prijava težave …</translation>
 <translation id="6612717000975622067">Pošlji Ctrl + Alt + Del</translation>
 <translation id="6654753848497929428">Skupna raba</translation>
-<translation id="6681800064886881394">Copyright 2013 Google Inc. Vse pravice pridržane.</translation>
 <translation id="677755392401385740">Gostitelj zagnan za uporabnika: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6939719207673461467">Pokaži/skrij tipkovnico.</translation>
 <translation id="6963936880795878952">Povezave z oddaljenim računalnikom so začasno onemogočene, ker je nekdo poskušal vzpostaviti povezavo z njim z neveljavno kodo PIN. Poskusite znova pozneje.</translation>

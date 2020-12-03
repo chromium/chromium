@@ -57,6 +57,7 @@
 <translation id="1056775291175587022">No networks</translation>
 <translation id="1056898198331236512">Warning</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Enter your new PIN. A PIN must be at least one character long and can contain letters, numbers and other characters.}other{Enter your new PIN. A PIN must be at least # characters long and can contain letters, numbers and other characters.}}</translation>
 <translation id="1059944192885972544">Found <ph name="NUM" /> tabs For '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="1060292118287751956">Determines the frequency that the screen updates</translation>
 <translation id="1061904396131502319">Almost time for a break</translation>
@@ -635,9 +636,11 @@
 <translation id="1688935057616748272">Type a letter</translation>
 <translation id="168991973552362966">Add a nearby printer</translation>
 <translation id="1689945336726856614">Copy &amp;URL</translation>
+<translation id="1690248886740053041">Unable to connect to a mobile network. For technical support, please contact your operator.</translation>
 <translation id="1692115862433274081">Use another account</translation>
 <translation id="1692118695553449118">Sync is on</translation>
 <translation id="1692210323591458290">Dark purple</translation>
+<translation id="169279809881363536">No profiles were discovered. To set up a new network, scan the QR code using the device camera or enter the activation code provided by your operator.</translation>
 <translation id="1697150536837697295">Art</translation>
 <translation id="1697686431566694143">Edit file</translation>
 <translation id="1698122934742150150">Current incognito session only</translation>
@@ -1574,6 +1577,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2770465223704140727">Remove from list</translation>
 <translation id="2770690685823456775">Export your passwords to another folder</translation>
 <translation id="2770929488047004208">Monitor resolution</translation>
+<translation id="2770954829020464827">Details are hidden while you share your screen</translation>
 <translation id="2771268254788431918">Mobile data activated</translation>
 <translation id="2771816809568414714">Cheese</translation>
 <translation id="2772936498786524345">Sneaky</translation>
@@ -1941,6 +1945,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3201422919974259695">Available USB devices will appear here.</translation>
 <translation id="3202131003361292969">Path</translation>
 <translation id="3202173864863109533">This tab's audio is being muted.</translation>
+<translation id="3202218848974251205">The privacy sandbox</translation>
 <translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Check now</translation>
 <translation id="3208703785962634733">Unconfirmed</translation>
@@ -2161,6 +2166,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3459697287128633276">To enable your account to access the Google Play Store, please authenticate with your Identity Provider.</translation>
 <translation id="3462311546193741693">Signs you out of most sites. You'll stay signed in to your Google Account so that your synced data can be cleared.</translation>
 <translation id="3462413494201477527">Cancel account setup?</translation>
+<translation id="3464145797867108663">Add work profile</translation>
 <translation id="346431825526753">This is an account for kids managed by <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="3468298837301810372">Label</translation>
 <translation id="3468999815377931311">Android phone</translation>
@@ -2282,6 +2288,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="360180734785106144">Offer new features as they become available</translation>
 <translation id="3602290021589620013">Preview</translation>
 <translation id="3603622770190368340">Obtain network certificate</translation>
+<translation id="3604193429970465812">Secondary accounts</translation>
 <translation id="3604713164406837697">Change wallpaper</translation>
 <translation id="3605780360466892872">Businessman</translation>
 <translation id="3608576286259426129">User image preview</translation>
@@ -2606,6 +2613,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 
   Would you like to start <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="394183848452296464">Can’t create shortcut</translation>
+<translation id="3943494825379372497">Restore apps and pages?</translation>
 <translation id="3943582379552582368">&amp;Back</translation>
 <translation id="3943857333388298514">Paste</translation>
 <translation id="3948116654032448504">&amp;Search <ph name="SEARCH_ENGINE" /> for Image</translation>
@@ -2691,6 +2699,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4046013316139505482">These extensions don't need to see and change information on this site.</translation>
 <translation id="4046123991198612571">Next track</translation>
 <translation id="4047726037116394521">Go home</translation>
+<translation id="4049783682480068824">{COUNT,plural, =1{# contact is not available. To use Nearby Share with them, add the email address associated with their Google Account to your contacts.}other{# contacts are not available. To use Nearby Share with them, add the email addresses associated with their Google Accounts to your contacts.}}</translation>
 <translation id="4050225813016893843">Authentication method</translation>
 <translation id="4052120076834320548">Tiny</translation>
 <translation id="4056908315660577142">You reached the time limit that your parent set for <ph name="APP_NAME" /> Chrome app. You can use it for <ph name="TIME_LIMIT" /> tomorrow.</translation>
@@ -3174,7 +3183,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4646675363240786305">Ports</translation>
 <translation id="4647090755847581616">&amp;Close Tab</translation>
 <translation id="4647283074445570750">Step <ph name="CURRENT_STEP" /> of <ph name="TOTAL_STEPS" /></translation>
-<translation id="4647420311443994946">{0,select, tablet{Start app when you sign in to your tablet}computer{Start app when you sign in to your computer}other{Start app when you sign in to your device}}</translation>
 <translation id="4647697156028544508">Please enter the PIN for "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">Insufficient permissions</translation>
 <translation id="4648499713050786492">Please unlock your profile before adding a person.</translation>
@@ -3338,6 +3346,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4863769717153320198">Looks like <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Default)</translation>
 <translation id="4864369630010738180">Signing in...</translation>
 <translation id="4864805589453749318">Select the parent who is granting permission to add a school account.</translation>
+<translation id="4866265760644917470">Profile has been added successfully.</translation>
 <translation id="486635084936119914">Open certain file types automatically after downloading</translation>
 <translation id="48704129375571883">Add additional features</translation>
 <translation id="4870758487381879312">Enter admin-provided password to get configuration info</translation>
@@ -3621,6 +3630,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5206787458656075734">{COUNT,plural, =1{Successfully changed the compromised password. You have # more compromised password. Chrome recommends checking this password now.}other{Successfully changed the compromised password. You have # more compromised passwords. Chrome recommends checking these passwords now.}}</translation>
 <translation id="5207949376430453814">Highlight text caret</translation>
 <translation id="5209320130288484488">No devices found</translation>
+<translation id="5209572028385096813">This user is managed by Family Link</translation>
 <translation id="5210365745912300556">Close tab</translation>
 <translation id="5213481667492808996">Your '<ph name="NAME" />' data service is ready to use</translation>
 <translation id="5213891612754844763">Show proxy settings</translation>
@@ -3706,6 +3716,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5302048478445481009">Language</translation>
 <translation id="5302932258331363306">Show Substitutions</translation>
 <translation id="5304276686222516262">Unable to download contact list. Please check your network connection, or &lt;a href="#" id="tryAgainLink"&gt;try again&lt;/a&gt;.</translation>
+<translation id="5305145881844743843">This account is managed by <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5305688511332277257">None installed</translation>
 <translation id="5307030433605830021">Source not supported</translation>
 <translation id="5308380583665731573">Connect</translation>
@@ -3719,6 +3730,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5317780077021120954">Save</translation>
 <translation id="5319359161174645648">Google recommends Chrome</translation>
 <translation id="5320112320661303273">Looks like you've already set up Assistant on a different device. Get even more out of your Assistant by turning on the following setting.</translation>
+<translation id="5320135788267874712">New device name</translation>
 <translation id="532247166573571973">The server may be unreachable. Try again later.</translation>
 <translation id="5324300749339591280">Apps list</translation>
 <translation id="5324780743567488672">Set time zone automatically using your location</translation>
@@ -4086,6 +4098,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5740820643029013514">Use quieter messaging (recommended)</translation>
 <translation id="574104302965107104">Display mirroring</translation>
 <translation id="574209121243317957">Pitch</translation>
+<translation id="5742505912938664543">When you add a secondary account here, you may browse the web, download apps, and check your Gmail and other Google services using that account.</translation>
 <translation id="5746169159649715125">Save as PDF</translation>
 <translation id="5747552184818312860">Expires</translation>
 <translation id="5747785204778348146">Developer - unstable</translation>
@@ -4426,6 +4439,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6129953537138746214">Space</translation>
 <translation id="6130692320435119637">Add Wi-Fi</translation>
 <translation id="6136114942382973861">Close downloads bar</translation>
+<translation id="6136287496450963112">Your security key is not protected with a PIN. To manage fingerprints, first create a PIN.</translation>
 <translation id="6137767437444130246">User certificate</translation>
 <translation id="6138680304137685902">X9.62 ECDSA Signature with SHA-384</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, no network</translation>
@@ -4606,6 +4620,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6331566915566907158">Help improve Chrome OS features and performance</translation>
 <translation id="6331818708794917058">Sites can ask to connect to MIDI devices</translation>
 <translation id="6333064448949140209">File will be sent to Google for debugging</translation>
+<translation id="6334444530352320327">Your apps and OS settings will sync across Chromebooks where you're signed in with this account.<ph name="LINK_BEGIN" />Sync settings<ph name="LINK_END" /></translation>
 <translation id="6338981933082930623">All sites can show any ads to you</translation>
 <translation id="6339668969738228384">Create a new profile for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340017061976355871">Couldn’t connect with the server. Please check your network connection and try again. If the problem persists, restart your Chromebook.</translation>
@@ -4907,6 +4922,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6709133671862442373">News</translation>
 <translation id="6709357832553498500">Connect using <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Previous</translation>
+<translation id="6713233729292711163">Add work profile</translation>
 <translation id="6715803357256707211">An error occurred during installation of your Linux application. Click on the notification for details.</translation>
 <translation id="671619610707606484">This will clear <ph name="TOTAL_USAGE" /> of data stored by sites</translation>
 <translation id="671928215901716392">Lock screen</translation>
@@ -5275,6 +5291,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7121362699166175603">Clears history and auto-completions in the address bar. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Developer mode</translation>
 <translation id="7121728544325372695">Smart Dashes</translation>
+<translation id="7122353087820324370">Apps and OS settings are not synced to secondary accounts.</translation>
 <translation id="7123030151043029868">Allowed to automatically download multiple files</translation>
 <translation id="7123360114020465152">No longer supported</translation>
 <translation id="7125148293026877011">Delete Crostini</translation>
@@ -5589,6 +5606,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="750509436279396091">Open downloads folder</translation>
 <translation id="7506093026325926984">This password will be saved on this device</translation>
 <translation id="7506130076368211615">Set up new network</translation>
+<translation id="7506242536428928412">To use your new security key, set a new PIN</translation>
 <translation id="7506541170099744506">Your <ph name="DEVICE_TYPE" /> has successfully been enrolled for enterprise management.</translation>
 <translation id="7507207699631365376">See this provider's <ph name="BEGIN_LINK" />privacy policy<ph name="END_LINK" /></translation>
 <translation id="7507930499305566459">Status Responder Certificate</translation>
@@ -5752,6 +5770,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7691077781194517083">Can’t reset this security key. Error <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Crostini upgrade</translation>
 <translation id="7696063401938172191">On your '<ph name="PHONE_NAME" />':</translation>
+<translation id="7697166915480294040">Details are hidden while you share your screen</translation>
 <translation id="7697598343108519171">Use camera to scan QR code</translation>
 <translation id="7699968112832915395">Can't add account</translation>
 <translation id="7701040980221191251">None</translation>
@@ -6209,6 +6228,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8184472985242519288">Uniform</translation>
 <translation id="8186609076106987817">The server could not find the file.</translation>
 <translation id="8188389033983459049">Check your device settings and turn it on to continue</translation>
+<translation id="8189306097519446565">School accounts</translation>
+<translation id="8189750580333936930">Privacy sandbox</translation>
 <translation id="8190193592390505034">Connecting to <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Manage your apps, extensions, and themes</translation>
 <translation id="8195027750202970175">Size on disk</translation>
@@ -6900,6 +6921,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8986362086234534611">Forget</translation>
 <translation id="8986494364107987395">Automatically send usage statistics and crash reports to Google</translation>
 <translation id="8987927404178983737">Month</translation>
+<translation id="8989823300731803443">Continue where you left off.</translation>
 <translation id="8990209962746788689">Can't create QR code</translation>
 <translation id="8991520179165052608">Site can use your microphone</translation>
 <translation id="8992117551007229513">{COUNT,plural, =1{1 item}other{# items}}</translation>

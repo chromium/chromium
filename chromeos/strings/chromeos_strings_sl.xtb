@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Ni bilo mogoče začeti optično brati</translation>
 <translation id="1071587090247825784">Zaznan je požarni zid</translation>
 <translation id="1075811647922107217">Velikost strani</translation>
+<translation id="1124772482545689468">Uporabnik</translation>
 <translation id="1175697296044146566">To napravo <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Neznana napaka.</translation>
 <translation id="1204296502688602597">Zakasnitev DNS-ja</translation>
@@ -42,10 +43,10 @@
 <translation id="2375079107209812402">Na voljo imate še toliko poskusov: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Pošiljanje poročila s povratnimi informacijami</translation>
 <translation id="2461822463642141190">Trenutno</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Še {0} poskus}one{<ph name="ERROR_MESSAGE" /> Še {0} poskus}two{<ph name="ERROR_MESSAGE" /> Še {0} poskusa}few{<ph name="ERROR_MESSAGE" /> Še {0} poskusi}other{<ph name="ERROR_MESSAGE" /> Še {0} poskusov}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Išči</translation>
 <translation id="2570743873672969996">Izvajanje preizkusa <ph name="TEST_NAME" /> …</translation>
+<translation id="2620436844016719705">Sistem</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2872961005593481000">Zaustavitev</translation>
 <translation id="3008341117444806826">OSVEŽI</translation>
@@ -53,6 +54,8 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3083667275341675831">Diagnosticiranje povezav</translation>
 <translation id="3091839911843451378">Napaka – ustavljeno</translation>
+<translation id="3102119246920354026">Predpomnilnik</translation>
+<translation id="3122464029669770682">CPE</translation>
 <translation id="3188257591659621405">Moje datoteke</translation>
 <translation id="3199982728237701504">Podajalnik dokumentov (dvostransko)</translation>
 <translation id="3246869037381808805">Izbrisana bodo tiskalna opravila, starejša od 1 dneva</translation>
@@ -71,6 +74,7 @@
 <translation id="3838338534323494292">Novo geslo</translation>
 <translation id="3865414814144988605">Ločljivost</translation>
 <translation id="3941014780699102620">Ni bilo mogoče razrešiti gostitelja</translation>
+<translation id="3942420633017001071">Diagnostika</translation>
 <translation id="39823212440917567">Odstranjena bodo tiskalna opravila, starejša od toliko dni: <ph name="NUMBER_OF_DAYS" /></translation>
 <translation id="4003384961948020559">Napaka – izhodni pladenj je poln</translation>
 <translation id="4034824040120875894">Tiskalnik</translation>
@@ -105,6 +109,7 @@
 <translation id="4921665434385737356">Napolnjeno <ph name="RATE" /> v <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Izvedi</translation>
+<translation id="5154917547274118687">Pomnilnik</translation>
 <translation id="5168185087976003268">Stanje baterije</translation>
 <translation id="520299634122159966">Ni razpoložljivih optičnih bralnikov</translation>
 <translation id="5212543919916444558">Na zaslonu ni ničesar uporabnega.
@@ -137,6 +142,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Več o tem</translation>
 <translation id="6191293864534840972">Napačno oblikovani imenski strežniki</translation>
+<translation id="6232017090690406397">Baterija</translation>
 <translation id="6325525973963619867">Ni uspelo</translation>
 <translation id="636850387210749493">Prijava v podjetje</translation>
 <translation id="649050271426829538">Ustavljeno – zastoj papirja</translation>
@@ -194,6 +200,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8910721771319628100">Privzeto omrežje je nad pragom zakasnitve</translation>
 <translation id="8919837981463578619">Napaka – ni pladnja</translation>
 <translation id="8928727111548978589">Napaka – zmanjkalo je papirja</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Število preostalih poskusov: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8970109610781093811">Znova zaženi</translation>
 <translation id="9088306295921699330">Trenutna poraba</translation>
 <translation id="910415269708673980">Osvežite kartonček za <ph name="PRINCIPAL_NAME" /></translation>

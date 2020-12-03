@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">'<ph name="ATSIGN" />' ၏နောက်တွင် တစ်ပိုင်း ရိုက်ထည့်ပါ။ '<ph name="INVALIDADDRESS" />' က မပြည့်စုံပါ။</translation>
 <translation id="5334352251556557839">မီဒီယာ ဖွင့်၍ မရပါ။</translation>
 <translation id="537648784377940524">အနည်းဆုံးရက်စွဲ (<ph name="MIN_DATE_OR_TIME" />) သည် အများဆုံးရက်စွဲ (<ph name="MAX_DATE_OR_TIME" />) အရင် ဖြစ်ရပါမည်။</translation>
+<translation id="5378437566635403538">ချဲ့ထားသည်၊ ဒိုင်ယာလော့ခ် ဖွင့်ထားသည်။</translation>
 <translation id="5406322316791861025">ပုံပန်း</translation>
 <translation id="5425179576310518467">ယနေ့ရက်စွဲ</translation>
 <translation id="5453733299334684579">သစ်ပင်ပုံစံဇယား အကြောင်းအရာ</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">နောက်ထပ် ရွေးချယ်စရာများ</translation>
 <translation id="576709008726043716">နိဒါန်း</translation>
 <translation id="57838592816432529">တိတ်ရန်</translation>
+<translation id="5787939484346677755">ချဲ့ထားသည်၊ အလိုအလျောက်ဖြည့်စရာများ ရွေးနိုင်သည်။</translation>
 <translation id="5860033963881614850">ပိတ်ထား</translation>
 <translation id="588258955323874662">မျက်နှာပြင် အပြည့်</translation>
 <translation id="5888666972993069672"><ph name="DEVICE_FRIENDLY_NAME" /> သို့ ယခု ကာစ်လုပ်နေသည်</translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">စာရင်းအကွက်</translation>
 <translation id="6150588977291308318">ကျမ်းကိုးစာရင်း</translation>
 <translation id="6164829606128959761">မီတာ</translation>
+<translation id="6165053282446038410">ချဲ့ထားသည်၊ အလိုအလျောက်ဖြည့်စရာ <ph name="COUNT" /> ခု ရွေးနိုင်သည်။</translation>
 <translation id="6166809985690652833">စာအုပ်ဖတ်ပြီးနောက် သုံးသပ်ချက်</translation>
 <translation id="6209276755895393898">အောက်ပါ ဖြစ်ပုံရသည်- <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">လက်ရှိ စာမျက်နှာ</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">ခေါင်းစီး</translation>
 <translation id="6941933287844615239">မီဒီယာကို ဒေါင်းလုဒ်လုပ်ပါ</translation>
 <translation id="6981594929165378967">ထည့်သွင်းခြင်း</translation>
+<translation id="698788488269350478">ချဲ့ထားသည်။</translation>
 <translation id="6989848892321993519">ဤစာသားကို စာလုံးရေ <ph name="MIN_CHARACTERS" /> နှင့်အထက်ဖြစ်အောင် လုပ်ပါ (လက်ရှိတွင် စာလုံးရေ ၁ လုံးအသုံးပြုထားသည်)။</translation>
 <translation id="7034405885550056553">အကြံပြုချက်</translation>
 <translation id="709897737746224366">ကျေးဇူးပြုပြီး တောင်းဆိုထားသည့် ပုံစံနှင့် ကိုက်ညီပါစေ။</translation>
 <translation id="7102274145889307184">လက်ရှိတည်နေရာ</translation>
 <translation id="7118469954320184356">အကြောင်းအရာ မရှိပါ။</translation>
 <translation id="7139483182332611405">အမှာစကား</translation>
+<translation id="7198226213493847604">မီနူး ပေါ့ပ်အပ်ခလုတ်</translation>
 <translation id="7214187073215825913">အကြောင်းအရာ အချက်အလက်</translation>
 <translation id="7238347055216017155">အထူးပြုမှု</translation>
 <translation id="7263440858009898357">စာရင်းမှ အမယ်များကို ကျေးဇူးပြုပြီး ရွေးချယ်ပါ။</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">အခန်း</translation>
 <translation id="8845239796550121995">ယခု သင့် TV သို့ ကာစ်လုပ်နေပါသည်</translation>
 <translation id="8851136666856101339">ပင်မ</translation>
+<translation id="8861621546968757188">ဒိုင်ယာလော့ခ် ပေါ့ပ်အပ်ခလုတ်</translation>
 <translation id="8875657656876809964">ဗီဒီယိုဖွင့်ခြင်း အမှား</translation>
 <translation id="8889402386540077796">အရောင်အဆင်း</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

@@ -879,19 +879,6 @@
 <translation id="2349117476121456297">這項政策設為 True 時，鍵盤最上排的按鍵會做為功能鍵指令使用。按下搜尋鍵即可將按鍵行為改回媒體鍵。
 
       設為 False 或不予設定時，鍵盤預設會產生媒體鍵指令。按下搜尋鍵即可將按鍵改為功能鍵。</translation>
-<translation id="2353442107789326507">指定要套用至 <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" /> Enterprise Connector 的 Chrome Enterprise Connectors 服務設定清單，這份清單會在檔案附加至 Chrome 時觸發。
-
-      將檔案附加至特定網頁時，系統會使用 <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 欄位來判斷連接器是否要傳送檔案進行分析，以及要在該檔案的分析要求中加入哪些標記。系統會比對標記對應的模式，如果頁面網址符合與該標記相關聯的「啟用」模式，系統就會將該標記加入分析要求中 (但若有頁面網址與此標記中的「停用」模式符合的情況則除外)。如果在要求中加入至少 1 個標記，系統就會進行分析。
-
-      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 欄位會識別與這項設定對應的分析服務供應商。
-
-      如果將 <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> 欄位設為 1，Chrome 會先等候分析服務的回覆，再授予頁面存取檔案的權限。如果設為其他整數值，Chrome 會立即授予頁面存取檔案的權限。
-
-      <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> 欄位可控制 Chrome 要封鎖還是允許受到密碼保護的檔案。
-
-      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> 欄位可控制 Chrome 要封鎖還是允許超過檔案大小上限而無法分析的檔案 (超過 50 MB 的檔案)。
-
-      你只能透過 Google 管理控制台設定這項政策。</translation>
 <translation id="2358176879566587521">這項政策已遭到移除，因此與這個版本的 <ph name="PRODUCT_NAME" /> 不相容。詳情請參閱 https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2364639863953745682">Google 助理入門使用體驗的模式</translation>
 <translation id="2384233438419344179">如果將這項政策設為啟用，網頁元素只要不屬於瀏覽器網址列中的網域，就無法設定 Cookie。如果將這項政策設為停用，這類元素將可設定 Cookie，且使用者無法變更這項設定。
@@ -4536,17 +4523,6 @@
 <translation id="7701341006446125684">設定應用程式和擴充功能快取大小 (以位元組為單位)</translation>
 <translation id="7703737669292992839">禁止顯示檔案選取對話方塊</translation>
 <translation id="7709470712369261710">不要使用 Google 服務提供自動產生的圖片說明</translation>
-<translation id="7710950688502974809">指定要套用至 <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> Enterprise Connector 的 Chrome Enterprise Connectors 服務設定清單，在 Chrome 中透過剪貼簿或拖曳網頁內容的方式輸入資料時會觸發這份清單。
-
-      在特定網頁中輸入資料時，系統會使用 <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 欄位來判斷連接器是否要傳送資料進行分析，以及要在該資料的分析要求中加入哪些標記。系統會比對標記對應的模式，如果頁面網址符合與該標記相關聯的「啟用」模式，系統就會將該標記加入分析要求中 (但若有頁面網址與此標記中的「停用」模式符合的情況則除外)。如果在要求中加入至少 1 個標記，系統就會進行分析。
-
-      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 欄位會識別與這項設定對應的分析服務供應商。
-
-      如果將 <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> 欄位設為 1，Chrome 會先等候分析服務的回覆，再授予頁面存取資料的權限。如果設為其他整數值，Chrome 會立即授予頁面存取資料的權限。
-
-      <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> 欄位代表在 Chrome 中輸入的資料大小下限 (以位元組為單位)，要掃描的資料大小必須大於或等於這個值。如果不設定這個欄位，預設值為 100 個位元組。
-
-      你只能透過 Google 管理控制台設定這項政策。</translation>
 <translation id="7712109699186360774">每當有任何網站要使用攝影機和/或麥克風時詢問我</translation>
 <translation id="7713608076604149344">下載限制</translation>
 <translation id="7715711044277116530">簡報模式中的螢幕調暗延遲時間延長百分比</translation>
@@ -4736,19 +4712,6 @@
           如果設為 True、保留空白或不設定，這項政策就不會生效。</translation>
 <translation id="8011935490612940798">控管 <ph name="PRODUCT_NAME" /> 功能。</translation>
 <translation id="802147957407376460">將畫面旋轉 0 度</translation>
-<translation id="8027265928215448940">指定要套用至 <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> Enterprise Connector 的 Chrome Enterprise Connectors 服務設定清單，在 Chrome 中下載檔案時會觸發這份清單。
-
-      從特定網頁下載檔案時，系統會使用 <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 欄位來判斷連接器是否要傳送檔案進行分析，以及要在該檔案的分析要求中加入哪些標記。系統會比對標記對應的模式，如果頁面網址符合與該標記相關聯的「啟用」模式，系統就會將該標記加入分析要求中 (但若有頁面網址與此標記中的「停用」模式符合的情況則除外)。如果在要求中加入至少 1 個標記，系統就會進行分析。
-
-      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 欄位會識別與設定對應的分析服務供應商。
-
-      如果將 <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> 欄位設為 1，Chrome 會先等候分析服務的回覆，再授予使用者下載檔案的存取權。如果設為其他整數值，Chrome 會立即授予使用者檔案存取權。
-
-      <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> 欄位可控制 Chrome 要封鎖還是允許受到密碼保護的檔案。
-
-      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> 欄位可控制 Chrome 要封鎖還是允許大小過大而無法分析的檔案 (超過 50 MB 的檔案)。
-
-      你只能透過 Google 管理控制台設定這項政策。</translation>
 <translation id="8033913082323846868">這項政策自 M70 起已淘汰，請改用 AutofillAddressEnabled 和 AutofillCreditCardEnabled。
 
 啟用「<ph name="PRODUCT_NAME" />」的「自動填入」功能，並允許使用者使用先前儲存的地址或信用卡資料等資訊自動填寫網路表單。

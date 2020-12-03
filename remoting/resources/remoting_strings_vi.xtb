@@ -54,7 +54,6 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="369442766917958684">Ngoại tuyến.</translation>
 <translation id="3695446226812920698">Tìm hiểu cách thức</translation>
 <translation id="3776024066357219166">Phiên Chrome Remote Desktop của bạn đã kết thúc.</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3905196214175737742">Miền của chủ sở hữu máy chủ không hợp lệ.</translation>
 <translation id="3931191050278863510">Máy chủ đã dừng lại.</translation>
@@ -99,6 +98,7 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="5419418238395129586">Lần trực tuyến gần đây nhất: <ph name="DATE" /></translation>
 <translation id="544077782045763683">Máy chủ đã tắt.</translation>
 <translation id="5601503069213153581">Mã PIN</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Máy tính của bạn hiện đang được chia sẻ với <ph name="USER" />.</translation>
 <translation id="5750083143895808682">Đã đăng nhập bằng địa chỉ <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Kết nối lại</translation>
@@ -118,7 +118,6 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="6583902294974160967">Hỗ trợ</translation>
 <translation id="6612717000975622067">Gửi Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Chia sẻ</translation>
-<translation id="6681800064886881394">Bản quyền 2013 Google Inc. Mọi quyền được bảo lưu.</translation>
 <translation id="677755392401385740">Máy chủ đã khởi động cho người dùng: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6939719207673461467">Hiển thị / ẩn bàn phím.</translation>
 <translation id="6963936880795878952">Kết nối với máy tính từ xa tạm thời bị chặn vì ai đó đang cố gắng kết nối với máy tính đó bằng mã PIN không hợp lệ. Vui lòng thử lại sau.</translation>

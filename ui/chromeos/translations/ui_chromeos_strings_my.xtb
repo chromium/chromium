@@ -117,6 +117,7 @@
 <translation id="2208919847696382164">Linux ဖြင့် ထည့်သွင်းရန်</translation>
 <translation id="2225536596944493418">အကြောင်းအရာ <ph name="NUMBER_OF_ITEMS" />ခုကို ဖျက်လိုသည်မှာ သေချာသလား။</translation>
 <translation id="2230062665678605299">ဖိုလ်ဒါ  "<ph name="FOLDER_NAME" />"ကို ဖန်တီး မရခဲ့ပါ။ <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2251368349685848079">အမှိုက်ပုံးမှ ပြန်ယူရန်</translation>
 <translation id="2275059641601412272">ရွှေ့ထားသည်။</translation>
 <translation id="2288278176040912387">ကစားသူ မှတ်တမ်းတင်</translation>
 <translation id="2291538123825441971">ဖိုင် <ph name="NUMBER_OF_FILES" /> ခု ဖွင့်နေသည်။</translation>
@@ -733,6 +734,7 @@
 <translation id="8609695766746872526">အိုက်စ်လန်</translation>
 <translation id="8669949407341943408">ရွှေ့ပေးနေ...</translation>
 <translation id="8698464937041809063">Google ရေးဆွဲခြင်း</translation>
+<translation id="8712637175834984815">ရပါပြီ!</translation>
 <translation id="8713112442029511308">မော်လတာ</translation>
 <translation id="8714406895390098252">စက်ဘီး</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ကို ရွေးချယ်ထားသည်။</translation>

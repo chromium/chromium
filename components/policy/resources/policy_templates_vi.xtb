@@ -917,19 +917,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 <translation id="2349117476121456297">Khi bạn đặt chính sách này thành True, hàng phím trên cùng của bàn phím sẽ đóng vai trò là các lệnh phím chức năng. Khi bạn nhấn phím Tìm kiếm, các phím này sẽ trở về chế độ phím phương tiện.
 
       Nếu bạn đặt chính sách này thành False hoặc không đặt chính sách này, thì bàn phím sẽ mặc định tạo ra các lệnh phím phương tiện. Khi bạn nhấn phím Tìm kiếm, các phím sẽ thay đổi thành phím chức năng.</translation>
-<translation id="2353442107789326507">Danh sách các tùy chọn cài đặt dịch vụ Trình kết nối của Chrome Enterprise sẽ áp dụng cho Trình kết nối <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" /> của Chrome Enterprise. Trình kết nối này sẽ chạy khi có tệp được đính kèm vào Chrome.
-
-      Các trường <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> và <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> dùng để xác định xem trình kết nối có gửi tệp đi để phân tích hay không khi tệp được đính kèm vào một trang cụ thể, cũng như thẻ nào cần thêm vào yêu cầu phân tích cho tệp đó. Nếu URL của trang khớp với mẫu liên kết với một thẻ tương ứng với một mẫu 'enable', thì hệ thống sẽ thêm thẻ đó vào yêu cầu phân tích chừng nào không còn mẫu 'disable' có cùng thẻ như vậy khớp với URL của trang. Quá trình phân tích sẽ diễn ra nếu hệ thống thêm ít nhất 1 thẻ vào yêu cầu.
-
-      Trường <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> xác định nhà cung cấp dịch vụ phân tích nào tương ứng với các tùy chọn cài đặt.
-
-      Nếu bạn đặt trường <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> thành 1, thì Chrome sẽ đợi để nhận phản hồi từ dịch vụ phân tích rồi mới cho phép trang này truy cập vào tệp đó. Nếu bạn đặt trường đó thành bất kỳ giá trị số nguyên nào khác, thì Chrome sẽ cho phép trang này truy cập vào tệp đó ngay lập tức.
-
-      Trường <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> sẽ kiểm soát việc Chrome chặn hay cho phép tệp được bảo vệ bằng mật khẩu.
-
-      Trường <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> sẽ kiểm soát việc Chrome chặn hay cho phép phân tích những tệp quá lớn (trên 50 MB).
-
-      Bạn chỉ có thể đặt chính sách này trên Bảng điều khiển dành cho quản trị viên của Google.</translation>
 <translation id="2358176879566587521">Chính sách này đã bị xóa vì không tương thích với phiên bản <ph name="PRODUCT_NAME" /> này. Hãy đọc thêm tại https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2364639863953745682">Chế độ của trải nghiệm làm quen với Trợ lý</translation>
 <translation id="2384233438419344179">Nếu bạn đặt chính sách này thành Bật, thì các phần tử trang web không thuộc miền trong thanh địa chỉ của trình duyệt sẽ không thể đặt cookie. Nếu bạn đặt chính sách này thành Tắt, thì các phần tử trang web đó có thể đặt cookie và người dùng không thể thay đổi tùy chọn cài đặt này.
@@ -4620,17 +4607,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="7701341006446125684">Đặt kích thước bộ nhớ đệm của tiện ích và ứng dụng (bằng byte)</translation>
 <translation id="7703737669292992839">Ngăn hộp thoại chọn tệp</translation>
 <translation id="7709470712369261710">Không sử dụng các dịch vụ của Google để cung cấp nội dung mô tả hình ảnh tự động</translation>
-<translation id="7710950688502974809">Danh sách các tùy chọn cài đặt dịch vụ Chrome Enterprise Connectors sẽ áp dụng cho Trình kết nối <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> của Enterprise. Trình kết nối này sẽ chạy khi người dùng nhập dữ liệu vào Chrome từ khay nhớ tạm hoặc bằng cách kéo và thả nội dung trên web.
-
-      Các trường <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> và <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> dùng để xác định xem trình kết nối có gửi dữ liệu đi để phân tích hay không khi người dùng nhập dữ liệu vào một trang cụ thể và thẻ nào cần thêm vào yêu cầu phân tích cho dữ liệu đó. Nếu URL của trang khớp với mẫu liên kết với thẻ đó, thì hệ thống sẽ thêm một thẻ tương ứng với mẫu 'enable' vào yêu cầu phân tích chừng nào không còn mẫu 'disable' có thẻ như vậy khớp với URL của trang. Quá trình phân tích sẽ diễn ra nếu hệ thống thêm ít nhất 1 thẻ vào yêu cầu.
-
-      Trường <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> xác định nhà cung cấp dịch vụ phân tích nào tương ứng với các tùy chọn cài đặt.
-
-      Nếu bạn đặt trường <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> thành 1, thì Chrome sẽ đợi để nhận phản hồi từ dịch vụ phân tích rồi mới cho phép trang này truy cập vào dữ liệu đó. Nếu bạn đặt trường đó thành bất kỳ giá trị số nguyên nào khác, thì Chrome sẽ cho phép trang này truy cập vào dữ liệu đó ngay lập tức.
-
-      Trường <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> cho biết kích thước tối thiểu (tính bằng byte) mà dữ liệu nhập vào Chrome phải bằng hoặc lớn hơn thì mới quét được. Giá trị mặc định là 100 byte nếu bạn không đặt trường này.
-
-      Bạn chỉ có thể đặt chính sách này trên Bảng điều khiển dành cho quản trị viên của Google.</translation>
 <translation id="7712109699186360774">Hỏi mỗi lần trang web muốn truy cập vào máy ảnh và/hoặc micrô</translation>
 <translation id="7713608076604149344">Hạn chế tải xuống</translation>
 <translation id="7715711044277116530">Tỷ lệ phần trăm theo đó xác định độ trễ mờ màn hình ở chế độ bản trình bày</translation>
@@ -4825,19 +4801,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
           Chính sách này không có hiệu lực nếu bạn đặt thành bật, để trống hoặc không đặt.</translation>
 <translation id="8011935490612940798">Kiểm soát tính năng <ph name="PRODUCT_NAME" />.</translation>
 <translation id="802147957407376460">Xoay màn hình 0 độ</translation>
-<translation id="8027265928215448940">Danh sách các tùy chọn cài đặt dịch vụ Trình kết nối của Chrome Enterprise sẽ áp dụng cho Trình kết nối <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> của Enterprise. Trình kết nối này sẽ chạy khi tệp được tải xuống trong Chrome.
-
-      Các trường <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> và <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> dùng để xác định xem trình kết nối có gửi tệp đi phân tích hay không khi tệp được tải xuống trên một trang cụ thể, cũng như thẻ nào cần thêm vào yêu cầu phân tích cho tệp đó. Nếu URL của trang khớp với mẫu được liên kết với thẻ đó, thì hệ thống sẽ thêm một thẻ tương ứng với mẫu 'enable' vào yêu cầu phân tích cho tới chừng nào không còn mẫu 'disable' có thẻ như vậy khớp với URL của trang. Quá trình phân tích sẽ diễn ra nếu hệ thống thêm ít nhất 1 thẻ vào yêu cầu.
-
-      Trường <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> xác định nhà cung cấp dịch vụ phân tích nào tương ứng với các tùy chọn cài đặt.
-
-      Nếu bạn đặt trường <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> thành 1, thì Chrome sẽ đợi để nhận phản hồi từ dịch vụ phân tích rồi mới cho phép người dùng truy cập vào tệp đã tải xuống đó. Nếu bạn đặt trường này thành một giá trị số nguyên khác bất kỳ, thì Chrome sẽ cho phép người dùng truy cập vào tệp đó ngay lập tức.
-
-      Trường <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> sẽ kiểm soát việc Chrome chặn hay cho phép các tệp được bảo vệ bằng mật khẩu.
-
-      Trường <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> sẽ kiểm soát việc Chrome chặn hay cho phép những tệp có kích thước quá lớn (hơn 50 MB) nên không phân tích được.
-
-      Bạn chỉ có thể đặt chính sách này trên Bảng điều khiển dành cho quản trị viên Google.</translation>
 <translation id="8033913082323846868">Chính sách này không còn dùng trong M70, thay vào đó, hãy sử dụng AutofillAddressEnabled và AutofillCreditCardEnabled.
 
       Bật tính năng Tự động điền của <ph name="PRODUCT_NAME" /> và cho phép người dùng tự động hoàn thành các biểu mẫu web bằng cách sử dụng thông tin đã lưu trữ trước đây, chẳng hạn như địa chỉ và thông tin thẻ tín dụng.

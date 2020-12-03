@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">စကင်ဖတ်ရန် စတင်၍မရပါ</translation>
 <translation id="1071587090247825784">Firewall တွေ့ရှိသည်</translation>
 <translation id="1075811647922107217">စာမျက်နှာ အရွယ်အစား</translation>
+<translation id="1124772482545689468">အသုံးပြုသူ</translation>
 <translation id="1175697296044146566">ဤ <ph name="DEVICE_TYPE" /> ကို <ph name="MANAGER" /> က စီမံသည်။</translation>
 <translation id="1195447618553298278">မှားရသည့်အကြောင်း မသိပါ။</translation>
 <translation id="1204296502688602597">DNS တုံ့ပြန်ချိန်</translation>
@@ -21,6 +22,7 @@
 <translation id="1499900233129743732">ဤအသုံးပြုသူကို <ph name="MANAGER" /> က စီမံခန့်ခွဲသည့်အတွက် ဆက်တင်များကို အဝေးထိန်းစီမံပြီး အသုံးပြုသူ၏လုပ်ဆောင်ချက်ကို စောင့်ကြည့်နိုင်သည်။</translation>
 <translation id="150962533380566081">PUK မမှန်ကန်ပါ။</translation>
 <translation id="1510238584712386396">Launcher</translation>
+<translation id="1621067168122174824">အားသွင်းသည့်စမ်းသပ်မှု လုပ်ဆောင်ရန်</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (စာတွဲ <ph name="THREAD_COUNT" /> ခု)</translation>
 <translation id="1641857168437328880">စာရွက်စာတမ်း ထည့်ရန်ဗန်း (တစ်ဘက်သုံး)</translation>
 <translation id="1644574205037202324">မှတ်တမ်း</translation>
@@ -28,6 +30,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Resolver ရှိသည်</translation>
 <translation id="1743558184855585519">ကန့်သတ်ပမာဏသို့ ရောက်သွားသောအခါ ဘက်ထရီကုန်ပြီဟု သတ်မှတ်လိုက်သည်</translation>
+<translation id="1792647875738159689">စကင်ဖတ်ခြင်းကို ပယ်ဖျက်နေသည်</translation>
 <translation id="1905710495812624430">အများဆုံးခွင့်ပြုပေးထားသည့် အခေါက်အရေအတွက်ထက် ကျော်လွန်သွားပါပြီ။</translation>
 <translation id="1930797645656624981">Chrome OS လက်ကွက်ဝန်ဆောင်မှု</translation>
 <translation id="1947737735496445907">ပုံနှိပ်ထုတ်ပြီးပြီ</translation>
@@ -42,22 +45,26 @@
 <translation id="2375079107209812402">လုပ်ဆောင်ခွင့် <ph name="ATTEMPTS_LEFT" /> ကြိမ် ကျန်သည်</translation>
 <translation id="2391082728065870591">တုံ့ပြန်ချက် အစီရင်ခံစာ ပို့ရန်</translation>
 <translation id="2461822463642141190">လက်ရှိ</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ကြိမ် ကြိုးပမ်းနိုင်သည်}other{<ph name="ERROR_MESSAGE" /> {0} ကြိမ် ကြိုးပမ်းနိုင်သည်}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">ရှာဖွေရန်</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> စစ်ဆေးမှု လုပ်ဆောင်နေသည်...</translation>
+<translation id="2620436844016719705">စနစ်</translation>
 <translation id="2805756323405976993">အက်ပ်များ</translation>
 <translation id="2872961005593481000">ပိတ်ရန်</translation>
 <translation id="3008341117444806826">ပြန်လည်စတင်ရန်</translation>
 <translation id="3009958530611748826">သိမ်းရန် ဖိုင်တွဲကို ရွေးပါ</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
+<translation id="3069085583900247081">စမ်းသပ်မှု မအောင်မြင်ပါ</translation>
 <translation id="3083667275341675831">ချိတ်ဆက်နိုင်မှုဆိုင်ရာ အမှားရှာဖွေမှုများ</translation>
 <translation id="3091839911843451378">မအောင်မြင်ပါ - ရပ်သွားသည်</translation>
+<translation id="3102119246920354026">Cache</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">ကျွန်ုပ်၏ဖိုင်များ</translation>
 <translation id="3199982728237701504">စာရွက်စာတမ်း ထည့်ရန်ဗန်း (နှစ်ဘက်သုံး)</translation>
 <translation id="3246869037381808805">1 ရက်အထက် ပရင့်ထုတ်ရန်ဖိုင်များကို ဖယ်ရှားပါမည်</translation>
 <translation id="3268178239013324452">မအောင်မြင်ပါ - တံခါးပွင့်နေသည်</translation>
 <translation id="3310640316857623290">DNS တုံ့ပြန်ချိန်က ခွင့်ပြုနိုင်သောသတ်မှတ်ကာလကို သိသာစွာကျော်နေသည်</translation>
+<translation id="3328783797891415197">စမ်းသပ်မှု လုပ်ဆောင်နေသည်</translation>
 <translation id="3369013195428705271">ပုံနှိပ်မှတ်တမ်း အားလုံးကို ရှင်းထုတ်လိုသည်မှာ သေချာသလား။ ပုံနှိပ်ထုတ်နေသော ဖိုင်များကို ရှင်းထုတ်မည်မဟုတ်ပါ။</translation>
 <translation id="3456078764689556234">စာမျက်နှာ <ph name="TOTAL_PAGES" /> မျက်နှာအနက် <ph name="PRINTED_PAGES" /> မျက်နှာကို ပုံနှိပ်ထုတ်ထားသည်။</translation>
 <translation id="3459509316159669723">ပုံနှိပ်နေသည်</translation>
@@ -71,11 +78,13 @@
 <translation id="3838338534323494292">စကားဝှက်အသစ်</translation>
 <translation id="3865414814144988605">ပုံရိပ်ပြတ်သားကိန်း</translation>
 <translation id="3941014780699102620">ဆာဗာပင်ရင်းကို မဖြေရှင်းနိုင်ပါ</translation>
+<translation id="3942420633017001071">အမှားရှာဖွေမှုများ</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ရက်အထက် ပရင့်ထုတ်ရန်ဖိုင်များကို ဖယ်ရှားပါမည်</translation>
 <translation id="4003384961948020559">မအောင်မြင်ပါ - စာရွက်ထုတ်သည့်နေရာ ပြည့်နေသည်</translation>
 <translation id="4034824040120875894">ပုံနှိပ်စက်</translation>
 <translation id="4131410914670010031">အမည်း နှင့် အဖြူ</translation>
 <translation id="4145784616224233563">HTTP Firewall</translation>
+<translation id="4170700058716978431">မအောင်မြင်ပါ</translation>
 <translation id="4227825898293920515">စကားဝှက်သည် <ph name="TIME" /> တွင် သက်တမ်းကုန်ပါမည်</translation>
 <translation id="4238516577297848345">ပရင့်ထုတ်ရန် ဖိုင်များ လုပ်ဆောင်မနေပါ</translation>
 <translation id="4297501883039923494">ရပ်သွားသည် - အမည်မသိ အမှား</translation>
@@ -100,15 +109,19 @@
 <translation id="4773299976671772492">ဆိုင်းငံ့ထား</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> ပရင့်ထုတ်ခြင်းကို ပယ်ဖျက်လိုက်သည်။</translation>
 <translation id="4832079907277790330">Files အက်ပ်တွင် ဖိုင်တွဲကိုရွေးရန်...</translation>
+<translation id="4848429997038228357">လုပ်ဆောင်နေသည်</translation>
 <translation id="4890353053343094602">ချက်ချင်း အသစ်တစ်ခု ‌ရွေးပါ</translation>
 <translation id="4917889632206600977">ရပ်သွားသည် - စာရွက်ကုန်နေသည်</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> စက္ကန့်အတွင်း <ph name="RATE" /> အားသွင်းထားသည်။</translation>
 <translation id="4932733599132424254">ရက်စွဲ</translation>
 <translation id="4985509611418653372">စဖွင့်ရန်</translation>
+<translation id="500920857929044050">စမ်းသပ်မှု ရပ်ရန်</translation>
+<translation id="5154917547274118687">မှတ်ဉာဏ်</translation>
 <translation id="5168185087976003268">ဘက်ထရီအခြေအနေ</translation>
 <translation id="520299634122159966">စကင်ဖတ်စနစ်များ မရနိုင်ပါ</translation>
 <translation id="5212543919916444558">သင့်မျက်နှာပြင်တွင် ကျွန်ုပ်ကူညီနိုင်သည့် အကြောင်းအရာများကို မတွေ့ပါ။ မိုက်ကို တို့ပြီး နှစ်သက်ရာ မေးနိုင်ပါသည်။</translation>
 <translation id="5222676887888702881">ထွက်ခွာရန်</translation>
+<translation id="5264277876637023664">CPU စမ်းသပ်မှု လုပ်ဆောင်ရန်</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />၊ <ph name="PRINTER_NAME" />၊ <ph name="CREATION_TIME" />၊ <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">ပုံမှန်အစီအစဉ်များသို့ ပြန်သွားရန်</translation>
 <translation id="5317780077021120954">သိမ်းရန်</translation>
@@ -121,26 +134,33 @@
 <translation id="54609108002486618">ကြီးကြပ်ထားသည်</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />− <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">'ကူညီရေးဌာန' တွင် ပိုမိုလေ့လာရန်</translation>
+<translation id="5635169860413004179">အစီရင်ခံစာကို ကြည့်ရန်</translation>
 <translation id="5719918614880940190">၎င်းက CPU အသုံးပြုမှုကို တိုင်းတာပြီး core အားလုံး၏ ပေါင်းစည်းဆောင်ရွက်မှု ဖြစ်သည်</translation>
+<translation id="5797428682393400134">အောင်မြင်ပါသည်</translation>
 <translation id="5832805196449965646">လူကို ထည့်ပေးရန်</translation>
 <translation id="5895138241574237353">ပြန်စတင်မည</translation>
+<translation id="5931523347251946569">ဖိုင်ကို ရှာမတွေ့ပါ</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />၊ ဗားရှင်း <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
 <translation id="6048107060512778456">မအောင်မြင်ပါ - စာရွက်ညပ်နေသည်</translation>
 <translation id="6050189528197190982">ဖြူမဲစကေး</translation>
 <translation id="6058625436358447366">အပြီးသတ်ရန်အတွက် သင့်စကားဝှက် အသစ်နှင့် အဟောင်းကို ထည့်ပါ</translation>
 <translation id="6061772781719867950">HTTP တောင်းဆိုချက်များ မအောင်မြင်ပါ</translation>
+<translation id="6104112872696127344">စကင်ဖတ်ခြင်းကို ပယ်ဖျက်လိုက်သည်</translation>
 <translation id="6106186594183574873">အပြီးသတ်ရန်အတွက် သင့်စကားဝှက်ဟောင်းကို ထည့်ပါ</translation>
 <translation id="6108689792487843350">ဂိတ်ဝကို မချိတ်ဆက်နိုင်ပါ</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" />GHz / <ph name="MAX" />GHz</translation>
 <translation id="6146993107019042706">အပြီးသတ်ရန် သင့်စကားဝှက်အသစ်ကို ထည့်ပါ</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">ပိုမိုလေ့လာရန်</translation>
 <translation id="6191293864534840972">ပုံပျက်နေသော အမည်ဆာဗာများ</translation>
+<translation id="6232017090690406397">ဘက်ထရီ</translation>
 <translation id="6325525973963619867">အောင်မြင်ပါ</translation>
 <translation id="636850387210749493">လုပ်ငန်း အမည်စာရင်းသွင်းခြင်း</translation>
 <translation id="649050271426829538">ရပ်သွားသည် - စာရွက်ညပ်နေသည်</translation>
 <translation id="6517239166834772319">စူးစမ်းလေ့လာခြင်း</translation>
 <translation id="6527081081771465939">အမည်မသိ WiFi လုံခြုံရေးပရိုတိုကော</translation>
+<translation id="6532051501443766164">အစီရင်ခံစာကို ဖျောက်ထားရန်</translation>
 <translation id="65587193855025101">ပက်လက်တင်ရန်ဗန်း</translation>
 <translation id="6564646048574748301">မအောင်မြင်ပါ - ပုံနှိပ်စက်ကို ဆက်သွယ်၍မရပါ</translation>
 <translation id="6618744767048954150">လုပ်ဆောင်နေသည်</translation>
@@ -148,6 +168,7 @@
 <translation id="6643016212128521049">ရှင်းရန်</translation>
 <translation id="6704062477274546131">DNS ဖြေရှင်းချက်</translation>
 <translation id="6747215703636344499">ရပ်ထားသည် - အထွက်ပြည့်နေသည်</translation>
+<translation id="6756731097889387912">စကင်ဖတ်ခြင်းကို ပယ်ဖျက်၍မရပါ</translation>
 <translation id="6766275201586212568">DNS ဖြေရှင်းချက်များ မအောင်မြင်ပါ</translation>
 <translation id="6768237774506518020">DNS ဖြေရှင်းချက် ကျရှုံးမှုနှုန်း မြင့်သည်</translation>
 <translation id="6839141349259399400">စကင်ဖတ်စက်များသို့ ချိတ်ဆက်၍မရဘူးလား။</translation>
@@ -163,6 +184,7 @@
 <translation id="7648838807254605802">HTTPS တုံ့ပြန်ချိန် မြင့်သည်</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="7690294790491645610">စကားဝှက်အသစ်ကို အတည်ပြုပါ</translation>
+<translation id="7732651821766520760"><ph name="TEST_NAME" /> စမ်းသပ်မှု</translation>
 <translation id="7805768142964895445">အခြေအနေ</translation>
 <translation id="7855434858642800953">စကင်ဖတ်ထားသော ဖိုင်ကို သိမ်းပြီးပါပြီ။</translation>
 <translation id="7928373994957558460">ဖိုင်တည်နေရာကို ပြရန်</translation>
@@ -190,11 +212,16 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ပုံသေ</translation>
 <translation id="8845001906332463065">အကူအညီရယူပါ</translation>
+<translation id="8881098542468797602">စမ်းသပ်မှု အောင်မြင်သည်</translation>
 <translation id="8910721771319628100">တုံ့ပြန်ချိန် သတ်မှတ်ကာလအထက်ရှိနေသော မူလကွန်ရက်</translation>
 <translation id="8919837981463578619">မအောင်မြင်ပါ - ဗန်းမရှိပါ</translation>
 <translation id="8928727111548978589">မအောင်မြင်ပါ - စာရွက်ကုန်နေသည်</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> လုပ်ဆောင်ခွင့် <ph name="ATTEMPTS_LEFT" /> ကြိမ် ကျန်သည်</translation>
+<translation id="8970109610781093811">ထပ်လုပ်ဆောင်ရန်</translation>
 <translation id="9088306295921699330">လက်ရှိ အသုံးပြုမှု</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> အတွက် လက်မှတ်ကို ပြန်လည်စတင်ပါ</translation>
 <translation id="9106415115617144481">စာမျက်နှာ <ph name="PAGE_NUMBER" /> ကို စကင်ဖတ်နေသည်</translation>
 <translation id="9111102763498581341">သော့ဖွင့်ရန်</translation>
+<translation id="9149391708638971077">မှတ်ဉာဏ်စမ်းသပ်မှု လုပ်ဆောင်ရန်</translation>
+<translation id="982713511914535780">အားလျော့သည့်စမ်းသပ်မှု လုပ်ဆောင်ရန်</translation>
 </translationbundle>

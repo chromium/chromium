@@ -54,7 +54,6 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Saiba como</translation>
 <translation id="3776024066357219166">A sessão do Ambiente de Trabalho Remoto do Chrome terminou.</translation>
-<translation id="3870154837782082782">Google LLC</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3905196214175737742">Domínio do proprietário do anfitrião inválido.</translation>
 <translation id="3931191050278863510">O anfitrião parou.</translation>
@@ -99,6 +98,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="5419418238395129586">Último acesso online: <ph name="DATE" /></translation>
 <translation id="544077782045763683">O anfitrião foi desligado.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">O seu ambiente de trabalho está a ser atualmente partilhado com <ph name="USER" />.</translation>
 <translation id="5750083143895808682">Com sessão iniciada como <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Restabelecer ligação</translation>
@@ -118,7 +118,6 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="6583902294974160967">Apoio técnico</translation>
 <translation id="6612717000975622067">Enviar Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Partilhar</translation>
-<translation id="6681800064886881394">Copyright 2013 Google LLC Todos os Direitos Reservados.</translation>
 <translation id="677755392401385740">O anfitrião começou para o utilizador: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6939719207673461467">Mostrar/ocultar teclado.</translation>
 <translation id="6963936880795878952">As ligações ao computador remoto estão temporariamente bloqueadas porque alguém tentou estabelecer ligação com um PIN inválido. Tente novamente mais tarde.</translation>

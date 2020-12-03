@@ -117,6 +117,7 @@
 <translation id="2208919847696382164">Instal·la per a Linux</translation>
 <translation id="2225536596944493418">Confirmes que vols suprimir <ph name="NUMBER_OF_ITEMS" /> elements?</translation>
 <translation id="2230062665678605299">No es pot crear la carpeta "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2251368349685848079">Restaura de la paperera</translation>
 <translation id="2275059641601412272">S'ha mogut.</translation>
 <translation id="2288278176040912387">Tocadiscos</translation>
 <translation id="2291538123825441971">S'estan obrint <ph name="NUMBER_OF_FILES" /> fitxers.</translation>
@@ -734,6 +735,7 @@
 <translation id="8609695766746872526">Islandès</translation>
 <translation id="8669949407341943408">S'estan traslladant...</translation>
 <translation id="8698464937041809063">Dibuix de Google</translation>
+<translation id="8712637175834984815">Entesos</translation>
 <translation id="8713112442029511308">Maltès</translation>
 <translation id="8714406895390098252">Bicicleta</translation>
 <translation id="8719721339511222681">S'ha seleccionat <ph name="ENTRY_NAME" />.</translation>

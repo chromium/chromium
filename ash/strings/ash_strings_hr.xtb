@@ -122,6 +122,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2067602449040652523">Svjetlina tipkovnice</translation>
 <translation id="2078034614700056995">Za prelazak na sljedeću radnu površinu prijeđite s četiri prsta udesno</translation>
+<translation id="2079504693865562705">Sakrij aplikacije na polici</translation>
 <translation id="2083190527011054446">Laku noć, <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Niste povezani s mrežom</translation>
 <translation id="2126242104232412123">Nova radna površina</translation>
@@ -238,6 +239,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3226991577105957773">Još <ph name="COUNT" /></translation>
 <translation id="3236488194889173876">Mobilne mreže nisu dostupne</translation>
 <translation id="3249513730522716925">Prozor <ph name="WINDOW_TITLE" /> premješten je s radne površine <ph name="ACTIVE_DESK" /> na radnu površinu <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, jačina signala <ph name="SIGNAL_STRENGTH" /> posto.</translation>
 <translation id="3255483164551725916">Što možeš učiniti?</translation>
 <translation id="3269597722229482060">Desni klik</translation>
 <translation id="3289674678944039601">Punjenje putem adaptera</translation>
@@ -369,6 +371,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="4389184120735010762">Pritisnuli ste tipkovni prečac za usidreno povećalo. Želite li ga uključiti?</translation>
 <translation id="4412944820643904175">Značajka <ph name="FEATURE_NAME" /> je isključena.</translation>
 <translation id="4421231901400348175"><ph name="HELPER_NAME" /> i vi dijelite kontrolu nad zaslonom putem Daljinske pomoći.</translation>
+<translation id="4427613789487709312">Zadano (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Glasnoća</translation>
 <translation id="4450893287417543264">Ne prikazuj ponovo</translation>
 <translation id="445864333228800152">Dobra večer,</translation>
@@ -449,6 +452,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="5078796286268621944">Netočan PIN</translation>
 <translation id="5083553833479578423">Otključajte više značajki Asistenta.</translation>
 <translation id="5136175204352732067">Povezana je neka druga tipkovnica</translation>
+<translation id="5155897006997040331">Brzina čitanja</translation>
 <translation id="5168181903108465623">Dostupni su uređaji za emitiranje</translation>
 <translation id="5170568018924773124">Pokaži u mapi</translation>
 <translation id="5176318573511391780">Snimanje dijela zaslona</translation>
@@ -712,6 +716,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 obavijest}one{# obavijest}few{# obavijesti}other{# obavijesti}}</translation>
 <translation id="7724603315864178912">Izreži</translation>
+<translation id="7745560842763881396">Prikaži aplikacije na polici</translation>
 <translation id="7749443890790263709">Dosegnut je maksimalan broj radnih površina.</translation>
 <translation id="776344839111254542">Kliknite da biste vidjeli pojedinosti o ažuriranju</translation>
 <translation id="7780159184141939021">Zakretanje zaslona</translation>

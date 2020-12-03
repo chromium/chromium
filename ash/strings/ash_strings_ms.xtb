@@ -122,6 +122,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2050339315714019657">Potret</translation>
 <translation id="2067602449040652523">Kecerahan papan kekunci</translation>
 <translation id="2078034614700056995">Leret ke kanan dengan empat jari untuk beralih kepada meja seterusnya</translation>
+<translation id="2079504693865562705">Sembunyikan apl dalam rak</translation>
 <translation id="2083190527011054446">Selamat malam <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Tidak bersambung ke rangkaian</translation>
 <translation id="2126242104232412123">Meja baharu</translation>
@@ -238,6 +239,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> lagi</translation>
 <translation id="3236488194889173876">Tiada rangkaian mudah alih tersedia</translation>
 <translation id="3249513730522716925">Tetingkap <ph name="WINDOW_TITLE" /> dialihkan daripada Meja <ph name="ACTIVE_DESK" /> ke Meja <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, Kekuatan isyarat <ph name="SIGNAL_STRENGTH" /> peratus.</translation>
 <translation id="3255483164551725916">Apakah yang boleh anda lakukan?</translation>
 <translation id="3269597722229482060">Klik Kanan</translation>
 <translation id="3289674678944039601">Mengecas melalui penyesuai</translation>
@@ -370,6 +372,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4389184120735010762">Anda menekan pintasan papan kekunci untuk penggadang yang didok. Adakah anda ingin menghidupkannya?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> dimatikan.</translation>
 <translation id="4421231901400348175">Berkongsi kawalan skrin anda dengan <ph name="HELPER_NAME" /> melalui Bantuan Jauh.</translation>
+<translation id="4427613789487709312">Lalai (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Kelantangan</translation>
 <translation id="4450893287417543264">Jangan tunjukkan lagi</translation>
 <translation id="445864333228800152">Selamat petang,</translation>
@@ -450,6 +453,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5078796286268621944">PIN salah</translation>
 <translation id="5083553833479578423">Buka kunci pelbagai lagi ciri Assistant.</translation>
 <translation id="5136175204352732067">Papan kekunci lain disambungkan</translation>
+<translation id="5155897006997040331">Kelajuan membaca</translation>
 <translation id="5168181903108465623">Peranti Cast tersedia</translation>
 <translation id="5170568018924773124">Paparkan dalam folder</translation>
 <translation id="5176318573511391780">Rakam skrin separa</translation>
@@ -713,6 +717,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 pemberitahuan}other{# pemberitahuan}}</translation>
 <translation id="7724603315864178912">Potong</translation>
+<translation id="7745560842763881396">Tunjukkan apl dalam rak</translation>
 <translation id="7749443890790263709">Bilangan maksimum meja dicapai.</translation>
 <translation id="776344839111254542">Klik untuk melihat butiran kemas kini</translation>
 <translation id="7780159184141939021">Putarkan Skrin</translation>

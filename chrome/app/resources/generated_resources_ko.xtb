@@ -3172,7 +3172,6 @@
 <translation id="4646675363240786305">포트</translation>
 <translation id="4647090755847581616">탭 닫기(&amp;C)</translation>
 <translation id="4647283074445570750">총 <ph name="TOTAL_STEPS" />단계 중 <ph name="CURRENT_STEP" />단계</translation>
-<translation id="4647420311443994946">{0,select, tablet{태블릿에 로그인할 때 앱 시작}computer{컴퓨터에 로그인할 때 앱 시작}other{기기에 로그인할 때 앱 시작}}</translation>
 <translation id="4647697156028544508">'<ph name="DEVICE_NAME" />'의 PIN을 입력하세요:</translation>
 <translation id="4648491805942548247">권한 부족</translation>
 <translation id="4648499713050786492">프로필을 잠금 해제한 다음 사용자를 추가하세요.</translation>
@@ -3717,6 +3716,7 @@
 <translation id="5317780077021120954">저장</translation>
 <translation id="5319359161174645648">Google에서 추천하는 Chrome</translation>
 <translation id="5320112320661303273">이미 다른 기기에서 어시스턴트를 설정한 것 같습니다. 다음 설정을 켜면 어시스턴트를 더욱 유용하게 활용할 수 있습니다.</translation>
+<translation id="5320135788267874712">새 기기 이름</translation>
 <translation id="532247166573571973">서버 접속이 불가능할 수 있습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="5324300749339591280">앱 목록</translation>
 <translation id="5324780743567488672">사용자 위치를 사용하여 자동으로 시간대 설정</translation>

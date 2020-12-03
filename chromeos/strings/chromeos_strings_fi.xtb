@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Skannauksen aloittaminen ei onnistunut</translation>
 <translation id="1071587090247825784">Palomuuri havaittu</translation>
 <translation id="1075811647922107217">Sivun koko</translation>
+<translation id="1124772482545689468">Käyttäjä</translation>
 <translation id="1175697296044146566">Laitetta (<ph name="DEVICE_TYPE" />) ylläpitää <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Tuntematon virhe.</translation>
 <translation id="1204296502688602597">DNS-viive</translation>
@@ -21,6 +22,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> ylläpitää tätä käyttäjää ja voi muuttaa asetuksia ja seurata käyttäjän toimia etänä.</translation>
 <translation id="150962533380566081">Virheellinen PUK-koodi</translation>
 <translation id="1510238584712386396">Käynnistysohjelma</translation>
+<translation id="1621067168122174824">Suorita lataustesti</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> säiettä)</translation>
 <translation id="1641857168437328880">Syöttölaite (yksipuolinen)</translation>
 <translation id="1644574205037202324">Historia</translation>
@@ -28,6 +30,7 @@
 <translation id="1703835215927279855">Kirje</translation>
 <translation id="1706391837335750954">DNS-ratkaisija paikalla</translation>
 <translation id="1743558184855585519">Akkua pidetään kulutettuna, kun se saavuttaa rajan</translation>
+<translation id="1792647875738159689">Perutaan skannausta</translation>
 <translation id="1905710495812624430">Yritysten enimmäismäärä ylitettiin.</translation>
 <translation id="1930797645656624981">Chrome-käyttöjärjestelmän syöttöpalvelu</translation>
 <translation id="1947737735496445907">Tulostettu</translation>
@@ -42,22 +45,26 @@
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> yritystä jäljellä</translation>
 <translation id="2391082728065870591">Lähetä palauteraportti</translation>
 <translation id="2461822463642141190">Nykyinen</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} yritys jäljellä}other{<ph name="ERROR_MESSAGE" /> {0} yritystä jäljellä}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Etsi</translation>
 <translation id="2570743873672969996">Tehdään testiä <ph name="TEST_NAME" />…</translation>
+<translation id="2620436844016719705">Järjestelmä</translation>
 <translation id="2805756323405976993">Sovellukset</translation>
 <translation id="2872961005593481000">Sammuta</translation>
 <translation id="3008341117444806826">PÄIVITÄ</translation>
 <translation id="3009958530611748826">Valitse tallennuskansio</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3069085583900247081">Testi epäonnistui</translation>
 <translation id="3083667275341675831">Yhteysdiagnostiikka</translation>
 <translation id="3091839911843451378">Epäonnistui – Pysäytetty</translation>
+<translation id="3102119246920354026">Välimuisti</translation>
+<translation id="3122464029669770682">Keskusyksikkö</translation>
 <translation id="3188257591659621405">Omat tiedostot</translation>
 <translation id="3199982728237701504">Syöttölaite (kaksipuolinen)</translation>
 <translation id="3246869037381808805">Yli päivän vanhat tulostustyöt poistetaan</translation>
 <translation id="3268178239013324452">Epäonnistui – Luukku auki</translation>
 <translation id="3310640316857623290">DNS-viive merkittävästi yli sallitun rajan</translation>
+<translation id="3328783797891415197">Testi käynnissä</translation>
 <translation id="3369013195428705271">Haluatko varmasti poistaa tulostushistorian? Käynnissä olevia tulostustöitä ei poisteta.</translation>
 <translation id="3456078764689556234">Tulostettu <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /> sivua.</translation>
 <translation id="3459509316159669723">Tulostaminen</translation>
@@ -71,11 +78,13 @@
 <translation id="3838338534323494292">Uusi salasana</translation>
 <translation id="3865414814144988605">Resoluutio</translation>
 <translation id="3941014780699102620">Isännän selvittäminen epäonnistui</translation>
+<translation id="3942420633017001071">Diagnostiikka</translation>
 <translation id="39823212440917567">Yli <ph name="NUMBER_OF_DAYS" /> päivää vanhat tulostustyöt poistetaan</translation>
 <translation id="4003384961948020559">Epäonnistui – Syöte täynnä</translation>
 <translation id="4034824040120875894">Tulostin</translation>
 <translation id="4131410914670010031">Mustavalkoinen</translation>
 <translation id="4145784616224233563">HTTP-palomuuri</translation>
+<translation id="4170700058716978431">EPÄONNISTUI</translation>
 <translation id="4227825898293920515">Salasana vanhenee: <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ei tulostustöitä käynnissä</translation>
 <translation id="4297501883039923494">Pysähtynyt – Tuntematon virhe</translation>
@@ -100,16 +109,20 @@
 <translation id="4773299976671772492">Keskeytetty</translation>
 <translation id="4808449224298348341">Peruutettu tulostustyö: <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">Valitse kansio Tiedostot-sovelluksesta…</translation>
+<translation id="4848429997038228357">KÄYNNISSÄ</translation>
 <translation id="4890353053343094602">Valitse uusi välittömästi</translation>
 <translation id="4917889632206600977">Pysähtynyt – Paperi loppu</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> ladattiin <ph name="NUM_SECONDS" /> sekunnissa.</translation>
 <translation id="4932733599132424254">Päiväys</translation>
 <translation id="4985509611418653372">Suorita</translation>
+<translation id="500920857929044050">Lopeta testi</translation>
+<translation id="5154917547274118687">Muisti</translation>
 <translation id="5168185087976003268">Akun toiminta</translation>
 <translation id="520299634122159966">Skannereita ei saatavilla</translation>
 <translation id="5212543919916444558">En löydä näytöltä mitään, minkä kanssa voisin auttaa sinua.
 Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5222676887888702881">Kirjaudu ulos</translation>
+<translation id="5264277876637023664">Suorita CPU-testi</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Suorita ohjelmat uudelleen</translation>
 <translation id="5317780077021120954">Tallenna</translation>
@@ -122,26 +135,33 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="54609108002486618">Ylläpidetty</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Katso lisätietoja ohjekeskuksesta</translation>
+<translation id="5635169860413004179">Katso raportti</translation>
 <translation id="5719918614880940190">Tämä mittaa prosessorin käyttöä ja tarkoittaa kaikkien ytimien yhteissummaa</translation>
+<translation id="5797428682393400134">ONNISTUI</translation>
 <translation id="5832805196449965646">Lisää henkilö</translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
+<translation id="5931523347251946569">Tiedostoa ei löydy</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versio <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6048107060512778456">Epäonnistui – Paperitukos</translation>
 <translation id="6050189528197190982">Harmaasävy</translation>
 <translation id="6058625436358447366">Lisää lopuksi vanha ja uusi salasana</translation>
 <translation id="6061772781719867950">Hylätyt HTTP-pyynnöt</translation>
+<translation id="6104112872696127344">Skannaus on peruttu</translation>
 <translation id="6106186594183574873">Lisää lopuksi vanha salasana</translation>
 <translation id="6108689792487843350">Yhdyskäytävään ei saa yhteyttä</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" /> GHz / <ph name="MAX" /> GHz</translation>
 <translation id="6146993107019042706">Lisää lopuksi uusi salasana</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Lisätietoja</translation>
 <translation id="6191293864534840972">Nimipalvelimet väärän muotoisia</translation>
+<translation id="6232017090690406397">Akku</translation>
 <translation id="6325525973963619867">Epäonnistui</translation>
 <translation id="636850387210749493">Yritysversion käyttöönotto</translation>
 <translation id="649050271426829538">Pysähtynyt – Paperitukos</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Tuntematon Wi-Fi-suojausprotokolla</translation>
+<translation id="6532051501443766164">Piilota raportti</translation>
 <translation id="65587193855025101">Tasoskanneri</translation>
 <translation id="6564646048574748301">Epäonnistui – Ei yhteyttä tulostimeen</translation>
 <translation id="6618744767048954150">Käynnissä</translation>
@@ -149,6 +169,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6643016212128521049">Tyhjennä</translation>
 <translation id="6704062477274546131">DNS-ratkaisu</translation>
 <translation id="6747215703636344499">Pysähtynyt – Syöte täynnä</translation>
+<translation id="6756731097889387912">Skannausta ei voitu perua</translation>
 <translation id="6766275201586212568">Hylätyt DNS-selvitykset</translation>
 <translation id="6768237774506518020">Suuri DNS-selvitysten hylkäysprosentti</translation>
 <translation id="6839141349259399400">Etkö pysty yhdistämään skannereihin?</translation>
@@ -164,6 +185,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7648838807254605802">Suuri HTTPS-viive</translation>
 <translation id="7658239707568436148">Peruuta</translation>
 <translation id="7690294790491645610">Vahvista uusi salasana</translation>
+<translation id="7732651821766520760">Testi: <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Tila</translation>
 <translation id="7855434858642800953">Skannattu tiedosto tallennettu!</translation>
 <translation id="7928373994957558460">Näytä tiedoston sijainti</translation>
@@ -191,12 +213,16 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Oletus</translation>
 <translation id="8845001906332463065">Hae ohjeita</translation>
+<translation id="8881098542468797602">Testi onnistui</translation>
 <translation id="8910721771319628100">Oletusverkko yli viiverajan</translation>
 <translation id="8919837981463578619">Epäonnistui – Lokero puuttuu</translation>
 <translation id="8928727111548978589">Epäonnistui – Paperi loppu</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> yritystä jäljellä</translation>
 <translation id="8970109610781093811">Suorita uudelleen</translation>
 <translation id="9088306295921699330">Nykyinen käyttö</translation>
 <translation id="910415269708673980">Päivitä tukipyyntö: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skannataan sivu <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Poista lukitus</translation>
+<translation id="9149391708638971077">Suorita muistitesti</translation>
+<translation id="982713511914535780">Suorita purkautumistesti</translation>
 </translationbundle>

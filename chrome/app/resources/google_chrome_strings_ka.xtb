@@ -56,6 +56,7 @@
 <translation id="2309047409763057870">ეს Google Chrome-ის მეორადი ინსტალაცია არის და ნაგულისხმევ ბრაუზერად ის ვერ დაყენდება.</translation>
 <translation id="2348335408836342058">Chrome საჭიროებს თქვენს კამერასა და მიკროფონზე წვდომის ნებართვას ამ საიტისთვის</translation>
 <translation id="234869673307233423">Chrome ვერ ახერხებს პაროლების შემოწმებას. ცადეთ მოგვიანებით.</translation>
+<translation id="235650106824528204">ამ პროფილის გამოყენებისას შექმნილი Chrome მონაცემების (მაგ., შექმნილი სანიშნეების, ისტორიის, პაროლებისა და სხვა პარამეტრების) ამოშლა შეუძლია სამსახურის პროფილის ადმინისტრატორს. <ph name="LEARN_MORE" /></translation>
 <translation id="2429317896000329049">Google Chrome-მა ვერ დაასინქრონა თქვენი მონაცემები, რადგან სინქრონიზაცია არ არის ხელმისაწვდომი თქვენი დომენისთვის.</translation>
 <translation id="2467438592969358367">Google Chrome ითხოვს თქვენი პაროლების ექსპორტირებას. აღნიშნულის დასაშვებად აკრიფეთ თქვენი Windows-ის პაროლი.</translation>
 <translation id="2485422356828889247">დეინსტალაცია</translation>
@@ -176,12 +177,14 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="573759479754913123">Chrome-ის OS-ის შესახებ</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> — Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome-ის გაშვება ვერ მოხერხდა. ცადეთ ხელახლა.</translation>
+<translation id="5851757216820085940">თუ რამდენიმე Google ანგარიში გაქვთ, შეგიძლიათ დაამატოთ ისინი თქვენს <ph name="DEVICE_TYPE" />-ს. თქვენი ანგარიშები ხელმისაწვდომი იქნება როგორც Chrome ბრაუზერსა და Play Store-ში, ისე ისეთ სერვისებში, როგორიცაა Gmail, Drive და YouTube. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome ცდილობს პაროლების რედაქტირებას.</translation>
 <translation id="5895138241574237353">გადატვირთვა</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> — ქსელში შესვლა</translation>
 <translation id="5940385492829620908">თქვენი ვები, სანიშნეები და Chrome-ის სხვა მასალა არის აქ.</translation>
 <translation id="5941830788786076944">Google Chrome გახდეს ნაგულისხმევი ბრაუზერი</translation>
 <translation id="6070348360322141662">დამატებითი უსაფრთხოებისთვის, Google Chrome თქვენს მონაცემებს დაშიფრავს</translation>
+<translation id="608006075545470555">დაამატეთ სამსახურის პროფილი ამ ბრაუზერს</translation>
 <translation id="6113794647360055231">Chrome უბრალოდ გაუმჯობესდა</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> — Google Chrome Beta</translation>
@@ -193,10 +196,12 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6368958679917195344">Chrome OS არსებობს დამატებითი <ph name="BEGIN_LINK_CROS_OSS" />ღია წყაროს პროგრამული უზრუნველყოფის<ph name="END_LINK_CROS_OSS" /> წყალობით.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> — Google Chrome Dev</translation>
 <translation id="6566149418543181476">მიმდინარეობს Google Chrome-ის განახლება (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6568793831116033768">Chrome OS სისტემა</translation>
 <translation id="6650333065969705433">დაცული მედიის დასაკრავად Rosetta-ს გამოსაყენებლად საჭიროა Chrome-ის გადატვირთვა.</translation>
 <translation id="6676384891291319759">წვდომა ინტერნეტზე</translation>
 <translation id="6679975945624592337">Google Chrome-ისთვის ფონურ რეჟიმში მუშაობის დაშვება</translation>
 <translation id="6750954913813541382">მართლწერის შეცდომების შესასწორებლად Chrome უგზავნის Google-ს თქვენ მიერ ბრაუზერში აკრეფილ ტექსტს</translation>
+<translation id="6755885556185485672">Chrome OS სათანადოდ არ გაითიშა.</translation>
 <translation id="677276454032249905">მაინც გსურთ Chrome-იდან გასვლა?</translation>
 <translation id="683440813066116847">შიდა წესი Google Chrome Canary-ისთვის mDNS ტრაფიკის დასაშვებად.</translation>
 <translation id="6885412569789873916">Chrome Beta აპები</translation>
@@ -255,6 +260,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8498858610309223613">Google Chrome-ს ეს-ესაა მიესადაგა უსაფრთხოების საგანგებო განახლება. გადატვირთეთ ის ახლავე და თქვენი ჩანართებიც აღდგება.</translation>
 <translation id="8521348052903287641">შემომავალი წესი Google Chrome Dev-ისთვის mDNS ტრაფიკის დასაშვებად.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8550334526674375523">სამსახურის ეს პროფილი თქვენი პირადი პროფილისგან სრულიად დამოუკიდებლად ფუნქციონირებს.</translation>
 <translation id="8556340503434111824">ხელმისაწვდომია Google Chrome-ის უფრო ახალი ვერსია, რომელიც უფრო სწრაფია.</translation>
 <translation id="861359755029082151">Rosetta საშუალებას მისცემს Chrome-ს, ამ გვერდზე დაცული მედია დაუკრას.</translation>
 <translation id="8614913330719544658">Google Chrome არ პასუხობს. გავუშვათ ხელახლა?</translation>
@@ -273,6 +279,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8907709077090383765">Chrome-მა დაცული მედია რომ დაუკრას, საჭიროა Rosetta-ს ინსტალაცია. გსურთ მისი ახლავე ინსტალაცია?</translation>
 <translation id="8914504000324227558">Chrome-ის ხელახლა გაშვება</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" />-დან თქვენს Android ტელეფონზე ნომრის გასაგზავნად შედით Chrome-ში ორივე მოწყობილობაზე.</translation>
+<translation id="8986207147630327271">თქვენ აპირებთ, ამ ბრაუზერს სამსახურის პროფილი დაამატოთ, რითაც თქვენს ადმინისტრატორს კონტროლს მხოლოდ სამსახურის პროფილზე მიანიჭებთ.</translation>
 <translation id="8999208279178790196">{0,plural, =0{ხელმისაწვდომია Chrome-ის განახლება}=1{ხელმისაწვდომია Chrome-ის განახლება}other{უკვე # დღეა, რაც ხელმისაწვდომია Chrome-ის განახლება}}</translation>
 <translation id="9026991721384951619">Chrome OS-მა ვერ დაასინქრონა თქვენი მონაცემები, რადგან თქვენი ანგარიშის შესვლის დეტალები მოძველდა.</translation>
 <translation id="9067395829937117663">Google Chrome-ის მუშაობისთვის საჭიროა Windows 7 ან უფრო ახალი ვერსია.</translation>

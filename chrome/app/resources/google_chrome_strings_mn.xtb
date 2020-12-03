@@ -56,6 +56,7 @@
 <translation id="2309047409763057870">Энэ нь Google Chrome-н хоёр дахь суулгалт тул таны өгөгдмөл хөтчөөр сонгох боломжгүй.</translation>
 <translation id="2348335408836342058">Энэ сайтыг ашиглахын тулд Chrome-д таны камер, микрофонд хандах зөвшөөрөл шаардлагатай</translation>
 <translation id="234869673307233423">Chrome таны нууц үгсийг шалгах боломжгүй байна. Дараа дахин оролдоно уу.</translation>
+<translation id="235650106824528204">Энэ профайлыг ашиглах үед үүссэн Chrome-н аливаа өгөгдлийг (хавчуурга, түүх, нууц үг болон бусад тохиргоог үүсгэх зэрэг) ажлын профайлын админ хасах боломжтой. <ph name="LEARN_MORE" /></translation>
 <translation id="2429317896000329049">Таны домэйнд sync хийх боломжгүй учраас Google Chrome нь таны өгөгдлийг sync хийж чадсангүй.</translation>
 <translation id="2467438592969358367">Google Chrome таны нууц үгийг экспортлох хүсэлтэй байна. Үүнийг зөвшөөрч байгаа бол Windows-н нууц үгээ оруулна уу.</translation>
 <translation id="2485422356828889247">Устгах</translation>
@@ -177,12 +178,14 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="573759479754913123">Chrome үйлдлийн системийн тухай</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Канари</translation>
 <translation id="5804318322022881572">Chrome-г эхлүүлж чадсангүй. Дахин оролдоно уу.</translation>
+<translation id="5851757216820085940">Хэрэв танд олон Google Бүртгэл байгаа бол тэдгээрийг <ph name="DEVICE_TYPE" />-д нэмэх боломжтой. Таны бүртгэлүүд Chrome хөтөч, Play Store түүнчлэн Gmail, Драйв болон YouTube зэрэг үйлчилгээнүүдэд боломжтой болно.<ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome нь нууц үгсийг засах гэж оролдож байна.</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Сүлжээнд нэвтрэх</translation>
 <translation id="5940385492829620908">Таны веб, хавчуурга, болон Chrome-ийн бусад зүйлс энд хадгалагддаг.</translation>
 <translation id="5941830788786076944">Google Chrome-ыг анхдагч веб хөтөчөө болгоно уу</translation>
 <translation id="6070348360322141662">Таны аюулгүй байдлыг сайжруулахын тулд Google Chrome таны өгөгдлийг шифрлэнэ</translation>
+<translation id="608006075545470555">Энэ хөтчид ажлын профайл нэмэх</translation>
 <translation id="6113794647360055231">Chrome илүү сайн боллоо</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Бета</translation>
@@ -194,10 +197,12 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6368958679917195344">Chrome OS-ийг нэмэлт <ph name="BEGIN_LINK_CROS_OSS" /> нээлттэй эхийн программ хангамжаар ажиллуулж байна <ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Дев</translation>
 <translation id="6566149418543181476">Google Chrome-г шинэчилж байна (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6568793831116033768">Chrome үйлдлийн систем</translation>
 <translation id="6650333065969705433">Хамгаалагдсан медиаг тоглуулахын тулд Rosetta-г ашиглах бол та Chrome-г дахин эхлүүлэх ёстой.</translation>
 <translation id="6676384891291319759">Интернэтэд нэвтрэх</translation>
 <translation id="6679975945624592337">Google Chrome-г цаана ажиллуулахыг зөвшөөрөх</translation>
 <translation id="6750954913813541382">Зөв бичгийн алдааг засахын тулд Chrome таны хөтөч дээр бичсэн текстийг Google-д илгээдэг</translation>
+<translation id="6755885556185485672">Chrome үйлдлийн системийг зөв унтраагаагүй байна.</translation>
 <translation id="677276454032249905">Chrome-с ямар ч үед гарах уу?</translation>
 <translation id="683440813066116847">mDNS-ийг зөвшөөрөх Google Chrome Canary-ийн гадаад дүрэм.</translation>
 <translation id="6885412569789873916">Chrome Бэта Апп</translation>
@@ -256,6 +261,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8498858610309223613">Google Chrome-н аюулгүй байдлын тусгай шинэчлэлтийг хийж дууслаа. Одоо дахин эхлүүлнэ үү. Бид таны табыг сэргээх болно.</translation>
 <translation id="8521348052903287641">mDNS урсгалыг зөвшөөрөх Google Chrome-н дотоод дүрэм.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8550334526674375523">Энэ ажлын профайл нь таны хувийн профайлаас бүрэн тусдаа байна.</translation>
 <translation id="8556340503434111824">Google Chrome-ийн шинэ хувилбар боломжтой байгаа бөгөөд энэ нь урьд урьдныхаас ч илүү хурдан.</translation>
 <translation id="861359755029082151">Rosetta нь Chrome-г энэ хуудсан дээр хамгаалагдсан медиа тоглуулах боломжтой болгодог.</translation>
 <translation id="8614913330719544658">Google Chrome ажиллахгүй байна. Дахин эхүүлэх үү?</translation>
@@ -274,6 +280,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8907709077090383765">Chrome-г хамгаалагдсан медиа тоглуулах боломжтой болгохын тулд та Rosetta-г суулгах шаардлагатай. Та үүнийг одоо суулгамаар байна уу?</translation>
 <translation id="8914504000324227558">Chrome-г дахин эхлүүлэх</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" />-с Android утсандаа дугаар илгээхийн тулд хоёр төхөөрөмжийнхөө аль алинаас нь Chrome-д нэвтэрнэ үү.</translation>
+<translation id="8986207147630327271">Та энэ хөтчид ажлын профайл нэмж байгаа бөгөөд администратордоо зөвхөн ажлын профайлын хяналтыг өгч байна.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome-н шинэчлэлт боломжтой байна}=1{Chrome-н шинэчлэлт боломжтой байна}other{Chromium-н шинэчлэлт # хоногийн турш боломжтой байсаар байна}}</translation>
 <translation id="9026991721384951619">Таны бүртгэлийн мэдээлэл хуучирсан учраас Chrome OS нь таны өгөгдлийг sync хийж чадсангүй.</translation>
 <translation id="9067395829937117663">Google Chrome-д Windows 7 болон үүнээс дээших хувилбарууд шаардлагатай.</translation>

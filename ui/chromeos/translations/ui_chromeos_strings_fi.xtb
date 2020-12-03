@@ -117,6 +117,7 @@
 <translation id="2208919847696382164">Asenna Linux-versio</translation>
 <translation id="2225536596944493418">Haluatko varmasti poistaa <ph name="NUMBER_OF_ITEMS" /> kohdetta?</translation>
 <translation id="2230062665678605299">Kansiota <ph name="FOLDER_NAME" /> ei voi luoda. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2251368349685848079">Palauta roskakorista</translation>
 <translation id="2275059641601412272">Siirretty</translation>
 <translation id="2288278176040912387">Levysoitin</translation>
 <translation id="2291538123825441971">Avataan <ph name="NUMBER_OF_FILES" /> tiedostoa.</translation>
@@ -734,6 +735,7 @@
 <translation id="8609695766746872526">islanti</translation>
 <translation id="8669949407341943408">Siirretään…</translation>
 <translation id="8698464937041809063">Google-piirros</translation>
+<translation id="8712637175834984815">Ymmärretty</translation>
 <translation id="8713112442029511308">malta</translation>
 <translation id="8714406895390098252">Polkupyörä</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> valittiin.</translation>

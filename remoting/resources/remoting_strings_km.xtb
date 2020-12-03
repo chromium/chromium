@@ -54,7 +54,6 @@
 <translation id="369442766917958684">ក្រៅបណ្តាញ</translation>
 <translation id="3695446226812920698">ស្វែងយល់ពីរបៀប</translation>
 <translation id="3776024066357219166">វេន Chrome Remote Desktop របស់អ្នកបានបញ្ចប់។</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3897092660631435901">ម៉ឺនុយ</translation>
 <translation id="3905196214175737742">ដែនរបស់ម្ចាស់ម៉ាស៊ីនចែករំលែកគ្មានសុពលភាព។</translation>
 <translation id="3931191050278863510">ឧបករណ៍ចែករំលែកបណ្តាញបានឈប់។</translation>
@@ -99,6 +98,7 @@
 <translation id="5419418238395129586">នៅលើអ៊ីនធឺណិតលើកចុងក្រោយនៅថ្ងៃទី៖ <ph name="DATE" /></translation>
 <translation id="544077782045763683">ឧបករណ៍ចែករំលែកបណ្តាញបានបិទ។</translation>
 <translation id="5601503069213153581">លេខសម្គាល់</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">បច្ចុប្បន្ន ដេស៍ថបរបស់អ្នកត្រូវបានចែករំលែកជាមួយ <ph name="USER" />។</translation>
 <translation id="5750083143895808682">បានចូលជា <ph name="EMAIL_ADDRESS" /> ។</translation>
 <translation id="579702532610384533">ភ្ជាប់ឡើងវិញ</translation>
@@ -118,7 +118,6 @@
 <translation id="6583902294974160967">ជំនួយ</translation>
 <translation id="6612717000975622067">ផ្ញើ Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">ចែករំលែក</translation>
-<translation id="6681800064886881394">រក្សាសិទ្ធិគ្រប់យ៉ាងដោយ 2013 Google Inc។</translation>
 <translation id="677755392401385740">ឧបករណ៍ចែករំលែកបណ្តាញបានចាប់ផ្តើមសម្រាប់អ្នកប្រើ៖ <ph name="HOST_USERNAME" />។</translation>
 <translation id="6939719207673461467">បង្ហាញ/លាក់ ក្តារចុច។</translation>
 <translation id="6963936880795878952">ការតភ្ជាប់ទៅកុំព្យូទ័រពីចម្ងាយត្រូវបានរារាំងជាបណ្តោះអាសន្ន ដោយសារមាននរណាម្នាក់កំពុងព្យាយាមភ្ជាប់ទៅវាដោយប្រើកូដ PIN ដែលមិនត្រឹមត្រូវ។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។</translation>

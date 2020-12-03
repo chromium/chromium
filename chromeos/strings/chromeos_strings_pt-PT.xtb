@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Não foi possível iniciar a digitalização.</translation>
 <translation id="1071587090247825784">Firewall detetada</translation>
 <translation id="1075811647922107217">Tamanho da página</translation>
+<translation id="1124772482545689468">Utilizador</translation>
 <translation id="1175697296044146566">Este <ph name="DEVICE_TYPE" /> é gerido por <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Erro desconhecido.</translation>
 <translation id="1204296502688602597">Latência de DNS</translation>
@@ -21,6 +22,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> gere este utilizador e pode gerir remotamente as definições e monitorizar a atividade do utilizador.</translation>
 <translation id="150962533380566081">PUK inválido.</translation>
 <translation id="1510238584712386396">Launcher</translation>
+<translation id="1621067168122174824">Executar teste de carregamento</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads)</translation>
 <translation id="1641857168437328880">Alimentador de documentos (um lado)</translation>
 <translation id="1644574205037202324">Histórico</translation>
@@ -28,6 +30,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Resolvedor de DNS presente</translation>
 <translation id="1743558184855585519">A bateria é considerada consumida quando atingir o limite.</translation>
+<translation id="1792647875738159689">A cancelar a digitalização…</translation>
 <translation id="1905710495812624430">Foi excedido o número máximo de tentativas permitidas.</translation>
 <translation id="1930797645656624981">Serviço do método de introdução do Chrome OS</translation>
 <translation id="1947737735496445907">Impressão concluída</translation>
@@ -42,22 +45,26 @@
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> tentativas restantes</translation>
 <translation id="2391082728065870591">Enviar relatório de feedback</translation>
 <translation id="2461822463642141190">Atual</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentativa restante.}other{<ph name="ERROR_MESSAGE" /> {0} tentativas restantes.}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Analisar</translation>
 <translation id="2570743873672969996">A executar o teste <ph name="TEST_NAME" />…</translation>
+<translation id="2620436844016719705">Sistema</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Encerrar</translation>
 <translation id="3008341117444806826">ATUALIZAR</translation>
 <translation id="3009958530611748826">Selecione uma pasta onde guardar</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3069085583900247081">O teste falhou</translation>
 <translation id="3083667275341675831">Diagnóstico de conetividade</translation>
 <translation id="3091839911843451378">Falha – Parou</translation>
+<translation id="3102119246920354026">Cache</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">Os meus ficheiros</translation>
 <translation id="3199982728237701504">Alimentador de documentos (dois lados)</translation>
 <translation id="3246869037381808805">As tarefas de impressão com mais de um 1 dia serão removidas.</translation>
 <translation id="3268178239013324452">Falha – Porta aberta</translation>
 <translation id="3310640316857623290">Latência de DNS significativamente acima do limite permitido.</translation>
+<translation id="3328783797891415197">A executar teste…</translation>
 <translation id="3369013195428705271">Tem a certeza de que pretende limpar todo o histórico de impressões? As suas tarefas de impressão em curso não serão limpas.</translation>
 <translation id="3456078764689556234">Página <ph name="PRINTED_PAGES" /> impressa de <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Impressão</translation>
@@ -71,11 +78,13 @@
 <translation id="3838338534323494292">Nova palavra-passe</translation>
 <translation id="3865414814144988605">Resolução</translation>
 <translation id="3941014780699102620">Falha ao resolver anfitrião.</translation>
+<translation id="3942420633017001071">Diagnósticos</translation>
 <translation id="39823212440917567">As tarefas de impressão com mais de <ph name="NUMBER_OF_DAYS" /> dias serão removidas.</translation>
 <translation id="4003384961948020559">Falha – Saída cheia</translation>
 <translation id="4034824040120875894">Impressora</translation>
 <translation id="4131410914670010031">Preto e branco</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
+<translation id="4170700058716978431">FALHOU</translation>
 <translation id="4227825898293920515">A palavra-passe expira daqui a <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nenhuma tarefa de impressão em curso.</translation>
 <translation id="4297501883039923494">Parada – Erro desconhecido</translation>
@@ -100,16 +109,20 @@
 <translation id="4773299976671772492">Parado</translation>
 <translation id="4808449224298348341">Foi cancelada a tarefa de impressão de <ph name="DOCUMENT_TITLE" />.</translation>
 <translation id="4832079907277790330">Selecionar pasta na app Files…</translation>
+<translation id="4848429997038228357">EM EXECUÇÃO</translation>
 <translation id="4890353053343094602">Escolha uma nova de imediato</translation>
 <translation id="4917889632206600977">Parada – Sem papel</translation>
 <translation id="4921665434385737356">Carregou <ph name="RATE" /> em <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Executar</translation>
+<translation id="500920857929044050">Parar teste</translation>
+<translation id="5154917547274118687">Memória</translation>
 <translation id="5168185087976003268">Condição da bateria</translation>
 <translation id="520299634122159966">Nenhum leitor disponível.</translation>
 <translation id="5212543919916444558">Não consigo encontrar nada no ecrã com que possa ajudar.
 Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5222676887888702881">Terminar sessão</translation>
+<translation id="5264277876637023664">Executar teste da CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Executar novamente as Rotinas</translation>
 <translation id="5317780077021120954">Guardar</translation>
@@ -122,26 +135,33 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="54609108002486618">Geridos</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Saber mais no Centro de Ajuda</translation>
+<translation id="5635169860413004179">Ver relatório</translation>
 <translation id="5719918614880940190">Isto mede a utilização da CPU e é uma agregação de todos os núcleos.</translation>
+<translation id="5797428682393400134">ÊXITO</translation>
 <translation id="5832805196449965646">Adicionar pessoa</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
+<translation id="5931523347251946569">Ficheiro não encontrado</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versão <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6048107060512778456">Falha – Encravamento de papel</translation>
 <translation id="6050189528197190982">Tons de cinzento</translation>
 <translation id="6058625436358447366">Para terminar, introduza a palavra-passe antiga e a nova</translation>
 <translation id="6061772781719867950">Pedidos HTTPS com falhas</translation>
+<translation id="6104112872696127344">A digitalização foi cancelada.</translation>
 <translation id="6106186594183574873">Para terminar, introduza a palavra-passe antiga</translation>
 <translation id="6108689792487843350">Não é possível alcançar o gateway.</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" /> GHz/<ph name="MAX" /> GHz</translation>
 <translation id="6146993107019042706">Para terminar, introduza a nova palavra-passe.</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6191293864534840972">Os servidores de nomes têm um formato incorreto.</translation>
+<translation id="6232017090690406397">Bateria</translation>
 <translation id="6325525973963619867">Falhou</translation>
 <translation id="636850387210749493">Inscrição empresarial</translation>
 <translation id="649050271426829538">Parada – Encravamento de papel</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Protocolo de segurança de Wi-Fi desconhecido.</translation>
+<translation id="6532051501443766164">Ocultar relatório</translation>
 <translation id="65587193855025101">Plano</translation>
 <translation id="6564646048574748301">Falha – Impressora inacessível</translation>
 <translation id="6618744767048954150">Em execução</translation>
@@ -149,6 +169,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6704062477274546131">Resolução de DNS</translation>
 <translation id="6747215703636344499">Parada – Saída cheia</translation>
+<translation id="6756731097889387912">Não foi possível cancelar a digitalização.</translation>
 <translation id="6766275201586212568">Resoluções de DNS com falhas</translation>
 <translation id="6768237774506518020">Taxa de falhas de resolução de DNS elevada</translation>
 <translation id="6839141349259399400">Não consegue ligar aos scanners?</translation>
@@ -164,6 +185,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7648838807254605802">Latência elevada de HTTPS</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7690294790491645610">Confirmar a nova palavra-passe</translation>
+<translation id="7732651821766520760">Teste <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7855434858642800953">Ficheiro digitalizado guardado!</translation>
 <translation id="7928373994957558460">Mostrar localização do ficheiro</translation>
@@ -191,12 +213,16 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predefinição</translation>
 <translation id="8845001906332463065">Obter ajuda</translation>
+<translation id="8881098542468797602">Teste com êxito</translation>
 <translation id="8910721771319628100">Rede predefinida acima do limite de latência.</translation>
 <translation id="8919837981463578619">Falha – Tabuleiro em falta</translation>
 <translation id="8928727111548978589">Falha – Sem papel</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> tentativas restantes.</translation>
 <translation id="8970109610781093811">Executar novamente</translation>
 <translation id="9088306295921699330">Utilização atual</translation>
 <translation id="910415269708673980">Atualize a permissão para <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">A digitalizar a página <ph name="PAGE_NUMBER" />…</translation>
 <translation id="9111102763498581341">Desbloquear</translation>
+<translation id="9149391708638971077">Executar teste de memória</translation>
+<translation id="982713511914535780">Executar teste de descarga</translation>
 </translationbundle>

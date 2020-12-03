@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">Kunne ikke starte skanningen</translation>
 <translation id="1071587090247825784">Oppdaget en brannmur</translation>
 <translation id="1075811647922107217">Sidestørrelse</translation>
+<translation id="1124772482545689468">Bruker</translation>
 <translation id="1175697296044146566">Denne <ph name="DEVICE_TYPE" />-enheten administreres av <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Ukjent feil.</translation>
 <translation id="1204296502688602597">DNS-tidsforsinkelse</translation>
@@ -21,6 +22,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> administrerer denne brukeren og kan administrere innstillinger og overvåke brukeraktiviteten eksternt.</translation>
 <translation id="150962533380566081">Ugyldig PUK.</translation>
 <translation id="1510238584712386396">Appoversikt</translation>
+<translation id="1621067168122174824">Kjør ladetest</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> tråder)</translation>
 <translation id="1641857168437328880">Dokumentmater (ensidig)</translation>
 <translation id="1644574205037202324">Logg</translation>
@@ -28,6 +30,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolveren er til stede</translation>
 <translation id="1743558184855585519">Batteriet anses som oppbrukt når grensen er nådd</translation>
+<translation id="1792647875738159689">Avbryter skanningen</translation>
 <translation id="1905710495812624430">Du har overskredet maksimumsgrensen for antall forsøk.</translation>
 <translation id="1930797645656624981">Tjeneste for Chrome OS-inndatametode</translation>
 <translation id="1947737735496445907">Skrevet ut</translation>
@@ -42,22 +45,26 @@
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> forsøk igjen</translation>
 <translation id="2391082728065870591">Send tilbakemeldingsrapport</translation>
 <translation id="2461822463642141190">Nåværende</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} forsøk igjen}other{<ph name="ERROR_MESSAGE" /> {0} forsøk igjen}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Skann</translation>
 <translation id="2570743873672969996">Kjører test av <ph name="TEST_NAME" /> …</translation>
+<translation id="2620436844016719705">System</translation>
 <translation id="2805756323405976993">Apper</translation>
 <translation id="2872961005593481000">Slå av</translation>
 <translation id="3008341117444806826">OPPDATER</translation>
 <translation id="3009958530611748826">Velg mappen du vil lagre i</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3069085583900247081">Testen mislyktes</translation>
 <translation id="3083667275341675831">Tilkoblingsdiagnostikk</translation>
 <translation id="3091839911843451378">Mislykket – stoppet</translation>
+<translation id="3102119246920354026">Buffer</translation>
+<translation id="3122464029669770682">Prosessor</translation>
 <translation id="3188257591659621405">Mine filer</translation>
 <translation id="3199982728237701504">Dokumentmater (tosidig)</translation>
 <translation id="3246869037381808805">Utskriftsjobber som er eldre enn 1 dag, blir fjernet</translation>
 <translation id="3268178239013324452">Mislykket – luken er åpen</translation>
 <translation id="3310640316857623290">DNS-forsinkelsen er betydelig høyere enn den tillatte grenseverdien</translation>
+<translation id="3328783797891415197">Testen kjøres</translation>
 <translation id="3369013195428705271">Er du sikker på at du vil tømme hele utskriftsloggen? Utskriftsjobber som allerede er i gang, fjernes ikke.</translation>
 <translation id="3456078764689556234">Skrev ut side <ph name="PRINTED_PAGES" /> av <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Utskrift</translation>
@@ -71,11 +78,13 @@
 <translation id="3838338534323494292">Nytt passord</translation>
 <translation id="3865414814144988605">Oppløsning</translation>
 <translation id="3941014780699102620">Kunne ikke finne tilknytning til verten</translation>
+<translation id="3942420633017001071">Diagnostikk</translation>
 <translation id="39823212440917567">Utskriftsjobber som er eldre enn <ph name="NUMBER_OF_DAYS" /> dager, blir fjernet</translation>
 <translation id="4003384961948020559">Mislykket – utskriftsmottaket er fullt</translation>
 <translation id="4034824040120875894">Skriver</translation>
 <translation id="4131410914670010031">Svarthvitt</translation>
 <translation id="4145784616224233563">HTTP-brannmur</translation>
+<translation id="4170700058716978431">MISLYKKET</translation>
 <translation id="4227825898293920515">Passordet utløper om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ingen utskriftsjobber pågår</translation>
 <translation id="4297501883039923494">Stoppet – ukjent feil</translation>
@@ -100,16 +109,20 @@
 <translation id="4773299976671772492">Stoppet</translation>
 <translation id="4808449224298348341">Avbrøt utskriftsjobben <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">Velg en mappe i Filer-appen …</translation>
+<translation id="4848429997038228357">KJØRER</translation>
 <translation id="4890353053343094602">Velg et nytt passord umiddelbart</translation>
 <translation id="4917889632206600977">Stoppet – tom for papir</translation>
 <translation id="4921665434385737356">Ladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="4932733599132424254">Dato</translation>
 <translation id="4985509611418653372">Kjør</translation>
+<translation id="500920857929044050">Stans testen</translation>
+<translation id="5154917547274118687">Minne</translation>
 <translation id="5168185087976003268">Batterihelse</translation>
 <translation id="520299634122159966">Ingen tilgjengelige skannere</translation>
 <translation id="5212543919916444558">Jeg finner ikke noe på skjermen jeg kan hjelpe deg med. 
 Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5222676887888702881">Logg av</translation>
+<translation id="5264277876637023664">Kjør prosessortest</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Kjør rutinene på nytt</translation>
 <translation id="5317780077021120954">Lagre</translation>
@@ -122,26 +135,33 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="54609108002486618">Administrert</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Finn ut mer i brukerstøtten</translation>
+<translation id="5635169860413004179">Se rapporten</translation>
 <translation id="5719918614880940190">Dette er en sammenstilt måling av CPU-bruken for alle kjernene</translation>
+<translation id="5797428682393400134">FULLFØRT</translation>
 <translation id="5832805196449965646">Legg til person</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
+<translation id="5931523347251946569">Fant ikke filen</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versjon <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Lukk</translation>
 <translation id="6048107060512778456">Mislykket – papirstopp</translation>
 <translation id="6050189528197190982">Gråtoner</translation>
 <translation id="6058625436358447366">For å fullføre passordendringen, skriv inn det gamle og det nye passordet</translation>
 <translation id="6061772781719867950">Mislykkede HTTP-forespørsler</translation>
+<translation id="6104112872696127344">Skanningen er avbrutt</translation>
 <translation id="6106186594183574873">For å fullføre passordendringen, skriv inn det gamle passordet</translation>
 <translation id="6108689792487843350">Gatewayen er utilgjengelig</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" /> GHz / <ph name="MAX" /> GHz</translation>
 <translation id="6146993107019042706">For å fullføre passordendringen, skriv inn det nye passordet</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6191293864534840972">Navnetjenerne inneholder feil</translation>
+<translation id="6232017090690406397">Batteri</translation>
 <translation id="6325525973963619867">Mislykket</translation>
 <translation id="636850387210749493">Bedriftsregistrering</translation>
 <translation id="649050271426829538">Stoppet – papirstopp</translation>
 <translation id="6517239166834772319">Utforsk</translation>
 <translation id="6527081081771465939">Ukjent Wi-Fi-sikkerhetsprotokoll</translation>
+<translation id="6532051501443766164">Skjul rapporten</translation>
 <translation id="65587193855025101">Planskanner</translation>
 <translation id="6564646048574748301">Mislykket – skriveren kan ikke nås</translation>
 <translation id="6618744767048954150">Kjører</translation>
@@ -149,6 +169,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6643016212128521049">Tøm</translation>
 <translation id="6704062477274546131">DNS-konvertering</translation>
 <translation id="6747215703636344499">Stoppet – utskriftsmottaket er fullt</translation>
+<translation id="6756731097889387912">Kunne ikke avbryte skanningen</translation>
 <translation id="6766275201586212568">Mislykkede DNS-oppslag</translation>
 <translation id="6768237774506518020">Høy feilfrekvens for DNS-oppslag</translation>
 <translation id="6839141349259399400">Kan du ikke koble til noen skannere?</translation>
@@ -164,6 +185,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7648838807254605802">Høy HTTPS-tidsforsinkelse</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7690294790491645610">Bekreft det nye passordet</translation>
+<translation id="7732651821766520760"><ph name="TEST_NAME" />test</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7855434858642800953">Den skannede filen er lagret!</translation>
 <translation id="7928373994957558460">Vis filplassering</translation>
@@ -191,12 +213,16 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8845001906332463065">Få hjelp</translation>
+<translation id="8881098542468797602">Testen er fullført</translation>
 <translation id="8910721771319628100">Tidsforsinkelsen for standardnettverket er over grenseverdien</translation>
 <translation id="8919837981463578619">Mislykket – en skuff mangler</translation>
 <translation id="8928727111548978589">Mislykket – tom for papir</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> forsøk igjen</translation>
 <translation id="8970109610781093811">Kjør på nytt</translation>
 <translation id="9088306295921699330">Nåværende bruk</translation>
 <translation id="910415269708673980">Oppdater saken for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skanner side <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Lås opp</translation>
+<translation id="9149391708638971077">Kjør minnetest</translation>
+<translation id="982713511914535780">Kjør utladingstest</translation>
 </translationbundle>
