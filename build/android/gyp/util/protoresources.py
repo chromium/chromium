@@ -33,7 +33,7 @@ _FLAT_ARSC_HEADER = 'AAPT\x01\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00'
 # The package ID hardcoded for shared libraries. See
 # _HardcodeSharedLibraryDynamicAttributes() for more details. If this value
 # changes make sure to change REQUIRED_PACKAGE_IDENTIFIER in WebLayerImpl.java.
-SHARED_LIBRARY_HARDCODED_ID = 12
+SHARED_LIBRARY_HARDCODED_ID = 36
 
 
 def _ProcessZip(zip_path, process_func):
