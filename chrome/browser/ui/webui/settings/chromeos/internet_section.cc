@@ -707,6 +707,12 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"eidPopupDescription", IDS_SETTINGS_INTERNET_EID_POPUP_DESCRIPTION},
       {"closeEidPopupButtonLabel",
        IDS_SETTINGS_INTERNET_CLOSE_EID_POPUP_BUTTON_LABEL},
+      {"eSimRenameProfileDialogLabel",
+       IDS_SETTINGS_INTERNET_NETWORK_RENAME_DIALOG_RENAME_PROFILE},
+      {"eSimRenameProfileDialogDone",
+       IDS_SETTINGS_INTERNET_NETWORK_RENAME_DIALOG_DONE},
+      {"eSimRenameProfileDialogCancel",
+       IDS_SETTINGS_INTERNET_NETWORK_RENAME_DIALOG_CANCEL},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 

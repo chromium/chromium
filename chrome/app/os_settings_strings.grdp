@@ -2156,6 +2156,15 @@
   <message name="IDS_SETTINGS_INTERNET_NETWORK_MENU_RENAME" desc="Settings > Internet > Network details > Dot menu: Label for the button to rename an eSIM cellular network">
     Rename
   </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_RENAME_DIALOG_RENAME_PROFILE" desc="Settings > Internet > Network details > Rename profile dialog: Label for the dialog informing the user to rename an eSIM cellular network">
+    Rename Profile
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_RENAME_DIALOG_DONE" desc="Settings > Internet > Network details >Rename profile dialog: The Label for the dialog done button to rename an eSIM cellular network">
+    Done
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_RENAME_DIALOG_CANCEL" desc="Settings > Internet > Network details >Rename profile dialog: The Label for the dialog cancel button to rename an eSIM cellular network">
+    Cancel
+  </message>
   <message name="IDS_SETTINGS_INTERNET_BUTTON_ACTIVATE" desc="Settings > Internet > Network details: The label for the button to activate a Cellular network.">
     Activate
   </message>

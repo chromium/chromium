@@ -16,14 +16,10 @@ Polymer({
   ],
 
   properties: {
-    /**
-     * Set in currentRouteChanged() if the network's GUID corresponds
-     * with a Cellular eSIM network.
-     * @private
-     */
-    showDotsButton_: {
-      type: Boolean,
-      value: false,
+    /** @private */
+    iccid_: {
+      type: String,
+      value: '',
     },
   },
 
@@ -34,7 +30,6 @@ Polymer({
    * @protected
    */
   currentRouteChanged(route, oldRoute) {
-    this.showDotsButton_ = false;
     if (route !== settings.routes.NETWORK_DETAIL ||
         !loadTimeData.getBoolean('updatedCellularActivationUi')) {
       return;
@@ -53,10 +48,28 @@ Polymer({
     const networkConfig = network_config.MojoInterfaceProviderImpl.getInstance()
                               .getMojoServiceRemote();
     networkConfig.getNetworkState(guid).then(response => {
-      // TODO(crbug.com/1093185): Add check for specifically eSIM when cellular
-      // has an EID property.
-      this.showDotsButton_ = response.result.type ===
-          chromeos.networkConfig.mojom.NetworkType.kCellular;
+      // TODO(crbug.com/1093185): Add check for specifically eSIM when
+      // cellular has an EID property.
+      if (response.result.type !==
+          chromeos.networkConfig.mojom.NetworkType.kCellular) {
+        return;
+      }
+      this.setESimIccid_(networkConfig, guid);
+    });
+  },
+
+  /**
+   * @param {!chromeos.networkConfig.mojom.CrosNetworkConfigRemote}
+   *     networkConfig
+   * @param {string} guid
+   * @private
+   */
+  setESimIccid_(networkConfig, guid) {
+    networkConfig.getManagedProperties(guid).then(response => {
+      const managedProperty = response.result;
+      if (managedProperty.typeProperties.cellular.iccid) {
+        this.iccid_ = managedProperty.typeProperties.cellular.iccid;
+      }
     });
   },
 
@@ -68,4 +81,20 @@ Polymer({
     const menu = /** @type {!CrActionMenuElement} */ (this.$.menu.get());
     menu.showAt(/** @type {!Element} */ (e.target));
   },
+
+  /**
+   * @returns {boolean}
+   * @private
+   */
+  shouldShowDotsMenuButton_() {
+    return !!this.iccid_;
+  },
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onRenameESimProfileTap_(e) {
+    this.fire('show-esim-profile-rename-dialog', {iccid: this.iccid_});
+  }
 });

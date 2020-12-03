@@ -131,6 +131,21 @@ Polymer({
      */
     cellularSetupDialogPageName_: String,
 
+    /** @private {boolean} */
+    showESimProfileRenameDialog_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
+     * Iccid of an esim profile, used in internet detail menu.
+     * @private {string}
+     */
+    esimProfileIccid_: {
+      type: String,
+      value: '',
+    },
+
     /** @private {!Map<string, Element>} */
     focusConfig_: {
       type: Object,
@@ -167,6 +182,7 @@ Polymer({
     'show-detail': 'onShowDetail_',
     'show-known-networks': 'onShowKnownNetworks_',
     'show-networks': 'onShowNetworks_',
+    'show-esim-profile-rename-dialog': 'onShowESimProfileRenameDialog_',
   },
 
   /** @private  {?settings.InternetPageBrowserProxy} */
@@ -379,6 +395,20 @@ Polymer({
     params.append('name', OncMojo.getNetworkStateDisplayName(networkState));
     settings.Router.getInstance().navigateTo(
         settings.routes.NETWORK_DETAIL, params);
+  },
+
+  /**
+   * @param {!CustomEvent<!{iccid: string}>} event
+   * @private
+   */
+  onShowESimProfileRenameDialog_(event) {
+    this.esimProfileIccid_ = event.detail.iccid;
+    this.showESimProfileRenameDialog_ = true;
+  },
+
+  /** @private */
+  onCloseESimProfileRenameDialog_() {
+    this.showESimProfileRenameDialog_ = false;
   },
 
   /**

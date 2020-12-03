@@ -1,0 +1,36 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/mojo_interface_provider.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+
+<dom-module id="esim-rename-dialog">
+  <template>
+    <style>
+      #cancel {
+        margin-inline-end: 8px;
+      }
+    </style>
+    <cr-dialog id="profileRenameDialog" show-on-attach>
+      <div slot="title">$i18n{eSimRenameProfileDialogLabel}</div>
+      <div slot="body">
+        <cr-input value="{{esimProfileName_}}"
+            spellcheck="false">
+        </cr-button>
+      </div>
+      <div slot="button-container">
+        <cr-button id="cancel" on-click="onCancelTap_"
+            class="cancel-button">
+          $i18n{eSimRenameProfileDialogCancel}
+        </cr-button>
+        <cr-button id="done" on-click="onRenameDialogDoneTap_"
+            class="action-button">
+          $i18n{eSimRenameProfileDialogDone}
+        </cr-button>
+      </div>
+    </cr-dialog>
+  </template>
+  <script src="esim_rename_dialog.js"></script>
+</dom-module>

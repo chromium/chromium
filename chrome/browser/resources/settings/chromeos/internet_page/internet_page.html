@@ -28,6 +28,7 @@
 <link rel="import" href="internet_page_browser_proxy.html">
 <link rel="import" href="internet_subpage.html">
 <link rel="import" href="network_summary.html">
+<link rel="import" href="esim_rename_dialog.html">
 
 <dom-module id="settings-internet-page">
   <template>
@@ -114,7 +115,8 @@
 
       <template is="dom-if" route-path="/networkDetail" no-search restamp>
         <settings-subpage page-title="$i18n{internetDetailPageTitle}">
-          <settings-internet-detail-menu slot="subpage-title-extra">
+          <settings-internet-detail-menu
+              slot="subpage-title-extra">
           </settings-internet-detail-menu>
           <settings-internet-detail-page prefs="{{prefs}}"
               default-network="[[defaultNetwork]]"
@@ -159,6 +161,13 @@
           on-close="onCloseCellularSetupDialog_"
           page-name="[[cellularSetupDialogPageName_]]">
       </os-settings-cellular-setup-dialog>
+    </template>
+
+    <template is="dom-if" if="[[showESimProfileRenameDialog_]]" restamp>
+      <esim-rename-dialog id="esimRenameDialog"
+          on-close="onCloseESimProfileRenameDialog_"
+          iccid="[[esimProfileIccid_]]">
+      </esim-rename-dialog>
     </template>
   </template>
   <script src="internet_page.js"></script>

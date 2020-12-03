@@ -24,7 +24,7 @@
         margin: 6px 0 0 0;
       }
     </style>
-    <template is="dom-if" if="[[showDotsButton_]]">
+    <template is="dom-if" if="[[shouldShowDotsMenuButton_(iccid_)]]">
       <cr-icon-button class="icon-more-vert"
           title="$i18n{moreActions}"
           id="moreNetworkDetail"
@@ -35,6 +35,7 @@
       <template>
         <cr-action-menu role-description="$i18n{menu}">
           <button class="dropdown-item"
+              on-click="onRenameESimProfileTap_"
               role="menuitem"
               title="$i18n{networkDetailMenuRenameESim}">
             $i18n{networkDetailMenuRenameESim}
