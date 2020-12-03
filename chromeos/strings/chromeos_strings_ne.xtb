@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
 <translation id="1018656279737460067">रद्द गरियो</translation>
+<translation id="1059913517121127803">स्क्यान गर्ने प्रक्रिया सुरु गर्न सकिएन</translation>
 <translation id="1071587090247825784">फायरवाल पत्ता लाग्यो</translation>
 <translation id="1075811647922107217">पेजको आकार</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ।</translation>
@@ -101,6 +102,7 @@
 <translation id="4832079907277790330">Files एप खोलेर कुनै फोल्डर चयन गर्नु...</translation>
 <translation id="4890353053343094602">तुरुन्तै एउटा नयाँ पासवर्ड राख्नुहोस्</translation>
 <translation id="4917889632206600977">रोकियो - प्रिन्टरमा कागज सकियो</translation>
+<translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकेन्डमा <ph name="RATE" /> चार्ज भयो।</translation>
 <translation id="4932733599132424254">मिति</translation>
 <translation id="4985509611418653372">चलाउनुहोस्</translation>
 <translation id="5168185087976003268">ब्याट्रीको अवस्था</translation>
@@ -163,6 +165,7 @@
 <translation id="7690294790491645610">नयाँ पासवर्ड पुष्टि गर्नुहोस्</translation>
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7855434858642800953">स्क्यान गरिएको फाइल सुरक्षित गरियो!</translation>
+<translation id="7928373994957558460">फाइल भएको स्थान देखाइयोस्</translation>
 <translation id="7936303884198020182">कुनै पनि डोमेन नेम सर्भर फेला परेन</translation>
 <translation id="8041089156583427627">प्रतिक्रिया पठाउनुहोस्।</translation>
 <translation id="808894953321890993">पासवर्ड परिवर्तन गर्नुहोस्‌</translation>
