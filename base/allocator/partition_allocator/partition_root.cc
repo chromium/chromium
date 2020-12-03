@@ -355,6 +355,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   // ref-count at the beginning of the slot.
   allow_extras = (opts.alignment != PartitionOptions::Alignment::kAlignedAlloc);
 
+#if PARTITION_EXTRAS_REQUIRED
   size_t size = 0, offset = 0;
   if (allow_extras) {
     size += internal::kPartitionCookieSizeAdjustment;
@@ -365,6 +366,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   }
   extras_size = static_cast<uint32_t>(size);
   extras_offset = static_cast<uint32_t>(offset);
+#endif
 
   pcscan_mode = PartitionOptionsToPCScanMode<thread_safe>(opts.pcscan);
   if (pcscan_mode == PCScanMode::kEnabled) {

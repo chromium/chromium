@@ -146,8 +146,16 @@ struct BASE_EXPORT PartitionRoot {
   const bool is_thread_safe = thread_safe;
 
   bool allow_extras;
+
+#if !PARTITION_EXTRAS_REQUIRED
+  // Teach the compiler that `AdjustSizeForExtrasAdd` etc. can be eliminated
+  // in builds that use no extras.
+  static constexpr uint32_t extras_size = 0;
+  static constexpr uint32_t extras_offset = 0;
+#else
   uint32_t extras_size;
   uint32_t extras_offset;
+#endif
 
   // Not used on the fastest path (thread cache allocations), but on the fast
   // path of the central allocator.
