@@ -12,7 +12,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
-#include "chrome/browser/chromeos/borealis/borealis_context_manager_factory.h"
 #include "chrome/browser/chromeos/borealis/borealis_metrics.h"
 #include "chrome/browser/chromeos/borealis/borealis_task.h"
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
@@ -308,49 +307,6 @@ TEST_F(BorealisContextManagerTest, TasksCanOutliveCompletion) {
   EXPECT_CALL(callback_expectation, Callback(testing::_));
   context_manager.StartBorealis(callback_expectation.GetCallback());
   task_environment_.RunUntilIdle();
-}
-
-class BorealisContextManagerFactoryTest : public testing::Test {
- public:
-  BorealisContextManagerFactoryTest() = default;
-  BorealisContextManagerFactoryTest(const BorealisContextManagerFactoryTest&) =
-      delete;
-  BorealisContextManagerFactoryTest& operator=(
-      const BorealisContextManagerFactoryTest&) = delete;
-  ~BorealisContextManagerFactoryTest() override = default;
-
- protected:
-  void TearDown() override { chromeos::DBusThreadManager::Shutdown(); }
-
-  content::BrowserTaskEnvironment task_environment_;
-};
-
-TEST_F(BorealisContextManagerFactoryTest, ReturnsContextManagerForMainProfile) {
-  TestingProfile profile;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager;
-  auto mock_user_manager =
-      std::make_unique<testing::NiceMock<chromeos::MockUserManager>>();
-  mock_user_manager->AddUser(
-      AccountId::FromUserEmailGaiaId(profile.GetProfileUserName(), "id"));
-  scoped_user_manager = std::make_unique<user_manager::ScopedUserManager>(
-      std::move(mock_user_manager));
-  chromeos::DBusThreadManager::Initialize();
-
-  BorealisContextManager* context_manager =
-      BorealisContextManagerFactory::GetForProfile(&profile);
-  EXPECT_TRUE(context_manager);
-}
-
-TEST_F(BorealisContextManagerFactoryTest,
-       ReturnsNullpointerForSecondaryProfile) {
-  TestingProfile::Builder profile_builder;
-  profile_builder.SetProfileName("defaultprofile");
-  std::unique_ptr<TestingProfile> profile = profile_builder.Build();
-  chromeos::DBusThreadManager::Initialize();
-
-  BorealisContextManager* context_manager =
-      BorealisContextManagerFactory::GetForProfile(profile.get());
-  EXPECT_FALSE(context_manager);
 }
 
 }  // namespace

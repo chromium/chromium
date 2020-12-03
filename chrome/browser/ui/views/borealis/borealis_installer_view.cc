@@ -12,9 +12,9 @@
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/borealis/borealis_context_manager_factory.h"
-#include "chrome/browser/chromeos/borealis/borealis_context_manager_impl.h"
+#include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
 #include "chrome/browser/chromeos/borealis/borealis_installer_factory.h"
+#include "chrome/browser/chromeos/borealis/borealis_service.h"
 #include "chrome/browser/chromeos/borealis/borealis_util.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -193,8 +193,9 @@ bool BorealisInstallerView::Accept() {
 
   if (state_ == State::kCompleted) {
     // Launch button has been clicked.
-    borealis::BorealisContextManagerFactory::GetForProfile(profile_)
-        ->StartBorealis(base::DoNothing());
+    borealis::BorealisService::GetForProfile(profile_)
+        ->ContextManager()
+        .StartBorealis(base::DoNothing());
     return true;
   }
 

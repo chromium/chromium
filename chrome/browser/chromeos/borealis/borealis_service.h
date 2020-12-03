@@ -12,6 +12,7 @@ class Profile;
 namespace borealis {
 
 class BorealisAppLauncher;
+class BorealisContextManager;
 class BorealisFeatures;
 class BorealisWindowManager;
 
@@ -24,6 +25,7 @@ class BorealisService : public KeyedService {
   ~BorealisService() override = default;
 
   virtual BorealisAppLauncher& AppLauncher() = 0;
+  virtual BorealisContextManager& ContextManager() = 0;
   virtual BorealisFeatures& Features() = 0;
   virtual BorealisWindowManager& WindowManager() = 0;
 };

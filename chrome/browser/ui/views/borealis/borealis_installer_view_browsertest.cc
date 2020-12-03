@@ -7,9 +7,9 @@
 #include "base/bind.h"
 #include "chrome/browser/chromeos/borealis/borealis_context.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
-#include "chrome/browser/chromeos/borealis/borealis_context_manager_factory.h"
 #include "chrome/browser/chromeos/borealis/borealis_installer_factory.h"
 #include "chrome/browser/chromeos/borealis/borealis_metrics.h"
+#include "chrome/browser/chromeos/borealis/borealis_service_fake.h"
 #include "chrome/browser/chromeos/borealis/borealis_task.h"
 #include "chrome/browser/chromeos/borealis/borealis_util.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -33,11 +33,6 @@ namespace {
 
 class BorealisInstallerMock : public borealis::BorealisInstaller {
  public:
-  BorealisInstallerMock() = default;
-  ~BorealisInstallerMock() = default;
-  BorealisInstallerMock(const BorealisInstallerMock&) = delete;
-  BorealisInstallerMock& operator=(const BorealisInstallerMock&) = delete;
-
   MOCK_METHOD0(IsProcessing, bool());
   MOCK_METHOD0(Start, void());
   MOCK_METHOD0(Cancel, void());
@@ -47,12 +42,6 @@ class BorealisInstallerMock : public borealis::BorealisInstaller {
 
 class BorealisContextManagerMock : public borealis::BorealisContextManager {
  public:
-  BorealisContextManagerMock() = default;
-  ~BorealisContextManagerMock() = default;
-  BorealisContextManagerMock(const BorealisContextManagerMock&) = delete;
-  BorealisContextManagerMock& operator=(const BorealisContextManagerMock&) =
-      delete;
-
   MOCK_METHOD(void,
               StartBorealis,
               (BorealisContextManager::ResultCallback),
@@ -74,17 +63,13 @@ class BorealisInstallerViewBrowserTest : public DialogBrowserTest {
                     browser()->profile(),
                     base::BindRepeating([](content::BrowserContext* context)
                                             -> std::unique_ptr<KeyedService> {
-                      return std::make_unique<BorealisInstallerMock>();
+                      return std::make_unique<
+                          testing::StrictMock<BorealisInstallerMock>>();
                     })));
-    mock_context_manager_ =
-        static_cast<::testing::StrictMock<BorealisContextManagerMock>*>(
-            borealis::BorealisContextManagerFactory::GetInstance()
-                ->SetTestingFactoryAndUse(
-                    browser()->profile(),
-                    base::BindRepeating([](content::BrowserContext* context)
-                                            -> std::unique_ptr<KeyedService> {
-                      return std::make_unique<BorealisContextManagerMock>();
-                    })));
+
+    BorealisServiceFake* fake_service =
+        BorealisServiceFake::UseFakeForTesting(browser()->profile());
+    fake_service->SetContextManagerForTesting(&mock_context_manager_);
   }
 
   void ShowUi(const std::string& name) override {
@@ -160,7 +145,7 @@ class BorealisInstallerViewBrowserTest : public DialogBrowserTest {
   }
 
   ::testing::StrictMock<BorealisInstallerMock>* mock_installer_;
-  ::testing::StrictMock<BorealisContextManagerMock>* mock_context_manager_;
+  ::testing::StrictMock<BorealisContextManagerMock> mock_context_manager_;
   BorealisInstallerView* view_;
   base::string16 app_name_;
 
@@ -175,6 +160,7 @@ class BorealisInstallerViewBrowserTest : public DialogBrowserTest {
 // Test that the dialog can be launched.
 IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest, InvokeUi_default) {
   EXPECT_CALL(*mock_installer_, RemoveObserver(_));
+  EXPECT_CALL(*mock_installer_, Cancel());
   ShowAndVerifyUi();
 }
 
@@ -185,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest, SucessfulInstall) {
   view_->OnInstallationEnded(InstallationResult::kSuccess);
   ExpectInstallationCompletedSucessfully();
 
-  EXPECT_CALL(*mock_context_manager_, StartBorealis(_));
+  EXPECT_CALL(mock_context_manager_, StartBorealis(_));
   EXPECT_CALL(*mock_installer_, RemoveObserver(_));
   view_->AcceptDialog();
 
@@ -227,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest,
   view_->OnInstallationEnded(InstallationResult::kSuccess);
   ExpectInstallationCompletedSucessfully();
 
-  EXPECT_CALL(*mock_context_manager_, StartBorealis(_));
+  EXPECT_CALL(mock_context_manager_, StartBorealis(_));
   EXPECT_CALL(*mock_installer_, RemoveObserver(_));
   view_->AcceptDialog();
 

@@ -8,6 +8,7 @@
 #include "chrome/browser/chromeos/borealis/borealis_service.h"
 
 #include "chrome/browser/chromeos/borealis/borealis_app_launcher.h"
+#include "chrome/browser/chromeos/borealis/borealis_context_manager_impl.h"
 #include "chrome/browser/chromeos/borealis/borealis_features.h"
 #include "chrome/browser/chromeos/borealis/borealis_window_manager.h"
 
@@ -22,12 +23,14 @@ class BorealisServiceImpl : public BorealisService {
  private:
   // BorealisService overrides.
   BorealisAppLauncher& AppLauncher() override;
+  BorealisContextManager& ContextManager() override;
   BorealisFeatures& Features() override;
   BorealisWindowManager& WindowManager() override;
 
   Profile* const profile_;
 
   BorealisAppLauncher app_launcher_;
+  BorealisContextManagerImpl context_manager_;
   BorealisFeatures features_;
   BorealisWindowManager window_manager_;
 };
