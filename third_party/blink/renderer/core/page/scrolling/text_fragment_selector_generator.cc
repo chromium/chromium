@@ -224,8 +224,10 @@ void TextFragmentSelectorGenerator::AdjustSelection() {
   int corrected_end_offset =
       ephemeral_range.EndPosition().ComputeOffsetInContainerNode();
   if (IsFirstVisiblePosition(corrected_end, corrected_end_offset)) {
+    // Here, |Previous()| already skips the children of the given node,
+    // because we're doing pre-order traversal.
     corrected_end = BackwardNonEmptyVisibleTextNode(
-        FlatTreeTraversal::PreviousSkippingChildren(*corrected_end));
+        FlatTreeTraversal::Previous(*corrected_end));
     if (corrected_end)
       corrected_end_offset = corrected_end->textContent().length();
   } else {
@@ -563,7 +565,7 @@ String TextFragmentSelectorGenerator::GetPreviousTextBlock(
   // use the preceding visible node for the suffix.
   if (IsFirstVisiblePosition(prefix_end, prefix_end_offset)) {
     prefix_end = BackwardNonEmptyVisibleTextNode(
-        FlatTreeTraversal::PreviousSkippingChildren(*prefix_end));
+        FlatTreeTraversal::Previous(*prefix_end));
 
     if (!prefix_end)
       return "";

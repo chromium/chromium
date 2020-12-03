@@ -85,7 +85,7 @@ Node* GetVisibleTextNode(Node& start_node) {
   while (Node* ancestor = GetNonSearchableAncestor(*node)) {
     if (!ancestor)
       return nullptr;
-    node = Direction::NextSkippingChildren(*ancestor);
+    node = Direction::NextSkippingSubtree(*ancestor);
     if (!node)
       return nullptr;
   }
@@ -95,7 +95,7 @@ Node* GetVisibleTextNode(Node& start_node) {
     if (ShouldIgnoreContents(*node) ||
         (style && style->Display() == EDisplay::kNone)) {
       // This element and its descendants are not visible, skip it.
-      node = Direction::NextSkippingChildren(*node);
+      node = Direction::NextSkippingSubtree(*node);
       continue;
     }
     if (style && style->Visibility() == EVisibility::kVisible &&
@@ -201,7 +201,7 @@ Node* FindBuffer::ForwardVisibleTextNode(Node& start_node) {
     static Node* Next(const Node& node) {
       return FlatTreeTraversal::Next(node);
     }
-    static Node* NextSkippingChildren(const Node& node) {
+    static Node* NextSkippingSubtree(const Node& node) {
       return FlatTreeTraversal::NextSkippingChildren(node);
     }
   };
@@ -213,8 +213,10 @@ Node* FindBuffer::BackwardVisibleTextNode(Node& start_node) {
     static Node* Next(const Node& node) {
       return FlatTreeTraversal::Previous(node);
     }
-    static Node* NextSkippingChildren(const Node& node) {
-      return FlatTreeTraversal::PreviousSkippingChildren(node);
+    static Node* NextSkippingSubtree(const Node& node) {
+      // Unlike |NextSkippingChildren|, |Previous| already skips given nodes
+      // subtree.
+      return FlatTreeTraversal::Previous(node);
     }
   };
   return GetVisibleTextNode<BackwardDirection>(start_node);
