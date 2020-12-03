@@ -2614,8 +2614,7 @@ void NavigationRequest::OnRequestFailedInternal(
   loader_.reset();
 
   common_params_->previews_state = blink::PreviewsTypes::PREVIEWS_OFF;
-  if (status.ssl_info.has_value())
-    ssl_info_ = status.ssl_info;
+  ssl_info_ = status.ssl_info;
 
   devtools_instrumentation::OnNavigationRequestFailed(*this, status);
 
