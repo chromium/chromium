@@ -1413,6 +1413,8 @@ public class StartSurfaceTest {
             // omnibox.
             return;
         }
+
+        /** Verifies the case of start surface -> a tab -> tab switcher -> start surface. */
         onView(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
@@ -1424,6 +1426,28 @@ public class StartSurfaceTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
         assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
+
+        /** Verifies the case of navigating to a tab -> start surface -> tab switcher. */
+        onView(allOf(withParent(withId(
+                             org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container)),
+                       withId(org.chromium.chrome.tab_ui.R.id.tab_list_view)))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
+
+        onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
+        assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
+
+        try {
+            TestThreadUtils.runOnUiThreadBlocking(
+                    ()
+                            -> mActivityTestRule.getActivity()
+                                       .findViewById(org.chromium.chrome.tab_ui.R.id.more_tabs)
+                                       .performClick());
+        } catch (ExecutionException e) {
+            fail("Failed to tap 'more tabs' " + e.toString());
+        }
+        onViewWaiting(withId(R.id.secondary_tasks_surface_view));
+        assertTrue(bottomSheetTestSupport.hasSuppressionTokens());
     }
 
     private static Matcher<View> isView(final View targetView) {
