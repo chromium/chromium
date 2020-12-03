@@ -9,8 +9,8 @@ import {clearAsyncInterval, setAsyncInterval} from './async_interval.js';
 // eslint-disable-next-line no-unused-vars
 import {BarcodeWorkerInterface} from './barcode_worker_interface.js';
 
-// TODO(b/172879638): Get some performance data and tune the scan interval.
-const SCAN_INTERVAL = 1000;
+// The delay interval bewteen consecutive barcode detections.
+const SCAN_INTERVAL = 200;
 
 // If any dimension of the video exceeds this size, the image would be cropped
 // and/or scaled before scanning to speed up the detection.
