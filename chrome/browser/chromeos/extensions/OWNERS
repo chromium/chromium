@@ -23,5 +23,3 @@ per-file device_local_account*=isandrk@chromium.org
 per-file device_local_account*=atwilson@chromium.org
 per-file device_local_account*=bartfab@chromium.org
 per-file device_local_account*=poromov@chromium.org
-
-# COMPONENT: Platform>Extensions

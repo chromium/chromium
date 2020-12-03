@@ -1,5 +1,3 @@
 file://chromeos/policy/OWNERS
 
 per-file *install_event*=swapnilgupta@google.com
-
-# COMPONENT: Enterprise

@@ -2,5 +2,3 @@ file://chrome/browser/chromeos/guest_os/OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
-
-# COMPONENT: UI>Shell>Containers

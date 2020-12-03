@@ -11,6 +11,3 @@ per-file chrome_media_app*=file://chromeos/components/media_app_ui/OWNERS
 per-file terminal_source*=calamity@chromium.org
 per-file terminal_source*=joelhockey@chromium.org
 per-file default_web_app_ids.h=jshikaram@chromium.org
-
-# TEAM: cros-essential-apps-dev@chromium.org
-# COMPONENT: Platform>Apps>SystemWebApps

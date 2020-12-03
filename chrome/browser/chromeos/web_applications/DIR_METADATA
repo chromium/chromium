@@ -1,0 +1,4 @@
+monorail: {
+  component: "Platform>Apps>SystemWebApps"
+}
+team_email: "cros-essential-apps-dev@chromium.org"

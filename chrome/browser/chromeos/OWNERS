@@ -18,5 +18,3 @@ per-file tpm_firmware_update*=mnissler@chromium.org
 # Sandbox selection needs security review
 per-file service_sandbox_type.h=set noparent
 per-file service_sandbox_type.h=file://ipc/SECURITY_OWNERS
-
-# COMPONENT: UI>Shell
