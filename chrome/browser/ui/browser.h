@@ -683,6 +683,8 @@ class Browser : public TabStripModelObserver,
   // Sets the browser's user title. Setting it to an empty string clears it.
   void SetWindowUserTitle(const std::string& user_title);
 
+  StatusBubble* GetStatusBubbleForTesting();
+
  private:
   friend class BrowserTest;
   friend class ExclusiveAccessTest;

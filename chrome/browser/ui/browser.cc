@@ -895,6 +895,10 @@ void Browser::SetWindowUserTitle(const std::string& user_title) {
     session_service->SetWindowUserTitle(session_id(), user_title);
 }
 
+StatusBubble* Browser::GetStatusBubbleForTesting() {
+  return GetStatusBubble();
+}
+
 void Browser::OnWindowClosing() {
   if (!ShouldCloseWindow())
     return;
@@ -2689,11 +2693,14 @@ void Browser::RemoveScheduledUpdatesFor(WebContents* contents) {
 // Browser, Getters for UI (private):
 
 StatusBubble* Browser::GetStatusBubble() {
-  // In kiosk and exclusive app mode, we want to always hide the status bubble.
-  if (chrome::IsRunningInAppMode())
-    return NULL;
+  // In kiosk and exclusive app mode we want to always hide the status bubble.
+  if (chrome::IsRunningInAppMode() ||
+      (base::FeatureList::IsEnabled(features::kRemoveStatusBarInWebApps) &&
+       web_app::AppBrowserController::IsForWebAppBrowser(this))) {
+    return nullptr;
+  }
 
-  return window_ ? window_->GetStatusBubble() : NULL;
+  return window_ ? window_->GetStatusBubble() : nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

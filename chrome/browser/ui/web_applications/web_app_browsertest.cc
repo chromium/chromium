@@ -43,6 +43,7 @@
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "content/public/common/content_features.h"
@@ -1128,6 +1129,24 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_WindowControlsOverlay,
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
   EXPECT_EQ(true,
             app_browser->app_controller()->IsWindowControlsOverlayEnabled());
+}
+
+class WebAppBrowserTest_RemoveStatusBar : public WebAppBrowserTest {
+ public:
+  WebAppBrowserTest_RemoveStatusBar() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kRemoveStatusBarInWebApps);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_RemoveStatusBar, RemoveStatusBar) {
+  NavigateToURLAndWait(browser(), GetInstallableAppURL());
+  const AppId app_id = InstallPwaForCurrentUrl();
+  Browser* const app_browser = LaunchWebAppBrowser(app_id);
+  EXPECT_EQ(nullptr, app_browser->GetStatusBubbleForTesting());
 }
 
 }  // namespace web_app

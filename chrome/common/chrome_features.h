@@ -493,6 +493,9 @@ extern const base::Feature kRecordWebAppDebugInfo;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kAbusiveNotificationPermissionRevocation;
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kRemoveStatusBarInWebApps;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kRemoveSupervisedUsersOnStartup;
