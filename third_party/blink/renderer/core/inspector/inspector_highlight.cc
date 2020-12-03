@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -880,15 +881,17 @@ bool IsHorizontalFlex(LayoutObject* layout_flex) {
          layout_flex->StyleRef().ResolvedIsColumnFlexDirection();
 }
 
-Vector<Vector<PhysicalRect>> GetFlexLinesAndItems(LayoutBox* layout_box,
-                                                  bool is_horizontal,
-                                                  bool is_reverse) {
-  Vector<Vector<PhysicalRect>> flex_lines;
+Vector<Vector<std::pair<PhysicalRect, float>>> GetFlexLinesAndItems(
+    LayoutBox* layout_box,
+    bool is_horizontal,
+    bool is_reverse) {
+  Vector<Vector<std::pair<PhysicalRect, float>>> flex_lines;
 
   // Flex containers can't get fragmented yet, but this may change in the
   // future.
   for (const auto& fragment : layout_box->PhysicalFragments()) {
     LayoutUnit progression;
+
     for (const auto& child : fragment.Children()) {
       const NGPhysicalFragment* child_fragment = child.get();
       if (!child_fragment || child_fragment->IsOutOfFlowPositioned())
@@ -899,6 +902,14 @@ Vector<Vector<PhysicalRect>> GetFlexLinesAndItems(LayoutBox* layout_box,
 
       const LayoutObject* object = child_fragment->GetLayoutObject();
       const auto* box = To<LayoutBox>(object);
+
+      LayoutUnit baseline =
+          NGBoxFragment(box->StyleRef().GetWritingDirection(),
+                        *To<NGPhysicalBoxFragment>(child_fragment))
+              .BaselineOrSynthesize();
+      float adjusted_baseline = AdjustForAbsoluteZoom::AdjustFloat(
+          baseline + box->MarginTop(), box->StyleRef());
+
       PhysicalRect item_rect =
           PhysicalRect(fragment_offset.left - box->MarginLeft(),
                        fragment_offset.top - box->MarginTop(),
@@ -914,7 +925,7 @@ Vector<Vector<PhysicalRect>> GetFlexLinesAndItems(LayoutBox* layout_box,
         flex_lines.emplace_back();
       }
 
-      flex_lines.back().push_back(item_rect);
+      flex_lines.back().push_back(std::make_pair(item_rect, adjusted_baseline));
 
       progression = is_reverse ? item_start : item_end;
     }
@@ -950,23 +961,30 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexInfo(
   container_builder.AppendPath(QuadToPath(content_quad), scale);
 
   // Gather all flex items, sorted by flex line.
-  Vector<Vector<PhysicalRect>> flex_lines =
+  Vector<Vector<std::pair<PhysicalRect, float>>> flex_lines =
       GetFlexLinesAndItems(layout_box, is_horizontal, is_reverse);
 
-  // Send the offset information for each item to the frontend.
+  // We send a list of flex lines, each containing a list of flex items, with
+  // their baselines, to the frontend.
   std::unique_ptr<protocol::ListValue> lines_info =
       protocol::ListValue::create();
   for (auto line : flex_lines) {
     std::unique_ptr<protocol::ListValue> items_info =
         protocol::ListValue::create();
-    for (auto item_rect : line) {
+    for (auto item_data : line) {
+      std::unique_ptr<protocol::DictionaryValue> item_info =
+          protocol::DictionaryValue::create();
+
       FloatQuad item_margin_quad =
-          layout_object->LocalRectToAbsoluteQuad(item_rect);
+          layout_object->LocalRectToAbsoluteQuad(item_data.first);
       FrameQuadToViewport(containing_view, item_margin_quad);
       PathBuilder item_builder;
       item_builder.AppendPath(QuadToPath(item_margin_quad), scale);
 
-      items_info->pushValue(item_builder.Release());
+      item_info->setValue("itemBorder", item_builder.Release());
+      item_info->setDouble("baseline", item_data.second);
+
+      items_info->pushValue(std::move(item_info));
     }
     lines_info->pushValue(std::move(items_info));
   }
