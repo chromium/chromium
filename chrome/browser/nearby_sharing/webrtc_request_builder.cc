@@ -15,30 +15,45 @@ constexpr int kMajorVersion = 1;
 constexpr int kMinorVersion = 24;
 constexpr int kPointVersion = 0;
 
+using LocationStandard_Format =
+    chrome_browser_nearby_sharing_instantmessaging::LocationStandard_Format;
+
+LocationStandard_Format ToProto(sharing::mojom::LocationStandardFormat format) {
+  switch (format) {
+    case sharing::mojom::LocationStandardFormat::E164_CALLING:
+      return LocationStandard_Format::LocationStandard_Format_E164_CALLING;
+    case sharing::mojom::LocationStandardFormat::ISO_3166_1_ALPHA_2:
+      return LocationStandard_Format::
+          LocationStandard_Format_ISO_3166_1_ALPHA_2;
+  }
+}
+
 void BuildLocationHint(
-    chrome_browser_nearby_sharing_instantmessaging::LocationHint*
-        location_hint) {
-  location_hint->set_location(base::CountryCodeForCurrentTimezone());
-  location_hint->set_format(chrome_browser_nearby_sharing_instantmessaging::
-                                LocationStandard_Format_ISO_3166_1_ALPHA_2);
+    chrome_browser_nearby_sharing_instantmessaging::LocationHint* location_hint,
+    sharing::mojom::LocationHintPtr location_hint_ptr) {
+  location_hint->set_location(location_hint_ptr->location);
+  location_hint->set_format(ToProto(location_hint_ptr->format));
 }
 
 void BuildId(chrome_browser_nearby_sharing_instantmessaging::Id* req_id,
-             const std::string& id) {
+             const std::string& id,
+             sharing::mojom::LocationHintPtr location_hint) {
   DCHECK(req_id);
   req_id->set_id(id);
   req_id->set_app(kAppName);
   req_id->set_type(
       chrome_browser_nearby_sharing_instantmessaging::IdType::NEARBY_ID);
-  BuildLocationHint(req_id->mutable_location_hint());
+  BuildLocationHint(req_id->mutable_location_hint(), std::move(location_hint));
 }
 
 void BuildHeader(
     chrome_browser_nearby_sharing_instantmessaging::RequestHeader* header,
-    const std::string& requester_id) {
+    const std::string& requester_id,
+    sharing::mojom::LocationHintPtr location_hint) {
   DCHECK(header);
   header->set_app(kAppName);
-  BuildId(header->mutable_requester_id(), requester_id);
+  BuildId(header->mutable_requester_id(), requester_id,
+          std::move(location_hint));
   chrome_browser_nearby_sharing_instantmessaging::ClientInfo* info =
       header->mutable_client_info();
   info->set_api_version(
@@ -53,18 +68,21 @@ void BuildHeader(
 }  // namespace
 
 chrome_browser_nearby_sharing_instantmessaging::SendMessageExpressRequest
-BuildSendRequest(const std::string& self_id, const std::string& peer_id) {
+BuildSendRequest(const std::string& self_id,
+                 const std::string& peer_id,
+                 sharing::mojom::LocationHintPtr location_hint) {
   chrome_browser_nearby_sharing_instantmessaging::SendMessageExpressRequest
       request;
-  BuildId(request.mutable_dest_id(), peer_id);
-  BuildHeader(request.mutable_header(), self_id);
+  BuildId(request.mutable_dest_id(), peer_id, location_hint->Clone());
+  BuildHeader(request.mutable_header(), self_id, location_hint->Clone());
   return request;
 }
 
 chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesExpressRequest
-BuildReceiveRequest(const std::string& self_id) {
+BuildReceiveRequest(const std::string& self_id,
+                    sharing::mojom::LocationHintPtr location_hint) {
   chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesExpressRequest
       request;
-  BuildHeader(request.mutable_header(), self_id);
+  BuildHeader(request.mutable_header(), self_id, std::move(location_hint));
   return request;
 }

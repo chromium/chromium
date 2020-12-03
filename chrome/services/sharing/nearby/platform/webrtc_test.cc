@@ -4,6 +4,7 @@
 
 #include "chrome/services/sharing/nearby/platform/webrtc.h"
 
+#include "base/i18n/timezone.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/sharing/nearby/test_support/mock_webrtc_dependencies.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -65,6 +66,30 @@ class WebRtcMediumTest : public ::testing::Test {
     return mojo_impl_;
   }
 
+  connections::LocationHint GetCountryCodeLocationHint(
+      const std::string& country_code) {
+    auto location_hint = connections::LocationHint();
+    location_hint.set_location(country_code);
+    location_hint.set_format(
+        connections::LocationStandard_Format_ISO_3166_1_ALPHA_2);
+    return location_hint;
+  }
+
+  connections::LocationHint GetCallingCodeLocationHint(
+      const std::string& calling_code) {
+    auto location_hint = connections::LocationHint();
+    location_hint.set_location(calling_code);
+    location_hint.set_format(connections::LocationStandard_Format_E164_CALLING);
+    return location_hint;
+  }
+
+  connections::LocationHint GetUnknownLocationHint() {
+    auto location_hint = connections::LocationHint();
+    location_hint.set_location("");
+    location_hint.set_format(connections::LocationStandard_Format_UNKNOWN);
+    return location_hint;
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   testing::NiceMock<sharing::MockWebRtcDependencies> mojo_impl_;
@@ -97,9 +122,9 @@ TEST_F(WebRtcMediumTest, CreatePeerConnection) {
 }
 
 TEST_F(WebRtcMediumTest, GetSignalingMessenger) {
-  // TODO(https://crbug.com/1142001): Test with non-trivial |location_hint|.
   std::unique_ptr<api::WebRtcSignalingMessenger> messenger =
-      GetMedium().GetSignalingMessenger("from", connections::LocationHint());
+      GetMedium().GetSignalingMessenger("from",
+                                        GetCountryCodeLocationHint("ZZ"));
   EXPECT_TRUE(messenger);
 }
 
@@ -110,17 +135,49 @@ TEST_F(WebRtcMediumTest, GetMessengerAndSendMessage) {
 
   base::RunLoop loop;
   EXPECT_CALL(GetMockWebRtcDependencies(),
-              SendMessage(testing::Eq(from), testing::Eq(to),
+              SendMessage(testing::Eq(from), testing::Eq(to), testing::_,
                           testing::Eq(std::string(message)), testing::_))
-      .WillOnce(testing::WithArg<3>(testing::Invoke(
+      .WillOnce(testing::WithArg<4>(testing::Invoke(
           [&](sharing::MockWebRtcDependencies::SendMessageCallback callback) {
             std::move(callback).Run(/*success=*/true);
             loop.Quit();
           })));
 
-  // TODO(https://crbug.com/1142001): Test with non-trivial |location_hint|.
   std::unique_ptr<api::WebRtcSignalingMessenger> messenger =
-      GetMedium().GetSignalingMessenger(from, connections::LocationHint());
+      GetMedium().GetSignalingMessenger(from, GetCountryCodeLocationHint("ZZ"));
+  EXPECT_TRUE(messenger);
+
+  EXPECT_TRUE(messenger->SendMessage(to, message));
+  loop.Run();
+}
+
+TEST_F(WebRtcMediumTest, GetMessengerAndSendMessageWithUnknownLocationHint) {
+  ByteArray message("message");
+  const std::string from = "from";
+  const std::string to = "to";
+
+  base::RunLoop loop;
+  EXPECT_CALL(GetMockWebRtcDependencies(),
+              SendMessage(testing::Eq(from), testing::Eq(to), testing::_,
+                          testing::Eq(std::string(message)), testing::_))
+      .WillOnce(testing::Invoke(
+          [&](const std::string& self_id, const std::string& peer_id,
+              sharing::mojom::LocationHintPtr location_hint,
+              const std::string& message,
+              sharing::MockWebRtcDependencies::SendMessageCallback callback) {
+            // Validate we get the default country code if we pass an UNKNOWN
+            // location hint.
+            EXPECT_EQ(base::CountryCodeForCurrentTimezone(),
+                      location_hint->location);
+            EXPECT_EQ(
+                sharing::mojom::LocationStandardFormat::ISO_3166_1_ALPHA_2,
+                location_hint->format);
+            std::move(callback).Run(/*success=*/true);
+            loop.Quit();
+          }));
+
+  std::unique_ptr<api::WebRtcSignalingMessenger> messenger =
+      GetMedium().GetSignalingMessenger(from, GetUnknownLocationHint());
   EXPECT_TRUE(messenger);
 
   EXPECT_TRUE(messenger->SendMessage(to, message));
@@ -132,24 +189,28 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessages) {
   const std::string from = "from";
 
   EXPECT_CALL(GetMockWebRtcDependencies(),
-              StartReceivingMessages(testing::Eq(from), testing::_, testing::_))
+              StartReceivingMessages(testing::Eq(from), testing::_, testing::_,
+                                     testing::_))
       .WillOnce(testing::Invoke(
           [&message](
               const std::string& self_id,
+              sharing::mojom::LocationHintPtr location_hint,
               mojo::PendingRemote<sharing::mojom::IncomingMessagesListener>
                   listener,
               sharing::MockWebRtcDependencies::StartReceivingMessagesCallback
                   callback) {
+            EXPECT_EQ("ZZ", location_hint->location);
+            EXPECT_EQ(
+                sharing::mojom::LocationStandardFormat::ISO_3166_1_ALPHA_2,
+                location_hint->format);
             std::move(callback).Run(/*success=*/true);
-
             mojo::Remote<sharing::mojom::IncomingMessagesListener> remote(
                 std::move(listener));
             remote->OnMessage(std::string(message));
           }));
 
-  // TODO(https://crbug.com/1142001): Test with non-trivial |location_hint|.
   std::unique_ptr<api::WebRtcSignalingMessenger> messenger =
-      GetMedium().GetSignalingMessenger(from, connections::LocationHint());
+      GetMedium().GetSignalingMessenger(from, GetCountryCodeLocationHint("ZZ"));
   EXPECT_TRUE(messenger);
 
   base::RunLoop loop;
@@ -167,13 +228,23 @@ TEST_F(WebRtcMediumTest, DISABLED_GetMessenger_StartAndStopReceivingMessages) {
 
   mojo::Remote<sharing::mojom::IncomingMessagesListener> remote;
   EXPECT_CALL(GetMockWebRtcDependencies(),
-              StartReceivingMessages(testing::Eq(from), testing::_, testing::_))
+              StartReceivingMessages(testing::Eq(from), testing::_, testing::_,
+                                     testing::_))
       .WillOnce(testing::Invoke(
           [&](const std::string& self_id,
+              sharing::mojom::LocationHintPtr location_hint,
               mojo::PendingRemote<sharing::mojom::IncomingMessagesListener>
                   listener,
               sharing::MockWebRtcDependencies::StartReceivingMessagesCallback
                   callback) {
+            // Expect the unknown location hint to get defaulted by the time we
+            // get here.
+            EXPECT_EQ(base::CountryCodeForCurrentTimezone(),
+                      location_hint->location);
+            EXPECT_EQ(
+                sharing::mojom::LocationStandardFormat::ISO_3166_1_ALPHA_2,
+                location_hint->format);
+
             std::move(callback).Run(/*success=*/true);
 
             remote.Bind(std::move(listener));
@@ -186,9 +257,8 @@ TEST_F(WebRtcMediumTest, DISABLED_GetMessenger_StartAndStopReceivingMessages) {
         }
       }));
 
-  // TODO(https://crbug.com/1142001): Test with non-trivial |location_hint|.
   std::unique_ptr<api::WebRtcSignalingMessenger> messenger =
-      GetMedium().GetSignalingMessenger(from, connections::LocationHint());
+      GetMedium().GetSignalingMessenger(from, GetUnknownLocationHint());
   EXPECT_TRUE(messenger);
 
   base::RunLoop loop;
@@ -211,14 +281,20 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessagesTwice) {
   const std::string from = "from";
 
   EXPECT_CALL(GetMockWebRtcDependencies(),
-              StartReceivingMessages(testing::Eq(from), testing::_, testing::_))
+              StartReceivingMessages(testing::Eq(from), testing::_, testing::_,
+                                     testing::_))
       .WillOnce(testing::Invoke(
           [&message](
               const std::string& self_id,
+              sharing::mojom::LocationHintPtr location_hint,
               mojo::PendingRemote<sharing::mojom::IncomingMessagesListener>
                   listener,
               sharing::MockWebRtcDependencies::StartReceivingMessagesCallback
                   callback) {
+            EXPECT_EQ("+1", location_hint->location);
+            EXPECT_EQ(sharing::mojom::LocationStandardFormat::E164_CALLING,
+                      location_hint->format);
+
             std::move(callback).Run(/*success=*/true);
 
             mojo::Remote<sharing::mojom::IncomingMessagesListener> remote(
@@ -226,9 +302,8 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessagesTwice) {
             remote->OnMessage(std::string(message));
           }));
 
-  // TODO(https://crbug.com/1142001): Test with non-trivial |location_hint|.
   std::unique_ptr<api::WebRtcSignalingMessenger> messenger =
-      GetMedium().GetSignalingMessenger(from, connections::LocationHint());
+      GetMedium().GetSignalingMessenger(from, GetCallingCodeLocationHint("+1"));
   EXPECT_TRUE(messenger);
 
   base::RunLoop loop;
@@ -240,14 +315,20 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessagesTwice) {
 
   message = ByteArray("message_2");
   EXPECT_CALL(GetMockWebRtcDependencies(),
-              StartReceivingMessages(testing::Eq(from), testing::_, testing::_))
+              StartReceivingMessages(testing::Eq(from), testing::_, testing::_,
+                                     testing::_))
       .WillOnce(testing::Invoke(
           [&message](
               const std::string& self_id,
+              sharing::mojom::LocationHintPtr location_hint,
               mojo::PendingRemote<sharing::mojom::IncomingMessagesListener>
                   listener,
               sharing::MockWebRtcDependencies::StartReceivingMessagesCallback
                   callback) {
+            EXPECT_EQ("+1", location_hint->location);
+            EXPECT_EQ(sharing::mojom::LocationStandardFormat::E164_CALLING,
+                      location_hint->format);
+
             std::move(callback).Run(/*success=*/true);
 
             mojo::Remote<sharing::mojom::IncomingMessagesListener> remote(

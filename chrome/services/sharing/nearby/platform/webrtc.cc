@@ -9,6 +9,7 @@
 #include "chrome/services/sharing/webrtc/ipc_packet_socket_factory.h"
 #include "chrome/services/sharing/webrtc/mdns_responder_adapter.h"
 #include "chrome/services/sharing/webrtc/p2p_port_allocator.h"
+#include "chromeos/services/nearby/public/mojom/webrtc_signaling_messenger.mojom-shared.h"
 #include "jingle/glue/thread_wrapper.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -109,9 +110,11 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
  public:
   WebRtcSignalingMessengerImpl(
       const std::string& self_id,
+      const connections::LocationHint& location_hint,
       const mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>&
           messenger)
       : self_id_(self_id),
+        location_hint_(location_hint),
         messenger_(messenger),
         task_runner_(
             base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {}
@@ -123,12 +126,39 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
   WebRtcSignalingMessengerImpl& operator=(
       const WebRtcSignalingMessengerImpl& other) = delete;
 
+  sharing::mojom::LocationHintPtr CreateLocationHint() {
+    sharing::mojom::LocationHintPtr location_hint_ptr =
+        sharing::mojom::LocationHint::New();
+    location_hint_ptr->location = location_hint_.location();
+    switch (location_hint_.format()) {
+      case location::nearby::connections::LocationStandard_Format::
+          LocationStandard_Format_E164_CALLING:
+        location_hint_ptr->format =
+            sharing::mojom::LocationStandardFormat::E164_CALLING;
+        break;
+      case location::nearby::connections::LocationStandard_Format::
+          LocationStandard_Format_ISO_3166_1_ALPHA_2:
+        location_hint_ptr->format =
+            sharing::mojom::LocationStandardFormat::ISO_3166_1_ALPHA_2;
+        break;
+      case location::nearby::connections::LocationStandard_Format::
+          LocationStandard_Format_UNKNOWN:
+        // Here we default to the current default country code before sending.
+        location_hint_ptr->location = base::CountryCodeForCurrentTimezone();
+        location_hint_ptr->format =
+            sharing::mojom::LocationStandardFormat::ISO_3166_1_ALPHA_2;
+        break;
+    }
+    return location_hint_ptr;
+  }
+
   // api::WebRtcSignalingMessenger:
   bool SendMessage(absl::string_view peer_id,
                    const ByteArray& message) override {
     bool success = false;
     if (!messenger_->SendMessage(self_id_, std::string(peer_id),
-                                 std::string(message), &success)) {
+                                 CreateLocationHint(), std::string(message),
+                                 &success)) {
       return false;
     }
 
@@ -155,7 +185,8 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
         pending_remote;
     mojo::PendingReceiver<sharing::mojom::IncomingMessagesListener>
         pending_receiver = pending_remote.InitWithNewPipeAndPassReceiver();
-    if (!messenger_->StartReceivingMessages(self_id_, std::move(pending_remote),
+    if (!messenger_->StartReceivingMessages(self_id_, CreateLocationHint(),
+                                            std::move(pending_remote),
                                             &success) ||
         !success) {
       receiving_messages_ = false;
@@ -186,6 +217,7 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
  private:
   bool receiving_messages_ = false;
   std::string self_id_;
+  connections::LocationHint location_hint_;
   mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger> messenger_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
@@ -307,9 +339,8 @@ std::unique_ptr<api::WebRtcSignalingMessenger>
 WebRtcMedium::GetSignalingMessenger(
     absl::string_view self_id,
     const connections::LocationHint& location_hint) {
-  // TODO(https://crbug.com/1142001): Use |location_hint|.
   return std::make_unique<WebRtcSignalingMessengerImpl>(
-      std::string(self_id), webrtc_signaling_messenger_);
+      std::string(self_id), location_hint, webrtc_signaling_messenger_);
 }
 
 }  // namespace chrome

@@ -23,6 +23,7 @@ namespace {
 const char kSelfId[] = "self_id";
 const char kOAuthToken[] = "oauth_token";
 const char kTestAccount[] = "test@test.test";
+const char kCountryCode[] = "ZZ";
 
 chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse
 CreateReceiveMessagesResponse(const std::string& msg) {
@@ -87,6 +88,16 @@ class WebRtcSignalingMessengerTest : public testing::Test {
     return test_url_loader_factory_;
   }
 
+  sharing::mojom::LocationHintPtr CountryCodeLocationHint(
+      std::string country_code) {
+    sharing::mojom::LocationHintPtr location_hint_ptr =
+        sharing::mojom::LocationHint::New();
+    location_hint_ptr->location = country_code;
+    location_hint_ptr->format =
+        sharing::mojom::LocationStandardFormat::ISO_3166_1_ALPHA_2;
+    return location_hint_ptr;
+  }
+
   // Required to ensure that the listener has received all messages before we
   // can continue with our tests.
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -100,7 +111,8 @@ class WebRtcSignalingMessengerTest : public testing::Test {
 
 TEST_F(WebRtcSignalingMessengerTest, UnsuccessfulSendMessage_EmptyToken) {
   base::RunLoop loop;
-  GetMessenger().SendMessage(kSelfId, "peer_id", "message",
+  GetMessenger().SendMessage(kSelfId, "peer_id",
+                             CountryCodeLocationHint(kCountryCode), "message",
                              base::BindLambdaForTesting([&](bool success) {
                                EXPECT_FALSE(success);
                                loop.Quit();
@@ -111,7 +123,8 @@ TEST_F(WebRtcSignalingMessengerTest, UnsuccessfulSendMessage_EmptyToken) {
 
 TEST_F(WebRtcSignalingMessengerTest, UnsuccessfulSendMessage_HttpError) {
   base::RunLoop loop;
-  GetMessenger().SendMessage(kSelfId, "peer_id", "message",
+  GetMessenger().SendMessage(kSelfId, "peer_id",
+                             CountryCodeLocationHint(kCountryCode), "message",
                              base::BindLambdaForTesting([&](bool success) {
                                EXPECT_FALSE(success);
                                loop.Quit();
@@ -128,7 +141,8 @@ TEST_F(WebRtcSignalingMessengerTest, UnsuccessfulSendMessage_HttpError) {
 
 TEST_F(WebRtcSignalingMessengerTest, SuccessfulSendMessage) {
   base::RunLoop loop;
-  GetMessenger().SendMessage(kSelfId, "peer_id", "message",
+  GetMessenger().SendMessage(kSelfId, "peer_id",
+                             CountryCodeLocationHint(kCountryCode), "message",
                              base::BindLambdaForTesting([&](bool success) {
                                EXPECT_TRUE(success);
                                loop.Quit();
@@ -150,7 +164,8 @@ TEST_F(WebRtcSignalingMessengerTest, UnsuccessfulReceiveMessages_EmptyToken) {
 
   base::RunLoop loop;
   GetMessenger().StartReceivingMessages(
-      kSelfId, mojo_receiver.BindNewPipeAndPassRemote(),
+      kSelfId, CountryCodeLocationHint(kCountryCode),
+      mojo_receiver.BindNewPipeAndPassRemote(),
       base::BindLambdaForTesting([&](bool success) {
         EXPECT_FALSE(success);
         loop.Quit();
@@ -166,7 +181,8 @@ TEST_F(WebRtcSignalingMessengerTest, UnsuccessfulReceiveMessages_HttpError) {
 
   base::RunLoop loop;
   GetMessenger().StartReceivingMessages(
-      kSelfId, mojo_receiver.BindNewPipeAndPassRemote(),
+      kSelfId, CountryCodeLocationHint(kCountryCode),
+      mojo_receiver.BindNewPipeAndPassRemote(),
       base::BindLambdaForTesting([&](bool success) {
         EXPECT_FALSE(success);
         loop.Quit();
@@ -191,7 +207,8 @@ TEST_F(WebRtcSignalingMessengerTest, SuccessfulReceiveMessages) {
 
   base::RunLoop loop;
   GetMessenger().StartReceivingMessages(
-      kSelfId, mojo_receiver.BindNewPipeAndPassRemote(),
+      kSelfId, CountryCodeLocationHint(kCountryCode),
+      mojo_receiver.BindNewPipeAndPassRemote(),
       base::BindLambdaForTesting([&](bool success) {
         EXPECT_TRUE(success);
         loop.Quit();
@@ -220,7 +237,8 @@ TEST_F(WebRtcSignalingMessengerTest,
 
   base::RunLoop loop_1;
   GetMessenger().StartReceivingMessages(
-      kSelfId, mojo_receiver_1.BindNewPipeAndPassRemote(),
+      kSelfId, CountryCodeLocationHint(kCountryCode),
+      mojo_receiver_1.BindNewPipeAndPassRemote(),
       base::BindLambdaForTesting([&](bool success) {
         EXPECT_TRUE(success);
         loop_1.Quit();
@@ -240,7 +258,8 @@ TEST_F(WebRtcSignalingMessengerTest,
 
   base::RunLoop loop_2;
   GetMessenger().StartReceivingMessages(
-      kSelfId, mojo_receiver_2.BindNewPipeAndPassRemote(),
+      kSelfId, CountryCodeLocationHint(kCountryCode),
+      mojo_receiver_2.BindNewPipeAndPassRemote(),
       base::BindLambdaForTesting([&](bool success) {
         EXPECT_TRUE(success);
         loop_2.Quit();
@@ -268,7 +287,8 @@ TEST_F(WebRtcSignalingMessengerTest, StopReceivingMessages) {
 
   base::RunLoop loop;
   GetMessenger().StartReceivingMessages(
-      kSelfId, mojo_receiver.BindNewPipeAndPassRemote(),
+      kSelfId, CountryCodeLocationHint(kCountryCode),
+      mojo_receiver.BindNewPipeAndPassRemote(),
       base::BindLambdaForTesting([&](bool success) {
         EXPECT_TRUE(success);
         loop.Quit();

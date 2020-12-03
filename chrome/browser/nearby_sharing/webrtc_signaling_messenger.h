@@ -26,10 +26,12 @@ class WebRtcSignalingMessenger
   // sharing::mojom::WebRtcSignalingMessenger:
   void SendMessage(const std::string& self_id,
                    const std::string& peer_id,
+                   sharing::mojom::LocationHintPtr location_hint,
                    const std::string& message,
                    SendMessageCallback callback) override;
   void StartReceivingMessages(
       const std::string& self_id,
+      sharing::mojom::LocationHintPtr location_hint,
       mojo::PendingRemote<sharing::mojom::IncomingMessagesListener>
           incoming_messages_listener,
       StartReceivingMessagesCallback callback) override;

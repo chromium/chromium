@@ -10,6 +10,34 @@ interface IncomingMessagesListener {
   OnMessage(string message);
 };
 
+// NOTE: Keep in sync with:
+//   third_party/nearby/src/proto/connections/offline_wire_formats.proto
+enum LocationStandardFormat {
+  // NOTE: UNKNOWN = 0 is intentionally omitted.
+
+  // E164 country codes:
+  // https://en.wikipedia.org/wiki/List_of_country_calling_codes
+  // e.g. +1 for USA
+  E164_CALLING = 1,
+
+  // ISO 3166-1 alpha-2 country codes:
+  // https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
+  ISO_3166_1_ALPHA_2 = 2,
+};
+
+// |LocationHint| is used by Tachyon to choose the right geo shard. During
+// bandwidth upgrade the requester sends its location hint over the connection
+// and this is used to ensure both parties are talking to the same Tachyon
+// instance.
+// NOTE: Keep in sync with:
+//   third_party/nearby/src/proto/connections/offline_wire_formats.proto
+struct LocationHint {
+  // The location as an E164_CALLING code or an ISO 3166-1 alpha-2 country code.
+  string location;
+  // Defines the format of the location string.
+  LocationStandardFormat format;
+};
+
 // Runs in browser process and is used by the nearby library to send and
 // receive messages.
 // TODO(crbug.com/1106387) : Update Nearby library to use async callbacks
@@ -17,12 +45,12 @@ interface IncomingMessagesListener {
 interface WebRtcSignalingMessenger {
   // Sends a signaling message |message| to |peer_id|.
   [Sync]
-  SendMessage(string self_id, string peer_id, string message)
-    => (bool success);
+  SendMessage(string self_id, string peer_id, LocationHint location_hint,
+    string message) => (bool success);
 
   // Registers |listener| to start receiving messages from other devices.
   [Sync]
-  StartReceivingMessages(string self_id,
+  StartReceivingMessages(string self_id, LocationHint location_hint,
     pending_remote<IncomingMessagesListener> listener) => (bool success);
 
   // Unregisters listener and stops receiving messages from other devices.
