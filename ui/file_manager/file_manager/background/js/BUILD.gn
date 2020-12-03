@@ -26,6 +26,7 @@ group("closure_compile") {
   deps = [
     ":closure_compile_jsmodules",
     ":closure_compile_module",
+    ":js_test_gen_html_modules_type_check_auto",
     ":js_test_gen_html_type_check_auto",
     ":test_support_modules_type_check",
     ":test_support_type_check",
@@ -76,6 +77,7 @@ js_type_check("closure_compile_jsmodules") {
     ":app_windows.m",
     ":background_base.m",
     ":entry_location_impl.m",
+    ":metadata_proxy.m",
     ":test_util_base.m",
     ":volume_info_impl.m",
     ":volume_info_list_impl.m",
@@ -391,11 +393,19 @@ js_library("metadata_proxy") {
   deps = [ "//ui/file_manager/file_manager/common/js:lru_cache" ]
 }
 
-js_unittest("metadata_proxy_unittest") {
+js_library("metadata_proxy.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/background/js/metadata_proxy.m.js" ]
+  deps = [ "//ui/file_manager/file_manager/common/js:lru_cache.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("metadata_proxy_unittest.m") {
   deps = [
-    ":metadata_proxy",
-    "//ui/file_manager/base/js:test_error_reporting",
-    "//ui/file_manager/file_manager/common/js:mock_entry",
+    ":metadata_proxy.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/file_manager/file_manager/common/js:mock_entry.m",
   ]
 }
 
@@ -772,6 +782,19 @@ js_library("volume_manager_util.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_test_gen_html("js_test_gen_html_modules") {
+  deps = [ ":metadata_proxy_unittest.m" ]
+  js_module = true
+
+  closure_flags =
+      strict_error_checking_closure_args + [
+        "js_module_root=./gen/ui",
+        "js_module_root=../../ui",
+        "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+        "hide_warnings_for=third_party/",
+      ]
+}
+
 js_test_gen_html("js_test_gen_html") {
   deps = [
     ":crostini_unittest",
@@ -783,7 +806,6 @@ js_test_gen_html("js_test_gen_html") {
     ":import_history_unittest",
     ":media_import_handler_unittest",
     ":media_scanner_unittest",
-    ":metadata_proxy_unittest",
     ":mount_metrics_unittest",
     ":task_queue_unittest",
     ":trash_unittest",
@@ -793,6 +815,7 @@ js_test_gen_html("js_test_gen_html") {
 
 js_modulizer("modulize") {
   input_files = [
+    "metadata_proxy.js",
     "app_windows.js",
     "app_window_wrapper.js",
     "background_base.js",

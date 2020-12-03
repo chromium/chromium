@@ -59,6 +59,7 @@ group("unit_test_data") {
   deps = [
     "base/js:js_test_gen_html",
     "file_manager/background/js:js_test_gen_html",
+    "file_manager/background/js:js_test_gen_html_modules",
     "file_manager/common/js:js_test_gen_html",
     "file_manager/common/js:js_test_gen_html_modules",
     "file_manager/foreground/elements:js_test_gen_html",
