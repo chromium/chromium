@@ -160,10 +160,10 @@ void SnapshotManager::TakeSnapshot(const base::Version& version) {
     auto move_target_dir = user_data_dir_.Append(kSnapshotsDir)
                                .AddExtension(kDowngradeDeleteSuffix);
     base::CreateDirectory(move_target_dir);
-    MoveFolderForLaterDeletion(
-        snapshot_dir, move_target_dir.AppendASCII(version.GetString()),
-        "Downgrade.TakeSnapshot.MoveExistingSnapshot.Result",
-        "Downgrade.TakeSnapshot.MoveExistingSnapshot.FailureCount");
+    // This succeeds more than 80% of the time.
+    MoveFolderForLaterDeletion(snapshot_dir,
+                               move_target_dir.AppendASCII(version.GetString()),
+                               nullptr, nullptr);
   }
 
   size_t success_count = 0;
