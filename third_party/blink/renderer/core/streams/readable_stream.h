@@ -67,25 +67,23 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
     Member<AbortSignal> signal_;
   };
 
-  // Create* functions create an appropriate subclass depending on which
-  // implementation is selected by blink features.
+  enum State : uint8_t { kReadable, kClosed, kErrored };
+
+  // Zero-argument form of the constructor called from JavaScript.
   static ReadableStream* Create(ScriptState*, ExceptionState&);
+
+  // One-argument constructor called from JavaScript.
   static ReadableStream* Create(ScriptState*,
                                 ScriptValue underlying_source,
                                 ExceptionState&);
-  enum State : uint8_t { kReadable, kClosed, kErrored };
 
-  // Implements ReadableStream::Create() when this implementation is enabled.
+  // Two-argument constructor called from JavaScript.
   static ReadableStream* Create(ScriptState* script_state,
                                 ScriptValue underlying_source,
                                 ScriptValue strategy,
                                 ExceptionState& exception_state);
 
-  // Implements ReadableStream::CreateWithCountQueueingStrategy() when this
-  // implementation is enabled.
-  //
-  // TODO(ricea): Replace this API with something more efficient when the old
-  // implementation is gone.
+  // Entry point to create a ReadableStream from other C++ APIs.
   static ReadableStream* CreateWithCountQueueingStrategy(
       ScriptState* script_state,
       UnderlyingSourceBase* underlying_source,
