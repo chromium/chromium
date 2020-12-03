@@ -1679,20 +1679,6 @@ void DocumentLoader::CommitNavigation() {
       owner_document = owner_local_frame->GetDocument();
   }
 
-  // Re-validate Document Policy feature before installing the new document.
-  if (!RuntimeEnabledFeatures::DocumentPolicyEnabled(
-          owner_document ? owner_document->GetExecutionContext() : nullptr)) {
-    document_policy_ = DocumentPolicy::ParsedDocumentPolicy{};
-  }
-
-  if (document_policy_.feature_state.contains(
-          mojom::blink::DocumentPolicyFeature::kForceLoadAtTop)) {
-    navigation_scroll_allowed_ = !(
-        document_policy_
-            .feature_state[mojom::blink::DocumentPolicyFeature::kForceLoadAtTop]
-            .BoolValue());
-  }
-
   LocalDOMWindow* previous_window = frame_->DomWindow();
   InitializeWindow(owner_document);
 
@@ -1725,6 +1711,9 @@ void DocumentLoader::CommitNavigation() {
   security_init.ApplyDocumentPolicy(
       document_policy_,
       response_.HttpHeaderField(http_names::kDocumentPolicyReportOnly));
+
+  navigation_scroll_allowed_ = !frame_->DomWindow()->IsFeatureEnabled(
+      mojom::blink::DocumentPolicyFeature::kForceLoadAtTop);
 
   WillCommitNavigation();
 
