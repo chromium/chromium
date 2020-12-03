@@ -385,53 +385,6 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKey_ChallengeResponse) {
   EXPECT_EQ(key.data().challenge_response_key(1).signature_algorithm(1),
             kKey2Algorithm2Proto);
 }
-
-TEST(CryptohomeUtilTest, KeyAuthorizationDataToAuthorizationDataHmacSha256) {
-  KeyAuthorizationData auth_data_proto;
-  auth_data_proto.set_type(
-      KeyAuthorizationData::KEY_AUTHORIZATION_TYPE_HMACSHA256);
-  KeyDefinition::AuthorizationData auth_data;
-
-  KeyAuthorizationDataToAuthorizationData(auth_data_proto, &auth_data);
-
-  EXPECT_EQ(auth_data.type, KeyDefinition::AuthorizationData::TYPE_HMACSHA256);
-}
-
-TEST(CryptohomeUtilTest, KeyAuthorizationDataToAuthorizationDataAes256Cbc) {
-  KeyAuthorizationData auth_data_proto;
-  auth_data_proto.set_type(
-      KeyAuthorizationData::KEY_AUTHORIZATION_TYPE_AES256CBC_HMACSHA256);
-  KeyDefinition::AuthorizationData auth_data;
-
-  KeyAuthorizationDataToAuthorizationData(auth_data_proto, &auth_data);
-
-  EXPECT_EQ(auth_data.type,
-            KeyDefinition::AuthorizationData::TYPE_AES256CBC_HMACSHA256);
-}
-
-TEST(CryptohomeUtilTest, KeyAuthorizationDataToAuthorizationDataSecret) {
-  constexpr bool kEncrypt = true;
-  constexpr bool kSign = false;
-  constexpr bool kWrapped = true;
-  const std::string kSymmetricKey = "symmetric_key";
-  const std::string kPublicKey = "public_key";
-  KeyAuthorizationData auth_data_proto;
-  KeyAuthorizationSecret* secret = auth_data_proto.add_secrets();
-  KeyAuthorizationSecretUsage* usage = secret->mutable_usage();
-  usage->set_encrypt(kEncrypt);
-  usage->set_sign(kSign);
-  secret->set_wrapped(kWrapped);
-  secret->set_symmetric_key(kSymmetricKey);
-  secret->set_public_key(kPublicKey);
-  KeyDefinition::AuthorizationData::Secret expected_secret(
-      kEncrypt, kSign, kSymmetricKey, kPublicKey, kWrapped);
-  KeyDefinition::AuthorizationData auth_data;
-
-  KeyAuthorizationDataToAuthorizationData(auth_data_proto, &auth_data);
-
-  EXPECT_EQ(auth_data.secrets.back(), expected_secret);
-}
-
 TEST(CryptohomeUtilTest, AccountDiskUsageReplyToUsageSizeNullOptional) {
   const base::Optional<BaseReply> reply = base::nullopt;
 
@@ -530,8 +483,6 @@ TEST(CryptohomeUtilTest, GetKeyDataReplyToKeyDefinitionsTwoEntries) {
   key_data->set_label(kKeyLabel);
   key_data->mutable_privileges()->set_update(false);
   key_data->set_revision(kKeyRevision);
-  key_data->add_authorization_data()->set_type(
-      KeyAuthorizationData::KEY_AUTHORIZATION_TYPE_HMACSHA256);
   KeyProviderData* data = key_data->mutable_provider_data();
   KeyProviderData::Entry* entry1 = data->add_entry();
   entry1->set_name(kProviderData1Name);
@@ -551,9 +502,6 @@ TEST(CryptohomeUtilTest, GetKeyDataReplyToKeyDefinitionsTwoEntries) {
   EXPECT_EQ(kKeyLabel, key_definition.label);
   EXPECT_EQ(PRIV_ADD | PRIV_REMOVE, key_definition.privileges);
   EXPECT_EQ(kKeyRevision, key_definition.revision);
-  ASSERT_EQ(1u, key_definition.authorization_data.size());
-  EXPECT_EQ(KeyDefinition::AuthorizationData::TYPE_HMACSHA256,
-            key_definition.authorization_data.front().type);
   ASSERT_EQ(2u, key_definition.provider_data.size());
   const KeyDefinition::ProviderData* provider_data =
       &key_definition.provider_data[0];

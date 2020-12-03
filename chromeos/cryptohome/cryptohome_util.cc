@@ -70,20 +70,6 @@ void KeyDefPrivilegesToKeyPrivileges(int key_def_privileges,
 }
 
 // TODO(crbug.com/797848): Add tests that cover this logic.
-void KeyDefSecretToKeyAuthorizationSecret(
-    const KeyDefinition::AuthorizationData::Secret& key_def_secret,
-    KeyAuthorizationSecret* secret) {
-  secret->mutable_usage()->set_encrypt(key_def_secret.encrypt);
-  secret->mutable_usage()->set_sign(key_def_secret.sign);
-  secret->set_wrapped(key_def_secret.wrapped);
-  if (!key_def_secret.symmetric_key.empty())
-    secret->set_symmetric_key(key_def_secret.symmetric_key);
-
-  if (!key_def_secret.public_key.empty())
-    secret->set_public_key(key_def_secret.public_key);
-}
-
-// TODO(crbug.com/797848): Add tests that cover this logic.
 void KeyDefProviderDataToKeyProviderDataEntry(
     const KeyDefinition::ProviderData& provider_data,
     KeyProviderData::Entry* entry) {
@@ -93,17 +79,6 @@ void KeyDefProviderDataToKeyProviderDataEntry(
 
   if (provider_data.bytes)
     entry->set_bytes(*provider_data.bytes);
-}
-
-// TODO(crbug.com/797848): Add tests that cover this logic.
-KeyAuthorizationData::KeyAuthorizationType GetKeyAuthDataType(
-    KeyDefinition::AuthorizationData::Type key_def_auth_data_type) {
-  switch (key_def_auth_data_type) {
-    case KeyDefinition::AuthorizationData::TYPE_HMACSHA256:
-      return KeyAuthorizationData::KEY_AUTHORIZATION_TYPE_HMACSHA256;
-    case KeyDefinition::AuthorizationData::TYPE_AES256CBC_HMACSHA256:
-      return KeyAuthorizationData::KEY_AUTHORIZATION_TYPE_AES256CBC_HMACSHA256;
-  }
 }
 
 }  // namespace
@@ -181,16 +156,6 @@ std::vector<KeyDefinition> GetKeyDataReplyToKeyDefinitions(
     key_definition.policy.low_entropy_credential =
         it->policy().low_entropy_credential();
     key_definition.policy.auth_locked = it->policy().auth_locked();
-
-    // Extract |authorization_data|.
-    for (RepeatedPtrField<KeyAuthorizationData>::const_iterator auth_it =
-             it->authorization_data().begin();
-         auth_it != it->authorization_data().end(); ++auth_it) {
-      key_definition.authorization_data.push_back(
-          KeyDefinition::AuthorizationData());
-      KeyAuthorizationDataToAuthorizationData(
-          *auth_it, &key_definition.authorization_data.back());
-    }
 
     // Extract |provider_data|.
     for (RepeatedPtrField<KeyProviderData::Entry>::const_iterator
@@ -310,15 +275,6 @@ void KeyDefinitionToKey(const KeyDefinition& key_def, Key* key) {
                                     data->mutable_privileges());
   }
 
-  for (const auto& key_def_auth_data : key_def.authorization_data) {
-    KeyAuthorizationData* auth_data = data->add_authorization_data();
-    auth_data->set_type(GetKeyAuthDataType(key_def_auth_data.type));
-    for (const auto& key_def_secret : key_def_auth_data.secrets) {
-      KeyDefSecretToKeyAuthorizationSecret(key_def_secret,
-                                           auth_data->add_secrets());
-    }
-  }
-
   for (const auto& provider_data : key_def.provider_data) {
     KeyDefProviderDataToKeyProviderDataEntry(
         provider_data, data->mutable_provider_data()->add_entry());
@@ -397,28 +353,6 @@ MountError CryptohomeErrorToMountError(CryptohomeErrorCode code) {
     default:
       NOTREACHED();
       return MOUNT_ERROR_FATAL;
-  }
-}
-
-void KeyAuthorizationDataToAuthorizationData(
-    const KeyAuthorizationData& authorization_data_proto,
-    KeyDefinition::AuthorizationData* authorization_data) {
-  switch (authorization_data_proto.type()) {
-    case KeyAuthorizationData::KEY_AUTHORIZATION_TYPE_HMACSHA256:
-      authorization_data->type =
-          KeyDefinition::AuthorizationData::TYPE_HMACSHA256;
-      break;
-    case KeyAuthorizationData::KEY_AUTHORIZATION_TYPE_AES256CBC_HMACSHA256:
-      authorization_data->type =
-          KeyDefinition::AuthorizationData::TYPE_AES256CBC_HMACSHA256;
-      break;
-  }
-
-  for (const auto& secret : authorization_data_proto.secrets()) {
-    authorization_data->secrets.push_back(
-        KeyDefinition::AuthorizationData::Secret(
-            secret.usage().encrypt(), secret.usage().sign(),
-            secret.symmetric_key(), secret.public_key(), secret.wrapped()));
   }
 }
 

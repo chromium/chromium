@@ -66,13 +66,6 @@ void KeyDefinitionToKey(const KeyDefinition& key_def, Key* key);
 COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
 MountError CryptohomeErrorToMountError(CryptohomeErrorCode code);
 
-// Converts the given KeyAuthorizationData to AuthorizationData pointed to by
-// |authorization_data|.
-COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
-void KeyAuthorizationDataToAuthorizationData(
-    const KeyAuthorizationData& authorization_data_proto,
-    KeyDefinition::AuthorizationData* authorization_data);
-
 }  // namespace cryptohome
 
 #endif  // CHROMEOS_CRYPTOHOME_CRYPTOHOME_UTIL_H_
