@@ -1,7 +1,4 @@
 file://build/fuchsia/OWNERS
-# COMPONENT: Fuchsia
-# OS: Fuchsia
-# TEAM: cr-fuchsia@chromium.org
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
