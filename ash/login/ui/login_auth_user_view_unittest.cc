@@ -19,6 +19,8 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -209,6 +211,39 @@ TEST_P(LoginAuthUserViewUnittest, PressReturnWithTapToUnlockEnabled) {
   base::RunLoop().RunUntilIdle();
 }
 
+// Verifies that pressing return on the pin input field when tap-to-unlock
+// is enabled attempts unlock.
+TEST_P(LoginAuthUserViewUnittest, PressReturnOnPinWithTapToUnlockEnabled) {
+  auto client = std::make_unique<MockLoginScreenClient>();
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  LoginAuthUserView::TestApi auth_test(view_);
+  LoginUserView* user_view(auth_test.user_view());
+  LoginPinInputView* pin_input(auth_test.pin_input_view());
+
+  SetUserCount(1);
+
+  // One call using focus, and one direct call to the view.
+  EXPECT_CALL(*client,
+              AuthenticateUserWithEasyUnlock(
+                  user_view->current_user().basic_user_info.account_id))
+      .Times(2);
+  SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD |
+                     LoginAuthUserView::AUTH_PIN | LoginAuthUserView::AUTH_TAP,
+                 /*show_pinpad_for_pw=*/false,
+                 /*virtual_keyboard_visible=*/false,
+                 /*autosubmit_pin_length=*/6);
+
+  // Call through correct focus.
+  pin_input->RequestFocus();
+  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+
+  // Call the view directly as well.
+  pin_input->OnKeyPressed(ui::KeyEvent(
+      ui::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE));
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_P(LoginAuthUserViewUnittest, OnlineSignInMessage) {
   auto client = std::make_unique<MockLoginScreenClient>();
   LoginAuthUserView::TestApi auth_test(view_);
@@ -278,7 +313,6 @@ TEST_P(LoginAuthUserViewUnittest, PasswordFieldChangeOnUpdateUser) {
   view_->UpdateForUser(another_user);
   EXPECT_TRUE(password_test.textfield()->GetText().empty());
 
-  // TODO(tellier) - Check that this test is doing what it is intended to
   if (display_password_feature_enabled_) {
     password_test.textfield()->SetTextInputType(ui::TEXT_INPUT_TYPE_NULL);
     EXPECT_EQ(password_test.textfield()->GetTextInputType(),
