@@ -10,5 +10,5 @@ public class Playground {
         System.out.println("Your test here");
     }
 
-    private static native boolean doThing(long ptr, String s);
+    private static native boolean ensureSideEffects();
 }
