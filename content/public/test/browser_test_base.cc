@@ -790,6 +790,11 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
   }
 
   PostRunTestOnMainThread();
+
+  // Sometimes tests initialize a storage partition and the initialization
+  // schedules some tasks which need to be executed before finishing tests.
+  // Run these tasks.
+  content::RunAllPendingInMessageLoop();
 }
 
 void BrowserTestBase::SetAllowNetworkAccessToHostResolutions() {
