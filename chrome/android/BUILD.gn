@@ -1423,10 +1423,6 @@ if (enable_vr || enable_arcore) {
 
       data = [
         "//chrome/android/shared_preference_files/test/",
-        "//components/test/data/js_dialogs/render_tests/",
-        "//components/test/data/permission_dialogs/render_tests/",
-        "//components/test/data/vr_browser_ui/render_tests/",
-        "//components/test/data/vr_browser_video/render_tests/",
         "//third_party/gvr-android-sdk/test-apks/",
       ]
     }

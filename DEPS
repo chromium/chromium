@@ -105,6 +105,7 @@ vars = {
 
   # Bots that don't consume render test goldens can skip downloading
   # them.
+  # TODO(crbug.com/1103836): Remove after removing infra/ code.
   'skip_render_test_goldens_download': False,
 
   # Bots that don't consume WPR archives can skip downloading
@@ -4697,16 +4698,6 @@ hooks = [
                 '--bucket', 'chromium-binary-patching/zucchini_testdata',
                 '--recursive',
                 '-d', 'src/components/zucchini',
-    ],
-  },
-  # Pull down Android RenderTest goldens
-  {
-    'name': 'Fetch Android RenderTest goldens',
-    'pattern': '.',
-    'condition': 'checkout_android and not skip_render_test_goldens_download',
-    'action': [ 'python',
-                'src/chrome/test/data/android/manage_render_test_goldens.py',
-                'download',
     ],
   },
   # Pull down WPR Archive files
