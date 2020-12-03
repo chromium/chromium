@@ -4282,15 +4282,11 @@ if (enable_java_templates) {
                                [
                                  "custom_package",
                                  "create_srcjar",
-                                 "deps",
                                  "resource_overlay",
                                  "testonly",
                                  "strip_drawables",
                                ])
-        if (!defined(deps)) {
-          deps = []
-        }
-        deps += [ ":$_unpack_target_name" ]
+        deps = [ ":$_unpack_target_name" ]
         if (_should_process_manifest) {
           android_manifest_dep = ":$_unpack_target_name"
           android_manifest = "${_output_path}/AndroidManifest.xml"
