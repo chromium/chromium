@@ -18,6 +18,7 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/status_area_widget.h"
@@ -274,9 +275,14 @@ CaptureModeController::CaptureModeController(
       base::BindRepeating(
           &CaptureModeController::RecordAndResetScreenshotsTakenInLastWeek,
           weak_ptr_factory_.GetWeakPtr()));
+
+  Shell::Get()->session_controller()->AddObserver(this);
+  chromeos::PowerManagerClient::Get()->AddObserver(this);
 }
 
 CaptureModeController::~CaptureModeController() {
+  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
+  Shell::Get()->session_controller()->RemoveObserver(this);
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
 }
@@ -382,10 +388,58 @@ void CaptureModeController::OnRecordingEnded(bool success) {
                            weak_ptr_factory_.GetWeakPtr()));
 }
 
+void CaptureModeController::OnActiveUserSessionChanged(
+    const AccountId& account_id) {
+  EndSessionOrRecording(/*for_suspend=*/false);
+}
+
+void CaptureModeController::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  if (Shell::Get()->session_controller()->IsUserSessionBlocked())
+    EndSessionOrRecording(/*for_suspend=*/false);
+}
+
+void CaptureModeController::OnChromeTerminating() {
+  EndSessionOrRecording(/*for_suspend=*/false);
+}
+
+void CaptureModeController::SuspendImminent(
+    power_manager::SuspendImminent::Reason reason) {
+  EndSessionOrRecording(/*for_suspend=*/true);
+}
+
 void CaptureModeController::StartVideoRecordingImmediatelyForTesting() {
   DCHECK(IsActive());
   DCHECK_EQ(type_, CaptureModeType::kVideo);
   OnVideoRecordCountDownFinished();
+}
+
+void CaptureModeController::EndSessionOrRecording(bool for_suspend) {
+  if (IsActive()) {
+    // Suspend or user session changes can happen while the capture mode session
+    // is active or after the three-second countdown had started but not
+    // finished yet.
+    Stop();
+    return;
+  }
+
+  if (!is_recording_in_progress_)
+    return;
+
+  if (for_suspend) {
+    // If suspend happens while recording is in progress, we consider this a
+    // failure, and cut the recording immediately. The recording service may
+    // have some buffered chunks that will never be received, and as a result,
+    // the a few seconds at the end of the recording may get lost.
+    // TODO(afakhry): Think whether this is what we want. We might be able to
+    // end the recording normally by asking the service to StopRecording(), and
+    // block the suspend until all chunks have been received, and then we can
+    // resume it.
+    OnRecordingEnded(/*success=*/false);
+    return;
+  }
+
+  EndVideoRecording();
 }
 
 base::Optional<CaptureModeController::CaptureParams>

@@ -30,6 +30,9 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/power_manager/suspend.pb.h"
+#include "components/account_id/account_id.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -269,6 +272,21 @@ class CaptureModeTest : public AshTestBase {
     // Spin the run loop so that we get a signal that the associated root window
     // of the removed display is destroyed.
     base::RunLoop().RunUntilIdle();
+  }
+
+  void SwitchToUser2() {
+    auto* session_controller = GetSessionControllerClient();
+    constexpr char kUserEmail[] = "user2@capture_mode";
+    session_controller->AddUserSession(kUserEmail);
+    session_controller->SwitchActiveUser(AccountId::FromUserEmail(kUserEmail));
+  }
+
+  void WaitForSeconds(int seconds) {
+    base::RunLoop loop;
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, base::BindLambdaForTesting([&]() { loop.Quit(); }),
+        base::TimeDelta::FromSeconds(seconds));
+    loop.Run();
   }
 
  private:
@@ -1080,7 +1098,7 @@ TEST_F(CaptureModeTest, FullscreenCursorStates) {
 
   // Enter tablet mode, the cursor should be hidden.
   TabletModeControllerTestApi tablet_mode_controller_test_api;
-  // To void flaky failures due to mouse devices blocking entering tablet mode,
+  // To avoid flaky failures due to mouse devices blocking entering tablet mode,
   // we detach all mouse devices. This shouldn't affect testing the cursor
   // status.
   tablet_mode_controller_test_api.DetachAllMice();
@@ -1161,7 +1179,7 @@ TEST_F(CaptureModeTest, WindowCursorStates) {
 
   // Enter tablet mode, the cursor should be hidden.
   TabletModeControllerTestApi tablet_mode_controller_test_api;
-  // To void flaky failures due to mouse devices blocking entering tablet mode,
+  // To avoid flaky failures due to mouse devices blocking entering tablet mode,
   // we detach all mouse devices. This shouldn't affect testing the cursor
   // status.
   tablet_mode_controller_test_api.DetachAllMice();
@@ -1233,7 +1251,7 @@ TEST_F(CaptureModeTest, RegionDragCursorCompositing) {
 // incoming input events.
 TEST_F(CaptureModeTest, DoNotHandleEventDuringCountDown) {
   // We need a non-zero duration to avoid infinite loop on countdown.
-  ui::ScopedAnimationDurationScaleMode animatin_scale(
+  ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Create 2 windows that overlap with each other.
@@ -1390,6 +1408,67 @@ TEST_F(CaptureModeTest, DetachDisplayWhileWindowRecording) {
   EXPECT_TRUE(stop_recording_button->visible_preferred());
 }
 
+TEST_F(CaptureModeTest, SuspendWhileSessionIsActive) {
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kVideo);
+  EXPECT_TRUE(controller->IsActive());
+  power_manager_client()->SendSuspendImminent(
+      power_manager::SuspendImminent::IDLE);
+  EXPECT_FALSE(controller->IsActive());
+}
+
+TEST_F(CaptureModeTest, SuspendAfterCountdownStarts) {
+  // User NORMAL_DURATION for the countdown animation so we can have predictable
+  // timings.
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kVideo);
+  // Hit Enter to begin recording, wait for 1 second, then suspend the device.
+  auto* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_RETURN, event_generator);
+  WaitForSeconds(1);
+  power_manager_client()->SendSuspendImminent(
+      power_manager::SuspendImminent::IDLE);
+  EXPECT_FALSE(controller->IsActive());
+  EXPECT_FALSE(controller->is_recording_in_progress());
+}
+
+TEST_F(CaptureModeTest, SuspendAfterRecordingStarts) {
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kVideo);
+  controller->StartVideoRecordingImmediatelyForTesting();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  power_manager_client()->SendSuspendImminent(
+      power_manager::SuspendImminent::IDLE);
+  EXPECT_FALSE(controller->is_recording_in_progress());
+}
+
+TEST_F(CaptureModeTest, SwitchUsersWhileRecording) {
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kVideo);
+  controller->StartVideoRecordingImmediatelyForTesting();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  SwitchToUser2();
+  EXPECT_FALSE(controller->is_recording_in_progress());
+}
+
+TEST_F(CaptureModeTest, SwitchUsersAfterCountdownStarts) {
+  // User NORMAL_DURATION for the countdown animation so we can have predictable
+  // timings.
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kVideo);
+  // Hit Enter to begin recording, wait for 1 second, then switch users.
+  auto* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_RETURN, event_generator);
+  WaitForSeconds(1);
+  SwitchToUser2();
+  EXPECT_FALSE(controller->IsActive());
+  EXPECT_FALSE(controller->is_recording_in_progress());
+}
+
 TEST_F(CaptureModeTest, ClosingDisplayBeingFullscreenRecorded) {
   UpdateDisplay("400x400,401+0-400x400");
   auto roots = Shell::GetAllRootWindows();
@@ -1533,11 +1612,7 @@ TEST_F(CaptureModeTest, CancelCaptureDuringCountDown) {
   // down is in progress.
   auto* event_generator = GetEventGenerator();
   SendKey(ui::VKEY_RETURN, event_generator);
-  base::RunLoop loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, base::BindLambdaForTesting([&]() { loop.Quit(); }),
-      base::TimeDelta::FromSeconds(1));
-  loop.Run();
+  WaitForSeconds(1);
   SendKey(ui::VKEY_ESCAPE, event_generator);
 }
 

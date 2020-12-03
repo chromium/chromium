@@ -13,6 +13,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/video_file_handler.h"
 #include "ash/public/cpp/capture_mode_delegate.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted_memory.h"
@@ -21,6 +22,7 @@
 #include "base/optional.h"
 #include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
@@ -42,7 +44,9 @@ class VideoRecordingWatcher;
 
 // Controls starting and ending a Capture Mode session and its behavior.
 class ASH_EXPORT CaptureModeController
-    : public recording::mojom::RecordingServiceClient {
+    : public recording::mojom::RecordingServiceClient,
+      public SessionObserver,
+      public chromeos::PowerManagerClient::Observer {
  public:
   explicit CaptureModeController(std::unique_ptr<CaptureModeDelegate> delegate);
   CaptureModeController(const CaptureModeController&) = delete;
@@ -93,12 +97,26 @@ class ASH_EXPORT CaptureModeController
   void OnMuxerOutput(const std::string& chunk) override;
   void OnRecordingEnded(bool success) override;
 
+  // SessionObserver:
+  void OnActiveUserSessionChanged(const AccountId& account_id) override;
+  void OnSessionStateChanged(session_manager::SessionState state) override;
+  void OnChromeTerminating() override;
+
+  // chromeos::PowerManagerClient::Observer:
+  void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
+
   // Skips the 3-second count down, and IsCaptureAllowed() checks, and starts
   // video recording right away for testing purposes.
   void StartVideoRecordingImmediatelyForTesting();
 
  private:
   friend class CaptureModeTestApi;
+
+  // Used by user session change, and suspend events to end the capture mode
+  // session if it's active, or stop the video recording if one is in progress.
+  // |for_suspend| is true when this is called from |SuspendImminent()|, which
+  // leads to ending the video recording immediately as if it's a failure.
+  void EndSessionOrRecording(bool for_suspend);
 
   // Returns the capture parameters for the capture operation that is about to
   // be performed (i.e. the window to be captured, and the capture bounds). If

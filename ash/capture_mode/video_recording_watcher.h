@@ -5,7 +5,6 @@
 #ifndef ASH_CAPTURE_MODE_VIDEO_RECORDING_WATCHER_H_
 #define ASH_CAPTURE_MODE_VIDEO_RECORDING_WATCHER_H_
 
-#include "ash/public/cpp/session/session_observer.h"
 #include "ui/aura/window_observer.h"
 
 namespace ash {
@@ -14,14 +13,11 @@ class CaptureModeController;
 
 // An instance of this class is created while video recording is in progress to
 // watch for events that end video recording, such as a window being recorded
-// gets closed, a display being fullscreen-recorded gets disconnected, the user
-// session gets blocked, or while shutting down.
-// TODO(https://crbug.com/1142994): Decide what to do when switching users in
-// multi-profile.
+// gets closed or moved between displays, or a display being fullscreen-recorded
+// gets disconnected.
 // TODO(https://crbug.com/1145003): Use this to paint a border around the area
 // being recorded while recording is in progress.
-class VideoRecordingWatcher : public aura::WindowObserver,
-                              public SessionObserver {
+class VideoRecordingWatcher : public aura::WindowObserver {
  public:
   VideoRecordingWatcher(CaptureModeController* controller,
                         aura::Window* window_being_recorded);
@@ -34,10 +30,6 @@ class VideoRecordingWatcher : public aura::WindowObserver,
   void OnWindowDestroyed(aura::Window* window) override;
   void OnWindowRemovingFromRootWindow(aura::Window* window,
                                       aura::Window* new_root) override;
-
-  // SessionObserver:
-  void OnSessionStateChanged(session_manager::SessionState state) override;
-  void OnChromeTerminating() override;
 
  private:
   CaptureModeController* const controller_;
