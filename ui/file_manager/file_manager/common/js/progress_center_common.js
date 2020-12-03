@@ -208,8 +208,6 @@ class ProgressCenterItem {
 
   /**
    * Clones the item.
-   * TODO(adanilo) This is used by ProgressCenterItemGroup only, remove when
-   * VS feedback panels are turned on permanently.
    * @return {!ProgressCenterItem} New item having the same properties as this.
    */
   clone() {
