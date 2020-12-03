@@ -202,9 +202,9 @@ bool RemoveJob(const std::string& label) {
   if (!error)
     error = ErrnoFromLaunchData(resp.get());
 
-  // On macOS 10.10+, removing a running job yields EINPROGRESS but the
-  // operation completes eventually (but not necessarily by the time RemoveJob
-  // is done). See rdar://18398683 for details.
+  // Removing a running job yields EINPROGRESS but the operation completes
+  // eventually (but not necessarily by the time RemoveJob is done). See
+  // rdar://18398683 for details.
   if (error == EINPROGRESS)
     error = 0;
 

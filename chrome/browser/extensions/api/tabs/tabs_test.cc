@@ -70,7 +70,6 @@
 #include "ui/views/widget/widget_observer.h"
 
 #if defined(OS_MAC)
-#include "base/mac/mac_util.h"
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #endif
 
@@ -1043,8 +1042,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
 #if defined(OS_MAC)
-  if (base::mac::IsOS10_10())
-    return;  // Fails when swarmed. http://crbug.com/660582
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 #endif
 

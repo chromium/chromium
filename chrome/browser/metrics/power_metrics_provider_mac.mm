@@ -200,8 +200,7 @@ enum class ThermalStateUMA {
   kMaxValue = kCritical,
 };
 
-ThermalStateUMA ThermalStateToUmaEnumValue(NSProcessInfoThermalState state)
-    API_AVAILABLE(macos(10.10.3)) {
+ThermalStateUMA ThermalStateToUmaEnumValue(NSProcessInfoThermalState state) {
   switch (state) {
     case NSProcessInfoThermalStateNominal:
       return ThermalStateUMA::kNominal;
@@ -405,10 +404,7 @@ class PowerMetricsProvider::Impl : public base::RefCountedThreadSafe<Impl> {
       RecordSMC("All");
       RecordIsOnBattery();
       power_drain_calculator_.RecordBatteryDischarge();
-
-      if (@available(macOS 10.10.3, *)) {
-        RecordThermal();
-      }
+      RecordThermal();
     }
   }
 
@@ -438,7 +434,7 @@ class PowerMetricsProvider::Impl : public base::RefCountedThreadSafe<Impl> {
     UMA_HISTOGRAM_BOOLEAN("Power.Mac.IsOnBattery2", is_on_battery);
   }
 
-  void RecordThermal() API_AVAILABLE(macos(10.10.3)) {
+  void RecordThermal() {
     UMA_HISTOGRAM_ENUMERATION(
         "Power.Mac.ThermalState",
         ThermalStateToUmaEnumValue([[NSProcessInfo processInfo] thermalState]));

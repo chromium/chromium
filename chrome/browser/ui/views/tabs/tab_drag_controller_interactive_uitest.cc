@@ -106,10 +106,6 @@
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #endif
 
-#if defined(OS_MAC)
-#include "base/mac/mac_util.h"
-#endif
-
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1549,17 +1545,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_EQ(2u, browser_list->size());
   Browser* new_browser = browser_list->get(1);
 
-  bool check_new_window_active = true;
-#if defined(OS_MAC)
-  // AppKit 10.10 asynchronously reactivates the first
-  // window. This behavior is non-deterministic, and appears to be a test-only
-  // issue. Thus, we just skip the test check. https://crbug.com/862859.
-  if (base::mac::IsOS10_10())
-    check_new_window_active = false;
-#endif
-  if (check_new_window_active) {
-    EXPECT_TRUE(new_browser->window()->IsActive());
-  }
+  EXPECT_TRUE(new_browser->window()->IsActive());
   TabStrip* tab_strip2 = GetTabStripForBrowser(new_browser);
   EXPECT_FALSE(tab_strip2->GetDragContext()->IsDragSessionActive());
 

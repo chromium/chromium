@@ -9,7 +9,6 @@
 #include <errno.h>
 #include <libgen.h>
 #include <mach-o/dyld.h>
-#include <os/availability.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -31,7 +30,7 @@ extern "C" {
 // system CrashReporter and Crashpad collect in crash reports. Using a Crashpad
 // Annotation would be preferable, but this executable cannot depend on
 // Crashpad directly.
-void abort_report_np(const char* fmt, ...) API_AVAILABLE(macos(10.11));
+void abort_report_np(const char* fmt, ...);
 }
 
 namespace {
@@ -43,9 +42,7 @@ typedef int (*ChromeMainPtr)(int, char**);
   va_start(valist, format);
   char message[4096];
   if (vsnprintf(message, sizeof(message), format, valist) >= 0) {
-    if (__builtin_available(macOS 10.11, *)) {
-      abort_report_np("%s", message);
-    }
+    abort_report_np("%s", message);
   }
   va_end(valist);
   abort();
