@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.sync;
 
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-
 import android.view.View;
 
 import androidx.test.filters.LargeTest;
@@ -19,7 +16,6 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -68,9 +64,6 @@ public class SyncErrorCardPreferenceTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(2).build();
 
-    @Mock
-    private AndroidSyncSettings mAndroidSyncSettingsMock;
-
     private FakeProfileSyncService mFakeProfileSyncService;
 
     @ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
@@ -86,7 +79,6 @@ public class SyncErrorCardPreferenceTest {
 
     @Before
     public void setUp() throws Exception {
-        initMocks(this);
         // Start main activity before because native side needs to be initialized before overriding
         // ProfileSyncService.
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -94,8 +86,6 @@ public class SyncErrorCardPreferenceTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mFakeProfileSyncService = new FakeProfileSyncService();
             ProfileSyncService.overrideForTests(mFakeProfileSyncService);
-            AndroidSyncSettings.overrideForTests(mAndroidSyncSettingsMock);
-            when(mAndroidSyncSettingsMock.isChromeSyncEnabled()).thenReturn(true);
         });
     }
 
@@ -116,13 +106,14 @@ public class SyncErrorCardPreferenceTest {
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSyncErrorCardForAndroidSyncDisabled(boolean nightModeEnabled) throws Exception {
-        when(mAndroidSyncSettingsMock.doesMasterSyncSettingAllowChromeSync()).thenReturn(false);
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mFakeProfileSyncService);
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertEquals("ANDROID_SYNC_DISABLED SyncError should be set",
-                                SyncSettingsUtils.SyncError.ANDROID_SYNC_DISABLED,
-                                SyncSettingsUtils.getSyncError()));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mFakeProfileSyncService.setSyncAllowedByPlatform(false);
+
+            Assert.assertEquals("ANDROID_SYNC_DISABLED SyncError should be set",
+                    SyncSettingsUtils.SyncError.ANDROID_SYNC_DISABLED,
+                    SyncSettingsUtils.getSyncError());
+        });
 
         mSettingsActivityTestRule.startSettingsActivity();
         mRenderTestRule.render(
@@ -135,7 +126,6 @@ public class SyncErrorCardPreferenceTest {
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSyncErrorCardForAuthError(boolean nightModeEnabled) throws Exception {
         mFakeProfileSyncService.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
-        when(mAndroidSyncSettingsMock.doesMasterSyncSettingAllowChromeSync()).thenReturn(true);
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mFakeProfileSyncService);
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
@@ -153,7 +143,6 @@ public class SyncErrorCardPreferenceTest {
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSyncErrorCardForClientOutOfDate(boolean nightModeEnabled) throws Exception {
         mFakeProfileSyncService.setRequiresClientUpgrade(true);
-        when(mAndroidSyncSettingsMock.doesMasterSyncSettingAllowChromeSync()).thenReturn(true);
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mFakeProfileSyncService);
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
@@ -172,7 +161,6 @@ public class SyncErrorCardPreferenceTest {
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSyncErrorCardForOtherErrors(boolean nightModeEnabled) throws Exception {
         mFakeProfileSyncService.setAuthError(GoogleServiceAuthError.State.CONNECTION_FAILED);
-        when(mAndroidSyncSettingsMock.doesMasterSyncSettingAllowChromeSync()).thenReturn(true);
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mFakeProfileSyncService);
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
@@ -191,7 +179,6 @@ public class SyncErrorCardPreferenceTest {
     public void testSyncErrorCardForPassphraseRequired(boolean nightModeEnabled) throws Exception {
         mFakeProfileSyncService.setEngineInitialized(true);
         mFakeProfileSyncService.setPassphraseRequiredForPreferredDataTypes(true);
-        when(mAndroidSyncSettingsMock.doesMasterSyncSettingAllowChromeSync()).thenReturn(true);
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mFakeProfileSyncService);
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
@@ -212,7 +199,6 @@ public class SyncErrorCardPreferenceTest {
         mFakeProfileSyncService.setEngineInitialized(true);
         mFakeProfileSyncService.setTrustedVaultKeyRequiredForPreferredDataTypes(true);
         mFakeProfileSyncService.setEncryptEverythingEnabled(true);
-        when(mAndroidSyncSettingsMock.doesMasterSyncSettingAllowChromeSync()).thenReturn(true);
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mFakeProfileSyncService);
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
@@ -231,7 +217,6 @@ public class SyncErrorCardPreferenceTest {
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSyncErrorCardForSyncSetupIncomplete(boolean nightModeEnabled) throws Exception {
-        when(mAndroidSyncSettingsMock.doesMasterSyncSettingAllowChromeSync()).thenReturn(true);
         // Passing a null ProfileSyncService instance here would sign-in the user but
         // FirstSetupComplete will be unset.
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(

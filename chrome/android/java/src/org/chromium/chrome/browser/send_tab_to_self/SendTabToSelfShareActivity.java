@@ -11,7 +11,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
-import org.chromium.chrome.browser.sync.AndroidSyncSettings;
+import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -23,7 +23,6 @@ import org.chromium.ui.base.WindowAndroid;
  */
 public class SendTabToSelfShareActivity extends ChromeAccessorActivity {
     private static BottomSheetController sBottomSheetControllerForTesting;
-    private static AndroidSyncSettings sAndroidSyncSettings;
 
     @Override
     public void handleAction(ChromeActivity triggeringActivity) {
@@ -37,7 +36,8 @@ public class SendTabToSelfShareActivity extends ChromeAccessorActivity {
             return;
         }
 
-        boolean isSyncEnabled = getAndroidSyncSettings().isSyncEnabled();
+        boolean isSyncEnabled =
+                ProfileSyncService.get() != null && ProfileSyncService.get().isSyncRequested();
         controller.requestShowContent(
                 SendTabToSelfCoordinator.createBottomSheetContent(triggeringActivity,
                         entry.getUrl(), entry.getTitle(), entry.getTimestamp(), controller,
@@ -57,18 +57,8 @@ public class SendTabToSelfShareActivity extends ChromeAccessorActivity {
         return BottomSheetControllerProvider.from(window);
     }
 
-    private AndroidSyncSettings getAndroidSyncSettings() {
-        if (sAndroidSyncSettings != null) return sAndroidSyncSettings;
-        return AndroidSyncSettings.get();
-    }
-
     @VisibleForTesting
     public static void setBottomSheetControllerForTesting(BottomSheetController controller) {
         sBottomSheetControllerForTesting = controller;
-    }
-
-    @VisibleForTesting
-    public static void setAndroidSyncSettingsForTesting(AndroidSyncSettings syncSettings) {
-        sAndroidSyncSettings = syncSettings;
     }
 }

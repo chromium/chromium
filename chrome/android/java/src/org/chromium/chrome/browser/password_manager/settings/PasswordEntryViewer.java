@@ -36,7 +36,6 @@ import androidx.fragment.app.Fragment;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.sync.AndroidSyncSettings;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.text.SpanApplier;
@@ -215,8 +214,8 @@ public class PasswordEntryViewer
 
     private boolean isPasswordSyncingUser() {
         ProfileSyncService syncService = ProfileSyncService.get();
-        return (AndroidSyncSettings.get().isSyncEnabled() && syncService.isEngineInitialized()
-                && !syncService.isUsingSecondaryPassphrase());
+        return syncService != null && syncService.isSyncRequested()
+                && syncService.isEngineInitialized() && !syncService.isUsingSecondaryPassphrase();
     }
 
     @Override

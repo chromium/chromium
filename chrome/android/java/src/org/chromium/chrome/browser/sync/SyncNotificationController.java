@@ -63,7 +63,7 @@ public class SyncNotificationController implements ProfileSyncService.SyncStateC
         ThreadUtils.assertOnUiThread();
 
         // Auth errors take precedence over passphrase errors.
-        if (!AndroidSyncSettings.get().isSyncEnabled()) {
+        if (!mProfileSyncService.isSyncRequested()) {
             cancelNotifications();
             return;
         }

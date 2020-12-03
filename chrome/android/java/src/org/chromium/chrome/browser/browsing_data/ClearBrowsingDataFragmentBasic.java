@@ -11,7 +11,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.sync.AndroidSyncSettings;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
@@ -55,9 +54,8 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
     }
 
     private boolean isHistorySyncEnabled() {
-        boolean syncEnabled = AndroidSyncSettings.get().isSyncEnabled();
         ProfileSyncService syncService = ProfileSyncService.get();
-        return syncEnabled && syncService != null
+        return syncService != null && syncService.isSyncRequested()
                 && syncService.getActiveDataTypes().contains(ModelType.HISTORY_DELETE_DIRECTIVES);
     }
 

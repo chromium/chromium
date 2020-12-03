@@ -369,6 +369,11 @@ public class ProfileSyncService {
         }
     }
 
+    public boolean isSyncAllowedByPlatform() {
+        return ProfileSyncServiceJni.get().isSyncAllowedByPlatform(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    }
+
     public void setSyncAllowedByPlatform(boolean allowed) {
         ProfileSyncServiceJni.get().setSyncAllowedByPlatform(
                 mNativeProfileSyncServiceAndroid, ProfileSyncService.this, allowed);
@@ -651,6 +656,8 @@ public class ProfileSyncService {
 
         void requestStart(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         void requestStop(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        boolean isSyncAllowedByPlatform(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         void setSyncAllowedByPlatform(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller, boolean allowed);
         void setSyncSessionsId(

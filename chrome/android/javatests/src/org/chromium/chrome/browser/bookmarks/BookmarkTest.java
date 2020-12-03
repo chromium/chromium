@@ -11,8 +11,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils.checkHighlightOff;
@@ -72,8 +70,7 @@ import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.sync.AndroidSyncSettings;
-import org.chromium.chrome.browser.sync.AndroidSyncSettings.AndroidSyncSettingsObserver;
+import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -139,7 +136,7 @@ public class BookmarkTest {
     private EmbeddedTestServer mTestServer;
     private @Nullable BookmarkActivity mBookmarkActivity;
     @Mock
-    private AndroidSyncSettings mAndroidSyncSettings;
+    private ProfileSyncService mProfileSyncService;
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
@@ -160,17 +157,10 @@ public class BookmarkTest {
                     mActivityTestRule.getActivity().getActivityTab().getWebContents()));
             mBookmarkBridge = mActivityTestRule.getActivity().getBookmarkBridgeForTesting();
 
-            // Stub AndroidSyncSettings state to make sure promos aren't suppressed.
-            when(mAndroidSyncSettings.doesMasterSyncSettingAllowChromeSync()).thenReturn(true);
-            when(mAndroidSyncSettings.isSyncEnabled()).thenReturn(false);
-            when(mAndroidSyncSettings.isChromeSyncEnabled()).thenReturn(false);
-            doNothing()
-                    .when(mAndroidSyncSettings)
-                    .registerObserver(any(AndroidSyncSettingsObserver.class));
-            doNothing()
-                    .when(mAndroidSyncSettings)
-                    .unregisterObserver(any(AndroidSyncSettingsObserver.class));
-            AndroidSyncSettings.overrideForTests(mAndroidSyncSettings);
+            // Stub ProfileSyncService state to make sure promos aren't suppressed.
+            when(mProfileSyncService.isSyncAllowedByPlatform()).thenReturn(true);
+            when(mProfileSyncService.isSyncRequested()).thenReturn(false);
+            ProfileSyncService.overrideForTests(mProfileSyncService);
         });
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         mTestPage = mTestServer.getURL(TEST_PAGE_URL_GOOGLE);

@@ -20,8 +20,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.SigninActivity.AccessPoint;
-import org.chromium.chrome.browser.sync.AndroidSyncSettings;
-import org.chromium.chrome.browser.sync.AndroidSyncSettings.AndroidSyncSettingsObserver;
+import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.sync.settings.SyncAndServicesSettings;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
@@ -31,7 +30,8 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
  * If inflated manually, {@link SyncPromoView#init(int)} must be called before
  * attaching this View to a ViewGroup.
  */
-public class SyncPromoView extends LinearLayout implements AndroidSyncSettingsObserver {
+public class SyncPromoView
+        extends LinearLayout implements ProfileSyncService.SyncStateChangedListener {
     private @AccessPoint int mAccessPoint;
     private boolean mInitialized;
 
@@ -58,6 +58,9 @@ public class SyncPromoView extends LinearLayout implements AndroidSyncSettingsOb
      */
     public SyncPromoView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        // This promo is about enabling sync, so no sense in showing it if
+        // syncing isn't possible.
+        assert ProfileSyncService.get() != null;
     }
 
     @Override
@@ -93,9 +96,9 @@ public class SyncPromoView extends LinearLayout implements AndroidSyncSettingsOb
 
     private void update() {
         ViewState viewState;
-        if (!AndroidSyncSettings.get().doesMasterSyncSettingAllowChromeSync()) {
+        if (!ProfileSyncService.get().isSyncAllowedByPlatform()) {
             viewState = getStateForEnableAndroidSync();
-        } else if (!AndroidSyncSettings.get().isChromeSyncEnabled()) {
+        } else if (!ProfileSyncService.get().isSyncRequested()) {
             viewState = getStateForEnableChromeSync();
         } else {
             viewState = getStateForStartUsing();
@@ -142,6 +145,8 @@ public class SyncPromoView extends LinearLayout implements AndroidSyncSettingsOb
         private final int mTextResource;
         private final OnClickListener mOnClickListener;
 
+        // TODO(crbug.com/1107904): Once Chrome is decoupled from auto-sync,
+        // |onClickListener| can be inlined.
         public ButtonPresent(int textResource, OnClickListener onClickListener) {
             mTextResource = textResource;
             mOnClickListener = onClickListener;
@@ -196,19 +201,19 @@ public class SyncPromoView extends LinearLayout implements AndroidSyncSettingsOb
         assert mInitialized : "init(...) must be called on SyncPromoView before use.";
 
         super.onAttachedToWindow();
-        AndroidSyncSettings.get().registerObserver(this);
+        ProfileSyncService.get().addSyncStateChangedListener(this);
         update();
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        AndroidSyncSettings.get().unregisterObserver(this);
+        ProfileSyncService.get().removeSyncStateChangedListener(this);
     }
 
-    // AndroidSyncStateObserver
+    // ProfileSyncService.SyncStateChangedListener
     @Override
-    public void androidSyncSettingsChanged() {
+    public void syncStateChanged() {
         update();
     }
 }

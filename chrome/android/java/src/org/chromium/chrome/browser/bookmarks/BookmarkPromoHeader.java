@@ -28,8 +28,7 @@ import org.chromium.chrome.browser.signin.SyncPromoView;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
-import org.chromium.chrome.browser.sync.AndroidSyncSettings;
-import org.chromium.chrome.browser.sync.AndroidSyncSettings.AndroidSyncSettingsObserver;
+import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
@@ -44,8 +43,9 @@ import java.lang.annotation.RetentionPolicy;
  * Class that manages all the logic and UI behind the signin promo header in the bookmark
  * content UI. The header is shown only on certain situations, (e.g., not signed in).
  */
-class BookmarkPromoHeader implements AndroidSyncSettingsObserver, SignInStateObserver,
-                                     ProfileDataCache.Observer, AccountsChangeObserver {
+class BookmarkPromoHeader implements ProfileSyncService.SyncStateChangedListener,
+                                     SignInStateObserver, ProfileDataCache.Observer,
+                                     AccountsChangeObserver {
     /**
      * Specifies the various states in which the Bookmarks promo can be.
      */
@@ -72,6 +72,7 @@ class BookmarkPromoHeader implements AndroidSyncSettingsObserver, SignInStateObs
     private @Nullable ProfileDataCache mProfileDataCache;
     private final @Nullable SigninPromoController mSigninPromoController;
     private @PromoState int mPromoState;
+    private final @Nullable ProfileSyncService mProfileSyncService;
 
     /**
      * Initializes the class. Note that this will start listening to signin related events and
@@ -81,7 +82,8 @@ class BookmarkPromoHeader implements AndroidSyncSettingsObserver, SignInStateObs
         mContext = context;
         mPromoHeaderChangeAction = promoHeaderChangeAction;
 
-        AndroidSyncSettings.get().registerObserver(this);
+        mProfileSyncService = ProfileSyncService.get();
+        if (mProfileSyncService != null) mProfileSyncService.addSyncStateChangedListener(this);
 
         mSignInManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
@@ -111,7 +113,7 @@ class BookmarkPromoHeader implements AndroidSyncSettingsObserver, SignInStateObs
      * Clean ups the class. Must be called once done using this class.
      */
     void destroy() {
-        AndroidSyncSettings.get().unregisterObserver(this);
+        if (mProfileSyncService != null) mProfileSyncService.removeSyncStateChangedListener(this);
 
         if (mSigninPromoController != null) {
             mAccountManagerFacade.removeObserver(this);
@@ -208,7 +210,13 @@ class BookmarkPromoHeader implements AndroidSyncSettingsObserver, SignInStateObs
             return sPromoStateForTests;
         }
 
-        if (!AndroidSyncSettings.get().doesMasterSyncSettingAllowChromeSync()) {
+        if (mProfileSyncService == null) {
+            // |mProfileSyncService| will remain null until the next browser startup, so no sense in
+            // offering any promo.
+            return PromoState.PROMO_NONE;
+        }
+
+        if (!mProfileSyncService.isSyncAllowedByPlatform()) {
             return PromoState.PROMO_NONE;
         }
 
@@ -229,15 +237,15 @@ class BookmarkPromoHeader implements AndroidSyncSettingsObserver, SignInStateObs
                 SharedPreferencesManager.getInstance().readInt(
                         ChromePreferenceKeys.SIGNIN_AND_SYNC_PROMO_SHOW_COUNT)
                 < MAX_SIGNIN_AND_SYNC_PROMO_SHOW_COUNT;
-        if (!AndroidSyncSettings.get().isChromeSyncEnabled() && impressionLimitNotReached) {
+        if (!mProfileSyncService.isSyncRequested() && impressionLimitNotReached) {
             return PromoState.PROMO_SYNC;
         }
         return PromoState.PROMO_NONE;
     }
 
-    // AndroidSyncSettingsObserver implementation.
+    // ProfileSyncService.SyncStateChangedListener implementation.
     @Override
-    public void androidSyncSettingsChanged() {
+    public void syncStateChanged() {
         mPromoState = calculatePromoState();
         triggerPromoUpdate();
     }

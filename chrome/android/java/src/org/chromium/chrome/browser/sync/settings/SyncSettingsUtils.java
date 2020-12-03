@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.sync.AndroidSyncSettings;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -77,18 +76,19 @@ public class SyncSettingsUtils {
      */
     @SyncError
     public static int getSyncError() {
-        if (!AndroidSyncSettings.get().doesMasterSyncSettingAllowChromeSync()) {
-            return SyncError.ANDROID_SYNC_DISABLED;
-        }
-
-        if (!AndroidSyncSettings.get().isChromeSyncEnabled()) {
-            return SyncError.NO_ERROR;
-        }
-
         ProfileSyncService profileSyncService = ProfileSyncService.get();
         if (profileSyncService == null) {
             return SyncError.NO_ERROR;
         }
+
+        if (!profileSyncService.isSyncAllowedByPlatform()) {
+            return SyncError.ANDROID_SYNC_DISABLED;
+        }
+
+        if (!profileSyncService.isSyncRequested()) {
+            return SyncError.NO_ERROR;
+        }
+
         if (profileSyncService.getAuthError()
                 == GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS) {
             return SyncError.AUTH_ERROR;
@@ -219,13 +219,13 @@ public class SyncSettingsUtils {
             return "";
         }
 
-        if (!AndroidSyncSettings.get().doesMasterSyncSettingAllowChromeSync()) {
-            return res.getString(R.string.sync_android_system_sync_disabled);
-        }
-
         ProfileSyncService profileSyncService = ProfileSyncService.get();
         if (profileSyncService == null) {
             return res.getString(R.string.sync_is_disabled);
+        }
+
+        if (!profileSyncService.isSyncAllowedByPlatform()) {
+            return res.getString(R.string.sync_android_system_sync_disabled);
         }
 
         if (profileSyncService.isSyncDisabledByEnterprisePolicy()) {
@@ -251,30 +251,27 @@ public class SyncSettingsUtils {
             return res.getString(R.string.sync_error_generic);
         }
 
-        if (!profileSyncService.isSyncRequested()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
-            return res.getString(R.string.sync_data_types_off);
+        if (!profileSyncService.isSyncRequested()) {
+            return ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
+                    ? res.getString(R.string.sync_data_types_off)
+                    : context.getString(R.string.sync_is_disabled);
         }
 
-        boolean syncEnabled = AndroidSyncSettings.get().isSyncEnabled();
-        if (syncEnabled) {
-            if (!profileSyncService.isSyncActive()) {
-                return res.getString(R.string.sync_setup_progress);
-            }
-
-            if (profileSyncService.isPassphraseRequiredForPreferredDataTypes()) {
-                return res.getString(R.string.sync_need_passphrase);
-            }
-
-            if (profileSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()) {
-                return profileSyncService.isEncryptEverythingEnabled()
-                        ? context.getString(R.string.sync_error_card_title)
-                        : context.getString(R.string.sync_passwords_error_card_title);
-            }
-
-            return context.getString(R.string.sync_and_services_summary_sync_on);
+        if (!profileSyncService.isSyncActive()) {
+            return res.getString(R.string.sync_setup_progress);
         }
-        return context.getString(R.string.sync_is_disabled);
+
+        if (profileSyncService.isPassphraseRequiredForPreferredDataTypes()) {
+            return res.getString(R.string.sync_need_passphrase);
+        }
+
+        if (profileSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()) {
+            return profileSyncService.isEncryptEverythingEnabled()
+                    ? context.getString(R.string.sync_error_card_title)
+                    : context.getString(R.string.sync_passwords_error_card_title);
+        }
+
+        return context.getString(R.string.sync_and_services_summary_sync_on);
     }
 
     /**
@@ -292,7 +289,7 @@ public class SyncSettingsUtils {
         }
 
         ProfileSyncService profileSyncService = ProfileSyncService.get();
-        if (profileSyncService == null || !AndroidSyncSettings.get().isSyncEnabled()) {
+        if (profileSyncService == null || !profileSyncService.isSyncRequested()) {
             return useNewIcon
                     ? AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp)
                     : UiUtils.getTintedDrawable(context, R.drawable.ic_sync_green_legacy_40dp,
