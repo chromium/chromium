@@ -21,6 +21,8 @@ namespace syncer {
 // Lower bound time between two token validations when listening.
 const int kTokenValidationPeriodMinutesDefault = 60 * 24;
 
+const int kInstanceIDTokenTTLSeconds = 14 * 24 * 60 * 60;  // 2 weeks.
+
 FCMHandler::FCMHandler(gcm::GCMDriver* gcm_driver,
                        instance_id::InstanceIDDriver* instance_id_driver,
                        const std::string& sender_id,
@@ -199,10 +201,9 @@ void FCMHandler::DidReceiveTokenForValidation(
 
 void FCMHandler::StartTokenFetch(
     instance_id::InstanceID::GetTokenCallback callback) {
-  // TODO(crbug.com/1108780): set appropriate TTL.
   instance_id_driver_->GetInstanceID(app_id_)->GetToken(
       sender_id_, instance_id::kGCMScope,
-      /*time_to_live=*/base::TimeDelta(),
+      /*time_to_live=*/base::TimeDelta::FromSeconds(kInstanceIDTokenTTLSeconds),
       /*options=*/std::map<std::string, std::string>(),
       /*flags=*/{instance_id::InstanceID::Flags::kIsLazy}, std::move(callback));
 }
