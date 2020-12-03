@@ -2553,16 +2553,6 @@ const char kWebXrMultiGpuName[] = "WebXR Multi GPU Support";
 const char kWebXrMultiGpuDescription[] =
     "Improves WebXR support for computers with more than one GPU.";
 
-const char kWellKnownChangePasswordName[] =
-    "Support for .well-known/change-password";
-
-const char kWellKnownChangePasswordDescription[] =
-    "If enabled the 'change password' button in password checkup redirects to "
-    "the .well-known/change-password path. The path is supposed to point to "
-    "the password change form of the site. When the site doesn't support "
-    ".well-known/change-password it is checked if a fallback url is available. "
-    "Otherwise the user is redirected to the origin.";
-
 const char kWindowNamingName[] = "Window Naming";
 const char kWindowNamingDescription[] =
     "Whether the window naming UI is enabled.";

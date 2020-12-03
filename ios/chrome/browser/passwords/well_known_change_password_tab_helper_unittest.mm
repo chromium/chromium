@@ -7,9 +7,7 @@
 
 #include "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "ios/chrome/browser/passwords/ios_chrome_change_password_url_service_factory.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -95,8 +93,6 @@ class WellKnownChangePasswordTabHelperTest : public web::TestWebClient,
   using UkmBuilder =
       ukm::builders::PasswordManager_WellKnownChangePasswordResult;
   WellKnownChangePasswordTabHelperTest() {
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kWellKnownChangePassword);
     test_server_->RegisterRequestHandler(base::BindRepeating(
         &WellKnownChangePasswordTabHelperTest::HandleRequest,
         base::Unretained(this)));
@@ -159,7 +155,6 @@ class WellKnownChangePasswordTabHelperTest : public web::TestWebClient,
   // |path_response_map_|.
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request);
 
-  base::test::ScopedFeatureList feature_list_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   web::TestWebStateDelegate delegate_;
 };

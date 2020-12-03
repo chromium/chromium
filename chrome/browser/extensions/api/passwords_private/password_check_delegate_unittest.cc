@@ -247,11 +247,6 @@ class PasswordCheckDelegateTest : public ::testing::Test {
   SavedPasswordsPresenter& presenter() { return presenter_; }
   PasswordCheckDelegate& delegate() { return delegate_; }
 
-  void DisableWellKnownChangePasswordFeatureFlag() {
-    scoped_feature_list_.InitAndDisableFeature(
-        password_manager::features::kWellKnownChangePassword);
-  }
-
  private:
   content::BrowserTaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -1143,8 +1138,7 @@ TEST_F(PasswordCheckDelegateTest,
   RunUntilIdle();
 }
 
-TEST_F(PasswordCheckDelegateTest,
-       WellKnownChangePasswordUrlFeatureFlag_enabled) {
+TEST_F(PasswordCheckDelegateTest, WellKnownChangePasswordUrl) {
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
   store().AddCompromisedCredentials(
       MakeCompromised(kExampleCom, kUsername1, base::TimeDelta::FromMinutes(1),
@@ -1157,8 +1151,7 @@ TEST_F(PasswordCheckDelegateTest,
             password_manager::kWellKnownChangePasswordPath);
 }
 
-TEST_F(PasswordCheckDelegateTest,
-       WellKnownChangePasswordUrlFeatureFlagEnabled_androidrealm) {
+TEST_F(PasswordCheckDelegateTest, WellKnownChangePasswordUrl_androidrealm) {
   store().AddLogin(
       MakeSavedAndroidPassword(kExampleApp, kUsername1, "", kExampleCom));
   store().AddCompromisedCredentials(
@@ -1178,36 +1171,6 @@ TEST_F(PasswordCheckDelegateTest,
       GURL(*delegate().GetCompromisedCredentials().at(1).change_password_url)
           .path(),
       password_manager::kWellKnownChangePasswordPath);
-}
-
-TEST_F(PasswordCheckDelegateTest,
-       WellKnownChangePasswordUrlFeatureFlagDisabled_androidrealm) {
-  DisableWellKnownChangePasswordFeatureFlag();
-
-  store().AddLogin(MakeSavedAndroidPassword(kExampleApp, kUsername2,
-                                            "Example App", kExampleCom));
-  store().AddCompromisedCredentials(
-      MakeCompromised(MakeAndroidRealm(kExampleApp), kUsername2,
-                      base::TimeDelta::FromDays(3), CompromiseType::kPhished));
-
-  RunUntilIdle();
-  EXPECT_EQ(*delegate().GetCompromisedCredentials().at(0).change_password_url,
-            kExampleCom);
-}
-
-TEST_F(PasswordCheckDelegateTest,
-       WellKnownChangePasswordUrlFeatureFlag_disabled) {
-  DisableWellKnownChangePasswordFeatureFlag();
-
-  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
-  store().AddCompromisedCredentials(
-      MakeCompromised(kExampleCom, kUsername1, base::TimeDelta::FromMinutes(1),
-                      CompromiseType::kLeaked));
-  RunUntilIdle();
-  GURL change_password_url(
-      *delegate().GetCompromisedCredentials().at(0).change_password_url);
-  EXPECT_NE(change_password_url.path(),
-            password_manager::kWellKnownChangePasswordPath);
 }
 
 }  // namespace extensions

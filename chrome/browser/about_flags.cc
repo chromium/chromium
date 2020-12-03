@@ -6623,11 +6623,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(password_manager::features::kPasswordsWeaknessCheck)},
 #endif  // !defined(OS_ANDROID)
 
-    {"well-known-change-password",
-     flag_descriptions::kWellKnownChangePasswordName,
-     flag_descriptions::kWellKnownChangePasswordDescription, kOsAll,
-     FEATURE_VALUE_TYPE(password_manager::features::kWellKnownChangePassword)},
-
     {"window-naming", flag_descriptions::kWindowNamingName,
      flag_descriptions::kWindowNamingDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kWindowNaming)},

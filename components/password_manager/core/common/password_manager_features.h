@@ -40,7 +40,6 @@ extern const base::Feature kSecondaryServerFieldPredictions;
 extern const base::Feature kTreatNewPasswordHeuristicsAsReliable;
 extern const base::Feature kUseOfHashAffiliationFetcher;
 extern const base::Feature kUsernameFirstFlow;
-extern const base::Feature kWellKnownChangePassword;
 
 // Field trial and corresponding parameters.
 // To manually override this, start Chrome with the following parameters:

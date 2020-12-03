@@ -4970,11 +4970,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "well-known-change-password",
-    "owners": ["jdoerrie", "vasilii"],
-    "expiry_milestone": 90
-  },
-  {
     "name": "wifi-sync-android",
     "owners": [ "jonmann", "cvandermerwe@google.com", "cros-system-services@google.com" ],
     "expiry_milestone": 92

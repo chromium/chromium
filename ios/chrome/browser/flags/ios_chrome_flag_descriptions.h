@@ -415,9 +415,6 @@ extern const char kWebPageAlternativeTextZoomDescription[];
 extern const char kWebViewNativeContextMenuName[];
 extern const char kWebViewNativeContextMenuDescription[];
 
-extern const char kWellKnownChangePasswordName[];
-extern const char kWellKnownChangePasswordDescription[];
-
 extern const char kRestoreGaiaCookiesIfDeletedName[];
 extern const char kRestoreGaiaCookiesIfDeletedDescription[];
 

@@ -188,22 +188,15 @@ void ChangePasswordNavigationThrottleBrowserTestBase::TestNavigationThrottle(
 
 // Browser Test that checks navigation to /.well-known/change-password path and
 // redirection to change password URL returned by Change Password Service.
-// Enables kWellKnownChangePassword feature.
 class WellKnownChangePasswordNavigationThrottleBrowserTest
     : public ChangePasswordNavigationThrottleBrowserTestBase {
  public:
-  WellKnownChangePasswordNavigationThrottleBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kWellKnownChangePassword);
-  }
-
   void SetUpOnMainThread() override;
   void TestNavigationThrottleForLocalhost(const std::string& expected_path);
 
   MockChangePasswordUrlService* url_service_ = nullptr;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 void WellKnownChangePasswordNavigationThrottleBrowserTest::SetUpOnMainThread() {
@@ -483,16 +476,13 @@ constexpr char kExample2Hostname[] = "example2.com";
 constexpr char kExample2ChangePasswordRelativeUrl[] = "/change-pwd";
 
 // Browser Test that checks redirection to change password URL returned by
-// Affiliation Service. Enables kWellKnownChangePassword and
-// kChangePasswordAffiliationInfo features.
+// Affiliation Service. Enables kChangePasswordAffiliationInfo feature.
 class AffiliationChangePasswordNavigationThrottleBrowserTest
     : public ChangePasswordNavigationThrottleBrowserTestBase {
  public:
   AffiliationChangePasswordNavigationThrottleBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {password_manager::features::kWellKnownChangePassword,
-         password_manager::features::kChangePasswordAffiliationInfo},
-        {});
+    feature_list_.InitAndEnableFeature(
+        password_manager::features::kChangePasswordAffiliationInfo);
     sync_service_.SetFirstSetupComplete(true);
     sync_service_.SetIsUsingSecondaryPassphrase(false);
   }

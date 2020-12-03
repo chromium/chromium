@@ -7,7 +7,6 @@
 #import <Foundation/Foundation.h>
 
 #include "base/logging.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/passwords/ios_chrome_change_password_url_service_factory.h"
@@ -57,15 +56,11 @@ WellKnownChangePasswordTabHelper::ShouldAllowRequest(
   // The custom behaviour is only used if the .well-known/change-password
   // request if the request is the main frame opened in a new tab.
   if (processing_state_ == kWaitingForFirstRequest) {
-    // Boolean order important, feature flag last. Otherwise it messes
-    // with usage statistics of control and experimental group (UMA).
     if (request_info.target_frame_is_main &&
         ui::PageTransitionCoreTypeIs(request_info.transition_type,
                                      ui::PAGE_TRANSITION_TYPED) &&
         web_state_->GetLastCommittedURL().is_empty() &&  // empty tab history
-        IsWellKnownChangePasswordUrl(request_url) &&
-        base::FeatureList::IsEnabled(
-            password_manager::features::kWellKnownChangePassword)) {
+        IsWellKnownChangePasswordUrl(request_url)) {
       request_url_ = request_url;
       change_password_url_service_->PrefetchURLs();
       auto url_loader_factory =
@@ -89,9 +84,7 @@ void WellKnownChangePasswordTabHelper::ShouldAllowResponse(
   // True if the TabHelper expects the response from .well-known/change-password
   // and only that navigation was started.
   if (processing_state_ == kWaitingForResponse &&
-      [response isKindOfClass:[NSHTTPURLResponse class]] &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kWellKnownChangePassword)) {
+      [response isKindOfClass:[NSHTTPURLResponse class]]) {
     processing_state_ = kResponesReceived;
     DCHECK(url.SchemeIsHTTPOrHTTPS());
     response_policy_callback_ = std::move(callback);

@@ -91,18 +91,12 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsLifetimeHelper)
 std::unique_ptr<WellKnownChangePasswordNavigationThrottle>
 WellKnownChangePasswordNavigationThrottle::MaybeCreateThrottleFor(
     NavigationHandle* handle) {
-  const GURL& url = handle->GetURL();
-  // The order is important. We have to check if it as a well-known change
-  // password url first. We should only check the feature flag when the feature
-  // would be used. Otherwise the we would not see a difference between control
-  // and experiment groups on the dashboards.
-  if (handle->IsInMainFrame() && IsWellKnownChangePasswordUrl(url) &&
-      IsTriggeredByGoogleOwnedUI(handle) &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kWellKnownChangePassword)) {
-    return base::WrapUnique(
-        new WellKnownChangePasswordNavigationThrottle(handle));
+  if (handle->IsInMainFrame() &&
+      IsWellKnownChangePasswordUrl(handle->GetURL()) &&
+      IsTriggeredByGoogleOwnedUI(handle)) {
+    return std::make_unique<WellKnownChangePasswordNavigationThrottle>(handle);
   }
+
   return nullptr;
 }
 

@@ -34,10 +34,13 @@ class WellKnownChangePasswordNavigationThrottle
     : public content::NavigationThrottle,
       public password_manager::WellKnownChangePasswordStateDelegate {
  public:
-  ~WellKnownChangePasswordNavigationThrottle() override;
-
   static std::unique_ptr<WellKnownChangePasswordNavigationThrottle>
   MaybeCreateThrottleFor(content::NavigationHandle* handle);
+
+  explicit WellKnownChangePasswordNavigationThrottle(
+      content::NavigationHandle* handle);
+
+  ~WellKnownChangePasswordNavigationThrottle() override;
 
   // We don't need to override WillRedirectRequest since a redirect is the
   // expected behaviour and does not need manual intervention.
@@ -48,8 +51,6 @@ class WellKnownChangePasswordNavigationThrottle
   const char* GetNameForLogging() override;
 
  private:
-  explicit WellKnownChangePasswordNavigationThrottle(
-      content::NavigationHandle* handle);
   // password_manager::WellKnownChangePasswordStateDelegate:
   void OnProcessingFinished(bool is_supported) override;
   // Redirects to a given URL in the same tab.
