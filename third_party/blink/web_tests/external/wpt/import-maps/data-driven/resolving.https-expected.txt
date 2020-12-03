@@ -1,0 +1,175 @@
+This is a testharness.js-based test.
+Found 171 tests; 165 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS global setup
+PASS Test helper: fetching and sanity checking test JSON: resources/scopes.json
+PASS Test helper: fetching and sanity checking test JSON: resources/empty-import-map.json
+PASS Test helper: fetching and sanity checking test JSON: resources/packages-via-trailing-slashes.json
+PASS Test helper: fetching and sanity checking test JSON: resources/tricky-specifiers.json
+PASS Test helper: fetching and sanity checking test JSON: resources/url-specifiers.json
+PASS Test helper: fetching and sanity checking test JSON: resources/data-base-url.json
+PASS Test helper: fetching and sanity checking test JSON: resources/scopes-exact-vs-prefix.json
+PASS Test helper: fetching and sanity checking test JSON: resources/overlapping-entries.json
+PASS Test helper: fetching and sanity checking test JSON: resources/resolving-null.json
+PASS global cleanup
+PASS Fallback to toplevel and between scopes: should fall back to `imports` when no scopes match: a
+PASS Fallback to toplevel and between scopes: should fall back to `imports` when no scopes match: b
+PASS Fallback to toplevel and between scopes: should fall back to `imports` when no scopes match: c
+PASS Fallback to toplevel and between scopes: should fall back to `imports` when no scopes match: d
+PASS Fallback to toplevel and between scopes: should use a direct scope override: a
+PASS Fallback to toplevel and between scopes: should use a direct scope override: b
+PASS Fallback to toplevel and between scopes: should use a direct scope override: c
+PASS Fallback to toplevel and between scopes: should use a direct scope override: d
+PASS Fallback to toplevel and between scopes: should use an indirect scope override: a
+PASS Fallback to toplevel and between scopes: should use an indirect scope override: b
+PASS Fallback to toplevel and between scopes: should use an indirect scope override: c
+PASS Fallback to toplevel and between scopes: should use an indirect scope override: d
+PASS Relative URL scope keys: An empty string scope is a scope with import map base URL: a
+PASS Relative URL scope keys: An empty string scope is a scope with import map base URL: b
+PASS Relative URL scope keys: An empty string scope is a scope with import map base URL: c
+PASS Relative URL scope keys: './' scope is a scope with import map base URL's directory: a
+PASS Relative URL scope keys: './' scope is a scope with import map base URL's directory: b
+PASS Relative URL scope keys: './' scope is a scope with import map base URL's directory: c
+PASS Relative URL scope keys: '../' scope is a scope with import map base URL's parent directory: a
+PASS Relative URL scope keys: '../' scope is a scope with import map base URL's parent directory: b
+PASS Relative URL scope keys: '../' scope is a scope with import map base URL's parent directory: c
+PASS Package-like scenarios: Base URLs inside the scope should use the scope if the scope has matching keys: lodash-dot
+PASS Package-like scenarios: Base URLs inside the scope should use the scope if the scope has matching keys: lodash-dot/foo
+PASS Package-like scenarios: Base URLs inside the scope should use the scope if the scope has matching keys: lodash-dotdot
+PASS Package-like scenarios: Base URLs inside the scope should use the scope if the scope has matching keys: lodash-dotdot/foo
+PASS Package-like scenarios: Base URLs inside the scope fallback to less specific scope: moment
+PASS Package-like scenarios: Base URLs inside the scope fallback to less specific scope: vue
+PASS Package-like scenarios: Base URLs inside the scope fallback to toplevel: moment/foo
+PASS Package-like scenarios: Base URLs outside a scope shouldn't use the scope even if the scope has matching keys: lodash-dot
+PASS Package-like scenarios: Base URLs outside a scope shouldn't use the scope even if the scope has matching keys: lodash-dotdot
+PASS Package-like scenarios: Base URLs outside a scope shouldn't use the scope even if the scope has matching keys: lodash-dot/foo
+PASS Package-like scenarios: Base URLs outside a scope shouldn't use the scope even if the scope has matching keys: lodash-dotdot/foo
+PASS Package-like scenarios: Fallback to toplevel or not, depending on trailing slash match: moment
+PASS Package-like scenarios: Fallback to toplevel or not, depending on trailing slash match: moment/foo
+PASS Package-like scenarios: should still fail for package-like specifiers that are not declared: underscore/
+PASS Package-like scenarios: should still fail for package-like specifiers that are not declared: underscore/foo
+PASS valid relative specifiers: ./foo
+PASS valid relative specifiers: ./foo/bar
+PASS valid relative specifiers: ./foo/../bar
+PASS valid relative specifiers: ./foo/../../bar
+PASS valid relative specifiers: ../foo
+PASS valid relative specifiers: ../foo/bar
+PASS valid relative specifiers: ../../../foo/bar
+PASS valid relative specifiers: /foo
+PASS valid relative specifiers: /foo/bar
+PASS valid relative specifiers: /../../foo/bar
+PASS valid relative specifiers: /../foo/../bar
+PASS HTTPS scheme absolute URLs: https://fetch-scheme.net
+PASS HTTPS scheme absolute URLs: https:fetch-scheme.org
+PASS HTTPS scheme absolute URLs: https://fetch%2Dscheme.com/
+PASS HTTPS scheme absolute URLs: https://///fetch-scheme.com///
+PASS valid relative URLs that are invalid as specifiers should fail: invalid-specifier
+PASS valid relative URLs that are invalid as specifiers should fail: \invalid-specifier
+PASS valid relative URLs that are invalid as specifiers should fail: :invalid-specifier
+PASS valid relative URLs that are invalid as specifiers should fail: @invalid-specifier
+PASS valid relative URLs that are invalid as specifiers should fail: %2E/invalid-specifier
+PASS valid relative URLs that are invalid as specifiers should fail: %2E%2E/invalid-specifier
+PASS valid relative URLs that are invalid as specifiers should fail: .%2Finvalid-specifier
+PASS invalid absolute URLs should fail: https://invalid-url.com:demo
+PASS invalid absolute URLs should fail: http://[invalid-url.com]/
+PASS Package-like scenarios: package main modules: moment
+PASS Package-like scenarios: package main modules: lodash-dot
+PASS Package-like scenarios: package main modules: lodash-dotdot
+PASS Package-like scenarios: package submodules: moment/foo
+PASS Package-like scenarios: package submodules: lodash-dot/foo
+PASS Package-like scenarios: package submodules: lodash-dotdot/foo
+PASS Package-like scenarios: package names that end in a slash should just pass through: moment/
+PASS Package-like scenarios: package modules that are not declared should fail: underscore/
+PASS Package-like scenarios: package modules that are not declared should fail: underscore/foo
+PASS Package-like scenarios: backtracking via ..: mapped/path
+PASS Package-like scenarios: backtracking via ..: mapped/path/
+FAIL Package-like scenarios: backtracking via ..: mapped/path/.. assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Package-like scenarios: backtracking via ..: mapped/path/../backtrack assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Package-like scenarios: backtracking via ..: mapped/path/../../backtrack assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Package-like scenarios: backtracking via ..: mapped/path/../../../backtrack assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Package-like scenarios: backtracking via ..: moment/../backtrack assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Package-like scenarios: backtracking via ..: moment/.. assert_unreached: Should have rejected: undefined Reached unreachable code
+PASS Tricky specifiers: explicitly-mapped specifiers that happen to have a slash: package/withslash
+PASS Tricky specifiers: specifier with punctuation: .
+PASS Tricky specifiers: specifier with punctuation: ..
+PASS Tricky specifiers: specifier with punctuation: ..\
+PASS Tricky specifiers: specifier with punctuation: %2E
+PASS Tricky specifiers: specifier with punctuation: %2F
+PASS Tricky specifiers: submodule of something not declared with a trailing slash should fail: not-a-package/foo
+PASS Tricky specifiers: module for which only a trailing-slash version is present should fail: only-slash
+PASS URL-like specifiers: Ordinary URL-like specifiers: https://example.com/lib/foo.mjs
+PASS URL-like specifiers: Ordinary URL-like specifiers: https://///example.com/lib/foo.mjs
+PASS URL-like specifiers: Ordinary URL-like specifiers: /lib/foo.mjs
+PASS URL-like specifiers: Ordinary URL-like specifiers: https://example.com/app/dotrelative/foo.mjs
+PASS URL-like specifiers: Ordinary URL-like specifiers: ../app/dotrelative/foo.mjs
+PASS URL-like specifiers: Ordinary URL-like specifiers: https://example.com/dotdotrelative/foo.mjs
+PASS URL-like specifiers: Ordinary URL-like specifiers: ../dotdotrelative/foo.mjs
+PASS URL-like specifiers: Import map entries just composed from / and .: https://example.com/
+PASS URL-like specifiers: Import map entries just composed from / and .: /
+PASS URL-like specifiers: Import map entries just composed from / and .: ../
+PASS URL-like specifiers: Import map entries just composed from / and .: https://example.com/app/
+PASS URL-like specifiers: Import map entries just composed from / and .: /app/
+PASS URL-like specifiers: Import map entries just composed from / and .: ../app/
+PASS URL-like specifiers: prefix-matched by keys with trailing slashes: /test/foo.mjs
+PASS URL-like specifiers: prefix-matched by keys with trailing slashes: https://example.com/app/test/foo.mjs
+PASS URL-like specifiers: should use the last entry's address when URL-like specifiers parse to the same absolute URL: /test
+PASS URL-like specifiers: backtracking (relative URLs): /test/..
+PASS URL-like specifiers: backtracking (relative URLs): /test/../backtrack
+PASS URL-like specifiers: backtracking (relative URLs): /test/../../backtrack
+PASS URL-like specifiers: backtracking (relative URLs): /test/../../../backtrack
+PASS URL-like specifiers: backtracking (absolute URLs): https://example.com/test/..
+PASS URL-like specifiers: backtracking (absolute URLs): https://example.com/test/../backtrack
+PASS URL-like specifiers: backtracking (absolute URLs): https://example.com/test/../../backtrack
+PASS URL-like specifiers: backtracking (absolute URLs): https://example.com/test/../../../backtrack
+PASS data: base URL (?): should favor the most-specific key: foo/bar
+PASS Exact vs. prefix based matching: Scope without trailing slash only: Non-trailing-slash base URL (exact match): moment
+PASS Exact vs. prefix based matching: Scope without trailing slash only: Non-trailing-slash base URL (exact match): moment/foo
+PASS Exact vs. prefix based matching: Scope without trailing slash only: Trailing-slash base URL (fail): moment
+PASS Exact vs. prefix based matching: Scope without trailing slash only: Trailing-slash base URL (fail): moment/foo
+PASS Exact vs. prefix based matching: Scope without trailing slash only: Subpath base URL (fail): moment
+PASS Exact vs. prefix based matching: Scope without trailing slash only: Subpath base URL (fail): moment/foo
+PASS Exact vs. prefix based matching: Scope without trailing slash only: Non-subpath base URL (fail): moment
+PASS Exact vs. prefix based matching: Scope without trailing slash only: Non-subpath base URL (fail): moment/foo
+PASS Exact vs. prefix based matching: Scope with trailing slash only: Non-trailing-slash base URL (fail): moment
+PASS Exact vs. prefix based matching: Scope with trailing slash only: Non-trailing-slash base URL (fail): moment/foo
+PASS Exact vs. prefix based matching: Scope with trailing slash only: Trailing-slash base URL (exact match): moment
+PASS Exact vs. prefix based matching: Scope with trailing slash only: Trailing-slash base URL (exact match): moment/foo
+PASS Exact vs. prefix based matching: Scope with trailing slash only: Subpath base URL (prefix match): moment
+PASS Exact vs. prefix based matching: Scope with trailing slash only: Subpath base URL (prefix match): moment/foo
+PASS Exact vs. prefix based matching: Scope with trailing slash only: Non-subpath base URL (fail): moment
+PASS Exact vs. prefix based matching: Scope with trailing slash only: Non-subpath base URL (fail): moment/foo
+PASS Exact vs. prefix based matching: Scopes with and without trailing slash: Non-trailing-slash base URL (exact match): moment
+PASS Exact vs. prefix based matching: Scopes with and without trailing slash: Non-trailing-slash base URL (exact match): moment/foo
+PASS Exact vs. prefix based matching: Scopes with and without trailing slash: Trailing-slash base URL (exact match): moment
+PASS Exact vs. prefix based matching: Scopes with and without trailing slash: Trailing-slash base URL (exact match): moment/foo
+PASS Exact vs. prefix based matching: Scopes with and without trailing slash: Subpath base URL (prefix match): moment
+PASS Exact vs. prefix based matching: Scopes with and without trailing slash: Subpath base URL (prefix match): moment/foo
+PASS Exact vs. prefix based matching: Scopes with and without trailing slash: Non-subpath base URL (fail): moment
+PASS Exact vs. prefix based matching: Scopes with and without trailing slash: Non-subpath base URL (fail): moment/foo
+PASS should favor the most-specific key: Overlapping entries with trailing slashes: a
+PASS should favor the most-specific key: Overlapping entries with trailing slashes: a/
+PASS should favor the most-specific key: Overlapping entries with trailing slashes: a/x
+PASS should favor the most-specific key: Overlapping entries with trailing slashes: a/b
+PASS should favor the most-specific key: Overlapping entries with trailing slashes: a/b/
+PASS should favor the most-specific key: Overlapping entries with trailing slashes: a/b/c
+PASS Entries with errors shouldn't allow fallback: No fallback to less-specific prefixes: null/x
+PASS Entries with errors shouldn't allow fallback: No fallback to less-specific prefixes: null/b/x
+PASS Entries with errors shouldn't allow fallback: No fallback to less-specific prefixes: null/b/c/x
+PASS Entries with errors shouldn't allow fallback: No fallback to less-specific prefixes: invalid-url/x
+PASS Entries with errors shouldn't allow fallback: No fallback to less-specific prefixes: invalid-url/b/x
+PASS Entries with errors shouldn't allow fallback: No fallback to less-specific prefixes: invalid-url/b/c/x
+PASS Entries with errors shouldn't allow fallback: No fallback to less-specific prefixes: without-trailing-slashes/x
+PASS Entries with errors shouldn't allow fallback: No fallback to less-specific prefixes: without-trailing-slashes/b/x
+PASS Entries with errors shouldn't allow fallback: No fallback to less-specific prefixes: without-trailing-slashes/b/c/x
+PASS Entries with errors shouldn't allow fallback: No fallback to less-specific prefixes: prefix-resolution-error/x
+PASS Entries with errors shouldn't allow fallback: No fallback to less-specific prefixes: prefix-resolution-error/b/x
+PASS Entries with errors shouldn't allow fallback: No fallback to less-specific prefixes: prefix-resolution-error/b/c/x
+PASS Entries with errors shouldn't allow fallback: No fallback to less-specific scopes: null
+PASS Entries with errors shouldn't allow fallback: No fallback to less-specific scopes: invalid-url
+PASS Entries with errors shouldn't allow fallback: No fallback to less-specific scopes: without-trailing-slashes/x
+PASS Entries with errors shouldn't allow fallback: No fallback to less-specific scopes: prefix-resolution-error/x
+PASS Entries with errors shouldn't allow fallback: No fallback to absolute URL parsing: https://example.com/null
+PASS Entries with errors shouldn't allow fallback: No fallback to absolute URL parsing: https://example.com/invalid-url
+PASS Entries with errors shouldn't allow fallback: No fallback to absolute URL parsing: https://example.com/without-trailing-slashes/x
+PASS Entries with errors shouldn't allow fallback: No fallback to absolute URL parsing: https://example.com/prefix-resolution-error/x
+Harness: the test ran to completion.
+

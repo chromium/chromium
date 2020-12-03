@@ -1,0 +1,33 @@
+This is a testharness.js-based test.
+PASS global setup
+PASS Test helper: fetching and sanity checking test JSON: resources/empty-import-map-internal.json
+PASS Test helper: fetching and sanity checking test JSON: resources/url-specifiers-schemes-internal.json
+PASS global cleanup
+PASS non-HTTPS fetch scheme absolute URLs: about:fetch-scheme
+PASS non-fetch scheme absolute URLs: about:fetch-scheme
+PASS non-fetch scheme absolute URLs: mailto:non-fetch-scheme
+PASS non-fetch scheme absolute URLs: import:non-fetch-scheme
+PASS non-fetch scheme absolute URLs: javascript:non-fetch-scheme
+PASS non-fetch scheme absolute URLs: wss:non-fetch-scheme
+FAIL URL-like specifiers: Non-special vs. special schemes: data:text/javascript,console.log('foo') assert_equals: expected "data:text/javascript,console.log('foo')" but got "https://example.com/lib/test-data/javascript,console.log('foo')"
+PASS URL-like specifiers: Non-special vs. special schemes: data:text/
+FAIL URL-like specifiers: Non-special vs. special schemes: about:text/foo assert_equals: expected "about:text/foo" but got "https://example.com/lib/test-about/foo"
+PASS URL-like specifiers: Non-special vs. special schemes: about:text/
+FAIL URL-like specifiers: Non-special vs. special schemes: blob:text/foo assert_equals: expected "blob:text/foo" but got "https://example.com/lib/test-blob/foo"
+PASS URL-like specifiers: Non-special vs. special schemes: blob:text/
+FAIL URL-like specifiers: Non-special vs. special schemes: blah:text/foo assert_equals: expected "blah:text/foo" but got "https://example.com/lib/test-blah/foo"
+PASS URL-like specifiers: Non-special vs. special schemes: blah:text/
+PASS URL-like specifiers: Non-special vs. special schemes: http:text/foo
+PASS URL-like specifiers: Non-special vs. special schemes: http:text/
+PASS URL-like specifiers: Non-special vs. special schemes: https:text/foo
+PASS URL-like specifiers: Non-special vs. special schemes: https:text/
+PASS URL-like specifiers: Non-special vs. special schemes: ftp:text/foo
+PASS URL-like specifiers: Non-special vs. special schemes: ftp:text/
+PASS URL-like specifiers: Non-special vs. special schemes: file:text/foo
+PASS URL-like specifiers: Non-special vs. special schemes: file:text/
+PASS URL-like specifiers: Non-special vs. special schemes: ws:text/foo
+PASS URL-like specifiers: Non-special vs. special schemes: ws:text/
+PASS URL-like specifiers: Non-special vs. special schemes: wss:text/foo
+PASS URL-like specifiers: Non-special vs. special schemes: wss:text/
+Harness: the test ran to completion.
+
