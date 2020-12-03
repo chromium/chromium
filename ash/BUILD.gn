@@ -203,6 +203,8 @@ component("ash") {
     "ambient/ui/ambient_background_image_view.h",
     "ambient/ui/ambient_container_view.cc",
     "ambient/ui/ambient_container_view.h",
+    "ambient/ui/ambient_info_view.cc",
+    "ambient/ui/ambient_info_view.h",
     "ambient/ui/ambient_view_delegate.h",
     "ambient/ui/ambient_view_ids.h",
     "ambient/ui/assistant_response_container_view.cc",

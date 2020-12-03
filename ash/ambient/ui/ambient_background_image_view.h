@@ -15,13 +15,9 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
-namespace views {
-class Label;
-}  // namespace views
-
 namespace ash {
 
-class GlanceableInfoView;
+class AmbientInfoView;
 class MediaStringView;
 
 // AmbientBackgroundImageView--------------------------------------------------
@@ -83,11 +79,7 @@ class ASH_EXPORT AmbientBackgroundImageView : public views::View,
   gfx::ImageSkia image_unscaled_;
   gfx::ImageSkia related_image_unscaled_;
 
-  GlanceableInfoView* glanceable_info_view_ = nullptr;
-
-  // Label to show details text, i.e. attribution, to be displayed for the
-  // current image. Owned by the view hierarchy.
-  views::Label* details_label_ = nullptr;
+  AmbientInfoView* ambient_info_view_ = nullptr;
 
   MediaStringView* media_string_view_ = nullptr;
 
