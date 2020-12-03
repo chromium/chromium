@@ -28,15 +28,10 @@ _EXCLUDED_CLASSES_PREFIXES = ('android', 'junit', 'org/bouncycastle/util',
                               'org/hamcrest', 'org/junit', 'org/mockito')
 
 # Suites we shouldn't shard, usually because they don't contain enough test
-# cases. Some suites have poorly formed tests that rely on setup in other
-# tests.
+# cases.
 _EXCLUDED_SUITES = {
-    # Too small to shard test suites.
     'password_check_junit_tests',
     'touch_to_fill_junit_tests',
-    # Poorly formed test suites.
-    # TODO: (crbug.com/1147740) Remove component_junit_tests when it's fixed.
-    'components_junit_tests'
 }
 
 # Running time for chrome_junit_tests locally:
