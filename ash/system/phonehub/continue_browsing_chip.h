@@ -18,7 +18,8 @@ class ASH_EXPORT ContinueBrowsingChip : public views::Button {
  public:
   ContinueBrowsingChip(
       const chromeos::phonehub::BrowserTabsModel::BrowserTabMetadata& metadata,
-      int index);
+      int index,
+      size_t total_count);
 
   ~ContinueBrowsingChip() override;
   ContinueBrowsingChip(ContinueBrowsingChip&) = delete;
@@ -36,6 +37,9 @@ class ASH_EXPORT ContinueBrowsingChip : public views::Button {
 
   // The index of the chip as it is ordered in the parent view.
   int index_;
+
+  // The total number of chips in the parent view.
+  size_t total_count_;
 };
 
 }  // namespace ash

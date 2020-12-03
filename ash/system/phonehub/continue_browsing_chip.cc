@@ -8,12 +8,15 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/status_area_widget.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/multidevice/logging/logging.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
@@ -36,11 +39,13 @@ constexpr int kTitleMaxLines = 2;
 
 ContinueBrowsingChip::ContinueBrowsingChip(
     const chromeos::phonehub::BrowserTabsModel::BrowserTabMetadata& metadata,
-    int index)
+    int index,
+    size_t total_count)
     : views::Button(base::BindRepeating(&ContinueBrowsingChip::ButtonPressed,
                                         base::Unretained(this))),
       url_(metadata.url),
-      index_(index) {
+      index_(index),
+      total_count_(total_count) {
   auto* color_provider = AshColorProvider::Get();
   SetFocusBehavior(FocusBehavior::ALWAYS);
   focus_ring()->SetColor(color_provider->GetControlsLayerColor(
@@ -102,7 +107,12 @@ ContinueBrowsingChip::ContinueBrowsingChip(
   title_label->SetFontList(
       title_label->font_list().DeriveWithWeight(gfx::Font::Weight::BOLD));
 
-  SetTooltipText(metadata.title);
+  const base::string16 card_label = l10n_util::GetStringFUTF16(
+      IDS_ASH_PHONE_HUB_CONTINUE_BROWSING_TAB_LABEL,
+      base::NumberToString16(index_ + 1), base::NumberToString16(total_count_),
+      metadata.title, base::UTF8ToUTF16(url_.spec()));
+  SetTooltipText(card_label);
+  SetAccessibleName(card_label);
 }
 
 void ContinueBrowsingChip::OnPaintBackground(gfx::Canvas* canvas) {
