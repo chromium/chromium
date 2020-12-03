@@ -93,7 +93,9 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // field.
   virtual base::string16 GetValueForControl() const = 0;
 
-  // Get the unignored selection from the tree
+  // Get the unignored selection from the tree, meaning the selection whose
+  // endpoints are on unignored nodes. (An ignored node means that the node
+  // should not be exposed to platform APIs: See "IsInvisibleOrIgnored".)
   virtual const AXTree::Selection GetUnignoredSelection() const = 0;
 
   // Creates a text position rooted at this object.
@@ -118,18 +120,19 @@ class AX_EXPORT AXPlatformNodeDelegate {
 
   // Get the number of children of this node.
   //
-  // Note that this method presents to assistive technologies the unignored
-  // accessibility subtree, which doesn't necessarily reflect the internal
-  // descendant tree. (An ignored node means that the node should not be exposed
-  // to platform APIs: See "IsInvisibleOrIgnored".)
+  // Note that for accessibility trees that have ignored nodes, this method
+  // should return the number of unignored children. All ignored nodes are
+  // recursively removed from the children count. (An ignored node means that
+  // the node should not be exposed to platform APIs: See
+  // "IsInvisibleOrIgnored".)
   virtual int GetChildCount() const = 0;
 
-  // Get the child of a node given a 0-based index.
+  // Get a child of a node given a 0-based index.
   //
-  // Note that this method presents to assistive technologies the unignored
-  // accessibility subtree, which doesn't necessarily reflect the internal
-  // descendant tree. (An ignored node means that the node should not be exposed
-  // to platform APIs: See "IsInvisibleOrIgnored".)
+  // Note that for accessibility trees that have ignored nodes, this method
+  // returns only unignored children. All ignored nodes are recursively removed.
+  // (An ignored node means that the node should not be exposed to platform
+  // APIs: See "IsInvisibleOrIgnored".)
   virtual gfx::NativeViewAccessible ChildAtIndex(int index) = 0;
 
   // Returns true if it has a modal dialog.
@@ -162,7 +165,8 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // layer.
   virtual bool IsLeaf() const = 0;
 
-  // Returns true if this node is invisible or ignored.
+  // Returns true if this node is invisible or ignored. (Only relevant for
+  // accessibility trees that support ignored nodes.)
   virtual bool IsInvisibleOrIgnored() const = 0;
 
   // Returns true if this node is focused.
