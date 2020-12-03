@@ -90,15 +90,6 @@ class LocationBarMediator implements LocationBar, LocationBarDataProvider.Observ
     }
 
     // LocationBarData.Observer implementation
-
-    @Override
-    public void onTitleChanged() {}
-
-    @Override
-    public void onUrlChanged() {
-        mLocationBarLayout.setUrl(mLocationBarDataProvider.getCurrentUrl());
-    }
-
     @Override
     public void onIncognitoStateChanged() {
         mLocationBarLayout.updateMicButtonState();
@@ -109,8 +100,20 @@ class LocationBarMediator implements LocationBar, LocationBarDataProvider.Observ
         mLocationBarLayout.onNtpStartedLoading();
     }
 
-    // LocationBar implementation.
+    @Override
+    public void onPrimaryColorChanged() {
+        mLocationBarLayout.onPrimaryColorChanged();
+    }
 
+    @Override
+    public void onTitleChanged() {}
+
+    @Override
+    public void onUrlChanged() {
+        mLocationBarLayout.setUrl(mLocationBarDataProvider.getCurrentUrl());
+    }
+
+    // LocationBar implementation.
     @Override
     public void destroy() {
         mLocationBarLayout = null;
@@ -126,12 +129,12 @@ class LocationBarMediator implements LocationBar, LocationBarDataProvider.Observ
 
     @Override
     public void updateVisualsForState() {
-        mLocationBarLayout.updateVisualsForState();
+        mLocationBarLayout.onPrimaryColorChanged();
     }
 
     @Override
     public void setShowTitle(boolean showTitle) {
-        mLocationBarLayout.setShowTitle(showTitle);
+        // This method is only used in CustomTabToolbar.
     }
 
     @Override

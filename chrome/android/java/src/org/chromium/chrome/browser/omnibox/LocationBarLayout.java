@@ -325,7 +325,7 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         }
         mDeferredNativeRunnables.clear();
 
-        updateVisualsForState();
+        onPrimaryColorChanged();
 
         updateMicButtonVisibility();
 
@@ -592,45 +592,45 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         if (visibility == View.VISIBLE) updateMicButtonState();
     }
 
+    /** Updates visuals after the primary color has changed. */
+    @CallSuper
+    public void onPrimaryColorChanged() {
+        updateAssistantVoiceSearchColors();
+        updateUseDarkColors();
+    }
+
     /**
-     * Call to force the UI to update the state of various buttons based on whether or not the
-     * current tab is incognito.
+     * Update visuals to use a correct light or dark color scheme depending on the primary color.
      */
-    public void updateVisualsForState() {
-        // If the location bar is focused, the toolbar background color would be the default color
-        // regardless of whether it is branded or not.
-        final int defaultPrimaryColor = ChromeColors.getDefaultThemeColor(
-                getResources(), mLocationBarDataProvider.isIncognito());
-        final int primaryColor =
-                mUrlHasFocus ? defaultPrimaryColor : mLocationBarDataProvider.getPrimaryColor();
-
-        // This will be called between inflation and initialization. For those calls, using a null
-        // ColorStateList should have no visible impact to the user.
-        AssistantVoiceSearchService assistantVoiceSearchService =
-                mAssistantVoiceSearchServiceSupplier.get();
-        ColorStateList micColorStateList = assistantVoiceSearchService == null
-                ? null
-                : assistantVoiceSearchService.getMicButtonColorStateList(
-                        primaryColor, getContext());
-        ApiCompatibilityUtils.setImageTintList(mMicButton, micColorStateList);
-
+    private void updateUseDarkColors() {
+        // TODO(crbug.com/1114183): Unify light and dark color logic in chrome and make it clear
+        // whether the foreground or background color is dark.
         final boolean useDarkColors =
-                !ColorUtils.shouldUseLightForegroundOnBackground(primaryColor);
-        ColorStateList colorStateList =
-                ChromeColors.getPrimaryIconTint(getContext(), !useDarkColors);
-        ApiCompatibilityUtils.setImageTintList(mDeleteButton, colorStateList);
+                !ColorUtils.shouldUseLightForegroundOnBackground(getPrimaryBackgroundColor());
 
+        ApiCompatibilityUtils.setImageTintList(
+                mDeleteButton, ChromeColors.getPrimaryIconTint(getContext(), !useDarkColors));
         // If the URL changed colors and is not focused, update the URL to account for the new
         // color scheme.
         if (mUrlCoordinator.setUseDarkTextColors(useDarkColors) && !mUrlBar.hasFocus()) {
             setUrl(mLocationBarDataProvider.getCurrentUrl());
         }
-
         mStatusCoordinator.setUseDarkColors(useDarkColors);
-
         if (mAutocompleteCoordinator != null) {
             mAutocompleteCoordinator.updateVisualsForState(
                     useDarkColors, mLocationBarDataProvider.isIncognito());
+        }
+    }
+
+    /** Returns the primary color based on the url focus, and incognito state. */
+    private int getPrimaryBackgroundColor() {
+        // If the url bar is focused, the toolbar background color is the default color regardless
+        // of whether it is branded or not.
+        if (mUrlHasFocus) {
+            return ChromeColors.getDefaultThemeColor(
+                    getResources(), mLocationBarDataProvider.isIncognito());
+        } else {
+            return mLocationBarDataProvider.getPrimaryColor();
         }
     }
 
@@ -644,8 +644,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         return mStatusCoordinator.getSecurityIconView();
     }
 
-    public void setShowTitle(boolean showTitle) {}
-
     protected WindowAndroid getWindowAndroid() {
         return mWindowAndroid;
     }
@@ -656,13 +654,21 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         assert assistantVoiceSearchService != null;
         Drawable drawable = assistantVoiceSearchService.getCurrentMicDrawable();
         mMicButton.setImageDrawable(drawable);
+        updateAssistantVoiceSearchColors();
+    }
 
-        final int defaultPrimaryColor = ChromeColors.getDefaultThemeColor(
-                getResources(), mLocationBarDataProvider.isIncognito());
-        final int primaryColor =
-                mUrlHasFocus ? defaultPrimaryColor : mLocationBarDataProvider.getPrimaryColor();
-        ColorStateList colorStateList =
-                assistantVoiceSearchService.getMicButtonColorStateList(primaryColor, getContext());
+    private void updateAssistantVoiceSearchColors() {
+        AssistantVoiceSearchService assistantVoiceSearchService =
+                mAssistantVoiceSearchServiceSupplier.get();
+        ColorStateList colorStateList;
+        // This will be called between inflation and initialization. For those calls, using a null
+        // ColorStateList should have no visible impact to the user.
+        if (assistantVoiceSearchService == null) {
+            colorStateList = null;
+        } else {
+            colorStateList = assistantVoiceSearchService.getMicButtonColorStateList(
+                    getPrimaryBackgroundColor(), getContext());
+        }
         ApiCompatibilityUtils.setImageTintList(mMicButton, colorStateList);
     }
 
@@ -923,6 +929,7 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         mUrlHasFocus = hasFocus;
         updateButtonVisibility();
         updateShouldAnimateIconChanges();
+        onPrimaryColorChanged();
 
         if (mUrlHasFocus) {
             if (mNativeInitialized) RecordUserAction.record("FocusLocation");
@@ -958,8 +965,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
                     Context.INPUT_METHOD_SERVICE);
             if (imm.isActive(mUrlBar)) imm.hideSoftInputFromWindow(getWindowToken(), 0, null);
         }
-
-        if (mLocationBarDataProvider.isUsingBrandColor()) updateVisualsForState();
 
         mStatusCoordinator.onUrlFocusChange(mUrlHasFocus);
 

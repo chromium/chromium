@@ -30,10 +30,16 @@ public interface LocationBarDataProvider {
      * consumer will query the data it cares about.
      */
     interface Observer {
-        void onTitleChanged();
-        void onUrlChanged();
         void onIncognitoStateChanged();
         void onNtpStartedLoading();
+
+        /**
+         * Notifies about a possible change of the value of {@link #getPrimaryColor()}, or {@link
+         * #isUsingBrandColor()}.
+         */
+        void onPrimaryColorChanged();
+        void onTitleChanged();
+        void onUrlChanged();
         // TODO(https://crbug.com/1139481): Add methods for other LocationBarDataProvider
         // data, e.g. security state.
     }

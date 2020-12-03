@@ -121,6 +121,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         updateUsingBrandColor();
         notifyTitleChanged();
         notifyUrlChanged();
+        notifyPrimaryColorChanged();
     }
 
     @Override
@@ -346,7 +347,10 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     public void setShouldShowOmniboxInOverviewMode(boolean shouldShowOmniboxInOverviewMode) {
-        mShouldShowOmniboxInOverviewMode = shouldShowOmniboxInOverviewMode;
+        if (mShouldShowOmniboxInOverviewMode != shouldShowOmniboxInOverviewMode) {
+            mShouldShowOmniboxInOverviewMode = shouldShowOmniboxInOverviewMode;
+            notifyPrimaryColorChanged();
+        }
     }
 
     /**
@@ -356,6 +360,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     public void setPrimaryColor(int color) {
         mPrimaryColor = color;
         updateUsingBrandColor();
+        notifyPrimaryColorChanged();
     }
 
     private void updateUsingBrandColor() {
@@ -377,6 +382,12 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         // If the overview is visible, force use of primary color, which is also overridden when the
         // overview is visible.
         return isInOverviewAndShowingOmnibox() || mIsUsingBrandColor;
+    }
+
+    public void notifyPrimaryColorChanged() {
+        for (LocationBarDataProvider.Observer observer : mLocationBarDataObservers) {
+            observer.onPrimaryColorChanged();
+        }
     }
 
     @Override

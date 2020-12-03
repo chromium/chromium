@@ -178,8 +178,8 @@ class LocationBarPhone extends LocationBarLayout {
     }
 
     @Override
-    public void updateVisualsForState() {
-        super.updateVisualsForState();
+    public void onPrimaryColorChanged() {
+        super.onPrimaryColorChanged();
         boolean isIncognito = mLocationBarDataProvider.isIncognito();
         setShowIconsWhenUrlFocused(SearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito));
         updateStatusVisibility();

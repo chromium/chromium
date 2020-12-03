@@ -677,7 +677,7 @@ public class LocationBarLayoutTest {
         Tab tab = mActivityTestRule.loadUrlInNewTab(url, incognito);
         setupModelsForCurrentTab();
         setUrlToPageUrl(locationBar);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { locationBar.updateVisualsForState(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { locationBar.onPrimaryColorChanged(); });
         return tab;
     }
 

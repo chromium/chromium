@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.browser.toolbar.ToolbarColors;
+import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -249,7 +250,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mLocationBarModel = locationBarModel;
         mLocationBar =
                 new CustomTabLocationBar(locationBarModel, actionModeCallback, (UrlBar) mUrlBar);
-        mLocationBar.updateVisualsForState();
         return mLocationBar;
     }
 
@@ -495,6 +495,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         super.onConfigurationChanged(newConfig);
         mLocationBarModel.notifyTitleChanged();
         mLocationBarModel.notifyUrlChanged();
+        mLocationBarModel.notifyPrimaryColorChanged();
     }
 
     @Override
@@ -540,9 +541,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 // Using the current background color instead of the final color in case this
                 // animation was cancelled.  This ensures the assets are updated to the visible
                 // color.
-                int backgroundColor = background.getColor();
-                mUseDarkColors = !ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor);
-                mLocationBar.updateVisualsForState();
+                updateUseDarkColors(background.getColor());
             }
         });
         mBrandColorTransitionAnimation.start();
@@ -550,7 +549,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         if (!shouldAnimate) mBrandColorTransitionAnimation.end();
     }
 
-
+    private void updateUseDarkColors(int backgroundColor) {
+        boolean useDarkColors = !ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor);
+        if (mUseDarkColors == useDarkColors) return;
+        mUseDarkColors = useDarkColors;
+        mLocationBar.onUseDarkColorsChanged();
+    }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -613,8 +617,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 ActionMode.Callback actionModeCallback, UrlBar urlBar) {
             mLocationBarDataProvider = locationBarDataProvider;
             mLocationBarDataProvider.addObserver(this);
-            mUrlCoordinator = new UrlBarCoordinator(
-                    urlBar, null, actionModeCallback, /*focusChangeCallback=*/(unused) -> {}, this);
+            mUrlCoordinator = new UrlBarCoordinator(urlBar, /*windowDelegate=*/null,
+                    actionModeCallback, /*focusChangeCallback=*/(unused) -> {}, this);
+            onPrimaryColorChanged();
         }
 
         public void onNativeLibraryReady() {
@@ -752,6 +757,24 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         public void onNtpStartedLoading() {}
 
         @Override
+        public void onPrimaryColorChanged() {
+            onUseDarkColorsChanged();
+            updateProgressBarColors();
+        }
+
+        private void onUseDarkColorsChanged() {
+            updateButtonsTint();
+            if (mUrlCoordinator.setUseDarkTextColors(mUseDarkColors)) {
+                // Update the URL to make it use the new color scheme.
+                onUrlChanged();
+            }
+
+            mTitleBar.setTextColor(ApiCompatibilityUtils.getColor(getResources(),
+                    mUseDarkColors ? R.color.default_text_color_dark
+                                   : R.color.default_text_color_light));
+        }
+
+        @Override
         public void updateLoadingState(boolean updateUrl) {
             if (updateUrl) onUrlChanged();
             updateStatusIcon();
@@ -759,27 +782,23 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         @Override
         public void updateVisualsForState() {
-            Resources resources = getResources();
             updateStatusIcon();
-            updateButtonsTint();
-            if (mUrlCoordinator.setUseDarkTextColors(mUseDarkColors)) {
-                onUrlChanged();
-            }
+            updateProgressBarColors();
+        }
 
-            mTitleBar.setTextColor(ApiCompatibilityUtils.getColor(resources,
-                    mUseDarkColors ? R.color.default_text_color_dark
-                                   : R.color.default_text_color_light));
-
-            if (getProgressBar() != null) {
-                if (!ToolbarColors.isUsingDefaultToolbarColor(
-                            getResources(), false, getBackground().getColor())) {
-                    getProgressBar().setThemeColor(getBackground().getColor(), false);
-                } else {
-                    getProgressBar().setBackgroundColor(ApiCompatibilityUtils.getColor(
-                            resources, R.color.progress_bar_background));
-                    getProgressBar().setForegroundColor(ApiCompatibilityUtils.getColor(
-                            resources, R.color.progress_bar_foreground));
-                }
+        private void updateProgressBarColors() {
+            final ToolbarProgressBar progressBar = getProgressBar();
+            if (progressBar == null) return;
+            final Resources resources = getResources();
+            final int backgroundColor = getBackground().getColor();
+            if (ToolbarColors.isUsingDefaultToolbarColor(
+                        resources, /*isIncognito=*/false, backgroundColor)) {
+                progressBar.setBackgroundColor(
+                        ApiCompatibilityUtils.getColor(resources, R.color.progress_bar_background));
+                progressBar.setForegroundColor(
+                        ApiCompatibilityUtils.getColor(resources, R.color.progress_bar_foreground));
+            } else {
+                progressBar.setThemeColor(backgroundColor, /*isIncognito=*/false);
             }
         }
 
