@@ -589,11 +589,12 @@ class TemplateURL {
   enum Type {
     // Installed only on this device. Should not be synced. This is not common.
     LOCAL = 0,
-    // Regular search engine. This is the most common.
+    // Regular search engine. This is the most common, and the ONLY type synced.
     NORMAL = 1,
-    // Installed by extension through Override Settings API.
+    // Installed by extension through Override Settings API. Not synced.
     NORMAL_CONTROLLED_BY_EXTENSION = 2,
     // The keyword associated with an extension that uses the Omnibox API.
+    // Not synced.
     OMNIBOX_API_EXTENSION = 3,
   };
 

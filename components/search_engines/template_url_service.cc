@@ -1962,85 +1962,6 @@ void TemplateURLService::ResetTemplateURLGUID(TemplateURL* url,
   Update(url, TemplateURL(data));
 }
 
-base::string16 TemplateURLService::UniquifyKeyword(const TemplateURL& turl,
-                                                   bool force) {
-  DCHECK(!IsCreatedByExtension(&turl));
-  if (!force) {
-    // Already unique.
-    if (!GetTemplateURLForKeyword(turl.keyword()))
-      return turl.keyword();
-
-    // First, try to return the generated keyword for the TemplateURL.
-    GURL gurl(turl.url());
-    if (gurl.is_valid()) {
-      base::string16 keyword_candidate = TemplateURL::GenerateKeyword(gurl);
-      if (!GetTemplateURLForKeyword(keyword_candidate))
-        return keyword_candidate;
-    }
-  }
-
-  // We try to uniquify the keyword by appending a special character to the end.
-  // This is a best-effort approach where we try to preserve the original
-  // keyword and let the user do what they will after our attempt.
-  base::string16 keyword_candidate(turl.keyword());
-  do {
-    keyword_candidate.append(base::ASCIIToUTF16("_"));
-  } while (GetTemplateURLForKeyword(keyword_candidate));
-
-  return keyword_candidate;
-}
-
-bool TemplateURLService::IsLocalTemplateURLBetter(
-    const TemplateURL* local_turl,
-    const TemplateURL* sync_turl,
-    bool prefer_local_default) const {
-  DCHECK(GetTemplateURLForGUID(local_turl->sync_guid()));
-  return local_turl->last_modified() > sync_turl->last_modified() ||
-         local_turl->created_by_policy() ||
-         (prefer_local_default && local_turl == GetDefaultSearchProvider());
-}
-
-void TemplateURLService::ResolveSyncKeywordConflict(
-    TemplateURL* unapplied_sync_turl,
-    TemplateURL* applied_sync_turl,
-    syncer::SyncChangeList* change_list) {
-  DCHECK(loaded_);
-  DCHECK(unapplied_sync_turl);
-  DCHECK(applied_sync_turl);
-  DCHECK(change_list);
-  DCHECK_EQ(applied_sync_turl->keyword(), unapplied_sync_turl->keyword());
-  DCHECK_EQ(TemplateURL::NORMAL, applied_sync_turl->type());
-
-  Scoper scoper(this);
-
-  // Both |unapplied_sync_turl| and |applied_sync_turl| are known to Sync, so
-  // don't delete either of them. Instead, determine which is "better" and
-  // uniquify the other one, sending an update to the server for the updated
-  // entry.
-  const bool applied_turl_is_better =
-      IsLocalTemplateURLBetter(applied_sync_turl, unapplied_sync_turl);
-  TemplateURL* loser = applied_turl_is_better ?
-      unapplied_sync_turl : applied_sync_turl;
-  base::string16 new_keyword = UniquifyKeyword(*loser, false);
-  DCHECK(!GetTemplateURLForKeyword(new_keyword));
-  if (applied_turl_is_better) {
-    // Just set the keyword of |unapplied_sync_turl|. The caller is responsible
-    // for adding or updating unapplied_sync_turl in the local model.
-    unapplied_sync_turl->data_.SetKeyword(new_keyword);
-  } else {
-    // Update |applied_sync_turl| in the local model with the new keyword.
-    TemplateURLData data(applied_sync_turl->data());
-    data.SetKeyword(new_keyword);
-    Update(applied_sync_turl, TemplateURL(data));
-  }
-  // The losing TemplateURL should have their keyword updated. Send a change to
-  // the server to reflect this change.
-  syncer::SyncData sync_data = CreateSyncDataFromTemplateURL(*loser);
-  change_list->push_back(syncer::SyncChange(FROM_HERE,
-      syncer::SyncChange::ACTION_UPDATE,
-      sync_data));
-}
-
 void TemplateURLService::MergeInSyncTemplateURL(
     TemplateURL* sync_turl,
     const SyncDataMap& sync_data,
@@ -2050,49 +1971,63 @@ void TemplateURLService::MergeInSyncTemplateURL(
   DCHECK(!GetTemplateURLForGUID(sync_turl->sync_guid()));
   DCHECK(IsFromSync(sync_turl, sync_data));
 
-  TemplateURL* conflicting_turl =
-      FindNonExtensionTemplateURLForKeyword(sync_turl->keyword());
   bool should_add_sync_turl = true;
 
   Scoper scoper(this);
 
-  // Resolve conflicts with local TemplateURLs.
-  if (conflicting_turl) {
-    // Modify |conflicting_turl| to make room for |sync_turl|.
+  // First resolve conflicts with local duplicate keyword NORMAL TemplateURLs,
+  // working from best to worst.
+  DCHECK(sync_turl->type() == TemplateURL::NORMAL);
+  std::vector<TemplateURL*> local_duplicates;
+  const auto match_range =
+      keyword_to_turl_and_length_.equal_range(sync_turl->keyword());
+  for (auto it = match_range.first; it != match_range.second; ++it) {
+    TemplateURL* local_turl = it->second.first;
+    if (local_turl->type() == TemplateURL::NORMAL) {
+      local_duplicates.push_back(local_turl);
+    }
+  }
+  base::ranges::sort(local_duplicates, [&](const auto& a, const auto& b) {
+    return a->IsBetterThanEngineWithConflictingKeyword(b);
+  });
+  for (TemplateURL* conflicting_turl : local_duplicates) {
     if (IsFromSync(conflicting_turl, sync_data)) {
       // |conflicting_turl| is already known to Sync, so we're not allowed to
-      // remove it. In this case, we want to uniquify the worse one and send an
-      // update for the changed keyword to sync. We can reuse the logic from
-      // ResolveSyncKeywordConflict for this.
-      ResolveSyncKeywordConflict(sync_turl, conflicting_turl, change_list);
-    } else {
-      // |conflicting_turl| is not yet known to Sync. If it is better, then we
-      // want to transfer its values up to sync. Otherwise, we remove it and
-      // allow the entry from Sync to overtake it in the model.
-      const std::string guid = conflicting_turl->sync_guid();
-      if (IsLocalTemplateURLBetter(conflicting_turl, sync_turl)) {
-        ResetTemplateURLGUID(conflicting_turl, sync_turl->sync_guid());
-        syncer::SyncData sync_data =
-            CreateSyncDataFromTemplateURL(*conflicting_turl);
-        change_list->push_back(syncer::SyncChange(
-            FROM_HERE, syncer::SyncChange::ACTION_UPDATE, sync_data));
-        // Note that in this case we do not add the Sync TemplateURL to the
-        // local model, since we've effectively "merged" it in by updating the
-        // local conflicting entry with its sync_guid.
-        should_add_sync_turl = false;
-      } else {
-        // We guarantee that this isn't the local search provider. Otherwise,
-        // local would have won.
-        DCHECK(conflicting_turl != GetDefaultSearchProvider());
-        Remove(conflicting_turl);
-      }
-      // This TemplateURL was either removed or overwritten in the local model.
-      // Remove the entry from the local data so it isn't pushed up to Sync.
-      local_data->erase(guid);
+      // remove it. Just leave it. TemplateURLService can tolerate duplicates.
+      // TODO(tommycli): Eventually we should figure out a way to merge
+      // substantively identical ones or somehow otherwise cull the herd.
+      continue;
     }
-    // prepopulate_id 0 effectively means unspecified; i.e. that the turl isn't
-    // a pre-populated one, so we want to ignore that case.
-  } else if (sync_turl->prepopulate_id() != 0) {
+
+    // |conflicting_turl| is not yet known to Sync. If it is better, then we
+    // want to transfer its values up to sync. Otherwise, we remove it and
+    // allow the entry from Sync to overtake it in the model.
+    const std::string guid = conflicting_turl->sync_guid();
+    if (conflicting_turl == GetDefaultSearchProvider() ||
+        conflicting_turl->IsBetterThanEngineWithConflictingKeyword(sync_turl)) {
+      ResetTemplateURLGUID(conflicting_turl, sync_turl->sync_guid());
+      syncer::SyncData sync_data =
+          CreateSyncDataFromTemplateURL(*conflicting_turl);
+      change_list->push_back(syncer::SyncChange(
+          FROM_HERE, syncer::SyncChange::ACTION_UPDATE, sync_data));
+      // Note that in this case we do not add the Sync TemplateURL to the
+      // local model, since we've effectively "merged" it in by updating the
+      // local conflicting entry with its sync_guid.
+      should_add_sync_turl = false;
+    } else {
+      // We guarantee that this isn't the local search provider. Otherwise,
+      // local would have won.
+      DCHECK(conflicting_turl != GetDefaultSearchProvider());
+      Remove(conflicting_turl);
+    }
+    // This TemplateURL was either removed or overwritten in the local model.
+    // Remove the entry from the local data so it isn't pushed up to Sync.
+    local_data->erase(guid);
+  }
+
+  // Try to take over a local prepopulated entry, assuming we haven't already
+  // run into a keyword conflict.
+  if (local_duplicates.empty() && sync_turl->prepopulate_id() != 0) {
     // Check for a turl with a conflicting prepopulate_id. This detects the case
     // where the user changes a prepopulated engine's keyword on one client,
     // then begins syncing on another client.  We want to reflect this keyword
@@ -2113,8 +2048,8 @@ void TemplateURLService::MergeInSyncTemplateURL(
     // the relevant changes in, we give up and leave both intact.
     if (conflicting_prepopulated_turl &&
         !IsFromSync(conflicting_prepopulated_turl, sync_data) &&
-        !IsLocalTemplateURLBetter(conflicting_prepopulated_turl, sync_turl,
-                                  false)) {
+        sync_turl->IsBetterThanEngineWithConflictingKeyword(
+            conflicting_prepopulated_turl)) {
       std::string guid = conflicting_prepopulated_turl->sync_guid();
       if (conflicting_prepopulated_turl == default_search_provider_) {
         bool pref_matched =

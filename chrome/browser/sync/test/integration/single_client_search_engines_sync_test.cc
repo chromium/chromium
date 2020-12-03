@@ -100,12 +100,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientSearchEnginesSyncTest,
   ASSERT_THAT(guid1, NotNull());
   ASSERT_THAT(guid2, NotNull());
   ASSERT_THAT(guid3, NotNull());
+  // All three should retain their "key1" keywords, even if they are duplicates.
   EXPECT_EQ(base::ASCIIToUTF16("key1"), guid1->keyword());
-  // Due to uniquification, the keyword for "guid2" was reset to "key1.com".
-  EXPECT_EQ(base::ASCIIToUTF16("key1.com"), guid2->keyword());
-  // Due to uniquification, the keyword for "guid3" was reset to "key1_".
-  EXPECT_EQ(base::ASCIIToUTF16("key1_"), guid3->keyword());
+  EXPECT_EQ(base::ASCIIToUTF16("key1"), guid2->keyword());
+  EXPECT_EQ(base::ASCIIToUTF16("key1"), guid3->keyword());
 
+  // But "guid1" should be considered the "best", as it's the most recent.
   EXPECT_EQ(guid1,
             service->GetTemplateURLForKeyword(base::ASCIIToUTF16("key1")));
 }
