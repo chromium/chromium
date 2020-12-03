@@ -159,8 +159,10 @@ apps::mojom::IntentPtr CreateShareIntentFromFiles(
     const std::string& share_text,
     const std::string& share_title) {
   auto intent = CreateShareIntentFromFiles(filesystem_urls, mime_types);
-  intent->share_text = share_text;
-  intent->share_title = share_title;
+  if (!share_text.empty())
+    intent->share_text = share_text;
+  if (!share_title.empty())
+    intent->share_title = share_title;
   return intent;
 }
 

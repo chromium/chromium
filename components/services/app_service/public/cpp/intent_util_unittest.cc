@@ -359,3 +359,36 @@ TEST_F(IntentUtilTest, CommonMimeTypeMatch) {
   EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter_sub_wildcard));
   EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_all_wildcard));
 }
+
+TEST_F(IntentUtilTest, FileWithTitleText) {
+  const std::string mime_type = "image/jpeg";
+  auto filter = apps_util::CreateIntentFilterForSend(mime_type);
+
+  const std::vector<GURL> urls{GURL("abc")};
+  const std::vector<std::string> mime_types{mime_type};
+
+  auto intent =
+      apps_util::CreateShareIntentFromFiles(urls, mime_types, "text", "title");
+  EXPECT_TRUE(intent->share_text.has_value());
+  EXPECT_EQ(intent->share_text.value(), "text");
+  EXPECT_TRUE(intent->share_title.has_value());
+  EXPECT_EQ(intent->share_title.value(), "title");
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter));
+
+  intent = apps_util::CreateShareIntentFromFiles(urls, mime_types, "text", "");
+  EXPECT_TRUE(intent->share_text.has_value());
+  EXPECT_EQ(intent->share_text.value(), "text");
+  EXPECT_FALSE(intent->share_title.has_value());
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter));
+
+  intent = apps_util::CreateShareIntentFromFiles(urls, mime_types, "", "title");
+  EXPECT_FALSE(intent->share_text.has_value());
+  EXPECT_TRUE(intent->share_title.has_value());
+  EXPECT_EQ(intent->share_title.value(), "title");
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter));
+
+  intent = apps_util::CreateShareIntentFromFiles(urls, mime_types, "", "");
+  EXPECT_FALSE(intent->share_text.has_value());
+  EXPECT_FALSE(intent->share_title.has_value());
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter));
+}
