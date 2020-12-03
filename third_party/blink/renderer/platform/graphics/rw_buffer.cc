@@ -253,6 +253,19 @@ sk_sp<ROBuffer> RWBuffer::MakeROBufferSnapshot() const {
   return sk_sp<ROBuffer>(new ROBuffer(head_, total_used_, tail_));
 }
 
+bool RWBuffer::HasNoSnapshots() const {
+  // Trivially, there are no other references to the underlying buffer, because
+  // there is no underlying buffer.
+  if (!head_) {
+    return true;
+  }
+
+  // For this to be useful, it should only return true when the other threads
+  // can no longer touch the buffer; this means that the "acquire" ordering is
+  // required, since the count is decreased with "release" ordering.
+  return head_->ref_count_.load(std::memory_order_acquire) == 1;
+}
+
 void RWBuffer::Validate() const {
 #if DCHECK_IS_ON()
   if (head_) {

@@ -177,4 +177,46 @@ TEST(RWBuffer_noAppend, r) {
   }
 }
 
+// Tests that |HasNoSnapshots| returns the correct value when the buffer is
+// empty.
+// In this case, we can't tell if a snapshot has been created (in general), so
+// we expect to always get back false.
+TEST(RWBufferTest, HasNoSnapshotsEmpty) {
+  RWBuffer buffer;
+  ASSERT_EQ(0u, buffer.size());
+
+  EXPECT_TRUE(buffer.HasNoSnapshots());
+
+  {
+    sk_sp<ROBuffer> first = buffer.MakeROBufferSnapshot();
+    EXPECT_TRUE(buffer.HasNoSnapshots());
+
+    sk_sp<ROBuffer> second = buffer.MakeROBufferSnapshot();
+    EXPECT_TRUE(buffer.HasNoSnapshots());
+  }
+
+  EXPECT_TRUE(buffer.HasNoSnapshots());
+}
+
+// Tests that |HasNoSnapshots| returns the correct value when the buffer is
+// empty.
+TEST(RWBufferTest, HasNoSnapshots) {
+  RWBuffer buffer;
+  ASSERT_EQ(0u, buffer.size());
+
+  buffer.Append(gABC, 26);
+
+  EXPECT_TRUE(buffer.HasNoSnapshots());
+
+  {
+    sk_sp<ROBuffer> first = buffer.MakeROBufferSnapshot();
+    EXPECT_FALSE(buffer.HasNoSnapshots());
+
+    sk_sp<ROBuffer> second = buffer.MakeROBufferSnapshot();
+    EXPECT_FALSE(buffer.HasNoSnapshots());
+  }
+
+  EXPECT_TRUE(buffer.HasNoSnapshots());
+}
+
 }  // namespace blink

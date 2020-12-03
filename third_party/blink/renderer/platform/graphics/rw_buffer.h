@@ -46,6 +46,12 @@ class PLATFORM_EXPORT RWBuffer {
 
   sk_sp<ROBuffer> MakeROBufferSnapshot() const;
 
+  // This should only be called from the same thread that we are creating the
+  // RWBuffer and the snapshots on.
+  // If true is returned, it is guaranteed that |this| has unique ownership of
+  // its underlying buffer.
+  bool HasNoSnapshots() const;
+
   std::unique_ptr<SkStreamAsset> MakeStreamSnapshot() const;
 
   void Validate() const;
