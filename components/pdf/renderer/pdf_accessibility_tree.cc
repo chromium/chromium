@@ -1302,6 +1302,7 @@ void PdfAccessibilityTree::SetAccessibilityDocInfo(
   if (!render_accessibility)
     return;
 
+  ClearAccessibilityNodes();
   doc_info_ = doc_info;
   doc_node_ =
       CreateNode(ax::mojom::Role::kDocument, ax::mojom::Restriction::kReadOnly,
@@ -1323,6 +1324,11 @@ void PdfAccessibilityTree::SetAccessibilityPageInfo(
     const std::vector<ppapi::PdfAccessibilityTextRunInfo>& text_runs,
     const std::vector<PP_PrivateAccessibilityCharInfo>& chars,
     const ppapi::PdfAccessibilityPageObjects& page_objects) {
+  // Outdated calls are ignored.
+  uint32_t page_index = page_info.page_index;
+  if (page_index != next_page_index_)
+    return;
+
   content::RenderAccessibility* render_accessibility = GetRenderAccessibility();
   if (!render_accessibility)
     return;
@@ -1336,9 +1342,9 @@ void PdfAccessibilityTree::SetAccessibilityPageInfo(
   if (invalid_plugin_message_received_)
     return;
 
-  uint32_t page_index = page_info.page_index;
   CHECK_GE(page_index, 0U);
   CHECK_LT(page_index, doc_info_.page_count);
+  ++next_page_index_;
 
   ui::AXNodeData* page_node =
       CreateNode(ax::mojom::Role::kRegion, ax::mojom::Restriction::kReadOnly,
@@ -1458,6 +1464,13 @@ bool PdfAccessibilityTree::FindCharacterOffset(
   page_char_index->char_index = iter->second.char_index + char_offset_in_node;
   page_char_index->page_index = iter->second.page_index;
   return true;
+}
+
+void PdfAccessibilityTree::ClearAccessibilityNodes() {
+  next_page_index_ = 0;
+  nodes_.clear();
+  node_id_to_page_char_index_.clear();
+  node_id_to_annotation_info_.clear();
 }
 
 content::RenderAccessibility* PdfAccessibilityTree::GetRenderAccessibility() {

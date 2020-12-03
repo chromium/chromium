@@ -816,6 +816,10 @@ void OutOfProcessInstance::LoadAccessibility() {
   doc_info.text_copyable =
       PP_FromBool(engine()->HasPermission(PDFEngine::PERMISSION_COPY));
 
+  // A new document layout will trigger the creation of a new accessibility
+  // tree, so |next_accessibility_page_index_| should be reset to ignore
+  // outdated asynchronous calls of SendNextAccessibilityPage().
+  next_accessibility_page_index_ = 0;
   pp::PDF::SetAccessibilityDocInfo(GetPluginInstance(), &doc_info);
 
   // If the document contents isn't accessible, don't send anything more.
@@ -836,6 +840,11 @@ void OutOfProcessInstance::LoadAccessibility() {
 }
 
 void OutOfProcessInstance::SendNextAccessibilityPage(int32_t page_index) {
+  // Outdated calls are ignored.
+  if (page_index != next_accessibility_page_index_)
+    return;
+  ++next_accessibility_page_index_;
+
   AccessibilityPageInfo page_info;
   std::vector<pp::PDF::PrivateAccessibilityTextRunInfo> text_runs;
   std::vector<AccessibilityCharInfo> chars;
@@ -1236,6 +1245,11 @@ void OutOfProcessInstance::ProposeDocumentLayout(const DocumentLayout& layout) {
   }
   dimensions.Set(kJSPageDimensions, page_dimensions_array);
   PostMessage(dimensions);
+
+  // Reload the accessibility tree on layout changes because the relative page
+  // bounds are no longer valid.
+  if (layout.dirty() && accessibility_state_ == ACCESSIBILITY_STATE_LOADED)
+    LoadAccessibility();
 }
 
 void OutOfProcessInstance::Invalidate(const gfx::Rect& rect) {
