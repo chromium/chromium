@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/login/lock/screen_locker.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/chromeos/login/lock/screen_locker_tester.h"
@@ -21,6 +22,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
@@ -243,6 +245,47 @@ IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, FingerprintRecordsGone) {
   Profile* profile = browser()->profile();
   EXPECT_EQ(
       profile->GetPrefs()->GetInteger(prefs::kQuickUnlockFingerprintRecord), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, FingerprintScanResult) {
+  base::HistogramTester histogram_tester;
+
+  // Simulate fingerprint enrollment.
+  FakeBiodClient::Get()->StartEnrollSession(
+      "test-user", std::string(),
+      base::BindOnce([](const dbus::ObjectPath& result) {}));
+  FakeBiodClient::Get()->SendEnrollScanDone(
+      kFingerprint, biod::SCAN_RESULT_TOO_SLOW, false /* is_complete */,
+      -1 /* percent_complete */);
+  FakeBiodClient::Get()->SendEnrollScanDone(
+      kFingerprint, biod::SCAN_RESULT_SUCCESS, true /* is_complete */,
+      100 /* percent_complete */);
+
+  // Simulate fingerprint authentication.
+  FakeBiodClient::Get()->StartAuthSession(
+      base::BindOnce([](const dbus::ObjectPath& result) {}));
+  FakeBiodClient::Get()->SendAuthScanDone(kFingerprint,
+                                          biod::SCAN_RESULT_TOO_FAST);
+  FakeBiodClient::Get()->SendAuthScanDone(kFingerprint,
+                                          biod::SCAN_RESULT_SUCCESS);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(histogram_tester.GetAllSamples("Fingerprint.Enroll.ScanResult"),
+              ::testing::ElementsAre(
+                  base::Bucket(static_cast<base::HistogramBase::Sample>(
+                                   device::mojom::ScanResult::SUCCESS),
+                               1),
+                  base::Bucket(static_cast<base::HistogramBase::Sample>(
+                                   device::mojom::ScanResult::TOO_SLOW),
+                               1)));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples("Fingerprint.Auth.ScanResult"),
+              ::testing::ElementsAre(
+                  base::Bucket(static_cast<base::HistogramBase::Sample>(
+                                   device::mojom::ScanResult::SUCCESS),
+                               1),
+                  base::Bucket(static_cast<base::HistogramBase::Sample>(
+                                   device::mojom::ScanResult::TOO_FAST),
+                               1)));
 }
 
 }  // namespace chromeos

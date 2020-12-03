@@ -21,6 +21,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="Fingerprint.Auth.ScanResult" enum="FingerprintScanResult"
+    expires_after="2021-09-01">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>tomhughes@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the scan result during fingerprint authentication session. It is
+    recorded every time user touches the fingerprint sensor while authenticating
+    (unlock screen, web auth, etc.).
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Enroll.ScanResult" enum="FingerprintScanResult"
+    expires_after="2021-09-01">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>tomhughes@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the scan result during fingerprint enrollment session. It is recorded
+    every time user touches the fingerprint sensor while enrolling fingerprints
+    (during onboarding or in Chrome OS settings).
+  </summary>
+</histogram>
+
 <histogram name="Fingerprint.Reset.ResetContextMode"
     enum="FingerprintSensorMode" expires_after="2021-03-15">
   <owner>tomhughes@chromium.org</owner>

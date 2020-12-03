@@ -20,6 +20,7 @@ class FingerprintStorageTestApi;
 
 namespace quick_unlock {
 
+class FingerprintMetricsReporter;
 class QuickUnlockStorage;
 
 class FingerprintStorage {
@@ -62,6 +63,8 @@ class FingerprintStorage {
   int unlock_attempt_count_ = 0;
 
   mojo::Remote<device::mojom::Fingerprint> fp_service_;
+
+  std::unique_ptr<FingerprintMetricsReporter> metrics_reporter_;
 
   base::WeakPtrFactory<FingerprintStorage> weak_factory_{this};
 

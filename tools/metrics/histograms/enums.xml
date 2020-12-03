@@ -32016,6 +32016,16 @@ Called by update_feature_policy_enum.py.-->
   <int value="2" label="Record format version with validation value"/>
 </enum>
 
+<enum name="FingerprintScanResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Partial"/>
+  <int value="2" label="Insufficient"/>
+  <int value="3" label="Sensor Dirty"/>
+  <int value="4" label="Too Slow"/>
+  <int value="5" label="Too Fast"/>
+  <int value="6" label="Immobile"/>
+</enum>
+
 <enum name="FingerprintSensorMode">
   <int value="0" label="None"/>
   <int value="1" label="Deepsleep"/>
