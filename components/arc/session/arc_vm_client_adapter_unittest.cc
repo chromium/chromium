@@ -44,7 +44,6 @@
 namespace arc {
 namespace {
 
-constexpr const char kArcVmAdbdJobName[] = "arcvm_2dadbd";
 constexpr const char kArcVmPerBoardFeaturesJobName[] =
     "arcvm_2dper_2dboard_2dfeatures";
 constexpr const size_t kUnixMaxPathLen = sizeof(sockaddr_un::sun_path);
@@ -54,6 +53,8 @@ constexpr char kArcVmPreLoginServicesJobName[] =
     "arcvm_2dpre_2dlogin_2dservices";
 constexpr char kArcVmPostLoginServicesJobName[] =
     "arcvm_2dpost_2dlogin_2dservices";
+constexpr char kArcVmPostVmStartServicesJobName[] =
+    "arcvm_2dpost_2dvm_2dstart_2dservices";
 
 constexpr const char kUserIdHash[] = "this_is_a_valid_user_id_hash";
 constexpr const char kSerialNumber[] = "AAAABBBBCCCCDDDD1234";
@@ -762,14 +763,14 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_StartArcVmPostLoginServicesFailure) {
   EXPECT_TRUE(arc_instance_stopped_called());
 }
 
-// Tests that UpgradeArc() handles arcvm-adbd stop failures properly.
-// Note that arcvm-adbd is restarted AFTER ARCVM is started.
-TEST_F(ArcVmClientAdapterTest, UpgradeArc_StopArcVmAdbdFailure) {
+// Tests that UpgradeArc() handles arcvm-post-vm-start-services stop failures
+// properly.
+TEST_F(ArcVmClientAdapterTest, UpgradeArc_StopArcVmPostVmStartServicesFailure) {
   SetValidUserInfo();
   StartMiniArc();
 
   // Inject failure to FakeUpstartClient.
-  InjectUpstartStopJobFailure(kArcVmAdbdJobName);
+  InjectUpstartStopJobFailure(kArcVmPostVmStartServicesJobName);
 
   // Upgrade should still succeed.
   UpgradeArc(true);
@@ -780,14 +781,15 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_StopArcVmAdbdFailure) {
   EXPECT_FALSE(GetTestConciergeClient()->stop_vm_called());
 }
 
-// Tests that UpgradeArc() handles arcvm-adbd startup failures properly.
-// Note that arcvm-adbd is restarted AFTER ARCVM is started.
-TEST_F(ArcVmClientAdapterTest, UpgradeArc_StartArcVmAdbdFailure) {
+// Tests that UpgradeArc() handles arcvm-post-vm-start-services startup failures
+// properly.
+TEST_F(ArcVmClientAdapterTest,
+       UpgradeArc_StartArcVmPostVmStartServicesFailure) {
   SetValidUserInfo();
   StartMiniArc();
 
   // Inject failure to FakeUpstartClient.
-  InjectUpstartStartJobFailure(kArcVmAdbdJobName);
+  InjectUpstartStartJobFailure(kArcVmPostVmStartServicesJobName);
 
   EnableAdbOverUsbForTesting();
   UpgradeArc(false);

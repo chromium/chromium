@@ -62,14 +62,14 @@ namespace {
 // The "_2d" in job names below corresponds to "-". Upstart escapes characters
 // that aren't valid in D-Bus object paths with underscore followed by its
 // ascii code in hex. So "arc_2dcreate_2ddata" becomes "arc-create-data".
-constexpr const char kArcVmAdbdJobName[] = "arcvm_2dadbd";
 constexpr const char kArcVmPerBoardFeaturesJobName[] =
     "arcvm_2dper_2dboard_2dfeatures";
-// TODO(hashimoto): Introduce another job for post-vm-start services.
 constexpr char kArcVmPreLoginServicesJobName[] =
     "arcvm_2dpre_2dlogin_2dservices";
 constexpr char kArcVmPostLoginServicesJobName[] =
     "arcvm_2dpost_2dlogin_2dservices";
+constexpr char kArcVmPostVmStartServicesJobName[] =
+    "arcvm_2dpost_2dvm_2dstart_2dservices";
 
 constexpr const char kCrosSystemPath[] = "/usr/bin/crossystem";
 constexpr const char kArcVmBootNotificationServerSocketPath[] =
@@ -653,6 +653,8 @@ class ArcVmClientAdapter : public ArcClientAdapter,
         // exist.
         JobDesc{kArcVmPerBoardFeaturesJobName, UpstartOperation::JOB_START, {}},
 
+        JobDesc{
+            kArcVmPostVmStartServicesJobName, UpstartOperation::JOB_STOP, {}},
         JobDesc{kArcVmPostLoginServicesJobName, UpstartOperation::JOB_STOP, {}},
         JobDesc{kArcVmPreLoginServicesJobName,
                 UpstartOperation::JOB_STOP_AND_START,
@@ -830,20 +832,16 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     current_cid_ = response.vm_info().cid();
     VLOG(1) << "ARCVM started cid=" << current_cid_;
 
-    if (!should_start_adbd) {
-      // No need to start arcvm-adbd. Run the |callback| now.
-      std::move(callback).Run(true);
-      return;
+    VLOG(1) << "Starting arcvm-post-vm-start-services.";
+    std::vector<std::string> environment;
+    if (should_start_adbd) {
+      environment.push_back("SERIALNUMBER=" + serial_number_);
+      environment.push_back(
+          base::StringPrintf("ARCVM_CID=%" PRId64, current_cid_));
     }
-
-    // Start the daemon for supporting adb-over-usb.
-    VLOG(1) << "Starting arcvm-adbd";
-    std::vector<std::string> environment_for_adbd = {
-        "SERIALNUMBER=" + serial_number_,
-        base::StringPrintf("ARCVM_CID=%" PRId64, current_cid_)};
-    std::deque<JobDesc> jobs{JobDesc{kArcVmAdbdJobName,
-                                     UpstartOperation::JOB_STOP_AND_START,
-                                     std::move(environment_for_adbd)}};
+    std::deque<JobDesc> jobs{JobDesc{kArcVmPostVmStartServicesJobName,
+                                     UpstartOperation::JOB_START,
+                                     std::move(environment)}};
     ConfigureUpstartJobs(
         std::move(jobs),
         base::BindOnce(&ArcVmClientAdapter::OnConfigureUpstartJobsAfterVmStart,
