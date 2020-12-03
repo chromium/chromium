@@ -70,8 +70,7 @@ PasswordProtectionService::PasswordProtectionService(
 PasswordProtectionService::~PasswordProtectionService() {
   tracker_.TryCancelAll();
   CancelPendingRequests();
-  if (history_service_observation_.IsObserving())
-    history_service_observation_.RemoveObservation();
+  history_service_observation_.Reset();
   weak_factory_.InvalidateWeakPtrs();
 }
 
@@ -395,7 +394,7 @@ void PasswordProtectionService::OnURLsDeleted(
 void PasswordProtectionService::HistoryServiceBeingDeleted(
     history::HistoryService* history_service) {
   DCHECK(history_service_observation_.IsObservingSource(history_service));
-  history_service_observation_.RemoveObservation();
+  history_service_observation_.Reset();
 }
 
 std::unique_ptr<PasswordProtectionNavigationThrottle>

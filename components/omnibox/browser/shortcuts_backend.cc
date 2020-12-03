@@ -190,8 +190,7 @@ ShortcutsDatabase::Shortcut::MatchCore ShortcutsBackend::MatchToMatchCore(
 }
 
 void ShortcutsBackend::ShutdownOnUIThread() {
-  if (history_service_observation_.IsObserving())
-    history_service_observation_.RemoveObservation();
+  history_service_observation_.Reset();
 }
 
 void ShortcutsBackend::OnURLsDeleted(

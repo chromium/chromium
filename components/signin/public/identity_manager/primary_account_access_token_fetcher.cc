@@ -111,7 +111,7 @@ void PrimaryAccountAccessTokenFetcher::ProcessSigninStateChange() {
     return;
 
   DCHECK(identity_manager_observation_.IsObservingSource(identity_manager_));
-  identity_manager_observation_.RemoveObservation();
+  identity_manager_observation_.Reset();
 
   StartAccessTokenRequest();
 }

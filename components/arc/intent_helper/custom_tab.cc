@@ -69,10 +69,8 @@ void CustomTab::OnWindowStackingChanged(aura::Window* window) {
 }
 
 void CustomTab::OnWindowDestroying(aura::Window* window) {
-  if (arc_app_window_observation_.IsObservingSource(window))
-    arc_app_window_observation_.RemoveObservation();
-  if (other_windows_observation_.IsObservingSource(window))
-    other_windows_observation_.RemoveObservation();
+  arc_app_window_observation_.Reset();
+  other_windows_observation_.Reset();
 }
 
 void CustomTab::UpdateHostBounds(aura::Window* arc_app_window) {

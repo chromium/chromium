@@ -382,8 +382,7 @@ VerdictCacheManager::VerdictCacheManager(
 
 void VerdictCacheManager::Shutdown() {
   CleanUpExpiredVerdicts();
-  if (history_service_observation_.IsObserving())
-    history_service_observation_.RemoveObservation();
+  history_service_observation_.Reset();
   weak_factory_.InvalidateWeakPtrs();
 }
 
@@ -690,7 +689,7 @@ void VerdictCacheManager::OnURLsDeleted(
 void VerdictCacheManager::HistoryServiceBeingDeleted(
     history::HistoryService* history_service) {
   DCHECK(history_service_observation_.IsObservingSource(history_service));
-  history_service_observation_.RemoveObservation();
+  history_service_observation_.Reset();
 }
 
 bool VerdictCacheManager::RemoveExpiredPhishGuardVerdicts(

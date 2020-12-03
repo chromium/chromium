@@ -112,7 +112,7 @@ void ThreatDetailsRedirectsCollector::AllDone() {
 void ThreatDetailsRedirectsCollector::HistoryServiceBeingDeleted(
     history::HistoryService* history_service) {
   DCHECK(history_service_observation_.IsObservingSource(history_service));
-  history_service_observation_.RemoveObservation();
+  history_service_observation_.Reset();
   history_service_.reset();
 }
 

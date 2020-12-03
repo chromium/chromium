@@ -62,7 +62,7 @@ void ServiceWorkerContextAdapter::RunningServiceWorker::Subscribe(
 void ServiceWorkerContextAdapter::RunningServiceWorker::Unsubscribe() {
   DCHECK(scoped_observation_.IsObserving());
 
-  scoped_observation_.RemoveObservation();
+  scoped_observation_.Reset();
 }
 
 void ServiceWorkerContextAdapter::RunningServiceWorker::RenderProcessExited(

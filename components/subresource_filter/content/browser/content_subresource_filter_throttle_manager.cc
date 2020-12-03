@@ -141,7 +141,8 @@ ContentSubresourceFilterThrottleManager::
 void ContentSubresourceFilterThrottleManager::OnSubresourceFilterGoingAway() {
   // Stop observing here because the observer manager could be destroyed by the
   // time this class is destroyed.
-  scoped_observation_.RemoveObservation();
+  DCHECK(scoped_observation_.IsObserving());
+  scoped_observation_.Reset();
 }
 
 void ContentSubresourceFilterThrottleManager::RenderFrameDeleted(

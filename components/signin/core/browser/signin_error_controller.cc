@@ -21,7 +21,8 @@ SigninErrorController::SigninErrorController(
 SigninErrorController::~SigninErrorController() = default;
 
 void SigninErrorController::Shutdown() {
-  scoped_identity_manager_observation_.RemoveObservation();
+  DCHECK(scoped_identity_manager_observation_.IsObserving());
+  scoped_identity_manager_observation_.Reset();
 }
 
 void SigninErrorController::Update() {

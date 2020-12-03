@@ -313,8 +313,7 @@ class TypedURLSyncBridgeTest : public testing::Test {
             mock_processor_.CreateForwardingProcessor());
     typed_url_sync_bridge_ = bridge.get();
     typed_url_sync_bridge_->Init();
-    if (typed_url_sync_bridge_->history_backend_observation_.IsObserving())
-      typed_url_sync_bridge_->history_backend_observation_.RemoveObservation();
+    typed_url_sync_bridge_->history_backend_observation_.Reset();
     fake_history_backend_->SetTypedURLSyncBridgeForTest(std::move(bridge));
   }
 
@@ -412,9 +411,7 @@ class TypedURLSyncBridgeTest : public testing::Test {
     bridge()->history_backend_observation_.Observe(fake_history_backend_.get());
   }
 
-  void RemoveObserver() {
-    bridge()->history_backend_observation_.RemoveObservation();
-  }
+  void RemoveObserver() { bridge()->history_backend_observation_.Reset(); }
 
   // Fills |specifics| with the sync data for |url| and |visits|.
   static bool WriteToTypedUrlSpecifics(const URLRow& url,

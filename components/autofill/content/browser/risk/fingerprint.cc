@@ -328,7 +328,7 @@ void FingerprintDataLoader::OnGpuInfoUpdate() {
     return;
 
   DCHECK(gpu_observation_.IsObservingSource(gpu_data_manager_));
-  gpu_observation_.RemoveObservation();
+  gpu_observation_.Reset();
   MaybeFillFingerprint();
 }
 

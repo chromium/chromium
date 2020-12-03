@@ -172,7 +172,8 @@ void PopupTracker::OnSafeBrowsingChecksComplete(
 }
 
 void PopupTracker::OnSubresourceFilterGoingAway() {
-  scoped_observation_.RemoveObservation();
+  DCHECK(scoped_observation_.IsObserving());
+  scoped_observation_.Reset();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PopupTracker)

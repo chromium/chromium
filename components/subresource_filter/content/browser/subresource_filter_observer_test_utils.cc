@@ -23,7 +23,8 @@ TestSubresourceFilterObserver::TestSubresourceFilterObserver(
 TestSubresourceFilterObserver::~TestSubresourceFilterObserver() {}
 
 void TestSubresourceFilterObserver::OnSubresourceFilterGoingAway() {
-  scoped_observation_.RemoveObservation();
+  DCHECK(scoped_observation_.IsObserving());
+  scoped_observation_.Reset();
 }
 
 void TestSubresourceFilterObserver::OnPageActivationComputed(

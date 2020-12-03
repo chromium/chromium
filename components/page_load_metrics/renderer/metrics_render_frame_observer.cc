@@ -344,13 +344,14 @@ void MetricsRenderFrameObserver::DidCommitProvisionalLoad(
 void MetricsRenderFrameObserver::SetAdResourceTracker(
     subresource_filter::AdResourceTracker* ad_resource_tracker) {
   // Remove all sources and set a new source for the observer.
-  if (scoped_ad_resource_observation_.IsObserving())
-    scoped_ad_resource_observation_.RemoveObservation();
+  scoped_ad_resource_observation_.Reset();
   scoped_ad_resource_observation_.Observe(ad_resource_tracker);
 }
 
 void MetricsRenderFrameObserver::OnAdResourceTrackerGoingAway() {
-  scoped_ad_resource_observation_.RemoveObservation();
+  DCHECK(scoped_ad_resource_observation_.IsObserving());
+
+  scoped_ad_resource_observation_.Reset();
 }
 
 void MetricsRenderFrameObserver::OnAdResourceObserved(int request_id) {

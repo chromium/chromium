@@ -30,6 +30,6 @@ void SearchProviderObserver::OnTemplateURLServiceChanged() {
 void SearchProviderObserver::OnTemplateURLServiceShuttingDown() {
   DCHECK(service_);
   DCHECK(service_observation_.IsObservingSource(service_));
-  service_observation_.RemoveObservation();
+  service_observation_.Reset();
   service_ = nullptr;
 }

@@ -145,7 +145,7 @@ void AccessTokenFetcher::OnRefreshTokenAvailable(
     return;
 
   DCHECK(token_service_observation_.IsObservingSource(token_service_));
-  token_service_observation_.RemoveObservation();
+  token_service_observation_.Reset();
 
   StartAccessTokenRequest();
 }

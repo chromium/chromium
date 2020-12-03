@@ -203,7 +203,8 @@ void BrowsingHistoryService::OnStateChanged(syncer::SyncService* sync) {
   if (web_history) {
     DCHECK(!web_history_service_observation_.IsObserving());
     web_history_service_observation_.Observe(web_history);
-    sync_service_observation_.RemoveObservation();
+    DCHECK(sync_service_observation_.IsObserving());
+    sync_service_observation_.Reset();
   }
 }
 

@@ -201,9 +201,12 @@ void WorkerWatcher::TearDown() {
 
   PerformanceManagerImpl::BatchDeleteNodes(std::move(nodes));
 
-  dedicated_worker_service_observation_.RemoveObservation();
-  shared_worker_service_observation_.RemoveObservation();
-  service_worker_context_observation_.RemoveObservation();
+  DCHECK(dedicated_worker_service_observation_.IsObserving());
+  dedicated_worker_service_observation_.Reset();
+  DCHECK(shared_worker_service_observation_.IsObserving());
+  shared_worker_service_observation_.Reset();
+  DCHECK(service_worker_context_observation_.IsObserving());
+  service_worker_context_observation_.Reset();
 }
 
 void WorkerWatcher::OnWorkerCreated(

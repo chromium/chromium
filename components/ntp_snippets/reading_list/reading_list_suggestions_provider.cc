@@ -161,7 +161,7 @@ void ReadingListSuggestionsProvider::ReadingListModelBeingDeleted(
     const ReadingListModel* model) {
   DCHECK(model == reading_list_model_);
   DCHECK(scoped_observation_.IsObservingSource(reading_list_model_));
-  scoped_observation_.RemoveObservation();
+  scoped_observation_.Reset();
   reading_list_model_ = nullptr;
 }
 

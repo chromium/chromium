@@ -947,7 +947,8 @@ void MostVisitedSites::OnRepeatableQueriesUpdated() {
 }
 
 void MostVisitedSites::OnRepeatableQueriesServiceShuttingDown() {
-  repeatable_queries_observation_.RemoveObservation();
+  DCHECK(repeatable_queries_observation_.IsObserving());
+  repeatable_queries_observation_.Reset();
 }
 
 bool MostVisitedSites::ShouldAddHomeTile() const {

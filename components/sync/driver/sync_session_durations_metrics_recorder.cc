@@ -52,9 +52,9 @@ SyncSessionDurationsMetricsRecorder::SyncSessionDurationsMetricsRecorder(
 
 SyncSessionDurationsMetricsRecorder::~SyncSessionDurationsMetricsRecorder() {
   DCHECK(!total_session_timer_) << "Missing a call to OnSessionEnded().";
-  if (sync_observation_.IsObserving())
-    sync_observation_.RemoveObservation();
-  identity_manager_observation_.RemoveObservation();
+  sync_observation_.Reset();
+  DCHECK(identity_manager_observation_.IsObserving());
+  identity_manager_observation_.Reset();
 }
 
 void SyncSessionDurationsMetricsRecorder::OnSessionStarted(

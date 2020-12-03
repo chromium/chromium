@@ -172,7 +172,8 @@ void SafeBrowsingTriggeredPopupBlocker::OnSafeBrowsingChecksComplete(
 }
 
 void SafeBrowsingTriggeredPopupBlocker::OnSubresourceFilterGoingAway() {
-  scoped_observation_.RemoveObservation();
+  DCHECK(scoped_observation_.IsObserving());
+  scoped_observation_.Reset();
 }
 
 bool SafeBrowsingTriggeredPopupBlocker::IsEnabled(

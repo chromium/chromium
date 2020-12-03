@@ -214,8 +214,7 @@ void TopSitesImpl::OnNavigationCommitted(const GURL& url) {
 
 void TopSitesImpl::ShutdownOnUIThread() {
   history_service_ = nullptr;
-  if (history_service_observation_.IsObserving())
-    history_service_observation_.RemoveObservation();
+  history_service_observation_.Reset();
   // Cancel all requests so that the service doesn't callback to us after we've
   // invoked Shutdown (this could happen if we have a pending request and
   // Shutdown is invoked).

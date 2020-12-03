@@ -522,8 +522,7 @@ void SuggestionsServiceImpl::Shutdown() {
   // Cancel pending request.
   pending_request_.reset(nullptr);
 
-  if (sync_service_observation_.IsObserving())
-    sync_service_observation_.RemoveObservation();
+  sync_service_observation_.Reset();
 }
 
 void SuggestionsServiceImpl::ScheduleBlocklistUpload() {

@@ -551,7 +551,7 @@ void ContentSuggestionsService::OnURLsDeleted(
 void ContentSuggestionsService::HistoryServiceBeingDeleted(
     history::HistoryService* history_service) {
   DCHECK(history_service_observation_.IsObservingSource(history_service));
-  history_service_observation_.RemoveObservation();
+  history_service_observation_.Reset();
 }
 
 bool ContentSuggestionsService::TryRegisterProviderForCategory(
