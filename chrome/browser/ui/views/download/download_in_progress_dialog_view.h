@@ -24,15 +24,15 @@ class DownloadInProgressDialogView : public views::DialogDelegateView {
   static void Show(gfx::NativeWindow parent_window,
                    int download_count,
                    Browser::DownloadCloseType dialog_type,
-                   const base::Callback<void(bool)>& callback);
+                   base::OnceCallback<void(bool)> callback);
 
  private:
   DownloadInProgressDialogView(int download_count,
                                Browser::DownloadCloseType dialog_type,
-                               const base::Callback<void(bool)>& callback);
+                               base::OnceCallback<void(bool)> callback);
   ~DownloadInProgressDialogView() override;
 
-  const base::Callback<void(bool)> callback_;
+  base::OnceCallback<void(bool)> callback_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadInProgressDialogView);
 };

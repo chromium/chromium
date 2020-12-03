@@ -413,7 +413,7 @@ class BrowserWindow : public ui::BaseWindow {
   virtual void ConfirmBrowserCloseWithPendingDownloads(
       int download_count,
       Browser::DownloadCloseType dialog_type,
-      const base::Callback<void(bool)>& callback) = 0;
+      base::OnceCallback<void(bool)> callback) = 0;
 
   // ThemeService calls this when a user has changed their theme, indicating
   // that it's time to redraw everything.

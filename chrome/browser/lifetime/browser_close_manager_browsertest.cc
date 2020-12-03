@@ -178,16 +178,16 @@ class TestBrowserCloseManager : public BrowserCloseManager {
 
   void ConfirmCloseWithPendingDownloads(
       int download_count,
-      const base::Callback<void(bool)>& callback) override {
+      base::OnceCallback<void(bool)> callback) override {
     EXPECT_NE(NO_USER_CHOICE, user_choice_);
     switch (user_choice_) {
       case NO_USER_CHOICE:
       case USER_CHOICE_USER_CANCELS_CLOSE: {
-        callback.Run(false);
+        std::move(callback).Run(false);
         break;
       }
       case USER_CHOICE_USER_ALLOWS_CLOSE: {
-        callback.Run(true);
+        std::move(callback).Run(true);
         break;
       }
     }

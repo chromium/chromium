@@ -27,7 +27,7 @@ class BrowserCloseManager : public base::RefCounted<BrowserCloseManager> {
 
   virtual void ConfirmCloseWithPendingDownloads(
       int download_count,
-      const base::Callback<void(bool)>& callback);
+      base::OnceCallback<void(bool)> callback);
 
  private:
   // Notifies all browser windows that the close is cancelled.

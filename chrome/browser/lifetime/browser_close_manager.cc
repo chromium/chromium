@@ -109,17 +109,18 @@ void BrowserCloseManager::CheckForDownloadsInProgress() {
 
   ConfirmCloseWithPendingDownloads(
       download_count,
-      base::Bind(&BrowserCloseManager::OnReportDownloadsCancellable, this));
+      base::BindOnce(&BrowserCloseManager::OnReportDownloadsCancellable, this));
 #endif
 }
 
 void BrowserCloseManager::ConfirmCloseWithPendingDownloads(
     int download_count,
-    const base::Callback<void(bool)>& callback) {
+    base::OnceCallback<void(bool)> callback) {
   Browser* browser = BrowserList::GetInstance()->GetLastActive();
   DCHECK(browser);
   browser->window()->ConfirmBrowserCloseWithPendingDownloads(
-      download_count, Browser::DownloadCloseType::kBrowserShutdown, callback);
+      download_count, Browser::DownloadCloseType::kBrowserShutdown,
+      std::move(callback));
 }
 
 void BrowserCloseManager::OnReportDownloadsCancellable(bool proceed) {
