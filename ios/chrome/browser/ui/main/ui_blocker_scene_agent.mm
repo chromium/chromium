@@ -15,11 +15,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface UIBlockerSceneAgent () <SceneStateObserver>
-
-// Scene to which this agent is attached.
-// Implements the setter from SceneAgent protocol.
-@property(nonatomic, weak) SceneState* sceneState;
+@interface UIBlockerSceneAgent ()
 
 // TODO(crbug.com/1107873): Create a coordinator to own this view controller.
 // The view controller that blocks all interactions with the scene.
@@ -29,14 +25,6 @@
 @end
 
 @implementation UIBlockerSceneAgent
-
-#pragma mark - SceneAgent
-
-- (void)setSceneState:(SceneState*)sceneState {
-  DCHECK(!_sceneState);
-  _sceneState = sceneState;
-  [sceneState addObserver:self];
-}
 
 #pragma mark - SceneStateObserver
 

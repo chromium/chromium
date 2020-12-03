@@ -306,14 +306,9 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  IncognitoReauthSceneAgent* reauthAgent = nil;
-  for (id agent in SceneStateBrowserAgent::FromBrowser(_incognitoBrowser)
-           ->GetSceneState()
-           .connectedAgents) {
-    if ([agent isKindOfClass:[IncognitoReauthSceneAgent class]]) {
-      reauthAgent = agent;
-    }
-  }
+  IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
+      agentFromScene:SceneStateBrowserAgent::FromBrowser(_incognitoBrowser)
+                         ->GetSceneState()];
 
   [self.dispatcher startDispatchingToTarget:reauthAgent
                                 forProtocol:@protocol(IncognitoReauthCommands)];

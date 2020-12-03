@@ -17,6 +17,22 @@ source_set("scene_state_observer") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("observing_scene_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  sources = [
+    "observing_scene_state_agent.h",
+    "observing_scene_state_agent.mm",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+
+  public_deps = [
+    ":scene_state_header",
+    ":scene_state_observer",
+  ]
+}
+
 source_set("scene_state_header") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -63,6 +79,7 @@ source_set("scene") {
   deps = [
     ":incognito_blocker_scene_agent",
     ":main",
+    ":observing_scene_agent",
     ":scene_testing",
     "//base",
     "//components/infobars/core",

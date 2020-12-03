@@ -480,14 +480,9 @@
 // Starts mediators owned by this coordinator.
 - (void)startMediators {
   if (self.browser->GetBrowserState()->IsOffTheRecord()) {
-    IncognitoReauthSceneAgent* reauthAgent = nil;
-    for (id agent in SceneStateBrowserAgent::FromBrowser(self.browser)
-             ->GetSceneState()
-             .connectedAgents) {
-      if ([agent isKindOfClass:[IncognitoReauthSceneAgent class]]) {
-        reauthAgent = agent;
-      }
-    }
+    IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
+        agentFromScene:SceneStateBrowserAgent::FromBrowser(self.browser)
+                           ->GetSceneState()];
 
     self.incognitoAuthMediator =
         [[IncognitoReauthMediator alloc] initWithConsumer:self.viewController

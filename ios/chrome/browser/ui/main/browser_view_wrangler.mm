@@ -433,12 +433,8 @@
 }
 
 - (void)dispatchToEndpointsForBrowser:(Browser*)browser {
-  IncognitoReauthSceneAgent* reauthAgent = nil;
-  for (id agent in _sceneState.connectedAgents) {
-    if ([agent isKindOfClass:[IncognitoReauthSceneAgent class]]) {
-      reauthAgent = agent;
-    }
-  }
+  IncognitoReauthSceneAgent* reauthAgent =
+      [IncognitoReauthSceneAgent agentFromScene:_sceneState];
 
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
   [dispatcher startDispatchingToTarget:reauthAgent

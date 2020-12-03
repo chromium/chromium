@@ -28,10 +28,7 @@
 
 #pragma mark - IncognitoReauthSceneAgent
 
-@interface IncognitoReauthSceneAgent () <SceneStateObserver>
-
-// Scene state this agent serves.
-@property(nonatomic, weak) SceneState* sceneState;
+@interface IncognitoReauthSceneAgent ()
 
 // Set when the scene goes foreground. Checks if any incognito tabs were open.
 @property(nonatomic, assign) BOOL windowHadIncognitoContentOnForeground;
@@ -142,14 +139,6 @@
       self.windowHadIncognitoContentOnForeground = NO;
     }
   }
-}
-
-#pragma mark - SceneAgent
-
-- (void)setSceneState:(SceneState*)sceneState {
-  DCHECK(!_sceneState);
-  _sceneState = sceneState;
-  [sceneState addObserver:self];
 }
 
 #pragma mark - private

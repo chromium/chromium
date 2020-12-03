@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_INCOGNITO_REAUTH_INCOGNITO_REAUTH_SCENE_AGENT_H_
 #define IOS_CHROME_BROWSER_UI_INCOGNITO_REAUTH_INCOGNITO_REAUTH_SCENE_AGENT_H_
 
-#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/observing_scene_state_agent.h"
 
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
 
@@ -27,7 +27,7 @@ class PrefService;
 // A scene agent that tracks the incognito authentication status for the current
 // scene.
 @interface IncognitoReauthSceneAgent
-    : NSObject <IncognitoReauthCommands, SceneAgent>
+    : ObservingSceneAgent <IncognitoReauthCommands>
 
 // Designated initializer.
 // The |reauthModule| is used for authentication.

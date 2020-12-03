@@ -16,11 +16,8 @@
 #error "This file requires ARC support."
 #endif
 
-@interface DefaultBrowserSceneAgent () <SceneStateObserver>
+@interface DefaultBrowserSceneAgent ()
 
-// Scene to which this agent is attached.
-// Implements the setter from SceneAgent protocol.
-@property(nonatomic, weak) SceneState* sceneState;
 // Command Dispatcher.
 @property(nonatomic, weak) CommandDispatcher* dispatcher;
 
@@ -32,14 +29,6 @@
   if ([super init])
     _dispatcher = dispatcher;
   return self;
-}
-
-#pragma mark - SceneAgent
-
-- (void)setSceneState:(SceneState*)sceneState {
-  DCHECK(!_sceneState);
-  _sceneState = sceneState;
-  [sceneState addObserver:self];
 }
 
 #pragma mark - SceneStateObserver
