@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task_runner.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/policy/messaging_layer/util/shared_vector.h"
@@ -21,8 +23,10 @@
 namespace reporting {
 namespace {
 
-using testing::_;
-using testing::Return;
+using ::testing::_;
+using ::testing::Invoke;
+using ::testing::Return;
+using ::testing::WithArgs;
 
 // Usage (in tests only):
 //
@@ -119,34 +123,32 @@ class TestRecordHandler : public DmServerUploadService::RecordHandler {
   TestRecordHandler() : RecordHandler(/*client=*/nullptr) {}
   ~TestRecordHandler() override = default;
 
-  MOCK_METHOD(Status, HandleRecord, (Record));
+  void HandleRecords(
+      std::unique_ptr<std::vector<EncryptedRecord>> records,
+      DmServerUploadService::CompletionCallback upload_complete) override {
+    HandleRecords_(records, upload_complete);
+  }
+
+  MOCK_METHOD(void,
+              HandleRecords_,
+              (std::unique_ptr<std::vector<EncryptedRecord>>&,
+               DmServerUploadService::CompletionCallback&));
 };
 
 class DmServerUploaderTest : public testing::Test {
  public:
   DmServerUploaderTest()
       : sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
-        handlers_(SharedVector<std::unique_ptr<
-                      DmServerUploadService::RecordHandler>>::Create()) {}
-
-  void SetUp() override {
-    std::unique_ptr<TestRecordHandler> handler_ptr(new TestRecordHandler());
-    handler_ = handler_ptr.get();
-    handlers_->PushBack(std::move(handler_ptr), base::DoNothing());
-    records_ = std::make_unique<std::vector<EncryptedRecord>>();
-  }
+        handler_(std::make_unique<TestRecordHandler>()),
+        records_(std::make_unique<std::vector<EncryptedRecord>>()) {}
 
  protected:
   content::BrowserTaskEnvironment task_envrionment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  TestRecordHandler* handler_;
-
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
-  scoped_refptr<
-      SharedVector<std::unique_ptr<DmServerUploadService::RecordHandler>>>
-      handlers_;
 
+  std::unique_ptr<TestRecordHandler> handler_;
   std::unique_ptr<std::vector<EncryptedRecord>> records_;
 
   const base::TimeDelta kMaxDelay_ = base::TimeDelta::FromSeconds(1);
@@ -156,55 +158,54 @@ TEST_F(DmServerUploaderTest, ProcessesRecord) {
   // Add an empty record.
   records_->emplace_back();
 
-  EXPECT_CALL(*handler_, HandleRecord(_)).WillOnce(Return(Status::StatusOK()));
+  EXPECT_CALL(*handler_, HandleRecords_(_, _))
+      .WillOnce(WithArgs<1>(
+          Invoke([](DmServerUploadService::CompletionCallback& callback) {
+            std::move(callback).Run(SequencingInformation());
+          })));
 
   TestCallbackWaiter callback_waiter;
   DmServerUploadService::CompletionCallback cb =
       base::BindOnce(&TestCallbackWaiter::CompleteExpectSuccess,
                      base::Unretained(&callback_waiter));
 
-  Start<DmServerUploadService::DmServerUploader>(
-      std::move(records_), handlers_, std::move(cb), sequenced_task_runner_);
+  Start<DmServerUploadService::DmServerUploader>(std::move(records_),
+                                                 handler_.get(), std::move(cb),
+                                                 sequenced_task_runner_);
 
   callback_waiter.Wait();
 }
 
 TEST_F(DmServerUploaderTest, ProcessesRecords) {
-  for (uint64_t i = 0; i < 10; i++) {
-    EncryptedRecord record;
-    auto* sequencing_info = record.mutable_sequencing_information();
-    sequencing_info->set_sequencing_id(i);
+  uint64_t kNumberOfRecords = 10;
+  uint64_t kGenerationId = 1234;
 
-    records_->push_back(record);
+  for (uint64_t i = 0; i < kNumberOfRecords; i++) {
+    EncryptedRecord encrypted_record;
+    encrypted_record.set_encrypted_wrapped_record(
+        base::StrCat({"Record Number ", base::NumberToString(i)}));
+    auto* sequencing_information =
+        encrypted_record.mutable_sequencing_information();
+    sequencing_information->set_generation_id(kGenerationId);
+    sequencing_information->set_sequencing_id(i);
+    sequencing_information->set_priority(Priority::IMMEDIATE);
+    records_->push_back(std::move(encrypted_record));
   }
 
-  EXPECT_CALL(*handler_, HandleRecord(_))
-      .Times(10)
-      .WillRepeatedly(Return(Status::StatusOK()));
+  EXPECT_CALL(*handler_, HandleRecords_(_, _))
+      .WillOnce(WithArgs<1>(
+          Invoke([](DmServerUploadService::CompletionCallback& callback) {
+            std::move(callback).Run(SequencingInformation());
+          })));
 
   TestCallbackWaiter callback_waiter;
   DmServerUploadService::CompletionCallback cb =
       base::BindOnce(&TestCallbackWaiter::CompleteExpectSuccess,
                      base::Unretained(&callback_waiter));
 
-  Start<DmServerUploadService::DmServerUploader>(
-      std::move(records_), handlers_, std::move(cb), sequenced_task_runner_);
-
-  callback_waiter.Wait();
-}
-
-TEST_F(DmServerUploaderTest, DeniesBadWrappedRecord) {
-  EncryptedRecord record;
-  record.set_encrypted_wrapped_record("El Chupacabra");
-  records_->push_back(record);
-
-  TestCallbackWaiter callback_waiter;
-  DmServerUploadService::CompletionCallback cb =
-      base::BindOnce(&TestCallbackWaiter::CompleteExpectInvalidArgument,
-                     base::Unretained(&callback_waiter));
-
-  Start<DmServerUploadService::DmServerUploader>(
-      std::move(records_), handlers_, std::move(cb), sequenced_task_runner_);
+  Start<DmServerUploadService::DmServerUploader>(std::move(records_),
+                                                 handler_.get(), std::move(cb),
+                                                 sequenced_task_runner_);
 
   callback_waiter.Wait();
 }
@@ -213,16 +214,21 @@ TEST_F(DmServerUploaderTest, ReportsFailureToProcess) {
   // Add an empty record.
   records_->emplace_back();
 
-  EXPECT_CALL(*handler_, HandleRecord(_))
-      .WillOnce(Return(Status(error::INVALID_ARGUMENT, "Fail for test")));
+  EXPECT_CALL(*handler_, HandleRecords_(_, _))
+      .WillOnce(WithArgs<1>(
+          Invoke([](DmServerUploadService::CompletionCallback& callback) {
+            std::move(callback).Run(
+                Status(error::FAILED_PRECONDITION, "Fail for test"));
+          })));
 
   TestCallbackWaiter callback_waiter;
   DmServerUploadService::CompletionCallback cb =
       base::BindOnce(&TestCallbackWaiter::CompleteExpectFailedPrecondition,
                      base::Unretained(&callback_waiter));
 
-  Start<DmServerUploadService::DmServerUploader>(
-      std::move(records_), handlers_, std::move(cb), sequenced_task_runner_);
+  Start<DmServerUploadService::DmServerUploader>(std::move(records_),
+                                                 handler_.get(), std::move(cb),
+                                                 sequenced_task_runner_);
 
   callback_waiter.Wait();
 }
@@ -231,17 +237,21 @@ TEST_F(DmServerUploaderTest, ReportsFailureToUpload) {
   // Add an empty record.
   records_->emplace_back();
 
-  EXPECT_CALL(*handler_, HandleRecord(_))
-      .WillRepeatedly(
-          Return(Status(error::DEADLINE_EXCEEDED, "Fail for test")));
+  EXPECT_CALL(*handler_, HandleRecords_(_, _))
+      .WillOnce(WithArgs<1>(
+          Invoke([](DmServerUploadService::CompletionCallback& callback) {
+            std::move(callback).Run(
+                Status(error::DEADLINE_EXCEEDED, "Fail for test"));
+          })));
 
   TestCallbackWaiter callback_waiter;
   DmServerUploadService::CompletionCallback cb =
-      base::BindOnce(&TestCallbackWaiter::CompleteExpectFailedPrecondition,
+      base::BindOnce(&TestCallbackWaiter::CompleteExpectDeadlineExceeded,
                      base::Unretained(&callback_waiter));
 
-  Start<DmServerUploadService::DmServerUploader>(
-      std::move(records_), handlers_, std::move(cb), sequenced_task_runner_);
+  Start<DmServerUploadService::DmServerUploader>(std::move(records_),
+                                                 handler_.get(), std::move(cb),
+                                                 sequenced_task_runner_);
 
   callback_waiter.Wait();
 }
@@ -252,8 +262,9 @@ TEST_F(DmServerUploaderTest, FailWithZeroRecords) {
       base::BindOnce(&TestCallbackWaiter::CompleteExpectInvalidArgument,
                      base::Unretained(&callback_waiter));
 
-  Start<DmServerUploadService::DmServerUploader>(
-      std::move(records_), handlers_, std::move(cb), sequenced_task_runner_);
+  Start<DmServerUploadService::DmServerUploader>(std::move(records_),
+                                                 handler_.get(), std::move(cb),
+                                                 sequenced_task_runner_);
 
   callback_waiter.Wait();
 }

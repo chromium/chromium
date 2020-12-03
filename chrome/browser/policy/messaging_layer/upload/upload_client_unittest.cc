@@ -10,7 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/values.h"
-#include "chrome/browser/policy/messaging_layer/upload/app_install_report_handler.h"
+#include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -35,6 +35,15 @@ using testing::_;
 using testing::Invoke;
 using testing::InvokeArgument;
 using testing::WithArgs;
+
+MATCHER_P(EqualsProto,
+          message,
+          "Match a proto Message equal to the matcher's argument.") {
+  std::string expected_serialized, actual_serialized;
+  message.SerializeToString(&expected_serialized);
+  arg.SerializeToString(&actual_serialized);
+  return expected_serialized == actual_serialized;
+}
 
 // Usage (in tests only):
 //
@@ -77,6 +86,12 @@ class TestCallbackWaiter {
   TestCallbackWaiter() : run_loop_(std::make_unique<base::RunLoop>()) {}
 
   virtual void Signal() { run_loop_->Quit(); }
+
+  void CompleteExpectSequencingInformation(SequencingInformation expected,
+                                           SequencingInformation info) {
+    EXPECT_THAT(info, EqualsProto(expected));
+    Signal();
+  }
 
   void Wait() { run_loop_->Run(); }
 
@@ -142,30 +157,9 @@ class UploadClientTest : public ::testing::Test {
 #endif  // OS_CHROMEOS
 };
 
-TEST_F(UploadClientTest, CreateUploadClient) {
+TEST_F(UploadClientTest, CreateUploadClientAndUploadRecords) {
   const int kExpectedCallTimes = 10;
   const uint64_t kGenerationId = 1234;
-
-  TestCallbackWaiterWithCounter waiter(kExpectedCallTimes);
-
-  auto client = std::make_unique<MockCloudPolicyClient>();
-  client->SetDMToken(
-      policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
-
-  EXPECT_CALL(*client, UploadExtensionInstallReport_(_, _))
-      .WillRepeatedly(WithArgs<1>(
-          Invoke([&waiter](AppInstallReportHandler::ClientCallback& callback) {
-            std::move(callback).Run(true);
-            base::ThreadPool::PostTask(
-                FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-                base::BindOnce(&TestCallbackWaiterWithCounter::Signal,
-                               base::Unretained(&waiter)));
-          })));
-
-  TestEvent<StatusOr<std::unique_ptr<UploadClient>>> e;
-  UploadClient::Create(std::move(client), base::DoNothing(), e.cb());
-  StatusOr<std::unique_ptr<UploadClient>> upload_client_result = e.result();
-  ASSERT_OK(upload_client_result) << upload_client_result.status();
 
   base::Value data{base::Value::Type::DICTIONARY};
   data.SetKey("TEST_KEY", base::Value("TEST_VALUE"));
@@ -180,7 +174,6 @@ TEST_F(UploadClientTest, CreateUploadClient) {
 
   std::string serialized_record;
   wrapped_record.SerializeToString(&serialized_record);
-
   std::unique_ptr<std::vector<EncryptedRecord>> records =
       std::make_unique<std::vector<EncryptedRecord>>();
   for (int i = 0; i < kExpectedCallTimes; i++) {
@@ -195,11 +188,40 @@ TEST_F(UploadClientTest, CreateUploadClient) {
     records->push_back(encrypted_record);
   }
 
+  TestCallbackWaiterWithCounter waiter(kExpectedCallTimes);
+
+  auto client = std::make_unique<MockCloudPolicyClient>();
+  client->SetDMToken(
+      policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
+
+  EXPECT_CALL(*client, UploadEncryptedReport(_, _, _))
+      .WillRepeatedly(WithArgs<2>(
+          Invoke([&waiter](base::OnceCallback<void(bool)> callback) {
+            std::move(callback).Run(true);
+            base::ThreadPool::PostTask(
+                FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+                base::BindOnce(&TestCallbackWaiterWithCounter::Signal,
+                               base::Unretained(&waiter)));
+          })));
+
+  TestCallbackWaiter completion_callback_waiter;
+  UploadClient::ReportSuccessfulUploadCallback completion_cb =
+      base::BindRepeating(
+          &TestCallbackWaiter::CompleteExpectSequencingInformation,
+          base::Unretained(&completion_callback_waiter),
+          records->back().sequencing_information());
+
+  TestEvent<StatusOr<std::unique_ptr<UploadClient>>> e;
+  UploadClient::Create(std::move(client), completion_cb, e.cb());
+  StatusOr<std::unique_ptr<UploadClient>> upload_client_result = e.result();
+  ASSERT_OK(upload_client_result) << upload_client_result.status();
+
   auto upload_client = std::move(upload_client_result.ValueOrDie());
   auto enqueue_result = upload_client->EnqueueUpload(std::move(records));
   EXPECT_TRUE(enqueue_result.ok());
 
   waiter.Wait();
+  completion_callback_waiter.Wait();
 }
 
 }  // namespace

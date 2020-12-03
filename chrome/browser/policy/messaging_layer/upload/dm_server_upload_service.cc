@@ -10,15 +10,14 @@
 
 #include "base/task/post_task.h"
 #include "base/task_runner.h"
-#include "chrome/browser/policy/messaging_layer/upload/app_install_report_handler.h"
-#include "chrome/browser/policy/messaging_layer/upload/meet_device_telemetry_report_handler.h"
+#include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 #include "chrome/browser/policy/messaging_layer/util/backoff_settings.h"
-#include "chrome/browser/policy/messaging_layer/util/shared_vector.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/status_macros.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
 #include "chrome/browser/policy/messaging_layer/util/task_runner_context.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/proto/record.pb.h"
@@ -26,28 +25,9 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-#ifdef OS_CHROMEOS
-#include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-
 namespace reporting {
-namespace {
 
-// This function must run on UI thread.
-StatusOr<Profile*> GetPrimaryProfile() {
-  if (!user_manager::UserManager::IsInitialized()) {
-    return Status(error::FAILED_PRECONDITION, "User manager not initialized");
-  }
-  const auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!primary_user) {
-    return Status(error::FAILED_PRECONDITION, "Primary user not found");
-  }
-  return chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
-}
-
-}  // namespace
 }  // namespace reporting
-#endif
 
 namespace reporting {
 
@@ -94,13 +74,13 @@ DmServerUploadService::RecordHandler::RecordHandler(
 
 DmServerUploader::DmServerUploader(
     std::unique_ptr<std::vector<EncryptedRecord>> records,
-    scoped_refptr<SharedVector<std::unique_ptr<RecordHandler>>> handlers,
+    RecordHandler* handler,
     CompletionCallback completion_cb,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
     : TaskRunnerContext<CompletionResponse>(std::move(completion_cb),
                                             sequenced_task_runner),
       encrypted_records_(std::move(records)),
-      handlers_(handlers) {
+      handler_(handler) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -108,204 +88,84 @@ DmServerUploader::~DmServerUploader() = default;
 
 void DmServerUploader::OnStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (handler_ == nullptr) {
+    Complete(Status(error::INVALID_ARGUMENT, "handler was null"));
+    return;
+  }
   // Early exit if we don't have any records.
+  // TODO(b/170054326) Allow empty records list if encryption keys delivery is
+  // requested and return OK in this case.
   if (encrypted_records_->empty()) {
     Complete(
         Status(error::INVALID_ARGUMENT, "No records received for upload."));
     return;
   }
-  handlers_->IsEmpty(base::BindOnce(
-      &DmServerUploader::IsHandlerVectorEmptyCheck, base::Unretained(this)));
+  ProcessRecords();
 }
 
-void DmServerUploader::IsHandlerVectorEmptyCheck(bool handlers_is_empty) {
-  // Early Exit if we don't have any handlers.
-  if (handlers_is_empty) {
-    Complete(Status(error::INTERNAL, "No handlers available for upload."));
-    return;
-  }
-  Schedule(&DmServerUploader::ProcessRecords, base::Unretained(this));
-}
 
 void DmServerUploader::ProcessRecords() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Status process_status;
 
-  generation_id_ =
+  const uint64_t expected_generation_id =
       encrypted_records_->front().sequencing_information().generation_id();
+  uint64_t expected_sequencing_id =
+      encrypted_records_->front().sequencing_information().sequencing_id();
 
   // Will stop processing records on the first record that fails to pass.
-  // Discarding the remaining records.
+  size_t records_added = 0;
   for (const EncryptedRecord& encrypted_record : *encrypted_records_) {
-    if (process_status = IsRecordValid(encrypted_record),
-        !process_status.ok()) {
+    process_status = IsRecordValid(encrypted_record, expected_generation_id,
+                                   expected_sequencing_id);
+    if (!process_status.ok()) {
+      LOG(ERROR) << "Record was received out of order from the StorageModule";
       break;
     }
+    records_added += 1;
+    expected_sequencing_id++;
   }
 
-  if (record_infos_.empty()) {
+  if (records_added == 0) {
     Complete(process_status);
     return;
   }
+
+  // Discarding the remaining records.
+  encrypted_records_->resize(records_added);
 
   HandleRecords();
 }
 
 void DmServerUploader::HandleRecords() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Status handle_status = Status::StatusOK();
-
-  // Set collector to count 1; execution_cb will increment it
-  // every time |execution_cb| posts a task, and then callback
-  // will decrement it. Self-destructs when dropping to 0.
-  CollectorCallback* const collector = new CollectorCallback(
-      /*count=*/1, base::BindOnce(&DmServerUploader::OnRecordsHandled,
-                                  base::Unretained(this)));
-
-  // TODO(chromium:1078512) Cannot verify client state on this thread. Find a
-  // way to do that and restructure this loop to handle it.
-  // Passing raw |record_infos_| pointer is safe since record_infos will not die
-  // until after handlers_ does.
-  auto done_cb = base::BindRepeating(&CollectorCallback::Decrement,
-                                     base::Unretained(collector));
-  auto execution_cb = base::BindRepeating(
-      [](std::vector<RecordInfo>* record_infos,
-         base::RepeatingCallback<void(const SequencingInformation&)>
-             add_successfull_upload_cb,
-         CollectorCallback* collector,
-         std::unique_ptr<RecordHandler>& record_handler) {
-        for (auto record_info_it = record_infos->begin();
-             record_info_it != record_infos->end();) {
-          auto handle_status =
-              record_handler->HandleRecord(record_info_it->record);
-
-          // Record was successfully handled - mark it as such and move on to
-          // the next record.
-          if (handle_status.ok()) {
-            collector->Increment();
-            add_successfull_upload_cb.Run(
-                record_info_it->sequencing_information);
-
-            // We don't need to handle this record again. Delete it.
-            record_info_it = record_infos->erase(record_info_it);
-            continue;
-          }
-          record_info_it++;
-        }
-      },
-      &record_infos_,
-      base::BindRepeating(&DmServerUploader::AddSuccessfulUpload,
-                          base::Unretained(this), done_cb),
-      base::Unretained(collector));
-
-  auto predicate_cb = base::BindRepeating(
-      [](std::vector<RecordInfo>* record_infos,
-         const std::unique_ptr<RecordHandler>& record_handler) {
-        return !record_infos->empty();
-      },
-      &record_infos_);
-
-  handlers_->ExecuteOnEachElement(std::move(execution_cb),
-                                  base::BindOnce(&CollectorCallback::Decrement,
-                                                 base::Unretained(collector)),
-                                  std::move(predicate_cb));
+  handler_->HandleRecords(
+      std::move(encrypted_records_),
+      base::BindOnce(&DmServerUploader::Complete, base::Unretained(this)));
 }
 
-void DmServerUploader::OnRecordsHandled() {
-  Status status = record_infos_.empty()
-                      ? Status::StatusOK()
-                      : Status(error::FAILED_PRECONDITION,
-                               "Unable to connect to the server and upload "
-                               "some or all records");
-  Complete(status);
-}
-
-void DmServerUploader::Complete(Status status) {
-  // Records were successfully uploaded - return the highest record processed.
-  // Any unprocessed record will be attempted again later.
-  if (highest_successful_sequence_.has_value()) {
-    Schedule(&DmServerUploader::Response, base::Unretained(this),
-             highest_successful_sequence_.value());
-    return;
-  }
-
-  // No records were uploaded, return the status.
-  Schedule(&DmServerUploader::Response, base::Unretained(this), status);
+void DmServerUploader::Complete(CompletionResponse completion_response) {
+  Schedule(&DmServerUploader::Response, base::Unretained(this),
+           completion_response);
 }
 
 Status DmServerUploader::IsRecordValid(
-    const EncryptedRecord& encrypted_record) {
+    const EncryptedRecord& encrypted_record,
+    const uint64_t expected_generation_id,
+    const uint64_t expected_sequencing_id) const {
   // Test to ensure all records are in the same generation.
   if (encrypted_record.sequencing_information().generation_id() !=
-      generation_id_) {
+      expected_generation_id) {
     return Status(error::INVALID_ARGUMENT,
                   "Record does not have the correct generation");
   }
 
-  // Parse the WrappedRecord from the EncryptedRecord.
-  WrappedRecord wrapped_record;
-  if (!wrapped_record.ParseFromString(
-          encrypted_record.encrypted_wrapped_record())) {
-    return Status(error::INVALID_ARGUMENT, "Unable to parse record");
+  if (encrypted_record.sequencing_information().sequencing_id() !=
+      expected_sequencing_id) {
+    return Status(error::INVALID_ARGUMENT, "Out of order sequencing_id");
   }
 
-  record_infos_.emplace_back(RecordInfo{
-      wrapped_record.record(), encrypted_record.sequencing_information()});
   return Status::StatusOK();
-}
-
-void DmServerUploader::AddSuccessfulUpload(
-    base::RepeatingClosure done_cb,
-    const SequencingInformation& sequencing_information) {
-  Schedule(&DmServerUploader::ProcessSuccessfulUploadAddition,
-           base::Unretained(this), std::move(done_cb), sequencing_information);
-}
-
-void DmServerUploader::ProcessSuccessfulUploadAddition(
-    base::RepeatingClosure done_cb,
-    SequencingInformation sequencing_information) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Auto-call done_cb when returning.
-  class CleanUp {
-   public:
-    explicit CleanUp(base::RepeatingClosure done_cb)
-        : done_cb_(std::move(done_cb)) {}
-    ~CleanUp() { std::move(done_cb_).Run(); }
-
-   private:
-    base::RepeatingClosure done_cb_;
-  } clean_up(std::move(done_cb));
-
-  // If this is the first successful record - set highest to this record.
-  if (!highest_successful_sequence_.has_value()) {
-    highest_successful_sequence_ = sequencing_information;
-    return;
-  }
-
-  // If messages were processed out of order log a warning. This shouldn't
-  // happen, but there are no upload guarantees for DmServerUploadService so it
-  // isn't a big deal.
-  if (sequencing_information.sequencing_id() <
-      highest_successful_sequence_->sequencing_id()) {
-    LOG(WARNING) << "Records were processed out of order: "
-                 << "Record " << sequencing_information.sequencing_id()
-                 << " was processed after "
-                 << highest_successful_sequence_->sequencing_id();
-    return;
-  }
-
-  // If messages are duplicated log a warning. This shouldn't happen, but the
-  // current system already has potential for duplicated events.
-  if (sequencing_information.sequencing_id() ==
-      highest_successful_sequence_->sequencing_id()) {
-    LOG(WARNING) << "Record upload was duplicated: "
-                 << "Record " << sequencing_information.sequencing_id()
-                 << " was processed multiple times.";
-    return;
-  }
-
-  highest_successful_sequence_ = sequencing_information;
 }
 
 void DmServerUploadService::Create(
@@ -321,26 +181,7 @@ void DmServerUploadService::Create(
 
   auto uploader = base::WrapUnique(
       new DmServerUploadService(std::move(client), report_upload_success_cb));
-#ifdef OS_CHROMEOS
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&GetPrimaryProfile),
-      base::BindOnce(
-          [](std::unique_ptr<DmServerUploadService> uploader,
-             base::OnceCallback<void(
-                 StatusOr<std::unique_ptr<DmServerUploadService>>)> created_cb,
-             StatusOr<Profile*> primary_profile_result) {
-            if (!primary_profile_result.ok()) {
-              std::move(created_cb).Run(primary_profile_result.status());
-              return;
-            }
-            InitRecordHandlers(std::move(uploader),
-                               primary_profile_result.ValueOrDie(),
-                               std::move(created_cb));
-          },
-          std::move(uploader), std::move(created_cb)));
-#else
-  InitRecordHandlers(std::move(uploader), std::move(created_cb));
-#endif  // OS_CHROMEOS
+  InitRecordHandler(std::move(uploader), std::move(created_cb));
 }
 
 DmServerUploadService::DmServerUploadService(
@@ -348,7 +189,6 @@ DmServerUploadService::DmServerUploadService(
     ReportSuccessfulUploadCallback upload_cb)
     : client_(std::move(client)),
       upload_cb_(upload_cb),
-      record_handlers_(SharedVector<std::unique_ptr<RecordHandler>>::Create()),
       sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})) {}
 
 DmServerUploadService::~DmServerUploadService() {
@@ -366,18 +206,15 @@ DmServerUploadService::~DmServerUploadService() {
 Status DmServerUploadService::EnqueueUpload(
     std::unique_ptr<std::vector<EncryptedRecord>> records) {
   Start<DmServerUploader>(
-      std::move(records), record_handlers_,
+      std::move(records), handler_.get(),
       base::BindOnce(&DmServerUploadService::UploadCompletion,
                      base::Unretained(this)),
       sequenced_task_runner_);
   return Status::StatusOK();
 }
 
-void DmServerUploadService::InitRecordHandlers(
+void DmServerUploadService::InitRecordHandler(
     std::unique_ptr<DmServerUploadService> uploader,
-#ifdef OS_CHROMEOS
-    Profile* primary_profile,
-#endif  // OS_CHROMEOS
     base::OnceCallback<void(StatusOr<std::unique_ptr<DmServerUploadService>>)>
         created_cb) {
   auto* client = uploader->GetClient();
@@ -387,33 +224,8 @@ void DmServerUploadService::InitRecordHandlers(
     return;
   }
 
-  std::vector<std::unique_ptr<RecordHandler>> handlers;
-  handlers.emplace_back(std::make_unique<AppInstallReportHandler>(client));
-#ifdef OS_CHROMEOS
-  // Temporary wrapper for MeetDeviceTelemetry
-  handlers.emplace_back(std::make_unique<MeetDeviceTelemetryReportHandler>(
-      primary_profile, client));
-#endif  // OS_CHROMEOS
-
-  // Copy record_handlers_ aside, because uploader is going to be moved.
-  auto record_handlers = uploader->record_handlers_;
-
-  // collector_cb self-destructs upon completion.
-  CollectorCallback* const collector_cb = new CollectorCallback(
-      handlers.size(),
-      base::BindOnce(
-          [](std::unique_ptr<DmServerUploadService> uploader,
-             base::OnceCallback<void(
-                 StatusOr<std::unique_ptr<DmServerUploadService>>)>
-                 created_cb) {
-            std::move(created_cb).Run(std::move(uploader));
-          },
-          std::move(uploader), std::move(created_cb)));
-  for (auto& handler : handlers) {
-    record_handlers->PushBack(std::move(handler),
-                              base::BindOnce(&CollectorCallback::Decrement,
-                                             base::Unretained(collector_cb)));
-  }
+  uploader->handler_ = std::make_unique<RecordHandlerImpl>(client);
+  std::move(created_cb).Run(std::move(uploader));
 }
 
 void DmServerUploadService::UploadCompletion(

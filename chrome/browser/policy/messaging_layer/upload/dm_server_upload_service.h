@@ -11,7 +11,6 @@
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
 #include "base/task_runner.h"
-#include "chrome/browser/policy/messaging_layer/util/shared_vector.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/status_macros.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
@@ -47,16 +46,24 @@ class DmServerUploadService {
 
   using CompletionCallback = base::OnceCallback<void(CompletionResponse)>;
 
-  // Since DmServer records need to be sorted prior to sending, we need handlers
-  // for each type of record.
+  // Handles sending records to the server.
   class RecordHandler {
    public:
-    explicit RecordHandler(policy::CloudPolicyClient* client);
     virtual ~RecordHandler() = default;
 
-    virtual Status HandleRecord(Record record) = 0;
+    // Will iterate over |records| and ensure they are in ascending sequence
+    // order, and within the same generation. Any out of order records will be
+    // discarded.
+    // Once the server has responded |upload_complete| is called with either the
+    // highest accepted SequencingInformation, or an error detailing the failure
+    // cause.
+    // Any errors will result in |upload_complete| being called with a Status.
+    virtual void HandleRecords(
+        std::unique_ptr<std::vector<EncryptedRecord>> records,
+        DmServerUploadService::CompletionCallback upload_complete) = 0;
 
    protected:
+    explicit RecordHandler(policy::CloudPolicyClient* client);
     policy::CloudPolicyClient* GetClient() const { return client_; }
 
    private:
@@ -70,25 +77,16 @@ class DmServerUploadService {
    public:
     DmServerUploader(
         std::unique_ptr<std::vector<EncryptedRecord>> records,
-        scoped_refptr<SharedVector<std::unique_ptr<RecordHandler>>> handlers,
+        RecordHandler* handler,
         CompletionCallback completion_cb,
         scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
 
    private:
-    struct RecordInfo {
-      Record record;
-      SequencingInformation sequencing_information;
-    };
-
     ~DmServerUploader() override;
 
     // OnStart checks to ensure that our record set isn't empty, and requests
     // handler size status from |handlers_|.
     void OnStart() override;
-
-    // The callback for handler size status. Will early exit if there are no
-    // available handlers. Otherwise schedules ProcessRecords.
-    void IsHandlerVectorEmptyCheck(bool handler_is_empty);
 
     // ProcessRecords verifies that the records provided are parseable and sets
     // the |Record|s up for handling by the |RecordHandlers|s. On
@@ -103,15 +101,13 @@ class DmServerUploadService {
     // processed and calls Complete.
     void OnRecordsHandled();
 
-    // Complete evaluates if any records were successfully uploaded.  If no
-    // records were successfully uploaded and |status| is not ok - it calls
-    // |Response| with the provided |status|. Otherwise it calls |Response| with
-    // the list of successful uploads (even if some were not successful).
-    void Complete(Status status);
+    // Complete schedules |Response| with the provided |completion_response|.
+    void Complete(CompletionResponse completion_response);
 
-    // Helper function for determining if a Record is valid and adding it to
-    // |record_infos_|.
-    Status IsRecordValid(const EncryptedRecord& encrypted_record);
+    // Helper function for determining if an EncryptedRecord is valid.
+    Status IsRecordValid(const EncryptedRecord& encrypted_record,
+                         const uint64_t expected_generation_id,
+                         const uint64_t expected_sequencing_id) const;
 
     // Helper function for tracking the highest sequencing information per
     // generation id. Schedules ProcessSuccessfulUploadAddition.
@@ -125,13 +121,8 @@ class DmServerUploadService {
         SequencingInformation sequencing_information);
 
     std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records_;
-    scoped_refptr<SharedVector<std::unique_ptr<RecordHandler>>> handlers_;
+    RecordHandler* handler_;
 
-    // generation_id_ will be set to the generation of the first record in
-    // encrypted_records_.
-    uint64_t generation_id_;
-
-    std::vector<RecordInfo> record_infos_;
     base::Optional<SequencingInformation> highest_successful_sequence_;
 
     SEQUENCE_CHECKER(sequence_checker_);
@@ -159,11 +150,8 @@ class DmServerUploadService {
   DmServerUploadService(std::unique_ptr<policy::CloudPolicyClient> client,
                         ReportSuccessfulUploadCallback completion_cb);
 
-  static void InitRecordHandlers(
+  static void InitRecordHandler(
       std::unique_ptr<DmServerUploadService> uploader,
-#ifdef OS_CHROMEOS
-      Profile* primary_profile,
-#endif  // OS_CHROMEOS
       base::OnceCallback<void(StatusOr<std::unique_ptr<DmServerUploadService>>)>
           created_cb);
 
@@ -173,7 +161,7 @@ class DmServerUploadService {
 
   std::unique_ptr<policy::CloudPolicyClient> client_;
   ReportSuccessfulUploadCallback upload_cb_;
-  scoped_refptr<SharedVector<std::unique_ptr<RecordHandler>>> record_handlers_;
+  std::unique_ptr<RecordHandler> handler_;
 
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 };

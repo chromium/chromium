@@ -1,0 +1,79 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_RECORD_HANDLER_IMPL_H_
+#define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_RECORD_HANDLER_IMPL_H_
+
+#include <string>
+#include <utility>
+
+#include "base/callback.h"
+#include "base/memory/ref_counted.h"
+#include "base/sequenced_task_runner.h"
+#include "base/task/post_task.h"
+#include "base/task_runner.h"
+#include "base/values.h"
+#include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
+#include "chrome/browser/policy/messaging_layer/util/shared_queue.h"
+#include "chrome/browser/policy/messaging_layer/util/status.h"
+#include "chrome/browser/policy/messaging_layer/util/status_macros.h"
+#include "chrome/browser/policy/messaging_layer/util/statusor.h"
+#include "chrome/browser/policy/messaging_layer/util/task_runner_context.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
+#include "components/policy/proto/record.pb.h"
+
+namespace reporting {
+
+// |RecordHandlerImpl| handles |ReportRequests|, sending them to
+// the server using |CloudPolicyClient|. Since |CloudPolicyClient| will cancel
+// any in progress reports if a new report is added, |RecordHandlerImpl|
+// ensures that only one report is ever processed at one time by forming a
+// queue.
+class RecordHandlerImpl : public DmServerUploadService::RecordHandler {
+ public:
+  // ReportUploader handles enqueuing events on the |report_queue_|,
+  // and uploading those events with the |client_|.
+  class ReportUploader
+      : public TaskRunnerContext<DmServerUploadService::CompletionResponse> {
+   public:
+    ReportUploader(
+        std::unique_ptr<std::vector<EncryptedRecord>> records,
+        policy::CloudPolicyClient* client,
+        DmServerUploadService::CompletionCallback upload_complete_cb,
+        scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
+
+   private:
+    ~ReportUploader() override;
+
+    void OnStart() override;
+
+    void StartUpload(const EncryptedRecord& encrypted_record);
+    void OnUploadComplete(bool success);
+    void HandleFailedUpload();
+    void HandleSuccessfulUpload();
+
+    void Complete(DmServerUploadService::CompletionResponse completion_result);
+
+    std::unique_ptr<std::vector<EncryptedRecord>> records_;
+    policy::CloudPolicyClient* client_;
+
+    // Set for the highest record being uploaded.
+    base::Optional<SequencingInformation> highest_sequencing_information_;
+  };
+
+  explicit RecordHandlerImpl(policy::CloudPolicyClient* client);
+  ~RecordHandlerImpl() override;
+
+  // Base class RecordHandler method implementation.
+  void HandleRecords(
+      std::unique_ptr<std::vector<EncryptedRecord>> record,
+      DmServerUploadService::CompletionCallback upload_complete) override;
+
+ private:
+  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+};
+
+}  // namespace reporting
+
+#endif  // CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_RECORD_HANDLER_IMPL_H_
