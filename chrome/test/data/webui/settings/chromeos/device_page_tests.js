@@ -612,6 +612,30 @@ cr.define('device_page_tests', function() {
       return !!element && element.offsetWidth > 0 && element.offsetHeight > 0;
     }
 
+    /**
+     * Checks that the deep link to a setting focuses the correct element.
+     * @param {!settings.Route} route
+     * @param {!string} settingId
+     * @param {!Element} deepLinkElement The element that should be focused by
+     *                                   the deep link
+     * @param {!string} elementDesc A human-readable description of the element,
+     *                              for assertion messages
+     */
+    async function checkDeepLink(
+        route, settingId, deepLinkElement, elementDesc) {
+      loadTimeData.overrideValues({isDeepLinkingEnabled: true});
+      assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
+
+      const params = new URLSearchParams;
+      params.append('settingId', settingId);
+      settings.Router.getInstance().navigateTo(route, params);
+
+      await test_util.waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          `${elementDesc} should be focused for settingId=${settingId}.`);
+    }
+
     test(assert(TestNames.DevicePage), function() {
       expectTrue(isVisible(devicePage.$$('#pointersRow')));
       expectTrue(isVisible(devicePage.$$('#keyboardRow')));
@@ -769,20 +793,10 @@ cr.define('device_page_tests', function() {
       });
 
       test('Deep link to touchpad speed', async () => {
-        loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-        assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
-        const params = new URLSearchParams;
-        params.append('settingId', '405');
-        settings.Router.getInstance().navigateTo(
-            settings.routes.POINTERS, params);
-
-        const deepLinkElement =
-            pointersPage.$$('#touchpadSensitivity').$$('cr-slider');
-        await test_util.waitAfterNextRender(deepLinkElement);
-        assertEquals(
-            deepLinkElement, getDeepActiveElement(),
-            'Touchpad speed slider should be focused for settingId=405.');
+        return checkDeepLink(
+            settings.routes.POINTERS, '405',
+            pointersPage.$$('#touchpadSensitivity').$$('cr-slider'),
+            'Touchpad speed slider');
       });
     });
 
@@ -890,38 +904,17 @@ cr.define('device_page_tests', function() {
       });
 
       test('deep link to acceleration setting', async () => {
-        loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-        assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
-        const params = new URLSearchParams();
-        params.append('settingId', '436');
-        settings.Router.getInstance().navigateTo(
-            settings.routes.POINTERS, params);
-
-        const deepLinkElement =
-            pointersPage.$$('#pointingStickAcceleration').$$('cr-toggle');
-        await test_util.waitAfterNextRender(deepLinkElement);
-        assertEquals(
-            deepLinkElement, getDeepActiveElement(),
-            'pointing stick acceleration slider should be focused for ' +
-                'settingId=436.');
+        return checkDeepLink(
+            settings.routes.POINTERS, '436',
+            pointersPage.$$('#pointingStickAcceleration').$$('cr-toggle'),
+            'Pointing stick acceleration slider');
       });
 
       test('deep link to speed setting', async () => {
-        loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-        assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
-        const params = new URLSearchParams();
-        params.append('settingId', '435');
-        settings.Router.getInstance().navigateTo(
-            settings.routes.POINTERS, params);
-
-        const deepLinkElement =
-            pointersPage.$$('#pointingStickSpeedSlider').$$('cr-slider');
-        await test_util.waitAfterNextRender(deepLinkElement);
-        assertEquals(
-            deepLinkElement, getDeepActiveElement(),
-            'pointing stick speed slider should be focused for settingId=435.');
+        return checkDeepLink(
+            settings.routes.POINTERS, '435',
+            pointersPage.$$('#pointingStickSpeedSlider').$$('cr-slider'),
+            'Pointing stick speed slider');
       });
     });
 
@@ -1051,20 +1044,10 @@ cr.define('device_page_tests', function() {
       });
 
       test('Deep link to keyboard shortcuts', async () => {
-        loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-        assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
-        const params = new URLSearchParams;
-        params.append('settingId', '413');
-        settings.Router.getInstance().navigateTo(
-            settings.routes.KEYBOARD, params);
-
-        const deepLinkElement =
-            keyboardPage.$$('#keyboardShortcutViewer').$$('cr-icon-button');
-        await test_util.waitAfterNextRender(deepLinkElement);
-        assertEquals(
-            deepLinkElement, getDeepActiveElement(),
-            'Keyboard shortcuts button should be focused for settingId=413.');
+        return checkDeepLink(
+            settings.routes.KEYBOARD, '413',
+            keyboardPage.$$('#keyboardShortcutViewer').$$('cr-icon-button'),
+            'Keyboard shortcuts button');
       });
     });
 
@@ -1913,19 +1896,9 @@ cr.define('device_page_tests', function() {
                   });
             });
         test('Deep link to sleep when laptop lid closed', async () => {
-          loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-          assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
-          const params = new URLSearchParams;
-          params.append('settingId', '424');
-          settings.Router.getInstance().navigateTo(
-              settings.routes.POWER, params);
-
-          const deepLinkElement = lidClosedToggle.$$('cr-toggle');
-          await test_util.waitAfterNextRender(deepLinkElement);
-          assertEquals(
-              deepLinkElement, getDeepActiveElement(),
-              'Sleep when closed toggle should be focused for settingId=424.');
+          return checkDeepLink(
+              settings.routes.POWER, '424', lidClosedToggle.$$('cr-toggle'),
+              'Sleep when closed toggle');
         });
       });
     });
@@ -2096,16 +2069,9 @@ cr.define('device_page_tests', function() {
         ]);
         browserProxy.setAndroidAppsReceived(true);
 
-        const params = new URLSearchParams;
-        params.append('settingId', '417');
-        settings.Router.getInstance().navigateTo(
-            settings.routes.STYLUS, params);
-
-        const deepLinkElement = stylusPage.$$('#selectApp');
-        await test_util.waitAfterNextRender(deepLinkElement);
-        assertEquals(
-            deepLinkElement, getDeepActiveElement(),
-            'Note-taking apps dropdown should be focused for settingId=417.');
+        return checkDeepLink(
+            settings.routes.STYLUS, '417', stylusPage.$$('#selectApp'),
+            'Note-taking apps dropdown');
       });
 
       test('app-visibility', function() {
