@@ -3946,15 +3946,6 @@ ci.gpu_fyi_thin_tester(
 )
 
 ci.gpu_fyi_thin_tester(
-    name = "Win10 FYI x64 Release (AMD RX 550)",
-    console_view_entry = ci.console_view_entry(
-        category = "Windows|10|x64|AMD",
-        short_name = "550",
-    ),
-    triggered_by = ["GPU FYI Win x64 Builder"],
-)
-
-ci.gpu_fyi_thin_tester(
     name = "Win10 FYI x64 Release (AMD RX 5500 XT)",
     console_view_entry = ci.console_view_entry(
         category = "Windows|10|x64|AMD",

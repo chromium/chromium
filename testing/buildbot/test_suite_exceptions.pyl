@@ -132,8 +132,6 @@
   },
   'angle_white_box_tests': {
     'remove_from': [
-      # https://crbug.com/1035178
-      'Win10 FYI x64 Release (AMD RX 550)',
       # https://crbug.com/1094629
       'Linux FYI Release (AMD R7 240)',
     ],
@@ -2928,8 +2926,6 @@
       # Always fails on older cards, flaky on newer cards.
       'Win7 FYI Debug (AMD)',
       'Win7 FYI Release (AMD)',
-      # crbug.com/1005814
-      'Win10 FYI x64 Release (AMD RX 550)',
     ],
   },
   'webgl_conformance_tests': {
@@ -3098,8 +3094,6 @@
   },
   'xr_browser_tests': {
     'remove_from': [
-      # Randomly hangs indefinitely https://crbug.com/1018896.
-      'Win10 FYI x64 Release (AMD RX 550)',
       # This exception probably needs to stay due to lack of capacity
       # on the Win AMD bots.
       'Win7 FYI Debug (AMD)',
