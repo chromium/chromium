@@ -13,6 +13,7 @@
 
 namespace blink {
 
+class GPUAdapter;
 class GPUSwapChain;
 class GPUSwapChainDescriptor;
 
@@ -63,7 +64,8 @@ class GPUCanvasContext : public CanvasRenderingContext {
   GPUSwapChain* configureSwapChain(const GPUSwapChainDescriptor* descriptor,
                                    ExceptionState&);
   ScriptPromise getSwapChainPreferredFormat(ScriptState* script_state,
-                                            const GPUDevice* device);
+                                            GPUDevice* device);
+  String getSwapChainPreferredFormat(const GPUAdapter* adapter);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(GPUCanvasContext);

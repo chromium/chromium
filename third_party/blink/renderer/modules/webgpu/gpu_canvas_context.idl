@@ -10,4 +10,5 @@
     [RaisesException] GPUSwapChain configureSwapChain(GPUSwapChainDescriptor descriptor);
 
     [CallWith=ScriptState] Promise<GPUTextureFormat> getSwapChainPreferredFormat(GPUDevice device);
+    GPUTextureFormat getSwapChainPreferredFormat(GPUAdapter adapter);
 };
