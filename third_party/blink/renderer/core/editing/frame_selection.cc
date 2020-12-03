@@ -1288,6 +1288,11 @@ LayoutSelectionStatus FrameSelection::ComputeLayoutSelectionStatus(
   return layout_selection_->ComputeSelectionStatus(cursor);
 }
 
+SelectionState FrameSelection::ComputeLayoutSelectionStateForCursor(
+    const NGInlineCursorPosition& position) const {
+  return layout_selection_->ComputeSelectionStateForCursor(position);
+}
+
 bool FrameSelection::IsDirectional() const {
   return is_directional_;
 }

@@ -582,10 +582,10 @@ static SelectionState GetSelectionStateFor(const LayoutText& layout_text) {
   return layout_text.GetSelectionState();
 }
 
-static SelectionState GetSelectionStateFor(const NGInlineCursor& cursor) {
-  DCHECK(cursor.Current().GetLayoutObject());
-  return GetSelectionStateFor(
-      To<LayoutText>(*cursor.Current().GetLayoutObject()));
+static SelectionState GetSelectionStateFor(
+    const NGInlineCursorPosition& position) {
+  DCHECK(position.GetLayoutObject());
+  return GetSelectionStateFor(To<LayoutText>(*position.GetLayoutObject()));
 }
 
 bool LayoutSelection::IsSelected(const LayoutObject& layout_object) {
@@ -665,7 +665,7 @@ LayoutSelectionStatus LayoutSelection::ComputeSelectionStatus(
   const NGTextOffset offset = cursor.Current().TextOffset();
   const unsigned start_offset = offset.start;
   const unsigned end_offset = offset.end;
-  switch (GetSelectionStateFor(cursor)) {
+  switch (GetSelectionStateFor(cursor.Current())) {
     case SelectionState::kStart: {
       const unsigned start_in_block = paint_range_->start_offset.value();
       const bool is_continuous = start_in_block <= end_offset;
@@ -706,6 +706,61 @@ LayoutSelectionStatus LayoutSelection::ComputeSelectionStatus(
     default:
       // This block is not included in selection.
       return {0, 0, SelectSoftLineBreak::kNotSelected};
+  }
+}
+
+SelectionState LayoutSelection::ComputeSelectionStateForCursor(
+    const NGInlineCursorPosition& position) const {
+  if (!position)
+    return SelectionState::kNone;
+
+  DCHECK(position.IsText());
+
+  // Selection on ellipsis is not supported.
+  if (position.IsEllipsis())
+    return SelectionState::kNone;
+
+  const NGTextOffset offset = position.TextOffset();
+  const unsigned start_offset = offset.start;
+  const unsigned end_offset = offset.end;
+  // Determine the state of the overall selection, relative to the LayoutObject
+  // associated with the current cursor position. This state will allow us know
+  // which offset comparisons are valid, and determine if the selection
+  // endpoints fall within the current cursor position.
+  switch (GetSelectionStateFor(position)) {
+    case SelectionState::kStart: {
+      const unsigned start_in_block = paint_range_->start_offset.value();
+      return start_offset <= start_in_block && start_in_block <= end_offset
+                 ? SelectionState::kStart
+                 : SelectionState::kNone;
+    }
+    case SelectionState::kEnd: {
+      const unsigned end_in_block = paint_range_->end_offset.value();
+      return start_offset <= end_in_block && end_in_block <= end_offset
+                 ? SelectionState::kEnd
+                 : SelectionState::kNone;
+    }
+    case SelectionState::kStartAndEnd: {
+      const unsigned start_in_block = paint_range_->start_offset.value();
+      const unsigned end_in_block = paint_range_->end_offset.value();
+      const bool is_start_in_current_cursor =
+          start_offset <= start_in_block && start_in_block <= end_offset;
+      const bool is_end_in_current_cursor =
+          start_offset <= end_in_block && end_in_block <= end_offset;
+      if (is_start_in_current_cursor && is_end_in_current_cursor)
+        return SelectionState::kStartAndEnd;
+      else if (is_start_in_current_cursor)
+        return SelectionState::kStart;
+      else if (is_end_in_current_cursor)
+        return SelectionState::kEnd;
+      else
+        return SelectionState::kInside;
+    }
+    case SelectionState::kInside: {
+      return SelectionState::kInside;
+    }
+    default:
+      return SelectionState::kNone;
   }
 }
 

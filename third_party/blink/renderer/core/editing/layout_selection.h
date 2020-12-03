@@ -33,10 +33,12 @@ class IntRect;
 class LayoutObject;
 class LayoutText;
 class NGInlineCursor;
+class NGInlineCursorPosition;
 class FrameSelection;
 struct LayoutSelectionStatus;
 struct LayoutTextSelectionStatus;
 class SelectionPaintRange;
+enum class SelectionState;
 
 class LayoutSelection final : public GarbageCollected<LayoutSelection> {
  public:
@@ -50,6 +52,15 @@ class LayoutSelection final : public GarbageCollected<LayoutSelection> {
 
   LayoutTextSelectionStatus ComputeSelectionStatus(const LayoutText&) const;
   LayoutSelectionStatus ComputeSelectionStatus(const NGInlineCursor&) const;
+
+  // Compute the layout selection state relative to the current item of the
+  // given NGInlineCursor. E.g. a state of kStart means that the selection
+  // starts within the position (and ends elsewhere), where kStartAndEnd means
+  // the selection both starts and ends within the position. This information is
+  // used at paint time to determine the edges of the layout selection.
+  SelectionState ComputeSelectionStateForCursor(
+      const NGInlineCursorPosition&) const;
+
   static bool IsSelected(const LayoutObject&);
 
   void ContextDestroyed();
