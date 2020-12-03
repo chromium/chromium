@@ -4,13 +4,23 @@
 
 #include "base/macros.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/browser/sync/test/integration/search_engines_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/test/base/search_test_utils.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sync/driver/profile_sync_service.h"
+#include "components/sync/engine_impl/loopback_server/loopback_server_entity.h"
+#include "components/sync/engine_impl/loopback_server/persistent_unique_client_entity.h"
+#include "components/sync/model/sync_data.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
+
+using search_engines_helper::HasSearchEngine;
+using testing::NotNull;
 
 class SingleClientSearchEnginesSyncTest : public SyncTest {
  public:
@@ -35,6 +45,18 @@ class SingleClientSearchEnginesSyncTest : public SyncTest {
     // TODO(crbug.com/1137771): rewrite test to not use verifier.
     return true;
   }
+
+  std::unique_ptr<syncer::LoopbackServerEntity> CreateFromTemplateURL(
+      std::unique_ptr<TemplateURL> turl) {
+    DCHECK(turl);
+    syncer::SyncData sync_data =
+        TemplateURLService::CreateSyncDataFromTemplateURL(*turl);
+    return syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+        /*non_unique_name=*/sync_data.GetTitle(),
+        /*client_tag=*/turl->sync_guid(), sync_data.GetSpecifics(),
+        /*creation_time=*/0,
+        /*last_modified_time=*/0);
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientSearchEnginesSyncTest, Sanity) {
@@ -44,4 +66,46 @@ IN_PROC_BROWSER_TEST_F(SingleClientSearchEnginesSyncTest, Sanity) {
                                          /*keyword=*/"test0");
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
   ASSERT_TRUE(search_engines_helper::ServiceMatchesVerifier(0));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientSearchEnginesSyncTest,
+                       DuplicateKeywordEnginesAllFromSync) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  TemplateURLService* service =
+      search_engines_helper::GetServiceForBrowserContext(0);
+  ASSERT_FALSE(HasSearchEngine(/*profile_index=*/0, "key1"));
+  ASSERT_FALSE(service->GetTemplateURLForGUID("guid1"));
+  ASSERT_FALSE(service->GetTemplateURLForGUID("guid2"));
+  ASSERT_FALSE(service->GetTemplateURLForGUID("guid3"));
+
+  // Create two TemplateURLs with the same keyword, but different guids.
+  // "guid2" is newer, so it should be treated as better.
+  fake_server_->InjectEntity(CreateFromTemplateURL(CreateTestTemplateURL(
+      /*keyword=*/base::ASCIIToUTF16("key1"), /*url=*/"http://key1.com",
+      /*guid=*/"guid1", /*last_mod=*/10)));
+  fake_server_->InjectEntity(CreateFromTemplateURL(CreateTestTemplateURL(
+      /*keyword=*/base::ASCIIToUTF16("key1"), /*url=*/"http://key1.com",
+      /*guid=*/"guid2", /*last_mod=*/5)));
+  fake_server_->InjectEntity(CreateFromTemplateURL(CreateTestTemplateURL(
+      /*keyword=*/base::ASCIIToUTF16("key1"), /*url=*/"http://key1.com",
+      /*guid=*/"guid3", /*last_mod=*/5)));
+
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+
+  EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
+  TemplateURL* guid1 = service->GetTemplateURLForGUID("guid1");
+  TemplateURL* guid2 = service->GetTemplateURLForGUID("guid2");
+  TemplateURL* guid3 = service->GetTemplateURLForGUID("guid3");
+  ASSERT_THAT(guid1, NotNull());
+  ASSERT_THAT(guid2, NotNull());
+  ASSERT_THAT(guid3, NotNull());
+  EXPECT_EQ(base::ASCIIToUTF16("key1"), guid1->keyword());
+  // Due to uniquification, the keyword for "guid2" was reset to "key1.com".
+  EXPECT_EQ(base::ASCIIToUTF16("key1.com"), guid2->keyword());
+  // Due to uniquification, the keyword for "guid3" was reset to "key1_".
+  EXPECT_EQ(base::ASCIIToUTF16("key1_"), guid3->keyword());
+
+  EXPECT_EQ(guid1,
+            service->GetTemplateURLForKeyword(base::ASCIIToUTF16("key1")));
 }

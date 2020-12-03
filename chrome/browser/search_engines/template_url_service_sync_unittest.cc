@@ -185,17 +185,6 @@ class TemplateURLServiceSyncTest : public testing::Test {
   std::unique_ptr<syncer::SyncChangeProcessor> PassProcessor();
   std::unique_ptr<syncer::SyncErrorFactory> CreateAndPassSyncErrorFactory();
 
-  // Creates a TemplateURL with some test values. The caller owns the returned
-  // TemplateURL*.
-  std::unique_ptr<TemplateURL> CreateTestTemplateURL(
-      const base::string16& keyword,
-      const std::string& url,
-      const std::string& guid = std::string(),
-      time_t last_mod = 100,
-      bool safe_for_autoreplace = false,
-      bool created_by_policy = false,
-      int prepopulate_id = 999999) const;
-
   // Verifies the two TemplateURLs are equal.
   // TODO(stevet): Share this with TemplateURLServiceTest.
   void AssertEquals(const TemplateURL& expected,
@@ -287,29 +276,6 @@ std::unique_ptr<syncer::SyncErrorFactory>
 TemplateURLServiceSyncTest::CreateAndPassSyncErrorFactory() {
   return std::unique_ptr<syncer::SyncErrorFactory>(
       new syncer::SyncErrorFactoryMock());
-}
-
-std::unique_ptr<TemplateURL> TemplateURLServiceSyncTest::CreateTestTemplateURL(
-    const base::string16& keyword,
-    const std::string& url,
-    const std::string& guid,
-    time_t last_mod,
-    bool safe_for_autoreplace,
-    bool created_by_policy,
-    int prepopulate_id) const {
-  TemplateURLData data;
-  data.SetShortName(ASCIIToUTF16("unittest"));
-  data.SetKeyword(keyword);
-  data.SetURL(url);
-  data.favicon_url = GURL("http://favicon.url");
-  data.safe_for_autoreplace = safe_for_autoreplace;
-  data.date_created = Time::FromTimeT(100);
-  data.last_modified = Time::FromTimeT(last_mod);
-  data.created_by_policy = created_by_policy;
-  data.prepopulate_id = prepopulate_id;
-  if (!guid.empty())
-    data.sync_guid = guid;
-  return std::make_unique<TemplateURL>(data);
 }
 
 void TemplateURLServiceSyncTest::AssertEquals(const TemplateURL& expected,

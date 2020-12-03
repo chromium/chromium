@@ -30,6 +30,18 @@ void SetManagedDefaultSearchPreferences(const TemplateURLData& managed_data,
 // Removes all the managed preferences for the default search provider.
 void RemoveManagedDefaultSearchPreferences(TestingProfile* profile);
 
+// Creates a TemplateURL with some test values. The caller owns the returned
+// TemplateURL*.
+// TODO(tommycli): Change last_mod to more verbose name and make it base::Time.
+std::unique_ptr<TemplateURL> CreateTestTemplateURL(
+    const base::string16& keyword,
+    const std::string& url,
+    const std::string& guid = std::string(),
+    time_t last_mod = 100,
+    bool safe_for_autoreplace = false,
+    bool created_by_policy = false,
+    int prepopulate_id = 999999);
+
 class TemplateURLServiceTestUtil : public TemplateURLServiceObserver {
  public:
   TemplateURLServiceTestUtil();
