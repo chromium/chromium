@@ -230,21 +230,6 @@ class TestPasswordProtectionService : public MockPasswordProtectionService {
   DISALLOW_COPY_AND_ASSIGN(TestPasswordProtectionService);
 };
 
-class MockPasswordProtectionNavigationThrottle
-    : public PasswordProtectionNavigationThrottle {
- public:
-  MockPasswordProtectionNavigationThrottle(
-      content::NavigationHandle* navigation_handle,
-      scoped_refptr<PasswordProtectionRequest> request,
-      bool is_warning_showing)
-      : PasswordProtectionNavigationThrottle(navigation_handle,
-                                             request,
-                                             is_warning_showing) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPasswordProtectionNavigationThrottle);
-};
-
 class PasswordProtectionServiceTest : public ::testing::TestWithParam<bool> {
  public:
   PasswordProtectionServiceTest()
@@ -1456,7 +1441,7 @@ TEST_P(PasswordProtectionServiceTest, TestRequestCancelOnTimeout) {
   InitializeAndStartPasswordOnFocusRequest(true /* match whitelist */,
                                            10000 /* timeout in ms */,
                                            web_contents.get());
-  auto throttle = std::make_unique<MockPasswordProtectionNavigationThrottle>(
+  auto throttle = std::make_unique<PasswordProtectionNavigationThrottle>(
       nullptr, request_, false);
   EXPECT_EQ(1U, GetNumberOfNavigationThrottles());
   request_->Cancel(true /* timeout */);
@@ -1468,7 +1453,7 @@ TEST_P(PasswordProtectionServiceTest, TestRequestCancelNotOnTimeout) {
   InitializeAndStartPasswordOnFocusRequest(true /* match whitelist */,
                                            10000 /* timeout in ms */,
                                            web_contents.get());
-  auto throttle = std::make_unique<MockPasswordProtectionNavigationThrottle>(
+  auto throttle = std::make_unique<PasswordProtectionNavigationThrottle>(
       nullptr, request_, false);
   EXPECT_EQ(1U, GetNumberOfNavigationThrottles());
   request_->Cancel(false /* timeout */);
