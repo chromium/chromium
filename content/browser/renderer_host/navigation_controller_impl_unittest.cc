@@ -224,12 +224,9 @@ class NavigationControllerTest : public RenderViewHostImplTestHarness,
 
 class TestWebContentsDelegate : public WebContentsDelegate {
  public:
-  TestWebContentsDelegate()
-      : navigation_state_change_count_(0), repost_form_warning_count_(0) {}
+  TestWebContentsDelegate() = default;
 
   int navigation_state_change_count() { return navigation_state_change_count_; }
-
-  int repost_form_warning_count() { return repost_form_warning_count_; }
 
   // Keep track of whether the tab has notified us of a navigation state change.
   void NavigationStateChanged(WebContents* source,
@@ -237,16 +234,9 @@ class TestWebContentsDelegate : public WebContentsDelegate {
     navigation_state_change_count_++;
   }
 
-  void ShowRepostFormWarningDialog(WebContents* source) override {
-    repost_form_warning_count_++;
-  }
-
  private:
   // The number of times NavigationStateChanged has been called.
-  int navigation_state_change_count_;
-
-  // The number of times ShowRepostFormWarningDialog() was called.
-  int repost_form_warning_count_;
+  int navigation_state_change_count_ = 0;
 };
 
 // Observer that records the LoadCommittedDetails from the most recent commit.
@@ -4109,45 +4099,6 @@ TEST_F(NavigationControllerTest, ClearHistoryList) {
   EXPECT_FALSE(controller.CanGoBack());
   EXPECT_FALSE(controller.CanGoForward());
   EXPECT_EQ(url4, controller.GetVisibleEntry()->GetURL());
-}
-
-TEST_F(NavigationControllerTest, PostThenReplaceStateThenReload) {
-  std::unique_ptr<TestWebContentsDelegate> delegate(
-      new TestWebContentsDelegate());
-  EXPECT_FALSE(contents()->GetDelegate());
-  contents()->SetDelegate(delegate.get());
-
-  // Submit a form.
-  auto simulator = NavigationSimulatorImpl::CreateRendererInitiated(
-      GURL("http://foo"), main_test_rfh());
-  simulator->SetIsFormSubmission(true);
-  simulator->SetIsPostWithId(123);
-  simulator->Commit();
-
-  // Now reload. We should show repost warning dialog.
-  {
-    NavigationControllerImpl::ScopedShowRepostDialogForTesting show_repost;
-    controller_impl().Reload(ReloadType::NORMAL, true);
-  }
-  const int expected_repost_form_warning_count = 1;
-  EXPECT_EQ(expected_repost_form_warning_count,
-            delegate->repost_form_warning_count());
-
-  // history.replaceState() is called.
-  GURL replace_url("http://foo#foo");
-  simulator = NavigationSimulatorImpl::CreateRendererInitiated(
-      GURL("http://foo#foo"), main_test_rfh());
-  simulator->set_did_create_new_entry(false);
-  simulator->Commit();
-
-  // Now reload. replaceState overrides the POST, so we should not show a
-  // repost warning dialog.
-  {
-    NavigationControllerImpl::ScopedShowRepostDialogForTesting show_repost;
-    controller_impl().Reload(ReloadType::NORMAL, true);
-  }
-  EXPECT_EQ(expected_repost_form_warning_count,
-            delegate->repost_form_warning_count());
 }
 
 // Tests that if a stale navigation comes back from the renderer, it is properly

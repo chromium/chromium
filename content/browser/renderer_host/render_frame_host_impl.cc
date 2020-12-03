@@ -2622,6 +2622,15 @@ void RenderFrameHostImpl::DidNavigate(
   if (!params.url_is_unreachable)
     last_successful_url_ = params.url;
 
+  // Set the last committed HTTP method. Note that we're setting this here
+  // instead of in DidCommitNewDocument because same-document navigations
+  // triggered by the History API (history.replaceState/pushState) will reset
+  // the method to "GET" (while fragment navigations won't).
+  // TODO(arthursonzogni): Stop relying on DidCommitProvisionalLoadParams. Use
+  // the NavigationRequest instead. The browser process doesn't need to rely on
+  // the renderer process.
+  last_http_method_ = params.method;
+
   if (did_create_new_document)
     DidCommitNewDocument(params, navigation_request);
 
@@ -3026,7 +3035,7 @@ void RenderFrameHostImpl::DidCommitBackForwardCacheNavigation(
   is_loading_ = true;
 
   DidCommitNavigationInternal(std::move(owned_request), std::move(params),
-                              /*is_same_document_navigation=*/false);
+                              /*same_document_params=*/nullptr);
 
   // The page is already loaded since it came from the cache, so fire the stop
   // loading event.
@@ -3058,7 +3067,8 @@ void RenderFrameHostImpl::DidCommitPerNavigationMojoInterfaceNavigation(
 }
 
 void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
-    mojom::DidCommitProvisionalLoadParamsPtr params) {
+    mojom::DidCommitProvisionalLoadParamsPtr params,
+    mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params) {
   ScopedActiveURL scoped_active_url(params->url,
                                     frame_tree()->root()->current_origin());
   ScopedCommitStateResetter commit_state_resetter(this);
@@ -3091,7 +3101,7 @@ void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
   if (!DidCommitNavigationInternal(
           is_browser_initiated ? std::move(same_document_navigation_request_)
                                : nullptr,
-          std::move(params), true /* is_same_document_navigation*/)) {
+          std::move(params), std::move(same_document_params))) {
     return;
   }
 
@@ -8049,7 +8059,9 @@ RenderFrameHostImpl::CreateNavigationRequestForCommit(
     const NavigationGesture& gesture,
     const std::vector<GURL>& redirects,
     const blink::PageState& page_state,
-    bool is_same_document) {
+    bool is_same_document,
+    bool is_same_document_history_api_navigation) {
+  DCHECK(!is_same_document_history_api_navigation || is_same_document);
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter;
   // We don't switch the COEP reporter on same-document navigations, so create
   // one only for cross-document navigations.
@@ -8067,10 +8079,18 @@ RenderFrameHostImpl::CreateNavigationRequestForCommit(
     // history navigations.
     web_bundle_navigation_info = web_bundle_handle_->navigation_info()->Clone();
   }
+  std::string method = "GET";
+  if (is_same_document && !is_same_document_history_api_navigation) {
+    // Preserve the HTTP method used by the last navigation if this is a
+    // same-document navigation that is not triggered by the history API
+    // (history.replaceState/pushState). See spec:
+    // https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps
+    method = last_http_method_;
+  }
   return NavigationRequest::CreateForCommit(
       frame_tree_node_, this, is_same_document, url, origin,
-      std::move(referrer), transition, should_replace_current_entry, gesture,
-      redirects, page_state, std::move(coep_reporter),
+      std::move(referrer), transition, should_replace_current_entry, method,
+      gesture, redirects, page_state, std::move(coep_reporter),
       std::move(web_bundle_navigation_info));
 }
 
@@ -8432,7 +8452,8 @@ void RenderFrameHostImpl::UpdateSiteURL(const GURL& url,
 bool RenderFrameHostImpl::DidCommitNavigationInternal(
     std::unique_ptr<NavigationRequest> navigation_request,
     mojom::DidCommitProvisionalLoadParamsPtr params,
-    bool is_same_document_navigation) {
+    mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params) {
+  const bool is_same_document_navigation = !!same_document_params;
   // Sanity-check the page transition for frame type.
   DCHECK_EQ(ui::PageTransitionIsMainFrame(params->transition), !GetParent());
   if (navigation_request &&
@@ -8519,7 +8540,9 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
         params->url, params->origin, params->referrer.Clone(),
         params->transition, params->should_replace_current_entry,
         params->gesture, params->redirects, params->page_state,
-        is_same_document_navigation);
+        is_same_document_navigation,
+        same_document_params &&
+            same_document_params->is_history_api_navigation);
   }
 
   DCHECK(navigation_request);
@@ -8671,11 +8694,6 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // the NavigationRequest instead. The browser process doesn't need to rely on
   // the renderer process.
   last_http_status_code_ = params.http_status_code;
-
-  // TODO(arthursonzogni): Stop relying on DidCommitProvisionalLoadParams. Use
-  // the NavigationRequest instead. The browser process doesn't need to rely on
-  // the renderer process.
-  last_http_method_ = params.method;
 
   renderer_reported_scheduler_tracked_features_ = 0;
   browser_reported_scheduler_tracked_features_ = 0;
@@ -9025,7 +9043,7 @@ void RenderFrameHostImpl::DidCommitNavigation(
   }
 
   if (!DidCommitNavigationInternal(std::move(request), std::move(params),
-                                   false /* is_same_document_navigation */)) {
+                                   nullptr /* same_document_params */)) {
     return;
   }
 

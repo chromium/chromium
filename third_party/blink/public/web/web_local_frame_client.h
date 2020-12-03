@@ -399,7 +399,9 @@ class BLINK_EXPORT WebLocalFrameClient {
   // For example, the navigation may have just resulted in scrolling to a
   // named anchor or a PopState event may have been dispatched.
   virtual void DidFinishSameDocumentNavigation(WebHistoryCommitType,
-                                               bool content_initiated) {}
+                                               bool content_initiated,
+                                               bool is_history_api_navigation) {
+  }
 
   // Called upon update to scroll position, document state, and other
   // non-navigational events related to the data held by WebHistoryItem.

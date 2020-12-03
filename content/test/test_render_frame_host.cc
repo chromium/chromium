@@ -274,7 +274,10 @@ void TestRenderFrameHost::SendNavigateWithParamsAndInterfaceParams(
     bool was_within_same_document) {
   last_commit_was_error_page_ = params->url_is_unreachable;
   if (was_within_same_document) {
-    DidCommitSameDocumentNavigation(std::move(params));
+    auto same_doc_params = mojom::DidCommitSameDocumentNavigationParams::New();
+    same_doc_params->is_history_api_navigation = false;
+    DidCommitSameDocumentNavigation(std::move(params),
+                                    std::move(same_doc_params));
   } else {
     DidCommitProvisionalLoad(std::move(params), std::move(interface_params));
   }

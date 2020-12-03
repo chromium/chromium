@@ -212,6 +212,7 @@ class CONTENT_EXPORT NavigationRequest
       blink::mojom::ReferrerPtr referrer,
       const ui::PageTransition& transition,
       bool should_replace_current_entry,
+      const std::string& method,
       const NavigationGesture& gesture,
       const std::vector<GURL>& redirects,
       const blink::PageState& page_state,

@@ -166,6 +166,18 @@ struct DidCommitProvisionalLoadParams {
   mojo_base.mojom.UnguessableToken? embedding_token;
 };
 
+// Similar to DidCommitProvisionalLoadParams, but only used for
+// FrameHost.DidCommitSameDocumentNavigation. Eventually, all parameters in
+// DidCommitProvisionalLoadParams will either get removed or moved to
+// DidCommitSameDocumentNavigationParams.
+// See https://crbug.com/1133115, https://crbug.com/1131832
+struct DidCommitSameDocumentNavigationParams {
+  // Will be true if the navigation is the result of history.pushState or
+  // history.replaceState.
+  // TODO(crbug.com/1131832): Port SameDocumentNavigationSource enum to mojo
+  // and use that instead of bool here.
+  bool is_history_api_navigation = false;
+};
 
 interface NavigationClient {
   // Tells the renderer that a navigation is ready to commit.

@@ -150,7 +150,9 @@ class MockFrameHost : public mojom::FrameHost {
   }
 
   void DidCommitSameDocumentNavigation(
-      mojom::DidCommitProvisionalLoadParamsPtr params) override {
+      mojom::DidCommitProvisionalLoadParamsPtr params,
+      mojom::DidCommitSameDocumentNavigationParamsPtr same_doc_params)
+      override {
     last_commit_params_ = std::move(params);
   }
 

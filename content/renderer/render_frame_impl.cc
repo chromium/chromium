@@ -4230,13 +4230,13 @@ void RenderFrameImpl::DidCommitNavigation(
       GetTransitionType(frame_->GetDocumentLoader(), IsMainFrame());
 
   DidCommitNavigationInternal(
-      commit_type, false /* was_within_same_document */, transition,
-      sandbox_flags, feature_policy_header, document_policy_header,
+      commit_type, transition, sandbox_flags, feature_policy_header,
+      document_policy_header,
       should_reset_browser_interface_broker
           ? mojom::DidCommitProvisionalLoadInterfaceParams::New(
                 std::move(browser_interface_broker_receiver))
           : nullptr,
-      GetWebFrame()->GetEmbeddingToken());
+      nullptr /* same_document_params */, GetWebFrame()->GetEmbeddingToken());
 
   // If we end up reusing this WebRequest (for example, due to a #ref click),
   // we don't want the transition type to persist.  Just clear it.
@@ -4372,7 +4372,8 @@ void RenderFrameImpl::DidFinishLoad() {
 
 void RenderFrameImpl::DidFinishSameDocumentNavigation(
     blink::WebHistoryCommitType commit_type,
-    bool content_initiated) {
+    bool content_initiated,
+    bool is_history_api_navigation) {
   TRACE_EVENT1("navigation,rail",
                "RenderFrameImpl::didFinishSameDocumentNavigation", "id",
                routing_id_);
@@ -4385,14 +4386,16 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
 
   ui::PageTransition transition =
       GetTransitionType(frame_->GetDocumentLoader(), IsMainFrame());
+  auto same_document_params =
+      mojom::DidCommitSameDocumentNavigationParams::New();
+  same_document_params->is_history_api_navigation = is_history_api_navigation;
   DidCommitNavigationInternal(
-      commit_type,
-      true,  // was_within_same_document
-      transition, network::mojom::WebSandboxFlags(),
+      commit_type, transition, network::mojom::WebSandboxFlags(),
       blink::ParsedFeaturePolicy(),         // feature_policy_header
       blink::DocumentPolicyFeatureState(),  // document_policy_header
       nullptr,                              // interface_params
-      base::nullopt                         // embedding_token
+      std::move(same_document_params),
+      base::nullopt  // embedding_token
   );
 
   // If we end up reusing this WebRequest (for example, due to a #ref click),
@@ -5186,14 +5189,14 @@ void RenderFrameImpl::UpdateStateForCommit(
 
 void RenderFrameImpl::DidCommitNavigationInternal(
     blink::WebHistoryCommitType commit_type,
-    bool was_within_same_document,
     ui::PageTransition transition,
     network::mojom::WebSandboxFlags sandbox_flags,
     const blink::ParsedFeaturePolicy& feature_policy_header,
     const blink::DocumentPolicyFeatureState& document_policy_header,
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params,
+    mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params,
     const base::Optional<base::UnguessableToken>& embedding_token) {
-  DCHECK(!(was_within_same_document && interface_params));
+  DCHECK(!(same_document_params && interface_params));
   UpdateStateForCommit(commit_type, transition);
 
   if (render_view_->renderer_wide_named_frame_lookup())
@@ -5208,8 +5211,9 @@ void RenderFrameImpl::DidCommitNavigationInternal(
       commit_type, transition, sandbox_flags, feature_policy_header,
       document_policy_header, embedding_token);
 
-  if (was_within_same_document) {
-    GetFrameHost()->DidCommitSameDocumentNavigation(std::move(params));
+  if (same_document_params) {
+    GetFrameHost()->DidCommitSameDocumentNavigation(
+        std::move(params), std::move(same_document_params));
   } else {
     NavigationState* navigation_state =
         NavigationState::FromDocumentLoader(frame_->GetDocumentLoader());

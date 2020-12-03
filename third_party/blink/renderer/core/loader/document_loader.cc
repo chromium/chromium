@@ -483,7 +483,11 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   original_url_ = new_url;
   url_ = new_url;
   replaces_current_history_item_ = type != WebFrameLoadType::kStandard;
-  if (same_document_navigation_source == kSameDocumentNavigationHistoryApi) {
+  bool is_history_api_navigation =
+      (same_document_navigation_source == kSameDocumentNavigationHistoryApi);
+  if (is_history_api_navigation) {
+    // See spec:
+    // https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps
     http_method_ = http_names::kGET;
     http_body_ = nullptr;
   }
@@ -502,13 +506,12 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
             same_document_navigation_source);
   }
 
-  SetHistoryItemStateForCommit(
-      history_item_.Get(), type,
-      same_document_navigation_source == kSameDocumentNavigationHistoryApi
-          ? HistoryNavigationType::kHistoryApi
-          : HistoryNavigationType::kFragment);
+  SetHistoryItemStateForCommit(history_item_.Get(), type,
+                               is_history_api_navigation
+                                   ? HistoryNavigationType::kHistoryApi
+                                   : HistoryNavigationType::kFragment);
   history_item_->SetDocumentState(frame_->GetDocument()->GetDocumentState());
-  if (same_document_navigation_source == kSameDocumentNavigationHistoryApi) {
+  if (is_history_api_navigation) {
     history_item_->SetStateObject(std::move(data));
     history_item_->SetScrollRestorationType(scroll_restoration_type);
   }
@@ -518,7 +521,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       FrameScheduler::NavigationType::kSameDocument);
 
   GetLocalFrameClient().DidFinishSameDocumentNavigation(
-      history_item_.Get(), commit_type, is_content_initiated);
+      history_item_.Get(), commit_type, is_content_initiated,
+      is_history_api_navigation);
   probe::DidNavigateWithinDocument(frame_);
   if (!was_loading) {
     GetLocalFrameClient().DidStopLoading();

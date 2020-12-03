@@ -2073,7 +2073,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params);
 
   void DidCommitSameDocumentNavigation(
-      mojom::DidCommitProvisionalLoadParamsPtr params) override;
+      mojom::DidCommitProvisionalLoadParamsPtr params,
+      mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params)
+      override;
   void BeginNavigation(
       mojom::CommonNavigationParamsPtr common_params,
       mojom::BeginNavigationParamsPtr begin_params,
@@ -2284,7 +2286,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const NavigationGesture& gesture,
       const std::vector<GURL>& redirects,
       const blink::PageState& page_state,
-      bool is_same_document);
+      bool is_same_document,
+      bool is_same_document_history_api_navigation);
 
   // Helper to process the beforeunload completion callback. |proceed| indicates
   // whether the navigation or tab close should be allowed to proceed.  If
@@ -2410,7 +2413,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool DidCommitNavigationInternal(
       std::unique_ptr<NavigationRequest> navigation_request,
       mojom::DidCommitProvisionalLoadParamsPtr params,
-      bool is_same_document_navigation);
+      mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params);
 
   // Called when we received the confirmation a new document committed in the
   // renderer. It was created from the |navigation|.

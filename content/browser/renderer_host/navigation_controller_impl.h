@@ -340,8 +340,13 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   FRIEND_TEST_ALL_PREFIXES(TimeSmoother, SingleDuplicate);
   FRIEND_TEST_ALL_PREFIXES(TimeSmoother, ManyDuplicates);
   FRIEND_TEST_ALL_PREFIXES(TimeSmoother, ClockBackwardsJump);
-  FRIEND_TEST_ALL_PREFIXES(NavigationControllerTest,
+  FRIEND_TEST_ALL_PREFIXES(NavigationControllerBrowserTest, PostThenReload);
+  FRIEND_TEST_ALL_PREFIXES(NavigationControllerBrowserTest,
                            PostThenReplaceStateThenReload);
+  FRIEND_TEST_ALL_PREFIXES(NavigationControllerBrowserTest,
+                           PostThenPushStateThenReload);
+  FRIEND_TEST_ALL_PREFIXES(NavigationControllerBrowserTest,
+                           PostThenFragmentNavigationThenReload);
 
   // Defines possible actions that are returned by
   // DetermineActionForHistoryNavigation().

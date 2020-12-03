@@ -464,7 +464,8 @@ interface FrameHost {
   // Sent by the renderer to indicate that a same document navigation
   // committed in the renderer process.
   DidCommitSameDocumentNavigation(
-      DidCommitProvisionalLoadParams params);
+      DidCommitProvisionalLoadParams params,
+      DidCommitSameDocumentNavigationParams same_document_params);
 
   // Sent by the renderer to request a navigation.
   // |blob_url_token| should be non-null when this is a navigation to a blob:

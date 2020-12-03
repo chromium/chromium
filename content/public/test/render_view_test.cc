@@ -826,7 +826,7 @@ void RenderViewTest::OnSameDocumentNavigation(blink::WebLocalFrame* frame,
   view->GetMainRenderFrame()->DidFinishSameDocumentNavigation(
       is_new_navigation ? blink::kWebStandardCommit
                         : blink::kWebHistoryInertCommit,
-      false /* content_initiated */);
+      false /* content_initiated */, false /* is_history_api_navigation */);
 }
 
 void RenderViewTest::SetUseZoomForDSFEnabled(bool enabled) {

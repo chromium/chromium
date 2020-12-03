@@ -624,7 +624,8 @@ class CONTENT_EXPORT RenderFrameImpl
   void DidHandleOnloadEvents() override;
   void DidFinishLoad() override;
   void DidFinishSameDocumentNavigation(blink::WebHistoryCommitType commit_type,
-                                       bool content_initiated) override;
+                                       bool content_initiated,
+                                       bool is_history_api_navigation) override;
   void DidUpdateCurrentHistoryItem() override;
   base::UnguessableToken GetDevToolsFrameToken() override;
   void AbortClientNavigation() override;
@@ -1086,12 +1087,12 @@ class CONTENT_EXPORT RenderFrameImpl
   // a commit message to the browser process.
   void DidCommitNavigationInternal(
       blink::WebHistoryCommitType commit_type,
-      bool was_within_same_document,
       ui::PageTransition transition,
       network::mojom::WebSandboxFlags sandbox_flags,
       const blink::ParsedFeaturePolicy& feature_policy_header,
       const blink::DocumentPolicyFeatureState& document_policy_header,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params,
+      mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params,
       const base::Optional<base::UnguessableToken>& embedding_token);
 
   blink::WebComputedAXTree* GetOrCreateWebComputedAXTree() override;

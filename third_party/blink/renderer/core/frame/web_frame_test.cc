@@ -7595,8 +7595,10 @@ class TestDidNavigateCommitTypeWebFrameClient
   ~TestDidNavigateCommitTypeWebFrameClient() override = default;
 
   // frame_test_helpers::TestWebFrameClient:
-  void DidFinishSameDocumentNavigation(WebHistoryCommitType type,
-                                       bool content_initiated) override {
+  void DidFinishSameDocumentNavigation(
+      WebHistoryCommitType type,
+      bool content_initiated,
+      bool is_history_api_navigation) override {
     last_commit_type_ = type;
   }
 
