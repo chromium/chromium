@@ -13,10 +13,10 @@
 #include "ios/web/common/features.h"
 
 const base::Feature kEditBookmarksIOS{"EditBookmarksIOS",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kManagedBookmarksIOS{"ManagedBookmarksIOS",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kEnableIncognitoModeAvailabilityIOS{
     "EnableIncognitoModeAvailabilityIOS", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -59,13 +59,8 @@ bool ShouldInstallEnterprisePolicyHandlers() {
   return IsEnterprisePolicyEnabled();
 }
 
-bool ShouldInstallManagedBookmarksPolicyHandler() {
-  return HasSwitch(switches::kInstallManagedBookmarksHandler);
-}
-
 bool IsManagedBookmarksEnabled() {
-  return ShouldInstallManagedBookmarksPolicyHandler() &&
-         base::FeatureList::IsEnabled(kManagedBookmarksIOS);
+  return base::FeatureList::IsEnabled(kManagedBookmarksIOS);
 }
 
 bool ShouldInstallURLBlocklistPolicyHandlers() {

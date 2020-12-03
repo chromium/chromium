@@ -409,6 +409,7 @@ TEST_F(PopupMenuMediatorTest, TestItemsStatusOnNTP) {
 TEST_F(PopupMenuMediatorTest, TestReadLaterDisabled) {
   const GURL kUrl("https://chromium.test");
   web_state_->SetCurrentURL(kUrl);
+  CreatePrefs();
   CreateMediator(PopupMenuTypeToolsMenu, /*is_incognito=*/NO,
                  /*trigger_incognito_hint=*/NO);
   mediator_.webStateList = web_state_list_.get();
@@ -416,6 +417,7 @@ TEST_F(PopupMenuMediatorTest, TestReadLaterDisabled) {
       browser_.get(), OverlayModality::kWebContentArea);
   FakePopupMenuConsumer* consumer = [[FakePopupMenuConsumer alloc] init];
   mediator_.popupMenu = consumer;
+  mediator_.prefService = prefs_.get();
   SetUpActiveWebState();
   ASSERT_TRUE(HasItem(consumer, kToolsMenuReadLater, /*enabled=*/YES));
 
@@ -512,12 +514,14 @@ TEST_F(PopupMenuMediatorTest, TestBookmarksToolsMenuButtons) {
   web_state_->SetCurrentURL(url);
   CreateMediator(PopupMenuTypeToolsMenu, /*is_incognito=*/NO,
                  /*trigger_incognito_hint=*/NO);
+  CreatePrefs();
   SetUpBookmarks();
   bookmarks::AddIfNotBookmarked(bookmark_model_, url,
                                 base::SysNSStringToUTF16(@"Test bookmark"));
   mediator_.webStateList = web_state_list_.get();
   FakePopupMenuConsumer* consumer = [[FakePopupMenuConsumer alloc] init];
   mediator_.popupMenu = consumer;
+  mediator_.prefService = prefs_.get();
 
   EXPECT_TRUE(HasItem(consumer, kToolsMenuAddToBookmarks, /*enabled=*/YES));
 

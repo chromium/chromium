@@ -1364,8 +1364,8 @@
         'chrome.*:8-',
         'chrome_os:11-',
         'android:30-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -1787,8 +1787,8 @@
         'chrome.*:8-',
         'chrome_os:11-',
         'android:30-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -2306,8 +2306,12 @@
       'owners': ['file://components/policy/resources/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:8-', 'chrome_os:11-', 'android:39-'],
-      'future_on': [ 'ios' ],
+      'supported_on': [
+        'chrome.*:8-',
+        'chrome_os:11-',
+        'android:39-',
+        'ios:88-',
+      ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -3082,8 +3086,8 @@
         'chrome.*:8-',
         'chrome_os:11-',
         'android:30-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -3135,8 +3139,8 @@
         'chrome.*:83-',
         'chrome_os:83-',
         'android:87-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -3166,8 +3170,10 @@
       'owners': ['file://components/policy/resources/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:8-'],
-      'future_on': [ 'ios' ],
+      'supported_on': [
+        'chrome.*:8-',
+        'ios:88-',
+      ],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': False,
@@ -3194,8 +3200,8 @@
         'chrome.*:8-',
         'chrome_os:11-',
         'android:30-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -3297,8 +3303,8 @@
         'chrome.*:69-',
         'chrome_os:69-',
         'android:69-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -3321,8 +3327,8 @@
         'chrome.*:63-',
         'chrome_os:63-',
         'android:63-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -5102,8 +5108,8 @@
         'chrome.*:8-',
         'chrome_os:11-',
         'android:30-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5149,8 +5155,8 @@
         'chrome.*:8-',
         'chrome_os:11-',
         'android:30-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5172,8 +5178,8 @@
         'chrome.*:8-',
         'chrome_os:11-',
         'android:30-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5195,8 +5201,8 @@
         'chrome.*:8-',
         'chrome_os:11-',
         'android:30-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5218,8 +5224,8 @@
         'chrome.*:8-',
         'chrome_os:11-',
         'android:30-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5264,8 +5270,8 @@
         'chrome.*:8-',
         'chrome_os:11-',
         'android:30-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5290,8 +5296,8 @@
         'chrome.*:8-',
         'chrome_os:11-',
         'android:30-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5316,8 +5322,8 @@
         'chrome.*:24-',
         'chrome_os:24-',
         'android:30-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5360,8 +5366,8 @@
         'chrome.*:29-',
         'chrome_os:29-',
         'android:30-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5383,8 +5389,8 @@
         'chrome.*:30-',
         'chrome_os:30-',
         'android:30-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5406,8 +5412,8 @@
         'chrome.*:29-',
         'chrome_os:29-',
         'android:30-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5429,8 +5435,8 @@
         'chrome.*:29-',
         'chrome_os:29-',
         'android:30-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5473,8 +5479,8 @@
         'chrome.*:29-',
         'chrome_os:29-',
         'android:30-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5664,8 +5670,8 @@
         'chrome.*:10-',
         'chrome_os:11-',
         'android:33-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -6874,8 +6880,8 @@
         'chrome.*:11-',
         'chrome_os:11-',
         'android:34-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -6943,8 +6949,8 @@
         'chrome.*:11-',
         'chrome_os:11-',
         'android:34-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7637,8 +7643,8 @@
         'chrome.*:12-',
         'chrome_os:12-',
         'android:30-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -7738,8 +7744,8 @@
         'chrome.*:12-',
         'chrome_os:12-',
         'android:30-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -10386,9 +10392,9 @@
       'supported_on': [
         'chrome.*:22-',
         'chrome_os:22-',
-        'android:30-'
+        'android:30-',
+        'ios:88-',
       ],
-      'future_on': ['ios'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -13260,8 +13266,10 @@
           'caption': '''Disable all variations''',
         },
       ],
-      'supported_on': ['chrome.*:83-'],
-      'future_on': ['ios'],
+      'supported_on': [
+        'chrome.*:83-',
+        'ios:88-',
+      ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -13531,8 +13539,8 @@
         'android:30-',
         'chrome.*:37-',
         'chrome_os:37-',
+        'ios:88-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -17144,8 +17152,10 @@
       'owners': ['zmin@chromium.org', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean'},
-      'supported_on': ['chrome.*:75-'],
-      'future_on': ['ios'],
+      'supported_on': [
+        'chrome.*:75-',
+        'ios:88-',
+      ],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -18228,8 +18238,10 @@
       'owners': ['zmin@chromium.org', 'pastarmovj@chromium.org', 'rogerta@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
-      'supported_on': ['chrome.*:72-'],
-      'future_on': [ 'ios' ],
+      'supported_on': [
+        'chrome.*:72-',
+        'ios:88-',
+      ],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -19431,8 +19443,11 @@
         'per_profile': False,
         'cloud_only': True,
       },
-      'supported_on': ['chrome.*:72-', 'chrome_os:81-'],
-      'future_on': [ 'ios' ],
+      'supported_on': [
+        'chrome.*:72-',
+        'chrome_os:81-',
+        'ios:88-',
+      ],
       'caption': '''Enables <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> cloud reporting''',
       'example_value': True,
       'desc': '''This policy controls <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> cloud reporting which uploads information about the browser operation to Google Admin console.
