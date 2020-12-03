@@ -228,9 +228,9 @@ class flat_tree {
   //
   // Assume that move assignment invalidates iterators and references.
 
-  flat_tree& operator=(const flat_tree&);
+  flat_tree& operator=(const flat_tree&) = default;
   flat_tree& operator=(flat_tree&&) noexcept(
-      std::is_nothrow_move_assignable<container_type>::value);
+      std::is_nothrow_move_assignable<container_type>::value) = default;
   // Takes the first if there are duplicates in the initializer list.
   flat_tree& operator=(std::initializer_list<value_type> ilist);
 
@@ -633,16 +633,6 @@ flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
 
 // ----------------------------------------------------------------------------
 // Assignments.
-
-template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
-auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::operator=(
-    const flat_tree&) -> flat_tree& = default;
-
-template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
-auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::
-operator=(flat_tree&&) noexcept(
-    std::is_nothrow_move_assignable<container_type>::value)
-    -> flat_tree& = default;
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::operator=(
