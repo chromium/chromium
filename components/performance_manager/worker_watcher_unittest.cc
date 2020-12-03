@@ -1336,7 +1336,8 @@ void WorkerWatcherTest::TestFrameDestroyed(
     feature_list.InitAndEnableFeature(
         features::kServiceWorkerRelationshipsInGraph);
   } else {
-    feature_list.Init();
+    feature_list.InitAndDisableFeature(
+        features::kServiceWorkerRelationshipsInGraph);
   }
 
   int render_process_id = process_node_source()->CreateProcessNode();
