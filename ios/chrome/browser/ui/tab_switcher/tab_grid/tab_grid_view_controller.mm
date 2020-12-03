@@ -130,6 +130,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 @property(nonatomic, weak) UIBarButtonItem* doneButton;
 @property(nonatomic, weak) UIBarButtonItem* closeAllButton;
 @property(nonatomic, assign) BOOL undoCloseAllAvailable;
+// Bool informing if the confirmation action sheet is displayed.
+@property(nonatomic, assign) BOOL closeAllConfirmationDisplayed;
 @property(nonatomic, assign) TabGridConfiguration configuration;
 // Setting the current page doesn't scroll the scroll view; use
 // -scrollToPage:animated: for that.
@@ -160,6 +162,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     _regularTabsViewController = [[GridViewController alloc] init];
     _incognitoTabsViewController = [[GridViewController alloc] init];
     _remoteTabsViewController = [[RecentTabsTableViewController alloc] init];
+    _closeAllConfirmationDisplayed = NO;
     _pageViewControllers = @[
       _incognitoTabsViewController, _regularTabsViewController,
       _remoteTabsViewController
@@ -414,7 +417,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)closeAllTabsConfirmationClosed {
-  self.topToolbar.pageControl.userInteractionEnabled = YES;
+  self.closeAllConfirmationDisplayed = NO;
+  [self configureButtonsForActiveAndCurrentPage];
 }
 
 #pragma mark - Public Properties
@@ -1068,6 +1072,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     NOTREACHED() << "The done button should not be configured based on the "
                     "contents of the recent tabs page.";
   }
+
+  if (!self.closeAllConfirmationDisplayed)
+    self.topToolbar.pageControl.userInteractionEnabled = YES;
+
   // The Done button should have the same behavior as the other buttons on the
   // top Toolbar.
   BOOL incognitoTabsNeedsAuth =
@@ -1498,6 +1506,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // toolbar in order to avoid alignment issues when changing the device
   // orientation to landscape in multi window mode.
   UIBarButtonItem* buttonAnchor = self.topToolbar.leadingButton;
+  self.closeAllConfirmationDisplayed = YES;
   self.topToolbar.pageControl.userInteractionEnabled = NO;
   switch (self.currentPage) {
     case TabGridPageIncognitoTabs:
