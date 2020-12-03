@@ -442,8 +442,10 @@ public class FeedSurfaceMediator
      * expand icon on the section header view.
      */
     private void onSectionHeaderToggled() {
-        getPrefService().setBoolean(Pref.ARTICLES_LIST_VISIBLE, mSectionHeader.isExpanded());
-        mCoordinator.getStream().setStreamContentVisibility(mSectionHeader.isExpanded());
+        getPrefService().setBoolean(
+                Pref.ARTICLES_LIST_VISIBLE, mCoordinator.getTabLayoutMenuDelegate().isEnabled());
+        mCoordinator.getStream().setStreamContentVisibility(
+                mCoordinator.getTabLayoutMenuDelegate().isEnabled());
         // TODO(huayinz): Update the section header view through a ModelChangeProcessor.
         mCoordinator.getSectionHeaderView().updateVisuals();
     }
@@ -489,6 +491,10 @@ public class FeedSurfaceMediator
                     R.id.ntp_feed_header_menu_item_toggle_switch, icon_id));
         }
         return itemList;
+    }
+
+    boolean hasPrimaryAccount() {
+        return mSigninManager.getIdentityManager().hasPrimaryAccount();
     }
 
     /**
@@ -558,6 +564,18 @@ public class FeedSurfaceMediator
 
         if (mFeedEnabled) {
             int firstChildTop = mCoordinator.getStream().getChildTopAt(0);
+            return firstChildTop != Stream.POSITION_NOT_KNOWN ? -firstChildTop : Integer.MIN_VALUE;
+        } else {
+            return mCoordinator.getScrollViewForPolicy().getScrollY();
+        }
+    }
+
+    @Override
+    public int getVerticalTabLayoutOffset() {
+        if (!isScrollViewInitialized()) return 0;
+
+        if (mFeedEnabled) {
+            int firstChildTop = mCoordinator.getStream().getChildTopAt(1);
             return firstChildTop != Stream.POSITION_NOT_KNOWN ? -firstChildTop : Integer.MIN_VALUE;
         } else {
             return mCoordinator.getScrollViewForPolicy().getScrollY();

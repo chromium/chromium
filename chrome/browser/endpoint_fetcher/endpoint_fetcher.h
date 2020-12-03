@@ -62,6 +62,19 @@ class EndpointFetcher {
                   const std::string& post_data,
                   const net::NetworkTrafficAnnotationTag& annotation_tag);
 
+  // Preferred constructor - forms identity_manager and url_loader_factory.
+  // OAUTH authentication with authentication mode is used for this constructor.
+  EndpointFetcher(Profile* const profile,
+                  const std::string& oauth_consumer_name,
+                  const GURL& url,
+                  const std::string& http_method,
+                  const std::string& content_type,
+                  const std::vector<std::string>& scopes,
+                  int64_t timeout_ms,
+                  const std::string& post_data,
+                  const net::NetworkTrafficAnnotationTag& annotation_tag,
+                  const signin::PrimaryAccountAccessTokenFetcher::Mode mode);
+
   // Constructor if Chrome API Key is used for authentication
   EndpointFetcher(Profile* const profile,
                   const GURL& url,
@@ -134,6 +147,8 @@ class EndpointFetcher {
   // Members set in Fetch
   std::unique_ptr<const signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
+  signin::PrimaryAccountAccessTokenFetcher::Mode mode_ =
+      signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
 
   base::WeakPtrFactory<EndpointFetcher> weak_ptr_factory_{this};

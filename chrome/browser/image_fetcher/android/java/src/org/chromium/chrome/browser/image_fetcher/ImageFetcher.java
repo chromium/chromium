@@ -31,6 +31,7 @@ public abstract class ImageFetcher {
     public static final String QUERY_TILE_UMA_CLIENT_NAME = "QueryTiles";
     public static final String VIDEO_TUTORIALS_IPH_UMA_CLIENT_NAME = "VideoTutorialsIPH";
     public static final String VIDEO_TUTORIALS_LIST_UMA_CLIENT_NAME = "VideoTutorialsList";
+    public static final String SHOPPING_TILE_UMA_CLIENT_NAME = "ShoppingTiles";
 
     /**
      * Encapsulates image fetching customization options. Supports a subset of the native

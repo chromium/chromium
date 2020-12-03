@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/feed_header_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+  <ImageView
+      android:id="@+id/toolbar_shadow"
+      android:src="@drawable/modern_toolbar_shadow"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/toolbar_shadow_height"
+      android:layout_marginTop="48dp"
+      android:scaleType="fitXY"
+      android:importantForAccessibility="no"
+      android:visibility="gone"
+      tools:ignore="ContentDescription" />
+
+  <LinearLayout
+      android:id="@+id/feed_header"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginHorizontal="16dp">
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/feed_tabs"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        style="@style/TabLayoutStyle" >
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <!-- Note ignore RtlHardcoded since this is an image, and the paddingLeft is for
+           spacing the image away from the header title above.
+      -->
+    <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
+        android:id="@+id/header_menu"
+        android:layout_width="@dimen/feed_v2_header_menu_width"
+        android:layout_height="@dimen/snippets_article_header_menu_size"
+        android:scaleType="fitXY"
+        android:paddingVertical="15dp"
+        android:paddingStart="15dp"
+        android:background="@null"
+        app:srcCompat="@drawable/ic_settings_gear_24dp"
+        app:menuMaxWidth="@dimen/feed_header_menu_max_width"
+        app:tint="@null"
+        tools:ignore="RtlHardcoded"/>
+  </LinearLayout>
+
+</FrameLayout>
+

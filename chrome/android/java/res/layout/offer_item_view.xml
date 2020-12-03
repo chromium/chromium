@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/product_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/experimental_explore_sites_padding">
+  <org.chromium.chrome.browser.shopping.front_door.RoundedCornerSquareImageView
+      android:id="@+id/image"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:src="@color/thumbnail_placeholder_on_primary_bg"/>
+  <LinearLayout
+      android:id="@+id/name_bookmark_container"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:minHeight="48dp"
+      android:layout_below="@id/image">
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:id="@+id/name"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:layout_gravity="center_vertical"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/bookmark_product"
+        android:layout_gravity="center"
+        android:src="@drawable/btn_star"/>
+  </LinearLayout>
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:id="@+id/description"
+      android:layout_below="@id/name_bookmark_container"
+      android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:id="@+id/price"
+      android:layout_below="@id/description"
+      android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+      android:singleLine="false"/>
+
+</RelativeLayout>

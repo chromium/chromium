@@ -8,15 +8,18 @@ import android.app.Activity;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.feed.FeedV1ActionOptions;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
+import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
  * Wraps management of the Feed V2 stream.
@@ -39,10 +42,13 @@ public class FeedStreamWrapper implements FeedSurfaceCoordinator.StreamWrapper {
     public Stream createStream(Profile profile, Activity activity, boolean showDarkBackground,
             SnackbarManager snackbarManager, NativePageNavigationDelegate pageNavigationDelegate,
             UiConfig uiConfig, boolean placeholderShown,
-            BottomSheetController bottomSheetController, Supplier<Tab> tabSupplier,
-            FeedV1ActionOptions v1ActionOptions) {
+            BottomSheetController bottomSheetController, FeedV1ActionOptions v1ActionOptions,
+            Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+            ModalDialogManager modalDialogManager, Supplier<Tab> tabSupplier,
+            Supplier<ContextMenuManager> contextMenuManagerSupplier) {
         mStream = new FeedStream(activity, showDarkBackground, snackbarManager,
-                pageNavigationDelegate, bottomSheetController, placeholderShown, tabSupplier);
+                pageNavigationDelegate, bottomSheetController, ephemeralTabCoordinatorSupplier,
+                modalDialogManager, tabSupplier, placeholderShown, contextMenuManagerSupplier);
         return mStream;
     }
 

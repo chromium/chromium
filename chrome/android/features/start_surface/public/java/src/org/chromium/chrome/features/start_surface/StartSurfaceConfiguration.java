@@ -5,12 +5,9 @@
 package org.chromium.chrome.features.start_surface;
 
 import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Log;
-import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
@@ -89,8 +86,9 @@ public class StartSurfaceConfiguration {
      * @return Whether the Start Surface is enabled.
      */
     public static boolean isStartSurfaceEnabled() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.START_SURFACE_ANDROID)
-                && !SysUtils.isLowEndDevice();
+        // return CachedFeatureFlags.isEnabled(ChromeFeatureList.START_SURFACE_ANDROID)
+        //         && !SysUtils.isLowEndDevice();
+        return false;
     }
 
     /**

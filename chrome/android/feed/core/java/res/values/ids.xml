@@ -13,4 +13,6 @@
   <item type="id" name="feed_stream_recycler_view" />
   <!-- Tag id for storing the contentId of the content on a view for view reporting. -->
   <item type="id" name="tag_view_actions_content_id" />
+  <item type="id" name="resume_view" />
+  <item type="id" name="for_you_view" />
 </resources>

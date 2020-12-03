@@ -20,13 +20,17 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feed.shared.stream.Header;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
+import org.chromium.chrome.browser.shopping_tiles.NTPTabLayout.TabSelectionDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,14 +59,17 @@ public class FeedStream implements Stream {
 
     public FeedStream(Activity activity, boolean isBackgroundDark, SnackbarManager snackbarManager,
             NativePageNavigationDelegate nativePageNavigationDelegate,
-            BottomSheetController bottomSheetController, boolean isPlaceholderShown,
-            Supplier<Tab> tabSupplier) {
+            BottomSheetController bottomSheetController,
+            Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+            ModalDialogManager modalDialogManager, Supplier<Tab> tabSupplier,
+            boolean isPlaceholderShown, Supplier<ContextMenuManager> contextMenuManagerSupplier) {
         // TODO(petewil): Use isBackgroundDark to turn on dark theme.
         this.mActivity = activity;
         this.mFeedStreamSurface = new FeedStreamSurface(activity, isBackgroundDark, snackbarManager,
                 nativePageNavigationDelegate, bottomSheetController,
-                HelpAndFeedbackLauncherImpl.getInstance(), isPlaceholderShown,
-                new FeedStreamSurface.ShareHelperWrapper(tabSupplier));
+                HelpAndFeedbackLauncherImpl.getInstance(), ephemeralTabCoordinatorSupplier,
+                modalDialogManager, isPlaceholderShown,
+                new FeedStreamSurface.ShareHelperWrapper(tabSupplier), contextMenuManagerSupplier);
     }
 
     @Override
@@ -153,6 +160,14 @@ public class FeedStream implements Stream {
         }
 
         View view = layoutManager.findViewByPosition(position);
+
+        if (position == 1) {
+            if (view.findViewById(R.id.tab_layout) == null) {
+                // Locate the view that contains the tab_layout.
+                view = findTabLayout(layoutManager, position + 1);
+            }
+        }
+
         if (view == null) {
             return POSITION_NOT_KNOWN;
         }
@@ -160,11 +175,46 @@ public class FeedStream implements Stream {
         return view.getTop();
     }
 
+    private View findTabLayout(LinearLayoutManager layoutManager, int startPostion) {
+        Log.e("Meil_tabLayout", "Need to locate the tab layout");
+        View tabLayoutContainer = null;
+
+        for (int i = startPostion; i < mRecyclerView.getAdapter().getItemCount(); i++) {
+            View view = layoutManager.findViewByPosition(i);
+            if (view == null) break;
+
+            if (view.findViewById(R.id.tab_layout) != null) {
+                Log.e("Meil_tabLayout", "Found the tab layout");
+                tabLayoutContainer = view;
+                break;
+            }
+        }
+        return tabLayoutContainer;
+    }
+
     @Override
     public boolean isChildAtPositionVisible(int position) {
         LinearLayoutManager layoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
         if (layoutManager == null) {
             return false;
+        }
+
+        View view = layoutManager.findViewByPosition(position);
+
+        if (position == 1 && view != null && view.findViewById(R.id.tab_layout) == null) {
+            // locate the tab layout position
+            for (int i = 2; i < mRecyclerView.getAdapter().getItemCount(); i++) {
+                View tabLayoutView = layoutManager.findViewByPosition(i);
+                if (tabLayoutView == null) {
+                    position = i;
+                    break;
+                }
+
+                if (tabLayoutView != null && tabLayoutView.findViewById(R.id.tab_layout) != null) {
+                    position = i;
+                    break;
+                }
+            }
         }
 
         int firstItemPosition = layoutManager.findFirstVisibleItemPosition();
@@ -270,6 +320,11 @@ public class FeedStream implements Stream {
             layoutManager.scrollToPositionWithOffset(state.position, state.offset);
         }
         return true;
+    }
+
+    @Override
+    public TabSelectionDelegate getTabLayoutDelegate() {
+        return mFeedStreamSurface.getTabLayoutDelegate();
     }
 
     static class ScrollState {

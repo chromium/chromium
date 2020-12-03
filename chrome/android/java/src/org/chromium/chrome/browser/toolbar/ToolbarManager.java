@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.ntp.NewTabPage.OnTabLayoutScrollListener;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
@@ -78,6 +79,7 @@ import org.chromium.chrome.browser.previews.PreviewsUma;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.shopping_tiles.NTPTabLayout;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -865,6 +867,26 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 mVisibleNtp.setSearchBoxScrollListener(
                         (fraction) -> scrollCallback.onResult(fraction));
             }
+        }
+
+        @Override
+        public void setTabLayoutScrollListener(OnTabLayoutScrollListener listener,
+                Supplier<Integer> verticalPositionSupplier,
+                Supplier<NTPTabLayout> tabLayoutSupplier) {
+            NewTabPage newVisibleNtp = getNewTabPageForCurrentTab();
+            if (mVisibleNtp != null) mVisibleNtp.setTabLayoutScrollListener(null, null, null);
+            mVisibleNtp = newVisibleNtp;
+            if (mVisibleNtp != null && shouldUpdateListener()) {
+                mVisibleNtp.setTabLayoutScrollListener(
+                        listener, verticalPositionSupplier, tabLayoutSupplier);
+            }
+        }
+
+        @Override
+        public boolean isTabLayoutShownOnNtp() {
+            assert wasShowingNtp();
+
+            return mVisibleNtp.getNewTabPageLayout().isTabLayoutOffscreen();
         }
 
         // Boolean predicate that tells if the NewTabPage.OnSearchBoxScrollListener

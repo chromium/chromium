@@ -45,7 +45,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneshotSupplier) {
         super(host, contentContainer, false, null, tabContentManagerSupplier,
                 layerTitleCacheSupplier, overviewModeBehaviorSupplier,
-                layoutStateProviderOneshotSupplier);
+                layoutStateProviderOneshotSupplier, null);
 
         mTabStripLayoutHelperManager = new StripLayoutHelperManager(host.getContext(), this,
                 mHost.getLayoutRenderHost(), () -> mTitleCache, layerTitleCacheSupplier);

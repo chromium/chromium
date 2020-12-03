@@ -79,7 +79,7 @@ public class FeedStreamTest {
         // Surfaces won't open until after startup.
         FeedStreamSurface.startup();
         mFeedStream = new FeedStream(mActivity, false, mSnackbarManager, mPageNavigationDelegate,
-                mBottomSheetController, /* isPlaceholderShown= */ false, mTabSupplier);
+                mBottomSheetController, null, null, mTabSupplier,false);
         mFeedStream.onCreate(null);
         mRecyclerView = (RecyclerView) mFeedStream.getView();
         mLayoutManager = new FakeLinearLayoutManager(mActivity);

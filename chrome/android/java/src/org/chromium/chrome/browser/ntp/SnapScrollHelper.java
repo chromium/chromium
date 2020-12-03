@@ -78,6 +78,7 @@ public class SnapScrollHelper {
 
     /** Update scroll offset and perform snap scroll if necessary. */
     public void handleScroll() {
+        mNewTabPageLayout.updateTabLayoutOnScroll();
         int scrollY = mNewTabPageLayout.getScrollDelegate().getVerticalScrollOffset();
         if (mLastScrollY == scrollY) return;
 

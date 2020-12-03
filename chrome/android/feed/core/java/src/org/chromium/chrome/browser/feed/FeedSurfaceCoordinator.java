@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.feed;
 
+import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuDivider;
+import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuListItem;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -23,9 +26,11 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
@@ -41,7 +46,11 @@ import org.chromium.chrome.browser.ntp.SnapScrollHelper;
 import org.chromium.chrome.browser.ntp.cards.promo.HomepagePromoController;
 import org.chromium.chrome.browser.ntp.cards.promo.enhanced_protection.EnhancedProtectionPromoController;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeaderView;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.shopping_tiles.NTPTabLayout;
+import org.chromium.chrome.browser.shopping_tiles.NTPTabLayout.MenuDelegate;
+import org.chromium.chrome.browser.shopping_tiles.NTPTabLayout.TabSelectionDelegate;
 import org.chromium.chrome.browser.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -51,9 +60,16 @@ import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenu.Delegate;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,7 +97,10 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
                 SnackbarManager snackbarManager,
                 NativePageNavigationDelegate pageNavigationDelegate, UiConfig uiConfig,
                 boolean placeholderShown, BottomSheetController bottomSheetController,
-                Supplier<Tab> tabSupplier, FeedV1ActionOptions v1ActionOptions);
+                FeedV1ActionOptions v1ActionOptions,
+                Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+                ModalDialogManager modalDialogManager, Supplier<Tab> tabSupplier,
+                Supplier<ContextMenuManager> contextMenuManagerSupplier);
 
         /**
          * Called after the stream returned by createStream() is no longer needed.
@@ -109,7 +128,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
 
     private UiConfig mUiConfig;
     private FrameLayout mRootView;
-    private ContextMenuManager mContextMenuManager;
+    private Supplier<ContextMenuManager> mContextMenuManagerSupplier;
     private Tracker mTracker;
     private long mStreamCreatedTimeMs;
 
@@ -233,9 +252,95 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         }
     }
 
+    class TabLayoutMenuDelegate implements MenuDelegate {
+        ObserverList<Observer> mObservers = new ObserverList<>();
+        // TODO(meiliang): Read from cache whether the feed is on or off.
+        boolean mIsEnabled = true;
+
+        Delegate mListMenuDelegate = new Delegate() {
+            @Override
+            public void onItemSelected(PropertyModel item) {
+                int itemId = item.get(ListMenuItemProperties.MENU_ITEM_ID);
+
+                if (itemId == R.id.ntp_feed_header_menu_customize_shopping_feed) {
+                    // TODO(meiliang): Launch onboarding.
+                } else if (itemId == R.id.ntp_feed_header_menu_item_toggle_switch) {
+                    mIsEnabled = !mIsEnabled;
+
+                    getPrefService().setBoolean(Pref.ARTICLES_LIST_VISIBLE, mIsEnabled);
+                    getStream().setStreamContentVisibility(mIsEnabled);
+
+                    for (Observer observer : mObservers) {
+                        observer.onSwitch(mIsEnabled);
+                    }
+                    // TODO(meiliang): turn off/on feed.
+                } else {
+                    mMediator.onItemSelected(item);
+                }
+            }
+        };
+
+        TabLayoutMenuDelegate() {
+            mIsEnabled = getPrefService().getBoolean(Pref.ARTICLES_LIST_VISIBLE);
+        }
+
+        PrefService getPrefService() {
+            return UserPrefs.get(Profile.getLastUsedRegularProfile());
+        }
+
+        @Override
+        public void addObserver(Observer observer) {
+            mObservers.addObserver(observer);
+        }
+
+        @Override
+        public void removeObserver(Observer observer) {
+            mObservers.removeObserver(observer);
+        }
+
+        @Override
+        public ModelList getMenuModelList() {
+            ModelList modelList = new ModelList();
+            int icon_id = 0;
+            modelList.add(buildMenuListItem(R.string.menu_item_customize_shopping_feed,
+                    R.id.ntp_feed_header_menu_customize_shopping_feed, icon_id));
+            modelList.add(buildMenuDivider());
+            if (mMediator.hasPrimaryAccount()) {
+                modelList.add(buildMenuListItem(R.string.ntp_manage_my_activity,
+                        R.id.ntp_feed_header_menu_item_activity, icon_id));
+                modelList.add(buildMenuListItem(R.string.ntp_manage_interests,
+                        R.id.ntp_feed_header_menu_item_interest, icon_id));
+            }
+            modelList.add(buildMenuListItem(
+                    R.string.learn_more, R.id.ntp_feed_header_menu_item_learn, icon_id));
+            if (mIsEnabled) {
+                modelList.add(buildMenuListItem(R.string.ntp_turn_off_feed,
+                        R.id.ntp_feed_header_menu_item_toggle_switch, icon_id));
+            } else {
+                modelList.add(buildMenuListItem(R.string.ntp_turn_on_feed,
+                        R.id.ntp_feed_header_menu_item_toggle_switch, icon_id));
+            }
+            return modelList;
+        }
+
+        @Override
+        public Delegate getListMenuDelegate() {
+            return mListMenuDelegate;
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return mIsEnabled;
+        }
+    }
+
+    private TabLayoutMenuDelegate mTabLayoutMenuDelegate;
+
+    private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+    private final ModalDialogManager mModalDialogManager;
+
     /**
      * Constructs a new FeedSurfaceCoordinator.
-     *
      * @param activity The containing {@link ChromeActivity}.
      * @param snackbarManager The {@link SnackbarManager} displaying Snackbar UI.
      * @param tabModelSelector {@link TabModelSelector} object.
@@ -251,6 +356,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
      * @param profile The current user profile.
      * @param isPlaceholderShownInitially Whether the placeholder is shown initially.
      * @param bottomSheetController The bottom sheet controller, used in v2.
+     * @param ephemeralTabCoordinatorSupplier
+     * @param modalDialogManager
      */
     public FeedSurfaceCoordinator(Activity activity, SnackbarManager snackbarManager,
             TabModelSelector tabModelSelector, Supplier<Tab> tabProvider,
@@ -258,7 +365,10 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             @Nullable SectionHeaderView sectionHeaderView, FeedV1ActionOptions actionOptions,
             boolean showDarkBackground, FeedSurfaceDelegate delegate,
             @Nullable NativePageNavigationDelegate pageNavigationDelegate, Profile profile,
-            boolean isPlaceholderShownInitially, BottomSheetController bottomSheetController) {
+            boolean isPlaceholderRequested, BottomSheetController bottomSheetController,
+            Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+            ModalDialogManager modalDialogManager,
+            Supplier<ContextMenuManager> contextMenuManagerSupplier) {
         if (FeedFeatures.isV2Enabled()) {
             mStreamWrapper = FeedV2.createStreamWrapper();
         } else {
@@ -270,13 +380,16 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mNtpHeader = ntpHeader;
         mSectionHeaderView = sectionHeaderView;
         mShowDarkBackground = showDarkBackground;
-        mIsPlaceholderShownInitially = isPlaceholderShownInitially;
+        mIsPlaceholderShownInitially = isPlaceholderRequested;
         mDelegate = delegate;
         mPageNavigationDelegate = pageNavigationDelegate;
         mBottomSheetController = bottomSheetController;
         mProfile = profile;
         mV1ActionOptions = actionOptions;
+        mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
+        mModalDialogManager = modalDialogManager;
         mTabSupplier = tabProvider;
+        mContextMenuManagerSupplier = contextMenuManagerSupplier;
 
         Resources resources = mActivity.getResources();
         mDefaultMarginPixels = mStreamWrapper.defaultMarginPixels(activity);
@@ -296,6 +409,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             mEnhancedProtectionPromoController =
                     new EnhancedProtectionPromoController(mActivity, mProfile);
         }
+
+        mTabLayoutMenuDelegate = new TabLayoutMenuDelegate();
 
         // Mediator should be created before any Stream changes.
         mMediator = new FeedSurfaceMediator(this, snapScrollHelper, mPageNavigationDelegate);
@@ -347,6 +462,20 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mMediator.onThumbnailCaptured();
     }
 
+    @Override
+    public TabSelectionDelegate getTabLayoutDelegate() {
+        assert FeedFeatures.isV2Enabled() : "Feed V2 must be enabled";
+
+        return mStream.getTabLayoutDelegate();
+    }
+
+    @Override
+    public TabLayoutMenuDelegate getTabLayoutMenuDelegate() {
+        assert FeedFeatures.isV2Enabled() : "Feed V2 must be enabled";
+
+        return mTabLayoutMenuDelegate;
+    }
+
     /**
      * @return The {@link StreamLifecycleManager} that manages the lifecycle of the {@link Stream}.
      */
@@ -378,7 +507,11 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mStreamCreatedTimeMs = SystemClock.elapsedRealtime();
         mStream = mStreamWrapper.createStream(mProfile, mActivity, mShowDarkBackground,
                 mSnackbarManager, mPageNavigationDelegate, mUiConfig, mIsPlaceholderShownInitially,
-                mBottomSheetController, mTabSupplier, mV1ActionOptions);
+                mBottomSheetController, mV1ActionOptions, mEphemeralTabCoordinatorSupplier,
+                mModalDialogManager, mTabSupplier, mContextMenuManagerSupplier);
+        if (FeedFeatures.isV2Enabled()) {
+            mStream.setStreamContentVisibility(mTabLayoutMenuDelegate.isEnabled());
+        }
 
         mStreamLifecycleManager = mDelegate.createStreamLifecycleManager(mStream, mActivity);
 
@@ -542,9 +675,10 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             headers.add(new EnhancedProtectionPromoHeader());
         }
 
-        if (mSectionHeaderView != null) {
-            headers.add(new NonDismissibleHeader(mSectionHeaderView));
-        }
+        NTPTabLayout tabLayoutHeader = (NTPTabLayout) LayoutInflater.from(mRootView.getContext())
+                                               .inflate(R.layout.ntp_tab_layout, null, false);
+        tabLayoutHeader.setMenuDelegate(getTabLayoutMenuDelegate());
+        headers.add(new NonDismissibleHeader(tabLayoutHeader));
 
         if (isSignInPromoVisible) {
             headers.add(new SignInPromoHeader());

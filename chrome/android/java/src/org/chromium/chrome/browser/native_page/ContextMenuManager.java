@@ -34,7 +34,8 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
     @IntDef({ContextMenuItemId.SEARCH, ContextMenuItemId.OPEN_IN_NEW_TAB,
             ContextMenuItemId.OPEN_IN_INCOGNITO_TAB, ContextMenuItemId.OPEN_IN_NEW_WINDOW,
             ContextMenuItemId.SAVE_FOR_OFFLINE, ContextMenuItemId.ADD_TO_MY_APPS,
-            ContextMenuItemId.REMOVE, ContextMenuItemId.LEARN_MORE})
+            ContextMenuItemId.REMOVE, ContextMenuItemId.LEARN_MORE, ContextMenuItemId.SHARE,
+            ContextMenuItemId.BOOKMARK, ContextMenuItemId.NOT_INTERESTED})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ContextMenuItemId {
         // The order of the items will be based on the value of their ID. So if new items are added,
@@ -49,7 +50,12 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
         int REMOVE = 6;
         int LEARN_MORE = 7;
 
-        int NUM_ENTRIES = 8;
+        // for shopping feed
+        int SHARE = 8;
+        int BOOKMARK = 9;
+        int NOT_INTERESTED = 10;
+
+        int NUM_ENTRIES = 11;
     }
 
     private final NativePageNavigationDelegate mNavigationDelegate;
@@ -83,6 +89,10 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
 
         /** Called when a context menu has been created. */
         void onContextMenuCreated();
+
+        default boolean handleMenuItemClick(@ContextMenuItemId int menuItemId) {
+            return false;
+        }
     }
 
     /**
@@ -234,6 +244,10 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
                 return true;
             case ContextMenuItemId.ADD_TO_MY_APPS:
                 return false;
+            case ContextMenuItemId.SHARE:
+            case ContextMenuItemId.BOOKMARK:
+            case ContextMenuItemId.NOT_INTERESTED:
+                return delegate.isItemSupported(itemId);
             default:
                 assert false;
                 return false;
@@ -259,6 +273,12 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
                 return R.string.remove;
             case ContextMenuItemId.LEARN_MORE:
                 return R.string.learn_more;
+            case ContextMenuItemId.SHARE:
+                return R.string.contextmenu_share_link;
+            case ContextMenuItemId.BOOKMARK:
+                return R.string.menu_bookmark;
+            case ContextMenuItemId.NOT_INTERESTED:
+                return R.string.menu_item_not_interested;
         }
         assert false;
         return 0;
@@ -271,6 +291,8 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
      * @return true if user selection was handled.
      */
     protected boolean handleMenuItemClick(@ContextMenuItemId int itemId, Delegate delegate) {
+        if (delegate.handleMenuItemClick(itemId)) return true;
+
         switch (itemId) {
             case ContextMenuItemId.OPEN_IN_NEW_TAB:
                 delegate.openItem(WindowOpenDisposition.NEW_BACKGROUND_TAB);

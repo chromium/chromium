@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/shopping_tasks_section"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/hairline_border_card_background"
+    android:orientation="vertical"
+    android:layout_marginBottom="@dimen/default_list_row_padding">
+
+    <LinearLayout
+        android:id="@+id/for_you_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:minHeight="@dimen/snippets_article_header_height"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/card_padding">
+
+        <TextView
+            android:id="@+id/for_you"
+            style="@style/TextAppearance.TextSmall.Blue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="FOR YOU" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/task_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:minHeight="@dimen/snippets_article_header_height"
+        android:paddingStart="@dimen/card_padding">
+
+        <TextView
+            android:id="@+id/task_name"
+            style="@style/TextAppearance.Headline.Primary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Espresso Machines" />
+
+        <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
+            android:id="@+id/header_menu"
+            android:layout_width="@dimen/snippets_article_header_menu_size"
+            android:layout_height="@dimen/snippets_article_header_menu_size"
+            android:background="@null"
+            android:src="@drawable/ic_more_vert_24dp" />
+    </LinearLayout>
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/more_button"
+        style="@style/TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/snippets_article_header_menu_size"
+        android:layout_gravity="center_horizontal"
+        android:background="@null"
+        android:text="View more" />
+
+</LinearLayout>

@@ -59,6 +59,29 @@ EndpointFetcher::EndpointFetcher(
 
 EndpointFetcher::EndpointFetcher(
     Profile* const profile,
+    const std::string& oauth_consumer_name,
+    const GURL& url,
+    const std::string& http_method,
+    const std::string& content_type,
+    const std::vector<std::string>& scopes,
+    int64_t timeout_ms,
+    const std::string& post_data,
+    const net::NetworkTrafficAnnotationTag& annotation_tag,
+    const signin::PrimaryAccountAccessTokenFetcher::Mode mode)
+    : EndpointFetcher(profile,
+                      oauth_consumer_name,
+                      url,
+                      http_method,
+                      content_type,
+                      scopes,
+                      timeout_ms,
+                      post_data,
+                      annotation_tag) {
+  mode_ = mode;
+}
+
+EndpointFetcher::EndpointFetcher(
+    Profile* const profile,
     const GURL& url,
     const std::string& http_method,
     const std::string& content_type,
@@ -132,27 +155,32 @@ void EndpointFetcher::Fetch(EndpointFetcherCallback endpoint_fetcher_callback) {
       std::move(endpoint_fetcher_callback));
   DCHECK(!access_token_fetcher_);
   DCHECK(!simple_url_loader_);
+  LOG(INFO) << "FrontDoor: EndpointFetcher start to fetch";
+  LOG(INFO) << "FrontDoor: Fetching Auth token";
   // TODO(crbug.com/997018) Make access_token_fetcher_ local variable passed
   // to callback
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
           oauth_consumer_name_, identity_manager_, oauth_scopes_,
-          std::move(token_callback),
-          signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
+          std::move(token_callback), mode_);
 }
 
 void EndpointFetcher::OnAuthTokenFetched(
     EndpointFetcherCallback endpoint_fetcher_callback,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
+  LOG(INFO) << "FrontDoor: OnAuthTokenFetched";
   access_token_fetcher_.reset();
   if (error.state() != GoogleServiceAuthError::NONE) {
     auto response = std::make_unique<EndpointResponse>();
-    response->response = "There was an authentication error";
+    LOG(INFO) << "FrontDoor: Invalid Auth Token";
+    response->response =
+        "There was an authentication error: " + error.ToString();
     // TODO(crbug.com/993393) Add more detailed error messaging
     std::move(endpoint_fetcher_callback).Run(std::move(response));
     return;
   }
+  LOG(INFO) << "FrontDoor: Valid Auth Token";
   PerformRequest(std::move(endpoint_fetcher_callback),
                  access_token_info.token.c_str());
 }
@@ -160,6 +188,7 @@ void EndpointFetcher::OnAuthTokenFetched(
 void EndpointFetcher::PerformRequest(
     EndpointFetcherCallback endpoint_fetcher_callback,
     const char* key) {
+  LOG(INFO) << "FrontDoor: Building request";
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = http_method_;
   resource_request->url = url_;
@@ -207,6 +236,9 @@ void EndpointFetcher::PerformRequest(
       base::BindOnce(&EndpointFetcher::OnResponseFetched,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(endpoint_fetcher_callback));
+
+  LOG(INFO) << "FrontDoor: Sent request.";
+
   simple_url_loader_->DownloadToString(
       url_loader_factory_.get(), std::move(body_as_string_callback),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
@@ -215,9 +247,11 @@ void EndpointFetcher::PerformRequest(
 void EndpointFetcher::OnResponseFetched(
     EndpointFetcherCallback endpoint_fetcher_callback,
     std::unique_ptr<std::string> response_body) {
+  LOG(INFO) << "FrontDoor: Got Response.";
   simple_url_loader_.reset();
   if (response_body) {
     if (sanitize_response_) {
+      LOG(INFO) << "FrontDoor: Sanitize the response.";
       data_decoder::JsonSanitizer::Sanitize(
           std::move(*response_body),
           base::BindOnce(&EndpointFetcher::OnSanitizationResult,
@@ -231,7 +265,7 @@ void EndpointFetcher::OnResponseFetched(
   } else {
     auto response = std::make_unique<EndpointResponse>();
     // TODO(crbug.com/993393) Add more detailed error messaging
-    response->response = "There was a response error";
+    response->response = "There was a response error: empty response body";
     std::move(endpoint_fetcher_callback).Run(std::move(response));
   }
 }
@@ -259,6 +293,8 @@ static void OnEndpointFetcherComplete(
     // prematurely (which would result in cancellation of the request).
     std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> endpoint_response) {
+  LOG(INFO) << "FrontDoor: EndpointFetcher Respond to client.";
+
   base::android::RunObjectCallbackAndroid(
       jcaller, Java_EndpointResponse_createEndpointResponse(
                    base::android::AttachCurrentThread(),
@@ -271,7 +307,7 @@ static void OnEndpointFetcherComplete(
 // TODO(crbug.com/1077537) Create a KeyProvider so
 // we can have one centralized API.
 
-static void JNI_EndpointFetcher_NativeFetchOAuth(
+static void JNI_EndpointFetcher_NativeFetchOAuthImmediate(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jprofile,
     const base::android::JavaParamRef<jstring>& joauth_consumer_name,
@@ -294,6 +330,42 @@ static void JNI_EndpointFetcher_NativeFetchOAuth(
       // TODO(crbug.com/995852) Create a traffic annotation tag and configure it
       // as part of the EndpointFetcher call over JNI.
       NO_TRAFFIC_ANNOTATION_YET);
+  endpoint_fetcher->Fetch(
+      base::BindOnce(&OnEndpointFetcherComplete,
+                     base::android::ScopedJavaGlobalRef<jobject>(jcallback),
+                     // unique_ptr endpoint_fetcher is passed until the callback
+                     // to ensure its lifetime across the request.
+                     std::move(endpoint_fetcher)));
+}
+
+static void JNI_EndpointFetcher_NativeFetchOAuth(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jprofile,
+    const base::android::JavaParamRef<jstring>& joauth_consumer_name,
+    const base::android::JavaParamRef<jstring>& jurl,
+    const base::android::JavaParamRef<jstring>& jhttps_method,
+    const base::android::JavaParamRef<jstring>& jcontent_type,
+    const base::android::JavaParamRef<jobjectArray>& jscopes,
+    const base::android::JavaParamRef<jstring>& jpost_data,
+    jlong jtimeout,
+    const base::android::JavaParamRef<jobject>& jcallback,
+    jboolean jwait_until_available) {
+  signin::PrimaryAccountAccessTokenFetcher::Mode mode =
+      jwait_until_available
+          ? signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable
+          : signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate;
+  std::vector<std::string> scopes;
+  base::android::AppendJavaStringArrayToStringVector(env, jscopes, &scopes);
+  auto endpoint_fetcher = std::make_unique<EndpointFetcher>(
+      ProfileAndroid::FromProfileAndroid(jprofile),
+      base::android::ConvertJavaStringToUTF8(env, joauth_consumer_name),
+      GURL(base::android::ConvertJavaStringToUTF8(env, jurl)),
+      base::android::ConvertJavaStringToUTF8(env, jhttps_method),
+      base::android::ConvertJavaStringToUTF8(env, jcontent_type), scopes,
+      jtimeout, base::android::ConvertJavaStringToUTF8(env, jpost_data),
+      // TODO(crbug.com/995852) Create a traffic annotation tag and configure it
+      // as part of the EndpointFetcher call over JNI.
+      NO_TRAFFIC_ANNOTATION_YET, mode);
   endpoint_fetcher->Fetch(
       base::BindOnce(&OnEndpointFetcherComplete,
                      base::android::ScopedJavaGlobalRef<jobject>(jcallback),

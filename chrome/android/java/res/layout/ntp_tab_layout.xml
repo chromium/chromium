@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.chromium.chrome.browser.shopping_tiles.NTPTabLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ntp_tab_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:background="@color/default_bg_color"/>

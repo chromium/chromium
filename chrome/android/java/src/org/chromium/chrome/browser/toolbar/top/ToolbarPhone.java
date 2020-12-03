@@ -44,6 +44,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.graphics.drawable.DrawableWrapper;
 import androidx.core.graphics.drawable.DrawableCompat;
 
+import com.google.android.material.tabs.TabLayout;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
@@ -55,6 +57,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.shopping_tiles.NTPTabLayout;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.toolbar.ButtonData;
@@ -130,6 +133,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     private TextView mUrlBar;
     protected View mUrlActionContainer;
     protected ImageView mToolbarShadow;
+    protected NTPTabLayout mTabLayoutContainer;
+    protected TabLayout mTabLayout;
     private @Nullable ImageButton mOptionalButton;
     private boolean mOptionalButtonUsesTint;
 
@@ -772,6 +777,18 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         mNtpSearchBoxScrollFraction = scrollFraction;
         updateUrlExpansionFraction();
         updateUrlExpansionAnimation();
+    }
+
+    private void onTabLayoutScrollChanged(float scrollPercentage) {
+        if (scrollPercentage == 1.0) {
+            // show tab layout
+            mTabLayoutContainer.setVisibility(VISIBLE);
+        } else {
+            // hide tab layout
+            mTabLayoutContainer.setVisibility(GONE);
+        }
+
+        invalidate();
     }
 
     /**
@@ -1475,6 +1492,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         super.onAttachedToWindow();
 
         mToolbarShadow = (ImageView) getRootView().findViewById(R.id.toolbar_shadow);
+
+        mTabLayoutContainer = (NTPTabLayout) getRootView().findViewById(R.id.feed_header);
+        mTabLayout = (TabLayout) getRootView().findViewById(R.id.feed_tabs);
 
         // This is a workaround for http://crbug.com/574928. Since Jelly Bean is the lowest version
         // we support now and the next deprecation target, we decided to simply workaround.
@@ -2253,6 +2273,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
         resetNtpAnimationValues();
         ntpDelegate.setSearchBoxScrollListener(this::onNtpScrollChanged);
+        ntpDelegate.setTabLayoutScrollListener(
+                this::onTabLayoutScrollChanged, () -> getBottom(), () -> mTabLayoutContainer);
         if (ntpDelegate.isLocationBarShown()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 NtpSearchBoxDrawable ntpSearchBox = new NtpSearchBoxDrawable(getContext(), this);
@@ -2451,12 +2473,21 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             updateNtpTransitionAnimation();
         }
 
+        if (getToolbarDataProvider().getNewTabPageDelegate().wasShowingNtp()) {
+            onTabLayoutScrollChanged(
+                    getToolbarDataProvider().getNewTabPageDelegate().isTabLayoutShownOnNtp() ? 0
+                                                                                             : 1);
+        } else {
+            onTabLayoutScrollChanged(0);
+        }
+
         getMenuButtonCoordinator().setVisibility(true);
 
         DrawableCompat.setTint(mLocationBarBackground,
                 isIncognito() ? Color.WHITE
                               : ApiCompatibilityUtils.getColor(
                                       getResources(), R.color.toolbar_text_box_background));
+
         TraceEvent.end("ToolbarPhone.updateVisualsForLocationBarState");
     }
 

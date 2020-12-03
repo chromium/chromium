@@ -30,6 +30,8 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
+import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -51,6 +53,7 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.query_tiles.QueryTileSection.QueryInfo;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.shopping_tiles.NTPTabLayout;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
@@ -78,6 +81,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 
 import java.util.List;
@@ -130,6 +134,11 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
     private final int mTabStripAndToolbarHeight;
 
+    private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+    private final Supplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
+
+    private final ModalDialogManager mModalDialogManager;
+
     @Override
     public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
             int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
@@ -156,6 +165,10 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
          * @param scrollPercentage The percentage the search box has been scrolled off the page.
          */
         void onNtpScrollChanged(float scrollPercentage);
+    }
+
+    public interface OnTabLayoutScrollListener {
+        void onTabLayoutScrollChanged(float scrollPercentage);
     }
 
     protected class NewTabPageManagerImpl
@@ -273,12 +286,16 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
      * @param nativePageHost The host that is showing this new tab page.
      * @param tab The {@link Tab} that contains this new tab page.
      * @param bottomSheetController The controller for bottom sheets, used by the feed.
+     * @param modalDialogManager
      */
     public NewTabPage(Activity activity, BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<Tab> activityTabProvider, SnackbarManager snackbarManager,
             ActivityLifecycleDispatcher lifecycleDispatcher, TabModelSelector tabModelSelector,
             boolean isTablet, NewTabPageUma uma, boolean isInNightMode,
-            NativePageHost nativePageHost, Tab tab, BottomSheetController bottomSheetController) {
+            NativePageHost nativePageHost, Tab tab, BottomSheetController bottomSheetController,
+            Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+            Supplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
+            ModalDialogManager modalDialogManager) {
         mConstructedTimeNs = System.nanoTime();
         TraceEvent.begin(TAG);
 
@@ -287,6 +304,11 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mTab = tab;
         mNewTabPageUma = uma;
         Profile profile = Profile.fromWebContents(mTab.getWebContents());
+
+        mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
+        mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
+
+        mModalDialogManager = modalDialogManager;
 
         SuggestionsDependencyFactory depsFactory = SuggestionsDependencyFactory.getInstance();
 
@@ -376,7 +398,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 mSearchProviderHasLogo,
                 TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle(),
                 mFeedSurfaceProvider.getScrollDelegate(), mContextMenuManager,
-                mFeedSurfaceProvider.getUiConfig(), activityTabProvider, lifecycleDispatcher, uma);
+                mFeedSurfaceProvider.getUiConfig(), activityTabProvider, lifecycleDispatcher, uma,
+                mEphemeralTabCoordinatorSupplier, mOverviewModeBehaviorSupplier);
         TraceEvent.end(TAG);
     }
 
@@ -412,12 +435,13 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                     R.layout.new_tab_page_snippets_expandable_header, null, false);
         }
 
-        mFeedSurfaceProvider =
-                new FeedSurfaceCoordinator(activity, snackbarManager, tabModelSelector, tabProvider,
-                        new SnapScrollHelper(mNewTabPageManager, mNewTabPageLayout),
-                        mNewTabPageLayout, sectionHeaderView, new FeedV1ActionOptions(),
-                        isInNightMode, this, mNewTabPageManager.getNavigationDelegate(), profile,
-                        /* isPlaceholderShownInitially= */ false, bottomSheetController);
+        mFeedSurfaceProvider = new FeedSurfaceCoordinator(activity, snackbarManager,
+                tabModelSelector, tabProvider,
+                new SnapScrollHelper(mNewTabPageManager, mNewTabPageLayout), mNewTabPageLayout,
+                sectionHeaderView, new FeedV1ActionOptions(), isInNightMode, this,
+                mNewTabPageManager.getNavigationDelegate(), profile,
+                /* isPlaceholderRequested= */ false, bottomSheetController,
+                mEphemeralTabCoordinatorSupplier, mModalDialogManager, () -> mContextMenuManager);
 
         // Record the timestamp at which the new tab page's construction started.
         uma.trackTimeToFirstDraw(mFeedSurfaceProvider.getView(), mConstructedTimeNs);
@@ -608,6 +632,16 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
      */
     public void setSearchBoxScrollListener(OnSearchBoxScrollListener listener) {
         mNewTabPageLayout.setSearchBoxScrollListener(listener);
+    }
+
+    public void setTabLayoutScrollListener(OnTabLayoutScrollListener listener,
+            Supplier<Integer> verticalPositionSupplier, Supplier<NTPTabLayout> tabLayoutSupplier) {
+        mNewTabPageLayout.setTabLayoutScrollListener(listener, verticalPositionSupplier);
+        if (tabLayoutSupplier != null && tabLayoutSupplier.get() != null) {
+            tabLayoutSupplier.get().setDelegate(mFeedSurfaceProvider.getTabLayoutDelegate());
+            tabLayoutSupplier.get().setMenuDelegate(
+                    mFeedSurfaceProvider.getTabLayoutMenuDelegate());
+        }
     }
 
     /**

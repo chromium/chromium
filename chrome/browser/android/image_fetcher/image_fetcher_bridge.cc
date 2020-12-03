@@ -117,6 +117,7 @@ void ImageFetcherBridge::FetchImage(JNIEnv* j_env,
                                     const JavaParamRef<jstring>& j_client_name,
                                     const jint j_expiration_interval_mins,
                                     const JavaParamRef<jobject>& j_callback) {
+  DVLOG(0) << "Meil Fetch Image";
   ScopedJavaGlobalRef<jobject> callback(j_callback);
   ImageFetcherConfig config =
       static_cast<ImageFetcherConfig>(j_image_fetcher_config);
@@ -270,7 +271,9 @@ void ImageFetcherBridge::OnImageFetched(
     const gfx::Image& image,
     const RequestMetadata& request_metadata) {
   ScopedJavaLocalRef<jobject> j_bitmap;
+  DVLOG(0) << "Meil: OnImageFetched";
   if (!image.IsEmpty()) {
+    DVLOG(0) << "Meil: image not empty";
     j_bitmap = gfx::ConvertToJavaBitmap(*image.ToSkBitmap());
   }
   RunObjectCallbackAndroid(callback, j_bitmap);

@@ -42,8 +42,31 @@ public final class EndpointFetcher {
             String[] scopes, String postData, long timeout) {
         // EndpointFetcher currently does not support incognito mode
         assert !profile.isOffTheRecord();
+        EndpointFetcherJni.get().nativeFetchOAuthImmediate(profile, oathConsumerName, url,
+                httpsMethod, contentType, scopes, postData, timeout, callback);
+    }
+
+    /**
+     * Calls an endpoint using OAuth and returns the response via a callback
+     * @param callback callback function response is returned in
+     * @param profile profile via which the endpoint is called
+     * @param oathConsumerName consumer name for OAuth
+     * @param url endpoint URL called
+     * @param httpsMethod the HTTPS method used e.g. "GET" or "POST"
+     * @param contentType the content type e.g. "application/json"
+     * @param scopes scopes used as part of authentication
+     * @param postData data for a "POST" request
+     * @param timeout time after which the request will terminate in the event a response hasn't
+     *         been received
+     */
+    @MainThread
+    public static void fetchUsingOAuth(Callback<EndpointResponse> callback, Profile profile,
+            String oathConsumerName, String url, String httpsMethod, String contentType,
+            String[] scopes, String postData, long timeout, boolean waitUntilAvailable) {
+        // EndpointFetcher currently does not support incognito mode
+        assert !profile.isOffTheRecord();
         EndpointFetcherJni.get().nativeFetchOAuth(profile, oathConsumerName, url, httpsMethod,
-                contentType, scopes, postData, timeout, callback);
+                contentType, scopes, postData, timeout, callback, waitUntilAvailable);
     }
 
     /**
@@ -70,9 +93,14 @@ public final class EndpointFetcher {
 
     @NativeMethods
     public interface Natives {
-        void nativeFetchOAuth(Profile profile, String oathConsumerName, String url,
+        void nativeFetchOAuthImmediate(Profile profile, String oathConsumerName, String url,
                 String httpsMethod, String contentType, String[] scopes, String postData,
                 long timeout, Callback<EndpointResponse> callback);
+
+        void nativeFetchOAuth(Profile profile, String oathConsumerName, String url,
+                String httpsMethod, String contentType, String[] scopes, String postData,
+                long timeout, Callback<EndpointResponse> callback, boolean waitUntilAvailable);
+
         void nativeFetchChromeAPIKey(Profile profile, String url, String httpsMethod,
                 String contentType, String postData, long timeout, String[] headers,
                 Callback<EndpointResponse> callback);

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <org.chromium.chrome.browser.shopping.front_door.RoundedCornerSquareImageView
+      android:id="@+id/image"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center_horizontal"
+      android:adjustViewBounds="true"
+      android:src="@color/thumbnail_placeholder_on_primary_bg"
+      app:cornerRadiusTopStart="@dimen/default_rounded_corner_radius"
+      app:cornerRadiusTopEnd="@dimen/default_rounded_corner_radius"
+      app:cornerRadiusBottomStart="@dimen/default_rounded_corner_radius"
+      app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius"
+      android:scaleType="centerCrop"
+      android:importantForAccessibility="no"/>
+
+  <org.chromium.chrome.browser.shopping.front_door.AdjustableScrimView
+    android:id="@+id/scrim"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="48dp"
+    android:gravity="center_vertical"
+    android:layout_gravity="bottom"
+    android:background="@drawable/gradient_scrim_angle90"
+    app:cornerRadiusBottomStart="@dimen/default_rounded_corner_radius"
+    app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius"/>
+
+</merge>

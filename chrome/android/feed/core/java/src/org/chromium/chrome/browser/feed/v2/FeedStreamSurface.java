@@ -19,6 +19,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator.ItemAnimatorFinishedListener;
 
+import com.google.android.material.tabs.TabLayout;
+
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
@@ -30,15 +32,22 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feed.shared.ScrollTracker;
 import org.chromium.chrome.browser.feed.shared.stream.Stream.ContentChangedListener;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.shopping_tiles.NTPTabLayout;
+import org.chromium.chrome.browser.shopping_tiles.NTPTabLayout.TabSelectionDelegate;
+import org.chromium.chrome.browser.shopping_tiles.ShoppingProductContent;
+import org.chromium.chrome.browser.shopping_tiles.ShoppingProductListCoordinator;
+import org.chromium.chrome.browser.shopping_tiles.ShoppingProductListCoordinator.ListType;
 import org.chromium.chrome.browser.signin.IdentityServicesProvider;
 import org.chromium.chrome.browser.suggestions.NavigationRecorder;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
@@ -69,6 +78,7 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 
 import java.util.ArrayList;
@@ -335,6 +345,61 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         }
     }
 
+    class TabLayoutHeaderSelectionDelegate implements TabSelectionDelegate {
+        int mSelectedTabIndex;
+
+        @Override
+        public int getSelectedTabIndex() {
+            return mSelectedTabIndex;
+        }
+
+        @Override
+        public void onTabSelected(TabLayout.Tab tab) {
+            Log.e("Meil_tabSelected", "onTabSelected");
+            mSelectedTabIndex = tab.getPosition();
+            // Open tab surface
+            if (tab.getPosition() == 0) {
+                Log.e("Meil_tabSelected", "onTabSelected position: " + 0);
+                // onSurfaceOpened();
+                FeedStreamSurfaceJni.get().surfaceOpened(
+                        mNativeFeedStreamSurface, FeedStreamSurface.this);
+                mHybridListRenderer.onSurfaceOpened();
+            } else {
+                Log.e("Meil_tabSelected", "onTabSelected position: " + tab.getPosition());
+                // if tab is the shopping tab, show shopping content
+                List<FeedListContentManager.FeedContent> contents = new ArrayList<>();
+
+                // Add front door recycler view.
+                View forYouView = mShoppingList.get();
+                forYouView.setId(R.id.for_you_view);
+                ShoppingProductContent content = new ShoppingProductContent("Test", forYouView);
+                contents.add(content);
+                mContentManager.addContents(mContentManager.getItemCount(), contents);
+            }
+        }
+
+        @Override
+        public void onTabUnselected(TabLayout.Tab tab) {
+            // Remove feed content, discover or shopping.
+            int feedCount = mContentManager.getItemCount() - mHeaderCount;
+            if (feedCount > 0) {
+                mContentManager.removeContents(mHeaderCount, feedCount);
+                mRecyclerViewAnimationFinishDetector.asyncWait();
+            }
+            if (tab.getPosition() == 0) {
+                FeedStreamSurfaceJni.get().surfaceClosed(
+                        mNativeFeedStreamSurface, FeedStreamSurface.this);
+            }
+        }
+
+        @Override
+        public void onTabReselected(TabLayout.Tab tab) {}
+    }
+
+    private ShoppingProductListCoordinator mShoppingList;
+    private TabLayoutHeaderSelectionDelegate mTabLayoutDelegate =
+            new TabLayoutHeaderSelectionDelegate();
+
     /**
      * Creates a {@link FeedStreamSurface} for creating native side bridge to access native feed
      * client implementation.
@@ -342,8 +407,11 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
     public FeedStreamSurface(Activity activity, boolean isBackgroundDark,
             SnackbarManager snackbarManager, NativePageNavigationDelegate pageNavigationDelegate,
             BottomSheetController bottomSheetController,
-            HelpAndFeedbackLauncher helpAndFeedbackLauncher, boolean isPlaceholderShown,
-            ShareHelperWrapper shareHelper) {
+            HelpAndFeedbackLauncher helpAndFeedbackLauncher,
+            Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+            ModalDialogManager modalDialogManager, boolean isPlaceholderShown,
+            ShareHelperWrapper shareHelper,
+            Supplier<ContextMenuManager> contextMenuManagerSupplier) {
         mNativeFeedStreamSurface = FeedStreamSurfaceJni.get().init(FeedStreamSurface.this);
         mSnackbarManager = snackbarManager;
         mActivity = activity;
@@ -385,6 +453,12 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
             mRootView = null;
         }
 
+        // Front door Recycler view supplier.
+        mShoppingList =
+                new ShoppingProductListCoordinator(mActivity, ephemeralTabCoordinatorSupplier,
+                        Profile.getLastUsedRegularProfile(), ListType.STAGGERED, modalDialogManager,
+                        contextMenuManagerSupplier, this::openUrl, this::share);
+
         trackSurface(this);
     }
 
@@ -412,8 +486,15 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         for (int i = 0; i < headerViews.size(); ++i) {
             View view = headerViews.get(i);
             String key = "Header" + view.hashCode();
+
+            if (view.getId() == R.id.ntp_tab_layout) {
+                assert view instanceof NTPTabLayout;
+                ((NTPTabLayout) view).setDelegate(mTabLayoutDelegate);
+            }
+
             FeedListContentManager.NativeViewContent headerContent =
                     new FeedListContentManager.NativeViewContent(key, view);
+
             newContentList.add(headerContent);
         }
 
@@ -425,6 +506,10 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         updateContentsInPlace(newContentList);
 
         mHeaderCount = headerViews.size();
+    }
+
+    public TabSelectionDelegate getTabLayoutDelegate() {
+        return mTabLayoutDelegate;
     }
 
     /**

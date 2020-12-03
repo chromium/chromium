@@ -30,6 +30,8 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.video_tutorials.NewTabPageVideoIPHManager;
+import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
+import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.cryptids.ProbabilisticCryptidRenderer;
 import org.chromium.chrome.browser.explore_sites.ExperimentalExploreSitesSection;
@@ -38,6 +40,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp.NewTabPage.OnSearchBoxScrollListener;
+import org.chromium.chrome.browser.ntp.NewTabPage.OnTabLayoutScrollListener;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
@@ -94,6 +97,9 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
     private Object mExploreSection; // Null when explore sites disabled.
 
     private OnSearchBoxScrollListener mSearchBoxScrollListener;
+    private OnTabLayoutScrollListener mTabLayoutScrollListener;
+    // TODO(meiliang): Use this polish the TabLayout transitioning position.
+    private Supplier<Integer> mTabLayoutVerticalPositionSupplier;
 
     private NewTabPageManager mManager;
     private Activity mActivity;
@@ -162,6 +168,11 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         int getVerticalScrollOffset();
 
         /**
+         * @return The vertical scroll offset of the TabLayout view.
+         */
+        int getVerticalTabLayoutOffset();
+
+        /**
          * Snaps the scroll point of the scroll view to prevent the user from scrolling to midway
          * through a transition.
          */
@@ -223,7 +234,9 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
             TileGroup.Delegate tileGroupDelegate, boolean searchProviderHasLogo,
             boolean searchProviderIsGoogle, ScrollDelegate scrollDelegate,
             ContextMenuManager contextMenuManager, UiConfig uiConfig, Supplier<Tab> tabProvider,
-            ActivityLifecycleDispatcher lifecycleDispatcher, NewTabPageUma uma) {
+            ActivityLifecycleDispatcher lifecycleDispatcher, NewTabPageUma uma,
+            Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+            Supplier<OverviewModeBehavior> overviewModeBehaviorSupplier) {
         TraceEvent.begin(TAG + ".initialize()");
         mScrollDelegate = scrollDelegate;
         mManager = manager;
@@ -348,6 +361,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
                     // correctly placed with their new layout configurations.
                     onUrlFocusAnimationChanged();
                     updateSearchBoxOnScroll();
+                    updateTabLayoutOnScroll();
 
                     // The positioning of elements may have been changed (since the elements expand
                     // to fill the available vertical space), so adjust the scroll.
@@ -370,6 +384,20 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
 
         if (mSearchBoxScrollListener != null) {
             mSearchBoxScrollListener.onNtpScrollChanged(getToolbarTransitionPercentage());
+        }
+    }
+
+    void updateTabLayoutOnScroll() {
+        if (mDisableUrlFocusChangeAnimations || mIsViewMoving) return;
+
+        // When the page changes (tab switching or new page loading), it is possible that events
+        // (e.g. delayed view change notifications) trigger calls to these methods after
+        // the current page changes. We check it again to make sure we don't attempt to update the
+        // wrong page.
+        if (!mManager.isCurrentPage()) return;
+
+        if (mTabLayoutScrollListener != null && mScrollDelegate.isScrollViewInitialized()) {
+            mTabLayoutScrollListener.onTabLayoutScrollChanged(isTabLayoutOffscreen() ? 1f : 0f);
         }
     }
 
@@ -707,6 +735,11 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
                 || mScrollDelegate.getVerticalScrollOffset() > getSearchBoxView().getTop();
     }
 
+    public boolean isTabLayoutOffscreen() {
+        return !mScrollDelegate.isChildVisibleAtPosition(1)
+                || mScrollDelegate.getVerticalTabLayoutOffset() > 0;
+    }
+
     /**
      * Sets the listener for search box scroll changes.
      * @param listener The listener to be notified on changes.
@@ -714,6 +747,13 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
     void setSearchBoxScrollListener(OnSearchBoxScrollListener listener) {
         mSearchBoxScrollListener = listener;
         if (mSearchBoxScrollListener != null) updateSearchBoxOnScroll();
+    }
+
+    void setTabLayoutScrollListener(
+            OnTabLayoutScrollListener listener, Supplier<Integer> verticalPositionSupplier) {
+        mTabLayoutScrollListener = listener;
+        mTabLayoutVerticalPositionSupplier = verticalPositionSupplier;
+        if (mTabLayoutScrollListener != null) updateTabLayoutOnScroll();
     }
 
     @Override

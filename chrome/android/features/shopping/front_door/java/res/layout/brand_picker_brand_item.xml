@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="4dp"
+    android:layout_marginVertical="2dp">
+
+  <LinearLayout
+      android:id="@+id/item"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:minHeight="@dimen/list_item_min_height"
+      android:orientation="horizontal"
+      android:layout_marginStart="12dp"
+      android:gravity="center_vertical" >
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/start_icon"
+        style="@style/ListItemStartIcon" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical" >
+
+      <TextView
+          android:id="@+id/title"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:maxLines="1"
+          android:ellipsize="end"
+          android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+      <TextView
+          android:id="@+id/description"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:maxLines="1"
+          android:ellipsize="end"
+          android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+    </LinearLayout>
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/end_button"
+        android:visibility="gone"
+        style="@style/ListItemEndIcon" />
+
+  </LinearLayout>
+  <!--  <include layout="@layout/modern_list_item_view" android:id="@+id/item"/>-->
+
+</FrameLayout>

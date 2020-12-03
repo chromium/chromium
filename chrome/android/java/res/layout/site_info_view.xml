@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/site_info"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:orientation="horizontal"
+  android:gravity="center_vertical">
+  <ImageView
+      android:id="@+id/favicon"
+      android:layout_width="48dp"
+      android:layout_height="48dp"
+      android:padding="12dp"
+      app:srcCompat="@drawable/ic_globe_24dp"
+      android:tint="@color/default_icon_color_inverse"/>
+
+  <TextView
+      android:id="@+id/description"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:textAppearance="@style/TextAppearance.TextSmall.Primary.Light"
+      android:text="Placeholder ..."
+      android:singleLine="true"/>
+
+  <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
+      android:id="@+id/menu"
+      android:layout_width="@dimen/snippets_article_header_menu_size"
+      android:layout_height="@dimen/snippets_article_header_menu_size"
+      android:padding="15dp"
+      android:background="@null"
+      android:contentDescription="@string/accessibility_ntp_feed_menu_button"
+      android:scaleType="fitXY"
+      android:src="@drawable/ic_more_vert_24dp"
+      app:menuMaxWidth="@dimen/feed_header_menu_max_width"
+      android:tint="@color/default_icon_color_inverse"
+      tools:ignore="RtlHardcoded" />
+
+</LinearLayout>

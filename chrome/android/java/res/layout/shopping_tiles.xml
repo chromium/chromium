@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/shopping_tiles_section"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/section_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/snippets_article_header_height"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/card_padding"
+        android:gravity="center_vertical">
+
+        <TextView android:id="@+id/shopping_tiles_header"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Shopping"
+            style="@style/TextAppearance.TextAccentMediumThick.Secondary" />
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/more_button"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/snippets_article_header_menu_size"
+            style="@style/TextButton"
+            android:text="MORE"/>
+    </LinearLayout>
+
+</LinearLayout>

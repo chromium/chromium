@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+  <FrameLayout
+    android:id="@+id/header_content_container"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1">
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/TabLayoutStyle" >
+
+      <com.google.android.material.tabs.TabItem
+          android:id="@+id/discover_tab"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/ntp_discover_on" />
+      <com.google.android.material.tabs.TabItem
+          android:id="@+id/shopping_tab"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/ntp_tablayout_shopping"
+          />
+    </com.google.android.material.tabs.TabLayout>
+
+    <TextView
+        android:id="@+id/off_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:minHeight="48dp"
+        android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary"
+        android:gravity="center_vertical"
+        android:text="@string/ntp_discover_off"
+        android:visibility="gone"/>
+  </FrameLayout>
+
+  <!-- Note ignore RtlHardcoded since this is an image, and the paddingLeft is for
+         spacing the image away from the header title above.
+    -->
+  <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
+      android:id="@+id/menu"
+      android:layout_width="@dimen/feed_v2_header_menu_width"
+      android:layout_height="@dimen/snippets_article_header_menu_size"
+      android:scaleType="fitXY"
+      android:paddingVertical="15dp"
+      android:paddingStart="15dp"
+      android:background="@null"
+      app:srcCompat="@drawable/ic_settings_gear_24dp"
+      app:menuMaxWidth="@dimen/feed_header_menu_max_width"
+      app:tint="@null"
+      tools:ignore="RtlHardcoded"/>
+</merge>

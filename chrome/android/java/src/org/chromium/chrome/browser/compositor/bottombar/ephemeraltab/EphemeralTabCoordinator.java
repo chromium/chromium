@@ -13,7 +13,6 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import org.chromium.base.Callback;
-import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -21,7 +20,6 @@ import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -78,6 +76,8 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
     private boolean mViewed; // Moved up from peek state by user
     private boolean mFullyOpened;
 
+    private boolean mShouldOpenHalf;
+
     /**
      * Constructor.
      * @param context The associated {@link Context}.
@@ -108,8 +108,9 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
      * @return {@code true} if the feature is enabled.
      */
     public static boolean isSupported() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.EPHEMERAL_TAB_USING_BOTTOM_SHEET)
-                && !SysUtils.isLowEndDevice();
+        // return ChromeFeatureList.isEnabled(ChromeFeatureList.EPHEMERAL_TAB_USING_BOTTOM_SHEET)
+        //         && !SysUtils.isLowEndDevice();
+        return true;
     }
 
     /**
@@ -194,6 +195,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
             mBottomSheetController.addObserver(mSheetObserver);
             mSheetContent = new EphemeralTabSheetContent(mContext, this::openInNewTab,
                     this::onToolbarClick, this::close, getMaxViewHeight());
+            mSheetContent.skipPeek(mShouldOpenHalf);
             mMediator.init(mWebContents, mContentView, mSheetContent, profile);
             mLayoutView.addOnLayoutChangeListener(this);
         }
@@ -205,6 +207,13 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
 
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         if (tracker.isInitialized()) tracker.notifyEvent(EventConstants.EPHEMERAL_TAB_USED);
+    }
+
+    public void requestOpenSheet(
+            String url, String title, boolean isIncognito, boolean halfHeight) {
+        mShouldOpenHalf = halfHeight;
+        requestOpenSheet(url, title, isIncognito);
+        mShouldOpenHalf = false;
     }
 
     private Profile getProfile(boolean isIncognito) {

@@ -15,6 +15,8 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsMarginSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
+import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.download.DownloadPage;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesPage;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
@@ -42,19 +44,26 @@ import org.chromium.ui.util.ColorUtils;
 public class NativePageFactory {
     private final ChromeActivity mActivity;
     private final BottomSheetController mBottomSheetController;
+    private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+    private final Supplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
     private NewTabPageUma mNewTabPageUma;
 
     private NativePageBuilder mNativePageBuilder;
 
-    public NativePageFactory(ChromeActivity activity, BottomSheetController sheetController) {
+    public NativePageFactory(ChromeActivity activity, BottomSheetController sheetController,
+            Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+            Supplier<OverviewModeBehavior> overviewModeBehaviorSupplier) {
         mActivity = activity;
         mBottomSheetController = sheetController;
+        mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
+        mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
     }
 
     private NativePageBuilder getBuilder() {
         if (mNativePageBuilder == null) {
-            mNativePageBuilder = new NativePageBuilder(
-                    mActivity, this::getNewTabPageUma, mBottomSheetController);
+            mNativePageBuilder =
+                    new NativePageBuilder(mActivity, this::getNewTabPageUma, mBottomSheetController,
+                            mEphemeralTabCoordinatorSupplier, mOverviewModeBehaviorSupplier);
         }
         return mNativePageBuilder;
     }
@@ -74,12 +83,18 @@ public class NativePageFactory {
         private final ChromeActivity mActivity;
         private final BottomSheetController mBottomSheetController;
         private final Supplier<NewTabPageUma> mUma;
+        private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+        private final Supplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
 
         public NativePageBuilder(ChromeActivity activity, Supplier<NewTabPageUma> uma,
-                BottomSheetController sheetController) {
+                BottomSheetController sheetController,
+                Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+                Supplier<OverviewModeBehavior> overviewModeBehaviorSupplier) {
             mActivity = activity;
             mUma = uma;
             mBottomSheetController = sheetController;
+            mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
+            mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
         }
 
         protected NativePage buildNewTabPage(Tab tab) {
@@ -89,8 +104,10 @@ public class NativePageFactory {
             return new NewTabPage(mActivity, mActivity.getBrowserControlsManager(),
                     mActivity.getActivityTabProvider(), mActivity.getSnackbarManager(),
                     mActivity.getLifecycleDispatcher(), mActivity.getTabModelSelector(),
-                    mActivity.isTablet(), mUma.get(), ColorUtils.inNightMode(mActivity),
-                    nativePageHost, tab, mBottomSheetController);
+                    mActivity.isTablet(), mUma.get(),
+                        ColorUtils.inNightMode(mActivity), nativePageHost, tab,
+                    mBottomSheetController, mEphemeralTabCoordinatorSupplier,
+                    mOverviewModeBehaviorSupplier, mActivity.getModalDialogManager());
         }
 
         protected NativePage buildBookmarksPage(Tab tab) {

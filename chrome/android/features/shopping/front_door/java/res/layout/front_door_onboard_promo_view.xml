@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/onboarding_promo_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/hairline_border_card_background"
+    android:orientation="vertical">
+
+  <TextView
+      android:id="@+id/onboarding_header"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center"
+      android:paddingVertical="16dp"
+      android:paddingHorizontal="10dp"
+      android:text="Curate your own shopping feed"
+      android:textAppearance="@style/TextAppearance.Headline.Primary" />
+  <LinearLayout
+      android:id="@+id/category_container"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingHorizontal="12dp">
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:padding="4dp">
+      <org.chromium.chrome.browser.shopping.front_door.RoundedCornerSquareImageView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="center_horizontal"
+          android:adjustViewBounds="true"
+          android:src="@drawable/Thumbnail_Electronics"
+          app:cornerRadiusTopStart="@dimen/default_rounded_corner_radius"
+          app:cornerRadiusTopEnd="@dimen/default_rounded_corner_radius"
+          app:cornerRadiusBottomStart="@dimen/default_rounded_corner_radius"
+          app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius"
+          android:scaleType="centerCrop"
+          android:importantForAccessibility="no"/>
+
+      <org.chromium.chrome.browser.shopping.front_door.AdjustableScrimView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:minHeight="48dp"
+          android:gravity="center_vertical"
+          android:layout_gravity="bottom"
+          android:background="@drawable/gradient_scrim_angle90"
+          app:cornerRadiusBottomStart="@dimen/default_rounded_corner_radius"
+          app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius">
+        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Light"
+            android:gravity="center"
+            android:text="@string/category_electronics"/>
+      </org.chromium.chrome.browser.shopping.front_door.AdjustableScrimView>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:padding="4dp">
+      <org.chromium.chrome.browser.shopping.front_door.RoundedCornerSquareImageView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="center_horizontal"
+          android:adjustViewBounds="true"
+          android:src="@drawable/Thumbnail_Beauty"
+          app:cornerRadiusTopStart="@dimen/default_rounded_corner_radius"
+          app:cornerRadiusTopEnd="@dimen/default_rounded_corner_radius"
+          app:cornerRadiusBottomStart="@dimen/default_rounded_corner_radius"
+          app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius"
+          android:scaleType="centerCrop"
+          android:importantForAccessibility="no"/>
+
+      <org.chromium.chrome.browser.shopping.front_door.AdjustableScrimView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:minHeight="48dp"
+          android:gravity="center_vertical"
+          android:layout_gravity="bottom"
+          android:background="@drawable/gradient_scrim_angle90"
+          app:cornerRadiusBottomStart="@dimen/default_rounded_corner_radius"
+          app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius">
+        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Light"
+            android:gravity="center"
+            android:text="@string/category_health_and_beauty"/>
+      </org.chromium.chrome.browser.shopping.front_door.AdjustableScrimView>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:padding="4dp">
+      <org.chromium.chrome.browser.shopping.front_door.RoundedCornerSquareImageView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="center_horizontal"
+          android:adjustViewBounds="true"
+          android:src="@drawable/Thumbnail_Home_and_Garden"
+          app:cornerRadiusTopStart="@dimen/default_rounded_corner_radius"
+          app:cornerRadiusTopEnd="@dimen/default_rounded_corner_radius"
+          app:cornerRadiusBottomStart="@dimen/default_rounded_corner_radius"
+          app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius"
+          android:scaleType="centerCrop"
+          android:importantForAccessibility="no"/>
+
+      <org.chromium.chrome.browser.shopping.front_door.AdjustableScrimView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:minHeight="48dp"
+          android:gravity="center_vertical"
+          android:layout_gravity="bottom"
+          android:background="@drawable/gradient_scrim_angle90"
+          app:cornerRadiusBottomStart="@dimen/default_rounded_corner_radius"
+          app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius">
+        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Light"
+            android:gravity="center"
+            android:text="@string/category_home_and_garden"/>
+      </org.chromium.chrome.browser.shopping.front_door.AdjustableScrimView>
+    </FrameLayout>
+
+  </LinearLayout>
+  <TextView
+    android:id="@+id/get_started"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:paddingVertical="16dp"
+    android:text="Get started"
+    android:layout_gravity="center"
+    android:textAppearance="@style/TextAppearance.Button.Text.Blue"/>
+
+</LinearLayout>

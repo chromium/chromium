@@ -10,4 +10,6 @@
   <!-- No content dimensions. -->
   <dimen name="no_content_padding">16dp</dimen>
   <dimen name="no_content_text_padding">8dp</dimen>
+  <dimen name="resume_item_width">168dp</dimen>
+  <dimen name="resume_recycler_view_height">192dp</dimen>
 </resources>

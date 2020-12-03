@@ -145,6 +145,40 @@ public class BookmarkUtils {
         });
     }
 
+    public static void addUrlToShoppingFolder(ChromeTabbedActivity activity, final String url, final String title, boolean remove) {
+        final BookmarkModel bookmarkModel = new BookmarkModel();
+        bookmarkModel.finishLoadingBookmarkModel(() -> {
+            BookmarkId shoppingFolder = findOrCreateShoppingFolderInternal(bookmarkModel);
+
+            if (remove) {
+                for (BookmarkItem item:bookmarkModel.getBookmarksForFolder(shoppingFolder)) {
+                    if (item.getUrl().startsWith(url)) {
+                        bookmarkModel.deleteBookmark(item.getId());
+                    }
+                }
+            } else {
+                bookmarkModel.addBookmark(shoppingFolder, 0, title, url);
+                Snackbar snackbar = Snackbar.make("Shopping", new SnackbarController() {}, Snackbar.TYPE_ACTION,
+                    Snackbar.UMA_BOOKMARK_ADDED)
+                    .setTemplateText(activity.getString(R.string.bookmark_page_saved_folder));
+                activity.getSnackbarManager().showSnackbar(snackbar);
+            }
+        });
+    }
+
+    private static BookmarkId findOrCreateShoppingFolderInternal(BookmarkModel model) {
+        BookmarkId rootId = model.getDefaultFolder();
+        for (BookmarkId id : model.getChildIDs(rootId)) {
+            if ("Shopping".equals(model.getBookmarkTitle(id))) {
+                return id;
+            }
+        }
+
+        BookmarkId shoppingId = model.addFolder(
+            rootId, model.getChildCount(rootId), "Shopping");
+        return shoppingId;
+    }
+
     /**
      * An internal version of {@link #addBookmarkSilently(Context, BookmarkModel, String, String)}.
      * Will reset last used parent if it fails to add a bookmark

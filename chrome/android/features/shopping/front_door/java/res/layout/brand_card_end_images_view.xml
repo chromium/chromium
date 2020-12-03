@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+  <org.chromium.components.browser_ui.widget.RoundedCornerImageView
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      android:id="@+id/end_top_image"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_marginBottom="1dp"
+      android:scaleType="centerCrop"
+      android:src="@color/thumbnail_placeholder_on_primary_bg"
+      android:layout_weight="1"/>
+
+  <org.chromium.components.browser_ui.widget.RoundedCornerImageView
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      android:id="@+id/end_bottom_image"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_marginTop="1dp"
+      android:scaleType="centerCrop"
+      app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius"
+      android:src="@color/thumbnail_placeholder_on_primary_bg"
+      android:layout_weight="1"/>
+
+</LinearLayout>

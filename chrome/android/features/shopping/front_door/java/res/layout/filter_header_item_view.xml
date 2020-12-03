@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.chromium.chrome.browser.shopping.front_door.AutoFlowLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/filter_chips"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+</org.chromium.chrome.browser.shopping.front_door.AutoFlowLayout>

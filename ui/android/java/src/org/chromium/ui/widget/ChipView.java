@@ -53,6 +53,11 @@ public class ChipView extends LinearLayout {
     private ViewGroup mEndIconWrapper;
     private TextView mSecondaryText;
 
+    @Px
+    private int mLeadingElementPadding;
+    @Px
+    private int mEndPadding;
+
     /**
      * Constructor for inflating from XML.
      */
@@ -76,15 +81,13 @@ public class ChipView extends LinearLayout {
         boolean extendLateralPadding =
                 a.getBoolean(R.styleable.ChipView_extendLateralPadding, false);
 
-        @Px
-        int leadingElementPadding = extendLateralPadding
+        mLeadingElementPadding = extendLateralPadding
                 ? getResources().getDimensionPixelSize(
                         R.dimen.chip_element_extended_leading_padding)
                 : getResources().getDimensionPixelSize(R.dimen.chip_element_leading_padding);
 
         // End padding is already longer so no need to adjust in the 'extendLateralPadding' case.
-        @Px
-        int endPadding = getResources().getDimensionPixelSize(R.dimen.chip_end_padding);
+        mEndPadding = getResources().getDimensionPixelSize(R.dimen.chip_end_padding);
 
         mEndIconStartPadding = extendLateralPadding
                 ? getResources().getDimensionPixelSize(R.dimen.chip_end_icon_extended_margin_start)
@@ -130,13 +133,13 @@ public class ChipView extends LinearLayout {
 
         if (mUseRoundedStartIcon) {
             int chipHeight = getResources().getDimensionPixelOffset(R.dimen.chip_default_height);
-            leadingElementPadding = (chipHeight - iconHeight) / 2;
+            mLeadingElementPadding = (chipHeight - iconHeight) / 2;
         }
 
         // Setting this enforces 16dp padding at the end and 8dp at the start (unless overridden).
         // For text, the start padding needs to be 16dp which is why a ChipTextView contributes the
         // remaining 8dp.
-        ViewCompat.setPaddingRelative(this, leadingElementPadding, 0, endPadding, 0);
+        ViewCompat.setPaddingRelative(this, mLeadingElementPadding, 0, mEndPadding, 0);
 
         mPrimaryText = new TextView(new ContextThemeWrapper(getContext(), R.style.ChipTextView));
         ApiCompatibilityUtils.setTextAppearance(mPrimaryText, primaryTextAppearance);
@@ -292,5 +295,12 @@ public class ChipView extends LinearLayout {
      */
     public @Px int getCornerRadius() {
         return mCornerRadius;
+    }
+
+    public void setIconOnly(boolean isIconOnly) {
+        mPrimaryText.setVisibility(isIconOnly ? GONE : VISIBLE);
+        if (isIconOnly) {
+            ViewCompat.setPaddingRelative(this, mEndPadding, 0, mEndPadding, 0);
+        }
     }
 }

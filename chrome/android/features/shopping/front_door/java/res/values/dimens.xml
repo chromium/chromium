@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <dimen name="picker_selected_padding">8dp</dimen>
+    <dimen name="rounded_corner_radius">8dp</dimen>
+    <dimen name="brand_card_favicon_size">24dp</dimen>
+    <dimen name="pick_top_padding">16dp</dimen>
+    <dimen name="picker_horizontal_padding">4dp</dimen>
+</resources>

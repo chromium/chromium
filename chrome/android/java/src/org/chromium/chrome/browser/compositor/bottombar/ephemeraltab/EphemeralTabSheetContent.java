@@ -85,6 +85,13 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
     private ImageView mFaviconView;
     private @OpenMode int mOpenMode;
 
+    @HeightMode
+    private int mFullHeightMode = BottomSheetContent.HeightMode.WRAP_CONTENT;
+    @HeightMode
+    private int mHalfHeightMode = BottomSheetContent.HeightMode.DEFAULT;
+
+    private boolean mSkipPeak;
+
     /**
      * Constructor.
      * @param context An Android context.
@@ -278,9 +285,10 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
 
     @Override
     public int getPeekHeight() {
+        if (mSkipPeak) return HeightMode.DISABLED;
         if (mOpenMode == OpenMode.PEEK) {
             int toolbarHeight =
-                    mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+                mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
             return (int) (toolbarHeight * PEEK_TOOLBAR_HEIGHT_MULTIPLE);
         } else {
             return HeightMode.DISABLED;
@@ -288,13 +296,22 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public float getHalfHeightRatio() {
-        return mOpenMode == OpenMode.HALF ? HALF_HEIGHT_RATIO : HeightMode.DEFAULT;
+    public float getFullHeightRatio() {
+        return mFullHeightMode;
     }
 
     @Override
-    public float getFullHeightRatio() {
-        return mOpenMode == OpenMode.HALF ? FULL_HEIGHT_RATIO : HeightMode.WRAP_CONTENT;
+    public float getHalfHeightRatio() {
+        return mHalfHeightMode;
+    }
+
+    public void skipPeek(boolean skip) {
+        mSkipPeak = skip;
+        if (skip) {
+            mFullHeightMode = BottomSheetContent.HeightMode.DEFAULT;
+        } else {
+            mFullHeightMode = BottomSheetContent.HeightMode.WRAP_CONTENT;
+        }
     }
 
     @Override

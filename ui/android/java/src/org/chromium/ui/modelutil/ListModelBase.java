@@ -5,7 +5,6 @@
 package org.chromium.ui.modelutil;
 
 import androidx.annotation.NonNull;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -205,5 +204,17 @@ public class ListModelBase<T, P> extends ListObservableImpl<P> implements Simple
     /** Clear all items from the list. */
     public void clear() {
         if (size() > 0) removeRange(0, size());
+    }
+
+    /**
+     * Get a portion of this list between the specified fromIndex, inclusive, and toIndex,
+     * exclusive.
+     *
+     * @param fromIndex Low index (inclusive) of the subList
+     * @param toIndex High endpoint (exclusive) of the subList
+     * @return A copy of the sublist.
+     */
+    public List<T> sublist(int fromIndex, int toIndex) {
+        return new ArrayList<>(mItems.subList(fromIndex, toIndex));
     }
 }

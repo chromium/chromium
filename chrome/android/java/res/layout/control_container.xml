@@ -5,10 +5,11 @@
 <org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/control_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="@dimen/control_container_height" >
+    android:minHeight="@dimen/control_container_height">
 
     <view
         class="org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer$ToolbarViewResourceFrameLayout"
@@ -22,14 +23,25 @@
             android:layout_marginTop="@dimen/tab_strip_height"
             android:layout_height="@dimen/toolbar_height_no_shadow" />
 
-        <ImageView
-            android:id="@+id/toolbar_shadow"
-            android:src="@drawable/modern_toolbar_shadow"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/toolbar_shadow_height"
-            android:layout_marginTop="@dimen/tab_strip_and_toolbar_height"
-            android:scaleType="fitXY"
-            tools:ignore="ContentDescription" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/tab_strip_and_toolbar_height">
+
+            <include layout="@layout/ntp_tab_layout"
+                android:id="@+id/feed_header"
+                android:visibility="gone"/>
+
+            <ImageView
+                android:id="@+id/toolbar_shadow"
+                android:src="@drawable/modern_toolbar_shadow"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/toolbar_shadow_height"
+                android:layout_below="@id/feed_header"
+                android:scaleType="fitXY"
+                tools:ignore="ContentDescription" />
+        </RelativeLayout>
+
 
         <ViewStub
             android:id="@+id/find_toolbar_stub"

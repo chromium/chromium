@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:padding="4dp">
+  <org.chromium.chrome.browser.shopping.front_door.BrandCardView
+      android:id="@+id/item"
+      android:layout_width="156dp"
+      android:layout_height="178dp"/>
+</LinearLayout>

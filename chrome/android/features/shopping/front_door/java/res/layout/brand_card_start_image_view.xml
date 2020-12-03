@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.chromium.components.browser_ui.widget.RoundedCornerImageView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/start_image"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="1dp"
+    android:adjustViewBounds="true"
+    android:scaleType="fitCenter"
+    app:cornerRadiusBottomStart="@dimen/default_rounded_corner_radius"
+    android:src="@color/thumbnail_placeholder_on_primary_bg" />

@@ -8,6 +8,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsDelegateAndroid;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
+import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
@@ -34,6 +35,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final BrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+    private final Supplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
     private final Runnable mContextMenuCopyLinkObserver;
     private final BottomSheetController mBottomSheetController;
     private NativePageFactory mNativePageFactory;
@@ -42,11 +44,13 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             BrowserControlsVisibilityDelegate appBrowserControlsVisibilityDelegate,
             Supplier<ShareDelegate> shareDelegateSupplier,
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
-            Runnable contextMenuCopyLinkObserver, BottomSheetController sheetController) {
+            BottomSheetController sheetController,
+            Supplier<OverviewModeBehavior> overviewModeBehaviorSupplier, Runnable contextMenuCopyLinkObserver) {
         mActivity = activity;
         mAppBrowserControlsVisibilityDelegate = appBrowserControlsVisibilityDelegate;
         mShareDelegateSupplier = shareDelegateSupplier;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
+        mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
         mContextMenuCopyLinkObserver = contextMenuCopyLinkObserver;
         mBottomSheetController = sheetController;
     }
@@ -81,7 +85,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     @Override
     public NativePage createNativePage(String url, NativePage candidatePage, Tab tab) {
         if (mNativePageFactory == null) {
-            mNativePageFactory = new NativePageFactory(mActivity, mBottomSheetController);
+            mNativePageFactory = new NativePageFactory(mActivity, mBottomSheetController,
+                    mEphemeralTabCoordinatorSupplier, mOverviewModeBehaviorSupplier);
         }
         return mNativePageFactory.createNativePage(url, candidatePage, tab);
     }

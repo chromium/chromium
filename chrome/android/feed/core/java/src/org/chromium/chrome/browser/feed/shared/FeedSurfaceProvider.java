@@ -9,6 +9,8 @@ import android.view.View;
 
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
+import org.chromium.chrome.browser.shopping_tiles.NTPTabLayout.MenuDelegate;
+import org.chromium.chrome.browser.shopping_tiles.NTPTabLayout.TabSelectionDelegate;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 
 /**
@@ -49,4 +51,8 @@ public interface FeedSurfaceProvider {
      * Captures the contents of this provider into the specified output.
      */
     void captureThumbnail(Canvas canvas);
+
+    TabSelectionDelegate getTabLayoutDelegate();
+
+    MenuDelegate getTabLayoutMenuDelegate();
 }

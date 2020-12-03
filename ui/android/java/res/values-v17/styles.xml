@@ -249,6 +249,11 @@
         <item name="android:textColor">@color/default_text_color_disabled_light</item>
     </style>
 
+    <style name="TextAppearance.TextAccentMediumThick.Light">
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:textColor">@color/default_text_color_light</item>
+    </style>
+
     <style name="TextAppearance.WhiteLink" tools:ignore="UnusedResources">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">@dimen/text_size_medium</item>

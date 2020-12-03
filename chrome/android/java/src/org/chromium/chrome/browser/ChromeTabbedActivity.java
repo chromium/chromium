@@ -574,12 +574,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 }
             }
             mLayoutManager = new LayoutManagerChromePhone(compositorViewHolder, mContentContainer,
-                    mStartSurfaceSupplier.get(), getTabContentManagerSupplier(),
-                    () -> {
+                    mStartSurfaceSupplier.get(), getTabContentManagerSupplier(), () -> {
                         if (getCompositorViewHolder() == null) return null;
                         return getCompositorViewHolder().getLayerTitleCache();
-                    },
-                    mOverviewModeBehaviorSupplier, mLayoutStateProviderOneshotSupplier);
+                    }, mOverviewModeBehaviorSupplier, mLayoutStateProviderOneshotSupplier, null);
             mOverviewModeController = mLayoutManager;
         }
     }
@@ -1656,8 +1654,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         Supplier<TabDelegateFactory> tabDelegateFactorySupplier = () -> {
             return new TabbedModeTabDelegateFactory(this, getAppBrowserControlsVisibilityDelegate(),
                     getShareDelegateSupplier(), mEphemeralTabCoordinatorSupplier,
-                    ((TabbedRootUiCoordinator) mRootUiCoordinator)::onContextMenuCopyLink,
-                    mRootUiCoordinator.getBottomSheetController());
+                    mRootUiCoordinator.getBottomSheetController(), mOverviewModeBehaviorSupplier,                     ((TabbedRootUiCoordinator) mRootUiCoordinator)::onContextMenuCopyLink);
         };
 
         ChromeTabCreator.OverviewNTPCreator overviewNTPCreator = null;

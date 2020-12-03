@@ -13,6 +13,9 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.ntp.NewTabPage.OnTabLayoutScrollListener;
+import org.chromium.chrome.browser.shopping_tiles.NTPTabLayout;
 
 /**
  * Delegate that provides the toolbar with the info of the NTP for the current tab.
@@ -41,6 +44,10 @@ public interface NewTabPageDelegate {
         return false;
     }
 
+    default boolean isTabLayoutShownOnNtp() {
+        return false;
+    }
+
     /**
      * @return {@code true} if we're transitioning away from showing the location bar.
      */
@@ -53,6 +60,9 @@ public interface NewTabPageDelegate {
      * @param scrollCallback Callback to be invoked when the event occurs.
      */
     default void setSearchBoxScrollListener(@Nullable Callback<Float> scrollCallback) {}
+
+    default void setTabLayoutScrollListener(OnTabLayoutScrollListener listener,
+            Supplier<Integer> verticalPositionSupplier, Supplier<NTPTabLayout> tabLayoutSupplier) {}
 
     /**
      * Get the bounds of the search box in relation to the top level NewTabPage view.

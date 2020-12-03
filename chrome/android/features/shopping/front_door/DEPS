@@ -1,0 +1,5 @@
+include_rules = [
+  "+chrome/browser/endpoint_fetcher",
+  "+chrome/browser/image_fetcher",
+  "+chrome/browser/profiles/android/java",
+]

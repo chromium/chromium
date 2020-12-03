@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperMa
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.shopping_tiles.ShoppingTileSection;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -61,6 +62,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     protected ToolbarSwipeLayout mToolbarSwipeLayout;
     /** A {@link Layout} that should be used when the user is in the tab switcher. */
     protected Layout mOverviewLayout;
+    protected Layout mFrontDoorLayout;
 
     // Event Filter Handlers
     private final SwipeHandler mToolbarSwipeHandler;
@@ -93,7 +95,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<LayerTitleCache> layerTitleCacheSupplier,
             OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneshotSupplier) {
+            OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneshotSupplier,
+            Supplier<ShoppingTileSection> shoppingTileSectionSupplier) {
         super(host, contentContainer, tabContentManagerSupplier, layerTitleCacheSupplier,
                 layoutStateProviderOneshotSupplier);
         Context context = host.getContext();
@@ -135,6 +138,9 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
         mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
         mOverviewModeBehaviorSupplier.set(this);
+
+        mFrontDoorLayout = new FrontDoorLayout(context, this, renderHost,
+                shoppingTileSectionSupplier, mHost.getBrowserControlsManagerSupplier());
     }
 
     /**
@@ -416,6 +422,11 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         } else if (mOverviewLayout != null) {
             startShowing(mOverviewLayout, animate);
         }
+    }
+
+    @Override
+    public void showFrontDoor() {
+        startShowing(mFrontDoorLayout, false);
     }
 
     /**

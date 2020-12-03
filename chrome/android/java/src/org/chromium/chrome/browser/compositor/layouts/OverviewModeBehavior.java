@@ -61,4 +61,6 @@ public interface OverviewModeBehavior {
      * @param listener Unregisters {@code listener} for overview mode status changes.
      */
     void removeOverviewModeObserver(OverviewModeObserver listener);
+
+    void showFrontDoor();
 }

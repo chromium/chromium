@@ -9,6 +9,8 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.shopping_tiles.NTPTabLayout.TabSelectionDelegate;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
@@ -210,5 +212,9 @@ public interface Stream {
             /** The next value that should be used when adding additional values to the IntDef. */
             int NEXT_VALUE = 3;
         }
+    }
+
+    default TabSelectionDelegate getTabLayoutDelegate() {
+        return null;
     }
 }

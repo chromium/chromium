@@ -185,8 +185,9 @@ public class TabUiFeatureUtilities {
      * @return Whether the instant start is supported.
      */
     public static boolean supportInstantStart(boolean isTablet) {
-        return !DeviceClassManager.enableAccessibilityLayout()
-                && CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START) && !isTablet;
+        // return !DeviceClassManager.enableAccessibilityLayout()
+        //         && CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START) && !isTablet;
+        return false;
     }
 
     /**

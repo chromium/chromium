@@ -13,3 +13,82 @@ java_strings_grd("java_strings_grd") {
   outputs = [ "values/android_chrome_front_door_strings.xml" ] +
             [ "values-ja/android_chrome_front_door_strings.xml" ]
 }
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/Thumbnail_Apparel.jpg",
+    "java/res/drawable/Thumbnail_Baby_and_Kids.jpg",
+    "java/res/drawable/Thumbnail_Beauty.jpg",
+    "java/res/drawable/Thumbnail_Electronics.jpg",
+    "java/res/drawable/Thumbnail_Home_Improvement_and_Tools.jpg",
+    "java/res/drawable/Thumbnail_Home_and_Garden.jpg",
+    "java/res/drawable/Thumbnail_Sports_and_Outfoors.jpg",
+    "java/res/drawable/Thumbnail_Toys_and_Games.jpg",
+    "java/res/drawable/Thumbnail_Travel_Luggage_and_Bags.jpg",
+    "java/res/drawable/gradient_scrim_angle90.xml",
+    "java/res/drawable/picked_indicator.xml",
+    "java/res/layout/brand_card_end_images_view.xml",
+    "java/res/layout/brand_card_image_view.xml",
+    "java/res/layout/brand_card_item.xml",
+    "java/res/layout/brand_card_item_view.xml",
+    "java/res/layout/brand_card_start_image_view.xml",
+    "java/res/layout/brand_picker_brand_checkbox_item.xml",
+    "java/res/layout/brand_picker_brand_item.xml",
+    "java/res/layout/brand_picker_category_header.xml",
+    "java/res/layout/category_name_text_view.xml",
+    "java/res/layout/filter_chip.xml",
+    "java/res/layout/filter_header_item_view.xml",
+    "java/res/layout/front_door_onboard_promo_view.xml",
+    "java/res/layout/onboard_category_item_view.xml",
+    "java/res/layout/scrimable_image.xml",
+    "java/res/values/dimens.xml",
+  ]
+  deps = [
+    ":java_strings_grd",
+    "//chrome/android:chrome_app_java_resources",
+  ]
+}
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/shopping/front_door/AdjustableScrimView.java",
+    "java/src/org/chromium/chrome/browser/shopping/front_door/AutoFlowLayout.java",
+    "java/src/org/chromium/chrome/browser/shopping/front_door/BrandCardView.java",
+    "java/src/org/chromium/chrome/browser/shopping/front_door/BrandInfo.java",
+    "java/src/org/chromium/chrome/browser/shopping/front_door/ChipProperties.java",
+    "java/src/org/chromium/chrome/browser/shopping/front_door/ChipsProvider.java",
+    "java/src/org/chromium/chrome/browser/shopping/front_door/DummyJSONResponseProvider.java",
+    "java/src/org/chromium/chrome/browser/shopping/front_door/FilterChipListCoordinator.java",
+    "java/src/org/chromium/chrome/browser/shopping/front_door/FrontDoorFeedProvider.java",
+    "java/src/org/chromium/chrome/browser/shopping/front_door/FrontDoorOnBoardingCoordinator.java",
+    "java/src/org/chromium/chrome/browser/shopping/front_door/FrontDoorOnBoardingMediator.java",
+    "java/src/org/chromium/chrome/browser/shopping/front_door/InterceptTouchEventFrameLayout.java",
+    "java/src/org/chromium/chrome/browser/shopping/front_door/OnboardBrandParser.java",
+    "java/src/org/chromium/chrome/browser/shopping/front_door/OnboardCategoryAndBrandProvider.java",
+    "java/src/org/chromium/chrome/browser/shopping/front_door/Picker.java",
+    "java/src/org/chromium/chrome/browser/shopping/front_door/ProductLineInfo.java",
+    "java/src/org/chromium/chrome/browser/shopping/front_door/ProductLineParser.java",
+    "java/src/org/chromium/chrome/browser/shopping/front_door/ProductLineProvider.java",
+    "java/src/org/chromium/chrome/browser/shopping/front_door/RoundedCornerSquareImageView.java",
+    "java/src/org/chromium/chrome/browser/shopping/front_door/ScrimableImageContainer.java",
+    "java/src/org/chromium/chrome/browser/shopping/front_door/ShoppingFeedFetcher.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/endpoint_fetcher:java",
+    "//chrome/browser/image_fetcher:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/android/favicon:java",
+    "//components/browser_ui/util/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/favicon/android:java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/android_deps:androidx_appcompat_appcompat_resources_java",
+    "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
+    "//third_party/android_deps:material_design_java",
+    "//ui/android:ui_java",
+    "//url:gurl_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.shopping.front_door"
+}

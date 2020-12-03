@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<merge xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="center"
+      android:background="@drawable/hairline_border_card_background"
+      android:orientation="vertical">
+    <LinearLayout
+        android:id="@+id/brand_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="4dp" >
+      <org.chromium.ui.widget.ChromeImageView
+          android:id="@+id/favicon"
+          android:layout_width="36dp"
+          android:layout_height="36dp"
+          android:layout_gravity="center_vertical"
+          android:scaleType="center"
+          app:srcCompat="@drawable/ic_globe_24dp"/>
+      <LinearLayout
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:orientation="vertical"
+          android:layout_gravity="center_vertical" >
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="Nike"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="Nike.com"
+            android:textAppearance="@style/TextAppearance.TextSmall.Primary" />
+      </LinearLayout>
+
+    </LinearLayout>
+
+    <include layout="@layout/brand_card_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:id="@+id/images_container"
+        android:layout_marginHorizontal="1dp"
+        android:layout_marginBottom="1dp"
+        android:layout_below="@id/brand_info"/>
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/add_to_feed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/images_container"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="8dp"
+        android:visibility="gone"
+        style="@style/FilledButton.Flat"
+        android:text="Add to feed"/>
+
+  </LinearLayout>
+
+</merge>

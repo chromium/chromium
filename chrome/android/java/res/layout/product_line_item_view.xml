@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/product_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/experimental_explore_sites_padding">
+    <org.chromium.components.browser_ui.widget.RoundedCornerImageView
+        android:id="@+id/image_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="centerInside"
+        android:adjustViewBounds="true"
+        android:src="@color/thumbnail_placeholder_on_primary_bg"
+        app:cornerRadiusTopStart="8dp"
+        app:cornerRadiusTopEnd="8dp"
+        app:cornerRadiusBottomStart="8dp"
+        app:cornerRadiusBottomEnd="8dp" />
+    <TextView
+        android:id="@+id/product_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:gravity="center_vertical"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:layout_below="@id/image_container"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+        android:text="Product name"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/brand_name"
+        android:layout_below="@id/product_name"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+        android:singleLine="false"
+        android:text="Brand name"/>
+</RelativeLayout>
