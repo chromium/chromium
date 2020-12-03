@@ -99,7 +99,7 @@ bool ResetPipeBlocking(WINUSB_INTERFACE_HANDLE handle, UCHAR pipeId) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   if (!WinUsb_ResetPipe(handle, pipeId)) {
-    USB_PLOG(DEBUG) << "Failed to reset pipe " << static_cast<int>(pipeId);
+    USB_PLOG(DEBUG) << "Failed to reset pipe " << int{pipeId};
     return false;
   }
 
@@ -111,8 +111,7 @@ bool SetCurrentAlternateSettingBlocking(WINUSB_INTERFACE_HANDLE handle,
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   if (!WinUsb_SetCurrentAlternateSetting(handle, settingNumber)) {
-    USB_PLOG(DEBUG) << "Failed to set alternate setting "
-                    << static_cast<int>(settingNumber);
+    USB_PLOG(DEBUG) << "Failed to set alternate setting " << int{settingNumber};
     return false;
   }
 
@@ -203,7 +202,6 @@ void UsbDeviceHandleWin::Close() {
     return;
 
   device_->HandleClosed(this);
-  device_ = nullptr;
 
   if (hub_handle_.IsValid()) {
     CancelIo(hub_handle_.Get());
@@ -226,6 +224,8 @@ void UsbDeviceHandleWin::Close() {
   scoped_refptr<UsbDeviceHandleWin> self(this);
   while (!requests_.empty())
     requests_.begin()->second->Abort();
+
+  device_ = nullptr;
 }
 
 void UsbDeviceHandleWin::SetConfiguration(int configuration_value,
@@ -587,14 +587,30 @@ UsbDeviceHandleWin::UsbDeviceHandleWin(scoped_refptr<UsbDeviceWin> device)
       interface_info.info = interface.get();
       RegisterEndpoints(interface.get(), *alternate);
 
-      if (interface->interface_number == interface->first_interface) {
-        auto it = device_->functions().find(interface->interface_number);
-        if (it != device_->functions().end()) {
-          interface_info.function_driver = it->second.driver;
-          interface_info.function_path = it->second.path;
+      if (device_->driver_type() == UsbDeviceWin::DriverType::kComposite) {
+        if (interface->interface_number == interface->first_interface) {
+          auto it = device_->functions().find(interface->interface_number);
+          if (it != device_->functions().end()) {
+            interface_info.function_driver = it->second.driver;
+            interface_info.function_path = it->second.path;
+          }
         }
       }
     }
+  }
+
+  if (device_->driver_type() == UsbDeviceWin::DriverType::kWinUSB) {
+    // If this is not a composite device we can assume UsbServiceWin has
+    // set up the device with a single function entry no matter how many
+    // functions the device appears to have based on its descriptors.
+    DCHECK_EQ(1u, device_->functions().size());
+    DCHECK(base::Contains(device_->functions(), 0));
+    const UsbDeviceWin::FunctionInfo& function_info =
+        device_->functions().find(0)->second;
+    DCHECK(base::Contains(interfaces_, 0));
+    Interface& interface_info = interfaces_[0];
+    interface_info.function_driver = function_info.driver;
+    interface_info.function_path = function_info.path;
   }
 }
 
@@ -660,12 +676,8 @@ void UsbDeviceHandleWin::OpenInterfaceHandle(Interface* interface,
     return;
   }
 
-  if (interface->info->first_interface != interface->info->interface_number) {
-    auto first_interface_it =
-        interfaces_.find(interface->info->first_interface);
-    DCHECK(first_interface_it != interfaces_.end());
-    Interface* first_interface = &first_interface_it->second;
-
+  Interface* first_interface = GetFirstInterfaceForFunction(interface);
+  if (first_interface != interface) {
     OpenInterfaceHandle(
         first_interface,
         base::BindOnce(&UsbDeviceHandleWin::OnFirstInterfaceOpened,
@@ -684,6 +696,28 @@ void UsbDeviceHandleWin::OpenInterfaceHandle(Interface* interface,
   OnFunctionAvailable(std::move(callback), interface);
 }
 
+UsbDeviceHandleWin::Interface* UsbDeviceHandleWin::GetFirstInterfaceForFunction(
+    Interface* interface) {
+  switch (device_->driver_type()) {
+    case UsbDeviceWin::DriverType::kUnsupported:
+      NOTREACHED();
+      return nullptr;
+    case UsbDeviceWin::DriverType::kWinUSB:
+      // If WinUSB has been loaded for a composite device then all of its
+      // interfaces must be treated as a single function.
+      DCHECK(base::Contains(interfaces_, 0));
+      return &interfaces_[0];
+    case UsbDeviceWin::DriverType::kComposite: {
+      if (interface->info->interface_number == interface->info->first_interface)
+        return interface;
+
+      auto it = interfaces_.find(interface->info->first_interface);
+      DCHECK(it != interfaces_.end());
+      return &it->second;
+    }
+  }
+}
+
 void UsbDeviceHandleWin::OnFunctionAvailable(OpenInterfaceCallback callback,
                                              Interface* interface) {
   base::ScopedClosureRunner run_callback(
@@ -694,16 +728,14 @@ void UsbDeviceHandleWin::OnFunctionAvailable(OpenInterfaceCallback callback,
 
   if (!base::EqualsCaseInsensitiveASCII(interface->function_driver,
                                         kWinUsbDriverName)) {
-    USB_LOG(ERROR) << "Interface "
-                   << static_cast<int>(interface->info->interface_number)
+    USB_LOG(ERROR) << "Interface " << int{interface->info->interface_number}
                    << " uses driver \"" << interface->function_driver
                    << "\" instead of WinUSB.";
     return;
   }
 
   if (interface->function_path.empty()) {
-    USB_LOG(ERROR) << "Interface "
-                   << static_cast<int>(interface->info->interface_number)
+    USB_LOG(ERROR) << "Interface " << int{interface->info->interface_number}
                    << " has no device path.";
     return;
   }
@@ -732,10 +764,12 @@ void UsbDeviceHandleWin::OnFirstInterfaceOpened(int interface_number,
   auto interface_it = interfaces_.find(interface_number);
   DCHECK(interface_it != interfaces_.end());
   Interface* interface = &interface_it->second;
-  DCHECK_NE(interface->info->first_interface,
-            interface->info->interface_number);
-  DCHECK_EQ(interface->info->first_interface,
-            first_interface->info->interface_number);
+  if (device_->driver_type() == UsbDeviceWin::DriverType::kComposite) {
+    DCHECK_NE(interface->info->first_interface,
+              interface->info->interface_number);
+    DCHECK_EQ(interface->info->first_interface,
+              first_interface->info->interface_number);
+  }
 
   base::ScopedClosureRunner run_callback(
       base::BindOnce(std::move(callback), interface));
@@ -745,8 +779,8 @@ void UsbDeviceHandleWin::OnFirstInterfaceOpened(int interface_number,
 
   first_interface->reference_count++;
 
-  int index =
-      interface->info->interface_number - interface->info->first_interface - 1;
+  int index = interface->info->interface_number -
+              first_interface->info->interface_number - 1;
   WINUSB_INTERFACE_HANDLE handle;
   if (WinUsb_GetAssociatedInterface(first_interface->handle.Get(), index,
                                     &handle)) {
@@ -754,7 +788,7 @@ void UsbDeviceHandleWin::OnFirstInterfaceOpened(int interface_number,
   } else {
     USB_PLOG(ERROR) << "Failed to get associated interface " << index
                     << " from interface "
-                    << static_cast<int>(interface->info->first_interface);
+                    << int{first_interface->info->interface_number};
     ReleaseInterfaceReference(first_interface);
   }
 }
@@ -953,12 +987,7 @@ UsbDeviceHandleWin::Request* UsbDeviceHandleWin::MakeRequest(
   if (!interface) {
     handle = hub_handle_.Get();
   } else {
-    if (interface->info->interface_number != interface->info->first_interface) {
-      auto it = interfaces_.find(interface->info->first_interface);
-      DCHECK(it != interfaces_.end());
-      interface = &it->second;
-    }
-
+    interface = GetFirstInterfaceForFunction(interface);
     handle = interface->handle.Get();
     interface->reference_count++;
   }
@@ -1083,18 +1112,25 @@ void UsbDeviceHandleWin::ReportIsochronousError(
 }
 
 bool UsbDeviceHandleWin::AllFunctionsEnumerated() const {
-  for (const auto& map_entry : interfaces_) {
-    const Interface& interface = map_entry.second;
-
-    // Iterate over functions, rather than interfaces.
-    if (interface.info->first_interface != interface.info->interface_number)
-      continue;
-
-    if (interface.function_driver.empty())
+  switch (device_->driver_type()) {
+    case UsbDeviceWin::DriverType::kUnsupported:
+      NOTREACHED();
       return false;
-  }
+    case UsbDeviceWin::DriverType::kWinUSB:
+      return true;
+    case UsbDeviceWin::DriverType::kComposite:
+      for (const auto& map_entry : interfaces_) {
+        const Interface& interface = map_entry.second;
 
-  return true;
+        // Iterate over functions, rather than interfaces.
+        if (interface.info->first_interface != interface.info->interface_number)
+          continue;
+
+        if (interface.function_driver.empty())
+          return false;
+      }
+      return true;
+  }
 }
 
 void UsbDeviceHandleWin::ReleaseInterfaceReference(Interface* interface) {
@@ -1111,11 +1147,9 @@ void UsbDeviceHandleWin::ReleaseInterfaceReference(Interface* interface) {
   if (interface->function_handle.IsValid())
     interface->function_handle.Close();
 
-  if (interface->info->interface_number != interface->info->first_interface) {
-    auto it = interfaces_.find(interface->info->first_interface);
-    DCHECK(it != interfaces_.end());
-    ReleaseInterfaceReference(&it->second);
-  }
+  Interface* first_interface = GetFirstInterfaceForFunction(interface);
+  if (first_interface != interface)
+    ReleaseInterfaceReference(first_interface);
 }
 
 }  // namespace device

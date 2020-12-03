@@ -503,10 +503,10 @@ class UsbServiceWin::BlockingTaskRunnerHelper {
       return;
     }
 
-    bool is_supported = false;
+    auto driver_type = UsbDeviceWin::DriverType::kUnsupported;
     std::vector<std::pair<int, UsbDeviceWin::FunctionInfo>> functions;
     if (IsCompositeDevice(service_name)) {
-      is_supported = true;
+      driver_type = UsbDeviceWin::DriverType::kComposite;
       // For composite devices Windows a composite device driver (usually the
       // built-in usbccgp.sys) creates child device nodes for each device
       // function. The device paths for these children must be opened in order
@@ -518,9 +518,9 @@ class UsbServiceWin::BlockingTaskRunnerHelper {
         }
       }
     } else if (base::EqualsCaseInsensitiveASCII(service_name, L"winusb")) {
-      is_supported = true;
-      // A non-composite device has a single device node for all interfaces as
-      // it only has a single function.
+      driver_type = UsbDeviceWin::DriverType::kWinUSB;
+      // A non-composite device has a single device node for all interfaces. It
+      // may still include multiple functions but they will be ignored.
       UsbDeviceWin::FunctionInfo info;
       info.driver = service_name;
       info.path = device_path;
@@ -538,7 +538,7 @@ class UsbServiceWin::BlockingTaskRunnerHelper {
         FROM_HERE, base::BindOnce(&UsbServiceWin::CreateDeviceObject, service_,
                                   std::move(device_path), std::move(hub_path),
                                   std::move(functions), bus_number, port_number,
-                                  is_supported, service_name));
+                                  driver_type, service_name));
   }
 
   void EnumeratePotentialFunction(
@@ -660,7 +660,7 @@ void UsbServiceWin::CreateDeviceObject(
     const base::flat_map<int, UsbDeviceWin::FunctionInfo>& functions,
     uint32_t bus_number,
     uint32_t port_number,
-    bool is_supported,
+    UsbDeviceWin::DriverType driver_type,
     const std::wstring& driver_name) {
   // Devices that appear during initial enumeration are gathered into the first
   // result returned by GetDevices() and prevent device add/remove notifications
@@ -669,7 +669,7 @@ void UsbServiceWin::CreateDeviceObject(
     ++first_enumeration_countdown_;
 
   auto device = base::MakeRefCounted<UsbDeviceWin>(
-      device_path, hub_path, functions, bus_number, port_number, is_supported);
+      device_path, hub_path, functions, bus_number, port_number, driver_type);
   devices_by_path_[device->device_path()] = device;
   device->ReadDescriptors(base::BindOnce(&UsbServiceWin::DeviceReady,
                                          weak_factory_.GetWeakPtr(), device,
