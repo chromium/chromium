@@ -80,6 +80,8 @@ class ASH_EXPORT LoginPinView : public NonAccessibleView {
     void SetBackspaceTimers(std::unique_ptr<base::OneShotTimer> delay_timer,
                             std::unique_ptr<base::RepeatingTimer> repeat_timer);
 
+    void ClickOnDigit(int number) const;
+
    private:
     LoginPinView* const view_;
   };
