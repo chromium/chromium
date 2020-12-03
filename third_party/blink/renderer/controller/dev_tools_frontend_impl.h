@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -84,13 +83,14 @@ class DevToolsFrontendImpl final
 
   Member<DevToolsHost> devtools_host_;
   String api_script_;
-  HeapMojoAssociatedRemote<mojom::blink::DevToolsFrontendHost,
-                           HeapMojoWrapperMode::kForceWithoutContextObserver>
-      host_;
+  // The host_ must outlive the ExecutionContext of LocalFrame, so it should not
+  // be associated with the ExecutionContext of LocalFrame.
+  HeapMojoAssociatedRemote<mojom::blink::DevToolsFrontendHost> host_{nullptr};
+  // The receiver_ must outlive the ExecutionContext of LocalFrame, so it should
+  // not be associated with the ExecutionContext of LocalFrame.
   HeapMojoAssociatedReceiver<mojom::blink::DevToolsFrontend,
-                             DevToolsFrontendImpl,
-                             HeapMojoWrapperMode::kForceWithoutContextObserver>
-      receiver_;
+                             DevToolsFrontendImpl>
+      receiver_{this, nullptr};
 
   DISALLOW_COPY_AND_ASSIGN(DevToolsFrontendImpl);
 };

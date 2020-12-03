@@ -65,9 +65,7 @@ const char DevToolsFrontendImpl::kSupplementName[] = "DevToolsFrontendImpl";
 DevToolsFrontendImpl::DevToolsFrontendImpl(
     LocalFrame& frame,
     mojo::PendingAssociatedReceiver<mojom::blink::DevToolsFrontend> receiver)
-    : Supplement<LocalFrame>(frame),
-      host_(frame.DomWindow()),
-      receiver_(this, frame.DomWindow()) {
+    : Supplement<LocalFrame>(frame) {
   receiver_.Bind(std::move(receiver),
                  frame.GetTaskRunner(TaskType::kMiscPlatformAPI));
 }
