@@ -21,53 +21,50 @@ class F extends ValidationTest {
 
     const format = colorStates.length ? colorStates[0].format : 'rgba8unorm';
 
+    let fragColorType;
+    let suffix;
+    if (format.endsWith('sint')) {
+      fragColorType = 'i32';
+      suffix = '';
+    } else if (format.endsWith('uint')) {
+      fragColorType = 'u32';
+      suffix = 'u';
+    } else {
+      fragColorType = 'f32';
+      suffix = '.0';
+    }
+
     return {
-      vertexStage: this.getVertexStage(),
-      fragmentStage: this.getFragmentStage(format),
+      vertexStage: {
+        module: this.device.createShaderModule({
+          code: `
+            [[builtin(position)]] var<out> Position : vec4<f32>;
+
+            [[stage(vertex)]] fn main() -> void {
+              Position = vec4<f32>(0.0, 0.0, 0.0, 1.0);
+            }`,
+        }),
+
+        entryPoint: 'main',
+      },
+
+      fragmentStage: {
+        module: this.device.createShaderModule({
+          code: `
+            [[location(0)]] var<out> fragColor : vec4<${fragColorType}>;
+            [[stage(fragment)]] fn main() -> void {
+              fragColor = vec4<${fragColorType}>(0${suffix}, 1${suffix}, 0${suffix}, 1${suffix});
+            }`,
+        }),
+
+        entryPoint: 'main',
+      },
+
       layout: this.getPipelineLayout(),
       primitiveTopology,
       colorStates,
       sampleCount,
       depthStencilState,
-    };
-  }
-
-  getVertexStage() {
-    return {
-      module: this.makeShaderModule('vertex', {
-        glsl: `
-          #version 450
-          void main() {
-            gl_Position = vec4(0.0, 0.0, 0.0, 1.0);
-          }
-        `,
-      }),
-
-      entryPoint: 'main',
-    };
-  }
-
-  getFragmentStage(format) {
-    let fragColorType;
-    if (format.endsWith('sint')) {
-      fragColorType = 'ivec4';
-    } else if (format.endsWith('uint')) {
-      fragColorType = 'uvec4';
-    } else {
-      fragColorType = 'vec4';
-    }
-
-    const glsl = `
-      #version 450
-      layout(location = 0) out ${fragColorType} fragColor;
-      void main() {
-        fragColor = ${fragColorType}(0.0, 1.0, 0.0, 1.0);
-      }
-    `;
-
-    return {
-      module: this.makeShaderModule('fragment', { glsl }),
-      entryPoint: 'main',
     };
   }
 

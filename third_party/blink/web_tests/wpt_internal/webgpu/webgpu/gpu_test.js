@@ -155,6 +155,32 @@ export class GPUTest extends Fixture {
     });
   }
 
+  // We can expand this function in order to support multiple valid values or two mixed vectors
+  // if needed. See the discussion at https://github.com/gpuweb/cts/pull/384#discussion_r533101429
+  expectContentsTwoValidValues(src, expected1, expected2, srcOffset = 0) {
+    assert(expected1.byteLength === expected2.byteLength);
+    const { dst, begin, end } = this.createAlignedCopyForMapRead(
+      src,
+      expected1.byteLength,
+      srcOffset
+    );
+
+    this.eventualAsyncExpectation(async niceStack => {
+      const constructor = expected1.constructor;
+      await dst.mapAsync(GPUMapMode.READ);
+      const actual = new constructor(dst.getMappedRange());
+      const check1 = this.checkBuffer(actual.subarray(begin, end), expected1);
+      const check2 = this.checkBuffer(actual.subarray(begin, end), expected2);
+      if (check1 !== undefined && check2 !== undefined) {
+        niceStack.message = `Expected one of the following two checks to succeed:
+  - ${check1}
+  - ${check2}`;
+        this.rec.expectationFailed(niceStack);
+      }
+      dst.destroy();
+    });
+  }
+
   expectBuffer(actual, exp) {
     const check = this.checkBuffer(actual, exp);
     if (check !== undefined) {
