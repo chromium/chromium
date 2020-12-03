@@ -18,7 +18,7 @@
 
 namespace shape_detection {
 
-class API_AVAILABLE(macosx(10.10)) BarcodeDetectionImplMac
+class BarcodeDetectionImplMac
     : public shape_detection::mojom::BarcodeDetection {
  public:
   BarcodeDetectionImplMac();

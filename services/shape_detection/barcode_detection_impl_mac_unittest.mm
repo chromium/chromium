@@ -120,11 +120,6 @@ TEST_P(BarcodeDetectionImplMacTest, ScanOneBarcode) {
   }
 
   impl_ = GetParam().factory.Run(mojom::BarcodeDetectorOptions::New());
-  if (!impl_) {
-    LOG(WARNING) << "Barcode Detection is not supported before Mac OSX 10.10."
-                 << "Skipping test.";
-    return;
-  }
 
   // Generate a barcode image as a CIImage by using |qr_code_generator|.
   NSData* const qr_code_data =

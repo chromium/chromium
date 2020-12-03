@@ -4,7 +4,6 @@
 
 #include "services/shape_detection/text_detection_impl_mac.h"
 
-#include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -17,11 +16,8 @@ namespace shape_detection {
 // static
 void TextDetectionImpl::Create(
     mojo::PendingReceiver<mojom::TextDetection> receiver) {
-  // Text detection needs at least MAC OS X 10.11.
-  if (@available(macOS 10.11, *)) {
-    mojo::MakeSelfOwnedReceiver(std::make_unique<TextDetectionImplMac>(),
-                                std::move(receiver));
-  }
+  mojo::MakeSelfOwnedReceiver(std::make_unique<TextDetectionImplMac>(),
+                              std::move(receiver));
 }
 
 TextDetectionImplMac::TextDetectionImplMac() {
@@ -35,8 +31,6 @@ TextDetectionImplMac::~TextDetectionImplMac() {}
 
 void TextDetectionImplMac::Detect(const SkBitmap& bitmap,
                                   DetectCallback callback) {
-  DCHECK(base::mac::IsAtLeastOS10_11());
-
   base::scoped_nsobject<CIImage> ci_image = CreateCIImageFromSkBitmap(bitmap);
   if (!ci_image) {
     std::move(callback).Run({});
