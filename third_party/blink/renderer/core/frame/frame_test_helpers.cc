@@ -59,6 +59,7 @@
 #include "third_party/blink/public/web/web_navigation_params.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view_client.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -289,11 +290,14 @@ WebLocalFrameImpl* CreateProvisional(WebFrame& old_frame,
     // The WebWidget requires the compositor to be set before it is used.
     cc::LayerTreeSettings layer_tree_settings =
         GetSynchronousSingleThreadLayerTreeSettings();
-    widget_client->set_layer_tree_host(frame_widget->InitializeCompositing(
+    frame_widget->InitializeCompositing(
         widget_client->main_thread_scheduler(),
         widget_client->task_graph_runner(),
         widget_client->GetInitialScreenInfo(),
-        std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings));
+        std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings);
+    widget_client->set_layer_tree_host(
+        static_cast<WebFrameWidgetImpl*>(frame_widget)
+            ->LayerTreeHostForTesting());
     frame_widget->SetCompositorVisible(true);
   } else if (frame->Parent()->IsWebRemoteFrame()) {
     widget_client = std::make_unique<TestWebWidgetClient>();
@@ -306,11 +310,14 @@ WebLocalFrameImpl* CreateProvisional(WebFrame& old_frame,
     // The WebWidget requires the compositor to be set before it is used.
     cc::LayerTreeSettings layer_tree_settings =
         GetSynchronousSingleThreadLayerTreeSettings();
-    widget_client->set_layer_tree_host(frame_widget->InitializeCompositing(
+    frame_widget->InitializeCompositing(
         widget_client->main_thread_scheduler(),
         widget_client->task_graph_runner(),
         widget_client->GetInitialScreenInfo(),
-        std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings));
+        std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings);
+    widget_client->set_layer_tree_host(
+        static_cast<WebFrameWidgetImpl*>(frame_widget)
+            ->LayerTreeHostForTesting());
     frame_widget->SetCompositorVisible(true);
     frame_widget->Resize(gfx::Size());
   }
@@ -374,10 +381,13 @@ WebLocalFrameImpl* CreateLocalChild(WebRemoteFrame& parent,
   widget_client->SetFrameWidget(frame_widget, std::move(widget_remote));
   cc::LayerTreeSettings layer_tree_settings =
       GetSynchronousSingleThreadLayerTreeSettings();
-  widget_client->set_layer_tree_host(frame_widget->InitializeCompositing(
+  frame_widget->InitializeCompositing(
       widget_client->main_thread_scheduler(),
       widget_client->task_graph_runner(), widget_client->GetInitialScreenInfo(),
-      std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings));
+      std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings);
+  widget_client->set_layer_tree_host(
+      static_cast<WebFrameWidgetImpl*>(frame_widget)
+          ->LayerTreeHostForTesting());
   frame_widget->SetCompositorVisible(true);
   // Set an initial size for subframes.
   if (frame->Parent())
@@ -468,11 +478,13 @@ WebViewImpl* WebViewHelper::InitializeWithOpener(
   test_web_widget_client_->SetFrameWidget(widget, std::move(widget_remote));
   cc::LayerTreeSettings layer_tree_settings =
       GetSynchronousSingleThreadLayerTreeSettings();
-  test_web_widget_client_->set_layer_tree_host(widget->InitializeCompositing(
+  widget->InitializeCompositing(
       test_web_widget_client_->main_thread_scheduler(),
       test_web_widget_client_->task_graph_runner(),
       test_web_widget_client_->GetInitialScreenInfo(),
-      std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings));
+      std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings);
+  test_web_widget_client_->set_layer_tree_host(
+      static_cast<WebFrameWidgetImpl*>(widget)->LayerTreeHostForTesting());
   widget->SetCompositorVisible(true);
 
   // We inform the WebView when it has a local main frame attached once the

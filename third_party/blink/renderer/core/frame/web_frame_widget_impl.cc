@@ -1947,7 +1947,7 @@ void WebFrameWidgetImpl::ResetMeaningfulLayoutStateForMainFrame() {
   data.should_dispatch_first_layout_after_finished_loading = true;
 }
 
-cc::LayerTreeHost* WebFrameWidgetImpl::InitializeCompositing(
+void WebFrameWidgetImpl::InitializeCompositing(
     scheduler::WebThreadScheduler* main_thread_scheduler,
     cc::TaskGraphRunner* task_graph_runner,
     const ScreenInfo& screen_info,
@@ -1970,7 +1970,6 @@ cc::LayerTreeHost* WebFrameWidgetImpl::InitializeCompositing(
   }
 
   GetPage()->AnimationHostInitialized(*AnimationHost(), frame_view);
-  return widget_base_->LayerTreeHost();
 }
 
 void WebFrameWidgetImpl::SetCompositorVisible(bool visible) {
@@ -3657,6 +3656,10 @@ const viz::LocalSurfaceId& WebFrameWidgetImpl::LocalSurfaceIdFromParent() {
 
 cc::LayerTreeHost* WebFrameWidgetImpl::LayerTreeHost() {
   return widget_base_->LayerTreeHost();
+}
+
+cc::LayerTreeHost* WebFrameWidgetImpl::LayerTreeHostForTesting() {
+  return LayerTreeHost();
 }
 
 ScreenMetricsEmulator* WebFrameWidgetImpl::DeviceEmulator() {

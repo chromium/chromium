@@ -106,8 +106,6 @@ class CONTENT_EXPORT RenderWidget : public blink::WebWidgetClient {
   // passed into this object to asynchronously delete itself.
   void CloseForFrame(std::unique_ptr<RenderWidget> widget);
 
-  cc::LayerTreeHost* layer_tree_host() { return layer_tree_host_; }
-
  private:
   // Destroy the RenderWidget. The |widget| is the owning pointer of |this|.
   void Close(std::unique_ptr<RenderWidget> widget);
@@ -127,9 +125,6 @@ class CONTENT_EXPORT RenderWidget : public blink::WebWidgetClient {
   // the RenderWidget is associated with a RenderViewImpl through |delegate_|.
   // Becomes null once close is initiated on the RenderWidget.
   blink::WebWidget* webwidget_ = nullptr;
-
-  // This is valid while |webwidget_| is valid.
-  cc::LayerTreeHost* layer_tree_host_ = nullptr;
 
   // True once Close() is called, during the self-destruction process, and to
   // verify destruction always goes through Close().

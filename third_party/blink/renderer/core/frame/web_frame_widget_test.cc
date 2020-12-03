@@ -74,7 +74,7 @@ TEST_F(WebFrameWidgetSimTest, AutoResizeAllocatedLocalSurfaceId) {
             WebView().MainFrameViewWidget()->LocalSurfaceIdFromParent());
   EXPECT_FALSE(WebView()
                    .MainFrameViewWidget()
-                   ->LayerTreeHost()
+                   ->LayerTreeHostForTesting()
                    ->new_local_surface_id_request_for_testing());
 
   constexpr gfx::Size size(200, 200);
@@ -83,7 +83,7 @@ TEST_F(WebFrameWidgetSimTest, AutoResizeAllocatedLocalSurfaceId) {
             WebView().MainFrameViewWidget()->LocalSurfaceIdFromParent());
   EXPECT_TRUE(WebView()
                   .MainFrameViewWidget()
-                  ->LayerTreeHost()
+                  ->LayerTreeHostForTesting()
                   ->new_local_surface_id_request_for_testing());
 }
 
@@ -158,7 +158,8 @@ class WebFrameWidgetImplRemoteFrameSimTest : public SimTest {
 // roots.
 TEST_F(WebFrameWidgetImplRemoteFrameSimTest,
        ActivePinchGestureUpdatesLayerTreeHostSubFrame) {
-  cc::LayerTreeHost* layer_tree_host = LocalFrameRootWidget()->LayerTreeHost();
+  cc::LayerTreeHost* layer_tree_host =
+      LocalFrameRootWidget()->LayerTreeHostForTesting();
   EXPECT_FALSE(layer_tree_host->is_external_pinch_gesture_active_for_testing());
   blink::VisualProperties visual_properties;
 
@@ -468,7 +469,7 @@ class NotifySwapTimesWebFrameWidgetTest : public SimTest {
     auto root_layer = cc::SolidColorLayer::Create();
     root_layer->SetBounds(gfx::Size(200, 100));
     root_layer->SetBackgroundColor(SK_ColorGREEN);
-    FrameWidgetBase()->LayerTreeHost()->SetRootLayer(root_layer);
+    FrameWidgetBase()->LayerTreeHostForTesting()->SetRootLayer(root_layer);
 
     auto color_layer = cc::SolidColorLayer::Create();
     color_layer->SetBounds(gfx::Size(100, 100));
@@ -570,7 +571,8 @@ TEST_F(NotifySwapTimesWebFrameWidgetTest,
 // not propagated to the LayerTreeHost when properties are synced for main
 // frame.
 TEST_F(WebFrameWidgetSimTest, ActivePinchGestureUpdatesLayerTreeHost) {
-  auto* layer_tree_host = WebView().MainFrameViewWidget()->LayerTreeHost();
+  auto* layer_tree_host =
+      WebView().MainFrameViewWidget()->LayerTreeHostForTesting();
   EXPECT_FALSE(layer_tree_host->is_external_pinch_gesture_active_for_testing());
   blink::VisualProperties visual_properties;
 

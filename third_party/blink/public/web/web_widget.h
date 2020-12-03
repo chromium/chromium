@@ -85,7 +85,7 @@ class WebWidget {
   // is called. |settings| is typically null. When |settings| is null
   // the default settings will be used, tests may provide a |settings| object to
   // override the defaults.
-  virtual cc::LayerTreeHost* InitializeCompositing(
+  virtual void InitializeCompositing(
       scheduler::WebThreadScheduler* main_thread_scheduler,
       cc::TaskGraphRunner* task_graph_runner,
       const ScreenInfo& screen_info,

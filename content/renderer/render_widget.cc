@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "cc/trees/layer_tree_host.h"
 #include "cc/trees/ukm_manager.h"
 #include "content/renderer/render_thread_impl.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -76,12 +75,11 @@ void RenderWidget::Initialize(blink::WebWidget* web_widget,
 void RenderWidget::InitCompositing(const blink::ScreenInfo& screen_info) {
   TRACE_EVENT0("blink", "RenderWidget::InitializeLayerTreeView");
 
-  layer_tree_host_ = webwidget_->InitializeCompositing(
+  webwidget_->InitializeCompositing(
       compositor_deps_->GetWebMainThreadScheduler(),
       compositor_deps_->GetTaskGraphRunner(), screen_info,
       compositor_deps_->CreateUkmRecorderFactory(),
       /*settings=*/nullptr);
-  DCHECK(layer_tree_host_);
 }
 
 void RenderWidget::Close(std::unique_ptr<RenderWidget> widget) {
@@ -94,11 +92,6 @@ void RenderWidget::Close(std::unique_ptr<RenderWidget> widget) {
 
   webwidget_->Close();
   webwidget_ = nullptr;
-
-  // |layer_tree_host_| is valid only when |webwidget_| is valid. Close may
-  // use the WebWidgetClient while unloading the Frame so we clear this
-  // after.
-  layer_tree_host_ = nullptr;
 }
 
 }  // namespace content

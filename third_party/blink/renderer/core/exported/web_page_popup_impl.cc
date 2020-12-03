@@ -431,7 +431,7 @@ void WebPagePopupImpl::DidSetBounds() {
   widget_base_->AckPendingWindowRect();
 }
 
-cc::LayerTreeHost* WebPagePopupImpl::InitializeCompositing(
+void WebPagePopupImpl::InitializeCompositing(
     scheduler::WebThreadScheduler* main_thread_scheduler,
     cc::TaskGraphRunner* task_graph_runner,
     const ScreenInfo& screen_info,
@@ -444,7 +444,6 @@ cc::LayerTreeHost* WebPagePopupImpl::InitializeCompositing(
                                       screen_info,
                                       std::move(ukm_recorder_factory), settings,
                                       /*frame_widget_input_handler=*/nullptr);
-  return widget_base_->LayerTreeHost();
 }
 
 scheduler::WebRenderWidgetSchedulingState*

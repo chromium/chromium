@@ -102,6 +102,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/forms/external_date_time_chooser.h"
@@ -534,10 +535,12 @@ TEST_F(WebViewTest, SetBaseBackgroundColorBeforeMainFrame) {
         CreateWidgetForMainFrame(&web_widget_client, frame);
     cc::LayerTreeSettings layer_tree_settings =
         frame_test_helpers::GetSynchronousSingleThreadLayerTreeSettings();
-    web_widget_client.set_layer_tree_host(widget->InitializeCompositing(
+    widget->InitializeCompositing(
         web_widget_client.main_thread_scheduler(),
         web_widget_client.task_graph_runner(), ScreenInfo(),
-        std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings));
+        std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings);
+    web_widget_client.set_layer_tree_host(
+        static_cast<WebFrameWidgetImpl*>(widget)->LayerTreeHostForTesting());
     widget->SetCompositorVisible(true);
     web_view->DidAttachLocalMainFrame();
   }
@@ -2767,10 +2770,12 @@ TEST_F(WebViewTest, ClientTapHandlingNullWebViewClient) {
       CreateWidgetForMainFrame(&web_widget_client, local_frame);
   cc::LayerTreeSettings layer_tree_settings =
       frame_test_helpers::GetSynchronousSingleThreadLayerTreeSettings();
-  web_widget_client.set_layer_tree_host(widget->InitializeCompositing(
+  widget->InitializeCompositing(
       web_widget_client.main_thread_scheduler(),
       web_widget_client.task_graph_runner(), ScreenInfo(),
-      std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings));
+      std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings);
+  web_widget_client.set_layer_tree_host(
+      static_cast<WebFrameWidgetImpl*>(widget)->LayerTreeHostForTesting());
   widget->SetCompositorVisible(true);
   web_view->DidAttachLocalMainFrame();
 
@@ -4268,10 +4273,12 @@ TEST_F(WebViewTest, SetHasTouchEventConsumers) {
         std::move(widget_receiver), viz::FrameSinkId());
     cc::LayerTreeSettings layer_tree_settings =
         frame_test_helpers::GetSynchronousSingleThreadLayerTreeSettings();
-    web_widget_client.set_layer_tree_host(widget->InitializeCompositing(
+    widget->InitializeCompositing(
         web_widget_client.main_thread_scheduler(),
         web_widget_client.task_graph_runner(), ScreenInfo(),
-        std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings));
+        std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings);
+    web_widget_client.set_layer_tree_host(
+        static_cast<WebFrameWidgetImpl*>(widget)->LayerTreeHostForTesting());
     widget->SetCompositorVisible(true);
     web_view_impl->DidAttachLocalMainFrame();
   }

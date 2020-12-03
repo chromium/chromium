@@ -156,7 +156,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void SetFocus(bool) override;
   bool HasFocus() override;
   WebHitTestResult HitTestResultAt(const gfx::PointF&) override { return {}; }
-  cc::LayerTreeHost* InitializeCompositing(
+  void InitializeCompositing(
       scheduler::WebThreadScheduler* main_thread_scheduler,
       cc::TaskGraphRunner* task_graph_runner,
       const ScreenInfo& screen_info,

@@ -331,7 +331,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void ResetMeaningfulLayoutStateForMainFrame();
 
   // WebWidget overrides.
-  cc::LayerTreeHost* InitializeCompositing(
+  void InitializeCompositing(
       scheduler::WebThreadScheduler* main_thread_scheduler,
       cc::TaskGraphRunner* task_graph_runner,
       const ScreenInfo& screen_info,
@@ -468,6 +468,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   cc::LayerTreeDebugState GetLayerTreeDebugState();
   void SetLayerTreeDebugState(const cc::LayerTreeDebugState& state);
 
+  // Return the compositor LayerTreeHost.
+  cc::LayerTreeHost* LayerTreeHostForTesting();
   // Ask compositor to composite a frame for testing. This will generate a
   // BeginMainFrame, and update the document lifecycle.
   void SynchronouslyCompositeForTesting(base::TimeTicks frame_time);
