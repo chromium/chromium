@@ -264,7 +264,6 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKeyDefaultPrivileges) {
   EXPECT_TRUE(privileges.add());
   EXPECT_TRUE(privileges.remove());
   EXPECT_TRUE(privileges.update());
-  EXPECT_FALSE(privileges.authorized_update());
 }
 
 TEST(CryptohomeUtilTest, KeyDefinitionToKeyAddPrivileges) {
@@ -278,7 +277,6 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKeyAddPrivileges) {
   EXPECT_TRUE(privileges.add());
   EXPECT_FALSE(privileges.remove());
   EXPECT_FALSE(privileges.update());
-  EXPECT_FALSE(privileges.authorized_update());
 }
 
 TEST(CryptohomeUtilTest, KeyDefinitionToKeyRemovePrivileges) {
@@ -292,7 +290,6 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKeyRemovePrivileges) {
   EXPECT_FALSE(privileges.add());
   EXPECT_TRUE(privileges.remove());
   EXPECT_FALSE(privileges.update());
-  EXPECT_FALSE(privileges.authorized_update());
 }
 
 TEST(CryptohomeUtilTest, KeyDefinitionToKeyUpdatePrivileges) {
@@ -306,26 +303,11 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKeyUpdatePrivileges) {
   EXPECT_FALSE(privileges.add());
   EXPECT_FALSE(privileges.remove());
   EXPECT_TRUE(privileges.update());
-  EXPECT_FALSE(privileges.authorized_update());
-}
-
-TEST(CryptohomeUtilTest, KeyDefinitionToKeyAuthorizedUpdatePrivileges) {
-  KeyDefinition key_def;
-  key_def.privileges = PRIV_AUTHORIZED_UPDATE;
-  Key key;
-
-  KeyDefinitionToKey(key_def, &key);
-  KeyPrivileges privileges = key.data().privileges();
-
-  EXPECT_FALSE(privileges.add());
-  EXPECT_FALSE(privileges.remove());
-  EXPECT_FALSE(privileges.update());
-  EXPECT_TRUE(privileges.authorized_update());
 }
 
 TEST(CryptohomeUtilTest, KeyDefinitionToKeyAllPrivileges) {
   KeyDefinition key_def;
-  key_def.privileges = PRIV_DEFAULT | PRIV_AUTHORIZED_UPDATE;
+  key_def.privileges = PRIV_DEFAULT;
   Key key;
 
   KeyDefinitionToKey(key_def, &key);
@@ -334,7 +316,6 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKeyAllPrivileges) {
   EXPECT_TRUE(privileges.add());
   EXPECT_TRUE(privileges.remove());
   EXPECT_TRUE(privileges.update());
-  EXPECT_TRUE(privileges.authorized_update());
 }
 
 // Test the KeyDefinitionToKey() function against the KeyDefinition struct of

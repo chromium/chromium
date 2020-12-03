@@ -65,8 +65,6 @@ void KeyDefPrivilegesToKeyPrivileges(int key_def_privileges,
   privileges->set_add(key_def_privileges & PRIV_ADD);
   privileges->set_remove(key_def_privileges & PRIV_REMOVE);
   privileges->set_update(key_def_privileges & PRIV_MIGRATE);
-  privileges->set_authorized_update(key_def_privileges &
-                                    PRIV_AUTHORIZED_UPDATE);
 }
 
 // TODO(crbug.com/797848): Add tests that cover this logic.
@@ -149,8 +147,6 @@ std::vector<KeyDefinition> GetKeyDataReplyToKeyDefinitions(
       key_definition.privileges |= PRIV_REMOVE;
     if (privileges.update())
       key_definition.privileges |= PRIV_MIGRATE;
-    if (privileges.authorized_update())
-      key_definition.privileges |= PRIV_AUTHORIZED_UPDATE;
 
     // Extract |policy|.
     key_definition.policy.low_entropy_credential =

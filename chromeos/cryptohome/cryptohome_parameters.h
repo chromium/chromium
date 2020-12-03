@@ -23,7 +23,6 @@ enum AuthKeyPrivileges {
   PRIV_ADD = 1 << 1,                // Can add new keys.
   PRIV_REMOVE = 1 << 2,             // Can remove other keys.
   PRIV_MIGRATE = 1 << 3,            // Destroy all keys and replace with new.
-  PRIV_AUTHORIZED_UPDATE = 1 << 4,  // Key can be updated in place.
   PRIV_DEFAULT = PRIV_ADD | PRIV_REMOVE | PRIV_MIGRATE
 };
 
