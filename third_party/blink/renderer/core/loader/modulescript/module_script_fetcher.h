@@ -53,7 +53,7 @@ class CORE_EXPORT ModuleScriptFetcher : public ResourceClient {
 
  protected:
   static bool WasModuleLoadSuccessful(
-      Resource* resource,
+      ScriptResource* resource,
       HeapVector<Member<ConsoleMessage>>* error_messages,
       ModuleScriptCreationParams::ModuleType* module_type);
 };

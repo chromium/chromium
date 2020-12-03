@@ -37,6 +37,7 @@ void WorkerModuleScriptFetcher::Fetch(
     ResourceFetcher* fetch_client_settings_object_fetcher,
     ModuleGraphLevel level,
     ModuleScriptFetcher::Client* client) {
+  DCHECK_EQ(fetch_params.GetScriptType(), mojom::blink::ScriptType::kModule);
   DCHECK(global_scope_->IsContextThread());
   DCHECK(!fetch_client_settings_object_fetcher_);
   fetch_client_settings_object_fetcher_ = fetch_client_settings_object_fetcher;

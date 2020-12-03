@@ -485,6 +485,8 @@ bool ScriptStreamer::TryStartStreamingTask() {
   source_ = std::make_unique<v8::ScriptCompiler::StreamedSource>(
       std::move(stream_ptr), encoding_);
 
+  // TODO(crbug.com/1061857) Pass ScriptResource::ScriptType to the streaming
+  // task.
   std::unique_ptr<v8::ScriptCompiler::ScriptStreamingTask>
       script_streaming_task(base::WrapUnique(v8::ScriptCompiler::StartStreaming(
           V8PerIsolateData::MainThreadIsolate(), source_.get())));

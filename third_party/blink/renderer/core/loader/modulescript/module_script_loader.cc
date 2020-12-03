@@ -154,6 +154,7 @@ void ModuleScriptLoader::FetchInternal(
 
   // Note: |options| should not be modified after here.
   FetchParameters fetch_params(std::move(resource_request), options);
+  fetch_params.SetModuleScript();
 
   // <spec label="SMSR">... its integrity metadata to options's integrity
   // metadata, ...</spec>

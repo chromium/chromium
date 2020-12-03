@@ -84,31 +84,35 @@ ScriptResource* ScriptResource::Fetch(FetchParameters& params,
   DCHECK(IsRequestContextSupported(
       params.GetResourceRequest().GetRequestContext()));
   auto* resource = To<ScriptResource>(fetcher->RequestResource(
-      params, ScriptResourceFactory(streaming_allowed), client));
+      params, ScriptResourceFactory(streaming_allowed, params.GetScriptType()),
+      client));
   return resource;
 }
 
 ScriptResource* ScriptResource::CreateForTest(
     const KURL& url,
-    const WTF::TextEncoding& encoding) {
+    const WTF::TextEncoding& encoding,
+    mojom::blink::ScriptType script_type) {
   ResourceRequest request(url);
   request.SetCredentialsMode(network::mojom::CredentialsMode::kOmit);
   ResourceLoaderOptions options(nullptr /* world */);
   TextResourceDecoderOptions decoder_options(
       TextResourceDecoderOptions::kPlainTextContent, encoding);
   return MakeGarbageCollected<ScriptResource>(request, options, decoder_options,
-                                              kNoStreaming);
+                                              kNoStreaming, script_type);
 }
 
 ScriptResource::ScriptResource(
     const ResourceRequest& resource_request,
     const ResourceLoaderOptions& options,
     const TextResourceDecoderOptions& decoder_options,
-    StreamingAllowed streaming_allowed)
+    StreamingAllowed streaming_allowed,
+    mojom::blink::ScriptType script_type)
     : TextResource(resource_request,
                    ResourceType::kScript,
                    options,
-                   decoder_options) {
+                   decoder_options),
+      script_type_(script_type) {
   static bool script_streaming_enabled =
       base::FeatureList::IsEnabled(features::kScriptStreaming);
 
@@ -128,6 +132,13 @@ void ScriptResource::Trace(Visitor* visitor) const {
   visitor->Trace(streamer_);
   visitor->Trace(cached_metadata_handler_);
   TextResource::Trace(visitor);
+}
+
+Resource::MatchStatus ScriptResource::CanReuse(
+    const FetchParameters& params) const {
+  if (script_type_ != params.GetScriptType())
+    return Resource::MatchStatus::kScriptTypeDoesNotMatch;
+  return Resource::CanReuse(params);
 }
 
 void ScriptResource::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,

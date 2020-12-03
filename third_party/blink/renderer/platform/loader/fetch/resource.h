@@ -140,6 +140,9 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
     // Match fails due to different request headers.
     kRequestHeadersDoNotMatch,
+
+    // Match fails due to different script types.
+    kScriptTypeDoesNotMatch,
   };
 
   ~Resource() override;

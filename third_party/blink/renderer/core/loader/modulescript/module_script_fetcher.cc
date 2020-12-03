@@ -7,6 +7,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
@@ -34,10 +35,11 @@ void ModuleScriptFetcher::Trace(Visitor* visitor) const {
 
 // <specdef href="https://html.spec.whatwg.org/C/#fetch-a-single-module-script">
 bool ModuleScriptFetcher::WasModuleLoadSuccessful(
-    Resource* resource,
+    ScriptResource* resource,
     HeapVector<Member<ConsoleMessage>>* error_messages,
     ModuleScriptCreationParams::ModuleType* module_type) {
   DCHECK(error_messages);
+  DCHECK_EQ(resource->GetScriptType(), mojom::blink::ScriptType::kModule);
 
   if (resource) {
     SubresourceIntegrityHelper::GetConsoleMessages(

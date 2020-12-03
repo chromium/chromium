@@ -27,6 +27,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_FETCH_PARAMETERS_H_
 
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/script/script_type.mojom-shared.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
@@ -192,6 +194,10 @@ class PLATFORM_EXPORT FetchParameters {
   void SetLazyImageDeferred();
   void SetLazyImageNonBlocking();
 
+  mojom::blink::ScriptType GetScriptType() const { return script_type_; }
+
+  void SetModuleScript();
+
   // See documentation in blink::ResourceRequest.
   bool IsFromOriginDirtyStyleSheet() const {
     return is_from_origin_dirty_style_sheet_;
@@ -216,6 +222,7 @@ class PLATFORM_EXPORT FetchParameters {
   ResourceWidth resource_width_;
   ClientHintsPreferences client_hint_preferences_;
   ImageRequestBehavior image_request_behavior_;
+  mojom::blink::ScriptType script_type_ = mojom::blink::ScriptType::kClassic;
   bool is_stale_revalidation_ = false;
   bool is_from_origin_dirty_style_sheet_ = false;
 };

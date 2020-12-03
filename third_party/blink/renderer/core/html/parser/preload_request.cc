@@ -100,6 +100,7 @@ Resource* PreloadRequest::Start(Document* document) {
     DCHECK_EQ(resource_type_, ResourceType::kScript);
     params.SetCrossOriginAccessControl(
         origin, ScriptLoader::ModuleScriptCredentialsMode(cross_origin_));
+    params.SetModuleScript();
   } else if (cross_origin_ != kCrossOriginAttributeNotSet) {
     params.SetCrossOriginAccessControl(origin, cross_origin_);
   }

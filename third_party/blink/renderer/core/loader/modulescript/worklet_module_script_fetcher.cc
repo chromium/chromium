@@ -19,6 +19,7 @@ void WorkletModuleScriptFetcher::Fetch(
     ResourceFetcher* fetch_client_settings_object_fetcher,
     ModuleGraphLevel level,
     ModuleScriptFetcher::Client* client) {
+  DCHECK_EQ(fetch_params.GetScriptType(), mojom::blink::ScriptType::kModule);
   if (module_responses_map_->GetEntry(
           fetch_params.Url(), client,
           fetch_client_settings_object_fetcher->GetTaskRunner())) {

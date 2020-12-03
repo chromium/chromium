@@ -130,4 +130,9 @@ void FetchParameters::SetLazyImageNonBlocking() {
   image_request_behavior_ = kNonBlockingImage;
 }
 
+void FetchParameters::SetModuleScript() {
+  DCHECK_EQ(mojom::blink::ScriptType::kClassic, script_type_);
+  script_type_ = mojom::blink::ScriptType::kModule;
+}
+
 }  // namespace blink

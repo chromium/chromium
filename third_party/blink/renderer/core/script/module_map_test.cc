@@ -114,6 +114,7 @@ class ModuleMapTestModulator final : public DummyModulator {
                ResourceFetcher*,
                ModuleGraphLevel,
                ModuleScriptFetcher::Client* client) override {
+      CHECK_EQ(request.GetScriptType(), mojom::blink::ScriptType::kModule);
       TestRequest* test_request = MakeGarbageCollected<TestRequest>(
           ModuleScriptCreationParams(
               request.Url(),

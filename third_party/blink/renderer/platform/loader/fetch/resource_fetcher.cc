@@ -1449,6 +1449,9 @@ void ResourceFetcher::PrintPreloadWarning(Resource* resource,
     case Resource::MatchStatus::kRequestHeadersDoNotMatch:
       builder.Append("because the request headers do not match.");
       break;
+    case Resource::MatchStatus::kScriptTypeDoesNotMatch:
+      builder.Append("because the script type does not match.");
+      break;
   }
   console_logger_->AddConsoleMessage(mojom::ConsoleMessageSource::kOther,
                                      mojom::ConsoleMessageLevel::kWarning,

@@ -77,6 +77,7 @@ class WorkletModuleResponsesMapTest : public testing::Test {
         mojom::blink::RequestContextType::SCRIPT);
     FetchParameters fetch_params =
         FetchParameters::CreateForTest(std::move(resource_request));
+    fetch_params.SetModuleScript();
     WorkletModuleScriptFetcher* module_fetcher =
         MakeGarbageCollected<WorkletModuleScriptFetcher>(
             map_.Get(), ModuleScriptLoader::CreatePassKeyForTests());
