@@ -21,6 +21,13 @@
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/scanning/lorgnette_scanner_manager.h"
 #include "chrome/browser/chromeos/scanning/scanning_type_converters.h"
+#include "third_party/skia/include/codec/SkCodec.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkStream.h"
+#include "third_party/skia/include/core/SkTypes.h"
+#include "third_party/skia/include/docs/SkPDFDocument.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_util.h"
 
@@ -39,6 +46,36 @@ constexpr int kJpgQuality = 100;
 // The max progress percent that can be reported for a scanned page.
 constexpr uint32_t kMaxProgressPercent = 100;
 
+// Contains information extracted from a PNG image necessary for conversion to
+// PDF.
+struct PngImageData {
+  SkImageInfo png_info;
+  std::vector<uint8_t> pixels;
+};
+
+// Creates a filename for a scanned image using |start_time|, |page_number|, and
+// |file_ext|.
+std::string CreateFilename(const base::Time::Exploded& start_time,
+                           uint32_t page_number,
+                           const std::string& file_ext) {
+  return base::StringPrintf(
+      "scan_%02d%02d%02d-%02d%02d%02d_%d.%s", start_time.year, start_time.month,
+      start_time.day_of_month, start_time.hour, start_time.minute,
+      start_time.second, page_number, file_ext.c_str());
+}
+
+// Helper function that writes |scanned_image| to |file_path|.
+// Returns whether the image was successfully written.
+bool WriteImage(const base::FilePath& file_path,
+                const std::string& scanned_image) {
+  if (!base::WriteFile(file_path, scanned_image)) {
+    LOG(ERROR) << "Failed to save scanned image: " << file_path.value().c_str();
+    return false;
+  }
+
+  return true;
+}
+
 // Converts |png_img| to JPG.
 std::string PngToJpg(const std::string& png_img) {
   std::vector<uint8_t> jpg_img;
@@ -52,6 +89,97 @@ std::string PngToJpg(const std::string& png_img) {
   return std::string(jpg_img.begin(), jpg_img.end());
 }
 
+// Creates a new page for the PDF document and adds |image_data| to the page.
+// Returns whether the page was successfully created.
+bool AddPdfPage(sk_sp<SkDocument> pdf_doc, PngImageData& image_data) {
+  SkBitmap img_bitmap;
+  if (!img_bitmap.setInfo(image_data.png_info,
+                          image_data.png_info.minRowBytes())) {
+    LOG(ERROR) << "Unable to set bitmap image info.";
+    return false;
+  }
+
+  img_bitmap.setPixels(static_cast<void*>(image_data.pixels.data()));
+  SkCanvas* page_canvas = pdf_doc->beginPage(image_data.png_info.width(),
+                                             image_data.png_info.height());
+  if (!page_canvas) {
+    LOG(ERROR) << "Unable to access PDF page canvas.";
+    return false;
+  }
+  page_canvas->drawBitmap(img_bitmap, /*left=*/0, /*top=*/0);
+  pdf_doc->endPage();
+  return true;
+}
+
+// Given PNG image data, returns the image info and pixels as a struct.
+base::Optional<PngImageData> GetPngData(sk_sp<SkData> img_data) {
+  PngImageData acquired_data;
+  std::unique_ptr<SkCodec> png_codec = SkCodec::MakeFromData(img_data, nullptr);
+  if (!png_codec) {
+    LOG(ERROR) << "Unable to make SkCodec from data.";
+    return base::nullopt;
+  }
+
+  acquired_data.png_info = png_codec->getInfo();
+  if (acquired_data.png_info.isEmpty()) {
+    LOG(ERROR) << "Unable to get image info from codec.";
+    return base::nullopt;
+  }
+
+  // Calculations for vector size provided by SkCodec.h.
+  acquired_data.pixels =
+      std::vector<uint8_t>(acquired_data.png_info.computeMinByteSize());
+  auto result = png_codec->getPixels(
+      acquired_data.png_info, static_cast<void*>(acquired_data.pixels.data()),
+      acquired_data.png_info.minRowBytes());
+  if (result != SkCodec::kSuccess) {
+    LOG(ERROR) << "Unable to get pixels from codec. Returned error: "
+               << SkCodec::ResultToString(result);
+    return base::nullopt;
+  }
+
+  return acquired_data;
+}
+
+// Converts |png_img| to PDF and writes the PDF to |file_path|.
+// Returns whether the converted image was successfully saved.
+bool SaveAsPdf(const std::string& png_img, const base::FilePath& file_path) {
+  SkDynamicMemoryWStream img_stream;
+  if (!img_stream.write(png_img.c_str(), png_img.size())) {
+    LOG(ERROR) << "Unable to write image to dynamic memory stream.";
+    return false;
+  }
+
+  sk_sp<SkData> img_data = img_stream.detachAsData();
+  if (img_data->isEmpty()) {
+    LOG(ERROR) << "Stream data is empty.";
+    return false;
+  }
+
+  base::Optional<PngImageData> acquired_data = GetPngData(img_data);
+  if (!acquired_data.has_value()) {
+    LOG(ERROR) << "Unable to process image data.";
+    return false;
+  }
+
+  SkFILEWStream pdf_outfile(file_path.value().c_str());
+  if (!pdf_outfile.isValid()) {
+    LOG(ERROR) << "Unable to open output file.";
+    return false;
+  }
+
+  sk_sp<SkDocument> pdf_doc = SkPDF::MakeDocument(&pdf_outfile);
+  SkASSERT(pdf_doc);
+  if (!AddPdfPage(pdf_doc, acquired_data.value())) {
+    LOG(ERROR) << "Unable to add new PDF page.";
+    return false;
+  }
+
+  // TODO(kmoed): Add multipage scan functionality.
+  pdf_doc->close();
+  return true;
+}
+
 // Saves |scanned_image| to a file after converting it if necessary. Returns the
 // file path to the saved file if the save succeeds.
 base::FilePath SavePage(const base::FilePath& scan_to_path,
@@ -59,34 +187,31 @@ base::FilePath SavePage(const base::FilePath& scan_to_path,
                         std::string scanned_image,
                         uint32_t page_number,
                         const base::Time::Exploded& start_time) {
-  std::string file_ext;
+  std::string filename;
   switch (file_type) {
     case mojo_ipc::FileType::kPng:
-      file_ext = "png";
-      break;
-    case mojo_ipc::FileType::kJpg:
-      file_ext = "jpg";
-      scanned_image = PngToJpg(scanned_image);
-      if (scanned_image.empty())
+      filename = CreateFilename(start_time, page_number, "png");
+      if (!WriteImage(scan_to_path.Append(filename), scanned_image))
         return base::FilePath();
 
       break;
-    default:
-      LOG(ERROR) << "Selected file type not supported.";
-      return base::FilePath();
+    case mojo_ipc::FileType::kJpg:
+      filename = CreateFilename(start_time, page_number, "jpg");
+      scanned_image = PngToJpg(scanned_image);
+      if (scanned_image.empty() ||
+          !WriteImage(scan_to_path.Append(filename), scanned_image)) {
+        return base::FilePath();
+      }
+      break;
+    case mojo_ipc::FileType::kPdf:
+      filename = CreateFilename(start_time, page_number, "pdf");
+      if (!SaveAsPdf(scanned_image, scan_to_path.Append(filename)))
+        return base::FilePath();
+
+      break;
   }
 
-  const std::string filename = base::StringPrintf(
-      "scan_%02d%02d%02d-%02d%02d%02d_%d.%s", start_time.year, start_time.month,
-      start_time.day_of_month, start_time.hour, start_time.minute,
-      start_time.second, page_number, file_ext.c_str());
-  const auto file_path = scan_to_path.Append(filename);
-  if (!base::WriteFile(file_path, scanned_image)) {
-    LOG(ERROR) << "Failed to save scanned image: " << file_path.value().c_str();
-    return base::FilePath();
-  }
-
-  return file_path;
+  return scan_to_path.Append(filename);
 }
 
 }  // namespace

@@ -27,6 +27,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/codec/png_codec.h"
 
 namespace chromeos {
 
@@ -81,6 +83,16 @@ std::vector<base::FilePath> CreateSavedScanPaths(
         scan_time.second, i, type.c_str())));
   }
   return file_paths;
+}
+
+// Returns a manually generated PNG image.
+std::string CreatePng() {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(100, 100);
+  bitmap.eraseARGB(255, 0, 255, 0);
+  std::vector<unsigned char> bytes;
+  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &bytes);
+  return std::string(bytes.begin(), bytes.end());
 }
 
 }  // namespace
@@ -309,8 +321,8 @@ TEST_F(ScanServiceTest, ScanWithUnsupportedFilePath) {
 TEST_F(ScanServiceTest, Scan) {
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
-  const std::vector<std::string> scan_data = {"TestData1", "TestData2",
-                                              "TestData3"};
+  const std::vector<std::string> scan_data = {CreatePng(), CreatePng(),
+                                              CreatePng()};
   fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
@@ -323,7 +335,9 @@ TEST_F(ScanServiceTest, Scan) {
   mojo_ipc::ScanSettings settings;
   settings.scan_to_path = temp_dir_.GetPath();
   std::map<std::string, mojo_ipc::FileType> file_types = {
-      {"png", mojo_ipc::FileType::kPng}, {"jpg", mojo_ipc::FileType::kJpg}};
+      {"png", mojo_ipc::FileType::kPng},
+      {"jpg", mojo_ipc::FileType::kJpg},
+      {"pdf", mojo_ipc::FileType::kPdf}};
   for (const auto& type : file_types) {
     const std::vector<base::FilePath> saved_scan_paths = CreateSavedScanPaths(
         temp_dir_.GetPath(), scan_time, type.first, scan_data.size());
