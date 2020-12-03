@@ -87,11 +87,6 @@ void ContextualSearchLayer::SetProperties(
     float progress_bar_height,
     float progress_bar_opacity,
     float progress_bar_completion,
-    float divider_line_visibility_percentage,
-    float divider_line_width,
-    float divider_line_height,
-    int divider_line_color,
-    float divider_line_x_offset,
     bool touch_highlight_visible,
     float touch_highlight_x_offset,
     float touch_highlight_width,
@@ -280,30 +275,6 @@ void ContextualSearchLayer::SetProperties(
       progress_bar_background_resource_id, progress_bar_resource_id,
       progress_bar_visible, search_bar_bottom, progress_bar_height,
       progress_bar_opacity, progress_bar_completion, search_panel_width);
-
-  // ---------------------------------------------------------------------------
-  // Divider Line separator.  Deprecated -- old layout only.
-  // ---------------------------------------------------------------------------
-  if (divider_line_visibility_percentage > 0.f) {
-    if (divider_line_->parent() != layer_)
-      layer_->AddChild(divider_line_);
-
-    // The divider line animates in from the bottom.
-    float divider_line_y_offset =
-        ((search_bar_height - divider_line_height) / 2) +
-        (divider_line_height * (1.f - divider_line_visibility_percentage));
-    divider_line_->SetPosition(gfx::PointF(divider_line_x_offset,
-                                           divider_line_y_offset));
-
-    // The divider line should not draw below its final resting place.
-    // Set bounds to restrict the vertical draw position.
-    divider_line_->SetBounds(
-        gfx::Size(divider_line_width,
-                  divider_line_height * divider_line_visibility_percentage));
-    divider_line_->SetBackgroundColor(divider_line_color);
-  } else if (divider_line_->parent()) {
-    divider_line_->RemoveFromParent();
-  }
 
   // ---------------------------------------------------------------------------
   // Touch Highlight Layer
@@ -655,7 +626,6 @@ ContextualSearchLayer::ContextualSearchLayer(
       bar_banner_text_(cc::UIResourceLayer::Create()),
       search_caption_(cc::UIResourceLayer::Create()),
       text_layer_(cc::UIResourceLayer::Create()),
-      divider_line_(cc::SolidColorLayer::Create()),
       touch_highlight_layer_(cc::SolidColorLayer::Create()) {
   // Search Bar Banner
   bar_banner_container_->SetIsDrawable(true);
@@ -689,9 +659,6 @@ ContextualSearchLayer::ContextualSearchLayer(
 
   // Quick action icon
   quick_action_icon_layer_->SetIsDrawable(true);
-
-  // Divider line
-  divider_line_->SetIsDrawable(true);
 
   // Content layer
   text_layer_->SetIsDrawable(true);

@@ -79,8 +79,6 @@
     <dimen name="contextual_search_padded_button_width">
       @dimen/overlay_panel_padded_button_width
     </dimen>
-    <dimen name="contextual_search_divider_line_width">1dp</dimen>
-    <dimen name="contextual_search_divider_line_height">24dp</dimen>
     <!-- Padding at the end of the Bar. -->
     <dimen name="contextual_search_end_padding">7dp</dimen>
     <dimen name="contextual_search_bubble_y_inset">-3dp</dimen>

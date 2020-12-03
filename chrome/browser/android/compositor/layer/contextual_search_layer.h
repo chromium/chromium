@@ -89,11 +89,6 @@ class ContextualSearchLayer : public OverlayPanelLayer {
                      float progress_bar_height,
                      float progress_bar_opacity,
                      float progress_bar_completion,
-                     float divider_line_visibility_percentage,
-                     float divider_line_width,
-                     float divider_line_height,
-                     int divider_line_color,
-                     float divider_line_x_offset,
                      bool touch_highlight_visible,
                      float touch_highlight_x_offset,
                      float touch_highlight_width,
@@ -151,7 +146,6 @@ class ContextualSearchLayer : public OverlayPanelLayer {
   scoped_refptr<cc::UIResourceLayer> bar_banner_text_;
   scoped_refptr<cc::UIResourceLayer> search_caption_;
   scoped_refptr<cc::UIResourceLayer> text_layer_;
-  scoped_refptr<cc::SolidColorLayer> divider_line_;
   scoped_refptr<cc::SolidColorLayer> touch_highlight_layer_;
 };
 

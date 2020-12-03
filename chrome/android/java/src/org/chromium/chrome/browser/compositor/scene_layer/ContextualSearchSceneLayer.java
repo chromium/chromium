@@ -122,13 +122,6 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
         float progressBarOpacity = panel.getProgressBarOpacity();
         float progressBarCompletion = panel.getProgressBarCompletion();
 
-        float dividerLineVisibilityPercentage =
-                searchBarControl.getDividerLineVisibilityPercentage();
-        float dividerLineWidth = searchBarControl.getDividerLineWidth();
-        float dividerLineHeight = searchBarControl.getDividerLineHeight();
-        int dividerLineColor = searchBarControl.getDividerLineColor();
-        float dividerLineXOffset = searchBarControl.getDividerLineXOffset();
-
         boolean touchHighlightVisible = searchBarControl.getTouchHighlightVisible();
         float touchHighlightXOffset = searchBarControl.getTouchHighlightXOffsetPx();
         float touchHighlightWidth = searchBarControl.getTouchHighlightWidthPx();
@@ -168,10 +161,9 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 quickActionIconVisible, thumbnailVisible, thumbnailUrl,
                 customImageVisibilityPercentage, barImageSize, iconColor, dragHandlebarColor,
                 closeIconOpacity, isProgressBarVisible, progressBarHeight * mDpToPx,
-                progressBarOpacity, progressBarCompletion, dividerLineVisibilityPercentage,
-                dividerLineWidth, dividerLineHeight, dividerLineColor, dividerLineXOffset,
-                touchHighlightVisible, touchHighlightXOffset, touchHighlightWidth,
-                Profile.getLastUsedRegularProfile(), roundedBarTopResourceId, separatorLineColor);
+                progressBarOpacity, progressBarCompletion, touchHighlightVisible,
+                touchHighlightXOffset, touchHighlightWidth, Profile.getLastUsedRegularProfile(),
+                roundedBarTopResourceId, separatorLineColor);
     }
 
     @CalledByNative
@@ -244,8 +236,6 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 float customImageVisibilityPercentage, int barImageSize, int iconColor,
                 int dragHandlebarColor, float closeIconOpacity, boolean isProgressBarVisible,
                 float progressBarHeight, float progressBarOpacity, float progressBarCompletion,
-                float dividerLineVisibilityPercentage, float dividerLineWidth,
-                float dividerLineHeight, int dividerLineColor, float dividerLineXOffset,
                 boolean touchHighlightVisible, float touchHighlightXOffset,
                 float toucHighlightWidth, Profile profile, int barBackgroundResourceId,
                 int separatorLineColor);

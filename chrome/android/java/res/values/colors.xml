@@ -69,7 +69,6 @@
     <!-- Contextual Search colors -->
     <color name="contextual_search_promo_background_color">@color/default_bg_color_elev_0</color>
     <color name="contextual_search_promo_border_color">#C2C2C2</color>
-    <color name="contextual_search_divider_line_color">@color/default_bg_color_secondary</color>
 
     <!-- Toolbar colors -->
     <color name="toolbar_text_box_background_incognito">@color/black_alpha_38</color>

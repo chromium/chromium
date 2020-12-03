@@ -127,11 +127,6 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
     jfloat progress_bar_height,
     jfloat progress_bar_opacity,
     jfloat progress_bar_completion,
-    jfloat divider_line_visibility_percentage,
-    jfloat divider_line_width,
-    jfloat divider_line_height,
-    jint divider_line_color,
-    jfloat divider_line_x_offset,
     jboolean touch_highlight_visible,
     jfloat touch_highlight_x_offset,
     jfloat touch_highlight_width,
@@ -186,8 +181,6 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
       custom_image_visibility_percentage, bar_image_size, icon_color,
       drag_handlebar_color, close_icon_opacity, progress_bar_visible,
       progress_bar_height, progress_bar_opacity, progress_bar_completion,
-      divider_line_visibility_percentage, divider_line_width,
-      divider_line_height, divider_line_color, divider_line_x_offset,
       touch_highlight_visible, touch_highlight_x_offset, touch_highlight_width,
       rounded_bar_top_resource_id, separator_line_color);
 
