@@ -570,8 +570,8 @@ public class AutofillAssistantChromeTabIntegrationTest {
                                    .getSpec()
                                    .equals(getURL(TEST_PAGE_A)));
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
-        onView(is(mScrimCoordinator.getViewForTesting()))
-                .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
+        waitUntilViewMatchesCondition(is(mScrimCoordinator.getViewForTesting()),
+                withEffectiveVisibility(Visibility.VISIBLE));
 
         onView(withId(org.chromium.chrome.R.id.tab_switcher_button)).perform(click());
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), not(isDisplayed()));
@@ -579,8 +579,8 @@ public class AutofillAssistantChromeTabIntegrationTest {
 
         Espresso.pressBack();
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
-        onView(is(mScrimCoordinator.getViewForTesting()))
-                .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
+        waitUntilViewMatchesCondition(is(mScrimCoordinator.getViewForTesting()),
+                withEffectiveVisibility(Visibility.VISIBLE));
     }
 
     @Test
@@ -596,8 +596,8 @@ public class AutofillAssistantChromeTabIntegrationTest {
                                    .getSpec()
                                    .equals(getURL(TEST_PAGE_A)));
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
-        onView(is(mScrimCoordinator.getViewForTesting()))
-                .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
+        waitUntilViewMatchesCondition(is(mScrimCoordinator.getViewForTesting()),
+                withEffectiveVisibility(Visibility.VISIBLE));
 
         // Clicking location bar hides UI and shows the keyboard.
         onView(withId(org.chromium.chrome.R.id.url_bar)).perform(click());
@@ -607,7 +607,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
         // Closing keyboard brings it back.
         Espresso.pressBack();
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
-        onView(is(mScrimCoordinator.getViewForTesting()))
-                .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
+        waitUntilViewMatchesCondition(is(mScrimCoordinator.getViewForTesting()),
+                withEffectiveVisibility(Visibility.VISIBLE));
     }
 }
