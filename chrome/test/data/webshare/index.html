@@ -40,6 +40,61 @@
         return ('share failed: ' + error);
       }
     }
+
+    async function share_file_title() {
+      try {
+        const single_file = create_file('sample.webp', 'image/webp', 12);
+        await navigator.share({files: [single_file], title: "Subject"});
+        return 'share succeeded';
+      } catch(error) {
+        return ('share failed: ' + error);
+      }
+    }
+
+    async function share_file_title_url() {
+      try {
+        const single_file = create_file('sample.webp', 'image/webp', 12);
+        await navigator.share({files: [single_file],
+                               title: "Subject",
+                               url: "https://example.com/"});
+        return 'share succeeded';
+      } catch(error) {
+        return ('share failed: ' + error);
+      }
+    }
+
+    async function share_file_text() {
+      try {
+        const single_file = create_file('sample.webp', 'image/webp', 12);
+        await navigator.share({files: [single_file], text: "Message"});
+        return 'share succeeded';
+      } catch(error) {
+        return ('share failed: ' + error);
+      }
+    }
+
+    async function share_file_text_url() {
+      try {
+        const single_file = create_file('sample.webp', 'image/webp', 12);
+        await navigator.share({files: [single_file],
+                               text: "Message",
+                               url: "https://example.com/"});
+        return 'share succeeded';
+      } catch(error) {
+        return ('share failed: ' + error);
+      }
+    }
+
+    async function share_file_url() {
+      try {
+        const single_file = create_file('sample.webp', 'image/webp', 12);
+        await navigator.share({files: [single_file],
+                               url: "https://example.com/"});
+        return 'share succeeded';
+      } catch(error) {
+        return ('share failed: ' + error);
+      }
+    }
   </script>
 </head>
 <body>

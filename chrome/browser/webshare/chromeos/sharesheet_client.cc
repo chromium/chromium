@@ -92,7 +92,7 @@ void SharesheetClient::Share(
   }
 
   if (files.empty()) {
-    // TODO(crbug.com/1127670): Support title/text/url sharing.
+    // TODO(crbug.com/1127670): Support title/text/url sharing without files.
     std::move(callback).Run(blink::mojom::ShareError::CANCELED);
     return;
   }
@@ -102,6 +102,15 @@ void SharesheetClient::Share(
   current_share_->directory =
       chromeos::CrosDisksClient::GetArchiveMountPoint().Append(
           kWebShareDirname);
+  if (share_url.is_valid()) {
+    if (text.empty())
+      current_share_->text = share_url.spec();
+    else
+      current_share_->text = text + " " + share_url.spec();
+  } else {
+    current_share_->text = text;
+  }
+  current_share_->title = title;
   current_share_->callback = std::move(callback);
 
   current_share_->prepare_directory_task =
@@ -155,7 +164,8 @@ void SharesheetClient::OnStoreFiles(blink::mojom::ShareError error) {
 
   GetSharesheetCallback().Run(
       web_contents(), std::move(current_share_->file_paths),
-      std::move(current_share_->content_types),
+      std::move(current_share_->content_types), current_share_->text,
+      current_share_->title,
       base::BindOnce(&SharesheetClient::OnShowSharesheet,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -166,10 +176,13 @@ void SharesheetClient::OnShowSharesheet(sharesheet::SharesheetResult result) {
 }
 
 // static
-void SharesheetClient::ShowSharesheet(content::WebContents* web_contents,
-                                      std::vector<base::FilePath> file_paths,
-                                      std::vector<std::string> content_types,
-                                      CloseCallback close_callback) {
+void SharesheetClient::ShowSharesheet(
+    content::WebContents* web_contents,
+    const std::vector<base::FilePath>& file_paths,
+    const std::vector<std::string>& content_types,
+    const std::string& text,
+    const std::string& title,
+    CloseCallback close_callback) {
   if (!base::FeatureList::IsEnabled(features::kSharesheet)) {
     std::move(close_callback).Run(sharesheet::SharesheetResult::kCancel);
     return;
@@ -184,8 +197,8 @@ void SharesheetClient::ShowSharesheet(content::WebContents* web_contents,
 
   sharesheet_service->ShowBubble(
       web_contents,
-      apps_util::CreateShareIntentFromFiles(profile, std::move(file_paths),
-                                            std::move(content_types)),
+      apps_util::CreateShareIntentFromFiles(profile, file_paths, content_types,
+                                            text, title),
       std::move(close_callback));
 }
 

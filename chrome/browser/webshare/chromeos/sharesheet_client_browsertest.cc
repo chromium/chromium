@@ -58,6 +58,29 @@ class SharesheetClientBrowserTest : public InProcessBrowserTest {
     return embedded_test_server()->GetURL("/webshare/index.html");
   }
 
+  void ConfirmShareText(const std::string& script,
+                        const char* expected_text,
+                        const char* expected_title) {
+    SharesheetClient::SetSharesheetCallbackForTesting(
+        base::BindLambdaForTesting(
+            [&expected_text, &expected_title](
+                content::WebContents* in_contents,
+                const std::vector<base::FilePath>& file_paths,
+                const std::vector<std::string>& content_types,
+                const std::string& text, const std::string& title,
+                SharesheetClient::CloseCallback close_callback) {
+              EXPECT_EQ(text, expected_text);
+              EXPECT_EQ(title, expected_title);
+              std::move(close_callback)
+                  .Run(sharesheet::SharesheetResult::kCancel);
+            }));
+
+    content::WebContents* const contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    EXPECT_EQ("share failed: AbortError: Share canceled",
+              content::EvalJs(contents, script));
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -72,8 +95,9 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, ShareTwoFiles) {
 
   SharesheetClient::SetSharesheetCallbackForTesting(base::BindLambdaForTesting(
       [contents, &file_paths](content::WebContents* in_contents,
-                              std::vector<base::FilePath> in_file_paths,
-                              std::vector<std::string> content_types,
+                              const std::vector<base::FilePath>& in_file_paths,
+                              const std::vector<std::string>& content_types,
+                              const std::string& text, const std::string& title,
                               SharesheetClient::CloseCallback close_callback) {
         EXPECT_EQ(contents, in_contents);
 
@@ -107,8 +131,9 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, RepeatedShare) {
         base::BindLambdaForTesting(
             [contents, &file_paths](
                 content::WebContents* in_contents,
-                std::vector<base::FilePath> in_file_paths,
-                std::vector<std::string> content_types,
+                const std::vector<base::FilePath>& in_file_paths,
+                const std::vector<std::string>& content_types,
+                const std::string& text, const std::string& title,
                 SharesheetClient::CloseCallback close_callback) {
               EXPECT_EQ(contents, in_contents);
 
@@ -136,14 +161,35 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, CancelledShare) {
   ui_test_utils::NavigateToURL(browser(), GetAppUrl());
   SharesheetClient::SetSharesheetCallbackForTesting(base::BindLambdaForTesting(
       [](content::WebContents* in_contents,
-         std::vector<base::FilePath> file_paths,
-         std::vector<std::string> content_types,
+         const std::vector<base::FilePath>& file_paths,
+         const std::vector<std::string>& content_types, const std::string& text,
+         const std::string& title,
          SharesheetClient::CloseCallback close_callback) {
         std::move(close_callback).Run(sharesheet::SharesheetResult::kCancel);
       }));
 
   EXPECT_EQ("share failed: AbortError: Share canceled",
             content::EvalJs(contents, script));
+}
+
+IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, TextWithFile) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ui_test_utils::NavigateToURL(browser(), GetAppUrl());
+  ConfirmShareText("share_file_title()",
+                   /*expected_text=*/"",
+                   /*expected_title=*/"Subject");
+  ConfirmShareText("share_file_title_url()",
+                   /*expected_text=*/"https://example.com/",
+                   /*expected_title=*/"Subject");
+  ConfirmShareText("share_file_text()",
+                   /*expected_text=*/"Message",
+                   /*expected_title=*/"");
+  ConfirmShareText("share_file_text_url()",
+                   /*expected_text=*/"Message https://example.com/",
+                   /*expected_title=*/"");
+  ConfirmShareText("share_file_url()",
+                   /*expected_text=*/"https://example.com/",
+                   /*expected_title=*/"");
 }
 
 }  // namespace webshare
