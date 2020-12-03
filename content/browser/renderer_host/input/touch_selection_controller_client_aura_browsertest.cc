@@ -882,18 +882,9 @@ class TouchSelectionControllerClientAuraScaleFactorTest
   }
 };
 
-#if defined(OS_WIN)
-// High DPI tests are disabled on Windows due to crbug.com/545547.
-#define MAYBE_SelectionHandleCoordinates DISABLED_SelectionHandleCoordinates
-#define MAYBE_InsertionHandleCoordinates DISABLED_InsertionHandleCoordinates
-#else
-#define MAYBE_SelectionHandleCoordinates SelectionHandleCoordinates
-#define MAYBE_InsertionHandleCoordinates InsertionHandleCoordinates
-#endif
-
 // Tests that selection handles are properly positioned at 2x DSF.
 IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraScaleFactorTest,
-                       MAYBE_SelectionHandleCoordinates) {
+                       SelectionHandleCoordinates) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
   InitSelectionController();
@@ -989,7 +980,7 @@ IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraScaleFactorTest,
 
 // Tests that insertion handles are properly positioned at 2x DSF.
 IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraScaleFactorTest,
-                       MAYBE_InsertionHandleCoordinates) {
+                       InsertionHandleCoordinates) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
   InitSelectionController();
