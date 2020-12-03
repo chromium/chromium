@@ -246,7 +246,7 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
       accessible_alert_(accessible_alert),
       accessible_alert_timer_(
           FROM_HERE,
-          base::TimeDelta::FromSeconds(30),
+          base::TimeDelta::FromMinutes(3),
           base::BindRepeating(&DownloadItemView::AnnounceAccessibleAlert,
                               base::Unretained(this))) {
   views::InstallRectHighlightPathGenerator(this);
