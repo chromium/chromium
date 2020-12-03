@@ -6,7 +6,6 @@
 #define CHROMEOS_CONSTANTS_CHROMEOS_SWITCHES_H_
 
 #include "base/component_export.h"
-#include "chromeos/dbus/constants/dbus_switches.h"
 
 namespace chromeos {
 namespace switches {
