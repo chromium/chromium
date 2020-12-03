@@ -28,6 +28,12 @@
   }
 </if>
 
+  #website-text {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
   #website-title {
     color: var(--cr-primary-text-color);
     flex: 1;
@@ -89,17 +95,21 @@
   }
 </style>
 <div id="icon"></div>
-<div id="website-title" class="elided-text" title="[[item_.title]]">
-  [[item_.title]]
+<div id="website-text" role="gridcell">
+  <div id="website-title" class="elided-text" title="[[item_.title]]">
+    [[item_.title]]
+  </div>
+  <div id="website-url" class="elided-text" title="[[item_.url]]">
+    [[item_.url]]
+  </div>
 </div>
-<div id="website-url" class="elided-text" title="[[item_.url]]">
-  [[item_.url]]
+<div role="gridcell">
+  <cr-icon-button class="icon-more-vert"
+      id="menuButton"
+      tabindex="[[ironListTabIndex]]"
+      title="$i18n{moreActionsButtonTitle}"
+      aria-label$="[[getButtonAriaLabel_(item_, isSelectedItem_,
+          isMultiSelect_)]]"
+      on-click="onMenuButtonClick_"
+      aria-haspopup="menu"></cr-icon-button>
 </div>
-<cr-icon-button class="icon-more-vert"
-    id="menuButton"
-    tabindex="[[ironListTabIndex]]"
-    title="$i18n{moreActionsButtonTitle}"
-    aria-label$="[[getButtonAriaLabel_(item_, isSelectedItem_,
-        isMultiSelect_)]]"
-    on-click="onMenuButtonClick_"
-    aria-haspopup="menu"></cr-icon-button>

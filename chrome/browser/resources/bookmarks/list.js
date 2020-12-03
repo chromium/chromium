@@ -355,4 +355,12 @@ Polymer({
   getAriaRowindex_(index) {
     return index + 1;
   },
+
+  /**
+   * @param {string} id
+   * @return {boolean}
+   */
+  getAriaSelected_(id) {
+    return this.selectedItems_.has(id);
+  },
 });

@@ -40,17 +40,19 @@
     items="[[displayedList_]]"
     hidden$="[[isEmptyList_(displayedList_.length)]]"
     role="grid"
-    aria-label="$i18n{listAxLabel}">
+    aria-label="$i18n{listAxLabel}"
+    aria-multiselectable="true">
   <template>
-    <div role="row" id$="bookmark_[[index]]"
-        aria-rowindex$="[[getAriaRowindex_(index)]]">
-      <bookmarks-item item-id="[[item.id]]"
-          draggable="true"
-          role="gridcell"
-          tabindex$="[[tabIndex]]"
-          iron-list-tab-index="[[tabIndex]]">
-      </bookmarks-item>
-    </div>
+    <bookmarks-item
+        id="bookmark_[[index]]"
+        item-id="[[item.id]]"
+        draggable="true"
+        role="row"
+        tabindex$="[[tabIndex]]"
+        iron-list-tab-index="[[tabIndex]]"
+        aria-rowindex$="[[getAriaRowindex_(index)]]"
+        aria-selected="[[getAriaSelected_(item.id, selectedItems_)]]">
+    </bookmarks-item>
   </template>
 </iron-list>
 <div id="message" class="centered-message"
