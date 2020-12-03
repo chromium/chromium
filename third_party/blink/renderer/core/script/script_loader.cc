@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/script/script_loader.h"
 
 #include "base/feature_list.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
@@ -44,6 +45,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/importance_attribute.h"
+#include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/core/script/classic_pending_script.h"
@@ -706,10 +708,15 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
         // <spec label="fetch-an-inline-module-script-graph" step="1">Let script
         // be the result of creating a JavaScript module script using source
         // text, settings object, base URL, and options.</spec>
-        ModuleScript* module_script =
-            JSModuleScript::Create(ParkableString(source_text.Impl()), nullptr,
-                                   ScriptSourceLocationType::kInline, modulator,
-                                   source_url, base_url, options, position);
+
+        ModuleScriptCreationParams params(
+            source_url,
+            ModuleScriptCreationParams::ModuleType::kJavaScriptModule,
+            ParkableString(source_text.Impl()), nullptr,
+            options.CredentialsMode());
+        ModuleScript* module_script = JSModuleScript::Create(
+            params, base_url, ScriptSourceLocationType::kInline, modulator,
+            options, position);
 
         // <spec label="fetch-an-inline-module-script-graph" step="2">If script
         // is null, asynchronously complete this algorithm with null, and abort

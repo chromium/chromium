@@ -40,15 +40,15 @@ class TextPosition;
 
 namespace blink {
 
-class ScriptEvaluationResult;
 class ExecutionContext;
 class KURL;
 class ModuleScript;
+class ModuleScriptCreationParams;
 class ReferrerScriptInfo;
+class ScriptEvaluationResult;
 class ScriptFetchOptions;
 class ScriptSourceCode;
 class ScriptState;
-class SingleCachedMetadataHandler;
 
 class CORE_EXPORT V8ScriptRunner final {
   STATIC_ONLY(V8ScriptRunner);
@@ -114,9 +114,7 @@ class CORE_EXPORT V8ScriptRunner final {
       const ReferrerScriptInfo&);
   static v8::MaybeLocal<v8::Module> CompileModule(
       v8::Isolate*,
-      const String& source,
-      SingleCachedMetadataHandler*,
-      const String& file_name,
+      const ModuleScriptCreationParams&,
       const WTF::TextPosition&,
       v8::ScriptCompiler::CompileOptions,
       v8::ScriptCompiler::NoCacheReason,

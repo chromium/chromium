@@ -271,9 +271,8 @@ void ModuleScriptLoader::NotifyFetchFinished(
       // a module script given source text, module map settings object,
       // response's url, and options." [spec text]
       module_script_ = JSModuleScript::Create(
-          params->GetSourceText(), params->CacheHandler(),
-          ScriptSourceLocationType::kExternalFile, modulator_,
-          params->GetResponseUrl(), params->GetResponseUrl(), options_);
+          params.value(), params->SourceURL() /* base URL */,
+          ScriptSourceLocationType::kExternalFile, modulator_, options_);
       break;
   }
 

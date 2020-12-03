@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
+#include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/module_record_resolver.h"
@@ -46,14 +47,12 @@ void ModuleRecordProduceCacheData::Trace(Visitor* visitor) const {
 
 v8::Local<v8::Module> ModuleRecord::Compile(
     v8::Isolate* isolate,
-    const String& source,
-    const KURL& source_url,
+    const ModuleScriptCreationParams& params,
     const KURL& base_url,
     const ScriptFetchOptions& options,
     const TextPosition& text_position,
     ExceptionState& exception_state,
     mojom::blink::V8CacheOptions v8_cache_options,
-    SingleCachedMetadataHandler* cache_handler,
     ScriptSourceLocationType source_location_type,
     ModuleRecordProduceCacheData** out_produce_cache_data) {
   v8::TryCatch try_catch(isolate);
@@ -71,12 +70,12 @@ v8::Local<v8::Module> ModuleRecord::Compile(
   V8CodeCache::ProduceCacheOptions produce_cache_options;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
   std::tie(compile_options, produce_cache_options, no_cache_reason) =
-      V8CodeCache::GetCompileOptions(v8_cache_options, cache_handler,
-                                     source.length(), source_location_type);
+      V8CodeCache::GetCompileOptions(v8_cache_options, params.CacheHandler(),
+                                     params.GetSourceText().length(),
+                                     source_location_type);
 
   if (!V8ScriptRunner::CompileModule(
-           isolate, source, cache_handler, source_url, text_position,
-           compile_options, no_cache_reason,
+           isolate, params, text_position, compile_options, no_cache_reason,
            ReferrerScriptInfo(base_url, options,
                               ReferrerScriptInfo::BaseUrlSource::kOther))
            .ToLocal(&module)) {
@@ -89,7 +88,7 @@ v8::Local<v8::Module> ModuleRecord::Compile(
   if (out_produce_cache_data) {
     *out_produce_cache_data =
         MakeGarbageCollected<ModuleRecordProduceCacheData>(
-            isolate, cache_handler, produce_cache_options, module);
+            isolate, params.CacheHandler(), produce_cache_options, module);
   }
 
   return module;

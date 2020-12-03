@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
+#include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/module_script.h"
@@ -247,13 +248,12 @@ v8::MaybeLocal<v8::Script> V8ScriptRunner::CompileScript(
 
 v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
     v8::Isolate* isolate,
-    const String& source_text,
-    SingleCachedMetadataHandler* cache_handler,
-    const String& file_name,
+    const ModuleScriptCreationParams& params,
     const TextPosition& start_position,
     v8::ScriptCompiler::CompileOptions compile_options,
     v8::ScriptCompiler::NoCacheReason no_cache_reason,
     const ReferrerScriptInfo& referrer_info) {
+  const String file_name = params.SourceURL();
   constexpr const char* kTraceEventCategoryGroup = "v8,devtools.timeline";
   TRACE_EVENT_BEGIN1(kTraceEventCategoryGroup, "v8.compileModule", "fileName",
                      file_name.Utf8());
@@ -271,7 +271,8 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
                           true,                    // is_module
                           referrer_info.ToV8HostDefinedOptions(isolate));
 
-  v8::Local<v8::String> code = V8String(isolate, source_text);
+  // TODO(crbug.com/1061857): Finalize module streaming here.
+  v8::Local<v8::String> code = V8String(isolate, params.GetSourceText());
 
   v8::MaybeLocal<v8::Module> script;
   inspector_compile_script_event::V8CacheResult cache_result;
@@ -287,6 +288,7 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
 
     case v8::ScriptCompiler::kConsumeCodeCache: {
       // Compile a script, and consume a V8 cache that was generated previously.
+      SingleCachedMetadataHandler* cache_handler = params.CacheHandler();
       DCHECK(cache_handler);
       v8::ScriptCompiler::CachedData* cached_data =
           V8CodeCache::CreateCachedData(cache_handler);

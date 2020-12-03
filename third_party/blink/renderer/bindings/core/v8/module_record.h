@@ -22,6 +22,7 @@ namespace blink {
 
 class ExceptionState;
 class KURL;
+class ModuleScriptCreationParams;
 class ScriptFetchOptions;
 class ScriptState;
 class ScriptValue;
@@ -63,14 +64,12 @@ class CORE_EXPORT ModuleRecord final {
  public:
   static v8::Local<v8::Module> Compile(
       v8::Isolate*,
-      const String& source,
-      const KURL& source_url,
+      const ModuleScriptCreationParams& params,
       const KURL& base_url,
       const ScriptFetchOptions&,
       const TextPosition&,
       ExceptionState&,
       mojom::blink::V8CacheOptions = mojom::blink::V8CacheOptions::kDefault,
-      SingleCachedMetadataHandler* = nullptr,
       ScriptSourceLocationType source_location_type =
           ScriptSourceLocationType::kInternal,
       ModuleRecordProduceCacheData** out_produce_cache_data = nullptr);

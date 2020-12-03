@@ -7,6 +7,8 @@
 
 #include "base/optional.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
+#include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata_handler.h"
@@ -24,18 +26,27 @@ class ModuleScriptCreationParams {
 
  public:
   ModuleScriptCreationParams(
-      const KURL& response_url,
+      const KURL& source_url,
       const ModuleScriptCreationParams::ModuleType module_type,
       const ParkableString& source_text,
       SingleCachedMetadataHandler* cache_handler,
-      network::mojom::CredentialsMode credentials_mode)
-      : response_url_(response_url),
+      network::mojom::CredentialsMode credentials_mode,
+      ScriptStreamer* script_streamer = nullptr,
+      ScriptStreamer::NotStreamingReason not_streaming_reason =
+          ScriptStreamer::NotStreamingReason::kStreamingDisabled)
+      : source_url_(source_url),
         module_type_(module_type),
         is_isolated_(false),
         source_text_(source_text),
         isolated_source_text_(),
         cache_handler_(cache_handler),
-        credentials_mode_(credentials_mode) {}
+        credentials_mode_(credentials_mode),
+        script_streamer_(script_streamer),
+        not_streaming_reason_(not_streaming_reason) {
+    DCHECK_EQ(
+        !script_streamer,
+        not_streaming_reason != ScriptStreamer::NotStreamingReason::kInvalid);
+  }
 
   ~ModuleScriptCreationParams() = default;
 
@@ -43,8 +54,7 @@ class ModuleScriptCreationParams {
     String isolated_source_text =
         isolated_source_text_ ? isolated_source_text_.IsolatedCopy()
                               : GetSourceText().ToString().IsolatedCopy();
-
-    return ModuleScriptCreationParams(GetResponseUrl().Copy(), module_type_,
+    return ModuleScriptCreationParams(SourceURL().Copy(), module_type_,
                                       isolated_source_text,
                                       GetFetchCredentialsMode());
   }
@@ -53,7 +63,8 @@ class ModuleScriptCreationParams {
     return module_type_;
   }
 
-  const KURL& GetResponseUrl() const { return response_url_; }
+  const KURL& SourceURL() const { return source_url_; }
+
   const ParkableString& GetSourceText() const {
     if (is_isolated_) {
       source_text_ = ParkableString(isolated_source_text_.ReleaseImpl());
@@ -62,30 +73,46 @@ class ModuleScriptCreationParams {
     }
     return source_text_;
   }
+
+  // TODO(crbug.com/1154943): Make this non-const.
+  void ClearSourceText() const {
+    source_text_ = ParkableString();
+    isolated_source_text_ = String();
+    is_isolated_ = false;
+  }
+
   SingleCachedMetadataHandler* CacheHandler() const { return cache_handler_; }
+
   network::mojom::CredentialsMode GetFetchCredentialsMode() const {
     return credentials_mode_;
   }
 
   bool IsSafeToSendToAnotherThread() const {
-    return response_url_.IsSafeToSendToAnotherThread() && is_isolated_;
+    return source_url_.IsSafeToSendToAnotherThread() && is_isolated_;
   }
 
  private:
   // Creates an isolated copy.
   ModuleScriptCreationParams(
-      const KURL& response_url,
+      const KURL& source_url,
       const ModuleScriptCreationParams::ModuleType& module_type,
       const String& isolated_source_text,
       network::mojom::CredentialsMode credentials_mode)
-      : response_url_(response_url),
+      : source_url_(source_url),
         module_type_(module_type),
         is_isolated_(true),
         source_text_(),
         isolated_source_text_(isolated_source_text),
-        credentials_mode_(credentials_mode) {}
+        credentials_mode_(credentials_mode),
+        // The ScriptStreamer is intentionally cleared since it cannot be passed
+        // across threads. This only disables script streaming on worklet
+        // top-level scripts where the ModuleScriptCreationParams is
+        // passed across threads.
+        script_streamer_(nullptr),
+        not_streaming_reason_(
+            ScriptStreamer::NotStreamingReason::kStreamingDisabled) {}
 
-  const KURL response_url_;
+  const KURL source_url_;
   const ModuleType module_type_;
 
   // Mutable because an isolated copy can become bound to a thread when
@@ -98,14 +125,18 @@ class ModuleScriptCreationParams {
   Persistent<SingleCachedMetadataHandler> cache_handler_;
 
   const network::mojom::CredentialsMode credentials_mode_;
+
+  // |script_streamer_| is cleared when crossing thread boundaries.
+  Persistent<ScriptStreamer> script_streamer_;
+  const ScriptStreamer::NotStreamingReason not_streaming_reason_;
 };
 
 }  // namespace blink
 
 namespace WTF {
 
-// Creates a deep copy because |response_url_| and |source_text_| are not
-// cross-thread-transfer-safe.
+// Creates a deep copy because |source_url_|, |source_text_| and
+// |script_streamer_| are not cross-thread-transfer-safe.
 template <>
 struct CrossThreadCopier<blink::ModuleScriptCreationParams> {
   static blink::ModuleScriptCreationParams Copy(
