@@ -34,6 +34,9 @@
                   atIndexPath:(NSIndexPath*)indexPath
         suggestionsShownAbove:(NSInteger)suggestionsAbove;
 
+// Record metrics for when the user has scrolled |scrollDistance| in the Feed.
+- (void)recordFeedScrolled:(int)scrollDistance;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_METRICS_RECORDING_H_

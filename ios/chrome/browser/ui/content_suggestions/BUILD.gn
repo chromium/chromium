@@ -193,6 +193,7 @@ source_set("metrics") {
     "discover_feed_metrics_recorder.mm",
   ]
   deps = [
+    ":feature_flags",
     "//base",
     "//components/feed/core/v2:common",
   ]
