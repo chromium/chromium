@@ -100,6 +100,20 @@ class MojoCameraClientObserver : public CameraClientObserver {
 
 CameraClientObserver::~CameraClientObserver() = default;
 
+FailedCameraHalServerCallbacks::FailedCameraHalServerCallbacks()
+    : callbacks_(this) {}
+FailedCameraHalServerCallbacks::~FailedCameraHalServerCallbacks() = default;
+
+mojo::PendingRemote<cros::mojom::CameraHalServerCallbacks>
+FailedCameraHalServerCallbacks::GetRemote() {
+  return callbacks_.BindNewPipeAndPassRemote();
+}
+
+void FailedCameraHalServerCallbacks::CameraDeviceActivityChange(
+    int32_t camera_id,
+    bool opened,
+    cros::mojom::CameraClientType type) {}
+
 // static
 CameraHalDispatcherImpl* CameraHalDispatcherImpl::GetInstance() {
   return base::Singleton<CameraHalDispatcherImpl>::get();
@@ -229,11 +243,8 @@ CameraHalDispatcherImpl::~CameraHalDispatcherImpl() {
 void CameraHalDispatcherImpl::RegisterServer(
     mojo::PendingRemote<cros::mojom::CameraHalServer> camera_hal_server) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
-  // TODO(b/170075468): Reject this call once Chrome OS uses
-  // RegisterServerWithToken.
-  auto temporary_token = base::UnguessableToken::Create();
-  RegisterServerWithToken(std::move(camera_hal_server), temporary_token,
-                          base::DoNothing());
+  LOG(ERROR) << "CameraHalDispatcher::RegisterServer is deprecated. "
+                "CameraHalServer will not be registered.";
 }
 
 void CameraHalDispatcherImpl::RegisterServerWithToken(
@@ -241,10 +252,17 @@ void CameraHalDispatcherImpl::RegisterServerWithToken(
     const base::UnguessableToken& token,
     RegisterServerWithTokenCallback callback) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
-  // TODO(b/170075468): Authenticate the token.
 
   if (camera_hal_server_) {
     LOG(ERROR) << "Camera HAL server is already registered";
+    std::move(callback).Run(-EALREADY,
+                            failed_camera_hal_server_callbacks_.GetRemote());
+    return;
+  }
+  if (!token_manager_.AuthenticateServer(token)) {
+    LOG(ERROR) << "Failed to authenticate server";
+    std::move(callback).Run(-EPERM,
+                            failed_camera_hal_server_callbacks_.GetRemote());
     return;
   }
   camera_hal_server_.Bind(std::move(camera_hal_server));
@@ -641,6 +659,10 @@ void CameraHalDispatcherImpl::OnTraceLogDisabledOnProxyThread() {
     return;
   }
   camera_hal_server_->SetTracingEnabled(false);
+}
+
+TokenManager* CameraHalDispatcherImpl::GetTokenManagerForTesting() {
+  return &token_manager_;
 }
 
 }  // namespace media

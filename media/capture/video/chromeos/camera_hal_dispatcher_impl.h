@@ -66,6 +66,32 @@ class CAPTURE_EXPORT CameraActiveClientObserver : public base::CheckedObserver {
                                     bool is_active) = 0;
 };
 
+// A class to provide a no-op remote to CameraHalServer that failed
+// registration. When CameraHalServer calls
+// CameraHalDispatcher::RegisterServerWithToken to register itself, a
+// PendingRemote<CameraHalServerCallbacks> is returned. Returning an unbound
+// pending remote would crash CameraHalServer immediately, and thus disallows
+// it from handling authentication failures.
+// TODO(b/170075468): Modify RegisterServerWithToken to return an optional
+// CameraHalServerCallbacks instead.
+class FailedCameraHalServerCallbacks
+    : public cros::mojom::CameraHalServerCallbacks {
+ private:
+  friend class CameraHalDispatcherImpl;
+
+  FailedCameraHalServerCallbacks();
+  ~FailedCameraHalServerCallbacks() final;
+
+  mojo::PendingRemote<cros::mojom::CameraHalServerCallbacks> GetRemote();
+
+  // CameraHalServerCallbacks implementations.
+  void CameraDeviceActivityChange(int32_t camera_id,
+                                  bool opened,
+                                  cros::mojom::CameraClientType type) final;
+
+  mojo::Receiver<cros::mojom::CameraHalServerCallbacks> callbacks_;
+};
+
 // The CameraHalDispatcherImpl hosts and waits on the unix domain socket
 // /var/run/camera3.sock.  CameraHalServer and CameraHalClients connect to the
 // unix domain socket to create the initial Mojo connections with the
@@ -186,6 +212,8 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   void OnTraceLogEnabledOnProxyThread();
   void OnTraceLogDisabledOnProxyThread();
 
+  TokenManager* GetTokenManagerForTesting();
+
   base::ScopedFD proxy_fd_;
   base::ScopedFD cancel_pipe_;
 
@@ -200,6 +228,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   mojo::Receiver<cros::mojom::CameraHalServerCallbacks>
       camera_hal_server_callbacks_;
+  FailedCameraHalServerCallbacks failed_camera_hal_server_callbacks_;
 
   std::set<std::unique_ptr<CameraClientObserver>, base::UniquePtrComparator>
       client_observers_;

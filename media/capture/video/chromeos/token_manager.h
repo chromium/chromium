@@ -9,11 +9,12 @@
 #include "base/containers/flat_set.h"
 #include "base/thread_annotations.h"
 #include "base/unguessable_token.h"
+#include "media/capture/capture_export.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 
 namespace media {
 
-class TokenManager {
+class CAPTURE_EXPORT TokenManager {
  public:
   TokenManager();
   ~TokenManager();
@@ -28,10 +29,15 @@ class TokenManager {
   void RegisterPluginVmToken(const base::UnguessableToken& token);
   void UnregisterPluginVmToken(const base::UnguessableToken& token);
 
+  bool AuthenticateServer(const base::UnguessableToken& token);
   bool AuthenticateClient(cros::mojom::CameraClientType type,
                           const base::UnguessableToken& token);
 
  private:
+  friend class CameraHalDispatcherImplTest;
+
+  void AssignServerTokenForTesting(const base::UnguessableToken& token);
+
   base::UnguessableToken server_token_;
 
   base::Lock client_token_map_lock_;

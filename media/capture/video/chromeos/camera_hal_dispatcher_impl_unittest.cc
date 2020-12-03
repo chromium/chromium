@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/posix/safe_strerror.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -107,10 +108,13 @@ class CameraHalDispatcherImplTest : public ::testing::Test {
 
   static void RegisterServer(
       CameraHalDispatcherImpl* dispatcher,
-      mojo::PendingRemote<cros::mojom::CameraHalServer> server) {
-    // TODO(b/170075468): Migrate to RegisterServerWithToken once the migration
-    // is done.
-    dispatcher->RegisterServer(std::move(server));
+      mojo::PendingRemote<cros::mojom::CameraHalServer> server,
+      cros::mojom::CameraHalDispatcher::RegisterServerWithTokenCallback
+          callback) {
+    auto token = base::UnguessableToken::Create();
+    dispatcher->GetTokenManagerForTesting()->AssignServerTokenForTesting(token);
+    dispatcher->RegisterServerWithToken(std::move(server), std::move(token),
+                                        std::move(callback));
   }
 
   static void RegisterClient(
@@ -119,6 +123,16 @@ class CameraHalDispatcherImplTest : public ::testing::Test {
     // TODO(b/170075468): Migrate to RegisterClientWithToken once the migration
     // is done.
     dispatcher->RegisterClient(std::move(client));
+  }
+
+  void OnRegisteredServer(
+      int32_t result,
+      mojo::PendingRemote<cros::mojom::CameraHalServerCallbacks> callbacks) {
+    if (result != 0) {
+      ADD_FAILURE() << "Failed to register server: "
+                    << base::safe_strerror(-result);
+      QuitRunLoop();
+    }
   }
 
  protected:
@@ -149,8 +163,11 @@ TEST_F(CameraHalDispatcherImplTest, ServerConnectionError) {
   auto server = mock_server->GetPendingRemote();
   GetProxyTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&CameraHalDispatcherImplTest::RegisterServer,
-                     base::Unretained(dispatcher_), std::move(server)));
+      base::BindOnce(
+          &CameraHalDispatcherImplTest::RegisterServer,
+          base::Unretained(dispatcher_), std::move(server),
+          base::BindOnce(&CameraHalDispatcherImplTest::OnRegisteredServer,
+                         base::Unretained(this))));
   auto client = mock_client->GetPendingRemote();
   GetProxyTaskRunner()->PostTask(
       FROM_HERE,
@@ -174,8 +191,11 @@ TEST_F(CameraHalDispatcherImplTest, ServerConnectionError) {
   server = mock_server->GetPendingRemote();
   GetProxyTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&CameraHalDispatcherImplTest::RegisterServer,
-                     base::Unretained(dispatcher_), std::move(server)));
+      base::BindOnce(
+          &CameraHalDispatcherImplTest::RegisterServer,
+          base::Unretained(dispatcher_), std::move(server),
+          base::BindOnce(&CameraHalDispatcherImplTest::OnRegisteredServer,
+                         base::Unretained(this))));
 
   // Wait until the clients gets the newly established Mojo channel.
   DoLoop();
@@ -198,8 +218,11 @@ TEST_F(CameraHalDispatcherImplTest, ClientConnectionError) {
   auto server = mock_server->GetPendingRemote();
   GetProxyTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&CameraHalDispatcherImplTest::RegisterServer,
-                     base::Unretained(dispatcher_), std::move(server)));
+      base::BindOnce(
+          &CameraHalDispatcherImplTest::RegisterServer,
+          base::Unretained(dispatcher_), std::move(server),
+          base::BindOnce(&CameraHalDispatcherImplTest::OnRegisteredServer,
+                         base::Unretained(this))));
   auto client = mock_client->GetPendingRemote();
   GetProxyTaskRunner()->PostTask(
       FROM_HERE,

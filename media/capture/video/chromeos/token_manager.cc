@@ -115,6 +115,11 @@ void TokenManager::UnregisterPluginVmToken(
   }
 }
 
+bool TokenManager::AuthenticateServer(const base::UnguessableToken& token) {
+  DCHECK(!server_token_.is_empty());
+  return server_token_ == token;
+}
+
 bool TokenManager::AuthenticateClient(cros::mojom::CameraClientType type,
                                       const base::UnguessableToken& token) {
   base::AutoLock l(client_token_map_lock_);
@@ -125,6 +130,11 @@ bool TokenManager::AuthenticateClient(cros::mojom::CameraClientType type,
   }
   auto& token_set = client_token_map_[type];
   return token_set.find(token) != token_set.end();
+}
+
+void TokenManager::AssignServerTokenForTesting(
+    const base::UnguessableToken& token) {
+  server_token_ = token;
 }
 
 }  // namespace media
