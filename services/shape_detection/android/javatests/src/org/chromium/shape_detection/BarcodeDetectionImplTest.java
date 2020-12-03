@@ -4,6 +4,8 @@
 
 package org.chromium.shape_detection;
 
+import android.os.Build;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -17,6 +19,7 @@ import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.shape_detection.mojom.BarcodeDetection;
 import org.chromium.shape_detection.mojom.BarcodeDetectionProvider;
@@ -35,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(ParameterizedRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
+@DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.N_MR1, message = "crbug.com/1153716")
 public class BarcodeDetectionImplTest {
     private static final org.chromium.skia.mojom.BitmapWithArbitraryBpp QR_CODE_BITMAP =
             TestUtils.mojoBitmapFromFile("qr_code.png");

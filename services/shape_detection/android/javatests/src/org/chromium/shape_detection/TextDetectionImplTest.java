@@ -4,6 +4,8 @@
 
 package org.chromium.shape_detection;
 
+import android.os.Build;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -12,6 +14,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.gfx.mojom.RectF;
 import org.chromium.shape_detection.mojom.TextDetection;
@@ -25,6 +28,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
+@DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.N_MR1, message = "crbug.com/1153716")
 public class TextDetectionImplTest {
     private static final String[] DETECTION_EXPECTED_TEXT = {
             "The quick brown fox jumped over the lazy dog.", "Helvetica Neue 36."};
