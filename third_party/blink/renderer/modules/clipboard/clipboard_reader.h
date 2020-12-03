@@ -40,7 +40,7 @@ class ClipboardPromise;
 //     ClipboardReader::NextRead().
 class ClipboardReader : public GarbageCollected<ClipboardReader> {
  public:
-  // Returns nullptr if there is no implementation for the given mime_type.
+  // ClipboardWriter::IsValidType() must return true for `mime_type`.
   static ClipboardReader* Create(SystemClipboard* system_clipboard,
                                  const String& mime_type,
                                  ClipboardPromise* promise);

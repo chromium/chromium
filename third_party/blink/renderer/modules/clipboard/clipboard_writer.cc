@@ -251,6 +251,7 @@ class ClipboardRawDataWriter final : public ClipboardWriter {
 ClipboardWriter* ClipboardWriter::Create(SystemClipboard* system_clipboard,
                                          const String& mime_type,
                                          ClipboardPromise* promise) {
+  DCHECK(ClipboardWriter::IsValidType(mime_type, /*is_raw=*/false));
   if (mime_type == kMimeTypeImagePng) {
     return MakeGarbageCollected<ClipboardImageWriter>(system_clipboard,
                                                       promise);
@@ -265,7 +266,8 @@ ClipboardWriter* ClipboardWriter::Create(SystemClipboard* system_clipboard,
       RuntimeEnabledFeatures::ClipboardSvgEnabled())
     return MakeGarbageCollected<ClipboardSvgWriter>(system_clipboard, promise);
 
-  NOTREACHED() << "Type " << mime_type << " was not implemented";
+  NOTREACHED()
+      << "IsValidType() and Create() have inconsistent implementations.";
   return nullptr;
 }
 
@@ -275,7 +277,7 @@ ClipboardWriter* ClipboardWriter::Create(
     const String& mime_type,
     ClipboardPromise* promise) {
   DCHECK(base::FeatureList::IsEnabled(features::kRawClipboard));
-
+  DCHECK(ClipboardWriter::IsValidType(mime_type, /*is_raw=*/true));
   return MakeGarbageCollected<ClipboardRawDataWriter>(raw_system_clipboard,
                                                       promise, mime_type);
 }
@@ -309,9 +311,12 @@ bool ClipboardWriter::IsValidType(const String& type, bool is_raw) {
   if (is_raw)
     return type.length() < mojom::blink::RawClipboardHost::kMaxFormatSize;
 
+  if (type == kMimeTypeImageSvg)
+    return RuntimeEnabledFeatures::ClipboardSvgEnabled();
+
   // TODO(https://crbug.com/1029857): Add support for other types.
   return type == kMimeTypeImagePng || type == kMimeTypeTextPlain ||
-         type == kMimeTypeTextHTML || type == kMimeTypeImageSvg;
+         type == kMimeTypeTextHTML;
 }
 
 void ClipboardWriter::WriteToSystem(Blob* blob) {

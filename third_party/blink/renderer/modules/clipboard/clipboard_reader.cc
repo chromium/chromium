@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_promise.h"
+#include "third_party/blink/renderer/modules/clipboard/clipboard_writer.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -303,6 +304,7 @@ class ClipboardSvgReader final : public ClipboardReader {
 ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
                                          const String& mime_type,
                                          ClipboardPromise* promise) {
+  DCHECK(ClipboardWriter::IsValidType(mime_type, /*is_raw=*/false));
   if (mime_type == kMimeTypeImagePng)
     return MakeGarbageCollected<ClipboardImageReader>(system_clipboard,
                                                       promise);
@@ -315,7 +317,9 @@ ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
   if (mime_type == kMimeTypeImageSvg &&
       RuntimeEnabledFeatures::ClipboardSvgEnabled())
     return MakeGarbageCollected<ClipboardSvgReader>(system_clipboard, promise);
-  // The MIME type is not supported.
+
+  NOTREACHED()
+      << "IsValidType() and Create() have inconsistent implementations.";
   return nullptr;
 }
 

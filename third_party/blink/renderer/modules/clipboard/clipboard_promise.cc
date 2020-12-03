@@ -272,8 +272,10 @@ void ClipboardPromise::OnReadAvailableFormatNames(
 
   clipboard_item_data_.ReserveInitialCapacity(format_names.size());
   for (const String& format_name : format_names) {
-    clipboard_item_data_.emplace_back(format_name,
-                                      /* Placeholder value. */ nullptr);
+    if (ClipboardWriter::IsValidType(format_name, is_raw_)) {
+      clipboard_item_data_.emplace_back(format_name,
+                                        /* Placeholder value. */ nullptr);
+    }
   }
   ReadNextRepresentation();
 }

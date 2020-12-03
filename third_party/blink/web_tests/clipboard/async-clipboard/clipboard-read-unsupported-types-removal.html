@@ -1,0 +1,33 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Async Clipboard read unsupported types removal test.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<body>
+<script>
+'use strict';
+
+promise_test(async t => {
+  // Write supported and unsupported types to clipboard.
+  document.addEventListener('copy', event => {
+    event.clipboardData.setData('text/plain', 'Supported text.');
+    event.clipboardData.setData('unsupported-type', 'Unsupported custom text.');
+    event.preventDefault();
+  });
+  document.execCommand('copy');
+
+  // Read clipboard contents.
+  await test_driver.set_permission({name: 'clipboard-read'}, 'granted');
+  const clipboardItems = await navigator.clipboard.read();
+
+  // The unsupported unsupported-type type should be removed, leaving only
+  // the supported text/plain type.
+  const clipboardItem = clipboardItems[0];
+  assert_equals(clipboardItem.types.length, 1);
+  assert_true(clipboardItem.types.includes('text/plain'));
+  assert_false(clipboardItem.types.includes('unsupported-type'));
+}, 'Verify that clipboard read removes unsupported types.');
+</script>
+</body>
