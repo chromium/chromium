@@ -621,20 +621,34 @@ aes_hw_ctr32_encrypt_blocks:
 	add	x7,x3,#32
 	mov	w6,w5
 	csel	x12,xzr,x12,lo
+
+	// ARM Cortex-A57 and Cortex-A72 cores running in 32-bit mode are
+	// affected by silicon errata #1742098 [0] and #1655431 [1],
+	// respectively, where the second instruction of an aese/aesmc
+	// instruction pair may execute twice if an interrupt is taken right
+	// after the first instruction consumes an input register of which a
+	// single 32-bit lane has been updated the last time it was modified.
+	//
+	// This function uses a counter in one 32-bit lane. The vmov lines
+	// could write to v1.16b and v18.16b directly, but that trips this bugs.
+	// We write to v6.16b and copy to the final register as a workaround.
+	//
+	// [0] ARM-EPM-049219 v23 Cortex-A57 MPCore Software Developers Errata Notice
+	// [1] ARM-EPM-012079 v11.0 Cortex-A72 MPCore Software Developers Errata Notice
 #ifndef __ARMEB__
 	rev	w8, w8
 #endif
-	orr	v1.16b,v0.16b,v0.16b
 	add	w10, w8, #1
-	orr	v18.16b,v0.16b,v0.16b
-	add	w8, w8, #2
 	orr	v6.16b,v0.16b,v0.16b
 	rev	w10, w10
-	mov	v1.s[3],w10
+	mov	v6.s[3],w10
+	add	w8, w8, #2
+	orr	v1.16b,v6.16b,v6.16b
 	b.ls	.Lctr32_tail
 	rev	w12, w8
+	mov	v6.s[3],w12
 	sub	x2,x2,#3		// bias
-	mov	v18.s[3],w12
+	orr	v18.16b,v6.16b,v6.16b
 	b	.Loop3x_ctr32
 
 .align	4
@@ -661,11 +675,11 @@ aes_hw_ctr32_encrypt_blocks:
 	aese	v1.16b,v16.16b
 	aesmc	v5.16b,v1.16b
 	ld1	{v2.16b},[x0],#16
-	orr	v0.16b,v6.16b,v6.16b
+	add	w9,w8,#1
 	aese	v18.16b,v16.16b
 	aesmc	v18.16b,v18.16b
 	ld1	{v3.16b},[x0],#16
-	orr	v1.16b,v6.16b,v6.16b
+	rev	w9,w9
 	aese	v4.16b,v17.16b
 	aesmc	v4.16b,v4.16b
 	aese	v5.16b,v17.16b
@@ -674,8 +688,6 @@ aes_hw_ctr32_encrypt_blocks:
 	mov	x7,x3
 	aese	v18.16b,v17.16b
 	aesmc	v17.16b,v18.16b
-	orr	v18.16b,v6.16b,v6.16b
-	add	w9,w8,#1
 	aese	v4.16b,v20.16b
 	aesmc	v4.16b,v4.16b
 	aese	v5.16b,v20.16b
@@ -690,21 +702,26 @@ aes_hw_ctr32_encrypt_blocks:
 	aesmc	v4.16b,v4.16b
 	aese	v5.16b,v21.16b
 	aesmc	v5.16b,v5.16b
+	 // Note the logic to update v0.16b, v1.16b, and v1.16b is written to work
+	 // around a bug in ARM Cortex-A57 and Cortex-A72 cores running in
+	 // 32-bit mode. See the comment above.
 	eor	v19.16b,v19.16b,v7.16b
-	rev	w9,w9
+	mov	v6.s[3], w9
 	aese	v17.16b,v21.16b
 	aesmc	v17.16b,v17.16b
-	mov	v0.s[3], w9
+	orr	v0.16b,v6.16b,v6.16b
 	rev	w10,w10
 	aese	v4.16b,v22.16b
 	aesmc	v4.16b,v4.16b
+	mov	v6.s[3], w10
+	rev	w12,w8
 	aese	v5.16b,v22.16b
 	aesmc	v5.16b,v5.16b
-	mov	v1.s[3], w10
-	rev	w12,w8
+	orr	v1.16b,v6.16b,v6.16b
+	mov	v6.s[3], w12
 	aese	v17.16b,v22.16b
 	aesmc	v17.16b,v17.16b
-	mov	v18.s[3], w12
+	orr	v18.16b,v6.16b,v6.16b
 	subs	x2,x2,#3
 	aese	v4.16b,v23.16b
 	aese	v5.16b,v23.16b
