@@ -131,8 +131,6 @@ struct BASE_EXPORT PartitionRoot {
   using ScopedGuard = internal::ScopedGuard<thread_safe>;
   using PCScan = internal::PCScan<thread_safe>;
 
-  internal::MaybeSpinLock<thread_safe> lock_;
-
   enum class PCScanMode : uint8_t {
     kNonScannable,
     kDisabled,
@@ -140,13 +138,33 @@ struct BASE_EXPORT PartitionRoot {
   } pcscan_mode = PCScanMode::kNonScannable;
 
   // Flags accessed on fast paths.
+  //
+  // Careful! PartitionAlloc's performance is sensitive to its layout. Please
+  // put the fast-path objects below, and the other ones further (see comment in
+  // this file).
   bool with_thread_cache = false;
   const bool is_thread_safe = thread_safe;
-  bool initialized = false;
 
   bool allow_extras;
   uint32_t extras_size;
   uint32_t extras_offset;
+
+  // Not used on the fastest path (thread cache allocations), but on the fast
+  // path of the central allocator.
+  internal::MaybeSpinLock<thread_safe> lock_;
+
+  // The bucket lookup table lets us map a size_t to a bucket quickly.
+  // The trailing +1 caters for the overflow case for very large allocation
+  // sizes.  It is one flat array instead of a 2D array because in the 2D
+  // world, we'd need to index array[blah][max+1] which risks undefined
+  // behavior.
+  static uint16_t
+      bucket_index_lookup[((kBitsPerSizeT + 1) * kNumBucketsPerOrder) + 1];
+  Bucket buckets[kNumBuckets] = {};
+  Bucket sentinel_bucket;
+
+  // All fields below this comment are not accessed on the fast path.
+  bool initialized = false;
 
   // Bookkeeping.
   // - total_size_of_super_pages - total virtual address space for normal bucket
@@ -176,18 +194,6 @@ struct BASE_EXPORT PartitionRoot {
 
   // Integrity check = ~reinterpret_cast<uintptr_t>(this).
   uintptr_t inverted_self = 0;
-
-  // The bucket lookup table lets us map a size_t to a bucket quickly.
-  // The trailing +1 caters for the overflow case for very large allocation
-  // sizes.  It is one flat array instead of a 2D array because in the 2D
-  // world, we'd need to index array[blah][max+1] which risks undefined
-  // behavior.
-  static uint16_t
-      bucket_index_lookup[((kBitsPerSizeT + 1) * kNumBucketsPerOrder) + 1];
-  // Accessed on fast paths, but sizeof(Bucket) is large, so there is no real
-  // benefit in packing it with other members.
-  Bucket buckets[kNumBuckets] = {};
-  Bucket sentinel_bucket;
 
   PartitionRoot() = default;
   explicit PartitionRoot(PartitionOptions opts) { Init(opts); }
