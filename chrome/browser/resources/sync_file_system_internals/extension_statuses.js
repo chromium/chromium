@@ -10,40 +10,40 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
 import {createElementFromText} from './utils.js';
 
-  /**
-   * Get initial map of extension statuses (pending batch sync, enabled and
-   * disabled).
-   */
-  function refreshExtensionStatuses() {
-    sendWithPromise('getExtensionStatuses').then(onGetExtensionStatuses);
+/**
+ * Get initial map of extension statuses (pending batch sync, enabled and
+ * disabled).
+ */
+function refreshExtensionStatuses() {
+  sendWithPromise('getExtensionStatuses').then(onGetExtensionStatuses);
+}
+
+/**
+ * Handles callback from onGetExtensionStatuses.
+ * @param {!Array<!{
+ *   extensionName: string,
+ *   extensionID: string,
+ *   status: string,
+ * }>} extensionStatuses
+ */
+function onGetExtensionStatuses(extensionStatuses) {
+  const itemContainer = $('extension-entries');
+  itemContainer.textContent = '';
+
+  for (let i = 0; i < extensionStatuses.length; i++) {
+    const originEntry = extensionStatuses[i];
+    const tr = document.createElement('tr');
+    tr.appendChild(createElementFromText('td', originEntry.extensionName));
+    tr.appendChild(createElementFromText('td', originEntry.extensionID));
+    tr.appendChild(createElementFromText('td', originEntry.status));
+    itemContainer.appendChild(tr);
   }
+}
 
-  /**
-   * Handles callback from onGetExtensionStatuses.
-   * @param {!Array<!{
-   *   extensionName: string,
-   *   extensionID: string,
-   *   status: string,
-   * }>} extensionStatuses
-   */
-  function onGetExtensionStatuses(extensionStatuses) {
-    const itemContainer = $('extension-entries');
-    itemContainer.textContent = '';
+function main() {
+  refreshExtensionStatuses();
+  $('refresh-extensions-statuses')
+      .addEventListener('click', refreshExtensionStatuses);
+}
 
-    for (let i = 0; i < extensionStatuses.length; i++) {
-      const originEntry = extensionStatuses[i];
-      const tr = document.createElement('tr');
-      tr.appendChild(createElementFromText('td', originEntry.extensionName));
-      tr.appendChild(createElementFromText('td', originEntry.extensionID));
-      tr.appendChild(createElementFromText('td', originEntry.status));
-      itemContainer.appendChild(tr);
-    }
-  }
-
-  function main() {
-    refreshExtensionStatuses();
-    $('refresh-extensions-statuses')
-        .addEventListener('click', refreshExtensionStatuses);
-  }
-
-  document.addEventListener('DOMContentLoaded', main);
+document.addEventListener('DOMContentLoaded', main);
