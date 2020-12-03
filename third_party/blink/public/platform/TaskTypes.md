@@ -19,9 +19,9 @@ pausable. Some internal task queues are not.
 | MediaElementEvent                 | No          | No                      |  No        | Yes       | Yes      | Yes          |
 | CanvasBlobSerialization           | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | Microtask                         | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
-| JavascriptTimerDelayedLowNesting  | Yes         | No [^2]                 |  Yes       | Yes       | Yes      | Yes          |
-| JavascriptTimerDelayedHighNesting | Yes         | Yes [^3]                |  Yes       | Yes       | Yes      | Yes          |
-| JavascriptTimerImmediate          | No [^1]     | No                      |  Yes       | Yes       | Yes      | Yes          |
+| JavascriptTimerDelayedLowNesting  | Yes         | No [^1]                 |  Yes       | Yes       | Yes      | Yes          |
+| JavascriptTimerDelayedHighNesting | Yes         | Yes [^2]                |  Yes       | Yes       | Yes      | Yes          |
+| JavascriptTimerImmediate          | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | RemoteEvent                       | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | WebSocket                         | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | PostedMessage                     | No          | No                      |  No        | Yes       | Yes      | Yes          |
@@ -63,9 +63,7 @@ Internal Translation queue supports concept of it running only in the foreground
 has been backgrounded for 5 minutes. See
 [Chrome Platform Status entry](https://www.chromestatus.com/feature/4718288976216064).
 
-[^1] "Yes" if the "OptOutZeroTimeoutTimersFromThrottling" feature is disabled.
-
-[^2] "Yes" if the "IntensiveWakeUpThrottling" feature is enabled and the
+[^1] "Yes" if the "IntensiveWakeUpThrottling" feature is enabled and the
 "can_intensively_throttle_low_nesting_level" param is "true".
 
-[^3] "No" if the "IntensiveWakeUpThrottling" feature is disabled.
+[^2] "No" if the "IntensiveWakeUpThrottling" feature is disabled.

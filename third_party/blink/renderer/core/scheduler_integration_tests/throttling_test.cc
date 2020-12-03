@@ -139,63 +139,11 @@ TEST_F(BackgroundPageThrottlingTest, TimersThrottledInBackgroundPage) {
               ElementsAre(console_message, console_message, console_message));
 }
 
-// Verify that a timer with timeout=0 is not throttled until its timeout is
-// rounded up to 4ms.
-TEST_F(BackgroundPageThrottlingTest,
-       ZeroTimeoutTimersThrottledInBackgroundPage) {
-  SimRequest main_resource("https://example.com/", "text/html");
-
-  LoadURL("https://example.com/");
-
-  const String console_message = BuildTimerConsoleMessage();
-  main_resource.Complete(
-      String::Format("(<script>"
-                     "  function f(repetitions) {"
-                     "     if (repetitions == 0) return;"
-                     "     console.log('%s');"
-                     "     setTimeout(f, 0, repetitions - 1);"
-                     "  }"
-                     "  setTimeout(f, 0, 50);"
-                     "</script>)",
-                     console_message.Utf8().c_str()));
-
-  GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
-
-  // Initially, timeout is rounded up to 1ms and no throttling is applied
-  // (https://crbug.com/402694). After 4 executions, timeout is rounded up to
-  // 4ms and throttling is applied.
-  constexpr base::TimeDelta k10Ms = base::TimeDelta::FromMilliseconds(10);
-  platform_->RunForPeriod(k10Ms);
-  EXPECT_THAT(FilteredConsoleMessages(),
-              ElementsAre(console_message, console_message, console_message,
-                          console_message));
-  platform_->RunForPeriod(base::TimeDelta::FromSeconds(1) - k10Ms);
-  EXPECT_THAT(FilteredConsoleMessages(),
-              ElementsAre(console_message, console_message, console_message,
-                          console_message, console_message));
-}
-
-namespace {
-
-class OptOutZeroTimeoutFromThrottlingTest : public ThrottlingTestBase {
- public:
-  OptOutZeroTimeoutFromThrottlingTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kOptOutZeroTimeoutTimersFromThrottling);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-}  // namespace
-
-// Verify that in a hidden page, when the kOptOutZeroTimeoutTimersFromThrottling
-// feature is enabled:
+// Verify the execution time of non-nested timers on a hidden page.
 // - setTimeout(..., 0) and setTimeout(..., -1) schedule their callback after
 //   1ms. The 1 ms delay exists for historical reasons crbug.com/402694.
 // - setTimeout(..., 5) schedules its callback at the next aligned time
-TEST_F(OptOutZeroTimeoutFromThrottlingTest, WithoutNesting) {
+TEST_F(BackgroundPageThrottlingTest, WithoutNesting) {
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
 
@@ -228,10 +176,9 @@ TEST_F(OptOutZeroTimeoutFromThrottlingTest, WithoutNesting) {
                           timeout_5_message));
 }
 
-// Verify that in a hidden page, when the kOptOutZeroTimeoutTimersFromThrottling
-// feature is enabled, a timer created with setTimeout(..., 0) is throttled
-// after 5 nesting levels.
-TEST_F(OptOutZeroTimeoutFromThrottlingTest, SetTimeoutNesting) {
+// Verify that on a hidden page, a timer created with setTimeout(..., 0) is
+// throttled after 5 nesting levels.
+TEST_F(BackgroundPageThrottlingTest, NestedSetTimeoutZero) {
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
 
@@ -262,10 +209,9 @@ TEST_F(OptOutZeroTimeoutFromThrottlingTest, SetTimeoutNesting) {
   EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(5, console_message));
 }
 
-// Verify that in a hidden page, when the kOptOutZeroTimeoutTimersFromThrottling
-// feature is enabled, a timer created with setInterval(..., 0) is throttled
-// after 5 nesting levels.
-TEST_F(OptOutZeroTimeoutFromThrottlingTest, SetIntervalNesting) {
+// Verify that in a hidden page, a timer created with setInterval(..., 0) is
+// throttled after 5 nesting levels.
+TEST_F(BackgroundPageThrottlingTest, NestedSetIntervalZero) {
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
 

@@ -273,10 +273,6 @@ const base::Feature kWebRtcIgnoreUnspecifiedColorSpace{
 const base::Feature kIntensiveWakeUpThrottling{
     "IntensiveWakeUpThrottling", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, timers with timeout=0 are not throttled.
-const base::Feature kOptOutZeroTimeoutTimersFromThrottling{
-    "OptOutZeroTimeoutTimersFromThrottling", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Name of the parameter that controls the grace period during which there is no
 // intensive wake up throttling after a page is hidden. Defined here to allow
 // access from about_flags.cc. The FeatureParam is defined in

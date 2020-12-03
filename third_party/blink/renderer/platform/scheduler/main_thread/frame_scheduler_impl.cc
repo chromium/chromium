@@ -384,11 +384,9 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
               QueueTraits::PrioritisationType::kJavaScriptTimer)
           .SetCanBeIntensivelyThrottled(IsIntensiveWakeUpThrottlingEnabled());
     case TaskType::kJavascriptTimerImmediate: {
-      return DeferrableTaskQueueTraits()
-          .SetPrioritisationType(
-              QueueTraits::PrioritisationType::kJavaScriptTimer)
-          .SetCanBeThrottled(!base::FeatureList::IsEnabled(
-              features::kOptOutZeroTimeoutTimersFromThrottling));
+      // Immediate timers are not throttled.
+      return DeferrableTaskQueueTraits().SetPrioritisationType(
+          QueueTraits::PrioritisationType::kJavaScriptTimer);
     }
     case TaskType::kInternalLoading:
     case TaskType::kNetworking:
