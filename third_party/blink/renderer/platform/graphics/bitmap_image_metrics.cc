@@ -39,11 +39,6 @@ void BitmapImageMetrics::CountDecodedImageType(const String& type) {
   UMA_HISTOGRAM_ENUMERATION("Blink.DecodedImageType", decoded_image_type);
 }
 
-void BitmapImageMetrics::CountImageDensityCorrection(bool density_correction_present) {
-  UMA_HISTOGRAM_BOOLEAN("Blink.DecodedImage.DensitySizeCorrectionDetected",
-                        density_correction_present);
-}
-
 void BitmapImageMetrics::CountImageJpegDensity(int image_min_side,
                                                uint64_t density_centi_bpp,
                                                size_t image_size_bytes) {

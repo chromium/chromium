@@ -346,14 +346,8 @@ bool BitmapImage::IsSizeAvailable() {
     return true;
 
   size_available_ = decoder_ && decoder_->IsSizeAvailable();
-  if (size_available_ && HasVisibleImageSize(Size())) {
+  if (size_available_ && HasVisibleImageSize(Size()))
     BitmapImageMetrics::CountDecodedImageType(decoder_->FilenameExtension());
-    if (decoder_->FilenameExtension() == "jpg") {
-      IntSize correctedSize = decoder_->DensityCorrectedSizeAtIndex(0);
-      BitmapImageMetrics::CountImageDensityCorrection(
-        !correctedSize.IsEmpty() && correctedSize != decoder_->Size());
-    }
-  }
 
   return size_available_;
 }

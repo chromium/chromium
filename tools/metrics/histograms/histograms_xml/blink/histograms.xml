@@ -540,6 +540,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.DecodedImage.DensitySizeCorrectionDetected"
     enum="BooleanPresent" expires_after="2021-01-03">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <owner>schenney@chromium.org</owner>
   <owner>noam.j.rosenthal@gmail.com</owner>
   <owner>paint-dev@chromium.org</owner>

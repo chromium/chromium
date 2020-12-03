@@ -828,33 +828,6 @@ TEST_F(BitmapHistogramTest, DecodedImageType) {
 #endif  // BUILDFLAG(ENABLE_AV1_DECODER)
 }
 
-TEST_F(BitmapHistogramTest, DecodedImageDensitySizeCorrectionDetected) {
-  ExpectImageRecordsSample("exif-resolution-none.jpg",
-                           "Blink.DecodedImage.DensitySizeCorrectionDetected",
-                           false);
-  ExpectImageRecordsSample("exif-resolution-invalid-cm.jpg",
-                           "Blink.DecodedImage.DensitySizeCorrectionDetected",
-                           false);
-  ExpectImageRecordsSample("exif-resolution-invalid-no-match.jpg",
-                           "Blink.DecodedImage.DensitySizeCorrectionDetected",
-                           false);
-  ExpectImageRecordsSample("exif-resolution-invalid-partial.jpg",
-                           "Blink.DecodedImage.DensitySizeCorrectionDetected",
-                           false);
-  ExpectImageRecordsSample("exif-resolution-no-change.jpg",
-                           "Blink.DecodedImage.DensitySizeCorrectionDetected",
-                           false);
-  ExpectImageRecordsSample("exif-resolution-valid-hires.jpg",
-                           "Blink.DecodedImage.DensitySizeCorrectionDetected",
-                           true);
-  ExpectImageRecordsSample("exif-resolution-valid-lores.jpg",
-                           "Blink.DecodedImage.DensitySizeCorrectionDetected",
-                           true);
-  ExpectImageRecordsSample("exif-resolution-valid-non-uniform.jpg",
-                           "Blink.DecodedImage.DensitySizeCorrectionDetected",
-                           true);
-}
-
 TEST_F(BitmapHistogramTest, DecodedImageDensityKiBWeighted_JpegDensity) {
   // Test a 64x64 image, which should be too small to report any metrics.
   {
