@@ -18,6 +18,7 @@
         app:srcCompat="@drawable/ic_warning_red_24dp" />
 
     <TextView
+        android:id="@+id/account_picker_general_error_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"

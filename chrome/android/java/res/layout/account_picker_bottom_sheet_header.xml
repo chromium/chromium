@@ -15,6 +15,7 @@
       app:srcCompat="@drawable/chrome_sync_logo" />
 
   <TextView
+      android:id="@+id/account_picker_header_title"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginTop="12dp"

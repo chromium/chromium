@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 import android.widget.ViewFlipper;
 
@@ -42,6 +43,21 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         boolean onBackPressed();
     }
 
+    /**
+     * The title id for each screen of the bottom sheet's view flipper, the position of
+     * each id corresponds to the value of {@link ViewState}. It is used to set focus
+     * on title when the view flipper moves to a new screen.
+     */
+    private static final @IdRes int[] sTitleIds = new int[] {
+            R.id.account_picker_header_title,
+            R.id.account_picker_header_title,
+            R.id.account_picker_header_title,
+            R.id.account_picker_signin_in_progress_title,
+            R.id.incognito_interstitial_title,
+            R.id.account_picker_general_error_title,
+            R.id.account_picker_auth_error_title,
+    };
+
     private final Activity mActivity;
     private final BackPressListener mBackPressListener;
     private final View mContentView;
@@ -49,9 +65,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     private final RecyclerView mAccountListView;
     private final View mSelectedAccountView;
     private final ButtonCompat mDismissButton;
-
-    private @StringRes int mTitleId;
-    private @StringRes int mContentDescriptionId;
 
     /**
      * @param activity The activity that hosts this view. Used for inflating views.
@@ -85,12 +98,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                 R.string.signin_account_picker_general_error_button);
         setUpContinueButton(mViewFlipper.getChildAt(ViewState.SIGNIN_AUTH_ERROR),
                 R.string.auth_error_card_button);
-    }
-
-    void setTitleAndContentDescriptionStrings(
-            @StringRes int titleId, @StringRes @Nullable Integer subtitleId) {
-        mTitleId = titleId;
-        mContentDescriptionId = subtitleId != null ? subtitleId : titleId;
     }
 
     /**
@@ -140,6 +147,8 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
      */
     void setDisplayedView(@ViewState int state) {
         mViewFlipper.setDisplayedChild(state);
+        View titleView = mViewFlipper.getChildAt(state).findViewById(sTitleIds[state]);
+        titleView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 
     /**
@@ -208,22 +217,27 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
 
     @Override
     public int getSheetContentDescriptionStringId() {
-        return mContentDescriptionId;
+        // TODO(https://crbug.com/1112696): Use more specific string
+        // account picker content description
+        return R.string.signin_account_picker_bottom_sheet_subtitle;
     }
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        return mTitleId;
+        return R.string.signin_account_picker_dialog_title;
     }
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        return mTitleId;
+        // TODO(https://crbug.com/1112696): Use more specific string
+        // like |Open account picker bottom sheet...| when bottom sheet opens
+        // after a11y meeting
+        return R.string.signin_account_picker_dialog_title;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        // TODO(https://crbug.com/1112696): Use more specific string to when the account
+        // TODO(https://crbug.com/1112696): Use more specific string when the account
         // picker is closed.
         return R.string.close;
     }
