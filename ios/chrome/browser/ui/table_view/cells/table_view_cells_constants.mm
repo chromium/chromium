@@ -21,8 +21,8 @@ const CGFloat kTableViewCellSelectionAnimationDuration = 0.15;
 const CGFloat kUseDefaultFontSize = 0.0;
 const CGFloat kTableViewLabelVerticalTopSpacing = 13.0;
 const CGFloat kTableViewAccessoryWidth = 40;
-const CGFloat kTableViewIconImageSize = 28;
-const CGFloat kTableViewImagePadding = 12;
+const CGFloat kTableViewIconImageSize = 30;
+const CGFloat kTableViewImagePadding = 14;
 
 NSString* const kMaskedPassword = @"••••••••";
 NSString* const kTableViewCellInfoButtonViewId =
