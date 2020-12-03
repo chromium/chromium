@@ -2,13 +2,10 @@
 
 The WebGPU conformance test suite (CTS) is developed at
 <https://github.com/gpuweb/cts>. It is written in TypeScript and compiled to
-JavaScript to run as part of WPT. It currently has two branches:
-
-- `main`: Tests which do not use GLSL shaders.
-- `glsl-dependent`: With additional tests that use GLSL shaders compiled to SPIR-V.
+JavaScript to run as part of WPT.
 
 The `roll_webgpu_cts.sh` script in this directory rolls Chromium's
-`third_party/webgpu-cts/src/` to the latest `glsl-dependent` revision, builds
+`third_party/webgpu-cts/src/` to the latest revision, builds
 it, and saves the built files into `.../wpt_internal/webgpu/`.
 Once this is done, `.../wpt_internal/webgpu/cts.html` must also be regenerated.
 This is done with the `regenerate_internal_cts_html.sh` script.
@@ -24,24 +21,6 @@ instructions on performing a roll.
 
 ## How to roll the WebGPU CTS into Chromium
 
-1. Merge the cts `main` branch into `glsl-dependent` if it hasn't been
-    done recently (or just ask kainino@ to do this).
-    1. Check out the `glsl-dependent` branch in a local checkout.
-    1. `git merge main`, fix any immediate conflicts, and finish merge.
-    1. Push `glsl-dependent` to your own fork of `gpuweb/cts`.
-    1. Open PR from `you:glsl-dependent` to `gpuweb:glsl-dependent`.
-    1. Push to your fork.
-        1. CI may fail. Fix the branch build if needed.
-            1. `npm install --frozen-lockfile`
-            1. Fixes to make `npx grunt pre` pass.
-            1. Commit fixes and push to your fork.
-    1. Get review (specifically on the build-fix commit if any).
-    1. (Ideally) **don't** click the merge button. Push your branch directly to
-        `gpuweb:glsl-dependent` to keep the nice merge history. This will not
-        bypass the CI and review checks.
-    1. Wait for
-        [Chromium's mirror](https://chromium.googlesource.com/external/github.com/gpuweb/cts/+log/refs/heads/glsl-dependent)
-        to pick up the changes (_usually_ &lt;10 minutes).
 1. Run `third_party/blink/web_tests/webgpu/roll_webgpu_cts.sh`.
 1. Repeat until regeneration succeeds:
     1. Run `third_party/blink/web_tests/webgpu/regenerate_internal_cts_html.sh`.
@@ -81,5 +60,4 @@ instructions on performing a roll.
 This is not necessary for the roll process, but if you want to run a test
 locally with `--enable-unsafe-webgpu`, you can easily do so here:
 
-*   <https://gpuweb-cts-glsl.github.io/standalone/> (`glsl-dependent` branch)
-*   <https://gpuweb.github.io/cts/standalone/> (`main` branch)
+*   <https://gpuweb.github.io/cts/standalone/>

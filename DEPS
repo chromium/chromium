@@ -1541,17 +1541,7 @@ deps = {
     Var('chromium_git') + '/external/khronosgroup/webgl.git' + '@' + '3e3f152617996e4a175fd0b597a1936824b371f3',
 
   'src/third_party/webgpu-cts/src':
-    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '6d2646eeb60e313cacbe43b266cf32948a4fef7e',
-
-  'src/third_party/blink/web_tests/wpt_internal/webgpu/third_party/glslang_js': {
-    'packages': [
-      {
-        'package': 'chromium/third_party/glslang_js',
-        'version': 'Zka0-f53_HEAZ1bpsxr9BSi7P51-4bzYwSMg0RMKX1AC',
-      },
-    ],
-    'dep_type': 'cipd',
-  },
+    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '3c2fe3888658d82b47ca831d59a2e07579619c2d',
 
   'src/third_party/webrtc':
     Var('webrtc_git') + '/src.git' + '@' + 'f65a003f7f2b442023a3431e6170a744202579c3',

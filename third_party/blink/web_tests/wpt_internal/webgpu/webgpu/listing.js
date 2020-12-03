@@ -635,14 +635,6 @@ export const listing = [
     "file": [
       "shader",
       "execution",
-      "robust_access"
-    ],
-    "description": "Tests to check datatype clamping in shaders is correctly implemented including vector / matrix indexing\n\n- For each shader stage (TODO):\n  - For various memory spaces (storage, uniform, global, function local, shared memory, TODO(in, out))\n    - For dynamic vs. non dynamic buffer bindings (when testing storage or uniform)\n      - For many data types (float, uint, int) x (sized array, unsized array, vec, mat...)\n        - For various types of accesses (read, write, atomic ops)\n          - For various indices in bounds and out of bounds of the data type\n            - Check that accesses are in bounds or discarded (as much as we can tell)\n\nTODO add tests to check that texel fetch operations stay in-bounds."
-  },
-  {
-    "file": [
-      "shader",
-      "execution",
       "robust_access_vertex"
     ],
     "description": "Test vertex attributes behave correctly (no crash / data leak) when accessed out of bounds\n\nTest coverage:\n\nThe following will be parameterized (all combinations tested):\n\n1) Draw call indexed? (false / true)\n  - Run the draw call using an index buffer\n\n2) Draw call indirect? (false / true)\n  - Run the draw call using an indirect buffer\n\n3) Draw call parameter (vertexCount, firstVertex, indexCount, firstIndex, baseVertex, instanceCount,\n  firstInstance)\n  - The parameter which will go out of bounds. Filtered depending on if the draw call is indexed.\n\n4) Attribute type (float, vec2, vec3, vec4)\n  - The input attribute type in the vertex shader\n\n5) Error scale (1, 4, 10^2, 10^4, 10^6)\n  - Offset to add to the correct draw call parameter\n\n6) Additional vertex buffers (0, +4)\n  - Tests that no OOB occurs if more vertex buffers are used\n\nThe tests will also have another vertex buffer bound for an instanced attribute, to make sure\ninstanceCount / firstInstance are tested.\n\nThe tests will include multiple attributes per vertex buffer.\n\nThe vertex buffers will be filled by repeating a few chosen values until the end of the buffer.\n\nThe test will run a render pipeline which verifies the following:\n1) All vertex attribute values occur in the buffer or are zero\n2) All gl_VertexIndex values are within the index buffer or 0\n\nTODO:\n\nA suppression may be needed for d3d12 on tests that have non-zero baseVertex, since d3d12 counts\nfrom 0 instead of from baseVertex (will fail check for gl_VertexIndex).\n\nVertex buffer contents could be randomized to prevent the case where a previous test creates\na similar buffer to ours and the OOB-read seems valid. This should be deterministic, which adds\nmore complexity that we may not need."

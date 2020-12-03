@@ -1,7 +1,6 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
  **/ import { Fixture } from '../common/framework/fixture.js';
-import { compileGLSL, initGLSL } from '../common/framework/glsl.js';
 import { attemptGarbageCollection } from '../common/framework/util/collect_garbage.js';
 import { assert } from '../common/framework/util/util.js';
 
@@ -33,7 +32,6 @@ export class GPUTest extends Fixture {
 
   async init() {
     await super.init();
-    await initGLSL();
 
     this.provider = await devicePool.reserve();
   }
@@ -89,16 +87,6 @@ export class GPUTest extends Fixture {
     }
   }
 
-  makeShaderModule(stage, code) {
-    // If both are provided, always choose WGSL. (Can change this if needed.)
-    if ('wgsl' in code) {
-      return this.device.createShaderModule({ code: code.wgsl });
-    } else {
-      const spirv = compileGLSL(code.glsl, stage, false);
-      return this.device.createShaderModule({ code: spirv });
-    }
-  }
-
   createCopyForMapRead(src, srcOffset, size) {
     assert(srcOffset % 4 === 0);
     assert(size % 4 === 0);
@@ -132,10 +120,6 @@ export class GPUTest extends Fixture {
   }
 
   expectContents(src, expected, srcOffset = 0) {
-    this.expectSubContents(src, srcOffset, expected);
-  }
-
-  expectSubContents(src, srcOffset, expected) {
     const { dst, begin, end } = this.createAlignedCopyForMapRead(
       src,
       expected.byteLength,

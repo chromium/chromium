@@ -117,8 +117,6 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:max_r
 # https://github.com/gpuweb/cts/issues/230 these tests need to be updated and Dawn will fail once we implement proper limits
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:max_resources_per_stage,in_bind_group_layout,* [ Failure ]
 
-wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:* [ Skip ]
-
 # Failure in both D3D12 and Vulkan validation layers
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,index_access:* [ Skip ]
 

@@ -3,9 +3,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# This tool rolls the latest webgpu-cts glsl-dependent branch into
+# This tool rolls the latest WebGPU CTS revision into
 # wpt_internal/webgpu/. It does the following:
-#   - Updates Chromium's DEPS to the latest origin/glsl-dependent.
+#   - Updates Chromium's DEPS third_party/webgpu-cts to the latest origin/main.
 #   - Runs gclient sync.
 #   - Builds the CTS (requires a local installation of node+npm).
 #   - Syncs the built out-wpt/ directory into wpt_internal/webgpu/.
@@ -47,12 +47,12 @@ roll_cts_to() {
   pushd third_party/webgpu-cts/src > /dev/null
 
     npm install --frozen-lockfile
-    npx grunt wpt  # build third_party/webgpu-cts/src/out-wpt/
+    npm run wpt  # build third_party/webgpu-cts/src/out-wpt/
 
   popd > /dev/null
 }
 
-roll_cts_to origin/glsl-dependent
+roll_cts_to origin/main
 rsync -au --del \
   third_party/webgpu-cts/src/out-wpt/{common,webgpu} \
   third_party/blink/web_tests/wpt_internal/webgpu/
