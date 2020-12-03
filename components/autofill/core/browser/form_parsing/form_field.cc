@@ -174,10 +174,9 @@ bool FormField::ParseField(AutofillScanner* scanner,
                            AutofillField** match,
                            const RegExLogging& logging) {
   if (base::FeatureList::IsEnabled(
-          features::kAutofillUsePageLanguageToSelectFieldParsingPatterns) ||
+          features::kAutofillParsingPatternsLanguageDependent) ||
       base::FeatureList::IsEnabled(
-          features::
-              kAutofillApplyNegativePatternsForFieldTypeDetectionHeuristics)) {
+          features::kAutofillParsingPatternsNegativeMatching)) {
     return ParseField(scanner, patterns, match, logging);
   } else {
     return ParseField(scanner, pattern, match, logging);
@@ -221,8 +220,7 @@ bool FormField::ParseFieldSpecifics(
 
     // TODO(crbug.com/1132831): Remove feature check once launched.
     if (base::FeatureList::IsEnabled(
-            features::
-                kAutofillApplyNegativePatternsForFieldTypeDetectionHeuristics)) {
+            features::kAutofillParsingPatternsNegativeMatching)) {
       if (!pattern.negative_pattern.empty() &&
           FormField::Match(field, base::UTF8ToUTF16(pattern.negative_pattern),
                            pattern.match_field_attributes,
@@ -263,10 +261,9 @@ bool FormField::ParseFieldSpecifics(
     const RegExLogging& logging,
     MatchFieldBitmasks match_field_bitmasks) {
   if (base::FeatureList::IsEnabled(
-          features::kAutofillUsePageLanguageToSelectFieldParsingPatterns) ||
+          features::kAutofillParsingPatternsLanguageDependent) ||
       base::FeatureList::IsEnabled(
-          features::
-              kAutofillApplyNegativePatternsForFieldTypeDetectionHeuristics)) {
+          features::kAutofillParsingPatternsNegativeMatching)) {
     // TODO(crbug/1142936): This hack is to allow
     // AddressField::ParseNameAndLabelSeparately().
     if (match_field_bitmasks.restrict_attributes != ~0 ||

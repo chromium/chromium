@@ -26,8 +26,6 @@ extern const base::Feature kAutofillAddressProfileSavePrompt;
 extern const base::Feature kAutofillAllowDuplicateFormSubmissions;
 extern const base::Feature kAutofillAllowNonHttpActivation;
 extern const base::Feature kAutofillAlwaysFillAddresses;
-extern const base::Feature
-    kAutofillApplyNegativePatternsForFieldTypeDetectionHeuristics;
 extern const base::Feature kAutofillCacheQueryResponses;
 extern const base::Feature kAutofillCreateDataForTest;
 extern const base::Feature kAutofillEnableAccountWalletStorage;
@@ -52,6 +50,9 @@ extern const base::Feature kAutofillLabelAffixRemoval;
 extern const base::Feature kAutofillPruneSuggestions;
 extern const base::Feature kAutofillMetadataUploads;
 extern const base::Feature kAutofillOffNoServerData;
+extern const base::Feature kAutofillParsingPatternsFromRemote;
+extern const base::Feature kAutofillParsingPatternsNegativeMatching;
+extern const base::Feature kAutofillParsingPatternsLanguageDependent;
 extern const base::Feature kAutofillPreventMixedFormsFilling;
 extern const base::Feature kAutofillProbableFormSubmissionInBrowser;
 extern const base::Feature kAutofillProfileClientValidation;
@@ -70,8 +71,6 @@ extern const base::Feature kAutofillUploadThrottling;
 extern const base::Feature kAutofillUseAlternativeStateNameMap;
 extern const base::Feature kAutofillUseImprovedLabelDisambiguation;
 extern const base::Feature kAutofillUseNewSectioningMethod;
-extern const base::Feature kAutofillUsePageLanguageToSelectFieldParsingPatterns;
-extern const base::Feature kAutofillUseRemotePatterns;
 
 #if defined(OS_ANDROID)
 extern const base::Feature kAutofillManualFallbackAndroid;

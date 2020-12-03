@@ -100,7 +100,7 @@ const std::vector<MatchingPattern> PatternProvider::GetMatchPatterns(
 
   // TODO(crbug.com/1134496): Remove feature check once launched.
   if (base::FeatureList::IsEnabled(
-          features::kAutofillUsePageLanguageToSelectFieldParsingPatterns)) {
+          features::kAutofillParsingPatternsLanguageDependent)) {
     auto outer_it = patterns_.find(pattern_name);
     if (outer_it != patterns_.end()) {
       const std::map<LanguageCode, std::vector<MatchingPattern>>&
@@ -114,10 +114,8 @@ const std::vector<MatchingPattern> PatternProvider::GetMatchPatterns(
       }
     }
     return GetAllPatternsByType(pattern_name);
-  } else if (
-      base::FeatureList::IsEnabled(
-          features::
-              kAutofillApplyNegativePatternsForFieldTypeDetectionHeuristics)) {
+  } else if (base::FeatureList::IsEnabled(
+                 features::kAutofillParsingPatternsNegativeMatching)) {
     return GetAllPatternsByType(pattern_name);
   } else {
     return {};

@@ -49,13 +49,6 @@ const base::Feature kAutofillAllowNonHttpActivation{
 const base::Feature kAutofillAlwaysFillAddresses{
     "AlwaysFillAddresses", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether negative patterns are used to parse the field type.
-// TODO(crbug.com/1132831): Remove once launched.
-const base::Feature
-    kAutofillApplyNegativePatternsForFieldTypeDetectionHeuristics{
-        "AutofillApplyNegativePatternsForFieldTypeDetectionHeuristics",
-        base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls the use of GET (instead of POST) to fetch cacheable autofill query
 // responses.
 const base::Feature kAutofillCacheQueryResponses{
@@ -181,6 +174,18 @@ const base::Feature kAutofillMetadataUploads{"AutofillMetadataUploads",
 const base::Feature kAutofillOffNoServerData{"AutofillOffNoServerData",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether negative patterns are used to parse the field type.
+// TODO(crbug.com/1132831): Remove once launched.
+const base::Feature kAutofillParsingPatternsNegativeMatching{
+    "AutofillParsingPatternsNegativeMatching",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls whether page language is used to match patterns.
+// TODO(crbug.com/1134496): Remove once launched.
+const base::Feature kAutofillParsingPatternsLanguageDependent{
+    "AutofillParsingPatternsLanguageDependent",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If feature is enabled, Autofill will be disabled for mixed forms (forms on
 // HTTPS sites that submit over HTTP).
 const base::Feature kAutofillPreventMixedFormsFilling{
@@ -280,16 +285,10 @@ const base::Feature kAutofillUseImprovedLabelDisambiguation{
 const base::Feature kAutofillUseNewSectioningMethod{
     "AutofillUseNewSectioningMethod", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether page language is used to match patterns.
-// TODO(crbug.com/1134496): Remove once launched.
-const base::Feature kAutofillUsePageLanguageToSelectFieldParsingPatterns{
-    "AutofillUsePageLanguageToSelectFieldParsingPatterns",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // When enabled, Autofill will load remote patterns via the component updater.
 // TODO(crbug/1121990): Remove once launched.
-extern const base::Feature kAutofillUseRemotePatterns{
-    "AutofillUseRemotePatterns", base::FEATURE_DISABLED_BY_DEFAULT};
+extern const base::Feature kAutofillParsingPatternsFromRemote{
+    "AutofillParsingPatternsFromRemote", base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if defined(OS_ANDROID)
 // Controls whether the Autofill manual fallback for Addresses and Payments is
