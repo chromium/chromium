@@ -7,7 +7,7 @@ include_rules = [
     "+content/renderer/compositor",
     "+content/test",
     "+gpu/command_buffer/client/gles2_interface.h",
-    "+ui/events/blink/blink_event_util.h"
+    "+ui/events/blink/blink_event_util.h",
 ]
 
 specific_include_rules = {

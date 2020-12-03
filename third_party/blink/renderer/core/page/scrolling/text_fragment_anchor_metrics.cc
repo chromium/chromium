@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
+#include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -92,6 +93,11 @@ void TextFragmentAnchorMetrics::ReportMetrics() {
   if (matches_.size() > 0) {
     UseCounter::Count(document_, WebFeature::kTextFragmentAnchorMatchFound);
   }
+
+  shared_highlighting::LogLinkOpenedUkmEvent(
+      document_->UkmRecorder(), document_->UkmSourceID(),
+      KURL(document_->referrer()),
+      /*success=*/matches_.size() == selector_count_);
 
   std::string uma_prefix = GetPrefixForHistograms();
 
