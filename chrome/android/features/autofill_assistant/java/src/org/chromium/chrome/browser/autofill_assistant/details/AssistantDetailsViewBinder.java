@@ -209,9 +209,9 @@ class AssistantDetailsViewBinder
                 details.getHighlightLine2(), R.style.TextAppearance_TextMedium_Secondary);
         // TODO(crbug.com/1118226): Update the styles that use *_Disabled with UX guidance.
         setTextStyle(viewHolder.mDescriptionLine3View, details.getUserApprovalRequired(),
-                details.getHighlightLine3(), R.style.TextAppearance_TextSmall_Disabled);
+                details.getHighlightLine3(), R.style.TextAppearance_TextSmall_Secondary);
         setTextStyle(viewHolder.mPriceAttributionView, details.getUserApprovalRequired(),
-                details.getHighlightLine3(), R.style.TextAppearance_TextSmall_Disabled);
+                details.getHighlightLine3(), R.style.TextAppearance_TextSmall_Secondary);
         setTextStyle(viewHolder.mTotalPriceLabelView, details.getUserApprovalRequired(),
                 /* highlight= */ false, R.style.TextAppearance_TextMedium_Secondary);
         setTextStyle(viewHolder.mTotalPriceView, details.getUserApprovalRequired(),
