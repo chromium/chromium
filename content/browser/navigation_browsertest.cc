@@ -5,11 +5,13 @@
 #include <stdint.h>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -3268,29 +3270,288 @@ IN_PROC_BROWSER_TEST_F(NavigationUrlRewriteBrowserTest,
   }
 }
 
-// A navigation that fails to navigate due to an ERR_INVALID_URL would attempt
-// to load the error page into the destination RenderFrameHost returned from
-// GetFrameHostForNavigation(). That RenderFrameHost may not be the current
-// one. And even if it is, showing an error page is not a same-document
-// navigation. Regression test for https://crbug.com/1018385
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, SameDocumentNavigation) {
+  WebContents* wc = shell()->web_contents();
+  GURL url1 = embedded_test_server()->GetURL("a.com", "/title1.html#frag1");
+  GURL url2 = embedded_test_server()->GetURL("a.com", "/title1.html#frag2");
+  NavigationHandleCommitObserver navigation_0(wc, url1);
+  NavigationHandleCommitObserver navigation_1(wc, url2);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  NavigationEntry* entry =
+      web_contents()->GetController().GetLastCommittedEntry();
+  EXPECT_TRUE(NavigateToURL(shell(), url2));
+  // The NavigationEntry changes on a same-document navigation.
+  EXPECT_NE(web_contents()->GetController().GetLastCommittedEntry(), entry);
+
+  EXPECT_TRUE(navigation_0.has_committed());
+  EXPECT_TRUE(navigation_1.has_committed());
+  EXPECT_FALSE(navigation_0.was_same_document());
+  EXPECT_TRUE(navigation_1.was_same_document());
+}
+
+// Some navigations are not allowed, such as when they fail the content security
+// policy, or for trying to load about:srcdoc in the main frame. These result in
+// us redirecting the navigation to an error page via
+// RenderFrameHostImpl::FailedNavigation().
+// Repeating the request with a different URL fragment results in attempting a
+// same-document navigation, but error pages do not support such navigations. In
+// this case treat each failed navigation request as a separate load, with the
+// resulting navigation being performed as a cross-document navigation. This is
+// regression test for https://crbug.com/1018385.
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
-                       SameDocumentNavigationInErrorPage) {
-  NavigationHandleCommitObserver navigation_0(web_contents(),
-                                              GURL("about:srcdoc#0"));
-  NavigationHandleCommitObserver navigation_1(web_contents(),
-                                              GURL("about:srcdoc#1"));
+                       SameDocumentNavigationOnBlockedPage) {
+  GURL url1("about:srcdoc#0");
+  GURL url2("about:srcdoc#1");
+  NavigationHandleCommitObserver navigation_0(web_contents(), url1);
+  NavigationHandleCommitObserver navigation_1(web_contents(), url2);
 
   // Big warning: about:srcdoc is not supposed to be valid browser-initiated
   // main-frame navigation, it is currently blocked by the NavigationRequest.
   // It is used here to reproduce bug https://crbug.com/1018385. Please avoid
   // copying this kind of navigation in your own tests.
-  EXPECT_FALSE(NavigateToURL(shell(), GURL("about:srcdoc#0")));
-  EXPECT_FALSE(NavigateToURL(shell(), GURL("about:srcdoc#1")));
+  EXPECT_FALSE(NavigateToURL(shell(), url1));
+  EXPECT_FALSE(NavigateToURL(shell(), url2));
 
   EXPECT_TRUE(navigation_0.has_committed());
   EXPECT_TRUE(navigation_1.has_committed());
   EXPECT_FALSE(navigation_0.was_same_document());
   EXPECT_FALSE(navigation_1.was_same_document());
+}
+
+// This navigation is allowed by the browser, but the network will not be able
+// to connect to the site, so the NavigationRequest fails on the browser side
+// and is redirected to an error page. Performing another navigation should
+// make the full attempt again, in case the network request succeeds this time.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       SameDocumentNavigationOnBadServerErrorPage) {
+  GURL url1("http://badserver.com:9/");
+  GURL url2("http://badserver.com:9/#1");
+  NavigationHandleCommitObserver navigation_0(web_contents(), url1);
+  NavigationHandleCommitObserver navigation_1(web_contents(), url2);
+
+  // The navigation is okay from the browser's perspective, so NavigateToURL()
+  // will return true. But the network request ultimately fails, so the request
+  // is redirected to an error page.
+  EXPECT_FALSE(NavigateToURL(shell(), url1));
+  EXPECT_TRUE(navigation_0.has_committed());
+  EXPECT_FALSE(navigation_0.was_same_document());
+
+  // The 2nd request shares a URL but it should be another cross-document
+  // navigation, rather than trying to navigate inside the error page.
+  EXPECT_FALSE(NavigateToURL(shell(), url2));
+  EXPECT_TRUE(navigation_1.has_committed());
+  EXPECT_FALSE(navigation_1.was_same_document());
+}
+
+// This navigation is allowed by the browser, and the request to the server is
+// successful, but it returns 404 error headers, and (optionally) an error page.
+// When another request is made for the same page but with a different fragment,
+// the browser will attempt to perform a same-document navigation but that
+// navigation is intended for the actual document not the error page that has
+// been loaded instead. A same-document navigation in the renderer-loaded error
+// page should be performed as a cross-document navigation in order to attempt
+// to reload the page.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       SameDocumentNavigationOn404ErrorPage) {
+  // This case is a non-empty 404 page. It makes different choices about where
+  // to load the page on a same-document navigation.
+  {
+    GURL url1 = embedded_test_server()->GetURL("a.com", "/page404.html");
+    GURL url2 = embedded_test_server()->GetURL("a.com", "/page404.html#1");
+    NavigationHandleCommitObserver navigation_0(web_contents(), url1);
+    NavigationHandleCommitObserver navigation_1(web_contents(), url2);
+
+    EXPECT_TRUE(NavigateToURL(shell(), url1));
+    EXPECT_TRUE(navigation_0.has_committed());
+    EXPECT_FALSE(navigation_0.was_same_document());
+
+    // This is another navigation to the non-existent URL, but with a different
+    // fragment. We have successfully loaded content from a.com. The fact that
+    // it is 404 response does not mean it is an error page, since the term
+    // "error page" is used for cases where the browser encounters an error
+    // loading a document from the origin. HTTP responses with >400 status codes
+    // are just like regular documents from the origin and we render their
+    // response body just like we would a 200 response. This is why it can make
+    // sense for a same document navigation to be performed from a 404 page.
+    EXPECT_TRUE(NavigateToURL(shell(), url2));
+    EXPECT_TRUE(navigation_1.has_committed());
+    EXPECT_TRUE(navigation_1.was_same_document());
+  }
+  // This case is an empty 404 page. It makes different choices about where
+  // to load the page on a same-document navigation. Since the server has only
+  // replied with an error, the browser will display its own error page and
+  // therefore it is not one coming from the server's origin.
+  {
+    GURL url1 = embedded_test_server()->GetURL("a.com", "/empty404.html");
+    GURL url2 = embedded_test_server()->GetURL("a.com", "/empty404.html#1");
+    NavigationHandleCommitObserver navigation_0(web_contents(), url1);
+    NavigationHandleCommitObserver navigation_1(web_contents(), url2);
+
+    EXPECT_FALSE(NavigateToURL(shell(), url1));
+    EXPECT_TRUE(navigation_0.has_committed());
+    EXPECT_FALSE(navigation_0.was_same_document());
+
+    // This is another navigation to the non-existent URL, but with a different
+    // fragment. Since we did not load a document from the server (we got
+    // `false` from `NavigateToURL()`) there is no server-provided document to
+    // navigate within. The result should be a cross-document navigation in
+    // order to attempt to load the document at the given path from the server
+    // again.
+    EXPECT_FALSE(NavigateToURL(shell(), url2));
+    EXPECT_TRUE(navigation_1.has_committed());
+    EXPECT_FALSE(navigation_1.was_same_document());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       SameDocumentNavigationFromCrossDocumentRedirect) {
+  WebContents* wc = shell()->web_contents();
+  GURL url0 = embedded_test_server()->GetURL("/title1.html#frag1");
+  GURL url1 =
+      embedded_test_server()->GetURL("/server-redirect?title1.html#frag2");
+  GURL url2 = embedded_test_server()->GetURL("/title1.html#frag2");
+  NavigationHandleCommitObserver navigation_0(wc, url0);
+  NavigationHandleCommitObserver navigation_1(wc, url1);
+  NavigationHandleCommitObserver navigation_2(wc, url2);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url0));
+  // Since the redirect does not land at the URL we passed in, we get a false
+  // return here.
+  EXPECT_FALSE(NavigateToURL(shell(), url1));
+
+  // The navigation to |url1| is redirected and so |url1| does not commit. Then
+  // the resulting navigation to |url2| lands at the same document URL as |url0|
+  // which would be a same-document navigation if there wasn't a redirect
+  // involved. But since it started as a cross-document navigation it results in
+  // loading a new document instead of doing a same-document navigation.
+  EXPECT_TRUE(navigation_0.has_committed());
+  EXPECT_FALSE(navigation_1.has_committed());
+  EXPECT_TRUE(navigation_2.has_committed());
+  EXPECT_FALSE(navigation_0.was_same_document());
+  EXPECT_FALSE(navigation_1.was_same_document());
+  EXPECT_FALSE(navigation_2.was_same_document());
+
+  EXPECT_EQ(wc->GetMainFrame()->GetLastCommittedURL(), url2);
+}
+
+class GetEffectiveUrlClient : public ContentBrowserClient {
+ public:
+  GURL GetEffectiveURL(content::BrowserContext* browser_context,
+                       const GURL& url) override {
+    if (effective_url_)
+      return *effective_url_;
+    return url;
+  }
+
+  bool IsSuitableHost(RenderProcessHost* process_host,
+                      const GURL& site_url) override {
+    if (!disallowed_process_id_)
+      return true;
+    return process_host->GetID() != disallowed_process_id_;
+  }
+
+  void set_effective_url(const GURL& url) { effective_url_ = url; }
+
+  void set_disallowed_process(int id) { disallowed_process_id_ = id; }
+
+ private:
+  base::Optional<GURL> effective_url_;
+  int disallowed_process_id_ = 0;
+};
+
+// While a document is open, state in the browser may change such that loading
+// the document would choose a different SiteInstance. A cross-document
+// navigation would pick up this different SiteInstance, but a same-document
+// navigation should not. It should just navigate inside the currently loaded
+// document instead of reloading the document.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       SameDocumentNavigationWhenSiteInstanceWouldChange) {
+  auto* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  GURL url0 = embedded_test_server()->GetURL("a.com", "/title1.html#ref1");
+  GURL url1 = embedded_test_server()->GetURL("a.com", "/title1.html#ref2");
+
+  GetEffectiveUrlClient new_client;
+  ContentBrowserClient* old_client =
+      content::SetBrowserClientForTesting(&new_client);
+
+  NavigationHandleCommitObserver navigation_0(wc, url0);
+  EXPECT_TRUE(NavigateToURL(shell(), url0));
+  EXPECT_TRUE(navigation_0.has_committed());
+  EXPECT_FALSE(navigation_0.was_same_document());
+
+  RenderFrameHost* main_frame_host = wc->GetMainFrame();
+  RenderProcessHost* main_frame_process_host = main_frame_host->GetProcess();
+
+  // When we both change the effective URL and also disallow the current
+  // renderer process, a new load of the current document would get a different
+  // SiteInstance.
+  GURL modified_url0 =
+      embedded_test_server()->GetURL("c.com", "/title1.html#ref1");
+  new_client.set_effective_url(modified_url0);
+  new_client.set_disallowed_process(main_frame_process_host->GetID());
+
+  NavigationHandleCommitObserver navigation_1(wc, url1);
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  EXPECT_TRUE(navigation_1.has_committed());
+  EXPECT_TRUE(navigation_1.was_same_document());
+
+  // The RenderFrameHost should not have changed, we should perform the
+  // navigation in the currently loaded document.
+  EXPECT_EQ(main_frame_host, wc->GetMainFrame());
+  EXPECT_EQ(main_frame_process_host, wc->GetMainFrame()->GetProcess());
+
+  content::SetBrowserClientForTesting(old_client);
+}
+
+// This tests the same ideas as the above test except in this case the same-
+// document navigation is done through a history navigation, which exercises
+// different codepaths in the NavigationControllerImpl.
+IN_PROC_BROWSER_TEST_F(
+    NavigationBrowserTest,
+    SameDocumentHistoryNavigationWhenSiteInstanceWouldChange) {
+  auto* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  GURL url0 = embedded_test_server()->GetURL("a.com", "/title1.html#ref1");
+  GURL url1 = embedded_test_server()->GetURL("a.com", "/title1.html#ref2");
+  NavigationHandleCommitObserver navigation_0(wc, url0);
+  NavigationHandleCommitObserver navigation_1(wc, url1);
+
+  GetEffectiveUrlClient new_client;
+  ContentBrowserClient* old_client =
+      content::SetBrowserClientForTesting(&new_client);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url0));
+  EXPECT_TRUE(navigation_0.has_committed());
+  EXPECT_FALSE(navigation_0.was_same_document());
+
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  EXPECT_TRUE(navigation_1.has_committed());
+  EXPECT_TRUE(navigation_1.was_same_document());
+
+  RenderFrameHost* main_frame_host = wc->GetMainFrame();
+  RenderProcessHost* main_frame_process_host = main_frame_host->GetProcess();
+
+  // When we both change the effective URL and also disallow the current
+  // renderer process, a new load of the current document would get a different
+  // SiteInstance.
+  GURL modified_url0 =
+      embedded_test_server()->GetURL("c.com", "/title1.html#ref1");
+  new_client.set_effective_url(modified_url0);
+  new_client.set_disallowed_process(main_frame_process_host->GetID());
+
+  // Navigates to the same-document. Since the SiteInstance changed, we would
+  // normally try isolate this navigation by using a different RenderProcessHost
+  // and RenderFrameHost. But since it is same-document, we want to avoid that
+  // and perform the navigation inside the loaded |url0| document.
+  wc->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(wc));
+
+  // The RenderFrameHost should not have changed, we should perform the
+  // navigation in the currently loaded document.
+  EXPECT_EQ(main_frame_host, wc->GetMainFrame());
+  EXPECT_EQ(main_frame_process_host, wc->GetMainFrame()->GetProcess());
+
+  content::SetBrowserClientForTesting(old_client);
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
@@ -3348,9 +3609,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
   RenderFrameHost* openee_rfh =
       static_cast<WebContentsImpl*>(openee_shell->web_contents())
-          ->GetFrameTree()
-          ->root()
-          ->current_frame_host();
+          ->GetMainFrame();
   GlobalFrameRoutingId openee_routing_id(openee_rfh->GetProcess()->GetID(),
                                          openee_rfh->GetRoutingID());
   base::RunLoop loop;
