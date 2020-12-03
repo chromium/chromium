@@ -7,5 +7,3 @@ meacer@chromium.org
 per-file elide_url.*=cthomp@chromium.org
 per-file elide_url.*=estark@chromium.org
 per-file elide_url.*=felt@chromium.org
-
-# COMPONENT: UI>Security>UrlFormatting

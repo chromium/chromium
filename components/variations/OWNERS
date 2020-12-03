@@ -2,6 +2,3 @@ file://base/metrics/OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
-
-# COMPONENT: Internals>Metrics>Variations
-# TEAM: chromium-dev@chromium.org
