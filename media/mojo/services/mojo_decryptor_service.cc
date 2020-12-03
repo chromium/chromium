@@ -197,7 +197,6 @@ void MojoDecryptorService::OnDecryptDone(DecryptCallback callback,
   DVLOG_IF(3, status == Status::kSuccess) << __func__;
 
   if (!buffer) {
-    DCHECK_NE(status, Status::kSuccess);
     std::move(callback).Run(status, nullptr);
     return;
   }
