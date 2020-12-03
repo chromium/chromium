@@ -1269,6 +1269,10 @@ try_.chromium_mac_builder(
 # they are built, hence no additional dimension is specified.
 # The 10.xx version translates to which bots will run isolated tests.
 try_.chromium_mac_builder(
+    name = "mac_chromium_10.11_rel_ng",
+)
+
+try_.chromium_mac_builder(
     name = "mac_chromium_10.12_rel_ng",
 )
 
