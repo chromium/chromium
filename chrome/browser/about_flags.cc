@@ -1484,17 +1484,6 @@ const FeatureEntry::FeatureVariation kOmniboxBubbleUrlSuggestionsVariations[] =
          nullptr,
      }};
 
-const FeatureEntry::FeatureParam kMarkHttpAsDangerous[] = {
-    {security_state::features::kMarkHttpAsFeatureParameterName,
-     security_state::features::kMarkHttpAsParameterDangerous}};
-const FeatureEntry::FeatureParam kMarkHttpAsWarningAndDangerousOnFormEdits[] = {
-    {security_state::features::kMarkHttpAsFeatureParameterName,
-     security_state::features::
-         kMarkHttpAsParameterWarningAndDangerousOnFormEdits}};
-const FeatureEntry::FeatureParam kMarkHttpAsDangerWarning[] = {
-    {security_state::features::kMarkHttpAsFeatureParameterName,
-     security_state::features::kMarkHttpAsParameterDangerWarning}};
-
 // The "Enabled" state for this feature is "0" and representing setting A.
 const FeatureEntry::FeatureParam kTabHoverCardsSettingB[] = {
     {features::kTabHoverCardsFeatureParameterName, "1"}};
@@ -1504,15 +1493,6 @@ const FeatureEntry::FeatureParam kTabHoverCardsSettingC[] = {
 const FeatureEntry::FeatureVariation kTabHoverCardsFeatureVariations[] = {
     {"B", kTabHoverCardsSettingB, base::size(kTabHoverCardsSettingB), nullptr},
     {"C", kTabHoverCardsSettingC, base::size(kTabHoverCardsSettingC), nullptr}};
-
-const FeatureEntry::FeatureVariation kMarkHttpAsFeatureVariations[] = {
-    {"(mark as actively dangerous)", kMarkHttpAsDangerous,
-     base::size(kMarkHttpAsDangerous), nullptr},
-    {"(mark with a Not Secure warning and dangerous on form edits)",
-     kMarkHttpAsWarningAndDangerousOnFormEdits,
-     base::size(kMarkHttpAsWarningAndDangerousOnFormEdits), nullptr},
-    {"(mark with a grey triangle icon)", kMarkHttpAsDangerWarning,
-     base::size(kMarkHttpAsDangerWarning), nullptr}};
 
 const FeatureEntry::FeatureParam kPromoBrowserCommandUnknownCommandParam[] = {
     {features::kPromoBrowserCommandIdParam, "0"}};
@@ -4608,13 +4588,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableNetworkLoggingToFileName,
      flag_descriptions::kEnableNetworkLoggingToFileDescription, kOsAll,
      SINGLE_VALUE_TYPE(network::switches::kLogNetLog)},
-
-    {"enable-mark-http-as", flag_descriptions::kMarkHttpAsName,
-     flag_descriptions::kMarkHttpAsDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         security_state::features::kMarkHttpAsFeature,
-         kMarkHttpAsFeatureVariations,
-         "HTTPReallyBadFinal")},
 
     {"enable-web-authentication-cable-v2-support",
      flag_descriptions::kEnableWebAuthenticationCableV2SupportName,

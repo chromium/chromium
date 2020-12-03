@@ -95,26 +95,6 @@ using flags_ui::FeatureEntry;
 
 namespace {
 
-const FeatureEntry::FeatureParam kMarkHttpAsDangerous[] = {
-    {security_state::features::kMarkHttpAsFeatureParameterName,
-     security_state::features::kMarkHttpAsParameterDangerous}};
-const FeatureEntry::FeatureParam kMarkHttpAsWarningAndDangerousOnFormEdits[] = {
-    {security_state::features::kMarkHttpAsFeatureParameterName,
-     security_state::features::
-         kMarkHttpAsParameterWarningAndDangerousOnFormEdits}};
-const FeatureEntry::FeatureParam kMarkHttpAsDangerWarning[] = {
-    {security_state::features::kMarkHttpAsFeatureParameterName,
-     security_state::features::kMarkHttpAsParameterDangerWarning}};
-
-const FeatureEntry::FeatureVariation kMarkHttpAsFeatureVariations[] = {
-    {"(mark as actively dangerous)", kMarkHttpAsDangerous,
-     base::size(kMarkHttpAsDangerous), nullptr},
-    {"(mark with a Not Secure warning and dangerous on form edits)",
-     kMarkHttpAsWarningAndDangerousOnFormEdits,
-     base::size(kMarkHttpAsWarningAndDangerousOnFormEdits), nullptr},
-    {"(mark with a grey triangle icon)", kMarkHttpAsDangerWarning,
-     base::size(kMarkHttpAsDangerWarning), nullptr}};
-
 const FeatureEntry::Choice kAutofillIOSDelayBetweenFieldsChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {"0", autofill::switches::kAutofillIOSDelayBetweenFields, "0"},
@@ -267,12 +247,6 @@ const FeatureEntry::FeatureVariation kDiscoverFeedInNtpVariations[] = {
 //
 // When adding a new choice, add it to the end of the list.
 const flags_ui::FeatureEntry kFeatureEntries[] = {
-    {"enable-mark-http-as", flag_descriptions::kMarkHttpAsName,
-     flag_descriptions::kMarkHttpAsDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         security_state::features::kMarkHttpAsFeature,
-         kMarkHttpAsFeatureVariations,
-         "MarkHttpAs")},
     {"in-product-help-demo-mode-choice",
      flag_descriptions::kInProductHelpDemoModeName,
      flag_descriptions::kInProductHelpDemoModeDescription, flags_ui::kOsIos,

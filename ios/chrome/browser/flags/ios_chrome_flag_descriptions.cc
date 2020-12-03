@@ -307,9 +307,6 @@ const char kManagedBookmarksIOSDescription[] =
     "When enabled, managed bookmarks set by an enterprise policy can be shown "
     "in the bookmarks UI on iOS";
 
-const char kMarkHttpAsName[] = "Mark non-secure origins as non-secure";
-const char kMarkHttpAsDescription[] = "Change the UI treatment for HTTP pages";
-
 const char kMobileGoogleSRPName[] = "Mobile version of Google SRP by default";
 const char kMobileGoogleSRPDescription[] =
     "Request the Mobile version of Google SRP by default when the desktop mode "

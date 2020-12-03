@@ -271,11 +271,6 @@ extern const char kLockBottomToolbarDescription[];
 extern const char kManagedBookmarksIOSName[];
 extern const char kManagedBookmarksIOSDescription[];
 
-// Title, description, and options for the MarkHttpAs setting that controls
-// display of omnibox warnings about non-secure pages.
-extern const char kMarkHttpAsName[];
-extern const char kMarkHttpAsDescription[];
-
 // Title and description for the flag where the Google SRP is requested in
 // mobile mode by default.
 extern const char kMobileGoogleSRPName[];

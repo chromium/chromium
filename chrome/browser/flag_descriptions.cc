@@ -1377,9 +1377,6 @@ const char kLogJsConsoleMessagesDescription[] =
     "Enable logging JS console messages in system logs, please note that they "
     "may contain PII.";
 
-const char kMarkHttpAsName[] = "Mark non-secure origins as non-secure";
-const char kMarkHttpAsDescription[] = "Change the UI treatment for HTTP pages";
-
 const char kMediaHistoryName[] = "Enable Media History";
 const char kMediaHistoryDescription[] =
     "Enables Media History which records data around media playbacks on "

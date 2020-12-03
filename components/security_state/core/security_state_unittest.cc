@@ -312,72 +312,16 @@ TEST(SecurityStateTest, MixedContentWithPolicyCertificate) {
   EXPECT_EQ(DANGEROUS, helper.GetSecurityLevel());
 }
 
-// Tests that WARNING is set on normal http pages but DANGEROUS on
-// form edits when kMarkHttpAsFeature is set to lower security state on form
-// edits.
-TEST(SecurityStateTest, WarningAndDangerousOnFormEditsWhenFeatureEnabled) {
+// Tests that WARNING is set on normal http pages regardless of
+// form edits.
+TEST(SecurityStateTest, WarningOnHttpAndFormEdits) {
   TestSecurityStateHelper helper;
   helper.SetUrl(GURL(kHttpUrl));
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      security_state::features::kMarkHttpAsFeature,
-      {{security_state::features::kMarkHttpAsFeatureParameterName,
-        security_state::features::
-            kMarkHttpAsParameterWarningAndDangerousOnFormEdits}});
-
-  EXPECT_EQ(security_state::WARNING, helper.GetSecurityLevel());
-
-  helper.set_insecure_field_edit(true);
-  EXPECT_EQ(DANGEROUS, helper.GetSecurityLevel());
-}
-
-// Tests that WARNING is set on normal http pages regardless of form edits with
-// default feature enabled.
-TEST(SecurityStateTest,
-     AlwaysWarningWhenFeatureMarksWithTriangleWarningAndFeatureEnabled) {
-  TestSecurityStateHelper helper;
-  helper.SetUrl(GURL(kHttpUrl));
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      security_state::features::kMarkHttpAsFeature);
 
   EXPECT_EQ(WARNING, helper.GetSecurityLevel());
 
   helper.set_insecure_field_edit(true);
   EXPECT_EQ(WARNING, helper.GetSecurityLevel());
-}
-
-// Tests that WARNING is set on normal http pages regardless of form edits with
-// default feature disabled.
-TEST(SecurityStateTest,
-     AlwaysWarningWhenFeatureMarksWithTriangleWarningAndFeatureDisabled) {
-  TestSecurityStateHelper helper;
-  helper.SetUrl(GURL(kHttpUrl));
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      security_state::features::kMarkHttpAsFeature);
-
-  EXPECT_EQ(WARNING, helper.GetSecurityLevel());
-
-  helper.set_insecure_field_edit(true);
-  EXPECT_EQ(WARNING, helper.GetSecurityLevel());
-}
-
-// Tests that DANGEROUS is set on normal http pages regardless of form edits
-// when kMarkHttpAsFeature is set to always DANGEROUS
-TEST(SecurityStateTest, AlwaysDangerousWhenFeatureMarksAllAsDangerous) {
-  TestSecurityStateHelper helper;
-  helper.SetUrl(GURL(kHttpUrl));
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      security_state::features::kMarkHttpAsFeature,
-      {{security_state::features::kMarkHttpAsFeatureParameterName,
-        security_state::features::kMarkHttpAsParameterDangerous}});
-
-  EXPECT_EQ(DANGEROUS, helper.GetSecurityLevel());
-
-  helper.set_insecure_field_edit(true);
-  EXPECT_EQ(DANGEROUS, helper.GetSecurityLevel());
 }
 
 // Tests that |safety_tip_status| effects security level appropriately.

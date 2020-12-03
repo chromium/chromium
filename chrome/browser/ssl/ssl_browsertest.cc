@@ -1910,47 +1910,6 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestWSSInvalidCert) {
   EXPECT_TRUE(base::LowerCaseEqualsASCII(result, "pass"));
 }
 
-class SSLUITestWithHttpDangerous : public SSLUITest {
- public:
-  SSLUITestWithHttpDangerous() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        security_state::features::kMarkHttpAsFeature,
-        {{security_state::features::kMarkHttpAsFeatureParameterName,
-          security_state::features::kMarkHttpAsParameterDangerous}});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Ensure that non-standard origins are marked as neutral when the
-// MarkNonSecureAs Dangerous flag is enabled.
-IN_PROC_BROWSER_TEST_F(SSLUITestWithHttpDangerous, MarkFileAsNonSecure) {
-  WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(contents);
-
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(contents);
-  ASSERT_TRUE(helper);
-
-  ui_test_utils::NavigateToURL(browser(), GURL("file:///"));
-  EXPECT_EQ(security_state::NONE, helper->GetSecurityLevel());
-}
-
-// Ensure that about-protocol origins are marked as neutral when the
-// MarkNonSecureAs Dangerous flag is enabled.
-IN_PROC_BROWSER_TEST_F(SSLUITestWithHttpDangerous, MarkAboutAsNonSecure) {
-  WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(contents);
-
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(contents);
-  ASSERT_TRUE(helper);
-
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
-  EXPECT_EQ(security_state::NONE, helper->GetSecurityLevel());
-}
-
 // Data URLs should always be marked as non-secure.
 IN_PROC_BROWSER_TEST_F(SSLUITest, MarkDataAsNonSecure) {
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -1962,40 +1921,6 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, MarkDataAsNonSecure) {
 
   ui_test_utils::NavigateToURL(browser(), GURL("data:text/plain,hello"));
   EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
-}
-
-// Ensure that HTTP-protocol origins are marked as Dangerous when the
-// MarkNonSecureAs Dangerous flag is enabled.
-IN_PROC_BROWSER_TEST_F(SSLUITestWithHttpDangerous, MarkHTTPAsDangerous) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // Navigate to a non-local HTTP page.
-  GURL url = embedded_test_server()->GetURL("/ssl/google.html");
-  GURL::Replacements http_url_replacements;
-  http_url_replacements.SetHostStr("example.test");
-  url = url.ReplaceComponents(http_url_replacements);
-  ui_test_utils::NavigateToURL(browser(), url);
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  SecurityStateTabHelper* helper = SecurityStateTabHelper::FromWebContents(tab);
-  ASSERT_TRUE(helper);
-
-  EXPECT_EQ(security_state::DANGEROUS, helper->GetSecurityLevel());
-}
-
-// Ensure that blob-protocol origins are marked as neutral when the
-// MarkNonSecureAs Dangerous flag is enabled.
-IN_PROC_BROWSER_TEST_F(SSLUITestWithHttpDangerous, MarkBlobAsNonSecure) {
-  WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(contents);
-
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(contents);
-  ASSERT_TRUE(helper);
-
-  ui_test_utils::NavigateToURL(
-      browser(),
-      GURL("blob:chrome://newtab/49a463bb-fac8-476c-97bf-5d7076c3ea1a"));
-  EXPECT_EQ(security_state::NONE, helper->GetSecurityLevel());
 }
 
 // TODO(crbug.com/1148302): This class directly calls

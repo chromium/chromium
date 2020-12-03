@@ -168,18 +168,6 @@ void InjectScript(content::WebContents* contents) {
   }
 }
 
-// Gets the Insecure Input Events from the entry's SSLStatus user data.
-security_state::InsecureInputEventData GetInputEvents(
-    content::NavigationEntry* entry) {
-  security_state::SSLStatusInputEventData* input_events =
-      static_cast<security_state::SSLStatusInputEventData*>(
-          entry->GetSSL().user_data.get());
-  if (input_events)
-    return *input_events->input_events();
-
-  return security_state::InsecureInputEventData();
-}
-
 // A delegate class that allows emulating selection of a file for an
 // INPUT TYPE=FILE form field.
 class FileChooserDelegate : public content::WebContentsDelegate {
@@ -517,25 +505,8 @@ class SecurityStateTabHelperTest : public CertVerifierBrowserTest {
         contents->GetController().GetVisibleEntry();
     ASSERT_TRUE(entry);
 
-    // TODO(crbug.com/917693): Remove this conditional and hard-code the test
-    // expectation to DANGEROUS when the feature fully launches.
-    security_state::SecurityLevel expected_security_level =
-        security_state::NONE;
-    if (base::FeatureList::IsEnabled(
-            security_state::features::kMarkHttpAsFeature)) {
-      std::string parameter = base::GetFieldTrialParamValueByFeature(
-          security_state::features::kMarkHttpAsFeature,
-          security_state::features::kMarkHttpAsFeatureParameterName);
-      if (parameter ==
-          security_state::features::kMarkHttpAsParameterDangerous) {
-        expected_security_level = security_state::DANGEROUS;
-      } else {
-        expected_security_level = security_state::WARNING;
-      }
-    }
-
     EXPECT_EQ(use_secure_inner_origin ? security_state::NONE
-                                      : expected_security_level,
+                                      : security_state::WARNING,
               helper->GetSecurityLevel());
   }
 
@@ -1445,24 +1416,9 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest,
                           true /* use_secure_inner_origin */);
 }
 
-class SecurityStateTabHelperTestWithFormsDangerous
-    : public SecurityStateTabHelperTest {
- public:
-  SecurityStateTabHelperTestWithFormsDangerous() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        security_state::features::kMarkHttpAsFeature,
-        {{security_state::features::kMarkHttpAsFeatureParameterName,
-          security_state::features::
-              kMarkHttpAsParameterWarningAndDangerousOnFormEdits}});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Tests that the security level of a HTTP page is not downgraded when a form
 // field is modified by JavaScript.
-IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTestWithFormsDangerous,
+IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest,
                        SecurityLevelNotDowngradedAfterScriptModification) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1492,54 +1448,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTestWithFormsDangerous,
   InjectScript(contents);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(security_state::WARNING, helper->GetSecurityLevel());
-}
-
-// Tests that the security level of a HTTP page is downgraded from
-// WARNING to DANGEROUS after editing a form field in the relevant
-// configurations.
-IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTestWithFormsDangerous,
-                       SecurityLevelDowngradedAfterFileSelection) {
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(contents);
-  ASSERT_TRUE(helper);
-
-  // Navigate to an HTTP page. Use a non-local hostname so that it is
-  // not considered secure.
-  ui_test_utils::NavigateToURL(
-      browser(),
-      GetURLWithNonLocalHostname(embedded_test_server(), "/file_input.html"));
-  EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
-
-  // Prepare a file for the upload form.
-  base::FilePath file_path;
-  EXPECT_TRUE(base::PathService::Get(base::DIR_TEMP, &file_path));
-  file_path = file_path.AppendASCII("bar");
-
-  base::RunLoop run_loop;
-  // Fill out the form to refer to the test file.
-  SecurityStyleTestObserver observer(contents);
-  std::unique_ptr<FileChooserDelegate> delegate(
-      new FileChooserDelegate(file_path, run_loop.QuitClosure()));
-  contents->SetDelegate(delegate.get());
-  EXPECT_TRUE(
-      ExecuteScript(contents, "document.getElementById('fileinput').click();"));
-  run_loop.Run();
-  observer.WaitForDidChangeVisibleSecurityState();
-
-  // Verify that the security state degrades as expected.
-  EXPECT_EQ(security_state::DANGEROUS, helper->GetSecurityLevel());
-
-  content::NavigationEntry* entry = contents->GetController().GetVisibleEntry();
-  ASSERT_TRUE(entry);
-  EXPECT_TRUE(GetInputEvents(entry).insecure_field_edited);
-
-  // Verify that after a refresh, the DANGEROUS state is cleared.
-  contents->GetController().Reload(content::ReloadType::NORMAL, false);
-  EXPECT_TRUE(content::WaitForLoadStop(contents));
-  EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
 }
 
 // Tests that the security state for a WebContents is up to date when the
@@ -1713,49 +1621,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(observer.latest_explanations().scheme_is_cryptographic);
   EXPECT_TRUE(observer.latest_explanations().info_explanations.empty());
   EXPECT_TRUE(observer.latest_explanations().summary.empty());
-}
-
-class SecurityStateTabHelperTestWithHttpDangerous
-    : public SecurityStateTabHelperTest {
- public:
-  SecurityStateTabHelperTestWithHttpDangerous() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        security_state::features::kMarkHttpAsFeature,
-        {{security_state::features::kMarkHttpAsFeatureParameterName,
-          security_state::features::kMarkHttpAsParameterDangerous}});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Tests that the security level of a HTTP page is downgraded to DANGEROUS when
-// MarkHttpAsDangerous is enabled.
-IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTestWithHttpDangerous,
-                       SecurityLevelDangerous) {
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(contents);
-
-  SecurityStyleTestObserver observer(contents);
-
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(contents);
-  ASSERT_TRUE(helper);
-
-  // Navigate to an HTTP page. Use a non-local hostname so that it is
-  // not considered secure.
-  GURL http_url =
-      GetURLWithNonLocalHostname(embedded_test_server(), "/title1.html");
-  ui_test_utils::NavigateToURL(browser(), http_url);
-
-  EXPECT_EQ(security_state::DANGEROUS, helper->GetSecurityLevel());
-  EXPECT_EQ(blink::SecurityStyle::kInsecureBroken,
-            observer.latest_security_style());
-  const content::SecurityStyleExplanations& http_explanation =
-      observer.latest_explanations();
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_HTTP_NONSECURE_SUMMARY),
-            http_explanation.summary);
 }
 
 // Visit a valid HTTPS page, then a broken HTTPS page, and then go back,
@@ -2078,8 +1943,10 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperIncognitoTest, HttpErrorPage) {
   EXPECT_EQ(security_state::NONE, helper->GetSecurityLevel());
 }
 
-IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTestWithFormsDangerous,
-                       MarkHttpAsWarningAndDangerousOnFormEdits) {
+// Tests that the security level of an HTTP page remains WARNING regardless of
+// whether a form was edited.
+IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest,
+                       MarkHttpAsWarningOnFormEdits) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   SecurityStateTabHelper* helper =
@@ -2103,90 +1970,8 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTestWithFormsDangerous,
                             false);
   observer.WaitForDidChangeVisibleSecurityState();
 
-  // Verify that the security state degrades as expected.
-  EXPECT_EQ(security_state::DANGEROUS, helper->GetSecurityLevel());
-  const content::SecurityStyleExplanations& http_explanation =
-      observer.latest_explanations();
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_HTTP_NONSECURE_SUMMARY),
-            http_explanation.summary);
-
-  // Verify security state stays degraded after same-page navigation.
-  ui_test_utils::NavigateToURL(
-      browser(), GetURLWithNonLocalHostname(
-                     embedded_test_server(),
-                     "/textinput/focus_input_on_load.html#fragment"));
-  EXPECT_TRUE(content::WaitForLoadStop(contents));
-  EXPECT_EQ(security_state::DANGEROUS, helper->GetSecurityLevel());
-
-  // Verify that after a refresh, the DANGEROUS state is cleared.
-  contents->GetController().Reload(content::ReloadType::NORMAL, false);
-  EXPECT_TRUE(content::WaitForLoadStop(contents));
+  // Verify that the security state remains the same.
   EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
-}
-
-IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTestWithFormsDangerous,
-                       MarkHttpAsWarningAndDangerousOnFileInputEdits) {
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(contents);
-  ASSERT_TRUE(helper);
-
-  // Navigate to an HTTP page. Use a non-local hostname so that it is
-  // not considered secure.
-  ui_test_utils::NavigateToURL(
-      browser(),
-      GetURLWithNonLocalHostname(embedded_test_server(), "/file_input.html"));
-
-  EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
-  SecurityStyleTestObserver observer(contents);
-
-  // Prepare a file for the upload form.
-  base::FilePath file_path;
-  EXPECT_TRUE(base::PathService::Get(base::DIR_TEMP, &file_path));
-  file_path = file_path.AppendASCII("bar");
-
-  base::RunLoop run_loop;
-  // Fill out the form to refer to the test file.
-  std::unique_ptr<FileChooserDelegate> delegate(
-      new FileChooserDelegate(file_path, run_loop.QuitClosure()));
-  contents->SetDelegate(delegate.get());
-  EXPECT_TRUE(
-      ExecuteScript(contents, "document.getElementById('fileinput').click();"));
-  run_loop.Run();
-  observer.WaitForDidChangeVisibleSecurityState();
-
-  // Verify that the security state degrades as expected.
-  EXPECT_EQ(security_state::DANGEROUS, helper->GetSecurityLevel());
-}
-
-class SecurityStateTabHelperTestWithAutoupgradesAndHttpWarningsDisabled
-    : public SecurityStateTabHelperTestWithAutoupgradesDisabled {
- public:
-  SecurityStateTabHelperTestWithAutoupgradesAndHttpWarningsDisabled() {
-    feature_list_.InitAndDisableFeature(
-        security_state::features::kMarkHttpAsFeature);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Tests that the histogram for security level is recorded correctly for HTTP
-// pages.
-IN_PROC_BROWSER_TEST_F(
-    SecurityStateTabHelperTestWithAutoupgradesAndHttpWarningsDisabled,
-    HTTPSecurityLevelHistogram) {
-  const char kHistogramName[] = "Security.SecurityLevel.NoncryptographicScheme";
-
-  {
-    base::HistogramTester histograms;
-    // Use a non-local hostname so that the page is treated as Not Secure.
-    ui_test_utils::NavigateToURL(
-        browser(),
-        GetURLWithNonLocalHostname(embedded_test_server(), "/title1.html"));
-    histograms.ExpectUniqueSample(kHistogramName, security_state::WARNING, 1);
-  }
 }
 
 // Tests that the histogram for security level is recorded correctly for HTTPS
