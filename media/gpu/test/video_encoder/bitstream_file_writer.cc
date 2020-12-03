@@ -39,8 +39,10 @@ class BitstreamFileWriter::FrameFileWriter {
 };
 
 BitstreamFileWriter::BitstreamFileWriter(
-    std::unique_ptr<FrameFileWriter> frame_file_writer)
+    std::unique_ptr<FrameFileWriter> frame_file_writer,
+    base::Optional<size_t> num_vp9_temporal_layers_to_write)
     : frame_file_writer_(std::move(frame_file_writer)),
+      num_vp9_temporal_layers_to_write_(num_vp9_temporal_layers_to_write),
       num_buffers_writing_(0),
       num_errors_(0),
       writer_thread_("BitstreamFileWriterThread"),
@@ -59,7 +61,8 @@ std::unique_ptr<BitstreamFileWriter> BitstreamFileWriter::Create(
     VideoCodec codec,
     const gfx::Size& resolution,
     uint32_t frame_rate,
-    uint32_t num_frames) {
+    uint32_t num_frames,
+    base::Optional<size_t> num_vp9_temporal_layers_to_write) {
   std::unique_ptr<FrameFileWriter> frame_file_writer;
   if (!base::DirectoryExists(output_filepath.DirName()))
     base::CreateDirectory(output_filepath.DirName());
@@ -82,8 +85,8 @@ std::unique_ptr<BitstreamFileWriter> BitstreamFileWriter::Create(
         std::make_unique<FrameFileWriter>(std::move(ivf_writer));
   }
 
-  auto bitstream_file_writer =
-      base::WrapUnique(new BitstreamFileWriter(std::move(frame_file_writer)));
+  auto bitstream_file_writer = base::WrapUnique(new BitstreamFileWriter(
+      std::move(frame_file_writer), num_vp9_temporal_layers_to_write));
   if (!bitstream_file_writer->writer_thread_.Start()) {
     LOG(ERROR) << "Failed to start file writer thread";
     return nullptr;
@@ -95,6 +98,14 @@ std::unique_ptr<BitstreamFileWriter> BitstreamFileWriter::Create(
 void BitstreamFileWriter::ProcessBitstream(
     scoped_refptr<BitstreamRef> bitstream,
     size_t frame_index) {
+  if (num_vp9_temporal_layers_to_write_ &&
+      bitstream->metadata.vp9->temporal_idx >=
+          *num_vp9_temporal_layers_to_write_) {
+    // Skip |bitstream| because it contains a frame in upper layers than layers
+    // to be saved.
+    return;
+  }
+
   base::AutoLock auto_lock(writer_lock_);
   num_buffers_writing_++;
   writer_thread_.task_runner()->PostTask(

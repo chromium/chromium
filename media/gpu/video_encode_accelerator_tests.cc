@@ -122,6 +122,40 @@ class VideoEncoderTest : public ::testing::Test {
   }
 
  private:
+  std::unique_ptr<BitstreamProcessor> CreateBitstreamValidator(
+      const VideoDecoderConfig& decoder_config,
+      const size_t last_frame_index,
+      VideoFrameValidator::GetModelFrameCB get_model_frame_cb,
+      base::Optional<size_t> num_vp9_temporal_layers_to_decode) {
+    std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors;
+
+    // Attach a video frame writer to store individual frames to disk if
+    // requested.
+    std::unique_ptr<VideoFrameProcessor> image_writer;
+    auto frame_output_config = g_env->ImageOutputConfig();
+    base::FilePath output_folder = base::FilePath(g_env->OutputFolder())
+                                       .Append(g_env->GetTestOutputFilePath());
+    if (frame_output_config.output_mode != FrameOutputMode::kNone) {
+      image_writer = VideoFrameFileWriter::Create(
+          output_folder, frame_output_config.output_format,
+          frame_output_config.output_limit,
+          num_vp9_temporal_layers_to_decode
+              ? base::NumberToString(*num_vp9_temporal_layers_to_decode)
+              : "");
+      LOG_ASSERT(image_writer);
+      if (frame_output_config.output_mode == FrameOutputMode::kAll)
+        video_frame_processors.push_back(std::move(image_writer));
+    }
+    auto ssim_validator = SSIMVideoFrameValidator::Create(
+        get_model_frame_cb, std::move(image_writer),
+        VideoFrameValidator::ValidationMode::kAverage);
+    LOG_ASSERT(ssim_validator);
+    video_frame_processors.push_back(std::move(ssim_validator));
+    return BitstreamValidator::Create(decoder_config, last_frame_index,
+                                      std::move(video_frame_processors),
+                                      num_vp9_temporal_layers_to_decode);
+  }
+
   std::vector<std::unique_ptr<BitstreamProcessor>> CreateBitstreamProcessors(
       Video* video,
       const VideoEncoderClientConfig& config) {
@@ -137,11 +171,24 @@ class VideoEncoderTest : public ::testing::Test {
           g_env->OutputFolder()
               .Append(g_env->GetTestOutputFilePath())
               .Append(video->FilePath().BaseName().ReplaceExtension(extension));
-      auto bitstream_writer = BitstreamFileWriter::Create(
-          output_bitstream_filepath, codec, visible_rect.size(),
-          config.framerate, config.num_frames_to_encode);
-      LOG_ASSERT(bitstream_writer);
-      bitstream_processors.emplace_back(std::move(bitstream_writer));
+      if (config.num_temporal_layers > 1) {
+        for (size_t num_vp9_temporal_layers_to_write = 1;
+             num_vp9_temporal_layers_to_write <= config.num_temporal_layers;
+             ++num_vp9_temporal_layers_to_write) {
+          bitstream_processors.emplace_back(BitstreamFileWriter::Create(
+              output_bitstream_filepath.InsertBeforeExtensionASCII(
+                  FILE_PATH_LITERAL(".TL") +
+                  base::NumberToString(num_vp9_temporal_layers_to_write)),
+              codec, visible_rect.size(), config.framerate,
+              config.num_frames_to_encode, num_vp9_temporal_layers_to_write));
+          LOG_ASSERT(bitstream_processors.back());
+        }
+      } else {
+        bitstream_processors.emplace_back(BitstreamFileWriter::Create(
+            output_bitstream_filepath, codec, visible_rect.size(),
+            config.framerate, config.num_frames_to_encode));
+        LOG_ASSERT(bitstream_processors.back());
+      }
     }
 
     if (!g_env->IsBitstreamValidatorEnabled()) {
@@ -174,7 +221,6 @@ class VideoEncoderTest : public ::testing::Test {
         codec, config.output_profile, VideoDecoderConfig::AlphaMode::kIsOpaque,
         VideoColorSpace(), kNoTransformation, visible_rect.size(), visible_rect,
         visible_rect.size(), EmptyExtraData(), EncryptionScheme::kUnencrypted);
-    std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors;
     raw_data_helper_ = RawDataHelper::Create(video);
     if (!raw_data_helper_) {
       LOG(ERROR) << "Failed to create raw data helper";
@@ -184,31 +230,21 @@ class VideoEncoderTest : public ::testing::Test {
     VideoFrameValidator::GetModelFrameCB get_model_frame_cb =
         base::BindRepeating(&VideoEncoderTest::GetModelFrame,
                             base::Unretained(this), visible_rect);
-
-    // Attach a video frame writer to store individual frames to disk if
-    // requested.
-    std::unique_ptr<VideoFrameProcessor> image_writer;
-    auto frame_output_config = g_env->ImageOutputConfig();
-    base::FilePath output_folder = base::FilePath(g_env->OutputFolder())
-                                       .Append(g_env->GetTestOutputFilePath());
-    if (frame_output_config.output_mode != FrameOutputMode::kNone) {
-      image_writer = VideoFrameFileWriter::Create(
-          output_folder, frame_output_config.output_format,
-          frame_output_config.output_limit);
-      LOG_ASSERT(image_writer);
-      if (frame_output_config.output_mode == FrameOutputMode::kAll)
-        video_frame_processors.push_back(std::move(image_writer));
+    if (config.num_temporal_layers > 1) {
+      for (size_t num_temporal_layers_to_decode = 1;
+           num_temporal_layers_to_decode <= config.num_temporal_layers;
+           ++num_temporal_layers_to_decode) {
+        bitstream_processors.emplace_back(CreateBitstreamValidator(
+            decoder_config, config.num_frames_to_encode - 1, get_model_frame_cb,
+            num_temporal_layers_to_decode));
+        LOG_ASSERT(bitstream_processors.back());
+      }
+    } else {
+      bitstream_processors.emplace_back(CreateBitstreamValidator(
+          decoder_config, config.num_frames_to_encode - 1, get_model_frame_cb,
+          base::nullopt));
+      LOG_ASSERT(bitstream_processors.back());
     }
-    auto ssim_validator = SSIMVideoFrameValidator::Create(
-        get_model_frame_cb, std::move(image_writer),
-        VideoFrameValidator::ValidationMode::kAverage);
-    LOG_ASSERT(ssim_validator);
-    video_frame_processors.push_back(std::move(ssim_validator));
-    auto bitstream_validator = BitstreamValidator::Create(
-        decoder_config, config.num_frames_to_encode - 1,
-        std::move(video_frame_processors));
-    LOG_ASSERT(bitstream_validator);
-    bitstream_processors.emplace_back(std::move(bitstream_validator));
     return bitstream_processors;
   }
 
