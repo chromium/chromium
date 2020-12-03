@@ -156,6 +156,9 @@ TEST_F(InitValueManifestTest, InitFromValueValid) {
     // Test a hosted app with a requirements section.
     Testcase("init_valid_app_requirements.json"),
 
+    // Test a theme with a minimum_chrome_version.
+    Testcase("init_valid_theme_minimum_chrome.json"),
+
     // Verify empty permission settings are considered valid.
     Testcase("init_valid_permissions_empty.json"),
 
