@@ -43,6 +43,23 @@ void CopyToNewLayerOnCopyRequestFinished(
   std::move(layer_copy_callback).Run(std::move(copy_layer));
 }
 
+void CopyToLayerOnCopyRequestFinished(
+    GetTargetLayerCallback get_target_layer_callback,
+    std::unique_ptr<viz::CopyOutputResult> copy_result) {
+  if (get_target_layer_callback.IsCancelled())
+    return;
+
+  if (!copy_result || copy_result->IsEmpty())
+    return;
+
+  ui::Layer* layer = nullptr;
+  std::move(get_target_layer_callback).Run(&layer);
+  if (!layer)
+    return;
+
+  CopyCopyOutputResultToLayer(std::move(copy_result), layer);
+}
+
 }  // namespace
 
 std::unique_ptr<ui::Layer> CreateLayerFromCopyOutputResult(
@@ -55,6 +72,19 @@ std::unique_ptr<ui::Layer> CreateLayerFromCopyOutputResult(
 void CopyLayerContentToNewLayer(ui::Layer* layer, LayerCopyCallback callback) {
   auto new_callback =
       base::BindOnce(&CopyToNewLayerOnCopyRequestFinished, std::move(callback));
+  auto copy_request = std::make_unique<viz::CopyOutputRequest>(
+      viz::CopyOutputRequest::ResultFormat::RGBA_TEXTURE,
+      std::move(new_callback));
+  gfx::Rect bounds(layer->size());
+  copy_request->set_area(bounds);
+  copy_request->set_result_selection(bounds);
+  layer->RequestCopyOfOutput(std::move(copy_request));
+}
+
+void CopyLayerContentToLayer(ui::Layer* layer,
+                             GetTargetLayerCallback callback) {
+  auto new_callback =
+      base::BindOnce(&CopyToLayerOnCopyRequestFinished, std::move(callback));
   auto copy_request = std::make_unique<viz::CopyOutputRequest>(
       viz::CopyOutputRequest::ResultFormat::RGBA_TEXTURE,
       std::move(new_callback));

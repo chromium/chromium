@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/ash_export.h"
 #include "base/callback.h"
 
 namespace ui {
@@ -18,16 +19,25 @@ class CopyOutputResult;
 }
 
 namespace ash {
+
+// Creates the new layer using the image in |copy_result|.
+ASH_EXPORT std::unique_ptr<ui::Layer> CreateLayerFromCopyOutputResult(
+    std::unique_ptr<viz::CopyOutputResult> copy_result);
+
 using LayerCopyCallback =
     base::OnceCallback<void(std::unique_ptr<ui::Layer> new_layer)>;
 
-// Creates the new layer using the image in |copy_result|.
-std::unique_ptr<ui::Layer> CreateLayerFromCopyOutputResult(
-    std::unique_ptr<viz::CopyOutputResult> copy_result);
-
 // Creates a new layer that has a copy of the |layer|'s content. This is an
 // async API and a new layer will be passed to the |callback| when copy is done.
-void CopyLayerContentToNewLayer(ui::Layer* layer, LayerCopyCallback callback);
+ASH_EXPORT void CopyLayerContentToNewLayer(ui::Layer* layer,
+                                           LayerCopyCallback callback);
+
+using GetTargetLayerCallback = base::OnceCallback<void(ui::Layer**)>;
+
+// Copy the content of |original_layer| to a new layer given via |callback|.
+// This is an async API and |callback| is called when the copy result is ready.
+ASH_EXPORT void CopyLayerContentToLayer(ui::Layer* original_layer,
+                                        GetTargetLayerCallback callback);
 
 }  // namespace ash
 

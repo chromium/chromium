@@ -2262,6 +2262,7 @@ test("ash_unittests") {
     "tray_action/test_tray_action_client.cc",
     "tray_action/test_tray_action_client.h",
     "tray_action/tray_action_unittest.cc",
+    "utility/layer_util_unittest.cc",
     "utility/screenshot_controller_unittest.cc",
     "wallpaper/wallpaper_controller_unittest.cc",
     "wallpaper/wallpaper_utils/wallpaper_color_calculator_unittest.cc",
