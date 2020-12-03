@@ -89,6 +89,17 @@ H264Decoder::H264Accelerator::Status H264Decoder::H264Accelerator::SetStream(
   return H264Decoder::H264Accelerator::Status::kNotSupported;
 }
 
+H264Decoder::H264Accelerator::Status
+H264Decoder::H264Accelerator::ParseEncryptedSliceHeader(
+    const uint8_t* data,
+    size_t size,
+    const std::vector<SubsampleEntry>& subsamples,
+    const std::vector<uint8_t>& sps_nalu_data,
+    const std::vector<uint8_t>& pps_nalu_data,
+    H264SliceHeader* slice_header_out) {
+  return H264Decoder::H264Accelerator::Status::kNotSupported;
+}
+
 H264Decoder::H264Decoder(std::unique_ptr<H264Accelerator> accelerator,
                          VideoCodecProfile profile,
                          const VideoColorSpace& container_color_space)
@@ -140,9 +151,9 @@ void H264Decoder::Reset() {
     state_ = kAfterReset;
 }
 
-void H264Decoder::PrepareRefPicLists(const H264SliceHeader* slice_hdr) {
-  ConstructReferencePicListsP(slice_hdr);
-  ConstructReferencePicListsB(slice_hdr);
+void H264Decoder::PrepareRefPicLists() {
+  ConstructReferencePicListsP();
+  ConstructReferencePicListsB();
 }
 
 bool H264Decoder::ModifyReferencePicLists(const H264SliceHeader* slice_hdr,
@@ -421,8 +432,7 @@ struct LongTermPicNumAscCompare {
   }
 };
 
-void H264Decoder::ConstructReferencePicListsP(
-    const H264SliceHeader* slice_hdr) {
+void H264Decoder::ConstructReferencePicListsP() {
   // RefPicList0 (8.2.4.2.1) [[1] [2]], where:
   // [1] shortterm ref pics sorted by descending pic_num,
   // [2] longterm ref pics by ascending long_term_pic_num.
@@ -456,8 +466,7 @@ struct POCDescCompare {
   }
 };
 
-void H264Decoder::ConstructReferencePicListsB(
-    const H264SliceHeader* slice_hdr) {
+void H264Decoder::ConstructReferencePicListsB() {
   // RefPicList0 (8.2.4.2.3) [[1] [2] [3]], where:
   // [1] shortterm ref pics with POC < curr_pic's POC sorted by descending POC,
   // [2] shortterm ref pics with POC > curr_pic's POC by ascending POC,
@@ -787,7 +796,7 @@ H264Decoder::H264Accelerator::Status H264Decoder::StartNewFrame(
     return H264Accelerator::Status::kFail;
 
   UpdatePicNums(frame_num);
-  PrepareRefPicLists(slice_hdr);
+  PrepareRefPicLists();
 
   return accelerator_->SubmitFrameMetadata(sps, pps, dpb_, ref_pic_list_p0_,
                                            ref_pic_list_b0_, ref_pic_list_b1_,
@@ -1239,6 +1248,15 @@ bool H264Decoder::HandleFrameNumGap(int frame_num) {
   return true;
 }
 
+H264Decoder::H264Accelerator::Status H264Decoder::ProcessEncryptedSliceHeader(
+    const std::vector<SubsampleEntry>& subsamples) {
+  DCHECK(curr_nalu_);
+  DCHECK(curr_slice_hdr_);
+  return accelerator_->ParseEncryptedSliceHeader(
+      curr_nalu_->data, curr_nalu_->size, subsamples, last_sps_nalu_,
+      last_pps_nalu_, curr_slice_hdr_.get());
+}
+
 H264Decoder::H264Accelerator::Status H264Decoder::PreprocessCurrentSlice() {
   const H264SliceHeader* slice_hdr = curr_slice_hdr_.get();
   DCHECK(slice_hdr);
@@ -1286,8 +1304,13 @@ H264Decoder::H264Accelerator::Status H264Decoder::ProcessCurrentSlice() {
     max_pic_num_ = 2 * max_frame_num_;
 
   H264Picture::Vector ref_pic_list0, ref_pic_list1;
-  if (!ModifyReferencePicLists(slice_hdr, &ref_pic_list0, &ref_pic_list1))
+  // If we are using full sample encryption then we do not have the information
+  // we need to update the ref pic lists here, but that's OK because the
+  // accelerator doesn't actually need to submit them in this case.
+  if (!slice_hdr->full_sample_encryption &&
+      !ModifyReferencePicLists(slice_hdr, &ref_pic_list0, &ref_pic_list1)) {
     return H264Accelerator::Status::kFail;
+  }
 
   const H264PPS* pps = parser_.GetPPS(curr_pps_id_);
   if (!pps)
@@ -1415,11 +1438,30 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
         // additional key has been provided, for example), then the remaining
         // steps will be executed.
         if (!curr_slice_hdr_) {
-          curr_slice_hdr_.reset(new H264SliceHeader());
-          par_res =
-              parser_.ParseSliceHeader(*curr_nalu_, curr_slice_hdr_.get());
-          if (par_res != H264Parser::kOk)
-            SET_ERROR_AND_RETURN();
+          curr_slice_hdr_ = std::make_unique<H264SliceHeader>();
+          state_ = kParseSliceHeader;
+        }
+
+        if (state_ == kParseSliceHeader) {
+          // Check if the slice header is encrypted.
+          bool parsed_header = false;
+          if (current_decrypt_config_) {
+            const std::vector<SubsampleEntry>& subsamples =
+                parser_.GetCurrentSubsamples();
+            // There is only a single clear byte for the NALU information for
+            // full sample encryption, and the rest is encrypted.
+            if (!subsamples.empty() && subsamples[0].clear_bytes == 1) {
+              CHECK_ACCELERATOR_RESULT(ProcessEncryptedSliceHeader(subsamples));
+              parsed_header = true;
+              curr_slice_hdr_->pic_parameter_set_id = last_parsed_pps_id_;
+            }
+          }
+          if (!parsed_header) {
+            par_res =
+                parser_.ParseSliceHeader(*curr_nalu_, curr_slice_hdr_.get());
+            if (par_res != H264Parser::kOk)
+              SET_ERROR_AND_RETURN();
+          }
           state_ = kTryPreprocessCurrentSlice;
         }
 
@@ -1469,6 +1511,8 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
         if (!ProcessSPS(sps_id, &need_new_buffers))
           SET_ERROR_AND_RETURN();
 
+        last_sps_nalu_.assign(curr_nalu_->data,
+                              curr_nalu_->data + curr_nalu_->size);
         if (state_ == kNeedStreamMetadata)
           state_ = kAfterReset;
 
@@ -1485,13 +1529,13 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
       }
 
       case H264NALU::kPPS: {
-        int pps_id;
-
         CHECK_ACCELERATOR_RESULT(FinishPrevFrameIfPresent());
-        par_res = parser_.ParsePPS(&pps_id);
+        par_res = parser_.ParsePPS(&last_parsed_pps_id_);
         if (par_res != H264Parser::kOk)
           SET_ERROR_AND_RETURN();
 
+        last_pps_nalu_.assign(curr_nalu_->data,
+                              curr_nalu_->data + curr_nalu_->size);
         break;
       }
 

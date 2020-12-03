@@ -310,6 +310,16 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   scoped_refptr<VASurface> CreateVASurfaceForPixmap(
       scoped_refptr<gfx::NativePixmap> pixmap);
 
+  // Creates a self-releasing VASurface from |buffers|. The ownership of the
+  // surface is transferred to the caller.  |buffers| should be a pointer array
+  // of size 1, with |buffer_size| corresponding to its size. |size| should be
+  // the desired surface dimensions (which does not need to map to |buffer_size|
+  // in any relevant way). |buffers| should be kept alive when using the
+  // VASurface and for accessing the data after the operation is complete.
+  scoped_refptr<VASurface> CreateVASurfaceForUserPtr(const gfx::Size& size,
+                                                     uintptr_t* buffers,
+                                                     size_t buffer_size);
+
   // Syncs and exports |va_surface| as a gfx::NativePixmapDmaBuf. Currently, the
   // only VAAPI surface pixel formats supported are VA_FOURCC_IMC3 and
   // VA_FOURCC_NV12.

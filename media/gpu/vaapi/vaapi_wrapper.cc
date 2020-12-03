@@ -484,6 +484,11 @@ bool IsBlockedDriver(VaapiWrapper::CodecMode mode, VAProfile va_profile) {
   return false;
 }
 
+bool IsValidVABufferType(VABufferType type) {
+  return type < VABufferTypeMax || type == VAEncryptionParameterBufferType ||
+         type == VACencStatusParameterBufferType;
+}
+
 // This class is a wrapper around its |va_display_| (and its associated
 // |va_lock_|) to guarantee mutual exclusion and singleton behaviour.
 class VADisplayState {
@@ -826,7 +831,7 @@ bool GetRequiredAttribs(const base::Lock* va_lock,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (mode == VaapiWrapper::kDecodeProtected && profile != VAProfileProtected) {
     required_attribs->push_back(
-        {VAConfigAttribEncryption, VA_ENCRYPTION_TYPE_CTR_128});
+        {VAConfigAttribEncryption, VA_ENCRYPTION_TYPE_CENC_CTR});
   }
 #endif
 
@@ -2014,6 +2019,47 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
                        base::BindOnce(&VaapiWrapper::DestroySurface, this));
 }
 
+scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForUserPtr(
+    const gfx::Size& size,
+    uintptr_t* buffers,
+    size_t buffer_size) {
+  VASurfaceAttribExternalBuffers va_attrib_extbuf{};
+  va_attrib_extbuf.buffers = buffers;
+  va_attrib_extbuf.data_size = buffer_size;
+  va_attrib_extbuf.num_buffers = 1u;
+  va_attrib_extbuf.width = size.width();
+  va_attrib_extbuf.height = size.height();
+  std::fill(va_attrib_extbuf.pitches, va_attrib_extbuf.pitches + 3,
+            size.width());
+  va_attrib_extbuf.pixel_format = VA_FOURCC_NV12;
+
+  std::vector<VASurfaceAttrib> va_attribs(2);
+  va_attribs[0].flags = VA_SURFACE_ATTRIB_SETTABLE;
+  va_attribs[0].type = VASurfaceAttribMemoryType;
+  va_attribs[0].value.type = VAGenericValueTypeInteger;
+  va_attribs[0].value.value.i = VA_SURFACE_ATTRIB_MEM_TYPE_USER_PTR;
+
+  va_attribs[1].flags = VA_SURFACE_ATTRIB_SETTABLE;
+  va_attribs[1].type = VASurfaceAttribExternalBufferDescriptor;
+  va_attribs[1].value.type = VAGenericValueTypePointer;
+  va_attribs[1].value.value.p = &va_attrib_extbuf;
+
+  VASurfaceID va_surface_id = VA_INVALID_ID;
+  const unsigned int va_format = VA_RT_FORMAT_YUV420;
+  {
+    base::AutoLock auto_lock(*va_lock_);
+    VAStatus va_res = vaCreateSurfaces(
+        va_display_, va_format, base::checked_cast<unsigned int>(size.width()),
+        base::checked_cast<unsigned int>(size.height()), &va_surface_id, 1,
+        &va_attribs[0], va_attribs.size());
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateSurfaces_Importing,
+                         nullptr);
+  }
+  DVLOG(2) << __func__ << " " << va_surface_id;
+  return new VASurface(va_surface_id, size, va_format,
+                       base::BindOnce(&VaapiWrapper::DestroySurface, this));
+}
+
 std::unique_ptr<NativePixmapAndSizeInfo>
 VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBuf(
     const ScopedVASurface& scoped_va_surface) {
@@ -2833,7 +2879,7 @@ bool VaapiWrapper::SubmitBuffer_Locked(const VABufferDescriptor& va_buffer) {
   TRACE_EVENT0("media,gpu", "VaapiWrapper::SubmitBuffer_Locked");
   va_lock_->AssertAcquired();
 
-  DCHECK_LT(va_buffer.type, VABufferTypeMax);
+  DCHECK(IsValidVABufferType(va_buffer.type));
   DCHECK(va_buffer.data);
 
   unsigned int va_buffer_size;
@@ -2864,7 +2910,7 @@ bool VaapiWrapper::MapAndCopy_Locked(VABufferID va_buffer_id,
   va_lock_->AssertAcquired();
 
   DCHECK_NE(va_buffer_id, VA_INVALID_ID);
-  DCHECK_LT(va_buffer.type, VABufferTypeMax);
+  DCHECK(IsValidVABufferType(va_buffer.type));
   DCHECK(va_buffer.data);
 
   ScopedVABufferMapping mapping(

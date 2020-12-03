@@ -111,6 +111,11 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
     crypto_params->encryption_type =
         full_sample_ ? VA_ENCRYPTION_TYPE_CENC_CTR : VA_ENCRYPTION_TYPE_CTR_128;
   } else {
+    if (full_sample_) {
+      LOG(ERROR) << "CBC encryption is not supported for CENCv1";
+      protected_session_state_ = ProtectedSessionState::kFailed;
+      return protected_session_state_;
+    }
     crypto_params->encryption_type = VA_ENCRYPTION_TYPE_CBC;
   }
 

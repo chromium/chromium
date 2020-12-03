@@ -359,6 +359,14 @@ struct MEDIA_EXPORT H264SliceHeader {
   // Size in bits of dec_ref_pic_marking() syntax element.
   size_t dec_ref_pic_marking_bit_size;
   size_t pic_order_cnt_bit_size;
+
+  // This is when we are using full sample encryption and only the portions
+  // needed for DPB management are filled in, the rest will already be known
+  // by the accelerator and we will not need to specify it.
+  bool full_sample_encryption;
+  // This is used by some accelerators to handle decoding after slice header
+  // parsing.
+  uint32_t full_sample_index;
 };
 
 struct H264SEIRecoveryPoint {

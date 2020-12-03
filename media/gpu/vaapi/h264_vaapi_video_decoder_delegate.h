@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_VAAPI_H264_VAAPI_VIDEO_DECODER_DELEGATE_H_
 #define MEDIA_GPU_VAAPI_H264_VAAPI_VIDEO_DECODER_DELEGATE_H_
 
+#include "base/atomic_sequence_num.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "media/gpu/h264_decoder.h"
@@ -39,6 +40,13 @@ class H264VaapiVideoDecoderDelegate : public H264Decoder::H264Accelerator,
                              const H264Picture::Vector& ref_pic_listb0,
                              const H264Picture::Vector& ref_pic_listb1,
                              scoped_refptr<H264Picture> pic) override;
+  Status ParseEncryptedSliceHeader(
+      const uint8_t* data,
+      size_t size,
+      const std::vector<SubsampleEntry>& subsamples,
+      const std::vector<uint8_t>& sps_nalu_data,
+      const std::vector<uint8_t>& pps_nalu_data,
+      H264SliceHeader* slice_header_out) override;
   Status SubmitSlice(const H264PPS* pps,
                      const H264SliceHeader* slice_hdr,
                      const H264Picture::Vector& ref_pic_list0,

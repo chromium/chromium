@@ -783,11 +783,13 @@ void VaapiVideoDecoder::SetState(State state) {
     case State::kDecoding:
       DCHECK(state_ == State::kWaitingForInput ||
              state_ == State::kWaitingForOutput ||
-             state_ == State::kChangingResolution);
+             state_ == State::kChangingResolution ||
+             state_ == State::kWaitingForProtected);
       break;
     case State::kResetting:
       DCHECK(state_ == State::kWaitingForInput ||
-             state_ == State::kWaitingForOutput || state_ == State::kDecoding);
+             state_ == State::kWaitingForOutput || state_ == State::kDecoding ||
+             state_ == State::kWaitingForProtected);
       ClearDecodeTaskQueue(DecodeStatus::ABORTED);
       break;
     case State::kChangingResolution:
