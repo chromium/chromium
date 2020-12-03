@@ -99,6 +99,7 @@ android_library("java") {
     "org/chromium/weblayer/UrlBarOptions.java",
     "org/chromium/weblayer/UserIdentityCallback.java",
     "org/chromium/weblayer/VerifiesOnO.java",
+    "org/chromium/weblayer/VerifiesOnR.java",
     "org/chromium/weblayer/WebLayer.java",
     "org/chromium/weblayer/WebLayerFileProvider.java",
     "org/chromium/weblayer/WebMessage.java",

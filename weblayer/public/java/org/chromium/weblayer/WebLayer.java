@@ -273,11 +273,12 @@ public class WebLayer {
             // Use the application context as the supplied context may have a shorter lifetime.
             mContext = context.getApplicationContext();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                    && context.getAttributionTag() != null) {
+                    && ApiHelperForR.getAttributionTag(context) != null) {
                 // Getting the application context means we lose any attribution. Use the
                 // attribution tag from the supplied context so that embedders have a way to set an
                 // attribution tag.
-                mContext = mContext.createAttributionContext(context.getAttributionTag());
+                mContext = ApiHelperForR.createAttributionContext(
+                        mContext, ApiHelperForR.getAttributionTag(context));
             }
             try {
                 ClassLoader classLoader = getOrCreateRemoteClassLoader(mContext);
@@ -833,6 +834,20 @@ public class WebLayer {
             } finally {
                 StrictMode.setThreadPolicy(oldPolicy);
             }
+        }
+    }
+
+    @VerifiesOnR
+    @TargetApi(Build.VERSION_CODES.R)
+    private static final class ApiHelperForR {
+        /** See {@link Context.getAttributionTag() }. */
+        public static String getAttributionTag(Context context) {
+            return context.getAttributionTag();
+        }
+
+        /** See {@link Context.createAttributionContext(String) }. */
+        public static Context createAttributionContext(Context context, String tag) {
+            return context.createAttributionContext(tag);
         }
     }
 }

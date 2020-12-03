@@ -12,3 +12,14 @@
 -keepclassmembers,allowobfuscation class ** {
   @org.chromium.weblayer.VerifiesOnO <methods>;
 }
+
+-keep @interface org.chromium.weblayer.VerifiesOnR
+-if @org.chromium.weblayer.VerifiesOnR class * {
+    *** *(...);
+}
+-keep,allowobfuscation class <1> {
+    *** <2>(...);
+}
+-keepclassmembers,allowobfuscation class ** {
+  @org.chromium.weblayer.VerifiesOnR <methods>;
+}
