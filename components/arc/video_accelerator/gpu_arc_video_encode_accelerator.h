@@ -88,6 +88,12 @@ class GpuArcVideoEncodeAccelerator
                           bool force_keyframe,
                           EncodeCallback callback);
 
+  // Global counter that keeps track of the number of active clients (i.e., how
+  // many VEAs in use by this class).
+  // Since this class only works on the same thread, it's safe to access
+  // |client_count_| without lock.
+  static size_t client_count_;
+
   gpu::GpuPreferences gpu_preferences_;
   gpu::GpuDriverBugWorkarounds gpu_workarounds_;
   std::unique_ptr<media::VideoEncodeAccelerator> accelerator_;

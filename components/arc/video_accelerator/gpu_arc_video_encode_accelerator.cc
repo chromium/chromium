@@ -27,6 +27,14 @@
 namespace arc {
 
 namespace {
+
+// Maximum number of concurrent ARC video clients.
+// Currently we have no way to know the resources are not enough to create more
+// VEAs. Currently this value is selected as 40 instances are enough to pass
+// the CTS tests.
+// TODO(b/168422427): Decrease this to 8 once media_codecs_c2.xml is updated.
+constexpr size_t kMaxConcurrentClients = 40;
+
 base::Optional<media::VideoFrameLayout> CreateVideoFrameLayout(
     media::VideoPixelFormat format,
     const gfx::Size& coded_size,
@@ -63,6 +71,9 @@ base::Optional<media::VideoFrameLayout> CreateVideoFrameLayout(
 }
 }  // namespace
 
+// static
+size_t GpuArcVideoEncodeAccelerator::client_count_ = 0;
+
 GpuArcVideoEncodeAccelerator::GpuArcVideoEncodeAccelerator(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
@@ -72,7 +83,13 @@ GpuArcVideoEncodeAccelerator::GpuArcVideoEncodeAccelerator(
           media::VideoEncodeAccelerator::Config::StorageType::kShmem),
       bitstream_buffer_serial_(0) {}
 
-GpuArcVideoEncodeAccelerator::~GpuArcVideoEncodeAccelerator() = default;
+GpuArcVideoEncodeAccelerator::~GpuArcVideoEncodeAccelerator() {
+  // Normally |client_count_| should always be > 0 if vea_ is set, but if it
+  // isn't and we underflow then we won't be able to create any new decoder
+  // forever. (b/173700103). So let's use an extra check to avoid this...
+  if (accelerator_ && client_count_ > 0)
+    client_count_--;
+}
 
 // VideoEncodeAccelerator::Client implementation.
 void GpuArcVideoEncodeAccelerator::RequireBitstreamBuffers(
@@ -140,6 +157,13 @@ GpuArcVideoEncodeAccelerator::InitializeTask(
     DLOG(ERROR) << "storage type must be specified";
     return mojom::VideoEncodeAccelerator::Result::kInvalidArgumentError;
   }
+
+  if (client_count_ >= kMaxConcurrentClients) {
+    VLOGF(1) << "Reject to Initialize() due to too many clients: "
+             << client_count_;
+    return mojom::VideoEncodeAccelerator::Result::kInsufficientResourcesError;
+  }
+
   input_pixel_format_ = config.input_format;
   input_storage_type_ = *config.storage_type;
   visible_size_ = config.input_visible_size;
@@ -149,8 +173,11 @@ GpuArcVideoEncodeAccelerator::InitializeTask(
     DLOG(ERROR) << "Failed to create a VideoEncodeAccelerator.";
     return mojom::VideoEncodeAccelerator::Result::kPlatformFailureError;
   }
+
   client_.Bind(std::move(client));
 
+  client_count_++;
+  VLOGF(2) << "Number of concurrent clients: " << client_count_;
   return mojom::VideoEncodeAccelerator::Result::kSuccess;
 }
 
