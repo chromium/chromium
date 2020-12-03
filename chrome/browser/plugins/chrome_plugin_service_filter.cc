@@ -166,35 +166,6 @@ bool ChromePluginServiceFilter::IsPluginAvailable(
   if (!context_info->plugin_prefs.get()->IsPluginEnabled(*plugin))
     return false;
 
-  // Do additional checks for Flash.
-  if (plugin->name == base::ASCIIToUTF16(content::kFlashPluginName)) {
-    // Check the content setting first, and always respect the ALLOW or BLOCK
-    // state. When IsPluginAvailable() is called to check whether a plugin
-    // should be advertised, |url| has the same origin as |main_frame_origin|.
-    // The intended behavior is that Flash is advertised only if a Flash embed
-    // hosted on the same origin as the main frame origin is allowed to run.
-    bool is_managed = false;
-    HostContentSettingsMap* settings_map =
-        context_info_it->second->host_content_settings_map.get();
-    ContentSetting flash_setting = PluginUtils::GetFlashPluginContentSetting(
-        settings_map, main_frame_origin, plugin_content_url, &is_managed);
-
-    if (flash_setting == CONTENT_SETTING_ALLOW)
-      return true;
-
-    if (flash_setting == CONTENT_SETTING_BLOCK)
-      return false;
-
-    // If the content setting is being managed by enterprise policy and is an
-    // ASK setting, we check to see if it has been temporarily granted.
-    if (is_managed) {
-      return context_info_it->second->permission_tracker->IsFlashEnabled(
-          main_frame_origin.GetURL());
-    }
-
-    return false;
-  }
-
   return true;
 }
 

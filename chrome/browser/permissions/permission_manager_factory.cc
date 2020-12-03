@@ -37,9 +37,6 @@
 #include "components/permissions/permission_manager.h"
 #include "ppapi/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "chrome/browser/plugins/flash_permission_context.h"
-#endif
 
 #if defined(OS_ANDROID) || defined(OS_CHROMEOS)
 #include "chrome/browser/media/protected_media_identifier_permission_context.h"
@@ -91,10 +88,6 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
           profile, ContentSettingsType::MEDIASTREAM_CAMERA);
   permission_contexts[ContentSettingsType::BACKGROUND_SYNC] =
       std::make_unique<BackgroundSyncPermissionContext>(profile);
-#if BUILDFLAG(ENABLE_PLUGINS)
-  permission_contexts[ContentSettingsType::PLUGINS] =
-      std::make_unique<FlashPermissionContext>(profile);
-#endif
   permission_contexts[ContentSettingsType::SENSORS] =
       std::make_unique<SensorPermissionContext>(profile);
   permission_contexts[ContentSettingsType::ACCESSIBILITY_EVENTS] =

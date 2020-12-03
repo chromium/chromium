@@ -136,24 +136,6 @@ ContentSetting PluginUtils::GetFlashPluginContentSetting(
 }
 
 // static
-ContentSetting PluginUtils::UnsafeGetRawDefaultFlashContentSetting(
-    const HostContentSettingsMap* host_content_settings_map,
-    bool* is_managed) {
-  std::string provider_id;
-  ContentSetting plugin_setting =
-      host_content_settings_map->GetDefaultContentSetting(
-          ContentSettingsType::PLUGINS, &provider_id);
-
-  if (is_managed) {
-    *is_managed = HostContentSettingsMap::GetProviderTypeFromSource(
-                      provider_id) == HostContentSettingsMap::POLICY_PROVIDER;
-  }
-
-  return plugin_setting;
-}
-
-
-// static
 std::string PluginUtils::GetExtensionIdForMimeType(
     content::BrowserContext* browser_context,
     const std::string& mime_type) {

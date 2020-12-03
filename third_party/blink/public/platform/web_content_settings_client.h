@@ -94,10 +94,6 @@ class WebContentSettingsClient {
   // Reports that passive mixed content was found at the provided URL.
   virtual void PassiveInsecureContentFound(const WebURL&) {}
 
-  // Notifies the client that the frame would have instantiated a plugin if
-  // plugins were enabled.
-  virtual void DidNotAllowPlugins() {}
-
   // Notifies the client that the frame would have executed script if script
   // were enabled.
   virtual void DidNotAllowScript() {}

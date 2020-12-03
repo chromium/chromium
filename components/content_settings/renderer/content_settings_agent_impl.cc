@@ -446,10 +446,6 @@ bool ContentSettingsAgentImpl::ShouldAutoupgradeMixedContent() {
   return false;
 }
 
-void ContentSettingsAgentImpl::DidNotAllowPlugins() {
-  DidBlockContentType(ContentSettingsType::PLUGINS);
-}
-
 void ContentSettingsAgentImpl::DidNotAllowScript() {
   DidBlockContentType(ContentSettingsType::JAVASCRIPT);
 }
