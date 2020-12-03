@@ -135,6 +135,18 @@ void ManifestUpdateTask::OnDidGetInstallableData(const InstallableData& data) {
   web_application_info_.emplace();
   UpdateWebAppInfoFromManifest(*data.manifest, &web_application_info_.value());
 
+  // We cannot allow the app ID to change via the manifest changing. We rely on
+  // fixed app IDs to determine whether web apps installed in the user sync
+  // profile has been sync installed across devices. If we allowed the app ID to
+  // change then the sync system would try to redeploy the old app indefinitely,
+  // additionally the new app ID would get added to the sync profile. This has
+  // the potential to flood the user sync profile with an infinite number of
+  // apps should the site be serving a random start_url on every navigation.
+  if (app_id_ != GenerateAppIdFromURL(web_application_info_->start_url)) {
+    DestroySelf(ManifestUpdateResult::kAppIdMismatch);
+    return;
+  }
+
   if (IsUpdateNeededForManifest()) {
     UpdateAfterWindowsClose();
     return;
@@ -145,9 +157,6 @@ void ManifestUpdateTask::OnDidGetInstallableData(const InstallableData& data) {
 
 bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
   DCHECK(web_application_info_.has_value());
-
-  if (app_id_ != GenerateAppIdFromURL(web_application_info_->start_url))
-    return false;
 
   if (web_application_info_->theme_color !=
       registrar_.GetAppThemeColor(app_id_))

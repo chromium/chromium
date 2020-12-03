@@ -42,7 +42,8 @@ enum ManifestUpdateResult {
   kAppIsSystemWebApp = 9,
   kIconDownloadFailed = 10,
   kIconReadFromDiskFailed = 11,
-  kMaxValue = kIconReadFromDiskFailed,
+  kAppIdMismatch = 12,
+  kMaxValue = kAppIdMismatch,
 };
 
 // Checks whether the installed web app associated with a given WebContents has

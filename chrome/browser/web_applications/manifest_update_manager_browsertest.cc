@@ -497,9 +497,9 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
   OverrideManifest(kManifestTemplate, {"b.html", kInstallableIconList});
   EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
-            ManifestUpdateResult::kAppUpToDate);
+            ManifestUpdateResult::kAppIdMismatch);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
-                                      ManifestUpdateResult::kAppUpToDate, 1);
+                                      ManifestUpdateResult::kAppIdMismatch, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
