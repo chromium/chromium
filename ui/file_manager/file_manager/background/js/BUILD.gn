@@ -383,6 +383,7 @@ js_library("file_operation_util") {
   deps = [
     ":metadata_proxy",
     "//ui/file_manager/file_manager/common/js:async_util",
+    "//ui/file_manager/file_manager/common/js:trash",
     "//ui/file_manager/file_manager/common/js:util",
   ]
   externs_list =

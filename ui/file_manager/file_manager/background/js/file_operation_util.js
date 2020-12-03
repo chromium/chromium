@@ -1247,22 +1247,13 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
 
 /**
  * @typedef {{
- *  name: string,
- *  filesEntry: !Entry,
- *  infoEntry: !FileEntry
- * }}
- */
-fileOperationUtil.TrashEntry;
-
-/**
- * @typedef {{
  *  entries: Array<Entry>,
  *  taskId: string,
  *  entrySize: Object,
  *  totalBytes: number,
  *  processedBytes: number,
  *  cancelRequested: boolean,
- *  trashedEntries: Array<!fileOperationUtil.TrashEntry>,
+ *  trashedEntries: Array<!TrashEntry>,
  * }}
  */
 fileOperationUtil.DeleteTask;

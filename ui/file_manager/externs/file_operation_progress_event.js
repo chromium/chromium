@@ -25,7 +25,7 @@ class FileOperationProgressEvent extends Event {
     /** @public {number} */
     this.processedBytes;
 
-    /** @public {?Array<!fileOperationUtil.TrashEntry>} */
+    /** @public {?Array<!FilesAppEntry>} */
     this.trashedEntries;
   }
 }

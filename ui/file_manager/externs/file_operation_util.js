@@ -12,12 +12,3 @@ fileOperationUtil.EventRouter = function() {};
 
 /** @enum {string} */
 fileOperationUtil.EventRouter.EventType = {};
-
-/**
- * @typedef {{
- *  name: string,
- *  filesEntry: !Entry,
- *  infoEntry: !FileEntry
- * }}
- */
-fileOperationUtil.TrashEntry;
