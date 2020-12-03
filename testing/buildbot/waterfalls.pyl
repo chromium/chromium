@@ -1749,6 +1749,7 @@
           'all'
         ],
         'mixins': [
+          'enable_resultdb',
           'mac_10.15',
           'mac_toolchain',
           'out_dir_arg',
@@ -1780,6 +1781,7 @@
           'url_unittests'
         ],
         'mixins': [
+          'enable_resultdb',
           'ios_restart_device',
           'limited_capacity_bot',
           'mac_10.15',
@@ -2428,6 +2430,7 @@
       },
       'ios-asan': {
         'mixins': [
+          'enable_resultdb',
           'mac_10.15',
           'mac_toolchain',
           'out_dir_arg',
@@ -2440,6 +2443,7 @@
       },
       'ios-simulator-code-coverage': {
         'mixins': [
+          'enable_resultdb',
           'ios_output_disabled_tests',
           'isolate_profile_data',
           'mac_10.15',
@@ -2454,6 +2458,7 @@
       },
       'ios-simulator-coverage-exp': {
         'mixins': [
+          'enable_resultdb',
           'isolate_profile_data',
           'mac_10.15',
           'mac_toolchain',
@@ -2467,6 +2472,7 @@
       },
       'ios-simulator-cronet': {
         'mixins': [
+          'enable_resultdb',
           'mac_10.15',
           'mac_toolchain',
           'out_dir_arg',
@@ -2479,6 +2485,7 @@
       },
       'ios-simulator-full-configs-coverage-exp': {
         'mixins': [
+          'enable_resultdb',
           'isolate_profile_data',
           'mac_10.15',
           'mac_toolchain',
@@ -2492,6 +2499,7 @@
       },
       'ios-simulator-multi-window': {
         'mixins': [
+          'enable_resultdb',
           'mac_10.15',
           'mac_toolchain',
           'out_dir_arg',
@@ -2504,6 +2512,7 @@
       },
       'ios-webkit-tot': {
         'mixins': [
+          'enable_resultdb',
           'ios_custom_webkit',
           'mac_10.15',
           'mac_toolchain',
@@ -2537,6 +2546,7 @@
           'all',
         ],
         'mixins': [
+          'enable_resultdb',
           'mac_10.15',
           'mac_toolchain',
           'out_dir_arg',
@@ -2554,6 +2564,7 @@
           'all',
         ],
         'mixins': [
+          'enable_resultdb',
           'mac_10.15',
           'mac_toolchain',
           'out_dir_arg',
@@ -4892,6 +4903,7 @@
           'all',
         ],
         'mixins': [
+          'enable_resultdb',
           'isolate_profile_data',
           'mac_10.15',
           'mac_toolchain',
@@ -4908,6 +4920,7 @@
           'all'
         ],
         'mixins': [
+          'enable_resultdb',
           'isolate_profile_data',
           'mac_10.15',
           'mac_toolchain',
@@ -4924,6 +4937,7 @@
           'all'
         ],
         'mixins': [
+          'enable_resultdb',
           'mac_10.15',
           'mac_toolchain',
           'out_dir_arg',
