@@ -11,6 +11,7 @@ js_type_check("closure_compile") {
     ":cellular_eid_popup",
     ":cellular_networks_list",
     ":cellular_setup_dialog",
+    ":esim_remove_profile_dialog",
     ":esim_rename_dialog",
     ":internet_config",
     ":internet_detail_menu",
@@ -29,6 +30,7 @@ js_type_check("closure_compile") {
 js_library("internet_page") {
   deps = [
     ":cellular_setup_dialog",
+    ":esim_remove_profile_dialog",
     ":esim_rename_dialog",
     ":internet_config",
     ":internet_page_browser_proxy",
@@ -231,6 +233,16 @@ js_library("esim_rename_dialog") {
   ]
 }
 
+js_library("esim_remove_profile_dialog") {
+  deps = [
+    "//ui/webui/resources/cr_components/chromeos/cellular_setup:mojo_interface_provider",
+    "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input",
+    "//ui/webui/resources/js:i18n_behavior",
+  ]
+}
+
 # TODO: Uncomment as the Polymer3 migration makes progress.
 js_type_check("closure_compile_module") {
   is_polymer3 = true
@@ -239,6 +251,7 @@ js_type_check("closure_compile_module") {
     ":cellular_networks_list.m",
     ":cellular_setup_dialog.m",
     ":cellular_setup_settings_delegate.m",
+    ":esim_remove_profile_dialog.m",
     ":esim_rename_dialog.m",
     ":internet_config.m",
     ":internet_detail_menu.m",
@@ -366,6 +379,7 @@ js_library("internet_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/internet_page/internet_page.m.js" ]
   deps = [
     ":cellular_setup_dialog.m",
+    ":esim_remove_profile_dialog.m",
     ":esim_rename_dialog.m",
     ":internet_config.m",
     ":internet_detail_page.m",
@@ -543,6 +557,18 @@ js_library("esim_rename_dialog.m") {
   extra_deps = [ ":esim_rename_dialog_module" ]
 }
 
+js_library("esim_remove_profile_dialog.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/internet_page/esim_remove_profile_dialog.m.js" ]
+  deps = [
+    "//ui/webui/resources/cr_components/chromeos/cellular_setup:mojo_interface_provider.m",
+    "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+  extra_deps = [ ":esim_remove_profile_dialog_module" ]
+}
+
 import("//tools/polymer/polymer.gni")
 
 group("polymer3_elements") {
@@ -550,6 +576,7 @@ group("polymer3_elements") {
     ":cellular_eid_popup_module",
     ":cellular_networks_list_module",
     ":cellular_setup_dialog_module",
+    ":esim_remove_profile_dialog_module",
     ":esim_rename_dialog_module",
     ":internet_config_module",
     ":internet_detail_menu_module",
@@ -680,6 +707,14 @@ polymer_modulizer("cellular_eid_popup") {
 polymer_modulizer("esim_rename_dialog") {
   js_file = "esim_rename_dialog.js"
   html_file = "esim_rename_dialog.html"
+  html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+}
+
+polymer_modulizer("esim_remove_profile_dialog") {
+  js_file = "esim_remove_profile_dialog.js"
+  html_file = "esim_remove_profile_dialog.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
   namespace_rewrites = os_settings_namespace_rewrites

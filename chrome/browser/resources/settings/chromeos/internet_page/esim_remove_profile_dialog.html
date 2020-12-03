@@ -1,0 +1,31 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/mojo_interface_provider.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+
+<dom-module id="esim-remove-profile-dialog">
+  <template>
+    <style>
+      #cancel {
+        margin-inline-end: 8px;
+      }
+    </style>
+    <cr-dialog id="dialog" show-on-attach>
+      <div slot="title">[[getTitleString_(esimProfileName_)]]</div>
+      <div slot="button-container">
+        <cr-button id="cancel" on-click="onCancelTap_"
+            class="cancel-button">
+          $i18n{eSimRemoveProfileDialogCancel}
+        </cr-button>
+        <cr-button id="remove" on-click="onRemoveProfileTap_"
+            class="action-button">
+          $i18n{eSimRemoveProfileDialogRemove}
+        </cr-button>
+      </div>
+    </cr-dialog>
+  </template>
+  <script src="esim_remove_profile_dialog.js"></script>
+</dom-module>
