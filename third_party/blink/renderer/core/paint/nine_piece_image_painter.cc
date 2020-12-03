@@ -80,18 +80,35 @@ void PaintPieces(GraphicsContext& context,
                  const ComputedStyle& style,
                  const NinePieceImage& nine_piece_image,
                  Image* image,
-                 IntSize image_size,
+                 const FloatSize& unzoomed_image_size,
                  PhysicalBoxSides sides_to_include) {
+  // |image_size| is in the image's native resolution and |slice_scale| defines
+  // the effective size of a CSS pixel in the image.
+  FloatSize image_size = image->SizeAsFloat(kRespectImageOrientation);
+  // Compute the scale factor to apply to the slice values by relating the
+  // zoomed size to the "unzoomed" (CSS pixel) size. For raster images this
+  // should match any DPR scale while for generated images it should match the
+  // effective zoom. (Modulo imprecisions introduced by the computation.) This
+  // scale should in theory be uniform.
+  FloatSize slice_scale(image_size.Width() / unzoomed_image_size.Width(),
+                        image_size.Height() / unzoomed_image_size.Height());
+
+  // TODO(fs): Use FloatSize here to avoid additional rounding (leave that to
+  // NinePieceImageGrid if needed). For narrow slices the rounding can introduce
+  // large errors (fairly visible in the TC in crbug.com/596075 when zooming).
+  IntSize rounded_image_size = RoundedIntSize(image_size);
   IntRectOutsets border_widths(style.BorderTopWidth(), style.BorderRightWidth(),
                                style.BorderBottomWidth(),
                                style.BorderLeftWidth());
-  NinePieceImageGrid grid(nine_piece_image, image_size,
-                          PixelSnappedIntRect(border_image_rect), border_widths,
-                          sides_to_include);
+  NinePieceImageGrid grid(
+      nine_piece_image, rounded_image_size, slice_scale, style.EffectiveZoom(),
+      PixelSnappedIntRect(border_image_rect), border_widths, sides_to_include);
 
+  ScopedInterpolationQuality interpolation_quality_scope(
+      context, style.GetInterpolationQuality());
   for (NinePiece piece = kMinPiece; piece < kMaxPiece; ++piece) {
-    NinePieceImageGrid::NinePieceDrawInfo draw_info = grid.GetNinePieceDrawInfo(
-        piece, nine_piece_image.GetImage()->ImageScaleFactor());
+    NinePieceImageGrid::NinePieceDrawInfo draw_info =
+        grid.GetNinePieceDrawInfo(piece);
 
     if (draw_info.is_drawable) {
       if (draw_info.is_corner_piece) {
@@ -125,10 +142,11 @@ void PaintPieces(GraphicsContext& context,
         FloatSize tile_spacing(h_tile->spacing, v_tile->spacing);
 
         // TODO(cavalcantii): see crbug.com/662507.
-        base::Optional<ScopedInterpolationQuality> interpolation_quality_scope;
+        base::Optional<ScopedInterpolationQuality>
+            interpolation_quality_override;
         if (draw_info.tile_rule.horizontal == kRoundImageRule ||
             draw_info.tile_rule.vertical == kRoundImageRule)
-          interpolation_quality_scope.emplace(context, kInterpolationMedium);
+          interpolation_quality_override.emplace(context, kInterpolationMedium);
 
         context.DrawImageTiled(image, draw_info.destination, draw_info.source,
                                tile_scale_factor, tile_phase, tile_spacing);
@@ -165,35 +183,33 @@ bool NinePieceImagePainter::Paint(GraphicsContext& graphics_context,
   rect_with_outsets.Expand(style.ImageOutsets(nine_piece_image));
   PhysicalRect border_image_rect = rect_with_outsets;
 
-  // NinePieceImage returns the image slices without effective zoom applied and
-  // thus we compute the nine piece grid on top of the image in unzoomed
-  // coordinates.
-  //
-  // FIXME: The default object size passed to imageSize() should be scaled by
-  // the zoom factor passed in. In this case it means that borderImageRect
-  // should be passed in compensated by effective zoom, since the scale factor
-  // is one. For generated images, the actual image data (gradient stops, etc.)
-  // are scaled to effective zoom instead so we must take care not to cause
-  // scale of them again.
-  IntSize image_size = RoundedIntSize(
-      style_image->ImageSize(document, 1, FloatSize(border_image_rect.size),
-                             kRespectImageOrientation));
+  // Resolve the image size for any image that may need it (for example
+  // generated or SVG), then get an image using that size. This will yield an
+  // image with either "native" size (raster images) or size scaled by effective
+  // zoom.
+  const FloatSize default_object_size(border_image_rect.size);
+  FloatSize image_size =
+      style_image->ImageSize(document, style.EffectiveZoom(),
+                             default_object_size, kRespectImageOrientation);
   scoped_refptr<Image> image =
-      style_image->GetImage(observer, document, style, FloatSize(image_size));
+      style_image->GetImage(observer, document, style, image_size);
   if (!image)
     return true;
+
+  // Resolve the image size again, this time with a size-multiplier of one, to
+  // yield the size in CSS pixels. This is the unit/scale we expect the
+  // 'border-image-slice' values to be in.
+  FloatSize unzoomed_image_size = style_image->ImageSize(
+      document, 1, default_object_size.ScaledBy(1 / style.EffectiveZoom()),
+      kRespectImageOrientation);
 
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",
                "data",
                inspector_paint_image_event::Data(node, *style_image,
                                                  FloatRect(image->Rect()),
                                                  FloatRect(border_image_rect)));
-
-  ScopedInterpolationQuality interpolation_quality_scope(
-      graphics_context, style.GetInterpolationQuality());
   PaintPieces(graphics_context, border_image_rect, style, nine_piece_image,
-              image.get(), image_size, sides_to_include);
-
+              image.get(), unzoomed_image_size, sides_to_include);
   return true;
 }
 

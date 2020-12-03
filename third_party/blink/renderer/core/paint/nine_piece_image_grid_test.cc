@@ -34,11 +34,12 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_NoDrawables) {
   IntRect border_image_area(0, 0, 100, 100);
   IntRectOutsets border_widths(0, 0, 0, 0);
 
-  NinePieceImageGrid grid = NinePieceImageGrid(
-      nine_piece, image_size, border_image_area, border_widths);
+  NinePieceImageGrid grid =
+      NinePieceImageGrid(nine_piece, image_size, FloatSize(1, 1), 1,
+                         border_image_area, border_widths);
   for (NinePiece piece = kMinPiece; piece < kMaxPiece; ++piece) {
     NinePieceImageGrid::NinePieceDrawInfo draw_info =
-        grid.GetNinePieceDrawInfo(piece, 1);
+        grid.GetNinePieceDrawInfo(piece);
     EXPECT_FALSE(draw_info.is_drawable);
   }
 }
@@ -53,11 +54,12 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_AllDrawable) {
   IntRect border_image_area(0, 0, 100, 100);
   IntRectOutsets border_widths(10, 10, 10, 10);
 
-  NinePieceImageGrid grid = NinePieceImageGrid(
-      nine_piece, image_size, border_image_area, border_widths);
+  NinePieceImageGrid grid =
+      NinePieceImageGrid(nine_piece, image_size, FloatSize(1, 1), 1,
+                         border_image_area, border_widths);
   for (NinePiece piece = kMinPiece; piece < kMaxPiece; ++piece) {
     NinePieceImageGrid::NinePieceDrawInfo draw_info =
-        grid.GetNinePieceDrawInfo(piece, 1);
+        grid.GetNinePieceDrawInfo(piece);
     EXPECT_TRUE(draw_info.is_drawable);
   }
 }
@@ -72,11 +74,12 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_NoFillMiddleNotDrawable) {
   IntRect border_image_area(0, 0, 100, 100);
   IntRectOutsets border_widths(10, 10, 10, 10);
 
-  NinePieceImageGrid grid = NinePieceImageGrid(
-      nine_piece, image_size, border_image_area, border_widths);
+  NinePieceImageGrid grid =
+      NinePieceImageGrid(nine_piece, image_size, FloatSize(1, 1), 1,
+                         border_image_area, border_widths);
   for (NinePiece piece = kMinPiece; piece < kMaxPiece; ++piece) {
     NinePieceImageGrid::NinePieceDrawInfo draw_info =
-        grid.GetNinePieceDrawInfo(piece, 1);
+        grid.GetNinePieceDrawInfo(piece);
     if (piece != kMiddlePiece)
       EXPECT_TRUE(draw_info.is_drawable);
     else
@@ -103,11 +106,12 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_TopLeftDrawable) {
   };
 
   for (const auto& test_case : test_cases) {
-    NinePieceImageGrid grid = NinePieceImageGrid(
-        nine_piece, image_size, border_image_area, test_case.border_widths);
+    NinePieceImageGrid grid =
+        NinePieceImageGrid(nine_piece, image_size, FloatSize(1, 1), 1,
+                           border_image_area, test_case.border_widths);
     for (NinePiece piece = kMinPiece; piece < kMaxPiece; ++piece) {
       NinePieceImageGrid::NinePieceDrawInfo draw_info =
-          grid.GetNinePieceDrawInfo(piece, 1);
+          grid.GetNinePieceDrawInfo(piece);
       if (piece == kTopLeftPiece)
         EXPECT_EQ(draw_info.is_drawable, test_case.expected_is_drawable);
     }
@@ -127,11 +131,12 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_ScaleDownBorder) {
   // down and corner pieces cover the entire border image area.
   nine_piece.SetBorderSlices(BorderImageLengthBox(6));
 
-  NinePieceImageGrid grid = NinePieceImageGrid(
-      nine_piece, image_size, border_image_area, border_widths);
+  NinePieceImageGrid grid =
+      NinePieceImageGrid(nine_piece, image_size, FloatSize(1, 1), 1,
+                         border_image_area, border_widths);
   for (NinePiece piece = kMinPiece; piece < kMaxPiece; ++piece) {
     NinePieceImageGrid::NinePieceDrawInfo draw_info =
-        grid.GetNinePieceDrawInfo(piece, 1);
+        grid.GetNinePieceDrawInfo(piece);
     if (draw_info.is_corner_piece)
       EXPECT_EQ(draw_info.destination.Size(), FloatSize(50, 50));
     else
@@ -144,16 +149,16 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_ScaleDownBorder) {
   BorderImageLength bottom_right(20);
   nine_piece.SetBorderSlices(
       BorderImageLengthBox(top_left, bottom_right, bottom_right, top_left));
-  grid = NinePieceImageGrid(nine_piece, image_size, border_image_area,
-                            border_widths);
+  grid = NinePieceImageGrid(nine_piece, image_size, FloatSize(1, 1), 1,
+                            border_image_area, border_widths);
   NinePieceImageGrid::NinePieceDrawInfo draw_info =
-      grid.GetNinePieceDrawInfo(kTopLeftPiece, 1);
+      grid.GetNinePieceDrawInfo(kTopLeftPiece);
   EXPECT_EQ(draw_info.destination.Size(), FloatSize(33, 33));
-  draw_info = grid.GetNinePieceDrawInfo(kTopRightPiece, 1);
+  draw_info = grid.GetNinePieceDrawInfo(kTopRightPiece);
   EXPECT_EQ(draw_info.destination.Size(), FloatSize(67, 33));
-  draw_info = grid.GetNinePieceDrawInfo(kBottomLeftPiece, 1);
+  draw_info = grid.GetNinePieceDrawInfo(kBottomLeftPiece);
   EXPECT_EQ(draw_info.destination.Size(), FloatSize(33, 67));
-  draw_info = grid.GetNinePieceDrawInfo(kBottomRightPiece, 1);
+  draw_info = grid.GetNinePieceDrawInfo(kBottomRightPiece);
   EXPECT_EQ(draw_info.destination.Size(), FloatSize(67, 67));
 
   // Set border slices that overlap in one dimension but not in the other, and
@@ -163,18 +168,18 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_ScaleDownBorder) {
   BorderImageLength left_right(Length::Fixed(11));
   nine_piece.SetBorderSlices(
       BorderImageLengthBox(top_bottom, left_right, top_bottom, left_right));
-  grid = NinePieceImageGrid(nine_piece, image_size, border_image_area,
-                            border_widths);
+  grid = NinePieceImageGrid(nine_piece, image_size, FloatSize(1, 1), 1,
+                            border_image_area, border_widths);
   NinePieceImageGrid::NinePieceDrawInfo tl_info =
-      grid.GetNinePieceDrawInfo(kTopLeftPiece, 1);
+      grid.GetNinePieceDrawInfo(kTopLeftPiece);
   EXPECT_EQ(tl_info.destination.Size(), FloatSize(6, 50));
   // The top-right, bottom-left and bottom-right pieces are the same size as
   // the top-left piece.
-  draw_info = grid.GetNinePieceDrawInfo(kTopRightPiece, 1);
+  draw_info = grid.GetNinePieceDrawInfo(kTopRightPiece);
   EXPECT_EQ(tl_info.destination.Size(), draw_info.destination.Size());
-  draw_info = grid.GetNinePieceDrawInfo(kBottomLeftPiece, 1);
+  draw_info = grid.GetNinePieceDrawInfo(kBottomLeftPiece);
   EXPECT_EQ(tl_info.destination.Size(), draw_info.destination.Size());
-  draw_info = grid.GetNinePieceDrawInfo(kBottomRightPiece, 1);
+  draw_info = grid.GetNinePieceDrawInfo(kBottomRightPiece);
   EXPECT_EQ(tl_info.destination.Size(), draw_info.destination.Size());
 }
 
@@ -356,11 +361,11 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting) {
     nine_piece.SetVerticalRule((ENinePieceImageRule)test_case.vertical_rule);
 
     NinePieceImageGrid grid = NinePieceImageGrid(
-        nine_piece, test_case.image_size, test_case.border_image_area,
-        test_case.border_widths);
+        nine_piece, test_case.image_size, FloatSize(1, 1), 1,
+        test_case.border_image_area, test_case.border_widths);
     for (NinePiece piece = kMinPiece; piece < kMaxPiece; ++piece) {
       NinePieceImageGrid::NinePieceDrawInfo draw_info =
-          grid.GetNinePieceDrawInfo(piece, 1);
+          grid.GetNinePieceDrawInfo(piece);
       EXPECT_EQ(test_case.pieces[piece].is_drawable, draw_info.is_drawable);
       if (!test_case.pieces[piece].is_drawable)
         continue;
@@ -392,6 +397,71 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting) {
       EXPECT_EQ(test_case.pieces[piece].vertical_rule,
                 draw_info.tile_rule.vertical);
     }
+  }
+}
+
+TEST_F(NinePieceImageGridTest, NinePieceImagePainting_Zoomed) {
+  NinePieceImage nine_piece;
+  nine_piece.SetImage(GeneratedImage());
+  // Image slices are specified in CSS pixels.
+  nine_piece.SetImageSlices(LengthBox(10, 10, 10, 10));
+  nine_piece.SetFill(true);
+
+  IntSize image_size(50, 50);
+  IntRect border_image_area(0, 0, 200, 200);
+  IntRectOutsets border_widths(20, 20, 20, 20);
+
+  NinePieceImageGrid grid =
+      NinePieceImageGrid(nine_piece, image_size, FloatSize(2, 2), 2,
+                         border_image_area, border_widths);
+  struct {
+    bool is_drawable;
+    bool is_corner_piece;
+    FloatRect destination;
+    FloatRect source;
+    float tile_scale_horizontal;
+    float tile_scale_vertical;
+    ENinePieceImageRule horizontal_rule;
+    ENinePieceImageRule vertical_rule;
+  } expected_pieces[kMaxPiece] = {
+      {true, true, FloatRect(0, 0, 20, 20), FloatRect(0, 0, 20, 20), 0, 0,
+       kStretchImageRule, kStretchImageRule},
+      {true, true, FloatRect(0, 180, 20, 20), FloatRect(0, 30, 20, 20), 0, 0,
+       kStretchImageRule, kStretchImageRule},
+      {true, false, FloatRect(0, 20, 20, 160), FloatRect(0, 20, 20, 10), 1, 1,
+       kStretchImageRule, kStretchImageRule},
+      {true, true, FloatRect(180, 0, 20, 20), FloatRect(30, 0, 20, 20), 0, 0,
+       kStretchImageRule, kStretchImageRule},
+      {true, true, FloatRect(180, 180, 20, 20), FloatRect(30, 30, 20, 20), 0, 0,
+       kStretchImageRule, kStretchImageRule},
+      {true, false, FloatRect(180, 20, 20, 160), FloatRect(30, 20, 20, 10), 1,
+       1, kStretchImageRule, kStretchImageRule},
+      {true, false, FloatRect(20, 0, 160, 20), FloatRect(20, 0, 10, 20), 1, 1,
+       kStretchImageRule, kStretchImageRule},
+      {true, false, FloatRect(20, 180, 160, 20), FloatRect(20, 30, 10, 20), 1,
+       1, kStretchImageRule, kStretchImageRule},
+      {true, false, FloatRect(20, 20, 160, 160), FloatRect(20, 20, 10, 10), 16,
+       16, kStretchImageRule, kStretchImageRule},
+  };
+
+  for (NinePiece piece = kMinPiece; piece < kMaxPiece; ++piece) {
+    NinePieceImageGrid::NinePieceDrawInfo draw_info =
+        grid.GetNinePieceDrawInfo(piece);
+    EXPECT_TRUE(draw_info.is_drawable);
+
+    const auto& expected = expected_pieces[piece];
+    EXPECT_EQ(draw_info.destination, expected.destination);
+    EXPECT_EQ(draw_info.source, expected.source);
+
+    if (expected.is_corner_piece)
+      continue;
+
+    EXPECT_FLOAT_EQ(draw_info.tile_scale.Width(),
+                    expected.tile_scale_horizontal);
+    EXPECT_FLOAT_EQ(draw_info.tile_scale.Height(),
+                    expected.tile_scale_vertical);
+    EXPECT_EQ(draw_info.tile_rule.vertical, expected.vertical_rule);
+    EXPECT_EQ(draw_info.tile_rule.horizontal, expected.horizontal_rule);
   }
 }
 

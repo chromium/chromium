@@ -64,6 +64,8 @@ class CORE_EXPORT NinePieceImageGrid {
  public:
   NinePieceImageGrid(const NinePieceImage&,
                      IntSize image_size,
+                     const FloatSize& slice_scale,
+                     float zoom,
                      IntRect border_image_area,
                      const IntRectOutsets& border_widths,
                      PhysicalBoxSides sides_to_include = PhysicalBoxSides());
@@ -85,7 +87,7 @@ class CORE_EXPORT NinePieceImageGrid {
       ENinePieceImageRule vertical;
     } tile_rule;
   };
-  NinePieceDrawInfo GetNinePieceDrawInfo(NinePiece, float) const;
+  NinePieceDrawInfo GetNinePieceDrawInfo(NinePiece) const;
 
   struct Edge {
     DISALLOW_NEW();
