@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 
 import("//build/config/ios/ios_sdk.gni")
+import("//build/toolchain/goma.gni")
 import("//build/toolchain/toolchain.gni")
+import("//build_overrides/build.gni")
 
 declare_args() {
   # Enabling this option makes clang compile to an intermediate
@@ -87,12 +89,12 @@ config("compiler") {
 # that is iOS-only. Please see that target for advice on what should go in
 # :runtime_library vs. :compiler.
 config("runtime_library") {
-  # The variable ios_sdk_path may be relative to root_out_dir on the bots. As
-  # it is passed to the compiler via cflags, ldflags which do not rebase the
-  # values (since they are compiler flags, not paths), it may be required to
-  # rebase it. Use a local variable to avoid repeating the rebase invocation.
+  # The variable ios_sdk_path is relative to root_build_dir when using Goma RBE
+  # and system Xcode (since Goma RBE only supports paths relative to source).
+  # Rebase the value in that case since gn does not convert paths in compiler
+  # flags (since it is not aware they are paths).
   _sdk_root = ios_sdk_path
-  if (ios_enable_relative_sdk_path) {
+  if (use_system_xcode && use_goma) {
     _sdk_root = rebase_path(ios_sdk_path, root_build_dir)
   }
 
@@ -222,7 +224,7 @@ _xctrunner_path =
 #
 # To workaround this, add a target that pretends to create those files
 # (but does nothing). See https://crbug.com/1061487 for why this is needed.
-if (ios_use_goma_rbe) {
+if (use_system_xcode && use_goma) {
   action("copy_xctrunner_app") {
     testonly = true
     script = "//build/noop.py"
@@ -251,7 +253,7 @@ action("xctest_runner_without_arm64e") {
     xcode_version,
   ]
 
-  if (ios_use_goma_rbe) {
+  if (use_system_xcode && use_goma) {
     deps = [ ":copy_xctrunner_app" ]
   }
 }

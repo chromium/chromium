@@ -5,7 +5,9 @@
 import("//build/config/ios/config.gni")
 import("//build/config/ios/ios_sdk_overrides.gni")
 import("//build/toolchain/goma.gni")
+import("//build/toolchain/goma.gni")
 import("//build/toolchain/toolchain.gni")
+import("//build_overrides/build.gni")
 
 assert(use_system_xcode, "Hermetic xcode doesn't work for ios.")
 
@@ -58,9 +60,6 @@ declare_args() {
   # You can also pass the value via "--args" parameter for "gn gen" command by
   # using the syntax --args='additional_target_cpus=["arm"] target_cpu="arm64"'.
   additional_target_cpus = []
-
-  # TODO(crbug.com/1015730): remove this flag because ios_use_goma_rbe covers.
-  ios_enable_relative_sdk_path = ios_use_goma_rbe
 }
 
 declare_args() {
@@ -135,7 +134,7 @@ if (ios_sdk_path == "") {
       ios_sdk_developer_dir,
     ]
   }
-  if (ios_use_goma_rbe) {
+  if (use_system_xcode && use_goma) {
     ios_sdk_info_args += [
       "--create_symlink_at",
       "sdk/xcode_links",

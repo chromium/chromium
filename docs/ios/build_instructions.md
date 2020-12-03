@@ -328,6 +328,23 @@ ask there. As mentioned above, be sure that the
 [waterfall](https://build.chromium.org/buildbot/waterfall/) is green and the tree
 is open before checking out. This will increase your chances of success.
 
+### Debugging
+
+To help with deterministic builds, and to work with Goma, the path to source
+files in debugging symbols are relative to source directory. To allow Xcode
+to find the source files, you need to ensure to have an `~/.lldbinit-Xcode`
+file with the following lines into it (substitute {SRC} for your actual path
+to the root of Chromium's sources):
+
+```
+script sys.path[:0] = ['{SRC}/tools/lldb']
+script import lldbinit
+```
+
+This will also allow you to see the content of some of Chromium types in the
+debugger like `base::string16`, ... If you want to use `lldb` directly, name
+the file `~/.lldbinit` instead of `~/.lldbinit-Xcode`.
+
 ### Improving performance of `git status`
 
 #### Increase the vnode cache size
