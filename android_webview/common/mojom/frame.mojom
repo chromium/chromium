@@ -22,4 +22,8 @@ interface LocalMainFrame {
   // TODO(crbug.com/1146495): AwViewHostMsg_UpdateHitTestData IPC message should
   // be converted to LocalMainFrameHost interface.
   HitTest(gfx.mojom.PointF touch_center, gfx.mojom.SizeF touch_area);
+
+  // Requests for the renderer to determine if the document contains any image
+  // elements.
+  DocumentHasImage() => (bool has_images);
 };

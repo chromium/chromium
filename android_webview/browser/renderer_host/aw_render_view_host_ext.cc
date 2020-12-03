@@ -31,7 +31,6 @@ AwRenderViewHostExt::AwRenderViewHostExt(AwRenderViewHostExtClient* client,
 
 AwRenderViewHostExt::~AwRenderViewHostExt() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ClearImageRequests();
 }
 
 void AwRenderViewHostExt::DocumentHasImages(DocumentHasImagesResult result) {
@@ -40,13 +39,9 @@ void AwRenderViewHostExt::DocumentHasImages(DocumentHasImagesResult result) {
     std::move(result).Run(false);
     return;
   }
-  static uint32_t next_id = 1;
-  uint32_t this_id = next_id++;
-  // Send the message to the main frame, instead of the whole frame tree,
-  // because it only makes sense on the main frame.
-  if (web_contents()->GetMainFrame()->Send(new AwViewMsg_DocumentHasImages(
-          web_contents()->GetMainFrame()->GetRoutingID(), this_id))) {
-    image_requests_callback_map_[this_id] = std::move(result);
+
+  if (local_main_frame_remote_) {
+    local_main_frame_remote_->DocumentHasImage(std::move(result));
   } else {
     // Still have to respond to the API call WebView#docuemntHasImages.
     // Otherwise the listener of the response may be starved.
@@ -117,20 +112,6 @@ void AwRenderViewHostExt::SmoothScroll(int target_x,
                                  target_x, target_y, duration));
 }
 
-void AwRenderViewHostExt::RenderViewHostChanged(
-    content::RenderViewHost* old_host,
-    content::RenderViewHost* new_host) {
-  ClearImageRequests();
-}
-
-void AwRenderViewHostExt::ClearImageRequests() {
-  for (auto& pair : image_requests_callback_map_) {
-    std::move(pair.second).Run(false);
-  }
-
-  image_requests_callback_map_.clear();
-}
-
 void AwRenderViewHostExt::RenderFrameCreated(
     content::RenderFrameHost* frame_host) {
   if (!frame_host->GetParent()) {
@@ -170,8 +151,6 @@ bool AwRenderViewHostExt::OnMessageReceived(
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP_WITH_PARAM(AwRenderViewHostExt, message,
                                    render_frame_host)
-    IPC_MESSAGE_HANDLER(AwViewHostMsg_DocumentHasImagesResponse,
-                        OnDocumentHasImagesResponse)
     IPC_MESSAGE_HANDLER(AwViewHostMsg_UpdateHitTestData,
                         OnUpdateHitTestData)
     IPC_MESSAGE_HANDLER(AwViewHostMsg_OnContentsSizeChanged,
@@ -180,28 +159,6 @@ bool AwRenderViewHostExt::OnMessageReceived(
   IPC_END_MESSAGE_MAP()
 
   return handled;
-}
-
-void AwRenderViewHostExt::OnDocumentHasImagesResponse(
-    content::RenderFrameHost* render_frame_host,
-    int msg_id,
-    bool has_images) {
-  // Only makes sense coming from the main frame of the current frame tree.
-  // This matches the current implementation that only cares about if there is
-  // an img child node in the main document, and essentially invokes JS:
-  // node.getElementsByTagName("img").
-  if (render_frame_host != web_contents()->GetMainFrame())
-    return;
-
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::map<int, DocumentHasImagesResult>::iterator pending_req =
-      image_requests_callback_map_.find(msg_id);
-  if (pending_req == image_requests_callback_map_.end()) {
-    DLOG(WARNING) << "unexpected DocumentHasImages Response: " << msg_id;
-  } else {
-    std::move(pending_req->second).Run(has_images);
-    image_requests_callback_map_.erase(pending_req);
-  }
 }
 
 void AwRenderViewHostExt::OnUpdateHitTestData(

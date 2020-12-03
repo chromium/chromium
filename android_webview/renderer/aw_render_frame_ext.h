@@ -47,8 +47,6 @@ class AwRenderFrameExt : public content::RenderFrameObserver,
   void FocusedElementChanged(const blink::WebElement& element) override;
   void OnDestruct() override;
 
-  void OnDocumentHasImagesRequest(uint32_t id);
-
   void OnSetTextZoomFactor(float zoom_factor);
 
   void OnResetScrollAndScaleState();
@@ -61,6 +59,7 @@ class AwRenderFrameExt : public content::RenderFrameObserver,
   void SetBackgroundColor(SkColor c) override;
   void HitTest(const gfx::PointF& touch_center,
                const gfx::SizeF& touch_area) override;
+  void DocumentHasImage(DocumentHasImageCallback callback) override;
 
   void BindLocalMainFrame(
       mojo::PendingAssociatedReceiver<mojom::LocalMainFrame> pending_receiver);
