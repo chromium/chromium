@@ -13,7 +13,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "chrome/browser/chromeos/arc/session/arc_service_launcher.h"
-#include "chrome/browser/chromeos/camera_mic/vm_camera_mic_manager_factory.h"
 #include "chrome/browser/chromeos/child_accounts/child_status_reporting_service_factory.h"
 #include "chrome/browser/chromeos/child_accounts/child_user_service_factory.h"
 #include "chrome/browser/chromeos/child_accounts/family_user_metrics_service_factory.h"
@@ -211,8 +210,6 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
         plugin_vm::PluginVmManagerFactory::GetForProfile(primary_profile_);
     if (plugin_vm_manager)
       plugin_vm_manager->OnPrimaryUserSessionStarted();
-
-    VmCameraMicManagerFactory::GetForProfile(primary_profile_);
   }
 }
 
