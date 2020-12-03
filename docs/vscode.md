@@ -75,24 +75,6 @@ integration to work:
 }
 ```
 
-#### Rendering of underscore on Linux
-
-As mentioned in [#35901](https://github.com/Microsoft/vscode/issues/35901), VS
-Code will not show underscore (`_`) properly on Linux by default. You can work
-around this issue by forcing another font such as the default `monospace` or
-changing the font size in your settings:
-
-```json
-{
-  // If you want to use the default "monospace" font:
-  //"terminal.integrated.fontFamily": "monospace"
-  // If you would rather just increase the size of the font:
-  //"terminal.integrated.fontSize": 15
-  // If you would rather decrease the size of the font:
-  //"terminal.integrated.fontSize": 13
-}
-```
-
 ### Useful Extensions
 
 Up to now, you have a basic version of VS Code without much language support.
