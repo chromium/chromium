@@ -17,7 +17,8 @@ namespace weblayer {
 class UkmBrowserTest : public WebLayerBrowserTest {
  public:
   void SetUp() override {
-    InstallTestGmsBridge(user_consent_);
+    InstallTestGmsBridge(user_consent_ ? ConsentType::kConsent
+                                       : ConsentType::kNoConsent);
 
     WebLayerBrowserTest::SetUp();
   }

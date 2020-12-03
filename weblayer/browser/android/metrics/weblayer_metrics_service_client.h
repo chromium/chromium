@@ -18,13 +18,15 @@
 #include "components/metrics/metrics_service_client.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "weblayer/browser/browser_list_observer.h"
 #include "weblayer/browser/profile_impl.h"
 
 namespace weblayer {
 
 class WebLayerMetricsServiceClient
     : public ::metrics::AndroidMetricsServiceClient,
-      public ProfileImpl::ProfileObserver {
+      public ProfileImpl::ProfileObserver,
+      public BrowserListObserver {
   friend class base::NoDestructor<WebLayerMetricsServiceClient>;
 
  public:
@@ -52,9 +54,20 @@ class WebLayerMetricsServiceClient
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
 
  private:
+  friend void JNI_ApplyConsentHelper(bool user_consent, bool app_consent);
+
+  // Called once when consent has been determined.
+  void ApplyConsent(bool user_consent, bool app_consent);
+
+  // Updates the services based on the foreground state.
+  void ApplyForegroundStateToServices();
+
   // ProfileImpl::ProfileObserver:
   void ProfileCreated(ProfileImpl* profile) override;
   void ProfileDestroyed(ProfileImpl* profile) override;
+
+  // BrowserListObserver:
+  void OnHasAtLeastOneResumedBrowserStateChanged(bool new_value) override;
 
   std::vector<base::OnceClosure> post_start_tasks_;
 

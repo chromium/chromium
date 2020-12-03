@@ -38,7 +38,7 @@ class NoStatePrefetchBrowserTest : public WebLayerBrowserTest {
  public:
 #if defined(OS_ANDROID)
   void SetUp() override {
-    InstallTestGmsBridge(/* user_consent= */ true);
+    InstallTestGmsBridge(ConsentType::kConsent);
 
     WebLayerBrowserTest::SetUp();
   }

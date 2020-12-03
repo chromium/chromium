@@ -49,11 +49,14 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/javascript_dialogs/android/app_modal_dialog_view_android.h"  // nogncheck
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"  // nogncheck
+#include "components/metrics/metrics_service.h"
+#include "components/variations/variations_ids_provider.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "net/android/network_change_notifier_factory_android.h"
 #include "net/base/network_change_notifier.h"
 #include "weblayer/browser/android/metrics/uma_utils.h"
+#include "weblayer/browser/android/metrics/weblayer_metrics_service_client.h"
 #include "weblayer/browser/java/jni/MojoInterfaceRegistrar_jni.h"
 #include "weblayer/browser/media/local_presentation_manager_factory.h"
 #include "weblayer/browser/media/media_router_factory.h"
@@ -161,6 +164,18 @@ int BrowserMainPartsImpl::PreCreateThreads() {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kDisableMediaSessionAPI);
   }
+
+  // WebLayer initializes the MetricsService once consent is determined.
+  // Determining consent is async and potentially slow. VariationsIdsProvider
+  // is responsible for updating the X-Client-Data header. To ensure the header
+  // is always provided, VariationsIdsProvider is registered now.
+  //
+  // Chrome registers the VariationsIdsProvider from PreCreateThreads() as well.
+  auto* metrics_client = WebLayerMetricsServiceClient::GetInstance();
+  metrics_client->GetMetricsService()
+      ->synthetic_trial_registry()
+      ->AddSyntheticTrialObserver(
+          variations::VariationsIdsProvider::GetInstance());
 #endif
 
   return content::RESULT_CODE_NORMAL_EXIT;

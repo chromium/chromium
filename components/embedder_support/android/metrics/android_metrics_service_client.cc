@@ -248,6 +248,16 @@ void AndroidMetricsServiceClient::Initialize(PrefService* pref_service) {
                                   base::BindRepeating(&LoadClientInfo));
 
   init_finished_ = true;
+
+  // Create the MetricsService immediately so that other code can make use of
+  // it. Chrome always creates the MetricsService as well.
+  metrics_service_ = std::make_unique<MetricsService>(
+      metrics_state_manager_.get(), this, pref_service_);
+
+  // Registration of providers has to wait until consent is determined. To
+  // do otherwise means the providers would always be configured with reporting
+  // disabled (because when this is called in production consent hasn't been
+  // determined). If consent has not been determined, this does nothing.
   MaybeStartMetrics();
 }
 
@@ -260,8 +270,7 @@ void AndroidMetricsServiceClient::MaybeStartMetrics() {
   bool user_consent_or_flag = user_consent_ || IsMetricsReportingForceEnabled();
   if (IsConsentDetermined()) {
     if (app_consent_ && user_consent_or_flag) {
-      metrics_service_ = std::make_unique<MetricsService>(
-          metrics_state_manager_.get(), this, pref_service_);
+      did_start_metrics_ = true;
       // Make GetSampleBucketValue() work properly.
       metrics_state_manager_->ForceClientIdCreation();
       is_client_id_forced_ = true;
@@ -309,7 +318,7 @@ void AndroidMetricsServiceClient::RegisterMetricsProvidersAndInitState() {
       std::make_unique<metrics::GPUMetricsProvider>());
   RegisterAdditionalMetricsProviders(metrics_service_.get());
 
-  // The file metrics provider makes IO.
+  // The file metrics provider performs IO.
   base::ScopedAllowBlocking allow_io;
   metrics_service_->InitializeMetricsRecordingState();
 }
@@ -419,10 +428,14 @@ bool AndroidMetricsServiceClient::IsReportingEnabled() const {
          (EnabledStateProvider::IsReportingEnabled() && IsInSample());
 }
 
+MetricsService* AndroidMetricsServiceClient::GetMetricsServiceIfStarted() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return did_start_metrics_ ? metrics_service_.get() : nullptr;
+}
+
 MetricsService* AndroidMetricsServiceClient::GetMetricsService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // This will be null if initialization hasn't finished, or if metrics
-  // collection is disabled.
+  // This will be null if initialization hasn't finished.
   return metrics_service_.get();
 }
 

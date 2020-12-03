@@ -42,6 +42,7 @@ if (is_android) {
       "//content/public/test/android:content_java_test_support",
       "//testing/android/native_test:native_test_java",
       "//third_party/android_deps:android_support_v4_java",
+      "//third_party/android_deps:androidx_annotation_annotation_java",
       "//third_party/android_deps:androidx_core_core_java",
       "//ui/android:ui_java",
       "//weblayer/browser/java",
@@ -49,6 +50,7 @@ if (is_android) {
       "//weblayer/public/java",
       "//weblayer/public/javatestutil:test_java",
     ]
+    srcjar_deps = [ ":generated_enums" ]
 
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
@@ -69,6 +71,10 @@ if (is_android) {
     } else {
       deps += [ "//v8:v8_external_startup_data_assets" ]
     }
+  }
+
+  java_cpp_enum("generated_enums") {
+    sources = [ "//weblayer/browser/android/metrics/metrics_test_helper.h" ]
   }
 }
 

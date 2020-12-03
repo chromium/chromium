@@ -393,6 +393,7 @@ void MetricsService::RecordCompletedSessionEnd() {
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
 void MetricsService::OnAppEnterBackground(bool keep_recording_in_background) {
+  is_in_foreground_ = false;
   if (!keep_recording_in_background) {
     rotation_scheduler_->Stop();
     reporting_service_.Stop();
@@ -419,6 +420,7 @@ void MetricsService::OnAppEnterBackground(bool keep_recording_in_background) {
 }
 
 void MetricsService::OnAppEnterForeground(bool force_open_new_log) {
+  is_in_foreground_ = true;
   state_manager_->clean_exit_beacon()->WriteBeaconValue(false);
   StartSchedulerIfNecessary();
 
