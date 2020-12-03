@@ -62,6 +62,7 @@
 #include "device/fido/hid/fake_hid_impl_for_testing.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/mock_fido_device.h"
+#include "device/fido/multiple_virtual_fido_device_factory.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key.h"
 #include "device/fido/test_callback_receiver.h"
@@ -3941,6 +3942,51 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialWrongPINFirst) {
             virtual_device_factory_->mutable_state()->pin_retries);
 }
 
+TEST_F(PINAuthenticatorImplTest, MakeCredentialSkipPINTouch) {
+  virtual_device_factory_->mutable_state()->pin = kTestPIN;
+  int taps = 0;
+  virtual_device_factory_->mutable_state()->simulate_press_callback =
+      base::BindLambdaForTesting([&](device::VirtualFidoDevice* device) {
+        ++taps;
+        return true;
+      });
+  virtual_device_factory_->mutable_state()->pin_retries =
+      device::kMaxPinRetries;
+  test_client_.expected = {{device::kMaxPinRetries, kTestPIN}};
+  EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ(taps, 1);
+}
+
+TEST_F(PINAuthenticatorImplTest, MakeCredentialDontSkipPINTouch) {
+  // Create two devices. Both are candidates but only the second one will
+  // respond to touches.
+  auto discovery =
+      std::make_unique<device::test::MultipleVirtualFidoDeviceFactory>();
+  device::test::MultipleVirtualFidoDeviceFactory::DeviceDetails device_1;
+  device_1.config.pin_support = true;
+  device_1.state->simulate_press_callback =
+      base::BindRepeating([](VirtualFidoDevice* _) { return false; });
+  discovery->AddDevice(std::move(device_1));
+
+  int taps = 0;
+  device::test::MultipleVirtualFidoDeviceFactory::DeviceDetails device_2;
+  device_2.state->pin = kTestPIN;
+  device_2.config.pin_support = true;
+  device_2.state->simulate_press_callback =
+      base::BindLambdaForTesting([&](VirtualFidoDevice* _) {
+        ++taps;
+        return true;
+      });
+  discovery->AddDevice(std::move(device_2));
+
+  AuthenticatorEnvironmentImpl::GetInstance()
+      ->ReplaceDefaultDiscoveryFactoryForTesting(std::move(discovery));
+
+  test_client_.expected = {{device::kMaxPinRetries, kTestPIN}};
+  EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ(taps, 2);
+}
+
 TEST_F(PINAuthenticatorImplTest, MakeCredentialAlwaysUv) {
   // Test that if an authenticator is reporting alwaysUv = 1, UV is attempted
   // even if the user verification requirement is discouraged.
@@ -4189,6 +4235,57 @@ TEST_F(PINAuthenticatorImplTest, GetAssertionHardLock) {
   ASSERT_TRUE(test_client_.failure_reason.has_value());
   EXPECT_EQ(InterestingFailureReason::kHardPINBlock,
             *test_client_.failure_reason);
+}
+
+TEST_F(PINAuthenticatorImplTest, GetAssertionSkipPINTouch) {
+  virtual_device_factory_->mutable_state()->pin = kTestPIN;
+  int taps = 0;
+  virtual_device_factory_->mutable_state()->simulate_press_callback =
+      base::BindLambdaForTesting([&](device::VirtualFidoDevice* device) {
+        ++taps;
+        return true;
+      });
+  PublicKeyCredentialRequestOptionsPtr options = get_credential_options();
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+      options->allow_credentials[0].id(), kTestRelyingPartyId));
+  test_client_.expected = {{device::kMaxPinRetries, kTestPIN}};
+  EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
+            AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ(taps, 1);
+}
+
+TEST_F(PINAuthenticatorImplTest, GetAssertionDontSkipPINTouch) {
+  // Create two devices. Both are candidates but only the second one will
+  // respond to touches.
+  auto discovery =
+      std::make_unique<device::test::MultipleVirtualFidoDeviceFactory>();
+  device::test::MultipleVirtualFidoDeviceFactory::DeviceDetails device_1;
+  device_1.config.pin_support = true;
+  device_1.state->simulate_press_callback =
+      base::BindRepeating([](VirtualFidoDevice* _) { return false; });
+  discovery->AddDevice(std::move(device_1));
+
+  int taps = 0;
+  device::test::MultipleVirtualFidoDeviceFactory::DeviceDetails device_2;
+  device_2.state->pin = kTestPIN;
+  device_2.config.pin_support = true;
+  device_2.state->simulate_press_callback =
+      base::BindLambdaForTesting([&](VirtualFidoDevice* _) {
+        ++taps;
+        return true;
+      });
+  PublicKeyCredentialRequestOptionsPtr options = get_credential_options();
+  ASSERT_TRUE(device_2.state->InjectRegistration(
+      options->allow_credentials[0].id(), kTestRelyingPartyId));
+  discovery->AddDevice(std::move(device_2));
+
+  AuthenticatorEnvironmentImpl::GetInstance()
+      ->ReplaceDefaultDiscoveryFactoryForTesting(std::move(discovery));
+
+  test_client_.expected = {{device::kMaxPinRetries, kTestPIN}};
+  EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
+            AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ(taps, 2);
 }
 
 TEST_F(PINAuthenticatorImplTest, GetAssertionAlwaysUv) {
@@ -4702,18 +4799,18 @@ TEST_F(UVTokenAuthenticatorImplTest, GetAssertionFallBackToPin) {
       get_credential_options()->allow_credentials[0].id(),
       kTestRelyingPartyId));
 
-  int expected_retries = 5;
-  virtual_device_factory_->mutable_state()->uv_retries = expected_retries;
+  int taps = 0;
+  virtual_device_factory_->mutable_state()->uv_retries = 5;
   virtual_device_factory_->mutable_state()->simulate_press_callback =
       base::BindLambdaForTesting([&](device::VirtualFidoDevice* device) {
-        EXPECT_EQ(--expected_retries,
-                  virtual_device_factory_->mutable_state()->uv_retries);
+        ++taps;
         return true;
       });
 
   EXPECT_EQ(AuthenticatorGetAssertion(get_credential_options()).status,
             AuthenticatorStatus::SUCCESS);
-  EXPECT_EQ(0, expected_retries);
+  // 5 retries + 1 tap for the actual get assertion request.
+  EXPECT_EQ(taps, 6);
   EXPECT_TRUE(test_client_.collected_pin());
   EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length());
   EXPECT_EQ(5, virtual_device_factory_->mutable_state()->uv_retries);
@@ -4821,18 +4918,18 @@ TEST_F(UVTokenAuthenticatorImplTest, MakeCredentialFallBackToPin) {
       get_credential_options()->allow_credentials[0].id(),
       kTestRelyingPartyId));
 
-  int expected_retries = 5;
-  virtual_device_factory_->mutable_state()->uv_retries = expected_retries;
+  int taps = 0;
+  virtual_device_factory_->mutable_state()->uv_retries = 5;
   virtual_device_factory_->mutable_state()->simulate_press_callback =
       base::BindLambdaForTesting([&](device::VirtualFidoDevice* device) {
-        EXPECT_EQ(--expected_retries,
-                  virtual_device_factory_->mutable_state()->uv_retries);
+        ++taps;
         return true;
       });
 
   EXPECT_EQ(AuthenticatorMakeCredential(make_credential_options()).status,
             AuthenticatorStatus::SUCCESS);
-  EXPECT_EQ(0, expected_retries);
+  // 5 retries + 1 tap for the actual get assertion request.
+  EXPECT_EQ(taps, 6);
   EXPECT_TRUE(test_client_.collected_pin());
   EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length());
   EXPECT_EQ(5, virtual_device_factory_->mutable_state()->uv_retries);

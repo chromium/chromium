@@ -1067,8 +1067,11 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
     return CtapDeviceResponseCode::kCtap2ErrUnsupportedOption;
   }
 
-  // Step 10.
-  if (!user_verified && !SimulatePress()) {
+  // Step 10. Simulate a press unless the user has been verified by internal
+  // user verification.
+  if ((!user_verified || request.user_verification ==
+                             UserVerificationRequirement::kDiscouraged) &&
+      !SimulatePress()) {
     return base::nullopt;
   }
 
@@ -1370,8 +1373,12 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
   }
 
   // Step 7.
-  if (request.user_presence_required && !user_verified && !SimulatePress())
+  if (request.user_presence_required &&
+      (!user_verified || request.user_verification ==
+                             UserVerificationRequirement::kDiscouraged) &&
+      !SimulatePress()) {
     return base::nullopt;
+  }
 
   // Step 8.
   if (found_registrations.empty()) {

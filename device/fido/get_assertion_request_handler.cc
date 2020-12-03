@@ -350,9 +350,9 @@ void GetAssertionRequestHandler::DispatchRequest(
       // Proceed without a token.
       break;
     case PINUVDisposition::kGetToken:
-      ObtainPINUVAuthToken(authenticator,
-                           GetPinTokenPermissionsFor(*authenticator, request),
-                           allow_skipping_pin_touch_);
+      ObtainPINUVAuthToken(
+          authenticator, GetPinTokenPermissionsFor(*authenticator, request),
+          active_authenticators().size() == 1 && allow_skipping_pin_touch_);
       return;
     case PINUVDisposition::kUnsatisfiable:
       FIDO_LOG(DEBUG) << authenticator->GetDisplayName()

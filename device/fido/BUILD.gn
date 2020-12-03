@@ -426,6 +426,10 @@ source_set("test_support") {
 
   if (!is_android) {
     sources += [
+      "multiple_virtual_fido_device_factory.cc",
+      "multiple_virtual_fido_device_factory.h",
+      "virtual_fido_device_discovery.cc",
+      "virtual_fido_device_discovery.h",
       "virtual_fido_device_factory.cc",
       "virtual_fido_device_factory.h",
     ]
