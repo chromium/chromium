@@ -320,6 +320,13 @@ bool SchemeRegistry::IsFetchScheme(const String& scheme) {
          scheme == "http" || scheme == "https";
 }
 
+// https://url.spec.whatwg.org/#special-scheme
+bool SchemeRegistry::IsSpecialScheme(const String& scheme) {
+  DCHECK_EQ(scheme, scheme.LowerASCII());
+  return scheme == "ftp" || scheme == "file" || scheme == "http" ||
+         scheme == "https" || scheme == "ws" || scheme == "wss";
+}
+
 void SchemeRegistry::RegisterURLSchemeAsFirstPartyWhenTopLevel(
     const String& scheme) {
   DCHECK_EQ(scheme, scheme.LowerASCII());

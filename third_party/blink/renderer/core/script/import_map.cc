@@ -431,6 +431,15 @@ base::Optional<KURL> ImportMap::ResolveImportsMatch(
     return ResolveImportsMatchInternal(key, exact, debug_message);
   }
 
+  // <spec step="1.2">... either asURL is null, or asURL is special</spec>
+  if (parsed_specifier.GetType() == ParsedSpecifier::Type::kURL &&
+      !SchemeRegistry::IsSpecialScheme(parsed_specifier.GetUrl().Protocol())) {
+    *debug_message = "Import Map: \"" + key +
+                     "\" skips prefix match because of non-special URL scheme";
+
+    return base::nullopt;
+  }
+
   // Step 1.2.
   if (auto prefix_match = MatchPrefix(parsed_specifier, specifier_map)) {
     return ResolveImportsMatchInternal(key, *prefix_match, debug_message);
