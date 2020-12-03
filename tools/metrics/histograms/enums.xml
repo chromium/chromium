@@ -54719,6 +54719,10 @@ Called by update_net_trust_anchors.py.-->
     The download and model info files were successfully verified and processed,
     but the expected model file failed to be processed.
   </int>
+  <int value="9" label="Failed to validate model info file">
+    The download was successfully verified, but the model info contained in the
+    model info file was invalid.
+  </int>
 </enum>
 
 <enum name="OptimizationGuideProcessHintsResult">

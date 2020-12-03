@@ -11,8 +11,10 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "chrome/browser/download/download_service_factory.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_observer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,6 +24,7 @@
 #include "components/download/public/background_service/download_service.h"
 #include "components/optimization_guide/optimization_guide_enums.h"
 #include "components/optimization_guide/optimization_guide_features.h"
+#include "components/optimization_guide/optimization_guide_util.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/public/cpp/unzip.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -284,7 +287,7 @@ void PredictionModelDownloadManager::OnDownloadUnzipped(
                      ui_weak_ptr_factory_.GetWeakPtr()));
 }
 
-base::Optional<std::pair<proto::ModelInfo, base::FilePath>>
+base::Optional<proto::PredictionModel>
 PredictionModelDownloadManager::ProcessUnzippedContents(
     const base::FilePath& unzipped_dir_path) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
@@ -308,6 +311,11 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
         PredictionModelDownloadStatus::kFailedModelInfoParsing);
     return base::nullopt;
   }
+  if (!model_info.has_version() || !model_info.has_optimization_target()) {
+    RecordPredictionModelDownloadStatus(
+        PredictionModelDownloadStatus::kFailedModelInfoInvalid);
+    return base::nullopt;
+  }
 
   // Move model file away from temp directory.
   base::FilePath temp_model_path = unzipped_dir_path.Append(kModelFileName);
@@ -325,19 +333,22 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
   }
 
   RecordPredictionModelDownloadStatus(PredictionModelDownloadStatus::kSuccess);
-  return std::make_pair(model_info, model_path);
+
+  proto::PredictionModel model;
+  *model.mutable_model_info() = model_info;
+  SetFilePathInPredictionModel(model_path, &model);
+  return model;
 }
 
 void PredictionModelDownloadManager::NotifyModelReady(
-    const base::Optional<std::pair<proto::ModelInfo, base::FilePath>>&
-        model_contents) {
+    const base::Optional<proto::PredictionModel>& model) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!model_contents)
+  if (!model)
     return;
 
   for (PredictionModelDownloadObserver& observer : observers_)
-    observer.OnModelReady(model_contents->first, model_contents->second);
+    observer.OnModelReady(*model);
 }
 
 void PredictionModelDownloadManager::TurnOffVerificationForTesting() {

@@ -146,9 +146,11 @@ enum class PredictionModelDownloadStatus {
   kFailedModelFileNotFound,
   // The model file failed to be moved to a more permanent directory.
   kFailedModelFileOtherError,
+  // The model info was invalid.
+  kFailedModelInfoInvalid,
 
   // Add new values above this line.
-  kMaxValue = kFailedModelFileOtherError,
+  kMaxValue = kFailedModelInfoInvalid,
 };
 
 }  // namespace optimization_guide

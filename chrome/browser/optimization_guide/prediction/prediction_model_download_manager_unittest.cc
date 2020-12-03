@@ -8,9 +8,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/optional.h"
 #include "base/path_service.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
+#include "build/build_config.h"
 #include "chrome/browser/download/download_service_factory.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_observer.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -19,6 +21,7 @@
 #include "components/download/public/background_service/test/mock_download_service.h"
 #include "components/optimization_guide/optimization_guide_enums.h"
 #include "components/optimization_guide/optimization_guide_features.h"
+#include "components/optimization_guide/optimization_guide_util.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/in_process_unzipper.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,24 +39,23 @@ class TestPredictionModelDownloadObserver
   TestPredictionModelDownloadObserver() = default;
   ~TestPredictionModelDownloadObserver() override = default;
 
-  void OnModelReady(const proto::ModelInfo& model_info,
-                    const base::FilePath& model_path) override {
-    last_ready_model_ = std::make_pair(model_info, model_path);
+  void OnModelReady(const proto::PredictionModel& model) override {
+    last_ready_model_ = model;
   }
 
-  base::Optional<std::pair<proto::ModelInfo, base::FilePath>> last_ready_model()
-      const {
+  base::Optional<proto::PredictionModel> last_ready_model() const {
     return last_ready_model_;
   }
 
  private:
-  base::Optional<std::pair<proto::ModelInfo, base::FilePath>> last_ready_model_;
+  base::Optional<proto::PredictionModel> last_ready_model_;
 };
 
 enum class PredictionModelDownloadFileStatus {
   kVerifiedCrxWithGoodModelFiles,
   kVerifiedCrxWithNoFiles,
   kVerifiedCrxWithBadModelInfoFile,
+  kVerifiedCrxWithInvalidModelInfo,
   kVerfiedCrxWithValidModelInfoNoModelFile,
   kUnverifiedFile,
 };
@@ -145,6 +147,8 @@ class PredictionModelDownloadManagerTest
         return temp_dir_.GetPath().AppendASCII("nofiles.crx3");
       case PredictionModelDownloadFileStatus::kVerifiedCrxWithBadModelInfoFile:
         return temp_dir_.GetPath().AppendASCII("badmodelinfo.crx3");
+      case PredictionModelDownloadFileStatus::kVerifiedCrxWithInvalidModelInfo:
+        return temp_dir_.GetPath().AppendASCII("invalidmodelinfo.crx3");
       case PredictionModelDownloadFileStatus::
           kVerfiedCrxWithValidModelInfoNoModelFile:
         return temp_dir_.GetPath().AppendASCII("nomodel.crx3");
@@ -186,6 +190,10 @@ class PredictionModelDownloadManagerTest
       model_info.set_optimization_target(
           proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
       model_info.set_version(123);
+      if (status ==
+          PredictionModelDownloadFileStatus::kVerifiedCrxWithInvalidModelInfo) {
+        model_info.clear_version();
+      }
 
       std::string serialized_model_info;
       ASSERT_TRUE(model_info.SerializeToString(&serialized_model_info));
@@ -435,6 +443,29 @@ TEST_F(PredictionModelDownloadManagerTest,
 }
 
 TEST_F(PredictionModelDownloadManagerTest,
+       VerifiedCrxWithInvalidModelInfoShouldDeleteTempFile) {
+  base::HistogramTester histogram_tester;
+
+  TestPredictionModelDownloadObserver observer;
+  download_manager()->AddObserver(&observer);
+  TurnOffDownloadVerification();
+
+  SetDownloadSucceeded(
+      "model",
+      PredictionModelDownloadFileStatus::kVerifiedCrxWithInvalidModelInfo);
+  RunUntilIdle();
+
+  EXPECT_FALSE(observer.last_ready_model().has_value());
+  EXPECT_FALSE(base::PathExists(GetFilePathForDownloadFileStatus(
+      PredictionModelDownloadFileStatus::kVerifiedCrxWithInvalidModelInfo)));
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager."
+      "DownloadStatus",
+      PredictionModelDownloadStatus::kFailedModelInfoInvalid, 1);
+}
+
+TEST_F(PredictionModelDownloadManagerTest,
        VerifiedCrxWithValidModelInfoFileButNoModelFileShouldDeleteTempFile) {
   base::HistogramTester histogram_tester;
 
@@ -472,11 +503,14 @@ TEST_F(
   RunUntilIdle();
 
   EXPECT_TRUE(observer.last_ready_model().has_value());
-  EXPECT_EQ(observer.last_ready_model()->first.optimization_target(),
+  EXPECT_EQ(observer.last_ready_model()->model_info().optimization_target(),
             proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-  EXPECT_EQ(observer.last_ready_model()->first.version(), 123);
+  EXPECT_EQ(observer.last_ready_model()->model_info().version(), 123);
   EXPECT_EQ(
-      observer.last_ready_model()->second.BaseName().value(),
+      GetFilePathFromPredictionModel(observer.last_ready_model().value())
+          .value()
+          .BaseName()
+          .value(),
       FILE_PATH_LITERAL("OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD_123.tflite"));
   // Downloaded file should still be deleted.
   EXPECT_FALSE(base::PathExists(GetFilePathForDownloadFileStatus(

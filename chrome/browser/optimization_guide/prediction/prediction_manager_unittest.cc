@@ -183,6 +183,9 @@ class FakeOptimizationTargetModelObserver
     return file_it->second;
   }
 
+  // Resets the state of the observer.
+  void Reset() { last_received_paths_.clear(); }
+
  private:
   base::flat_map<proto::OptimizationTarget, base::FilePath>
       last_received_paths_;
@@ -722,12 +725,17 @@ TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
                        proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
                    .has_value());
 
-  // Ensure observer is hooked up.
   proto::ModelInfo model_info;
   model_info.set_optimization_target(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-  prediction_manager()->OnModelReady(model_info,
-                                     temp_dir().AppendASCII("whatever"));
+  model_info.set_version(1);
+
+  // Ensure observer is hooked up.
+  proto::PredictionModel model1;
+  *model1.mutable_model_info() = model_info;
+  SetFilePathInPredictionModel(temp_dir().AppendASCII("whatever"), &model1);
+  prediction_manager()->OnModelReady(model1);
+  RunUntilIdle();
 
   EXPECT_EQ(observer
                 .last_received_path_for_target(
@@ -739,12 +747,60 @@ TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
   // Now remove observer.
   prediction_manager()->RemoveObserverForOptimizationTargetModel(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &observer);
-  prediction_manager()->OnModelReady(model_info,
-                                     temp_dir().AppendASCII("whatever2"));
+  proto::PredictionModel model2;
+  *model2.mutable_model_info() = model_info;
+  model2.mutable_model_info()->set_version(2);
+  SetFilePathInPredictionModel(temp_dir().AppendASCII("whatever2"), &model2);
+  prediction_manager()->OnModelReady(model2);
+  RunUntilIdle();
 
   // Last received path should not have been updated since the observer was
   // removed.
   EXPECT_EQ(observer
+                .last_received_path_for_target(
+                    proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
+                ->BaseName()
+                .value(),
+            FILE_PATH_LITERAL("whatever"));
+}
+
+TEST_F(PredictionManagerTest,
+       AddObserverForOptimizationTargetModelExistingFile) {
+  CreatePredictionManager({});
+
+  FakeOptimizationTargetModelObserver observer1;
+  prediction_manager()->AddObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &observer1);
+  SetStoreInitialized(/* load_models= */ false,
+                      /* load_host_model_features= */ false,
+                      /* have_models_in_store= */ false);
+
+  proto::ModelInfo model_info;
+  model_info.set_optimization_target(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  model_info.set_version(1);
+
+  // Ensure observer is hooked up.
+  proto::PredictionModel model1;
+  *model1.mutable_model_info() = model_info;
+  SetFilePathInPredictionModel(temp_dir().AppendASCII("whatever"), &model1);
+  prediction_manager()->OnModelReady(model1);
+  RunUntilIdle();
+
+  EXPECT_EQ(observer1
+                .last_received_path_for_target(
+                    proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
+                ->BaseName()
+                .value(),
+            FILE_PATH_LITERAL("whatever"));
+
+  // Now, register a new observer.
+  FakeOptimizationTargetModelObserver observer2;
+  prediction_manager()->AddObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &observer2);
+
+  // Observer2 should receive a notification for the current model path.
+  EXPECT_EQ(observer2
                 .last_received_path_for_target(
                     proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
                 ->BaseName()
@@ -892,6 +948,9 @@ TEST_F(PredictionManagerTest, UpdateModelWithSameVersion) {
       "OptimizationGuide.PredictionManager.PredictionModelsStored", true, 1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 3, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionManager.ModelTypeChanged.PainfulPageLoad",
+      false, 1);
 
   get_models_response =
       BuildGetModelsResponse({} /* hosts */, {} /* client features */);
@@ -908,6 +967,45 @@ TEST_F(PredictionManagerTest, UpdateModelWithSameVersion) {
     EXPECT_EQ(3, stored_prediction_model->GetVersion());
   histogram_tester.ExpectBucketCount("OptimizationGuide.IsPredictionModelValid",
                                      true, 2);
+}
+
+TEST_F(PredictionManagerTest, UpdateModelFileWithSameVersion) {
+  base::HistogramTester histogram_tester;
+
+  CreatePredictionManager({});
+
+  FakeOptimizationTargetModelObserver observer;
+  prediction_manager()->AddObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &observer);
+
+  proto::PredictionModel model;
+  model.mutable_model_info()->set_optimization_target(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  model.mutable_model_info()->set_version(3);
+  SetFilePathInPredictionModel(temp_dir().AppendASCII("whatever"), &model);
+  prediction_manager()->OnModelReady(model);
+  RunUntilIdle();
+
+  EXPECT_TRUE(observer
+                  .last_received_path_for_target(
+                      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
+                  .has_value());
+
+  // Now reset the observer state.
+  observer.Reset();
+
+  // Send the same model again.
+  prediction_manager()->OnModelReady(model);
+
+  // The observer should not have received an update.
+  EXPECT_FALSE(observer
+                   .last_received_path_for_target(
+                       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
+                   .has_value());
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionManager.ModelTypeChanged.PainfulPageLoad",
+      false, 1);
 }
 
 TEST_F(PredictionManagerTest,
@@ -1339,6 +1437,72 @@ TEST_F(PredictionManagerTest, UpdateModelForUnregisteredTarget) {
       "OptimizationGuide.PredictionManager.HostModelFeaturesStored", 0);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 0);
+}
+
+TEST_F(PredictionManagerTest, UpdateModelForUnregisteredTargetOnModelReady) {
+  base::HistogramTester histogram_tester;
+  CreatePredictionManager({});
+
+  prediction_manager()->RegisterOptimizationTargets({});
+  SetStoreInitialized();
+
+  proto::PredictionModel model;
+  model.mutable_model_info()->set_optimization_target(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  model.mutable_model_info()->set_version(3);
+  SetFilePathInPredictionModel(temp_dir().AppendASCII("whatever"), &model);
+  prediction_manager()->OnModelReady(model);
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionManager.PredictionModelsStored", 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionManager.HostModelFeaturesStored", 0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 0);
+}
+
+TEST_F(PredictionManagerTest, UpdateModelForRegisteredTargetButNowFile) {
+  std::unique_ptr<content::MockNavigationHandle> navigation_handle =
+      CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
+          GURL("https://foo.com"));
+
+  base::HistogramTester histogram_tester;
+  CreatePredictionManager({});
+
+  prediction_manager()->RegisterOptimizationTargets(
+      {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD});
+  SetStoreInitialized();
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 1, 1);
+
+  EXPECT_EQ(OptimizationTargetDecision::kPageLoadMatches,
+            prediction_manager()->ShouldTargetNavigation(
+                navigation_handle.get(),
+                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, {}));
+
+  // Now, update the model to be a file.
+  proto::PredictionModel model;
+  model.mutable_model_info()->set_optimization_target(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  model.mutable_model_info()->set_version(3);
+  SetFilePathInPredictionModel(temp_dir().AppendASCII("whatever"), &model);
+  prediction_manager()->OnModelReady(model);
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionManager.PredictionModelsStored", 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionManager.HostModelFeaturesStored", 0);
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 3, 1);
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.PredictionManager.ModelTypeChanged.PainfulPageLoad",
+      true, 1);
+
+  // Expect that the old decision tree should not be used.
+  EXPECT_EQ(OptimizationTargetDecision::kModelNotAvailableOnClient,
+            prediction_manager()->ShouldTargetNavigation(
+                navigation_handle.get(),
+                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, {}));
 }
 
 TEST_F(

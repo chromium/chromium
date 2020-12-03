@@ -26,6 +26,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_session_statistic.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_fetcher.h"
+#include "chrome/browser/optimization_guide/prediction/prediction_model_file.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/optimization_guide/optimization_guide_constants.h"
@@ -159,6 +160,25 @@ class ScopedPredictionModelConstructionAndValidationRecorder {
   const base::TimeTicks validation_start_time_;
   const optimization_guide::proto::OptimizationTarget optimization_target_;
 };
+
+void RecordModelUpdateVersion(
+    const optimization_guide::proto::ModelInfo& model_info) {
+  base::UmaHistogramSparse(
+      "OptimizationGuide.PredictionModelUpdateVersion." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              model_info.optimization_target()),
+      model_info.version());
+}
+
+void RecordModelTypeChanged(
+    optimization_guide::proto::OptimizationTarget optimization_target,
+    bool changed) {
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.PredictionManager.ModelTypeChanged." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              optimization_target),
+      changed);
+}
 
 }  // namespace
 
@@ -316,6 +336,14 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
     OptimizationTargetModelObserver* observer) {
   registered_observers_for_optimization_targets_[optimization_target]
       .AddObserver(observer);
+
+  // Notify observer of existing model file path.
+  auto model_file_it =
+      optimization_target_prediction_model_file_map_.find(optimization_target);
+  if (model_file_it != optimization_target_prediction_model_file_map_.end()) {
+    observer->OnModelFileUpdated(optimization_target,
+                                 model_file_it->second->GetModelFilePath());
+  }
 
   RegisterOptimizationTargets({optimization_target});
 }
@@ -642,8 +670,9 @@ void PredictionManager::FetchModelsAndHostModelFeatures() {
           static_cast<proto::ClientModelFeature>(client_model_feature));
     }
   }
-  // Only Decision Trees are currently supported.
   base_model_info.add_supported_model_types(proto::MODEL_TYPE_DECISION_TREE);
+  if (features::IsModelDownloadingEnabled())
+    base_model_info.add_supported_model_types(proto::MODEL_TYPE_TFLITE_2_3_0);
 
   // For now, we will fetch for all registered optimization targets.
   for (const auto& optimization_target : registered_optimization_targets_) {
@@ -745,11 +774,7 @@ void PredictionManager::UpdatePredictionModels(
     // Storing the model regardless of whether the model is valid or not. Model
     // will be removed from store if it fails to load.
     prediction_model_update_data->CopyPredictionModelIntoUpdateData(model);
-    base::UmaHistogramSparse(
-        "OptimizationGuide.PredictionModelUpdateVersion." +
-            optimization_guide::GetStringNameForOptimizationTarget(
-                model.model_info().optimization_target()),
-        model.model_info().version());
+    RecordModelUpdateVersion(model.model_info());
     OnLoadPredictionModel(std::make_unique<proto::PredictionModel>(model));
   }
 
@@ -761,11 +786,25 @@ void PredictionManager::UpdatePredictionModels(
   }
 }
 
-void PredictionManager::OnModelReady(const proto::ModelInfo& model_info,
-                                     const base::FilePath& file_path) {
-  // TODO(crbug/1146151): Clean up old model for target and update target in
-  // store.
-  NotifyObserversOfNewModelPath(model_info.optimization_target(), file_path);
+void PredictionManager::OnModelReady(const proto::PredictionModel& model) {
+  DCHECK(model.model_info().has_version() &&
+         model.model_info().has_optimization_target());
+
+  RecordModelUpdateVersion(model.model_info());
+
+  // Store the received model in the store.
+  std::unique_ptr<StoreUpdateData> prediction_model_update_data =
+      StoreUpdateData::CreatePredictionModelStoreUpdateData();
+  prediction_model_update_data->CopyPredictionModelIntoUpdateData(model);
+  model_and_features_store_->UpdatePredictionModels(
+      std::move(prediction_model_update_data),
+      base::BindOnce(&PredictionManager::OnPredictionModelsStored,
+                     ui_weak_ptr_factory_.GetWeakPtr()));
+
+  if (registered_optimization_targets_.contains(
+          model.model_info().optimization_target())) {
+    OnLoadPredictionModel(std::make_unique<proto::PredictionModel>(model));
+  }
 }
 
 void PredictionManager::NotifyObserversOfNewModelPath(
@@ -883,11 +922,11 @@ void PredictionManager::OnLoadPredictionModel(
   if (!model)
     return;
 
-  bool success = ProcessAndStorePredictionModel(*model);
-  OnProcessOrSendPredictionModel(std::move(model), success);
+  bool success = ProcessAndStoreLoadedModel(*model);
+  OnProcessLoadedModel(std::move(model), success);
 }
 
-void PredictionManager::OnProcessOrSendPredictionModel(
+void PredictionManager::OnProcessLoadedModel(
     std::unique_ptr<proto::PredictionModel> model,
     bool success) {
   SEQUENCE_CHECKER(sequence_checker_);
@@ -909,10 +948,12 @@ void PredictionManager::OnProcessOrSendPredictionModel(
   }
 }
 
-bool PredictionManager::ProcessAndStorePredictionModel(
+bool PredictionManager::ProcessAndStoreLoadedModel(
     const proto::PredictionModel& model) {
   SEQUENCE_CHECKER(sequence_checker_);
   if (!model.model_info().has_optimization_target())
+    return false;
+  if (!model.model_info().has_version())
     return false;
   if (!model.has_model())
     return false;
@@ -923,25 +964,98 @@ bool PredictionManager::ProcessAndStorePredictionModel(
 
   ScopedPredictionModelConstructionAndValidationRecorder
       prediction_model_recorder(model.model_info().optimization_target());
+  std::unique_ptr<PredictionModelFile> prediction_model_file =
+      PredictionModelFile::Create(model);
   std::unique_ptr<PredictionModel> prediction_model =
-      CreatePredictionModel(model);
-  if (!prediction_model) {
+      prediction_model_file ? nullptr : CreatePredictionModel(model);
+  if (!prediction_model_file && !prediction_model) {
     prediction_model_recorder.set_is_valid(false);
     return false;
   }
 
-  auto it = optimization_target_prediction_model_map_.find(
-      model.model_info().optimization_target());
-  if (it == optimization_target_prediction_model_map_.end()) {
-    optimization_target_prediction_model_map_.emplace(
-        model.model_info().optimization_target(), std::move(prediction_model));
+  proto::OptimizationTarget optimization_target =
+      model.model_info().optimization_target();
+
+  // See if we should update the loaded model.
+  if (!ShouldUpdateStoredModelForTarget(optimization_target,
+                                        model.model_info().version())) {
     return true;
   }
-  if (it->second->GetVersion() != prediction_model->GetVersion()) {
-    it->second = std::move(prediction_model);
-    return true;
+
+  // Update prediction model file if that is what we have loaded.
+  if (prediction_model_file) {
+    StoreLoadedPredictionModelFile(optimization_target,
+                                   std::move(prediction_model_file));
   }
-  return false;
+
+  // Update prediction model if that is what we have loaded.
+  if (prediction_model) {
+    StoreLoadedPredictionModel(optimization_target,
+                               std::move(prediction_model));
+  }
+
+  return true;
+}
+
+bool PredictionManager::ShouldUpdateStoredModelForTarget(
+    proto::OptimizationTarget optimization_target,
+    int64_t new_version) const {
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  auto model_file_it =
+      optimization_target_prediction_model_file_map_.find(optimization_target);
+  if (model_file_it != optimization_target_prediction_model_file_map_.end())
+    return model_file_it->second->GetVersion() != new_version;
+
+  auto model_it =
+      optimization_target_prediction_model_map_.find(optimization_target);
+  if (model_it != optimization_target_prediction_model_map_.end())
+    return model_it->second->GetVersion() != new_version;
+
+  return true;
+}
+
+void PredictionManager::StoreLoadedPredictionModelFile(
+    proto::OptimizationTarget optimization_target,
+    std::unique_ptr<PredictionModelFile> prediction_model_file) {
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  bool has_model_for_target =
+      optimization_target_prediction_model_map_.contains(optimization_target);
+  RecordModelTypeChanged(optimization_target, has_model_for_target);
+  if (has_model_for_target) {
+    // Remove prediction model if we received the update as a model file. In
+    // practice, this shouldn't happen.
+    optimization_target_prediction_model_map_.erase(optimization_target);
+  }
+
+  // Notify observers of new model file path.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PredictionManager::NotifyObserversOfNewModelPath,
+                     ui_weak_ptr_factory_.GetWeakPtr(), optimization_target,
+                     prediction_model_file->GetModelFilePath()));
+
+  optimization_target_prediction_model_file_map_.insert_or_assign(
+      optimization_target, std::move(prediction_model_file));
+}
+
+void PredictionManager::StoreLoadedPredictionModel(
+    proto::OptimizationTarget optimization_target,
+    std::unique_ptr<PredictionModel> prediction_model) {
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  bool has_model_file_for_target =
+      optimization_target_prediction_model_file_map_.contains(
+          optimization_target);
+  RecordModelTypeChanged(optimization_target, has_model_file_for_target);
+  if (has_model_file_for_target) {
+    // Remove prediction model file from map if we received the update as a
+    // PredictionModel. In practice, this shouldn't happen.
+    optimization_target_prediction_model_file_map_.erase(optimization_target);
+  }
+  optimization_target_prediction_model_map_.insert_or_assign(
+      optimization_target, std::move(prediction_model));
 }
 
 bool PredictionManager::ProcessAndStoreHostModelFeatures(

@@ -52,6 +52,7 @@ class OptimizationTargetModelObserver;
 class PredictionModel;
 class PredictionModelDownloadManager;
 class PredictionModelFetcher;
+class PredictionModelFile;
 class TopHostProvider;
 
 using HostModelFeaturesMRUCache =
@@ -183,8 +184,7 @@ class PredictionManager
       OptimizationGuideDecision optimization_guide_decision);
 
   // PredictionModelDownloadObserver:
-  void OnModelReady(const proto::ModelInfo& model_info,
-                    const base::FilePath& model_file_path) override;
+  void OnModelReady(const proto::PredictionModel& model) override;
 
  protected:
   // Return the prediction model for the optimization target used by this
@@ -307,16 +307,31 @@ class PredictionManager
   void OnLoadPredictionModel(
       std::unique_ptr<proto::PredictionModel> prediction_model);
 
-  // Process |model| into a PredictionModel object and store it in the
-  // |optimization_target_prediction_model_map_|. Return true if a prediction
+  // Process loaded |model| into memory. Return true if a prediction
   // model object was created and successfully stored, otherwise false.
-  bool ProcessAndStorePredictionModel(const proto::PredictionModel& model);
+  bool ProcessAndStoreLoadedModel(const proto::PredictionModel& model);
 
-  // Post-processing callback invoked after processing |model| or sending it to
-  // the ML Service.
-  void OnProcessOrSendPredictionModel(
-      std::unique_ptr<proto::PredictionModel> model,
-      bool success);
+  // Return whether the model stored in memory for |optimization_target| should
+  // be updated based on what's currently stored and |new_version|.
+  bool ShouldUpdateStoredModelForTarget(
+      proto::OptimizationTarget optimization_target,
+      int64_t new_version) const;
+
+  // Updates the in-memory model file for |optimization_target| to
+  // |prediction_model_file|.
+  void StoreLoadedPredictionModelFile(
+      proto::OptimizationTarget optimization_target,
+      std::unique_ptr<PredictionModelFile> prediction_model_file);
+
+  // Updates the in-memory model for |optimization_target| to
+  // |prediction_model|.
+  void StoreLoadedPredictionModel(
+      proto::OptimizationTarget optimization_target,
+      std::unique_ptr<PredictionModel> prediction_model);
+
+  // Post-processing callback invoked after processing |model|.
+  void OnProcessLoadedModel(std::unique_ptr<proto::PredictionModel> model,
+                            bool success);
 
   // Process |host_model_features| from the into host model features
   // usable by the PredictionManager. The processed host model features are
@@ -352,6 +367,12 @@ class PredictionManager
   // an optimization target decision for it.
   base::flat_map<proto::OptimizationTarget, std::unique_ptr<PredictionModel>>
       optimization_target_prediction_model_map_;
+
+  // A map of optimization target to the model file containing the model for the
+  // target.
+  base::flat_map<proto::OptimizationTarget,
+                 std::unique_ptr<PredictionModelFile>>
+      optimization_target_prediction_model_file_map_;
 
   // The set of optimization targets that have been registered with the
   // prediction manager.

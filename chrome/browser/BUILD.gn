@@ -990,6 +990,8 @@ static_library("browser") {
     "optimization_guide/prediction/prediction_model_download_observer.h",
     "optimization_guide/prediction/prediction_model_fetcher.cc",
     "optimization_guide/prediction/prediction_model_fetcher.h",
+    "optimization_guide/prediction/prediction_model_file.cc",
+    "optimization_guide/prediction/prediction_model_file.h",
     "page_load_metrics/observers/aborts_page_load_metrics_observer.cc",
     "page_load_metrics/observers/aborts_page_load_metrics_observer.h",
     "page_load_metrics/observers/ad_metrics/ads_page_load_metrics_observer.cc",

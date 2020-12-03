@@ -25,7 +25,7 @@ class PredictionModelDownloadClient;
 class PredictionModelDownloadObserver;
 
 namespace proto {
-class ModelInfo;
+class PredictionModel;
 }  // namespace proto
 
 // Manages the downloads of prediction models.
@@ -108,15 +108,13 @@ class PredictionModelDownloadManager {
   // Processes the contents in |unzipped_dir_path|.
   //
   // Must be called on the background thread, as it performs file I/O.
-  base::Optional<std::pair<proto::ModelInfo, base::FilePath>>
-  ProcessUnzippedContents(const base::FilePath& unzipped_dir_path);
+  base::Optional<proto::PredictionModel> ProcessUnzippedContents(
+      const base::FilePath& unzipped_dir_path);
 
   // Notifies |observers_| that a model is ready.
   //
   // Must be invoked on the UI thread.
-  void NotifyModelReady(
-      const base::Optional<std::pair<proto::ModelInfo, base::FilePath>>&
-          model_contents);
+  void NotifyModelReady(const base::Optional<proto::PredictionModel>& model);
 
   // Turns off CRX3 verification for testing.
   void TurnOffVerificationForTesting();
