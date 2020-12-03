@@ -231,6 +231,12 @@ void ProfileInfoCache::NotifyProfileThemeColorsChanged(
     observer.OnProfileThemeColorsChanged(profile_path);
 }
 
+void ProfileInfoCache::NotifyProfileHostedDomainChanged(
+    const base::FilePath& profile_path) {
+  for (auto& observer : observer_list_)
+    observer.OnProfileHostedDomainChanged(profile_path);
+}
+
 void ProfileInfoCache::DeleteProfileFromCache(
     const base::FilePath& profile_path) {
   ProfileAttributesEntry* entry;

@@ -15,6 +15,7 @@ export class TestProfileCustomizationBrowserProxy extends TestBrowserProxy {
       textColor: '',
       backgroundColor: '',
       pictureUrl: '',
+      isManaged: false,
     };
   }
 

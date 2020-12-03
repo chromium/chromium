@@ -15,6 +15,7 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
  *   textColor: string,
  *   backgroundColor: string,
  *   pictureUrl: string,
+ *   isManaged: boolean,
  * }}
  */
 export let ProfileInfo;

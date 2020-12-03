@@ -653,7 +653,8 @@ void ProfileAttributesEntry::SetProfileThemeColors(
 }
 
 void ProfileAttributesEntry::SetHostedDomain(std::string hosted_domain) {
-  SetString(kHostedDomain, hosted_domain);
+  if (SetString(kHostedDomain, hosted_domain))
+    profile_info_cache_->NotifyProfileHostedDomainChanged(GetPath());
 }
 
 void ProfileAttributesEntry::SetAuthInfo(const std::string& gaia_id,

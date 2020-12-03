@@ -62,9 +62,6 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
       .GetProfileAttributesWithPath(profile->GetPath(), &entry);
   source->AddString("profileName",
                     base::UTF16ToUTF8(entry->GetLocalProfileName()));
-  source->AddBoolean("isManaged",
-                     !entry->GetHostedDomain().empty() &&
-                         entry->GetHostedDomain() != kNoHostedDomainFound);
 
   // Resources for testing.
   source->OverrideContentSecurityPolicy(

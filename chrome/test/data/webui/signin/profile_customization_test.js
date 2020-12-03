@@ -27,7 +27,6 @@ suite('ProfileCustomizationTest', function() {
 
   setup(function() {
     loadTimeData.overrideValues({
-      isManaged: false,
       profileName: 'TestName',
     });
     browserProxy = new TestProfileCustomizationBrowserProxy();
@@ -35,6 +34,7 @@ suite('ProfileCustomizationTest', function() {
       textColor: 'rgb(255, 0, 0)',
       backgroundColor: 'rgb(0, 255, 0)',
       pictureUrl: AVATAR_URL_1,
+      isManaged: false,
     });
     ProfileCustomizationBrowserProxyImpl.instance_ = browserProxy;
     document.body.innerHTML = '';
@@ -100,15 +100,20 @@ suite('ProfileCustomizationTest', function() {
     assertEquals('rgb(255, 0, 0)', getComputedStyle(header).color);
     assertEquals('rgb(0, 255, 0)', getComputedStyle(header).backgroundColor);
     checkImageUrl('#avatar', AVATAR_URL_1);
+    assertFalse(isChildVisible(app, '#badge'));
     // Update the info.
     const color1 = 'rgb(1, 2, 3)';
     const color2 = 'rgb(4, 5, 6)';
-    webUIListenerCallback(
-        'on-profile-info-changed',
-        {textColor: color1, backgroundColor: color2, pictureUrl: AVATAR_URL_2});
+    webUIListenerCallback('on-profile-info-changed', {
+      textColor: color1,
+      backgroundColor: color2,
+      pictureUrl: AVATAR_URL_2,
+      isManaged: true,
+    });
     assertEquals(color1, getComputedStyle(header).color);
     assertEquals(color2, getComputedStyle(header).backgroundColor);
     checkImageUrl('#avatar', AVATAR_URL_2);
+    assertTrue(isChildVisible(app, '#badge'));
   });
 
   test('ThemeSelector', function() {

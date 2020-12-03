@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 
 namespace base {
@@ -39,6 +39,8 @@ class ProfileCustomizationHandler : public content::WebUIMessageHandler,
   void OnProfileHighResAvatarLoaded(
       const base::FilePath& profile_path) override;
   void OnProfileThemeColorsChanged(const base::FilePath& profile_path) override;
+  void OnProfileHostedDomainChanged(
+      const base::FilePath& profile_path) override;
 
  private:
   // Handlers for messages from javascript.
@@ -46,7 +48,9 @@ class ProfileCustomizationHandler : public content::WebUIMessageHandler,
   void HandleDone(const base::ListValue* args);
 
   // Sends an updated profile info (avatar and colors) to the WebUI.
-  void UpdateProfileInfo();
+  // `profile_path` is the path of the profile being updated, this function does
+  // nothing if the profile path does not match the current profile.
+  void UpdateProfileInfo(const base::FilePath& profile_path);
 
   // Computes the profile info (avatar and colors) to be sent to the WebUI.
   base::Value GetProfileInfoValue();
@@ -55,7 +59,8 @@ class ProfileCustomizationHandler : public content::WebUIMessageHandler,
   ProfileAttributesEntry* GetProfileEntry() const;
 
   base::FilePath profile_path_;
-  ScopedObserver<ProfileAttributesStorage, ProfileAttributesStorage::Observer>
+  base::ScopedObservation<ProfileAttributesStorage,
+                          ProfileAttributesStorage::Observer>
       observed_profile_{this};
 
   // Called when the "Done" button has been pressed.

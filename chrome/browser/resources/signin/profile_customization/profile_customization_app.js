@@ -30,7 +30,7 @@ Polymer({
     /** Whether the account is managed (Enterprise) */
     isManaged_: {
       type: Boolean,
-      value: () => loadTimeData.getBoolean('isManaged'),
+      value: false,
     },
 
     /** Initial local profile name, non-editable */
@@ -95,5 +95,6 @@ Polymer({
     this.style.setProperty(
         '--header-background-color', profileInfo.backgroundColor);
     this.pictureUrl_ = profileInfo.pictureUrl;
+    this.isManaged_ = profileInfo.isManaged;
   },
 });

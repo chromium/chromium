@@ -104,6 +104,8 @@ class ProfileAttributesTestObserver
                void(const base::FilePath& profile_path));
   MOCK_METHOD1(OnProfileThemeColorsChanged,
                void(const base::FilePath& profile_path));
+  MOCK_METHOD1(OnProfileHostedDomainChanged,
+               void(const base::FilePath& profile_path));
 };
 }  // namespace
 
@@ -140,6 +142,8 @@ class ProfileAttributesStorageTest : public testing::Test {
     EXPECT_CALL(observer_, OnProfileSigninRequiredChanged(_)).Times(0);
     EXPECT_CALL(observer_, OnProfileSupervisedUserIdChanged(_)).Times(0);
     EXPECT_CALL(observer_, OnProfileIsOmittedChanged(_)).Times(0);
+    EXPECT_CALL(observer_, OnProfileThemeColorsChanged(_)).Times(0);
+    EXPECT_CALL(observer_, OnProfileHostedDomainChanged(_)).Times(0);
   }
 
   void EnableObserver() { storage()->AddObserver(&observer_); }
@@ -298,7 +302,8 @@ TEST_F(ProfileAttributesStorageTest, InitialValues) {
   EXPECT_EQ(std::string("testing_profile_gaia0"), entry->GetGAIAId());
   EXPECT_EQ(base::ASCIIToUTF16("testing_profile_user0"), entry->GetUserName());
   EXPECT_EQ(0U, entry->GetAvatarIconIndex());
-  EXPECT_EQ(std::string(""), entry->GetSupervisedUserId());
+  EXPECT_EQ(std::string(), entry->GetSupervisedUserId());
+  EXPECT_EQ(std::string(), entry->GetHostedDomain());
 }
 
 TEST_F(ProfileAttributesStorageTest, EntryAccessors) {
@@ -331,6 +336,10 @@ TEST_F(ProfileAttributesStorageTest, EntryAccessors) {
 
   EXPECT_CALL(observer(), OnProfileIsOmittedChanged(path)).Times(2);
   TEST_BOOL_ACCESSORS(ProfileAttributesEntry, entry, IsOmitted);
+  VerifyAndResetCallExpectations();
+
+  EXPECT_CALL(observer(), OnProfileHostedDomainChanged(path)).Times(2);
+  TEST_STRING_ACCESSORS(ProfileAttributesEntry, entry, HostedDomain);
   VerifyAndResetCallExpectations();
 
   TEST_BOOL_ACCESSORS(ProfileAttributesEntry, entry, IsEphemeral);
