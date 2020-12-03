@@ -128,6 +128,17 @@ enum HttpsLatencyProblem {
   kVeryHighLatency,
 };
 
+// Problems related to the VideoConferencing routine.
+[Extensible]
+enum VideoConferencingProblem {
+  // Failed requests to a STUN server via UDP.
+  kUdpFailure,
+  // Failed requests to a STUN server via TCP.
+  kTcpFailure,
+  // Failed to establish a TLS connection to media hostnames.
+  kMediaFailure,
+};
+
 // This interface is to be used by any clients that need to run specific
 // network-related diagnostics. Expected clients of this interface are
 // NetworkHealth, cros_healthd, and a connectivity diagnostics Web UI (to name
@@ -180,4 +191,12 @@ interface NetworkDiagnosticsRoutines {
   // the system.
   HttpsLatency() => (RoutineVerdict verdict,
       array<HttpsLatencyProblem> problems);
+
+  // Tests the device's video conferencing capabalities by testing whether the
+  // device can:
+  // (1) Contact either a default or specified STUN server via UDP.
+  // (2) Contact either a default or specified STUN server via TCP.
+  // (3) Reach common media endpoints.
+  VideoConferencing(string? stun_server_hostname) => (RoutineVerdict verdict,
+      array<VideoConferencingProblem> problems, string? support_details);
 };

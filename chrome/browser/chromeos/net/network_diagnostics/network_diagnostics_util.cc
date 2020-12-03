@@ -182,6 +182,35 @@ net::NetworkTrafficAnnotationTag GetStunNetworkAnnotationTag() {
   )");
 }
 
+std::vector<int> GetUdpPortsForGoogleStunServer() {
+  return {19302, 19303, 19304, 19305, 19306, 19307, 19308, 19309};
+}
+
+std::vector<int> GetUdpPortsForCustomStunServer() {
+  return {3478};
+}
+
+std::vector<int> GetTcpPortsForGoogleStunServer() {
+  return {19305, 19306, 19307, 19308};
+}
+
+std::vector<int> GetTcpPortsForCustomStunServer() {
+  return {3478};
+}
+
+std::vector<GURL> GetDefaultMediaUrls() {
+  const char* const kHostnames[] = {
+      "https://apis.google.com",           "https://talkgadget.google.com",
+      "https://clients6.google.com",       "https://hangouts.google.com",
+      "https://client-channel.google.com", "https://googleapis.com",
+      "https://accounts.google.com",       "https://clients4.google.com"};
+  std::vector<GURL> hostnames;
+  for (auto* const& hostname : kHostnames) {
+    hostnames.push_back(GURL(hostname));
+  }
+  return hostnames;
+}
+
 }  // namespace util
 
 }  // namespace network_diagnostics

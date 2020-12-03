@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/optional.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/captive_portal_routine.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/dns_latency_routine.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/dns_resolution_routine.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/chromeos/net/network_diagnostics/https_latency_routine.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/lan_connectivity_routine.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/signal_strength_routine.h"
+#include "chrome/browser/chromeos/net/network_diagnostics/video_conferencing_routine.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "components/device_event_log/device_event_log.h"
 
@@ -205,6 +207,27 @@ void NetworkDiagnostics::HttpsLatency(HttpsLatencyCallback callback) {
          HttpsLatencyCallback callback, mojom::RoutineVerdict verdict,
          const std::vector<mojom::HttpsLatencyProblem>& problems) {
         std::move(callback).Run(verdict, problems);
+      },
+      std::move(routine), std::move(callback)));
+}
+
+void NetworkDiagnostics::VideoConferencing(
+    const base::Optional<std::string>& stun_server_name,
+    VideoConferencingCallback callback) {
+  auto routine = std::make_unique<VideoConferencingRoutine>();
+  if (stun_server_name.has_value()) {
+    routine =
+        std::make_unique<VideoConferencingRoutine>(stun_server_name.value());
+  }
+  // RunRoutine() takes a lambda callback that takes ownership of the routine.
+  // This ensures that the routine stays alive when it makes asynchronous mojo
+  // calls. The routine will be destroyed when the lambda exits.
+  routine->RunRoutine(base::BindOnce(
+      [](std::unique_ptr<VideoConferencingRoutine> routine,
+         VideoConferencingCallback callback, mojom::RoutineVerdict verdict,
+         const std::vector<mojom::VideoConferencingProblem>& problems,
+         const base::Optional<std::string>& support_details) {
+        std::move(callback).Run(verdict, problems, support_details);
       },
       std::move(routine), std::move(callback)));
 }
