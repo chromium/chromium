@@ -393,7 +393,14 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, InstalledAppWithContextMenu) {
   ASSERT_FALSE(menu->HasCommandWithId(IDC_CONTENT_CONTEXT_UNDO));
 }
 
-IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, AppWithContextMenuTextField) {
+// Flaky on Mac10.13 Tests (dbg). See https://crbug.com/1155013
+#if defined(OS_MAC)
+#define MAYBE_AppWithContextMenuTextField DISABLED_AppWithContextMenuTextField
+#else
+#define MAYBE_AppWithContextMenuTextField AppWithContextMenuTextField
+#endif
+IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
+                       MAYBE_AppWithContextMenuTextField) {
   LoadAndLaunchPlatformApp("context_menu", "Launched");
 
   // The context_menu app has one context menu item. This, along with a
@@ -466,7 +473,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, AppWithContextMenuClicked) {
   ASSERT_TRUE(onclicked_listener.WaitUntilSatisfied());
 }
 
-IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, DisallowNavigation) {
+// https://crbug.com/1155013
+IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, DISABLED_DisallowNavigation) {
   TabsAddedNotificationObserver observer(browser(), 1);
 
   ASSERT_TRUE(StartEmbeddedTestServer());
