@@ -22,6 +22,12 @@
 #include "weblayer/test/weblayer_browser_test.h"
 #include "weblayer/test/weblayer_browser_test_utils.h"
 
+#if defined(OS_ANDROID)
+#include "components/infobars/android/infobar_android.h"  // nogncheck
+#include "components/infobars/core/infobar_manager.h"     // nogncheck
+#include "weblayer/browser/infobar_service.h"
+#endif
+
 namespace weblayer {
 
 namespace {
@@ -36,6 +42,35 @@ bool WasParsedScriptElementLoaded(content::RenderFrameHost* rfh) {
       &script_resource_was_loaded));
   return script_resource_was_loaded;
 }
+
+#if defined(OS_ANDROID)
+class TestInfoBarManagerObserver : public infobars::InfoBarManager::Observer {
+ public:
+  TestInfoBarManagerObserver() = default;
+  ~TestInfoBarManagerObserver() override = default;
+  void OnInfoBarAdded(infobars::InfoBar* infobar) override {
+    if (on_infobar_added_callback_)
+      std::move(on_infobar_added_callback_).Run();
+  }
+
+  void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override {
+    if (on_infobar_removed_callback_)
+      std::move(on_infobar_removed_callback_).Run();
+  }
+
+  void set_on_infobar_added_callback(base::OnceClosure callback) {
+    on_infobar_added_callback_ = std::move(callback);
+  }
+
+  void set_on_infobar_removed_callback(base::OnceClosure callback) {
+    on_infobar_removed_callback_ = std::move(callback);
+  }
+
+ private:
+  base::OnceClosure on_infobar_added_callback_;
+  base::OnceClosure on_infobar_removed_callback_;
+};
+#endif  // if defined(OS_ANDROID)
 
 }  // namespace
 
@@ -62,6 +97,22 @@ class SubresourceFilterBrowserTest : public WebLayerBrowserTest {
         BrowserProcess::GetInstance()->subresource_filter_ruleset_service());
     ASSERT_NO_FATAL_FAILURE(
         test_ruleset_publisher.SetRuleset(test_ruleset_pair.unindexed));
+  }
+
+  // Configures the database manager to activate on |url| in |web_contents|.
+  void ActivateSubresourceFilterInWebContentsForURL(
+      content::WebContents* web_contents,
+      const GURL& url) {
+    scoped_refptr<FakeSafeBrowsingDatabaseManager> database_manager =
+        base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>();
+    database_manager->AddBlocklistedUrl(
+        url, safe_browsing::SB_THREAT_TYPE_URL_PHISHING);
+
+    auto* client_impl = static_cast<SubresourceFilterClientImpl*>(
+        subresource_filter::ContentSubresourceFilterThrottleManager::
+            FromWebContents(web_contents)
+                ->client());
+    client_impl->set_database_manager_for_testing(std::move(database_manager));
   }
 };
 
@@ -167,16 +218,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
       observer.GetPageActivation(test_url);
   EXPECT_FALSE(page_activation);
 
-  // Configure the database manager to activate on this URL.
-  scoped_refptr<FakeSafeBrowsingDatabaseManager> database_manager =
-      base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>();
-  database_manager->AddBlocklistedUrl(
-      test_url, safe_browsing::SB_THREAT_TYPE_URL_PHISHING);
-  auto* client_impl = static_cast<SubresourceFilterClientImpl*>(
-      subresource_filter::ContentSubresourceFilterThrottleManager::
-          FromWebContents(web_contents)
-              ->client());
-  client_impl->set_database_manager_for_testing(database_manager);
+  ActivateSubresourceFilterInWebContentsForURL(web_contents, test_url);
 
   // Verify that the "ad" subframe is loaded if it is not flagged by the
   // ruleset.
@@ -251,5 +293,53 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   NavigateAndWaitForCompletion(test_url, shell());
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
 }
+
+#if defined(OS_ANDROID)
+// Test that the ads blocked infobar is presented when visiting a page where the
+// subresource filter blocks resources from being loaded and is removed when
+// navigating away.
+IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, InfoBarPresentation) {
+  auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
+  auto* infobar_service = InfoBarService::FromWebContents(web_contents);
+
+  // Configure the subresource filter to activate on the test URL and to block
+  // its script from loading.
+  GURL test_url(
+      embedded_test_server()->GetURL("/frame_with_included_script.html"));
+  ActivateSubresourceFilterInWebContentsForURL(web_contents, test_url);
+  ASSERT_NO_FATAL_FAILURE(
+      SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
+
+  TestInfoBarManagerObserver infobar_observer;
+  infobar_service->AddObserver(&infobar_observer);
+
+  base::RunLoop run_loop;
+  infobar_observer.set_on_infobar_added_callback(run_loop.QuitClosure());
+
+  EXPECT_EQ(0u, infobar_service->infobar_count());
+
+  // Navigate such that the script is blocked and verify that the ads blocked
+  // infobar is presented.
+  NavigateAndWaitForCompletion(test_url, shell());
+  run_loop.Run();
+
+  EXPECT_EQ(1u, infobar_service->infobar_count());
+  auto* infobar =
+      static_cast<infobars::InfoBarAndroid*>(infobar_service->infobar_at(0));
+  EXPECT_TRUE(infobar->HasSetJavaInfoBar());
+  EXPECT_EQ(infobar->delegate()->GetIdentifier(),
+            infobars::InfoBarDelegate::ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID);
+
+  // Navigate away and verify that the infobar is removed.
+  base::RunLoop run_loop2;
+  infobar_observer.set_on_infobar_removed_callback(run_loop2.QuitClosure());
+
+  NavigateAndWaitForCompletion(GURL("about:blank"), shell());
+  run_loop2.Run();
+
+  EXPECT_EQ(0u, infobar_service->infobar_count());
+  infobar_service->RemoveObserver(&infobar_observer);
+}
+#endif
 
 }  // namespace weblayer

@@ -21,6 +21,8 @@
 
 #if defined(OS_ANDROID)
 #include "components/safe_browsing/android/remote_database_manager.h"
+#include "components/subresource_filter/android/ads_blocked_infobar_delegate.h"
+#include "weblayer/browser/infobar_service.h"
 #endif
 
 namespace weblayer {
@@ -45,8 +47,14 @@ GetDatabaseManagerFromSafeBrowsingService() {
 
 }  // namespace
 
-SubresourceFilterClientImpl::SubresourceFilterClientImpl()
-    : database_manager_(GetDatabaseManagerFromSafeBrowsingService()) {}
+SubresourceFilterClientImpl::SubresourceFilterClientImpl(
+    content::WebContents* web_contents)
+    :
+#if defined(OS_ANDROID)
+      web_contents_(web_contents),
+#endif
+      database_manager_(GetDatabaseManagerFromSafeBrowsingService()) {
+}
 
 SubresourceFilterClientImpl::~SubresourceFilterClientImpl() = default;
 
@@ -58,19 +66,27 @@ void SubresourceFilterClientImpl::CreateThrottleManagerWithClientForWebContents(
   subresource_filter::VerifiedRulesetDealer::Handle* dealer =
       ruleset_service ? ruleset_service->GetRulesetDealer() : nullptr;
   subresource_filter::ContentSubresourceFilterThrottleManager::
-      CreateForWebContents(web_contents,
-                           std::make_unique<SubresourceFilterClientImpl>(),
-                           dealer);
+      CreateForWebContents(
+          web_contents,
+          std::make_unique<SubresourceFilterClientImpl>(web_contents), dealer);
 }
 
 void SubresourceFilterClientImpl::OnReloadRequested() {
   // TODO(crbug.com/1116095): Bring up this flow on Android when user requests
   // it via the infobar.
-  NOTREACHED();
+  NOTIMPLEMENTED();
 }
 
 void SubresourceFilterClientImpl::ShowNotification() {
-  // TODO(crbug.com/1116095): Show infobar on Android.
+#if defined(OS_ANDROID)
+  // TODO(crbug.com/1116095): Move ChromeSubresourceFilterClient::ShowUI()'s
+  // interaction with metrics and content settings into code that's shared by
+  // WebLayer.
+  InfoBarService* infobar_service =
+      InfoBarService::FromWebContents(web_contents_);
+  subresource_filter::AdsBlockedInfobarDelegate::Create(
+      infobar_service, InfoBarService::GetResourceIdMapper());
+#endif
 }
 
 subresource_filter::mojom::ActivationLevel
