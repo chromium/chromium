@@ -304,6 +304,9 @@ void BrowserManager::StartWithLogFile(base::ScopedFD logfd) {
   options.environment["GOOGLE_DEFAULT_CLIENT_SECRET"] =
       google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_MAIN);
 
+  // This sets the channel for Lacros.
+  options.environment["CHROME_VERSION_EXTRA"] = "dev";
+
   options.kill_on_parent_death = true;
 
   // Paths are UTF-8 safe on Chrome OS.
