@@ -20,10 +20,6 @@ source_set("local_search_service") {
     "linear_map_search.h",
     "local_search_service.cc",
     "local_search_service.h",
-    "local_search_service_sync.cc",
-    "local_search_service_sync.h",
-    "local_search_service_sync_factory.cc",
-    "local_search_service_sync_factory.h",
     "pref_names.cc",
     "pref_names.h",
     "search_metrics_reporter.cc",
@@ -45,11 +41,22 @@ source_set("local_search_service") {
 
   public_deps = [
     "//base",
-    "//components/keyed_service/content:content",
     "//components/metrics:metrics",
     "//components/prefs",
-    "//content/public/browser",
     "//ui/gfx",
+  ]
+}
+
+source_set("local_search_service_sync") {
+  sources = [
+    "local_search_service_sync.cc",
+    "local_search_service_sync.h",
+    "local_search_service_sync_factory.cc",
+    "local_search_service_sync_factory.h",
+  ]
+  deps = [
+    ":local_search_service",
+    "//components/keyed_service/content:content",
   ]
 }
 
@@ -85,6 +92,7 @@ source_set("local_search_service_proxy") {
 
   public_deps = [
     ":local_search_service",
+    ":local_search_service_sync",
     "//base",
     "//chromeos/components/local_search_service/public/mojom",
     "//components/keyed_service/content:content",

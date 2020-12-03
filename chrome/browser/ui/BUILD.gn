@@ -2630,6 +2630,7 @@ static_library("ui") {
       "//chromeos/components/drivefs/mojom:mojom",
       "//chromeos/components/help_app_ui",
       "//chromeos/components/local_search_service:local_search_service",
+      "//chromeos/components/local_search_service:local_search_service_sync",
       "//chromeos/components/media_app_ui",
       "//chromeos/components/multidevice",
       "//chromeos/components/multidevice/debug_webui",

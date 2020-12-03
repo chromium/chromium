@@ -14,11 +14,11 @@
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/task_runner_util.h"
 #include "base/time/time.h"
 #include "chromeos/components/local_search_service/content_extraction_utils.h"
 #include "chromeos/components/local_search_service/inverted_index.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
-#include "content/public/browser/browser_thread.h"
 
 namespace chromeos {
 namespace local_search_service {
@@ -47,7 +47,6 @@ std::vector<Token> ExtractDocumentTokens(const Data& data) {
 }
 
 ExtractedContent ExtractDocumentsContent(const std::vector<Data>& data) {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   ExtractedContent documents;
   for (const Data& d : data) {
     const std::vector<Token> document_tokens = ExtractDocumentTokens(d);

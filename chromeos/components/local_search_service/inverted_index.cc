@@ -16,7 +16,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/components/local_search_service/search_utils.h"
-#include "content/public/browser/browser_thread.h"
 
 namespace chromeos {
 namespace local_search_service {
@@ -61,7 +60,8 @@ TfidfCache BuildTfidf(uint32_t num_docs_from_last_update,
                       const Dictionary& dictionary,
                       const TermSet& terms_to_be_updated,
                       const TfidfCache& tfidf_cache) {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  // TODO(crbug/1137560): consider moving the helper functions inside the class
+  // so that we can use SequenceChecker.
   TfidfCache new_cache(tfidf_cache);
   // If number of documents doesn't change from the last time index was built,
   // we only need to update terms in |terms_to_be_updated|. Otherwise we need
@@ -93,7 +93,6 @@ bool RemoveDocumentIfExist(const std::string& document_id,
   CHECK(doc_length);
   CHECK(dictionary);
   CHECK(terms_to_be_updated);
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   bool document_removed = false;
   if (doc_length->find(document_id) == doc_length->end())
     return document_removed;
@@ -122,7 +121,6 @@ std::pair<DocumentStateVariables, uint32_t> UpdateDocumentStateVariables(
     const DocLength& doc_length,
     Dictionary&& dictionary,
     TermSet&& terms_to_be_updated) {
-  DCHECK(!::content::BrowserThread::CurrentlyOn(::content::BrowserThread::UI));
   DocLength new_doc_length(doc_length);
   uint32_t num_deleted = 0u;
   for (const auto& document : documents_to_update) {
@@ -157,7 +155,6 @@ std::pair<DocumentStateVariables, TfidfCache> ClearData(
     Dictionary&& dictionary,
     TermSet&& terms_to_be_updated,
     TfidfCache&& tfidf_cache) {
-  DCHECK(!::content::BrowserThread::CurrentlyOn(::content::BrowserThread::UI));
   DocLength new_doc_length;
   documents_to_update.clear();
   dictionary.clear();

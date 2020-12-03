@@ -92,6 +92,8 @@
 #include "ash/services/recording/recording_service.h"
 #include "chrome/services/sharing/sharing_impl.h"
 #include "chromeos/assistant/buildflags.h"  // nogncheck
+#include "chromeos/components/local_search_service/local_search_service.h"
+#include "chromeos/components/local_search_service/public/mojom/local_search_service.mojom.h"
 #include "chromeos/services/ime/ime_service.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
 #include "chromeos/services/nearby/public/mojom/sharing.mojom.h"  // nogncheck
@@ -262,6 +264,13 @@ auto RunTtsService(
   return std::make_unique<chromeos::tts::TtsService>(std::move(receiver));
 }
 
+auto RunLocalSearchService(
+    mojo::PendingReceiver<
+        chromeos::local_search_service::mojom::LocalSearchService> receiver) {
+  return std::make_unique<chromeos::local_search_service::LocalSearchService>(
+      std::move(receiver));
+}
+
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 auto RunAssistantAudioDecoder(
     mojo::PendingReceiver<
@@ -341,6 +350,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunRecordingService);
   services.Add(RunSharing);
   services.Add(RunTtsService);
+  services.Add(RunLocalSearchService);
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   services.Add(RunAssistantAudioDecoder);
 #endif

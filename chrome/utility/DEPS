@@ -23,6 +23,8 @@ include_rules = [
   "+chrome/services/util_win/util_win_impl.h",
   "+chrome/services/util_win/public/mojom",
   "+chromeos/assistant/buildflags.h",
+  "+chromeos/components/local_search_service/local_search_service.h",
+  "+chromeos/components/local_search_service/public/mojom",
   "+chromeos/services/assistant",
   "+chromeos/services/ime/ime_service.h",
   "+chromeos/services/ime/public/mojom",

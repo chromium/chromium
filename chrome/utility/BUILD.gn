@@ -172,6 +172,8 @@ static_library("utility") {
       "//chrome/services/file_util",
       "//chrome/services/sharing",
       "//chromeos/assistant:buildflags",
+      "//chromeos/components/local_search_service:local_search_service",
+      "//chromeos/components/local_search_service/public/mojom",
       "//chromeos/services/ime:lib",
       "//chromeos/services/ime/public/mojom",
       "//chromeos/services/nearby/public/mojom:mojom",

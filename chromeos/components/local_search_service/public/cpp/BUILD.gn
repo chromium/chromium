@@ -29,6 +29,7 @@ source_set("cpp") {
     "//chromeos/components/local_search_service:local_search_service",
     "//chromeos/components/local_search_service:local_search_service_provider",
     "//chromeos/components/local_search_service/public/mojom",
+    "//components/keyed_service/content:content",
     "//components/prefs:prefs",
   ]
 }
