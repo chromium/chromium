@@ -176,7 +176,7 @@ void ViewsScreenLocker::HandleLaunchPublicSession(
   NOTREACHED();
 }
 
-void ViewsScreenLocker::SuspendDone(const base::TimeDelta& sleep_duration) {
+void ViewsScreenLocker::SuspendDone(base::TimeDelta sleep_duration) {
   for (user_manager::User* user :
        user_manager::UserManager::Get()->GetUnlockUsers()) {
     UpdatePinKeyboardState(user->GetAccountId());

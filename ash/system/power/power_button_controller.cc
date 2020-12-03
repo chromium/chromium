@@ -344,7 +344,7 @@ void PowerButtonController::ScreenBrightnessChanged(
 
 void PowerButtonController::PowerButtonEventReceived(
     bool down,
-    const base::TimeTicks& timestamp) {
+    base::TimeTicks timestamp) {
   if (lock_state_controller_->ShutdownRequested())
     return;
 
@@ -368,7 +368,7 @@ void PowerButtonController::SuspendImminent(
   DismissMenu();
 }
 
-void PowerButtonController::SuspendDone(const base::TimeDelta& sleep_duration) {
+void PowerButtonController::SuspendDone(base::TimeDelta sleep_duration) {
   last_resume_time_ = tick_clock_->NowTicks();
 }
 

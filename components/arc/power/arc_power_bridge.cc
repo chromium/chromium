@@ -214,7 +214,7 @@ void ArcPowerBridge::OnConciergeSuspendVmResponse(
   chromeos::PowerManagerClient::Get()->UnblockSuspend(token);
 }
 
-void ArcPowerBridge::SuspendDone(const base::TimeDelta& sleep_duration) {
+void ArcPowerBridge::SuspendDone(base::TimeDelta sleep_duration) {
   if (arc::IsArcVmEnabled()) {
     vm_tools::concierge::ResumeVmRequest request;
     request.set_name(kArcVmName);

@@ -33,7 +33,7 @@ class COMPONENT_EXPORT(CHROMEOS_DISKS) SuspendUnmountManager
 
   // PowerManagerClient::Observer
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
-  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // Callback passed to DiskMountManager holds weak pointers of this.
   DiskMountManager* const disk_mount_manager_;

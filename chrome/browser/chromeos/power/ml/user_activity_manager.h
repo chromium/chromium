@@ -92,10 +92,10 @@ class UserActivityManager : public ui::UserActivityObserver,
 
   // chromeos::PowerManagerClient::Observer overrides:
   void LidEventReceived(chromeos::PowerManagerClient::LidState state,
-                        const base::TimeTicks& timestamp) override;
+                        base::TimeTicks timestamp) override;
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
   void TabletModeEventReceived(chromeos::PowerManagerClient::TabletMode mode,
-                               const base::TimeTicks& timestamp) override;
+                               base::TimeTicks timestamp) override;
   void ScreenIdleStateChanged(
       const power_manager::ScreenIdleState& proto) override;
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;

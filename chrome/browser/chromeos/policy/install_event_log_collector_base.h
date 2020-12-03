@@ -20,7 +20,7 @@ class InstallEventLogCollectorBase
     : public chromeos::PowerManagerClient::Observer,
       public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
-  InstallEventLogCollectorBase(Profile* profile);
+  explicit InstallEventLogCollectorBase(Profile* profile);
   ~InstallEventLogCollectorBase() override;
 
   // Event handlers for the login and logout events.
@@ -47,7 +47,7 @@ class InstallEventLogCollectorBase
   // chromeos::PowerManagerClient::Observer:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override =
       0;
-  void SuspendDone(const base::TimeDelta& sleep_duration) override = 0;
+  void SuspendDone(base::TimeDelta sleep_duration) override = 0;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(network::mojom::ConnectionType type) override;

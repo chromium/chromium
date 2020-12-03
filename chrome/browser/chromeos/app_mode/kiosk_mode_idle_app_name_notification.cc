@@ -96,7 +96,7 @@ void KioskModeIdleAppNameNotification::OnUserActivity(const ui::Event* event) {
 }
 
 void KioskModeIdleAppNameNotification::SuspendDone(
-    const base::TimeDelta& sleep_duration) {
+    base::TimeDelta sleep_duration) {
   // When we come back from a system resume we stop the timer and show the
   // message.
   timer_.Stop();

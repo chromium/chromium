@@ -128,7 +128,7 @@ class SmbService : public KeyedService,
 
   // chromeos::PowerManagerClient::Observer overrides
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
-  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
  private:
   friend class SmbServiceTest;

@@ -25,7 +25,7 @@ class DisplaySpeakerController : public display::DisplayObserver,
                                uint32_t changed_metrics) override;
 
   // chromeos::PowerManagerClient::Observer:
-  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
  private:
   // Swaps the left and right channels on yoga devices based on orientation.

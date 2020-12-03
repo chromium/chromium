@@ -3429,7 +3429,7 @@ void CrostiniManager::SuspendImminent(
                      weak_ptr_factory_.GetWeakPtr(), token));
 }
 
-void CrostiniManager::SuspendDone(const base::TimeDelta& sleep_duration) {
+void CrostiniManager::SuspendDone(base::TimeDelta sleep_duration) {
   // https://crbug.com/968060.  Sshfs is unmounted before suspend,
   // call RestartCrostini to force remount if container is running.
   ContainerId container_id = ContainerId::GetDefault();

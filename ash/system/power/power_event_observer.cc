@@ -271,7 +271,7 @@ void PowerEventObserver::SuspendImminent(
   }
 }
 
-void PowerEventObserver::SuspendDone(const base::TimeDelta& sleep_duration) {
+void PowerEventObserver::SuspendDone(base::TimeDelta sleep_duration) {
   suspend_in_progress_ = false;
 
   Shell::Get()->display_configurator()->ResumeDisplays();

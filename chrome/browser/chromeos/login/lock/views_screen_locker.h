@@ -61,7 +61,7 @@ class ViewsScreenLocker : public LoginScreenClient::Delegate,
                                  const std::string& input_method) override;
 
   // PowerManagerClient::Observer:
-  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // lock_screen_apps::FocusCyclerDelegate:
   void RegisterLockScreenAppFocusHandler(

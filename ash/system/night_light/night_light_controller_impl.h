@@ -181,7 +181,7 @@ class ASH_EXPORT NightLightControllerImpl
   bool GetEnabled() const override;
 
   // chromeos::PowerManagerClient::Observer:
-  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
   void AmbientColorChanged(const int32_t color_temperature) override;
 
   // message_center::NotificationObserver:

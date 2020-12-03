@@ -97,7 +97,7 @@ class EasyUnlockService::PowerMonitor : public PowerManagerClient::Observer {
     service_->PrepareForSuspend();
   }
 
-  void SuspendDone(const base::TimeDelta& sleep_duration) override {
+  void SuspendDone(base::TimeDelta sleep_duration) override {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&PowerMonitor::ResetWakingUp,

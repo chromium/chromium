@@ -68,7 +68,7 @@ class ArcAppInstallEventLogCollector : public InstallEventLogCollectorBase,
 
   // chromeos::PowerManagerClient::Observer:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
-  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // arc::ArcPolicyBridge::Observer:
   void OnCloudDpsRequested(base::Time time,

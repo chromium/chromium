@@ -148,11 +148,11 @@ class ASH_EXPORT TabletModeController
 
   // chromeos::PowerManagerClient::Observer:
   void LidEventReceived(chromeos::PowerManagerClient::LidState state,
-                        const base::TimeTicks& time) override;
+                        base::TimeTicks time) override;
   void TabletModeEventReceived(chromeos::PowerManagerClient::TabletMode mode,
-                               const base::TimeTicks& time) override;
+                               base::TimeTicks time) override;
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
-  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // ui::InputDeviceEventObserver:
   void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;

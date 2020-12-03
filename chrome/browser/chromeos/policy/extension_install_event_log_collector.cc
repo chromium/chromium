@@ -529,7 +529,7 @@ void ExtensionInstallEventLogCollector::SuspendImminent(
 }
 
 void ExtensionInstallEventLogCollector::SuspendDone(
-    const base::TimeDelta& sleep_duration) {
+    base::TimeDelta sleep_duration) {
   delegate_->AddForAllExtensions(
       CreateSessionChangeEvent(em::ExtensionInstallReportLogEvent::RESUME));
 }

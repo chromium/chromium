@@ -441,7 +441,7 @@ void UnlockManagerImpl::SuspendImminent(
   bluetooth_suspension_recovery_timer_->Stop();
 }
 
-void UnlockManagerImpl::SuspendDone(const base::TimeDelta& sleep_duration) {
+void UnlockManagerImpl::SuspendDone(base::TimeDelta sleep_duration) {
   bluetooth_suspension_recovery_timer_->Start(
       FROM_HERE, kBluetoothAdapterResumeMaxDuration,
       base::BindOnce(

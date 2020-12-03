@@ -182,9 +182,9 @@ class Adapter : public AlsReader::Observer,
 
   // chromeos::PowerManagerClient::Observer overrides:
   void PowerManagerBecameAvailable(bool service_is_ready) override;
-  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
   void LidEventReceived(chromeos::PowerManagerClient::LidState state,
-                        const base::TimeTicks& timestamp) override;
+                        base::TimeTicks timestamp) override;
 
   Status GetStatusForTesting() const;
 

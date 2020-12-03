@@ -112,7 +112,7 @@ void UserActivityPowerManagerNotifier::SuspendImminent(
 }
 
 void UserActivityPowerManagerNotifier::SuspendDone(
-    const base::TimeDelta& sleep_duration) {
+    base::TimeDelta sleep_duration) {
   suspending_ = false;
 }
 

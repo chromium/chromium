@@ -54,7 +54,7 @@ void DarkResumeController::DarkSuspendImminent() {
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DarkResumeController::SuspendDone(const base::TimeDelta& sleep_duration) {
+void DarkResumeController::SuspendDone(base::TimeDelta sleep_duration) {
   DVLOG(1) << __func__;
   // Clear any dark resume state when the device resumes.
   ClearDarkResumeState();

@@ -88,8 +88,7 @@ void PowerButtonDisplayController::OnScreenStateChanged(
   screen_state_last_changed_ = tick_clock_->NowTicks();
 }
 
-void PowerButtonDisplayController::SuspendDone(
-    const base::TimeDelta& sleep_duration) {
+void PowerButtonDisplayController::SuspendDone(base::TimeDelta sleep_duration) {
   // Stop forcing backlights off on resume to handle situations where the power
   // button resumed but we didn't receive the event (crbug.com/735291).
   SetBacklightsForcedOff(false);
@@ -97,13 +96,13 @@ void PowerButtonDisplayController::SuspendDone(
 
 void PowerButtonDisplayController::LidEventReceived(
     chromeos::PowerManagerClient::LidState state,
-    const base::TimeTicks& timestamp) {
+    base::TimeTicks timestamp) {
   SetBacklightsForcedOff(false);
 }
 
 void PowerButtonDisplayController::TabletModeEventReceived(
     chromeos::PowerManagerClient::TabletMode mode,
-    const base::TimeTicks& timestamp) {
+    base::TimeTicks timestamp) {
   SetBacklightsForcedOff(false);
 }
 

@@ -84,7 +84,7 @@ IdleEventNotifier::~IdleEventNotifier() = default;
 
 void IdleEventNotifier::LidEventReceived(
     chromeos::PowerManagerClient::LidState state,
-    const base::TimeTicks& /* timestamp */) {
+    base::TimeTicks /* timestamp */) {
   // Ignore lid-close event, as we will observe suspend signal.
   if (state == chromeos::PowerManagerClient::LidState::OPEN) {
     UpdateActivityData(ActivityType::USER_OTHER);
@@ -99,8 +99,7 @@ void IdleEventNotifier::PowerChanged(
   }
 }
 
-
-void IdleEventNotifier::SuspendDone(const base::TimeDelta& sleep_duration) {
+void IdleEventNotifier::SuspendDone(base::TimeDelta sleep_duration) {
   // SuspendDone is triggered by user opening the lid (or other user
   // activities).
   // A suspend and subsequent SuspendDone signal could occur with or without a

@@ -85,7 +85,7 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
   void PowerManagerRestarted() override;
   void LidEventReceived(PowerManagerClient::LidState state,
-                        const base::TimeTicks& timestamp) override;
+                        base::TimeTicks timestamp) override;
 
  private:
   enum class PowerSource { kAc, kBattery };

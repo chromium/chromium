@@ -170,7 +170,7 @@ void DeviceEventRouter::SuspendImminent(
   is_resuming_ = true;
 }
 
-void DeviceEventRouter::SuspendDone(const base::TimeDelta& sleep_duration) {
+void DeviceEventRouter::SuspendDone(base::TimeDelta sleep_duration) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,

@@ -174,7 +174,7 @@ void DetachableBaseHandler::InvalidBaseConnected() {
 
 void DetachableBaseHandler::TabletModeEventReceived(
     chromeos::PowerManagerClient::TabletMode mode,
-    const base::TimeTicks& timestamp) {
+    base::TimeTicks timestamp) {
   UpdateTabletMode(mode);
 }
 

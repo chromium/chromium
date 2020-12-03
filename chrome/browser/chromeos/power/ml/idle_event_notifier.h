@@ -99,9 +99,9 @@ class IdleEventNotifier : public PowerManagerClient::Observer,
 
   // chromeos::PowerManagerClient::Observer overrides:
   void LidEventReceived(chromeos::PowerManagerClient::LidState state,
-                        const base::TimeTicks& timestamp) override;
+                        base::TimeTicks timestamp) override;
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
-  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // ui::UserActivityObserver overrides:
   void OnUserActivity(const ui::Event* event) override;

@@ -137,7 +137,7 @@ void ProfileProvider::LoggedInStateChanged() {
   }
 }
 
-void ProfileProvider::SuspendDone(const base::TimeDelta& sleep_duration) {
+void ProfileProvider::SuspendDone(base::TimeDelta sleep_duration) {
   // A zero value for the suspend duration indicates that the suspend was
   // canceled. Do not collect anything if that's the case.
   if (sleep_duration.is_zero())

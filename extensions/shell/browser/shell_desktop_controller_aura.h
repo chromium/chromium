@@ -88,8 +88,7 @@ class ShellDesktopControllerAura
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // chromeos::PowerManagerClient::Observer:
-  void PowerButtonEventReceived(bool down,
-                                const base::TimeTicks& timestamp) override;
+  void PowerButtonEventReceived(bool down, base::TimeTicks timestamp) override;
 
   // display::DisplayConfigurator::Observer:
   void OnDisplayModeChanged(

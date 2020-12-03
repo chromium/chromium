@@ -98,8 +98,7 @@ void EventBasedStatusReportingService::OnConnectionChanged(
     RequestStatusReport(StatusReportEvent::kDeviceOnline);
 }
 
-void EventBasedStatusReportingService::SuspendDone(
-    const base::TimeDelta& duration) {
+void EventBasedStatusReportingService::SuspendDone(base::TimeDelta duration) {
   RequestStatusReport(StatusReportEvent::kSuspendDone);
 }
 

@@ -96,7 +96,7 @@ void ArcAppInstallEventLogCollector::SuspendImminent(
 }
 
 void ArcAppInstallEventLogCollector::SuspendDone(
-    const base::TimeDelta& sleep_duration) {
+    base::TimeDelta sleep_duration) {
   delegate_->AddForAllPackages(
       CreateSessionChangeEvent(em::AppInstallReportLogEvent::RESUME));
 }

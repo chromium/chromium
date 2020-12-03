@@ -333,7 +333,7 @@ void AudioInputImpl::RemoveObserver(
 
 void AudioInputImpl::LidEventReceived(
     chromeos::PowerManagerClient::LidState state,
-    const base::TimeTicks& timestamp) {
+    base::TimeTicks timestamp) {
   // Lid switch event still gets fired during system suspend, which enables
   // us to stop DSP recording correctly when user closes lid after the device
   // goes to sleep.

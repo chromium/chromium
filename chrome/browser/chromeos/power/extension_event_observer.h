@@ -96,7 +96,7 @@ class ExtensionEventObserver : public ProfileManagerObserver,
   // PowerManagerClient::Observer:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
   void DarkSuspendImminent() override;
-  void SuspendDone(const base::TimeDelta& duration) override;
+  void SuspendDone(base::TimeDelta duration) override;
 
  private:
   friend class TestApi;

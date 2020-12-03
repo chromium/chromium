@@ -260,7 +260,7 @@ void TetherService::SuspendImminent(
   UpdateTetherTechnologyState();
 }
 
-void TetherService::SuspendDone(const base::TimeDelta& sleep_duration) {
+void TetherService::SuspendDone(base::TimeDelta sleep_duration) {
   suspended_ = false;
 
   // If there was a previous TetherComponent instance in the process of an

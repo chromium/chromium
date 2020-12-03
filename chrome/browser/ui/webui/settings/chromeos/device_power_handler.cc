@@ -202,7 +202,7 @@ void PowerHandler::PowerManagerRestarted() {
 }
 
 void PowerHandler::LidEventReceived(PowerManagerClient::LidState state,
-                                    const base::TimeTicks& timestamp) {
+                                    base::TimeTicks timestamp) {
   lid_state_ = state;
   SendPowerManagementSettings(false /* force */);
 }

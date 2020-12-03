@@ -55,7 +55,7 @@ class UI_CHROMEOS_EXPORT UserActivityPowerManagerNotifier
 
   // chromeos::PowerManagerClient::Observer:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
-  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
  private:
   // Notifies power manager that the user is active and activity type. No-op if

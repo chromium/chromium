@@ -212,7 +212,7 @@ void ShellDesktopControllerAura::CloseRootWindowController(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ShellDesktopControllerAura::PowerButtonEventReceived(
     bool down,
-    const base::TimeTicks& timestamp) {
+    base::TimeTicks timestamp) {
   if (down) {
     chromeos::PowerManagerClient::Get()->RequestShutdown(
         power_manager::REQUEST_SHUTDOWN_FOR_USER, "AppShell power button");

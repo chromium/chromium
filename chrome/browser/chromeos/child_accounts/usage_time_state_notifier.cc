@@ -90,8 +90,7 @@ void UsageTimeStateNotifier::SuspendImminent(
   ChangeUsageTimeState(UsageTimeState::INACTIVE);
 }
 
-void UsageTimeStateNotifier::SuspendDone(
-    const base::TimeDelta& sleep_duration) {
+void UsageTimeStateNotifier::SuspendDone(base::TimeDelta sleep_duration) {
   ChangeUsageTimeState(GetCurrentState());
 }
 

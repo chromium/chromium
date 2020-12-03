@@ -64,7 +64,7 @@ class UsageTimeStateNotifier : public session_manager::SessionManagerObserver,
   void ScreenIdleStateChanged(
       const power_manager::ScreenIdleState& state) override;
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
-  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
   base::ObserverList<Observer> observers_;
 

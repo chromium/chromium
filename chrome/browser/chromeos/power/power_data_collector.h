@@ -81,7 +81,7 @@ class PowerDataCollector : public PowerManagerClient::Observer {
 
   // PowerManagerClient::Observer implementation:
   void PowerChanged(const power_manager::PowerSupplyProperties& prop) override;
-  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // Only those power data samples which fall within the last
   // |kSampleTimeLimitSec| are stored in memory.

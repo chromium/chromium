@@ -72,7 +72,7 @@ class ArcPowerBridge : public KeyedService,
 
   // chromeos::PowerManagerClient::Observer overrides.
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
-  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
   void ScreenBrightnessChanged(
       const power_manager::BacklightBrightnessChange& change) override;
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;

@@ -286,7 +286,7 @@ void Adapter::PowerManagerBecameAvailable(bool service_is_ready) {
   UpdateStatus();
 }
 
-void Adapter::SuspendDone(const base::TimeDelta& /* sleep_duration */) {
+void Adapter::SuspendDone(base::TimeDelta /* sleep_duration */) {
   // We skip this notification if adapter hasn't been initialised (because its
   // |params_| may change), or, if adapter is disabled (because adapter won't
   // change brightness anyway).
@@ -298,7 +298,7 @@ void Adapter::SuspendDone(const base::TimeDelta& /* sleep_duration */) {
 }
 
 void Adapter::LidEventReceived(chromeos::PowerManagerClient::LidState state,
-                               const base::TimeTicks& /* timestamp */) {
+                               base::TimeTicks /* timestamp */) {
   is_lid_closed_ = state == chromeos::PowerManagerClient::LidState::CLOSED;
   if (!*is_lid_closed_) {
     lid_reopen_time_ = tick_clock_->NowTicks();

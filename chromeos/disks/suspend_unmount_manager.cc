@@ -55,7 +55,7 @@ void SuspendUnmountManager::SuspendImminent(
   }
 }
 
-void SuspendUnmountManager::SuspendDone(const base::TimeDelta& sleep_duration) {
+void SuspendUnmountManager::SuspendDone(base::TimeDelta sleep_duration) {
   // SuspendDone can be called before OnUnmountComplete when suspend is
   // cancelled, or it takes long time to unmount volumes.
   unmounting_paths_.clear();

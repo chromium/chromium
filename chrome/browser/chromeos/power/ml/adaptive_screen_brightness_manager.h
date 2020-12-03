@@ -74,9 +74,9 @@ class AdaptiveScreenBrightnessManager
       const power_manager::BacklightBrightnessChange& change) override;
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
   void LidEventReceived(chromeos::PowerManagerClient::LidState state,
-                        const base::TimeTicks& timestamp) override;
+                        base::TimeTicks timestamp) override;
   void TabletModeEventReceived(chromeos::PowerManagerClient::TabletMode mode,
-                               const base::TimeTicks& timestamp) override;
+                               base::TimeTicks timestamp) override;
 
   // viz::mojom::VideoDetectorObserver overrides:
   void OnVideoActivityStarted() override;

@@ -23,8 +23,7 @@ class IdleActionWarningObserver : public PowerManagerClient::Observer,
   ~IdleActionWarningObserver() override;
 
   // PowerManagerClient::Observer:
-  void IdleActionImminent(
-      const base::TimeDelta& time_until_idle_action) override;
+  void IdleActionImminent(base::TimeDelta time_until_idle_action) override;
   void IdleActionDeferred() override;
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
 

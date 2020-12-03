@@ -1048,7 +1048,7 @@ void SmbService::OnSuspendUnmountDone(
       power_manager_suspend_token);
 }
 
-void SmbService::SuspendDone(const base::TimeDelta& sleep_duration) {
+void SmbService::SuspendDone(base::TimeDelta sleep_duration) {
   // Don't iterate directly over the share map during the remount
   // process as shares can be removed on failure in OnSmbfsMountDone.
   std::vector<std::string> mount_ids;

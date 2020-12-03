@@ -707,8 +707,7 @@ bool NightLightControllerImpl::GetEnabled() const {
          active_user_pref_service_->GetBoolean(prefs::kNightLightEnabled);
 }
 
-void NightLightControllerImpl::SuspendDone(
-    const base::TimeDelta& sleep_duration) {
+void NightLightControllerImpl::SuspendDone(base::TimeDelta sleep_duration) {
   // Time changes while the device is suspended. We need to refresh the schedule
   // upon device resume to know what the status should be now.
   Refresh(/*did_schedule_change=*/true,

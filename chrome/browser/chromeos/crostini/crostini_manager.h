@@ -568,7 +568,7 @@ class CrostiniManager : public KeyedService,
 
   // chromeos::PowerManagerClient::Observer overrides:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
-  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // Callback for |RemoveSshfsCrostiniVolume| called from |SuspendImminent| when
   // the device is allowed to suspend. Removes metadata associated with the

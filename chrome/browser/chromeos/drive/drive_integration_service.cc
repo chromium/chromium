@@ -1035,8 +1035,7 @@ void DriveIntegrationService::SuspendImminent(
   RemoveDriveMountPoint();
 }
 
-void DriveIntegrationService::SuspendDone(
-    const base::TimeDelta& sleep_duration) {
+void DriveIntegrationService::SuspendDone(base::TimeDelta sleep_duration) {
   if (is_enabled()) {
     AddDriveMountPoint();
   }

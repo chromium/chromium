@@ -240,7 +240,7 @@ class SigninScreenHandler
                const content::NotificationDetails& details) override;
 
   // PowerManagerClient::Observer implementation:
-  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // ash::TabletModeObserver:
   void OnTabletModeStarted() override;

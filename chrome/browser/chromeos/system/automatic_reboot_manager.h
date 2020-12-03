@@ -100,7 +100,7 @@ class AutomaticRebootManager : public PowerManagerClient::Observer,
   bool WaitForInitForTesting(const base::TimeDelta& timeout);
 
   // PowerManagerClient::Observer:
-  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // UpdateEngineClient::Observer:
   void UpdateStatusChanged(const update_engine::StatusResult& status) override;

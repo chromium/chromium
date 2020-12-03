@@ -71,7 +71,7 @@ class DeviceEventRouter : public VolumeManagerObserver,
 
   // PowerManagerClient::Observer overrides.
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
-  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
   bool is_resuming() const { return is_resuming_; }
   bool is_starting_up() const { return is_starting_up_; }

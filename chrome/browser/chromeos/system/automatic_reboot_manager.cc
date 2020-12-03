@@ -204,8 +204,7 @@ bool AutomaticRebootManager::WaitForInitForTesting(
   return initialized_.TimedWait(timeout);
 }
 
-void AutomaticRebootManager::SuspendDone(
-    const base::TimeDelta& sleep_duration) {
+void AutomaticRebootManager::SuspendDone(base::TimeDelta sleep_duration) {
   MaybeReboot(true);
 }
 

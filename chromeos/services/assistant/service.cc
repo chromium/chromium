@@ -287,7 +287,7 @@ void Service::PowerChanged(const power_manager::PowerSupplyProperties& prop) {
   UpdateAssistantManagerState();
 }
 
-void Service::SuspendDone(const base::TimeDelta& sleep_duration) {
+void Service::SuspendDone(base::TimeDelta sleep_duration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // |token_refresh_timer_| may become stale during sleeping, so we immediately
   // request a new token to make sure it is fresh.

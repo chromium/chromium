@@ -109,7 +109,7 @@ MetricsReporter::MetricsReporter(
 
 MetricsReporter::~MetricsReporter() = default;
 
-void MetricsReporter::SuspendDone(const base::TimeDelta& duration) {
+void MetricsReporter::SuspendDone(base::TimeDelta duration) {
   daily_event_->CheckInterval();
 }
 

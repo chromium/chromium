@@ -326,13 +326,13 @@ void SmartChargingManager::SuspendImminent(
 
 void SmartChargingManager::LidEventReceived(
     const chromeos::PowerManagerClient::LidState state,
-    const base::TimeTicks& /* timestamp */) {
+    base::TimeTicks /* timestamp */) {
   lid_state_ = state;
 }
 
 void SmartChargingManager::TabletModeEventReceived(
     const chromeos::PowerManagerClient::TabletMode mode,
-    const base::TimeTicks& /* timestamp */) {
+    base::TimeTicks /* timestamp */) {
   tablet_mode_ = mode;
 }
 

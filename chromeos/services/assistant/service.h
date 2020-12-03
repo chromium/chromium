@@ -98,7 +98,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
 
   // chromeos::PowerManagerClient::Observer overrides:
   void PowerChanged(const power_manager::PowerSupplyProperties& prop) override;
-  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // ash::SessionActivationObserver overrides:
   void OnSessionActivated(bool activated) override;

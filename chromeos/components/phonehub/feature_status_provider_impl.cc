@@ -315,8 +315,7 @@ void FeatureStatusProviderImpl::SuspendImminent(
   UpdateStatus();
 }
 
-void FeatureStatusProviderImpl::SuspendDone(
-    const base::TimeDelta& sleep_duration) {
+void FeatureStatusProviderImpl::SuspendDone(base::TimeDelta sleep_duration) {
   PA_LOG(INFO) << "Device has stopped suspending";
   is_suspended_ = false;
   UpdateStatus();

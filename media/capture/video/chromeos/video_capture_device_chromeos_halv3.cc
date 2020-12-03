@@ -87,7 +87,7 @@ class VideoCaptureDeviceChromeOSHalv3::PowerManagerClientProxy
                                   device_, token));
   }
 
-  void SuspendDone(const base::TimeDelta& sleep_duration) final {
+  void SuspendDone(base::TimeDelta sleep_duration) final {
     device_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&VideoCaptureDeviceChromeOSHalv3::OpenDevice, device_));

@@ -72,7 +72,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputImpl
 
   // chromeos::PowerManagerClient::Observer overrides:
   void LidEventReceived(chromeos::PowerManagerClient::LidState state,
-                        const base::TimeTicks& timestamp) override;
+                        base::TimeTicks timestamp) override;
 
   // Called when the mic state associated with the interaction is changed.
   void SetMicState(bool mic_open);

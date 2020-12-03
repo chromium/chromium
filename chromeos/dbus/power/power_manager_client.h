@@ -128,7 +128,7 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
     // Called when a suspend attempt (previously announced via
     // SuspendImminent()) has completed. The system may not have actually
     // suspended (if e.g. the user canceled the suspend attempt).
-    virtual void SuspendDone(const base::TimeDelta& sleep_duration) {}
+    virtual void SuspendDone(base::TimeDelta sleep_duration) {}
 
     // Called when the system is about to resuspend from a dark resume.  Like
     // SuspendImminent(), the suspend will be deferred until all observers have
@@ -146,22 +146,20 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
 
     // Called when the power button is pressed or released.
     virtual void PowerButtonEventReceived(bool down,
-                                          const base::TimeTicks& timestamp) {}
+                                          base::TimeTicks timestamp) {}
 
     // Called when the device's lid is opened or closed. LidState::NOT_PRESENT
     // is never passed.
-    virtual void LidEventReceived(LidState state,
-                                  const base::TimeTicks& timestamp) {}
+    virtual void LidEventReceived(LidState state, base::TimeTicks timestamp) {}
 
     // Called when the device's tablet mode switch is on or off.
     // TabletMode::UNSUPPORTED is never passed.
     virtual void TabletModeEventReceived(TabletMode mode,
-                                         const base::TimeTicks& timestamp) {}
+                                         base::TimeTicks timestamp) {}
 
     // Called when the idle action will be performed after
     // |time_until_idle_action|.
-    virtual void IdleActionImminent(
-        const base::TimeDelta& time_until_idle_action) {}
+    virtual void IdleActionImminent(base::TimeDelta time_until_idle_action) {}
 
     // Called after IdleActionImminent() when the inactivity timer is reset
     // before the idle action has been performed.

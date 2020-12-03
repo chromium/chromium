@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(CHROMEOS_POWER) DarkResumeController
   // chromeos::PowerManagerClient::Observer overrides.
   void PowerManagerInitialized() override;
   void DarkSuspendImminent() override;
-  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // mojom::WakeLockObserver overrides.
   void OnWakeLockDeactivated(device::mojom::WakeLockType type) override;

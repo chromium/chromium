@@ -56,7 +56,7 @@ IdleActionWarningObserver::~IdleActionWarningObserver() {
 }
 
 void IdleActionWarningObserver::IdleActionImminent(
-    const base::TimeDelta& time_until_idle_action) {
+    base::TimeDelta time_until_idle_action) {
   // Only display warning if idle action is to shut down or logout.
   PowerPolicyController::Action idle_action = GetIdleAction(on_battery_power_);
   if (idle_action != PowerPolicyController::ACTION_STOP_SESSION &&

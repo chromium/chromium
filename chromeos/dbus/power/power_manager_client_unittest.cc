@@ -129,7 +129,7 @@ class TestObserver : public PowerManagerClient::Observer {
     if (run_unblock_suspend_immediately_)
       CHECK(UnblockSuspend());
   }
-  void SuspendDone(const base::TimeDelta& sleep_duration) override {
+  void SuspendDone(base::TimeDelta sleep_duration) override {
     num_suspend_done_++;
   }
   void DarkSuspendImminent() override {

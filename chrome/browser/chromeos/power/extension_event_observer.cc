@@ -199,7 +199,7 @@ void ExtensionEventObserver::DarkSuspendImminent() {
     OnSuspendImminent(true);
 }
 
-void ExtensionEventObserver::SuspendDone(const base::TimeDelta& duration) {
+void ExtensionEventObserver::SuspendDone(base::TimeDelta duration) {
   block_suspend_token_ = {};
   suspend_readiness_callback_.Cancel();
 }

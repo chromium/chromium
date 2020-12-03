@@ -271,13 +271,13 @@ void AdaptiveScreenBrightnessManager::PowerChanged(
 
 void AdaptiveScreenBrightnessManager::LidEventReceived(
     const chromeos::PowerManagerClient::LidState state,
-    const base::TimeTicks& /* timestamp */) {
+    base::TimeTicks /* timestamp */) {
   lid_state_ = state;
 }
 
 void AdaptiveScreenBrightnessManager::TabletModeEventReceived(
     const chromeos::PowerManagerClient::TabletMode mode,
-    const base::TimeTicks& /* timestamp */) {
+    base::TimeTicks /* timestamp */) {
   tablet_mode_ = mode;
 }
 

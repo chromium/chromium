@@ -72,7 +72,7 @@ class EventBasedStatusReportingService
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
   // PowerManagerClient::Observer:
-  void SuspendDone(const base::TimeDelta& duration) override;
+  void SuspendDone(base::TimeDelta duration) override;
 
   // ScreenTimeController::Observer:
   void UsageTimeLimitWarning() override;

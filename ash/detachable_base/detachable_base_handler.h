@@ -93,7 +93,7 @@ class ASH_EXPORT DetachableBaseHandler
 
   // chromeos::PowerManagerClient::Observer:
   void TabletModeEventReceived(chromeos::PowerManagerClient::TabletMode mode,
-                               const base::TimeTicks& timestamp) override;
+                               base::TimeTicks timestamp) override;
 
  private:
   // Identifier for a detachable base device - HEX encoded string created from

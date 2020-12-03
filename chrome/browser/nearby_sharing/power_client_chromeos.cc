@@ -19,6 +19,6 @@ void PowerClientChromeos::SuspendImminent(
   SetSuspended(true);
 }
 
-void PowerClientChromeos::SuspendDone(const base::TimeDelta& sleep_duration) {
+void PowerClientChromeos::SuspendDone(base::TimeDelta sleep_duration) {
   SetSuspended(false);
 }

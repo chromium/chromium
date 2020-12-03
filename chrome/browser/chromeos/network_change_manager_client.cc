@@ -40,8 +40,7 @@ NetworkChangeManagerClient::~NetworkChangeManagerClient() {
   PowerManagerClient::Get()->RemoveObserver(this);
 }
 
-void NetworkChangeManagerClient::SuspendDone(
-    const base::TimeDelta& sleep_duration) {
+void NetworkChangeManagerClient::SuspendDone(base::TimeDelta sleep_duration) {
   // Force invalidation of network resources on resume.
   network_change_notifier_->OnIPAddressChanged();
   if (network_change_manager_) {

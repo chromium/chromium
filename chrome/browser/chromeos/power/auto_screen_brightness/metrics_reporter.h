@@ -71,7 +71,7 @@ class MetricsReporter : public PowerManagerClient::Observer {
   ~MetricsReporter() override;
 
   // PowerManagerClient::Observer:
-  void SuspendDone(const base::TimeDelta& duration) override;
+  void SuspendDone(base::TimeDelta duration) override;
 
   // Sets |device_class_|. Should only be called once after adapter is
   // initialized.

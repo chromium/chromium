@@ -657,7 +657,7 @@ void TabletModeController::OnAccelerometerUpdated(
 
 void TabletModeController::LidEventReceived(
     chromeos::PowerManagerClient::LidState state,
-    const base::TimeTicks& time) {
+    base::TimeTicks time) {
   VLOG(1) << "Lid event received: " << ToString(state);
   lid_is_closed_ = state != chromeos::PowerManagerClient::LidState::OPEN;
   if (lid_is_closed_) {
@@ -675,7 +675,7 @@ void TabletModeController::LidEventReceived(
 
 void TabletModeController::TabletModeEventReceived(
     chromeos::PowerManagerClient::TabletMode mode,
-    const base::TimeTicks& time) {
+    base::TimeTicks time) {
   if (!tablet_mode_behavior_.use_sensor)
     return;
 
@@ -703,7 +703,7 @@ void TabletModeController::SuspendImminent(
   }
 }
 
-void TabletModeController::SuspendDone(const base::TimeDelta& sleep_duration) {
+void TabletModeController::SuspendDone(base::TimeDelta sleep_duration) {
   // We do not want TabletMode usage metrics to include time spent in suspend.
   tablet_mode_usage_interval_start_time_ = base::Time::Now();
 

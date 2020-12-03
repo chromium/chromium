@@ -49,7 +49,7 @@ class ProfileProvider : public chromeos::PowerManagerClient::Observer,
   // Called when a suspend finishes. This is either a successful suspend
   // followed by a resume, or a suspend that was canceled. Inherited from
   // PowerManagerClient::Observer.
-  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // Called when a session restore has finished.
   void OnSessionRestoreDone(int num_tabs_restored);

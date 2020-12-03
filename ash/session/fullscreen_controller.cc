@@ -137,7 +137,7 @@ void FullscreenController::ScreenBrightnessChanged(
 
 void FullscreenController::LidEventReceived(
     chromeos::PowerManagerClient::LidState state,
-    const base::TimeTicks& timestamp) {
+    base::TimeTicks timestamp) {
   // Show alert when the lid is opened. This also covers the case when the user
   // turn off "Sleep when cover is closed".
   if (state == chromeos::PowerManagerClient::LidState::OPEN)

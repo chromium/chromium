@@ -148,7 +148,7 @@ void UserActivityManager::OnUserActivity(const ui::Event* /* event */) {
 
 void UserActivityManager::LidEventReceived(
     chromeos::PowerManagerClient::LidState state,
-    const base::TimeTicks& /* timestamp */) {
+    base::TimeTicks /* timestamp */) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   lid_state_ = state;
 }
@@ -174,7 +174,7 @@ void UserActivityManager::PowerChanged(
 
 void UserActivityManager::TabletModeEventReceived(
     chromeos::PowerManagerClient::TabletMode mode,
-    const base::TimeTicks& /* timestamp */) {
+    base::TimeTicks /* timestamp */) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   tablet_mode_ = mode;
 }

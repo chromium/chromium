@@ -61,7 +61,7 @@ class AffiliatedSessionService : public session_manager::SessionManagerObserver,
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
   // chromeos::PowerManagerClient::Observer
-  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
  private:
   bool is_session_locked_;

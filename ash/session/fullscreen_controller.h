@@ -39,7 +39,7 @@ class FullscreenController : public chromeos::PowerManagerClient::Observer {
   void ScreenBrightnessChanged(
       const power_manager::BacklightBrightnessChange& change) override;
   void LidEventReceived(chromeos::PowerManagerClient::LidState state,
-                        const base::TimeTicks& timestamp) override;
+                        base::TimeTicks timestamp) override;
 
   const SessionControllerImpl* const session_controller_;
 

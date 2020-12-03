@@ -64,8 +64,7 @@ void DisplaySpeakerController::OnDisplayMetricsChanged(
   CrasAudioHandler::Get()->SetActiveHDMIOutoutRediscoveringIfNecessary(false);
 }
 
-void DisplaySpeakerController::SuspendDone(
-    const base::TimeDelta& sleep_duration) {
+void DisplaySpeakerController::SuspendDone(base::TimeDelta sleep_duration) {
   // This event is triggered when the device resumes after earlier suspension,
   // we should always start or re-start HDMI re-discovering
   // grace period right after this event.

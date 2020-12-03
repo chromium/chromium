@@ -136,7 +136,7 @@ void PowerMetricsReporter::SuspendImminent(
   }
 }
 
-void PowerMetricsReporter::SuspendDone(const base::TimeDelta& duration) {
+void PowerMetricsReporter::SuspendDone(base::TimeDelta duration) {
   daily_event_->CheckInterval();
 }
 

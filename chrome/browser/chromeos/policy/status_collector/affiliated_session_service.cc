@@ -92,8 +92,7 @@ void AffiliatedSessionService::OnProfileWillBeDestroyed(Profile* profile) {
   profile_observer_.Remove(profile);
 }
 
-void AffiliatedSessionService::SuspendDone(
-    const base::TimeDelta& sleep_duration) {
+void AffiliatedSessionService::SuspendDone(base::TimeDelta sleep_duration) {
   if (sleep_duration < kMinimumSuspendDuration) {
     return;
   }

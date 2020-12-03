@@ -59,7 +59,7 @@ void PowerDataCollector::PowerChanged(
   AddSample(&power_supply_data_, sample);
 }
 
-void PowerDataCollector::SuspendDone(const base::TimeDelta& sleep_duration) {
+void PowerDataCollector::SuspendDone(base::TimeDelta sleep_duration) {
   SystemResumedSample sample;
   sample.time = base::Time::Now();
   sample.sleep_duration = sleep_duration;
