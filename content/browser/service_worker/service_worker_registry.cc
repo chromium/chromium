@@ -128,6 +128,41 @@ class ServiceWorkerRegistry::InflightCallStoreRegistration
       callback_;
 };
 
+class ServiceWorkerRegistry::InflightCallStoreUserData
+    : public ServiceWorkerRegistry::InflightCall {
+ public:
+  InflightCallStoreUserData(
+      int64_t registration_id,
+      const url::Origin& origin,
+      std::vector<storage::mojom::ServiceWorkerUserDataPtr> user_data,
+      base::RepeatingCallback<
+          void(storage::mojom::ServiceWorkerDatabaseStatus status)> callback)
+      : registration_id_(registration_id),
+        origin_(origin),
+        user_data_(std::move(user_data)),
+        callback_(std::move(callback)) {}
+  ~InflightCallStoreUserData() override = default;
+
+  void Run(ServiceWorkerRegistry* registry) override {
+    DCHECK(registry);
+    DCHECK(registry->GetRemoteStorageControl().is_connected());
+    std::vector<storage::mojom::ServiceWorkerUserDataPtr> passed_user_data;
+    for (const auto& entry : user_data_)
+      passed_user_data.push_back(entry.Clone());
+
+    registry->GetRemoteStorageControl()->StoreUserData(
+        registration_id_, origin_, std::move(passed_user_data), callback_);
+  }
+
+ private:
+  const int64_t registration_id_;
+  const url::Origin origin_;
+  std::vector<storage::mojom::ServiceWorkerUserDataPtr> user_data_;
+  base::RepeatingCallback<void(
+      storage::mojom::ServiceWorkerDatabaseStatus status)>
+      callback_;
+};
+
 class ServiceWorkerRegistry::InflightCallApplyPolicyUpdates
     : public ServiceWorkerRegistry::InflightCall {
  public:
@@ -642,10 +677,13 @@ void ServiceWorkerRegistry::StoreUserData(
         registration_id, kv.first, kv.second));
   }
 
-  GetRemoteStorageControl()->StoreUserData(
+  uint64_t call_id = GetNextCallId();
+  auto call = std::make_unique<InflightCallStoreUserData>(
       registration_id, origin, std::move(user_data),
-      base::BindOnce(&ServiceWorkerRegistry::DidStoreUserData,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+      base::BindRepeating(&ServiceWorkerRegistry::DidStoreUserData,
+                          weak_factory_.GetWeakPtr(), base::Passed(&callback),
+                          call_id));
+  StartRemoteCall(call_id, std::move(call));
 }
 
 void ServiceWorkerRegistry::ClearUserData(int64_t registration_id,
@@ -1335,8 +1373,10 @@ void ServiceWorkerRegistry::DidGetUserKeysAndData(
 
 void ServiceWorkerRegistry::DidStoreUserData(
     StatusCallback callback,
+    uint64_t call_id,
     storage::mojom::ServiceWorkerDatabaseStatus status) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  FinishRemoteCall(call_id);
   // |status| can be NOT_FOUND when the associated registration did not exist in
   // the database. In the case, we don't have to schedule the corruption
   // recovery.

@@ -1620,11 +1620,12 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_UserData) {
           loop2.Quit();
         }));
 
-    // TODO(crbug.com/1133143): Support retry for StoreRegistration() then
-    // simulate storage restart before running loops.
+    EXPECT_EQ(inflight_call_count(), 2U);
+    registry()->SimulateStorageRestartForTesting();
 
     loop1.Run();
     loop2.Run();
+    EXPECT_EQ(inflight_call_count(), 0U);
   }
 
   // Tests that get methods for `registration1` work.

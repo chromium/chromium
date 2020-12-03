@@ -355,6 +355,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       storage::mojom::ServiceWorkerDatabaseStatus status,
       const base::flat_map<std::string, std::string>& data_map);
   void DidStoreUserData(StatusCallback callback,
+                        uint64_t call_id,
                         storage::mojom::ServiceWorkerDatabaseStatus status);
   void DidClearUserData(StatusCallback callback,
                         uint64_t call_id,
@@ -424,6 +425,8 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   //
   // For StoreRegistration():
   class InflightCallStoreRegistration;
+  // For StoreUserData():
+  class InflightCallStoreUserData;
   // For ApplyPolicyUpdates():
   class InflightCallApplyPolicyUpdates;
 
