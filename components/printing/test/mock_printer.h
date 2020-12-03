@@ -89,7 +89,7 @@ class MockPrinter {
                       int margins_type,
                       const gfx::Size& page_size,
                       int scale_factor);
-  void PrintPage(const printing::mojom::DidPrintDocumentParams& params);
+  void PrintPage(printing::mojom::DidPrintDocumentParamsPtr params);
 
   // Functions that retrieve the output pages.
   Status GetPrinterStatus() const { return printer_status_; }

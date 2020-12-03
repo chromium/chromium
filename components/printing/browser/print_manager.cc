@@ -22,52 +22,7 @@ struct PrintManager::FrameDispatchHelper {
                        IPC::Message* reply_msg) {
     manager->OnScriptedPrint(render_frame_host, scripted_params, reply_msg);
   }
-
-  void OnDidPrintDocument(const mojom::DidPrintDocumentParams& params,
-                          IPC::Message* reply_msg) {
-    // If DidPrintDocument message was received then need to transition from
-    // a variable allocated on stack (which has efficient memory management
-    // when dealing with any other incoming message) to a persistent variable
-    // on the heap that can be referenced by the asynchronous processing which
-    // occurs beyond the scope of PrintViewManagerBase::OnMessageReceived().
-    manager->OnDidPrintDocument(
-        render_frame_host, params,
-        std::make_unique<DelayedFrameDispatchHelper>(
-            manager->web_contents(), render_frame_host, reply_msg));
-  }
 };
-
-PrintManager::DelayedFrameDispatchHelper::DelayedFrameDispatchHelper(
-    content::WebContents* contents,
-    content::RenderFrameHost* render_frame_host,
-    IPC::Message* reply_msg)
-    : content::WebContentsObserver(contents),
-      render_frame_host_(render_frame_host),
-      reply_msg_(reply_msg) {}
-
-PrintManager::DelayedFrameDispatchHelper::~DelayedFrameDispatchHelper() {
-  if (reply_msg_) {
-    PrintHostMsg_DidPrintDocument::WriteReplyParams(reply_msg_, false);
-    render_frame_host_->Send(reply_msg_);
-  }
-}
-
-void PrintManager::DelayedFrameDispatchHelper::SendCompleted() {
-  if (!reply_msg_)
-    return;
-
-  PrintHostMsg_DidPrintDocument::WriteReplyParams(reply_msg_, true);
-  render_frame_host_->Send(reply_msg_);
-
-  // This wraps up the one allowed reply for the message.
-  reply_msg_ = nullptr;
-}
-
-void PrintManager::DelayedFrameDispatchHelper::RenderFrameDeleted(
-    content::RenderFrameHost* render_frame_host) {
-  if (render_frame_host == render_frame_host_)
-    reply_msg_ = nullptr;
-}
 
 PrintManager::PrintManager(content::WebContents* contents)
     : content::WebContentsObserver(contents),
@@ -83,8 +38,6 @@ bool PrintManager::OnMessageReceived(
   IPC_BEGIN_MESSAGE_MAP(PrintManager, message)
     IPC_MESSAGE_FORWARD_DELAY_REPLY(PrintHostMsg_ScriptedPrint, &helper,
                                     FrameDispatchHelper::OnScriptedPrint)
-    IPC_MESSAGE_FORWARD_DELAY_REPLY(PrintHostMsg_DidPrintDocument, &helper,
-                                    FrameDispatchHelper::OnDidPrintDocument);
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
@@ -121,6 +74,11 @@ void PrintManager::UpdatePrintSettings(int32_t cookie,
 }
 
 void PrintManager::DidShowPrintDialog() {}
+
+void PrintManager::DidPrintDocument(mojom::DidPrintDocumentParamsPtr params,
+                                    DidPrintDocumentCallback callback) {
+  std::move(callback).Run(false);
+}
 
 void PrintManager::ShowInvalidPrinterSettingsError() {}
 

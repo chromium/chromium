@@ -51,8 +51,6 @@ bool PrintMockRenderThread::OnMessageReceived(const IPC::Message& msg) {
   IPC_BEGIN_MESSAGE_MAP(PrintMockRenderThread, msg)
 #if BUILDFLAG(ENABLE_PRINTING)
     IPC_MESSAGE_HANDLER_DELAY_REPLY(PrintHostMsg_ScriptedPrint, OnScriptedPrint)
-    IPC_MESSAGE_HANDLER_DELAY_REPLY(PrintHostMsg_DidPrintDocument,
-                                    OnDidPrintDocument)
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
     IPC_MESSAGE_HANDLER(PrintHostMsg_DidStartPreview, OnDidStartPreview)
     IPC_MESSAGE_HANDLER(PrintHostMsg_DidPreviewPage, OnDidPreviewPage)
@@ -76,14 +74,6 @@ void PrintMockRenderThread::OnScriptedPrint(
                             params.has_selection, &settings);
   }
   PrintHostMsg_ScriptedPrint::WriteReplyParams(reply_msg, settings);
-  Send(reply_msg);
-}
-
-void PrintMockRenderThread::OnDidPrintDocument(
-    const printing::mojom::DidPrintDocumentParams& params,
-    IPC::Message* reply_msg) {
-  printer_->PrintPage(params);
-  PrintHostMsg_DidPrintDocument::WriteReplyParams(reply_msg, true);
   Send(reply_msg);
 }
 

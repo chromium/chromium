@@ -67,9 +67,6 @@ class PrintMockRenderThread : public content::MockRenderThread {
   // PrintRenderFrameHelper expects final print settings from the user.
   void OnScriptedPrint(const printing::mojom::ScriptedPrintParams& params,
                        IPC::Message* reply_msg);
-
-  void OnDidPrintDocument(const printing::mojom::DidPrintDocumentParams& params,
-                          IPC::Message* reply_msg);
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void OnDidStartPreview(const printing::mojom::DidStartPreviewParams& params,
                          const printing::mojom::PreviewIds& ids);

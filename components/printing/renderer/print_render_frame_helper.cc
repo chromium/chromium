@@ -2010,13 +2010,14 @@ bool PrintRenderFrameHelper::PrintPagesNative(blink::WebLocalFrame* frame,
     snapshotter->Snapshot(ui::AXMode::kPDF, 0, &metafile.accessibility_tree());
   }
 
-  mojom::DidPrintDocumentParams page_params;
-  page_params.content = mojom::DidPrintContentParams::New();
+  mojom::DidPrintDocumentParamsPtr page_params =
+      mojom::DidPrintDocumentParams::New();
+  page_params->content = mojom::DidPrintContentParams::New();
   gfx::Size* page_size_in_dpi;
   gfx::Rect* content_area_in_dpi;
 #if defined(OS_APPLE) || defined(OS_WIN)
-  page_size_in_dpi = &page_params.page_size;
-  content_area_in_dpi = &page_params.content_area;
+  page_size_in_dpi = &page_params->page_size;
+  content_area_in_dpi = &page_params->content_area;
 #else
   page_size_in_dpi = nullptr;
   content_area_in_dpi = nullptr;
@@ -2036,17 +2037,16 @@ bool PrintRenderFrameHelper::PrintPagesNative(blink::WebLocalFrame* frame,
   metafile.FinishDocument();
 
   if (!CopyMetafileDataToReadOnlySharedMem(metafile,
-                                           page_params.content.get())) {
+                                           page_params->content.get())) {
     return false;
   }
 
-  page_params.document_cookie = print_params.document_cookie;
+  page_params->document_cookie = print_params.document_cookie;
 #if defined(OS_WIN)
-  page_params.physical_offsets = printer_printable_area_.origin();
+  page_params->physical_offsets = printer_printable_area_.origin();
 #endif
   bool completed = false;
-  Send(
-      new PrintHostMsg_DidPrintDocument(routing_id(), page_params, &completed));
+  GetPrintManagerHost()->DidPrintDocument(std::move(page_params), &completed);
   return completed;
 }
 

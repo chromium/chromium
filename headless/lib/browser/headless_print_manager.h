@@ -95,15 +95,13 @@ class HeadlessPrintManager
                          content::RenderFrameHost* render_frame_host) override;
 
   // printing::PrintManager:
-  void OnDidPrintDocument(
-      content::RenderFrameHost* render_frame_host,
-      const printing::mojom::DidPrintDocumentParams& params,
-      std::unique_ptr<DelayedFrameDispatchHelper> helper) override;
   void OnScriptedPrint(content::RenderFrameHost* render_frame_host,
                        const printing::mojom::ScriptedPrintParams& params,
                        IPC::Message* reply_msg) override;
 
   // printing::mojom::PrintManagerHost:
+  void DidPrintDocument(printing::mojom::DidPrintDocumentParamsPtr params,
+                        DidPrintDocumentCallback callback) override;
   void GetDefaultPrintSettings(
       GetDefaultPrintSettingsCallback callback) override;
   void ShowInvalidPrinterSettingsError() override;

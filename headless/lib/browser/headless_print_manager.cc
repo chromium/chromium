@@ -259,22 +259,23 @@ void HeadlessPrintManager::PrintingFailed(int32_t cookie) {
   ReleaseJob(PRINTING_FAILED);
 }
 
-void HeadlessPrintManager::OnDidPrintDocument(
-    content::RenderFrameHost* render_frame_host,
-    const printing::mojom::DidPrintDocumentParams& params,
-    std::unique_ptr<DelayedFrameDispatchHelper> helper) {
-  auto& content = *params.content;
+void HeadlessPrintManager::DidPrintDocument(
+    printing::mojom::DidPrintDocumentParamsPtr params,
+    DidPrintDocumentCallback callback) {
+  auto& content = *params->content;
   if (!content.metafile_data_region.IsValid()) {
     ReleaseJob(INVALID_MEMORY_HANDLE);
+    std::move(callback).Run(false);
     return;
   }
   base::ReadOnlySharedMemoryMapping map = content.metafile_data_region.Map();
   if (!map.IsValid()) {
     ReleaseJob(METAFILE_MAP_ERROR);
+    std::move(callback).Run(false);
     return;
   }
   data_ = std::string(static_cast<const char*>(map.memory()), map.size());
-  helper->SendCompleted();
+  std::move(callback).Run(true);
   ReleaseJob(PRINT_SUCCESS);
 }
 

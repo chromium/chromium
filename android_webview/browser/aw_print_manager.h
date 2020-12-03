@@ -22,6 +22,8 @@ class AwPrintManager : public printing::PrintManager,
   ~AwPrintManager() override;
 
   // mojom::PrintManagerHost:
+  void DidPrintDocument(printing::mojom::DidPrintDocumentParamsPtr params,
+                        DidPrintDocumentCallback callback) override;
   void GetDefaultPrintSettings(
       GetDefaultPrintSettingsCallback callback) override;
 
@@ -41,17 +43,13 @@ class AwPrintManager : public printing::PrintManager,
   explicit AwPrintManager(content::WebContents* contents);
 
   // printing::PrintManager:
-  void OnDidPrintDocument(
-      content::RenderFrameHost* render_frame_host,
-      const printing::mojom::DidPrintDocumentParams& params,
-      std::unique_ptr<DelayedFrameDispatchHelper> helper) override;
   void OnScriptedPrint(content::RenderFrameHost* render_frame_host,
                        const printing::mojom::ScriptedPrintParams& params,
                        IPC::Message* reply_msg) override;
 
   static void OnDidPrintDocumentWritingDone(
       const PdfWritingDoneCallback& callback,
-      std::unique_ptr<DelayedFrameDispatchHelper> helper,
+      DidPrintDocumentCallback did_print_document_cb,
       uint32_t page_count);
 
   std::unique_ptr<printing::PrintSettings> settings_;

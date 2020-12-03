@@ -302,6 +302,12 @@ interface PrintManagerHost {
   // Tells the browser that the print dialog has been shown.
   DidShowPrintDialog();
 
+  // Sends back to the browser the rendered document that was requested by a
+  // PrintRequestedPages() or from scripted printing. Waits until the document
+  // is ready before replying.
+  [Sync]
+  DidPrintDocument(DidPrintDocumentParams params) => (bool completed);
+
   // Tells the browser that there are invalid printer settings.
   ShowInvalidPrinterSettingsError();
 

@@ -267,15 +267,6 @@ IPC_STRUCT_TRAITS_END()
 
 // Messages sent from the renderer to the browser.
 
-// Sends back to the browser the rendered document that was requested by a
-// PrintMsg_PrintPages message or from scripted printing. The memory handle in
-// this message is already valid in the browser process. Waits until the
-// document is complete ready before replying.
-IPC_SYNC_MESSAGE_ROUTED1_1(PrintHostMsg_DidPrintDocument,
-                           printing::mojom::DidPrintDocumentParams
-                           /* page content */,
-                           bool /* completed */)
-
 // It's the renderer that controls the printing process when it is generated
 // by javascript. This step is about showing UI to the user to select the
 // final print settings. The output parameter is the same as

@@ -460,49 +460,59 @@ void PrintViewManagerBase::OnComposePdfDone(
     const gfx::Size& page_size,
     const gfx::Rect& content_area,
     const gfx::Point& physical_offsets,
-    std::unique_ptr<DelayedFrameDispatchHelper> helper,
+    DidPrintDocumentCallback callback,
     mojom::PrintCompositor::Status status,
     base::ReadOnlySharedMemoryRegion region) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (status != mojom::PrintCompositor::Status::kSuccess) {
     DLOG(ERROR) << "Compositing pdf failed with error " << status;
+    std::move(callback).Run(false);
     return;
   }
 
-  if (!print_job_->document())
+  if (!print_job_->document()) {
+    std::move(callback).Run(false);
     return;
+  }
 
   scoped_refptr<base::RefCountedSharedMemoryMapping> data =
       base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(region);
-  if (!data)
+  if (!data) {
+    std::move(callback).Run(false);
     return;
+  }
 
   PrintDocument(data, page_size, content_area, physical_offsets);
-  helper->SendCompleted();
+  std::move(callback).Run(true);
 }
 
-void PrintViewManagerBase::OnDidPrintDocument(
-    content::RenderFrameHost* render_frame_host,
-    const mojom::DidPrintDocumentParams& params,
-    std::unique_ptr<DelayedFrameDispatchHelper> helper) {
-  if (!PrintJobHasDocument(params.document_cookie))
+void PrintViewManagerBase::DidPrintDocument(
+    mojom::DidPrintDocumentParamsPtr params,
+    DidPrintDocumentCallback callback) {
+  if (!PrintJobHasDocument(params->document_cookie)) {
+    std::move(callback).Run(false);
     return;
+  }
 
-  const mojom::DidPrintContentParams& content = *params.content;
+  const mojom::DidPrintContentParams& content = *params->content;
   if (!content.metafile_data_region.IsValid()) {
     NOTREACHED() << "invalid memory handle";
     web_contents()->Stop();
+    std::move(callback).Run(false);
     return;
   }
 
   auto* client = PrintCompositeClient::FromWebContents(web_contents());
+  content::RenderFrameHost* render_frame_host =
+      print_manager_host_receivers_.GetCurrentTargetFrame();
+
   if (IsOopifEnabled() && print_job_->document()->settings().is_modifiable()) {
     client->DoCompositeDocumentToPdf(
-        params.document_cookie, render_frame_host, content,
+        params->document_cookie, render_frame_host, content,
         base::BindOnce(&PrintViewManagerBase::OnComposePdfDone,
-                       weak_ptr_factory_.GetWeakPtr(), params.page_size,
-                       params.content_area, params.physical_offsets,
-                       std::move(helper)));
+                       weak_ptr_factory_.GetWeakPtr(), params->page_size,
+                       params->content_area, params->physical_offsets,
+                       std::move(callback)));
     return;
   }
   auto data = base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(
@@ -510,12 +520,13 @@ void PrintViewManagerBase::OnDidPrintDocument(
   if (!data) {
     NOTREACHED() << "couldn't map";
     web_contents()->Stop();
+    std::move(callback).Run(false);
     return;
   }
 
-  PrintDocument(data, params.page_size, params.content_area,
-                params.physical_offsets);
-  helper->SendCompleted();
+  PrintDocument(data, params->page_size, params->content_area,
+                params->physical_offsets);
+  std::move(callback).Run(true);
 }
 
 void PrintViewManagerBase::GetDefaultPrintSettings(

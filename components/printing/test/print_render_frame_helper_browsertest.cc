@@ -230,6 +230,13 @@ class TestPrintManagerHost
     printer_->SetPrintedPagesCount(cookie, number_pages);
   }
   void DidGetDocumentCookie(int32_t cookie) override {}
+  void DidPrintDocument(mojom::DidPrintDocumentParamsPtr params,
+                        DidPrintDocumentCallback callback) override {
+    base::RunLoop().RunUntilIdle();
+    printer_->PrintPage(std::move(params));
+    std::move(callback).Run(true);
+    is_printed_ = true;
+  }
   void GetDefaultPrintSettings(
       GetDefaultPrintSettingsCallback callback) override {
     printing::mojom::PrintParamsPtr params =
@@ -325,6 +332,7 @@ class TestPrintManagerHost
 
   void DidShowPrintDialog() override {}
 
+  bool IsPrinted() { return is_printed_; }
   void SetExpectedPagesCount(uint32_t number_pages) {
     number_pages_ = number_pages;
   }
@@ -354,6 +362,7 @@ class TestPrintManagerHost
   }
 
   uint32_t number_pages_ = 0;
+  bool is_printed_ = false;
   MockPrinter* printer_;
   base::OnceClosure quit_closure_;
   mojo::AssociatedReceiver<mojom::PrintManagerHost> receiver_{this};
@@ -435,12 +444,11 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
   // Verifies whether the pages printed or not.
-  void VerifyPagesPrinted(bool expect_printed) {
-    const IPC::Message* print_msg =
-        render_thread_->sink().GetUniqueMessageMatching(
-            PrintHostMsg_DidPrintDocument::ID);
-    bool did_print = !!print_msg;
-    ASSERT_EQ(expect_printed, did_print);
+  void VerifyPagesPrinted(bool expect_printed,
+                          content::RenderFrame* render_frame = nullptr) {
+    if (!render_frame)
+      render_frame = content::RenderFrame::FromWebFrame(GetMainFrame());
+    ASSERT_EQ(expect_printed, print_manager(render_frame)->IsPrinted());
   }
 
   void OnPrintPages() {
@@ -547,9 +555,10 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
   }
 
   PrintMockRenderThread* print_render_thread() { return print_render_thread_; }
-  TestPrintManagerHost* print_manager() {
-    auto it = frame_to_print_manager_map_.find(
-        content::RenderFrame::FromWebFrame(GetMainFrame()));
+  TestPrintManagerHost* print_manager(content::RenderFrame* frame = nullptr) {
+    if (!frame)
+      frame = content::RenderFrame::FromWebFrame(GetMainFrame());
+    auto it = frame_to_print_manager_map_.find(frame);
     return it->second.get();
   }
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -693,9 +702,11 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, BasicBeforePrintAfterPrintSubFrame) {
       "</body>";
 
   LoadHTML(kCloseOnBeforeHtml);
+  content::RenderFrame* sub_render_frame = content::RenderFrame::FromWebFrame(
+      GetMainFrame()->FindFrameByName("sub")->ToWebLocalFrame());
   OnPrintPagesInFrame("sub");
   EXPECT_EQ(nullptr, GetMainFrame()->FindFrameByName("sub"));
-  VerifyPagesPrinted(false);
+  VerifyPagesPrinted(false, sub_render_frame);
 
   ClearPrintManagerHost();
 
@@ -707,9 +718,11 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, BasicBeforePrintAfterPrintSubFrame) {
       "</body>";
 
   LoadHTML(kCloseOnAfterHtml);
+  sub_render_frame = content::RenderFrame::FromWebFrame(
+      GetMainFrame()->FindFrameByName("sub")->ToWebLocalFrame());
   OnPrintPagesInFrame("sub");
   EXPECT_EQ(nullptr, GetMainFrame()->FindFrameByName("sub"));
-  VerifyPagesPrinted(true);
+  VerifyPagesPrinted(true, sub_render_frame);
 }
 
 #if defined(OS_APPLE)
