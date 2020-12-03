@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.signin.SigninPromoController;
 import org.chromium.chrome.browser.signin.SigninPromoUtil;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInAllowedObserver;
-import org.chromium.chrome.browser.sync.AndroidSyncSettings;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.sync.ProfileSyncService.SyncStateChangedListener;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -42,7 +41,6 @@ import java.lang.annotation.RetentionPolicy;
 // TODO(https://crbug.com/1110889): Move all promos from SigninPreference to this class.
 public class SyncPromoPreference
         extends Preference implements SignInAllowedObserver, ProfileDataCache.Observer,
-                                      AndroidSyncSettings.AndroidSyncSettingsObserver,
                                       SyncStateChangedListener, AccountsChangeObserver {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({State.PROMO_HIDDEN, State.PERSONALIZED_SIGNIN_PROMO, State.PERSONALIZED_SYNC_PROMO})
@@ -83,7 +81,6 @@ public class SyncPromoPreference
                 .addSignInAllowedObserver(this);
         mProfileDataCache.addObserver(this);
         FirstRunSignInProcessor.updateSigninManagerFirstRunCheckDone();
-        AndroidSyncSettings.get().registerObserver(this);
         ProfileSyncService syncService = ProfileSyncService.get();
         if (syncService != null) {
             syncService.addSyncStateChangedListener(this);
@@ -101,7 +98,6 @@ public class SyncPromoPreference
                 .getSigninManager(Profile.getLastUsedRegularProfile())
                 .removeSignInAllowedObserver(this);
         mProfileDataCache.removeObserver(this);
-        AndroidSyncSettings.get().unregisterObserver(this);
         ProfileSyncService syncService = ProfileSyncService.get();
         if (syncService != null) {
             syncService.removeSyncStateChangedListener(this);
@@ -221,12 +217,6 @@ public class SyncPromoPreference
     // ProfileDataCache.Observer implementation.
     @Override
     public void onProfileDataUpdated(String accountEmail) {
-        update();
-    }
-
-    // AndroidSyncSettings.AndroidSyncSettingsObserver implementation.
-    @Override
-    public void androidSyncSettingsChanged() {
         update();
     }
 

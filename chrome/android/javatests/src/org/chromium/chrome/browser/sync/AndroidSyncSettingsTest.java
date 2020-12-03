@@ -31,7 +31,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.sync.AndroidSyncSettings.AndroidSyncSettingsObserver;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -100,8 +99,8 @@ public class AndroidSyncSettingsTest {
         }
     }
 
-    // Should live on the UI thread as normal a AndroidSyncSettingsObserver.
-    private static class MockSyncSettingsObserver implements AndroidSyncSettingsObserver {
+    // Should live on the UI thread as a normal AndroidSyncSettings.Delegate.
+    private static class MockSyncSettingsDelegate implements AndroidSyncSettings.Delegate {
         private boolean mReceivedNotification;
 
         public void clearNotification() {
@@ -339,42 +338,42 @@ public class AndroidSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testAndroidSyncSettingsPostsNotifications() {
+    public void testAndroidSyncSettingsNotifiesDelegate() {
         createAndroidSyncSettings();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            MockSyncSettingsObserver syncSettingsObserver = new MockSyncSettingsObserver();
-            mAndroidSyncSettings.registerObserver(syncSettingsObserver);
+            MockSyncSettingsDelegate syncSettingsDelegate = new MockSyncSettingsDelegate();
+            mAndroidSyncSettings.setDelegate(syncSettingsDelegate);
 
-            syncSettingsObserver.clearNotification();
+            syncSettingsDelegate.clearNotification();
             mAndroidSyncSettings.enableChromeSync();
-            Assert.assertTrue("enableChromeSync should trigger observers",
-                    syncSettingsObserver.receivedNotification());
+            Assert.assertTrue("enableChromeSync should notify delegate",
+                    syncSettingsDelegate.receivedNotification());
 
-            syncSettingsObserver.clearNotification();
+            syncSettingsDelegate.clearNotification();
             mAndroidSyncSettings.updateAccount(mAlternateAccount);
             Assert.assertTrue("switching to account with different settings should notify",
-                    syncSettingsObserver.receivedNotification());
+                    syncSettingsDelegate.receivedNotification());
 
-            syncSettingsObserver.clearNotification();
+            syncSettingsDelegate.clearNotification();
             mAndroidSyncSettings.updateAccount(mAccount);
             Assert.assertTrue("switching to account with different settings should notify",
-                    syncSettingsObserver.receivedNotification());
+                    syncSettingsDelegate.receivedNotification());
 
-            syncSettingsObserver.clearNotification();
+            syncSettingsDelegate.clearNotification();
             mAndroidSyncSettings.enableChromeSync();
-            Assert.assertFalse("enableChromeSync shouldn't trigger observers",
-                    syncSettingsObserver.receivedNotification());
+            Assert.assertFalse("enableChromeSync shouldn't notify delegate",
+                    syncSettingsDelegate.receivedNotification());
 
-            syncSettingsObserver.clearNotification();
+            syncSettingsDelegate.clearNotification();
             mAndroidSyncSettings.disableChromeSync();
-            Assert.assertTrue("disableChromeSync should trigger observers",
-                    syncSettingsObserver.receivedNotification());
+            Assert.assertTrue("disableChromeSync should notify delegate",
+                    syncSettingsDelegate.receivedNotification());
 
-            syncSettingsObserver.clearNotification();
+            syncSettingsDelegate.clearNotification();
             mAndroidSyncSettings.disableChromeSync();
-            Assert.assertFalse("disableChromeSync shouldn't observers",
-                    syncSettingsObserver.receivedNotification());
+            Assert.assertFalse("disableChromeSync shouldn't notify delegate",
+                    syncSettingsDelegate.receivedNotification());
         });
     }
 

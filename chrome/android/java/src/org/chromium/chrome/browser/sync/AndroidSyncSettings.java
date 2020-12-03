@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -33,7 +32,6 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
  * DecoupleSyncFromAndroidMasterSync is enabled.
  *
  * A helper class to handle the current status of sync for Chrome in Android settings.
- * It also provides an observer to be used whenever Android sync settings change.
  *
  * {@link #updateAccount(Account)} should be invoked whenever sync account is changed.
  */
@@ -57,12 +55,14 @@ public class AndroidSyncSettings {
 
     private boolean mShouldDecoupleSyncFromMasterSync;
 
-    private final ObserverList<AndroidSyncSettingsObserver> mObservers = new ObserverList<>();
+    // Is set at most once.
+    @Nullable
+    private Delegate mDelegate;
 
     /**
-     * Provides notifications when Android sync settings have changed.
+     * Propagates changes from Android sync settings to the native code.
      */
-    public interface AndroidSyncSettingsObserver {
+    public interface Delegate {
         void androidSyncSettingsChanged();
     }
 
@@ -122,9 +122,7 @@ public class AndroidSyncSettings {
                 // This is called by Android on a background thread, but AndroidSyncSettings
                 // methods should be called from the UI thread, so post a task.
                 PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
-                    if (updateCachedSettings()) {
-                        notifyObservers();
-                    }
+                    if (updateCachedSettings()) maybeNotifyDelegate();
                 });
             }
         };
@@ -190,9 +188,7 @@ public class AndroidSyncSettings {
         ThreadUtils.assertOnUiThread();
         mAccount = account;
         updateSyncability();
-        if (updateCachedSettings()) {
-            notifyObservers();
-        }
+        if (updateCachedSettings()) maybeNotifyDelegate();
     }
 
     /**
@@ -206,19 +202,13 @@ public class AndroidSyncSettings {
     }
 
     /**
-     * Add a new AndroidSyncSettingsObserver.
+     * Must be called at most once to set a (non-null) delegate.
      */
-    public void registerObserver(AndroidSyncSettingsObserver observer) {
+    public void setDelegate(Delegate delegate) {
         ThreadUtils.assertOnUiThread();
-        mObservers.addObserver(observer);
-    }
-
-    /**
-     * Remove an AndroidSyncSettingsObserver that was previously added.
-     */
-    public void unregisterObserver(AndroidSyncSettingsObserver observer) {
-        ThreadUtils.assertOnUiThread();
-        mObservers.removeObserver(observer);
+        assert delegate != null;
+        assert mDelegate == null;
+        mDelegate = delegate;
     }
 
     private void setChromeSyncEnabled(boolean value) {
@@ -227,7 +217,7 @@ public class AndroidSyncSettings {
         mChromeSyncEnabled = value;
 
         mSyncContentResolverDelegate.setSyncAutomatically(mAccount, mContractAuthority, value);
-        notifyObservers();
+        maybeNotifyDelegate();
     }
 
     /**
@@ -301,10 +291,8 @@ public class AndroidSyncSettings {
                 || oldMasterSyncEnabled != mMasterSyncEnabled;
     }
 
-    private void notifyObservers() {
-        for (AndroidSyncSettingsObserver observer : mObservers) {
-            observer.androidSyncSettingsChanged();
-        }
+    private void maybeNotifyDelegate() {
+        if (mDelegate != null) mDelegate.androidSyncSettingsChanged();
     }
 
     /**

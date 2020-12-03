@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.signin.SigninUtils;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInAllowedObserver;
-import org.chromium.chrome.browser.sync.AndroidSyncSettings;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.sync.ProfileSyncService.SyncStateChangedListener;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
@@ -48,7 +47,6 @@ import java.util.Collections;
  */
 public class SignInPreference
         extends Preference implements SignInAllowedObserver, ProfileDataCache.Observer,
-                                      AndroidSyncSettings.AndroidSyncSettingsObserver,
                                       SyncStateChangedListener, AccountsChangeObserver {
     @IntDef({State.SIGNIN_DISABLED_BY_POLICY, State.SIGNIN_DISALLOWED, State.GENERIC_PROMO,
             State.SIGNED_IN})
@@ -94,7 +92,6 @@ public class SignInPreference
                 .addSignInAllowedObserver(this);
         mProfileDataCache.addObserver(this);
         FirstRunSignInProcessor.updateSigninManagerFirstRunCheckDone();
-        AndroidSyncSettings.get().registerObserver(this);
         ProfileSyncService syncService = ProfileSyncService.get();
         if (syncService != null) {
             syncService.addSyncStateChangedListener(this);
@@ -112,7 +109,6 @@ public class SignInPreference
                 .getSigninManager(Profile.getLastUsedRegularProfile())
                 .removeSignInAllowedObserver(this);
         mProfileDataCache.removeObserver(this);
-        AndroidSyncSettings.get().unregisterObserver(this);
         ProfileSyncService syncService = ProfileSyncService.get();
         if (syncService != null) {
             syncService.removeSyncStateChangedListener(this);
@@ -254,12 +250,6 @@ public class SignInPreference
     // ProfileDataCache.Observer implementation.
     @Override
     public void onProfileDataUpdated(String accountEmail) {
-        update();
-    }
-
-    // AndroidSyncSettings.AndroidSyncSettingsObserver implementation.
-    @Override
-    public void androidSyncSettingsChanged() {
         update();
     }
 

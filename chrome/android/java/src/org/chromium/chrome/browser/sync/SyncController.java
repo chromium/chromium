@@ -36,8 +36,8 @@ import org.chromium.components.sync.StopSource;
  * are careful to not change the Android Chrome sync setting so we know whether to turn sync back
  * on when it is re-enabled.
  */
-public class SyncController implements ProfileSyncService.SyncStateChangedListener,
-                                       AndroidSyncSettings.AndroidSyncSettingsObserver {
+public class SyncController
+        implements ProfileSyncService.SyncStateChangedListener, AndroidSyncSettings.Delegate {
     private static final String TAG = "SyncController";
 
     /**
@@ -58,7 +58,7 @@ public class SyncController implements ProfileSyncService.SyncStateChangedListen
     private final SyncNotificationController mSyncNotificationController;
 
     private SyncController() {
-        AndroidSyncSettings.get().registerObserver(this);
+        AndroidSyncSettings.get().setDelegate(this);
         mProfileSyncService = ProfileSyncService.get();
         mProfileSyncService.addSyncStateChangedListener(this);
 
@@ -154,7 +154,7 @@ public class SyncController implements ProfileSyncService.SyncStateChangedListen
     }
 
     /**
-     * From {@link AndroidSyncSettings.AndroidSyncSettingsObserver}.
+     * From {@link AndroidSyncSettings.Delegate}.
      */
     @Override
     public void androidSyncSettingsChanged() {
