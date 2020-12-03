@@ -27,7 +27,7 @@ ImageCache.DB_NAME = 'image-loader';
  * @type {number}
  * @const
  */
-ImageCache.DB_VERSION = 14;
+ImageCache.DB_VERSION = 15;
 
 /**
  * Memory limit for images data in bytes.
