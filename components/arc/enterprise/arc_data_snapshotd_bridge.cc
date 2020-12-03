@@ -109,9 +109,9 @@ void ArcDataSnapshotdBridge::ClearSnapshot(
     return;
   }
   VLOG(1) << "ClearSnapshot via D-Bus";
-  NOTIMPLEMENTED();
-
-  std::move(callback).Run(true /* success */);
+  chromeos::DBusThreadManager::Get()
+      ->GetArcDataSnapshotdClient()
+      ->ClearSnapshot(last, std::move(callback));
 }
 
 void ArcDataSnapshotdBridge::TakeSnapshot(
@@ -123,9 +123,8 @@ void ArcDataSnapshotdBridge::TakeSnapshot(
     return;
   }
   VLOG(1) << "TakeSnapshot via D-Bus";
-  NOTIMPLEMENTED();
-
-  std::move(callback).Run(true /* success */);
+  chromeos::DBusThreadManager::Get()->GetArcDataSnapshotdClient()->TakeSnapshot(
+      account_id, std::move(callback));
 }
 
 void ArcDataSnapshotdBridge::LoadSnapshot(
@@ -137,9 +136,20 @@ void ArcDataSnapshotdBridge::LoadSnapshot(
     return;
   }
   VLOG(1) << "LoadSnapshot via D-Bus";
-  NOTIMPLEMENTED();
+  chromeos::DBusThreadManager::Get()->GetArcDataSnapshotdClient()->LoadSnapshot(
+      account_id, std::move(callback));
+}
 
-  std::move(callback).Run(true /* success */, true /* last */);
+void ArcDataSnapshotdBridge::Update(int percent,
+                                    base::OnceCallback<void(bool)> callback) {
+  if (!is_available_) {
+    LOG(ERROR) << "Update call when D-Bus service is not available.";
+    std::move(callback).Run(false /* success */);
+    return;
+  }
+  VLOG(1) << "Update via D-Bus";
+  chromeos::DBusThreadManager::Get()->GetArcDataSnapshotdClient()->Update(
+      percent, std::move(callback));
 }
 
 }  // namespace data_snapshotd

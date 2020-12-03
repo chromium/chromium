@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_ARC_ENTERPRISE_ARC_DATA_SNAPSHOTD_BRIDGE_H_
 #define COMPONENTS_ARC_ENTERPRISE_ARC_DATA_SNAPSHOTD_BRIDGE_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -28,11 +30,21 @@ class ArcDataSnapshotdBridge {
 
   // Delegates the key pair generation to arc-data-snapshotd daemon.
   void GenerateKeyPair(base::OnceCallback<void(bool)> callback);
+  // Delegates the removal of snapshot to arc-data-snapshotd daemon. If |last|,
+  // removes the last generated snapshot.
   void ClearSnapshot(bool last, base::OnceCallback<void(bool)> callback);
+  // Delegates the taking of ARC data snapshot to arc-data-snapshotd daemon.
+  // |account_id| is the current account_id of MGS.
   void TakeSnapshot(const std::string& account_id,
                     base::OnceCallback<void(bool)> callback);
+  // Delegates the loading of ARC data snapshot to current MGS to
+  // arc-data-snapshotd daemon. |account_id| is the current account_id of MGS.
   void LoadSnapshot(const std::string& account_id,
                     base::OnceCallback<void(bool, bool)> callback);
+  // Delegates the updating of a progress bar on a UI screen to
+  // arc-data-snapshotd daemon. |percent| is a percentage of installed required
+  // ARC apps [0..100].
+  void Update(int percent, base::OnceCallback<void(bool)> callback);
 
   bool is_available_for_testing() { return is_available_; }
 

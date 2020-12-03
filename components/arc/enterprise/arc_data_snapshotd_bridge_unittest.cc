@@ -21,6 +21,8 @@ namespace data_snapshotd {
 
 namespace {
 
+constexpr char kFakeAccountId[] = "fake_account_id@localhost";
+
 void RunGenerateKeyPair(ArcDataSnapshotdBridge* bridge, bool expected_result) {
   base::RunLoop run_loop;
   bridge->GenerateKeyPair(
@@ -29,6 +31,61 @@ void RunGenerateKeyPair(ArcDataSnapshotdBridge* bridge, bool expected_result) {
         run_loop.Quit();
       }));
   run_loop.Run();
+}
+
+void RunClearSnapshot(ArcDataSnapshotdBridge* bridge, bool expected_result) {
+  base::RunLoop run_loop;
+  bridge->ClearSnapshot(
+      false /* last */,
+      base::BindLambdaForTesting([expected_result, &run_loop](bool success) {
+        EXPECT_EQ(expected_result, success);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+void RunTakeSnapshot(ArcDataSnapshotdBridge* bridge, bool expected_result) {
+  base::RunLoop run_loop;
+  bridge->TakeSnapshot(
+      kFakeAccountId,
+      base::BindLambdaForTesting([expected_result, &run_loop](bool success) {
+        EXPECT_EQ(expected_result, success);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+void RunLoadSnapshot(ArcDataSnapshotdBridge* bridge, bool expected_result) {
+  base::RunLoop run_loop;
+  bridge->LoadSnapshot(kFakeAccountId,
+                       base::BindLambdaForTesting([expected_result, &run_loop](
+                                                      bool success, bool last) {
+                         EXPECT_EQ(expected_result, success);
+                         // If LoadSnapshot fails, last = false.
+                         // If succeeds, last = true for tests.
+                         EXPECT_EQ(expected_result, last);
+                         run_loop.Quit();
+                       }));
+  run_loop.Run();
+}
+
+void RunUpdate(ArcDataSnapshotdBridge* bridge, bool expected_result) {
+  base::RunLoop run_loop;
+  bridge->Update(
+      50 /* percent */,
+      base::BindLambdaForTesting([expected_result, &run_loop](bool success) {
+        EXPECT_EQ(expected_result, success);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+void RunAll(ArcDataSnapshotdBridge* bridge, bool expected_result) {
+  RunGenerateKeyPair(bridge, expected_result);
+  RunClearSnapshot(bridge, expected_result);
+  RunTakeSnapshot(bridge, expected_result);
+  RunLoadSnapshot(bridge, expected_result);
+  RunUpdate(bridge, expected_result);
 }
 
 // Tests ArcDataSnapshotdBridge class instance.
@@ -65,12 +122,12 @@ TEST_F(ArcDataSnapshotdBridgeTest, ServiceAvailable) {
   dbus_client()->set_available(true /* is_available */);
   ArcDataSnapshotdBridge bridge{base::DoNothing()};
   EXPECT_FALSE(bridge.is_available_for_testing());
-  RunGenerateKeyPair(&bridge, false /* expected_result */);
+  RunAll(&bridge, false /* expected_result */);
 
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(bridge.is_available_for_testing());
-  RunGenerateKeyPair(&bridge, true /* expected_result */);
+  RunAll(&bridge, true /* expected_result */);
 }
 
 // Test basic scenario: D-Bus service is not available.
@@ -81,7 +138,7 @@ TEST_F(ArcDataSnapshotdBridgeTest, ServiceUnavailable) {
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(bridge.is_available_for_testing());
-  RunGenerateKeyPair(&bridge, false /* expected_result */);
+  RunAll(&bridge, false /* expected_result */);
 }
 
 // Test that service is available from the max attempt.
@@ -104,7 +161,7 @@ TEST_F(ArcDataSnapshotdBridgeTest, ServiceAvailableMaxAttempt) {
   dbus_client()->set_available(true /* is_available */);
   FastForwardAttempt();
   EXPECT_TRUE(bridge.is_available_for_testing());
-  RunGenerateKeyPair(&bridge, true /* expected_result */);
+  RunAll(&bridge, true /* expected_result */);
 }
 
 // Test that service is available from the max + 1 attempt and is not picked up.
@@ -127,7 +184,7 @@ TEST_F(ArcDataSnapshotdBridgeTest, ServiceUnavailableMaxAttempts) {
   dbus_client()->set_available(true /* is_available */);
   FastForwardAttempt();
   EXPECT_FALSE(bridge.is_available_for_testing());
-  RunGenerateKeyPair(&bridge, false /* expected_result */);
+  RunAll(&bridge, false /* expected_result */);
 }
 
 }  // namespace

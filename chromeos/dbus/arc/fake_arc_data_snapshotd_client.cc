@@ -21,6 +21,32 @@ void FakeArcDataSnapshotdClient::GenerateKeyPair(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
+void FakeArcDataSnapshotdClient::ClearSnapshot(
+    bool last,
+    VoidDBusMethodCallback callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), true));
+}
+
+void FakeArcDataSnapshotdClient::TakeSnapshot(const std::string& account_id,
+                                              VoidDBusMethodCallback callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), true));
+}
+
+void FakeArcDataSnapshotdClient::LoadSnapshot(
+    const std::string& account_id,
+    LoadSnapshotMethodCallback callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), true, true));
+}
+
+void FakeArcDataSnapshotdClient::Update(int percent,
+                                        VoidDBusMethodCallback callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), true));
+}
+
 void FakeArcDataSnapshotdClient::WaitForServiceToBeAvailable(
     dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(

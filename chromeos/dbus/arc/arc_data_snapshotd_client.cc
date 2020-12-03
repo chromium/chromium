@@ -19,9 +19,40 @@ namespace chromeos {
 
 namespace {
 
-void OnVoidDBusMethod(VoidDBusMethodCallback callback,
-                      dbus::Response* response) {
-  std::move(callback).Run(response != nullptr);
+void OnBoolMethodCallback(VoidDBusMethodCallback callback,
+                          dbus::Response* response) {
+  if (!response) {
+    std::move(callback).Run(false /* success */);
+    return;
+  }
+  dbus::MessageReader reader(response);
+  bool success;
+  if (!reader.PopBool(&success)) {
+    std::move(callback).Run(false /* success */);
+    return;
+  }
+  std::move(callback).Run(success);
+}
+
+void OnLoadSnapshotMethodCallback(
+    ArcDataSnapshotdClient::LoadSnapshotMethodCallback callback,
+    dbus::Response* response) {
+  if (!response) {
+    std::move(callback).Run(false /* success */, false /* last */);
+    return;
+  }
+  dbus::MessageReader reader(response);
+  bool success;
+  if (!reader.PopBool(&success)) {
+    std::move(callback).Run(false /* success */, false /* last */);
+    return;
+  }
+  bool last;
+  if (!reader.PopBool(&last)) {
+    std::move(callback).Run(success, false /* last */);
+    return;
+  }
+  std::move(callback).Run(success, last);
 }
 
 class ArcDataSnapshotdClientImpl : public ArcDataSnapshotdClient {
@@ -39,8 +70,55 @@ class ArcDataSnapshotdClientImpl : public ArcDataSnapshotdClient {
         arc::data_snapshotd::kArcDataSnapshotdServiceInterface,
         arc::data_snapshotd::kGenerateKeyPairMethod);
     dbus::MessageWriter writer(&method_call);
-    proxy_->CallMethod(&method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-                       base::BindOnce(&OnVoidDBusMethod, std::move(callback)));
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&OnBoolMethodCallback, std::move(callback)));
+  }
+
+  void ClearSnapshot(bool last, VoidDBusMethodCallback callback) override {
+    dbus::MethodCall method_call(
+        arc::data_snapshotd::kArcDataSnapshotdServiceInterface,
+        arc::data_snapshotd::kClearSnapshotMethod);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendBool(last);
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&OnBoolMethodCallback, std::move(callback)));
+  }
+
+  void TakeSnapshot(const std::string& account_id,
+                    VoidDBusMethodCallback callback) override {
+    dbus::MethodCall method_call(
+        arc::data_snapshotd::kArcDataSnapshotdServiceInterface,
+        arc::data_snapshotd::kTakeSnapshotMethod);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(account_id);
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&OnBoolMethodCallback, std::move(callback)));
+  }
+
+  void LoadSnapshot(const std::string& account_id,
+                    base::OnceCallback<void(bool, bool)> callback) override {
+    dbus::MethodCall method_call(
+        arc::data_snapshotd::kArcDataSnapshotdServiceInterface,
+        arc::data_snapshotd::kLoadSnapshotMethod);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(account_id);
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&OnLoadSnapshotMethodCallback, std::move(callback)));
+  }
+
+  void Update(int percent, VoidDBusMethodCallback callback) override {
+    dbus::MethodCall method_call(
+        arc::data_snapshotd::kArcDataSnapshotdServiceInterface,
+        arc::data_snapshotd::kUpdateMethod);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendInt32(percent);
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&OnBoolMethodCallback, std::move(callback)));
   }
 
   void WaitForServiceToBeAvailable(
