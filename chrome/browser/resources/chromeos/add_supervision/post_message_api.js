@@ -103,7 +103,7 @@ const MAX_INITIALIZATION_ATTEMPTS = 8;
    */
   initialize() {
     if (this.isInitialized_ ||
-        !this.originMatchesFilter_(this.clientElement_.src)) {
+        !this.originMatchesFilter(this.clientElement_.src)) {
       return;
     }
 
@@ -148,11 +148,10 @@ const MAX_INITIALIZATION_ATTEMPTS = 8;
 
   /**
    * Determines if the specified origin matches the origin filter.
-   * @private
    * @param {!string} origin The origin URL to match with the filter.
    * @return {boolean}  whether the specified origin matches the filter.
    */
-  originMatchesFilter_(origin) {
+  originMatchesFilter(origin) {
     const originURL = new URL(origin);
 
     // We allow the pathname portion of the URL to be a prefix filter,
@@ -168,7 +167,7 @@ const MAX_INITIALIZATION_ATTEMPTS = 8;
    * @param {Event} event  The postMessage event to handle.
    */
   onMessage_(event) {
-    if (!this.originMatchesFilter_(event.origin)) {
+    if (!this.originMatchesFilter(event.origin)) {
       console.log('Message received from unauthorized origin: ' + event.origin);
       return;
     }
@@ -292,7 +291,7 @@ const MAX_INITIALIZATION_ATTEMPTS = 8;
    *     sent from the server.
    */
   onInitialize_(event) {
-    if (!this.originMatchesFilter_(event.origin)) {
+    if (!this.originMatchesFilter(event.origin)) {
       console.error(
           'Initialization event received from non-authorized origin: ' +
           event.origin);
@@ -309,7 +308,7 @@ const MAX_INITIALIZATION_ATTEMPTS = 8;
    * @param {!string} origin The origin URL to match with the filter.
    * @return {boolean}  whether the specified origin matches the filter.
    */
-  originMatchesFilter_(origin) {
+  originMatchesFilter(origin) {
     return origin == this.serverOriginURLFilter_;
   }
 
@@ -319,7 +318,7 @@ const MAX_INITIALIZATION_ATTEMPTS = 8;
    *     API.
    */
   onMessage_(event) {
-    if (!this.originMatchesFilter_(event.origin)) {
+    if (!this.originMatchesFilter(event.origin)) {
       console.error(
           'Message received from non-authorized origin: ' + event.origin);
       return;

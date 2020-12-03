@@ -85,10 +85,12 @@ export class EduCoexistenceController extends PostMessageAPIServer {
 
     this.webview_.request.onBeforeSendHeaders.addListener(
         (details) => {
-          details.requestHeaders.push({
-            name: 'Authorization',
-            value: 'Bearer ' + this.eduCoexistenceAccessToken_,
-          });
+          if (this.originMatchesFilter(details.url)) {
+            details.requestHeaders.push({
+              name: 'Authorization',
+              value: 'Bearer ' + this.eduCoexistenceAccessToken_,
+            });
+          }
 
           return {requestHeaders: details.requestHeaders};
         },
