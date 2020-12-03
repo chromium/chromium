@@ -4,52 +4,52 @@
 
 import("//testing/test.gni")
 
-if (!is_ios) {
-  static_library("renderer") {
-    sources = [
-      "paint_preview_recorder_impl.cc",
-      "paint_preview_recorder_impl.h",
-      "paint_preview_recorder_utils.cc",
-      "paint_preview_recorder_utils.h",
-    ]
+assert(!is_ios, "Paint Previews are not supported on iOS.")
 
-    deps = [
-      "//base",
-      "//cc/paint",
-      "//content/public/renderer",
-      "//mojo/public/cpp/base",
-      "//third_party/blink/public:blink_headers",
-      "//third_party/blink/public/common",
-    ]
+source_set("renderer") {
+  sources = [
+    "paint_preview_recorder_impl.cc",
+    "paint_preview_recorder_impl.h",
+    "paint_preview_recorder_utils.cc",
+    "paint_preview_recorder_utils.h",
+  ]
 
-    public_deps = [
-      "//components/paint_preview/common",
-      "//components/paint_preview/common/mojom",
-    ]
-  }
+  deps = [
+    "//base",
+    "//cc/paint",
+    "//content/public/renderer",
+    "//mojo/public/cpp/base",
+    "//third_party/blink/public:blink_headers",
+    "//third_party/blink/public/common",
+  ]
 
-  source_set("unit_tests") {
-    testonly = true
+  public_deps = [
+    "//components/paint_preview/common",
+    "//components/paint_preview/common/mojom",
+  ]
+}
 
-    sources = [ "paint_preview_recorder_utils_unittest.cc" ]
+source_set("unit_tests") {
+  testonly = true
 
-    deps = [
-      ":renderer",
-      "//base",
-      "//base/test:test_support",
-      "//cc/paint",
-      "//components/paint_preview/common:test_utils",
-      "//testing/gmock",
-      "//testing/gtest",
-    ]
-  }
+  sources = [ "paint_preview_recorder_utils_unittest.cc" ]
 
-  test("paint_preview_renderer_unit_tests") {
-    deps = [
-      ":unit_tests",
-      "//base",
-      "//base/test:test_support",
-      "//components/test:run_all_unittests",
-    ]
-  }
+  deps = [
+    ":renderer",
+    "//base",
+    "//base/test:test_support",
+    "//cc/paint",
+    "//components/paint_preview/common:test_utils",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+test("paint_preview_renderer_unit_tests") {
+  deps = [
+    ":unit_tests",
+    "//base",
+    "//base/test:test_support",
+    "//components/test:run_all_unittests",
+  ]
 }
