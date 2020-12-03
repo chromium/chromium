@@ -3387,6 +3387,7 @@ source_set("unit_tests") {
     "borealis/borealis_installer_unittest.cc",
     "borealis/borealis_launch_watcher_unittest.cc",
     "borealis/borealis_task_unittest.cc",
+    "borealis/borealis_window_manager_unittest.cc",
     "borealis/infra/described_unittest.cc",
     "borealis/infra/expected_unittest.cc",
     "borealis/infra/state_manager_unittest.cc",

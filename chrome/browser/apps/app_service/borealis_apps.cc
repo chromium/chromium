@@ -66,6 +66,9 @@ BorealisApps::BorealisApps(
     : profile_(profile) {
   Registry()->AddObserver(this);
 
+  anonymous_observation_.Observe(
+      &borealis::BorealisService::GetForProfile(profile_)->WindowManager());
+
   PublisherBase::Initialize(app_service, apps::mojom::AppType::kBorealis);
 
   // TODO(b/170264723): When uninstalling borealis is completed, ensure that we
@@ -214,6 +217,30 @@ void BorealisApps::OnRegistryUpdated(
       Publish(Convert(*registration, /*new_icon_key=*/true), subscribers_);
     }
   }
+}
+
+void BorealisApps::NewAnonymousAppDetected(const std::string& shelf_app_id,
+                                           const std::string& shelf_app_name) {
+  apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
+      apps::mojom::AppType::kBorealis, shelf_app_id,
+      apps::mojom::Readiness::kReady, shelf_app_name,
+      apps::mojom::InstallSource::kUser);
+
+  app->icon_key = apps::mojom::IconKey::New(
+      apps::mojom::IconKey::kDoesNotChangeOverTime,
+      IDR_LOGO_BOREALIS_DEFAULT_192, apps::IconEffects::kNone);
+  app->recommendable = apps::mojom::OptionalBool::kFalse;
+  app->searchable = apps::mojom::OptionalBool::kFalse;
+  app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
+  app->show_in_shelf = apps::mojom::OptionalBool::kTrue;
+  app->show_in_search = apps::mojom::OptionalBool::kFalse;
+
+  Publish(std::move(app), subscribers_);
+}
+
+void BorealisApps::WindowManagerWillBeDeleted(
+    borealis::BorealisWindowManager* window_manager) {
+  anonymous_observation_.Reset();
 }
 
 }  // namespace apps

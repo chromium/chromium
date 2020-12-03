@@ -9,6 +9,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -387,11 +388,28 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBorealisBrowserTest,
 IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBorealisBrowserTest,
                        BorealisUnknownApp) {
   views::Widget* widget = CreateExoWindow("org.chromium.borealis.wmclass.bar");
-  std::string app_id = "crostini:org.chromium.termina.wmclass.bar";
+  std::string app_id = "borealis_anon:org.chromium.borealis.wmclass.bar";
 
   EXPECT_EQ(1u,
             app_service_proxy_->InstanceRegistry().GetWindows(app_id).size());
-  EXPECT_NE(-1, shelf_model()->ItemIndexByAppID(app_id));
+  ASSERT_NE(-1, shelf_model()->ItemIndexByAppID(app_id));
+
+  // Initially, anonymous apps haven't been published, as that is an
+  // asynchronous operation. This means their shelf item has no title.
+  EXPECT_TRUE(shelf_model()
+                  ->items()[shelf_model()->ItemIndexByAppID(app_id)]
+                  .title.empty());
+
+  // Flushing calls here simulates the fraction-of-seconds delay between the
+  // window appearing and its app being published.
+  app_service_proxy_->FlushMojoCallsForTesting();
+
+  // Now that the app is published, it will have a name based on the app_id
+  EXPECT_EQ(
+      "wmclass.bar",
+      base::UTF16ToUTF8(shelf_model()
+                            ->items()[shelf_model()->ItemIndexByAppID(app_id)]
+                            .title));
 
   widget->CloseNow();
   EXPECT_TRUE(

@@ -8,7 +8,9 @@
 #include <memory>
 #include <string>
 
+#include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
+#include "chrome/browser/chromeos/borealis/borealis_window_manager.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
@@ -24,8 +26,10 @@ namespace apps {
 
 // An app publisher (in the App Service sense) of Borealis apps.
 // See components/services/app_service/README.md.
-class BorealisApps : public apps::PublisherBase,
-                     public guest_os::GuestOsRegistryService::Observer {
+class BorealisApps
+    : public apps::PublisherBase,
+      public guest_os::GuestOsRegistryService::Observer,
+      public borealis::BorealisWindowManager::AnonymousAppObserver {
  public:
   BorealisApps(const mojo::Remote<apps::mojom::AppService>& app_service,
                Profile* profile);
@@ -70,11 +74,21 @@ class BorealisApps : public apps::PublisherBase,
       const std::vector<std::string>& removed_apps,
       const std::vector<std::string>& inserted_apps) override;
 
+  // borealis::BorealisWindowManager::AnonymousAppObserver overrides.
+  void NewAnonymousAppDetected(const std::string& shelf_app_id,
+                               const std::string& shelf_app_name) override;
+  void WindowManagerWillBeDeleted(
+      borealis::BorealisWindowManager* window_manager) override;
+
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
   Profile* const profile_;
+
+  base::ScopedObservation<borealis::BorealisWindowManager,
+                          borealis::BorealisWindowManager::AnonymousAppObserver>
+      anonymous_observation_{this};
 };
 
 }  // namespace apps
