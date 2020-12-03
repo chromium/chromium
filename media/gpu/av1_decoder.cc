@@ -59,6 +59,20 @@ bool IsYUV420Sequence(const libgav1::ColorConfig& color_config) {
   return color_config.subsampling_x == 1 && color_config.subsampling_y == 1 &&
          !color_config.is_monochrome;
 }
+
+bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
+  // Spec 6.4.1.
+  switch (profile) {
+    case AV1PROFILE_PROFILE_MAIN:
+    case AV1PROFILE_PROFILE_HIGH:
+      return bit_depth == 8u || bit_depth == 10u;
+    case AV1PROFILE_PROFILE_PRO:
+      return bit_depth == 8u || bit_depth == 10u || bit_depth == 12u;
+    default:
+      NOTREACHED();
+      return false;
+  }
+}
 }  // namespace
 
 AV1Decoder::AV1Decoder(std::unique_ptr<AV1Accelerator> accelerator,
@@ -118,6 +132,7 @@ void AV1Decoder::Reset() {
   visible_rect_ = gfx::Rect();
   frame_size_ = gfx::Size();
   profile_ = VideoCodecProfile::VIDEO_CODEC_PROFILE_UNKNOWN;
+  bit_depth_ = 0;
   stream_id_ = 0;
   stream_ = nullptr;
   stream_size_ = 0;
@@ -216,13 +231,6 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
         }
 
         current_sequence_header_ = parser_->sequence_header();
-        // TODO(hiroh): Expose the bit depth to let the AV1Decoder client
-        // perform these checks.
-        if (current_sequence_header_->color_config.bitdepth != 8) {
-          // TODO(hiroh): Handle 10/12 bit depth.
-          DVLOG(1) << "10/12 bit depth are not supported";
-          return kDecodeError;
-        }
         if (!IsYUV420Sequence(current_sequence_header_->color_config)) {
           DVLOG(1) << "Only YUV 4:2:0 is supported";
           return kDecodeError;
@@ -236,6 +244,15 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
             base::strict_cast<int>(current_frame_header_->render_height));
         const VideoCodecProfile new_profile =
             AV1ProfileToVideoCodecProfile(current_sequence_header_->profile);
+        const uint8_t new_bit_depth = base::checked_cast<uint8_t>(
+            current_sequence_header_->color_config.bitdepth);
+        if (!IsValidBitDepth(new_bit_depth, new_profile)) {
+          DVLOG(1) << "Invalid bit depth="
+                   << base::strict_cast<int>(new_bit_depth)
+                   << ", profile=" << GetProfileName(new_profile);
+          return kDecodeError;
+        }
+
         DCHECK(!new_frame_size.IsEmpty());
         if (!gfx::Rect(new_frame_size).Contains(new_visible_rect)) {
           DVLOG(1) << "Render size exceeds picture size. render size: "
@@ -245,13 +262,15 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
         }
 
         ClearReferenceFrames();
-        // Issues kConfigChange only if either the dimensions or profile is
-        // changed.
+        // Issues kConfigChange only if either the dimensions, profile or bit
+        // depth is changed.
         if (frame_size_ != new_frame_size ||
-            visible_rect_ != new_visible_rect || profile_ != new_profile) {
+            visible_rect_ != new_visible_rect || profile_ != new_profile ||
+            bit_depth_ != new_bit_depth) {
           frame_size_ = new_frame_size;
           visible_rect_ = new_visible_rect;
           profile_ = new_profile;
+          bit_depth_ = new_bit_depth;
           clear_current_frame.ReplaceClosure(base::DoNothing());
           return kConfigChange;
         }
@@ -434,6 +453,11 @@ gfx::Rect AV1Decoder::GetVisibleRect() const {
 VideoCodecProfile AV1Decoder::GetProfile() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return profile_;
+}
+
+uint8_t AV1Decoder::GetBitDepth() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return bit_depth_;
 }
 
 size_t AV1Decoder::GetRequiredNumOfPictures() const {

@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "media/base/limits.h"
 #include "media/gpu/h265_decoder.h"
 
@@ -19,6 +20,30 @@ struct POCAscCompare {
   }
 };
 
+bool ParseBitDepth(const H265SPS& sps, uint8_t& bit_depth) {
+  // Spec 7.4.3.2.1
+  if (sps.bit_depth_y != sps.bit_depth_c) {
+    DVLOG(1) << "Different bit depths among planes is not supported";
+    return false;
+  }
+  bit_depth = base::checked_cast<uint8_t>(sps.bit_depth_y);
+  return true;
+}
+
+bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
+  // Spec A.3.
+  switch (profile) {
+    case HEVCPROFILE_MAIN:
+      return bit_depth == 8u;
+    case HEVCPROFILE_MAIN10:
+      return bit_depth == 8u || bit_depth == 10u;
+    case HEVCPROFILE_MAIN_STILL_PICTURE:
+      return bit_depth == 8u;
+    default:
+      NOTREACHED();
+      return false;
+  }
+}
 }  // namespace
 
 H265Decoder::H265Accelerator::H265Accelerator() = default;
@@ -310,6 +335,10 @@ VideoCodecProfile H265Decoder::GetProfile() const {
   return profile_;
 }
 
+uint8_t H265Decoder::GetBitDepth() const {
+  return bit_depth_;
+}
+
 size_t H265Decoder::GetRequiredNumOfPictures() const {
   constexpr size_t kPicsInPipeline = limits::kMaxVideoFrames + 1;
   return GetNumReferenceFrames() + kPicsInPipeline;
@@ -347,16 +376,25 @@ bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
 
   VideoCodecProfile new_profile = H265Parser::ProfileIDCToVideoCodecProfile(
       sps->profile_tier_level.general_profile_idc);
-
+  uint8_t new_bit_depth = 0;
+  if (!ParseBitDepth(*sps, new_bit_depth))
+    return false;
+  if (!IsValidBitDepth(new_bit_depth, new_profile)) {
+    DVLOG(1) << "Invalid bit depth=" << base::strict_cast<int>(new_bit_depth)
+             << ", profile=" << GetProfileName(new_profile);
+    return false;
+  }
   if (pic_size_ != new_pic_size || dpb_.max_num_pics() != sps->max_dpb_size ||
-      profile_ != new_profile) {
+      profile_ != new_profile || bit_depth_ != new_bit_depth) {
     if (!Flush())
       return false;
     DVLOG(1) << "Codec profile: " << GetProfileName(new_profile)
              << ", level(x30): " << sps->profile_tier_level.general_level_idc
              << ", DPB size: " << sps->max_dpb_size
-             << ", Picture size: " << new_pic_size.ToString();
+             << ", Picture size: " << new_pic_size.ToString()
+             << ", bit_depth: " << base::strict_cast<int>(new_bit_depth);
     profile_ = new_profile;
+    bit_depth_ = new_bit_depth;
     pic_size_ = new_pic_size;
     dpb_.set_max_num_pics(sps->max_dpb_size);
     if (need_new_buffers)

@@ -69,13 +69,14 @@ class MEDIA_GPU_EXPORT AcceleratedVideoDecoder {
   // we need a new set of them, or when an error occurs.
   virtual DecodeResult Decode() WARN_UNUSED_RESULT = 0;
 
-  // Return dimensions/visible rectangle/profile/required number of pictures
-  // that client should be ready to provide for the decoder to function properly
-  // (of which up to GetNumReferenceFrames() might be needed for internal
-  // decoding). To be used after Decode() returns kConfigChange.
+  // Return dimensions/visible rectangle/profile/bit depth/required number of
+  // pictures that client should be ready to provide for the decoder to function
+  // properly (of which up to GetNumReferenceFrames() might be needed for
+  // internal decoding). To be used after Decode() returns kConfigChange.
   virtual gfx::Size GetPicSize() const = 0;
   virtual gfx::Rect GetVisibleRect() const = 0;
   virtual VideoCodecProfile GetProfile() const = 0;
+  virtual uint8_t GetBitDepth() const = 0;
   virtual size_t GetRequiredNumOfPictures() const = 0;
   virtual size_t GetNumReferenceFrames() const = 0;
 

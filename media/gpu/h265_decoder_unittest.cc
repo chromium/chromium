@@ -37,6 +37,10 @@ constexpr char kFrame2[] = "bear-frame2.hevc";
 constexpr char kFrame3[] = "bear-frame3.hevc";
 constexpr char kFrame4[] = "bear-frame4.hevc";
 constexpr char kFrame5[] = "bear-frame5.hevc";
+constexpr char k10BitFrame0[] = "bear-320x180-10bit-frame-0.hevc";
+constexpr char k10BitFrame1[] = "bear-320x180-10bit-frame-1.hevc";
+constexpr char k10BitFrame2[] = "bear-320x180-10bit-frame-2.hevc";
+constexpr char k10BitFrame3[] = "bear-320x180-10bit-frame-3.hevc";
 
 // Checks whether the decrypt config in the picture matches the decrypt config
 // passed to this matcher.
@@ -194,6 +198,7 @@ TEST_F(H265DecoderTest, DecodeSingleFrame) {
   EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode());
   EXPECT_EQ(gfx::Size(320, 184), decoder_->GetPicSize());
   EXPECT_EQ(HEVCPROFILE_MAIN, decoder_->GetProfile());
+  EXPECT_EQ(8u, decoder_->GetBitDepth());
   EXPECT_EQ(17u, decoder_->GetRequiredNumOfPictures());
 
   // Also test running out of surfaces.
@@ -218,6 +223,7 @@ TEST_F(H265DecoderTest, SkipNonIDRFrames) {
   EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode());
   EXPECT_EQ(gfx::Size(320, 184), decoder_->GetPicSize());
   EXPECT_EQ(HEVCPROFILE_MAIN, decoder_->GetProfile());
+  EXPECT_EQ(8u, decoder_->GetBitDepth());
   EXPECT_EQ(17u, decoder_->GetRequiredNumOfPictures());
   {
     InSequence sequence;
@@ -237,6 +243,7 @@ TEST_F(H265DecoderTest, DecodeProfileMain) {
   EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode());
   EXPECT_EQ(gfx::Size(320, 184), decoder_->GetPicSize());
   EXPECT_EQ(HEVCPROFILE_MAIN, decoder_->GetProfile());
+  EXPECT_EQ(8u, decoder_->GetBitDepth());
   EXPECT_EQ(17u, decoder_->GetRequiredNumOfPictures());
 
   EXPECT_CALL(*accelerator_, CreateH265Picture()).Times(6);
@@ -262,6 +269,41 @@ TEST_F(H265DecoderTest, DecodeProfileMain) {
     EXPECT_CALL(*accelerator_, OutputPicture(HasPoc(3))).After(decode_poc3);
     EXPECT_CALL(*accelerator_, OutputPicture(HasPoc(4))).After(decode_poc4);
     EXPECT_CALL(*accelerator_, OutputPicture(HasPoc(8))).After(decode_poc8);
+  }
+
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, Decode());
+  EXPECT_TRUE(decoder_->Flush());
+}
+
+TEST_F(H265DecoderTest, Decode10BitStream) {
+  SetInputFrameFiles({k10BitFrame0, k10BitFrame1, k10BitFrame2, k10BitFrame3});
+  EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode());
+  EXPECT_EQ(gfx::Size(320, 184), decoder_->GetPicSize());
+  EXPECT_EQ(gfx::Rect(320, 180), decoder_->GetVisibleRect());
+  EXPECT_EQ(HEVCPROFILE_MAIN10, decoder_->GetProfile());
+  EXPECT_EQ(10u, decoder_->GetBitDepth());
+  EXPECT_EQ(17u, decoder_->GetRequiredNumOfPictures());
+
+  EXPECT_CALL(*accelerator_, CreateH265Picture()).Times(4);
+  EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _)).Times(4);
+  EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _, _)).Times(4);
+
+  // Two pictures will be kept in the DPB for reordering. The second and third
+  // pictures should be outputted after feeding the fourth frame.
+  Expectation decode_poc0, decode_poc1, decode_poc2, decode_poc3;
+  {
+    InSequence decode_order;
+    decode_poc0 = EXPECT_CALL(*accelerator_, SubmitDecode(HasPoc(0)));
+    decode_poc3 = EXPECT_CALL(*accelerator_, SubmitDecode(HasPoc(3)));
+    decode_poc2 = EXPECT_CALL(*accelerator_, SubmitDecode(HasPoc(2)));
+    decode_poc1 = EXPECT_CALL(*accelerator_, SubmitDecode(HasPoc(1)));
+  }
+  {
+    InSequence display_order;
+    EXPECT_CALL(*accelerator_, OutputPicture(HasPoc(0))).After(decode_poc0);
+    EXPECT_CALL(*accelerator_, OutputPicture(HasPoc(1))).After(decode_poc1);
+    EXPECT_CALL(*accelerator_, OutputPicture(HasPoc(2))).After(decode_poc2);
+    EXPECT_CALL(*accelerator_, OutputPicture(HasPoc(3))).After(decode_poc3);
   }
 
   EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, Decode());
@@ -314,6 +356,7 @@ TEST_F(H265DecoderTest, SetEncryptedStream) {
   decoder_->SetStream(0, *buffer);
   EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, decoder_->Decode());
   EXPECT_EQ(HEVCPROFILE_MAIN, decoder_->GetProfile());
+  EXPECT_EQ(8u, decoder_->GetBitDepth());
   EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, decoder_->Decode());
   EXPECT_TRUE(decoder_->Flush());
 }
@@ -323,6 +366,7 @@ TEST_F(H265DecoderTest, SubmitFrameMetadataRetry) {
   EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode());
   EXPECT_EQ(gfx::Size(320, 184), decoder_->GetPicSize());
   EXPECT_EQ(HEVCPROFILE_MAIN, decoder_->GetProfile());
+  EXPECT_EQ(8u, decoder_->GetBitDepth());
   EXPECT_EQ(17u, decoder_->GetRequiredNumOfPictures());
 
   {
@@ -358,6 +402,7 @@ TEST_F(H265DecoderTest, SubmitSliceRetry) {
   EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode());
   EXPECT_EQ(gfx::Size(320, 184), decoder_->GetPicSize());
   EXPECT_EQ(HEVCPROFILE_MAIN, decoder_->GetProfile());
+  EXPECT_EQ(8u, decoder_->GetBitDepth());
   EXPECT_EQ(17u, decoder_->GetRequiredNumOfPictures());
 
   {
@@ -393,6 +438,7 @@ TEST_F(H265DecoderTest, SubmitDecodeRetry) {
   EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode());
   EXPECT_EQ(gfx::Size(320, 184), decoder_->GetPicSize());
   EXPECT_EQ(HEVCPROFILE_MAIN, decoder_->GetProfile());
+  EXPECT_EQ(8u, decoder_->GetBitDepth());
   EXPECT_EQ(17u, decoder_->GetRequiredNumOfPictures());
 
   {
@@ -442,6 +488,7 @@ TEST_F(H265DecoderTest, SetStreamRetry) {
   EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode(false));
   EXPECT_EQ(gfx::Size(320, 184), decoder_->GetPicSize());
   EXPECT_EQ(HEVCPROFILE_MAIN, decoder_->GetProfile());
+  EXPECT_EQ(8u, decoder_->GetBitDepth());
   EXPECT_EQ(17u, decoder_->GetRequiredNumOfPictures());
 
   {

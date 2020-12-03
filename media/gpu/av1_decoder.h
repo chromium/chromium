@@ -106,6 +106,7 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
   gfx::Size GetPicSize() const override;
   gfx::Rect GetVisibleRect() const override;
   VideoCodecProfile GetProfile() const override;
+  uint8_t GetBitDepth() const override;
   size_t GetRequiredNumOfPictures() const override;
   size_t GetNumReferenceFrames() const override;
 
@@ -137,6 +138,7 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
   gfx::Rect visible_rect_;
   gfx::Size frame_size_;
   VideoCodecProfile profile_;
+  uint8_t bit_depth_ = 0;
 
   int32_t stream_id_ = 0;
   const uint8_t* stream_ = nullptr;

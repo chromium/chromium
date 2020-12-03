@@ -298,6 +298,17 @@ mp4edit.exe --insert moov/trak/mdia/minf/stbl/stsd/vp09:smdm.bin \
 
 smdm.bin and coll.bin generated with program from https://crbug.com/1123430#c5.
 
+#### bear-320x180-10bit-frame-\{0,1,2,3\}.h264
+The first four frames of the H.264 version of bear-av1-320x180-10bit.mp4 created
+using the following command.
+`ffmpeg -i bear-av1-320x180-10bit.mp4 -vcodec h264 -vframes 4 bear-320x180-10bit-4frames.h264`
+The file is then split into bitstreams each of which contains a single frame, so
+that they contain frames as below.
+bear-320x180-10bit-frame-0.h264: SPS+PPS+Single IDR
+bear-320x180-10bit-frame-1.h264: B
+bear-320x180-10bit-frame-2.h264: B
+bear-320x180-10bit-frame-3.h264: P
+
 ### AAC test data from MPEG-DASH demoplayer (44100 Hz, stereo)
 Duration of each packet is (1024/44100 Hz), approximately 23.22 ms.
 
@@ -902,6 +913,17 @@ SPS and PPS from bear.hevc for h265_decoder_unittest.cc.
 #### bear-frame\{0,1,2,3,4,5\}.hevc
 Single IDR, P, B, B, B, P frames respectively from bear.hevc for
 h265_decoder_unittest.cc.
+
+#### bear-320x180-10bit-frame-\{0,1,2,3\}.hevc
+The first four frames of the HEVC version of bear-av1-320x180-10bit.mp4 created
+using the following command.
+`ffmpeg -i bear-av1-320x180-10bit.mp4 -vcodec hevc -vframes 4 bear-320x180-10bit-4frames.hevc`
+The file is then split into bitstreams each of which contains a single frame, so
+that they contain frames as below.
+bear-320x180-10bit-frame-0.hevc: SPS+PPS+Single IDR
+bear-320x180-10bit-frame-1.hevc: B
+bear-320x180-10bit-frame-2.hevc: B
+bear-320x180-10bit-frame-3.hevc: P
 
 ###  WebM files for testing multiple tracks.
 

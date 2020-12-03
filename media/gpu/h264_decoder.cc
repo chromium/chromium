@@ -17,6 +17,67 @@
 #include "media/video/h264_level_limits.h"
 
 namespace media {
+namespace {
+bool ParseBitDepth(const H264SPS& sps, uint8_t& bit_depth) {
+  // Spec 7.4.2.1.1
+  if (sps.bit_depth_luma_minus8 != sps.bit_depth_chroma_minus8) {
+    DVLOG(1) << "H264Decoder doesn't support different bit depths between luma"
+             << "and chroma, bit_depth_luma_minus8="
+             << sps.bit_depth_luma_minus8
+             << ", bit_depth_chroma_minus8=" << sps.bit_depth_chroma_minus8;
+    return false;
+  }
+  DCHECK_GE(sps.bit_depth_luma_minus8, 0);
+  DCHECK_LE(sps.bit_depth_luma_minus8, 6);
+  switch (sps.bit_depth_luma_minus8) {
+    case 0:
+      bit_depth = 8u;
+      break;
+    case 2:
+      bit_depth = 10u;
+      break;
+    case 4:
+      bit_depth = 12u;
+      break;
+    case 6:
+      bit_depth = 14u;
+      break;
+    default:
+      DVLOG(1) << "Invalid bit depth: "
+               << base::checked_cast<int>(sps.bit_depth_luma_minus8 + 8);
+      return false;
+  }
+  return true;
+}
+
+bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
+  // Spec A.2.
+  switch (profile) {
+    case H264PROFILE_BASELINE:
+    case H264PROFILE_MAIN:
+    case H264PROFILE_EXTENDED:
+    case H264PROFILE_HIGH:
+      return bit_depth == 8u;
+    case H264PROFILE_HIGH10PROFILE:
+    case H264PROFILE_HIGH422PROFILE:
+      return bit_depth == 8u || bit_depth == 10u;
+    case H264PROFILE_HIGH444PREDICTIVEPROFILE:
+      return bit_depth == 8u || bit_depth == 10u || bit_depth == 12u ||
+             bit_depth == 14u;
+    case H264PROFILE_SCALABLEBASELINE:
+    case H264PROFILE_SCALABLEHIGH:
+      // Spec G.10.1.
+      return bit_depth == 8u;
+    case H264PROFILE_STEREOHIGH:
+    case H264PROFILE_MULTIVIEWHIGH:
+      // Spec H.10.1.1 and H.10.1.2.
+      return bit_depth == 8u;
+    default:
+      NOTREACHED();
+      return false;
+  }
+}
+}  // namespace
 
 H264Decoder::H264Accelerator::H264Accelerator() = default;
 
@@ -1086,18 +1147,28 @@ bool H264Decoder::ProcessSPS(int sps_id, bool* need_new_buffers) {
     DVLOG(1) << "Invalid DPB size: " << max_dpb_size;
     return false;
   }
-
   VideoCodecProfile new_profile =
       H264Parser::ProfileIDCToVideoCodecProfile(sps->profile_idc);
+  uint8_t new_bit_depth = 0;
+  if (!ParseBitDepth(*sps, new_bit_depth))
+    return false;
+  if (!IsValidBitDepth(new_bit_depth, new_profile)) {
+    DVLOG(1) << "Invalid bit depth=" << base::strict_cast<int>(new_bit_depth)
+             << ", profile=" << GetProfileName(new_profile);
+    return false;
+  }
+
   if (pic_size_ != new_pic_size || dpb_.max_num_pics() != max_dpb_size ||
-      profile_ != new_profile) {
+      profile_ != new_profile || bit_depth_ != new_bit_depth) {
     if (!Flush())
       return false;
     DVLOG(1) << "Codec profile: " << GetProfileName(new_profile)
              << ", level: " << level << ", DPB size: " << max_dpb_size
-             << ", Picture size: " << new_pic_size.ToString();
+             << ", Picture size: " << new_pic_size.ToString()
+             << ", bit depth: " << base::strict_cast<int>(new_bit_depth);
     *need_new_buffers = true;
     profile_ = new_profile;
+    bit_depth_ = new_bit_depth;
     pic_size_ = new_pic_size;
     dpb_.set_max_num_pics(max_dpb_size);
   }
@@ -1453,6 +1524,10 @@ gfx::Rect H264Decoder::GetVisibleRect() const {
 
 VideoCodecProfile H264Decoder::GetProfile() const {
   return profile_;
+}
+
+uint8_t H264Decoder::GetBitDepth() const {
+  return bit_depth_;
 }
 
 size_t H264Decoder::GetRequiredNumOfPictures() const {

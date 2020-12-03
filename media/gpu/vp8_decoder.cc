@@ -180,6 +180,10 @@ VideoCodecProfile VP8Decoder::GetProfile() const {
   return VP8PROFILE_ANY;
 }
 
+uint8_t VP8Decoder::GetBitDepth() const {
+  return 8u;
+}
+
 size_t VP8Decoder::GetRequiredNumOfPictures() const {
   constexpr size_t kPicsInPipeline = limits::kMaxVideoFrames + 1;
   return kVP8NumFramesActive + kPicsInPipeline;

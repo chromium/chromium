@@ -56,6 +56,20 @@ VideoCodecProfile VP9ProfileToVideoCodecProfile(uint8_t profile) {
   }
 }
 
+bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
+  // Spec 7.2.
+  switch (profile) {
+    case VP9PROFILE_PROFILE0:
+    case VP9PROFILE_PROFILE1:
+      return bit_depth == 8u;
+    case VP9PROFILE_PROFILE2:
+    case VP9PROFILE_PROFILE3:
+      return bit_depth == 10u || bit_depth == 12u;
+    default:
+      NOTREACHED();
+      return false;
+  }
+}
 }  // namespace
 
 VP9Decoder::VP9Accelerator::VP9Accelerator() {}
@@ -217,11 +231,20 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
       VLOG(1) << "Invalid profile: " << curr_frame_hdr_->profile;
       return kDecodeError;
     }
+    if (!IsValidBitDepth(curr_frame_hdr_->bit_depth, new_profile)) {
+      DVLOG(1) << "Invalid bit depth="
+               << base::strict_cast<int>(curr_frame_hdr_->bit_depth)
+               << ", profile=" << GetProfileName(new_profile);
+      return kDecodeError;
+    }
 
     DCHECK(!new_pic_size.IsEmpty());
-    if (new_pic_size != pic_size_ || new_profile != profile_) {
+    if (new_pic_size != pic_size_ || new_profile != profile_ ||
+        curr_frame_hdr_->bit_depth != bit_depth_) {
       DVLOG(1) << "New profile: " << GetProfileName(new_profile)
-               << ", New resolution: " << new_pic_size.ToString();
+               << ", New resolution: " << new_pic_size.ToString()
+               << ", New bit depth: "
+               << base::strict_cast<int>(curr_frame_hdr_->bit_depth);
 
       if (!curr_frame_hdr_->IsKeyframe() &&
           !(curr_frame_hdr_->IsIntra() && pic_size_.IsEmpty())) {
@@ -249,6 +272,7 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
       pic_size_ = new_pic_size;
       visible_rect_ = new_render_rect;
       profile_ = new_profile;
+      bit_depth_ = curr_frame_hdr_->bit_depth;
       size_change_failure_counter_ = 0;
       return kConfigChange;
     }
@@ -345,6 +369,10 @@ gfx::Rect VP9Decoder::GetVisibleRect() const {
 
 VideoCodecProfile VP9Decoder::GetProfile() const {
   return profile_;
+}
+
+uint8_t VP9Decoder::GetBitDepth() const {
+  return bit_depth_;
 }
 
 size_t VP9Decoder::GetRequiredNumOfPictures() const {
