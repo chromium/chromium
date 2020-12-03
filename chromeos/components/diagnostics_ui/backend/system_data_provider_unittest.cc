@@ -384,7 +384,7 @@ void VerifyHealthResult(const mojom::BatteryHealthPtr& update,
   const int32_t expected_charge_full_design_milliamp_hours =
       charge_full_design * 1000;
   const int8_t expected_battery_wear_percentage =
-      expected_charge_full_now_milliamp_hours /
+      100 * expected_charge_full_now_milliamp_hours /
       expected_charge_full_design_milliamp_hours;
 
   EXPECT_EQ(expected_charge_full_now_milliamp_hours,

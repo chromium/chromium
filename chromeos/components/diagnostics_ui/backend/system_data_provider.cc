@@ -142,7 +142,7 @@ void PopulateBatteryHealth(const healthd::BatteryInfo& battery_info,
       battery_info.charge_full_design * kMilliampsInAnAmp;
   out_battery_health.cycle_count = battery_info.cycle_count;
   out_battery_health.battery_wear_percentage =
-      out_battery_health.charge_full_now_milliamp_hours /
+      100 * out_battery_health.charge_full_now_milliamp_hours /
       out_battery_health.charge_full_design_milliamp_hours;
 }
 
