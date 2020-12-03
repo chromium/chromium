@@ -7,9 +7,12 @@
 #include "base/callback_helpers.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/arc/session/arc_container_client_adapter.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
+
+namespace {
 
 class ArcContainerClientAdapterTest : public testing::Test {
  public:
@@ -22,6 +25,7 @@ class ArcContainerClientAdapterTest : public testing::Test {
   void SetUp() override {
     chromeos::SessionManagerClient::InitializeFake();
     client_adapter_ = CreateArcContainerClientAdapter();
+    chromeos::FakeSessionManagerClient::Get()->set_arc_available(true);
   }
 
   void TearDown() override {
@@ -34,6 +38,7 @@ class ArcContainerClientAdapterTest : public testing::Test {
 
  private:
   std::unique_ptr<ArcClientAdapter> client_adapter_;
+  content::BrowserTaskEnvironment browser_task_environment_;
 };
 
 // b/164816080 This test ensures that a new container instance that is
@@ -85,5 +90,52 @@ TEST_F(ArcContainerClientAdapterTest,
   EXPECT_TRUE(parent_observer.stopped_called());
   EXPECT_FALSE(child_observer.stopped_called());
 }
+
+struct DalvikMemoryProfileTestParam {
+  // Requested profile.
+  StartParams::DalvikMemoryProfile profile;
+  // Expected value passed to DBus.
+  login_manager::StartArcMiniContainerRequest_DalvikMemoryProfile expectation;
+};
+
+constexpr DalvikMemoryProfileTestParam kDalvikMemoryProfileTestCases[] = {
+    {StartParams::DalvikMemoryProfile::DEFAULT,
+     login_manager::
+         StartArcMiniContainerRequest_DalvikMemoryProfile_MEMORY_PROFILE_DEFAULT},
+    {StartParams::DalvikMemoryProfile::M4G,
+     login_manager::
+         StartArcMiniContainerRequest_DalvikMemoryProfile_MEMORY_PROFILE_4G},
+    {StartParams::DalvikMemoryProfile::M8G,
+     login_manager::
+         StartArcMiniContainerRequest_DalvikMemoryProfile_MEMORY_PROFILE_8G},
+    {StartParams::DalvikMemoryProfile::M16G,
+     login_manager::
+         StartArcMiniContainerRequest_DalvikMemoryProfile_MEMORY_PROFILE_16G}};
+
+class ArcContainerClientAdapterDalvikMemoryProfileTest
+    : public ArcContainerClientAdapterTest,
+      public testing::WithParamInterface<DalvikMemoryProfileTestParam> {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ArcContainerClientAdapterDalvikMemoryProfileTest,
+                         ::testing::ValuesIn(kDalvikMemoryProfileTestCases));
+
+void OnMiniInstanceStarted(bool result) {
+  DCHECK(result);
+}
+
+TEST_P(ArcContainerClientAdapterDalvikMemoryProfileTest, Profile) {
+  const auto& test_param = GetParam();
+  StartParams start_params;
+  start_params.dalvik_memory_profile = test_param.profile;
+  client_adapter()->StartMiniArc(std::move(start_params),
+                                 base::BindOnce(&OnMiniInstanceStarted));
+  const auto& request = chromeos::FakeSessionManagerClient::Get()
+                            ->last_start_arc_mini_container_request();
+  EXPECT_TRUE(request.has_dalvik_memory_profile());
+  EXPECT_EQ(test_param.expectation, request.dalvik_memory_profile());
+}
+
+}  // namespace
 
 }  // namespace arc

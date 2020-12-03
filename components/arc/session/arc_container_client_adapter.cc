@@ -66,6 +66,26 @@ ToLoginManagerPlayStoreAutoUpdate(StartParams::PlayStoreAutoUpdate update) {
   }
 }
 
+// Converts DalvikMemoryProfile into login_manager's.
+login_manager::StartArcMiniContainerRequest_DalvikMemoryProfile
+ToLoginManagerDalvikMemoryProfile(
+    StartParams::DalvikMemoryProfile dalvik_memory_profile) {
+  switch (dalvik_memory_profile) {
+    case StartParams::DalvikMemoryProfile::DEFAULT:
+      return login_manager::
+          StartArcMiniContainerRequest_DalvikMemoryProfile_MEMORY_PROFILE_DEFAULT;
+    case StartParams::DalvikMemoryProfile::M4G:
+      return login_manager::
+          StartArcMiniContainerRequest_DalvikMemoryProfile_MEMORY_PROFILE_4G;
+    case StartParams::DalvikMemoryProfile::M8G:
+      return login_manager::
+          StartArcMiniContainerRequest_DalvikMemoryProfile_MEMORY_PROFILE_8G;
+    case StartParams::DalvikMemoryProfile::M16G:
+      return login_manager::
+          StartArcMiniContainerRequest_DalvikMemoryProfile_MEMORY_PROFILE_16G;
+  }
+}
+
 }  // namespace
 
 class ArcContainerClientAdapter
@@ -91,11 +111,11 @@ class ArcContainerClientAdapter
     request.set_arc_file_picker_experiment(params.arc_file_picker_experiment);
     request.set_play_store_auto_update(
         ToLoginManagerPlayStoreAutoUpdate(params.play_store_auto_update));
+    request.set_dalvik_memory_profile(
+        ToLoginManagerDalvikMemoryProfile(params.dalvik_memory_profile));
     request.set_arc_custom_tabs_experiment(params.arc_custom_tabs_experiment);
     request.set_disable_system_default_app(
         params.arc_disable_system_default_app);
-    // TODO(b/160760318): Add Dalvik memory profile once arc.proto is ready.
-
     chromeos::SessionManagerClient::Get()->StartArcMiniContainer(
         request, std::move(callback));
   }
