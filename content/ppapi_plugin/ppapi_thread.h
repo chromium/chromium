@@ -138,7 +138,7 @@ class PpapiThread : public ChildThreadImpl,
   // The BlinkPlatformImpl implementation.
   std::unique_ptr<PpapiBlinkPlatformImpl> blink_platform_impl_;
 
-  std::unique_ptr<discardable_memory::ClientDiscardableSharedMemoryManager>
+  scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(PpapiThread);

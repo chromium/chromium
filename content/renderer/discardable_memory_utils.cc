@@ -25,7 +25,7 @@
 
 namespace content {
 
-std::unique_ptr<discardable_memory::ClientDiscardableSharedMemoryManager>
+scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
 CreateDiscardableMemoryAllocator() {
   DVLOG(1) << "Using shared memory for discardable memory";
 
@@ -33,7 +33,7 @@ CreateDiscardableMemoryAllocator() {
       manager_remote;
   ChildThread::Get()->BindHostReceiver(
       manager_remote.InitWithNewPipeAndPassReceiver());
-  return std::make_unique<
+  return base::MakeRefCounted<
       discardable_memory::ClientDiscardableSharedMemoryManager>(
       std::move(manager_remote), ChildProcess::current()->io_task_runner(),
       ChildProcess::current()->main_thread()->main_thread_runner());
