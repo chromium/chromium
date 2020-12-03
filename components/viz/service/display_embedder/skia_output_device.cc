@@ -270,6 +270,27 @@ bool SkiaOutputDevice::Wait(SkSurface* sk_surface,
 
 bool SkiaOutputDevice::Draw(SkSurface* sk_surface,
                             sk_sp<const SkDeferredDisplayList> ddl) {
+#if DCHECK_IS_ON()
+  const auto& characterization = ddl->characterization();
+  if (!sk_surface->isCompatible(characterization)) {
+    SkSurfaceCharacterization surface_characterization;
+    DCHECK(sk_surface->characterize(&surface_characterization));
+#define CHECK_PROPERTY(name) \
+  DCHECK_EQ(characterization.name(), surface_characterization.name());
+    CHECK_PROPERTY(cacheMaxResourceBytes);
+    CHECK_PROPERTY(origin);
+    CHECK_PROPERTY(width);
+    CHECK_PROPERTY(height);
+    CHECK_PROPERTY(colorType);
+    CHECK_PROPERTY(sampleCount);
+    CHECK_PROPERTY(isTextureable);
+    CHECK_PROPERTY(isMipMapped);
+    CHECK_PROPERTY(usesGLFBO0);
+    CHECK_PROPERTY(vkRTSupportsInputAttachment);
+    CHECK_PROPERTY(vulkanSecondaryCBCompatible);
+    CHECK_PROPERTY(isProtected);
+  }
+#endif
   return sk_surface->draw(ddl);
 }
 

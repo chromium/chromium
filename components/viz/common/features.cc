@@ -96,6 +96,12 @@ const base::Feature kUseSetPresentDuration{"UseSetPresentDuration",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // OS_WIN
 
+#if defined(USE_X11)
+// Uses X11 Present Extensions instead of the Vulkan swapchain for presenting.
+const base::Feature kUseX11Present{"UseX11Present",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 bool IsOverlayPrioritizationEnabled() {
   return base::FeatureList::IsEnabled(kEnableOverlayPrioritization);
 }

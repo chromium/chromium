@@ -58,13 +58,14 @@ LIBRARY_FILTER = set([
     "libsmime3.so",
     "libstdc++.so",
     "libuuid.so",
-    "libxkbcommon.so.0",
     "libxcb.so",
     "libxcb-dri3.so.0",
+    "libxkbcommon.so.0",
+    "libxshmfence.so.1",
     "rtld(GNU_HASH)",
 ])
 
-SUPPORTED_FEDORA_RELEASES = ['30', '31']
+SUPPORTED_FEDORA_RELEASES = ['31', '32', '33']
 SUPPORTED_OPENSUSE_LEAP_RELEASES = ['15.1', '15.2']
 
 COMMON_NS = "http://linux.duke.edu/metadata/common"

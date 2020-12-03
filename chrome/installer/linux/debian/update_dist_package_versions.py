@@ -59,7 +59,6 @@ PACKAGE_FILTER = set([
     "libuuid1",
     "libx11-6",
     "libx11-xcb1",
-    "libxkbcommon0",
     "libxcb1",
     "libxcb-dri3-0",
     "libxcomposite1",
@@ -68,8 +67,10 @@ PACKAGE_FILTER = set([
     "libxext6",
     "libxfixes3",
     "libxi6",
+    "libxkbcommon0",
     "libxrandr2",
     "libxrender1",
+    "libxshmfence1",
     "libxss1",
     "libxtst6",
 ])

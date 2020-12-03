@@ -11,6 +11,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
@@ -76,6 +77,10 @@
 
 #if defined(OS_FUCHSIA)
 #include "components/viz/service/display_embedder/output_presenter_fuchsia.h"
+#endif
+
+#if defined(USE_X11)
+#include "components/viz/service/display_embedder/output_presenter_x11.h"
 #endif
 
 namespace viz {
@@ -1184,13 +1189,63 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
   return true;
 }
 
-bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
 #if BUILDFLAG(ENABLE_VULKAN)
+bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
   if (dependency_->IsOffscreen()) {
     output_device_ = std::make_unique<SkiaOutputDeviceOffscreen>(
         context_state_, gfx::SurfaceOrigin::kBottomLeft,
         renderer_settings_.requires_alpha_channel,
         shared_gpu_deps_->memory_tracker(),
+        GetDidSwapBuffersCompleteCallback());
+    return true;
+  }
+
+#if defined(USE_OZONE)
+  bool needs_background_image =
+      features::IsUsingOzonePlatform() && ui::OzonePlatform::GetInstance()
+                                              ->GetPlatformProperties()
+                                              .needs_background_image;
+#else   // defined(USE_OZONE)
+  bool needs_background_image = false;
+#endif  // !defined(USE_OZONE)
+
+#if !defined(OS_WIN)
+#if defined(OS_FUCHSIA)
+  auto output_presenter = OutputPresenterFuchsia::Create(
+      window_surface_.get(), dependency_, shared_image_factory_.get(),
+      shared_image_representation_factory_.get());
+#elif defined(USE_X11)
+  const bool use_x11_present =
+      base::FeatureList::IsEnabled(features::kUseX11Present) &&
+      !features::IsUsingOzonePlatform();
+  auto output_presenter = use_x11_present
+                              ? OutputPresenterX11::Create(
+                                    dependency_, shared_image_factory_.get(),
+                                    shared_image_representation_factory_.get())
+                              : nullptr;
+#else
+  auto output_presenter =
+      OutputPresenterGL::Create(dependency_, shared_image_factory_.get(),
+                                shared_image_representation_factory_.get());
+  if (output_presenter) {
+    // TODO(https://crbug.com/1012401): don't depend on GL.
+    gl_surface_ = output_presenter->gl_surface();
+  }
+#endif
+  if (output_presenter) {
+    output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
+        std::move(output_presenter), dependency_,
+        shared_image_representation_factory_.get(),
+        shared_gpu_deps_->memory_tracker(), GetDidSwapBuffersCompleteCallback(),
+        needs_background_image);
+    return true;
+  }
+#endif  // !defined(OS_WIN)
+  (void)needs_background_image;
+
+  if (vulkan_context_provider_->GetGrSecondaryCBDrawContext()) {
+    output_device_ = std::make_unique<SkiaOutputDeviceVulkanSecondaryCB>(
+        vulkan_context_provider_, shared_gpu_deps_->memory_tracker(),
         GetDidSwapBuffersCompleteCallback());
     return true;
   }
@@ -1214,45 +1269,6 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
   }
 #endif  // defined(USE_X11)
 
-#if defined(USE_OZONE)
-  bool needs_background_image = ui::OzonePlatform::GetInstance()
-                                    ->GetPlatformProperties()
-                                    .needs_background_image;
-#else   // defined(USE_OZONE)
-  bool needs_background_image = false;
-#endif  // !defined(USE_OZONE)
-
-#if !defined(OS_WIN)
-#if defined(OS_FUCHSIA)
-  auto output_presenter = OutputPresenterFuchsia::Create(
-      window_surface_.get(), dependency_, shared_image_factory_.get(),
-      shared_image_representation_factory_.get());
-#else   // defined(OS_FUCHSIA)
-  auto output_presenter =
-      OutputPresenterGL::Create(dependency_, shared_image_factory_.get(),
-                                shared_image_representation_factory_.get());
-  if (output_presenter) {
-    // TODO(https://crbug.com/1012401): don't depend on GL.
-    gl_surface_ = output_presenter->gl_surface();
-  }
-#endif  // !defined(OS_FUCHSIA)
-  if (output_presenter) {
-    output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
-        std::move(output_presenter), dependency_,
-        shared_image_representation_factory_.get(),
-        shared_gpu_deps_->memory_tracker(), GetDidSwapBuffersCompleteCallback(),
-        needs_background_image);
-    return true;
-  }
-#endif  // !defined(OS_WIN)
-  (void)needs_background_image;
-
-  if (vulkan_context_provider_->GetGrSecondaryCBDrawContext()) {
-    output_device_ = std::make_unique<SkiaOutputDeviceVulkanSecondaryCB>(
-        vulkan_context_provider_, shared_gpu_deps_->memory_tracker(),
-        GetDidSwapBuffersCompleteCallback());
-    return true;
-  }
   auto output_device = SkiaOutputDeviceVulkan::Create(
       vulkan_context_provider_, dependency_->GetSurfaceHandle(),
       shared_gpu_deps_->memory_tracker(), GetDidSwapBuffersCompleteCallback());
@@ -1268,10 +1284,12 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
 #endif  // defined(OS_WIN)
   output_device_ = std::move(output_device);
   return true;
-#else   // BUILDFLAG(ENABLE_VULKAN)
-  return false;
-#endif  // !BUILDFLAG(ENABLE_VULKAN)
 }
+#else   // BUILDFLAG(ENABLE_VULKAN)
+bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
+  return false;
+}
+#endif  // !BUILDFLAG(ENABLE_VULKAN)
 
 bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
 #if BUILDFLAG(SKIA_USE_DAWN)

@@ -37,6 +37,7 @@ include_rules = [
   "+third_party/libyuv",
   "+third_party/skia",
   "+ui/accelerated_widget_mac",
+  "+ui/events/platform/x11/x11_event_source.h",
   "+ui/display",
   "+ui/gl",
   "+ui/latency",

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//components/viz/viz.gni")
 import("//gpu/vulkan/features.gni")
@@ -437,14 +438,22 @@ viz_source_set("gpu_service_dependencies") {
     ]
 
     public_deps += [ "//gpu/vulkan" ]
-  }
 
-  if (use_x11 && enable_vulkan) {
-    sources += [
-      "display_embedder/skia_output_device_x11.cc",
-      "display_embedder/skia_output_device_x11.h",
-    ]
-    deps += [ "//ui/gfx/x" ]
+    if (use_x11 || ozone_platform_x11) {
+      sources += [
+        "display_embedder/output_presenter_x11.cc",
+        "display_embedder/output_presenter_x11.h",
+        "display_embedder/skia_output_device_x11.cc",
+        "display_embedder/skia_output_device_x11.h",
+      ]
+
+      libs = [ "xshmfence" ]
+
+      deps += [
+        "//ui/events/platform/x11",
+        "//ui/gfx/x",
+      ]
+    }
   }
 
   if (skia_use_dawn && is_win) {

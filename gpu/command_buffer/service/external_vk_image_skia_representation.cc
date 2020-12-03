@@ -80,10 +80,21 @@ sk_sp<SkSurface> ExternalVkImageSkiaRepresentation::BeginWriteAccess(
 
   access_mode_ = kWrite;
 
-  // If Vulkan/GL/Dawn share the same memory backing, we need set
-  // |end_state| VK_QUEUE_FAMILY_EXTERNAL, and then the caller will set the
-  // VkImage to VK_QUEUE_FAMILY_EXTERNAL before calling EndAccess().
-  if (backing_impl()->need_synchronization()) {
+  if (backing_impl()->usage() & SHARED_IMAGE_USAGE_SCANOUT) {
+    // If the backing is used for scanout, we need to to set
+    // |end_state| VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, and then the caller will
+    // set the VkImage to VK_IMAGE_LAYOUT_PRESENT_SRC_KHR before calling
+    // EndAccess().
+    auto queue_index = backing_impl()
+                           ->context_provider()
+                           ->GetDeviceQueue()
+                           ->GetVulkanQueueIndex();
+    *end_state = std::make_unique<GrBackendSurfaceMutableState>(
+        VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, queue_index);
+  } else if (backing_impl()->need_synchronization()) {
+    // If Vulkan/GL/Dawn share the same memory backing, we need to set
+    // |end_state| VK_QUEUE_FAMILY_EXTERNAL, and then the caller will set the
+    // VkImage to VK_QUEUE_FAMILY_EXTERNAL before calling EndAccess().
     *end_state = std::make_unique<GrBackendSurfaceMutableState>(
         VK_IMAGE_LAYOUT_UNDEFINED, VK_QUEUE_FAMILY_EXTERNAL);
   }

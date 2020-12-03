@@ -187,8 +187,9 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
   auto* device_queue = context_state->vk_context_provider()->GetDeviceQueue();
   VkFormat vk_format = ToVkFormat(format);
   constexpr auto kUsageNeedsColorAttachment =
-      SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_RASTER |
-      SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_WEBGPU;
+      SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
+      SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
+      SHARED_IMAGE_USAGE_WEBGPU;
   VkImageUsageFlags vk_usage = VK_IMAGE_USAGE_SAMPLED_BIT;
   if (usage & kUsageNeedsColorAttachment) {
     vk_usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
