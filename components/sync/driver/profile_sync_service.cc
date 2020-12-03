@@ -1045,13 +1045,18 @@ void ProfileSyncService::OnActionableError(const SyncProtocolError& error) {
       // the next browser startup.
       StopAndClear();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-      // On every platform except ChromeOS, sign out the user after a dashboard
-      // clear.
-      if (!IsLocalSyncEnabled()) {
+      // On every platform except ChromeOS, revoke the Sync consent in
+      // IdentityManager after a dashboard clear.
+      if (!IsLocalSyncEnabled() &&
+          identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
         auto* account_mutator = identity_manager_->GetPrimaryAccountMutator();
-
         // GetPrimaryAccountMutator() returns nullptr on ChromeOS only.
         DCHECK(account_mutator);
+
+        // Note that this method is misnamed: It will not actually remove the
+        // primary account, it will just clear the Sync consent bit (i.e. the
+        // account will change from ConsentLevel::kSync to
+        // ConsentLevel::kNotRequired)
         account_mutator->ClearPrimaryAccount(
             signin::PrimaryAccountMutator::ClearAccountsAction::kDefault,
             signin_metrics::SERVER_FORCED_DISABLE,
