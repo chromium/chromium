@@ -434,7 +434,9 @@ void LayoutObject::AssertClearedPaintInvalidationFlags() const {
   // no paint effects (only white-space, for instance).
   if ((IsText() && IsLayoutNGObject()) ||
       // and culled inline boxes too.
-      (IsInLayoutNGInlineFormattingContext() && IsLayoutInline()))
+      (IsInLayoutNGInlineFormattingContext() && IsLayoutInline()) ||
+      // TablesNG columns are also not visited.
+      (IsLayoutTableCol() && IsLayoutNGObject()))
     return;
   ShowLayoutTreeForThis();
   NOTREACHED();
