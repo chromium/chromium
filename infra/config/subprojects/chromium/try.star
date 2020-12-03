@@ -649,6 +649,7 @@ try_.chromium_chromiumos_builder(
 try_.chromium_chromiumos_builder(
     name = "chromeos-amd64-generic-rel",
     branch_selector = branches.ALL_BRANCHES,
+    builderless = not settings.is_master,
     main_list_view = "try",
     tryjob = try_.job(),
 )
