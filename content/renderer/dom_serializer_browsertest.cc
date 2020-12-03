@@ -86,11 +86,8 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
   }
 
   void SetUpOnMainThread() override {
-    render_view_routing_id_ = shell()
-                                  ->web_contents()
-                                  ->GetMainFrame()
-                                  ->GetRenderViewHost()
-                                  ->GetRoutingID();
+    main_frame_token_ =
+        shell()->web_contents()->GetMainFrame()->GetFrameToken();
   }
 
   // DomSerializerDelegate.
@@ -107,16 +104,10 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
       serialization_reported_end_of_data_ = true;
   }
 
-  RenderView* GetRenderView() {
-    return RenderView::FromRoutingID(render_view_routing_id_);
-  }
-
-  WebView* GetWebView() {
-    return GetRenderView()->GetWebView();
-  }
+  WebView* GetWebView() { return GetMainFrame()->View(); }
 
   WebLocalFrame* GetMainFrame() {
-    return GetRenderView()->GetMainRenderFrame()->GetWebFrame();
+    return WebFrame::FromFrameToken(main_frame_token_)->ToWebLocalFrame();
   }
 
   WebLocalFrame* FindSubFrameByURL(const GURL& url) {
@@ -139,11 +130,8 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
     navigation_observer.Wait();
     // After navigations, the RenderView for the new document might be a new
     // one.
-    render_view_routing_id_ = shell()
-                                  ->web_contents()
-                                  ->GetMainFrame()
-                                  ->GetRenderViewHost()
-                                  ->GetRoutingID();
+    main_frame_token_ =
+        shell()->web_contents()->GetMainFrame()->GetFrameToken();
   }
 
   class SingleLinkRewritingDelegate
@@ -198,7 +186,7 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
  private:
   // Written only on the browser main UI thread. Read only from the in-process
   // renderer thread via posted tasks:
-  int32_t render_view_routing_id_ = -1;
+  base::UnguessableToken main_frame_token_;
   std::string serialized_contents_;
   bool serialization_reported_end_of_data_ = false;
 };
