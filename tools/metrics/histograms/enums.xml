@@ -30418,6 +30418,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3734" label="ChangeTypeUsingConfig"/>
   <int value="3735" label="V8SourceBuffer_AppendEncodedChunks_Method"/>
   <int value="3736" label="OversrollBehaviorOnViewportBreaks"/>
+  <int value="3737" label="SameOriginJsonTypeForScript"/>
+  <int value="3738" label="CrossOriginJsonTypeForScript"/>
+  <int value="3739" label="SameOriginStrictNosniffWouldBlock"/>
+  <int value="3740" label="CrossOriginStrictNosniffWouldBlock"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

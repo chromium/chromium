@@ -56,6 +56,16 @@ const WebFeature kTextXmlFeatures[2] = {
     WebFeature::kSameOriginTextXml,
 };
 
+const WebFeature kJsonFeatures[2] = {
+    WebFeature::kCrossOriginJsonTypeForScript,
+    WebFeature::kSameOriginJsonTypeForScript,
+};
+
+const WebFeature kUnknownFeatures[2] = {
+    WebFeature::kCrossOriginStrictNosniffWouldBlock,
+    WebFeature::kSameOriginStrictNosniffWouldBlock,
+};
+
 // Helper function to decide what to do with with a given mime type. This takes
 // - a mime type
 // - inputs that affect the decision (is_same_origin, mime_type_check_mode).
@@ -121,6 +131,11 @@ bool AllowMimeTypeAsScript(const String& mime_type,
     counter = kTextPlainFeatures[same_origin];
   } else if (mime_type.StartsWithIgnoringCase("text/xml")) {
     counter = kTextXmlFeatures[same_origin];
+  } else if (mime_type.StartsWithIgnoringCase("text/json") ||
+             mime_type.StartsWithIgnoringCase("application/json")) {
+    counter = kJsonFeatures[same_origin];
+  } else {
+    counter = kUnknownFeatures[same_origin];
   }
 
   return true;
