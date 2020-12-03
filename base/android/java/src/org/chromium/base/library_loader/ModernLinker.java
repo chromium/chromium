@@ -48,29 +48,41 @@ class ModernLinker extends Linker {
             if (!ok) resetAndThrow("Cannot load without relro sharing");
             mState = State.DONE;
         } else if (provideRelro) {
-            // We are in the browser, and with a current load address that indicates that there
-            // is enough address space for shared RELRO to operate. Create the shared RELRO, and
-            // store it in the map.
+            // Running in the browser process, with a fixed load address, hence having
+            // enough address space for shared RELRO to operate. Create the shared RELRO, and
+            // store it.
             LibInfo libInfo = new LibInfo();
             libInfo.mLibFilePath = libFilePath;
-            if (!nativeLoadLibraryCreateRelros(libFilePath, loadAddress, libInfo)) {
-                Log.e(TAG, "Unable to create relro, retrying without");
+            if (!nativeLoadLibrary(
+                        libFilePath, loadAddress, libInfo, true /* spawnRelroRegion */)) {
+                Log.e(TAG, "Unable to load with ModernLinker, using the system linker instead");
                 nativeLoadLibraryNoRelros(libFilePath);
                 libInfo.mRelroFd = -1;
             }
             mLibInfo = libInfo;
+            Log.d(TAG, "Successfully spawned RELRO: mLoadAddress=%d, mLoadSize=%d",
+                    mLibInfo.mLoadAddress, mLibInfo.mLoadSize);
             // Next state is still to provide relro (even if we don't have any), as child processes
             // would wait for them.
             mState = State.DONE_PROVIDE_RELRO;
         } else {
-            // We are in a service process, again with a current load address that is suitable for
-            // shared RELRO, and we are to wait for shared RELROs. So do that, then use the LibInfo
-            // we received.
+            // Running in a child process, also with a fixed load address that is suitable for
+            // shared RELRO.
             waitForSharedRelrosLocked();
+            Log.d(TAG, "Received mLibInfo: mLoadAddress=%d, mLoadSize=%d", mLibInfo.mLoadAddress,
+                    mLibInfo.mLoadSize);
+            // Two LibInfo objects are used: |mLibInfo| that brings the RELRO FD, and a temporary
+            // LibInfo to load the library. Before replacing the library's RELRO with the one from
+            // |mLibInfo|, the two objects are compared to make sure the memory ranges and the
+            // contents match.
+            LibInfo libInfoForLoad = new LibInfo();
             assert libFilePath.equals(mLibInfo.mLibFilePath);
-            if (!nativeLoadLibraryUseRelros(libFilePath, loadAddress, mLibInfo.mRelroFd)) {
+            if (!nativeLoadLibrary(
+                        libFilePath, loadAddress, libInfoForLoad, false /* spawnRelroRegion */)) {
                 resetAndThrow(String.format("Unable to load library: %s", libFilePath));
             }
+            assert libInfoForLoad.mRelroFd == -1;
+            nativeUseRelros(mLibInfo);
 
             mLibInfo.close();
             mLibInfo = null;
@@ -107,10 +119,9 @@ class ModernLinker extends Linker {
         throw new UnsatisfiedLinkError(message);
     }
 
-    private static native boolean nativeLoadLibraryCreateRelros(
-            String dlopenExtPath, long loadAddress, LibInfo libInfo);
-    private static native boolean nativeLoadLibraryUseRelros(
-            String dlopenExtPath, long loadAddress, int fd);
     private static native boolean nativeLoadLibraryNoRelros(String dlopenExtPath);
+    private static native boolean nativeLoadLibrary(
+            String dlopenExtPath, long loadAddress, LibInfo libInfo, boolean spawnRelroRegion);
+    private static native boolean nativeUseRelros(LibInfo libInfo);
     private static native int nativeGetRelroSharingResult();
 }

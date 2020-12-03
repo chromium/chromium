@@ -12,6 +12,7 @@
 #include <dlfcn.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <inttypes.h>
 #include <jni.h>
 #include <limits.h>
 #include <link.h>
@@ -27,16 +28,6 @@
 
 #include <android/dlext.h>
 #include "base/android/linker/linker_jni.h"
-
-// From //base/posix/eintr_wrapper.h, but we don't want to depend on //base.
-#define HANDLE_EINTR(x)                                     \
-  ({                                                        \
-    decltype(x) eintr_wrapper_result;                       \
-    do {                                                    \
-      eintr_wrapper_result = (x);                           \
-    } while (eintr_wrapper_result == -1 && errno == EINTR); \
-    eintr_wrapper_result;                                   \
-  })
 
 // Not defined on all platforms. As this linker is only supported on ARM32/64,
 // x86/x86_64 and MIPS, page size is always 4k.
@@ -68,7 +59,7 @@ namespace {
 // Record of the Java VM passed to JNI_OnLoad().
 static JavaVM* s_java_vm = nullptr;
 
-// Guarded by.sLock in Linker.java.
+// Guarded by |sLock| in Linker.java.
 RelroSharingStatus s_relro_sharing_status = RelroSharingStatus::NOT_ATTEMPTED;
 
 // Helper class for anonymous memory mapping.
@@ -113,7 +104,7 @@ ScopedAnonymousMmap ScopedAnonymousMmap::ReserveAtAddress(void* address,
   void* actual_address =
       mmap(address, size, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   if (actual_address == MAP_FAILED) {
-    LOG_INFO("mmap failed: %s", strerror(errno));
+    PLOG_ERROR("mmap");
     return {};
   }
 
@@ -144,9 +135,14 @@ struct SharedMemoryFunctions {
         dlsym(library_handle, "ASharedMemory_create"));
     set_protection = reinterpret_cast<SetProtectionFunction>(
         dlsym(library_handle, "ASharedMemory_setProt"));
+  }
 
-    if (!create || !set_protection)
+  bool IsWorking() const {
+    if (!create || !set_protection) {
       LOG_ERROR("Cannot get the shared memory functions from libandroid");
+      return false;
+    }
+    return true;
   }
 
   ~SharedMemoryFunctions() {
@@ -163,21 +159,120 @@ struct SharedMemoryFunctions {
   void* library_handle;
 };
 
-// Metadata about a library loaded at a given |address|.
-struct LoadedLibraryMetadata {
-  explicit LoadedLibraryMetadata(void* address)
-      : load_address(address),
-        load_size(0),
-        min_vaddr(0),
-        relro_start(0),
-        relro_size(0) {}
+// Holds address ranges of the loaded native library, its RELRO region, along
+// with the RELRO FD identifying the shared memory region. Carries the same
+// members as the Java-side LibInfo, allowing to internally import/export the
+// member values from/to the Java-side counterpart.
+//
+// Does *not* own the RELRO FD as soon as the latter gets exported to Java
+// (as a result of 'spawning' the RELRO region as shared memory.
+//
+// *Not* threadsafe.
+class NativeLibInfo {
+ public:
+  // Constructs an (almost) empty instance. To be later populated from native
+  // code. The |env| and |java_object| will be useful later for exporting the
+  // values to the Java counterpart.
+  NativeLibInfo(size_t address, JNIEnv* env, jobject java_object)
+      : load_address_(address), env_(env), java_object_(java_object) {}
 
-  const void* load_address;
+  // Constructs and imports fields from the Java LibInfo. As above, the |env|
+  // and |java_object| are used for exporting.
+  NativeLibInfo(JNIEnv* env, jobject java_object)
+      : env_(env), java_object_(java_object) {
+    s_lib_info_fields.GetLoadInfo(env, java_object, &load_address_,
+                                  &load_size_);
+    s_lib_info_fields.GetRelroInfo(env, java_object, &relro_start_,
+                                   &relro_size_, &relro_fd_);
+  }
 
-  size_t load_size;
-  size_t min_vaddr;
-  size_t relro_start;
-  size_t relro_size;
+  size_t load_address() const { return load_address_; }
+
+  // Loads the native library using android_dlopen_ext and invokes JNI_OnLoad().
+  //
+  // On a successful load exports the address range of the library to the
+  // Java-side LibInfo.
+  //
+  // Iff |spawn_relro_region| is true, also finds the RELRO region in the
+  // library (PT_GNU_RELRO), converts it to be backed by a shared memory region
+  // (here referred as "RELRO FD") and exports the RELRO information to Java
+  // (the address range and the RELRO FD).
+  //
+  // When spawned, the shared memory region is exported only after sealing as
+  // read-only and without writable memory mappings. This allows any process to
+  // provide RELRO FD before it starts processing arbitrary input. For example,
+  // an App Zygote can create a RELRO FD in a sufficiently trustworthy way to
+  // make the Browser/Privileged processes share the region with it.
+  //
+  // TODO(pasko): Add an option to use an existing memory reservation.
+  bool LoadLibrary(const String& library_path, bool spawn_relro_region);
+
+  // Finds the RELRO region in the native library identified by
+  // |this->load_address()| and replaces it with the shared memory region
+  // identified by |other_lib_info|.
+  //
+  // The external NativeLibInfo can arrive from a different process.
+  //
+  // Note on security: The RELRO region is treated as *trusted*, no untrusted
+  // user/website/network input can be processed in an isolated process before
+  // it sends the RELRO FD. This is because there is no way to check whether the
+  // process has a writable mapping of the region remaining.
+  bool CompareRelroAndReplaceItBy(const NativeLibInfo& other_lib_info);
+
+ private:
+  friend int VisitLibraryPhdrs(dl_phdr_info*, size_t, void*);
+
+  NativeLibInfo() = delete;
+
+  // Not copyable or movable.
+  NativeLibInfo(const NativeLibInfo&) = delete;
+  NativeLibInfo& operator=(const NativeLibInfo&) = delete;
+
+  // Exports the address range of the library described by |this| to the
+  // Java-side LibInfo.
+  void ExportLoadInfoToJava() const {
+    s_lib_info_fields.SetLoadInfo(env_, java_object_, load_address_,
+                                  load_size_);
+  }
+
+  // Initializes |relro_fd_| with a newly created read-only shared memory region
+  // sized as the library's RELRO and with identical data.
+  bool CreateSharedRelroFd();
+
+  // Exports the address range of the RELRO region and RELRO FD described by
+  // |this| to the Java-side LibInfo.
+  void ExportRelroInfoToJava() const {
+    s_lib_info_fields.SetRelroInfo(env_, java_object_, relro_start_,
+                                   relro_size_, relro_fd_);
+  }
+
+  void CloseRelroFd() {
+    if (relro_fd_ == kInvalidFd)
+      return;
+    close(relro_fd_);
+    relro_fd_ = kInvalidFd;
+  }
+
+  // Loads and initializes the load address ranges: |load_address_|,
+  // |load_size_|.
+  bool LoadWithDlopenExt(const String& path, void** handle);
+
+  // Assuming that RELRO-related information is populated, memory-maps the RELRO
+  // FD on top of the library's RELRO.
+  bool ReplaceRelroWithSharedOne() const;
+
+  // Returns true iff the RELRO address and size, along with the contents are
+  // equal among the two.
+  bool RelroIsIdentical(const NativeLibInfo& external_lib_info) const;
+
+  static constexpr int kInvalidFd = -1;
+  size_t load_address_ = 0;
+  size_t load_size_ = 0;
+  size_t relro_start_ = 0;
+  size_t relro_size_ = 0;
+  int relro_fd_ = kInvalidFd;
+  JNIEnv* env_;
+  jobject java_object_;
 };
 
 // android_dlopen_ext() wrapper.
@@ -194,28 +289,26 @@ bool AndroidDlopenExt(const char* filename,
 
   LOG_INFO(
       "android_dlopen_ext:"
-      " flags=0x%llx, reserved_addr=%p, reserved_size=%d",
-      static_cast<long long>(extinfo.flags), extinfo.reserved_addr,
+      " flags=0x%" PRIx64 ", reserved_addr=%p, reserved_size=%d",
+      static_cast<uint64_t>(extinfo.flags), extinfo.reserved_addr,
       static_cast<int>(extinfo.reserved_size));
 
   *status = android_dlopen_ext(filename, flag, &extinfo);
   return true;
 }
 
-// Callback for dl_iterate_phdr(). Read phdrs to identify whether or not
-// this library's load address matches the |load_address| passed in
-// |data|. If yes, fills the metadata we care about in |data|.
-//
-// A non-zero return value terminates iteration.
-int FindLoadedLibraryMetadata(dl_phdr_info* info,
-                              size_t size UNUSED,
-                              void* data) {
-  auto* metadata = reinterpret_cast<LoadedLibraryMetadata*>(data);
+// Callback for dl_iterate_phdr(). From program headers (phdr(s)) of a loaded
+// library determines its load address, and in case it is equal to
+// |lib_info.load_address()|, extracts the RELRO and size information from
+// corresponding phdr(s).
+int VisitLibraryPhdrs(dl_phdr_info* info, size_t size UNUSED, void* lib_info) {
+  auto* out_lib_info = reinterpret_cast<NativeLibInfo*>(lib_info);
+  ElfW(Addr) lookup_address =
+      static_cast<ElfW(Addr)>(out_lib_info->load_address());
 
   // Use max and min vaddr to compute the library's load size.
   auto min_vaddr = std::numeric_limits<ElfW(Addr)>::max();
   ElfW(Addr) max_vaddr = 0;
-
   ElfW(Addr) min_relro_vaddr = ~0;
   ElfW(Addr) max_relro_vaddr = 0;
 
@@ -223,52 +316,71 @@ int FindLoadedLibraryMetadata(dl_phdr_info* info,
   for (int i = 0; i < info->dlpi_phnum; ++i) {
     const ElfW(Phdr)* phdr = &info->dlpi_phdr[i];
     switch (phdr->p_type) {
-      case PT_LOAD: {
-        // See if this segment's load address matches what we passed to
-        // android_dlopen_ext as extinfo.reserved_addr.
+      case PT_LOAD:
+        // See if this segment's load address matches the value passed to
+        // android_dlopen_ext as |extinfo.reserved_addr|.
         //
         // Here and below, the virtual address in memory is computed by
         //     address == info->dlpi_addr + program_header->p_vaddr
         // that is, the p_vaddr fields is relative to the object base address.
         // See dl_iterate_phdr(3) for details.
-        void* load_addr =
-            reinterpret_cast<void*>(info->dlpi_addr + phdr->p_vaddr);
-        // Matching is based on the load address, since we have no idea
-        // where the relro segment is.
-        if (load_addr == metadata->load_address)
+        if (lookup_address == info->dlpi_addr + phdr->p_vaddr)
           is_matching = true;
 
         if (phdr->p_vaddr < min_vaddr)
           min_vaddr = phdr->p_vaddr;
         if (phdr->p_vaddr + phdr->p_memsz > max_vaddr)
           max_vaddr = phdr->p_vaddr + phdr->p_memsz;
-      } break;
+        break;
       case PT_GNU_RELRO:
         min_relro_vaddr = PAGE_START(phdr->p_vaddr);
         max_relro_vaddr = phdr->p_vaddr + phdr->p_memsz;
+
+        // As of 2020-11 in libmonochrome.so RELRO is covered by a LOAD segment.
+        // It is not clear whether this property is going to be guaranteed in
+        // the future. Include the RELRO segment as part of the 'load size'.
+        // This way a potential future change change in layout of LOAD segments
+        // would not open address space for racy mmap(MAP_FIXED).
+        if (min_relro_vaddr < min_vaddr)
+          min_vaddr = min_relro_vaddr;
+        if (max_vaddr < max_relro_vaddr)
+          max_vaddr = max_relro_vaddr;
         break;
       default:
         break;
     }
   }
 
-  // If this library matches what we seek, return its load size.
+  // Fill out size and relro information if there was a match.
   if (is_matching) {
     int page_size = sysconf(_SC_PAGESIZE);
     if (page_size != PAGE_SIZE)
       abort();
 
-    metadata->load_size = PAGE_END(max_vaddr) - PAGE_START(min_vaddr);
-    metadata->min_vaddr = min_vaddr;
-
-    metadata->relro_size =
+    out_lib_info->load_size_ = PAGE_END(max_vaddr) - PAGE_START(min_vaddr);
+    out_lib_info->relro_size_ =
         PAGE_END(max_relro_vaddr) - PAGE_START(min_relro_vaddr);
-    metadata->relro_start = info->dlpi_addr + PAGE_START(min_relro_vaddr);
+    out_lib_info->relro_start_ = info->dlpi_addr + PAGE_START(min_relro_vaddr);
 
     return true;
   }
 
   return false;
+}
+
+bool FindRelroAndLibraryRangesInElf(void* load_address,
+                                    NativeLibInfo* lib_info) {
+  LOG_INFO("Called for %p", load_address);
+  if (!dl_iterate_phdr) {
+    LOG_ERROR("No dl_iterate_phdr() found");
+    return false;
+  }
+  int status = dl_iterate_phdr(&VisitLibraryPhdrs, lib_info);
+  if (!status) {
+    LOG_ERROR("Failed to find library at address %p", load_address);
+    return false;
+  }
+  return true;
 }
 
 // Creates an android_dlextinfo struct so that a library is loaded inside the
@@ -284,105 +396,24 @@ std::unique_ptr<android_dlextinfo> MakeAndroidDlextinfo(
   return info;
 }
 
-// Copies the current relocations into a shared-memory file, and uses this file
-// as the relocations.
-//
-// Returns true for success, and populate |fd| with the relocations's fd in this
-// case.
-bool CopyAndRemapRelocations(const LoadedLibraryMetadata& metadata, int* fd) {
-  LOG_INFO("Entering");
-  void* relro_addr = reinterpret_cast<void*>(metadata.relro_start);
-
-  SharedMemoryFunctions fns;
-  if (!fns.create)
-    return false;
-
-  int shared_mem_fd = fns.create("cr_relro", metadata.relro_size);
-  if (shared_mem_fd == -1) {
-    LOG_ERROR("Cannot create the shared memory file");
-    return false;
-  }
-
-  int rw_flags = PROT_READ | PROT_WRITE;
-  fns.set_protection(shared_mem_fd, rw_flags);
-
-  void* relro_copy_addr = mmap(nullptr, metadata.relro_size, rw_flags,
-                               MAP_SHARED, shared_mem_fd, 0);
-  if (relro_copy_addr == MAP_FAILED) {
-    LOG_ERROR("Cannot mmap() space for the copy");
-    close(shared_mem_fd);
-    return false;
-  }
-
-  memcpy(relro_copy_addr, relro_addr, metadata.relro_size);
-  int retval =
-      HANDLE_EINTR(mprotect(relro_copy_addr, metadata.relro_size, PROT_READ));
-  if (retval) {
-    LOG_ERROR("Cannot call mprotect()");
-    close(shared_mem_fd);
-    munmap(relro_copy_addr, metadata.relro_size);
-    return false;
-  }
-
-  void* new_addr =
-      mremap(relro_copy_addr, metadata.relro_size, metadata.relro_size,
-             MREMAP_MAYMOVE | MREMAP_FIXED, relro_addr);
-  if (new_addr != relro_addr) {
-    LOG_ERROR("mremap() error");
-    close(shared_mem_fd);
-    munmap(relro_copy_addr, metadata.relro_size);
-    return false;
-  }
-
-  *fd = shared_mem_fd;
-  return true;
-}
-
-// Gathers metadata about the library loaded at |addr|.
-//
-// Returns true for success.
-bool GetLoadedLibraryMetadata(LoadedLibraryMetadata* metadata) {
-  LOG_INFO("Called for %p", metadata->load_address);
-
-  if (!dl_iterate_phdr) {
-    LOG_ERROR("No dl_iterate_phdr() found");
-    return false;
-  }
-  int status = dl_iterate_phdr(&FindLoadedLibraryMetadata, metadata);
-  if (!status) {
-    LOG_ERROR("Failed to find library at address %p", metadata->load_address);
-    return false;
-  }
-
-  LOG_INFO("Relro start address = %p, size = %d",
-           reinterpret_cast<void*>(metadata->relro_start),
-           static_cast<int>(metadata->relro_size));
-
-  return true;
-}
-
-// Resizes the address space reservation to the actual required size.
-// Failure here is only a warning, as at worst this wastes virtual address
-// space, not actual memory.
-void ResizeMapping(const ScopedAnonymousMmap& mapping,
-                   const LoadedLibraryMetadata& metadata) {
+// Resizes the address space reservation to the required size.  Failure here is
+// only a warning, since at worst this wastes virtual address space, not
+// physical memory.
+void ResizeMapping(const ScopedAnonymousMmap& mapping, size_t load_size) {
   // Trim the reservation mapping to match the library's actual size. Failure
   // to resize is not a fatal error. At worst we lose a portion of virtual
   // address space that we might otherwise have recovered. Note that trimming
   // the mapping here requires that we have already released the scoped
   // mapping.
   const uintptr_t uintptr_addr = reinterpret_cast<uintptr_t>(mapping.address());
-  if (mapping.size() > metadata.load_size) {
+  if (mapping.size() <= load_size) {
+    LOG_ERROR("WARNING: library reservation was too small");
+  } else {
     // Unmap the part of the reserved address space that is beyond the end of
     // the loaded library data.
-    void* unmap = reinterpret_cast<void*>(uintptr_addr + metadata.load_size);
-    const size_t length = mapping.size() - metadata.load_size;
-    if (munmap(unmap, length) == -1) {
-      LOG_ERROR("WARNING: unmap of %d bytes at %p failed: %s",
-                static_cast<int>(length), unmap, strerror(errno));
-    }
-  } else {
-    LOG_ERROR("WARNING: library reservation was too small");
+    void* unmap = reinterpret_cast<void*>(uintptr_addr + load_size);
+    const size_t length = mapping.size() - load_size;
+    munmap(unmap, length);
   }
 }
 
@@ -406,103 +437,115 @@ bool CallJniOnLoad(void* handle) {
   return true;
 }
 
-// Load the library at |path| at address |wanted_address| if possible, and
-// creates a file with relro at |relocations_path|.
-//
-// In case of success, returns a readonly file descriptor to the relocations,
-// otherwise returns -1.
-int LoadCreateSharedRelocations(const String& path, void* wanted_address) {
+bool NativeLibInfo::LoadWithDlopenExt(const String& path, void** handle) {
   LOG_INFO("Entering");
-  ScopedAnonymousMmap mapping = ScopedAnonymousMmap::ReserveAtAddress(
-      wanted_address, kAddressSpaceReservationSize);
-  if (!mapping.address())
-    return -1;
 
+  // Reserve a region for loading the library, as required by
+  // android_dlopen_ext.
+  auto* address = reinterpret_cast<void*>(load_address_);
+  ScopedAnonymousMmap mapping = ScopedAnonymousMmap::ReserveAtAddress(
+      address, kAddressSpaceReservationSize);
+  if (!mapping.address())
+    return false;
+
+  // Invoke android_dlopen_ext.
   std::unique_ptr<android_dlextinfo> dlextinfo = MakeAndroidDlextinfo(mapping);
-  void* handle = nullptr;
-  if (!AndroidDlopenExt(path.c_str(), RTLD_NOW, *dlextinfo, &handle)) {
+  void* local_handle = nullptr;
+  if (!AndroidDlopenExt(path.c_str(), RTLD_NOW, *dlextinfo, &local_handle)) {
     LOG_ERROR("android_dlopen_ext() error");
-    return -1;
+    return false;
   }
-  if (handle == nullptr) {
+  if (local_handle == nullptr) {
     LOG_ERROR("android_dlopen_ext: %s", dlerror());
-    return -1;
+    return false;
   }
+
+  // The library successfully loaded. Avoid further automatic unmapping.
   mapping.Release();
 
-  LoadedLibraryMetadata metadata{mapping.address()};
-  bool ok = GetLoadedLibraryMetadata(&metadata);
-  int relro_fd = -1;
-  if (ok) {
-    ResizeMapping(mapping, metadata);
-    CopyAndRemapRelocations(metadata, &relro_fd);
+  // Find RELRO and trim the unused parts of the memory mapping.
+  if (!FindRelroAndLibraryRangesInElf(address, this)) {
+    // Fail early if PT_GNU_RELRO is not found. It likely indicates a
+    // build misconfiguration.
+    LOG_ERROR("Could not find RELRO in the loaded library: %s", path.c_str());
+    abort();
+    return false;
   }
 
-  if (!CallJniOnLoad(handle))
-    return -1;
+  // Save a little virtual address space.
+  ResizeMapping(mapping, load_size_);
 
-  return relro_fd;
+  *handle = local_handle;
+  return true;
 }
 
-// Load the library at |path| at address |wanted_address| if possible, and
-// uses the relocations in |relocations_fd| if possible.
-bool LoadUseSharedRelocations(const String& path,
-                              void* wanted_address,
-                              int relocations_fd) {
+bool NativeLibInfo::CreateSharedRelroFd() {
   LOG_INFO("Entering");
-  ScopedAnonymousMmap mapping = ScopedAnonymousMmap::ReserveAtAddress(
-      wanted_address, kAddressSpaceReservationSize);
-  if (!mapping.address())
-    return false;
-
-  std::unique_ptr<android_dlextinfo> dlextinfo = MakeAndroidDlextinfo(mapping);
-  void* handle = nullptr;
-  if (!AndroidDlopenExt(path.c_str(), RTLD_NOW, *dlextinfo, &handle)) {
-    LOG_ERROR("No android_dlopen_ext function found");
-    return false;
-  }
-  if (handle == nullptr) {
-    LOG_ERROR("android_dlopen_ext: %s", dlerror());
-    return false;
-  }
-  mapping.Release();
-
-  LoadedLibraryMetadata metadata{mapping.address()};
-  bool ok = GetLoadedLibraryMetadata(&metadata);
-  if (!ok) {
-    LOG_ERROR("Cannot get library's metadata");
+  if (!relro_start_ || !relro_size_) {
+    LOG_ERROR("RELRO region is not populated");
     return false;
   }
 
-  ResizeMapping(mapping, metadata);
-  void* shared_relro_mapping_address = mmap(
-      nullptr, metadata.relro_size, PROT_READ, MAP_SHARED, relocations_fd, 0);
-  if (shared_relro_mapping_address == MAP_FAILED) {
-    LOG_ERROR("Cannot map the relocations");
+  // Create a writable shared memory region.
+  SharedMemoryFunctions functions;
+  if (!functions.IsWorking())
+    return false;
+  int shared_mem_fd = functions.create("cr_relro", relro_size_);
+  if (shared_mem_fd == -1) {
+    LOG_ERROR("Cannot create the shared memory file");
+    return false;
+  }
+  int rw_flags = PROT_READ | PROT_WRITE;
+  functions.set_protection(shared_mem_fd, rw_flags);
+
+  // Map the region as writable.
+  void* relro_copy_addr =
+      mmap(nullptr, relro_size_, rw_flags, MAP_SHARED, shared_mem_fd, 0);
+  if (relro_copy_addr == MAP_FAILED) {
+    PLOG_ERROR("failed to allocate space for copying RELRO");
+    close(shared_mem_fd);
     return false;
   }
 
-  void* current_relro_address = reinterpret_cast<void*>(metadata.relro_start);
-  int retval = memcmp(shared_relro_mapping_address, current_relro_address,
-                      metadata.relro_size);
-  if (!retval) {
-    void* new_addr = mremap(shared_relro_mapping_address, metadata.relro_size,
-                            metadata.relro_size, MREMAP_MAYMOVE | MREMAP_FIXED,
-                            current_relro_address);
-    if (new_addr != current_relro_address) {
-      LOG_ERROR("Cannot call mremap()");
-      munmap(shared_relro_mapping_address, metadata.relro_size);
-      return false;
-    }
-    s_relro_sharing_status = RelroSharingStatus::SHARED;
-  } else {
-    munmap(shared_relro_mapping_address, metadata.relro_size);
-    LOG_ERROR("Relocations are not identical, giving up.");
-    s_relro_sharing_status = RelroSharingStatus::NOT_IDENTICAL;
+  // Populate the shared memory region with the contents of RELRO.
+  void* relro_addr = reinterpret_cast<void*>(relro_start_);
+  memcpy(relro_copy_addr, relro_addr, relro_size_);
+
+  // Protect the underlying physical pages from further modifications from all
+  // processes including the forked ones.
+  //
+  // Setting protection flags on the region to read-only guarantees that the
+  // memory can no longer get mapped as writable, for any FD pointing to the
+  // region, for any process. It is necessary to also munmap(2) the existing
+  // writable memory mappings, since they are not directly affected by the
+  // change of region's protection flags.
+  munmap(relro_copy_addr, relro_size_);
+  if (functions.set_protection(shared_mem_fd, PROT_READ) == -1) {
+    LOG_ERROR("Failed to set the RELRO FD as read-only.");
+    close(shared_mem_fd);
+    return false;
   }
 
-  if (!CallJniOnLoad(handle))
+  relro_fd_ = shared_mem_fd;
+  return true;
+}
+
+bool NativeLibInfo::ReplaceRelroWithSharedOne() const {
+  LOG_INFO("Entering");
+  if (relro_fd_ == -1 || !relro_start_ || !relro_size_) {
+    LOG_ERROR("Replacement RELRO not ready");
     return false;
+  }
+
+  // Map as read-only to *atomically* replace the RELRO region provided by the
+  // dynamic linker. To avoid memory corruption it is important that the
+  // contents of both memory regions is identical.
+  void* new_addr = mmap(reinterpret_cast<void*>(relro_start_), relro_size_,
+                        PROT_READ, MAP_FIXED | MAP_SHARED, relro_fd_, 0);
+  if (new_addr == MAP_FAILED) {
+    PLOG_ERROR("mmap() over RELRO");
+    return false;
+  }
 
   return true;
 }
@@ -520,56 +563,162 @@ bool LoadNoSharedRelocations(const String& path) {
   return true;
 }
 
+bool NativeLibInfo::LoadLibrary(const String& library_path,
+                                bool spawn_relro_region) {
+  // Load the library.
+  void* handle = nullptr;
+  if (!LoadWithDlopenExt(library_path, &handle)) {
+    LOG_ERROR("Failed to load native library: %s", library_path.c_str());
+    return false;
+  }
+  if (!CallJniOnLoad(handle))
+    return false;
+
+  // Publish the library size and load address back to LibInfo in Java.
+  ExportLoadInfoToJava();
+
+  if (!spawn_relro_region)
+    return true;
+
+  // Spawn RELRO to a shared memory region by copying and remapping on top of
+  // itself.
+  if (!CreateSharedRelroFd()) {
+    LOG_ERROR("Failed to create shared RELRO");
+    return false;
+  }
+  if (!ReplaceRelroWithSharedOne()) {
+    LOG_ERROR("Failed to convert RELRO to shared memory");
+    CloseRelroFd();
+    return false;
+  }
+
+  LOG_INFO(
+      "Created and converted RELRO to shared memory: relro_fd=%d, "
+      "relro_start=0x%zx",
+      relro_fd_, relro_start_);
+  ExportRelroInfoToJava();
+  return true;
+}
+
+bool NativeLibInfo::RelroIsIdentical(
+    const NativeLibInfo& other_lib_info) const {
+  // Abandon sharing if contents of the incoming RELRO region does not match the
+  // current one. This can be useful for debugging, but should never happen in
+  // the field.
+  if (other_lib_info.relro_start_ != relro_start_ ||
+      other_lib_info.relro_size_ != relro_size_ ||
+      other_lib_info.load_size_ != load_size_) {
+    LOG_ERROR("Incoming RELRO size does not match RELRO of the loaded library");
+    return false;
+  }
+  void* shared_relro_address =
+      mmap(nullptr, other_lib_info.relro_size_, PROT_READ, MAP_SHARED,
+           other_lib_info.relro_fd_, 0);
+  if (shared_relro_address == MAP_FAILED) {
+    PLOG_ERROR("mmap relro_fd");
+    return false;
+  }
+  void* current_relro_address = reinterpret_cast<void*>(relro_start_);
+  int not_equal =
+      memcmp(shared_relro_address, current_relro_address, relro_size_);
+  munmap(shared_relro_address, relro_size_);
+  if (not_equal) {
+    LOG_ERROR("Relocations are not identical, giving up.");
+    return false;
+  }
+  return true;
+}
+
+bool NativeLibInfo::CompareRelroAndReplaceItBy(
+    const NativeLibInfo& other_lib_info) {
+  if (other_lib_info.relro_fd_ == -1) {
+    LOG_ERROR("No shared region to use");
+    return false;
+  }
+
+  void* library_address = reinterpret_cast<void*>(other_lib_info.load_address_);
+  if (!FindRelroAndLibraryRangesInElf(library_address, this)) {
+    LOG_ERROR("Could not find RELRO from externally provided address: 0x%p",
+              library_address);
+    return false;
+  }
+
+  if (!RelroIsIdentical(other_lib_info)) {
+    LOG_ERROR("RELRO is not identical");
+    s_relro_sharing_status = RelroSharingStatus::NOT_IDENTICAL;
+    return false;
+  }
+
+  // Make it shared.
+  //
+  // The alternative approach to invoke mprotect+mremap is probably faster than
+  // munmap+mmap here. The advantage of the latter is that it removes all
+  // formerly writable mappings, so:
+  //  * It does not rely on disallowing mprotect(PROT_WRITE)
+  //  * This way |ReplaceRelroWithSharedOne()| is reused across spawning RELRO
+  //    and receiving it
+  if (!other_lib_info.ReplaceRelroWithSharedOne()) {
+    LOG_ERROR("Failed to use relro_fd");
+    // TODO(pasko): Introduce RelroSharingStatus::OTHER for rare RELRO sharing
+    // failures like this one.
+    return false;
+  }
+
+  s_relro_sharing_status = RelroSharingStatus::SHARED;
+  return true;
+}
+
 }  // namespace
 
 JNI_GENERATOR_EXPORT jboolean
-Java_org_chromium_base_library_1loader_ModernLinker_nativeLoadLibraryCreateRelros(
+Java_org_chromium_base_library_1loader_ModernLinker_nativeLoadLibrary(
     JNIEnv* env,
     jclass clazz,
     jstring jdlopen_ext_path,
     jlong load_address,
-    jobject lib_info_obj) {
+    jobject lib_info_obj,
+    jboolean spawn_relro_region) {
   LOG_INFO("Entering");
 
-  String library_path(env, jdlopen_ext_path);
-
   if (!IsValidAddress(load_address)) {
-    LOG_ERROR("Invalid address 0x%llx", static_cast<long long>(load_address));
+    LOG_ERROR("Invalid address 0x%" PRIx64,
+              static_cast<uint64_t>(load_address));
     return false;
   }
-  void* address = reinterpret_cast<void*>(load_address);
-
-  int fd = LoadCreateSharedRelocations(library_path, address);
-  if (fd == -1)
+  String library_path(env, jdlopen_ext_path);
+  // Create an empty NativeLibInfo. It will gradually get populated as the
+  // library gets loaded, RELRO rets extracted as shared memory, etc.
+  NativeLibInfo lib_info = {static_cast<size_t>(load_address), env,
+                            lib_info_obj};
+  if (!lib_info.LoadLibrary(library_path, spawn_relro_region)) {
     return false;
-
-  // Note the shared RELRO fd in the supplied libinfo object. In this
-  // implementation the RELRO start is set to the library's load address,
-  // and the RELRO size is unused.
-  const size_t cast_addr = reinterpret_cast<size_t>(address);
-  s_lib_info_fields.SetRelroInfo(env, lib_info_obj, cast_addr, 0, fd);
-
+  }
   return true;
 }
 
 JNI_GENERATOR_EXPORT jboolean
-Java_org_chromium_base_library_1loader_ModernLinker_nativeLoadLibraryUseRelros(
+Java_org_chromium_base_library_1loader_ModernLinker_nativeUseRelros(
     JNIEnv* env,
     jclass clazz,
-    jstring jdlopen_ext_path,
-    jlong load_address,
-    jint relro_fd) {
+    jobject lib_info_obj) {
   LOG_INFO("Entering");
+  // Copy all contents from the Java-side LibInfo object.
+  NativeLibInfo incoming_lib_info(env, lib_info_obj);
 
-  String library_path(env, jdlopen_ext_path);
+  // Create an empty NativeLibInfo to extract the current information about the
+  // loaded library and later compare with the contents of the
+  // |incoming_lib_info|.
+  NativeLibInfo lib_info = {incoming_lib_info.load_address(), env,
+                            lib_info_obj};
 
-  if (!IsValidAddress(load_address)) {
-    LOG_ERROR("Invalid address 0x%llx", static_cast<long long>(load_address));
+  if (!IsValidAddress(incoming_lib_info.load_address())) {
+    LOG_ERROR("Invalid address 0x%zx", incoming_lib_info.load_address());
     return false;
   }
-  void* address = reinterpret_cast<void*>(load_address);
-
-  return LoadUseSharedRelocations(library_path, address, relro_fd);
+  if (!lib_info.CompareRelroAndReplaceItBy(incoming_lib_info)) {
+    return false;
+  }
+  return true;
 }
 
 JNI_GENERATOR_EXPORT jboolean

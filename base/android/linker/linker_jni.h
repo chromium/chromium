@@ -40,6 +40,7 @@
 #define LOG_ERROR(FORMAT, ...)                                             \
   __android_log_print(ANDROID_LOG_ERROR, TAG, "%s: " FORMAT, __FUNCTION__, \
                       ##__VA_ARGS__)
+#define PLOG_ERROR(MESSAGE) LOG_ERROR(MESSAGE ": %s", strerror(errno))
 
 #define UNUSED __attribute__((unused))
 
@@ -171,8 +172,20 @@ struct LibInfo_class {
     env->SetIntField(library_info_obj, relro_fd_id, relro_fd);
   }
 
-  // Use this instance to convert a RelroInfo reference into
-  // a crazy_library_info_t.
+  void GetLoadInfo(JNIEnv* env,
+                   jobject library_info_obj,
+                   size_t* load_address,
+                   size_t* load_size) {
+    if (load_address) {
+      *load_address = static_cast<size_t>(
+          env->GetLongField(library_info_obj, load_address_id));
+    }
+    if (load_size) {
+      *load_size = static_cast<size_t>(
+          env->GetLongField(library_info_obj, load_size_id));
+    }
+  }
+
   void GetRelroInfo(JNIEnv* env,
                     jobject library_info_obj,
                     size_t* relro_start,
