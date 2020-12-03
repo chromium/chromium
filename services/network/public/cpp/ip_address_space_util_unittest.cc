@@ -14,6 +14,10 @@ using mojom::IPAddressSpace;
 using net::IPAddress;
 using net::IPAddressBytes;
 
+IPAddress PublicIPv4Address() {
+  return IPAddress(64, 233, 160, 0);
+}
+
 IPAddress PrivateIPv4Address() {
   return IPAddress(192, 168, 1, 1);
 }
@@ -21,7 +25,7 @@ IPAddress PrivateIPv4Address() {
 TEST(IPAddressSpaceTest, IPAddressToIPAddressSpacev4) {
   EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress()), IPAddressSpace::kUnknown);
 
-  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(64, 233, 160, 0)),
+  EXPECT_EQ(IPAddressToIPAddressSpace(PublicIPv4Address()),
             IPAddressSpace::kPublic);
 
   EXPECT_EQ(IPAddressToIPAddressSpace(PrivateIPv4Address()),

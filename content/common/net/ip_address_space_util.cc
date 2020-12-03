@@ -61,4 +61,14 @@ IPAddressSpace CalculateClientAddressSpace(
       response_head->remote_endpoint.address());
 }
 
+IPAddressSpace CalculateResourceAddressSpace(const GURL& url,
+                                             const net::IPAddress& address) {
+  if (url.SchemeIsFile()) {
+    // See: https://wicg.github.io/cors-rfc1918/#file-url.
+    return IPAddressSpace::kLocal;
+  }
+
+  return network::IPAddressToIPAddressSpace(address);
+}
+
 }  // namespace content

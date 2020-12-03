@@ -11,6 +11,12 @@
 
 class GURL;
 
+namespace net {
+
+class IPAddress;
+
+}  // namespace net
+
 namespace content {
 
 // Given a request URL and response information, this function calculates the
@@ -36,6 +42,17 @@ namespace content {
 network::mojom::IPAddressSpace CONTENT_EXPORT CalculateClientAddressSpace(
     const GURL& url,
     const network::mojom::URLResponseHead* response_head);
+
+// Given a response URL and the IP address the requested resource was fetched
+// from, this function calculates the IPAddressSpace of the requested resource.
+//
+// As opposed to CalculateClientAddressSpace(), this function is used to
+// determine the address space of the *target* of a fetch, for comparison with
+// that of the client of the fetch.
+//
+// See: https://wicg.github.io/cors-rfc1918/#integration-fetch
+network::mojom::IPAddressSpace CONTENT_EXPORT
+CalculateResourceAddressSpace(const GURL& url, const net::IPAddress& address);
 
 }  // namespace content
 

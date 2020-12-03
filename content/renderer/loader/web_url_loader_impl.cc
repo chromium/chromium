@@ -32,6 +32,7 @@
 #include "components/variations/net/variations_url_loader_throttle.h"
 #include "content/child/child_thread_impl.h"
 #include "content/common/frame.mojom.h"
+#include "content/common/net/ip_address_space_util.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/navigation_policy.h"
@@ -54,7 +55,6 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/http_raw_request_response_info.h"
-#include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
@@ -896,21 +896,13 @@ void WebURLLoaderImpl::PopulateURLResponse(
           : blink::WebString());
 
   response->SetRemoteIPEndpoint(head.remote_endpoint);
-
   // This computation can only be done once SetUrlListViaServiceWorker() has
   // been called on |response|, so that ResponseUrl() returns the correct
   // answer.
   //
   // Implements: https://wicg.github.io/cors-rfc1918/#integration-html
-  //
-  // TODO(crbug.com/955213): Just copy the address space in |head| once it is
-  // made available.
-  if (response->ResponseUrl().ProtocolIs("file")) {
-    response->SetAddressSpace(network::mojom::IPAddressSpace::kLocal);
-  } else {
-    response->SetAddressSpace(
-        network::IPAddressToIPAddressSpace(head.remote_endpoint.address()));
-  }
+  response->SetAddressSpace(CalculateResourceAddressSpace(
+      response->ResponseUrl(), head.remote_endpoint.address()));
 
   blink::WebVector<blink::WebString> cors_exposed_header_names(
       head.cors_exposed_header_names.size());

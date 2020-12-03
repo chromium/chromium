@@ -24,6 +24,10 @@ using network::mojom::IPAddressSpace;
 using network::mojom::ParsedHeaders;
 using network::mojom::URLResponseHead;
 
+IPAddress PublicIPv4Address() {
+  return IPAddress(64, 233, 160, 0);
+}
+
 IPAddress PrivateIPv4Address() {
   return IPAddress(192, 168, 1, 1);
 }
@@ -103,6 +107,26 @@ TEST(IPAddressSpaceUtilTest, CalculateClientAddressSpaceTreatAsPublicAddress) {
   EXPECT_EQ(
       IPAddressSpace::kPublic,
       CalculateClientAddressSpace(GURL("http://foo.test"), &response_head));
+}
+
+TEST(IPAddressSpaceTest, CalculateResourceAddressSpaceFileURL) {
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            CalculateResourceAddressSpace(GURL("file:///foo"), IPAddress()));
+}
+
+TEST(IPAddressSpaceTest, CalculateResourceAddressSpaceIPAddress) {
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            CalculateResourceAddressSpace(GURL("http:///foo.test"),
+                                          IPAddress::IPv4Localhost()));
+  EXPECT_EQ(IPAddressSpace::kPrivate,
+            CalculateResourceAddressSpace(GURL("http:///foo.test"),
+                                          PrivateIPv4Address()));
+  EXPECT_EQ(IPAddressSpace::kPublic,
+            CalculateResourceAddressSpace(GURL("http:///foo.test"),
+                                          PublicIPv4Address()));
+  EXPECT_EQ(
+      IPAddressSpace::kUnknown,
+      CalculateResourceAddressSpace(GURL("http:///foo.test"), IPAddress()));
 }
 
 }  // namespace
