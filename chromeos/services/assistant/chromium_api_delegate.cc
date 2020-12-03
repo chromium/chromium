@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "base/single_thread_task_runner.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -22,6 +23,10 @@ ChromiumApiDelegate::~ChromiumApiDelegate() = default;
 assistant_client::HttpConnectionFactory*
 ChromiumApiDelegate::GetHttpConnectionFactory() {
   return &http_connection_factory_;
+}
+
+void ChromiumApiDelegate::OverrideDoNotDisturb(bool do_not_disturb_enabled) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace assistant

@@ -152,6 +152,15 @@ void ChromiumHttpConnection::Start() {
     case Method::HEAD:
       resource_request->method = "HEAD";
       break;
+    case Method::PATCH:
+      resource_request->method = "PATCH";
+      break;
+    case Method::PUT:
+      resource_request->method = "PUT";
+      break;
+    case Method::DELETE:
+      resource_request->method = "DELETE";
+      break;
   }
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 

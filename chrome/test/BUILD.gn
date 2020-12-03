@@ -2853,7 +2853,7 @@ if (!is_android) {
         }
         deps += [ "//printing:test_support" ]
       }
-      if (enable_assistant_integration_tests) {
+      if (enable_cros_libassistant) {
         sources += [
           "../browser/ui/ash/assistant/assistant_browsertest.cc",
           "../browser/ui/ash/assistant/assistant_test_mixin.cc",
