@@ -868,7 +868,7 @@ video::-internal-media-controls-overflow-menu-list {
   overflow-y: auto;
   white-space: nowrap;
   font-size: 12px;
-  background: #FFFFFF;
+  background: -internal-light-dark(#ffffff, #3B3B3B);
   box-shadow: 0 1px 9px 0 rgba(0,0,0,0.40);
   border-radius: 2px;
   transition: transform .3s ease-out, opacity .2s linear;
