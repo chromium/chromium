@@ -39,7 +39,7 @@ class RootVoteObserver : public VoteObserver {
   VoteConsumerDefaultImpl vote_consumer_default_impl_;
 
   // The ID of the only voting channel we've vended.
-  voting::VoterId<Vote> voter_id_ = voting::kInvalidVoterId<Vote>;
+  VoterId voter_id_;
 };
 
 }  // namespace execution_context_priority

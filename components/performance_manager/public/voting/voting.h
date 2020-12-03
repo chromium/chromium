@@ -106,8 +106,6 @@ class Vote final {
 
 template <typename VoteImpl>
 using VoterId = util::IdTypeU32<VoteImpl>;
-template <typename VoteImpl>
-constexpr VoterId<VoteImpl> kInvalidVoterId;
 
 // A raw vote becomes an AcceptedVote once a VoteConsumer receives and stores
 // it, associating it with a VoterId.
@@ -252,7 +250,7 @@ class AcceptedVote final {
 
   // The ID of the voter that submitted the vote. This is defined by the
   // VoteConsumer.
-  VoterId<VoteImpl> voter_id_ = kInvalidVoterId<VoteImpl>;
+  VoterId<VoteImpl> voter_id_;
 
   const ContextType* context_ = nullptr;
 
@@ -313,7 +311,7 @@ class VotingChannel final {
   // Used to reach back into the factory to decrement the outstanding
   // VotingChannel count, and for routing votes to the consumer.
   VotingChannelFactory<VoteImpl>* factory_ = nullptr;
-  VoterId<VoteImpl> voter_id_ = kInvalidVoterId<VoteImpl>;
+  VoterId<VoteImpl> voter_id_;
 };
 
 // A helper for creating VotingChannels that binds a unique VoterId (and
@@ -662,7 +660,7 @@ AcceptedVote<VoteImpl>::AcceptedVote(VoteConsumer<VoteImpl>* consumer,
       vote_(vote),
       invalidated_(false) {
   DCHECK(consumer_);
-  DCHECK_NE(voter_id_, kInvalidVoterId<VoteImpl>);
+  DCHECK(voter_id_);
   DCHECK(context_);
   DCHECK(vote_.IsValid());
 }
@@ -700,8 +698,7 @@ bool AcceptedVote<VoteImpl>::HasReceipt(
 
 template <class VoteImpl>
 bool AcceptedVote<VoteImpl>::IsValid() const {
-  return consumer_ && voter_id_ != kInvalidVoterId<VoteImpl> &&
-         vote_.IsValid() && !invalidated_;
+  return consumer_ && voter_id_ && vote_.IsValid() && !invalidated_;
 }
 
 template <class VoteImpl>
@@ -776,7 +773,7 @@ void AcceptedVote<VoteImpl>::Take(AcceptedVote<VoteImpl>&& rhs) {
   DCHECK(!receipt_);
 
   consumer_ = std::exchange(rhs.consumer_, nullptr);
-  voter_id_ = std::exchange(rhs.voter_id_, kInvalidVoterId<VoteImpl>);
+  voter_id_ = std::exchange(rhs.voter_id_, VoterId<VoteImpl>());
   context_ = std::exchange(rhs.context_, nullptr);
   vote_ = std::exchange(rhs.vote_, VoteImpl());
   receipt_ = std::exchange(rhs.receipt_, nullptr);
@@ -821,17 +818,17 @@ VoteReceipt<VoteImpl> VotingChannel<VoteImpl>::SubmitVote(
 
 template <class VoteImpl>
 bool VotingChannel<VoteImpl>::IsValid() const {
-  return factory_ && voter_id_ != kInvalidVoterId<VoteImpl>;
+  return factory_ && voter_id_;
 }
 
 template <class VoteImpl>
 void VotingChannel<VoteImpl>::Reset() {
   if (!factory_)
     return;
-  DCHECK_NE(kInvalidVoterId<VoteImpl>, voter_id_);
+  DCHECK(voter_id_);
   factory_->OnVotingChannelDestroyed(PassKey());
   factory_ = nullptr;
-  voter_id_ = kInvalidVoterId<VoteImpl>;
+  voter_id_ = VoterId<VoteImpl>();
 }
 
 template <class VoteImpl>
@@ -845,7 +842,7 @@ template <class VoteImpl>
 void VotingChannel<VoteImpl>::Take(VotingChannel<VoteImpl>&& rhs) {
   Reset();
   factory_ = std::exchange(rhs.factory_, nullptr);
-  voter_id_ = std::exchange(rhs.voter_id_, kInvalidVoterId<VoteImpl>);
+  voter_id_ = std::exchange(rhs.voter_id_, VoterId<VoteImpl>());
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -869,8 +866,12 @@ VotingChannel<VoteImpl> VotingChannelFactory<VoteImpl>::BuildVotingChannel() {
   ++voting_channels_outstanding_;
   // TODO(sebmarchand): Use VoterId<VoteImpl>::Generator instead of
   // FromUnsafeValue.
+  // Note: The pre-increment operator is used so that the value of the first
+  // voter ID is 1. This is required because 0 is the value for an invalid
+  // VoterId.
   VoterId<VoteImpl> new_voter_id =
       VoterId<VoteImpl>::FromUnsafeValue(++voting_channels_issued_);
+  DCHECK(!new_voter_id.is_null());
   return VotingChannel<VoteImpl>(
       base::PassKey<VotingChannelFactory<VoteImpl>>(), this, new_voter_id);
 }

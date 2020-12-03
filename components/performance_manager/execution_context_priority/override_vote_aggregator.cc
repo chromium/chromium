@@ -14,7 +14,7 @@ OverrideVoteAggregator::~OverrideVoteAggregator() = default;
 
 VotingChannel OverrideVoteAggregator::GetOverrideVotingChannel() {
   DCHECK(vote_data_map_.empty());
-  DCHECK_EQ(voting::kInvalidVoterId<Vote>, override_voter_id_);
+  DCHECK(!override_voter_id_);
   DCHECK_GT(2u, vote_consumer_default_impl_.voting_channels_issued());
   auto channel = vote_consumer_default_impl_.BuildVotingChannel();
   override_voter_id_ = channel.voter_id();
@@ -23,7 +23,7 @@ VotingChannel OverrideVoteAggregator::GetOverrideVotingChannel() {
 
 VotingChannel OverrideVoteAggregator::GetDefaultVotingChannel() {
   DCHECK(vote_data_map_.empty());
-  DCHECK_EQ(voting::kInvalidVoterId<Vote>, default_voter_id_);
+  DCHECK(!default_voter_id_);
   DCHECK_GT(2u, vote_consumer_default_impl_.voting_channels_issued());
   auto channel = vote_consumer_default_impl_.BuildVotingChannel();
   default_voter_id_ = channel.voter_id();
@@ -35,9 +35,7 @@ void OverrideVoteAggregator::SetUpstreamVotingChannel(VotingChannel&& channel) {
 }
 
 bool OverrideVoteAggregator::IsSetup() const {
-  return override_voter_id_ != voting::kInvalidVoterId<Vote> &&
-         default_voter_id_ != voting::kInvalidVoterId<Vote> &&
-         channel_.IsValid();
+  return override_voter_id_ && default_voter_id_ && channel_.IsValid();
 }
 
 void OverrideVoteAggregator::OnVoteSubmitted(

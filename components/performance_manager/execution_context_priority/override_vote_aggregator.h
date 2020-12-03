@@ -87,8 +87,8 @@ class OverrideVoteAggregator : public VoteObserver {
 
   // Our two input voters. We'll only accept votes from these voters otherwise
   // we'll DCHECK.
-  VoterId override_voter_id_ = voting::kInvalidVoterId<Vote>;
-  VoterId default_voter_id_ = voting::kInvalidVoterId<Vote>;
+  VoterId override_voter_id_;
+  VoterId default_voter_id_;
 
   // Our channel for upstreaming our votes.
   VotingChannelWrapper channel_;

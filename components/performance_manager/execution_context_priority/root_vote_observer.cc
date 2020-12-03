@@ -62,6 +62,7 @@ void RootVoteObserver::OnVoteChanged(VoterId voter_id,
 void RootVoteObserver::OnVoteInvalidated(
     VoterId voter_id,
     const ExecutionContext* execution_context) {
+  DCHECK_EQ(voter_id_, voter_id);
   SetPriorityAndReason(
       execution_context,
       PriorityAndReason(base::TaskPriority::LOWEST,

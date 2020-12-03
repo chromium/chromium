@@ -71,8 +71,7 @@ TEST(VotingTest, VoteReceiptsWork) {
   voter.SetVotingChannel(consumer.voting_channel_factory_.BuildVotingChannel());
   EXPECT_EQ(&consumer.voting_channel_factory_,
             voter.voting_channel_.factory_for_testing());
-  EXPECT_NE(voting::kInvalidVoterId<TestVote>,
-            voter.voting_channel_.voter_id());
+  EXPECT_TRUE(voter.voting_channel_.voter_id());
   EXPECT_TRUE(voter.voting_channel_.IsValid());
 
   voter.EmitVote(kDummyContext1, 0);

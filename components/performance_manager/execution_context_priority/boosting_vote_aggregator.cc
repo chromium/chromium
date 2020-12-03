@@ -248,7 +248,7 @@ BoostingVoteAggregator::~BoostingVoteAggregator() {
 
 VotingChannel BoostingVoteAggregator::GetVotingChannel() {
   DCHECK(nodes_.empty());
-  DCHECK_EQ(voting::kInvalidVoterId<Vote>, input_voter_id_);
+  DCHECK(!input_voter_id_);
   DCHECK_GT(1u, vote_consumer_default_impl_.voting_channels_issued());
   auto channel = vote_consumer_default_impl_.BuildVotingChannel();
   input_voter_id_ = channel.voter_id();
@@ -260,7 +260,7 @@ void BoostingVoteAggregator::SetUpstreamVotingChannel(VotingChannel&& channel) {
 }
 
 bool BoostingVoteAggregator::IsSetup() const {
-  return input_voter_id_ != voting::kInvalidVoterId<Vote> && channel_.IsValid();
+  return input_voter_id_ && channel_.IsValid();
 }
 
 void BoostingVoteAggregator::SubmitBoostingVote(

@@ -129,7 +129,7 @@ TEST(ExecutionContextPriorityTest, VoteReceiptsWork) {
   voter.SetVotingChannel(consumer.voting_channel_factory_.BuildVotingChannel());
   EXPECT_EQ(&consumer.voting_channel_factory_,
             voter.voting_channel_.factory_for_testing());
-  EXPECT_NE(voting::kInvalidVoterId<Vote>, voter.voting_channel_.voter_id());
+  EXPECT_TRUE(voter.voting_channel_.voter_id());
   EXPECT_TRUE(voter.voting_channel_.IsValid());
 
   voter.EmitVote(kDummyExecutionContext1, base::TaskPriority::LOWEST);

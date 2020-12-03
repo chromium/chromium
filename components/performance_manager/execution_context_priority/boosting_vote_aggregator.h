@@ -367,7 +367,7 @@ class BoostingVoteAggregator : public VoteObserver {
 
   // Our input voter. We'll only accept votes from this voter otherwise we'll
   // DCHECK.
-  voting::VoterId<Vote> input_voter_id_ = voting::kInvalidVoterId<Vote>;
+  voting::VoterId<Vote> input_voter_id_;
 
   // Our channel for upstreaming our votes.
   VotingChannelWrapper channel_;
