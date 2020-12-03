@@ -358,13 +358,16 @@ void MaybeReportDangerousDownloadBlocked(
     return;
   }
 
-  std::string raw_digest_sha256 = download->GetHash();
-  extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile)
-      ->OnDangerousDownloadEvent(
-          download->GetURL(), download_path,
-          base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
-          danger_type, download->GetMimeType(), download->GetTotalBytes(),
-          safe_browsing::EventResult::BLOCKED);
+  auto* router =
+      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
+  if (router) {
+    std::string raw_digest_sha256 = download->GetHash();
+    router->OnDangerousDownloadEvent(
+        download->GetURL(), download_path,
+        base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
+        danger_type, download->GetMimeType(), download->GetTotalBytes(),
+        safe_browsing::EventResult::BLOCKED);
+  }
 #endif
 }
 
