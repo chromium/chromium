@@ -235,12 +235,9 @@ class ContentSubresourceFilterThrottleManager
       const mojom::ActivationLevel& activation_level,
       bool did_inherit_opener_activation);
 
-  // For each RenderFrameHost where the last committed load has subresource
-  // filtering activated, owns the corresponding AsyncDocumentSubresourceFilter.
-  // A null filter indicates that the filter should be inherited from its
-  // parent if the parent has one. This is possible if the last load was a
-  // special navigation (see MaybeActivateSubframeSpecialUrls) or if no
-  // navigations have committed.
+  // For each RenderFrameHost where the last committed load (or the initial load
+  // if no committed load has occurred) has subresource filtering activated,
+  // owns the corresponding AsyncDocumentSubresourceFilter.
   std::map<content::RenderFrameHost*,
            std::unique_ptr<AsyncDocumentSubresourceFilter>>
       frame_host_filter_map_;

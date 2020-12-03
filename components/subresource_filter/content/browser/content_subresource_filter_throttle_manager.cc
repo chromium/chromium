@@ -323,6 +323,7 @@ ContentSubresourceFilterThrottleManager::FilterForFinishedNavigation(
   DCHECK(frame_host);
 
   std::unique_ptr<AsyncDocumentSubresourceFilter> filter;
+  base::Optional<mojom::ActivationState> activation_to_inherit;
   did_inherit_opener_activation = false;
 
   if (navigation_handle->HasCommitted() && throttle) {
@@ -331,47 +332,43 @@ ContentSubresourceFilterThrottleManager::FilterForFinishedNavigation(
   }
 
   // If the frame should inherit its activation then, if it has an activated
-  // opener, construct a filter with the inherited activation state. The
+  // opener/parent, construct a filter with the inherited activation state. The
   // filter's activation state will be available immediately so a throttle is
   // not required. Instead, we construct the filter synchronously.
   if (ShouldInheritOpenerActivation(navigation_handle, frame_host)) {
     content::RenderFrameHost* opener_rfh =
         navigation_handle->GetWebContents()->GetOpener();
-    base::Optional<mojom::ActivationState> opener_activation;
     if (auto* opener_throttle_manager =
             ContentSubresourceFilterThrottleManager::FromWebContents(
                 content::WebContents::FromRenderFrameHost(opener_rfh))) {
-      opener_activation =
+      activation_to_inherit =
           opener_throttle_manager->GetFrameActivationState(opener_rfh);
       did_inherit_opener_activation = true;
     }
-
-    if (opener_activation && opener_activation->activation_level !=
-                                 mojom::ActivationLevel::kDisabled) {
-      DCHECK(dealer_handle_);
-
-      // This constructs the filter in a way that allows it to be immediately
-      // used. See the AsyncDocumentSubresourceFilter constructor for details.
-      filter = std::make_unique<AsyncDocumentSubresourceFilter>(
-          EnsureRulesetHandle(), frame_host->GetLastCommittedOrigin(),
-          *opener_activation);
-    }
+  } else if (ShouldInheritParentActivation(navigation_handle)) {
+    // Throttles are only constructed for navigations handled by the network
+    // stack and we only release filters for committed navigations.
+    DCHECK(!filter);
+    activation_to_inherit =
+        GetFrameActivationState(navigation_handle->GetParentFrame());
   }
 
-  // Make sure |frame_host_filter_map_| is updated or cleaned up depending on
-  // this navigation's activation state.
+  if (activation_to_inherit.has_value() &&
+      activation_to_inherit->activation_level !=
+          mojom::ActivationLevel::kDisabled) {
+    DCHECK(dealer_handle_);
+
+    // This constructs the filter in a way that allows it to be immediately
+    // used. See the AsyncDocumentSubresourceFilter constructor for details.
+    filter = std::make_unique<AsyncDocumentSubresourceFilter>(
+        EnsureRulesetHandle(), frame_host->GetLastCommittedOrigin(),
+        activation_to_inherit.value());
+  }
+
+  // Make sure `frame_host_filter_map_` is cleaned up if necessary. Otherwise,
+  // it is updated below.
   if (!filter) {
-    if (ShouldInheritParentActivation(navigation_handle) &&
-        base::Contains(frame_host_filter_map_,
-                       navigation_handle->GetParentFrame())) {
-      // TODO(crbug.com/1134288): Synchronously construct filters for subframes
-      // to inherit activation from their parents, instead of walking up the
-      // frame tree. Once done, consider updating the map in the caller.
-      // |nullptr| indicates a subframe inheriting its activation.
-      frame_host_filter_map_[frame_host] = nullptr;
-    } else {
-      frame_host_filter_map_.erase(frame_host);
-    }
+    frame_host_filter_map_.erase(frame_host);
     return nullptr;
   }
 
@@ -592,24 +589,12 @@ ContentSubresourceFilterThrottleManager::GetFrameFilter(
     content::RenderFrameHost* frame_host) {
   DCHECK(frame_host);
 
-  // Filter will be null for those special url navigations that were added in
-  // MaybeActivateSubframeSpecialUrls and for subframes with an aborted load.
-  // Return the filter of the first parent with a non-null filter.
-  while (frame_host) {
-    auto it = frame_host_filter_map_.find(frame_host);
-    if (it == frame_host_filter_map_.end())
-      return nullptr;
+  auto it = frame_host_filter_map_.find(frame_host);
+  if (it == frame_host_filter_map_.end())
+    return nullptr;
 
-    if (it->second)
-      return it->second.get();
-    frame_host = it->first->GetParent();
-  }
-
-  // Since a null filter is only possible for special navigations of iframes and
-  // aborted loads in a subframe, the above loop should have found a filter for
-  // at least the top level frame, thus making this unreachable.
-  NOTREACHED();
-  return nullptr;
+  DCHECK(it->second);
+  return it->second.get();
 }
 
 void ContentSubresourceFilterThrottleManager::MaybeShowNotification() {
