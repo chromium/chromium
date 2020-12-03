@@ -259,6 +259,7 @@ source_set("chromeos") {
     "//components/favicon/core",
     "//components/feedback",
     "//components/flags_ui",
+    "//components/full_restore",
     "//components/gcm_driver",
     "//components/google/core/common",
     "//components/guest_os",

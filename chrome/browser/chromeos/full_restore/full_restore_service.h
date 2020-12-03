@@ -47,6 +47,9 @@ class FullRestoreService : public KeyedService {
   void HandleRestoreNotificationClicked(const std::string& id,
                                         base::Optional<int> button_index);
 
+  // Implement the restoration.
+  void Restore();
+
   Profile* profile_ = nullptr;
 
   bool is_shut_down_ = false;

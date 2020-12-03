@@ -16,6 +16,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -67,7 +68,7 @@ FullRestoreService::FullRestoreService(Profile* profile) : profile_(profile) {
       prefs->GetInteger(kRestoreAppsAndPagesPrefName));
   switch (restore_pref) {
     case RestoreOption::kAlways:
-      // TODO(crbug.com/909794): Implement apps and pages restoration.
+      Restore();
       break;
     case RestoreOption::kAskEveryTime:
       ShowRestoreNotification(kRestoreNotificationId);
@@ -138,7 +139,14 @@ void FullRestoreService::HandleRestoreNotificationClicked(
     return;
   }
 
-  // TODO(crbug.com/909794):Get the user selection and start the restoration.
+  Restore();
+}
+
+void FullRestoreService::Restore() {
+  ::full_restore::SetRestoreFlag(true);
+
+  // TODO(crbug.com/909794): Implement the restoration. And move the heavy load
+  // out of this KeyedService class.
 }
 
 }  // namespace full_restore

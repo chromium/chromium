@@ -1,0 +1,15 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("full_restore") {
+  output_name = "full_restore_lib"
+  sources = [
+    "full_restore_utils.cc",
+    "full_restore_utils.h",
+  ]
+
+  defines = [ "IS_FULL_RESTORE_IMPL" ]
+
+  public_deps = [ "//base" ]
+}
