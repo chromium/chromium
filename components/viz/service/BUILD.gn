@@ -625,6 +625,8 @@ viz_source_set("perf_tests") {
     "display/gl_renderer_copier_perftest.cc",
     "display/renderer_perftest.cc",
     "display/surface_aggregator_perftest.cc",
+    "display/viz_perf_test.cc",
+    "display/viz_perf_test.h",
   ]
 
   deps = [

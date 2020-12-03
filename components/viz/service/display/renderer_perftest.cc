@@ -15,7 +15,6 @@
 //    --use_virtualized_gl_contexts=1
 
 #include "base/bind.h"
-#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram.h"
@@ -27,7 +26,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/timer/lap_timer.h"
+#include "build/build_config.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/quads/render_pass_io.h"
@@ -38,6 +37,7 @@
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
 #include "components/viz/service/display/skia_renderer.h"
+#include "components/viz/service/display/viz_perf_test.h"
 #include "components/viz/service/display_embedder/gl_output_surface_offscreen.h"
 #include "components/viz/service/display_embedder/in_process_gpu_memory_buffer_manager.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
@@ -75,21 +75,6 @@ perf_test::PerfResultReporter SetUpRendererReporter(const std::string& story) {
   perf_test::PerfResultReporter reporter(kMetricPrefixRenderer, story);
   reporter.RegisterImportantMetric(kMetricFps, "fps");
   return reporter;
-}
-
-base::TimeDelta TestTimeLimit() {
-  static const char kPerfTestTimeMillis[] = "perf-test-time-ms";
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kPerfTestTimeMillis)) {
-    const std::string delay_millis_string(
-        command_line->GetSwitchValueASCII(kPerfTestTimeMillis));
-    int delay_millis;
-    if (base::StringToInt(delay_millis_string, &delay_millis) &&
-        delay_millis > 0) {
-      return base::TimeDelta::FromMilliseconds(delay_millis);
-    }
-  }
-  return base::TimeDelta::FromSeconds(3);
 }
 
 class WaitForSwapDisplayClient : public DisplayClient {
@@ -281,7 +266,7 @@ bool CompositorRenderPassListFromJSON(
 }  // namespace
 
 template <typename RendererType>
-class RendererPerfTest : public testing::Test {
+class RendererPerfTest : public VizPerfTest {
  public:
   RendererPerfTest()
       : manager_(&shared_bitmap_manager_),
@@ -289,10 +274,7 @@ class RendererPerfTest : public testing::Test {
             std::make_unique<CompositorFrameSinkSupport>(nullptr,
                                                          &manager_,
                                                          kArbitraryFrameSinkId,
-                                                         true /* is_root */)),
-        timer_(/*warmup_laps=*/100,
-               /*time_limit=*/TestTimeLimit(),
-               /*check_interval=*/10) {}
+                                                         true /* is_root */)) {}
 
   // Overloaded for concrete RendererType below.
   std::unique_ptr<OutputSurface> CreateOutputSurface(
@@ -307,6 +289,11 @@ class RendererPerfTest : public testing::Test {
       printf("Using SkiaRenderer\n");
     else
       printf("Using GLRenderer\n");
+
+#if defined(OS_ANDROID)
+    renderer_settings_.color_space = gfx::ColorSpace::CreateSRGB();
+    renderer_settings_.initial_screen_size = kSurfaceSize;
+#endif
 
     auto* gpu_service = TestGpuServiceHolder::GetInstance()->gpu_service();
 
@@ -715,7 +702,6 @@ class RendererPerfTest : public testing::Test {
   scoped_refptr<ContextProvider> child_context_provider_;
   std::unique_ptr<ClientResourceProvider> child_resource_provider_;
   std::vector<TransferableResource> resource_list_;
-  base::LapTimer timer_;
   std::unique_ptr<gl::DisableNullDrawGLBindings> enable_pixel_output_;
 
   DISALLOW_COPY_AND_ASSIGN(RendererPerfTest);

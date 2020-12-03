@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/timer/lap_timer.h"
 #include "cc/test/fake_output_surface_client.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -11,6 +10,7 @@
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/surface_aggregator.h"
+#include "components/viz/service/display/viz_perf_test.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
@@ -53,7 +53,7 @@ class ExpectedOutput {
   size_t expected_quads_;
 };
 
-class SurfaceAggregatorPerfTest : public testing::Test {
+class SurfaceAggregatorPerfTest : public VizPerfTest {
  public:
   SurfaceAggregatorPerfTest() : manager_(&shared_bitmap_manager_) {
     context_provider_ = TestContextProvider::Create();
@@ -201,7 +201,6 @@ class SurfaceAggregatorPerfTest : public testing::Test {
   scoped_refptr<TestContextProvider> context_provider_;
   std::unique_ptr<DisplayResourceProvider> resource_provider_;
   std::unique_ptr<SurfaceAggregator> aggregator_;
-  base::LapTimer timer_;
 };
 
 TEST_F(SurfaceAggregatorPerfTest, ManySurfacesOpaque) {
