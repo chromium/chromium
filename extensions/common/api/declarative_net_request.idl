@@ -494,15 +494,15 @@ namespace declarativeNetRequest {
     // an error, $(ref:runtime.lastError) will be set and no change will be made
     // to the rule set. This can happen for multiple reasons, such as invalid
     // rule format, duplicate rule ID, rule count limit exceeded, and others.
-    // TODO(crbug.com/1043200): Add documentation once implementation is
-    // complete.
+    // <!-- TODO(crbug.com/1043200): Add documentation once implementation is
+    // complete. -->
     [nodoc] static void updateSessionRules(UpdateRuleOptions options,
                                    optional EmptyCallback callback);
 
     // Returns the current set of session scoped rules for the extension.
     // |callback|: Called with the set of session scoped rules.
-    // TODO(crbug.com/1043200): Add documentation once implementation is
-    // complete.
+    // <!-- TODO(crbug.com/1043200): Add documentation once implementation is
+    // complete. -->
     [nodoc] static void getSessionRules(GetRulesCallback callback);
 
     // Updates the set of enabled static rulesets for the extension. The
@@ -558,7 +558,8 @@ namespace declarativeNetRequest {
 
     // Returns the number of static rules an extension can enable before the
     // global static rule limit is reached.
-    // TODO(crbug.com/983299): Add documentation once implementation is complete.
+    // <!-- TODO(crbug.com/983299): Add documentation once implementation is
+    // complete. -->
     [nodoc] static void getAvailableStaticRuleCount(
         GetAvailableStaticRuleCountCallback callback);
   };
@@ -573,19 +574,18 @@ namespace declarativeNetRequest {
     // static rulesets that will not count towards the global total. Up to this
     // number of rules can be enabled regardless of the number of rules that
     // count towards the global total.
-    // TODO(crbug.com/983299): Add documentation once implementation is
-    // complete.
+    // <!-- TODO(crbug.com/983299): Add documentation once implementation is
+    // complete. -->
     [nodoc, value=30000] static long GUARANTEED_MINIMUM_STATIC_RULES();
 
     // The maximum number of dynamic rules that an extension can add.
-    // TODO(crbug.com/1043200): Deprecate this once implementation of session
-    // scoped rules is complete.
     [value=5000] static long MAX_NUMBER_OF_DYNAMIC_RULES();
 
     // The maximum number of combined dynamic or session scoped rules an
     // extension can add.
-    // TODO(crbug.com/1043200): Add documentation once implementation is
-    // complete.
+    // <!--TODO(crbug.com/1043200): Add documentation once implementation is
+    // complete. Also deprecate MAX_NUMBER_OF_DYNAMIC_RULES.
+    // -->
     [nodoc, value=5000] static long MAX_NUMBER_OF_DYNAMIC_OR_SESSION_RULES();
 
     // Time interval within which <code>MAX_GETMATCHEDRULES_CALLS_PER_INTERVAL
@@ -610,6 +610,12 @@ namespace declarativeNetRequest {
 
     // Ruleset ID for the dynamic rules added by the extension.
     [value="_dynamic"] static DOMString DYNAMIC_RULESET_ID();
+
+    // Ruleset ID for the session-scoped rules added by the extension.
+    // <!-- TODO(crbug.com/1043200): Add documentation once implementation is
+    // complete. Also describe it in MatchedRule.rulesetId.
+    // -->
+    [nodoc, value="_session"] static DOMString SESSION_RULESET_ID();
   };
 
   interface Events {

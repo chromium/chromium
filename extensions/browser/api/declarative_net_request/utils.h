@@ -82,8 +82,9 @@ flat::ActionType ConvertToFlatActionType(
     api::declarative_net_request::RuleActionType action_type);
 
 // Returns the extension-specified ID for the given |ruleset_id| if it
-// corresponds to a static ruleset ID. For the dynamic ruleset ID, it returns
-// the |DYNAMIC_RULESET_ID| API constant.
+// corresponds to a static ruleset ID. For the dynamic or session-scoped ruleset
+// ID, it returns the |DYNAMIC_RULESET_ID| and |SESSION_RULESET_ID| API
+// constants respectively.
 std::string GetPublicRulesetID(const Extension& extension,
                                RulesetID ruleset_id);
 

@@ -105,11 +105,13 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
   std::vector<api::declarative_net_request::Rule> GetSessionRules(
       const ExtensionId& extension_id) const;
 
-  // Updates the session scoped rules for the given |extension_id|.
-  void UpdateSessionRules(
+  // Updates the session scoped rules for the given |extension_id|. On failure,
+  // returns false and populates |error|.
+  bool UpdateSessionRules(
       const ExtensionId& extension_id,
       std::vector<int> rule_ids_to_remove,
-      std::vector<api::declarative_net_request::Rule> rules_to_add);
+      std::vector<api::declarative_net_request::Rule> rules_to_add,
+      std::string* error);
 
   RulesetManager* ruleset_manager() { return &ruleset_manager_; }
 
@@ -167,7 +169,7 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
 
   // Invoked when we have loaded the rulesets in |load_data| on
   // |file_task_runner_| in response to OnExtensionLoaded.
-  void OnInitialRulesetsLoaded(LoadRequestData load_data);
+  void OnInitialRulesetsLoadedFromDisk(LoadRequestData load_data);
 
   // Invoked when rulesets are loaded in response to
   // UpdateEnabledStaticRulesets.
@@ -241,6 +243,10 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
       tasks_pending_on_load_;
 
   // Session scoped rules value corresponding to extensions.
+  // TODO(crbug.com/1152430): Currently we are storing session scoped rules in
+  // two forms: one as a base::ListValue and second in the indexed format as
+  // part of RulesetMatcher, leading to double memory usage. We should be able
+  // to do away with the base::ListValue representation.
   std::map<ExtensionId, base::ListValue> session_rules_;
 
   // Must be the last member variable. See WeakPtrFactory documentation for

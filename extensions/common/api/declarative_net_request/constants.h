@@ -23,10 +23,15 @@ constexpr int kMinValidID = 1;
 constexpr int kMinValidPriority = 1;
 
 using RulesetID =
-    ::util::IdType<class RulesetIDTag, int, -1 /* invalid value */>;
+    ::util::IdType<class RulesetIDTag, int, -2 /* invalid value */>;
 
 constexpr RulesetID kMinValidStaticRulesetID(1);
 constexpr RulesetID kDynamicRulesetID(0);
+constexpr RulesetID kSessionRulesetID(-1);
+
+// Prefix for reserved ruleset public IDs. Extensions can't specify static
+// rulesets beginning with this.
+constexpr char kReservedRulesetIDPrefix = '_';
 
 // Default priority used for rules when the priority is not explicity provided
 // by an extension.

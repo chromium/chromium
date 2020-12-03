@@ -80,10 +80,10 @@ bool DNRManifestHandler::Parse(Extension* extension, base::string16* error) {
 
     // ID validation.
     const std::string& manifest_id = rulesets[index].id;
-    constexpr char kReservedRulesetIDPrefix = '_';
 
-    // Ensure that the dynamic ruleset ID is reserved.
+    // Sanity check that the dynamic and session ruleset IDs are reserved.
     DCHECK_EQ(kReservedRulesetIDPrefix, dnr_api::DYNAMIC_RULESET_ID[0]);
+    DCHECK_EQ(kReservedRulesetIDPrefix, dnr_api::SESSION_RULESET_ID[0]);
 
     if (manifest_id.empty() || !ruleset_ids.insert(manifest_id).second ||
         manifest_id[0] == kReservedRulesetIDPrefix) {

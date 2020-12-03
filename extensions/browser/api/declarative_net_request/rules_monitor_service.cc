@@ -26,6 +26,7 @@
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/file_sequence_helper.h"
+#include "extensions/browser/api/declarative_net_request/parse_info.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_manager.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/browser/api/web_request/permission_helper.h"
@@ -57,6 +58,10 @@ static base::LazyInstance<
     BrowserContextKeyedAPIFactory<RulesMonitorService>>::Leaky g_factory =
     LAZY_INSTANCE_INITIALIZER;
 
+// TODO(crbug.com/1043200): Remove this constant once a shared rule limit is
+// implemented for dynamic and session-scoped rules.
+constexpr size_t kSessionRulesetLimit = 5000;
+
 bool RulesetInfoCompareByID(const RulesetInfo& lhs, const RulesetInfo& rhs) {
   return lhs.source().id() < rhs.source().id();
 }
@@ -87,6 +92,41 @@ bool ShouldReleaseAllocationOnUnload(const ExtensionPrefs* prefs,
   }
 
   return reason == UnloadedExtensionReason::BLOCKLIST;
+}
+
+// Helper to create a RulesetMatcher for the session-scoped ruleset
+// corresponding to the given |rules|. On failure, null is returned and |error|
+// is populated.
+std::unique_ptr<RulesetMatcher> CreateSessionScopedMatcher(
+    const ExtensionId& extension_id,
+    std::vector<api::declarative_net_request::Rule> rules,
+    std::string* error) {
+  DCHECK(error);
+  RulesetSource source(kSessionRulesetID, kSessionRulesetLimit, extension_id,
+                       true /* enabled */);
+
+  // TODO(crbug.com/1043200): Rules which exceed the regex memory limit
+  // |info.regex_limit_exceeded_rules()| should be treated as errors.
+  ParseInfo info = source.IndexRules(std::move(rules));
+  if (info.has_error()) {
+    *error = info.error();
+    return nullptr;
+  }
+
+  base::span<const uint8_t> buffer = info.GetBuffer();
+  std::unique_ptr<RulesetMatcher> matcher;
+  LoadRulesetResult result = source.CreateVerifiedMatcher(
+      std::string(reinterpret_cast<const char*>(buffer.data()), buffer.size()),
+      &matcher);
+
+  // Creating a verified matcher for session scoped rules should never result in
+  // an error, since these are not persisted to disk and are not affected by
+  // related corruption and verification issues.
+  DCHECK_EQ(LoadRulesetResult::kSuccess, result)
+      << "Loading session scoped ruleset failed unexpectedly "
+      << static_cast<int>(result);
+
+  return matcher;
 }
 
 }  // namespace
@@ -212,10 +252,16 @@ RulesMonitorService::GetSessionRules(const ExtensionId& extension_id) const {
   return result;
 }
 
-void RulesMonitorService::UpdateSessionRules(
+bool RulesMonitorService::UpdateSessionRules(
     const ExtensionId& extension_id,
     std::vector<int> rule_ids_to_remove,
-    std::vector<api::declarative_net_request::Rule> rules_to_add) {
+    std::vector<api::declarative_net_request::Rule> rules_to_add,
+    std::string* error) {
+  DCHECK(error);
+
+  // Sanity check that this is only called for an enabled extension.
+  DCHECK(extension_registry_->enabled_extensions().Contains(extension_id));
+
   std::vector<api::declarative_net_request::Rule> new_rules =
       GetSessionRules(extension_id);
 
@@ -229,11 +275,32 @@ void RulesMonitorService::UpdateSessionRules(
                    std::make_move_iterator(rules_to_add.begin()),
                    std::make_move_iterator(rules_to_add.end()));
 
-  // TODO(crbug.com/1043200): Index and evaluate session scoped rules.
+  // TODO(crbug.com/1043200): Implement a shared rules and regex rules limit for
+  // dynamic and session-scoped rules.
+  if (new_rules.size() > kSessionRulesetLimit) {
+    *error = "Number of session scoped rules exceeded";
+    return false;
+  }
+
   std::unique_ptr<base::ListValue> new_rules_value = base::ListValue::From(
       json_schema_compiler::util::CreateValueFromArray(new_rules));
   DCHECK(new_rules_value);
+
+  std::unique_ptr<RulesetMatcher> matcher =
+      CreateSessionScopedMatcher(extension_id, std::move(new_rules), error);
+  if (!matcher)
+    return false;  // |error| should be already populated.
+
   session_rules_[extension_id] = std::move(*new_rules_value);
+
+  // Update the RulesetMatcher if the extension is not currently loading its
+  // initial rulesets in response to extension load. If it is, then the
+  // session-scoped ruleset will be loaded subsequently in
+  // OnInitialRulesetsLoadedFromDisk.
+  if (!base::Contains(tasks_pending_on_load_, extension_id))
+    UpdateRulesetMatcher(extension_id, std::move(matcher));
+
+  return true;
 }
 
 RulesMonitorService::RulesMonitorService(
@@ -350,9 +417,7 @@ void RulesMonitorService::OnExtensionLoaded(
   }
 
   if (load_data.rulesets.empty()) {
-    if (test_observer_)
-      test_observer_->OnRulesetLoadComplete(extension->id());
-
+    OnInitialRulesetsLoadedFromDisk(std::move(load_data));
     return;
   }
 
@@ -365,7 +430,7 @@ void RulesMonitorService::OnExtensionLoaded(
   DCHECK(inserted);
 
   auto load_ruleset_callback =
-      base::BindOnce(&RulesMonitorService::OnInitialRulesetsLoaded,
+      base::BindOnce(&RulesMonitorService::OnInitialRulesetsLoadedFromDisk,
                      weak_factory_.GetWeakPtr());
   file_sequence_bridge_->LoadRulesets(std::move(load_data),
                                       std::move(load_ruleset_callback));
@@ -402,6 +467,8 @@ void RulesMonitorService::OnExtensionUninstalled(
     const Extension* extension,
     UninstallReason reason) {
   DCHECK_EQ(context_, browser_context);
+
+  session_rules_.erase(extension->id());
 
   // Skip if the extension will be reinstalled soon.
   if (reason == UNINSTALL_REASON_REINSTALL)
@@ -503,8 +570,42 @@ void RulesMonitorService::UpdateEnabledStaticRulesetsInternal(
                                       std::move(load_ruleset_callback));
 }
 
-void RulesMonitorService::OnInitialRulesetsLoaded(LoadRequestData load_data) {
-  DCHECK(!load_data.rulesets.empty());
+void RulesMonitorService::OnInitialRulesetsLoadedFromDisk(
+    LoadRequestData load_data) {
+  if (test_observer_)
+    test_observer_->OnRulesetLoadComplete(load_data.extension_id);
+
+  // Load session-scoped ruleset.
+  std::vector<api::declarative_net_request::Rule> session_rules =
+      GetSessionRules(load_data.extension_id);
+
+  // Allocate one additional space for the session-scoped ruleset if needed.
+  CompositeMatcher::MatcherList matchers;
+  matchers.reserve(load_data.rulesets.size() + (session_rules.empty() ? 0 : 1));
+
+  if (!session_rules.empty()) {
+    std::string error;
+    std::unique_ptr<RulesetMatcher> session_matcher =
+        CreateSessionScopedMatcher(load_data.extension_id,
+                                   std::move(session_rules), &error);
+    DCHECK(session_matcher)
+        << "Loading session scoped ruleset failed unexpectedly: " << error;
+    matchers.push_back(std::move(session_matcher));
+  }
+
+  if (load_data.rulesets.empty()) {
+    // No file backed ruleset to load.
+    DCHECK(!base::Contains(tasks_pending_on_load_, load_data.extension_id));
+    DCHECK(extension_registry_->enabled_extensions().Contains(
+        load_data.extension_id));
+
+    if (!matchers.empty()) {
+      AddCompositeMatcher(
+          load_data.extension_id,
+          std::make_unique<CompositeMatcher>(std::move(matchers)));
+    }
+    return;
+  }
 
   // Signal ruleset load completion.
   {
@@ -515,9 +616,6 @@ void RulesMonitorService::OnInitialRulesetsLoaded(LoadRequestData load_data) {
     tasks_pending_on_load_.erase(it);
   }
 
-  if (test_observer_)
-    test_observer_->OnRulesetLoadComplete(load_data.extension_id);
-
   LogMetricsAndUpdateChecksumsIfNeeded(load_data);
 
   // It's possible that the extension has been disabled since the initial load
@@ -527,9 +625,8 @@ void RulesMonitorService::OnInitialRulesetsLoaded(LoadRequestData load_data) {
     return;
   }
 
-  // Sort by ruleset IDs. This would ensure the dynamic ruleset comes first
-  // followed by static rulesets, which would be in the order in which they were
-  // defined in the manifest.
+  // Sort by ruleset IDs. This will ensure that the static rulesets are in the
+  // order in which they are defined in the manifest.
   std::sort(load_data.rulesets.begin(), load_data.rulesets.end(),
             &RulesetInfoCompareByID);
 
@@ -538,8 +635,6 @@ void RulesMonitorService::OnInitialRulesetsLoaded(LoadRequestData load_data) {
   // at install time (by raising a hard error) to maintain forwards
   // compatibility. Since we iterate based on the order of ruleset ID, we'll
   // give more preference to rulesets occurring first in the manifest.
-  CompositeMatcher::MatcherList matchers;
-  matchers.reserve(load_data.rulesets.size());
   size_t static_rules_count = 0;
   size_t static_regex_rules_count = 0;
   bool notify_ruleset_failed_to_load = false;
@@ -782,6 +877,7 @@ void RulesMonitorService::RemoveCompositeMatcher(
 void RulesMonitorService::AddCompositeMatcher(
     const ExtensionId& extension_id,
     std::unique_ptr<CompositeMatcher> matcher) {
+  DCHECK(extension_registry_->enabled_extensions().Contains(extension_id));
   bool had_extra_headers_matcher = ruleset_manager_.HasAnyExtraHeadersMatcher();
   ruleset_manager_.AddRuleset(extension_id, std::move(matcher));
   AdjustExtraHeaderListenerCountIfNeeded(had_extra_headers_matcher);

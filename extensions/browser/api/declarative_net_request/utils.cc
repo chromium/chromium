@@ -262,6 +262,8 @@ std::string GetPublicRulesetID(const Extension& extension,
                                RulesetID ruleset_id) {
   if (ruleset_id == kDynamicRulesetID)
     return dnr_api::DYNAMIC_RULESET_ID;
+  if (ruleset_id == kSessionRulesetID)
+    return dnr_api::SESSION_RULESET_ID;
 
   DCHECK_GE(ruleset_id, kMinValidStaticRulesetID);
   return DNRManifestData::GetRuleset(extension, ruleset_id).manifest_id;

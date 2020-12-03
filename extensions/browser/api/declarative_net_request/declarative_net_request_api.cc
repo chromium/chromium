@@ -185,8 +185,13 @@ DeclarativeNetRequestUpdateSessionRulesFunction::Run() {
   auto* rules_monitor_service =
       declarative_net_request::RulesMonitorService::Get(browser_context());
   DCHECK(rules_monitor_service);
-  rules_monitor_service->UpdateSessionRules(
-      extension_id(), std::move(rule_ids_to_remove), std::move(rules_to_add));
+  std::string update_error;
+  if (!rules_monitor_service->UpdateSessionRules(
+          extension_id(), std::move(rule_ids_to_remove),
+          std::move(rules_to_add), &update_error)) {
+    return RespondNow(Error(std::move(update_error)));
+  }
+
   return RespondNow(NoArguments());
 }
 
@@ -303,9 +308,12 @@ DeclarativeNetRequestGetEnabledRulesetsFunction::Run() {
     DCHECK(extension());
     public_ids = GetPublicRulesetIDs(*extension(), *matcher);
 
-    // Exclude the dynamic ruleset ID if present, as expected by the API
-    // function.
-    base::Erase(public_ids, dnr_api::DYNAMIC_RULESET_ID);
+    // Exclude any reserved ruleset IDs since they would correspond to
+    // non-static rulesets.
+    base::EraseIf(public_ids, [](const std::string& id) {
+      DCHECK(!id.empty());
+      return id[0] == declarative_net_request::kReservedRulesetIDPrefix;
+    });
   }
 
   return RespondNow(

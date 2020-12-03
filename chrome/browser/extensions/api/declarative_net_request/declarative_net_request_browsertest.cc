@@ -1260,31 +1260,39 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
                        Enable_Disable_Reload_Uninstall) {
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);
 
-  // Block all main frame requests to "index.html".
+  // Block all main frame requests to "static.example".
   TestRule rule = CreateGenericRule();
-  rule.condition->url_filter = std::string("index.html");
+  rule.condition->url_filter = std::string("static.example");
   rule.condition->resource_types = std::vector<std::string>({"main_frame"});
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules({rule}));
   const ExtensionId extension_id = last_loaded_extension_id();
 
-  // Add dynamic rule to block requests to "page.html".
-  rule.condition->url_filter = std::string("page.html");
+  // Add dynamic rule to block requests to "dynamic.example".
+  rule.condition->url_filter = std::string("dynamic.example");
   ASSERT_NO_FATAL_FAILURE(AddDynamicRules(extension_id, {rule}));
 
-  GURL static_rule_url = embedded_test_server()->GetURL(
-      "example.com", "/pages_with_script/index.html");
-  GURL dynamic_rule_url = embedded_test_server()->GetURL(
-      "example.com", "/pages_with_script/page.html");
+  // Add session-scoped rule to block requests to "session.example".
+  rule.condition->url_filter = std::string("session.example");
+  ASSERT_NO_FATAL_FAILURE(UpdateSessionRules(extension_id, {}, {rule}));
+
+  constexpr char kUrlPath[] = "/pages_with_script/index.html";
+  GURL static_rule_url =
+      embedded_test_server()->GetURL("static.example", kUrlPath);
+  GURL dynamic_rule_url =
+      embedded_test_server()->GetURL("dynamic.example", kUrlPath);
+  GURL session_rule_url =
+      embedded_test_server()->GetURL("session.example", kUrlPath);
 
   auto test_extension_enabled = [&](bool expected_enabled) {
     EXPECT_EQ(expected_enabled,
               ExtensionRegistry::Get(profile())->enabled_extensions().Contains(
                   extension_id));
 
-    // If the extension is enabled, both the |static_rule_url| and
-    // |dynamic_rule_url| should be blocked.
+    // Ensure the various registered rules work correctly if the extension is
+    // enabled.
     EXPECT_EQ(expected_enabled, IsNavigationBlocked(static_rule_url));
     EXPECT_EQ(expected_enabled, IsNavigationBlocked(dynamic_rule_url));
+    EXPECT_EQ(expected_enabled, IsNavigationBlocked(session_rule_url));
   };
 
   {
@@ -1783,16 +1791,20 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   rule.condition->url_filter = std::string("session.com");
   ASSERT_NO_FATAL_FAILURE(UpdateSessionRules(extension_id, {}, {rule}));
 
+  CompositeMatcher* composite_matcher =
+      ruleset_manager()->GetMatcherForExtension(extension_id);
+  ASSERT_TRUE(composite_matcher);
+  EXPECT_THAT(
+      GetPublicRulesetIDs(*last_loaded_extension(), *composite_matcher),
+      UnorderedElementsAre(kDefaultRulesetID, dnr_api::DYNAMIC_RULESET_ID,
+                           dnr_api::SESSION_RULESET_ID));
+
   EXPECT_TRUE(IsNavigationBlocked(embedded_test_server()->GetURL(
       "static.com", "/pages_with_script/index.html")));
   EXPECT_TRUE(IsNavigationBlocked(embedded_test_server()->GetURL(
       "dynamic.com", "/pages_with_script/index.html")));
-
-  // TODO(crbug.com/1043200): This should be true once we start evaluating
-  // session scoped rules.
-  EXPECT_FALSE(IsNavigationBlocked(embedded_test_server()->GetURL(
+  EXPECT_TRUE(IsNavigationBlocked(embedded_test_server()->GetURL(
       "session.com", "/pages_with_script/index.html")));
-
   EXPECT_FALSE(IsNavigationBlocked(embedded_test_server()->GetURL(
       "unmatched.com", "/pages_with_script/index.html")));
 }

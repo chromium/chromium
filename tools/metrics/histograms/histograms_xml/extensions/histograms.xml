@@ -583,7 +583,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Measures the time taken to load a single indexed ruleset in the browser
     process for an extension. This includes reading the indexed ruleset file and
-    verifying it. Emitted whenever a single extension ruleset is loaded.
+    verifying it. Emitted whenever a single file-backed extension ruleset is
+    loaded.
   </summary>
 </histogram>
 

@@ -999,8 +999,11 @@ TEST_P(SingleRulesetTest, UpdateEnabledRulesetsRace) {
 
 // Tests updateSessionRules and getSessionRules extension function calls.
 TEST_P(SingleRulesetTest, SessionRules) {
-  // Load an extension with no static rulesets.
+  // Load an extension with an empty static ruleset.
+  RulesetManagerObserver ruleset_waiter(manager());
   LoadAndExpectSuccess();
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
+  VerifyPublicRulesetIDs(*extension(), {kDefaultRulesetID});
 
   base::ListValue result;
   RunGetRulesFunction(*extension(), RulesetScope::kSession, &result);
@@ -1017,6 +1020,8 @@ TEST_P(SingleRulesetTest, SessionRules) {
               ::testing::UnorderedElementsAre(
                   ::testing::Eq(std::cref(*rule_1.ToValue())),
                   ::testing::Eq(std::cref(*rule_2.ToValue()))));
+  VerifyPublicRulesetIDs(*extension(),
+                         {kDefaultRulesetID, dnr_api::SESSION_RULESET_ID});
 
   // No dynamic rules should be returned.
   RunGetRulesFunction(*extension(), RulesetScope::kDynamic, &result);
@@ -1027,7 +1032,6 @@ TEST_P(SingleRulesetTest, SessionRules) {
   RunGetRulesFunction(*extension(), RulesetScope::kSession, &result);
   EXPECT_THAT(result.GetList(), ::testing::UnorderedElementsAre(::testing::Eq(
                                     std::cref(*rule_1.ToValue()))));
-
   RunGetRulesFunction(*extension(), RulesetScope::kDynamic, &result);
   EXPECT_TRUE(result.empty());
 }
@@ -1508,6 +1512,25 @@ TEST_P(MultipleRulesetsTest, UpdateEnabledRulesets_InvalidRulesetID) {
       ErrorUtils::FormatErrorMessage(kInvalidRulesetIDError,
                                      kInvalidRulesetId));
   VerifyPublicRulesetIDs(*extension(), {kId1, kId3});
+
+  // Ensure we can't enable/disable dynamic or session-scoped rulesets using
+  // updateEnabledRulesets.
+  ASSERT_TRUE(RunUpdateRulesFunction(*extension(), {}, {CreateGenericRule()},
+                                     RulesetScope::kDynamic));
+  ASSERT_TRUE(RunUpdateRulesFunction(*extension(), {}, {CreateGenericRule()},
+                                     RulesetScope::kSession));
+  VerifyPublicRulesetIDs(*extension(), {kId1, kId3, dnr_api::DYNAMIC_RULESET_ID,
+                                        dnr_api::SESSION_RULESET_ID});
+  RunUpdateEnabledRulesetsFunction(
+      *extension(), {}, {kId2, dnr_api::DYNAMIC_RULESET_ID},
+      ErrorUtils::FormatErrorMessage(kInvalidRulesetIDError,
+                                     dnr_api::DYNAMIC_RULESET_ID));
+  RunUpdateEnabledRulesetsFunction(
+      *extension(), {kId1, dnr_api::SESSION_RULESET_ID}, {},
+      ErrorUtils::FormatErrorMessage(kInvalidRulesetIDError,
+                                     dnr_api::SESSION_RULESET_ID));
+  VerifyPublicRulesetIDs(*extension(), {kId1, kId3, dnr_api::DYNAMIC_RULESET_ID,
+                                        dnr_api::SESSION_RULESET_ID});
 }
 
 TEST_P(MultipleRulesetsTest, UpdateEnabledRulesets_RuleCountExceeded) {
@@ -1620,20 +1643,23 @@ TEST_P(MultipleRulesetsTest, UpdateAndGetEnabledRulesets_Success) {
   VerifyPublicRulesetIDs(*extension(), {kId2, kId3});
   VerifyGetEnabledRulesetsFunction(*extension(), {kId2, kId3});
 
-  // Add dynamic rules and ensure that the setEnabledRulesets call doesn't have
-  // any effect on the dynamic ruleset. Also ensure that the getEnabledRulesets
-  // call excludes the dynamic ruleset ID.
+  // Add dynamic and session-scoped rules and ensure that the setEnabledRulesets
+  // call doesn't have any effect on their associated rulesets. Also ensure that
+  // the getEnabledRulesets call excludes these rulesets.
   ASSERT_TRUE(RunUpdateRulesFunction(*extension(), {}, {CreateGenericRule()},
                                      RulesetScope::kDynamic));
-  VerifyPublicRulesetIDs(*extension(),
-                         {kId2, kId3, dnr_api::DYNAMIC_RULESET_ID});
+  ASSERT_TRUE(RunUpdateRulesFunction(*extension(), {}, {CreateGenericRule()},
+                                     RulesetScope::kSession));
+  VerifyPublicRulesetIDs(*extension(), {kId2, kId3, dnr_api::DYNAMIC_RULESET_ID,
+                                        dnr_api::SESSION_RULESET_ID});
   VerifyGetEnabledRulesetsFunction(*extension(), {kId2, kId3});
 
   // Ensure enabling a ruleset takes priority over disabling.
   RunUpdateEnabledRulesetsFunction(*extension(), {kId1}, {kId1},
                                    base::nullopt /* expected_error */);
   VerifyPublicRulesetIDs(*extension(),
-                         {kId1, kId2, kId3, dnr_api::DYNAMIC_RULESET_ID});
+                         {kId1, kId2, kId3, dnr_api::DYNAMIC_RULESET_ID,
+                          dnr_api::SESSION_RULESET_ID});
   VerifyGetEnabledRulesetsFunction(*extension(), {kId1, kId2, kId3});
 
   // Ensure the set of enabled rulesets persists across extension reloads.
@@ -1648,7 +1674,8 @@ TEST_P(MultipleRulesetsTest, UpdateAndGetEnabledRulesets_Success) {
       registry()->GetExtensionById(extension_id, ExtensionRegistry::ENABLED);
   ASSERT_TRUE(extension);
   VerifyPublicRulesetIDs(*extension,
-                         {kId1, kId2, kId3, dnr_api::DYNAMIC_RULESET_ID});
+                         {kId1, kId2, kId3, dnr_api::DYNAMIC_RULESET_ID,
+                          dnr_api::SESSION_RULESET_ID});
   VerifyGetEnabledRulesetsFunction(*extension, {kId1, kId2, kId3});
 }
 
