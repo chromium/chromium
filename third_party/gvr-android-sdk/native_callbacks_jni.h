@@ -17,6 +17,7 @@
 // generate the file. But the real jni functions in the static library
 // doesn't have the prefix.
 // 6. Added function RegisterNativeCallbacksNatives at the end of this file.
+// 7. Added "vr" as an argument to base::android::LazyGetClass.
 
 #ifndef com_google_vr_internal_controller_NativeCallbacks_JNI
 #define com_google_vr_internal_controller_NativeCallbacks_JNI
@@ -38,8 +39,8 @@ const char kNativeCallbacksClassPath[] =
     "com/google/vr/internal/controller/NativeCallbacks";
 // Leaking this jclass as we cannot use LazyInstance from some threads.
 std::atomic<jclass> g_NativeCallbacks_clazz __attribute__((unused)) (nullptr);
-#define NativeCallbacks_clazz(env)                            \
-  base::android::LazyGetClass(env, kNativeCallbacksClassPath, \
+#define NativeCallbacks_clazz(env)                                  \
+  base::android::LazyGetClass(env, kNativeCallbacksClassPath, "vr", \
                               &g_NativeCallbacks_clazz)
 
 }  // namespace

@@ -358,6 +358,7 @@ if (enable_gvr_services) {
 
   generate_jni("jni_headers") {
     sources = java_sources_needing_jni
+    split_name = "vr"
   }
 
   android_library("java") {

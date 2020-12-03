@@ -103,7 +103,7 @@ public class VrModuleProvider implements ModuleInstallUi.FailureUiListener {
 
     // TODO(crbug.com/870055): JNI should be registered in the shared VR library's JNI_OnLoad
     // function. Do this once we have a shared VR library.
-    /* package */ static void registerJni() {
+    public static void registerJni() {
         VrModuleProviderJni.get().registerJni();
     }
 

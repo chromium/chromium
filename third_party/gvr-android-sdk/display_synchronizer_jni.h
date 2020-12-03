@@ -12,6 +12,7 @@
 // 2. Use absolute path instead of relative path.
 // 3. Removed all helper functions such as: Create.
 // 4. Added function RegisterDisplaySynchronizerNatives at the end of this file.
+// 5. Added "vr" as an argument to base::android::LazyGetClass.
 
 #ifndef com_google_vr_cardboard_DisplaySynchronizer_JNI
 #define com_google_vr_cardboard_DisplaySynchronizer_JNI
@@ -35,8 +36,8 @@ const char kDisplaySynchronizerClassPath[] =
 // Leaking this jclass as we cannot use LazyInstance from some threads.
 std::atomic<jclass> g_DisplaySynchronizer_clazz __attribute__((unused))
     (nullptr);
-#define DisplaySynchronizer_clazz(env)                            \
-  base::android::LazyGetClass(env, kDisplaySynchronizerClassPath, \
+#define DisplaySynchronizer_clazz(env)                                  \
+  base::android::LazyGetClass(env, kDisplaySynchronizerClassPath, "vr", \
                               &g_DisplaySynchronizer_clazz)
 
 }  // namespace

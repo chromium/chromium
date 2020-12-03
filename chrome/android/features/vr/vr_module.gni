@@ -18,8 +18,5 @@ vr_module_desc = {
   # by native library load). Therefore disable auto-load on Module.getImpl();
   # the VR DFM manages its own loading on start-up and on install.
   load_native_on_get_impl = false
-
-  # TODO(crbug.com/1145287): Need to support @CalledByNative in isolated splits
-  # before this can be enabled.
-  # uses_split = "chrome"
+  uses_split = "chrome"
 }

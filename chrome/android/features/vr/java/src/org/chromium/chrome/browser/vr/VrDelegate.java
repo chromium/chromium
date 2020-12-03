@@ -160,13 +160,13 @@ public abstract class VrDelegate implements VrHandler {
         }
     }
 
-    /* package */ void setSystemUiVisibilityForVr(Activity activity) {
+    public void setSystemUiVisibilityForVr(Activity activity) {
         activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         int flags = activity.getWindow().getDecorView().getSystemUiVisibility();
         activity.getWindow().getDecorView().setSystemUiVisibility(flags | VR_SYSTEM_UI_FLAGS);
     }
 
-    /* package */ void addBlackOverlayViewForActivity(ChromeActivity activity) {
+    public void addBlackOverlayViewForActivity(ChromeActivity activity) {
         View overlay = activity.getWindow().findViewById(R.id.vr_overlay_view);
         if (overlay != null) return;
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
@@ -178,7 +178,7 @@ public abstract class VrDelegate implements VrHandler {
         decor.addView(v, params);
     }
 
-    /* package */ void removeBlackOverlayView(Activity activity, boolean animate) {
+    public void removeBlackOverlayView(Activity activity, boolean animate) {
         View overlay = activity.getWindow().findViewById(R.id.vr_overlay_view);
         if (overlay == null) return;
         FrameLayout decor = (FrameLayout) activity.getWindow().getDecorView();
@@ -207,7 +207,7 @@ public abstract class VrDelegate implements VrHandler {
         }
     }
 
-    /* package */ boolean activitySupportsVrBrowsing(Activity activity) {
+    public boolean activitySupportsVrBrowsing(Activity activity) {
         if (activity instanceof ChromeTabbedActivity) return true;
         return false;
     }
