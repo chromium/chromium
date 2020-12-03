@@ -8,7 +8,6 @@
 #include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/settings_window_manager_observer_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
@@ -19,15 +18,12 @@
 #include "ui/base/models/menu_model.h"
 
 using chrome::SettingsWindowManager;
-using chrome::SettingsWindowManagerObserver;
 using chromeos::ProfileHelper;
 using user_manager::UserManager;
 
 namespace {
 
-class SystemMenuModelBuilderMultiUserTest
-    : public chromeos::LoginManagerTest,
-      public SettingsWindowManagerObserver {
+class SystemMenuModelBuilderMultiUserTest : public chromeos::LoginManagerTest {
  public:
   SystemMenuModelBuilderMultiUserTest() : LoginManagerTest() {
     login_mixin_.AppendRegularUsers(2);
@@ -36,16 +32,10 @@ class SystemMenuModelBuilderMultiUserTest
   }
   ~SystemMenuModelBuilderMultiUserTest() override = default;
 
-  // SettingsWindowManagerObserver:
-  void OnNewSettingsWindow(Browser* settings_browser) override {
-    settings_browser_ = settings_browser;
-  }
-
  protected:
   AccountId account_id1_;
   AccountId account_id2_;
   chromeos::LoginManagerMixin login_mixin_{&mixin_host_};
-  Browser* settings_browser_ = nullptr;
 };
 
 // Regression test for https://crbug.com/1023043
@@ -65,16 +55,15 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderMultiUserTest,
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
 
-  // Open the settings window and record the |settings_browser_|.
+  // Open the settings window and record the |settings_browser|.
   auto* manager = SettingsWindowManager::GetInstance();
-  manager->AddObserver(this);
   manager->ShowOSSettings(profile);
-  manager->RemoveObserver(this);
-  ASSERT_TRUE(settings_browser_);
+  auto* settings_browser = manager->FindBrowserForProfile(profile);
+  ASSERT_TRUE(settings_browser);
 
   // Copy the command ids from the system menu.
   BrowserView* browser_view =
-      BrowserView::GetBrowserViewForBrowser(settings_browser_);
+      BrowserView::GetBrowserViewForBrowser(settings_browser);
   ui::MenuModel* menu = browser_view->frame()->GetSystemMenuModel();
   std::set<int> commands;
   for (int i = 0; i < menu->GetItemCount(); i++)
