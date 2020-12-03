@@ -722,7 +722,8 @@ class WebMediaPlayerImplTest
 
     wmpi_->Load(blink::WebMediaPlayer::kLoadTypeURL,
                 blink::WebMediaPlayerSource(blink::WebURL(kTestURL)),
-                blink::WebMediaPlayer::kCorsModeUnspecified);
+                blink::WebMediaPlayer::kCorsModeUnspecified,
+                /*is_cache_disabled=*/false);
 
     base::RunLoop().RunUntilIdle();
 
@@ -986,7 +987,8 @@ TEST_F(WebMediaPlayerImplTest, LoadAndDestroyDataUrl) {
 
   wmpi_->Load(blink::WebMediaPlayer::kLoadTypeURL,
               blink::WebMediaPlayerSource(blink::WebURL(kMp3DataUrl)),
-              blink::WebMediaPlayer::kCorsModeUnspecified);
+              blink::WebMediaPlayer::kCorsModeUnspecified,
+              /*is_cache_disabled=*/false);
 
   base::RunLoop().RunUntilIdle();
 
@@ -2173,7 +2175,8 @@ TEST_F(WebMediaPlayerImplTest, DISABLED_DemuxerOverride) {
   EXPECT_FALSE(IsSuspended());
   wmpi_->Load(blink::WebMediaPlayer::kLoadTypeURL,
               blink::WebMediaPlayerSource(blink::WebURL(GURL("data://test"))),
-              blink::WebMediaPlayer::kCorsModeUnspecified);
+              blink::WebMediaPlayer::kCorsModeUnspecified,
+              /*is_cache_disabled=*/false);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsSuspended());
 }

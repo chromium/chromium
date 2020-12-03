@@ -50,11 +50,12 @@ class MockWebMediaPlayer : public EmptyWebMediaPlayer {
   MOCK_METHOD1(SetLatencyHint, void(double));
   MOCK_METHOD1(EnabledAudioTracksChanged, void(const WebVector<TrackId>&));
   MOCK_METHOD1(SelectedVideoTrackChanged, void(TrackId*));
-  MOCK_METHOD3(
+  MOCK_METHOD4(
       Load,
       WebMediaPlayer::LoadTiming(LoadType load_type,
                                  const blink::WebMediaPlayerSource& source,
-                                 CorsMode cors_mode));
+                                 CorsMode cors_mode,
+                                 bool is_cache_disabled));
   MOCK_CONST_METHOD0(DidLazyLoad, bool());
 
   MOCK_METHOD0(GetSrcAfterRedirects, GURL());
@@ -96,7 +97,7 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
     EXPECT_CALL(*mock_media_player, HasVideo()).WillRepeatedly(Return(true));
     EXPECT_CALL(*mock_media_player, Duration()).WillRepeatedly(Return(1.0));
     EXPECT_CALL(*mock_media_player, CurrentTime()).WillRepeatedly(Return(0));
-    EXPECT_CALL(*mock_media_player, Load(_, _, _))
+    EXPECT_CALL(*mock_media_player, Load(_, _, _, _))
         .Times(AnyNumber())
         .WillRepeatedly(Return(WebMediaPlayer::LoadTiming::kImmediate));
     EXPECT_CALL(*mock_media_player, DidLazyLoad).WillRepeatedly(Return(false));
@@ -466,7 +467,7 @@ TEST_P(HTMLMediaElementTest,
 
   // WebMediaPlayer will signal that it will defer loading to some later time.
   testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
-  EXPECT_CALL(*MockMediaPlayer(), Load(_, _, _))
+  EXPECT_CALL(*MockMediaPlayer(), Load(_, _, _, _))
       .WillOnce(Return(WebMediaPlayer::LoadTiming::kDeferred));
 
   // Window's 'load' event starts out "delayed".
@@ -484,7 +485,7 @@ TEST_P(HTMLMediaElementTest, ImmediateMediaPlayerLoadDoesDelayWindowLoadEvent) {
   Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
 
   // WebMediaPlayer will signal that it will do the load immediately.
-  EXPECT_CALL(*MockMediaPlayer(), Load(_, _, _))
+  EXPECT_CALL(*MockMediaPlayer(), Load(_, _, _, _))
       .WillOnce(Return(WebMediaPlayer::LoadTiming::kImmediate));
 
   // Window's 'load' event starts out "delayed".

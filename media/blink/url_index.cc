@@ -240,10 +240,13 @@ void UrlIndex::RemoveUrlData(const scoped_refptr<UrlData>& url_data) {
 }
 
 scoped_refptr<UrlData> UrlIndex::GetByUrl(const GURL& gurl,
-                                          UrlData::CorsMode cors_mode) {
-  auto i = indexed_data_.find(std::make_pair(gurl, cors_mode));
-  if (i != indexed_data_.end() && i->second->Valid()) {
-    return i->second;
+                                          UrlData::CorsMode cors_mode,
+                                          CacheMode cache_mode) {
+  if (cache_mode == kNormal) {
+    auto i = indexed_data_.find(std::make_pair(gurl, cors_mode));
+    if (i != indexed_data_.end() && i->second->Valid()) {
+      return i->second;
+    }
   }
 
   return NewUrlData(gurl, cors_mode);

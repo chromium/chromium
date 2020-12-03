@@ -181,6 +181,7 @@
         "WillSendNavigationRequest",
         "WillSendWebSocketHandshakeRequest",
         "SetDevToolsIds",
+        "IsCacheDisabled",
       ]
     },
     InspectorPageAgent: {

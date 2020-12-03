@@ -229,7 +229,7 @@ class MultibufferDataSourceTest : public testing::Test {
     GURL gurl(url);
     data_source_.reset(new MockMultibufferDataSource(
         base::ThreadTaskRunnerHandle::Get(),
-        url_index_->GetByUrl(gurl, cors_mode), &host_));
+        url_index_->GetByUrl(gurl, cors_mode, UrlIndex::kNormal), &host_));
     data_source_->SetPreload(preload_);
 
     response_generator_.reset(new TestResponseGenerator(gurl, file_size));
@@ -991,7 +991,9 @@ TEST_F(MultibufferDataSourceTest, Http_ShareData) {
   StrictMock<MockBufferedDataSourceHost> host2;
   MockMultibufferDataSource source2(
       base::ThreadTaskRunnerHandle::Get(),
-      url_index_->GetByUrl(GURL(kHttpUrl), UrlData::CORS_UNSPECIFIED), &host2);
+      url_index_->GetByUrl(GURL(kHttpUrl), UrlData::CORS_UNSPECIFIED,
+                           UrlIndex::kNormal),
+      &host2);
   source2.SetPreload(preload_);
 
   EXPECT_CALL(*this, OnInitialize(true));
@@ -1356,7 +1358,8 @@ TEST_F(MultibufferDataSourceTest, SeekPastEOF) {
   GURL gurl(kHttpUrl);
   data_source_.reset(new MockMultibufferDataSource(
       base::ThreadTaskRunnerHandle::Get(),
-      url_index_->GetByUrl(gurl, UrlData::CORS_UNSPECIFIED), &host_));
+      url_index_->GetByUrl(gurl, UrlData::CORS_UNSPECIFIED, UrlIndex::kNormal),
+      &host_));
   data_source_->SetPreload(preload_);
 
   response_generator_.reset(new TestResponseGenerator(gurl, kDataSize + 1));
@@ -1732,7 +1735,8 @@ TEST_F(MultibufferDataSourceTest, Http_CheckLoadingTransition) {
   GURL gurl(kHttpUrl);
   data_source_.reset(new MockMultibufferDataSource(
       base::ThreadTaskRunnerHandle::Get(),
-      url_index_->GetByUrl(gurl, UrlData::CORS_UNSPECIFIED), &host_));
+      url_index_->GetByUrl(gurl, UrlData::CORS_UNSPECIFIED, UrlIndex::kNormal),
+      &host_));
   data_source_->SetPreload(preload_);
 
   response_generator_.reset(new TestResponseGenerator(gurl, kDataSize * 1));

@@ -409,7 +409,8 @@ void WebMediaPlayerMS::OnAudioRenderErrorCallback() {
 WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
     LoadType load_type,
     const WebMediaPlayerSource& source,
-    CorsMode /*cors_mode*/) {
+    CorsMode /*cors_mode*/,
+    bool is_cache_disabled) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   SendLogMessage(String::Format("%s({load_type=%s})", __func__,
                                 LoadTypeToString(load_type)));

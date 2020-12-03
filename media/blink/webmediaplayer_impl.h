@@ -122,7 +122,8 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
 
   WebMediaPlayer::LoadTiming Load(LoadType load_type,
                                   const blink::WebMediaPlayerSource& source,
-                                  CorsMode cors_mode) override;
+                                  CorsMode cors_mode,
+                                  bool is_cache_disabled) override;
 
   // Playback controls.
   void Play() override;
@@ -380,7 +381,10 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
 
   // Called after |defer_load_cb_| has decided to allow the load. If
   // |defer_load_cb_| is null this is called immediately.
-  void DoLoad(LoadType load_type, const blink::WebURL& url, CorsMode cors_mode);
+  void DoLoad(LoadType load_type,
+              const blink::WebURL& url,
+              CorsMode cors_mode,
+              bool is_cache_disabled);
 
   // Called after asynchronous initialization of a data source completed.
   void DataSourceInitialized(bool success);

@@ -236,8 +236,8 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
   scoped_refptr<UrlData> destination_url_data(url_data_);
 
   if (!redirects_to_.is_empty()) {
-    destination_url_data =
-        url_data_->url_index()->GetByUrl(redirects_to_, cors_mode_);
+    destination_url_data = url_data_->url_index()->GetByUrl(
+        redirects_to_, cors_mode_, UrlIndex::kNormal);
     redirects_to_ = GURL();
   }
 

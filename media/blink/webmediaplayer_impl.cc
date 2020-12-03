@@ -553,7 +553,8 @@ WebMediaPlayerImpl::~WebMediaPlayerImpl() {
 WebMediaPlayer::LoadTiming WebMediaPlayerImpl::Load(
     LoadType load_type,
     const blink::WebMediaPlayerSource& source,
-    CorsMode cors_mode) {
+    CorsMode cors_mode,
+    bool is_cache_disabled) {
   // Only URL or MSE blob URL is supported.
   DCHECK(source.IsURL());
   blink::WebURL url = source.GetAsURL();
@@ -563,10 +564,11 @@ WebMediaPlayer::LoadTiming WebMediaPlayerImpl::Load(
   bool is_deferred = false;
 
   if (defer_load_cb_) {
-    is_deferred = defer_load_cb_.Run(base::BindOnce(
-        &WebMediaPlayerImpl::DoLoad, weak_this_, load_type, url, cors_mode));
+    is_deferred = defer_load_cb_.Run(
+        base::BindOnce(&WebMediaPlayerImpl::DoLoad, weak_this_, load_type, url,
+                       cors_mode, is_cache_disabled));
   } else {
-    DoLoad(load_type, url, cors_mode);
+    DoLoad(load_type, url, cors_mode, is_cache_disabled);
   }
 
   return is_deferred ? LoadTiming::kDeferred : LoadTiming::kImmediate;
@@ -722,7 +724,8 @@ void WebMediaPlayerImpl::OnDisplayTypeChanged(blink::DisplayType display_type) {
 
 void WebMediaPlayerImpl::DoLoad(LoadType load_type,
                                 const blink::WebURL& url,
-                                CorsMode cors_mode) {
+                                CorsMode cors_mode,
+                                bool is_cache_disabled) {
   TRACE_EVENT1("media", "WebMediaPlayerImpl::DoLoad", "id", media_log_->id());
   DVLOG(1) << __func__;
   DCHECK(main_task_runner_->BelongsToCurrentThread());
@@ -818,8 +821,9 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
       return;
     }
 
-    auto url_data =
-        url_index_->GetByUrl(url, static_cast<UrlData::CorsMode>(cors_mode));
+    auto url_data = url_index_->GetByUrl(
+        url, static_cast<UrlData::CorsMode>(cors_mode),
+        is_cache_disabled ? UrlIndex::kCacheDisabled : UrlIndex::kNormal);
     mb_data_source_ = new MultibufferDataSource(
         main_task_runner_, std::move(url_data), media_log_.get(),
         buffered_data_source_host_.get(),

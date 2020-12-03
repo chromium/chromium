@@ -40,7 +40,10 @@ class MockWebMediaPlayer : public WebMediaPlayer {
   MockWebMediaPlayer() {}
   ~MockWebMediaPlayer() override = default;
 
-  LoadTiming Load(LoadType, const WebMediaPlayerSource&, CorsMode) override {
+  LoadTiming Load(LoadType,
+                  const WebMediaPlayerSource&,
+                  CorsMode,
+                  bool is_cache_disabled) override {
     return LoadTiming::kImmediate;
   }
   void Play() override {}

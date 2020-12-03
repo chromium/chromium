@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -1334,7 +1335,11 @@ void HTMLMediaElement::StartPlayerLoad() {
   web_media_player_->RequestRemotePlaybackDisabled(
       FastHasAttribute(html_names::kDisableremoteplaybackAttr));
 
-  auto load_timing = web_media_player_->Load(GetLoadType(), source, CorsMode());
+  bool is_cache_disabled = false;
+  probe::IsCacheDisabled(GetDocument().GetExecutionContext(),
+                         &is_cache_disabled);
+  auto load_timing = web_media_player_->Load(GetLoadType(), source, CorsMode(),
+                                             is_cache_disabled);
   if (load_timing == WebMediaPlayer::LoadTiming::kDeferred) {
     // Deferred media loading is not part of the spec, but intuition is that
     // this should not hold up the Window's "load" event (similar to user

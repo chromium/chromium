@@ -158,7 +158,10 @@ class WebMediaPlayer {
 
   virtual ~WebMediaPlayer() = default;
 
-  virtual LoadTiming Load(LoadType, const WebMediaPlayerSource&, CorsMode) = 0;
+  virtual LoadTiming Load(LoadType,
+                          const WebMediaPlayerSource&,
+                          CorsMode,
+                          bool is_cache_disabled) = 0;
 
   // Playback controls.
   virtual void Play() = 0;

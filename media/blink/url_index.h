@@ -227,6 +227,8 @@ class MEDIA_BLINK_EXPORT UrlIndex {
   UrlIndex(ResourceFetchContext* fetch_context, int block_shift);
   virtual ~UrlIndex();
 
+  enum CacheMode { kNormal, kCacheDisabled };
+
   // Look up an UrlData in the index and return it. If none is found,
   // create a new one. Note that newly created UrlData entries are NOT
   // added to the index, instead you must call TryInsert on them after
@@ -235,7 +237,8 @@ class MEDIA_BLINK_EXPORT UrlIndex {
   // Because the returned UrlData has a raw reference to |this|, it must be
   // released before |this| is destroyed.
   scoped_refptr<UrlData> GetByUrl(const GURL& gurl,
-                                  UrlData::CorsMode cors_mode);
+                                  UrlData::CorsMode cors_mode,
+                                  CacheMode cache_mode);
 
   // Add the given UrlData to the index if possible. If a better UrlData
   // is already present in the index, return it instead. (If not, we just

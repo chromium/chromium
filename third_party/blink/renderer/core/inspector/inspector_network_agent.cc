@@ -2138,4 +2138,9 @@ ExecutionContext* InspectorNetworkAgent::GetTargetExecutionContext() const {
   return inspected_frames_->Root()->DomWindow();
 }
 
+void InspectorNetworkAgent::IsCacheDisabled(bool* is_cache_disabled) const {
+  if (cache_disabled_.Get())
+    *is_cache_disabled = true;
+}
+
 }  // namespace blink

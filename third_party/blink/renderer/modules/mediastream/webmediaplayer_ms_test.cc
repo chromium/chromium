@@ -725,7 +725,8 @@ MockMediaStreamVideoRenderer* WebMediaPlayerMSTest::LoadAndGetFrameProvider(
   EXPECT_CALL(*this,
               DoReadyStateChanged(WebMediaPlayer::kReadyStateHaveNothing));
   player_->Load(WebMediaPlayer::kLoadTypeURL, WebMediaPlayerSource(),
-                WebMediaPlayer::kCorsModeUnspecified);
+                WebMediaPlayer::kCorsModeUnspecified,
+                /*is_cache_disabled=*/false);
   compositor_ = player_->compositor_.get();
   EXPECT_TRUE(!!compositor_);
   compositor_->SetAlgorithmEnabledForTesting(algorithm_enabled);
@@ -870,7 +871,8 @@ TEST_P(WebMediaPlayerMSTest, NoWaitForFrameForAudio) {
               DoReadyStateChanged(WebMediaPlayer::kReadyStateHaveEnoughData));
 
   player_->Load(WebMediaPlayer::kLoadTypeURL, WebMediaPlayerSource(),
-                WebMediaPlayer::kCorsModeUnspecified);
+                WebMediaPlayer::kCorsModeUnspecified,
+                /*is_cache_disabled=*/false);
 
   message_loop_controller_.RunAndWaitForStatus(
       media::PipelineStatus::PIPELINE_OK);
