@@ -17,7 +17,7 @@ Are you a Google employee? See
 * At least 100GB of free disk space on an NTFS-formatted hard drive. FAT32
   will not work, as some of the Git packfiles are larger than 4GB.
 * An appropriate version of Visual Studio, as described below.
-* Windows 7 or newer.
+* Windows 10 or newer.
 
 ## Setting up Windows
 
