@@ -102,6 +102,9 @@ class VIZ_SERVICE_EXPORT OutputPresenterX11 : public OutputPresenter,
   // Image in present queue.
   base::circular_deque<Image*> present_images_;
 
+  uint64_t last_target_msc_ = 0;
+  uint64_t last_present_msc_ = 0;
+
   // Callbacks wait for X11 CompleteNotifyEvent
   base::circular_deque<SwapCompletionCallback> swap_completion_callbacks_;
   base::circular_deque<BufferPresentedCallback> presentation_callbacks_;

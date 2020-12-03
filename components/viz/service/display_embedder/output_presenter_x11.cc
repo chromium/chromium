@@ -8,6 +8,7 @@ extern "C" {
 #include <X11/xshmfence.h>
 }
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -472,13 +473,15 @@ void OutputPresenterX11::PostSubBuffer(
   auto* image = static_cast<PresenterImageX11*>(present_images_.back());
   DCHECK(!image->busy());
   image->set_busy(true);
+
+  last_target_msc_ = std::max(last_present_msc_, last_target_msc_) + 1;
   // Trigger the |wait_fence|, so the Xserver will not be blocked.
   // TODO(penghuang): trigger the fence when the image is ready to present, and
   // wait for the |idle_fence| before reusing the image.
-  // TODO(penghuang): set target-msc, divisor and remainder properly.
   x11::Connection::Get()->present().Pixmap({
       .window = window_,
       .pixmap = image->pixmap(),
+      .target_msc = last_target_msc_,
   });
 
   swap_completion_callbacks_.push_back(std::move(completion_callback));
@@ -530,6 +533,8 @@ bool OutputPresenterX11::OnConfigureNotifyEvent(
 
 bool OutputPresenterX11::OnCompleteNotifyEvent(
     const x11::Present::CompleteNotifyEvent* event) {
+  DCHECK_LE(last_present_msc_, event->msc);
+  last_present_msc_ = event->msc;
   // Calling |swap_completion_callbacks_| will kick off a new frame, in most
   // cases, there should be one or more images are idle. However in some corner
   // cases, all images could be busy.
@@ -538,7 +543,18 @@ bool OutputPresenterX11::OnCompleteNotifyEvent(
   std::move(swap_completion_callbacks_.front())
       .Run(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_ACK));
   swap_completion_callbacks_.pop_front();
-  std::move(presentation_callbacks_.front()).Run(gfx::PresentationFeedback());
+
+  auto timestamp =
+      base::TimeTicks() + base::TimeDelta::FromMicroseconds(event->ust);
+  // Assume the refresh rate is 60 Hz for now.
+  // TODO(penghuang): query refresh rate from Xserver.
+  constexpr auto kInterval = base::TimeDelta::FromMicroseconds(
+      base::Time::kMicrosecondsPerSecond / 60);
+  uint32_t flags = gfx::PresentationFeedback::kVSync;
+  if (event->mode == x11::Present::CompleteMode::Flip)
+    flags |= gfx::PresentationFeedback::kZeroCopy;
+  std::move(presentation_callbacks_.front())
+      .Run(gfx::PresentationFeedback(timestamp, kInterval, flags));
   presentation_callbacks_.pop_front();
   return true;
 }
