@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/editing/selection_modifier.h"
 
+#include "third_party/blink/renderer/core/editing/editing_behavior.h"
+#include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -126,6 +128,155 @@ TEST_F(SelectionModifierTest, StartOfSentenceWithNull) {
   EXPECT_FALSE(modifier.Modify(SelectionModifyAlteration::kMove,
                                SelectionModifyDirection::kBackward,
                                TextGranularity::kSentenceBoundary));
+}
+
+TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
+  const char* body_content =
+      "a a"
+      "<div id='host'>"
+      "<span slot='e'>e e</span>"
+      "<span slot='c'>c c</span>"
+      "</div>"
+      "f f";
+  const char* shadow_content =
+      "b b"
+      "<slot name='c'></slot>"
+      "d d"
+      "<slot name='e'></slot>";
+  LoadAhem();
+  InsertStyleElement("body {font-family: Ahem}");
+  SetBodyContent(body_content);
+  Element* host = GetDocument().getElementById("host");
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  shadow_root.setInnerHTML(shadow_content);
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* body = GetDocument().body();
+  Node* a = body->childNodes()->item(0);
+  Node* b = shadow_root.childNodes()->item(0);
+  Node* c = host->QuerySelector("[slot=c]")->firstChild();
+  Node* d = shadow_root.childNodes()->item(2);
+  Node* e = host->QuerySelector("[slot=e]")->firstChild();
+  Node* f = body->childNodes()->item(2);
+
+  auto makeSelection = [&](Position position) {
+    return SelectionInDOMTree::Builder().Collapse(position).Build();
+  };
+  SelectionModifyAlteration move = SelectionModifyAlteration::kMove;
+  SelectionModifyDirection direction;
+  TextGranularity granularity;
+
+  {
+    // Test moving forward, character by character.
+    direction = SelectionModifyDirection::kForward;
+    granularity = TextGranularity::kCharacter;
+    SelectionModifier modifier(GetFrame(), makeSelection(Position(body, 0)));
+    EXPECT_EQ(Position(a, 0), modifier.Selection().Base());
+    for (Node* node : {a, b, c, d, e, f}) {
+      if (node == b || node == f) {
+        modifier.Modify(move, direction, granularity);
+        EXPECT_EQ(Position(node, 0), modifier.Selection().Base());
+      }
+      modifier.Modify(move, direction, granularity);
+      EXPECT_EQ(Position(node, 1), modifier.Selection().Base());
+      modifier.Modify(move, direction, granularity);
+      EXPECT_EQ(Position(node, 2), modifier.Selection().Base());
+      modifier.Modify(move, direction, granularity);
+      EXPECT_EQ(Position(node, 3), modifier.Selection().Base());
+    }
+  }
+  {
+    // Test moving backward, character by character.
+    direction = SelectionModifyDirection::kBackward;
+    granularity = TextGranularity::kCharacter;
+    SelectionModifier modifier(GetFrame(), makeSelection(Position(body, 3)));
+    for (Node* node : {f, e, d, c, b, a}) {
+      EXPECT_EQ(Position(node, 3), modifier.Selection().Base());
+      modifier.Modify(move, direction, granularity);
+      EXPECT_EQ(Position(node, 2), modifier.Selection().Base());
+      modifier.Modify(move, direction, granularity);
+      EXPECT_EQ(Position(node, 1), modifier.Selection().Base());
+      modifier.Modify(move, direction, granularity);
+      if (node == f || node == b) {
+        EXPECT_EQ(Position(node, 0), modifier.Selection().Base());
+        modifier.Modify(move, direction, granularity);
+      }
+    }
+    EXPECT_EQ(Position(a, 0), modifier.Selection().Base());
+  }
+  {
+    // Test moving forward, word by word.
+    direction = SelectionModifyDirection::kForward;
+    granularity = TextGranularity::kWord;
+    bool skip_space =
+        GetFrame().GetEditor().Behavior().ShouldSkipSpaceWhenMovingRight();
+    SelectionModifier modifier(GetFrame(), makeSelection(Position(body, 0)));
+    EXPECT_EQ(Position(a, 0), modifier.Selection().Base());
+    for (Node* node : {a, b, c, d, e, f}) {
+      if (node == b || node == f) {
+        modifier.Modify(move, direction, granularity);
+        EXPECT_EQ(Position(node, 0), modifier.Selection().Base());
+      }
+      modifier.Modify(move, direction, granularity);
+      EXPECT_EQ(Position(node, skip_space ? 2 : 1),
+                modifier.Selection().Base());
+      if (node == a || node == e || node == f) {
+        modifier.Modify(move, direction, granularity);
+        EXPECT_EQ(Position(node, 3), modifier.Selection().Base());
+      }
+    }
+  }
+  {
+    // Test moving backward, word by word.
+    direction = SelectionModifyDirection::kBackward;
+    granularity = TextGranularity::kWord;
+    SelectionModifier modifier(GetFrame(), makeSelection(Position(body, 3)));
+    for (Node* node : {f, e, d, c, b, a}) {
+      if (node == f || node == e || node == a) {
+        EXPECT_EQ(Position(node, 3), modifier.Selection().Base());
+        modifier.Modify(move, direction, granularity);
+      }
+      EXPECT_EQ(Position(node, 2), modifier.Selection().Base());
+      modifier.Modify(move, direction, granularity);
+      if (node == f || node == b) {
+        EXPECT_EQ(Position(node, 0), modifier.Selection().Base());
+        modifier.Modify(move, direction, granularity);
+      }
+    }
+    EXPECT_EQ(Position(a, 0), modifier.Selection().Base());
+  }
+
+  // Place the contents into different lines
+  InsertStyleElement("span {display: block}");
+  UpdateAllLifecyclePhasesForTest();
+
+  {
+    // Test moving forward, line by line.
+    direction = SelectionModifyDirection::kForward;
+    granularity = TextGranularity::kLine;
+    for (int i = 0; i <= 3; ++i) {
+      SelectionModifier modifier(GetFrame(), makeSelection(Position(a, i)));
+      for (Node* node : {a, b, c, d, e, f}) {
+        EXPECT_EQ(Position(node, i), modifier.Selection().Base());
+        modifier.Modify(move, direction, granularity);
+      }
+      EXPECT_EQ(Position(f, 3), modifier.Selection().Base());
+    }
+  }
+  {
+    // Test moving backward, line by line.
+    direction = SelectionModifyDirection::kBackward;
+    granularity = TextGranularity::kLine;
+    for (int i = 0; i <= 3; ++i) {
+      SelectionModifier modifier(GetFrame(), makeSelection(Position(f, i)));
+      for (Node* node : {f, e, d, c, b, a}) {
+        EXPECT_EQ(Position(node, i), modifier.Selection().Base());
+        modifier.Modify(move, direction, granularity);
+      }
+      EXPECT_EQ(Position(a, 0), modifier.Selection().Base());
+    }
+  }
 }
 
 }  // namespace blink

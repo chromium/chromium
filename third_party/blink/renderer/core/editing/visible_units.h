@@ -130,8 +130,13 @@ CORE_EXPORT Position EndOfWordPosition(const Position&,
 CORE_EXPORT PositionInFlatTree
 EndOfWordPosition(const PositionInFlatTree&, WordSide = kNextWordIfOnBoundary);
 CORE_EXPORT PositionWithAffinity PreviousWordPosition(const Position&);
+CORE_EXPORT PositionInFlatTreeWithAffinity
+PreviousWordPosition(const PositionInFlatTree&);
 CORE_EXPORT PositionWithAffinity NextWordPosition(
     const Position&,
+    PlatformWordBehavior = PlatformWordBehavior::kWordDontSkipSpaces);
+CORE_EXPORT PositionInFlatTreeWithAffinity NextWordPosition(
+    const PositionInFlatTree&,
     PlatformWordBehavior = PlatformWordBehavior::kWordDontSkipSpaces);
 
 // sentences
@@ -144,8 +149,8 @@ EndOfSentence(const PositionInFlatTree&);
 CORE_EXPORT VisiblePosition EndOfSentence(const VisiblePosition&);
 CORE_EXPORT VisiblePositionInFlatTree
 EndOfSentence(const VisiblePositionInFlatTree&);
-Position PreviousSentencePosition(const Position&);
-Position NextSentencePosition(const Position&);
+PositionInFlatTree PreviousSentencePosition(const PositionInFlatTree&);
+PositionInFlatTree NextSentencePosition(const PositionInFlatTree&);
 EphemeralRange ExpandEndToSentenceBoundary(const EphemeralRange&);
 EphemeralRange ExpandRangeToSentenceBoundary(const EphemeralRange&);
 
@@ -227,8 +232,8 @@ bool IsStartOfDocument(const VisiblePosition&);
 bool IsEndOfDocument(const VisiblePosition&);
 
 // editable content
-Position StartOfEditableContent(const Position&);
-Position EndOfEditableContent(const Position&);
+PositionInFlatTree StartOfEditableContent(const PositionInFlatTree&);
+PositionInFlatTree EndOfEditableContent(const PositionInFlatTree&);
 CORE_EXPORT bool IsEndOfEditableOrNonEditableContent(const VisiblePosition&);
 CORE_EXPORT bool IsEndOfEditableOrNonEditableContent(
     const VisiblePositionInFlatTree&);

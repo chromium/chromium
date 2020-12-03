@@ -51,7 +51,7 @@ class AbstractLineBox {
  public:
   AbstractLineBox() = default;
 
-  static AbstractLineBox CreateFor(const PositionWithAffinity&);
+  static AbstractLineBox CreateFor(const PositionInFlatTreeWithAffinity&);
 
   bool IsNull() const { return type_ == Type::kNull; }
 
@@ -121,7 +121,7 @@ class AbstractLineBox {
                           line_direction_point - absolute_block_point.top);
   }
 
-  PositionWithAffinity PositionForPoint(
+  PositionInFlatTreeWithAffinity PositionForPoint(
       const PhysicalOffset& point_in_container,
       bool only_editable_leaves) const {
     if (IsOldLayout()) {
@@ -130,11 +130,14 @@ class AbstractLineBox {
               GetBlock().FlipForWritingMode(point_in_container),
               only_editable_leaves);
       if (!closest_leaf_child)
-        return PositionWithAffinity();
+        return PositionInFlatTreeWithAffinity();
       const Node* node = closest_leaf_child->GetNode();
-      if (node && EditingIgnoresContent(*node))
-        return PositionWithAffinity(Position::InParentBeforeNode(*node));
-      return closest_leaf_child->PositionForPoint(point_in_container);
+      if (node && EditingIgnoresContent(*node)) {
+        return PositionInFlatTreeWithAffinity(
+            PositionInFlatTree::InParentBeforeNode(*node));
+      }
+      return ToPositionInFlatTreeWithAffinity(
+          closest_leaf_child->PositionForPoint(point_in_container));
     }
     return PositionForPoint(cursor_, point_in_container, only_editable_leaves);
   }
@@ -186,9 +189,10 @@ class AbstractLineBox {
            HasEditableStyle(*layout_object->GetNode());
   }
 
-  static PositionWithAffinity PositionForPoint(const NGInlineCursor& line,
-                                               const PhysicalOffset& point,
-                                               bool only_editable_leaves) {
+  static PositionInFlatTreeWithAffinity PositionForPoint(
+      const NGInlineCursor& line,
+      const PhysicalOffset& point,
+      bool only_editable_leaves) {
     DCHECK(line.Current().IsLineBox());
     const PhysicalSize unit_square(LayoutUnit(1), LayoutUnit(1));
     const LogicalOffset logical_point =
@@ -232,13 +236,16 @@ class AbstractLineBox {
       }
     }
     if (!closest_leaf_child)
-      return PositionWithAffinity();
+      return PositionInFlatTreeWithAffinity();
     const Node* const node = closest_leaf_child.Current().GetNode();
     if (!node)
-      return PositionWithAffinity();
-    if (EditingIgnoresContent(*node))
-      return PositionWithAffinity(Position::BeforeNode(*node));
-    return closest_leaf_child.PositionForPointInChild(point);
+      return PositionInFlatTreeWithAffinity();
+    if (EditingIgnoresContent(*node)) {
+      return PositionInFlatTreeWithAffinity(
+          PositionInFlatTree::BeforeNode(*node));
+    }
+    return ToPositionInFlatTreeWithAffinity(
+        closest_leaf_child.PositionForPointInChild(point));
   }
 
   enum class Type { kNull, kOldLayout, kLayoutNG };
@@ -250,13 +257,14 @@ class AbstractLineBox {
 
 // static
 AbstractLineBox AbstractLineBox::CreateFor(
-    const PositionWithAffinity& position) {
+    const PositionInFlatTreeWithAffinity& position) {
   if (position.IsNull() ||
       !position.GetPosition().AnchorNode()->GetLayoutObject()) {
     return AbstractLineBox();
   }
 
-  const PositionWithAffinity adjusted = ComputeInlineAdjustedPosition(position);
+  const PositionWithAffinity adjusted =
+      ToPositionInDOMTreeWithAffinity(ComputeInlineAdjustedPosition(position));
   if (adjusted.IsNull())
     return AbstractLineBox();
 
@@ -276,25 +284,27 @@ ContainerNode* HighestEditableRootOfNode(const Node& node) {
 }
 
 Node* PreviousNodeConsideringAtomicNodes(const Node& start) {
-  if (start.previousSibling()) {
-    Node* node = start.previousSibling();
-    while (!IsAtomicNode(node) && node->lastChild())
-      node = node->lastChild();
+  if (Node* previous_sibling = FlatTreeTraversal::PreviousSibling(start)) {
+    Node* node = previous_sibling;
+    while (!IsAtomicNodeInFlatTree(node)) {
+      if (Node* last_child = FlatTreeTraversal::LastChild(*node))
+        node = last_child;
+    }
     return node;
   }
-  return start.parentNode();
+  return FlatTreeTraversal::Parent(start);
 }
 
 Node* NextNodeConsideringAtomicNodes(const Node& start) {
-  if (!IsAtomicNode(&start) && start.hasChildren())
-    return start.firstChild();
-  if (start.nextSibling())
-    return start.nextSibling();
+  if (!IsAtomicNodeInFlatTree(&start) && FlatTreeTraversal::HasChildren(start))
+    return FlatTreeTraversal::FirstChild(start);
+  if (Node* next_sibling = FlatTreeTraversal::NextSibling(start))
+    return next_sibling;
   const Node* node = &start;
-  while (node && !node->nextSibling())
-    node = node->parentNode();
+  while (node && !FlatTreeTraversal::NextSibling(*node))
+    node = FlatTreeTraversal::Parent(*node);
   if (node)
-    return node->nextSibling();
+    return FlatTreeTraversal::NextSibling(*node);
   return nullptr;
 }
 
@@ -303,7 +313,7 @@ Node* NextNodeConsideringAtomicNodes(const Node& start) {
 Node* PreviousAtomicLeafNode(const Node& start) {
   Node* node = PreviousNodeConsideringAtomicNodes(start);
   while (node) {
-    if (IsAtomicNode(node))
+    if (IsAtomicNodeInFlatTree(node))
       return node;
     node = PreviousNodeConsideringAtomicNodes(*node);
   }
@@ -315,7 +325,7 @@ Node* PreviousAtomicLeafNode(const Node& start) {
 Node* NextAtomicLeafNode(const Node& start) {
   Node* node = NextNodeConsideringAtomicNodes(start);
   while (node) {
-    if (IsAtomicNode(node))
+    if (IsAtomicNodeInFlatTree(node))
       return node;
     node = NextNodeConsideringAtomicNodes(*node);
   }
@@ -344,16 +354,18 @@ Node* NextLeafWithGivenEditability(Node* node, bool editable) {
   return nullptr;
 }
 
-bool InSameLine(const Node& node, const PositionWithAffinity& position) {
+bool InSameLine(const Node& node,
+                const PositionInFlatTreeWithAffinity& position) {
   if (!node.GetLayoutObject())
     return true;
-  return InSameLine(CreateVisiblePosition(FirstPositionInOrBeforeNode(node))
+  return InSameLine(CreateVisiblePosition(
+                        PositionInFlatTree::FirstPositionInOrBeforeNode(node))
                         .ToPositionWithAffinity(),
                     position);
 }
 
 Node* FindNodeInPreviousLine(const Node& start_node,
-                             const PositionWithAffinity& position) {
+                             const PositionInFlatTreeWithAffinity& position) {
   for (Node* runner = PreviousLeafWithSameEditability(start_node); runner;
        runner = PreviousLeafWithSameEditability(*runner)) {
     if (!InSameLine(*runner, position))
@@ -363,9 +375,9 @@ Node* FindNodeInPreviousLine(const Node& start_node,
 }
 
 // FIXME: consolidate with code in previousLinePosition.
-Position PreviousRootInlineBoxCandidatePosition(
+PositionInFlatTree PreviousRootInlineBoxCandidatePosition(
     Node* node,
-    const PositionWithAffinity& position) {
+    const PositionInFlatTreeWithAffinity& position) {
   ContainerNode* highest_root = HighestEditableRoot(position.GetPosition());
   Node* const previous_node = FindNodeInPreviousLine(*node, position);
   for (Node* runner = previous_node; runner && !runner->IsShadowRoot();
@@ -373,19 +385,19 @@ Position PreviousRootInlineBoxCandidatePosition(
     if (HighestEditableRootOfNode(*runner) != highest_root)
       break;
 
-    const Position& candidate =
-        IsA<HTMLBRElement>(*runner)
-            ? Position::BeforeNode(*runner)
-            : Position::EditingPositionOf(runner, CaretMaxOffset(runner));
+    const PositionInFlatTree& candidate =
+        IsA<HTMLBRElement>(*runner) ? PositionInFlatTree::BeforeNode(*runner)
+                                    : PositionInFlatTree::EditingPositionOf(
+                                          runner, CaretMaxOffset(runner));
     if (IsVisuallyEquivalentCandidate(candidate))
       return candidate;
   }
-  return Position();
+  return PositionInFlatTree();
 }
 
-Position NextRootInlineBoxCandidatePosition(
+PositionInFlatTree NextRootInlineBoxCandidatePosition(
     Node* node,
-    const PositionWithAffinity& position) {
+    const PositionInFlatTreeWithAffinity& position) {
   ContainerNode* highest_root = HighestEditableRoot(position.GetPosition());
   // TODO(xiaochengh): We probably also need to pass in the starting editability
   // to |PreviousLeafWithSameEditability|.
@@ -401,31 +413,31 @@ Position NextRootInlineBoxCandidatePosition(
     if (HighestEditableRootOfNode(*runner) != highest_root)
       break;
 
-    const Position& candidate =
-        Position::EditingPositionOf(runner, CaretMinOffset(runner));
+    const PositionInFlatTree& candidate =
+        PositionInFlatTree::EditingPositionOf(runner, CaretMinOffset(runner));
     if (IsVisuallyEquivalentCandidate(candidate))
       return candidate;
   }
-  return Position();
+  return PositionInFlatTree();
 }
 
 }  // namespace
 
 // static
-PositionWithAffinity SelectionModifier::PreviousLinePosition(
-    const PositionWithAffinity& position,
+PositionInFlatTreeWithAffinity SelectionModifier::PreviousLinePosition(
+    const PositionInFlatTreeWithAffinity& position,
     LayoutUnit line_direction_point) {
   // TODO(xiaochengh): Make all variables |const|.
 
-  Position p = position.GetPosition();
+  PositionInFlatTree p = position.GetPosition();
   Node* node = p.AnchorNode();
 
   if (!node)
-    return PositionWithAffinity();
+    return PositionInFlatTreeWithAffinity();
 
   LayoutObject* layout_object = node->GetLayoutObject();
   if (!layout_object)
-    return PositionWithAffinity();
+    return PositionInFlatTreeWithAffinity();
 
   AbstractLineBox line = AbstractLineBox::CreateFor(position);
   if (!line.IsNull()) {
@@ -435,14 +447,15 @@ PositionWithAffinity SelectionModifier::PreviousLinePosition(
   }
 
   if (line.IsNull()) {
-    Position candidate = PreviousRootInlineBoxCandidatePosition(node, position);
+    PositionInFlatTree candidate =
+        PreviousRootInlineBoxCandidatePosition(node, position);
     if (candidate.IsNotNull()) {
       line = AbstractLineBox::CreateFor(
           CreateVisiblePosition(candidate).ToPositionWithAffinity());
       if (line.IsNull()) {
         // TODO(editing-dev): Investigate if this is correct for null
         // |CreateVisiblePosition(candidate)|.
-        return PositionWithAffinity(candidate);
+        return PositionInFlatTreeWithAffinity(candidate);
       }
     }
   }
@@ -473,25 +486,26 @@ PositionWithAffinity SelectionModifier::PreviousLinePosition(
                               ? RootEditableElement(*node)
                               : node->GetDocument().documentElement();
   if (!root_element)
-    return PositionWithAffinity();
-  return PositionWithAffinity(Position::FirstPositionInNode(*root_element));
+    return PositionInFlatTreeWithAffinity();
+  return PositionInFlatTreeWithAffinity(
+      PositionInFlatTree::FirstPositionInNode(*root_element));
 }
 
 // static
-PositionWithAffinity SelectionModifier::NextLinePosition(
-    const PositionWithAffinity& position,
+PositionInFlatTreeWithAffinity SelectionModifier::NextLinePosition(
+    const PositionInFlatTreeWithAffinity& position,
     LayoutUnit line_direction_point) {
   // TODO(xiaochengh): Make all variables |const|.
 
-  Position p = position.GetPosition();
+  PositionInFlatTree p = position.GetPosition();
   Node* node = p.AnchorNode();
 
   if (!node)
-    return PositionWithAffinity();
+    return PositionInFlatTreeWithAffinity();
 
   LayoutObject* layout_object = node->GetLayoutObject();
   if (!layout_object)
-    return PositionWithAffinity();
+    return PositionInFlatTreeWithAffinity();
 
   AbstractLineBox line = AbstractLineBox::CreateFor(position);
   if (!line.IsNull()) {
@@ -502,10 +516,10 @@ PositionWithAffinity SelectionModifier::NextLinePosition(
 
   if (line.IsNull()) {
     // FIXME: We need do the same in previousLinePosition.
-    Node* child = NodeTraversal::ChildAt(*node, p.ComputeEditingOffset());
+    Node* child = FlatTreeTraversal::ChildAt(*node, p.ComputeEditingOffset());
     Node* search_start_node =
-        child ? child : &NodeTraversal::LastWithinOrSelf(*node);
-    Position candidate =
+        child ? child : &FlatTreeTraversal::LastWithinOrSelf(*node);
+    PositionInFlatTree candidate =
         NextRootInlineBoxCandidatePosition(search_start_node, position);
     if (candidate.IsNotNull()) {
       line = AbstractLineBox::CreateFor(
@@ -513,7 +527,7 @@ PositionWithAffinity SelectionModifier::NextLinePosition(
       if (line.IsNull()) {
         // TODO(editing-dev): Investigate if this is correct for null
         // |CreateVisiblePosition(candidate)|.
-        return PositionWithAffinity(candidate);
+        return PositionInFlatTreeWithAffinity(candidate);
       }
     }
   }
@@ -544,8 +558,9 @@ PositionWithAffinity SelectionModifier::NextLinePosition(
                               ? RootEditableElement(*node)
                               : node->GetDocument().documentElement();
   if (!root_element)
-    return PositionWithAffinity();
-  return PositionWithAffinity(Position::LastPositionInNode(*root_element));
+    return PositionInFlatTreeWithAffinity();
+  return PositionInFlatTreeWithAffinity(
+      PositionInFlatTree::LastPositionInNode(*root_element));
 }
 
 }  // namespace blink

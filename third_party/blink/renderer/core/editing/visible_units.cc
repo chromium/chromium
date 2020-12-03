@@ -409,20 +409,20 @@ bool IsEndOfDocument(const VisiblePosition& p) {
 
 // ---------
 
-Position StartOfEditableContent(const Position& position) {
+PositionInFlatTree StartOfEditableContent(const PositionInFlatTree& position) {
   ContainerNode* highest_root = HighestEditableRoot(position);
   if (!highest_root)
-    return Position();
+    return PositionInFlatTree();
 
-  return Position::FirstPositionInNode(*highest_root);
+  return PositionInFlatTree::FirstPositionInNode(*highest_root);
 }
 
-Position EndOfEditableContent(const Position& position) {
+PositionInFlatTree EndOfEditableContent(const PositionInFlatTree& position) {
   ContainerNode* highest_root = HighestEditableRoot(position);
   if (!highest_root)
-    return Position();
+    return PositionInFlatTree();
 
-  return Position::LastPositionInNode(*highest_root);
+  return PositionInFlatTree::LastPositionInNode(*highest_root);
 }
 
 bool IsEndOfEditableOrNonEditableContent(const VisiblePosition& position) {

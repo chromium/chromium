@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/inline_box_position.h"
 #include "third_party/blink/renderer/core/editing/local_caret_rect.h"
+#include "third_party/blink/renderer/core/editing/ng_flat_tree_shorthands.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
@@ -54,15 +55,16 @@ namespace {
 // enters an infinite loop. Work around it by hard-limiting the iteration.
 const unsigned kMaxIterationForPageGranularityMovement = 1024;
 
-VisiblePosition LeftBoundaryOfLine(const VisiblePosition& c,
-                                   TextDirection direction) {
+VisiblePositionInFlatTree LeftBoundaryOfLine(const VisiblePositionInFlatTree& c,
+                                             TextDirection direction) {
   DCHECK(c.IsValid()) << c;
   return direction == TextDirection::kLtr ? LogicalStartOfLine(c)
                                           : LogicalEndOfLine(c);
 }
 
-VisiblePosition RightBoundaryOfLine(const VisiblePosition& c,
-                                    TextDirection direction) {
+VisiblePositionInFlatTree RightBoundaryOfLine(
+    const VisiblePositionInFlatTree& c,
+    TextDirection direction) {
   DCHECK(c.IsValid()) << c;
   return direction == TextDirection::kLtr ? LogicalEndOfLine(c)
                                           : LogicalStartOfLine(c);
@@ -70,14 +72,25 @@ VisiblePosition RightBoundaryOfLine(const VisiblePosition& c,
 
 }  // namespace
 
+static bool InSameParagraph(const VisiblePositionInFlatTree& a,
+                            const VisiblePositionInFlatTree& b,
+                            EditingBoundaryCrossingRule boundary_crossing_rule =
+                                kCannotCrossEditingBoundary) {
+  DCHECK(a.IsValid()) << a;
+  DCHECK(b.IsValid()) << b;
+  return a.IsNotNull() &&
+         StartOfParagraph(a, boundary_crossing_rule).DeepEquivalent() ==
+             StartOfParagraph(b, boundary_crossing_rule).DeepEquivalent();
+}
+
 // static
-VisiblePosition SelectionModifier::PreviousParagraphPosition(
-    const VisiblePosition& passed_position,
+VisiblePositionInFlatTree SelectionModifier::PreviousParagraphPosition(
+    const VisiblePositionInFlatTree& passed_position,
     LayoutUnit x_point) {
-  VisiblePosition position = passed_position;
+  VisiblePositionInFlatTree position = passed_position;
   do {
     DCHECK(position.IsValid()) << position;
-    const VisiblePosition& new_position = CreateVisiblePosition(
+    const VisiblePositionInFlatTree& new_position = CreateVisiblePosition(
         PreviousLinePosition(position.ToPositionWithAffinity(), x_point));
     if (new_position.IsNull() ||
         new_position.DeepEquivalent() == position.DeepEquivalent())
@@ -88,13 +101,13 @@ VisiblePosition SelectionModifier::PreviousParagraphPosition(
 }
 
 // static
-VisiblePosition SelectionModifier::NextParagraphPosition(
-    const VisiblePosition& passed_position,
+VisiblePositionInFlatTree SelectionModifier::NextParagraphPosition(
+    const VisiblePositionInFlatTree& passed_position,
     LayoutUnit x_point) {
-  VisiblePosition position = passed_position;
+  VisiblePositionInFlatTree position = passed_position;
   do {
     DCHECK(position.IsValid()) << position;
-    const VisiblePosition& new_position = CreateVisiblePosition(
+    const VisiblePositionInFlatTree& new_position = CreateVisiblePosition(
         NextLinePosition(position.ToPositionWithAffinity(), x_point));
     if (new_position.IsNull() ||
         new_position.DeepEquivalent() == position.DeepEquivalent())
@@ -118,7 +131,7 @@ SelectionModifier::SelectionModifier(
     const SelectionInDOMTree& selection,
     LayoutUnit x_pos_for_vertical_arrow_navigation)
     : frame_(&frame),
-      current_selection_(selection),
+      current_selection_(ConvertToSelectionInFlatTree(selection)),
       x_pos_for_vertical_arrow_navigation_(
           x_pos_for_vertical_arrow_navigation) {}
 
@@ -127,20 +140,21 @@ SelectionModifier::SelectionModifier(const LocalFrame& frame,
     : SelectionModifier(frame, selection, NoXPosForVerticalArrowNavigation()) {}
 
 VisibleSelection SelectionModifier::Selection() const {
-  return CreateVisibleSelection(current_selection_);
+  return CreateVisibleSelection(
+      ConvertToSelectionInDOMTree(current_selection_));
 }
 
-static VisiblePosition ComputeVisibleExtent(
-    const VisibleSelection& visible_selection) {
+static VisiblePositionInFlatTree ComputeVisibleExtent(
+    const VisibleSelectionInFlatTree& visible_selection) {
   return CreateVisiblePosition(visible_selection.Extent(),
                                visible_selection.Affinity());
 }
 
 TextDirection SelectionModifier::DirectionOfEnclosingBlock() const {
-  const Position& selection_extent = selection_.Extent();
+  const PositionInFlatTree& selection_extent = selection_.Extent();
 
-  // TODO(editing-dev): Check for Position::IsNotNull is an easy fix for few
-  // editing/ web tests, that didn't expect that (e.g.
+  // TODO(editing-dev): Check for PositionInFlatTree::IsNotNull is an easy fix
+  // for few editing/ web tests, that didn't expect that (e.g.
   // editing/selection/extend-byline-withfloat.html).
   // That should be fixed in a more appropriate manner.
   // We should either have SelectionModifier aborted earlier for null selection,
@@ -153,10 +167,11 @@ TextDirection SelectionModifier::DirectionOfEnclosingBlock() const {
 namespace {
 
 base::Optional<TextDirection> DirectionAt(
-    const PositionWithAffinity& position) {
+    const PositionInFlatTreeWithAffinity& position) {
   if (position.IsNull())
     return base::nullopt;
-  const PositionWithAffinity adjusted = ComputeInlineAdjustedPosition(position);
+  const PositionInFlatTreeWithAffinity adjusted =
+      ComputeInlineAdjustedPosition(position);
   if (adjusted.IsNull())
     return base::nullopt;
 
@@ -176,10 +191,11 @@ base::Optional<TextDirection> DirectionAt(
 
 // TODO(xiaochengh): Deduplicate code with |DirectionAt()|.
 base::Optional<TextDirection> LineDirectionAt(
-    const PositionWithAffinity& position) {
+    const PositionInFlatTreeWithAffinity& position) {
   if (position.IsNull())
     return base::nullopt;
-  const PositionWithAffinity adjusted = ComputeInlineAdjustedPosition(position);
+  const PositionInFlatTreeWithAffinity adjusted =
+      ComputeInlineAdjustedPosition(position);
   if (adjusted.IsNull())
     return base::nullopt;
 
@@ -199,7 +215,7 @@ base::Optional<TextDirection> LineDirectionAt(
   return base::nullopt;
 }
 
-TextDirection DirectionOf(const VisibleSelection& visible_selection) {
+TextDirection DirectionOf(const VisibleSelectionInFlatTree& visible_selection) {
   base::Optional<TextDirection> maybe_start_direction =
       DirectionAt(visible_selection.VisibleStart().ToPositionWithAffinity());
   base::Optional<TextDirection> maybe_end_direction =
@@ -222,7 +238,7 @@ TextDirection SelectionModifier::LineDirectionOfExtent() const {
       .value_or(DirectionOfEnclosingBlockOf(selection_.Extent()));
 }
 
-static bool IsBaseStart(const VisibleSelection& visible_selection,
+static bool IsBaseStart(const VisibleSelectionInFlatTree& visible_selection,
                         SelectionModifyDirection direction) {
   switch (direction) {
     case SelectionModifyDirection::kRight:
@@ -238,25 +254,27 @@ static bool IsBaseStart(const VisibleSelection& visible_selection,
   return true;
 }
 
-// This function returns |VisibleSelection| from start and end position of
-// current_selection_'s |VisibleSelection| with |direction| and ordering of base
-// and extent to handle base/extent don't match to start/end, e.g. granularity
-// != character, and start/end adjustment in |visibleSelection::validate()| for
-// range selection.
-VisibleSelection SelectionModifier::PrepareToModifySelection(
+// This function returns |VisibleSelectionInFlatTree| from start and end
+// position of current_selection_'s |VisibleSelectionInFlatTree| with
+// |direction| and ordering of base and extent to handle base/extent don't match
+// to start/end, e.g. granularity
+// != character, and start/end adjustment in
+// |VisibleSelectionInFlatTree::validate()| for range selection.
+VisibleSelectionInFlatTree SelectionModifier::PrepareToModifySelection(
     SelectionModifyAlteration alter,
     SelectionModifyDirection direction) const {
-  const VisibleSelection& visible_selection =
+  const VisibleSelectionInFlatTree& visible_selection =
       CreateVisibleSelection(current_selection_);
   if (alter != SelectionModifyAlteration::kExtend)
     return visible_selection;
   if (visible_selection.IsNone())
     return visible_selection;
 
-  const EphemeralRange& range = visible_selection.AsSelection().ComputeRange();
+  const EphemeralRangeInFlatTree& range =
+      visible_selection.AsSelection().ComputeRange();
   if (range.IsCollapsed())
     return visible_selection;
-  SelectionInDOMTree::Builder builder;
+  SelectionInFlatTree::Builder builder;
   // Make base and extent match start and end so we extend the user-visible
   // selection. This only matters for cases where base and extend point to
   // different positions than start and end (e.g. after a double-click to
@@ -271,63 +289,65 @@ VisibleSelection SelectionModifier::PrepareToModifySelection(
   return CreateVisibleSelection(builder.Build());
 }
 
-VisiblePosition SelectionModifier::PositionForPlatform(
+VisiblePositionInFlatTree SelectionModifier::PositionForPlatform(
     bool is_get_start) const {
   Settings* settings = GetFrame().GetSettings();
   if (settings && settings->GetEditingBehaviorType() ==
                       mojom::blink::EditingBehavior::kEditingMacBehavior)
     return is_get_start ? selection_.VisibleStart() : selection_.VisibleEnd();
   // Linux and Windows always extend selections from the extent endpoint.
-  // FIXME: VisibleSelection should be fixed to ensure as an invariant that
-  // base/extent always point to the same nodes as start/end, but which points
-  // to which depends on the value of isBaseFirst. Then this can be changed
-  // to just return selection_.extent().
+  // FIXME: VisibleSelectionInFlatTree should be fixed to ensure as an invariant
+  // that base/extent always point to the same nodes as start/end, but which
+  // points to which depends on the value of isBaseFirst. Then this can be
+  // changed to just return selection_.extent().
   return selection_.IsBaseFirst() ? selection_.VisibleEnd()
                                   : selection_.VisibleStart();
 }
 
-VisiblePosition SelectionModifier::StartForPlatform() const {
+VisiblePositionInFlatTree SelectionModifier::StartForPlatform() const {
   return PositionForPlatform(true);
 }
 
-VisiblePosition SelectionModifier::EndForPlatform() const {
+VisiblePositionInFlatTree SelectionModifier::EndForPlatform() const {
   return PositionForPlatform(false);
 }
 
-Position SelectionModifier::NextWordPositionForPlatform(
-    const Position& original_position) {
+PositionInFlatTree SelectionModifier::NextWordPositionForPlatform(
+    const PositionInFlatTree& original_position) {
   const PlatformWordBehavior platform_word_behavior =
       GetFrame().GetEditor().Behavior().ShouldSkipSpaceWhenMovingRight()
           ? PlatformWordBehavior::kWordSkipSpaces
           : PlatformWordBehavior::kWordDontSkipSpaces;
   // Next word position can't be upstream.
-  const Position position_after_current_word =
+  const PositionInFlatTree position_after_current_word =
       NextWordPosition(original_position, platform_word_behavior).GetPosition();
 
   return position_after_current_word;
 }
 
-static VisiblePosition AdjustForwardPositionForUserSelectAll(
-    const VisiblePosition& position) {
+static VisiblePositionInFlatTree AdjustForwardPositionForUserSelectAll(
+    const VisiblePositionInFlatTree& position) {
   Node* const root_user_select_all = EditingStrategy::RootUserSelectAllForNode(
       position.DeepEquivalent().AnchorNode());
   if (!root_user_select_all)
     return position;
   return CreateVisiblePosition(MostForwardCaretPosition(
-      Position::AfterNode(*root_user_select_all), kCanCrossEditingBoundary));
+      PositionInFlatTree::AfterNode(*root_user_select_all),
+      kCanCrossEditingBoundary));
 }
 
-static VisiblePosition AdjustBackwardPositionForUserSelectAll(
-    const VisiblePosition& position) {
+static VisiblePositionInFlatTree AdjustBackwardPositionForUserSelectAll(
+    const VisiblePositionInFlatTree& position) {
   Node* const root_user_select_all = EditingStrategy::RootUserSelectAllForNode(
       position.DeepEquivalent().AnchorNode());
   if (!root_user_select_all)
     return position;
   return CreateVisiblePosition(MostBackwardCaretPosition(
-      Position::BeforeNode(*root_user_select_all), kCanCrossEditingBoundary));
+      PositionInFlatTree::BeforeNode(*root_user_select_all),
+      kCanCrossEditingBoundary));
 }
 
-VisiblePosition SelectionModifier::ModifyExtendingRightInternal(
+VisiblePositionInFlatTree SelectionModifier::ModifyExtendingRightInternal(
     TextGranularity granularity) {
   // The difference between modifyExtendingRight and modifyExtendingForward is:
   // modifyExtendingForward always extends forward logically.
@@ -364,18 +384,19 @@ VisiblePosition SelectionModifier::ModifyExtendingRightInternal(
       return ModifyExtendingForwardInternal(granularity);
   }
   NOTREACHED() << static_cast<int>(granularity);
-  return VisiblePosition();
+  return VisiblePositionInFlatTree();
 }
 
-VisiblePosition SelectionModifier::ModifyExtendingRight(
+VisiblePositionInFlatTree SelectionModifier::ModifyExtendingRight(
     TextGranularity granularity) {
-  const VisiblePosition& pos = ModifyExtendingRightInternal(granularity);
+  const VisiblePositionInFlatTree& pos =
+      ModifyExtendingRightInternal(granularity);
   if (DirectionOfEnclosingBlock() == TextDirection::kLtr)
     return AdjustForwardPositionForUserSelectAll(pos);
   return AdjustBackwardPositionForUserSelectAll(pos);
 }
 
-VisiblePosition SelectionModifier::ModifyExtendingForwardInternal(
+VisiblePositionInFlatTree SelectionModifier::ModifyExtendingForwardInternal(
     TextGranularity granularity) {
   switch (granularity) {
     case TextGranularity::kCharacter:
@@ -390,7 +411,7 @@ VisiblePosition SelectionModifier::ModifyExtendingForwardInternal(
               ComputeVisibleExtent(selection_).DeepEquivalent()),
           TextAffinity::kUpstreamIfPossible);
     case TextGranularity::kLine: {
-      const VisiblePosition& pos = ComputeVisibleExtent(selection_);
+      const VisiblePositionInFlatTree& pos = ComputeVisibleExtent(selection_);
       DCHECK(pos.IsValid()) << pos;
       return CreateVisiblePosition(NextLinePosition(
           pos.ToPositionWithAffinity(),
@@ -407,7 +428,7 @@ VisiblePosition SelectionModifier::ModifyExtendingForwardInternal(
     case TextGranularity::kParagraphBoundary:
       return EndOfParagraph(EndForPlatform());
     case TextGranularity::kDocumentBoundary: {
-      const VisiblePosition& pos = EndForPlatform();
+      const VisiblePositionInFlatTree& pos = EndForPlatform();
       if (IsEditablePosition(pos.DeepEquivalent())) {
         DCHECK(pos.IsValid()) << pos;
         return CreateVisiblePosition(
@@ -417,18 +438,19 @@ VisiblePosition SelectionModifier::ModifyExtendingForwardInternal(
     }
   }
   NOTREACHED() << static_cast<int>(granularity);
-  return VisiblePosition();
+  return VisiblePositionInFlatTree();
 }
 
-VisiblePosition SelectionModifier::ModifyExtendingForward(
+VisiblePositionInFlatTree SelectionModifier::ModifyExtendingForward(
     TextGranularity granularity) {
-  const VisiblePosition pos = ModifyExtendingForwardInternal(granularity);
+  const VisiblePositionInFlatTree pos =
+      ModifyExtendingForwardInternal(granularity);
   if (DirectionOfEnclosingBlock() == TextDirection::kLtr)
     return AdjustForwardPositionForUserSelectAll(pos);
   return AdjustBackwardPositionForUserSelectAll(pos);
 }
 
-VisiblePosition SelectionModifier::ModifyMovingRight(
+VisiblePositionInFlatTree SelectionModifier::ModifyMovingRight(
     TextGranularity granularity) {
   switch (granularity) {
     case TextGranularity::kCharacter:
@@ -457,10 +479,10 @@ VisiblePosition SelectionModifier::ModifyMovingRight(
                                  DirectionOfEnclosingBlock());
   }
   NOTREACHED() << static_cast<int>(granularity);
-  return VisiblePosition();
+  return VisiblePositionInFlatTree();
 }
 
-VisiblePosition SelectionModifier::ModifyMovingForward(
+VisiblePositionInFlatTree SelectionModifier::ModifyMovingForward(
     TextGranularity granularity) {
   // TODO(editing-dev): Stay in editable content for the less common
   // granularities.
@@ -482,7 +504,7 @@ VisiblePosition SelectionModifier::ModifyMovingForward(
       // down-arrowing from a range selection that ends at the start of a line
       // needs to leave the selection at that line start (no need to call
       // nextLinePosition!)
-      const VisiblePosition& pos = EndForPlatform();
+      const VisiblePositionInFlatTree& pos = EndForPlatform();
       if (selection_.IsRange() && IsStartOfLine(pos))
         return pos;
       DCHECK(pos.IsValid()) << pos;
@@ -501,7 +523,7 @@ VisiblePosition SelectionModifier::ModifyMovingForward(
     case TextGranularity::kParagraphBoundary:
       return EndOfParagraph(EndForPlatform());
     case TextGranularity::kDocumentBoundary: {
-      const VisiblePosition& pos = EndForPlatform();
+      const VisiblePositionInFlatTree& pos = EndForPlatform();
       if (IsEditablePosition(pos.DeepEquivalent())) {
         DCHECK(pos.IsValid()) << pos;
         return CreateVisiblePosition(
@@ -511,10 +533,10 @@ VisiblePosition SelectionModifier::ModifyMovingForward(
     }
   }
   NOTREACHED() << static_cast<int>(granularity);
-  return VisiblePosition();
+  return VisiblePositionInFlatTree();
 }
 
-VisiblePosition SelectionModifier::ModifyExtendingLeftInternal(
+VisiblePositionInFlatTree SelectionModifier::ModifyExtendingLeftInternal(
     TextGranularity granularity) {
   // The difference between modifyExtendingLeft and modifyExtendingBackward is:
   // modifyExtendingBackward always extends backward logically.
@@ -550,23 +572,24 @@ VisiblePosition SelectionModifier::ModifyExtendingLeftInternal(
       return ModifyExtendingBackwardInternal(granularity);
   }
   NOTREACHED() << static_cast<int>(granularity);
-  return VisiblePosition();
+  return VisiblePositionInFlatTree();
 }
 
-VisiblePosition SelectionModifier::ModifyExtendingLeft(
+VisiblePositionInFlatTree SelectionModifier::ModifyExtendingLeft(
     TextGranularity granularity) {
-  const VisiblePosition& pos = ModifyExtendingLeftInternal(granularity);
+  const VisiblePositionInFlatTree& pos =
+      ModifyExtendingLeftInternal(granularity);
   if (DirectionOfEnclosingBlock() == TextDirection::kLtr)
     return AdjustBackwardPositionForUserSelectAll(pos);
   return AdjustForwardPositionForUserSelectAll(pos);
 }
 
-VisiblePosition SelectionModifier::ModifyExtendingBackwardInternal(
+VisiblePositionInFlatTree SelectionModifier::ModifyExtendingBackwardInternal(
     TextGranularity granularity) {
   // Extending a selection backward by word or character from just after a table
   // selects the table.  This "makes sense" from the user perspective, esp. when
-  // deleting. It was done here instead of in VisiblePosition because we want
-  // VPs to iterate over everything.
+  // deleting. It was done here instead of in VisiblePositionInFlatTree because
+  // we want VPs to iterate over everything.
   switch (granularity) {
     case TextGranularity::kCharacter:
       return PreviousPositionOf(ComputeVisibleExtent(selection_),
@@ -578,7 +601,7 @@ VisiblePosition SelectionModifier::ModifyExtendingBackwardInternal(
       return CreateVisiblePosition(PreviousSentencePosition(
           ComputeVisibleExtent(selection_).DeepEquivalent()));
     case TextGranularity::kLine: {
-      const VisiblePosition& pos = ComputeVisibleExtent(selection_);
+      const VisiblePositionInFlatTree& pos = ComputeVisibleExtent(selection_);
       DCHECK(pos.IsValid()) << pos;
       return CreateVisiblePosition(PreviousLinePosition(
           pos.ToPositionWithAffinity(),
@@ -596,7 +619,7 @@ VisiblePosition SelectionModifier::ModifyExtendingBackwardInternal(
     case TextGranularity::kParagraphBoundary:
       return StartOfParagraph(StartForPlatform());
     case TextGranularity::kDocumentBoundary: {
-      const VisiblePosition pos = StartForPlatform();
+      const VisiblePositionInFlatTree pos = StartForPlatform();
       if (IsEditablePosition(pos.DeepEquivalent())) {
         DCHECK(pos.IsValid()) << pos;
         return CreateVisiblePosition(
@@ -606,18 +629,19 @@ VisiblePosition SelectionModifier::ModifyExtendingBackwardInternal(
     }
   }
   NOTREACHED() << static_cast<int>(granularity);
-  return VisiblePosition();
+  return VisiblePositionInFlatTree();
 }
 
-VisiblePosition SelectionModifier::ModifyExtendingBackward(
+VisiblePositionInFlatTree SelectionModifier::ModifyExtendingBackward(
     TextGranularity granularity) {
-  const VisiblePosition pos = ModifyExtendingBackwardInternal(granularity);
+  const VisiblePositionInFlatTree pos =
+      ModifyExtendingBackwardInternal(granularity);
   if (DirectionOfEnclosingBlock() == TextDirection::kLtr)
     return AdjustBackwardPositionForUserSelectAll(pos);
   return AdjustForwardPositionForUserSelectAll(pos);
 }
 
-VisiblePosition SelectionModifier::ModifyMovingLeft(
+VisiblePositionInFlatTree SelectionModifier::ModifyMovingLeft(
     TextGranularity granularity) {
   switch (granularity) {
     case TextGranularity::kCharacter:
@@ -646,12 +670,12 @@ VisiblePosition SelectionModifier::ModifyMovingLeft(
                                 DirectionOfEnclosingBlock());
   }
   NOTREACHED() << static_cast<int>(granularity);
-  return VisiblePosition();
+  return VisiblePositionInFlatTree();
 }
 
-VisiblePosition SelectionModifier::ModifyMovingBackward(
+VisiblePositionInFlatTree SelectionModifier::ModifyMovingBackward(
     TextGranularity granularity) {
-  VisiblePosition pos;
+  VisiblePositionInFlatTree pos;
   switch (granularity) {
     case TextGranularity::kCharacter:
       if (selection_.IsRange()) {
@@ -670,7 +694,7 @@ VisiblePosition SelectionModifier::ModifyMovingBackward(
           ComputeVisibleExtent(selection_).DeepEquivalent()));
       break;
     case TextGranularity::kLine: {
-      const VisiblePosition& start = StartForPlatform();
+      const VisiblePositionInFlatTree& start = StartForPlatform();
       DCHECK(start.IsValid()) << start;
       pos = CreateVisiblePosition(PreviousLinePosition(
           start.ToPositionWithAffinity(),
@@ -712,7 +736,7 @@ static bool IsBoundary(TextGranularity granularity) {
          granularity == TextGranularity::kDocumentBoundary;
 }
 
-VisiblePosition SelectionModifier::ComputeModifyPosition(
+VisiblePositionInFlatTree SelectionModifier::ComputeModifyPosition(
     SelectionModifyAlteration alter,
     SelectionModifyDirection direction,
     TextGranularity granularity) {
@@ -735,7 +759,7 @@ VisiblePosition SelectionModifier::ComputeModifyPosition(
       return ModifyMovingBackward(granularity);
   }
   NOTREACHED() << static_cast<int>(direction);
-  return VisiblePosition();
+  return VisiblePositionInFlatTree();
 }
 
 bool SelectionModifier::Modify(SelectionModifyAlteration alter,
@@ -750,8 +774,8 @@ bool SelectionModifier::Modify(SelectionModifyAlteration alter,
     return false;
 
   bool was_range = selection_.IsRange();
-  VisiblePosition original_start_position = selection_.VisibleStart();
-  VisiblePosition position =
+  VisiblePositionInFlatTree original_start_position = selection_.VisibleStart();
+  VisiblePositionInFlatTree position =
       ComputeModifyPosition(alter, direction, granularity);
   if (position.IsNull())
     return false;
@@ -772,10 +796,9 @@ bool SelectionModifier::Modify(SelectionModifyAlteration alter,
 
   switch (alter) {
     case SelectionModifyAlteration::kMove:
-      current_selection_ =
-          SelectionInDOMTree::Builder()
-              .Collapse(position.ToPositionWithAffinity())
-              .Build();
+      current_selection_ = SelectionInFlatTree::Builder()
+                               .Collapse(position.ToPositionWithAffinity())
+                               .Build();
       break;
     case SelectionModifyAlteration::kExtend:
 
@@ -792,10 +815,11 @@ bool SelectionModifier::Modify(SelectionModifyAlteration alter,
         // starting with the caret in the middle of a word and then
         // word-selecting forward, leaving the caret in the same place where it
         // was, instead of directly selecting to the end of the word.
-        const VisibleSelection& new_selection = CreateVisibleSelection(
-            SelectionInDOMTree::Builder(selection_.AsSelection())
-                .Extend(position.DeepEquivalent())
-                .Build());
+        const VisibleSelectionInFlatTree& new_selection =
+            CreateVisibleSelection(
+                SelectionInFlatTree::Builder(selection_.AsSelection())
+                    .Extend(position.DeepEquivalent())
+                    .Build());
         if (selection_.IsBaseFirst() != new_selection.IsBaseFirst())
           position = selection_.VisibleBase();
       }
@@ -808,7 +832,7 @@ bool SelectionModifier::Modify(SelectionModifyAlteration alter,
                .Behavior()
                .ShouldAlwaysGrowSelectionWhenExtendingToBoundary() ||
           selection_.IsCaret() || !IsBoundary(granularity)) {
-        current_selection_ = SelectionInDOMTree::Builder()
+        current_selection_ = SelectionInFlatTree::Builder()
                                  .Collapse(selection_.Base())
                                  .Extend(position.DeepEquivalent())
                                  .Build();
@@ -820,7 +844,7 @@ bool SelectionModifier::Modify(SelectionModifyAlteration alter,
             (text_direction == TextDirection::kRtl &&
              direction == SelectionModifyDirection::kLeft)) {
           current_selection_ =
-              SelectionInDOMTree::Builder()
+              SelectionInFlatTree::Builder()
                   .Collapse(selection_.IsBaseFirst()
                                 ? selection_.Base()
                                 : position.DeepEquivalent())
@@ -829,7 +853,7 @@ bool SelectionModifier::Modify(SelectionModifyAlteration alter,
                   .Build();
         } else {
           current_selection_ =
-              SelectionInDOMTree::Builder()
+              SelectionInFlatTree::Builder()
                   .Collapse(selection_.IsBaseFirst() ? position.DeepEquivalent()
                                                      : selection_.Base())
                   .Extend(selection_.IsBaseFirst() ? selection_.Extent()
@@ -848,7 +872,7 @@ bool SelectionModifier::Modify(SelectionModifyAlteration alter,
 }
 
 // TODO(yosin): Maybe baseline would be better?
-static bool AbsoluteCaretY(const PositionWithAffinity& c, int& y) {
+static bool AbsoluteCaretY(const PositionInFlatTreeWithAffinity& c, int& y) {
   IntRect rect = AbsoluteCaretBoundsOf(c);
   if (rect.IsEmpty())
     return false;
@@ -872,7 +896,7 @@ bool SelectionModifier::ModifyWithPageGranularity(
                  ? SelectionModifyDirection::kBackward
                  : SelectionModifyDirection::kForward);
 
-  VisiblePosition pos;
+  VisiblePositionInFlatTree pos;
   LayoutUnit x_pos;
   switch (alter) {
     case SelectionModifyAlteration::kMove:
@@ -901,10 +925,10 @@ bool SelectionModifier::ModifyWithPageGranularity(
     start_y = -start_y;
   int last_y = start_y;
 
-  VisiblePosition result;
-  VisiblePosition next;
+  VisiblePositionInFlatTree result;
+  VisiblePositionInFlatTree next;
   unsigned iteration_count = 0;
-  for (VisiblePosition p = pos;
+  for (VisiblePositionInFlatTree p = pos;
        iteration_count < kMaxIterationForPageGranularityMovement; p = next) {
     ++iteration_count;
 
@@ -938,7 +962,7 @@ bool SelectionModifier::ModifyWithPageGranularity(
   switch (alter) {
     case SelectionModifyAlteration::kMove:
       current_selection_ =
-          SelectionInDOMTree::Builder()
+          SelectionInFlatTree::Builder()
               .Collapse(result.ToPositionWithAffinity())
               .SetAffinity(direction == SelectionModifyVerticalDirection::kUp
                                ? TextAffinity::kUpstream
@@ -946,7 +970,7 @@ bool SelectionModifier::ModifyWithPageGranularity(
               .Build();
       break;
     case SelectionModifyAlteration::kExtend: {
-      current_selection_ = SelectionInDOMTree::Builder()
+      current_selection_ = SelectionInFlatTree::Builder()
                                .Collapse(selection_.Base())
                                .Extend(result.DeepEquivalent())
                                .Build();
@@ -960,7 +984,7 @@ bool SelectionModifier::ModifyWithPageGranularity(
 // Abs x/y position of the caret ignoring transforms.
 // TODO(yosin) navigation with transforms should be smarter.
 static LayoutUnit LineDirectionPointForBlockDirectionNavigationOf(
-    const VisiblePosition& visible_position) {
+    const VisiblePositionInFlatTree& visible_position) {
   if (visible_position.IsNull())
     return LayoutUnit();
 
@@ -983,7 +1007,7 @@ static LayoutUnit LineDirectionPointForBlockDirectionNavigationOf(
 }
 
 LayoutUnit SelectionModifier::LineDirectionPointForBlockDirectionNavigation(
-    const Position& pos) {
+    const PositionInFlatTree& pos) {
   LayoutUnit x;
 
   if (selection_.IsNone())
@@ -991,11 +1015,11 @@ LayoutUnit SelectionModifier::LineDirectionPointForBlockDirectionNavigation(
 
   if (x_pos_for_vertical_arrow_navigation_ ==
       NoXPosForVerticalArrowNavigation()) {
-    VisiblePosition visible_position =
+    VisiblePositionInFlatTree visible_position =
         CreateVisiblePosition(pos, selection_.Affinity());
-    // VisiblePosition creation can fail here if a node containing the selection
-    // becomes visibility:hidden after the selection is created and before this
-    // function is called.
+    // VisiblePositionInFlatTree creation can fail here if a node containing the
+    // selection becomes visibility:hidden after the selection is created and
+    // before this function is called.
     x = LineDirectionPointForBlockDirectionNavigationOf(visible_position);
     x_pos_for_vertical_arrow_navigation_ = x;
   } else {

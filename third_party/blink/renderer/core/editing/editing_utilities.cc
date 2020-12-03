@@ -166,6 +166,11 @@ bool IsAtomicNode(const Node* node) {
   return node && (!node->hasChildren() || EditingIgnoresContent(*node));
 }
 
+bool IsAtomicNodeInFlatTree(const Node* node) {
+  return node && (!FlatTreeTraversal::HasChildren(*node) ||
+                  EditingIgnoresContent(*node));
+}
+
 template <typename Traversal>
 static int16_t ComparePositions(const Node* container_a,
                                 int offset_a,

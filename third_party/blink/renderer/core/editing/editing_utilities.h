@@ -156,6 +156,7 @@ inline bool CanHaveChildrenForEditing(const Node* node) {
 }
 
 bool IsAtomicNode(const Node*);
+bool IsAtomicNodeInFlatTree(const Node*);
 CORE_EXPORT bool IsEnclosingBlock(const Node*);
 CORE_EXPORT bool IsTabHTMLSpanElement(const Node*);
 bool IsTabHTMLSpanElementTextNode(const Node*);
