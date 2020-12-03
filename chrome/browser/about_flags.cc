@@ -3347,8 +3347,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDesktopPWAsRunOnOsLoginName,
      flag_descriptions::kDesktopPWAsRunOnOsLoginDescription, kOsWin,
      FEATURE_VALUE_TYPE(features::kDesktopPWAsRunOnOsLogin)},
-    {"record-web-app-debug-info",
-     flag_descriptions::kRecordWebAppDebugInfoName,
+    {"record-web-app-debug-info", flag_descriptions::kRecordWebAppDebugInfoName,
      flag_descriptions::kRecordWebAppDebugInfoDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kRecordWebAppDebugInfo)},
     {"use-sync-sandbox", flag_descriptions::kSyncSandboxName,
@@ -5573,7 +5572,7 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !defined(OS_ANDROID)
 
     {"enable-unsafe-webgpu", flag_descriptions::kUnsafeWebGPUName,
-     flag_descriptions::kUnsafeWebGPUDescription, kOsMac | kOsWin,
+     flag_descriptions::kUnsafeWebGPUDescription, kOsMac | kOsLinux | kOsWin,
      SINGLE_VALUE_TYPE(switches::kEnableUnsafeWebGPU)},
 
     {"enable-unsafe-fast-js-calls", flag_descriptions::kUnsafeFastJSCallsName,
