@@ -1,34 +1,27 @@
-# The list of keyboard layouts that we support. The keyboard layout metadata is
-# also defined here.
+# WARNING: This is a deprecated config file. This file no longer contains
+# canonical configs for input methods or keyboard layouts on CrOS. The only
+# piece of info deduced from this file and used by CrOS is an allowlist of XKB
+# layout IDs for login and lock screens. See below for details.
 #
 # Each non-comment line contains the following tab-or-space-separated columns.
-#
-# 1) The input method ID used by Chrome. (ex. "xkb:ca::fra") You should *NEVER*
-#    change the ID since the ID might be written in user's ~/Preferences. For
-#    example, three-letter ISO 639-2/B codes are used for IDs start with "xkb:"
-#    for histrical reason, but we should not replace them with two-letter 639-1
-#    codes that are currently in use in the 3rd column.
+# 1) Deprecated. Data in this column are no longer read by Chrome-on-CrOS.
 # 2) The keyboard layout ID used by XKB. (ex. "us", "us(dvorak)", "ca",
-#    "handwriting-vk,jp"). See also: /usr/share/X11/xkb/symbols.
-# 3) The language code (ex. "fr"). Only one format, ISO 639-1 compliant two-
-#    letter language code which can be recognized by ICU, is allowed. Do not use
-#    three-letter ones (ISO 639-2/T and 639-2/B) here. For "en", "pt", and "zh",
-#    two-letter upper-case country code should be added (ex. "en-US", "zh-TW").
-#    See http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes for details.
-#    We can specify multiple language code with comma separator.
-# 4) The indicator string (ex. INTL for xkb:us:intl:eng). This string will be
-#    shown in system tray or indicator window.
-# 5) The additional attibution.
-#    login: Specified keyboard layout will be used on login screen or lock
-#    screen.
+#    "handwriting-vk,jp"). See also: /usr/share/X11/xkb/symbols. Whether data
+#    in this column are read by Chrome-on-CrOS depends on data in column 5.
+# 3) Deprecated. Data in this column are no longer read by Chrome-on-CrOS.
+# 4) Deprecated. Data in this column are no longer read by Chrome-on-CrOS.
+# 5) Fixed string "login": Corresponding XKB layout ID in column 2 is read by
+#    Chrome-on-CrOS into an allowlist for login and lock screens.
+#    Empty: Corresponding XKB layout ID in column 2 is ignored.
 #
-# Notes:
-#   If you add an XKB layout which depends on AltGr or X11's Mod3Mask
-#   (e.g. Germany Neo2 XKB layout), you should also update kAltGrLayoutIds or
-#   kMod3LayoutIds in
-#   chrome/browser/chromeos/input_method/input_method_manager_impl.cc
-#   Otherwise, Mod3Mask might be removed unexpectedly by the rewriter, and
-#   sticky keys will not work.
+# Nowadays canonical input method configs on CrOS are defined in:
+# chrome/browser/resources/chromeos/input_method/google_xkb_manifest.json
+# For open-source Chromium OS: see other *_manifest.json in the same folder.
+#
+# Deprecated data aren't removed yet. This file is shipped in CrOS images, thus
+# possibly still read (and likely interpreted incorrectly) by other systems.
+# TODO(crbug.com/1134526): Investigate external systems that still read this
+# file for proper migration plans, then ultimately retire this legacy file.
 #
 
 # U.S. English
@@ -46,9 +39,6 @@ xkb:us:intl:por         us(intl)         pt-BR                INTL login
 xkb:us::ind             us               id                   US   login
 xkb:us::fil             us               fil                  US   login
 xkb:us::msa             us               ms                   US   login
-
-# U.S. English entiries have to be above the Dutch entry so that xkb:us:intl:eng
-# will be selected as the default keyboard when the UI language is set to Dutch.
 
 # Dutch
 xkb:be::nld  be nl BE login
@@ -69,15 +59,13 @@ xkb:be::ger     be      de       BE  login
 xkb:ch::ger     ch      de,de-CH CH  login
 
 # Japanese
-# |kMozcJaInputMethodIds| in ibus_ui_controller.cc should also be updated when
-# a new Mozc Japanese IME for another keyboard layout is added.
 xkb:jp::jpn  jp ja JA login
 
 # Russian
 xkb:ru::rus          ru           ru RU
 xkb:ru:phonetic:rus  ru(phonetic) ru RU
 
-# Keyboard layouts.
+# Others
 xkb:br::por           br             pt-BR,pt  BR login
 xkb:bg::bul           bg             bg        BG
 xkb:bg:phonetic:bul   bg(phonetic)   bg        BG
@@ -122,6 +110,3 @@ xkb:mn::mon           mn             mn        MN
 xkb:ie::ga            ie             ga        GA login
 xkb:mt::mlt           mt             mt        MT login
 xkb:mk::mkd           mk             mk        MK
-
-# TODO(yusukes): Support xkb:latam:deadtilde:spa and/or xkb:latam:nodeadkeys:spa
-# if necessary.

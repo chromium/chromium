@@ -5,10 +5,10 @@
 
 """Generate a C++ header from input_methods.txt.
 
-This program generates a C++ header file containing the information on
-available input methods.  It parses input_methods.txt, and then generates a
-static array definition from the information extracted. The input and output
-file names are specified on the command line.
+This program generates a C++ header file containing the information on login XKB
+layout IDs. It parses input_methods.txt, and then generates a static array
+definition from the information extracted. The input and output file names are
+specified on the command line.
 
 Run it like:
   gen_input_methods.py input_methods.txt input_methods.h
@@ -23,18 +23,15 @@ namespace chromeos {
 namespace input_method {
 
 struct InputMethodsInfo {
-  const char* input_method_id;
-  const char* language_code;
   const char* xkb_layout_id;
-  const char* indicator;
   bool is_login_keyboard;
 };
 const InputMethodsInfo kInputMethods[] = {
-  {"xkb:us::eng", "en-US", "us", "US", true},
-  {"xkb:us:dvorak:eng", "en-US", "us(dvorak)", "DV", true},
-  {"xkb:be::fra", "fr", "be", "BE", true},
-  {"xkb:br::por", "pt-BR", "br", "BR", true},
-  {"xkb:ru::rus", "ru", "ru", "RU", false},
+  {"us", true},
+  {"us(dvorak)", true},
+  {"be", true},
+  {"br", true},
+  {"ru", false},
 };
 
 }  // namespace input_method
@@ -56,17 +53,12 @@ namespace chromeos {
 namespace input_method {
 
 struct InputMethodsInfo {
-  const char* input_method_id;
-  const char* language_code;
   const char* xkb_layout_id;
-  const char* indicator;
   bool is_login_keyboard;
 };
 const InputMethodsInfo kInputMethods[] = {
 """
-ENGINE_FORMAT = ('  {"%(input_method_id)s", "%(language_code)s", ' +
-                 '"%(xkb_layout_id)s", "%(indicator)s", ' +
-                 '%(is_login_keyboard)s},\n')
+ENGINE_FORMAT = ('  {"%(xkb_layout_id)s", %(is_login_keyboard)s},\n')
 OUTPUT_FOOTER = """
 };
 
@@ -105,10 +97,7 @@ def main(argv):
     columns = line.split()
     assert len(columns) == 4 or len(columns) == 5, "Invalid format: " + line
     engine = {}
-    engine['input_method_id'] = columns[0]
     engine['xkb_layout_id'] = columns[1]
-    engine['language_code'] = columns[2]
-    engine['indicator'] = columns[3]
     is_login_keyboard = "false"
     if len(columns) == 5:
       assert columns[4] == "login", "Invalid attribute: " + columns[4]
