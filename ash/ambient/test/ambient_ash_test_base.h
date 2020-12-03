@@ -92,7 +92,7 @@ class AmbientAshTestBase : public AshTestBase {
       media_session::mojom::MediaPlaybackState state);
 
   // Set the size of the next image that will be loaded.
-  void SetPhotoViewImageSize(int width, int height);
+  void SetDecodedPhotoSize(int width, int height);
 
   // Advance the task environment timer to expire the lock screen inactivity
   // timer.
@@ -156,9 +156,11 @@ class AmbientAshTestBase : public AshTestBase {
 
   void FetchBackupImages();
 
-  void SetUrlLoaderData(std::unique_ptr<std::string> data);
+  void SetDownloadPhotoData(std::string data);
 
-  void SetImageDecoderImage(const gfx::ImageSkia& image);
+  void ClearDownloadPhotoData();
+
+  void SetDecodePhotoImage(const gfx::ImageSkia& image);
 
  private:
   std::unique_ptr<views::Widget> widget_;

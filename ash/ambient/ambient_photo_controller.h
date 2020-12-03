@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/ambient/ambient_constants.h"
+#include "ash/ambient/ambient_photo_cache.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "ash/ash_export.h"
@@ -30,41 +31,6 @@ class ImageSkia;
 }  // namespace gfx
 
 namespace ash {
-
-// A wrapper class of SimpleURLLoader to download the photo raw data. In the
-// test, this will be used to provide fake data.
-class ASH_EXPORT AmbientURLLoader {
- public:
-  AmbientURLLoader() = default;
-  AmbientURLLoader(const AmbientURLLoader&) = delete;
-  AmbientURLLoader& operator=(const AmbientURLLoader&) = delete;
-  virtual ~AmbientURLLoader() = default;
-
-  // Download data from the given |url|.
-  virtual void Download(
-      const std::string& url,
-      network::SimpleURLLoader::BodyAsStringCallback callback) = 0;
-
-  virtual void DownloadToFile(
-      const std::string& url,
-      network::SimpleURLLoader::DownloadToFileCompleteCallback callback,
-      const base::FilePath& file_path) = 0;
-};
-
-// A wrapper class of |data_decoder| to decode the photo raw data. In the test,
-// this will be used to provide fake data.
-class ASH_EXPORT AmbientImageDecoder {
- public:
-  AmbientImageDecoder() = default;
-  AmbientImageDecoder(const AmbientImageDecoder&) = delete;
-  AmbientImageDecoder& operator=(const AmbientImageDecoder&) = delete;
-  virtual ~AmbientImageDecoder() = default;
-
-  // Decode |encoded_bytes| to ImageSkia.
-  virtual void Decode(
-      const std::vector<uint8_t>& encoded_bytes,
-      base::OnceCallback<void(const gfx::ImageSkia&)> callback) = 0;
-};
 
 // Class to handle photos in ambient mode.
 class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
@@ -177,20 +143,13 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
                                         bool show_celsius,
                                         const gfx::ImageSkia& icon);
 
-  void set_url_loader_for_testing(
-      std::unique_ptr<AmbientURLLoader> url_loader) {
-    url_loader_ = std::move(url_loader);
+  void set_photo_cache_for_testing(
+      std::unique_ptr<AmbientPhotoCache> photo_cache) {
+    photo_cache_ = std::move(photo_cache);
   }
 
-  AmbientURLLoader* get_url_loader_for_testing() { return url_loader_.get(); }
-
-  void set_image_decoder_for_testing(
-      std::unique_ptr<AmbientImageDecoder> image_decoder) {
-    image_decoder_ = std::move(image_decoder);
-  }
-
-  AmbientImageDecoder* get_image_decoder_for_testing() {
-    return image_decoder_.get();
+  AmbientPhotoCache* get_photo_cache_for_testing() {
+    return photo_cache_.get();
   }
 
   void FetchTopicsForTesting();
@@ -246,9 +205,7 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
   ScopedObserver<AmbientBackendModel, AmbientBackendModelObserver>
       ambient_backend_model_observer_{this};
 
-  std::unique_ptr<AmbientURLLoader> url_loader_;
-
-  std::unique_ptr<AmbientImageDecoder> image_decoder_;
+  std::unique_ptr<AmbientPhotoCache> photo_cache_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

@@ -11,6 +11,7 @@
 
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_controller.h"
+#include "ash/ambient/ambient_photo_cache.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
@@ -36,12 +37,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/unguessable_token.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/decode_image.h"
-#include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/simple_url_loader.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -71,9 +67,9 @@ constexpr net::BackoffEntry::Policy kResumeFetchImageBackoffPolicy = {
     true,           // Use initial delay.
 };
 
-using DownloadCallback = base::OnceCallback<void(const gfx::ImageSkia&)>;
-
-void DownloadImageFromUrl(const std::string& url, DownloadCallback callback) {
+void DownloadImageFromUrl(
+    const std::string& url,
+    base::OnceCallback<void(const gfx::ImageSkia&)> callback) {
   DCHECK(!url.empty());
 
   // During shutdown, we may not have `ImageDownloader` when reach here.
@@ -82,18 +78,6 @@ void DownloadImageFromUrl(const std::string& url, DownloadCallback callback) {
 
   ImageDownloader::Get()->Download(GURL(url), NO_TRAFFIC_ANNOTATION_YET,
                                    base::BindOnce(std::move(callback)));
-}
-
-void ToImageSkia(DownloadCallback callback, const SkBitmap& image) {
-  if (image.isNull()) {
-    std::move(callback).Run(gfx::ImageSkia());
-    return;
-  }
-
-  gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(image);
-  image_skia.MakeThreadSafe();
-
-  std::move(callback).Run(image_skia);
 }
 
 base::TaskTraits GetTaskTraits() {
@@ -173,161 +157,10 @@ const std::array<const char*, 2>& GetBackupPhotoUrls() {
 
 }  // namespace
 
-class AmbientURLLoaderImpl : public AmbientURLLoader {
- public:
-  AmbientURLLoaderImpl()
-      : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-             base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {}
-  ~AmbientURLLoaderImpl() override = default;
-
-  // AmbientURLLoader:
-  void Download(
-      const std::string& url,
-      network::SimpleURLLoader::BodyAsStringCallback callback) override {
-    auto simple_loader = CreateSimpleURLLoader(url);
-    auto* loader_ptr = simple_loader.get();
-    auto loader_factory = AmbientClient::Get()->GetURLLoaderFactory();
-    loader_ptr->DownloadToString(
-        loader_factory.get(),
-        base::BindOnce(&AmbientURLLoaderImpl::OnUrlDownloaded,
-                       weak_factory_.GetWeakPtr(), std::move(callback),
-                       std::move(simple_loader), loader_factory),
-        kMaxImageSizeInBytes);
-  }
-
-  void DownloadToFile(
-      const std::string& url,
-      network::SimpleURLLoader::DownloadToFileCompleteCallback callback,
-      const base::FilePath& file_path) override {
-    auto simple_loader = CreateSimpleURLLoader(url);
-    auto loader_factory = AmbientClient::Get()->GetURLLoaderFactory();
-    auto* loader_ptr = simple_loader.get();
-    auto* loader_factory_ptr = loader_factory.get();
-
-    // Create a temporary file path as target for download to guard against race
-    // conditions in reading.
-    base::FilePath temp_path = file_path.DirName().Append(
-        base::UnguessableToken::Create().ToString() + kPhotoFileExt);
-
-    // Download to temp file first to guarantee entire image is written without
-    // errors before attempting to read it.
-    loader_ptr->DownloadToFile(
-        loader_factory_ptr,
-        base::BindOnce(&AmbientURLLoaderImpl::OnUrlDownloadedToFile,
-                       weak_factory_.GetWeakPtr(), std::move(callback),
-                       std::move(simple_loader), std::move(loader_factory),
-                       file_path),
-        temp_path);
-  }
-
- private:
-  std::unique_ptr<network::SimpleURLLoader> CreateSimpleURLLoader(
-      const std::string& url) {
-    auto resource_request = std::make_unique<network::ResourceRequest>();
-    resource_request->url = GURL(url);
-    resource_request->method = "GET";
-    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-
-    return network::SimpleURLLoader::Create(std::move(resource_request),
-                                            NO_TRAFFIC_ANNOTATION_YET);
-  }
-
-  // Called when the download completes.
-  void OnUrlDownloaded(
-      network::SimpleURLLoader::BodyAsStringCallback callback,
-      std::unique_ptr<network::SimpleURLLoader> simple_loader,
-      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-      std::unique_ptr<std::string> response_body) {
-    if (simple_loader->NetError() == net::OK && response_body) {
-      std::move(callback).Run(std::move(response_body));
-      return;
-    }
-
-    LOG(ERROR) << "Downloading to string failed with error code: "
-               << GetResponseCode(simple_loader.get()) << " with network error"
-               << simple_loader->NetError();
-    std::move(callback).Run(std::make_unique<std::string>());
-  }
-
-  void OnUrlDownloadedToFile(
-      network::SimpleURLLoader::DownloadToFileCompleteCallback callback,
-      std::unique_ptr<network::SimpleURLLoader> simple_loader,
-      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-      const base::FilePath& desired_path,
-      base::FilePath temp_path) {
-    if (simple_loader->NetError() != net::OK || temp_path.empty()) {
-      LOG(ERROR) << "Downloading to file failed with error code: "
-                 << GetResponseCode(simple_loader.get())
-                 << " with network error" << simple_loader->NetError();
-
-      if (!temp_path.empty()) {
-        // Clean up temporary file.
-        task_runner_->PostTask(FROM_HERE, base::BindOnce(
-                                              [](const base::FilePath& path) {
-                                                base::DeleteFile(path);
-                                              },
-                                              temp_path));
-      }
-      std::move(callback).Run(base::FilePath());
-      return;
-    }
-
-    // Swap the temporary file to the desired path, and then run the callback.
-    task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(
-            [](const base::FilePath& to_path, const base::FilePath& from_path) {
-              if (!base::ReplaceFile(from_path, to_path,
-                                     /*error=*/nullptr)) {
-                LOG(ERROR)
-                    << "Unable to move downloaded file to ambient directory";
-                // Clean up the files.
-                base::DeleteFile(from_path);
-                base::DeleteFile(to_path);
-                return base::FilePath();
-              }
-              return to_path;
-            },
-            desired_path, temp_path),
-        std::move(callback));
-  }
-
-  int GetResponseCode(network::SimpleURLLoader* simple_loader) {
-    if (simple_loader->ResponseInfo() &&
-        simple_loader->ResponseInfo()->headers) {
-      return simple_loader->ResponseInfo()->headers->response_code();
-    } else {
-      return -1;
-    }
-  }
-
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  base::WeakPtrFactory<AmbientURLLoaderImpl> weak_factory_{this};
-};
-
-class AmbientImageDecoderImpl : public AmbientImageDecoder {
- public:
-  AmbientImageDecoderImpl() = default;
-  ~AmbientImageDecoderImpl() override = default;
-
-  // AmbientImageDecoder:
-  void Decode(
-      const std::vector<uint8_t>& encoded_bytes,
-      base::OnceCallback<void(const gfx::ImageSkia&)> callback) override {
-    data_decoder::DecodeImageIsolated(
-        encoded_bytes, data_decoder::mojom::ImageCodec::DEFAULT,
-        /*shrink_to_fit=*/true, data_decoder::kDefaultMaxSizeInBytes,
-        /*desired_image_frame_size=*/gfx::Size(),
-        base::BindOnce(&ToImageSkia, std::move(callback)));
-  }
-};
-
 AmbientPhotoController::AmbientPhotoController()
     : fetch_topic_retry_backoff_(&kFetchTopicRetryBackoffPolicy),
       resume_fetch_image_backoff_(&kResumeFetchImageBackoffPolicy),
-      url_loader_(std::make_unique<AmbientURLLoaderImpl>()),
-      image_decoder_(std::make_unique<AmbientImageDecoderImpl>()),
+      photo_cache_(AmbientPhotoCache::Create()),
       task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits())) {
   ambient_backend_model_observer_.Add(&ambient_backend_model_);
@@ -444,7 +277,7 @@ void AmbientPhotoController::FetchBackupImages() {
   const auto& backup_photo_urls = GetBackupPhotoUrls();
   backup_retries_to_read_from_cache_ = backup_photo_urls.size();
   for (size_t i = 0; i < backup_photo_urls.size(); i++) {
-    url_loader_->DownloadToFile(
+    photo_cache_->DownloadPhotoToFile(
         backup_photo_urls.at(i),
         base::BindOnce(&AmbientPhotoController::OnBackupImageFetched,
                        weak_factory_.GetWeakPtr()),
@@ -515,7 +348,7 @@ void AmbientPhotoController::FetchPhotoRawData() {
                        weak_factory_.GetWeakPtr(),
                        /*from_downloading=*/true));
 
-    url_loader_->Download(
+    photo_cache_->DownloadPhoto(
         topic->url,
         base::BindOnce(&AmbientPhotoController::OnPhotoRawDataAvailable,
                        weak_factory_.GetWeakPtr(),
@@ -524,7 +357,7 @@ void AmbientPhotoController::FetchPhotoRawData() {
                        std::make_unique<std::string>(topic->details)));
 
     if (topic->related_image_url) {
-      url_loader_->Download(
+      photo_cache_->DownloadPhoto(
           *(topic->related_image_url),
           base::BindOnce(&AmbientPhotoController::OnPhotoRawDataAvailable,
                          weak_factory_.GetWeakPtr(),
@@ -740,11 +573,11 @@ void AmbientPhotoController::DecodePhotoRawData(
     bool is_related_image,
     base::RepeatingClosure on_done,
     std::unique_ptr<std::string> data) {
-  std::vector<uint8_t> image_bytes(data->begin(), data->end());
-  image_decoder_->Decode(
-      image_bytes, base::BindOnce(&AmbientPhotoController::OnPhotoDecoded,
-                                  weak_factory_.GetWeakPtr(), from_downloading,
-                                  is_related_image, std::move(on_done)));
+  photo_cache_->DecodePhoto(
+      std::move(data),
+      base::BindOnce(&AmbientPhotoController::OnPhotoDecoded,
+                     weak_factory_.GetWeakPtr(), from_downloading,
+                     is_related_image, std::move(on_done)));
 }
 
 void AmbientPhotoController::OnPhotoDecoded(bool from_downloading,

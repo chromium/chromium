@@ -272,7 +272,7 @@ TEST_F(AmbientPhotoControllerTest,
 TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDownloadingFailed) {
   base::FilePath ambient_image_path = GetCacheDir();
 
-  SetUrlLoaderData(std::make_unique<std::string>());
+  SetDownloadPhotoData("");
   FetchTopics();
   // Forward a little bit time. FetchTopics() will succeed. Downloading should
   // fail. Will read from cache, which is empty.
@@ -299,7 +299,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDownloadingFailed) {
 TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDecodingFailed) {
   base::FilePath ambient_image_path = GetCacheDir();
 
-  SetImageDecoderImage(gfx::ImageSkia());
+  SetDecodePhotoImage(gfx::ImageSkia());
   FetchTopics();
   // Forward a little bit time. FetchTopics() will succeed.
   // Downloading succeed and save the data to disk.
@@ -330,7 +330,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldDownloadBackupImagesWhenScheduled) {
   base::FilePath backup_image_path = GetBackupCacheDir();
 
   std::string expected_data = "backup data";
-  SetUrlLoaderData(std::make_unique<std::string>(expected_data));
+  SetDownloadPhotoData(expected_data);
 
   photo_controller()->ScheduleFetchBackupImages();
 
@@ -368,7 +368,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldResetTimerWhenBackupImagesFail) {
       photo_controller()->backup_photo_refresh_timer_for_testing().IsRunning());
 
   // Simulate an error in DownloadToFile.
-  SetUrlLoaderData(nullptr);
+  ClearDownloadPhotoData();
   task_environment()->FastForwardBy(kBackupPhotoRefreshDelay);
 
   // Directory should have been created, but with no files in it.
@@ -389,7 +389,7 @@ TEST_F(AmbientPhotoControllerTest,
   EXPECT_TRUE(
       photo_controller()->backup_photo_refresh_timer_for_testing().IsRunning());
 
-  SetUrlLoaderData(std::make_unique<std::string>("image data"));
+  SetDownloadPhotoData("image data");
 
   photo_controller()->StartScreenUpdate();
 
@@ -423,7 +423,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldNotLoadDuplicateImages) {
   scoped_observer.Add(photo_controller()->ambient_backend_model());
 
   // All images downloaded will be identical.
-  SetUrlLoaderData(std::make_unique<std::string>("image data"));
+  SetDownloadPhotoData("image data");
 
   photo_controller()->StartScreenUpdate();
   // Run the clock so the first photo is loaded.
@@ -437,7 +437,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldNotLoadDuplicateImages) {
 
   // Now expect a call because second image is loaded.
   EXPECT_CALL(mock_backend_observer, OnImagesChanged).Times(1);
-  SetUrlLoaderData(std::make_unique<std::string>("image data 2"));
+  SetDownloadPhotoData("image data 2");
   FastForwardToNextImage();
 
   // Second image should have been loaded.
