@@ -24,6 +24,7 @@ class GraphFeaturesHelper {
       // (1) Add a corresponding EnableFeatureFoo() member function.
       // (2) Add the feature to EnableDefault() if necessary.
       // (3) Add the feature to the implementation of ConfigureGraph().
+      bool execution_context_priority_decorator : 1;
       bool execution_context_registry : 1;
       bool frame_node_impl_describer : 1;
       bool frame_visibility_decorator : 1;
@@ -41,6 +42,12 @@ class GraphFeaturesHelper {
   constexpr GraphFeaturesHelper() = default;
   constexpr GraphFeaturesHelper(const GraphFeaturesHelper& other) = default;
   GraphFeaturesHelper& operator=(const GraphFeaturesHelper& other) = default;
+
+  constexpr GraphFeaturesHelper& EnableExecutionContextPriorityDecorator() {
+    EnableExecutionContextRegistry();
+    flags_.execution_context_priority_decorator = true;
+    return *this;
+  }
 
   constexpr GraphFeaturesHelper& EnableExecutionContextRegistry() {
     flags_.execution_context_registry = true;

@@ -33,6 +33,8 @@ static_library("performance_manager") {
     "execution_context_priority/boosting_vote_aggregator.cc",
     "execution_context_priority/boosting_vote_aggregator.h",
     "execution_context_priority/execution_context_priority.cc",
+    "execution_context_priority/execution_context_priority_decorator.cc",
+    "execution_context_priority/execution_context_priority_decorator.h",
     "execution_context_priority/frame_visibility_voter.cc",
     "execution_context_priority/frame_visibility_voter.h",
     "execution_context_priority/max_vote_aggregator.cc",

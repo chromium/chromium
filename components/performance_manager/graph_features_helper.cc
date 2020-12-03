@@ -10,6 +10,7 @@
 #include "components/performance_manager/decorators/frame_visibility_decorator.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
+#include "components/performance_manager/execution_context_priority/execution_context_priority_decorator.h"
 #include "components/performance_manager/graph/frame_node_impl_describer.h"
 #include "components/performance_manager/graph/page_node_impl_describer.h"
 #include "components/performance_manager/graph/process_node_impl_describer.h"
@@ -59,8 +60,12 @@ void GraphFeaturesHelper::ConfigureGraph(Graph* graph) const {
     Install<SiteDataRecorder>(graph);
 #endif
 
-  // This class has a dependency on ExecutionContextRegistry, so must be
+  // These classes have a dependency on ExecutionContextRegistry, so must be
   // installed after it.
+  if (flags_.execution_context_priority_decorator) {
+    Install<execution_context_priority::ExecutionContextPriorityDecorator>(
+        graph);
+  }
   if (flags_.v8_context_tracker)
     Install<v8_memory::V8ContextTracker>(graph);
 }
