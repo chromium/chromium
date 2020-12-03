@@ -44,7 +44,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   ScrollTimeline(Document*,
                  Element*,
                  ScrollDirection,
-                 HeapVector<Member<ScrollTimelineOffset>>*,
+                 HeapVector<Member<ScrollTimelineOffset>>,
                  base::Optional<double>);
 
   bool IsScrollTimeline() const override { return true; }
@@ -169,7 +169,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   Member<Element> scroll_source_;
   Member<Node> resolved_scroll_source_;
   ScrollDirection orientation_;
-  Member<HeapVector<Member<ScrollTimelineOffset>>> scroll_offsets_;
+  HeapVector<Member<ScrollTimelineOffset>> scroll_offsets_;
 
   base::Optional<double> time_range_;
 

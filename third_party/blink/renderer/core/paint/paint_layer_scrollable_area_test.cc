@@ -34,7 +34,7 @@ class ScrollableAreaMockChromeClient : public RenderingTestChromeClient {
   }
 };
 
-HeapVector<Member<ScrollTimelineOffset>>* CreateScrollOffsets(
+HeapVector<Member<ScrollTimelineOffset>> CreateScrollOffsets(
     ScrollTimelineOffset* start_scroll_offset =
         MakeGarbageCollected<ScrollTimelineOffset>(
             CSSNumericLiteralValue::Create(
@@ -45,10 +45,9 @@ HeapVector<Member<ScrollTimelineOffset>>* CreateScrollOffsets(
             CSSNumericLiteralValue::Create(
                 90.0,
                 CSSPrimitiveValue::UnitType::kPixels))) {
-  HeapVector<Member<ScrollTimelineOffset>>* scroll_offsets =
-      MakeGarbageCollected<HeapVector<Member<ScrollTimelineOffset>>>();
-  scroll_offsets->push_back(start_scroll_offset);
-  scroll_offsets->push_back(end_scroll_offset);
+  HeapVector<Member<ScrollTimelineOffset>> scroll_offsets;
+  scroll_offsets.push_back(start_scroll_offset);
+  scroll_offsets.push_back(end_scroll_offset);
   return scroll_offsets;
 }
 
@@ -1590,12 +1589,12 @@ class ScrollTimelineForTest : public ScrollTimeline {
  public:
   ScrollTimelineForTest(Document* document,
                         Element* scroll_source,
-                        HeapVector<Member<ScrollTimelineOffset>>*
+                        HeapVector<Member<ScrollTimelineOffset>>
                             scroll_offsets = CreateScrollOffsets())
       : ScrollTimeline(document,
                        scroll_source,
                        ScrollTimeline::Vertical,
-                       scroll_offsets,
+                       std::move(scroll_offsets),
                        100.0),
         invalidated_(false) {}
   void Invalidate() override {

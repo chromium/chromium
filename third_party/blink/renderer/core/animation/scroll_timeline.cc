@@ -138,17 +138,16 @@ ScrollTimeline* ScrollTimeline::Create(Document& document,
     return nullptr;
   }
 
-  HeapVector<Member<ScrollTimelineOffset>>* scroll_offsets =
-      MakeGarbageCollected<HeapVector<Member<ScrollTimelineOffset>>>();
+  HeapVector<Member<ScrollTimelineOffset>> scroll_offsets;
   if (options->scrollOffsets().IsEmpty()) {
     // TODO(crbug.com/1094014): scroll_offsets will replace start and end
     // offsets once spec decision on multiple scroll offsets is finalized.
     // https://github.com/w3c/csswg-drafts/issues/4912
     if (!start_scroll_offset->IsDefaultValue())
-      scroll_offsets->push_back(start_scroll_offset);
+      scroll_offsets.push_back(start_scroll_offset);
     if (!end_scroll_offset->IsDefaultValue() ||
         !start_scroll_offset->IsDefaultValue())
-      scroll_offsets->push_back(end_scroll_offset);
+      scroll_offsets.push_back(end_scroll_offset);
   } else {
     for (auto& offset : options->scrollOffsets()) {
       ScrollTimelineOffset* scroll_offset =
@@ -159,13 +158,13 @@ ScrollTimeline* ScrollTimeline::Create(Document& document,
       }
       if (scroll_offset->IsDefaultValue() &&
           (options->scrollOffsets().size() == 1 ||
-           (scroll_offsets->size() + 1) < options->scrollOffsets().size())) {
+           (scroll_offsets.size() + 1) < options->scrollOffsets().size())) {
         exception_state.ThrowTypeError(
             "Invalid scrollOffsets: 'auto' can only be set as an end "
             "offset when start offset presents.");
         return nullptr;
       }
-      scroll_offsets->push_back(scroll_offset);
+      scroll_offsets.push_back(scroll_offset);
     }
   }
 
@@ -182,15 +181,14 @@ ScrollTimeline::ScrollTimeline(
     Document* document,
     Element* scroll_source,
     ScrollDirection orientation,
-    HeapVector<Member<ScrollTimelineOffset>>* scroll_offsets,
+    HeapVector<Member<ScrollTimelineOffset>> scroll_offsets,
     base::Optional<double> time_range)
     : AnimationTimeline(document),
       scroll_source_(scroll_source),
       resolved_scroll_source_(ResolveScrollSource(scroll_source_)),
       orientation_(orientation),
-      scroll_offsets_(scroll_offsets),
+      scroll_offsets_(std::move(scroll_offsets)),
       time_range_(time_range) {
-  DCHECK(scroll_offsets_);
   if (resolved_scroll_source_) {
     ScrollTimelineSet& set = GetScrollTimelineSet();
     if (!set.Contains(resolved_scroll_source_)) {
@@ -222,14 +220,12 @@ bool ScrollTimeline::ComputeIsActive() const {
 ScrollTimelineOffset* ScrollTimeline::StartScrollOffset() const {
   // Single entry offset in scrollOffsets is considered as 'end'. Thus,
   // resolving start offset only if there is at least 2 offsets.
-  return scroll_offsets_ && scroll_offsets_->size() >= 2
-             ? scroll_offsets_->at(0)
-             : nullptr;
+  return scroll_offsets_.size() >= 2 ? scroll_offsets_.at(0) : nullptr;
 }
 ScrollTimelineOffset* ScrollTimeline::EndScrollOffset() const {
   // End offset is always the last offset in scrollOffsets if exists.
-  return scroll_offsets_ && scroll_offsets_->size() >= 1
-             ? scroll_offsets_->at(scroll_offsets_->size() - 1)
+  return scroll_offsets_.size() >= 1
+             ? scroll_offsets_.at(scroll_offsets_.size() - 1)
              : nullptr;
 }
 
@@ -255,16 +251,16 @@ bool ScrollTimeline::ResolveScrollOffsets(
 
   auto orientation = ToPhysicalScrollOrientation(orientation_, *layout_box);
 
-  if (scroll_offsets_->size() == 0) {
+  if (scroll_offsets_.size() == 0) {
     // Start and end offsets resolve to 'auto'.
     resolved_offsets.push_back(0);
     resolved_offsets.push_back(max_offset);
     return true;
   }
   // Single entry offset in scrollOffsets is considered as 'end'.
-  if (scroll_offsets_->size() == 1)
+  if (scroll_offsets_.size() == 1)
     resolved_offsets.push_back(0);
-  for (auto& offset : *scroll_offsets_) {
+  for (auto& offset : scroll_offsets_) {
     auto resolved_offset = offset->ResolveOffset(
         resolved_scroll_source_, orientation, max_offset, max_offset);
     if (!resolved_offset) {
@@ -286,12 +282,11 @@ AnimationTimeline::PhaseAndTime ScrollTimeline::CurrentPhaseAndTime() {
 
 bool ScrollTimeline::ScrollOffsetsEqual(
     const HeapVector<Member<ScrollTimelineOffset>>& other) const {
-  DCHECK(scroll_offsets_);
-  if (scroll_offsets_->size() != other.size())
+  if (scroll_offsets_.size() != other.size())
     return false;
-  size_t size = scroll_offsets_->size();
+  size_t size = scroll_offsets_.size();
   for (size_t i = 0; i < size; ++i) {
-    if (!DataEquivalent(scroll_offsets_->at(i), other.at(i)))
+    if (!DataEquivalent(scroll_offsets_.at(i), other.at(i)))
       return false;
   }
   return true;
@@ -477,11 +472,7 @@ void ScrollTimeline::endScrollOffset(ScrollTimelineOffsetValue& out) const {
 const HeapVector<ScrollTimelineOffsetValue> ScrollTimeline::scrollOffsets()
     const {
   HeapVector<ScrollTimelineOffsetValue> scroll_offsets;
-
-  if (!scroll_offsets_)
-    return scroll_offsets;
-
-  for (auto& offset : *scroll_offsets_) {
+  for (auto& offset : scroll_offsets_) {
     scroll_offsets.push_back(offset->ToScrollTimelineOffsetValue());
     // 'auto' can only be the end offset.
     DCHECK(!offset->IsDefaultValue() || scroll_offsets.size() == 2);

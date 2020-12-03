@@ -517,6 +517,26 @@ class HeapVector : public Vector<T, inlineCapacity, HeapAllocator> {
     CheckType();
   }
 
+  HeapVector(const HeapVector& other)
+      : Vector<T, inlineCapacity, HeapAllocator>(other) {
+    CheckType();
+  }
+
+  HeapVector& operator=(const HeapVector& other) {
+    Vector<T, inlineCapacity, HeapAllocator>::operator=(other);
+    return *this;
+  }
+
+  HeapVector(HeapVector&& other)
+      : Vector<T, inlineCapacity, HeapAllocator>(std::move(other)) {
+    CheckType();
+  }
+
+  HeapVector& operator=(HeapVector&& other) {
+    Vector<T, inlineCapacity, HeapAllocator>::operator=(std::move(other));
+    return *this;
+  }
+
   HeapVector(std::initializer_list<T> elements)
       : Vector<T, inlineCapacity, HeapAllocator>(elements) {
     CheckType();

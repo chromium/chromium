@@ -33,12 +33,12 @@ class CORE_EXPORT CSSScrollTimeline : public ScrollTimeline {
 
     Element* source_;
     ScrollTimeline::ScrollDirection direction_;
-    HeapVector<Member<ScrollTimelineOffset>>* offsets_;
+    HeapVector<Member<ScrollTimelineOffset>> offsets_;
     base::Optional<double> time_range_;
     StyleRuleScrollTimeline* rule_;
   };
 
-  CSSScrollTimeline(Document*, const Options&);
+  CSSScrollTimeline(Document*, Options&&);
 
   const AtomicString& Name() const;
 

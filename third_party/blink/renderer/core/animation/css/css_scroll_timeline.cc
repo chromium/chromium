@@ -123,23 +123,22 @@ ScrollTimelineOffset* ComputeScrollOffset(Document& document,
   return MakeGarbageCollected<ScrollTimelineOffset>();
 }
 
-HeapVector<Member<ScrollTimelineOffset>>* ComputeScrollOffsets(
+HeapVector<Member<ScrollTimelineOffset>> ComputeScrollOffsets(
     Document& document,
     const CSSValue* start,
     const CSSValue* end) {
-  auto* offsets =
-      MakeGarbageCollected<HeapVector<Member<ScrollTimelineOffset>>>();
+  HeapVector<Member<ScrollTimelineOffset>> offsets;
 
-  bool start_is_auto = IsAuto(start) || !start;
-  bool end_is_auto = IsAuto(end) || !end;
+  const bool start_is_auto = !start || IsAuto(start);
+  const bool end_is_auto = !end || IsAuto(end);
 
   // TODO(crbug.com/1094014): scroll_offsets will replace start and end
   // offsets once spec decision on multiple scroll offsets is finalized.
   // https://github.com/w3c/csswg-drafts/issues/4912
   if (!start_is_auto)
-    offsets->push_back(ComputeScrollOffset(document, start));
+    offsets.push_back(ComputeScrollOffset(document, start));
   if (!end_is_auto || !start_is_auto)
-    offsets->push_back(ComputeScrollOffset(document, end));
+    offsets.push_back(ComputeScrollOffset(document, end));
 
   return offsets;
 }
@@ -214,11 +213,11 @@ CSSScrollTimeline::Options::Options(Element* element,
       time_range_(ComputeTimeRange(rule.GetTimeRange())),
       rule_(&rule) {}
 
-CSSScrollTimeline::CSSScrollTimeline(Document* document, const Options& options)
+CSSScrollTimeline::CSSScrollTimeline(Document* document, Options&& options)
     : ScrollTimeline(document,
                      options.source_,
                      options.direction_,
-                     options.offsets_,
+                     std::move(options.offsets_),
                      *options.time_range_),
       rule_(options.rule_) {
   DCHECK(options.IsValid());
@@ -231,10 +230,9 @@ const AtomicString& CSSScrollTimeline::Name() const {
 }
 
 bool CSSScrollTimeline::Matches(const Options& options) const {
-  DCHECK(options.offsets_);
   return (scrollSource() == options.source_) &&
          (GetOrientation() == options.direction_) &&
-         (ScrollOffsetsEqual(*options.offsets_)) &&
+         (ScrollOffsetsEqual(options.offsets_)) &&
          (GetTimeRange() == options.time_range_) && (rule_ == options.rule_);
 }
 
