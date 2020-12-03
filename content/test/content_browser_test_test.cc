@@ -145,9 +145,16 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, RendererCrashCallStack) {
   }
 }
 
+#ifdef __clang__
+// Don't optimize this out of stack traces in ThinLTO builds.
+#pragma clang optimize off
+#endif
 IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MANUAL_BrowserCrash) {
   CHECK(false);
 }
+#ifdef __clang__
+#pragma clang optimize on
+#endif
 
 // Tests that browser tests print the callstack on asserts.
 // Disabled on Windows crbug.com/1034784
