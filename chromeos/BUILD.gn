@@ -331,6 +331,9 @@ if (is_chromeos_device) {
 
       # crbug.com/1148401
       "debugd.Printer",
+
+      # crbug.com/1154794
+      "policy.DefaultGeolocationSetting",
     ]
   }
 
