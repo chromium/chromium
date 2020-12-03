@@ -9,7 +9,7 @@ import android.view.View.OnClickListener;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.signin.DisplayableProfileData;
+import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
