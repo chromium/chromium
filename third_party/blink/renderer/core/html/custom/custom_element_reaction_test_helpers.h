@@ -107,23 +107,23 @@ class Enqueue : public Command {
 
 class TestReaction : public CustomElementReaction {
  public:
-  TestReaction(HeapVector<Member<Command>>* commands)
+  explicit TestReaction(HeapVector<Member<Command>>&& commands)
       : CustomElementReaction(
             *MakeGarbageCollected<TestCustomElementDefinition>(
                 CustomElementDescriptor("mock-element", "mock-element"))),
-        commands_(commands) {}
+        commands_(std::move(commands)) {}
   ~TestReaction() override = default;
   void Trace(Visitor* visitor) const override {
     CustomElementReaction::Trace(visitor);
     visitor->Trace(commands_);
   }
   void Invoke(Element& element) override {
-    for (auto& command : *commands_)
+    for (auto& command : commands_)
       command->Run(element);
   }
 
  private:
-  Member<HeapVector<Member<Command>>> commands_;
+  HeapVector<Member<Command>> commands_;
 
   DISALLOW_COPY_AND_ASSIGN(TestReaction);
 };
