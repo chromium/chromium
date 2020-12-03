@@ -26,10 +26,6 @@
 #include "ui/base/win/shell.h"
 #endif
 
-#if defined(OS_MAC)
-#include "base/mac/mac_util.h"
-#endif
-
 namespace extensions {
 
 using AppWindowApiTest = PlatformAppBrowserTest;
@@ -70,30 +66,18 @@ IN_PROC_BROWSER_TEST_F(ExperimentalAppWindowApiTest, SetIcon) {
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_OnMinimizedEvent) {
-#if defined(OS_MAC)
-  if (base::mac::IsOS10_10())
-    return;  // Fails when swarmed. http://crbug.com/660582,
-#endif
   EXPECT_TRUE(RunExtensionTestWithArg("platform_apps/windows_api_properties",
                                       "minimized"))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_OnMaximizedEvent) {
-#if defined(OS_MAC)
-  if (base::mac::IsOS10_10())
-    return;  // Fails when swarmed. http://crbug.com/660582,
-#endif
   EXPECT_TRUE(RunExtensionTestWithArg("platform_apps/windows_api_properties",
                                       "maximized"))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_OnRestoredEvent) {
-#if defined(OS_MAC)
-  if (base::mac::IsOS10_10())
-    return;  // Fails when swarmed. http://crbug.com/660582,
-#endif
   EXPECT_TRUE(RunExtensionTestWithArg("platform_apps/windows_api_properties",
                                       "restored"))
       << message_;
