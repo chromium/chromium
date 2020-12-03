@@ -364,7 +364,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/ssl/',
   '^chrome/browser/supervised_user/',
   '^chrome/browser/sync_file_system/',
-  '^chrome/browser/sync/',
   '^chrome/browser/thumbnail/cc/',
   '^chrome/browser/translate/',
   '^chrome/browser/ui/',
