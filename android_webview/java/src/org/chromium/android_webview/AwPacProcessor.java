@@ -15,12 +15,15 @@ import android.net.NetworkRequest;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.annotations.UsedByReflection;
 
 /**
  * Class to evaluate PAC scripts.
  */
 @JNINamespace("android_webview")
 @TargetApi(28)
+// TODO(amalova): remove UsedByReflection
+@UsedByReflection("Android")
 public class AwPacProcessor {
     private long mNativePacProcessor;
     private Network mNetwork;
@@ -35,10 +38,6 @@ public class AwPacProcessor {
     public static AwPacProcessor getInstance() {
         return LazyHolder.sInstance;
     }
-
-    // TODO(amalova): remove this constructor once
-    //  corresponging changes are landed in internal repo
-    public AwPacProcessor(Network network) {}
 
     public AwPacProcessor() {
         mNativePacProcessor = AwPacProcessorJni.get().createNativePacProcessor();
