@@ -67,7 +67,7 @@ class VIEWS_EXPORT NewBadge {
   static constexpr int kNewBadgeInternalPaddingTopMac = 1;
 
   // The baseline offset of the "new" badge image to the menu text baseline.
-  static constexpr int kNewBadgeBaslineOffsetMac = -4;
+  static constexpr int kNewBadgeBaselineOffsetMac = -4;
 
   // The corner radius of the rounded rect for the "new" badge.
   static constexpr int kNewBadgeCornerRadius = 3;

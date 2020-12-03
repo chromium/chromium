@@ -94,28 +94,6 @@ NSImage* NewTagImage() {
 
 }  // namespace
 
-@interface NewTagAttachmentCell : NSTextAttachmentCell
-@end
-
-@implementation NewTagAttachmentCell
-
-- (instancetype)init {
-  if (self = [super init]) {
-    self.image = NewTagImage();
-  }
-  return self;
-}
-
-- (NSPoint)cellBaselineOffset {
-  return NSMakePoint(0, views::NewBadge::kNewBadgeBaslineOffsetMac);
-}
-
-- (NSSize)cellSize {
-  return [self.image size];
-}
-
-@end
-
 @interface MenuControllerDelegate : NSObject <MenuControllerCocoaDelegate>
 @end
 
@@ -129,13 +107,12 @@ NSImage* NewTagImage() {
   if (!feature_enabled || !model->IsNewFeatureAt(index))
     return;
 
-  // TODO(avi): When moving to 10.11 as the minimum macOS, switch to using
-  // NSTextAttachment's |image| and |bounds| properties and avoid the whole
-  // NSTextAttachmentCell subclassing mishegas.
-  base::scoped_nsobject<NSTextAttachment> attachment(
-      [[NSTextAttachment alloc] init]);
-  attachment.get().attachmentCell =
-      [[[NewTagAttachmentCell alloc] init] autorelease];
+  NSTextAttachment* attachment =
+      [[[NSTextAttachment alloc] initWithData:nil ofType:nil] autorelease];
+  attachment.image = NewTagImage();
+  NSSize newTagSize = attachment.image.size;
+  attachment.bounds = NSMakeRect(0, views::NewBadge::kNewBadgeBaselineOffsetMac,
+                                 newTagSize.width, newTagSize.height);
 
   // Starting in 10.13, if an attributed string is set as a menu item title, and
   // NSFontAttributeName is not specified for it, it is automatically rendered
