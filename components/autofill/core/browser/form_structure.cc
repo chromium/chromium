@@ -890,6 +890,8 @@ void FormStructure::ProcessQueryResponse(
     form->UpdateAutofillCount();
     form->RationalizeRepeatedFields(form_interactions_ukm_logger);
     form->RationalizeFieldTypePredictions();
+    // TODO(crbug.com/1154080): By calling this with false, autocomplete section
+    // attributes will be ignored.
     form->IdentifySections(false);
   }
 
@@ -1125,8 +1127,8 @@ void FormStructure::RetrieveFromCache(
       field->set_server_type(cached_field->server_type());
       field->set_previously_autofilled(cached_field->previously_autofilled());
 
-      // Only retrieve an overall prediction from cache if a server prediction is
-      // set.
+      // Only retrieve an overall prediction from cache if a server prediction
+      // is set.
       if (base::FeatureList::IsEnabled(
               features::kAutofillRetrieveOverallPredictionsFromCache) &&
           field->server_type() != NO_SERVER_DATA) {
@@ -2057,12 +2059,10 @@ bool FormStructure::IsMalformed() const {
   return false;
 }
 
-void FormStructure::IdentifySections(bool has_author_specified_sections) {
+void FormStructure::IdentifySectionsWithNewMethod() {
   if (fields_.empty())
     return;
 
-  const bool is_enabled_autofill_new_sectioning =
-      base::FeatureList::IsEnabled(features::kAutofillUseNewSectioningMethod);
   const bool is_enabled_autofill_redundant_name_sectioning =
       base::FeatureList::IsEnabled(
           features::kAutofillSectionUponRedundantNameInfo);
@@ -2080,16 +2080,188 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
     }
   };
 
-  if (!has_author_specified_sections || is_enabled_autofill_new_sectioning) {
+  base::string16 current_section = get_section_name(*fields_.front());
+
+  // Keep track of the types we've seen in this section.
+  std::set<ServerFieldType> seen_types;
+  ServerFieldType previous_type = UNKNOWN_TYPE;
+
+  // Boolean flag that is set to true when a field in the current section
+  // has the autocomplete-section attribute defined.
+  bool previous_autocomplete_section_present = false;
+
+  bool is_hidden_section = false;
+  base::string16 last_visible_section;
+  for (const auto& field : fields_) {
+    const ServerFieldType current_type = field->Type().GetStorableType();
+    // All credit card fields belong to the same section that's different
+    // from address sections.
+    if (AutofillType(current_type).group() == CREDIT_CARD) {
+      field->section = "credit-card";
+      continue;
+    }
+
+    bool already_saw_current_type = seen_types.count(current_type) > 0;
+
+    // Forms often ask for multiple phone numbers -- e.g. both a daytime and
+    // evening phone number.  Our phone number detection is also generally a
+    // little off.  Hence, ignore this field type as a signal here.
+    if (AutofillType(current_type).group() == PHONE_HOME)
+      already_saw_current_type = false;
+
+    if (is_enabled_autofill_redundant_name_sectioning) {
+      // Forms sometimes have a different format of inputting names in
+      // different sections. If we believe a new name is being entered, assume
+      // it is a new section (unless there are two identical inputs in a row).
+      if (current_type == NAME_FULL)
+        already_saw_current_type |= (seen_types.count(NAME_LAST) > 0);
+    }
+
+    bool ignored_field = !field->IsVisible();
+
+    // This is the first visible field after a hidden section. Consider it as
+    // the continuation of the last visible section.
+    if (!ignored_field && is_hidden_section) {
+      current_section = last_visible_section;
+    }
+
+    // Start a new section by an ignored field, only if the next field is also
+    // already seen.
+    size_t field_index = &field - &fields_[0];
+    if (ignored_field &&
+        (is_hidden_section ||
+         !((field_index + 1) < fields_.size() &&
+           seen_types.count(
+               fields_[field_index + 1]->Type().GetStorableType()) > 0))) {
+      already_saw_current_type = false;
+    }
+
+    // Some forms have adjacent fields of the same type.  Two common examples:
+    //  * Forms with two email fields, where the second is meant to "confirm"
+    //    the first.
+    //  * Forms with a <select> menu for states in some countries, and a
+    //    freeform <input> field for states in other countries.  (Usually,
+    //    only one of these two will be visible for any given choice of
+    //    country.)
+    // Generally, adjacent fields of the same type belong in the same logical
+    // section.
+    if (current_type == previous_type)
+      already_saw_current_type = false;
+
+    // Boolean flag that is set to true when the |field| has
+    // autocomplete-section attribute defined.
+    bool autocomplete_section_attribute_present =
+        (field->section != kDefaultSection);
+
+    // Boolean flag that is set to true when the |field| has
+    // autocomplete-section attribute defined and is different that the
+    // previous field.
+    bool different_autocomplete_section_than_previous =
+        (autocomplete_section_attribute_present &&
+         (!field_index || fields_[field_index - 1]->section != field->section));
+
+    // Start a new section if the |current_type| was already seen or the
+    // autocomplete-section attribute is defined for the |field| which is
+    // different than the previous field.
+    if (current_type != UNKNOWN_TYPE &&
+        (already_saw_current_type ||
+         different_autocomplete_section_than_previous)) {
+      // Keep track of seen_types if the new section is hidden. The next
+      // visible section might be the continuation of the previous visible
+      // section.
+      if (ignored_field) {
+        is_hidden_section = true;
+        last_visible_section = current_section;
+      }
+
+      if (!is_hidden_section && (!autocomplete_section_attribute_present ||
+                                 different_autocomplete_section_than_previous))
+        seen_types.clear();
+
+      if (autocomplete_section_attribute_present &&
+          !previous_autocomplete_section_present) {
+        // If this field is the first field within the section with a defined
+        // autocomplete section, then change the section attribute of all the
+        // parsed fields in the current section to |field->section|.
+        int i = static_cast<int>(field_index - 1);
+        while (i >= 0 &&
+               base::UTF8ToUTF16(fields_[i]->section) == current_section) {
+          fields_[i]->section = field->section;
+          i--;
+        }
+      }
+
+      // The end of a section, so start a new section.
+      current_section = get_section_name(*field);
+
+      // The section described in the autocomplete section attribute
+      // overrides the value determined by the heuristic.
+      if (autocomplete_section_attribute_present)
+        current_section = base::UTF8ToUTF16(field->section);
+
+      previous_autocomplete_section_present =
+          autocomplete_section_attribute_present;
+    }
+
+    // Only consider a type "seen" if it was not ignored. Some forms have
+    // sections for different locales, only one of which is enabled at a
+    // time. Each section may duplicate some information (e.g. postal code)
+    // and we don't want that to cause section splits.
+    // Also only set |previous_type| when the field was not ignored. This
+    // prevents ignored fields from breaking up fields that are otherwise
+    // adjacent.
+    if (!ignored_field) {
+      seen_types.insert(current_type);
+      previous_type = current_type;
+      is_hidden_section = false;
+    }
+
+    field->section = base::UTF16ToUTF8(current_section);
+  }
+
+  // Ensure that credit card and address fields are in separate sections.
+  // This simplifies the section-aware logic in autofill_manager.cc.
+  for (const auto& field : fields_) {
+    FieldTypeGroup field_type_group = field->Type().group();
+    if (field_type_group == CREDIT_CARD)
+      field->section = field->section + "-cc";
+    else
+      field->section = field->section + "-default";
+  }
+}
+
+void FormStructure::IdentifySections(bool has_author_specified_sections) {
+  if (fields_.empty())
+    return;
+
+  if (base::FeatureList::IsEnabled(features::kAutofillUseNewSectioningMethod)) {
+    IdentifySectionsWithNewMethod();
+    return;
+  }
+
+  const bool is_enabled_autofill_redundant_name_sectioning =
+      base::FeatureList::IsEnabled(
+          features::kAutofillSectionUponRedundantNameInfo);
+
+  // Creates a unique name for the section that starts with |field|.
+  // TODO(crbug/896689): Cleanup once experiment is launched.
+  auto get_section_name = [](const AutofillField& field) {
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillNameSectionsWithRendererIds)) {
+      return base::StrCat(
+          {field.name, base::ASCIIToUTF16("_"),
+           base::NumberToString16(field.unique_renderer_id.value())});
+    } else {
+      return field.unique_name();
+    }
+  };
+
+  if (!has_author_specified_sections) {
     base::string16 current_section = get_section_name(*fields_.front());
 
     // Keep track of the types we've seen in this section.
     std::set<ServerFieldType> seen_types;
     ServerFieldType previous_type = UNKNOWN_TYPE;
-
-    // Boolean flag that is set to true when a field in the current section
-    // has the autocomplete-section attribute defined.
-    bool previous_autocomplete_section_present = false;
 
     bool is_hidden_section = false;
     base::string16 last_visible_section;
@@ -2149,31 +2321,10 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
       if (current_type == previous_type)
         already_saw_current_type = false;
 
-      // Boolean flag that is set to true when the |field| has
-      // autocomplete-section attribute defined.
-      bool autocomplete_section_attribute_present = false;
-      if (is_enabled_autofill_new_sectioning)
-        autocomplete_section_attribute_present =
-            (field->section != kDefaultSection);
-
-      // Boolean flag that is set to true when the |field| has
-      // autocomplete-section attribute defined and is different that the
-      // previous field.
-      bool different_autocomplete_section_than_previous = false;
-      if (is_enabled_autofill_new_sectioning) {
-        different_autocomplete_section_than_previous =
-            (autocomplete_section_attribute_present &&
-             (!field_index ||
-              fields_[field_index - 1]->section != field->section));
-      }
-
       // Start a new section if the |current_type| was already seen or the
       // autocomplete-section attribute is defined for the |field| which is
       // different than the previous field.
-      if (current_type != UNKNOWN_TYPE &&
-          (already_saw_current_type ||
-           (is_enabled_autofill_new_sectioning &&
-            different_autocomplete_section_than_previous))) {
+      if (current_type != UNKNOWN_TYPE && already_saw_current_type) {
         // Keep track of seen_types if the new section is hidden. The next
         // visible section might be the continuation of the previous visible
         // section.
@@ -2182,38 +2333,11 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
           last_visible_section = current_section;
         }
 
-        if (!is_hidden_section &&
-            (!is_enabled_autofill_new_sectioning ||
-             !autocomplete_section_attribute_present ||
-             different_autocomplete_section_than_previous))
+        if (!is_hidden_section)
           seen_types.clear();
-
-        if (is_enabled_autofill_new_sectioning &&
-            autocomplete_section_attribute_present &&
-            !previous_autocomplete_section_present) {
-          // If this field is the first field within the section with a defined
-          // autocomplete section, then change the section attribute of all the
-          // parsed fields in the current section to |field->section|.
-          int i = static_cast<int>(field_index - 1);
-          while (i >= 0 &&
-                 base::UTF8ToUTF16(fields_[i]->section) == current_section) {
-            fields_[i]->section = field->section;
-            i--;
-          }
-        }
 
         // The end of a section, so start a new section.
         current_section = get_section_name(*field);
-
-        if (is_enabled_autofill_new_sectioning) {
-          // The section described in the autocomplete section attribute
-          // overrides the value determined by the heuristic.
-          if (autocomplete_section_attribute_present)
-            current_section = base::UTF8ToUTF16(field->section);
-
-          previous_autocomplete_section_present =
-              autocomplete_section_attribute_present;
-        }
       }
 
       // Only consider a type "seen" if it was not ignored. Some forms have
