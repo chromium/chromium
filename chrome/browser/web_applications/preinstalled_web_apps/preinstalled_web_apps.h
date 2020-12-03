@@ -11,6 +11,9 @@
 
 namespace web_app {
 
+// Returns the list of web apps that should be pre-installed on new profiles.
+std::vector<ExternalInstallOptions> GetPreinstalledWebApps();
+
 // A scoped helper to provide a testing set of preinstalled app data. This will
 // replace the default set.
 struct ScopedTestingPreinstalledAppData {
@@ -23,9 +26,6 @@ struct ScopedTestingPreinstalledAppData {
 
   std::vector<ExternalInstallOptions> apps;
 };
-
-// Returns the list of web apps that should be pre-installed on new profiles.
-std::vector<ExternalInstallOptions> GetPreinstalledWebApps();
 
 }  // namespace web_app
 

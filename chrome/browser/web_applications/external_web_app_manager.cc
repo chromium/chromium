@@ -65,6 +65,7 @@ const base::FilePath::CharType kWebAppsSubDirectory[] =
 #endif
 
 bool g_skip_startup_for_testing_ = false;
+bool g_bypass_offline_manifest_requirement_for_testing_ = false;
 const base::FilePath* g_config_dir_for_testing = nullptr;
 const std::vector<base::Value>* g_configs_for_testing = nullptr;
 const FileUtilsWrapper* g_file_utils_for_testing = nullptr;
@@ -232,6 +233,10 @@ void ExternalWebAppManager::SkipStartupForTesting() {
   g_skip_startup_for_testing_ = true;
 }
 
+void ExternalWebAppManager::BypassOfflineManifestRequirementForTesting() {
+  g_bypass_offline_manifest_requirement_for_testing_ = true;
+}
+
 void ExternalWebAppManager::SetConfigDirForTesting(
     const base::FilePath* config_dir) {
   g_config_dir_for_testing = config_dir;
@@ -331,6 +336,29 @@ void ExternalWebAppManager::PostProcessConfigs(ConsumeInstallOptions callback,
   // Add hard coded configs.
   for (ExternalInstallOptions& options : GetPreinstalledWebApps())
     parsed_configs.options_list.push_back(std::move(options));
+
+  // Set common install options.
+  for (ExternalInstallOptions& options : parsed_configs.options_list) {
+    ALLOW_UNUSED_LOCAL(options);
+    DCHECK_EQ(options.install_source, ExternalInstallSource::kExternalDefault);
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    if (!g_bypass_offline_manifest_requirement_for_testing_) {
+      // Non-Chrome OS platforms are not permitted to fetch the web app install
+      // URLs during start up.
+      DCHECK(options.app_info_factory);
+      options.only_use_app_info_factory = true;
+    }
+
+    // Preinstalled web apps should not have OS shortcuts of any kind outside of
+    // Chrome OS.
+    options.add_to_applications_menu = false;
+    options.add_to_search = false;
+    options.add_to_management = false;
+    options.add_to_desktop = false;
+    options.add_to_quick_launch_bar = false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
 
   bool is_new_user = IsNewUser();
   std::string user_type = apps::DetermineUserType(profile_);

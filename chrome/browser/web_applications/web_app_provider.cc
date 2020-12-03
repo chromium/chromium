@@ -41,6 +41,13 @@
 
 namespace web_app {
 
+namespace {
+
+WebAppProvider::OsIntegrationManagerFactory
+    g_os_integration_manager_factory_for_testing = nullptr;
+
+}  // namespace
+
 // static
 WebAppProvider* WebAppProvider::Get(Profile* profile) {
   return WebAppProviderFactory::GetForProfile(profile);
@@ -53,6 +60,12 @@ WebAppProvider* WebAppProvider::GetForWebContents(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   DCHECK(profile);
   return WebAppProvider::Get(profile);
+}
+
+// static
+void WebAppProvider::SetOsIntegrationManagerFactoryForTesting(
+    OsIntegrationManagerFactory factory) {
+  g_os_integration_manager_factory_for_testing = factory;
 }
 
 WebAppProvider::WebAppProvider(Profile* profile) : profile_(profile) {
@@ -207,15 +220,20 @@ void WebAppProvider::CreateWebAppsSubsystems(Profile* profile) {
   install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(
       profile, icon_manager.get(), std::move(legacy_finalizer));
 
-  auto file_handler_manager =
-      std::make_unique<WebAppFileHandlerManager>(profile);
-  auto protocol_handler_manager =
-      std::make_unique<ProtocolHandlerManager>(profile);
-  auto shortcut_manager = std::make_unique<WebAppShortcutManager>(
-      profile, icon_manager.get(), file_handler_manager.get());
-  os_integration_manager_ = std::make_unique<OsIntegrationManager>(
-      profile, std::move(shortcut_manager), std::move(file_handler_manager),
-      std::move(protocol_handler_manager));
+  if (g_os_integration_manager_factory_for_testing) {
+    os_integration_manager_ =
+        g_os_integration_manager_factory_for_testing(profile);
+  } else {
+    auto file_handler_manager =
+        std::make_unique<WebAppFileHandlerManager>(profile);
+    auto protocol_handler_manager =
+        std::make_unique<ProtocolHandlerManager>(profile);
+    auto shortcut_manager = std::make_unique<WebAppShortcutManager>(
+        profile, icon_manager.get(), file_handler_manager.get());
+    os_integration_manager_ = std::make_unique<OsIntegrationManager>(
+        profile, std::move(shortcut_manager), std::move(file_handler_manager),
+        std::move(protocol_handler_manager));
+  }
 
   migration_manager_ = std::make_unique<WebAppMigrationManager>(
       profile, database_factory_.get(), icon_manager.get(),
