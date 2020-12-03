@@ -16,7 +16,7 @@ declare_args() {
   # additional code changes are required to be compliant with the availability
   # rules.
   # Must be of the form x.x.x for Info.plist files.
-  mac_deployment_target = "10.10.0"
+  mac_deployment_target = "10.11.0"
 
   # The value of the LSMinimmumSystemVersion in Info.plist files. This partially
   # controls the minimum supported version of macOS for Chromium by
