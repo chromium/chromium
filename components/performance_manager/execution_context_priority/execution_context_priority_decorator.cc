@@ -41,6 +41,8 @@ ExecutionContextPriorityDecorator::ExecutionContextPriorityDecorator() {
   // Set up voters.
   frame_visibility_voter_.SetVotingChannel(
       max_vote_aggregator_.GetVotingChannel());
+  frame_audible_voter_.SetVotingChannel(
+      max_vote_aggregator_.GetVotingChannel());
 }
 ExecutionContextPriorityDecorator::~ExecutionContextPriorityDecorator() =
     default;
@@ -49,10 +51,12 @@ void ExecutionContextPriorityDecorator::OnPassedToGraph(Graph* graph) {
   // Subscribe voters to the graph.
   graph->AddFrameNodeObserver(&ad_frame_voter_);
   graph->AddFrameNodeObserver(&frame_visibility_voter_);
+  graph->AddFrameNodeObserver(&frame_audible_voter_);
 }
 
 void ExecutionContextPriorityDecorator::OnTakenFromGraph(Graph* graph) {
   // Unsubscribe voters from the graph.
+  graph->RemoveFrameNodeObserver(&frame_audible_voter_);
   graph->RemoveFrameNodeObserver(&frame_visibility_voter_);
   graph->RemoveFrameNodeObserver(&ad_frame_voter_);
 }

@@ -6,6 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_EXECUTION_CONTEXT_PRIORITY_DECORATOR_H_
 
 #include "components/performance_manager/execution_context_priority/ad_frame_voter.h"
+#include "components/performance_manager/execution_context_priority/frame_audible_voter.h"
 #include "components/performance_manager/execution_context_priority/frame_visibility_voter.h"
 #include "components/performance_manager/execution_context_priority/max_vote_aggregator.h"
 #include "components/performance_manager/execution_context_priority/override_vote_aggregator.h"
@@ -52,6 +53,9 @@ class ExecutionContextPriorityDecorator final : public GraphOwned {
 
   // Casts a USER_VISIBLE vote when a frame is visible.
   FrameVisibilityVoter frame_visibility_voter_;
+
+  // Casts a USER_VISIBLE vote when a frame is audible.
+  FrameAudibleVoter frame_audible_voter_;
 };
 
 }  // namespace execution_context_priority
