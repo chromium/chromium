@@ -180,6 +180,8 @@ class Controller : public ScriptExecutorDelegate,
       base::OnceCallback<void(UserData*, UserData::FieldChange*)>) override;
   void OnScriptError(const std::string& error_message,
                      Metrics::DropOutReason reason);
+  void OnNavigationShutdownOrError(const GURL& url,
+                                   Metrics::DropOutReason reason);
 
   // Overrides autofill_assistant::UiDelegate:
   AutofillAssistantState GetState() const override;

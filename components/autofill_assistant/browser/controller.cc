@@ -1793,6 +1793,18 @@ void Controller::ExpectNavigation() {
   expect_navigation_ = true;
 }
 
+void Controller::OnNavigationShutdownOrError(const GURL& url,
+                                             Metrics::DropOutReason reason) {
+  if (google_util::IsGoogleDomainUrl(
+          url, google_util::ALLOW_SUBDOMAIN,
+          google_util::DISALLOW_NON_STANDARD_PORTS)) {
+    client_->Shutdown(reason);
+  } else {
+    OnScriptError(l10n_util::GetStringUTF8(IDS_AUTOFILL_ASSISTANT_GIVE_UP),
+                  reason);
+  }
+}
+
 void Controller::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInMainFrame() ||
@@ -1850,8 +1862,8 @@ void Controller::DidStartNavigation(
       web_contents()->GetLastCommittedURL().is_valid() &&
       !navigation_handle->WasServerRedirect() &&
       !navigation_handle->IsRendererInitiated()) {
-    OnScriptError(l10n_util::GetStringUTF8(IDS_AUTOFILL_ASSISTANT_GIVE_UP),
-                  Metrics::DropOutReason::NAVIGATION);
+    OnNavigationShutdownOrError(navigation_handle->GetURL(),
+                                Metrics::DropOutReason::NAVIGATION);
     return;
   }
 
@@ -1860,8 +1872,9 @@ void Controller::DidStartNavigation(
   if (state_ == AutofillAssistantState::RUNNING &&
       !navigation_handle->WasServerRedirect() &&
       !navigation_handle->IsRendererInitiated()) {
-    OnScriptError(l10n_util::GetStringUTF8(IDS_AUTOFILL_ASSISTANT_GIVE_UP),
-                  Metrics::DropOutReason::NAVIGATION_WHILE_RUNNING);
+    OnNavigationShutdownOrError(
+        navigation_handle->GetURL(),
+        Metrics::DropOutReason::NAVIGATION_WHILE_RUNNING);
     return;
   }
 
@@ -1889,23 +1902,16 @@ void Controller::DidFinishNavigation(
 
   // When in BROWSE state, stop autofill assistant if the user navigates away
   // from the original assisted domain. Subdomains of the original domain are
-  // supported.
+  // supported. If the new URL is on a Google property, destroy the UI
+  // immediately, without showing an error.
   if (state_ == AutofillAssistantState::BROWSE) {
     if (!url_utils::IsInDomainOrSubDomain(GetCurrentURL(), script_url_) &&
         !url_utils::IsInDomainOrSubDomain(GetCurrentURL(),
                                           browse_domains_allowlist_)) {
-      OnScriptError(l10n_util::GetStringUTF8(IDS_AUTOFILL_ASSISTANT_GIVE_UP),
-                    Metrics::DropOutReason::DOMAIN_CHANGE_DURING_BROWSE_MODE);
+      OnNavigationShutdownOrError(
+          web_contents()->GetLastCommittedURL(),
+          Metrics::DropOutReason::DOMAIN_CHANGE_DURING_BROWSE_MODE);
     }
-  }
-  // When in STOPPED state, entered by an unexpected DidStartNavigation or
-  // domain change while in BROWSE state (above), and the new URL is on a
-  // Google property, destroy the UI immediately.
-  if (state_ == AutofillAssistantState::STOPPED &&
-      google_util::IsGoogleDomainUrl(
-          web_contents()->GetLastCommittedURL(), google_util::ALLOW_SUBDOMAIN,
-          google_util::DISALLOW_NON_STANDARD_PORTS)) {
-    client_->DestroyUI();
   }
 
   if (start_after_navigation_) {

@@ -1893,7 +1893,7 @@ TEST_F(ControllerTest, NavigationAfterStopped) {
                                    AutofillAssistantState::STOPPED));
 }
 
-TEST_F(ControllerTest, NavigationToGooglePropertyDestroysUI) {
+TEST_F(ControllerTest, NavigationToGooglePropertyShutsDownDestroyingUI) {
   SupportsScriptResponseProto script_response;
   AddRunnableScript(&script_response, "autostart")
       ->mutable_presentation()
@@ -1911,23 +1911,20 @@ TEST_F(ControllerTest, NavigationToGooglePropertyDestroysUI) {
   Start();
   EXPECT_EQ(AutofillAssistantState::PROMPT, controller_->GetState());
 
-  EXPECT_CALL(mock_client_, RecordDropOut(Metrics::DropOutReason::NAVIGATION));
-  EXPECT_CALL(mock_client_, DestroyUI);
+  EXPECT_CALL(mock_client_, Shutdown(Metrics::DropOutReason::NAVIGATION));
   GURL google("https://google.com/search");
   SetLastCommittedUrl(google);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              google);
 
-  EXPECT_EQ(AutofillAssistantState::STOPPED, controller_->GetState());
-
   // Full history of state transitions.
   EXPECT_THAT(states_, ElementsAre(AutofillAssistantState::STARTING,
                                    AutofillAssistantState::RUNNING,
-                                   AutofillAssistantState::PROMPT,
-                                   AutofillAssistantState::STOPPED));
+                                   AutofillAssistantState::PROMPT));
 }
 
-TEST_F(ControllerTest, DomainChangeToGooglePropertyDuringBrowseDestroysUI) {
+TEST_F(ControllerTest,
+       DomainChangeToGooglePropertyDuringBrowseShutsDownDestroyingUI) {
   SupportsScriptResponseProto script_response;
   AddRunnableScript(&script_response, "runnable")
       ->mutable_presentation()
@@ -1948,20 +1945,16 @@ TEST_F(ControllerTest, DomainChangeToGooglePropertyDuringBrowseDestroysUI) {
 
   EXPECT_CALL(
       mock_client_,
-      RecordDropOut(Metrics::DropOutReason::DOMAIN_CHANGE_DURING_BROWSE_MODE));
-  EXPECT_CALL(mock_client_, DestroyUI);
+      Shutdown(Metrics::DropOutReason::DOMAIN_CHANGE_DURING_BROWSE_MODE));
   GURL google("https://google.com/search");
   SetLastCommittedUrl(google);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              google);
 
-  EXPECT_EQ(AutofillAssistantState::STOPPED, controller_->GetState());
-
   // Full history of state transitions.
   EXPECT_THAT(states_, ElementsAre(AutofillAssistantState::STARTING,
                                    AutofillAssistantState::RUNNING,
-                                   AutofillAssistantState::BROWSE,
-                                   AutofillAssistantState::STOPPED));
+                                   AutofillAssistantState::BROWSE));
 }
 
 TEST_F(ControllerTest, UserDataFormEmpty) {
