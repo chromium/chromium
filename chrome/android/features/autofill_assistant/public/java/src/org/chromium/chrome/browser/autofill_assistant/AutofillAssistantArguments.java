@@ -113,6 +113,13 @@ public class AutofillAssistantArguments {
     static final String PARAMETER_REQUEST_TRIGGER_SCRIPT = "REQUEST_TRIGGER_SCRIPT";
 
     /**
+     * Special parameter to allow injecting a base64-encoded GetTriggerScriptsResponseProto. When
+     * specified, the client will directly use the specified trigger scripts instead of fetching
+     * them from a remote backend. Takes precedence over PARAMETER_REQUEST_TRIGGER_SCRIPT.
+     */
+    static final String PARAMETER_TRIGGER_SCRIPTS_BASE64 = "TRIGGER_SCRIPTS_BASE64";
+
+    /**
      * Special output boolean parameter that will be set to true for regular scripts that were
      * started with a trigger script.
      */
@@ -250,6 +257,11 @@ public class AutofillAssistantArguments {
     /** Whether the caller requests the client to fetch trigger scripts from a remote endpoint. */
     public boolean requestsTriggerScript() {
         return getBooleanParameter(PARAMETER_REQUEST_TRIGGER_SCRIPT);
+    }
+
+    /** Whether the caller specified a base64-encoded trigger scripts response or not. */
+    public boolean containsBase64TriggerScripts() {
+        return !TextUtils.isEmpty(getStringParameter(PARAMETER_TRIGGER_SCRIPTS_BASE64));
     }
 
     /** Deprecated. Whether the caller provides script paths for lite scripts to execute. */

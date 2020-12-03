@@ -72,7 +72,8 @@ void SendRequestImpl(
 #ifdef DEBUG
   loader->SetAllowHttpErrorResults(true);
 #endif
-  loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+  auto* const loader_ptr = loader.get();
+  loader_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       content::BrowserContext::GetDefaultStoragePartition(context)
           ->GetURLLoaderFactoryForBrowserProcess()
           .get(),

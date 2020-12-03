@@ -260,9 +260,12 @@ class Metrics {
     // for example, if the activity was changed after triggering (e.g.,
     // switching from CCT to regular tab).
     LITE_SCRIPT_FAILED_TO_SHOW = 22,
-    // The proactive help switch was enabled at start, but then manually
-    // disabled in the Chrome settings.
+    // Since Chrome M-88. The proactive help switch was enabled at start, but
+    // then manually disabled in the Chrome settings.
     LITE_SCRIPT_DISABLED_PROACTIVE_HELP_SETTING = 23,
+    // Since Chrome M-88. The client failed to base64-decode the trigger script
+    // specified in the script parameters.
+    LITE_SCRIPT_BASE64_DECODING_ERROR = 24,
 
     // NOTE: All values in this block are DEPRECATED and will only be sent by
     // Chrome M-86 and M-87.
@@ -293,7 +296,7 @@ class Metrics {
     // Since Chrome M-88. The bottom sheet was swipe-dismissed by the user.
     LITE_SCRIPT_PROMPT_SWIPE_DISMISSED = 16,
 
-    kMaxValue = LITE_SCRIPT_DISABLED_PROACTIVE_HELP_SETTING
+    kMaxValue = LITE_SCRIPT_BASE64_DECODING_ERROR
   };
 
   // The different ways a user who has successfully completed a light script may

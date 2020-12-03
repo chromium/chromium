@@ -143,6 +143,31 @@ public class AutofillAssistantPreferenceFragmentTest {
             Preference syncAndServicesLink = prefs.findPreference(
                     AutofillAssistantPreferenceFragment.PREF_GOOGLE_SERVICES_SETTINGS_LINK);
             assertNotNull(syncAndServicesLink);
+            assertTrue(syncAndServicesLink.isVisible());
+        });
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT,
+            ChromeFeatureList.AUTOFILL_ASSISTANT_DISABLE_PROACTIVE_HELP_TIED_TO_MSBB})
+    public void
+    testProactiveHelpNotLinkedToMsbbIfLinkDisabled() {
+        final AutofillAssistantPreferenceFragment prefs =
+                startAutofillAssistantPreferenceFragment();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ChromeSwitchPreference proactiveHelpSwitch =
+                    (ChromeSwitchPreference) prefs.findPreference(
+                            AutofillAssistantPreferenceFragment
+                                    .PREF_ASSISTANT_PROACTIVE_HELP_SWITCH);
+            assertTrue(proactiveHelpSwitch.isEnabled());
+
+            Preference syncAndServicesLink = prefs.findPreference(
+                    AutofillAssistantPreferenceFragment.PREF_GOOGLE_SERVICES_SETTINGS_LINK);
+            assertNotNull(syncAndServicesLink);
+            assertFalse(syncAndServicesLink.isVisible());
         });
     }
 

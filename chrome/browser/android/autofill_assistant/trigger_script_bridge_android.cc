@@ -6,6 +6,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/base64.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantTriggerScriptBridge_jni.h"
 #include "chrome/browser/android/autofill_assistant/assistant_header_model.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
@@ -13,7 +14,9 @@
 #include "components/autofill_assistant/browser/service/api_key_fetcher.h"
 #include "components/autofill_assistant/browser/service/server_url_fetcher.h"
 #include "components/autofill_assistant/browser/service/service_request_sender_impl.h"
+#include "components/autofill_assistant/browser/service/service_request_sender_local_impl.h"
 #include "components/autofill_assistant/browser/service/simple_url_loader_factory.h"
+#include "components/autofill_assistant/browser/string_conversions_util.h"
 #include "components/autofill_assistant/browser/trigger_scripts/dynamic_trigger_conditions.h"
 #include "components/autofill_assistant/browser/trigger_scripts/static_trigger_conditions.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
@@ -48,6 +51,20 @@ void TriggerScriptBridgeAndroid::StartTriggerScript(
         reinterpret_cast<void*>(jservice_request_sender)));
     // TODO(b/171776026): consider exposing this in proto.
     disable_header_animations_for_testing_ = true;
+  } else if (trigger_context->GetBase64TriggerScriptsResponseProto()
+                 .has_value()) {
+    std::string response;
+    if (!base::Base64Decode(
+            trigger_context->GetBase64TriggerScriptsResponseProto().value(),
+            &response)) {
+      LOG(ERROR) << "Failed to base64-decode trigger scripts response";
+      Metrics::RecordLiteScriptFinished(
+          ukm::UkmRecorder::Get(), client->GetWebContents(),
+          Metrics::LiteScriptFinishedState::LITE_SCRIPT_BASE64_DECODING_ERROR);
+      return;
+    }
+    service_request_sender =
+        std::make_unique<ServiceRequestSenderLocalImpl>(response);
   } else {
     service_request_sender = std::make_unique<ServiceRequestSenderImpl>(
         client->GetWebContents()->GetBrowserContext(),

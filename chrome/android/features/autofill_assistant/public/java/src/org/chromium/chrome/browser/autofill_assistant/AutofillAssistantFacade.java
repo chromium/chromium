@@ -107,7 +107,8 @@ public class AutofillAssistantFacade {
         // Have an "attempted starts" baseline for the drop out histogram.
         AutofillAssistantMetrics.recordDropOut(DropOutReason.AA_START);
         waitForTabWithWebContents(activity, tab -> {
-            if (arguments.containsTriggerScript() || arguments.requestsTriggerScript()) {
+            if (arguments.containsTriggerScript() || arguments.requestsTriggerScript()
+                    || arguments.containsBase64TriggerScripts()) {
                 // Create a field trial and assign experiment arm based on script parameter. This
                 // is needed to tag UKM data to allow for A/B experiment comparisons.
                 FieldTrialList.createFieldTrial(LITE_SCRIPT_EXPERIMENT_TRIAL,
@@ -118,20 +119,12 @@ public class AutofillAssistantFacade {
                 AutofillAssistantMetrics.recordLiteScriptStarted(
                         tab.getWebContents(), LiteScriptStarted.LITE_SCRIPT_INTENT_RECEIVED);
 
-                // For trigger scripts since M-88, there is a dedicated Chrome setting that can be
-                // used to forever opt-out.
-                if (arguments.requestsTriggerScript()
-                        && !AutofillAssistantPreferencesUtil.isProactiveHelpSwitchOn()) {
-                    // Opt out users who have disabled the proactive help Chrome setting.
-                    AutofillAssistantMetrics.recordLiteScriptStarted(tab.getWebContents(),
-                            LiteScriptStarted.LITE_SCRIPT_PROACTIVE_TRIGGERING_DISABLED);
-                    return;
-                }
-
                 // Legacy, remove as soon as possible. Trigger scripts before M-88 were tied to the
-                // regular autofill assistant Chrome setting.
+                // regular autofill assistant Chrome setting. Since M-88, they also respect the new
+                // proactive help setting.
                 if (arguments.containsTriggerScript()
-                        && !AutofillAssistantPreferencesUtil.isAutofillAssistantSwitchOn()) {
+                        && (!AutofillAssistantPreferencesUtil.isAutofillAssistantSwitchOn()
+                                || !AutofillAssistantPreferencesUtil.isProactiveHelpSwitchOn())) {
                     if (AutofillAssistantPreferencesUtil
                                     .isAutofillAssistantLiteScriptCancelThresholdReached()) {
                         AutofillAssistantMetrics.recordLiteScriptStarted(tab.getWebContents(),
@@ -163,7 +156,6 @@ public class AutofillAssistantFacade {
                                 activity.getCompositorViewHolder(), activity, tab.getWebContents(),
                                 activity.getWindowAndroid().getKeyboardDelegate(),
                                 activity.getWindowAndroid().getApplicationBottomInsetProvider(),
-                                !AutofillAssistantPreferencesUtil.getShowOnboarding(),
                                 activity instanceof CustomTabActivity, arguments.getInitialUrl(),
                                 arguments.getParameters(), arguments.getExperimentIds(),
                                 arguments.getCallerAccount(), arguments.getUserName());
