@@ -383,7 +383,7 @@ bool ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailableBlocking() {
       u2f::kU2FServiceName, dbus::ObjectPath(u2f::kU2FServicePath));
 
   if (!u2f_proxy) {
-    FIDO_LOG(ERROR) << "Couldn't get u2f proxy";
+    FIDO_LOG(DEBUG) << "Couldn't get u2f proxy";
     return false;
   }
 
@@ -396,7 +396,7 @@ bool ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailableBlocking() {
       u2f_proxy->CallMethodAndBlock(&method_call, kShortTimeoutMs);
 
   if (!dbus_response) {
-    FIDO_LOG(ERROR) << "IsUvpaa dbus call had no response or timed out";
+    FIDO_LOG(DEBUG) << "IsUvpaa dbus call had no response or timed out";
     return false;
   }
 
