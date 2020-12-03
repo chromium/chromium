@@ -27,17 +27,45 @@ using testing::ElementsAre;
 using testing::IsEmpty;
 using testing::Pair;
 
-constexpr char kTreatAsPublicAddressPath[] = "/treat-as-public-address.html";
+// We use a custom page that explicitly disables its own favicon (by providing
+// an invalid data: URL for it) so as to prevent the browser from making an
+// automatic request to /favicon.ico. This is because the automatic request
+// messes with our tests, in which we want to trigger a single request from the
+// web page to a resource of our choice and observe the side-effect in metrics.
+constexpr char kNoFaviconPath[] = "/no-favicon.html";
 
-GURL PublicSecureURL(const net::EmbeddedTestServer& server) {
+// Same as kNoFaviconPath, except it carries a header that makes the browser
+// consider it came from the `public` address space, irrespective of the fact
+// that we loaded the web page from localhost.
+constexpr char kTreatAsPublicAddressPath[] =
+    "/no-favicon-treat-as-public-address.html";
+
+GURL SecureURL(const net::EmbeddedTestServer& server, const std::string& path) {
   // Test HTTPS servers cannot lie about their hostname, so they yield URLs
   // starting with https://localhost. http://localhost is already a secure
   // context, so we do not bother instantiating an HTTPS server.
-  return server.GetURL(kTreatAsPublicAddressPath);
+  return server.GetURL(path);
+}
+
+GURL NonSecureURL(const net::EmbeddedTestServer& server,
+                  const std::string& path) {
+  return server.GetURL("foo.test", path);
+}
+
+GURL LocalSecureURL(const net::EmbeddedTestServer& server) {
+  return SecureURL(server, kNoFaviconPath);
+}
+
+GURL LocalNonSecureURL(const net::EmbeddedTestServer& server) {
+  return NonSecureURL(server, kNoFaviconPath);
+}
+
+GURL PublicSecureURL(const net::EmbeddedTestServer& server) {
+  return SecureURL(server, kTreatAsPublicAddressPath);
 }
 
 GURL PublicNonSecureURL(const net::EmbeddedTestServer& server) {
-  return server.GetURL("foo.test", kTreatAsPublicAddressPath);
+  return NonSecureURL(server, kTreatAsPublicAddressPath);
 }
 
 constexpr WebFeature kAllAddressSpaceFeatures[] = {
@@ -135,8 +163,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkRequestBrowserTest,
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
 
   EXPECT_TRUE(content::NavigateToURL(web_contents(), PublicSecureURL(*server)));
-  EXPECT_TRUE(content::NavigateToURL(web_contents(),
-                                     server->GetURL("/defaultresponse")));
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), LocalSecureURL(*server)));
   EXPECT_TRUE(NavigateAndFlushHistograms());
 
   EXPECT_THAT(GetAddressSpaceFeatureBucketCounts(histogram_tester), IsEmpty());
@@ -152,8 +179,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkRequestBrowserTest,
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
 
   EXPECT_TRUE(content::NavigateToURL(web_contents(), PublicSecureURL(*server)));
-  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
-    fetch("defaultresponse")
+  EXPECT_EQ(true, content::EvalJs(web_contents(), R"(
+    fetch("defaultresponse").then(response => response.ok)
   )"));
   EXPECT_TRUE(NavigateAndFlushHistograms());
 
@@ -174,8 +201,8 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(
       content::NavigateToURL(web_contents(), PublicNonSecureURL(*server)));
-  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
-    fetch("defaultresponse")
+  EXPECT_EQ(true, content::EvalJs(web_contents(), R"(
+    fetch("defaultresponse").then(response => response.ok)
   )"));
   EXPECT_TRUE(NavigateAndFlushHistograms());
 
@@ -219,14 +246,18 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkRequestBrowserTest,
 
   EXPECT_TRUE(
       content::NavigateToURL(web_contents(), PublicNonSecureURL(*server)));
-  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+
+  base::StringPiece script_template = R"(
     new Promise(resolve => {
       const child = document.createElement("iframe");
-      child.src = "defaultresponse";
+      child.src = $1;
       child.onload = resolve;
       document.body.appendChild(child);
     })
-  )"));
+  )";
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace(script_template, LocalNonSecureURL(*server))));
   EXPECT_TRUE(NavigateAndFlushHistograms());
 
   // TODO(https://crbug.com/1129326): Expect InPublicNonSecureContext?
@@ -247,7 +278,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkRequestBrowserTest,
 
   EXPECT_TRUE(
       content::NavigateToURL(web_contents(), PublicNonSecureURL(*server)));
-  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+
+  base::StringPiece script_template = R"(
     function addChildFrame(doc, src) {
       return new Promise(resolve => {
         const child = doc.createElement("iframe");
@@ -258,8 +290,11 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkRequestBrowserTest,
     }
 
     addChildFrame(document, "about:blank")
-      .then(child => addChildFrame(child.contentDocument, "defaultresponse"))
-  )"));
+      .then(child => addChildFrame(child.contentDocument, $1))
+  )";
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace(script_template, LocalNonSecureURL(*server))));
   EXPECT_TRUE(NavigateAndFlushHistograms());
 
   // TODO(https://crbug.com/1129326): Expect InPublicNonSecureContext?
