@@ -2069,13 +2069,20 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(browser2->window()->IsMaximized());
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+#define MAYBE_DragWindowIntoGroup DISABLED_DragWindowIntoGroup
+#else
+#define MAYBE_DragWindowIntoGroup DragWindowIntoGroup
+#endif
+
 // Creates two browser with two tabs each. The first browser has one tab in a
 // group and the second tab not in a group. The second browser {browser2} has
 // two tabs in another group {group1}. Dragging the two tabs in the first
 // browser into the middle of the second browser will insert the two dragged
 // tabs into the {group1}} after the first tab.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       DragWindowIntoGroup) {
+                       MAYBE_DragWindowIntoGroup) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
 
@@ -2111,9 +2118,17 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
               testing::ElementsAre(0, 1, 2, 3));
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+#define MAYBE_DragGroupHeaderToSeparateWindow \
+  DISABLED_DragGroupHeaderToSeparateWindow
+#else
+#define MAYBE_DragGroupHeaderToSeparateWindow DragGroupHeaderToSeparateWindow
+#endif
+
 // Creates two browsers, then drags a group from one to the other.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       DragGroupHeaderToSeparateWindow) {
+                       MAYBE_DragGroupHeaderToSeparateWindow) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
   AddTabsAndResetBrowser(browser(), 1);
@@ -2409,10 +2424,19 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(model->IsGroupCollapsed(group));
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+#define MAYBE_DragCollapsedGroupHeaderToSeparateWindow \
+  DISABLED_DragCollapsedGroupHeaderToSeparateWindow
+#else
+#define MAYBE_DragCollapsedGroupHeaderToSeparateWindow \
+  DragCollapsedGroupHeaderToSeparateWindow
+#endif
+
 // Creates two browsers, then drags a collapsed group from one to the other.
 IN_PROC_BROWSER_TEST_P(
     DetachToBrowserTabDragControllerTestWithTabGroupsCollapseEnabled,
-    DragCollapsedGroupHeaderToSeparateWindow) {
+    MAYBE_DragCollapsedGroupHeaderToSeparateWindow) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
   AddTabsAndResetBrowser(browser(), 2);
@@ -2513,10 +2537,18 @@ void DragAllToSeparateWindowAndCancelStep2(
 
 }  // namespace
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+#define MAYBE_DragAllToSeparateWindowAndCancel \
+  DISABLED_DragAllToSeparateWindowAndCancel
+#else
+#define MAYBE_DragAllToSeparateWindowAndCancel DragAllToSeparateWindowAndCancel
+#endif
+
 // Creates two browsers, selects all tabs in first, drags into second, then hits
 // escape.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       DragAllToSeparateWindowAndCancel) {
+                       MAYBE_DragAllToSeparateWindowAndCancel) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
   AddTabsAndResetBrowser(browser(), 1);
@@ -2623,10 +2655,18 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
             browser2->window()->GetBounds().ToString());
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+#define MAYBE_DragSingleTabToSeparateWindow \
+  DISABLED_DragSingleTabToSeparateWindow
+#else
+#define MAYBE_DragSingleTabToSeparateWindow DragSingleTabToSeparateWindow
+#endif
+
 // Creates two browsers, the first browser has a single tab and drags into the
 // second browser.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       DragSingleTabToSeparateWindow) {
+                       MAYBE_DragSingleTabToSeparateWindow) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
   ResetIDs(browser()->tab_strip_model(), 0);
