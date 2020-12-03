@@ -81,24 +81,29 @@ public class AwPacProcessor {
     }
 
     // The calling code must not call any methods after it called destroy().
+    @UsedByReflection("Android")
     public void destroy() {
         getConnectivityManager().unregisterNetworkCallback(mNetworkCallback);
         AwPacProcessorJni.get().destroyNative(mNativePacProcessor, this);
     }
 
+    @UsedByReflection("Android")
     public boolean setProxyScript(String script) {
         return AwPacProcessorJni.get().setProxyScript(mNativePacProcessor, this, script);
     }
 
+    @UsedByReflection("Android")
     public String makeProxyRequest(String url) {
         return AwPacProcessorJni.get().makeProxyRequest(mNativePacProcessor, this, url);
     }
 
+    @UsedByReflection("Android")
     public void setNetwork(Network network) {
         updateNetworkLinkAddress(network, getConnectivityManager().getLinkProperties(network));
         mNetwork = network;
     }
 
+    @UsedByReflection("Android")
     public Network getNetwork() {
         return mNetwork;
     }
