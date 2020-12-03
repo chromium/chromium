@@ -96,5 +96,13 @@ Polymer({
    */
   onRenameESimProfileTap_(e) {
     this.fire('show-esim-profile-rename-dialog', {iccid: this.iccid_});
+  },
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onRemoveESimProfileTap_(e) {
+    this.fire('show-esim-remove-profile-dialog', {iccid: this.iccid_});
   }
 });

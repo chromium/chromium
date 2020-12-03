@@ -107,4 +107,23 @@ suite('InternetDetailMenu', function() {
     renameBtn.click();
     await Promise.all([renameProfilePromise, test_util.flushTasks()]);
   });
+
+  test('Remove menu button click', async function() {
+    init();
+    await flushAsync();
+    const trippleDot = internetDetailMenu.$$('#moreNetworkDetail');
+    assertTrue(!!trippleDot);
+
+    trippleDot.click();
+    await flushAsync();
+    const removeBtn =
+        internetDetailMenu.shadowRoot.querySelector('cr-action-menu')
+            .querySelector('#removeBtn');
+    assertTrue(!!removeBtn);
+
+    const removeProfilePromise = test_util.eventToPromise(
+        'show-esim-remove-profile-dialog', internetDetailMenu);
+    removeBtn.click();
+    await Promise.all([removeProfilePromise, test_util.flushTasks()]);
+  });
 });
