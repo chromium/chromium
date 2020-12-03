@@ -132,7 +132,8 @@ void WontCompile() {
   WeakPtr<Unrelated> ptr = AsWeakPtr(&f);
 }
 
-#elif defined(NCTEST_AMBIGUOUS_ANCESTORS)  // [r"fatal error: use of undeclared identifier 'AsWeakPtrImpl'"]
+#elif defined(NCTEST_AMBIGUOUS_ANCESTORS)  // [r"fatal error: (use of undeclared identifier|no matching function for call to) 'AsWeakPtrImpl'"]
+// TODO(crbug.com/1155145): Update expectation after rolling clang.
 
 void WontCompile() {
   MultiplyDerivedProducer f;
