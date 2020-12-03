@@ -4510,100 +4510,6 @@ class RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked
  private:
   base::test::ScopedFeatureList feature_list_;
 };
-
-IN_PROC_BROWSER_TEST_F(
-    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
-    ComputeIFrameLoopbackIPAddressSpace) {
-  {
-    base::string16 expected_title(base::UTF8ToUTF16("LOADED"));
-    TitleWatcher title_watcher(web_contents(), expected_title);
-    EXPECT_TRUE(
-        NavigateToURL(shell(), embedded_test_server()->GetURL(
-                                   "/do-not-treat-as-public-address.html")));
-    EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-
-    std::vector<RenderFrameHost*> frames =
-        shell()->web_contents()->GetAllFrames();
-    for (auto* frame : frames) {
-      SCOPED_TRACE(::testing::Message()
-                   << "URL: " << frame->GetLastCommittedURL());
-      auto* rfhi = static_cast<RenderFrameHostImpl*>(frame);
-
-      if (frame->GetLastCommittedURL().IsAboutBlank()) {
-        // TODO(986744): `about:blank` is not navigated via
-        // `RenderFrameHostImpl::CommitNavigation`, but handled in the renderer
-        // via `RenderFrameImpl::CommitInitialEmptyDocument`. This means that we
-        // don't calculate the value correctly on the browser-side, but do
-        // correctly inherit from the initiator on the Blink-side.
-        EXPECT_EQ(
-            network::mojom::IPAddressSpace::kUnknown,
-            rfhi->last_committed_client_security_state()->ip_address_space);
-        EXPECT_EQ("local", EvalJs(rfhi, "document.addressSpace"));
-      } else if (frame->GetLastCommittedURL().SchemeIsFileSystem() ||
-                 frame->GetLastCommittedURL().SchemeIsBlob() ||
-                 frame->GetLastCommittedURL().IsAboutSrcdoc() ||
-                 frame->GetLastCommittedURL().SchemeIs(url::kDataScheme)) {
-        // TODO(986744): `data:`, `blob:`, `filesystem:`, and `about:srcdoc`
-        // should all inherit the IPAddressSpace from the document
-        // that initiated a navigation. Right now, we treat them as `kPublic`.
-        EXPECT_EQ(
-            network::mojom::IPAddressSpace::kUnknown,
-            rfhi->last_committed_client_security_state()->ip_address_space);
-        EXPECT_EQ("public", EvalJs(rfhi, "document.addressSpace"));
-      } else {
-        // TODO(mkwst): Once the above two TODOs are resolved, this branch will
-        // be the correct expectation for all the frames in this test.
-        EXPECT_EQ(
-            network::mojom::IPAddressSpace::kLocal,
-            rfhi->last_committed_client_security_state()->ip_address_space);
-        EXPECT_EQ("local", EvalJs(rfhi, "document.addressSpace"));
-      }
-    }
-  }
-
-  // Loading from loopback that asserts publicness: `data:`, `blob:`,
-  // `filesystem:`, `about:blank`, and `about:srcdoc` all inherit the assertion.
-  {
-    base::string16 expected_title(base::UTF8ToUTF16("LOADED"));
-    TitleWatcher title_watcher(web_contents(), expected_title);
-    EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
-                                           "/treat-as-public-address.html")));
-    EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-
-    std::vector<RenderFrameHost*> frames = web_contents()->GetAllFrames();
-    for (auto* frame : frames) {
-      auto* rfhi = static_cast<RenderFrameHostImpl*>(frame);
-      if (frame->GetLastCommittedURL().IsAboutBlank()) {
-        // TODO(986744): `about:blank` is not navigated via `NavigationRequest`,
-        // but handled in the renderer via
-        // `RenderFrameImpl::CommitSyncNavigation`. This means that we don't
-        // calculate the value correctly on the browser-side, but do correctly
-        // inherit from the initiator on the Blink-side.
-        EXPECT_EQ(
-            network::mojom::IPAddressSpace::kUnknown,
-            rfhi->last_committed_client_security_state()->ip_address_space);
-        EXPECT_EQ("public", EvalJs(rfhi, "document.addressSpace"));
-      } else if (frame->GetLastCommittedURL().SchemeIsFileSystem() ||
-                 frame->GetLastCommittedURL().SchemeIsBlob() ||
-                 frame->GetLastCommittedURL().IsAboutSrcdoc() ||
-                 frame->GetLastCommittedURL().SchemeIs(url::kDataScheme)) {
-        // TODO(986744): `data:`, `blob:`, `filesystem:`, and `about:srcdoc`
-        // should all inherit the IPAddressSpace from the document
-        // that initiated a navigation. Right now, we treat them as `kUnknown`.
-        EXPECT_EQ(
-            network::mojom::IPAddressSpace::kUnknown,
-            rfhi->last_committed_client_security_state()->ip_address_space);
-        EXPECT_EQ("public", EvalJs(rfhi, "document.addressSpace"));
-      } else {
-        EXPECT_EQ(
-            network::mojom::IPAddressSpace::kPublic,
-            rfhi->last_committed_client_security_state()->ip_address_space);
-        EXPECT_EQ("public", EvalJs(rfhi, "document.addressSpace"));
-      }
-    }
-  }
-}
-
 namespace {
 
 constexpr char kDefaultPath[] = "/defaultresponse";
@@ -4758,7 +4664,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(child_navigation_manager.was_successful());
 
   ASSERT_EQ(1ul, root_frame_host()->child_count());
-  auto* child_frame = root_frame_host()->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
   EXPECT_EQ(GURL(kUnreachableWebDataURL),
             EvalJs(child_frame, "document.location.href"));
 
@@ -4795,7 +4702,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(child_navigation_manager.was_successful());
 
   ASSERT_EQ(1ul, root_frame_host()->child_count());
-  auto* child_frame = root_frame_host()->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
   EXPECT_EQ(url, EvalJs(child_frame, "document.location.href"));
   EXPECT_EQ(url, child_frame->GetLastCommittedURL());
   EXPECT_FALSE(child_frame->GetLastCommittedOrigin().opaque());
@@ -4861,7 +4769,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(navigation_manager.was_successful());
 
   ASSERT_EQ(1ul, root_frame_host()->child_count());
-  auto* child_frame = root_frame_host()->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
 
   // Failed navigation.
   EXPECT_EQ(GURL(kUnreachableWebDataURL),
@@ -4906,7 +4815,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(navigation_manager.was_successful());
 
   ASSERT_EQ(1ul, root_frame_host()->child_count());
-  auto* child_frame = root_frame_host()->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
 
   // Failed navigation.
   EXPECT_EQ(GURL(kUnreachableWebDataURL),
@@ -4926,7 +4836,7 @@ IN_PROC_BROWSER_TEST_F(
     CommitsClientSecurityStateForAboutURL) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
 
-  const auto& security_state =
+  const network::mojom::ClientSecurityStatePtr& security_state =
       root_frame_host()->last_committed_client_security_state();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_FALSE(security_state->is_web_secure_context);
@@ -4944,7 +4854,7 @@ IN_PROC_BROWSER_TEST_F(
     CommitsClientSecurityStateForDataURL) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,foo")));
 
-  const auto& security_state =
+  const network::mojom::ClientSecurityStatePtr& security_state =
       root_frame_host()->last_committed_client_security_state();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_FALSE(security_state->is_web_secure_context);
@@ -4959,7 +4869,7 @@ IN_PROC_BROWSER_TEST_F(
     CommitsClientSecurityStateForFileURL) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "empty.html")));
 
-  const auto& security_state =
+  const network::mojom::ClientSecurityStatePtr& security_state =
       root_frame_host()->last_committed_client_security_state();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_TRUE(security_state->is_web_secure_context);
@@ -4975,7 +4885,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(
       NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
 
-  const auto& security_state =
+  const network::mojom::ClientSecurityStatePtr& security_state =
       root_frame_host()->last_committed_client_security_state();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_FALSE(security_state->is_web_secure_context);
@@ -4991,7 +4901,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(
       NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
 
-  const auto& security_state =
+  const network::mojom::ClientSecurityStatePtr& security_state =
       root_frame_host()->last_committed_client_security_state();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_TRUE(security_state->is_web_secure_context);
@@ -5007,7 +4917,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(
       shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
 
-  const auto& security_state =
+  const network::mojom::ClientSecurityStatePtr& security_state =
       root_frame_host()->last_committed_client_security_state();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_TRUE(security_state->is_web_secure_context);
@@ -5030,7 +4940,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  const auto& security_state =
+  const network::mojom::ClientSecurityStatePtr& security_state =
       root_frame_host()->last_committed_client_security_state();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_FALSE(security_state->is_web_secure_context);
@@ -5053,7 +4963,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  const auto& security_state =
+  const network::mojom::ClientSecurityStatePtr& security_state =
       root_frame_host()->last_committed_client_security_state();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_FALSE(security_state->is_web_secure_context);
@@ -5061,6 +4971,326 @@ IN_PROC_BROWSER_TEST_F(
             security_state->ip_address_space);
 
   EXPECT_EQ("public", EvalJs(root_frame_host(), "document.addressSpace"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    IframeInheritsAddressSpaceForAboutBlankFromPublic) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+
+  EXPECT_EQ(true, EvalJs(root_frame_host(), R"(
+    new Promise((resolve) => {
+      const iframe = document.createElement("iframe");
+      iframe.src = "about:blank";  // Superfluous, but being explicit is nice.
+      iframe.onload = _ => { resolve(true); };
+      document.body.appendChild(iframe);
+    })
+  )"));
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+
+  const network::mojom::ClientSecurityStatePtr& security_state =
+      child_frame->last_committed_client_security_state();
+  ASSERT_FALSE(security_state.is_null());
+
+  // TODO(https://crbug.com/1136028): Expect kPublic once inheritance is fixed.
+  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    IframeInheritsAddressSpaceForAboutBlankFromLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+
+  EXPECT_EQ(true, EvalJs(root_frame_host(), R"(
+    new Promise((resolve) => {
+      const iframe = document.createElement("iframe");
+      iframe.src = "about:blank";  // Superfluous, but being explicit is nice.
+      iframe.onload = _ => { resolve(true); };
+      document.body.appendChild(iframe);
+    })
+  )"));
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+
+  const network::mojom::ClientSecurityStatePtr& security_state =
+      child_frame->last_committed_client_security_state();
+  ASSERT_FALSE(security_state.is_null());
+
+  // TODO(https://crbug.com/1136028): Expect kLocal once inheritance is fixed.
+  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    IframeInheritsAddressSpaceForAboutSrcdocFromPublic) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+
+  EXPECT_EQ(true, EvalJs(root_frame_host(), R"(
+    new Promise((resolve) => {
+      const iframe = document.createElement("iframe");
+      iframe.srcdoc = "foo";
+      iframe.onload = _ => { resolve(true); };
+      document.body.appendChild(iframe);
+    })
+  )"));
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+
+  const network::mojom::ClientSecurityStatePtr& security_state =
+      child_frame->last_committed_client_security_state();
+  ASSERT_FALSE(security_state.is_null());
+
+  // TODO(https://crbug.com/1136028): Expect kPublic once inheritance is fixed.
+  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    IframeInheritsAddressSpaceForAboutSrcdocFromLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+
+  EXPECT_EQ(true, EvalJs(root_frame_host(), R"(
+    new Promise((resolve) => {
+      const iframe = document.createElement("iframe");
+      iframe.srcdoc = "foo";
+      iframe.onload = _ => { resolve(true); };
+      document.body.appendChild(iframe);
+    })
+  )"));
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+
+  const network::mojom::ClientSecurityStatePtr& security_state =
+      child_frame->last_committed_client_security_state();
+  ASSERT_FALSE(security_state.is_null());
+
+  // TODO(https://crbug.com/1136028): Expect kLocal once inheritance is fixed.
+  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    IframeInheritsAddressSpaceForDataURLFromPublic) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+
+  EXPECT_EQ(true, EvalJs(root_frame_host(), R"(
+    new Promise((resolve) => {
+      const iframe = document.createElement("iframe");
+      iframe.src = "data:text/html,foo";
+      iframe.onload = _ => { resolve(true); };
+      document.body.appendChild(iframe);
+    })
+  )"));
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+
+  const network::mojom::ClientSecurityStatePtr& security_state =
+      child_frame->last_committed_client_security_state();
+  ASSERT_FALSE(security_state.is_null());
+
+  // TODO(https://crbug.com/1136028): Expect kPublic once inheritance is fixed.
+  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    IframeInheritsAddressSpaceForDataURLFromLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+
+  EXPECT_EQ(true, EvalJs(root_frame_host(), R"(
+    new Promise((resolve) => {
+      const iframe = document.createElement("iframe");
+      iframe.src = "data:text/html,foo";
+      iframe.onload = _ => { resolve(true); };
+      document.body.appendChild(iframe);
+    })
+  )"));
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+
+  const network::mojom::ClientSecurityStatePtr& security_state =
+      child_frame->last_committed_client_security_state();
+  ASSERT_FALSE(security_state.is_null());
+
+  // TODO(https://crbug.com/1136028): Expect kLocal once inheritance is fixed.
+  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    IframeInheritsAddressSpaceForBlobURLFromPublic) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+
+  EXPECT_EQ(true, EvalJs(root_frame_host(), R"(
+    new Promise((resolve) => {
+      const blob = new Blob(["foo"], {type: "text/html"});
+      const iframe = document.createElement("iframe");
+      iframe.src = URL.createObjectURL(blob);
+      iframe.onload = _ => { resolve(true); };
+      document.body.appendChild(iframe);
+    })
+  )"));
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+
+  const network::mojom::ClientSecurityStatePtr& security_state =
+      child_frame->last_committed_client_security_state();
+  ASSERT_FALSE(security_state.is_null());
+
+  // TODO(https://crbug.com/1136028): Expect kPublic once inheritance is fixed.
+  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    IframeInheritsAddressSpaceForBlobURLFromLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+
+  EXPECT_EQ(true, EvalJs(root_frame_host(), R"(
+    new Promise((resolve) => {
+      const blob = new Blob(["foo"], {type: "text/html"});
+      const iframe = document.createElement("iframe");
+      iframe.src = URL.createObjectURL(blob);
+      iframe.onload = _ => { resolve(true); };
+      document.body.appendChild(iframe);
+    })
+  )"));
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+
+  const network::mojom::ClientSecurityStatePtr& security_state =
+      child_frame->last_committed_client_security_state();
+  ASSERT_FALSE(security_state.is_null());
+
+  // TODO(https://crbug.com/1136028): Expect kLocal once inheritance is fixed.
+  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    IframeInheritsAddressSpaceForFilesystemURLFromPublic) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+
+  EXPECT_EQ(true, EvalJs(root_frame_host(), R"(
+    // It seems anonymous async functions are not available yet, so we cannot
+    // use an immediately-invoked function expression.
+    async function run() {
+      const fs = await new Promise((resolve, reject) => {
+        window.webkitRequestFileSystem(window.TEMPORARY, 1024, resolve, reject);
+      });
+      const file = await new Promise((resolve, reject) => {
+        fs.root.getFile('hello.html', {create: true}, resolve, reject);
+      });
+      const writer = await new Promise((resolve, reject) => {
+        file.createWriter(resolve, reject);
+      });
+      await new Promise((resolve) => {
+        writer.onwriteend = resolve;
+        writer.write(new Blob(["foo"], {type: "text/html"}));
+      });
+      await new Promise((resolve) => {
+        const iframe = document.createElement("iframe");
+        iframe.src = file.toURL();
+        iframe.onload = resolve;
+        document.body.appendChild(iframe);
+      });
+      return true;
+    }
+    run()
+  )"));
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+
+  const network::mojom::ClientSecurityStatePtr& security_state =
+      child_frame->last_committed_client_security_state();
+  ASSERT_FALSE(security_state.is_null());
+
+  // TODO(https://crbug.com/1136028): Expect kPublic once inheritance is fixed.
+  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    IframeInheritsAddressSpaceForFilesystemURLFromLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+
+  EXPECT_EQ(true, EvalJs(root_frame_host(), R"(
+    // It seems anonymous async functions are not available yet, so we cannot
+    // use an immediately-invoked function expression.
+    async function run() {
+      const fs = await new Promise((resolve, reject) => {
+        window.webkitRequestFileSystem(window.TEMPORARY, 1024, resolve, reject);
+      });
+      const file = await new Promise((resolve, reject) => {
+        fs.root.getFile('hello.html', {create: true}, resolve, reject);
+      });
+      const writer = await new Promise((resolve, reject) => {
+        file.createWriter(resolve, reject);
+      });
+      await new Promise((resolve) => {
+        writer.onwriteend = resolve;
+        writer.write(new Blob(["foo"], {type: "text/html"}));
+      });
+      await new Promise((resolve) => {
+        const iframe = document.createElement("iframe");
+        iframe.src = file.toURL();
+        iframe.onload = resolve;
+        document.body.appendChild(iframe);
+      });
+      return true;
+    }
+    run()
+  )"));
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+
+  const network::mojom::ClientSecurityStatePtr& security_state =
+      child_frame->last_committed_client_security_state();
+  ASSERT_FALSE(security_state.is_null());
+
+  // TODO(https://crbug.com/1136028): Expect kLocal once inheritance is fixed.
+  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+            security_state->ip_address_space);
 }
 
 // This test verifies that even with the blocking feature disabled, an insecure
@@ -5232,7 +5462,7 @@ IN_PROC_BROWSER_TEST_F(
       NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
 
   // Then embed a secure public iframe.
-  auto iframe_url = SecureTreatAsPublicAddressURL(*embedded_test_server());
+  GURL iframe_url = SecureTreatAsPublicAddressURL(*embedded_test_server());
   std::string script = base::ReplaceStringPlaceholders(
       R"(
         const iframe = document.createElement("iframe");
@@ -5244,9 +5474,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   ASSERT_EQ(1ul, root_frame_host()->child_count());
-  auto* child_frame = root_frame_host()->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
 
-  const auto& security_state =
+  const network::mojom::ClientSecurityStatePtr& security_state =
       child_frame->last_committed_client_security_state();
   ASSERT_FALSE(security_state.is_null());
 
@@ -5285,7 +5516,7 @@ IN_PROC_BROWSER_TEST_F(
       root_frame_host()->last_committed_client_security_state().is_null());
 
   // Then embed a secure public iframe.
-  auto iframe_url = SecureTreatAsPublicAddressURL(*embedded_test_server());
+  GURL iframe_url = SecureTreatAsPublicAddressURL(*embedded_test_server());
   std::string script = base::ReplaceStringPlaceholders(
       R"(
         const iframe = document.createElement("iframe");
@@ -5297,9 +5528,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(WaitForLoadStop(web_contents()));
 
   ASSERT_EQ(1ul, root_frame_host()->child_count());
-  auto* child_frame = root_frame_host()->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
 
-  const auto& security_state =
+  const network::mojom::ClientSecurityStatePtr& security_state =
       child_frame->last_committed_client_security_state();
   ASSERT_FALSE(security_state.is_null());
 
