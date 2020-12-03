@@ -17,6 +17,8 @@ namespace blink {
 
 // An identifiable surface.
 //
+// See also: ../../../../../docs/privacy_budget/good_identifiable_surface.md
+//
 // This class intends to be a lightweight wrapper over a simple 64-bit integer.
 // It exhibits the following characteristics:
 //

@@ -226,6 +226,8 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetDefaultConfigBrowserTest, Variations) {
   EXPECT_TRUE(settings->IsActive());
   EXPECT_TRUE(settings->IsTypeAllowed(
       blink::IdentifiableSurface::Type::kCanvasReadback));
+  EXPECT_FALSE(
+      settings->IsTypeAllowed(blink::IdentifiableSurface::Type::kMediaQuery));
 }
 
 #endif
