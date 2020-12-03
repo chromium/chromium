@@ -1,0 +1,22 @@
+Update the golden images in this directory when you change the corresponding UI
+surfaces. The golden images must be generated on Nexus 5 running KitKat (Android
+API version 19). If you have this device attached to your workstation, generate
+the renders using the following commands:
+
+$ out/Default/bin/run_chrome_public_test_apk_incremental \
+  --render-results-dir=/sdcard/render_tests/ -f PaymentRequest*Render
+$ for file in `adb shell ls /sdcard/render_tests/failures/`; do \
+    adb pull /sdcard/render_tests/failures/$file \
+        components/test/data/payments/render_tests/$file; done
+
+If you don't have a Nexus 5 running KitKat, then follow these steps instead:
+
+  1) Upload your change to https://chromium-review.googlesource.com.
+  2) Click "Choose try bots" and run the "linux_android_rel_ng" trybot.
+  3) After the bot has failed, click "linux_android_rel_ng" to see the test
+     results.
+  4) Click on "results_details" under the failed "chrome_public_test_apk" step.
+  5) Click on the name of the failed test in the "suite_name" column.
+  6) Click on the file names of failed renders in the "logs" column.
+  7) Right click on the "Failure" image to save it in
+     components/test/data/payments/render_tests. This is the new golden image.
