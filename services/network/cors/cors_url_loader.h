@@ -195,6 +195,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   net::IsolationInfo isolation_info_;
 
+  bool has_cors_been_affected_by_isolated_world_origin_ = false;
+
   // Used to run asynchronous class instance bound callbacks safely.
   base::WeakPtrFactory<CorsURLLoader> weak_factory_{this};
 
