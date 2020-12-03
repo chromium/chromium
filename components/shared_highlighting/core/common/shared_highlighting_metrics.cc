@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "components/search_engines/search_engine_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace shared_highlighting {
 
@@ -70,4 +71,34 @@ void LogGenerateErrorTabCrash() {
 void LogGenerateErrorIFrame() {
   LogLinkGenerationErrorReason(LinkGenerationError::kIFrame);
 }
+
+void LogLinkOpenedUkmEvent(ukm::SourceId source_id,
+                           const GURL& referrer,
+                           bool success) {
+  if (source_id != ukm::kInvalidSourceId) {
+    ukm::builders::SharedHighlights_LinkOpened(source_id)
+        .SetSuccess(success)
+        .SetSource(static_cast<int64_t>(GetLinkSource(referrer)))
+        .Record(ukm::UkmRecorder::Get());
+  }
+}
+
+void LogLinkGeneratedSuccessUkmEvent(ukm::SourceId source_id) {
+  if (source_id != ukm::kInvalidSourceId) {
+    ukm::builders::SharedHighlights_LinkGenerated(source_id)
+        .SetSuccess(true)
+        .Record(ukm::UkmRecorder::Get());
+  }
+}
+
+void LogLinkGeneratedErrorUkmEvent(ukm::SourceId source_id,
+                                   LinkGenerationError reason) {
+  if (source_id != ukm::kInvalidSourceId) {
+    ukm::builders::SharedHighlights_LinkGenerated(source_id)
+        .SetSuccess(false)
+        .SetError(static_cast<int64_t>(reason))
+        .Record(ukm::UkmRecorder::Get());
+  }
+}
+
 }  // namespace shared_highlighting

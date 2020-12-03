@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SHARED_HIGHLIGHTING_CORE_COMMON_SHARED_HIGHLIGHTING_METRICS_H_
 #define COMPONENTS_SHARED_HIGHLIGHTING_CORE_COMMON_SHARED_HIGHLIGHTING_METRICS_H_
 
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
 namespace shared_highlighting {
@@ -79,6 +80,24 @@ void LogGenerateErrorTabCrash();
 // Records when link generation was not completed because selection happened on
 // iframe.
 void LogGenerateErrorIFrame();
+
+// Records a UKM event for opening a link with text fragments. |source_id|
+// refers to the navigation action's ID, |referrer| will be used to record the
+// source and |success| should be true only if fragments highlighting was a
+// complete success. This event can only be recorded once per navigation.
+void LogLinkOpenedUkmEvent(ukm::SourceId source_id,
+                           const GURL& referrer,
+                           bool success);
+
+// Records a UKM event for successfully generating a link with text fragments.
+// |source_id| refers to the current frame.
+void LogLinkGeneratedSuccessUkmEvent(ukm::SourceId source_id);
+
+// Records a UKM event for failing to generate a link with text fragments.
+// |source_id| refers to the current frame and |reason| highlights the cause of
+// the failure.
+void LogLinkGeneratedErrorUkmEvent(ukm::SourceId source_id,
+                                   LinkGenerationError reason);
 
 }  // namespace shared_highlighting
 
