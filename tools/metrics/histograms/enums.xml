@@ -58124,6 +58124,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="REPEATED_IGNORES"/>
 </enum>
 
+<enum name="PermissionPromptDispositionReason">
+  <int value="0" label="User preference in settings"/>
+  <int value="1" label="Safe Browsing verdict"/>
+  <int value="2" label="Prediction service"/>
+  <int value="3" label="Default fallback"/>
+</enum>
+
 <enum name="PermissionRequestType">
   <int value="0" label="PERMISSION_BUBBLE_UNKNOWN"/>
   <int value="1" label="PERMISSION_BUBBLE_MULTIPLE"/>
@@ -59217,6 +59224,15 @@ Called by update_net_trust_anchors.py.-->
 <enum name="PreconnectTriggerUsed">
   <int value="0" label="The pre-connect triggered host was not accessed"/>
   <int value="1" label="The pre-connect triggered host was accessed"/>
+</enum>
+
+<enum name="PredictionGrantLikelihood">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Very unlikely"/>
+  <int value="2" label="Unlikely"/>
+  <int value="3" label="Neutral"/>
+  <int value="4" label="Likely"/>
+  <int value="5" label="Very likely"/>
 </enum>
 
 <enum name="PredictionStatus">

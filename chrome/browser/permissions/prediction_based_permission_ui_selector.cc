@@ -51,6 +51,8 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
     return;
   }
 
+  last_request_grant_likelihood_ = base::nullopt;
+
   DCHECK(!request_);
   permissions::PredictionService* service =
       PredictionServiceFactory::GetForProfile(profile_);
@@ -65,6 +67,11 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
 void PredictionBasedPermissionUiSelector::Cancel() {
   request_.reset();
   callback_.Reset();
+}
+
+base::Optional<permissions::PermissionUmaUtil::PredictionGrantLikelihood>
+PredictionBasedPermissionUiSelector::PredictedGrantLikelihoodForUKM() {
+  return last_request_grant_likelihood_;
 }
 
 permissions::PredictionRequestFeatures
@@ -128,6 +135,9 @@ void PredictionBasedPermissionUiSelector::LookupReponseReceived(
     std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
     return;
   }
+
+  last_request_grant_likelihood_ =
+      response->suggestion(0).grant_likelihood().discretized_likelihood();
 
   if (response->suggestion(0).grant_likelihood().discretized_likelihood() ==
       VeryUnlikely) {

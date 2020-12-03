@@ -38,6 +38,9 @@ class PredictionBasedPermissionUiSelector
 
   void Cancel() override;
 
+  base::Optional<permissions::PermissionUmaUtil::PredictionGrantLikelihood>
+  PredictedGrantLikelihoodForUKM() override;
+
  private:
   permissions::PredictionRequestFeatures BuildPredictionRequestFeatures(
       permissions::PermissionRequest* request);
@@ -49,6 +52,9 @@ class PredictionBasedPermissionUiSelector
 
   Profile* profile_;
   std::unique_ptr<PredictionServiceRequest> request_;
+  base::Optional<permissions::PermissionUmaUtil::PredictionGrantLikelihood>
+      last_request_grant_likelihood_;
+
   DecisionMadeCallback callback_;
 };
 

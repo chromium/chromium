@@ -10677,6 +10677,14 @@ be describing additional metrics about the same event.
       An enum of type ContentSettingsType.
     </summary>
   </metric>
+  <metric name="PredictionsApiResponse.GrantLikelihood"
+      enum="PredictionGrantLikelihood">
+    <summary>
+      An enum of type PermissionUmaUtil::PredictionGrantLikelihood describing
+      the likelihood returned by the Web Permission Predictions Service, if the
+      service was successfully queried.
+    </summary>
+  </metric>
   <metric name="PriorDismissals">
     <summary>
       The number of dismissed prompts for the given (origin, permission) pair,
@@ -10693,6 +10701,13 @@ be describing additional metrics about the same event.
     <summary>
       An enum of type PermissionPromptDisposition. The UI used to display a
       permission prompt, if any.
+    </summary>
+  </metric>
+  <metric name="PromptDispositionReason"
+      enum="PermissionPromptDispositionReason">
+    <summary>
+      An enum of type PermissionPromptDispositionReason. The reason why the
+      particular prompt disposition was used, if any.
     </summary>
   </metric>
   <metric name="SatisfiedAdaptiveTriggers">

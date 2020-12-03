@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "components/permissions/notification_permission_ui_selector.h"
 #include "components/permissions/permission_prompt.h"
+#include "components/permissions/permission_uma_util.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -33,6 +34,7 @@ namespace permissions {
 class PermissionRequest;
 enum class PermissionAction;
 enum class PermissionPromptDisposition;
+enum class PermissionPromptDispositionReason;
 
 // The message to be printed in the Developer Tools console when the quiet
 // notification permission prompt UI is shown on sites with abusive permission
@@ -233,6 +235,8 @@ class PermissionRequestManager
                                               const UiDecision& decision);
 
   PermissionPromptDisposition DetermineCurrentRequestUIDispositionForUMA();
+  PermissionPromptDispositionReason
+  DetermineCurrentRequestUIDispositionReasonForUMA();
 
   void LogWarningToConsole(const char* message);
 
@@ -304,6 +308,11 @@ class PermissionRequestManager
   // |requests_|, and whether to show warnings. This will be nullopt if we are
   // still waiting on the result from |notification_permission_ui_selectors_|.
   base::Optional<UiDecision> current_request_ui_to_use_;
+
+  // The likelihood value returned by the Web Permission Predictions Service,
+  // to be recoreded in UKM.
+  base::Optional<PermissionUmaUtil::PredictionGrantLikelihood>
+      prediction_grant_likelihood_;
 
   // Whether the bubble is being destroyed by this class, rather than in
   // response to a UI event. In this case, callbacks from the bubble itself

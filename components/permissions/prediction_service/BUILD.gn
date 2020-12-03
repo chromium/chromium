@@ -18,12 +18,12 @@ source_set("prediction_service") {
     "prediction_service_common.h",
   ]
   deps = [
-    ":prediction_service_messages_proto",
     "//components/keyed_service/content",
     "//components/permissions:permissions_common",
     "//services/network/public/cpp:cpp",
     "//third_party/protobuf:protobuf_lite",
   ]
+  public_deps = [ ":prediction_service_messages_proto" ]
 }
 
 source_set("unit_tests") {
@@ -31,7 +31,6 @@ source_set("unit_tests") {
   sources = [ "prediction_service_unittest.cc" ]
   deps = [
     ":prediction_service",
-    ":prediction_service_messages_proto",
     "//base/test:test_support",
     "//components/permissions:permissions_common",
     "//services/network:test_support",

@@ -8,6 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/optional.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_uma_util.h"
 
 namespace permissions {
 
@@ -79,6 +80,12 @@ class NotificationPermissionUiSelector {
   // can be issued. Can be called when there is no pending request which will
   // simply be a no-op.
   virtual void Cancel() {}
+
+  // Will return the selector's discretized prediction value, if any is
+  // applicable to be recorded in UKMs. This is specific only to a selector that
+  // makes use of the Web Permission Predictions Service to make decisions.
+  virtual base::Optional<PermissionUmaUtil::PredictionGrantLikelihood>
+  PredictedGrantLikelihoodForUKM();
 };
 
 }  // namespace permissions
