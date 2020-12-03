@@ -32,6 +32,9 @@ struct TileGroup {
   // Called when a tile was clicked, need to recalculate |tile_stats|.
   void OnTileClicked(const std::string& tile_id);
 
+  // Remove a tile from |tiles| given by its ID.
+  void RemoveTiles(const std::vector<std::string>& tile_ids);
+
   // Unique id for the group.
   std::string id;
 

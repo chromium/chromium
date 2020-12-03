@@ -4,9 +4,11 @@
 
 #include "components/query_tiles/internal/tile_group.h"
 
+#include <set>
 #include <sstream>
 #include <utility>
 
+#include "components/query_tiles/internal/tile_iterator.h"
 #include "components/query_tiles/internal/tile_utils.h"
 
 namespace query_tiles {
@@ -25,6 +27,17 @@ void DeepCopyGroup(const TileGroup& input, TileGroup* output) {
   for (const auto& tile : input.tiles)
     output->tiles.emplace_back(std::make_unique<Tile>(*tile.get()));
   output->tile_stats = input.tile_stats;
+}
+
+// Removes |id| from |id_set|. Returns true if |id| is found, or false
+// otherwise.
+bool RemoveIdFromSet(std::set<std::string>* id_set, const std::string& id) {
+  const auto it = id_set->find(id);
+  if (it != id_set->end()) {
+    id_set->erase(it);
+    return true;
+  }
+  return false;
 }
 
 }  // namespace
@@ -74,6 +87,38 @@ std::string TileGroup::DebugString() {
   for (const auto& tile : this->tiles)
     out << tile->DebugString();
   return out.str();
+}
+
+void TileGroup::RemoveTiles(const std::vector<std::string>& tile_ids) {
+  std::set<std::string> id_set(tile_ids.begin(), tile_ids.end());
+  std::queue<Tile*> tile_queue;
+  // Check if there are top level tiles to be removed.
+  for (auto iter = tiles.begin(); iter != tiles.end();) {
+    if (RemoveIdFromSet(&id_set, (*iter)->id)) {
+      iter = tiles.erase(iter);
+      if (id_set.empty())
+        return;
+    } else {
+      tile_queue.push(iter->get());
+      ++iter;
+    }
+  }
+
+  // Recursively check if there are sub tiles to be removed.
+  while (!tile_queue.empty()) {
+    Tile* tile = tile_queue.front();
+    tile_queue.pop();
+    for (auto it = tile->sub_tiles.begin(); it != tile->sub_tiles.end();) {
+      if (RemoveIdFromSet(&id_set, (*it)->id)) {
+        it = tile->sub_tiles.erase(it);
+        if (id_set.empty())
+          return;
+      } else {
+        tile_queue.push(it->get());
+        ++it;
+      }
+    }
+  }
 }
 
 }  // namespace query_tiles

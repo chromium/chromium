@@ -28,6 +28,45 @@ namespace {
 // A special tile group for tile stats.
 constexpr char kTileStatsGroup[] = "tile_stats";
 
+// Class for handling trending tiles. It checks whether a
+// trending tile should be displayed, or removed. Construct
+// a new instance each time when the caller has a list of
+// trending tiles to be displayed.
+class TrendingTilesHandler {
+ public:
+  // Map between tile ID and tile impression.
+  using ImpressionMap = std::map<std::string, int>;
+  explicit TrendingTilesHandler(ImpressionMap* impression_map)
+      : impression_map_(impression_map) {}
+
+  // Add a new trending tile for display, returns true if
+  // allowed, or returns false otherwise.
+  bool AddTrendingTileForDisplay(const std::string& tile_id) {
+    if (base::FeatureList::IsEnabled(
+            features::kQueryTilesRemoveTrendingTilesAfterInactivity) &&
+        (*impression_map_)[tile_id] >=
+            TileConfig::GetMaxTrendingTileImpressions()) {
+      tiles_to_remove_.push_back(tile_id);
+      return false;
+    }
+
+    if (++trending_tiles_count_ > TileConfig::GetNumTrendingTilesToDisplay())
+      return false;
+
+    ++(*impression_map_)[tile_id];
+    return true;
+  }
+
+  const std::vector<std::string>& tiles_to_remove() const {
+    return tiles_to_remove_;
+  }
+
+ private:
+  std::vector<std::string> tiles_to_remove_;
+  int trending_tiles_count_ = 0;
+  ImpressionMap* impression_map_;
+};
+
 class TileManagerImpl : public TileManager {
  public:
   TileManagerImpl(std::unique_ptr<TileStore> store,
@@ -68,10 +107,19 @@ class TileManagerImpl : public TileManager {
     }
 
     std::vector<Tile> tiles;
-    for (const auto& tile : tile_group_->tiles)
+    TrendingTilesHandler handler(&tile_impressions_);
+    for (const auto& tile : tile_group_->tiles) {
+      if (IsTrendingTile(tile->id)) {
+        // Return a limited number of trending tiles, filter out the rest.
+        if (!handler.AddTrendingTileForDisplay(tile->id))
+          continue;
+      }
       tiles.emplace_back(*tile.get());
+    }
+
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(tiles)));
+    RemoveTiles(handler.tiles_to_remove());
   }
 
   void GetTile(const std::string& tile_id, TileCallback callback) override {
@@ -87,10 +135,26 @@ class TileManagerImpl : public TileManager {
         }
       }
     }
-
     auto result_tile = result ? base::make_optional(*result) : base::nullopt;
+    TrendingTilesHandler handler(&tile_impressions_);
+    if (result_tile.has_value()) {
+      std::vector<std::unique_ptr<Tile>> tiles_to_display;
+      for (auto& tile : result_tile->sub_tiles) {
+        if (IsTrendingTile(tile->id)) {
+          // Return a limited number of trending subtiles, filter out the rest.
+          if (!handler.AddTrendingTileForDisplay(tile->id))
+            continue;
+        }
+        // Moving the tile to a temporary vector first, and will then
+        // use the temporary vector to replace |result_tile->sub_tiles|.
+        tiles_to_display.emplace_back(std::move(tile));
+      }
+      result_tile->sub_tiles = std::move(tiles_to_display);
+    }
+
+    RemoveTiles(handler.tiles_to_remove());
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), result_tile));
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(result_tile)));
   }
 
   TileGroupStatus PurgeDb() override {
@@ -245,6 +309,8 @@ class TileManagerImpl : public TileManager {
     // It's fine if |tile_stats_group_| is not saved, so no callback needs to
     // be passed to Update().
     store_->Update(kTileStatsGroup, *tile_stats_group_, base::DoNothing());
+
+    tile_impressions_.erase(tile_id);
   }
 
   void OnQuerySelected(const base::Optional<std::string>& parent_tile_id,
@@ -272,6 +338,17 @@ class TileManagerImpl : public TileManager {
     }
   }
 
+  void RemoveTiles(const std::vector<std::string>& tile_ids) {
+    if (!tile_group_)
+      return;
+
+    if (tile_ids.empty())
+      return;
+
+    tile_group_->RemoveTiles(tile_ids);
+    store_->Update(tile_group_->id, *tile_group_, base::DoNothing());
+  }
+
   // Indicates if the db is fully initialized, rejects calls if not.
   bool initialized_;
 
@@ -292,6 +369,10 @@ class TileManagerImpl : public TileManager {
   // Accept languages from the PrefService. Used to check if tiles stored are of
   // the same language.
   std::string accept_languages_;
+
+  // Map tracking how many times tiles are requested.
+  // TODO(qinmin): move this to |tile_stats_group_|.
+  std::map<std::string, int> tile_impressions_;
 
   base::WeakPtrFactory<TileManagerImpl> weak_ptr_factory_{this};
 };

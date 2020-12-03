@@ -146,6 +146,13 @@ TEST(TileUtilsTest, CalculateTileScore) {
             exp(-0.099));
 }
 
+TEST(TileUtilsTest, IsTrendingTile) {
+  EXPECT_TRUE(IsTrendingTile("trending_news"));
+  EXPECT_FALSE(IsTrendingTile("Trending_news"));
+  EXPECT_FALSE(IsTrendingTile("trendingnews"));
+  EXPECT_FALSE(IsTrendingTile("news"));
+}
+
 }  // namespace
 
 }  // namespace query_tiles

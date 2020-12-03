@@ -81,6 +81,38 @@ TEST(TileGroupTest, OnTileClicked) {
   EXPECT_EQ(group.tile_stats["guid-1-2"].score, 1.5);
 }
 
+TEST(TileGroupTest, RemoveTiles) {
+  TileGroup group;
+  test::ResetTestGroup(&group);
+  EXPECT_EQ(group.tiles.size(), 3u);
+  EXPECT_EQ(group.tiles[2]->id, "guid-1-3");
+  EXPECT_FALSE(group.tiles[2]->sub_tiles.empty());
+
+  std::vector<std::string> tiles_to_remove;
+  tiles_to_remove.emplace_back("guid-1-1");
+  group.RemoveTiles(tiles_to_remove);
+  EXPECT_EQ(group.tiles.size(), 2u);
+  EXPECT_EQ(group.tiles[0]->id, "guid-1-2");
+  EXPECT_EQ(group.tiles[1]->id, "guid-1-3");
+
+  test::ResetTestGroup(&group);
+  tiles_to_remove.clear();
+  tiles_to_remove.emplace_back("guid-1-4");
+  group.RemoveTiles(tiles_to_remove);
+  EXPECT_EQ(group.tiles.size(), 3u);
+  EXPECT_EQ(group.tiles[2]->id, "guid-1-3");
+  EXPECT_TRUE(group.tiles[2]->sub_tiles.empty());
+
+  // Remove 2 tiles.
+  test::ResetTestGroup(&group);
+  tiles_to_remove.emplace_back("guid-1-1");
+  group.RemoveTiles(tiles_to_remove);
+  EXPECT_EQ(group.tiles.size(), 2u);
+  EXPECT_EQ(group.tiles[0]->id, "guid-1-2");
+  EXPECT_EQ(group.tiles[1]->id, "guid-1-3");
+  EXPECT_TRUE(group.tiles[1]->sub_tiles.empty());
+}
+
 }  // namespace
 
 }  // namespace query_tiles

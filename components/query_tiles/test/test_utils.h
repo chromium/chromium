@@ -22,6 +22,9 @@ void ResetTestGroup(TileGroup* group);
 // Build and reset the Tile for test usage.
 void ResetTestEntry(Tile* entry);
 
+// Return a list of trending tiles for test.
+std::vector<std::unique_ptr<Tile>> GetTestTrendingTileList();
+
 // Returns true if all data in two TileGroups are identical.
 bool AreTileGroupsIdentical(const TileGroup& lhs, const TileGroup& rhs);
 
