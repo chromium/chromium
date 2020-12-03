@@ -1646,6 +1646,24 @@
       },
     },
 
+    'fuchsia_sizes_tests': {
+      'fuchsia_sizes': {
+        'merge': {
+          'script': '//tools/perf/process_perf_results.py',
+        },
+        'args': [
+          '--far-file',
+          'gen/fuchsia/engine/web_engine/web_engine.far',
+          '--far-file',
+          'gen/fuchsia/runners/cast_runner/cast_runner.far',
+          '--total-size-name',
+          'chrome_fuchsia',
+          '--compression-args',
+          '-14',
+        ],
+      },
+    },
+
     'gl_gtests_validating': {
       'gl_tests_validating': {
         'test': 'gl_tests',
@@ -5418,6 +5436,11 @@
     'devtools_gtests': [
       'devtools_browser_tests',
       'layout_ng_gtests',
+    ],
+
+    'fuchsia_arm64_isolated_scripts': [
+      'fuchsia_sizes_tests',
+      'gpu_angle_fuchsia_unittests_isolated_scripts',
     ],
 
     'fuchsia_x64_isolated_scripts': [

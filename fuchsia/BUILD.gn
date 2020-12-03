@@ -37,6 +37,7 @@ group("gn_all") {
     "engine:web_engine_unittests",
     "http:http_service_tests",
     "mojom:fuchsia_mojo_unittests",
+    "release:fuchsia_sizes",
     "runners:cast_runner",
     "runners:cast_runner_browsertests",
     "runners:cast_runner_integration_tests",

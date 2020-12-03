@@ -11,6 +11,7 @@ import argparse
 import collections
 import copy
 import json
+import logging
 import math
 import os
 import re
@@ -18,17 +19,11 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import traceback
+import uuid
 
-from common import GetHostToolPathFromPlatform, SDK_ROOT, DIR_SOURCE_ROOT
-
-# Import SendResults() from the results_dashboard.py in tools/perf/core instead
-# of the deprecated one in the chrome infra build recipes folder on the recipes
-# module path.
-sys.path.insert(0, os.path.join(DIR_SOURCE_ROOT, 'tools', 'perf'))
-sys.path.insert(0, os.path.join(DIR_SOURCE_ROOT, 'tools', 'perf', 'core'))
-from results_dashboard import SendResults
-sys.path.pop(0)
-sys.path.pop(0)
+from common import GetHostToolPathFromPlatform, GetHostArchFromPlatform
+from common import SDK_ROOT, DIR_SOURCE_ROOT
 
 # Structure representing the compressed and uncompressed sizes for a Fuchsia
 # package.
@@ -36,36 +31,32 @@ PackageSizes = collections.namedtuple('PackageSizes',
                                       ['compressed', 'uncompressed'])
 
 
-def CreateBinarySizeHistogram(name, commit_position, size):
+def CreateSizesExternalDiagnostic(sizes_guid):
+  """Creates a histogram external sizes diagnostic."""
+
+  benchmark_diagnostic = {
+      'type': 'GenericSet',
+      'guid': str(sizes_guid),
+      'values': ['sizes'],
+  }
+
+  return benchmark_diagnostic
+
+
+def CreateSizesHistogramItem(name, size, sizes_guid):
   """Create a performance dashboard histogram from the histogram template and
   binary size data."""
 
   # Chromium performance dashboard histogram containing binary size data.
   histogram = {
       'name': name,
-      'sampleValues': [size],
-      'maxNumSampleValues': 1,
-      'running': [1, size, math.log(size), size, size, size, 0],
       'unit': 'sizeInBytes_smallerIsBetter',
-      'description': 'chrome-fuchsia package binary sizes',
       'diagnostics': {
-          'chromiumCommitPositions': {
-              'type': 'GenericSet',
-              'values': [commit_position],
-          },
-          'bots': {
-              'type': 'GenericSet',
-              'values': ['fuchsia-fyi-arm64-size']
-          },
-          'benchmarks': {
-              'type': 'GenericSet',
-              'values': ['sizes']
-          },
-          'masters': {
-              'type': 'GenericSet',
-              'values': ['ChromiumLinux']
-          },
+          'benchmarks': str(sizes_guid),
       },
+      'sampleValues': [size],
+      'running': [1, size, math.log(size), size, size, size, 0],
+      'description': 'chrome-fuchsia package binary sizes',
       'summaryOptions': {
           'avg': True,
           'count': False,
@@ -79,15 +70,42 @@ def CreateBinarySizeHistogram(name, commit_position, size):
   return histogram
 
 
+def CreateSizesHistogram(package_sizes):
+  """Create a performance dashboard histogram from binary size data."""
+
+  sizes_guid = uuid.uuid1()
+  histogram = [CreateSizesExternalDiagnostic(sizes_guid)]
+  for name, size in package_sizes.items():
+    histogram.append(
+        CreateSizesHistogramItem('%s_%s' % (name, 'compressed'),
+                                 size.compressed, sizes_guid))
+    histogram.append(
+        CreateSizesHistogramItem('%s_%s' % (name, 'uncompressed'),
+                                 size.uncompressed, sizes_guid))
+  return histogram
+
+
+def GetZstdPathFromPlatform():
+  """Returns path to zstd compression utility based on the current platform."""
+
+  arch = GetHostArchFromPlatform()
+  if arch == 'arm64':
+    zstd_arch_dir = 'zstd-linux-arm64'
+  elif arch == 'x64':
+    zstd_arch_dir = 'zstd-linux-x64'
+  else:
+    raise Exception('zstd path unknown for architecture "%s"' % arch)
+
+  return os.path.join(DIR_SOURCE_ROOT, 'third_party', zstd_arch_dir, 'bin',
+                      'zstd')
+
+
 def CompressedSize(file_path, compression_args):
   """Calculates size file after zstd compression.  Uses non-chunked compression
   (Fuchsia uses chunked compression which is not available in the zstd command
   line tool).  The compression level can be set using compression_args."""
 
-  # Path to zstd compression utility.
-  zstd_path = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'zstd', 'bin',
-                           'zstd')
-
+  zstd_path = GetZstdPathFromPlatform()
   devnull = open(os.devnull)
   proc = subprocess.Popen([zstd_path, '-f', file_path, '-c'] + compression_args,
                           stdout=open(os.devnull, 'w'),
@@ -111,6 +129,14 @@ def ExtractFarFile(file_path, extract_dir):
   """Extracts contents of a Fuchsia archive file to the specified directory."""
 
   far_tool = GetHostToolPathFromPlatform('far')
+
+  if not os.path.isfile(far_tool):
+    raise Exception('Could not find FAR host tool "%s".' % far_tool)
+  if not os.path.isfile(file_path):
+    raise Exception('Could not find FAR file "%s".' % file_path)
+  if os.path.isdir(extract_dir):
+    raise Exception('Could not find extraction directory "%s".' % extract_dir)
+
   subprocess.check_call([
       far_tool, 'extract',
       '--archive=%s' % file_path,
@@ -130,20 +156,6 @@ def GetBlobNameHashes(meta_dir):
       (pkgfs_path, blob_hash) = line.strip().split('=')
       blob_name_hashes[pkgfs_path] = blob_hash
   return blob_name_hashes
-
-
-def CommitPositionFromGitShow():
-  """Returns the chromium commit position for the current workspace."""
-
-  # Match a commit position from a "git show" string like
-  # "    Cr-Commit-Position: refs/heads/master@{#819438}"
-  git_commit_position_re = r'^\s*Cr-Commit-Position:.*@\{#(?P<position>\d+)\}'
-
-  show_output = subprocess.check_output(['git', 'show', 'origin/master'])
-  match = re.search(git_commit_position_re, show_output, re.MULTILINE)
-  if match:
-    return int(match.group('position'))
-  raise RuntimeError('could not get chromium commit position from git show')
 
 
 def CommitPositionFromBuildProperty(value):
@@ -268,8 +280,11 @@ def GetPackageSizes(far_files, build_out_dir, extract_dir, excluded_paths,
   return package_sizes
 
 
-def GetBinarySizeHistogramsData(args):
-  """Get binary size histogram data for packages specified in args."""
+def GetBinarySizes(args):
+  """Get binary size data for packages specified in args.
+
+  If "total_size_name" is set, then computes a synthetic package size which is
+  the aggregated sizes across all blobs."""
 
   # Calculate compressed and uncompressed package sizes.
   sdk_libs = GetSDKLibs()
@@ -286,34 +301,19 @@ def GetBinarySizeHistogramsData(args):
     uncompressed = sum([a.uncompressed for a in package_sizes.values()])
     package_sizes[args.total_size_name] = PackageSizes(compressed, uncompressed)
 
-  # Determine chromium commit position from builder property or workspace.
-  if args.test_revision_cp:
-    commit_position = CommitPositionFromBuildProperty(args.test_revision_cp)
-  else:
-    commit_position = CommitPositionFromGitShow()
-
-  print('Chromium commit position: %d' % commit_position)
   for name, size in package_sizes.items():
     print('%s: compressed %d, uncompressed %d' %
           (name, size.compressed, size.uncompressed))
 
-  # Generate chromium performance dashboard histogram data for each binary size.
-  histograms_data = []
-  for name, size in package_sizes.items():
-    histograms_data.append(
-        CreateBinarySizeHistogram('%s_%s' % (name, 'compressed'),
-                                  commit_position, size.compressed))
-    histograms_data.append(
-        CreateBinarySizeHistogram('%s_%s' % (name, 'uncompressed'),
-                                  commit_position, size.uncompressed))
-
-  return histograms_data
+  return package_sizes
 
 
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument(
       '--build-out-dir',
+      '--output-directory',
+      type=os.path.realpath,
       required=True,
       help='Location of the build artifacts.',
   )
@@ -331,12 +331,10 @@ def main():
       required=True,
       action='append',
       help='Name of Fuchsia package FAR file (may be used more than once.)')
-  parser.add_argument('--histogram-path',
-                      help='Optional output file for histogram data')
   parser.add_argument(
-      '--server-url',
-      help='Write data to performance dashboard server URL instead of to a file'
-  )
+      '--isolated-script-test-output',
+      type=os.path.realpath,
+      help='File to which simplified JSON results will be written.')
   parser.add_argument(
       '--output-dir',
       help='Optional directory for histogram output file.  This argument is '
@@ -354,6 +352,10 @@ def main():
                       '-v',
                       action='store_true',
                       help='Enable verbose output')
+  # Accepted to conform to the isolated script interface, but ignored.
+  parser.add_argument('--isolated-script-test-filter', help=argparse.SUPPRESS)
+  parser.add_argument('--isolated-script-test-perf-output',
+                      help=argparse.SUPPRESS)
   args = parser.parse_args()
 
   # Optionally prefix the output_dir to the histogram_path.
@@ -388,24 +390,42 @@ def main():
     if not os.path.isfile(far_abs_path):
       raise Exception('Could not find FAR file "%s".' % far_abs_path)
 
-  histograms_data = GetBinarySizeHistogramsData(args)
+  isolated_script_output = {
+      'valid': False,
+      'failures': [],
+      'version': 'simplified'
+  }
+  test_name = 'sizes'
 
-  if args.server_url:
-    # Send histograms to the performance dashboard.
-    for data in histograms_data:
-      SendResults([data],
-                  'chrome_fuchsia_package_size',
-                  args.server_url,
-                  send_as_histograms=True)
+  results_directory = None
+  if args.isolated_script_test_output:
+    results_directory = os.path.join(
+        os.path.dirname(args.isolated_script_test_output), test_name)
+    if not os.path.exists(results_directory):
+      os.makedirs(results_directory)
 
-  if args.histogram_path:
-    # Save histogram data to a file.
-    histogram_dir = os.path.dirname(os.path.abspath(args.histogram_path))
-    if not os.path.isdir(histogram_dir):
-      raise Exception('Could not find histogram file output directory "%s".' %
-                      histogram_dir)
-    json_out = open(args.histogram_path, 'w')
-    json.dump(histograms_data, json_out)
+  try:
+    package_sizes = GetBinarySizes(args)
+    sizes_histogram = CreateSizesHistogram(package_sizes)
+    isolated_script_output = {
+        'valid': True,
+        'failures': [],
+        'version': 'simplified',
+    }
+  except:
+    _, value, trace = sys.exc_info()
+    traceback.print_tb(trace)
+    print(str(value))
+    return 1
+  finally:
+    if results_directory:
+      results_path = os.path.join(results_directory, 'test_results.json')
+      with open(results_path, 'w') as output_file:
+        json.dump(isolated_script_output, output_file)
+
+      histogram_path = os.path.join(results_directory, 'perf_results.json')
+      with open(histogram_path, 'w') as f:
+        json.dump(sizes_histogram, f)
 
   return 0
 

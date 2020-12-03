@@ -62,12 +62,16 @@ def _GetMachineGroup(build_properties):
     # in the build properties
     machine_group =  build_properties['perf_dashboard_machine_group']
   else:
-    mastername_mapping = {}
+    builder_group_mapping = {}
     with open(MACHINE_GROUP_JSON_FILE) as fp:
-      mastername_mapping = json.load(fp)
-      legacy_mastername = build_properties['mastername']
-      if mastername_mapping.get(legacy_mastername):
-        machine_group = mastername_mapping[legacy_mastername]
+      builder_group_mapping = json.load(fp)
+      if build_properties.get('builder_group', False):
+        legacy_builder_group = build_properties['builder_group']
+      else:
+        # TODO(crbug.com/1153958): remove reference to mastername.
+        legacy_builder_group = build_properties['mastername']
+      if builder_group_mapping.get(legacy_builder_group):
+        machine_group = builder_group_mapping[legacy_builder_group]
   if not machine_group:
     raise ValueError(
         'Must set perf_dashboard_machine_group or have a valid '

@@ -858,6 +858,10 @@
     "script": "//testing/scripts/run_flatbuffers_unittests.py",
     "type": "script",
   },
+  "fuchsia_sizes": {
+    "label": "//fuchsia/release:fuchsia_sizes",
+    "type": "generated_script",
+  },
   "fuchsia_telemetry_gpu_integration_test": {
     "args": [
       "../../content/test/gpu/run_gpu_integration_test_fuchsia.py",
