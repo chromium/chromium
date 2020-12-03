@@ -77,8 +77,9 @@ _java_library_patterns = [
   "//android_webview/glue:glue",
 ]
 
-# These identify all non-leaf targets that have .build_config files.
-_java_target_patterns = _java_library_patterns + _java_resource_patterns
+# These identify all non-leaf targets that have .build_config files. This is the
+# set of patterns that other targets can use to filter out java targets.
+java_target_patterns = _java_library_patterns + _java_resource_patterns
 
 _r8_path = "//third_party/r8/lib/r8.jar"
 _desugar_jdk_libs_json = "//third_party/r8/desugar_jdk_libs.json"
@@ -168,7 +169,7 @@ template("write_build_config") {
       assert(false, "Invalid java library target name: $_target_label")
     }
   } else if (_type == "group") {
-    if (filter_exclude([ _target_label ], _java_target_patterns) != []) {
+    if (filter_exclude([ _target_label ], java_target_patterns) != []) {
       assert(false, "Invalid java target name: $_target_label")
     }
   } else if (filter_exclude([ _type ], _java_leaf_types) != []) {
@@ -204,7 +205,7 @@ template("write_build_config") {
     if (defined(invoker.possible_config_deps)) {
       foreach(_possible_dep, invoker.possible_config_deps) {
         _dep_label = get_label_info(_possible_dep, "label_no_toolchain")
-        if (filter_exclude([ _dep_label ], _java_target_patterns) == []) {
+        if (filter_exclude([ _dep_label ], java_target_patterns) == []) {
           # Put the bug number in the target name so that false-positives
           # have a hint in the error message about non-existent dependencies.
           deps += [ "$_dep_label$build_config_target_suffix" ]

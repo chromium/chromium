@@ -136,11 +136,24 @@ template("test") {
         configs = []  # Prevent list overwriting warning.
         configs = invoker.configs
 
-        deps = []
         forward_variables_from(
             invoker,
             "*",
-            _apk_specific_vars + _wrapper_script_vars + TESTONLY_AND_VISIBILITY)
+            [ "deps" ] + _apk_specific_vars + _wrapper_script_vars +
+                TESTONLY_AND_VISIBILITY)
+
+        # Native targets do not need to depend on java targets. Filter them out
+        # so that the shared library can be built without needing to wait for
+        # dependent java targets.
+        deps = []
+        if (defined(invoker.deps)) {
+          foreach(_dep, invoker.deps) {
+            _target_label = get_label_info(_dep, "label_no_toolchain")
+            if (filter_exclude([ _target_label ], java_target_patterns) != []) {
+              deps += [ _dep ]
+            }
+          }
+        }
 
         if (!defined(invoker.use_default_launcher) ||
             invoker.use_default_launcher) {
