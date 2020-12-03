@@ -47,9 +47,9 @@ void LocalSearchService::BindIndex(
     return;
   }
 
-  if (reporter_remote)
-    reporter_remote_set_.Add(std::move(reporter_remote));
   it->second->BindReceiver(std::move(index_receiver));
+  if (reporter_remote)
+    it->second->SetReporterRemote(std::move(reporter_remote));
   std::move(callback).Run(base::nullopt);
 }
 

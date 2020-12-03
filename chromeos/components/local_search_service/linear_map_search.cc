@@ -99,7 +99,7 @@ void LinearMapSearch::AddOrUpdateSync(
     UpdateData(id, item.contents, &data_);
   }
 
-  MaybeLogIndexSize();
+  MaybeLogIndexSizeSync();
 }
 
 uint32_t LinearMapSearch::DeleteSync(const std::vector<std::string>& ids) {
@@ -109,7 +109,7 @@ uint32_t LinearMapSearch::DeleteSync(const std::vector<std::string>& ids) {
     num_deleted += data_.erase(id);
   }
 
-  MaybeLogIndexSize();
+  MaybeLogIndexSizeSync();
   return num_deleted;
 }
 
@@ -126,13 +126,13 @@ ResponseStatus LinearMapSearch::FindSync(const base::string16& query,
 
   if (query.empty()) {
     const ResponseStatus status = ResponseStatus::kEmptyQuery;
-    MaybeLogSearchResultsStats(status, 0u, base::TimeDelta());
+    MaybeLogSearchResultsStatsSync(status, 0u, base::TimeDelta());
     return status;
   }
 
   if (data_.empty()) {
     const ResponseStatus status = ResponseStatus::kEmptyIndex;
-    MaybeLogSearchResultsStats(status, 0u, base::TimeDelta());
+    MaybeLogSearchResultsStatsSync(status, 0u, base::TimeDelta());
     return status;
   }
 
@@ -140,7 +140,7 @@ ResponseStatus LinearMapSearch::FindSync(const base::string16& query,
 
   const base::TimeTicks end = base::TimeTicks::Now();
   const ResponseStatus status = ResponseStatus::kSuccess;
-  MaybeLogSearchResultsStats(status, results->size(), end - start);
+  MaybeLogSearchResultsStatsSync(status, results->size(), end - start);
   return status;
 }
 
@@ -150,13 +150,13 @@ void LinearMapSearch::GetSize(GetSizeCallback callback) {
 
 void LinearMapSearch::AddOrUpdate(const std::vector<Data>& data,
                                   AddOrUpdateCallback callback) {
-  // TODO(thanhdng): Add logging to this function once we have the metrics
-  // reporter available.
   for (const auto& item : data) {
     const auto& id = item.id;
     DCHECK(!id.empty());
     UpdateData(id, item.contents, &data_);
   }
+
+  MaybeLogIndexSize(data_.size());
   std::move(callback).Run();
 }
 
@@ -168,6 +168,7 @@ void LinearMapSearch::Delete(const std::vector<std::string>& ids,
     num_deleted += data_.erase(id);
   }
 
+  MaybeLogIndexSize(data_.size());
   std::move(callback).Run(num_deleted);
 }
 
@@ -185,24 +186,35 @@ void LinearMapSearch::UpdateDocuments(const std::vector<Data>& data,
     }
   }
 
+  MaybeLogIndexSize(data_.size());
   std::move(callback).Run(num_deleted);
 }
 
 void LinearMapSearch::Find(const base::string16& query,
                            uint32_t max_results,
                            FindCallback callback) {
+  const base::TimeTicks start = base::TimeTicks::Now();
   if (query.empty()) {
-    std::move(callback).Run(ResponseStatus::kEmptyQuery, base::nullopt);
+    const ResponseStatus status = ResponseStatus::kEmptyQuery;
+    MaybeLogSearchResultsStats(status, 0u, base::TimeDelta());
+    std::move(callback).Run(status, base::nullopt);
     return;
   }
 
   if (data_.empty()) {
-    std::move(callback).Run(ResponseStatus::kEmptyIndex, base::nullopt);
+    const ResponseStatus status = ResponseStatus::kEmptyIndex;
+    MaybeLogSearchResultsStats(status, 0u, base::TimeDelta());
+    std::move(callback).Run(status, base::nullopt);
     return;
   }
 
   std::vector<Result> results = GetSearchResults(query, max_results);
-  std::move(callback).Run(ResponseStatus::kSuccess, std::move(results));
+
+  const ResponseStatus status = ResponseStatus::kSuccess;
+  const base::TimeTicks end = base::TimeTicks::Now();
+  MaybeLogSearchResultsStats(status, results.size(), end - start);
+
+  std::move(callback).Run(status, std::move(results));
 }
 
 void LinearMapSearch::ClearIndex(ClearIndexCallback callback) {

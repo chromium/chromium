@@ -61,14 +61,14 @@ class IndexSync {
   // UMA metrics (number results and search latency).
   // Each implementation of this class should call this method at the end of
   // Find.
-  void MaybeLogSearchResultsStats(ResponseStatus status,
-                                  size_t num_results,
-                                  base::TimeDelta latency);
+  void MaybeLogSearchResultsStatsSync(ResponseStatus status,
+                                      size_t num_results,
+                                      base::TimeDelta latency);
 
   // Logs number of documents in the index if the index is not empty.
   // Each implementation of this class should call this method at the end of
   // Find.
-  void MaybeLogIndexSize();
+  void MaybeLogIndexSizeSync();
 
   void SetSearchParams(const SearchParams& search_params);
   SearchParams GetSearchParamsForTesting();

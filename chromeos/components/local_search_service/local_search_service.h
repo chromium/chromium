@@ -31,7 +31,6 @@ class LocalSearchService : public mojom::LocalSearchService {
 
  private:
   mojo::Receiver<mojom::LocalSearchService> receiver_;
-  mojo::RemoteSet<mojom::SearchMetricsReporter> reporter_remote_set_;
   std::map<IndexId, std::unique_ptr<Index>> indices_;
 };
 

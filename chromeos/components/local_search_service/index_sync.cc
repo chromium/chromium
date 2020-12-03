@@ -49,9 +49,9 @@ IndexSync::IndexSync(IndexId index_id,
 
 IndexSync::~IndexSync() = default;
 
-void IndexSync::MaybeLogSearchResultsStats(ResponseStatus status,
-                                           size_t num_results,
-                                           base::TimeDelta latency) {
+void IndexSync::MaybeLogSearchResultsStatsSync(ResponseStatus status,
+                                               size_t num_results,
+                                               base::TimeDelta latency) {
   if (reporter_)
     reporter_->OnSearchPerformed();
 
@@ -64,7 +64,7 @@ void IndexSync::MaybeLogSearchResultsStats(ResponseStatus status,
   }
 }
 
-void IndexSync::MaybeLogIndexSize() {
+void IndexSync::MaybeLogIndexSizeSync() {
   const uint64_t index_size = GetSizeSync();
   if (index_size != 0u) {
     base::UmaHistogramCounts10000(histogram_prefix_ + ".NumberDocuments",

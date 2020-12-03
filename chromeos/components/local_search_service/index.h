@@ -9,6 +9,7 @@
 
 #include "base/strings/string16.h"
 #include "chromeos/components/local_search_service/public/mojom/index.mojom.h"
+#include "chromeos/components/local_search_service/public/mojom/local_search_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -22,7 +23,25 @@ class Index : public mojom::Index {
 
   void BindReceiver(mojo::PendingReceiver<mojom::Index> receiver);
 
+  // Call once to set the SearchMetricsReporter remote.
+  void SetReporterRemote(
+      mojo::PendingRemote<mojom::SearchMetricsReporter> reporter_remote);
+
+ protected:
+  // Logs daily search metrics if |reporter_remote_| is bound. Also logs
+  // other UMA metrics (number results and search latency).
+  void MaybeLogSearchResultsStats(ResponseStatus status,
+                                  size_t num_results,
+                                  base::TimeDelta latency);
+
+  // Logs number of documents in the index.
+  void MaybeLogIndexSize(uint64_t index_size);
+
+  IndexId index_id_;
+
  private:
+  std::string histogram_prefix_;
+  mojo::Remote<mojom::SearchMetricsReporter> reporter_remote_;
   mojo::ReceiverSet<mojom::Index> receivers_;
 };
 

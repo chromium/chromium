@@ -145,12 +145,12 @@ ResponseStatus InvertedIndexSearch::FindSync(const base::string16& query,
   results->clear();
   if (query.empty()) {
     const ResponseStatus status = ResponseStatus::kEmptyQuery;
-    MaybeLogSearchResultsStats(status, 0u, base::TimeDelta());
+    MaybeLogSearchResultsStatsSync(status, 0u, base::TimeDelta());
     return status;
   }
   if (GetSizeSync() == 0u) {
     const ResponseStatus status = ResponseStatus::kEmptyIndex;
-    MaybeLogSearchResultsStats(status, 0u, base::TimeDelta());
+    MaybeLogSearchResultsStatsSync(status, 0u, base::TimeDelta());
     return status;
   }
 
@@ -163,7 +163,7 @@ ResponseStatus InvertedIndexSearch::FindSync(const base::string16& query,
 
   const base::TimeTicks end = base::TimeTicks::Now();
   const ResponseStatus status = ResponseStatus::kSuccess;
-  MaybeLogSearchResultsStats(status, results->size(), end - start);
+  MaybeLogSearchResultsStatsSync(status, results->size(), end - start);
   return status;
 }
 
@@ -208,12 +208,17 @@ void InvertedIndexSearch::Find(const base::string16& query,
                                uint32_t max_results,
                                FindCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const base::TimeTicks start = base::TimeTicks::Now();
   if (query.empty()) {
-    std::move(callback).Run(ResponseStatus::kEmptyQuery, base::nullopt);
+    const ResponseStatus status = ResponseStatus::kEmptyQuery;
+    MaybeLogSearchResultsStats(status, 0u, base::TimeDelta());
+    std::move(callback).Run(status, base::nullopt);
     return;
   }
   if (inverted_index_->NumberDocuments() == 0u) {
-    std::move(callback).Run(ResponseStatus::kEmptyIndex, base::nullopt);
+    const ResponseStatus status = ResponseStatus::kEmptyIndex;
+    MaybeLogSearchResultsStats(status, 0u, base::TimeDelta());
+    std::move(callback).Run(status, base::nullopt);
     return;
   }
 
@@ -224,7 +229,11 @@ void InvertedIndexSearch::Find(const base::string16& query,
 
   if (results.size() > max_results && max_results > 0u)
     results.resize(max_results);
-  std::move(callback).Run(ResponseStatus::kSuccess, results);
+
+  const ResponseStatus status = ResponseStatus::kSuccess;
+  const base::TimeTicks end = base::TimeTicks::Now();
+  MaybeLogSearchResultsStats(status, results.size(), end - start);
+  std::move(callback).Run(status, results);
 }
 
 void InvertedIndexSearch::ClearIndex(ClearIndexCallback callback) {
