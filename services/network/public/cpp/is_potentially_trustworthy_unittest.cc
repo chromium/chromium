@@ -50,8 +50,7 @@ TEST(IsPotentiallyTrustworthy, MainTest) {
   EXPECT_TRUE(IsPotentiallyTrustworthy("about:srcdoc#ref"));
   EXPECT_TRUE(IsPotentiallyTrustworthy("about:srcdoc?x=2#ref"));
 
-  // TODO(https://crbug.com/1153335): This should return false.
-  EXPECT_TRUE(IsPotentiallyTrustworthy("about:about"));
+  EXPECT_FALSE(IsPotentiallyTrustworthy("about:about"));
 
   // TODO(https://crbug.com/1119740): Should return true for data: URLs.
   EXPECT_FALSE(IsPotentiallyTrustworthy("data:test/plain;blah"));

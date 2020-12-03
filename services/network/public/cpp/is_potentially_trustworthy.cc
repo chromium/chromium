@@ -269,9 +269,7 @@ bool IsUrlPotentiallyTrustworthy(const GURL& url) {
 
   // 1. If url is "about:blank" or "about:srcdoc", return "Potentially
   //    Trustworthy".
-  // TODO(https://crbug.com/1153335): This should probably instead rely on
-  // something like url.IsAboutBlank() || url.IsAboutSrcdoc().
-  if (url.SchemeIs(url::kAboutScheme))
+  if (url.IsAboutBlank() || url.IsAboutSrcdoc())
     return true;
 
   // 2. If url’s scheme is "data", return "Potentially Trustworthy".
