@@ -39,13 +39,13 @@ class FontManager final : public ScriptWrappable,
   void Trace(blink::Visitor*) const override;
 
  private:
-  void DidShowFontChooser(mojom::blink::FontEnumerationStatus status,
+  void DidShowFontChooser(ScriptPromiseResolver* resolver,
+                          mojom::blink::FontEnumerationStatus status,
                           Vector<mojom::blink::FontMetadataPtr> fonts);
   void ContextDestroyed() override;
   void OnDisconnect();
 
   mojo::Remote<mojom::blink::FontAccessManager> remote_manager_;
-  Member<ScriptPromiseResolver> pending_resolver_;
 };
 
 }  // namespace blink

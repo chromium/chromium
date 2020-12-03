@@ -66,50 +66,45 @@ ScriptValue FontManager::query(ScriptState* script_state,
 
 ScriptPromise FontManager::showFontChooser(ScriptState* script_state,
                                            const QueryOptions* options) {
-  // TODO(crbug.com/1149621): Queue up font chooser requests.
-  if (!pending_resolver_) {
-    remote_manager_->ChooseLocalFonts(
-        WTF::Bind(&FontManager::DidShowFontChooser, WrapWeakPersistent(this)));
-    pending_resolver_ =
-        MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  }
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
 
-  return pending_resolver_->Promise();
+  remote_manager_->ChooseLocalFonts(WTF::Bind(&FontManager::DidShowFontChooser,
+                                              WrapWeakPersistent(this),
+                                              WrapPersistent(resolver)));
+
+  return promise;
 }
 
 void FontManager::Trace(blink::Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ContextLifecycleObserver::Trace(visitor);
-  visitor->Trace(pending_resolver_);
 }
 
 void FontManager::DidShowFontChooser(
+    ScriptPromiseResolver* resolver,
     mojom::blink::FontEnumerationStatus status,
     Vector<mojom::blink::FontMetadataPtr> fonts) {
   switch (status) {
     case mojom::blink::FontEnumerationStatus::kOk:
       break;
     case mojom::blink::FontEnumerationStatus::kUnimplemented:
-      pending_resolver_->Reject(MakeGarbageCollected<DOMException>(
+      resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,
           "Not yet supported on this platform."));
-      pending_resolver_.Clear();
       return;
     case mojom::blink::FontEnumerationStatus::kCanceled:
-      pending_resolver_->Reject(MakeGarbageCollected<DOMException>(
+      resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kAbortError, "The user canceled the operation."));
-      pending_resolver_.Clear();
       return;
     case mojom::blink::FontEnumerationStatus::kNeedsUserActivation:
-      pending_resolver_->Reject(MakeGarbageCollected<DOMException>(
+      resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kSecurityError, "User activation is required."));
-      pending_resolver_.Clear();
       return;
     case mojom::blink::FontEnumerationStatus::kUnexpectedError:
     default:
-      pending_resolver_->Reject(MakeGarbageCollected<DOMException>(
+      resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kUnknownError, "An unexpected error occured."));
-      pending_resolver_.Clear();
       return;
   }
 
@@ -119,8 +114,7 @@ void FontManager::DidShowFontChooser(
                                       font->family};
     entries.push_back(FontMetadata::Create(std::move(entry)));
   }
-  pending_resolver_->Resolve(std::move(entries));
-  pending_resolver_.Clear();
+  resolver->Resolve(std::move(entries));
 }
 
 void FontManager::ContextDestroyed() {
