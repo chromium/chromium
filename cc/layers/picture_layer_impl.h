@@ -177,6 +177,8 @@ class CC_EXPORT PictureLayerImpl
   void AddLowResolutionTilingIfNeeded();
   bool ShouldAdjustRasterScale() const;
   void RecalculateRasterScales();
+  void AdjustRasterScaleForTransformAnimation(
+      float preserved_raster_contents_scale);
   float MinimumRasterContentsScaleForWillChangeTransform() const;
   // Returns false if raster translation is not applicable.
   bool CalculateRasterTranslation(gfx::Vector2dF& raster_translation) const;
