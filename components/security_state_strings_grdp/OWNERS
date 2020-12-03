@@ -1,5 +1,4 @@
 file://components/security_state/OWNERS
-# COMPONENT: Internals>PageSecurityState
 
 # Translation screenshots:
 per-file *.png.sha1=*

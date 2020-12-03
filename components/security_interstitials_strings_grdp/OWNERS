@@ -1,5 +1,4 @@
 file://components/security_interstitials/OWNERS
-# COMPONENT: Services>Safebrowsing
 
 # Translation screenshots:
 per-file *.png.sha1=*
