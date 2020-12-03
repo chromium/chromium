@@ -177,6 +177,7 @@ if (enable_pdf) {
     configs += [ ":pdf_common_config" ]
 
     deps = [
+      ":accessibility_structs",
       ":internal",
       ":pdf",
       ":ppapi_migration",
@@ -189,7 +190,10 @@ if (enable_pdf) {
   source_set("accessibility_structs") {
     visibility = [ ":*" ]
 
-    sources = [ "accessibility_structs.h" ]
+    sources = [
+      "accessibility_structs.cc",
+      "accessibility_structs.h",
+    ]
 
     configs += [ ":pdf_common_config" ]
 

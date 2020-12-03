@@ -31,6 +31,7 @@
 #include "gin/public/gin_embedders.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/public/v8_platform.h"
+#include "pdf/accessibility_structs.h"
 #include "pdf/document_loader_impl.h"
 #include "pdf/draw_utils/coordinates.h"
 #include "pdf/draw_utils/shadow.h"
@@ -2468,8 +2469,9 @@ uint32_t PDFiumEngine::GetCharUnicode(int page_index, int char_index) {
   return pages_[page_index]->GetCharUnicode(char_index);
 }
 
-base::Optional<pp::PDF::PrivateAccessibilityTextRunInfo>
-PDFiumEngine::GetTextRunInfo(int page_index, int start_char_index) {
+base::Optional<AccessibilityTextRunInfo> PDFiumEngine::GetTextRunInfo(
+    int page_index,
+    int start_char_index) {
   DCHECK(PageIndexInBounds(page_index));
   auto info = pages_[page_index]->GetTextRunInfo(start_char_index);
   if (!client_->IsPrintPreview() && start_char_index >= 0)

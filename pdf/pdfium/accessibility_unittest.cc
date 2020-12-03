@@ -75,11 +75,11 @@ TEST_F(AccessibilityTest, GetAccessibilityPage) {
 
   ASSERT_EQ(2, engine->GetNumberOfPages());
   AccessibilityPageInfo page_info;
-  std::vector<pp::PDF::PrivateAccessibilityTextRunInfo> text_runs;
+  std::vector<AccessibilityTextRunInfo> text_runs;
   std::vector<AccessibilityCharInfo> chars;
   pp::PDF::PrivateAccessibilityPageObjects page_objects;
-  ASSERT_TRUE(GetAccessibilityInfo(engine.get(), 0, page_info, &text_runs,
-                                   chars, &page_objects));
+  ASSERT_TRUE(GetAccessibilityInfo(engine.get(), 0, page_info, text_runs, chars,
+                                   &page_objects));
   EXPECT_EQ(0u, page_info.page_index);
   EXPECT_EQ(gfx::Rect(5, 3, 266, 266), page_info.bounds);
   EXPECT_EQ(text_runs.size(), page_info.text_run_count);
@@ -92,13 +92,13 @@ TEST_F(AccessibilityTest, GetAccessibilityPage) {
     const auto& expected = kExpectedTextRuns[i];
     EXPECT_EQ(expected.len, text_runs[i].len) << i;
     EXPECT_FLOAT_EQ(expected.font_size, text_runs[i].style.font_size) << i;
-    EXPECT_FLOAT_EQ(expected.bounds_x, text_runs[i].bounds.point.x) << i;
-    EXPECT_FLOAT_EQ(expected.bounds_y, text_runs[i].bounds.point.y) << i;
+    EXPECT_FLOAT_EQ(expected.bounds_x, text_runs[i].bounds.x()) << i;
+    EXPECT_FLOAT_EQ(expected.bounds_y, text_runs[i].bounds.y()) << i;
     float expected_bounds_w =
         GetExpectedBoundsWidth(using_test_fonts, i, expected.bounds_w);
-    EXPECT_FLOAT_EQ(expected_bounds_w, text_runs[i].bounds.size.width) << i;
-    EXPECT_FLOAT_EQ(expected.bounds_h, text_runs[i].bounds.size.height) << i;
-    EXPECT_EQ(PP_PRIVATEDIRECTION_LTR, text_runs[i].direction);
+    EXPECT_FLOAT_EQ(expected_bounds_w, text_runs[i].bounds.width()) << i;
+    EXPECT_FLOAT_EQ(expected.bounds_h, text_runs[i].bounds.height()) << i;
+    EXPECT_EQ(AccessibilityTextDirection::kLeftToRight, text_runs[i].direction);
   }
 
   ASSERT_EQ(kExpectedCharCount, chars.size());
@@ -128,11 +128,11 @@ TEST_F(AccessibilityTest, GetAccessibilityImageInfo) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
 
   AccessibilityPageInfo page_info;
-  std::vector<pp::PDF::PrivateAccessibilityTextRunInfo> text_runs;
+  std::vector<AccessibilityTextRunInfo> text_runs;
   std::vector<AccessibilityCharInfo> chars;
   pp::PDF::PrivateAccessibilityPageObjects page_objects;
-  ASSERT_TRUE(GetAccessibilityInfo(engine.get(), 0, page_info, &text_runs,
-                                   chars, &page_objects));
+  ASSERT_TRUE(GetAccessibilityInfo(engine.get(), 0, page_info, text_runs, chars,
+                                   &page_objects));
   EXPECT_EQ(0u, page_info.page_index);
   EXPECT_EQ(gfx::Rect(5, 3, 816, 1056), page_info.bounds);
   EXPECT_EQ(text_runs.size(), page_info.text_run_count);
@@ -471,11 +471,11 @@ TEST_F(AccessibilityTest, GetAccessibilityLinkInfo) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
 
   AccessibilityPageInfo page_info;
-  std::vector<pp::PDF::PrivateAccessibilityTextRunInfo> text_runs;
+  std::vector<AccessibilityTextRunInfo> text_runs;
   std::vector<AccessibilityCharInfo> chars;
   pp::PDF::PrivateAccessibilityPageObjects page_objects;
-  ASSERT_TRUE(GetAccessibilityInfo(engine.get(), 0, page_info, &text_runs,
-                                   chars, &page_objects));
+  ASSERT_TRUE(GetAccessibilityInfo(engine.get(), 0, page_info, text_runs, chars,
+                                   &page_objects));
   EXPECT_EQ(0u, page_info.page_index);
   EXPECT_EQ(gfx::Rect(5, 3, 533, 266), page_info.bounds);
   EXPECT_EQ(text_runs.size(), page_info.text_run_count);
@@ -518,11 +518,11 @@ TEST_F(AccessibilityTest, GetAccessibilityHighlightInfo) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
 
   AccessibilityPageInfo page_info;
-  std::vector<pp::PDF::PrivateAccessibilityTextRunInfo> text_runs;
+  std::vector<AccessibilityTextRunInfo> text_runs;
   std::vector<AccessibilityCharInfo> chars;
   pp::PDF::PrivateAccessibilityPageObjects page_objects;
-  ASSERT_TRUE(GetAccessibilityInfo(engine.get(), 0, page_info, &text_runs,
-                                   chars, &page_objects));
+  ASSERT_TRUE(GetAccessibilityInfo(engine.get(), 0, page_info, text_runs, chars,
+                                   &page_objects));
   EXPECT_EQ(0u, page_info.page_index);
   EXPECT_EQ(gfx::Rect(5, 3, 533, 266), page_info.bounds);
   EXPECT_EQ(text_runs.size(), page_info.text_run_count);
@@ -576,11 +576,11 @@ TEST_F(AccessibilityTest, GetAccessibilityTextFieldInfo) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
 
   AccessibilityPageInfo page_info;
-  std::vector<pp::PDF::PrivateAccessibilityTextRunInfo> text_runs;
+  std::vector<AccessibilityTextRunInfo> text_runs;
   std::vector<AccessibilityCharInfo> chars;
   pp::PDF::PrivateAccessibilityPageObjects page_objects;
-  ASSERT_TRUE(GetAccessibilityInfo(engine.get(), 0, page_info, &text_runs,
-                                   chars, &page_objects));
+  ASSERT_TRUE(GetAccessibilityInfo(engine.get(), 0, page_info, text_runs, chars,
+                                   &page_objects));
   EXPECT_EQ(0u, page_info.page_index);
   EXPECT_EQ(gfx::Rect(5, 3, 400, 400), page_info.bounds);
   EXPECT_EQ(text_runs.size(), page_info.text_run_count);

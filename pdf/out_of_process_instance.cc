@@ -498,6 +498,37 @@ PrivateAccessibilityCharInfoFromAccessibilityCharInfo(
   return pp_chars;
 }
 
+pp::PDF::PrivateAccessibilityTextStyleInfo
+PrivateAccessibilityTextStyleInfoFromAccessibilityTextStyleInfo(
+    const AccessibilityTextStyleInfo& style) {
+  pp::PDF::PrivateAccessibilityTextStyleInfo pp_style;
+  pp_style.font_name = style.font_name;
+  pp_style.font_weight = style.font_weight;
+  pp_style.render_mode = static_cast<PP_TextRenderingMode>(style.render_mode);
+  pp_style.font_size = style.font_size;
+  pp_style.fill_color = style.fill_color;
+  pp_style.stroke_color = style.stroke_color;
+  pp_style.is_italic = style.is_italic;
+  pp_style.is_bold = style.is_bold;
+  return pp_style;
+}
+
+std::vector<pp::PDF::PrivateAccessibilityTextRunInfo>
+PrivateAccessibilityCharInfoFromAccessibilityTextRunInfo(
+    const std::vector<AccessibilityTextRunInfo>& text_runs) {
+  std::vector<pp::PDF::PrivateAccessibilityTextRunInfo> pp_text_runs;
+  pp_text_runs.reserve(text_runs.size());
+  for (const auto& text_run : text_runs) {
+    pp::PDF::PrivateAccessibilityTextRunInfo pp_text_run = {
+        text_run.len, PPFloatRectFromRectF(text_run.bounds),
+        static_cast<PP_PrivateDirection>(text_run.direction),
+        PrivateAccessibilityTextStyleInfoFromAccessibilityTextStyleInfo(
+            text_run.style)};
+    pp_text_runs.push_back(std::move(pp_text_run));
+  }
+  return pp_text_runs;
+}
+
 }  // namespace
 
 OutOfProcessInstance::OutOfProcessInstance(PP_Instance instance)
@@ -846,11 +877,11 @@ void OutOfProcessInstance::SendNextAccessibilityPage(int32_t page_index) {
   ++next_accessibility_page_index_;
 
   AccessibilityPageInfo page_info;
-  std::vector<pp::PDF::PrivateAccessibilityTextRunInfo> text_runs;
+  std::vector<AccessibilityTextRunInfo> text_runs;
   std::vector<AccessibilityCharInfo> chars;
   pp::PDF::PrivateAccessibilityPageObjects page_objects;
 
-  if (!GetAccessibilityInfo(engine(), page_index, page_info, &text_runs, chars,
+  if (!GetAccessibilityInfo(engine(), page_index, page_info, text_runs, chars,
                             &page_objects)) {
     return;
   }
@@ -859,8 +890,10 @@ void OutOfProcessInstance::SendNextAccessibilityPage(int32_t page_index) {
       PrivateAccessibilityPageInfoFromAccessibilityPageInfo(page_info);
   std::vector<PP_PrivateAccessibilityCharInfo> pp_chars =
       PrivateAccessibilityCharInfoFromAccessibilityCharInfo(chars);
+  std::vector<pp::PDF::PrivateAccessibilityTextRunInfo> pp_text_runs =
+      PrivateAccessibilityCharInfoFromAccessibilityTextRunInfo(text_runs);
   pp::PDF::SetAccessibilityPageInfo(GetPluginInstance(), &pp_page_info,
-                                    text_runs, pp_chars, page_objects);
+                                    pp_text_runs, pp_chars, page_objects);
 
   // Schedule loading the next page.
   pp::Module::Get()->core()->CallOnMainThread(

@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "pdf/accessibility_structs.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_unsupported_features.h"
@@ -122,7 +123,7 @@ int GetFirstNonUnicodeWhiteSpaceCharIndex(FPDF_TEXTPAGE text_page,
   return i;
 }
 
-PP_PrivateDirection GetDirectionFromAngle(float angle) {
+AccessibilityTextDirection GetDirectionFromAngle(float angle) {
   // Rotating the angle by 45 degrees to simplify the conditions statements.
   // It's like if we rotated the whole cartesian coordinate system like below.
   //   X                   X
@@ -140,15 +141,15 @@ PP_PrivateDirection GetDirectionFromAngle(float angle) {
   angle = fmodf(angle + k45DegreesInRadians, k360DegreesInRadians);
   // Quadrant I.
   if (angle >= 0 && angle <= k90DegreesInRadians)
-    return PP_PRIVATEDIRECTION_LTR;
+    return AccessibilityTextDirection::kLeftToRight;
   // Quadrant II.
   if (angle > k90DegreesInRadians && angle <= k180DegreesInRadians)
-    return PP_PRIVATEDIRECTION_TTB;
+    return AccessibilityTextDirection::kTopToBottom;
   // Quadrant III.
   if (angle > k180DegreesInRadians && angle <= k270DegreesInRadians)
-    return PP_PRIVATEDIRECTION_RTL;
+    return AccessibilityTextDirection::kRightToLeft;
   // Quadrant IV.
-  return PP_PRIVATEDIRECTION_BTT;
+  return AccessibilityTextDirection::kBottomToTop;
 }
 
 void AddCharSizeToAverageCharSize(gfx::SizeF new_size,
@@ -349,16 +350,16 @@ void PDFiumPage::CalculatePageObjectTextRunBreaks() {
 
 void PDFiumPage::CalculateTextRunStyleInfo(
     int char_index,
-    pp::PDF::PrivateAccessibilityTextStyleInfo* style_info) {
+    AccessibilityTextStyleInfo& style_info) {
   FPDF_TEXTPAGE text_page = GetTextPage();
-  style_info->font_size = FPDFText_GetFontSize(text_page, char_index);
+  style_info.font_size = FPDFText_GetFontSize(text_page, char_index);
 
   int flags = 0;
   size_t buffer_size =
       FPDFText_GetFontInfo(text_page, char_index, nullptr, 0, &flags);
   if (buffer_size > 0) {
     PDFiumAPIStringBufferAdapter<std::string> api_string_adapter(
-        &style_info->font_name, buffer_size, true);
+        &style_info.font_name, buffer_size, true);
     void* data = api_string_adapter.GetData();
     size_t bytes_written =
         FPDFText_GetFontInfo(text_page, char_index, data, buffer_size, nullptr);
@@ -366,22 +367,22 @@ void PDFiumPage::CalculateTextRunStyleInfo(
     api_string_adapter.Close(bytes_written);
   }
 
-  style_info->font_weight = FPDFText_GetFontWeight(text_page, char_index);
+  style_info.font_weight = FPDFText_GetFontWeight(text_page, char_index);
   // As defined in PDF 1.7 table 5.20.
   constexpr int kFlagItalic = (1 << 6);
   // Bold text is considered bold when greater than or equal to 700.
   constexpr int kStandardBoldValue = 700;
-  style_info->is_italic = (flags & kFlagItalic);
-  style_info->is_bold = style_info->font_weight >= kStandardBoldValue;
+  style_info.is_italic = (flags & kFlagItalic);
+  style_info.is_bold = style_info.font_weight >= kStandardBoldValue;
   unsigned int fill_r;
   unsigned int fill_g;
   unsigned int fill_b;
   unsigned int fill_a;
   if (FPDFText_GetFillColor(text_page, char_index, &fill_r, &fill_g, &fill_b,
                             &fill_a)) {
-    style_info->fill_color = MakeARGB(fill_a, fill_r, fill_g, fill_b);
+    style_info.fill_color = MakeARGB(fill_a, fill_r, fill_g, fill_b);
   } else {
-    style_info->fill_color = MakeARGB(0xff, 0, 0, 0);
+    style_info.fill_color = MakeARGB(0xff, 0, 0, 0);
   }
 
   unsigned int stroke_r;
@@ -390,22 +391,24 @@ void PDFiumPage::CalculateTextRunStyleInfo(
   unsigned int stroke_a;
   if (FPDFText_GetStrokeColor(text_page, char_index, &stroke_r, &stroke_g,
                               &stroke_b, &stroke_a)) {
-    style_info->stroke_color = MakeARGB(stroke_a, stroke_r, stroke_g, stroke_b);
+    style_info.stroke_color = MakeARGB(stroke_a, stroke_r, stroke_g, stroke_b);
   } else {
-    style_info->stroke_color = MakeARGB(0xff, 0, 0, 0);
+    style_info.stroke_color = MakeARGB(0xff, 0, 0, 0);
   }
 
   int render_mode = FPDFText_GetTextRenderMode(text_page, char_index);
-  DCHECK_GE(render_mode, PP_TEXTRENDERINGMODE_FIRST);
-  DCHECK_LE(render_mode, PP_TEXTRENDERINGMODE_LAST);
-  style_info->render_mode = static_cast<PP_TextRenderingMode>(render_mode);
+  DCHECK_GE(render_mode,
+            static_cast<int>(AccessibilityTextRenderMode::kUnknown));
+  DCHECK_LE(render_mode,
+            static_cast<int>(AccessibilityTextRenderMode::kMaxValue));
+  style_info.render_mode =
+      static_cast<AccessibilityTextRenderMode>(render_mode);
 }
 
-bool PDFiumPage::AreTextStyleEqual(
-    int char_index,
-    const pp::PDF::PrivateAccessibilityTextStyleInfo& style) {
-  pp::PDF::PrivateAccessibilityTextStyleInfo char_style;
-  CalculateTextRunStyleInfo(char_index, &char_style);
+bool PDFiumPage::AreTextStyleEqual(int char_index,
+                                   const AccessibilityTextStyleInfo& style) {
+  AccessibilityTextStyleInfo char_style;
+  CalculateTextRunStyleInfo(char_index, char_style);
   return char_style.font_name == style.font_name &&
          char_style.font_weight == style.font_weight &&
          char_style.render_mode == style.render_mode &&
@@ -434,8 +437,8 @@ void PDFiumPage::LogOverlappingAnnotations() {
                                  overlap_count, 1, 100, 50);
 }
 
-base::Optional<pp::PDF::PrivateAccessibilityTextRunInfo>
-PDFiumPage::GetTextRunInfo(int start_char_index) {
+base::Optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfo(
+    int start_char_index) {
   FPDF_PAGE page = GetPage();
   FPDF_TEXTPAGE text_page = GetTextPage();
   int chars_count = FPDFText_CountChars(text_page);
@@ -451,11 +454,8 @@ PDFiumPage::GetTextRunInfo(int start_char_index) {
     // If so, |info.len| needs to take the number of characters
     // iterated into account.
     DCHECK_GT(actual_start_char_index, start_char_index);
-    pp::PDF::PrivateAccessibilityTextRunInfo info;
+    AccessibilityTextRunInfo info;
     info.len = chars_count - start_char_index;
-    info.bounds = pp::FloatRect();
-    info.direction = PP_PRIVATEDIRECTION_NONE;
-    info.style.render_mode = PP_TEXTRENDERINGMODE_UNKNOWN;
     return info;
   }
 
@@ -473,8 +473,8 @@ PDFiumPage::GetTextRunInfo(int start_char_index) {
   int char_index = actual_start_char_index;
 
   // Set text run's style info from the first character of the text run.
-  pp::PDF::PrivateAccessibilityTextRunInfo info;
-  CalculateTextRunStyleInfo(char_index, &info.style);
+  AccessibilityTextRunInfo info;
+  CalculateTextRunStyleInfo(char_index, info.style);
 
   gfx::RectF start_char_rect =
       GetFloatCharRectInPixels(page, text_page, char_index);
@@ -493,7 +493,7 @@ PDFiumPage::GetTextRunInfo(int start_char_index) {
 
   // Add first non-space char to text run.
   text_run_bounds.Union(start_char_rect);
-  PP_PrivateDirection char_direction =
+  AccessibilityTextDirection char_direction =
       GetDirectionFromAngle(FPDFText_GetCharAngle(text_page, char_index));
   if (char_index < chars_count)
     char_index++;
@@ -589,14 +589,14 @@ PDFiumPage::GetTextRunInfo(int start_char_index) {
 
   info.len = char_index - start_char_index;
   info.style.font_size = text_run_font_size;
-  info.bounds = PPFloatRectFromRectF(text_run_bounds);
+  info.bounds = text_run_bounds;
   // Infer text direction from first and last character of the text run. We
   // can't base our decision on the character direction, since a character of a
   // RTL language will have an angle of 0 when not rotated, just like a
   // character in a LTR language.
   info.direction = char_index - actual_start_char_index > 1
                        ? GetDirectionFromAngle(text_run_angle)
-                       : PP_PRIVATEDIRECTION_NONE;
+                       : AccessibilityTextDirection::kNone;
   return info;
 }
 

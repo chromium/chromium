@@ -34,6 +34,8 @@ namespace chrome_pdf {
 
 class PDFiumEngine;
 class Thumbnail;
+struct AccessibilityTextRunInfo;
+struct AccessibilityTextStyleInfo;
 
 // Wrapper around a page from the document.
 class PDFiumPage {
@@ -55,8 +57,7 @@ class PDFiumPage {
   // Log overlaps between annotations in the page.
   void LogOverlappingAnnotations();
   // See definition of PDFEngine::GetTextRunInfo().
-  base::Optional<pp::PDF::PrivateAccessibilityTextRunInfo> GetTextRunInfo(
-      int start_char_index);
+  base::Optional<AccessibilityTextRunInfo> GetTextRunInfo(int start_char_index);
   // Get a unicode character from the page.
   uint32_t GetCharUnicode(int char_index);
   // Get the bounds of a character in page pixels.
@@ -348,14 +349,12 @@ class PDFiumPage {
   // broken for page objects such as links and images.
   void CalculatePageObjectTextRunBreaks();
   // Set text run style information based on a character of the text run.
-  void CalculateTextRunStyleInfo(
-      int char_index,
-      pp::PDF::PrivateAccessibilityTextStyleInfo* style_info);
+  void CalculateTextRunStyleInfo(int char_index,
+                                 AccessibilityTextStyleInfo& style_info);
   // Returns a boolean indicating if the character at index |char_index| has the
   // same text style as the text run.
-  bool AreTextStyleEqual(
-      int char_index,
-      const pp::PDF::PrivateAccessibilityTextStyleInfo& style);
+  bool AreTextStyleEqual(int char_index,
+                         const AccessibilityTextStyleInfo& style);
 
   // Key    :  Marked content id for the image element as specified in the
   //           struct tree.

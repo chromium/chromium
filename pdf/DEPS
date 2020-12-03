@@ -10,5 +10,6 @@ include_rules = [
   "+ui/events/keycodes/keyboard_codes.h",
   "+ui/gfx/geometry",
   "+ui/gfx/range/range.h",
+  "+ui/gfx/test/gfx_util.h",
   "+v8/include/v8.h"
 ]

@@ -46,6 +46,7 @@ class MouseInputEvent;
 class PDFiumDocument;
 class PDFiumPermissions;
 class TouchInputEvent;
+struct AccessibilityTextRunInfo;
 
 namespace draw_utils {
 class ShadowMatrix;
@@ -135,7 +136,7 @@ class PDFiumEngine : public PDFEngine,
   int GetCharCount(int page_index) override;
   gfx::RectF GetCharBounds(int page_index, int char_index) override;
   uint32_t GetCharUnicode(int page_index, int char_index) override;
-  base::Optional<pp::PDF::PrivateAccessibilityTextRunInfo> GetTextRunInfo(
+  base::Optional<AccessibilityTextRunInfo> GetTextRunInfo(
       int page_index,
       int start_char_index) override;
   std::vector<AccessibilityLinkInfo> GetLinkInfo(int page_index) override;

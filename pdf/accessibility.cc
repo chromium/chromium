@@ -18,16 +18,15 @@ namespace chrome_pdf {
 
 namespace {
 
-bool IsCharWithinTextRun(
-    const pp::PDF::PrivateAccessibilityTextRunInfo& text_run,
-    uint32_t text_run_start_char_index,
-    uint32_t char_index) {
+bool IsCharWithinTextRun(const AccessibilityTextRunInfo& text_run,
+                         uint32_t text_run_start_char_index,
+                         uint32_t char_index) {
   return char_index >= text_run_start_char_index &&
          char_index - text_run_start_char_index < text_run.len;
 }
 
 bool GetEnclosingTextRunRangeForCharRange(
-    const std::vector<pp::PDF::PrivateAccessibilityTextRunInfo>& text_runs,
+    const std::vector<AccessibilityTextRunInfo>& text_runs,
     int start_char_index,
     int char_count,
     uint32_t* start_text_run_index,
@@ -68,7 +67,7 @@ bool CompareTextRuns(const T& a, const T& b) {
 void GetAccessibilityLinkInfo(
     PDFEngine* engine,
     int32_t page_index,
-    const std::vector<pp::PDF::PrivateAccessibilityTextRunInfo>& text_runs,
+    const std::vector<AccessibilityTextRunInfo>& text_runs,
     std::vector<pp::PDF::PrivateAccessibilityLinkInfo>* links) {
   std::vector<PDFEngine::AccessibilityLinkInfo> engine_link_info =
       engine->GetLinkInfo(page_index);
@@ -117,7 +116,7 @@ void GetAccessibilityImageInfo(
 void GetAccessibilityHighlightInfo(
     PDFEngine* engine,
     int32_t page_index,
-    const std::vector<pp::PDF::PrivateAccessibilityTextRunInfo>& text_runs,
+    const std::vector<AccessibilityTextRunInfo>& text_runs,
     std::vector<pp::PDF::PrivateAccessibilityHighlightInfo>* highlights) {
   std::vector<PDFEngine::AccessibilityHighlightInfo> engine_highlight_info =
       engine->GetHighlightInfo(page_index);
@@ -185,7 +184,7 @@ bool GetAccessibilityInfo(
     PDFEngine* engine,
     int32_t page_index,
     AccessibilityPageInfo& page_info,
-    std::vector<pp::PDF::PrivateAccessibilityTextRunInfo>* text_runs,
+    std::vector<AccessibilityTextRunInfo>& text_runs,
     std::vector<AccessibilityCharInfo>& chars,
     pp::PDF::PrivateAccessibilityPageObjects* page_objects) {
   int page_count = engine->GetNumberOfPages();
@@ -210,13 +209,13 @@ bool GetAccessibilityInfo(
 
   int char_index = 0;
   while (char_index < char_count) {
-    base::Optional<pp::PDF::PrivateAccessibilityTextRunInfo>
-        text_run_info_result = engine->GetTextRunInfo(page_index, char_index);
+    base::Optional<AccessibilityTextRunInfo> text_run_info_result =
+        engine->GetTextRunInfo(page_index, char_index);
     DCHECK(text_run_info_result.has_value());
     const auto& text_run_info = text_run_info_result.value();
     uint32_t text_run_end = char_index + text_run_info.len;
     DCHECK_LE(text_run_end, static_cast<uint32_t>(char_count));
-    text_runs->push_back(text_run_info);
+    text_runs.push_back(text_run_info);
 
     // We need to provide enough information to draw a bounding box
     // around any arbitrary text range, but the bounding boxes of characters
@@ -233,25 +232,25 @@ bool GetAccessibilityInfo(
       gfx::RectF next_char_bounds = engine->GetCharBounds(page_index, i + 1);
       double& char_width = chars[i].char_width;
       switch (text_run_info.direction) {
-        case PP_PRIVATEDIRECTION_NONE:
-        case PP_PRIVATEDIRECTION_LTR:
+        case AccessibilityTextDirection::kNone:
+        case AccessibilityTextDirection::kLeftToRight:
           char_width = next_char_bounds.x() - char_bounds.x();
           break;
-        case PP_PRIVATEDIRECTION_TTB:
+        case AccessibilityTextDirection::kTopToBottom:
           char_width = next_char_bounds.y() - char_bounds.y();
           break;
-        case PP_PRIVATEDIRECTION_RTL:
+        case AccessibilityTextDirection::kRightToLeft:
           char_width = char_bounds.right() - next_char_bounds.right();
           break;
-        case PP_PRIVATEDIRECTION_BTT:
+        case AccessibilityTextDirection::kBottomToTop:
           char_width = char_bounds.bottom() - next_char_bounds.bottom();
           break;
       }
       char_bounds = next_char_bounds;
     }
     double& char_width = chars[text_run_end - 1].char_width;
-    if (text_run_info.direction == PP_PRIVATEDIRECTION_BTT ||
-        text_run_info.direction == PP_PRIVATEDIRECTION_TTB) {
+    if (text_run_info.direction == AccessibilityTextDirection::kBottomToTop ||
+        text_run_info.direction == AccessibilityTextDirection::kTopToBottom) {
       char_width = char_bounds.height();
     } else {
       char_width = char_bounds.width();
@@ -260,12 +259,11 @@ bool GetAccessibilityInfo(
     char_index += text_run_info.len;
   }
 
-  page_info.text_run_count = text_runs->size();
-  GetAccessibilityLinkInfo(engine, page_index, *text_runs,
-                           &page_objects->links);
+  page_info.text_run_count = text_runs.size();
+  GetAccessibilityLinkInfo(engine, page_index, text_runs, &page_objects->links);
   GetAccessibilityImageInfo(engine, page_index, page_info.text_run_count,
                             &page_objects->images);
-  GetAccessibilityHighlightInfo(engine, page_index, *text_runs,
+  GetAccessibilityHighlightInfo(engine, page_index, text_runs,
                                 &page_objects->highlights);
   GetAccessibilityFormFieldInfo(engine, page_index, page_info.text_run_count,
                                 &page_objects->form_fields);

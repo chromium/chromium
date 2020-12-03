@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
+#include "pdf/accessibility_structs.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/ppapi_migration/input_event_conversions.h"
 #include "ppapi/c/pp_input_event.h"
@@ -276,6 +277,27 @@ STATIC_ASSERT_ENUM(PP_TEXTRENDERINGMODE_FILLSTROKECLIP,
 STATIC_ASSERT_ENUM(PP_TEXTRENDERINGMODE_CLIP, FPDF_TEXTRENDERMODE_CLIP);
 STATIC_ASSERT_ENUM(PP_TEXTRENDERINGMODE_LAST, FPDF_TEXTRENDERMODE_LAST);
 
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityTextRenderMode::kUnknown,
+                   PP_TEXTRENDERINGMODE_UNKNOWN);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityTextRenderMode::kFill,
+                   PP_TEXTRENDERINGMODE_FILL);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityTextRenderMode::kStroke,
+                   PP_TEXTRENDERINGMODE_STROKE);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityTextRenderMode::kFillStroke,
+                   PP_TEXTRENDERINGMODE_FILLSTROKE);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityTextRenderMode::kInvisible,
+                   PP_TEXTRENDERINGMODE_INVISIBLE);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityTextRenderMode::kFillClip,
+                   PP_TEXTRENDERINGMODE_FILLCLIP);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityTextRenderMode::kStrokeClip,
+                   PP_TEXTRENDERINGMODE_STROKECLIP);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityTextRenderMode::kFillStrokeClip,
+                   PP_TEXTRENDERINGMODE_FILLSTROKECLIP);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityTextRenderMode::kClip,
+                   PP_TEXTRENDERINGMODE_CLIP);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityTextRenderMode::kMaxValue,
+                   PP_TEXTRENDERINGMODE_LAST);
+
 STATIC_ASSERT_ENUM(chrome_pdf::PDFEngine::FormType::kNone, FORMTYPE_NONE);
 STATIC_ASSERT_ENUM(chrome_pdf::PDFEngine::FormType::kAcroForm,
                    FORMTYPE_ACRO_FORM);
@@ -297,3 +319,16 @@ STATIC_ASSERT_ENUM(chrome_pdf::kPostScript3, FPDF_PRINTMODE_POSTSCRIPT3);
 STATIC_ASSERT_ENUM(chrome_pdf::kEmfWithReducedRasterization,
                    FPDF_PRINTMODE_EMF_IMAGE_MASKS);
 #endif
+
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityTextDirection::kNone,
+                   PP_PRIVATEDIRECTION_NONE);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityTextDirection::kLeftToRight,
+                   PP_PRIVATEDIRECTION_LTR);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityTextDirection::kRightToLeft,
+                   PP_PRIVATEDIRECTION_RTL);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityTextDirection::kTopToBottom,
+                   PP_PRIVATEDIRECTION_TTB);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityTextDirection::kBottomToTop,
+                   PP_PRIVATEDIRECTION_BTT);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityTextDirection::kMaxValue,
+                   PP_PRIVATEDIRECTION_LAST);

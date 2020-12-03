@@ -57,6 +57,7 @@ namespace chrome_pdf {
 class InputEvent;
 class Thumbnail;
 class UrlLoader;
+struct AccessibilityTextRunInfo;
 struct DocumentAttachmentInfo;
 struct DocumentMetadata;
 
@@ -436,10 +437,11 @@ class PDFEngine {
   virtual uint32_t GetCharUnicode(int page_index, int char_index) = 0;
   // Given a start char index, find the longest continuous run of text that's
   // in a single direction and with the same text style. Return a filled out
-  // pp::PDF::PrivateAccessibilityTextRunInfo on success or base::nullopt on
-  // failure. e.g. When |start_char_index| is out of bounds.
-  virtual base::Optional<pp::PDF::PrivateAccessibilityTextRunInfo>
-  GetTextRunInfo(int page_index, int start_char_index) = 0;
+  // AccessibilityTextRunInfo on success or base::nullopt on failure. e.g. When
+  // |start_char_index| is out of bounds.
+  virtual base::Optional<AccessibilityTextRunInfo> GetTextRunInfo(
+      int page_index,
+      int start_char_index) = 0;
   // For all the links on page |page_index|, get their urls, underlying text
   // ranges and bounding boxes.
   virtual std::vector<AccessibilityLinkInfo> GetLinkInfo(int page_index) = 0;
