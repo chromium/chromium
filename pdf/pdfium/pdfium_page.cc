@@ -396,7 +396,8 @@ void PDFiumPage::CalculateTextRunStyleInfo(
   }
 
   int render_mode = FPDFText_GetTextRenderMode(text_page, char_index);
-  if (render_mode < 0 || render_mode > PP_TEXTRENDERINGMODE_LAST) {
+  if (render_mode < PP_TEXTRENDERINGMODE_FIRST ||
+      render_mode > PP_TEXTRENDERINGMODE_LAST) {
     style_info->render_mode = PP_TEXTRENDERINGMODE_UNKNOWN;
   } else {
     style_info->render_mode = static_cast<PP_TextRenderingMode>(render_mode);
@@ -457,6 +458,7 @@ PDFiumPage::GetTextRunInfo(int start_char_index) {
     info.len = chars_count - start_char_index;
     info.bounds = pp::FloatRect();
     info.direction = PP_PRIVATEDIRECTION_NONE;
+    info.style.render_mode = PP_TEXTRENDERINGMODE_UNKNOWN;
     return info;
   }
 
