@@ -705,7 +705,7 @@ const base::Feature kPrivacyAdvisor{"PrivacyAdvisor",
 
 #if defined(OS_ANDROID)
 const base::Feature kPrivacyReorderedAndroid{"PrivacyReorderedAndroid",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 // Enables the privacy sandbox settings page.
