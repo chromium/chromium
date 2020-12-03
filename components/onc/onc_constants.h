@@ -126,6 +126,7 @@ ONC_EXPORT extern const char kFirmwareRevision[];
 ONC_EXPORT extern const char kFoundNetworks[];
 ONC_EXPORT extern const char kHardwareRevision[];
 ONC_EXPORT extern const char kHomeProvider[];
+ONC_EXPORT extern const char kEID[];
 ONC_EXPORT extern const char kICCID[];
 ONC_EXPORT extern const char kIMEI[];
 ONC_EXPORT extern const char kIMSI[];

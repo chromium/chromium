@@ -1340,11 +1340,22 @@ ONC configuration of of **Cellular** networks is not yet supported.
 
 ### Cellular type
 
-* **AutoConnect**
-    * (optional, defaults to *false*) - **boolean**
-    * Indicating that the network should be connected to automatically when
-      possible. Note, that disabled **AllowRoaming**
-      takes precedence over autoconnect.
+* **ActivationState**
+    * (optional, read-only) - **string**
+    * Carrier account activation state.
+    * Allowed values are:
+        * *Activated*
+        * *Activating*
+        * *NotActivated*
+        * *PartiallyActivated*
+
+* **ActivationType**
+    * (optional) - **string**
+    * Activation type.
+
+* **AllowRoaming**
+    * (optional) - **boolean**
+    * Whether cellular data connections are allowed when the device is roaming.
 
 * **APN**
     * (optional) - [APN](#APN-type)
@@ -1355,22 +1366,16 @@ ONC configuration of of **Cellular** networks is not yet supported.
     * (optional) - [array of APN](#APN-type)
     * List of available APN configurations.
 
-* **ActivationType**
-    * (optional) - **string**
-    * Activation type.
+* **AutoConnect**
+    * (optional, defaults to *false*) - **boolean**
+    * Indicating that the network should be connected to automatically when
+      possible. Note, that disabled **AllowRoaming**
+      takes precedence over autoconnect.
 
-* **ActivationState**
-    * (optional, read-only) - **string**
-    * Carrier account activation state.
-    * Allowed values are:
-        * *Activated*
-        * *Activating*
-        * *NotActivated*
-        * *PartiallyActivated*
-
-* **AllowRoaming**
-    * (optional) - **boolean**
-    * Whether cellular data connections are allowed when the device is roaming.
+* **EID**
+    * (optional, read-only, provided only for eSIM networks) - **string**
+    * For GSM / LTE modems, the Embedded Universal Integrated Circuit Card
+      Identifier of the eSIM card installed in the device.
 
 * **ESN**
     * (optional, read-only) - **string**

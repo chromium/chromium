@@ -300,6 +300,7 @@ const OncFieldSignature cellular_with_state_fields[] = {
     {::onc::cellular::kFoundNetworks, &kCellularFoundNetworkListSignature},
     {::onc::cellular::kHardwareRevision, &kStringSignature},
     {::onc::cellular::kHomeProvider, &kCellularProviderSignature},
+    {::onc::cellular::kEID, &kStringSignature},
     {::onc::cellular::kICCID, &kStringSignature},
     {::onc::cellular::kIMEI, &kStringSignature},
     {::onc::cellular::kIMSI, &kStringSignature},

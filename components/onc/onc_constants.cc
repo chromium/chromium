@@ -112,6 +112,7 @@ const char kFirmwareRevision[] = "FirmwareRevision";
 const char kFoundNetworks[] = "FoundNetworks";
 const char kHardwareRevision[] = "HardwareRevision";
 const char kHomeProvider[] = "HomeProvider";
+const char kEID[] = "EID";
 const char kICCID[] = "ICCID";
 const char kIMEI[] = "IMEI";
 const char kIMSI[] = "IMSI";

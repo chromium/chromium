@@ -22,6 +22,11 @@
 namespace chromeos {
 
 namespace {
+
+// Cellular Service EID property.
+// TODO(crbug.com/1093185): Use dbus-constants when property is added in shill.
+const char kCellularEidProperty[] = "Cellular.EID";
+
 const char* kDefaultMccMnc = "310999";
 const char* kFakeActivationCodePrefix = "1$SMDP.GSMA.COM$00000-00000-00000-000";
 const char* kFakeProfilePathPrefix = "/org/chromium/Hermes/Profile/";
@@ -165,7 +170,7 @@ void FakeHermesEuiccClient::AddCarrierProfile(
     return;
   }
 
-  CreateCellularService(path);
+  CreateCellularService(euicc_path, path);
   std::vector<dbus::ObjectPath> installed_profiles =
       euicc_properties->installed_carrier_profiles().value();
   installed_profiles.push_back(path);
@@ -291,7 +296,7 @@ void FakeHermesEuiccClient::DoInstallProfileFromActivationCode(
     profile_path = AddFakeCarrierProfile(
         euicc_path, hermes::profile::State::kInactive, activation_code);
   }
-  CreateCellularService(profile_path);
+  CreateCellularService(euicc_path, profile_path);
 
   std::move(callback).Run(HermesResponseStatus::kSuccess, &profile_path);
 }
@@ -325,7 +330,7 @@ void FakeHermesEuiccClient::DoInstallPendingProfile(
   installed_profiles.push_back(carrier_profile_path);
   euicc_properties->installed_carrier_profiles().ReplaceValue(
       installed_profiles);
-  CreateCellularService(carrier_profile_path);
+  CreateCellularService(euicc_path, carrier_profile_path);
 
   std::move(callback).Run(HermesResponseStatus::kSuccess);
 }
@@ -379,17 +384,23 @@ void FakeHermesEuiccClient::DoUninstallProfile(
 // profile is installed on the device through Hermes. Shill will be notified and
 // it then creates cellular services with matching ICCID for this profile.
 void FakeHermesEuiccClient::CreateCellularService(
+    const dbus::ObjectPath& euicc_path,
     const dbus::ObjectPath& carrier_profile_path) {
   const std::string& service_path =
       profile_service_path_map_[carrier_profile_path];
   HermesProfileClient::Properties* properties =
       HermesProfileClient::Get()->GetProperties(carrier_profile_path);
+  HermesEuiccClient::Properties* euicc_properties =
+      HermesEuiccClient::Get()->GetProperties(euicc_path);
   ShillServiceClient::TestInterface* service_test =
       ShillServiceClient::Get()->GetTestInterface();
   service_test->AddService(service_path,
                            "esim_guid" + properties->iccid().value(),
                            properties->name().value(), shill::kTypeCellular,
                            shill::kStateIdle, true);
+  service_test->SetServiceProperty(
+      service_path, kCellularEidProperty,
+      base::Value(euicc_properties->eid().value()));
   service_test->SetServiceProperty(service_path, shill::kIccidProperty,
                                    base::Value(properties->iccid().value()));
   service_test->SetServiceProperty(
