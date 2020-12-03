@@ -19,23 +19,16 @@
 (define disable-sandbox-denial-logging "DISABLE_SANDBOX_DENIAL_LOGGING")
 (define enable-logging "ENABLE_LOGGING")
 (define homedir-as-literal "USER_HOMEDIR_AS_LITERAL")
-(define elcap-or-later "ELCAP_OR_LATER")
 (define macos-1013 "MACOS_1013")
 (define field-trial-server-name "FIELD_TRIAL_SERVER_NAME")
 
-; Backwards compatibility for 10.9
-(if (not (defined? 'path))
-  (define path literal))
+; Backwards compatibility for 10.11
 (if (not (defined? 'iokit-registry-entry-class))
   (define iokit-registry-entry-class iokit-user-client-class))
 
 ; Consumes a subpath and appends it to the user's homedir path.
 (define (user-homedir-path subpath)
   (string-append (param homedir-as-literal) subpath))
-
-; (path) is not supported until 10.10.
-; TODO(kerrnel): remove this when 10.9 is no longer supported.
-(define (path x) (literal x))
 
 ; DISABLE_SANDBOX_DENIAL_LOGGING turns off log messages in the system log.
 (if (param-true? disable-sandbox-denial-logging)
@@ -85,8 +78,7 @@
   (iokit-user-client-class "IOSurfaceSendRight"))
 
 ; https://crbug.com/515280
-(if (param-true? elcap-or-later)
-  (allow file-read* (subpath "/System/Library/Extensions")))
+(allow file-read* (subpath "/System/Library/Extensions"))
 
 ; Needed for VideoToolbox usage - https://crbug.com/767037
 (allow mach-lookup (global-name "com.apple.coremedia.videodecoder"))

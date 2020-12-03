@@ -70,7 +70,6 @@ const char* SandboxMac::kSandboxEnableLogging = "ENABLE_LOGGING";
 const char* SandboxMac::kSandboxHomedirAsLiteral = "USER_HOMEDIR_AS_LITERAL";
 const char* SandboxMac::kSandboxLoggingPathAsLiteral = "LOG_FILE_PATH";
 const char* SandboxMac::kSandboxOSVersion = "OS_VERSION";
-const char* SandboxMac::kSandboxElCapOrLater = "ELCAP_OR_LATER";
 const char* SandboxMac::kSandboxMacOS1013 = "MACOS_1013";
 const char* SandboxMac::kSandboxFieldTrialSeverName = "FIELD_TRIAL_SERVER_NAME";
 const char* SandboxMac::kSandboxBundleVersionPath = "BUNDLE_VERSION_PATH";
@@ -191,10 +190,6 @@ bool SandboxMac::Enable(SandboxType sandbox_type) {
           base::MachPortRendezvousClient::GetBootstrapName())) {
     return false;
   }
-
-  bool elcap_or_later = base::mac::IsAtLeastOS10_11();
-  if (!compiler.InsertBooleanParam(kSandboxElCapOrLater, elcap_or_later))
-    return false;
 
   bool macos_1013 = base::mac::IsOS10_13();
   if (!compiler.InsertBooleanParam(kSandboxMacOS1013, macos_1013))

@@ -30,9 +30,6 @@
 (define filter-syscalls "FILTER_SYSCALLS")
 (define filter-syscalls-debug "FILTER_SYSCALLS_DEBUG")
 
-; Backwards compatibility for 10.10.
-(if (not (defined? 'path))
-  (define path literal))
 ; Backwards compatibility for 10.11.
 (if (not (defined? 'iokit-registry-entry-class))
   (define iokit-registry-entry-class iokit-user-client-class))

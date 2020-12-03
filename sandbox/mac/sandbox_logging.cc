@@ -104,10 +104,8 @@ void SendAslLog(Level level, const char* message) {
   asl_set(asl_message.get(), ASL_KEY_MSG, message);
   asl_send(asl_client.get(), asl_message.get());
 
-  if (__builtin_available(macOS 10.11, *)) {
-    if (level == Level::FATAL) {
-      abort_report_np(message);
-    }
+  if (level == Level::FATAL) {
+    abort_report_np(message);
   }
 }
 
