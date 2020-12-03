@@ -684,10 +684,15 @@ void OnSmsReceive(ScriptPromiseResolver* resolver,
     // Similar to kTimeout, the promise is not rejected here.
     return;
   } else if (status == mojom::blink::SmsStatus::kBackendNotAvailable) {
+    // Records when the backend is not available AND the request gets cancelled.
+    // i.e. client specifies GmsBackend.VERIFICATION but it's unavailable. If
+    // client specifies GmsBackend.AUTO and the verification backend is not
+    // available, we fall back to the user consent backend and the request will
+    // be handled accordingly. e.g. if the user declined the prompt, we record
+    // it as |kUserCancelled|.
+    RecordSmsOutcome(WebOTPServiceOutcome::kBackendNotAvailable, source_id,
+                     recorder);
     // Similar to kTimeout, the promise is not rejected here.
-
-    // TODO(yigu): Add UMA to better understand this.
-    // http://crbug.com/1141024
     return;
   }
   RecordSmsSuccessTime(base::TimeTicks::Now() - start_time, source_id,

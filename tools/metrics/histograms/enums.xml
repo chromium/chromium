@@ -76958,6 +76958,7 @@ others/histograms.xml -->
   <int value="4" label="Aborted"/>
   <int value="5" label="Timeout"/>
   <int value="6" label="UserCancelled"/>
+  <int value="7" label="BackendNotAvailable"/>
 </enum>
 
 <enum name="WebpDecodedFormat">
