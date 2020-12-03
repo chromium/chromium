@@ -1,8 +1,19 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>InputEvent.getTargetRanges() behavior</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-actions.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="resources/inputevent_common_input.js"></script>
+<!--
+  This layout tests is a duplicate of a WPT test wpt/input-events/
+  input-events-get-target-ranges.html. We need this duplicated test
+  to maintain test coverage because testdriver's key actions are not
+  supported in GpuBenchmarking::PointerActionSequence, which is used
+  to run layout tests.
+-->
 <p>To manually run this test, please follow the steps below:<br/>
 1. Place caret at the end of 'hel<i>lo wo</i><b>rld</b>'.<br/>
 2. Press Ctrl-Backspace (Alt-Backspace on macOS) to delete word backwards.<br/>
@@ -16,6 +27,20 @@ If a "PASS" result appears the test passes, otherwise it fails</p>
 <p id="test2_editable" contenteditable>test2</p>
 <textarea id="test3_plain">test3</textarea>
 <script>
+function inject_input() {
+  let isMacOSX = navigator.userAgent.indexOf("Mac OS X") != -1;
+  return collapseEndAndKeyDown('#test1_editable', 'Backspace', [isMacOSX ? 'altKey' : 'ctrlKey']).then(() => {
+    return collapseEndAndKeyDown('#test2_editable', 'a');
+  }).then(() => {
+    return selectAndKeyDown('#test2_editable', 'b');
+  }).then(() => {
+    selectAndExecCommand('#test2_editable', 'bold');
+    return focusAndKeyDown('#test3_plain', 'a');
+  }).then(() => {
+    return keyDown('Backspace');
+  });
+}
+
 async_test(t => {
     const test1_editable = document.getElementById('test1_editable');
     let lastBeforeInput;
@@ -73,4 +98,6 @@ async_test(t => {
             t.done();
     }));
 }, 'Textarea should have empty target range.');
+
+inject_input();
 </script>

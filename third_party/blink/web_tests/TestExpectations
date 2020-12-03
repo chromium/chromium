@@ -2121,6 +2121,7 @@ crbug.com/1040611 external/wpt/uievents/order-of-events/mouse-events/wheel-basic
 crbug.com/1040611 external/wpt/uievents/order-of-events/mouse-events/wheel-scrolling.html [ Failure Timeout ]
 crbug.com/893480 external/wpt/css/css-scroll-snap/input/keyboard.html [ Failure Timeout ]
 crbug.com/893480 external/wpt/infrastructure/testdriver/actions/textEditCommands.html [ Failure Timeout ]
+crbug.com/893480 external/wpt/input-events/input-events-get-target-ranges.html [ Failure Timeout ]
 
 # isInputPending requires threaded compositing and layerized iframes
 crbug.com/910421 external/wpt/is-input-pending/* [ Skip ]
