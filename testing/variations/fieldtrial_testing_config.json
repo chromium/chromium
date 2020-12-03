@@ -3575,6 +3575,21 @@
             ]
         }
     ],
+    "IOSRestoreGaiaCookies": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RestoreGAIACookiesIfDeleted"
+                    ]
+                }
+            ]
+        }
+    ],
     "Identifiability": [
         {
             "platforms": [
