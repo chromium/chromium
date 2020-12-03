@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/util/multi_window_support.h"
@@ -432,9 +433,20 @@
 }
 
 - (void)dispatchToEndpointsForBrowser:(Browser*)browser {
-  [browser->GetCommandDispatcher()
-      startDispatchingToTarget:_applicationCommandEndpoint
-                   forProtocol:@protocol(ApplicationCommands)];
+  IncognitoReauthSceneAgent* reauthAgent = nil;
+  for (id agent in _sceneState.connectedAgents) {
+    if ([agent isKindOfClass:[IncognitoReauthSceneAgent class]]) {
+      reauthAgent = agent;
+    }
+  }
+
+  CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+  [dispatcher startDispatchingToTarget:reauthAgent
+                           forProtocol:@protocol(IncognitoReauthCommands)];
+
+  [dispatcher startDispatchingToTarget:_applicationCommandEndpoint
+                           forProtocol:@protocol(ApplicationCommands)];
+
   // -startDispatchingToTarget:forProtocol: doesn't pick up protocols the
   // passed protocol conforms to, so ApplicationSettingsCommands is explicitly
   // dispatched to the endpoint as well. Since this is potentially
@@ -442,12 +454,10 @@
   DCHECK(!_applicationCommandEndpoint ||
          [_applicationCommandEndpoint
              conformsToProtocol:@protocol(ApplicationSettingsCommands)]);
-  [browser->GetCommandDispatcher()
-      startDispatchingToTarget:_applicationCommandEndpoint
-                   forProtocol:@protocol(ApplicationSettingsCommands)];
-  [browser->GetCommandDispatcher()
-      startDispatchingToTarget:_browsingDataCommandEndpoint
-                   forProtocol:@protocol(BrowsingDataCommands)];
+  [dispatcher startDispatchingToTarget:_applicationCommandEndpoint
+                           forProtocol:@protocol(ApplicationSettingsCommands)];
+  [dispatcher startDispatchingToTarget:_browsingDataCommandEndpoint
+                           forProtocol:@protocol(BrowsingDataCommands)];
 }
 
 @end

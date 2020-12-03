@@ -94,6 +94,8 @@
 #import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
 #import "ios/chrome/browser/ui/image_util/image_copier.h"
 #import "ios/chrome/browser/ui/image_util/image_saver.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
 #import "ios/chrome/browser/ui/infobars/infobar_container_coordinator.h"
 #import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/infobars/infobar_positioner.h"
@@ -500,6 +502,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 @property(nonatomic, assign) BOOL viewVisible;
 // Whether the controller should broadcast its UI.
 @property(nonatomic, assign, getter=isBroadcasting) BOOL broadcasting;
+// A view to obscure incognito content when the user isn't authorized to
+// see it.
+@property(nonatomic, strong) IncognitoReauthView* blockingView;
 // Whether the controller is currently dismissing a presented view controller.
 @property(nonatomic, assign, getter=isDismissingModal) BOOL dismissingModal;
 // Whether web usage is enabled for the WebStates in |self.browser|.
@@ -4695,6 +4700,33 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (UIView*)parentView {
   return self.contentArea;
+}
+
+#pragma mark - IncognitoReauthConsumer
+
+- (void)setItemsRequireAuthentication:(BOOL)require {
+  if (require) {
+    if (!self.blockingView) {
+      self.blockingView = [[IncognitoReauthView alloc] init];
+      self.blockingView.translatesAutoresizingMaskIntoConstraints = NO;
+      self.blockingView.layer.zPosition = FLT_MAX;
+
+      [self.blockingView.authenticateButton
+                 addTarget:self.reauthHandler
+                    action:@selector(authenticateIncognitoContent)
+          forControlEvents:UIControlEventTouchUpInside];
+
+      [self.blockingView.tabSwitcherButton
+                 addTarget:self.dispatcher
+                    action:@selector(displayRegularTabSwitcherInGridLayout)
+          forControlEvents:UIControlEventTouchUpInside];
+    }
+
+    [self.view addSubview:self.blockingView];
+    AddSameConstraints(self.view, self.blockingView);
+  } else {
+    [self.blockingView removeFromSuperview];
+  }
 }
 
 #pragma mark - UIGestureRecognizerDelegate

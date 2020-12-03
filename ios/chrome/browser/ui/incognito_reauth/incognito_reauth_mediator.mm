@@ -37,6 +37,10 @@
   return self;
 }
 
+- (void)dealloc {
+  [_reauthAgent removeObserver:self];
+}
+
 #pragma mark - IncognitoReauthObserver
 
 - (void)reauthAgent:(IncognitoReauthSceneAgent*)agent

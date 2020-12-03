@@ -187,6 +187,7 @@ source_set("main") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/download",
+    "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/page_info:coordinator",
     "//ios/chrome/browser/ui/print",
     "//ios/chrome/browser/ui/qr_scanner:coordinator",

@@ -12,10 +12,12 @@
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -37,6 +39,14 @@ class BrowserCoordinatorTest : public PlatformTest {
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
+
+    IncognitoReauthSceneAgent* reauthAgent = [[IncognitoReauthSceneAgent alloc]
+        initWithReauthModule:[[ReauthenticationModule alloc] init]];
+    [scene_state_ addAgent:reauthAgent];
+
+    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+    [dispatcher startDispatchingToTarget:reauthAgent
+                             forProtocol:@protocol(IncognitoReauthCommands)];
   }
 
   BrowserCoordinator* GetBrowserCoordinator() {

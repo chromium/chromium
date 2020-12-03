@@ -112,6 +112,10 @@ enum class KeyRetrievalTriggerForUMA;
 // TabSwitcher UI, specifically in its grid layout.
 - (void)displayTabSwitcherInGridLayout;
 
+// Same as displayTabSwitcherInGridLayout, but also force tab switcher to
+// regular tabs page.
+- (void)displayRegularTabSwitcherInGridLayout;
+
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
 // Shows the Autofill Settings UI, presenting from |baseViewController|.
 - (void)showAutofillSettingsFromViewController:

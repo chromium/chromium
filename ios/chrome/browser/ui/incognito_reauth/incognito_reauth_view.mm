@@ -57,6 +57,9 @@ const CGFloat kButtonSpacing = 16.0f;
 
 + (NSString*)authenticationActionLabel {
   LAContext* ctx = [[LAContext alloc] init];
+  // Call canEvaluatePolicy:error: once to populate biometrics type
+  [ctx canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
+                   error:nil];
   switch (ctx.biometryType) {
     case LABiometryTypeFaceID:
       return @"Face ID";

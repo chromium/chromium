@@ -45,7 +45,10 @@
 #import "ios/chrome/browser/ui/download/pass_kit_coordinator.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_controller_ios.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_mediator.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/infobars/infobar_feature.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/open_in/open_in_mediator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_container_coordinator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_coordinator.h"
@@ -103,6 +106,9 @@
 
 // Mediator between OpenIn TabHelper and OpenIn UI.
 @property(nonatomic, strong) OpenInMediator* openInMediator;
+
+// Mediator for incognito reauth.
+@property(nonatomic, strong) IncognitoReauthMediator* incognitoAuthMediator;
 
 // =================================================
 // Child Coordinators, listed in alphabetical order.
@@ -226,6 +232,7 @@
   [self startBrowserContainer];
   [self createViewController];
   [self startChildCoordinators];
+  [self startMediators];
   [self installDelegatesForAllWebStates];
   [self installDelegatesForBrowser];
   [self addWebStateListObserver];
@@ -468,6 +475,27 @@
 
   [self.defaultBrowserPromoCoordinator stop];
   self.defaultBrowserPromoCoordinator = nil;
+}
+
+// Starts mediators owned by this coordinator.
+- (void)startMediators {
+  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
+    IncognitoReauthSceneAgent* reauthAgent = nil;
+    for (id agent in SceneStateBrowserAgent::FromBrowser(self.browser)
+             ->GetSceneState()
+             .connectedAgents) {
+      if ([agent isKindOfClass:[IncognitoReauthSceneAgent class]]) {
+        reauthAgent = agent;
+      }
+    }
+
+    self.incognitoAuthMediator =
+        [[IncognitoReauthMediator alloc] initWithConsumer:self.viewController
+                                              reauthAgent:reauthAgent];
+  }
+
+  self.viewController.reauthHandler =
+      HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);
 }
 
 #pragma mark - ActivityServiceCommands

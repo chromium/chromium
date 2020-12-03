@@ -10,6 +10,7 @@
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_consumer.h"
 #import "ios/chrome/browser/ui/page_info/requirements/page_info_presentation.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_attacher.h"
@@ -23,12 +24,14 @@ class Browser;
 @class BrowserViewControllerDependencyFactory;
 @class CommandDispatcher;
 @class ToolbarAccessoryPresenter;
+@protocol IncognitoReauthCommands;
 
 // The top-level view controller for the browser UI. Manages other controllers
 // which implement the interface.
 @interface BrowserViewController
-    : UIViewController <LogoAnimationControllerOwnerOwner,
-                        FindBarPresentationDelegate,
+    : UIViewController <FindBarPresentationDelegate,
+                        IncognitoReauthConsumer,
+                        LogoAnimationControllerOwnerOwner,
                         PageInfoPresentation,
                         SyncPresenter,
                         ThumbStripAttacher,
@@ -55,6 +58,9 @@ class Browser;
 
 // Command dispatcher.
 @property(nonatomic, weak) CommandDispatcher* commandDispatcher;
+
+// Handler for reauth commands.
+@property(nonatomic, weak) id<IncognitoReauthCommands> reauthHandler;
 
 // Returns whether or not text to speech is playing.
 @property(nonatomic, assign, readonly, getter=isPlayingTTS) BOOL playingTTS;

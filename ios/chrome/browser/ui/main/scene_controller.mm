@@ -1057,7 +1057,15 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   [self.mainCoordinator prepareToShowTabGrid];
 }
 
+- (void)displayRegularTabSwitcherInGridLayout {
+  [self displayTabSwitcherForcingRegularTabs:YES];
+}
+
 - (void)displayTabSwitcherInGridLayout {
+  [self displayTabSwitcherForcingRegularTabs:NO];
+}
+
+- (void)displayTabSwitcherForcingRegularTabs:(BOOL)forcing {
   if (!IsThumbStripEnabled()) {
     // When the thumb strip feature is enabled, |self.tabSwitcherIsActive| could
     // be YES if the tab switcher button is tapped while the thumb strip is
@@ -1068,6 +1076,11 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   }
   if (!self.isProcessingVoiceSearchCommand) {
     [self.currentInterface.bvc userEnteredTabSwitcher];
+
+    if (forcing && self.currentInterface.incognito) {
+      [self setCurrentInterfaceForMode:ApplicationMode::NORMAL];
+    }
+
     [self showTabSwitcher];
     self.isProcessingTabSwitcherCommand = YES;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
@@ -2361,7 +2374,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // Shows the tab switcher UI.
 - (void)showTabSwitcher {
   DCHECK(self.mainCoordinator);
-  [self.mainCoordinator setActivePage:[self activePage]];
+  [self.mainCoordinator setActivePage:self.activePage];
   self.tabSwitcherIsActive = YES;
   self.mainCoordinator.delegate = self;
 
