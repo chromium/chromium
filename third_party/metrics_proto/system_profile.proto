@@ -17,7 +17,7 @@ import "extension_install.proto";
 // Almost all the fields should be populated on every upload. (The only
 // exception is some fields in the stability section that are only uploaded
 // once per browsing session, usually shortly after startup.)
-// Next tag: 35
+// Next tag: 36
 message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
   optional int64 build_timestamp = 1;
@@ -980,6 +980,22 @@ message SystemProfileProto {
   // The Chrome package name on Android, if it's different from
   // "com.android.chrome".
   optional string app_package_name = 26;
+
+  // The package which installed Chrome, as reported by
+  // PackageManager.getInstallerPackageName().
+  enum InstallerPackage {
+    // This field was not set.
+    INSTALLER_PACKAGE_UNKNOWN = 0;
+    // The installer package name returned by Android was empty.
+    INSTALLER_PACKAGE_NONE = 1;
+    // 'com.android.vending'.
+    INSTALLER_PACKAGE_GOOGLE_PLAY_STORE = 2;
+    // Any other non-empty value.
+    INSTALLER_PACKAGE_OTHER = 3;
+  }
+
+  // The package which installed Chrome, as reported by Android.
+  optional InstallerPackage installer_package = 35;
 
   // Data related to the "Better Together" multi-device features. This is only
   // uploaded on Chrome OS.
