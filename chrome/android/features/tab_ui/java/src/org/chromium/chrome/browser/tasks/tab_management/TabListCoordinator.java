@@ -77,6 +77,7 @@ public class TabListCoordinator implements Destroyable {
     private final Context mContext;
     private final TabListModel mModel;
     private final @UiType int mItemType;
+    private final TabModelSelector mTabModelSelector;
 
     private boolean mIsInitialized;
     private ViewTreeObserver.OnGlobalLayoutListener mGlobalLayoutListener;
@@ -116,6 +117,7 @@ public class TabListCoordinator implements Destroyable {
         mContext = context;
         mModel = new TabListModel();
         mAdapter = new SimpleRecyclerViewAdapter(mModel);
+        mTabModelSelector = tabModelSelector;
         RecyclerView.RecyclerListener recyclerListener = null;
         if (mMode == TabListMode.GRID || mMode == TabListMode.CAROUSEL) {
             mAdapter.registerType(UiType.SELECTABLE, parent -> {
@@ -231,9 +233,6 @@ public class TabListCoordinator implements Destroyable {
         mRecyclerView.setHasFixedSize(true);
         if (recyclerListener != null) mRecyclerView.setRecyclerListener(recyclerListener);
 
-        // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
-        // incognito profile) instead of always using regular profile. It works correctly now, but
-        // it is not safe.
         TabListFaviconProvider tabListFaviconProvider =
                 new TabListFaviconProvider(mContext, mMode == TabListMode.STRIP);
 
@@ -292,7 +291,7 @@ public class TabListCoordinator implements Destroyable {
 
         mIsInitialized = true;
 
-        Profile profile = Profile.getLastUsedRegularProfile();
+        Profile profile = mTabModelSelector.getCurrentModel().getProfile();
         mMediator.initWithNative(profile);
         if (dynamicResourceLoader != null) {
             mRecyclerView.createDynamicView(dynamicResourceLoader);
