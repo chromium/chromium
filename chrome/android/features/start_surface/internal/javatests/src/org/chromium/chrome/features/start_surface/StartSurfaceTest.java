@@ -1393,6 +1393,7 @@ public class StartSurfaceTest {
     @Feature({"StartSurface"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    @DisableIf.Build(sdk_is_less_than = P, message = "https://crbug.com/1150937")
     public void testShow_SingleAsHomepage_BottomSheet() {
         // clang-format on
         if (!mImmediateReturn) {
