@@ -6449,6 +6449,21 @@
             ]
         }
     ],
+    "ShareByDefaultInCCT": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ShareByDefaultInCCT"
+                    ]
+                }
+            ]
+        }
+    ],
     "SharedClipboard": [
         {
             "platforms": [
