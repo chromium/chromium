@@ -21,7 +21,6 @@ import java.io.IOException;
  */
 public class FragmentActivityReplacer extends ByteCodeRewriter {
     private static final String GET_ACTIVITY_METHOD_NAME = "getActivity";
-    private static final String GET_LIFECYCLE_ACTIVITY_METHOD_NAME = "getLifecycleActivity";
     private static final String NEW_METHOD_DESCRIPTOR = "()Landroid/app/Activity;";
     private static final String OLD_METHOD_DESCRIPTOR =
             "()Landroidx/fragment/app/FragmentActivity;";
@@ -45,23 +44,16 @@ public class FragmentActivityReplacer extends ByteCodeRewriter {
 
     @Override
     protected ClassVisitor getClassVisitorForClass(String classPath, ClassVisitor delegate) {
-        ClassVisitor invocationVisitor = new InvocationReplacer(delegate);
-        switch (classPath) {
-            case "androidx/fragment/app/Fragment.class":
-                return new FragmentClassVisitor(invocationVisitor);
-            case "com/google/android/gms/common/api/internal/SupportLifecycleFragmentImpl.class":
-                return new SupportLifecycleFragmentImplClassVisitor(invocationVisitor);
-            default:
-                return invocationVisitor;
+        ClassVisitor getActivityReplacer = new GetActivityReplacer(delegate);
+        if (classPath.equals("androidx/fragment/app/Fragment.class")) {
+            return new FragmentClassVisitor(getActivityReplacer);
         }
+        return getActivityReplacer;
     }
 
-    /**
-     * Updates any Fragment.getActivity/requireActivity() or getLifecycleActivity() calls to call
-     * the replaced method.
-     */
-    private static class InvocationReplacer extends ClassVisitor {
-        private InvocationReplacer(ClassVisitor baseVisitor) {
+    /** Updates any Fragment.getActivity/requireActivity() calls to call the replaced method. */
+    private static class GetActivityReplacer extends ClassVisitor {
+        private GetActivityReplacer(ClassVisitor baseVisitor) {
             super(Opcodes.ASM7, baseVisitor);
         }
 
@@ -76,8 +68,7 @@ public class FragmentActivityReplacer extends ByteCodeRewriter {
                     if ((opcode == Opcodes.INVOKEVIRTUAL || opcode == Opcodes.INVOKESPECIAL)
                             && descriptor.equals(OLD_METHOD_DESCRIPTOR)
                             && (name.equals(GET_ACTIVITY_METHOD_NAME)
-                                    || name.equals(REQUIRE_ACTIVITY_METHOD_NAME)
-                                    || name.equals(GET_LIFECYCLE_ACTIVITY_METHOD_NAME))) {
+                                    || name.equals(REQUIRE_ACTIVITY_METHOD_NAME))) {
                         super.visitMethodInsn(
                                 opcode, owner, name, NEW_METHOD_DESCRIPTOR, isInterface);
                     } else {
@@ -101,17 +92,16 @@ public class FragmentActivityReplacer extends ByteCodeRewriter {
                 int access, String name, String descriptor, String signature, String[] exceptions) {
             // Update the descriptor of getActivity() and requireActivity().
             MethodVisitor baseVisitor;
-            if (descriptor.equals(OLD_METHOD_DESCRIPTOR)
-                    && (name.equals(GET_ACTIVITY_METHOD_NAME)
-                            || name.equals(REQUIRE_ACTIVITY_METHOD_NAME))) {
-                baseVisitor =
-                        super.visitMethod(access, name, NEW_METHOD_DESCRIPTOR, null, exceptions);
+            if (name.equals(GET_ACTIVITY_METHOD_NAME)
+                    || name.equals(REQUIRE_ACTIVITY_METHOD_NAME)) {
+                baseVisitor = super.visitMethod(
+                        access & ~Opcodes.ACC_FINAL, name, NEW_METHOD_DESCRIPTOR, null, exceptions);
             } else {
                 baseVisitor = super.visitMethod(access, name, descriptor, signature, exceptions);
             }
 
             // Replace getActivity() with `return ContextUtils.activityFromContext(getContext());`
-            if (name.equals(GET_ACTIVITY_METHOD_NAME) && descriptor.equals(OLD_METHOD_DESCRIPTOR)) {
+            if (name.equals(GET_ACTIVITY_METHOD_NAME)) {
                 baseVisitor.visitVarInsn(Opcodes.ALOAD, 0);
                 baseVisitor.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "androidx/fragment/app/Fragment",
                         "getContext", "()Landroid/content/Context;", false);
@@ -131,36 +121,6 @@ public class FragmentActivityReplacer extends ByteCodeRewriter {
                     return internalName;
                 }
             });
-        }
-    }
-
-    /**
-     * Update SupportLifecycleFragmentImpl.getLifecycleActivity().
-     */
-    private static class SupportLifecycleFragmentImplClassVisitor extends ClassVisitor {
-        private SupportLifecycleFragmentImplClassVisitor(ClassVisitor baseVisitor) {
-            super(Opcodes.ASM7, baseVisitor);
-        }
-
-        @Override
-        public MethodVisitor visitMethod(
-                int access, String name, String descriptor, String signature, String[] exceptions) {
-            // SupportLifecycleFragmentImpl has two getActivity methods:
-            //   1. public FragmentActivity getLifecycleActivity():
-            //      This is what you'll see in the source. This delegates to Fragment.getActivity().
-            //   2. public Activity getLifecycleActivity():
-            //      This is generated because the class implements LifecycleFragment, which
-            //      declares this method, and delegates to #1.
-            //
-            // Here we change the return type of #1 and delete #2.
-            if (name.equals(GET_LIFECYCLE_ACTIVITY_METHOD_NAME)) {
-                if (descriptor.equals(OLD_METHOD_DESCRIPTOR)) {
-                    return super.visitMethod(
-                            access, name, NEW_METHOD_DESCRIPTOR, signature, exceptions);
-                }
-                return null;
-            }
-            return super.visitMethod(access, name, descriptor, signature, exceptions);
         }
     }
 }
