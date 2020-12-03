@@ -123,6 +123,11 @@ void KeyboardControllerImpl::CreateVirtualKeyboard(
     keyboard_ui_controller_->SetEnableFlag(
         KeyboardEnableFlag::kCommandLineEnabled);
   }
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          keyboard::switches::kDisableVirtualKeyboard)) {
+    keyboard_ui_controller_->SetEnableFlag(
+        KeyboardEnableFlag::kCommandLineDisabled);
+  }
 }
 
 void KeyboardControllerImpl::DestroyVirtualKeyboard() {

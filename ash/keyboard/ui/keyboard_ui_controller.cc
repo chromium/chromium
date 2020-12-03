@@ -478,6 +478,9 @@ bool KeyboardUIController::IsKeyboardEnableRequested() const {
   if (IsEnableFlagSet(KeyboardEnableFlag::kCommandLineEnabled))
     return true;
 
+  if (IsEnableFlagSet(KeyboardEnableFlag::kCommandLineDisabled))
+    return false;
+
   if (IsEnableFlagSet(KeyboardEnableFlag::kExtensionDisabled))
     return false;
 

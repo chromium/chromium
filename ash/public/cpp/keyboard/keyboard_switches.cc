@@ -8,6 +8,7 @@ namespace keyboard {
 namespace switches {
 
 const char kEnableVirtualKeyboard[] = "enable-virtual-keyboard";
+const char kDisableVirtualKeyboard[] = "disable-virtual-keyboard";
 
 }  // namespace switches
 }  // namespace keyboard

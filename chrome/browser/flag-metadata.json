@@ -979,6 +979,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "disable-virtual-keyboard",
+    "owners": [ "myy", "essential-inputs-team@google.com" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "disable-webrtc-hw-decoding",
     "owners": [ "hiroh", "chromeos-video-eng@google.com" ],
     // This flag does not expire because it allows users to disable HW video
