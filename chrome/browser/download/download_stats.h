@@ -68,6 +68,9 @@ enum ChromeDownloadOpenMethod {
   // the preferred method was to open the download using the browser.
   DOWNLOAD_OPEN_METHOD_USER_PLATFORM,
 
+  // The download was opened using a rename handler.
+  DOWNLOAD_OPEN_METHOD_RENAME_HANDLER,
+
   DOWNLOAD_OPEN_METHOD_LAST_ENTRY
 };
 

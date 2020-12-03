@@ -106,4 +106,10 @@ DownloadManagerDelegate::GetQuarantineConnectionCallback() {
 
 DownloadManagerDelegate::~DownloadManagerDelegate() {}
 
+std::unique_ptr<download::DownloadItemRenameHandler>
+DownloadManagerDelegate::GetRenameHandlerForDownload(
+    download::DownloadItem* download_item) {
+  return nullptr;
+}
+
 }  // namespace content

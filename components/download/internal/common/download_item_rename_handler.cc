@@ -9,14 +9,18 @@
 
 namespace download {
 
-DownloadItemRenameHandler::DownloadItemRenameHandler() = default;
+DownloadItemRenameHandler::DownloadItemRenameHandler(
+    DownloadItem* download_item) {}
 
 DownloadItemRenameHandler::~DownloadItemRenameHandler() = default;
 
-void DownloadItemRenameHandler::Start(DownloadItem* download_item,
-                                      Callback callback) {
-  std::move(callback).Run(DOWNLOAD_INTERRUPT_REASON_NONE,
-                          download_item->GetTargetFilePath());
+void DownloadItemRenameHandler::Start(Callback callback) {
+  std::move(callback).Run(DOWNLOAD_INTERRUPT_REASON_FILE_FAILED,
+                          base::FilePath());
 }
+
+void DownloadItemRenameHandler::OpenDownload() {}
+
+void DownloadItemRenameHandler::ShowDownloadInContext() {}
 
 }  // namespace download

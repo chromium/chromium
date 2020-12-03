@@ -1946,7 +1946,7 @@ void DownloadItemImpl::OnDownloadCompleting() {
   // If an alternate rename handler is specified, use it instead.
   rename_handler_ = delegate_->GetRenameHandlerForDownload(this);
   if (rename_handler_) {
-    rename_handler_->Start(this, std::move(callback));
+    rename_handler_->Start(std::move(callback));
     return;
   }
 

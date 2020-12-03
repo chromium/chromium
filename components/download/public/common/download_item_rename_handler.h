@@ -26,12 +26,18 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemRenameHandler {
   using Callback = base::OnceCallback<void(DownloadInterruptReason reason,
                                            const base::FilePath& path)>;
 
-  DownloadItemRenameHandler();
+  explicit DownloadItemRenameHandler(DownloadItem* download_item);
   virtual ~DownloadItemRenameHandler();
 
   // Starts the process of renaming the file and invokes |callback| when
   // done.
-  virtual void Start(DownloadItem* download_item, Callback callback);
+  virtual void Start(Callback callback);
+
+  // Opens the file associated with this download.
+  virtual void OpenDownload();
+
+  // Shows the download in the context of its container.
+  virtual void ShowDownloadInContext();
 };
 
 }  // namespace download

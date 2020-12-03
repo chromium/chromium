@@ -783,6 +783,14 @@ void ChromeDownloadManagerDelegate::OpenDownload(DownloadItem* download) {
 #if defined(OS_ANDROID)
   DownloadUtils::OpenDownload(download, DownloadOpenSource::kUnknown);
 #else
+
+  download::DownloadItemRenameHandler* handler = download->GetRenameHandler();
+  if (handler) {
+    handler->OpenDownload();
+    RecordDownloadOpenMethod(DOWNLOAD_OPEN_METHOD_RENAME_HANDLER);
+    return;
+  }
+
   if (!DownloadItemModel(download).ShouldPreferOpeningInBrowser()) {
     RecordDownloadOpenMethod(DOWNLOAD_OPEN_METHOD_DEFAULT_PLATFORM);
     OpenDownloadUsingPlatformHandler(download);
@@ -796,7 +804,8 @@ void ChromeDownloadManagerDelegate::OpenDownload(DownloadItem* download) {
   std::unique_ptr<chrome::ScopedTabbedBrowserDisplayer> browser_displayer;
   if (!browser ||
       !browser->CanSupportWindowFeature(Browser::FEATURE_TABSTRIP)) {
-    browser_displayer.reset(new chrome::ScopedTabbedBrowserDisplayer(profile_));
+    browser_displayer =
+        std::make_unique<chrome::ScopedTabbedBrowserDisplayer>(profile_);
     browser = browser_displayer->browser();
   }
   content::OpenURLParams params(
@@ -848,6 +857,12 @@ void ChromeDownloadManagerDelegate::ShowDownloadInShell(
 
   MaybeSendDangerousDownloadOpenedReport(download,
                                          true /* show_download_in_folder */);
+
+  download::DownloadItemRenameHandler* handler = download->GetRenameHandler();
+  if (handler) {
+    handler->ShowDownloadInContext();
+    return;
+  }
 
   base::FilePath platform_path(
       GetPlatformDownloadPath(profile_, download, PLATFORM_CURRENT_PATH));

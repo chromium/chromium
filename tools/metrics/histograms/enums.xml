@@ -19409,6 +19409,7 @@ Called by update_document_policy_enum.py.-->
   <int value="0" label="Opened with plaform handler by default"/>
   <int value="1" label="Opened in browser by default"/>
   <int value="2" label="Opened with plaform handler by user choice"/>
+  <int value="3" label="Opened with an alternate rename handler"/>
 </enum>
 
 <enum name="DownloadOriginStateOnResumption">
