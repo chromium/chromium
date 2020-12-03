@@ -96,6 +96,12 @@ class OptimizationGuideKeyedService
       optimization_guide::OptimizationGuideDecision
           optimization_guide_decision);
 
+  // Override the model file sent to observers of |optimization_target|. For
+  // testing purposes only.
+  void OverrideTargetModelFileForTesting(
+      optimization_guide::proto::OptimizationTarget optimization_target,
+      const base::FilePath& file_path);
+
  private:
   friend class ChromeBrowsingDataRemoverDelegate;
   friend class HintsFetcherBrowserTest;

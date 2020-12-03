@@ -1201,4 +1201,22 @@ void PredictionManager::OverrideTargetDecisionForTesting(
       optimization_target, CreatePredictionModel(*prediction_model));
 }
 
+void PredictionManager::OverrideTargetModelFileForTesting(
+    proto::OptimizationTarget optimization_target,
+    const base::FilePath& file_path) {
+  proto::PredictionModel prediction_model;
+  prediction_model.mutable_model_info()->set_version(1);
+  prediction_model.mutable_model_info()->set_optimization_target(
+      optimization_target);
+  SetFilePathInPredictionModel(file_path, &prediction_model);
+  std::unique_ptr<PredictionModelFile> prediction_model_file =
+      PredictionModelFile::Create(prediction_model);
+  DCHECK(prediction_model_file);
+
+  optimization_target_prediction_model_file_map_.insert_or_assign(
+      optimization_target, std::move(prediction_model_file));
+
+  NotifyObserversOfNewModelPath(optimization_target, file_path);
+}
+
 }  // namespace optimization_guide

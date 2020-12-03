@@ -338,3 +338,12 @@ void OptimizationGuideKeyedService::OverrideTargetDecisionForTesting(
         optimization_target, optimization_guide_decision);
   }
 }
+
+void OptimizationGuideKeyedService::OverrideTargetModelFileForTesting(
+    optimization_guide::proto::OptimizationTarget optimization_target,
+    const base::FilePath& file_path) {
+  if (prediction_manager_) {
+    prediction_manager_->OverrideTargetModelFileForTesting(optimization_target,
+                                                           file_path);
+  }
+}

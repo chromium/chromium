@@ -183,6 +183,12 @@ class PredictionManager
       proto::OptimizationTarget optimization_target,
       OptimizationGuideDecision optimization_guide_decision);
 
+  // Override the model file returned to observers for |optimization_target|.
+  // For testing purposes only.
+  void OverrideTargetModelFileForTesting(
+      proto::OptimizationTarget optimization_target,
+      const base::FilePath& file_path);
+
   // PredictionModelDownloadObserver:
   void OnModelReady(const proto::PredictionModel& model) override;
 
