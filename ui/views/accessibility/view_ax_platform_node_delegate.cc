@@ -278,12 +278,14 @@ const ui::AXNodeData& ViewAXPlatformNodeDelegate::GetData() const {
   // accessibility tree. We need to replace this with a cross-platform
   // solution that works for ChromeVox, too, and move it to ViewAccessibility.
   if (IsViewUnfocusableDescendantOfFocusableAncestor(view()))
-    data_.role = ax::mojom::Role::kIgnored;
+    data_.AddState(ax::mojom::State::kIgnored);
 
   return data_;
 }
 
 int ViewAXPlatformNodeDelegate::GetChildCount() const {
+  // We do not call "IsLeaf" here because "AXPlatformNodeDelegateBase::IsLeaf"
+  // calls "GetChildCount", and this will result in an infinit loop.
   if (ViewAccessibility::IsLeaf())
     return 0;
 
@@ -460,6 +462,10 @@ bool ViewAXPlatformNodeDelegate::IsChildOfLeaf() const {
 
 bool ViewAXPlatformNodeDelegate::IsLeaf() const {
   return ViewAccessibility::IsLeaf() || AXPlatformNodeDelegateBase::IsLeaf();
+}
+
+bool ViewAXPlatformNodeDelegate::IsIgnored() const {
+  return ViewAccessibility::IsIgnored() || GetData().IsIgnored();
 }
 
 bool ViewAXPlatformNodeDelegate::IsFocused() const {
@@ -755,15 +761,7 @@ void ViewAXPlatformNodeDelegate::GetViewsInGroupForSet(
           [](View* view) {
             ViewAccessibility& view_accessibility =
                 view->GetViewAccessibility();
-            bool is_ignored = view_accessibility.IsIgnored();
-            // TODO(dmazzoni): Remove the remainder of this lambda once the
-            // temporary code in GetData() setting the role to kIgnored is moved
-            // to ViewAccessibility.
-            ViewAXPlatformNodeDelegate* ax_delegate =
-                static_cast<ViewAXPlatformNodeDelegate*>(&view_accessibility);
-            if (ax_delegate)
-              is_ignored = is_ignored || ax_delegate->IsIgnored();
-            return is_ignored;
+            return view_accessibility.IsIgnored();
           }),
       views_in_group->end());
 }

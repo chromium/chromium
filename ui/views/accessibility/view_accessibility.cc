@@ -135,6 +135,10 @@ bool ViewAccessibility::IsLeaf() const {
   return is_leaf_;
 }
 
+bool ViewAccessibility::IsIgnored() const {
+  return is_ignored_;
+}
+
 void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   data->id = GetUniqueId().Get();
 
@@ -174,7 +178,7 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   if (custom_data_.GetHasPopup() != ax::mojom::HasPopup::kFalse)
     data->SetHasPopup(custom_data_.GetHasPopup());
 
-  static const ax::mojom::IntAttribute kOverridableIntAttributes[]{
+  static constexpr ax::mojom::IntAttribute kOverridableIntAttributes[]{
       ax::mojom::IntAttribute::kPosInSet,
       ax::mojom::IntAttribute::kSetSize,
   };
@@ -183,7 +187,7 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
       data->AddIntAttribute(attribute, custom_data_.GetIntAttribute(attribute));
   }
 
-  static const ax::mojom::IntListAttribute kOverridableIntListAttributes[]{
+  static constexpr ax::mojom::IntListAttribute kOverridableIntListAttributes[]{
       ax::mojom::IntListAttribute::kDescribedbyIds,
   };
   for (auto attribute : kOverridableIntListAttributes) {
@@ -212,16 +216,12 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   data->AddStringAttribute(ax::mojom::StringAttribute::kClassName,
                            view_->GetClassName());
 
-  if (IsIgnored()) {
-    // Prevent screen readers from navigating to or speaking ignored nodes.
-    data->AddState(ax::mojom::State::kInvisible);
+  if (is_ignored_ || data->role == ax::mojom::Role::kIgnored) {
     data->AddState(ax::mojom::State::kIgnored);
-    data->role = ax::mojom::Role::kIgnored;
-    return;
+  } else {
+    if (view_->IsAccessibilityFocusable() && !focused_virtual_child_)
+      data->AddState(ax::mojom::State::kFocusable);
   }
-
-  if (view_->IsAccessibilityFocusable() && !focused_virtual_child_)
-    data->AddState(ax::mojom::State::kFocusable);
 
   if (!view_->GetEnabled())
     data->SetRestriction(ax::mojom::Restriction::kDisabled);

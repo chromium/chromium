@@ -240,18 +240,31 @@ class ViewAXPlatformNodeDelegateTableTest
   TableView* table_ = nullptr;  // Owned by parent.
 };
 
-TEST_F(ViewAXPlatformNodeDelegateTest, RoleShouldMatch) {
+TEST_F(ViewAXPlatformNodeDelegateTest, FocusBehaviorShouldAffectIgnoredState) {
   EXPECT_EQ(ax::mojom::Role::kButton, button_accessibility()->GetData().role);
+  EXPECT_FALSE(
+      button_accessibility()->GetData().HasState(ax::mojom::State::kIgnored));
+
   // Since the label is a subview of |button_|, and the button is keyboard
-  // focusable, the label is assumed to form part of the button and not have a
-  // role of its own.
-  EXPECT_EQ(ax::mojom::Role::kIgnored, label_accessibility()->GetData().role);
-  // This will happen for all potentially keyboard-focusable Views with
-  // non-keyboard-focusable children, so if we make the button unfocusable, the
-  // label will be allowed to have its own role again.
-  button_->SetFocusBehavior(View::FocusBehavior::NEVER);
+  // focusable, the label is assumed to form part of the button and should be
+  // ignored.
   EXPECT_EQ(ax::mojom::Role::kStaticText,
             label_accessibility()->GetData().role);
+  EXPECT_TRUE(
+      label_accessibility()->GetData().HasState(ax::mojom::State::kIgnored));
+
+  // This will happen for all potentially keyboard-focusable Views with
+  // non-keyboard-focusable children, so if we make the button unfocusable, the
+  // label will not be ignored any more.
+  button_->SetFocusBehavior(View::FocusBehavior::NEVER);
+
+  EXPECT_EQ(ax::mojom::Role::kButton, button_accessibility()->GetData().role);
+  EXPECT_FALSE(
+      button_accessibility()->GetData().HasState(ax::mojom::State::kIgnored));
+  EXPECT_EQ(ax::mojom::Role::kStaticText,
+            label_accessibility()->GetData().role);
+  EXPECT_FALSE(
+      label_accessibility()->GetData().HasState(ax::mojom::State::kIgnored));
 }
 
 TEST_F(ViewAXPlatformNodeDelegateTest, BoundsShouldMatch) {
@@ -269,21 +282,25 @@ TEST_F(ViewAXPlatformNodeDelegateTest, LabelIsChildOfButton) {
   // be either before or after the label, which complicates correctness testing.
   button_->SetInstallFocusRingOnFocus(false);
 
-  // |button_| is focusable, so |label_| (as its child) should be ignored.
+  // Since the label is a subview of |button_|, and the button is keyboard
+  // focusable, the label is assumed to form part of the button and should be
+  // ignored, i.e. no visible in the accessibility tree that is available to
+  // platform APIs.
   EXPECT_NE(View::FocusBehavior::NEVER, button_->GetFocusBehavior());
-  EXPECT_EQ(1, button_accessibility()->GetChildCount());
-  EXPECT_EQ(button_->GetNativeViewAccessible(),
-            label_accessibility()->GetParent());
-  EXPECT_EQ(ax::mojom::Role::kIgnored, label_accessibility()->GetData().role);
+  EXPECT_EQ(0, button_accessibility()->GetChildCount());
+  EXPECT_EQ(ax::mojom::Role::kStaticText,
+            label_accessibility()->GetData().role);
 
-  // If |button_| is no longer focusable, |label_| should show up again.
+  // Modify the focus behavior to make the button unfocusable, and verify that
+  // the label is now a child of the button.
   button_->SetFocusBehavior(View::FocusBehavior::NEVER);
   EXPECT_EQ(1, button_accessibility()->GetChildCount());
   EXPECT_EQ(label_->GetNativeViewAccessible(),
             button_accessibility()->ChildAtIndex(0));
   EXPECT_EQ(button_->GetNativeViewAccessible(),
             label_accessibility()->GetParent());
-  EXPECT_NE(ax::mojom::Role::kIgnored, label_accessibility()->GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kStaticText,
+            label_accessibility()->GetData().role);
 }
 
 // Verify Views with invisible ancestors have ax::mojom::State::kInvisible.

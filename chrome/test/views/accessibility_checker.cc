@@ -78,6 +78,8 @@ bool DoesViewHaveAccessibilityErrors(views::View* view,
           "\n- Focusable View has no accessible name or placeholder, and the "
           "name attribute does not use kAttributeExplicitlyEmpty.";
     }
+    if (node_data.HasState(State::kIgnored))
+      violations += "\n- Focusable View should not be ignored.";
     if (node_data.HasState(State::kInvisible))
       violations += "\n- Focusable View should not be invisible.";
   }

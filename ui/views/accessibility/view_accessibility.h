@@ -113,7 +113,7 @@ class VIEWS_EXPORT ViewAccessibility {
   View* view() const { return view_; }
   AXVirtualView* FocusedVirtualChild() const { return focused_virtual_child_; }
   virtual bool IsLeaf() const;
-  bool IsIgnored() const { return is_ignored_; }
+  virtual bool IsIgnored() const;
 
   //
   // Methods for managing virtual views.

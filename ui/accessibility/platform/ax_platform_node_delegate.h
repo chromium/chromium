@@ -117,9 +117,19 @@ class AX_EXPORT AXPlatformNodeDelegate {
   virtual int GetIndexInParent() = 0;
 
   // Get the number of children of this node.
+  //
+  // Note that this method presents to assistive technologies the unignored
+  // accessibility subtree, which doesn't necessarily reflect the internal
+  // descendant tree. (An ignored node means that the node should not be exposed
+  // to platform APIs: See "IsInvisibleOrIgnored".)
   virtual int GetChildCount() const = 0;
 
   // Get the child of a node given a 0-based index.
+  //
+  // Note that this method presents to assistive technologies the unignored
+  // accessibility subtree, which doesn't necessarily reflect the internal
+  // descendant tree. (An ignored node means that the node should not be exposed
+  // to platform APIs: See "IsInvisibleOrIgnored".)
   virtual gfx::NativeViewAccessible ChildAtIndex(int index) = 0;
 
   // Returns true if it has a modal dialog.
