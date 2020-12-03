@@ -32,10 +32,7 @@ cast_source_set("net") {
       "network_change_notifier_factory_fuchsia.h",
     ]
 
-    deps += [
-      "//chromecast/base:chromecast_switches",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.hardware.ethernet",
-    ]
+    deps += [ "//chromecast/base:chromecast_switches" ]
   }
 }
 
@@ -51,9 +48,7 @@ cast_source_set("time_sync_tracker") {
     "time_sync_tracker.cc",
     "time_sync_tracker.h",
   ]
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 
   if (is_fuchsia) {
     sources += [

@@ -1,15 +1,15 @@
 {
   "sandbox": {
     "features": [
-      "root-ssl-certificates",
-      "deprecated-ambient-replace-as-executable"
+      "deprecated-ambient-replace-as-executable",
+      "root-ssl-certificates"
     ],
     "services": [
       "fuchsia.device.NameProvider",
       "fuchsia.intl.PropertyProvider",
       "fuchsia.logger.LogSink",
       "fuchsia.net.NameLookup",
-      "fuchsia.netstack.Netstack",
+      "fuchsia.net.interfaces.State",
       "fuchsia.posix.socket.Provider"
     ]
   }

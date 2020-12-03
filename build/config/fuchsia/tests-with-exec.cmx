@@ -1,5 +1,9 @@
 {
   "sandbox": {
+    "dev": [
+      "null",
+      "zero"
+    ],
     "features": [
       "deprecated-ambient-replace-as-executable",
       "isolated-cache-storage",
@@ -7,10 +11,6 @@
       "isolated-temp",
       "root-ssl-certificates",
       "vulkan"
-    ],
-    "dev": [
-      "null",
-      "zero"
     ],
     "services": [
       "fuchsia.accessibility.semantics.SemanticsManager",
@@ -26,7 +26,7 @@
       "fuchsia.mediacodec.CodecFactory",
       "fuchsia.memorypressure.Provider",
       "fuchsia.net.NameLookup",
-      "fuchsia.netstack.Netstack",
+      "fuchsia.net.interfaces.State",
       "fuchsia.posix.socket.Provider",
       "fuchsia.process.Launcher",
       "fuchsia.sys.Environment",
