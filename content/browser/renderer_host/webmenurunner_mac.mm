@@ -81,10 +81,8 @@
   [attrs setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 
   if (item->has_text_direction_override) {
-    if (@available(macOS 10.11, *)) {
-      [attrs setObject:@[ @(writingDirection | NSWritingDirectionOverride) ]
-                forKey:NSWritingDirectionAttributeName];
-    }
+    [attrs setObject:@[ @(writingDirection | NSWritingDirectionOverride) ]
+              forKey:NSWritingDirectionAttributeName];
   }
 
   [attrs setObject:[NSFont menuFontOfSize:_fontSize]

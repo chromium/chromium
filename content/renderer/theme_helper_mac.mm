@@ -21,7 +21,7 @@ void SystemColorsDidChange(int aqua_color_variant,
 
   // Register the defaults in the NSArgumentDomain, which is considered
   // volatile. Registering in the normal application domain fails from within
-  // the sandbox on 10.10+.
+  // the sandbox.
   [defaults removeVolatileDomainForName:NSArgumentDomain];
 
   NSDictionary* domain_values = @{

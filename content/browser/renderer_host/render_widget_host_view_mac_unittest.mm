@@ -11,7 +11,6 @@
 
 #include "base/command_line.h"
 #include "base/containers/queue.h"
-#include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -1507,26 +1506,14 @@ class RenderWidgetHostViewMacPinchTest
     }
   }
 
-  bool ShouldSendGestureEvents() {
-#if defined(MAC_OS_X_VERSION_10_11) && \
-    MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_11
-    return base::mac::IsAtMostOS10_10();
-#endif
-    return true;
-  }
-
   void SendBeginPinchEvent() {
     NSEvent* pinchBeginEvent = MockPinchEvent(NSEventPhaseBegan, 0);
-    if (ShouldSendGestureEvents())
-      [rwhv_cocoa_ beginGestureWithEvent:pinchBeginEvent];
     [rwhv_cocoa_ magnifyWithEvent:pinchBeginEvent];
   }
 
   void SendEndPinchEvent() {
     NSEvent* pinchEndEvent = MockPinchEvent(NSEventPhaseEnded, 0);
     [rwhv_cocoa_ magnifyWithEvent:pinchEndEvent];
-    if (ShouldSendGestureEvents())
-      [rwhv_cocoa_ endGestureWithEvent:pinchEndEvent];
   }
 
   const bool async_events_enabled_;
