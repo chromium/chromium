@@ -1304,6 +1304,10 @@ VaapiWrapper::GetSupportedDecodeProfiles(
         workarounds.disable_accelerated_vp8_decode) {
       continue;
     }
+    if (media_profile == VP9PROFILE_PROFILE2 &&
+        workarounds.disable_accelerated_vp9_profile2_decode) {
+      continue;
+    }
 
     const VASupportedProfiles::ProfileInfo* profile_info =
         VASupportedProfiles::Get().IsProfileSupported(kDecode, va_profile);
