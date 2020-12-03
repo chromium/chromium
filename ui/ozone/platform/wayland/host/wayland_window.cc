@@ -305,6 +305,7 @@ uint32_t WaylandWindow::DispatchEvent(const PlatformEvent& native_event) {
 
     // Wayland sends locations in DIP so they need to be translated to
     // physical pixels.
+    UpdateCursorPositionFromEvent(Event::Clone(*event));
     event->AsLocatedEvent()->set_location_f(gfx::ScalePoint(
         event->AsLocatedEvent()->location_f(), buffer_scale(), buffer_scale()));
 
@@ -500,10 +501,6 @@ bool WaylandWindow::IsActive() const {
 
 uint32_t WaylandWindow::DispatchEventToDelegate(
     const PlatformEvent& native_event) {
-  auto* event = static_cast<Event*>(native_event);
-  if (event->IsLocatedEvent())
-    UpdateCursorPositionFromEvent(Event::Clone(*event));
-
   bool handled = DispatchEventFromNativeUiEvent(
       native_event, base::BindOnce(&PlatformWindowDelegate::DispatchEvent,
                                    base::Unretained(delegate_)));
