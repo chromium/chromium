@@ -239,6 +239,62 @@ export function scanningAppTest() {
   /** @type {?FakeScanService} */
   let fakeScanService_ = null;
 
+  /** @type {?HTMLSelectElement} */
+  let scannerSelect = null;
+
+  /** @type {?HTMLSelectElement} */
+  let sourceSelect = null;
+
+  /** @type {?HTMLSelectElement} */
+  let fileTypeSelect = null;
+
+  /** @type {?HTMLSelectElement} */
+  let colorModeSelect = null;
+
+  /** @type {?HTMLSelectElement} */
+  let pageSizeSelect = null;
+
+  /** @type {?HTMLSelectElement} */
+  let resolutionSelect = null;
+
+  /** @type {?CrButtonElement} */
+  let scanButton = null;
+
+  /** @type {?CrButtonElement} */
+  let cancelButton = null;
+
+  /** @type {?HTMLElement} */
+  let statusText = null;
+
+  /** @type {?HTMLElement} */
+  let helperText = null;
+
+  /** @type {?HTMLElement} */
+  let scanProgress = null;
+
+  /** @type {?HTMLElement} */
+  let progressText = null;
+
+  /** @type {?HTMLElement} */
+  let progressBar = null;
+
+  /** @type {?HTMLElement} */
+  let scannedImages = null;
+
+  /**
+   * @type {!Map<!mojoBase.mojom.UnguessableToken,
+   *     !chromeos.scanning.mojom.ScannerCapabilities>}
+   */
+  const capabilities = new Map();
+  capabilities.set(firstScannerId, firstCapabilities);
+  capabilities.set(secondScannerId, secondCapabilities);
+
+  /** @type {!ScannerArr} */
+  const expectedScanners = [
+    createScanner(firstScannerId, firstScannerName),
+    createScanner(secondScannerId, secondScannerName)
+  ];
+
   suiteSetup(() => {
     fakeScanService_ = new FakeScanService();
     setScanServiceForTesting(fakeScanService_);
@@ -252,6 +308,20 @@ export function scanningAppTest() {
     fakeScanService_.resetForTest();
     scanningApp.remove();
     scanningApp = null;
+    scannerSelect = null;
+    sourceSelect = null;
+    fileTypeSelect = null;
+    colorModeSelect = null;
+    pageSizeSelect = null;
+    resolutionSelect = null;
+    scanButton = null;
+    cancelButton = null;
+    statusText = null;
+    helperText = null;
+    scanProgress = null;
+    progressText = null;
+    progressBar = null;
+    scannedImages = null;
   });
 
   /**
@@ -310,46 +380,9 @@ export function scanningAppTest() {
   }
 
   test('Scan', () => {
-    const expectedScanners = [
-      createScanner(firstScannerId, firstScannerName),
-      createScanner(secondScannerId, secondScannerName)
-    ];
-
-    let capabilities = new Map();
-    capabilities.set(firstScannerId, firstCapabilities);
-    capabilities.set(secondScannerId, secondCapabilities);
 
     /** @type {!mojoBase.mojom.FilePath} */
     const lastScannedFilePath = {'path': '/test/path/scan.jpg'};
-
-    /** @type {!HTMLSelectElement} */
-    let scannerSelect;
-    /** @type {!HTMLSelectElement} */
-    let sourceSelect;
-    /** @type {!HTMLSelectElement} */
-    let fileTypeSelect;
-    /** @type {!HTMLSelectElement} */
-    let colorModeSelect;
-    /** @type {!HTMLSelectElement} */
-    let pageSizeSelect;
-    /** @type {!HTMLSelectElement} */
-    let resolutionSelect;
-    /** @type {!CrButtonElement} */
-    let scanButton;
-    /** @type {!CrButtonElement} */
-    let cancelButton;
-    /** @type {!HTMLElement} */
-    let statusText;
-    /** @type {!HTMLElement} */
-    let helperText;
-    /** @type {!HTMLElement} */
-    let scanProgress;
-    /** @type {!HTMLElement} */
-    let progressText;
-    /** @type {!HTMLElement} */
-    let progressBar;
-    /** @type {!HTMLElement} */
-    let scannedImages;
 
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
@@ -399,11 +432,12 @@ export function scanningAppTest() {
           assertFalse(pageSizeSelect.disabled);
           assertFalse(resolutionSelect.disabled);
           assertFalse(scanButton.disabled);
-          assertTrue(isVisible(scanButton));
-          assertFalse(isVisible(cancelButton));
+          assertTrue(isVisible(/** @type {!CrButtonElement} */ (scanButton)));
+          assertFalse(
+              isVisible(/** @type {!CrButtonElement} */ (cancelButton)));
           assertEquals('', statusText.textContent.trim());
-          assertTrue(isVisible(helperText));
-          assertFalse(isVisible(scanProgress));
+          assertTrue(isVisible(/** @type {!HTMLElement} */ (helperText)));
+          assertFalse(isVisible(/** @type {!HTMLElement} */ (scanProgress)));
           assertFalse(isVisible(
               /** @type {!HTMLElement} */ (
                   scanningApp.$$('scan-done-section'))));
@@ -424,10 +458,10 @@ export function scanningAppTest() {
           assertTrue(pageSizeSelect.disabled);
           assertTrue(resolutionSelect.disabled);
           assertTrue(scanButton.disabled);
-          assertFalse(isVisible(scanButton));
-          assertTrue(isVisible(cancelButton));
-          assertFalse(isVisible(helperText));
-          assertTrue(isVisible(scanProgress));
+          assertFalse(isVisible(/** @type {!CrButtonElement} */ (scanButton)));
+          assertTrue(isVisible(/** @type {!CrButtonElement} */ (cancelButton)));
+          assertFalse(isVisible(/** @type {!HTMLElement} */ (helperText)));
+          assertTrue(isVisible(/** @type {!HTMLElement} */ (scanProgress)));
           assertFalse(isVisible(
               /** @type {!HTMLElement} */ (
                   scanningApp.$$('scan-done-section'))));
@@ -467,7 +501,7 @@ export function scanningAppTest() {
               true, lastScannedFilePath);
         })
         .then(() => {
-          assertTrue(isVisible(scannedImages));
+          assertTrue(isVisible(/** @type {!HTMLElement} */ (scannedImages)));
           assertEquals(2, scannedImages.querySelectorAll('img').length);
           assertTrue(isVisible(
               /** @type {!HTMLElement} */ (
@@ -489,33 +523,20 @@ export function scanningAppTest() {
           assertFalse(pageSizeSelect.disabled);
           assertFalse(resolutionSelect.disabled);
           assertFalse(scanButton.disabled);
-          assertTrue(isVisible(scanButton));
-          assertFalse(isVisible(cancelButton));
-          assertTrue(isVisible(helperText));
-          assertFalse(isVisible(scanProgress));
+          assertTrue(isVisible(/** @type {!CrButtonElement} */ (scanButton)));
+          assertFalse(
+              isVisible(/** @type {!CrButtonElement} */ (cancelButton)));
+          assertTrue(isVisible(/** @type {!HTMLElement} */ (helperText)));
+          assertFalse(isVisible(/** @type {!HTMLElement} */ (scanProgress)));
           assertFalse(isVisible(
               /** @type {!HTMLElement} */ (
                   scanningApp.$$('scan-done-section'))));
-          assertFalse(isVisible(scannedImages));
+          assertFalse(isVisible(/** @type {!HTMLElement} */ (scannedImages)));
           assertEquals(0, scannedImages.querySelectorAll('img').length);
         });
   });
 
   test('CancelScan', () => {
-    const expectedScanners = [
-      createScanner(firstScannerId, firstScannerName),
-      createScanner(secondScannerId, secondScannerName)
-    ];
-
-    let capabilities = new Map();
-    capabilities.set(firstScannerId, firstCapabilities);
-    capabilities.set(secondScannerId, secondCapabilities);
-
-    /** @type {!CrButtonElement} */
-    let scanButton;
-    /** @type {!CrButtonElement} */
-    let cancelButton;
-
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
           scanButton =
@@ -528,8 +549,9 @@ export function scanningAppTest() {
           // Before the scan button is clicked, the scan button should be
           // visible and enabled, and the cancel button shouldn't be visible.
           assertFalse(scanButton.disabled);
-          assertTrue(isVisible(scanButton));
-          assertFalse(isVisible(cancelButton));
+          assertTrue(isVisible(/** @type {!CrButtonElement} */ (scanButton)));
+          assertFalse(
+              isVisible(/** @type {!CrButtonElement} */ (cancelButton)));
 
           // Click the Scan button and wait till the scan is started.
           scanButton.click();
@@ -540,8 +562,8 @@ export function scanningAppTest() {
           // button should be disabled and not visible, and the cancel button
           // should be visible.
           assertTrue(scanButton.disabled);
-          assertFalse(isVisible(scanButton));
-          assertTrue(isVisible(cancelButton));
+          assertFalse(isVisible(/** @type {!CrButtonElement} */ (scanButton)));
+          assertTrue(isVisible(/** @type {!CrButtonElement} */ (cancelButton)));
 
           // Simulate a progress update and verify the progress bar and text are
           // updated correctly.
@@ -561,8 +583,9 @@ export function scanningAppTest() {
         .then(() => {
           // After canceling is complete, the scan button should be visible and
           // enabled, and the cancel button shouldn't be visible.
-          assertTrue(isVisible(scanButton));
-          assertFalse(isVisible(cancelButton));
+          assertTrue(isVisible(/** @type {!CrButtonElement} */ (scanButton)));
+          assertFalse(
+              isVisible(/** @type {!CrButtonElement} */ (cancelButton)));
           assertTrue(scanningApp.$$('#toast').open);
           assertFalse(isVisible(
               /** @type {!HTMLElement} */ (scanningApp.$$('#infoIcon'))));
@@ -575,18 +598,6 @@ export function scanningAppTest() {
   });
 
   test('CancelScanFailed', () => {
-    const expectedScanners = [
-      createScanner(firstScannerId, firstScannerName),
-    ];
-
-    let capabilities = new Map();
-    capabilities.set(firstScannerId, firstCapabilities);
-
-    /** @type {!CrButtonElement} */
-    let scanButton;
-    /** @type {!CrButtonElement} */
-    let cancelButton;
-
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
           scanButton =
@@ -631,25 +642,15 @@ export function scanningAppTest() {
           // button visible.
           assertTrue(
               isVisible(scanningApp.$$('#scanPreview').$$('#scanProgress')));
-          assertTrue(isVisible(cancelButton));
+          assertTrue(isVisible(/** @type {!CrButtonElement} */ (cancelButton)));
           assertFalse(
               isVisible(scanningApp.$$('#scanPreview').$$('#helperText')));
-          assertFalse(isVisible(scanButton));
+          assertFalse(isVisible(/** @type {!CrButtonElement} */ (scanButton)));
         });
   });
 
   test('ScanFailedToStart', () => {
-    const expectedScanners = [
-      createScanner(firstScannerId, firstScannerName),
-    ];
-
-    let capabilities = new Map();
-    capabilities.set(firstScannerId, firstCapabilities);
-
     fakeScanService_.setFailStartScan(true);
-
-    /** @type {!CrButtonElement} */
-    let scanButton;
 
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
@@ -674,14 +675,12 @@ export function scanningAppTest() {
               scanningApp.$$('#toastText').textContent.trim());
 
           assertFalse(scanButton.disabled);
-          assertTrue(isVisible(scanButton));
+          assertTrue(isVisible(/** @type {!CrButtonElement} */ (scanButton)));
         });
   });
 
   test('PanelContainerContent', () => {
-    const scanners = [];
-    const capabilities = new Map();
-    return initializeScanningApp(scanners, capabilities).then(() => {
+    return initializeScanningApp(expectedScanners, capabilities).then(() => {
       const panelContainer = scanningApp.$$('.panel-container');
       assertTrue(!!panelContainer);
 
@@ -694,10 +693,7 @@ export function scanningAppTest() {
   });
 
   test('MoreSettingsToggle', () => {
-    const scanners = [createScanner(firstScannerId, firstScannerName)];
-    const capabilities = new Map();
-    capabilities.set(firstScannerId, firstCapabilities);
-    return initializeScanningApp(scanners, capabilities)
+    return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
           return fakeScanService_.whenCalled('getScannerCapabilities');
         })
