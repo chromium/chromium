@@ -4383,18 +4383,6 @@
           'gpu_telemetry_tests': 'gpu_fyi_win_intel_release_telemetry_tests',
         },
       },
-      'Win10 FYI x64 Release (Intel UHD 630)': {
-        'os_type': 'win',
-        'browser_config': 'release_x64',
-        'mixins': [
-          'win10_intel_uhd_630_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_win_gtests',
-          'isolated_scripts': 'gpu_angle_and_desktop_representative_perf_fyi_isolated_scripts',
-          'gpu_telemetry_tests': 'gpu_fyi_win_intel_release_telemetry_tests',
-        },
-      },
       'Win10 FYI x64 Release (NVIDIA GeForce GTX 1660)': {
         # This bot currently only has one piece of hardware behind it,
         # and is being qualified for potential scale-out.

@@ -3964,18 +3964,6 @@ ci.gpu_fyi_thin_tester(
 )
 
 ci.gpu_fyi_thin_tester(
-    name = "Win10 FYI x64 Release (Intel UHD 630)",
-    console_view_entry = ci.console_view_entry(
-        category = "Windows|10|x64|Intel",
-        short_name = "uhd",
-    ),
-    # TODO(https://crbug.com/986939): Remove this increased timeout once
-    # more devices are added.
-    execution_timeout = 18 * time.hour,
-    triggered_by = ["GPU FYI Win x64 Builder"],
-)
-
-ci.gpu_fyi_thin_tester(
     name = "Win10 FYI x64 Release (NVIDIA GeForce GTX 1660)",
     console_view_entry = ci.console_view_entry(
         category = "Windows|10|x64|Nvidia",

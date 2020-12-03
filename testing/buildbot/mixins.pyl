@@ -911,21 +911,6 @@
       ],
     },
   },
-  'win10_intel_uhd_630_stable': {
-    'swarming': {
-      'dimensions': {
-        'gpu': '8086:3e92-24.20.100.6286',
-        'os': 'Windows-10',
-        'pool': 'chromium.tests.gpu',
-      },
-      # ~50% of the WebGL2 conformance tests time out with the default
-      # 1 hour expiration, but the last shard times out with a 3 hour
-      # expiration, so use 4 hours.
-      # TODO(https://crbug.com/986939): Remove this when more devices
-      # are added.
-      'expiration': 14400,
-    },
-  },
   'win10_nvidia_geforce_gtx_1660': {
     'swarming': {
       'dimensions': {
