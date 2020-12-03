@@ -34,7 +34,6 @@
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-forward.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -44,6 +43,7 @@
 namespace blink {
 class AssociatedInterfaceProvider;
 namespace mojom {
+enum class AuthenticatorStatus;
 enum class FeaturePolicyFeature;
 }  // namespace mojom
 }  // namespace blink
