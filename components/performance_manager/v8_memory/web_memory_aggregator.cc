@@ -84,23 +84,22 @@ void WebMeasureMemory(
     const FrameNode* frame_node,
     mojom::WebMemoryMeasurement::Mode mode,
     base::OnceCallback<void(mojom::WebMemoryMeasurementPtr)> callback) {
-  auto web_memory_aggregator = std::make_unique<WebMemoryAggregator>(
+  auto measurer = std::make_unique<WebMemoryMeasurer>(
       frame_node->GetFrameToken(),
       WebMeasurementModeToRequestMeasurementMode(mode), std::move(callback));
 
-  // Create a measurement complete callback to own |web_memory_aggregator|. It
+  // Create a measurement complete callback to own |measurer|. It
   // will be deleted when the callback is executed or dropped.
-  V8DetailedMemoryRequestOneShot* request = web_memory_aggregator->request();
-  auto measurement_complete_callback =
-      base::BindOnce(&WebMemoryAggregator::MeasurementComplete,
-                     std::move(web_memory_aggregator));
+  V8DetailedMemoryRequestOneShot* request = measurer->request();
+  auto measurement_complete_callback = base::BindOnce(
+      &WebMemoryMeasurer::MeasurementComplete, std::move(measurer));
 
   // Start memory measurement for the process of the given frame.
   request->StartMeasurement(frame_node->GetProcessNode(),
                             std::move(measurement_complete_callback));
 }
 
-WebMemoryAggregator::WebMemoryAggregator(
+WebMemoryMeasurer::WebMemoryMeasurer(
     const blink::LocalFrameToken& frame_token,
     V8DetailedMemoryRequest::MeasurementMode mode,
     MeasurementCallback callback)
@@ -108,9 +107,9 @@ WebMemoryAggregator::WebMemoryAggregator(
       callback_(std::move(callback)),
       request_(std::make_unique<V8DetailedMemoryRequestOneShot>(mode)) {}
 
-WebMemoryAggregator::~WebMemoryAggregator() = default;
+WebMemoryMeasurer::~WebMemoryMeasurer() = default;
 
-void WebMemoryAggregator::MeasurementComplete(
+void WebMemoryMeasurer::MeasurementComplete(
     const ProcessNode* process_node,
     const V8DetailedMemoryProcessData*) {
   std::move(callback_).Run(BuildMemoryUsageResult(frame_token_, process_node));

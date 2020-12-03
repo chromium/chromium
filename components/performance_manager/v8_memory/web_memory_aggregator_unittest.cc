@@ -100,7 +100,7 @@ void WebMemoryAggregatorTest::MeasureAndVerify(
     FrameNodeImpl* frame,
     base::flat_map<std::string, Bytes> expected) {
   bool measurement_done = false;
-  WebMemoryAggregator web_memory(
+  WebMemoryMeasurer web_memory(
       frame->frame_token(), V8DetailedMemoryRequest::MeasurementMode::kDefault,
       base::BindLambdaForTesting([&measurement_done, &expected](
                                      mojom::WebMemoryMeasurementPtr result) {

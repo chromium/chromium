@@ -18,17 +18,19 @@ class ProcessNode;
 
 namespace v8_memory {
 
-// A helper class for implementing WebMeasureMemory().
-class WebMemoryAggregator {
+// A helper class for implementing WebMeasureMemory(). This manages a request
+// object that sends a V8 detailed memory request to the renderer, and formats
+// the result into a mojom::WebMemoryMeasurement.
+class WebMemoryMeasurer {
  public:
   using MeasurementCallback =
       base::OnceCallback<void(mojom::WebMemoryMeasurementPtr)>;
 
-  WebMemoryAggregator(const blink::LocalFrameToken&,
-                      V8DetailedMemoryRequest::MeasurementMode,
-                      MeasurementCallback);
+  WebMemoryMeasurer(const blink::LocalFrameToken&,
+                    V8DetailedMemoryRequest::MeasurementMode,
+                    MeasurementCallback);
 
-  ~WebMemoryAggregator();
+  ~WebMemoryMeasurer();
 
   V8DetailedMemoryRequestOneShot* request() const { return request_.get(); }
 
