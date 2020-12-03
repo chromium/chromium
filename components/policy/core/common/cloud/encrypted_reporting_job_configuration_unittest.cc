@@ -23,6 +23,7 @@
 #include "chromeos/system/fake_statistics_provider.h"
 #endif
 
+using testing::IsNull;
 using testing::NotNull;
 using testing::StrEq;
 using testing::StrictMock;
@@ -36,10 +37,6 @@ constexpr ::reporting::Priority kPriority = ::reporting::Priority::IMMEDIATE;
 // Default values for EncryptionInfo
 constexpr char kEncryptionKey[] = "abcdef";
 constexpr uint64_t kPublicKeyId = 9876;
-
-// Default context paths
-constexpr char kProfileStringPath[] = "profile.string";
-constexpr char kProfileIntPath[] = "profile.int";
 
 // Keys for ResponseValueBuilder
 // Keys for internal dictionaries
@@ -221,10 +218,10 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
         record);
   }
 
-  static base::Value GenerateContext(base::StringPiece string, int int_val) {
+  static base::Value GenerateContext(base::StringPiece key,
+                                     base::StringPiece value) {
     base::Value context{base::Value::Type::DICTIONARY};
-    context.SetStringKey(kProfileStringPath, string);
-    context.SetIntKey(kProfileIntPath, int_val);
+    context.SetStringPath(key, value);
     return context;
   }
 
@@ -286,7 +283,6 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
 TEST_F(EncryptedReportingJobConfigurationTest, ValidatePayload) {
   EXPECT_CALL(callback_observer_, OnURLLoadComplete).Times(1);
   auto* payload = GetPayload();
-
   EXPECT_FALSE(GetDeviceName().empty());
   EXPECT_EQ(
       *payload->FindStringPath(ReportingJobConfigurationBase::
@@ -373,46 +369,49 @@ TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddsMultipleRecords) {
 }
 
 // Ensures that the context can be updated.
-TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddsContext) {
+TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddsAndUpdatesContext) {
   EXPECT_CALL(callback_observer_, OnURLLoadComplete).Times(1);
-  const std::string kTestString = "Frankenstein";
-  const int kTestInt = 1701;
+  const std::string kTestKey = "device.name";
+  const std::string kTestValue = "1701-A";
 
-  base::Value context = GenerateContext(kTestString, kTestInt);
-
+  base::Value context = GenerateContext(kTestKey, kTestValue);
   configuration_.UpdateContext(context);
 
+  // Ensure the payload includes the path and value.
   base::Value* payload = GetPayload();
+  std::string* good_result = payload->FindStringPath(kTestKey);
+  ASSERT_THAT(good_result, NotNull());
+  EXPECT_EQ(*good_result, kTestValue);
 
-  EXPECT_EQ(*payload->FindStringKey(kProfileStringPath), kTestString);
-  EXPECT_EQ(*payload->FindIntKey(kProfileIntPath), kTestInt);
-}
-
-// Ensures that the last context added overrides previous values, without losing
-// unchanged values.
-TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyOverwritesContext) {
-  EXPECT_CALL(callback_observer_, OnURLLoadComplete).Times(1);
-  const std::string kTestString = "Frankenstein";
-  const int kTestInt = 1701;
-
-  base::Value context = GenerateContext(kTestString, kTestInt);
-
+  // Add a path that isn't in the allow list.
+  const std::string kBadTestKey = "profile.string";
+  context = GenerateContext(kBadTestKey, kTestValue);
   configuration_.UpdateContext(context);
 
-  const std::string kTestString2 = "Wolverine";
-  base::Value context2 = GenerateContext(kTestString2, kTestInt);
-  configuration_.UpdateContext(context2);
+  // Ensure that the path is removed from the payload.
+  payload = GetPayload();
+  const std::string* bad_result = payload->FindStringPath(kBadTestKey);
+  EXPECT_THAT(bad_result, IsNull());
 
-  base::Value* payload = GetPayload();
+  // Ensure that adding a bad path hasn't destroyed the good path.
+  good_result = payload->FindStringPath(kTestKey);
+  EXPECT_THAT(good_result, NotNull());
+  EXPECT_EQ(*good_result, kTestValue);
 
-  EXPECT_EQ(*payload->FindStringKey(kProfileStringPath), kTestString2);
-  EXPECT_EQ(*payload->FindIntKey(kProfileIntPath), kTestInt);
+  // Ensure that a good path can be overriden.
+  const std::string kUpdatedTestValue = "1701-B";
+  context = GenerateContext(kTestKey, kUpdatedTestValue);
+  configuration_.UpdateContext(context);
+  payload = GetPayload();
+  good_result = payload->FindStringPath(kTestKey);
+  ASSERT_THAT(good_result, NotNull());
+  EXPECT_EQ(*good_result, kUpdatedTestValue);
 }
 
 // Ensures that upload success is handled correctly.
 TEST_F(EncryptedReportingJobConfigurationTest, OnURLLoadComplete_Success) {
-  const std::string kTestString = "Frankenstein";
-  const int kTestInt = 1701;
+  const std::string kTestString = "device.clientId";
+  const std::string kTestInt = "1701-A";
 
   base::Value context = GenerateContext(kTestString, kTestInt);
   configuration_.UpdateContext(context);

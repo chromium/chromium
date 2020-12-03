@@ -89,6 +89,8 @@ class POLICY_EXPORT EncryptedReportingJobConfiguration
   static std::string GetEncryptedWrappedRecordPath();
 
  protected:
+  void UpdatePayloadBeforeGetInternal() override;
+
   std::string GetUmaString() const override;
 
  private:
@@ -157,8 +159,11 @@ class POLICY_EXPORT EncryptedReportingJobConfiguration
   friend class EncryptedReportingJobConfigurationTest;
 
   void AddEncryptedRecordListToPayload();
+  std::set<std::string> GetTopLevelKeyAllowList();
 
   static const char kEncryptedRecordListKey_[];
+  static const char kDeviceKey_[];
+  static const char kBrowserKey_[];
 };
 
 }  // namespace policy

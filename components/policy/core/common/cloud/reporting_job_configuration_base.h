@@ -132,6 +132,10 @@ class POLICY_EXPORT ReportingJobConfigurationBase
   virtual void OnBeforeRetryInternal(int response_code,
                                      const std::string& response_body);
 
+  // Allows children to provide final mutations to |payload_| before completion
+  // of |GetPayload| call.
+  virtual void UpdatePayloadBeforeGetInternal();
+
   // Returns an identifying string for UMA.
   virtual std::string GetUmaString() const = 0;
 

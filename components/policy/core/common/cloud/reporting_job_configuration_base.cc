@@ -164,6 +164,10 @@ std::string ReportingJobConfigurationBase::GetPayload() {
     payload_.MergeDictionary(&context_.value());
     context_.reset();
   }
+
+  // Allow children to mutate the payload if need be.
+  UpdatePayloadBeforeGetInternal();
+
   std::string payload_string;
   base::JSONWriter::Write(payload_, &payload_string);
   return payload_string;
@@ -249,6 +253,8 @@ ReportingJobConfigurationBase::ShouldRetryInternal(
 void ReportingJobConfigurationBase::OnBeforeRetryInternal(
     int response_code,
     const std::string& response_body) {}
+
+void ReportingJobConfigurationBase::UpdatePayloadBeforeGetInternal() {}
 
 GURL ReportingJobConfigurationBase::GetURL(int last_error) const {
   return GURL(server_url_);

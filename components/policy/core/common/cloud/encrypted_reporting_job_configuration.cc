@@ -5,6 +5,7 @@
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
 
 #include "base/base64.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/proto/record.pb.h"
@@ -13,9 +14,11 @@
 
 namespace policy {
 
-// EncryptedReportingJobConfiguration string
+// EncryptedReportingJobConfiguration strings
 const char EncryptedReportingJobConfiguration::kEncryptedRecordListKey_[] =
     "encryptedRecord";
+const char EncryptedReportingJobConfiguration::kDeviceKey_[] = "device";
+const char EncryptedReportingJobConfiguration::kBrowserKey_[] = "browser";
 
 // EncrypedRecordDictionaryBuilder strings
 const char EncryptedReportingJobConfiguration::
@@ -160,6 +163,21 @@ EncryptedReportingJobConfiguration::~EncryptedReportingJobConfiguration() {
   }
 }
 
+void EncryptedReportingJobConfiguration::UpdatePayloadBeforeGetInternal() {
+  // Can't mutate payload_ and iterate it at the same time, so build a
+  // disallowed list and then remove the values.
+  std::set<std::string> disallowed_keys;
+  for (auto key_value_pair : payload_.DictItems()) {
+    if (GetTopLevelKeyAllowList().count(key_value_pair.first) == 0) {
+      disallowed_keys.insert(key_value_pair.first);
+    }
+  }
+
+  for (auto key : disallowed_keys) {
+    payload_.RemoveKey(key);
+  }
+}
+
 bool EncryptedReportingJobConfiguration::AddEncryptedRecord(
     const ::reporting::EncryptedRecord& record) {
   base::Optional<base::Value> record_result =
@@ -200,6 +218,13 @@ void EncryptedReportingJobConfiguration::AddEncryptedRecordListToPayload() {
                   base::Value{base::Value::Type::LIST});
 }
 
+std::set<std::string>
+EncryptedReportingJobConfiguration::GetTopLevelKeyAllowList() {
+  static std::set<std::string> kTopLevelKeyAllowList{kEncryptedRecordListKey_,
+                                                     kDeviceKey_, kBrowserKey_};
+  return kTopLevelKeyAllowList;
+}
+
 // static
 base::Optional<base::Value>
 EncryptedReportingJobConfiguration::SequencingInformationDictionaryBuilder::
@@ -213,10 +238,12 @@ EncryptedReportingJobConfiguration::SequencingInformationDictionaryBuilder::
   }
 
   base::Value sequencing_dictionary{base::Value::Type::DICTIONARY};
-  sequencing_dictionary.SetIntKey(GetSequencingIdPath(),
-                                  sequencing_information.sequencing_id());
-  sequencing_dictionary.SetIntKey(GetGenerationIdPath(),
-                                  sequencing_information.generation_id());
+  sequencing_dictionary.SetStringKey(
+      GetSequencingIdPath(),
+      base::NumberToString(sequencing_information.sequencing_id()));
+  sequencing_dictionary.SetStringKey(
+      GetGenerationIdPath(),
+      base::NumberToString(sequencing_information.generation_id()));
   sequencing_dictionary.SetIntKey(GetPriorityPath(),
                                   sequencing_information.priority());
   return sequencing_dictionary;
@@ -253,8 +280,9 @@ base::Optional<base::Value> EncryptedReportingJobConfiguration::
   base::Value encryption_info_dictionary{base::Value::Type::DICTIONARY};
   encryption_info_dictionary.SetStringKey(GetEncryptionKeyPath(),
                                           encryption_info.encryption_key());
-  encryption_info_dictionary.SetIntKey(GetPublicKeyIdPath(),
-                                       encryption_info.public_key_id());
+  encryption_info_dictionary.SetStringKey(
+      GetPublicKeyIdPath(),
+      base::NumberToString(encryption_info.public_key_id()));
   return encryption_info_dictionary;
 }
 
