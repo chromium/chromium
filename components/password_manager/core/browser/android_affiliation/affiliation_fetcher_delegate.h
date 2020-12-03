@@ -50,7 +50,7 @@ class AffiliationFetcherDelegate {
   virtual void OnMalformedResponse(AffiliationFetcherInterface* fetcher) = 0;
 
  protected:
-  virtual ~AffiliationFetcherDelegate() {}
+  virtual ~AffiliationFetcherDelegate() = default;
 };
 
 }  // namespace password_manager

@@ -198,8 +198,7 @@ std::vector<FacetURI> ExtractAndSortFacetURIs(const AffiliatedFacets& facets) {
 
 // FacetURI -------------------------------------------------------------------
 
-FacetURI::FacetURI() : is_valid_(false) {
-}
+FacetURI::FacetURI() = default;
 
 // static
 FacetURI FacetURI::FromPotentiallyInvalidSpec(const std::string& spec) {

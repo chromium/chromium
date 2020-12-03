@@ -25,7 +25,7 @@ class ExportFlow {
   virtual password_manager::ExportProgressStatus GetExportProgressStatus() = 0;
 
  protected:
-  virtual ~ExportFlow() {}
+  virtual ~ExportFlow() = default;
 };
 
 }  // namespace password_manager

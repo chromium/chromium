@@ -341,13 +341,13 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
     bool enable_passwords_account_storage = GetParam();
     if (enable_passwords_account_storage) {
       feature_list_.InitWithFeatures(
-          /*enable_features=*/{features::kPasswordReuseDetectionEnabled,
-                               features::kEnablePasswordsAccountStorage},
-          /*disable_features=*/{});
+          /*enabled_features=*/{features::kPasswordReuseDetectionEnabled,
+                                features::kEnablePasswordsAccountStorage},
+          /*disabled_features=*/{});
     } else {
       feature_list_.InitWithFeatures(
-          /*enable_features=*/{features::kPasswordReuseDetectionEnabled},
-          /*disable_features=*/{features::kEnablePasswordsAccountStorage});
+          /*enabled_features=*/{features::kPasswordReuseDetectionEnabled},
+          /*disabled_features=*/{features::kEnablePasswordsAccountStorage});
     }
   }
   ~PasswordManagerTest() override = default;

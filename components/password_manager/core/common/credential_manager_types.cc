@@ -27,8 +27,7 @@ std::ostream& operator<<(std::ostream& os, CredentialType value) {
   return os << CredentialTypeToString(value);
 }
 
-CredentialInfo::CredentialInfo() : type(CredentialType::CREDENTIAL_TYPE_EMPTY) {
-}
+CredentialInfo::CredentialInfo() = default;
 
 CredentialInfo::CredentialInfo(CredentialType type,
                                base::Optional<base::string16> id,

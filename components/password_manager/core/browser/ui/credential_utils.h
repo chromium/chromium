@@ -21,11 +21,11 @@ namespace password_manager {
 // Simple struct that stores a canonicalized credential. Allows implicit
 // constructon from PasswordForm and LeakCheckCredentail for convenience.
 struct CanonicalizedCredential {
-  CanonicalizedCredential(const PasswordForm& form)
+  CanonicalizedCredential(const PasswordForm& form)  // NOLINT
       : canonicalized_username(CanonicalizeUsername(form.username_value)),
         password(form.password_value) {}
 
-  CanonicalizedCredential(const LeakCheckCredential& credential)
+  CanonicalizedCredential(const LeakCheckCredential& credential)  // NOLINT
       : canonicalized_username(CanonicalizeUsername(credential.username())),
         password(credential.password()) {}
 

@@ -21,7 +21,7 @@ enum class PendingCredentialsState {
 
 class PasswordSaveManagerImpl : public PasswordSaveManager {
  public:
-  PasswordSaveManagerImpl(std::unique_ptr<FormSaver> form_saver);
+  explicit PasswordSaveManagerImpl(std::unique_ptr<FormSaver> form_saver);
   ~PasswordSaveManagerImpl() override;
 
   // Returns a MultiStorePasswordSaveManager if the password account storage

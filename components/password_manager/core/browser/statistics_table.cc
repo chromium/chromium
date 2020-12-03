@@ -48,8 +48,7 @@ bool operator==(const InteractionsStats& lhs, const InteractionsStats& rhs) {
          lhs.update_time == rhs.update_time;
 }
 
-StatisticsTable::StatisticsTable() : db_(nullptr) {
-}
+StatisticsTable::StatisticsTable() = default;
 
 StatisticsTable::~StatisticsTable() = default;
 

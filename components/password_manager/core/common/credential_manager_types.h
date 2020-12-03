@@ -56,7 +56,7 @@ struct CredentialInfo {
 
   bool operator==(const CredentialInfo& rhs) const;
 
-  CredentialType type;
+  CredentialType type = CredentialType::CREDENTIAL_TYPE_EMPTY;
 
   // An identifier (username, email address, etc). Corresponds to
   // WebCredential's id property.

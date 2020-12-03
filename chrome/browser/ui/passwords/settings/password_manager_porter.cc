@@ -117,7 +117,7 @@ PasswordManagerPorter::PasswordManagerPorter(
     : credential_provider_interface_(credential_provider_interface),
       on_export_progress_callback_(on_export_progress_callback) {}
 
-PasswordManagerPorter::~PasswordManagerPorter() {}
+PasswordManagerPorter::~PasswordManagerPorter() = default;
 
 bool PasswordManagerPorter::Store() {
   // In unittests a null WebContents means: "Abort creating the file Selector."

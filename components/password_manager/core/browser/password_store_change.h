@@ -37,7 +37,7 @@ class PasswordStoreChange {
   PasswordStoreChange(PasswordStoreChange&& other) = default;
   PasswordStoreChange& operator=(const PasswordStoreChange& change) = default;
   PasswordStoreChange& operator=(PasswordStoreChange&& change) = default;
-  virtual ~PasswordStoreChange() {}
+  ~PasswordStoreChange() = default;
 
   Type type() const { return type_; }
   const PasswordForm& form() const { return form_; }

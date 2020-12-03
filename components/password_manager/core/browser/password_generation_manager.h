@@ -21,7 +21,7 @@ class PasswordManagerDriver;
 
 class PasswordGenerationManager {
  public:
-  PasswordGenerationManager(PasswordManagerClient* client);
+  explicit PasswordGenerationManager(PasswordManagerClient* client);
   ~PasswordGenerationManager();
   PasswordGenerationManager(const PasswordGenerationManager& rhs) = delete;
   PasswordGenerationManager& operator=(const PasswordGenerationManager&) =

@@ -265,6 +265,8 @@ void PasswordRequirementsSpecFetcherImpl::OnFetchComplete(
 
     if (!found_entry) {
       VLOG(1) << "Found no entry for " << host;
+      // `found_entry` guards against moving out of `callback_function` twice.
+      // NOLINTNEXTLINE(bugprone-use-after-move)
       TriggerCallback(std::move(callback_function), ResultCode::kFoundNoSpec,
                       PasswordRequirementsSpec());
     }

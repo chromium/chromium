@@ -308,6 +308,9 @@ TEST_F(CompromisedCredentialsTableTest, RemoveRowsByUrlAndTime) {
                           compromised_credentials3, compromised_credentials4));
 
   EXPECT_TRUE(db()->RemoveRowsByUrlAndTime(
+      // Can't use the generic `std::not_equal_to<>` here, because BindRepeating
+      // does not support functors with an overloaded call operator.
+      // NOLINTNEXTLINE(modernize-use-transparent-functors)
       base::BindRepeating(std::not_equal_to<GURL>(),
                           GURL(compromised_credentials1.signon_realm)),
       base::Time(), base::Time::Max()));

@@ -367,12 +367,15 @@ TEST_F(PasswordSyncBridgeTest, ShouldForwardLocalChangesToTheProcessor) {
   ON_CALL(mock_processor(), IsTrackingMetadata()).WillByDefault(Return(true));
 
   PasswordStoreChangeList changes;
-  changes.push_back(PasswordStoreChange(
-      PasswordStoreChange::ADD, MakePasswordForm(kSignonRealm1), /*id=*/1));
-  changes.push_back(PasswordStoreChange(
-      PasswordStoreChange::UPDATE, MakePasswordForm(kSignonRealm2), /*id=*/2));
-  changes.push_back(PasswordStoreChange(
-      PasswordStoreChange::REMOVE, MakePasswordForm(kSignonRealm3), /*id=*/3));
+  changes.push_back(PasswordStoreChange(PasswordStoreChange::ADD,
+                                        MakePasswordForm(kSignonRealm1),
+                                        /*primary_key=*/1));
+  changes.push_back(PasswordStoreChange(PasswordStoreChange::UPDATE,
+                                        MakePasswordForm(kSignonRealm2),
+                                        /*primary_key=*/2));
+  changes.push_back(PasswordStoreChange(PasswordStoreChange::REMOVE,
+                                        MakePasswordForm(kSignonRealm3),
+                                        /*primary_key=*/3));
   PasswordStoreSync::MetadataStore* store =
       mock_password_store_sync()->GetMetadataStore();
   EXPECT_CALL(mock_processor(),
@@ -392,12 +395,15 @@ TEST_F(PasswordSyncBridgeTest,
   ON_CALL(mock_processor(), IsTrackingMetadata()).WillByDefault(Return(false));
 
   PasswordStoreChangeList changes;
-  changes.push_back(PasswordStoreChange(
-      PasswordStoreChange::ADD, MakePasswordForm(kSignonRealm1), /*id=*/1));
-  changes.push_back(PasswordStoreChange(
-      PasswordStoreChange::UPDATE, MakePasswordForm(kSignonRealm2), /*id=*/2));
-  changes.push_back(PasswordStoreChange(
-      PasswordStoreChange::REMOVE, MakePasswordForm(kSignonRealm3), /*id=*/3));
+  changes.push_back(PasswordStoreChange(PasswordStoreChange::ADD,
+                                        MakePasswordForm(kSignonRealm1),
+                                        /*primary_key=*/1));
+  changes.push_back(PasswordStoreChange(PasswordStoreChange::UPDATE,
+                                        MakePasswordForm(kSignonRealm2),
+                                        /*primary_key=*/2));
+  changes.push_back(PasswordStoreChange(PasswordStoreChange::REMOVE,
+                                        MakePasswordForm(kSignonRealm3),
+                                        /*primary_key=*/3));
 
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(mock_processor(), Delete).Times(0);

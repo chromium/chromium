@@ -150,6 +150,9 @@ TEST_F(StatisticsTableTest, RemoveStatsByOriginAndTime) {
   // Remove the entries with the timestamp 2 that are NOT matching
   // |kTestDomain3|.
   EXPECT_TRUE(db()->RemoveStatsByOriginAndTime(
+      // Can't use the generic `std::not_equal_to<>` here, because BindRepeating
+      // does not support functors with an overloaded call operator.
+      // NOLINTNEXTLINE(modernize-use-transparent-functors)
       base::BindRepeating(std::not_equal_to<GURL>(), stats3.origin_domain),
       base::Time::FromTimeT(2), base::Time()));
   EXPECT_THAT(db()->GetAllRows(), ElementsAre(stats3));

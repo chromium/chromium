@@ -79,7 +79,7 @@ class StatisticsTable {
   int GetNumAccounts();
 
  private:
-  sql::Database* db_;
+  sql::Database* db_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(StatisticsTable);
 };

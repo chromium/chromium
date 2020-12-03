@@ -37,7 +37,8 @@ class FieldInfoManagerImpl : public FieldInfoManager,
                              public KeyedService,
                              public PasswordStoreConsumer {
  public:
-  FieldInfoManagerImpl(scoped_refptr<password_manager::PasswordStore> store);
+  explicit FieldInfoManagerImpl(
+      scoped_refptr<password_manager::PasswordStore> store);
   ~FieldInfoManagerImpl() override;
 
   // FieldInfoManager:

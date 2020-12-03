@@ -68,7 +68,7 @@ TEST_F(HashPasswordManagerTest, SavingPasswordHashData) {
   // Verify |SavePasswordHash(const PasswordHashData&)| behavior.
   base::string16 new_password(base::UTF8ToUTF16("new_password"));
   PasswordHashData new_password_data(username, new_password,
-                                     /*is_gaia_password=*/true);
+                                     /*force_update=*/true);
   EXPECT_TRUE(hash_password_manager.SavePasswordHash(new_password_data));
   EXPECT_NE(current_password_hash_data->hash,
             hash_password_manager

@@ -57,7 +57,7 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
         forced_path_(forced_path) {}
 
  protected:
-  ~TestSelectFileDialog() override {}
+  ~TestSelectFileDialog() override = default;
 
   void SelectFileImpl(Type type,
                       const base::string16& title,

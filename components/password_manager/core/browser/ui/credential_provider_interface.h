@@ -21,7 +21,7 @@ class CredentialProviderInterface {
   virtual std::vector<std::unique_ptr<PasswordForm>> GetAllPasswords() = 0;
 
  protected:
-  virtual ~CredentialProviderInterface() {}
+  virtual ~CredentialProviderInterface() = default;
 };
 
 }  // namespace password_manager

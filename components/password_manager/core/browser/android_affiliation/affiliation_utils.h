@@ -136,7 +136,7 @@ class FacetURI {
   FacetURI(const std::string& canonical_spec, bool is_valid);
 
   // Whether |canonical_spec_| contains a valid facet URI in canonical form.
-  bool is_valid_;
+  bool is_valid_ = false;
 
   // The text of the encapsulated canonical URI, valid if and only if
   // |is_valid_| is true.

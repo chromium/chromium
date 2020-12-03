@@ -14,7 +14,7 @@ class ImportFlow {
   virtual void Load() = 0;
 
  protected:
-  virtual ~ImportFlow() {}
+  virtual ~ImportFlow() = default;
 };
 
 }  // namespace password_manager

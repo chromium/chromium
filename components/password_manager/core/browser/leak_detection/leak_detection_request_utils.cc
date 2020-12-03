@@ -167,7 +167,7 @@ std::unique_ptr<signin::AccessTokenFetcher> RequestAccessToken(
     signin::AccessTokenFetcher::TokenCallback callback) {
   return identity_manager->CreateAccessTokenFetcherForAccount(
       GetAccountForRequest(identity_manager),
-      /*consumer_name=*/"leak_detection_service", {kAPIScope},
+      /*oauth_consumer_name=*/"leak_detection_service", {kAPIScope},
       std::move(callback), signin::AccessTokenFetcher::Mode::kImmediate);
 }
 

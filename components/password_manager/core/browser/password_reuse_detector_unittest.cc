@@ -89,7 +89,7 @@ std::vector<PasswordHashData> PrepareGaiaPasswordData(
   for (const auto& password : passwords) {
     PasswordHashData password_hash("username_" + password,
                                    ASCIIToUTF16(password),
-                                   /*is_gaia_password=*/true);
+                                   /*force_update=*/true);
     result.push_back(password_hash);
   }
   return result;
@@ -101,7 +101,7 @@ std::vector<PasswordHashData> PrepareEnterprisePasswordData(
   for (const auto& password : passwords) {
     PasswordHashData password_hash("enterpriseUsername_" + password,
                                    ASCIIToUTF16(password),
-                                   /*is_gaia_password=*/false);
+                                   /*force_update=*/false);
     result.push_back(password_hash);
   }
   return result;

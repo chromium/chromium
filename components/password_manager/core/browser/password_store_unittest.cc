@@ -1666,6 +1666,9 @@ TEST_F(PasswordStoreTest, RemoveCompromisedCredentialsCreatedBetween) {
   testing::Mock::VerifyAndClearExpectations(&consumer);
 
   store->RemoveCompromisedCredentialsByUrlAndTime(
+      // Can't use the generic `std::not_equal_to<>` here, because BindRepeating
+      // does not support functors with an overloaded call operator.
+      // NOLINTNEXTLINE(modernize-use-transparent-functors)
       base::BindRepeating(std::not_equal_to<GURL>(),
                           GURL(compromised_credentials3.signon_realm)),
       base::Time::FromTimeT(150), base::Time::FromTimeT(350),

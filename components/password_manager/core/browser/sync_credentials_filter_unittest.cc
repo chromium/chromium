@@ -108,13 +108,13 @@ class CredentialsFilterTest : public SyncUsernameTestBase,
   CredentialsFilterTest() : pending_(SimpleGaiaForm("user@gmail.com")) {
     if (GetParam()) {
       feature_list_.InitWithFeatures(
-          /*enable_features=*/{features::kPasswordReuseDetectionEnabled,
-                               features::kEnablePasswordsAccountStorage},
-          /*disable_features=*/{});
+          /*enabled_features=*/{features::kPasswordReuseDetectionEnabled,
+                                features::kEnablePasswordsAccountStorage},
+          /*disabled_features=*/{});
     } else {
       feature_list_.InitWithFeatures(
-          /*enable_features=*/{features::kPasswordReuseDetectionEnabled},
-          /*disable_features=*/{features::kEnablePasswordsAccountStorage});
+          /*enabled_features=*/{features::kPasswordReuseDetectionEnabled},
+          /*disabled_features=*/{features::kEnablePasswordsAccountStorage});
     }
 
     client_ = std::make_unique<FakePasswordManagerClient>(identity_manager());

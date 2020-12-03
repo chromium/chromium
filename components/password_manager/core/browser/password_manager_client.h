@@ -93,8 +93,8 @@ class PasswordManagerClient {
   using CredentialsCallback = base::OnceCallback<void(const PasswordForm*)>;
   using ReauthSucceeded = base::StrongAlias<class ReauthSucceededTag, bool>;
 
-  PasswordManagerClient() {}
-  virtual ~PasswordManagerClient() {}
+  PasswordManagerClient() = default;
+  virtual ~PasswordManagerClient() = default;
 
   // Is saving new data for password autofill and filling of saved data enabled
   // for the current profile and page? For example, saving is disabled in

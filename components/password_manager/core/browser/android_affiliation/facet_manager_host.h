@@ -14,7 +14,7 @@ namespace password_manager {
 // provided by the AffiliationBackend.
 class FacetManagerHost {
  public:
-  virtual ~FacetManagerHost() {}
+  virtual ~FacetManagerHost() = default;
 
   // Reads the equivalence class containing |facet_uri| from the database and
   // returns true if found; returns false otherwise.

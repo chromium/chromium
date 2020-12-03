@@ -14,7 +14,7 @@ namespace password_manager {
 // Handles mediation completion and retrieves embedder-dependent services.
 class CredentialManagerPendingPreventSilentAccessTaskDelegate {
  public:
-  virtual ~CredentialManagerPendingPreventSilentAccessTaskDelegate() {}
+  virtual ~CredentialManagerPendingPreventSilentAccessTaskDelegate() = default;
 
   // Retrieves the profile PasswordStore.
   virtual PasswordStore* GetProfilePasswordStore() = 0;
