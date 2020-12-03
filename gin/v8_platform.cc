@@ -304,8 +304,7 @@ class JobDelegateImpl : public v8::JobDelegate {
 
 class JobHandleImpl : public v8::JobHandle {
  public:
-  JobHandleImpl(base::JobHandle handle, std::unique_ptr<v8::JobTask> job_task)
-      : handle_(std::move(handle)), job_task_(std::move(job_task)) {}
+  explicit JobHandleImpl(base::JobHandle handle) : handle_(std::move(handle)) {}
   ~JobHandleImpl() override = default;
 
   JobHandleImpl(const JobHandleImpl&) = delete;
@@ -342,7 +341,6 @@ class JobHandleImpl : public v8::JobHandle {
   }
 
   base::JobHandle handle_;
-  std::unique_ptr<v8::JobTask> job_task_;
 };
 
 }  // namespace
@@ -532,22 +530,25 @@ std::unique_ptr<v8::JobHandle> V8Platform::PostJob(
       task_traits = kBlockingTaskTraits;
       break;
   }
+  // Ownership of |job_task| is assumed by |worker_task|, while
+  // |max_concurrency_callback| uses an unretained pointer.
+  auto* job_task_ptr = job_task.get();
   auto handle =
       base::PostJob(FROM_HERE, task_traits,
                     base::BindRepeating(
-                        [](v8::JobTask* job_task, base::JobDelegate* delegate) {
+                        [](const std::unique_ptr<v8::JobTask>& job_task,
+                           base::JobDelegate* delegate) {
                           JobDelegateImpl delegate_impl(delegate);
                           job_task->Run(&delegate_impl);
                         },
-                        base::Unretained(job_task.get())),
+                        std::move(job_task)),
                     base::BindRepeating(
                         [](v8::JobTask* job_task, size_t worker_count) {
                           return job_task->GetMaxConcurrency(worker_count);
                         },
-                        base::Unretained(job_task.get())));
+                        base::Unretained(job_task_ptr)));
 
-  return std::make_unique<JobHandleImpl>(std::move(handle),
-                                         std::move(job_task));
+  return std::make_unique<JobHandleImpl>(std::move(handle));
 }
 
 bool V8Platform::IdleTasksEnabled(v8::Isolate* isolate) {
