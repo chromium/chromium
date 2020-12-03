@@ -5907,7 +5907,7 @@
           ]
         },
         "prefs": {
-          "extensions.install.login_screen_extensions": {
+          "extensions.install.forcelist": {
             "value": {
               "abcdefghijklmnopabcdefghijklmnop": {
                 "external_update_url": "https://clients2.google.com/service/update2/crx"

@@ -57,7 +57,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/login/test/device_state_mixin.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #endif
 
@@ -103,19 +102,11 @@ class ForceInstallPrefObserver final {
   base::WeakPtrFactory<ForceInstallPrefObserver> weak_ptr_factory_{this};
 };
 
-std::string GetForceInstallPrefName(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::ProfileHelper::IsSigninProfile(profile))
-    return extensions::pref_names::kLoginScreenExtensions;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  return extensions::pref_names::kInstallForceList;
-}
-
 ForceInstallPrefObserver::ForceInstallPrefObserver(
     Profile* profile,
     const extensions::ExtensionId& extension_id)
     : pref_service_(profile->GetPrefs()),
-      pref_name_(GetForceInstallPrefName(profile)),
+      pref_name_(extensions::pref_names::kInstallForceList),
       extension_id_(extension_id) {
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(

@@ -74,15 +74,13 @@ void ExtensionListPolicyHandler::ApplyList(base::Value filtered_list,
   prefs->SetValue(pref_path_, std::move(filtered_list));
 }
 
-// ExtensionInstallListPolicyHandler implementation ----------------------------
+// ExtensionInstallForceListPolicyHandler implementation -----------------------
 
-ExtensionInstallListPolicyHandler::ExtensionInstallListPolicyHandler(
-    const char* policy_name,
-    const char* pref_name)
-    : policy::TypeCheckingPolicyHandler(policy_name, base::Value::Type::LIST),
-      pref_name_(pref_name) {}
+ExtensionInstallForceListPolicyHandler::ExtensionInstallForceListPolicyHandler()
+    : policy::TypeCheckingPolicyHandler(policy::key::kExtensionInstallForcelist,
+                                        base::Value::Type::LIST) {}
 
-bool ExtensionInstallListPolicyHandler::CheckPolicySettings(
+bool ExtensionInstallForceListPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
     policy::PolicyErrorMap* errors) {
   const base::Value* value;
@@ -90,18 +88,18 @@ bool ExtensionInstallListPolicyHandler::CheckPolicySettings(
          ParseList(value, nullptr, errors);
 }
 
-void ExtensionInstallListPolicyHandler::ApplyPolicySettings(
+void ExtensionInstallForceListPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
   const base::Value* value = nullptr;
   base::DictionaryValue dict;
   if (CheckAndGetValue(policies, nullptr, &value) && value &&
       ParseList(value, &dict, nullptr)) {
-    prefs->SetValue(pref_name_, std::move(dict));
+    prefs->SetValue(pref_names::kInstallForceList, std::move(dict));
   }
 }
 
-bool ExtensionInstallListPolicyHandler::ParseList(
+bool ExtensionInstallForceListPolicyHandler::ParseList(
     const base::Value* policy_value,
     base::DictionaryValue* extension_dict,
     policy::PolicyErrorMap* errors) {
@@ -160,20 +158,6 @@ bool ExtensionInstallListPolicyHandler::ParseList(
 
   return true;
 }
-
-// ExtensionInstallForcelistPolicyHandler implementation -----------------------
-
-ExtensionInstallForcelistPolicyHandler::ExtensionInstallForcelistPolicyHandler()
-    : ExtensionInstallListPolicyHandler(policy::key::kExtensionInstallForcelist,
-                                        pref_names::kInstallForceList) {}
-
-// ExtensionInstallLoginScreenExtensionsPolicyHandler implementation -----------
-
-ExtensionInstallLoginScreenExtensionsPolicyHandler::
-    ExtensionInstallLoginScreenExtensionsPolicyHandler()
-    : ExtensionInstallListPolicyHandler(
-          policy::key::kDeviceLoginScreenExtensions,
-          pref_names::kLoginScreenExtensions) {}
 
 // ExtensionURLPatternListPolicyHandler implementation -------------------------
 

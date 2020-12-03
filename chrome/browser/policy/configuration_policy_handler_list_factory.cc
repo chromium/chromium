@@ -1852,10 +1852,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       key::kExtensionInstallBlocklist, extensions::pref_names::kInstallDenyList,
       true));
   handlers->AddHandler(
-      std::make_unique<extensions::ExtensionInstallForcelistPolicyHandler>());
-  handlers->AddHandler(
-      std::make_unique<
-          extensions::ExtensionInstallLoginScreenExtensionsPolicyHandler>());
+      std::make_unique<extensions::ExtensionInstallForceListPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<extensions::ExtensionURLPatternListPolicyHandler>(
           key::kExtensionInstallSources,

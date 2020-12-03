@@ -172,11 +172,11 @@ TEST(ExtensionListPolicyHandlerTest, ApplyPolicySettings) {
   EXPECT_EQ(expected, *value);
 }
 
-TEST(ExtensionInstallForcelistPolicyHandlerTest, CheckPolicySettings) {
+TEST(ExtensionInstallForceListPolicyHandlerTest, CheckPolicySettings) {
   base::ListValue list;
   policy::PolicyMap policy_map;
   policy::PolicyErrorMap errors;
-  ExtensionInstallForcelistPolicyHandler handler;
+  ExtensionInstallForceListPolicyHandler handler;
 
   // Start with an empty policy.
   policy_map.Set(policy::key::kExtensionInstallForcelist,
@@ -224,13 +224,13 @@ TEST(ExtensionInstallForcelistPolicyHandlerTest, CheckPolicySettings) {
   EXPECT_EQ(2U, errors.size());
 }
 
-TEST(ExtensionInstallForcelistPolicyHandlerTest, ApplyPolicySettings) {
+TEST(ExtensionInstallForceListPolicyHandlerTest, ApplyPolicySettings) {
   base::ListValue policy;
   base::DictionaryValue expected;
   policy::PolicyMap policy_map;
   PrefValueMap prefs;
   base::Value* value = NULL;
-  ExtensionInstallForcelistPolicyHandler handler;
+  ExtensionInstallForceListPolicyHandler handler;
 
   // Start with the policy being missing. This shouldn't affect the pref.
   handler.ApplyPolicySettings(policy_map, &prefs);

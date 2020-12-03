@@ -28,7 +28,7 @@ LoginScreenExtensionsStorageCleaner::LoginScreenExtensionsStorageCleaner() {
   prefs_ = ProfileHelper::GetSigninProfile()->GetPrefs();
   pref_change_registrar_.Init(prefs_);
   pref_change_registrar_.Add(
-      extensions::pref_names::kLoginScreenExtensions,
+      extensions::pref_names::kInstallForceList,
       base::BindRepeating(&LoginScreenExtensionsStorageCleaner::OnPolicyUpdated,
                           base::Unretained(this)));
   ClearPersistentDataForUninstalledExtensions();
@@ -45,7 +45,7 @@ void LoginScreenExtensionsStorageCleaner::
     ClearPersistentDataForUninstalledExtensions() {
   std::vector<std::string> installed_extension_ids;
   const PrefService::Preference* const pref =
-      prefs_->FindPreference(extensions::pref_names::kLoginScreenExtensions);
+      prefs_->FindPreference(extensions::pref_names::kInstallForceList);
   if (pref && pref->IsManaged() &&
       pref->GetType() == base::Value::Type::DICTIONARY) {
     // Each `item` contains a pair of extension ID and update URL.

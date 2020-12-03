@@ -57,7 +57,7 @@ void DeviceLocalAccountExtensionTracker::UpdateFromStore() {
 
   // TODO(binjin): Use two policy handlers here after
   // ExtensionManagementPolicyHandler is introduced.
-  extensions::ExtensionInstallForcelistPolicyHandler policy_handler;
+  extensions::ExtensionInstallForceListPolicyHandler policy_handler;
   if (!policy_handler.CheckPolicySettings(policy_map, NULL))
     return;
 

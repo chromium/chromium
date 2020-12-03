@@ -37,7 +37,7 @@ std::vector<std::string> GetLoginScreenPolicyExtensionIds() {
             PrefService::INITIALIZATION_STATUS_SUCCESS);
 
   const PrefService::Preference* const pref =
-      prefs->FindPreference(extensions::pref_names::kLoginScreenExtensions);
+      prefs->FindPreference(extensions::pref_names::kInstallForceList);
   if (!pref || !pref->IsManaged() ||
       pref->GetType() != base::Value::Type::DICTIONARY) {
     return {};

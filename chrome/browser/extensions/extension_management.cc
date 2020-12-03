@@ -68,8 +68,6 @@ ExtensionManagement::ExtensionManagement(Profile* profile)
                              pref_change_callback);
   pref_change_registrar_.Add(pref_names::kInstallForceList,
                              pref_change_callback);
-  pref_change_registrar_.Add(pref_names::kLoginScreenExtensions,
-                             pref_change_callback);
   pref_change_registrar_.Add(pref_names::kAllowedInstallSites,
                              pref_change_callback);
   pref_change_registrar_.Add(pref_names::kAllowedTypes, pref_change_callback);
@@ -371,12 +369,6 @@ void ExtensionManagement::Refresh() {
   const base::DictionaryValue* forced_list_pref =
       static_cast<const base::DictionaryValue*>(LoadPreference(
           pref_names::kInstallForceList, true, base::Value::Type::DICTIONARY));
-  const base::DictionaryValue* login_screen_extensions_pref = nullptr;
-  if (is_signin_profile_) {
-    login_screen_extensions_pref = static_cast<const base::DictionaryValue*>(
-        LoadPreference(pref_names::kLoginScreenExtensions, true,
-                       base::Value::Type::DICTIONARY));
-  }
   const base::ListValue* install_sources_pref =
       static_cast<const base::ListValue*>(LoadPreference(
           pref_names::kAllowedInstallSites, true, base::Value::Type::LIST));
@@ -441,7 +433,6 @@ void ExtensionManagement::Refresh() {
   }
 
   UpdateForcedExtensions(forced_list_pref);
-  UpdateForcedExtensions(login_screen_extensions_pref);
 
   if (install_sources_pref) {
     global_settings_->has_restricted_install_sources = true;

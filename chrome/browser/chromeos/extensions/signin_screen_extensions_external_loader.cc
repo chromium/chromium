@@ -30,7 +30,7 @@ namespace {
 
 base::Value GetForceInstalledExtensionsFromPrefs(const PrefService* prefs) {
   const PrefService::Preference* const login_screen_extensions_pref =
-      prefs->FindPreference(extensions::pref_names::kLoginScreenExtensions);
+      prefs->FindPreference(extensions::pref_names::kInstallForceList);
   CHECK(login_screen_extensions_pref);
   if (!login_screen_extensions_pref->IsManaged() &&
       !login_screen_extensions_pref->IsDefaultValue()) {
@@ -38,7 +38,7 @@ base::Value GetForceInstalledExtensionsFromPrefs(const PrefService* prefs) {
     // (This branch could be triggered if, for example, an attacker modified the
     // Local State file trying to inject some extensions into the Login Screen.)
     LOG(WARNING) << "Ignoring untrusted value of the "
-                 << extensions::pref_names::kLoginScreenExtensions << " pref";
+                 << extensions::pref_names::kInstallForceList << " pref";
     return base::Value(base::Value::Type::DICTIONARY);
   }
   const base::Value* login_screen_extensions_pref_value =
@@ -105,7 +105,7 @@ void SigninScreenExtensionsExternalLoader::OnPrefsInitialized(
 void SigninScreenExtensionsExternalLoader::SubscribeAndInitializeFromPrefs() {
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
-      extensions::pref_names::kLoginScreenExtensions,
+      extensions::pref_names::kInstallForceList,
       base::Bind(&SigninScreenExtensionsExternalLoader::UpdateStateFromPrefs,
                  base::Unretained(this)));
 
