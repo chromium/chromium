@@ -11334,7 +11334,8 @@ Called by update_net_error_codes.py.-->
   <int value="-603" label="FTP_TRANSFER_ABORTED"/>
   <int value="-602" label="FTP_SERVICE_UNAVAILABLE"/>
   <int value="-601" label="FTP_FAILED"/>
-  <int value="-507" label="TRUST_TOKEN_OPERATION_CACHE_HIT"/>
+  <int value="-507"
+      label="TRUST_TOKEN_OPERATION_SUCCESS_WITHOUT_SENDING_REQUEST"/>
   <int value="-506" label="TRUST_TOKEN_OPERATION_FAILED"/>
   <int value="-505" label="INVALID_WEB_BUNDLE"/>
   <int value="-504" label="INVALID_SIGNED_EXCHANGE"/>
@@ -50694,7 +50695,8 @@ Called by update_net_error_codes.py.-->
   <int value="504" label="INVALID_SIGNED_EXCHANGE"/>
   <int value="505" label="INVALID_WEB_BUNDLE"/>
   <int value="506" label="TRUST_TOKEN_OPERATION_FAILED"/>
-  <int value="507" label="TRUST_TOKEN_OPERATION_CACHE_HIT"/>
+  <int value="507"
+      label="TRUST_TOKEN_OPERATION_SUCCESS_WITHOUT_SENDING_REQUEST"/>
   <int value="601" label="FTP_FAILED"/>
   <int value="602" label="FTP_SERVICE_UNAVAILABLE"/>
   <int value="603" label="FTP_TRANSFER_ABORTED"/>

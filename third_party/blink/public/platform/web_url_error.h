@@ -132,7 +132,7 @@ struct WebURLError {
 
   // More detailed reason for failing the response with
   // net::ERR_TRUST_TOKEN_OPERATION_FAILED or
-  // net::ERR_TRUST_TOKEN_OPERATION_CACHE_HIT.
+  // net::ERR_TRUST_TOKEN_OPERATION_SUCCESS_WITHOUT_SENDING_REQUEST.
   //
   // A value of kOk means that this request failed for a reason other than a
   // Trust Tokens operation failure. This does not necessarily mean that a Trust

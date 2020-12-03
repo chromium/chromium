@@ -1010,7 +1010,8 @@ WebURLError WebURLLoaderImpl::PopulateURLError(
 
   if (status.trust_token_operation_status !=
       network::mojom::TrustTokenOperationStatus::kOk) {
-    DCHECK(status.error_code == net::ERR_TRUST_TOKEN_OPERATION_CACHE_HIT ||
+    DCHECK(status.error_code ==
+               net::ERR_TRUST_TOKEN_OPERATION_SUCCESS_WITHOUT_SENDING_REQUEST ||
            status.error_code == net::ERR_TRUST_TOKEN_OPERATION_FAILED)
         << "Unexpected error code on Trust Token operation failure (or cache "
            "hit): "

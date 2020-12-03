@@ -5852,7 +5852,7 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
   delete_run_loop.Run();
 
   EXPECT_EQ(client()->completion_status().error_code,
-            net::ERR_TRUST_TOKEN_OPERATION_CACHE_HIT);
+            net::ERR_TRUST_TOKEN_OPERATION_SUCCESS_WITHOUT_SENDING_REQUEST);
   EXPECT_EQ(client()->completion_status().trust_token_operation_status,
             mojom::TrustTokenOperationStatus::kAlreadyExists);
   // Verify the DevTools event was fired and it has the right status.

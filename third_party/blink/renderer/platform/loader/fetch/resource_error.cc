@@ -180,7 +180,8 @@ bool ResourceError::IsCancellation() const {
 }
 
 bool ResourceError::IsTrustTokenCacheHit() const {
-  return error_code_ == net::ERR_TRUST_TOKEN_OPERATION_CACHE_HIT;
+  return error_code_ ==
+         net::ERR_TRUST_TOKEN_OPERATION_SUCCESS_WITHOUT_SENDING_REQUEST;
 }
 
 bool ResourceError::IsUnactionableTrustTokensStatus() const {

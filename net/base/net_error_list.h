@@ -874,9 +874,11 @@ NET_ERROR(INVALID_WEB_BUNDLE, -505)
 NET_ERROR(TRUST_TOKEN_OPERATION_FAILED, -506)
 
 // When handling a Trust Tokens protocol operation-executing request, the system
-// found that the request's desired Trust Tokens results were already present in
-// a local cache; as a result, the main request was cancelled.
-NET_ERROR(TRUST_TOKEN_OPERATION_CACHE_HIT, -507)
+// was able to execute the request's Trust Tokens operation without sending the
+// request to its destination: for instance, the results could have been present
+// in a local cache (for redemption) or the operation could have been diverted
+// to a local provider (for "platform-provided" issuance).
+NET_ERROR(TRUST_TOKEN_OPERATION_SUCCESS_WITHOUT_SENDING_REQUEST, -507)
 
 // *** Code -600 is reserved (was FTP_PASV_COMMAND_FAILED). ***
 

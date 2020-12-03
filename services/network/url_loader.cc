@@ -888,9 +888,10 @@ void URLLoader::OnDoneBeginningTrustTokenOperation(
     // Here and below, defer calling NotifyCompleted to make sure the URLLoader
     // finishes initializing before getting deleted.
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&URLLoader::NotifyCompleted,
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  net::ERR_TRUST_TOKEN_OPERATION_CACHE_HIT));
+        FROM_HERE,
+        base::BindOnce(
+            &URLLoader::NotifyCompleted, weak_ptr_factory_.GetWeakPtr(),
+            net::ERR_TRUST_TOKEN_OPERATION_SUCCESS_WITHOUT_SENDING_REQUEST));
   } else {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&URLLoader::NotifyCompleted,
