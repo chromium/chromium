@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "BadPatternFinder.h"
+#include <clang/AST/Decl.h>
 #include "DiagnosticsReporter.h"
 
 #include <algorithm>
@@ -60,24 +61,30 @@ class OptionalGarbageCollectedMatcher : public MatchFinder::MatchCallback {
       : diagnostics_(diagnostics) {}
 
   void Register(MatchFinder& match_finder) {
-    // Matches any application of make_unique where the template argument is
-    // known to refer to a garbage-collected type.
-    auto optional_construction =
-        cxxConstructExpr(hasDeclaration(cxxConstructorDecl(ofClass(
-                             classTemplateSpecializationDecl(
-                                 hasName("::base::Optional"),
-                                 hasTemplateArgument(
-                                     0, refersToType(GarbageCollectedType())))
-                                 .bind("optional")))))
-            .bind("bad");
-    match_finder.addDynamicMatcher(optional_construction, this);
+    // Matches fields and new-expressions of type base::Optional where the
+    // template argument is known to refer to a garbage-collected type.
+    auto optional_type = hasType(
+        classTemplateSpecializationDecl(
+            hasName("::base::Optional"),
+            hasTemplateArgument(0, refersToType(GarbageCollectedType())))
+            .bind("optional"));
+    auto optional_field = fieldDecl(optional_type).bind("bad_field");
+    auto optional_new_expression =
+        cxxNewExpr(has(cxxConstructExpr(optional_type))).bind("bad_new");
+    match_finder.addDynamicMatcher(optional_field, this);
+    match_finder.addDynamicMatcher(optional_new_expression, this);
   }
 
   void run(const MatchFinder::MatchResult& result) override {
-    auto* bad_use = result.Nodes.getNodeAs<clang::Expr>("bad");
     auto* optional = result.Nodes.getNodeAs<clang::CXXRecordDecl>("optional");
     auto* gc_type = result.Nodes.getNodeAs<clang::CXXRecordDecl>("gctype");
-    diagnostics_.OptionalUsedWithGC(bad_use, optional, gc_type);
+    if (auto* bad_field =
+            result.Nodes.getNodeAs<clang::FieldDecl>("bad_field")) {
+      diagnostics_.OptionalFieldUsedWithGC(bad_field, optional, gc_type);
+    } else {
+      auto* bad_new = result.Nodes.getNodeAs<clang::Expr>("bad_new");
+      diagnostics_.OptionalNewExprUsedWithGC(bad_new, optional, gc_type);
+    }
   }
 
  private:

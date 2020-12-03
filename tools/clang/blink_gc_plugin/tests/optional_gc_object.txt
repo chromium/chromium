@@ -1,10 +1,7 @@
-optional_gc_object.cpp:10:24: warning: [blink-gc] Disallowed construction of 'Optional<blink::Base>' found; 'Base' is a garbage-collected type. optional cannot hold garbage-collected objects.
-  base::Optional<Base> optional_base;
-                       ^~~~~~~~~~~~~
-optional_gc_object.cpp:13:27: warning: [blink-gc] Disallowed construction of 'Optional<blink::Derived>' found; 'Derived' is a garbage-collected type. optional cannot hold garbage-collected objects.
-  base::Optional<Derived> optional_derived;
-                          ^~~~~~~~~~~~~~~~
-optional_gc_object.cpp:16:7: warning: [blink-gc] Disallowed construction of 'Optional<blink::Base>' found; 'Base' is a garbage-collected type. optional cannot hold garbage-collected objects.
-  new base::Optional<Base>;
-      ^~~~
-3 warnings generated.
+optional_gc_object.cpp:14:3: warning: [blink-gc] Disallowed optional field of 'Optional<blink::Base>' found; 'Base' is a garbage-collected type. Optional fields cannot hold garbage-collected objects.
+  base::Optional<Base> optional_field_;  // Optional fields are disallowed.
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+optional_gc_object.cpp:24:3: warning: [blink-gc] Disallowed new-expression of 'Optional<blink::Base>' found; 'Base' is a garbage-collected type. GCed types cannot be created with new.
+  new base::Optional<Base>;  // New expression with gced optionals are not
+  ^~~~~~~~~~~~~~~~~~~~~~~~
+2 warnings generated.

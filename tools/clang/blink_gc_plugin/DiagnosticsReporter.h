@@ -79,9 +79,12 @@ class DiagnosticsReporter {
   void UniquePtrUsedWithGC(const clang::Expr* expr,
                            const clang::FunctionDecl* bad_function,
                            const clang::CXXRecordDecl* gc_type);
-  void OptionalUsedWithGC(const clang::Expr* expr,
-                          const clang::CXXRecordDecl* optional,
-                          const clang::CXXRecordDecl* gc_type);
+  void OptionalFieldUsedWithGC(const clang::FieldDecl* decl,
+                               const clang::CXXRecordDecl* optional,
+                               const clang::CXXRecordDecl* gc_type);
+  void OptionalNewExprUsedWithGC(const clang::Expr* expr,
+                                 const clang::CXXRecordDecl* optional,
+                                 const clang::CXXRecordDecl* gc_type);
   void VariantUsedWithGC(const clang::Expr* expr,
                          const clang::CXXRecordDecl* variant,
                          const clang::CXXRecordDecl* gc_type);
@@ -142,7 +145,8 @@ class DiagnosticsReporter {
   unsigned diag_member_in_stack_allocated_class_;
 
   unsigned diag_unique_ptr_used_with_gc_;
-  unsigned diag_optional_used_with_gc_;
+  unsigned diag_optional_field_used_with_gc_;
+  unsigned diag_optional_new_expr_used_with_gc_;
   unsigned diag_variant_used_with_gc_;
 };
 

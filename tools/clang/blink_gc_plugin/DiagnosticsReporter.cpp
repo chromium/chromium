@@ -141,9 +141,15 @@ const char kUniquePtrUsedWithGC[] =
     "[blink-gc] Disallowed use of %0 found; %1 is a garbage-collected type. "
     "std::unique_ptr cannot hold garbage-collected objects.";
 
-const char kOptionalUsedWithGC[] =
-    "[blink-gc] Disallowed construction of %0 found; %1 is a garbage-collected "
-    "type. optional cannot hold garbage-collected objects.";
+const char kOptionalFieldUsedWithGC[] =
+    "[blink-gc] Disallowed optional field of %0 found; %1 is a "
+    "garbage-collected "
+    "type. Optional fields cannot hold garbage-collected objects.";
+
+const char kOptionalNewExprUsedWithGC[] =
+    "[blink-gc] Disallowed new-expression of %0 found; %1 is a "
+    "garbage-collected "
+    "type. GCed types cannot be created with new.";
 
 const char kVariantUsedWithGC[] =
     "[blink-gc] Disallowed construction of %0 found; %1 is a garbage-collected "
@@ -248,8 +254,10 @@ DiagnosticsReporter::DiagnosticsReporter(
 
   diag_unique_ptr_used_with_gc_ =
       diagnostic_.getCustomDiagID(getErrorLevel(), kUniquePtrUsedWithGC);
-  diag_optional_used_with_gc_ =
-      diagnostic_.getCustomDiagID(getErrorLevel(), kOptionalUsedWithGC);
+  diag_optional_field_used_with_gc_ =
+      diagnostic_.getCustomDiagID(getErrorLevel(), kOptionalFieldUsedWithGC);
+  diag_optional_new_expr_used_with_gc_ =
+      diagnostic_.getCustomDiagID(getErrorLevel(), kOptionalNewExprUsedWithGC);
   diag_variant_used_with_gc_ =
       diagnostic_.getCustomDiagID(getErrorLevel(), kVariantUsedWithGC);
 }
@@ -540,11 +548,19 @@ void DiagnosticsReporter::UniquePtrUsedWithGC(
       << bad_function << gc_type << expr->getSourceRange();
 }
 
-void DiagnosticsReporter::OptionalUsedWithGC(
+void DiagnosticsReporter::OptionalFieldUsedWithGC(
+    const clang::FieldDecl* field,
+    const clang::CXXRecordDecl* optional,
+    const clang::CXXRecordDecl* gc_type) {
+  ReportDiagnostic(field->getBeginLoc(), diag_optional_field_used_with_gc_)
+      << optional << gc_type << field->getSourceRange();
+}
+
+void DiagnosticsReporter::OptionalNewExprUsedWithGC(
     const clang::Expr* expr,
     const clang::CXXRecordDecl* optional,
     const clang::CXXRecordDecl* gc_type) {
-  ReportDiagnostic(expr->getBeginLoc(), diag_optional_used_with_gc_)
+  ReportDiagnostic(expr->getBeginLoc(), diag_optional_new_expr_used_with_gc_)
       << optional << gc_type << expr->getSourceRange();
 }
 
