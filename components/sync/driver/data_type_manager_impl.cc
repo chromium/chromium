@@ -320,7 +320,7 @@ void DataTypeManagerImpl::Restart() {
   if (old_state == STOPPED || old_state == CONFIGURED)
     NotifyStart();
 
-  download_types_queue_ = PrioritizeTypes(last_enabled_types_);
+  configuration_types_queue_ = PrioritizeTypes(last_enabled_types_);
   association_types_info_.reset();
 
   model_load_manager_.Initialize(
@@ -330,12 +330,12 @@ void DataTypeManagerImpl::Restart() {
 
 void DataTypeManagerImpl::OnAllDataTypesReadyForConfigure() {
   // TODO(crbug.com/1102837): Should we handle |needs_reconfigure_| here,
-  // before even starting the downloads?
-  // TODO(pavely): By now some of datatypes in |download_types_queue_| could
-  // have failed loading and should be excluded from configuration. I need to
-  // adjust |download_types_queue_| for such types.
+  // before even starting the configuration?
+  // TODO(pavely): By now some of datatypes in |configuration_types_queue_|
+  // could have failed loading and should be excluded from configuration. I need
+  // to adjust |configuration_types_queue_| for such types.
   ActivateDataTypes();
-  StartNextDownload(/*high_priority_types_before=*/ModelTypeSet());
+  StartNextConfiguration(/*higher_priority_types_before=*/ModelTypeSet());
 }
 
 ModelTypeSet DataTypeManagerImpl::GetPriorityTypes() const {
@@ -344,7 +344,7 @@ ModelTypeSet DataTypeManagerImpl::GetPriorityTypes() const {
 
 base::queue<ModelTypeSet> DataTypeManagerImpl::PrioritizeTypes(
     const ModelTypeSet& types) {
-  // Control types are usually downloaded before all other types during
+  // Control types are usually configured before all other types during
   // initialization of sync engine even before data type manager gets
   // constructed. However, listing control types here with the highest priority
   // makes the behavior consistent also for various flows for restarting sync
@@ -427,8 +427,8 @@ void DataTypeManagerImpl::ProcessReconfigure() {
     return;
   }
 
-  // Wait for current download to finish.
-  if (!download_types_queue_.empty()) {
+  // Wait for current configuration to finish.
+  if (!configuration_types_queue_.empty()) {
     return;
   }
 
@@ -452,12 +452,12 @@ void DataTypeManagerImpl::ProcessReconfigure() {
   ConfigureImpl(last_requested_types_, last_requested_context_);
 }
 
-void DataTypeManagerImpl::DownloadCompleted(
-    ModelTypeSet downloaded_types,
+void DataTypeManagerImpl::ConfigurationCompleted(
+    ModelTypeSet configured_types,
     ModelTypeSet succeeded_configuration_types,
     ModelTypeSet failed_configuration_types) {
-  // Note: |downloaded_types| are the types we requested to download, but some
-  // of them might have been downloaded already. |succeeded_configuration_types|
+  // Note: |configured_types| are the types we requested to configure. Some of
+  // them might have been downloaded already. |succeeded_configuration_types|
   // are the ones that were actually downloaded just now.
   DCHECK_EQ(CONFIGURING, state_);
 
@@ -465,24 +465,24 @@ void DataTypeManagerImpl::DownloadCompleted(
     DataTypeStatusTable::TypeErrorMap errors;
     for (ModelType type : failed_configuration_types) {
       SyncError error(FROM_HERE, SyncError::DATATYPE_ERROR,
-                      "Backend failed to download type.", type);
+                      "Backend failed to download and configure type.", type);
       errors[type] = error;
     }
     data_type_status_table_.UpdateFailedDataTypes(errors);
     needs_reconfigure_ = true;
   }
 
-  // If a reconfigure was requested while this download was ongoing, process it
-  // now.
+  // If a reconfigure was requested while this configuration was ongoing,
+  // process it now.
   if (needs_reconfigure_) {
-    download_types_queue_ = base::queue<ModelTypeSet>();
+    configuration_types_queue_ = base::queue<ModelTypeSet>();
     ProcessReconfigure();
     return;
   }
 
-  DCHECK(!download_types_queue_.empty());
-  DCHECK(download_types_queue_.front() == downloaded_types);
-  download_types_queue_.pop();
+  DCHECK(!configuration_types_queue_.empty());
+  DCHECK(configuration_types_queue_.front() == configured_types);
+  configuration_types_queue_.pop();
 
   if (association_types_info_) {
     // A non-empty |association_types_info_| means there were actually types
@@ -493,22 +493,35 @@ void DataTypeManagerImpl::DownloadCompleted(
   }
   DCHECK(!association_types_info_);
 
-  if (download_types_queue_.empty()) {
+  if (configuration_types_queue_.empty()) {
     state_ = CONFIGURED;
     NotifyDone(ConfigureResult(OK, last_requested_types_));
     return;
   }
 
-  StartNextDownload(/*high_priority_types_before=*/downloaded_types);
+  StartNextConfiguration(/*higher_priority_types_before=*/configured_types);
 }
 
-void DataTypeManagerImpl::StartNextDownload(
-    ModelTypeSet high_priority_types_before) {
-  if (download_types_queue_.empty())
+void DataTypeManagerImpl::StartNextConfiguration(
+    ModelTypeSet higher_priority_types_before) {
+  if (configuration_types_queue_.empty())
     return;
 
   ModelTypeConfigurer::ConfigureParams config_params;
   ModelTypeSet ready_types = PrepareConfigureParams(&config_params);
+
+  DCHECK(!association_types_info_);
+  association_types_info_ = AssociationTypesInfo();
+  association_types_info_->types = configuration_types_queue_.front();
+  association_types_info_->ready_types = ready_types;
+  association_types_info_->download_start_time = base::Time::Now();
+  association_types_info_->higher_priority_types_before =
+      higher_priority_types_before;
+
+  // Record stats for the types that are already downloaded. The remaining types
+  // will be handled once their download finishes (which happens as part of
+  // ConfigureDataTypes).
+  RecordConfigurationStats(ready_types);
 
   // The engine's state was initially derived from the types detected to have
   // been downloaded in the database. Afterwards it is modified only by this
@@ -522,19 +535,6 @@ void DataTypeManagerImpl::StartNextDownload(
   // through the DataTypeManager, and we are careful to never send a new
   // configure request until the current request succeeds.
   configurer_->ConfigureDataTypes(std::move(config_params));
-
-  DCHECK(!association_types_info_);
-  association_types_info_ = AssociationTypesInfo();
-  association_types_info_->types = download_types_queue_.front();
-  association_types_info_->ready_types = ready_types;
-  association_types_info_->download_start_time = base::Time::Now();
-  association_types_info_->high_priority_types_before =
-      high_priority_types_before;
-
-  // Record stats for the types that are already downloaded. The remaining types
-  // will be handled once their download finishes (which happens as part of
-  // ConfigureDataTypes).
-  RecordConfigurationStats(ready_types);
 }
 
 ModelTypeSet DataTypeManagerImpl::PrepareConfigureParams(
@@ -547,7 +547,7 @@ ModelTypeSet DataTypeManagerImpl::PrepareConfigureParams(
   // - Everything else (enabled types and already disabled types) is not
   //   touched.
   const DataTypeConfigStateMap config_state_map =
-      BuildDataTypeConfigStateMap(download_types_queue_.front());
+      BuildDataTypeConfigStateMap(configuration_types_queue_.front());
   const ModelTypeSet fatal_types = GetDataTypesInState(FATAL, config_state_map);
   const ModelTypeSet crypto_types =
       GetDataTypesInState(CRYPTO, config_state_map);
@@ -628,9 +628,9 @@ ModelTypeSet DataTypeManagerImpl::PrepareConfigureParams(
   params->enabled_types = enabled_types;
   params->to_download = types_to_download;
   params->to_purge = types_to_purge;
-  params->ready_task = base::BindOnce(&DataTypeManagerImpl::DownloadCompleted,
-                                      weak_ptr_factory_.GetWeakPtr(),
-                                      download_types_queue_.front());
+  params->ready_task = base::BindOnce(
+      &DataTypeManagerImpl::ConfigurationCompleted,
+      weak_ptr_factory_.GetWeakPtr(), configuration_types_queue_.front());
   params->is_sync_feature_enabled =
       last_requested_context_.sync_mode == SyncMode::kFull;
 
@@ -700,7 +700,7 @@ void DataTypeManagerImpl::RecordConfigurationStatsImpl(ModelType type) {
           info.download_ready_time - info.download_start_time;
     }
     configuration_stats_[type].high_priority_types_configured_before =
-        info.high_priority_types_before;
+        info.higher_priority_types_before;
     configuration_stats_[type].same_priority_types_configured_before =
         info.configured_types;
     info.configured_types.Put(type);
@@ -733,7 +733,7 @@ void DataTypeManagerImpl::Abort(ConfigureStatus status) {
 void DataTypeManagerImpl::StopImpl(ShutdownReason reason) {
   state_ = STOPPING;
 
-  // Invalidate weak pointer to drop download callbacks.
+  // Invalidate weak pointer to drop configuration callbacks.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   // Stop all data types.

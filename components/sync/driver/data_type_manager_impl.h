@@ -111,17 +111,13 @@ class DataTypeManagerImpl : public DataTypeManager,
   // was an actual change.
   bool UpdatePreconditionError(ModelType type);
 
-  // Starts a reconfiguration if it's required and no downloads are running.
+  // Starts a reconfiguration if it's required and no configuration is running.
   void ProcessReconfigure();
 
   // Programmatically force reconfiguration of all data types (if needed).
   void ForceReconfiguration();
 
   void Restart();
-
-  void DownloadCompleted(ModelTypeSet downloaded_types,
-                         ModelTypeSet succeeded_configuration_types,
-                         ModelTypeSet failed_configuration_types);
 
   void NotifyStart();
   void NotifyDone(const ConfigureResult& result);
@@ -135,25 +131,26 @@ class DataTypeManagerImpl : public DataTypeManager,
   DataTypeConfigStateMap BuildDataTypeConfigStateMap(
       const ModelTypeSet& types_being_configured) const;
 
-  // Start download of next set of types in |download_types_queue_| (if
-  // any exist, does nothing otherwise).
-  // Will kick off configuration of any new ready types.
-  void StartNextDownload(ModelTypeSet high_priority_types_before);
+  // Start configuration of next set of types in |configuration_types_queue_|
+  // (if any exist, does nothing otherwise).
+  void StartNextConfiguration(ModelTypeSet higher_priority_types_before);
+  void ConfigurationCompleted(ModelTypeSet configured_types,
+                              ModelTypeSet succeeded_configuration_types,
+                              ModelTypeSet failed_configuration_types);
 
   void RecordConfigurationStats(ModelTypeSet types);
-
   void RecordConfigurationStatsImpl(ModelType type);
 
   void StopImpl(ShutdownReason reason);
 
-  // Returns the currently enabled types.
   ModelTypeSet GetEnabledTypes() const;
 
-  ModelTypeConfigurer* configurer_;
+  ModelTypeConfigurer* const configurer_;
 
   // Map of all data type controllers that are available for sync.
   // This list is determined at startup by various command line flags.
-  const DataTypeController::TypeMap* controllers_;
+  const DataTypeController::TypeMap* const controllers_;
+
   State state_;
 
   // Types that requested in current configuration cycle.
@@ -196,8 +193,8 @@ class DataTypeManagerImpl : public DataTypeManager,
   // configuring backend.
   DataTypeStatusTable data_type_status_table_;
 
-  // Types waiting to be downloaded.
-  base::queue<ModelTypeSet> download_types_queue_;
+  // Types waiting to be configured, prioritized (highest priority first).
+  base::queue<ModelTypeSet> configuration_types_queue_;
 
   // Pending types and related time tracking info.
   struct AssociationTypesInfo {
@@ -206,7 +203,7 @@ class DataTypeManagerImpl : public DataTypeManager,
     ~AssociationTypesInfo();
 
     // Pending types. This is generally the same as
-    // |download_types_queue_.front()|.
+    // |configuration_types_queue_.front()|.
     ModelTypeSet types;
     // Types that have just been downloaded. This includes types that had
     // previously encountered an error and had to be purged.
@@ -220,7 +217,7 @@ class DataTypeManagerImpl : public DataTypeManager,
     base::Time download_ready_time;
     // The set of types that are higher priority, and were therefore blocking
     // the download of |types|.
-    ModelTypeSet high_priority_types_before;
+    ModelTypeSet higher_priority_types_before;
     // The subset of |types| that were successfully configured. Populated
     // one-by-one as types finish configuring.
     ModelTypeSet configured_types;
