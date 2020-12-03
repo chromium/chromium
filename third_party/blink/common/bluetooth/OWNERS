@@ -4,6 +4,3 @@ file://content/browser/bluetooth/OWNERS
 # new sandbox escapes.
 per-file *_mojom_traits*.*=set noparent
 per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS
-
-# TEAM: web-bluetooth@chromium.org
-# COMPONENT: Blink>Bluetooth
