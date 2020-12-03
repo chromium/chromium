@@ -122,7 +122,7 @@ if (is_ash) {
     ]
   }
 
-  source_set("shell_encryption_test") {
+  test("shell_encryption_unittests") {
     testonly = true
     public_configs = [ ":shell_encryption_config1" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -148,14 +148,12 @@ if (is_ash) {
       "src/testing/coefficient_polynomial_test.cc",
       "src/testing/protobuf_matchers_test.cc",
       "src/transcription_test.cc",
+      "tests/run_all_unittests.cc",
     ]
     deps = [
       ":shell_encryption_test_library",
-      "//testing/gtest:gtest_main",
+      "//base/test:test_support",
+      "//testing/gtest",
     ]
-  }
-
-  test("shell_encryption_unittests") {
-    deps = [ ":shell_encryption_test" ]
   }
 }
