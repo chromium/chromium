@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/sharesheet/sharesheet_target_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -108,12 +107,12 @@ bool IsKeyboardCodeArrow(ui::KeyboardCode key_code) {
 }  // namespace
 
 SharesheetBubbleView::SharesheetBubbleView(
-    content::WebContents* web_contents,
+    gfx::NativeWindow native_window,
     sharesheet::SharesheetServiceDelegate* delegate)
     : delegate_(delegate) {
-  gfx::NativeWindow parent = web_contents->GetTopLevelNativeWindow();
-  set_parent_window(parent);
-  parent_view_ = views::Widget::GetWidgetForNativeWindow(parent)->GetRootView();
+  set_parent_window(native_window);
+  parent_view_ =
+      views::Widget::GetWidgetForNativeWindow(native_window)->GetRootView();
   UpdateAnchorPosition();
 
   CreateBubble();
