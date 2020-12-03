@@ -620,15 +620,23 @@ static Position MostBackwardOrForwardCaretPosition(
     const Position& position,
     EditingBoundaryCrossingRule rule,
     F AlgorithmInFlatTree) {
-  if (position.IsNull())
+  Node* position_anchor = position.AnchorNode();
+  if (!position_anchor)
     return Position();
   DCHECK(position.IsValidFor(*position.GetDocument()));
 
   // Find the most backward or forward caret position in the flat tree.
   const Position& candidate = ToPositionInDOMTree(
       AlgorithmInFlatTree(ToPositionInFlatTree(position), rule));
-  if (candidate.IsNull())
+  Node* candidate_anchor = candidate.AnchorNode();
+  if (!candidate_anchor)
     return candidate;
+
+  // Fast path for common cases when there is no shadow involved.
+  if (!position_anchor->IsInShadowTree() && !IsShadowHost(position_anchor) &&
+      !candidate_anchor->IsInShadowTree() && !IsShadowHost(candidate_anchor)) {
+    return candidate;
+  }
 
   // Adjust the candidate to avoid crossing shadow boundaries.
   const SelectionInDOMTree& selection =
