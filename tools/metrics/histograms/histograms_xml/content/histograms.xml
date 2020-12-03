@@ -307,6 +307,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ContentSettings.EphemeralFlashPermission"
     enum="ContentSettings.EphemeralFlashPermission" expires_after="M89">
+  <obsolete>
+    Flash / Plugins is deprecated since M87 and removed in M89.
+  </obsolete>
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
