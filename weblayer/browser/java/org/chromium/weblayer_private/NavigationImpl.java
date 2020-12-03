@@ -149,6 +149,13 @@ public final class NavigationImpl extends INavigation.Stub {
     }
 
     @Override
+    public boolean isKnownProtocol() {
+        StrictModeWorkaround.apply();
+        throwIfNativeDestroyed();
+        return NavigationImplJni.get().isKnownProtocol(mNativeNavigationImpl);
+    }
+
+    @Override
     public boolean wasIntentLaunched() {
         return mIntentLaunched;
     }
@@ -231,6 +238,7 @@ public final class NavigationImpl extends INavigation.Stub {
         boolean isSameDocument(long nativeNavigationImpl);
         boolean isErrorPage(long nativeNavigationImpl);
         boolean isDownload(long nativeNavigationImpl);
+        boolean isKnownProtocol(long nativeNavigationImpl);
         boolean wasStopCalled(long nativeNavigationImpl);
         int getLoadError(long nativeNavigationImpl);
         boolean setRequestHeader(long nativeNavigationImpl, String name, String value);

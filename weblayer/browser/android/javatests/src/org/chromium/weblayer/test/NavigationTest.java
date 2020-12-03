@@ -12,10 +12,13 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 import android.webkit.WebResourceResponse;
 
+import androidx.fragment.app.Fragment;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -73,7 +76,22 @@ public class NavigationTest {
     private static final String STREAM_HTML = "<html>foobar</html>";
     private static final String STREAM_INNER_BODY = "foobar";
 
+    // A URL with a custom scheme/host that is handled by WebLayer Shell.
+    private static final String CUSTOM_SCHEME_URL_WITH_DEFAULT_EXTERNAL_HANDLER =
+            "weblayer://weblayertest/intent";
+    // An intent that opens Chrome to view a specified URL.
+    private static final String INTENT_TO_CHROME_URL =
+            "intent://play.google.com/store/apps/details?id=com.facebook.katana/#Intent;scheme=https;action=android.intent.action.VIEW;package=com.android.chrome;end";
+
     private static boolean sShouldTrackPageInitiated;
+
+    // An IntentInterceptor that simply drops intents to ensure that intent launches don't interfere
+    // with running of tests.
+    private class IntentInterceptor implements InstrumentationActivity.IntentInterceptor {
+        @Override
+        public void interceptIntent(
+                Fragment fragment, Intent intent, int requestCode, Bundle options) {}
+    }
 
     private static class Callback extends NavigationCallback {
         public static class NavigationCallbackHelper extends CallbackHelper {
@@ -83,6 +101,7 @@ public class NavigationTest {
             private List<Uri> mRedirectChain;
             private @LoadError int mLoadError;
             private @NavigationState int mNavigationState;
+            private boolean mIsKnownProtocol;
             private boolean mIsPageInitiatedNavigation;
 
             public void notifyCalled(Navigation navigation) {
@@ -92,6 +111,7 @@ public class NavigationTest {
                 mRedirectChain = navigation.getRedirectChain();
                 mLoadError = navigation.getLoadError();
                 mNavigationState = navigation.getState();
+                mIsKnownProtocol = navigation.isKnownProtocol();
                 if (sShouldTrackPageInitiated) {
                     mIsPageInitiatedNavigation = navigation.isPageInitiated();
                 }
@@ -130,6 +150,10 @@ public class NavigationTest {
             @NavigationState
             public int getNavigationState() {
                 return mNavigationState;
+            }
+
+            public boolean isKnownProtocol() {
+                return mIsKnownProtocol;
             }
 
             public boolean isPageInitiated() {
@@ -525,6 +549,43 @@ public class NavigationTest {
                 curFailedCount, url, LoadError.HTTP_CLIENT_ERROR);
         assertEquals(mCallback.onFailedCallback.getHttpStatusCode(), 404);
         assertEquals(mCallback.onFailedCallback.getNavigationState(), NavigationState.FAILED);
+    }
+
+    @MinWebLayerVersion(89)
+    @Test
+    @SmallTest
+    public void testIsKnownProtocol() throws Exception {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(URL1);
+        IntentInterceptor intentInterceptor = new IntentInterceptor();
+        activity.setIntentInterceptor(intentInterceptor);
+        setNavigationCallback(activity);
+
+        // Test various known protocol cases.
+        String httpUrl = mActivityTestRule.getTestDataURL("simple_page.html");
+        mActivityTestRule.navigateAndWait(httpUrl);
+        assertEquals(true, mCallback.onStartedCallback.isKnownProtocol());
+        assertEquals(true, mCallback.onCompletedCallback.isKnownProtocol());
+
+        mActivityTestRule.navigateAndWait("about:blank");
+        assertEquals(true, mCallback.onStartedCallback.isKnownProtocol());
+        assertEquals(true, mCallback.onCompletedCallback.isKnownProtocol());
+
+        String dataUrl = "data:text,foo";
+        mActivityTestRule.navigateAndWait(dataUrl);
+        assertEquals(true, mCallback.onStartedCallback.isKnownProtocol());
+        assertEquals(true, mCallback.onCompletedCallback.isKnownProtocol());
+
+        // Test external protocol cases.
+        mActivityTestRule.navigateAndWaitForFailure(activity.getTab(), INTENT_TO_CHROME_URL,
+                /*waitForPaint=*/false);
+        assertEquals(false, mCallback.onStartedCallback.isKnownProtocol());
+        assertEquals(false, mCallback.onFailedCallback.isKnownProtocol());
+
+        mActivityTestRule.navigateAndWaitForFailure(activity.getTab(),
+                CUSTOM_SCHEME_URL_WITH_DEFAULT_EXTERNAL_HANDLER,
+                /*waitForPaint=*/false);
+        assertEquals(false, mCallback.onStartedCallback.isKnownProtocol());
+        assertEquals(false, mCallback.onFailedCallback.isKnownProtocol());
     }
 
     @Test

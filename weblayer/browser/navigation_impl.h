@@ -69,6 +69,7 @@ class NavigationImpl : public Navigation {
   bool IsSameDocument(JNIEnv* env) { return IsSameDocument(); }
   bool IsErrorPage(JNIEnv* env) { return IsErrorPage(); }
   bool IsDownload(JNIEnv* env) { return IsDownload(); }
+  bool IsKnownProtocol(JNIEnv* env) { return IsKnownProtocol(); }
   bool WasStopCalled(JNIEnv* env) { return WasStopCalled(); }
   int GetLoadError(JNIEnv* env) { return static_cast<int>(GetLoadError()); }
   jboolean SetRequestHeader(JNIEnv* env,
@@ -97,6 +98,7 @@ class NavigationImpl : public Navigation {
   bool IsSameDocument() override;
   bool IsErrorPage() override;
   bool IsDownload() override;
+  bool IsKnownProtocol() override;
   bool WasStopCalled() override;
   LoadError GetLoadError() override;
   void SetRequestHeader(const std::string& name,

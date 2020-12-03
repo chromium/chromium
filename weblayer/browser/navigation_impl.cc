@@ -149,6 +149,10 @@ bool NavigationImpl::IsDownload() {
   return navigation_handle_->IsDownload();
 }
 
+bool NavigationImpl::IsKnownProtocol() {
+  return !navigation_handle_->IsExternalProtocol();
+}
+
 bool NavigationImpl::WasStopCalled() {
   return was_stopped_;
 }

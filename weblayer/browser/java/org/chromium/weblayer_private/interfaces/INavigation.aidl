@@ -37,4 +37,5 @@ interface INavigation {
   // @since 89
   boolean wasIntentLaunched() = 13;
   boolean isUserDecidingIntentLaunch() = 14;
+  boolean isKnownProtocol() = 15;
 }

@@ -70,6 +70,14 @@ class Navigation {
   // NavigationObserver::NavigationFailed.
   virtual bool IsDownload() = 0;
 
+  // Whether the target URL can be handled by the browser's internal protocol
+  // handlers, i.e., has a scheme that the browser knows how to process
+  // internally. Examples of such URLs are http(s) URLs, data URLs, and file
+  // URLs. A typical example of a URL for which there is no internal protocol
+  // handler (and for which this method would return false) is an intent:// URL.
+  // Added in 89.
+  virtual bool IsKnownProtocol() = 0;
+
   // Returns true if the navigation was stopped before it could complete because
   // NavigationController::Stop() was called.
   virtual bool WasStopCalled() = 0;

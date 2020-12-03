@@ -145,6 +145,28 @@ public class Navigation extends IClientNavigation.Stub {
     }
 
     /**
+     * Whether the target URL can be handled by the browser's internal protocol handlers, i.e., has
+     * a scheme that the browser knows how to process internally. Examples of such URLs are
+     * http(s) URLs, data URLs, and file URLs. A typical example of a URL for which there is no
+     * internal protocol handler (and for which this method would return also) is an intent:// URL.
+     *
+     * @return Whether the target URL of the navigation has a known protocol.
+     *
+     * @since 89
+     */
+    public boolean isKnownProtocol() {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 89) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            return mNavigationImpl.isKnownProtocol();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /**
      * Whether this navigation resulted in an external intent being launched. Returns false if this
      * navigation did not do so, or if that status is not yet known for this navigation.  This
      * status is determined for a navigation when processing final (post redirect) HTTP response
