@@ -29,6 +29,8 @@ class RoutineUpdatePtr;
 namespace chromeos {
 namespace diagnostics {
 
+constexpr int32_t kInvalidRoutineId = 0;
+
 using RunRoutineCallback =
     base::OnceCallback<void(cros_healthd::mojom::RunRoutineResponsePtr)>;
 
@@ -64,29 +66,25 @@ class SystemRoutineController : public mojom::SystemRoutineController {
       mojom::RoutineType routine_type,
       cros_healthd::mojom::RunRoutineResponsePtr response_ptr);
 
-  void ContinuePowerRoutine(mojom::RoutineType routine_type, int32_t id);
+  void ContinuePowerRoutine(mojom::RoutineType routine_type);
 
   void OnPowerRoutineContinued(
       mojom::RoutineType routine_type,
-      int32_t id,
       cros_healthd::mojom::RoutineUpdatePtr update_ptr);
 
-  void CheckRoutineStatus(mojom::RoutineType routine_type, int32_t id);
+  void CheckRoutineStatus(mojom::RoutineType routine_type);
 
   void OnRoutineStatusUpdated(mojom::RoutineType routine_type,
-                              int32_t id,
                               cros_healthd::mojom::RoutineUpdatePtr update_ptr);
 
   void HandlePowerRoutineStatusUpdate(
       mojom ::RoutineType routine_type,
-      int32_t id,
       cros_healthd::mojom::RoutineUpdatePtr update_ptr);
 
   bool IsRoutineRunning() const;
 
   void ScheduleCheckRoutineStatus(uint32_t duration_in_seconds,
-                                  mojom::RoutineType routine_type,
-                                  int32_t id);
+                                  mojom::RoutineType routine_type);
 
   void ParsePowerRoutineResult(mojom::RoutineType routine_type,
                                mojom::StandardRoutineResult result,
@@ -106,11 +104,17 @@ class SystemRoutineController : public mojom::SystemRoutineController {
                             double percent_change,
                             uint32_t seconds_elapsed);
 
+  void SendRoutineResult(mojom::RoutineResultInfoPtr result_info);
+
   void BindCrosHealthdDiagnosticsServiceIfNeccessary();
 
   void OnDiagnosticsServiceDisconnected();
 
   void OnInflightRoutineRunnerDisconnected();
+
+  // Keeps track of the id created by CrosHealthd for the currently running
+  // routine.
+  int32_t inflight_routine_id_ = kInvalidRoutineId;
 
   mojo::Remote<mojom::RoutineRunner> inflight_routine_runner_;
   std::unique_ptr<base::OneShotTimer> inflight_routine_timer_;

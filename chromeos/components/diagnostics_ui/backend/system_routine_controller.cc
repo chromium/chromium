@@ -308,12 +308,13 @@ void SystemRoutineController::OnRoutineStarted(
   DCHECK_EQ(healthd::DiagnosticRoutineStatusEnum::kRunning,
             response_ptr->status);
 
-  const int32_t id = response_ptr->id;
+  DCHECK_EQ(kInvalidRoutineId, inflight_routine_id_);
+  inflight_routine_id_ = response_ptr->id;
 
   // Sleep for the length of the test using a one-shot timer, then start
   // querying again for status.
   ScheduleCheckRoutineStatus(GetExpectedRoutineDurationInSeconds(routine_type),
-                             routine_type, id);
+                             routine_type);
 }
 
 void SystemRoutineController::OnPowerRoutineStarted(
@@ -328,25 +329,26 @@ void SystemRoutineController::OnPowerRoutineStarted(
     return;
   }
 
-  ContinuePowerRoutine(routine_type, response_ptr->id);
+  DCHECK_EQ(kInvalidRoutineId, inflight_routine_id_);
+  inflight_routine_id_ = response_ptr->id;
+
+  ContinuePowerRoutine(routine_type);
 }
 
 void SystemRoutineController::ContinuePowerRoutine(
-    mojom::RoutineType routine_type,
-    int32_t id) {
+    mojom::RoutineType routine_type) {
   DCHECK(IsPowerRoutine(routine_type));
 
   BindCrosHealthdDiagnosticsServiceIfNeccessary();
   diagnostics_service_->GetRoutineUpdate(
-      id, healthd::DiagnosticRoutineCommandEnum::kContinue,
+      inflight_routine_id_, healthd::DiagnosticRoutineCommandEnum::kContinue,
       /*should_include_output=*/true,
       base::BindOnce(&SystemRoutineController::OnPowerRoutineContinued,
-                     base::Unretained(this), routine_type, id));
+                     base::Unretained(this), routine_type));
 }
 
 void SystemRoutineController::OnPowerRoutineContinued(
     mojom::RoutineType routine_type,
-    int32_t id,
     healthd::RoutineUpdatePtr update_ptr) {
   DCHECK(IsPowerRoutine(routine_type));
 
@@ -363,27 +365,26 @@ void SystemRoutineController::OnPowerRoutineContinued(
   }
 
   ScheduleCheckRoutineStatus(GetExpectedRoutineDurationInSeconds(routine_type),
-                             routine_type, id);
+                             routine_type);
 }
 
 void SystemRoutineController::CheckRoutineStatus(
-    mojom::RoutineType routine_type,
-    int32_t id) {
+    mojom::RoutineType routine_type) {
+  DCHECK_NE(kInvalidRoutineId, inflight_routine_id_);
   BindCrosHealthdDiagnosticsServiceIfNeccessary();
   const bool should_include_output = IsPowerRoutine(routine_type);
   diagnostics_service_->GetRoutineUpdate(
-      id, healthd::DiagnosticRoutineCommandEnum::kGetStatus,
+      inflight_routine_id_, healthd::DiagnosticRoutineCommandEnum::kGetStatus,
       should_include_output,
       base::BindOnce(&SystemRoutineController::OnRoutineStatusUpdated,
-                     base::Unretained(this), routine_type, id));
+                     base::Unretained(this), routine_type));
 }
 
 void SystemRoutineController::OnRoutineStatusUpdated(
     mojom::RoutineType routine_type,
-    int32_t id,
     healthd::RoutineUpdatePtr update_ptr) {
   if (IsPowerRoutine(routine_type)) {
-    HandlePowerRoutineStatusUpdate(routine_type, id, std::move(update_ptr));
+    HandlePowerRoutineStatusUpdate(routine_type, std::move(update_ptr));
     return;
   }
 
@@ -404,7 +405,7 @@ void SystemRoutineController::OnRoutineStatusUpdated(
       // If still running, continue to repoll until it is finished.
       // TODO(baileyberro): Consider adding a timeout mechanism.
       ScheduleCheckRoutineStatus(kRoutineResultRefreshIntervalInSeconds,
-                                 routine_type, id);
+                                 routine_type);
       return;
     case healthd::DiagnosticRoutineStatusEnum::kPassed:
     case healthd::DiagnosticRoutineStatusEnum::kFailed:
@@ -427,8 +428,7 @@ void SystemRoutineController::OnRoutineStatusUpdated(
 }
 
 void SystemRoutineController::HandlePowerRoutineStatusUpdate(
-    mojom::RoutineType routine_type,
-    int32_t id,
+    mojom ::RoutineType routine_type,
     cros_healthd::mojom::RoutineUpdatePtr update_ptr) {
   DCHECK(IsPowerRoutine(routine_type));
 
@@ -449,7 +449,7 @@ void SystemRoutineController::HandlePowerRoutineStatusUpdate(
   // TODO(baileyberro): Consider adding a timeout mechanism.
   if (status == healthd::DiagnosticRoutineStatusEnum::kRunning) {
     ScheduleCheckRoutineStatus(kRoutineResultRefreshIntervalInSeconds,
-                               routine_type, id);
+                               routine_type);
     return;
   }
 
@@ -482,12 +482,11 @@ bool SystemRoutineController::IsRoutineRunning() const {
 
 void SystemRoutineController::ScheduleCheckRoutineStatus(
     uint32_t duration_in_seconds,
-    mojom::RoutineType routine_type,
-    int32_t id) {
+    mojom::RoutineType routine_type) {
   inflight_routine_timer_->Start(
       FROM_HERE, base::TimeDelta::FromSeconds(duration_in_seconds),
       base::BindOnce(&SystemRoutineController::CheckRoutineStatus,
-                     base::Unretained(this), routine_type, id));
+                     base::Unretained(this), routine_type));
 }
 
 void SystemRoutineController::ParsePowerRoutineResult(
@@ -586,8 +585,7 @@ void SystemRoutineController::OnStandardRoutineResult(
   DCHECK(IsRoutineRunning());
   auto result_info =
       ConstructStandardRoutineResultInfoPtr(routine_type, result);
-  inflight_routine_runner_->OnRoutineResult(std::move(result_info));
-  inflight_routine_runner_.reset();
+  SendRoutineResult(std::move(result_info));
 }
 
 void SystemRoutineController::OnPowerRoutineResult(
@@ -598,8 +596,14 @@ void SystemRoutineController::OnPowerRoutineResult(
   DCHECK(IsRoutineRunning());
   auto result_info = ConstructPowerRoutineResultInfoPtr(
       routine_type, result, percent_change, seconds_elapsed);
+  SendRoutineResult(std::move(result_info));
+}
+
+void SystemRoutineController::SendRoutineResult(
+    mojom::RoutineResultInfoPtr result_info) {
   inflight_routine_runner_->OnRoutineResult(std::move(result_info));
   inflight_routine_runner_.reset();
+  inflight_routine_id_ = kInvalidRoutineId;
 }
 
 void SystemRoutineController::BindCrosHealthdDiagnosticsServiceIfNeccessary() {
