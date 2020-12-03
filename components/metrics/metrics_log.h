@@ -17,9 +17,11 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_base.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_reporting_default_state.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
+#include "third_party/metrics_proto/system_profile.pb.h"
 
 class PrefService;
 
@@ -39,6 +41,9 @@ namespace internal {
 // Maximum number of events before truncation.
 constexpr int kOmniboxEventLimit = 5000;
 constexpr int kUserActionEventLimit = 5000;
+
+SystemProfileProto::InstallerPackage ToInstallerPackage(
+    base::StringPiece installer_package_name);
 }  // namespace internal
 
 class MetricsLog {
