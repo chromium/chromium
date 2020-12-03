@@ -406,43 +406,6 @@ template("chrome_public_common_apk_or_module_tmpl") {
 template("monochrome_public_common_apk_or_module_tmpl") {
   _is_bundle_module = defined(invoker.target_type) &&
                       invoker.target_type == "android_app_bundle_module"
-  _enable_chrome_module =
-      _is_bundle_module && invoker.is_base_module && enable_chrome_module
-
-  # If the chrome module is enabled, collect shared libraries from all other
-  # DFMs and add them as loadable modules to the base module.
-  if (_enable_chrome_module) {
-    _module_descs = []
-    if (defined(invoker.module_descs)) {
-      _module_descs = invoker.module_descs
-    }
-    _chrome_module_shared_lib_deps = []
-    _chrome_module_loadable_modules = []
-    _arch = ""
-    _toolchain = ""
-    if (android_64bit_target_cpu) {
-      if (invoker.is_64_bit_browser) {
-        _arch = "_64"
-      } else {
-        _toolchain = "($android_secondary_abi_toolchain)"
-      }
-    }
-    _base_target_name = "libmonochrome${_arch}"
-    foreach(_module_desc, _module_descs) {
-      if (defined(_module_desc.native_deps) && _module_desc.native_deps != []) {
-        _lib_target = "//chrome/android:${_base_target_name}_${_module_desc.name}${_toolchain}"
-        _chrome_module_shared_lib_deps += [ _lib_target ]
-
-        # In component builds, native libraries from DFMs are not in partitions,
-        # so include them as normal shared libraries instead of loadable
-        # modules.
-        if (!is_component_build) {
-          _lib_out_dir = get_label_info(_lib_target, "root_out_dir")
-          _chrome_module_loadable_modules += [ "${_lib_out_dir}/${_base_target_name}_${_module_desc.name}_partition.so" ]
-        }
-      }
-    }
-  }
 
   chrome_public_common_apk_or_module_tmpl(target_name) {
     _overrides = {
@@ -532,11 +495,15 @@ template("monochrome_public_common_apk_or_module_tmpl") {
         deps += [ ":${target_name}__all_dfm_resources" ]
       }
 
-      # Add all loadable modules and shared libraries from DFMs.
+      _enable_chrome_module =
+          _is_bundle_module && invoker.is_base_module && enable_chrome_module
       if (_enable_chrome_module) {
-        # The arcore manifest needs to be merged into the base module because the Play
-        # Store verifies the com.google.ar.core.min_apk_version meta-data tag is in
-        # the base manifest.
+        # TODO(crbug.com/1150459): Remove this once internal repo is updated.
+        not_needed(invoker, [ "module_descs" ])
+
+        # The arcore manifest needs to be merged into the base module because
+        # the Play Store verifies the com.google.ar.core.min_apk_version
+        # meta-data tag is in the base manifest.
         if (enable_arcore) {
           deps += [
             "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
@@ -547,38 +514,6 @@ template("monochrome_public_common_apk_or_module_tmpl") {
           deps += [ "//chrome/android:base_monochrome_module_java" ]
         } else {
           deps += [ "//chrome/android:base_module_java" ]
-        }
-        if (is_component_build) {
-          if (android_64bit_target_cpu && !invoker.is_64_bit_browser) {
-            secondary_abi_shared_libraries += _chrome_module_shared_lib_deps
-          } else {
-            shared_libraries += _chrome_module_shared_lib_deps
-          }
-        } else {
-          deps += _chrome_module_shared_lib_deps
-        }
-        _loadable_modules_32_bit = []
-        _loadable_modules_64_bit = []
-        foreach(_module_desc, _module_descs) {
-          if (defined(_module_desc.loadable_modules_32_bit)) {
-            _loadable_modules_32_bit += _module_desc.loadable_modules_32_bit
-          }
-          if (defined(_module_desc.loadable_modules_64_bit)) {
-            _loadable_modules_64_bit += _module_desc.loadable_modules_64_bit
-          }
-        }
-
-        if (android_64bit_target_cpu) {
-          if (invoker.is_64_bit_browser) {
-            loadable_modules +=
-                _loadable_modules_64_bit + _chrome_module_loadable_modules
-          } else {
-            secondary_abi_loadable_modules +=
-                _loadable_modules_32_bit + _chrome_module_loadable_modules
-          }
-        } else {
-          loadable_modules +=
-              _loadable_modules_32_bit + _chrome_module_loadable_modules
         }
       }
 

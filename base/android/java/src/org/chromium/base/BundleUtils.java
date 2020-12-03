@@ -117,6 +117,15 @@ public final class BundleUtils {
             if (path != null) {
                 return path;
             }
+
+            // SplitCompat is installed on the application context, so check there for library paths
+            // which were added to that ClassLoader.
+            path = ((BaseDexClassLoader) ContextUtils.getApplicationContext().getClassLoader())
+                           .findLibrary(libraryName);
+            if (path != null) {
+                return path;
+            }
+
             return getSplitApkLibraryPath(libraryName, splitName);
         }
     }

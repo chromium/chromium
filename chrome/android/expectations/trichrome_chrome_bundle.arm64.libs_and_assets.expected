@@ -1,9 +1,5 @@
 apk_path=lib/armeabi-v7a/libarcore_sdk_c.so, compress=False, alignment=4096
 apk_path=lib/armeabi-v7a/libchromium_android_linker.so, compress=False, alignment=4096
-apk_path=lib/armeabi-v7a/libmonochrome_cablev2_authenticator_partition.so, compress=False, alignment=4096
-apk_path=lib/armeabi-v7a/libmonochrome_stack_unwinder_partition.so, compress=False, alignment=4096
-apk_path=lib/armeabi-v7a/libmonochrome_test_dummy_partition.so, compress=False, alignment=4096
-apk_path=lib/armeabi-v7a/libmonochrome_vr_partition.so, compress=False, alignment=4096
 apk_path=assets/chrome_100_percent.pak, compress=False, alignment=4
 apk_path=assets/locales/af.pak, compress=False, alignment=4
 apk_path=assets/locales/am.pak, compress=False, alignment=4
