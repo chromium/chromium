@@ -187,6 +187,13 @@ public class Profile {
      * * This object is considered destroyed after this method returns. Calling any other method
      *   after will throw exceptions.
      * * Creating a new profile of the same name before doneCallback runs will throw an exception.
+     *
+     * After calling this function, {@link #getAllProfiles()} will not return the Profile, and
+     * {@link #enumerateAllProfileNames} will not return the profile name.
+     *
+     * @param completionCallback Callback that is notified when destruction and deletion of data is
+     * complete.
+     *
      * @since 82
      */
     public void destroyAndDeleteDataFromDisk(@Nullable Runnable completionCallback) {
@@ -201,17 +208,25 @@ public class Profile {
 
     /**
      * This method provides the same functionality as {@link destroyAndDeleteDataFromDisk}, but
-     * delays until there is no usage of the Profile. If there is no usage of the profile
-     * destruction is immediate. If there is usage, then destruction happens as soon as possible.
-     * It's possible cleanup may not happen until WebLayer is restarted. If cleanup does not happen
-     * until WebLayer is restarted, {@link completionCallback} is not run (because the process was
-     * restarted).
+     * delays until there is no usage of the Profile. If there is no usage of the profile,
+     * destruction and deletion of data on disk is immediate. If there is usage, then destruction
+     * and deletion of data happens when there is no usage of the Profile.  If the process is killed
+     * before deletion of data on disk occurs, then deletion of data happens when WebLayer is
+     * restarted.
      *
      * While destruction may be delayed, once this function is called, the profile name will not be
-     * returned from {@link WebLayer#enumerateAllProfileNames}.
+     * returned from {@link WebLayer#enumerateAllProfileNames}. OTOH, {@link #getAllProfiles()}
+     * returns this profile until there are no more usages.
      *
-     * @param completionCallback Callback this is notified when destruction is complete. This may
-     *         never be called.
+     * If this function is called multiple times before the Profile is destroyed, then every
+     * callback supplied is run once destruction and deletion of data is complete.
+     *
+     * @param completionCallback Callback that is notified when destruction and deletion of data is
+     * complete. If the process is killed before all references are removed, the callback is never
+     * called.
+     *
+     * @throws IllegalStateException If the Profile has already been destroyed. You can check for
+     * that by looking for the profile in {@link #getAllProfiles()}.
      *
      * @since 87
      */
