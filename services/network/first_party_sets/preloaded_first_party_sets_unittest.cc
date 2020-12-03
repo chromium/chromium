@@ -39,6 +39,8 @@ TEST(PreloadedFirstPartySets, AcceptsMinimal) {
 
   EXPECT_THAT(PreloadedFirstPartySets().ParseAndSet(input),
               Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://example.test"),
+                       SerializesTo("https://example.test")),
                   Pair(SerializesTo("https://aaaa.test"),
                        SerializesTo("https://example.test")))));
 }
@@ -60,8 +62,12 @@ TEST(PreloadedFirstPartySets, AcceptsMultipleSets) {
 
   EXPECT_THAT(
       PreloadedFirstPartySets().ParseAndSet(input),
-      Pointee(UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
+      Pointee(UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
                                         SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://foo.test"),
+                                        SerializesTo("https://foo.test")),
                                    Pair(SerializesTo("https://member2.test"),
                                         SerializesTo("https://foo.test")))));
 }
@@ -84,8 +90,12 @@ TEST(PreloadedFirstPartySets, ClearsPreloadedOnError) {
   PreloadedFirstPartySets sets;
   EXPECT_THAT(
       sets.ParseAndSet(input),
-      Pointee(UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
+      Pointee(UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
                                         SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://foo.test"),
+                                        SerializesTo("https://foo.test")),
                                    Pair(SerializesTo("https://member2.test"),
                                         SerializesTo("https://foo.test")))));
 
@@ -189,6 +199,8 @@ TEST(PreloadedFirstPartySets, SetsManuallySpecified_Valid_SingleMember) {
   sets.SetManuallySpecifiedSet("https://example.test,https://member.test");
   EXPECT_THAT(sets.ParseAndSet("[]"),
               Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://example.test"),
+                       SerializesTo("https://example.test")),
                   Pair(SerializesTo("https://member.test"),
                        SerializesTo("https://example.test")))));
 }
@@ -200,6 +212,8 @@ TEST(PreloadedFirstPartySets,
       "https://www.example.test,https://www.member.test");
   EXPECT_THAT(sets.ParseAndSet("[]"),
               Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://example.test"),
+                       SerializesTo("https://example.test")),
                   Pair(SerializesTo("https://member.test"),
                        SerializesTo("https://example.test")))));
 }
@@ -210,6 +224,8 @@ TEST(PreloadedFirstPartySets, SetsManuallySpecified_Valid_MultipleMembers) {
       "https://example.test,https://member1.test,https://member2.test");
   EXPECT_THAT(sets.ParseAndSet("[]"),
               Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://example.test"),
+                       SerializesTo("https://example.test")),
                   Pair(SerializesTo("https://member1.test"),
                        SerializesTo("https://example.test")),
                   Pair(SerializesTo("https://member2.test"),
@@ -228,6 +244,8 @@ TEST(PreloadedFirstPartySets, SetsManuallySpecified_Valid_OwnerIsMember) {
       "https://example.test,https://example.test,https://member1.test");
   EXPECT_THAT(sets.ParseAndSet("[]"),
               Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://example.test"),
+                       SerializesTo("https://example.test")),
                   Pair(SerializesTo("https://member1.test"),
                        SerializesTo("https://example.test")))));
 }
@@ -241,6 +259,8 @@ TEST(PreloadedFirstPartySets, SetsManuallySpecified_Valid_RepeatedMember) {
        https://member1.test)");
   EXPECT_THAT(sets.ParseAndSet("[]"),
               Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://example.test"),
+                       SerializesTo("https://example.test")),
                   Pair(SerializesTo("https://member1.test"),
                        SerializesTo("https://example.test")),
                   Pair(SerializesTo("https://member2.test"),
@@ -267,10 +287,14 @@ TEST(PreloadedFirstPartySets, SetsManuallySpecified_DeduplicatesOwnerOwner) {
       "https://example.test,https://member1.test,https://member2.test");
   EXPECT_THAT(
       sets.ParseAndSet(input),
-      Pointee(UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
+      Pointee(UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member1.test"),
                                         SerializesTo("https://example.test")),
                                    Pair(SerializesTo("https://member2.test"),
                                         SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://bar.test"),
+                                        SerializesTo("https://bar.test")),
                                    Pair(SerializesTo("https://member4.test"),
                                         SerializesTo("https://bar.test")))));
 }
@@ -295,8 +319,12 @@ TEST(PreloadedFirstPartySets, SetsManuallySpecified_DeduplicatesOwnerMember) {
       "https://example.test,https://member1.test,https://member3.test");
   EXPECT_THAT(sets.ParseAndSet(input),
               Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://example.test"),
+                       SerializesTo("https://example.test")),
                   Pair(SerializesTo("https://member1.test"),
                        SerializesTo("https://example.test")),
+                  Pair(SerializesTo("https://bar.test"),
+                       SerializesTo("https://bar.test")),
                   Pair(SerializesTo("https://member2.test"),
                        SerializesTo("https://bar.test")),
                   Pair(SerializesTo("https://member3.test"),
@@ -322,10 +350,14 @@ TEST(PreloadedFirstPartySets, SetsManuallySpecified_DeduplicatesMemberOwner) {
   sets.SetManuallySpecifiedSet("https://example.test,https://member3.test");
   EXPECT_THAT(sets.ParseAndSet(input),
               Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://foo.test"),
+                       SerializesTo("https://foo.test")),
                   Pair(SerializesTo("https://member1.test"),
                        SerializesTo("https://foo.test")),
                   Pair(SerializesTo("https://member2.test"),
                        SerializesTo("https://foo.test")),
+                  Pair(SerializesTo("https://example.test"),
+                       SerializesTo("https://example.test")),
                   Pair(SerializesTo("https://member3.test"),
                        SerializesTo("https://example.test")))));
 }
@@ -350,12 +382,18 @@ TEST(PreloadedFirstPartySets, SetsManuallySpecified_DeduplicatesMemberMember) {
       "https://example.test,https://member1.test,https://member2.test");
   EXPECT_THAT(
       sets.ParseAndSet(input),
-      Pointee(UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
+      Pointee(UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member1.test"),
                                         SerializesTo("https://example.test")),
                                    Pair(SerializesTo("https://member2.test"),
                                         SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://foo.test"),
+                                        SerializesTo("https://foo.test")),
                                    Pair(SerializesTo("https://member3.test"),
                                         SerializesTo("https://foo.test")),
+                                   Pair(SerializesTo("https://bar.test"),
+                                        SerializesTo("https://bar.test")),
                                    Pair(SerializesTo("https://member4.test"),
                                         SerializesTo("https://bar.test")))));
 }
@@ -376,18 +414,48 @@ TEST(PreloadedFirstPartySets, SetsManuallySpecified_ClearsPreloadedOnError) {
       "https://example.test,https://member1.test,https://member2.test");
   EXPECT_THAT(
       sets.ParseAndSet(input),
-      Pointee(UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
+      Pointee(UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member1.test"),
                                         SerializesTo("https://example.test")),
                                    Pair(SerializesTo("https://member2.test"),
                                         SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://bar.test"),
+                                        SerializesTo("https://bar.test")),
                                    Pair(SerializesTo("https://member3.test"),
                                         SerializesTo("https://bar.test")))));
 
   EXPECT_THAT(sets.ParseAndSet("{}"),
               Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://example.test"),
+                       SerializesTo("https://example.test")),
                   Pair(SerializesTo("https://member1.test"),
                        SerializesTo("https://example.test")),
                   Pair(SerializesTo("https://member2.test"),
+                       SerializesTo("https://example.test")))));
+}
+
+TEST(PreloadedFirstPartySets, SetsManuallySpecified_PrunesInducedSingletons) {
+  const std::string input = R"(
+  [
+    {
+      "owner": "https://foo.test",
+      "members": ["https://member1.test"]
+    }
+  ]
+  )";
+  ASSERT_TRUE(base::JSONReader::Read(input));
+
+  PreloadedFirstPartySets sets;
+  sets.SetManuallySpecifiedSet("https://example.test,https://member1.test");
+  // If we just erased entries that overlapped with the manually-supplied set,
+  // https://foo.test would be left as a singleton set. But since we disallow
+  // singleton sets, we ensure that such cases are caught and removed.
+  EXPECT_THAT(sets.ParseAndSet(input),
+              Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://example.test"),
+                       SerializesTo("https://example.test")),
+                  Pair(SerializesTo("https://member1.test"),
                        SerializesTo("https://example.test")))));
 }
 

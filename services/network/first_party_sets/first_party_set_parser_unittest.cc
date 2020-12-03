@@ -59,6 +59,19 @@ TEST(FirstPartySetParser, AcceptsTrivial) {
               Pointee(IsEmpty()));
 }
 
+TEST(FirstPartySetParser, RejectsSingletonSet) {
+  const std::string input =
+      R"([{
+        "owner": "https://example.test",
+        "members": []
+        }])";
+
+  // Sanity check that the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
+
+  EXPECT_FALSE(FirstPartySetParser::ParsePreloadedSets(input));
+}
+
 TEST(FirstPartySetParser, AcceptsMinimal) {
   const std::string input =
       R"([{
@@ -71,6 +84,8 @@ TEST(FirstPartySetParser, AcceptsMinimal) {
 
   EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input),
               Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://example.test"),
+                       SerializesTo("https://example.test")),
                   Pair(SerializesTo("https://aaaa.test"),
                        SerializesTo("https://example.test")))));
 }
@@ -206,6 +221,8 @@ TEST(FirstPartySetParser, TruncatesSubdomain_Owner) {
 
   EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input),
               Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://example.test"),
+                       SerializesTo("https://example.test")),
                   Pair(SerializesTo("https://aaaa.test"),
                        SerializesTo("https://example.test")))));
 }
@@ -222,6 +239,8 @@ TEST(FirstPartySetParser, TruncatesSubdomain_Member) {
 
   EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input),
               Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://example.test"),
+                       SerializesTo("https://example.test")),
                   Pair(SerializesTo("https://aaaa.test"),
                        SerializesTo("https://example.test")))));
 }
@@ -245,8 +264,12 @@ TEST(FirstPartySetParser, AcceptsMultipleSets) {
 
   EXPECT_THAT(
       FirstPartySetParser::ParsePreloadedSets(input),
-      Pointee(UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
+      Pointee(UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
                                         SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://foo.test"),
+                                        SerializesTo("https://foo.test")),
                                    Pair(SerializesTo("https://member2.test"),
                                         SerializesTo("https://foo.test")))));
 }
@@ -307,6 +330,8 @@ TEST(FirstPartySetParser, AllowsTrailingCommas) {
 
   EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input),
               Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://example.test"),
+                       SerializesTo("https://example.test")),
                   Pair(SerializesTo("https://member1.test"),
                        SerializesTo("https://example.test")))));
 }

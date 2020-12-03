@@ -58,12 +58,13 @@ base::Optional<net::SchemefulSite> Canonicalize(base::StringPiece origin_string,
 const char kFirstPartySetOwnerField[] = "owner";
 const char kFirstPartySetMembersField[] = "members";
 
-// Parses a single First-Party Set into a map from member to owner (not
-// including the owner). Note that this is intended for use *only* on sets that
+// Parses a single First-Party Set into a map from member to owner (including an
+// entry owner -> owner). Note that this is intended for use *only* on sets that
 // were preloaded via the component updater, so this does not check assertions
 // or versions. It rejects sets which are non-disjoint with
 // previously-encountered sets (i.e. sets which have non-empty intersections
-// with `elements`).
+// with `elements`), and singleton sets (i.e. sets must have an owner and at
+// least one valid member).
 //
 // Uses `elements` to check disjointness of sets; builds the mapping in `map`;
 // and augments `elements` to include the elements of the set that was parsed.
@@ -92,6 +93,7 @@ bool ParsePreloadedSet(
     return false;
 
   elements.insert(*canonical_owner);
+  map.emplace(*canonical_owner, *canonical_owner);
 
   // Confirm that the members field is present, and is an array of strings.
   const base::Value* maybe_members_list =
@@ -112,7 +114,7 @@ bool ParsePreloadedSet(
     map.emplace(*member, *canonical_owner);
     elements.insert(std::move(*member));
   }
-  return true;
+  return !maybe_members_list->GetList().empty();
 }
 
 }  // namespace

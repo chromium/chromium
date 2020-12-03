@@ -459,11 +459,11 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceWithFirstPartySetBrowserTest,
   if (IsInProcessNetworkService())
     return;
 
-  EXPECT_EQ(GetPreloadedFirstPartySetCountFromNetworkService(), 2);
+  EXPECT_EQ(GetPreloadedFirstPartySetCountFromNetworkService(), 3);
 
   SimulateNetworkServiceCrash();
 
-  EXPECT_EQ(GetPreloadedFirstPartySetCountFromNetworkService(), 2);
+  EXPECT_EQ(GetPreloadedFirstPartySetCountFromNetworkService(), 3);
 }
 
 // Tests that CORS is performed by the network service when |factory_override|

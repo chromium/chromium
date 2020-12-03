@@ -50,6 +50,9 @@ class PreloadedFirstPartySets {
   // `manually_specified_set_`.
   void ApplyManuallySpecifiedSet();
 
+  // Represents the mapping of site -> site, where keys are members of sets, and
+  // values are owners of the sets. Owners are explicitly represented as members
+  // of the set.
   base::flat_map<net::SchemefulSite, net::SchemefulSite> sets_;
   base::Optional<
       std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>>

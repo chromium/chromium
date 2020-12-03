@@ -87,20 +87,42 @@ void PreloadedFirstPartySets::ApplyManuallySpecifiedSet() {
   const base::flat_set<net::SchemefulSite>& manual_members =
       manually_specified_set_->second;
 
-  sets_.erase(
-      base::ranges::remove_if(sets_,
-                              [&manual_members, &manual_owner](const auto& p) {
-                                return p.first == manual_owner ||
-                                       p.second == manual_owner ||
-                                       manual_members.contains(p.first) ||
-                                       manual_members.contains(p.second);
-                              }),
-      sets_.end());
+  const auto was_manually_provided =
+      [&manual_members, &manual_owner](const net::SchemefulSite& site) {
+        return site == manual_owner || manual_members.contains(site);
+      };
+
+  // Erase the intersection between the manually-specified set and the
+  // CU-supplied set, and any members whose owner was in the intersection.
+  sets_.erase(base::ranges::remove_if(sets_,
+                                      [&was_manually_provided](const auto& p) {
+                                        return was_manually_provided(p.first) ||
+                                               was_manually_provided(p.second);
+                                      }),
+              sets_.end());
+
+  // Now remove singleton sets. We already removed any sites that were part
+  // of the intersection, or whose owner was part of the intersection. This
+  // leaves sites that *are* owners, which no longer have any (other)
+  // members.
+  std::set<net::SchemefulSite> owners_with_members;
+  for (const auto& it : sets_) {
+    if (it.first != it.second)
+      owners_with_members.insert(it.second);
+  }
+  sets_.erase(base::ranges::remove_if(
+                  sets_,
+                  [&owners_with_members](const auto& p) {
+                    return p.first == p.second &&
+                           !base::Contains(owners_with_members, p.first);
+                  }),
+              sets_.end());
 
   // Next, we must add the manually-added set to the parsed value.
   for (const net::SchemefulSite& member : manual_members) {
     sets_.emplace(member, manual_owner);
   }
+  sets_.emplace(manual_owner, manual_owner);
 }
 
 }  // namespace network
