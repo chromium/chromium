@@ -1257,7 +1257,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/signin/IdentityServicesProvider.java",
   "java/src/org/chromium/chrome/browser/signin/PersonalizedSigninPromoView.java",
   "java/src/org/chromium/chrome/browser/signin/ProfileDataCache.java",
-  "java/src/org/chromium/chrome/browser/signin/ProfileDownloader.java",
   "java/src/org/chromium/chrome/browser/signin/SignOutDialogFragment.java",
   "java/src/org/chromium/chrome/browser/signin/SigninActivity.java",
   "java/src/org/chromium/chrome/browser/signin/SigninActivityLauncherImpl.java",

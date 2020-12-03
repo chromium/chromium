@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.signin.services;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,7 +12,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.ProfileDataSource;
 
@@ -23,14 +22,21 @@ import java.util.ArrayList;
  * The native ProfileDownloader requires its access to be in the UI thread.
  * See chrome/browser/profiles/profile_downloader.h/cc for more details.
  */
-class ProfileDownloader {
+public class ProfileDownloader {
+    private static final Object LOCK = new Object();
+
     private static ProfileDownloader sInstance;
 
     private final ObserverList<ProfileDataSource.Observer> mObservers = new ObserverList<>();
 
-    static synchronized ProfileDownloader get() {
-        if (sInstance == null) {
-            sInstance = new ProfileDownloader();
+    /**
+     * Get the instance of ProfileDownloader.
+     */
+    public static ProfileDownloader get() {
+        synchronized (LOCK) {
+            if (sInstance == null) {
+                sInstance = new ProfileDownloader();
+            }
         }
         return sInstance;
     }
