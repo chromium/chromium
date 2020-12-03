@@ -123,20 +123,20 @@ TEST_F(LayoutSVGRootTest, RectBasedHitTestPartialOverlap) {
   EXPECT_EQ(2, count);
 }
 
-class CompositeSVGLayoutSVGRootTest : public PaintTestConfigurations,
-                                      public LayoutSVGRootTest,
+class CompositeSVGLayoutSVGRootTest : public LayoutSVGRootTest,
                                       private ScopedCompositeSVGForTest {
  public:
-  CompositeSVGLayoutSVGRootTest() : ScopedCompositeSVGForTest(true) {}
+  CompositeSVGLayoutSVGRootTest() : ScopedCompositeSVGForTest(true) {
+    // The tests don't apply in CompositeAfterPaint.
+    DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
+  }
 };
-
-INSTANTIATE_PAINT_TEST_SUITE_P(CompositeSVGLayoutSVGRootTest);
 
 // A PaintLayer is needed for the purposes of creating a GraphicsLayer to limit
 // CompositeSVG to SVG subtrees. This PaintLayer will not be needed with
 // CompositeAfterPaint. If compositing is needed for descendants, the paint
 // layer should be self-painting. Otherwise, it should be non-self-painting.
-TEST_P(CompositeSVGLayoutSVGRootTest, PaintLayerType) {
+TEST_F(CompositeSVGLayoutSVGRootTest, PaintLayerType) {
   SetBodyInnerHTML(R"HTML(
     <svg id="root" style="width: 200px; height: 200px;">
       <rect id="rect" width="100" height="100" fill="green"/>
@@ -159,7 +159,7 @@ TEST_P(CompositeSVGLayoutSVGRootTest, PaintLayerType) {
   EXPECT_FALSE(root.Layer()->IsSelfPaintingLayer());
 }
 
-TEST_P(CompositeSVGLayoutSVGRootTest, HasDescendantCompositingReasons) {
+TEST_F(CompositeSVGLayoutSVGRootTest, HasDescendantCompositingReasons) {
   SetBodyInnerHTML(R"HTML(
     <svg id="root" style="width: 200px; height: 200px;">
       <rect id="rect" width="100" height="100" fill="green"/>
@@ -214,7 +214,7 @@ TEST_P(CompositeSVGLayoutSVGRootTest, HasDescendantCompositingReasons) {
   EXPECT_FALSE(root.HasDescendantCompositingReasons());
 }
 
-TEST_P(CompositeSVGLayoutSVGRootTest, CompositedSVGMetric) {
+TEST_F(CompositeSVGLayoutSVGRootTest, CompositedSVGMetric) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .anim { animation: anim 5s infinite; }

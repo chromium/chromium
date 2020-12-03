@@ -196,6 +196,9 @@ CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(
   const ComputedStyle& style = object.StyleRef();
   auto reasons = CompositingReasonsForAnimation(object);
   reasons |= CompositingReasonsForWillChange(style);
+  // Exclude will-change for other properties some of which don't apply to SVG
+  // children, e.g. 'top'.
+  reasons &= ~CompositingReason::kWillChangeOther;
   if (style.HasBackdropFilter())
     reasons |= CompositingReason::kBackdropFilter;
   return reasons;

@@ -1176,14 +1176,20 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
         }
       }
 
-      // We may begin to composite our subtree prior to an animation starts, but
-      // a compositor element ID is only needed when an animation is current.
-      //
-      // Currently, we use the existence of this id to check if effect nodes
-      // have been created for animations on this element.
       state.direct_compositing_reasons =
           full_context_.direct_compositing_reasons &
           CompositingReasonsForEffectProperty();
+
+      if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+        state.direct_compositing_reasons |=
+            full_context_.direct_compositing_reasons &
+            CompositingReason::kSVGRoot;
+      }
+
+      // We may begin to composite our subtree prior to an animation starts, but
+      // a compositor element ID is only needed when an animation is current.
+      // Currently, we use the existence of this id to check if effect nodes
+      // have been created for animations on this element.
       if (state.direct_compositing_reasons) {
         state.compositor_element_id = GetCompositorElementId(
             CompositorElementIdNamespace::kPrimaryEffect);

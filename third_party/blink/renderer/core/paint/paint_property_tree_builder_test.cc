@@ -6977,7 +6977,8 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGChildBackdropFilter) {
   auto* svg_properties = PaintPropertiesForElement("svg");
   ASSERT_TRUE(svg_properties);
   ASSERT_TRUE(svg_properties->PaintOffsetTranslation());
-  EXPECT_TRUE(
+  EXPECT_EQ(
+      !RuntimeEnabledFeatures::CompositeAfterPaintEnabled(),
       svg_properties->PaintOffsetTranslation()->HasDirectCompositingReasons());
 
   auto* svg_text_properties = PaintPropertiesForElement("text");
