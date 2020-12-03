@@ -85,9 +85,8 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
 void TabSearchPageHandler::GetProfileTabs(GetProfileTabsCallback callback) {
   TRACE_EVENT0("browser", "TabSearchPageHandler::GetProfileTabs");
   auto profile_tabs = tab_search::mojom::ProfileTabs::New();
-  Profile* profile = browser_->profile();
   for (auto* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() != profile)
+    if (!ShouldTrackBrowser(browser))
       continue;
     TabStripModel* tab_strip_model = browser->tab_strip_model();
     auto window_tabs = tab_search::mojom::WindowTabs::New();
@@ -116,9 +115,8 @@ void TabSearchPageHandler::GetProfileTabs(GetProfileTabsCallback callback) {
 
 base::Optional<TabSearchPageHandler::TabDetails>
 TabSearchPageHandler::GetTabDetails(int32_t tab_id) {
-  Profile* profile = browser_->profile();
   for (auto* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() != profile) {
+    if (!ShouldTrackBrowser(browser)) {
       continue;
     }
 
@@ -248,7 +246,8 @@ void TabSearchPageHandler::NotifyTabsChanged() {
 }
 
 bool TabSearchPageHandler::ShouldTrackBrowser(Browser* browser) {
-  return browser->profile() == browser_->profile();
+  return browser->profile() == browser_->profile() &&
+         browser->type() == Browser::Type::TYPE_NORMAL;
 }
 
 void TabSearchPageHandler::SetTimerForTesting(

@@ -30,12 +30,14 @@ constexpr char kTabUrl2[] = "http://foo/2";
 constexpr char kTabUrl3[] = "http://foo/3";
 constexpr char kTabUrl4[] = "http://foo/4";
 constexpr char kTabUrl5[] = "http://foo/5";
+constexpr char kTabUrl6[] = "http://foo/6";
 
 constexpr char kTabName1[] = "Tab 1";
 constexpr char kTabName2[] = "Tab 2";
 constexpr char kTabName3[] = "Tab 3";
 constexpr char kTabName4[] = "Tab 4";
 constexpr char kTabName5[] = "Tab 5";
+constexpr char kTabName6[] = "Tab 6";
 
 class MockPage : public tab_search::mojom::Page {
  public:
@@ -112,6 +114,7 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
     browser3_ =
         CreateTestBrowser(browser()->profile()->GetPrimaryOTRProfile(), false);
     browser4_ = CreateTestBrowser(profile2(), false);
+    browser5_ = CreateTestBrowser(profile1(), true);
     BrowserList::SetLastActive(browser1());
     webui_controller_ =
         std::make_unique<ui::MojoBubbleWebUIController>(web_ui());
@@ -124,9 +127,11 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
     browser2()->tab_strip_model()->CloseAllTabs();
     browser3()->tab_strip_model()->CloseAllTabs();
     browser4()->tab_strip_model()->CloseAllTabs();
+    browser5()->tab_strip_model()->CloseAllTabs();
     browser2_.reset();
     browser3_.reset();
     browser4_.reset();
+    browser5_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -145,6 +150,9 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
 
   // Browser with a different profile of the default browser.
   Browser* browser4() { return browser4_.get(); }
+
+  // Browser with the same profile but not normal type.
+  Browser* browser5() { return browser5_.get(); }
 
   TestTabSearchPageHandler* handler() { return handler_.get(); }
   void FireTimer() { handler_->mock_debounce_timer()->Fire(); }
@@ -178,13 +186,15 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
   std::unique_ptr<Browser> browser2_;
   std::unique_ptr<Browser> browser3_;
   std::unique_ptr<Browser> browser4_;
+  std::unique_ptr<Browser> browser5_;
   std::unique_ptr<TestTabSearchPageHandler> handler_;
   std::unique_ptr<ui::MojoBubbleWebUIController> webui_controller_;
 };
 
 TEST_F(TabSearchPageHandlerTest, GetTabs) {
-  // Browser3 and browser4 are using different profiles, thus their tabs should
-  // not be accessible.
+  // Browser3 and browser4 are using different profiles, browser5 is not a
+  // normal type browser, thus their tabs should not be accessible.
+  AddTabWithTitle(browser5(), GURL(kTabUrl6), kTabName6);
   AddTabWithTitle(browser4(), GURL(kTabUrl5), kTabName5);
   AddTabWithTitle(browser3(), GURL(kTabUrl4), kTabName4);
   AddTabWithTitle(browser2(), GURL(kTabUrl3), kTabName3);
