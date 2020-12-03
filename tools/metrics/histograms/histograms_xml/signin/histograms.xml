@@ -476,6 +476,21 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.IOSGaiaCookieStateOnSignedInNavigation"
+    enum="GaiaCookieStateOnSignedInNavigation" expires_after="2021-08-05">
+  <owner>fernandex@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records whether the Gaia cookie is present when a user signed in to Chrome
+    navigates to a Google-owned domain that is eligible for Mirror account
+    consistency. This metrics tracks the user journeys that interact with
+    authentication cookies and that could be disrupted if an external force
+    (e.g. Apple's ITP) were to remove these cookies. This logging is limited to
+    once every hour due to performance constraints.
+  </summary>
+</histogram>
+
 <histogram name="Signin.IOSLoginMethodAndSyncState"
     enum="SigninIOSLoginMethodAndSyncState" expires_after="2021-04-30">
   <owner>jebel@chromium.org</owner>
