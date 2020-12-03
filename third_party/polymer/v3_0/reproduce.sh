@@ -95,5 +95,3 @@ python ../v1_0/rgbify_hex_vars.py --filter-prefix=google --replace \
 
 echo 'Creating GN files for interfaces and externs...'
 ../v1_0/generate_gn.sh 3 # polymer_version=3
-
-# TODO find unused elements?
