@@ -158,11 +158,6 @@ StartOfLine(const VisiblePositionInFlatTree&);
 CORE_EXPORT PositionWithAffinity StartOfLine(const PositionWithAffinity&);
 CORE_EXPORT PositionInFlatTreeWithAffinity
 StartOfLine(const PositionInFlatTreeWithAffinity&);
-// TODO(yosin) Return values of |VisiblePosition| version of |endOfLine()| with
-// shadow tree isn't defined well. We should not use it for shadow tree.
-CORE_EXPORT VisiblePosition EndOfLine(const VisiblePosition&);
-CORE_EXPORT VisiblePositionInFlatTree
-EndOfLine(const VisiblePositionInFlatTree&);
 CORE_EXPORT PositionWithAffinity EndOfLine(const PositionWithAffinity&);
 CORE_EXPORT PositionInFlatTreeWithAffinity
 EndOfLine(const PositionInFlatTreeWithAffinity&);

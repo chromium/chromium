@@ -224,7 +224,7 @@ class GranularityAdjuster final {
             .DeepEquivalent();
       case TextGranularity::kLine: {
         const VisiblePositionTemplate<Strategy> end =
-            EndOfLine(CreateVisiblePosition(passed_end));
+            CreateVisiblePosition(EndOfLine(passed_end));
         if (!IsEndOfParagraph(end))
           return end.DeepEquivalent();
         // If the end of this line is at the end of a paragraph, include the
@@ -235,7 +235,7 @@ class GranularityAdjuster final {
         return next.DeepEquivalent();
       }
       case TextGranularity::kLineBoundary:
-        return EndOfLine(CreateVisiblePosition(passed_end)).DeepEquivalent();
+        return EndOfLine(passed_end).GetPosition();
       case TextGranularity::kParagraph: {
         const VisiblePositionTemplate<Strategy> visible_paragraph_end =
             EndOfParagraph(CreateVisiblePosition(passed_end));

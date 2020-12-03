@@ -16,6 +16,15 @@
 
 namespace blink {
 
+static VisiblePosition EndOfLine(const VisiblePosition& position) {
+  return CreateVisiblePosition(EndOfLine(position.ToPositionWithAffinity()));
+}
+
+static VisiblePositionInFlatTree EndOfLine(
+    const VisiblePositionInFlatTree& position) {
+  return CreateVisiblePosition(EndOfLine(position.ToPositionWithAffinity()));
+}
+
 class VisibleUnitsLineTest : public EditingTestBase {
  protected:
   static PositionWithAffinity PositionWithAffinityInDOMTree(

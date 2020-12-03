@@ -291,8 +291,11 @@ struct VisualOrdering {
     const PositionWithAffinityTemplate<Strategy> candidate_position =
         PositionWithAffinityTemplate<Strategy>(
             candidate, TextAffinity::kUpstreamIfPossible);
-    if (InSameLine(current_position, candidate_position))
-      return candidate_position;
+    if (InSameLine(current_position, candidate_position)) {
+      return PositionWithAffinityTemplate<Strategy>(
+          CreateVisiblePosition(candidate).DeepEquivalent(),
+          TextAffinity::kUpstreamIfPossible);
+    }
     const PositionWithAffinityTemplate<Strategy>& adjusted_position =
         PreviousPositionOf(CreateVisiblePosition(current_position))
             .ToPositionWithAffinity();
@@ -401,20 +404,6 @@ PositionWithAffinity EndOfLine(const PositionWithAffinity& position) {
 PositionInFlatTreeWithAffinity EndOfLine(
     const PositionInFlatTreeWithAffinity& position) {
   return EndOfLineAlgorithm<EditingInFlatTreeStrategy>(position);
-}
-
-// TODO(yosin) Rename this function to reflect the fact it ignores bidi levels.
-VisiblePosition EndOfLine(const VisiblePosition& current_position) {
-  DCHECK(current_position.IsValid()) << current_position;
-  return CreateVisiblePosition(
-      EndOfLine(current_position.ToPositionWithAffinity()));
-}
-
-VisiblePositionInFlatTree EndOfLine(
-    const VisiblePositionInFlatTree& current_position) {
-  DCHECK(current_position.IsValid()) << current_position;
-  return CreateVisiblePosition(
-      EndOfLine(current_position.ToPositionWithAffinity()));
 }
 
 template <typename Strategy>
@@ -550,9 +539,14 @@ bool IsStartOfLine(const VisiblePositionInFlatTree& p) {
 }
 
 template <typename Strategy>
-static bool IsEndOfLineAlgorithm(const VisiblePositionTemplate<Strategy>& p) {
-  DCHECK(p.IsValid()) << p;
-  return p.IsNotNull() && p.DeepEquivalent() == EndOfLine(p).DeepEquivalent();
+static bool IsEndOfLineAlgorithm(
+    const VisiblePositionTemplate<Strategy>& visible_position) {
+  DCHECK(visible_position.IsValid()) << visible_position;
+  if (visible_position.IsNull())
+    return false;
+  const auto& end_of_line =
+      EndOfLine(visible_position.ToPositionWithAffinity());
+  return visible_position.DeepEquivalent() == end_of_line.GetPosition();
 }
 
 bool IsEndOfLine(const VisiblePosition& p) {
