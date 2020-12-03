@@ -26,8 +26,7 @@ class BitstreamFileWriter : public BitstreamProcessor {
       VideoCodec codec,
       const gfx::Size& resolution,
       uint32_t frame_rate,
-      uint32_t num_frames,
-      base::Optional<size_t> num_vp9_temporal_layers_to_write = base::nullopt);
+      uint32_t num_frames);
   BitstreamFileWriter(const BitstreamFileWriter&) = delete;
   BitstreamFileWriter operator=(const BitstreamFileWriter&) = delete;
   ~BitstreamFileWriter() override;
@@ -38,13 +37,11 @@ class BitstreamFileWriter : public BitstreamProcessor {
 
  private:
   class FrameFileWriter;
-  BitstreamFileWriter(std::unique_ptr<FrameFileWriter> frame_file_writer,
-                      base::Optional<size_t> num_vp9_temporal_layers_to_write_);
+  BitstreamFileWriter(std::unique_ptr<FrameFileWriter> frame_file_writer);
   void WriteBitstreamTask(scoped_refptr<BitstreamRef> bitstream,
                           size_t frame_index);
 
   const std::unique_ptr<FrameFileWriter> frame_file_writer_;
-  const base::Optional<size_t> num_vp9_temporal_layers_to_write_;
 
   // The number of buffers currently queued for writing.
   size_t num_buffers_writing_ GUARDED_BY(writer_lock_);

@@ -41,9 +41,7 @@ class VideoFrameFileWriter : public VideoFrameProcessor {
   static std::unique_ptr<VideoFrameFileWriter> Create(
       const base::FilePath& output_folder,
       OutputFormat output_format = OutputFormat::kPNG,
-      size_t output_limit = std::numeric_limits<size_t>::max(),
-      const base::FilePath::StringType& output_file_prefix =
-          base::FilePath::StringType());
+      size_t output_limit = std::numeric_limits<size_t>::max());
 
   // Interface VideoFrameProcessor
   void ProcessVideoFrame(scoped_refptr<const VideoFrame> video_frame,
@@ -54,8 +52,7 @@ class VideoFrameFileWriter : public VideoFrameProcessor {
  private:
   VideoFrameFileWriter(const base::FilePath& output_folder,
                        OutputFormat output_format,
-                       size_t output_limit,
-                       const base::FilePath::StringType& output_prefix);
+                       size_t output_limit);
 
   // Initialize the video frame file writer.
   bool Initialize();
@@ -77,8 +74,6 @@ class VideoFrameFileWriter : public VideoFrameProcessor {
   const OutputFormat output_format_;
   // The maximum number of frames that can be written.
   const size_t output_limit_;
-  // The prefix of the output file.
-  const base::FilePath::StringType output_file_prefix_;
 
   // The video frame mapper used to gain access to the raw video frame memory.
   std::unique_ptr<VideoFrameMapper> video_frame_mapper_;
