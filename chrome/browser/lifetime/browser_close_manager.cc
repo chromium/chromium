@@ -74,8 +74,8 @@ void BrowserCloseManager::TryToCloseBrowsers() {
   // this will trigger TryToCloseBrowsers to try again.
   for (auto* browser : *BrowserList::GetInstance()) {
     if (browser->TryToCloseWindow(
-            false,
-            base::Bind(&BrowserCloseManager::OnBrowserReportCloseable, this))) {
+            false, base::BindRepeating(
+                       &BrowserCloseManager::OnBrowserReportCloseable, this))) {
       current_browser_ = browser;
       return;
     }

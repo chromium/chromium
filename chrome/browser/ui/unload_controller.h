@@ -63,8 +63,9 @@ class UnloadController : public content::NotificationObserver,
   // Begins the process of confirming whether the associated browser can be
   // closed. Beforeunload events won't be fired if |skip_beforeunload|
   // is true.
-  bool TryToCloseWindow(bool skip_beforeunload,
-                        const base::Callback<void(bool)>& on_close_confirmed);
+  bool TryToCloseWindow(
+      bool skip_beforeunload,
+      const base::RepeatingCallback<void(bool)>& on_close_confirmed);
 
   // Clears the results of any beforeunload confirmation dialogs triggered by a
   // TryToCloseWindow call.
@@ -147,8 +148,13 @@ class UnloadController : public content::NotificationObserver,
 
   // A callback to call to report whether the user chose to close all tabs of
   // |browser_| that have beforeunload event handlers. This is set only if we
-  // are currently confirming that the browser is closable.
-  base::Callback<void(bool)> on_close_confirmed_;
+  // are currently confirming that the browser is closable. This can be called
+  // more than once if a user confirms all the beforeunload prompts (at which
+  // point it will be called with true) but the window close is later aborted
+  // (at which point it will be called with false). This can happen when
+  // multiple browser windows are being closed together. See
+  // BrowserList::TryToCloseBrowserList.
+  base::RepeatingCallback<void(bool)> on_close_confirmed_;
 
   base::WeakPtrFactory<UnloadController> weak_factory_{this};
 

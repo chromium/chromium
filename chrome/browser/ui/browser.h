@@ -460,8 +460,9 @@ class Browser : public TabStripModelObserver,
   // Note that if the browser window has been used before, users should always
   // have a chance to save their work before the window is closed without
   // triggering beforeunload event.
-  bool TryToCloseWindow(bool skip_beforeunload,
-                        const base::Callback<void(bool)>& on_close_confirmed);
+  bool TryToCloseWindow(
+      bool skip_beforeunload,
+      const base::RepeatingCallback<void(bool)>& on_close_confirmed);
 
   // Clears the results of any beforeunload confirmation dialogs triggered by a
   // TryToCloseWindow call.
