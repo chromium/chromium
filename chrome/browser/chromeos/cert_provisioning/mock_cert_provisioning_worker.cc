@@ -53,6 +53,9 @@ MockCertProvisioningWorkerFactory::ExpectDeserializeReturnMock(
 // ================ MockCertProvisioningWorker =================================
 
 MockCertProvisioningWorker::MockCertProvisioningWorker() {
+  // Makes MockCertProvisioningWorker return empty key by default. Because the
+  // return type is a reference, the object must exist to be able to return a
+  // default value.
   static const std::string default_public_key;
   ON_CALL(*this, GetPublicKey).WillByDefault(ReturnRef(default_public_key));
 }

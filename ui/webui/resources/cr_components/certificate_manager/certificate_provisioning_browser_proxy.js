@@ -17,6 +17,7 @@ import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
  *
  * @typedef {{
  *   certProfileId: string,
+ *   certProfileName: string,
  *   isDeviceWide: boolean,
  *   status: string,
  *   stateId: number,

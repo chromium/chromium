@@ -713,6 +713,7 @@ void CertProvisioningSchedulerImpl::UpdateFailedCertProfiles(
 
   FailedWorkerInfo info;
   info.state_before_failure = worker.GetPreviousState();
+  info.cert_profile_name = worker.GetCertProfile().name;
   info.public_key = worker.GetPublicKey();
   info.last_update_time = worker.GetLastUpdateTime();
 

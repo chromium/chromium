@@ -49,6 +49,7 @@ class TestCertificateProvisioningBrowserProxy extends TestBrowserProxy {
 function createSampleCertificateProvisioningProcess() {
   return {
     certProfileId: 'dummyProfileId',
+    certProfileName: 'Dummy Profile Name',
     isDeviceWide: true,
     publicKey: 'dummyPublicKey',
     stateId: 8,
