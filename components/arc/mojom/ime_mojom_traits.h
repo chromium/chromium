@@ -129,6 +129,9 @@ struct StructTraits<arc::mojom::KeyEventDataDataView, KeyEventUniquePtr> {
   static bool is_capslock_on(const KeyEventUniquePtr& key_event) {
     return key_event->IsCapsLockOn();
   }
+  static int32_t scan_code(const KeyEventUniquePtr& key_event) {
+    return key_event->scan_code();
+  }
 
   static bool Read(arc::mojom::KeyEventDataDataView data,
                    KeyEventUniquePtr* out);

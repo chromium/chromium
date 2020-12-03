@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 16
+// Next MinVersion: 17
 
 module arc.mojom;
 
@@ -54,6 +54,10 @@ struct KeyEventData {
   bool is_control_down;
   bool is_alt_down;
   bool is_capslock_on;
+  // An optional field used if |key_code| is undefined.
+  // It should be one of evdev codes (i.e. KEY_* defines)
+  // in <linux/input-event-codes.h>.
+  [MinVersion=16] uint32 scan_code;
 };
 
 // Next method ID: 8
