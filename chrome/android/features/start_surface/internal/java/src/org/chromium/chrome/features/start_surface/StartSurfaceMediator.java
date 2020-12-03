@@ -929,6 +929,9 @@ class StartSurfaceMediator
                         ? StartSurfaceState.SHOWN_HOMEPAGE
                         : mPreviousStartSurfaceState;
             } else if (mStartSurfaceState == StartSurfaceState.SHOWING_START) {
+                if (mTabModelSelector.isIncognitoSelected() && !mShowStackTabSwitcher) {
+                    return StartSurfaceState.SHOWN_TABSWITCHER;
+                }
                 return StartSurfaceState.SHOWN_HOMEPAGE;
             } else if (mStartSurfaceState == StartSurfaceState.SHOWING_TABSWITCHER) {
                 return StartSurfaceState.SHOWN_TABSWITCHER;
