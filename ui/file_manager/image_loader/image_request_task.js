@@ -396,8 +396,7 @@ ImageRequestTask.prototype.downloadThumbnail_ = function(onSuccess, onFailure) {
     PiexLoader.load(this.request_.url, chrome.runtime.reload)
         .then(
             function(data) {
-              // TODO(crbug.com/1152084): use this.renderOrientation_.
-              this.request_.orientation =
+              this.renderOrientation_ =
                   ImageOrientation.fromExifOrientation(data.orientation);
               this.ifd_ = data.ifd;
               this.contentType_ = data.mimeType;
