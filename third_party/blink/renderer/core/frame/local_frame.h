@@ -663,7 +663,6 @@ class CORE_EXPORT LocalFrame final
   void SetScaleFactor(float scale) override;
   void ClosePage(
       mojom::blink::LocalMainFrame::ClosePageCallback callback) override;
-  // Performs the specified plugin action on the node at the given location.
   void PluginActionAt(const gfx::Point& location,
                       mojom::blink::PluginActionType action) override;
   void SetInitialFocus(bool reverse) override;
@@ -692,6 +691,9 @@ class CORE_EXPORT LocalFrame final
   void ForwardMessageFromHost(
       BlinkTransferableMessage message,
       const scoped_refptr<const SecurityOrigin>& source_origin) final;
+  void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
+                                  cc::BrowserControlsState current,
+                                  bool animate) override;
 
   SystemClipboard* GetSystemClipboard();
   RawSystemClipboard* GetRawSystemClipboard();

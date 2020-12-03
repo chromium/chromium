@@ -4408,8 +4408,15 @@ void RenderFrameHostImpl::UpdateBrowserControlsState(
     cc::BrowserControlsState constraints,
     cc::BrowserControlsState current,
     bool animate) {
-  if (frame_)
-    frame_->UpdateBrowserControlsState(constraints, current, animate);
+  DCHECK(frame_tree_node_->IsMainFrame());
+
+  // TODO(https://crbug.com/1154852): Don't update browser control state for a
+  // frame that hasn't been created yet.
+  if (!IsRenderFrameCreated())
+    return;
+
+  GetAssociatedLocalMainFrame()->UpdateBrowserControlsState(constraints,
+                                                            current, animate);
 }
 
 bool RenderFrameHostImpl::Reload() {

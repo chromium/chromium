@@ -82,6 +82,11 @@ class PLATFORM_EXPORT FrameWidget {
   // the time the compositor is created.
   virtual const cc::LayerTreeSettings& GetLayerTreeSettings() = 0;
 
+  // Sets the state of the browser controls. (Used for URL bar animations.)
+  virtual void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
+                                          cc::BrowserControlsState current,
+                                          bool animate) = 0;
+
   // Set or get what event handlers exist in the document contained in the
   // WebWidget in order to inform the compositor thread if it is able to handle
   // an input event, or it needs to pass it to the main thread to be handled.

@@ -192,6 +192,9 @@ class CORE_EXPORT WebFrameWidgetImpl
   void RequestBeginMainFrameNotExpected(bool request) final;
   int GetLayerTreeId() final;
   const cc::LayerTreeSettings& GetLayerTreeSettings() final;
+  void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
+                                  cc::BrowserControlsState current,
+                                  bool animate) final;
   void SetEventListenerProperties(cc::EventListenerClass,
                                   cc::EventListenerProperties) final;
   cc::EventListenerProperties EventListenerProperties(

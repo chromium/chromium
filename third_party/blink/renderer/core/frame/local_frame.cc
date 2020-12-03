@@ -2735,6 +2735,21 @@ void LocalFrame::ForwardMessageFromHost(
       .ReceiveMessage(std::move(message), source_origin);
 }
 
+void LocalFrame::UpdateBrowserControlsState(
+    cc::BrowserControlsState constraints,
+    cc::BrowserControlsState current,
+    bool animate) {
+  DCHECK(IsMainFrame());
+  TRACE_EVENT2("renderer", "LocalFrame::UpdateBrowserControlsState",
+               "Constraint", static_cast<int>(constraints), "Current",
+               static_cast<int>(current));
+  TRACE_EVENT_INSTANT1("renderer", "is_animated", TRACE_EVENT_SCOPE_THREAD,
+                       "animated", animate);
+
+  GetWidgetForLocalRoot()->UpdateBrowserControlsState(constraints, current,
+                                                      animate);
+}
+
 HitTestResult LocalFrame::HitTestResultForVisualViewportPos(
     const IntPoint& pos_in_viewport) {
   IntPoint root_frame_point(

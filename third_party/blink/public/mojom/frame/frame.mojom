@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "cc/mojom/browser_controls_state.mojom";
 import "cc/mojom/touch_action.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -970,6 +971,13 @@ interface LocalMainFrame {
   // guest contents.
   ForwardMessageFromHost(blink.mojom.TransferableMessage message,
                          url.mojom.Origin source_origin);
+
+  // Notifies the renderer whether hiding/showing the browser controls is
+  // enabled, what the current state should be, and whether or not to
+  // animate to the proper state.
+  UpdateBrowserControlsState(cc.mojom.BrowserControlsState constraints,
+                             cc.mojom.BrowserControlsState current,
+                             bool animate);
 };
 
 // Implemented in Blink, this interface defines remote main-frame-specific

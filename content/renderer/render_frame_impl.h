@@ -436,9 +436,6 @@ class CONTENT_EXPORT RenderFrameImpl
       GetCanonicalUrlForSharingCallback callback) override;
   void BlockRequests() override;
   void ResumeBlockedRequests() override;
-  void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
-                                  cc::BrowserControlsState current,
-                                  bool animate) override;
   void SnapshotAccessibilityTree(
       uint32_t ax_mode,
       SnapshotAccessibilityTreeCallback callback) override;

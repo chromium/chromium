@@ -2635,22 +2635,6 @@ void RenderFrameImpl::SwapIn() {
   SwapInInternal();
 }
 
-void RenderFrameImpl::UpdateBrowserControlsState(
-    cc::BrowserControlsState constraints,
-    cc::BrowserControlsState current,
-    bool animate) {
-  TRACE_EVENT2("renderer", "RenderFrameImpl::UpdateBrowserControlsState",
-               "Constraint", static_cast<int>(constraints), "Current",
-               static_cast<int>(current));
-  TRACE_EVENT_INSTANT1("renderer", "is_animated", TRACE_EVENT_SCOPE_THREAD,
-                       "animated", animate);
-
-  DCHECK(is_main_frame_);
-
-  cc::LayerTreeHost* host = render_widget_->layer_tree_host();
-  host->UpdateBrowserControlsState(constraints, current, animate);
-}
-
 void RenderFrameImpl::SnapshotAccessibilityTree(
     uint32_t ax_mode,
     SnapshotAccessibilityTreeCallback callback) {

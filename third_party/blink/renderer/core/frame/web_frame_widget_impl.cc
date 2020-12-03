@@ -1595,6 +1595,15 @@ const cc::LayerTreeSettings& WebFrameWidgetImpl::GetLayerTreeSettings() {
   return widget_base_->LayerTreeHost()->GetSettings();
 }
 
+void WebFrameWidgetImpl::UpdateBrowserControlsState(
+    cc::BrowserControlsState constraints,
+    cc::BrowserControlsState current,
+    bool animate) {
+  DCHECK(View()->does_composite());
+  widget_base_->LayerTreeHost()->UpdateBrowserControlsState(constraints,
+                                                            current, animate);
+}
+
 void WebFrameWidgetImpl::SetHaveScrollEventHandlers(bool has_handlers) {
   widget_base_->LayerTreeHost()->SetHaveScrollEventHandlers(has_handlers);
 }
