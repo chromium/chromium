@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_COMMON_THREAD_UTILS_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_COMMON_THREAD_UTILS_H_
 
+#include "base/memory/scoped_refptr.h"
+#include "base/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 
 namespace safe_browsing {
@@ -30,6 +32,10 @@ bool CurrentlyOnThread(ThreadID thread_id) WARN_UNUSED_RESULT;
 // Callable on any thread. Returns TaskTraits for running a task on the given
 // thread.
 base::TaskTraits CreateTaskTraits(ThreadID thread_id);
+
+// Callable on any thread. Returns the task runner associated with the given
+// identifier.
+scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(ThreadID thread_id);
 
 }  // namespace safe_browsing
 

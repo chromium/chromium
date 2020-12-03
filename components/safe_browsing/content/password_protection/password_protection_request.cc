@@ -18,7 +18,6 @@
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/url_formatter/url_formatter.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "net/base/escape.h"
 #include "net/base/load_flags.h"
@@ -171,7 +170,7 @@ void PasswordProtectionRequest::CheckWhitelist() {
   auto result_callback =
       base::BindOnce(&OnWhitelistCheckDoneOnIO, GetWeakPtr());
   tracker_.PostTask(
-      content::GetIOThreadTaskRunner({}).get(), FROM_HERE,
+      GetTaskRunner(ThreadID::IO).get(), FROM_HERE,
       base::BindOnce(&AllowlistCheckerClient::StartCheckCsdWhitelist,
                      password_protection_service_->database_manager(),
                      main_frame_url_, std::move(result_callback)));
@@ -182,10 +181,11 @@ void PasswordProtectionRequest::OnWhitelistCheckDoneOnIO(
     base::WeakPtr<PasswordProtectionRequest> weak_request,
     bool match_whitelist) {
   // Don't access weak_request on IO thread. Move it back to UI thread first.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PasswordProtectionRequest::OnWhitelistCheckDone,
-                     weak_request, match_whitelist));
+  GetTaskRunner(ThreadID::UI)
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(&PasswordProtectionRequest::OnWhitelistCheckDone,
+                         weak_request, match_whitelist));
 }
 
 void PasswordProtectionRequest::OnWhitelistCheckDone(bool match_whitelist) {
@@ -350,11 +350,12 @@ void PasswordProtectionRequest::GetDomFeatures() {
       main_frame_url_,
       base::BindRepeating(&PasswordProtectionRequest::OnGetDomFeatures,
                           GetWeakPtr()));
-  content::GetUIThreadTaskRunner({})->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&PasswordProtectionRequest::OnGetDomFeatureTimeout,
-                     GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(kDomFeatureTimeoutMs));
+  GetTaskRunner(ThreadID::UI)
+      ->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&PasswordProtectionRequest::OnGetDomFeatureTimeout,
+                         GetWeakPtr()),
+          base::TimeDelta::FromMilliseconds(kDomFeatureTimeoutMs));
   dom_feature_start_time_ = base::TimeTicks::Now();
 }
 
@@ -540,10 +541,12 @@ void PasswordProtectionRequest::StartTimeout() {
   // The weak pointer used for the timeout will be invalidated (and
   // hence would prevent the timeout) if the check completes on time and
   // execution reaches Finish().
-  content::GetUIThreadTaskRunner({})->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&PasswordProtectionRequest::Cancel, GetWeakPtr(), true),
-      base::TimeDelta::FromMilliseconds(request_timeout_in_ms_));
+  GetTaskRunner(ThreadID::UI)
+      ->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&PasswordProtectionRequest::Cancel, GetWeakPtr(),
+                         true),
+          base::TimeDelta::FromMilliseconds(request_timeout_in_ms_));
 }
 
 void PasswordProtectionRequest::OnURLLoaderComplete(

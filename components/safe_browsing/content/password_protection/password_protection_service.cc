@@ -27,8 +27,6 @@
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/zoom/zoom_controller.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/google_api_keys.h"
@@ -36,7 +34,6 @@
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 
-using content::BrowserThread;
 using content::WebContents;
 using history::HistoryService;
 using password_manager::metrics_util::PasswordType;
@@ -386,12 +383,13 @@ void PasswordProtectionService::FillUserPopulation(
 void PasswordProtectionService::OnURLsDeleted(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindRepeating(&PasswordProtectionService::
-                              RemoveUnhandledSyncPasswordReuseOnURLsDeleted,
-                          GetWeakPtr(), deletion_info.IsAllHistory(),
-                          deletion_info.deleted_rows()));
+  GetTaskRunner(ThreadID::UI)
+      ->PostTask(
+          FROM_HERE,
+          base::BindRepeating(&PasswordProtectionService::
+                                  RemoveUnhandledSyncPasswordReuseOnURLsDeleted,
+                              GetWeakPtr(), deletion_info.IsAllHistory(),
+                              deletion_info.deleted_rows()));
 }
 
 void PasswordProtectionService::HistoryServiceBeingDeleted(
