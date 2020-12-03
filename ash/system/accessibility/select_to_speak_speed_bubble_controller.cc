@@ -13,6 +13,7 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_view.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace ash {
 
@@ -23,10 +24,12 @@ constexpr int kBubbleViewMargin = 2;
 
 }  // namespace
 
-SelectToSpeakSpeedBubbleController::SelectToSpeakSpeedBubbleController() =
-    default;
+SelectToSpeakSpeedBubbleController::SelectToSpeakSpeedBubbleController() {
+  Shell::Get()->activation_client()->AddObserver(this);
+}
 
 SelectToSpeakSpeedBubbleController::~SelectToSpeakSpeedBubbleController() {
+  Shell::Get()->activation_client()->RemoveObserver(this);
   if (bubble_widget_ && !bubble_widget_->IsClosed())
     bubble_widget_->CloseNow();
 }
@@ -47,10 +50,13 @@ void SelectToSpeakSpeedBubbleController::Show(views::View* anchor_view,
     init_params.corner_radius = kUnifiedTrayCornerRadius;
     init_params.has_shadow = false;
     init_params.translucent = true;
+    init_params.close_on_deactivate = false;
     init_params.preferred_width = kPreferredWidth;
     bubble_view_ = new TrayBubbleView(init_params);
     // TODO(crbug.com/1143814): Ensure this works correctly for RTL languages.
     bubble_view_->SetArrow(views::BubbleBorder::BOTTOM_RIGHT);
+    bubble_view_->SetCanActivate(true);
+    bubble_view_->SetFocusBehavior(ActionableView::FocusBehavior::ALWAYS);
 
     speed_view_ = new SelectToSpeakSpeedView(this, speech_rate);
     bubble_view_->AddChildView(speed_view_);
@@ -80,6 +86,22 @@ bool SelectToSpeakSpeedBubbleController::IsVisible() const {
 void SelectToSpeakSpeedBubbleController::BubbleViewDestroyed() {
   bubble_view_ = nullptr;
   bubble_widget_ = nullptr;
+}
+
+void SelectToSpeakSpeedBubbleController::OnWindowActivated(
+    ActivationReason reason,
+    aura::Window* gained_active,
+    aura::Window* lost_active) {
+  if (!gained_active || !bubble_widget_ || !speed_view_)
+    return;
+
+  views::Widget* gained_widget =
+      views::Widget::GetWidgetForNativeView(gained_active);
+  if (gained_widget == bubble_widget_) {
+    speed_view_->SetInitialFocus();
+  } else {
+    Hide();
+  }
 }
 
 void SelectToSpeakSpeedBubbleController::OnSpeechRateSelected(

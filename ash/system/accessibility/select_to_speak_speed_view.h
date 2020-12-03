@@ -5,7 +5,10 @@
 #ifndef ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SPEED_VIEW_H_
 #define ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SPEED_VIEW_H_
 
+#include "ash/ash_export.h"
 #include "ash/system/tray/view_click_listener.h"
+#include "ui/events/event.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
@@ -33,6 +36,8 @@ class SelectToSpeakSpeedView : public views::BoxLayoutView,
   SelectToSpeakSpeedView& operator=(const SelectToSpeakSpeedView&) = delete;
   ~SelectToSpeakSpeedView() override = default;
 
+  void SetInitialFocus();
+
  private:
   void AddMenuItem(int option_id,
                    const base::string16& label,
@@ -40,6 +45,9 @@ class SelectToSpeakSpeedView : public views::BoxLayoutView,
 
   // ViewClickListener:
   void OnViewClicked(views::View* sender) override;
+
+  // ui::EventHandler:
+  void OnKeyEvent(ui::KeyEvent* key_event) override;
 
   Delegate* delegate_ = nullptr;
   double default_speech_rate_ = 0.0;

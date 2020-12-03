@@ -7,10 +7,13 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/accessibility/floating_menu_utils.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_view.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace ash {
 
@@ -19,10 +22,12 @@ const int kAnchorRectVerticalSpacing = 12;
 const int kPreferredWidth = 368;
 }  // namespace
 
-SelectToSpeakMenuBubbleController::SelectToSpeakMenuBubbleController() =
-    default;
+SelectToSpeakMenuBubbleController::SelectToSpeakMenuBubbleController() {
+  Shell::Get()->activation_client()->AddObserver(this);
+}
 
 SelectToSpeakMenuBubbleController::~SelectToSpeakMenuBubbleController() {
+  Shell::Get()->activation_client()->RemoveObserver(this);
   if (bubble_widget_ && !bubble_widget_->IsClosed())
     bubble_widget_->CloseNow();
 }
@@ -44,8 +49,11 @@ void SelectToSpeakMenuBubbleController::Show(const gfx::Rect& anchor,
     init_params.has_shadow = false;
     init_params.translucent = true;
     init_params.preferred_width = kPreferredWidth;
+    init_params.close_on_deactivate = false;
     bubble_view_ = new TrayBubbleView(init_params);
     bubble_view_->SetArrow(views::BubbleBorder::TOP_LEFT);
+    bubble_view_->SetCanActivate(true);
+    bubble_view_->SetFocusBehavior(ActionableView::FocusBehavior::ALWAYS);
 
     menu_view_ = new SelectToSpeakMenuView(this);
     menu_view_->SetBorder(
@@ -67,7 +75,10 @@ void SelectToSpeakMenuBubbleController::Show(const gfx::Rect& anchor,
   bubble_view_->ChangeAnchorRect(gfx::Rect(
       anchor.x(), anchor.y() - kAnchorRectVerticalSpacing, anchor.width(),
       anchor.height() + kAnchorRectVerticalSpacing * 2));
-  bubble_widget_->Show();
+
+  if (!bubble_widget_->IsVisible()) {
+    bubble_widget_->Show();
+  }
 }
 
 void SelectToSpeakMenuBubbleController::Hide() {
@@ -80,10 +91,28 @@ void SelectToSpeakMenuBubbleController::Hide() {
   }
 }
 
+base::string16 SelectToSpeakMenuBubbleController::GetAccessibleNameForBubble() {
+  return l10n_util::GetStringUTF16(IDS_ASH_SELECT_TO_SPEAK_MENU);
+}
+
 void SelectToSpeakMenuBubbleController::BubbleViewDestroyed() {
   bubble_view_ = nullptr;
   bubble_widget_ = nullptr;
   menu_view_ = nullptr;
+}
+
+void SelectToSpeakMenuBubbleController::OnWindowActivated(
+    ActivationReason reason,
+    aura::Window* gained_active,
+    aura::Window* lost_active) {
+  if (!gained_active || !bubble_widget_)
+    return;
+
+  views::Widget* gained_widget =
+      views::Widget::GetWidgetForNativeView(gained_active);
+  if (gained_widget == bubble_widget_ && menu_view_) {
+    menu_view_->SetInitialFocus();
+  }
 }
 
 void SelectToSpeakMenuBubbleController::OnActionSelected(

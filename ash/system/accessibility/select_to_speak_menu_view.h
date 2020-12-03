@@ -5,8 +5,9 @@
 #ifndef ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_MENU_VIEW_H_
 #define ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_MENU_VIEW_H_
 
+#include "ash/ash_export.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
-#include "ash/system/accessibility/select_to_speak_speed_bubble_controller.h"
+#include "ui/events/event.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -51,8 +52,13 @@ class SelectToSpeakMenuView : public views::BoxLayoutView {
   // Update paused status.
   void SetPaused(bool is_paused);
 
+  void SetInitialFocus();
+
  private:
   void OnButtonPressed(views::Button* sender);
+
+  // ui::EventHandler:
+  void OnKeyEvent(ui::KeyEvent* key_event) override;
 
   // Owned by views hierarchy.
   FloatingMenuButton* prev_paragraph_button_ = nullptr;

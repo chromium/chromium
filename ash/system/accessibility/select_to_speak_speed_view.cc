@@ -14,6 +14,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
@@ -72,6 +73,34 @@ void SelectToSpeakSpeedView::OnViewClicked(views::View* sender) {
     selected_rate = kSpeechRates[speed_index];
   if (selected_rate != 0.0)
     delegate_->OnSpeechRateSelected(selected_rate);
+}
+
+void SelectToSpeakSpeedView::SetInitialFocus() {
+  if (children().size() == 0)
+    return;
+
+  children()[0]->RequestFocus();
+}
+
+void SelectToSpeakSpeedView::OnKeyEvent(ui::KeyEvent* key_event) {
+  if (key_event->type() != ui::ET_KEY_PRESSED || key_event->is_repeat()) {
+    // Only process key when first pressed.
+    return;
+  }
+
+  switch (key_event->key_code()) {
+    case ui::KeyboardCode::VKEY_UP:
+      GetFocusManager()->AdvanceFocus(/* reverse= */ true);
+      break;
+    case ui::KeyboardCode::VKEY_DOWN:
+      GetFocusManager()->AdvanceFocus(/* reverse= */ false);
+      break;
+    default:
+      // Unhandled key.
+      return;
+  }
+  key_event->SetHandled();
+  key_event->StopPropagation();
 }
 
 BEGIN_METADATA(SelectToSpeakSpeedView, views::BoxLayoutView)

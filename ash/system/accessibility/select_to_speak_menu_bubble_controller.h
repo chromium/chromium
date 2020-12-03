@@ -8,14 +8,17 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/system/accessibility/select_to_speak_menu_view.h"
+#include "ash/system/accessibility/select_to_speak_speed_bubble_controller.h"
 #include "ash/system/tray/tray_bubble_view.h"
+#include "ui/wm/public/activation_change_observer.h"
 
 namespace ash {
 
 // Manages the Select-to-speak floating menu panel.
 class ASH_EXPORT SelectToSpeakMenuBubbleController
     : public TrayBubbleView::Delegate,
-      public SelectToSpeakMenuView::Delegate {
+      public SelectToSpeakMenuView::Delegate,
+      public ::wm::ActivationChangeObserver {
  public:
   SelectToSpeakMenuBubbleController();
   ~SelectToSpeakMenuBubbleController() override;
@@ -33,7 +36,13 @@ class ASH_EXPORT SelectToSpeakMenuBubbleController
   friend class SelectToSpeakSpeedBubbleControllerTest;
 
   // TrayBubbleView::Delegate:
+  base::string16 GetAccessibleNameForBubble() override;
   void BubbleViewDestroyed() override;
+
+  // ::wm::ActivationChangeObserver:
+  void OnWindowActivated(ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
 
   // SelectToSpeakMenuView::Delegate:
   void OnActionSelected(SelectToSpeakPanelAction action) override;

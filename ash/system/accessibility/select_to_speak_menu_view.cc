@@ -159,6 +159,38 @@ SelectToSpeakMenuView::SelectToSpeakMenuView(Delegate* delegate)
   pause_button_->SetToggled(true);
 }
 
+void SelectToSpeakMenuView::OnKeyEvent(ui::KeyEvent* key_event) {
+  if (key_event->type() != ui::ET_KEY_PRESSED || key_event->is_repeat()) {
+    // Only process key when first pressed.
+    return;
+  }
+
+  auto action = SelectToSpeakPanelAction::kNone;
+  switch (key_event->key_code()) {
+    case ui::KeyboardCode::VKEY_LEFT:
+      action = SelectToSpeakPanelAction::kPreviousSentence;
+      break;
+    case ui::KeyboardCode::VKEY_RIGHT:
+      action = SelectToSpeakPanelAction::kNextSentence;
+      break;
+    case ui::KeyboardCode::VKEY_UP:
+      action = SelectToSpeakPanelAction::kPreviousParagraph;
+      break;
+    case ui::KeyboardCode::VKEY_DOWN:
+      action = SelectToSpeakPanelAction::kNextParagraph;
+      break;
+    case ui::KeyboardCode::VKEY_ESCAPE:
+      action = SelectToSpeakPanelAction::kExit;
+      break;
+    default:
+      // Unhandled key.
+      return;
+  }
+  delegate_->OnActionSelected(action);
+  key_event->SetHandled();
+  key_event->StopPropagation();
+}
+
 void SelectToSpeakMenuView::SetPaused(bool is_paused) {
   pause_button_->SetVectorIcon(is_paused ? kSelectToSpeakPlayIcon
                                          : kSelectToSpeakPauseIcon);
@@ -166,6 +198,10 @@ void SelectToSpeakMenuView::SetPaused(bool is_paused) {
       l10n_util::GetStringUTF16(is_paused ? IDS_ASH_SELECT_TO_SPEAK_RESUME
                                           : IDS_ASH_SELECT_TO_SPEAK_PAUSE));
   is_paused_ = is_paused;
+}
+
+void SelectToSpeakMenuView::SetInitialFocus() {
+  pause_button_->RequestFocus();
 }
 
 void SelectToSpeakMenuView::OnButtonPressed(views::Button* sender) {

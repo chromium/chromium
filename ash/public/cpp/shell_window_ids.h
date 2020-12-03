@@ -206,7 +206,7 @@ constexpr int kSystemModalContainerIds[] = {
 // windows in containers appearing later in the list. This list is used by
 // AshFocusRules to determine which container to start the search from when
 // looking for the next activatable window.
-ASH_PUBLIC_EXPORT const std::array<int, 18>& GetActivatableShellWindowIds();
+ASH_PUBLIC_EXPORT const std::array<int, 19>& GetActivatableShellWindowIds();
 
 // Returns true if |id| is in |kActivatableContainersIds|.
 ASH_PUBLIC_EXPORT bool IsActivatableShellWindowId(int id);

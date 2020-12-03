@@ -9,13 +9,15 @@
 #include "ash/system/accessibility/select_to_speak_speed_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/view_click_listener.h"
+#include "ui/wm/public/activation_change_observer.h"
 
 namespace ash {
 
 // Manages the Select-to-speak reading speed (speech rate) selector.
 class ASH_EXPORT SelectToSpeakSpeedBubbleController
     : public TrayBubbleView::Delegate,
-      public SelectToSpeakSpeedView::Delegate {
+      public SelectToSpeakSpeedView::Delegate,
+      public ::wm::ActivationChangeObserver {
  public:
   SelectToSpeakSpeedBubbleController();
   SelectToSpeakSpeedBubbleController(
@@ -38,6 +40,11 @@ class ASH_EXPORT SelectToSpeakSpeedBubbleController
 
   // TrayBubbleView::Delegate:
   void BubbleViewDestroyed() override;
+
+  // ::wm::ActivationChangeObserver:
+  void OnWindowActivated(ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
 
   // SelectToSpeakSpeedView::Delegate:
   void OnSpeechRateSelected(double speech_rate) override;

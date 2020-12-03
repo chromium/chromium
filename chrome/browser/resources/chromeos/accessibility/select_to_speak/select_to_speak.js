@@ -14,6 +14,19 @@ const SelectToSpeakPanelAction =
 const SELECT_TO_SPEAK_TRAY_CLASS_NAME =
     'tray/TrayBackgroundView/SelectToSpeakTray';
 
+// This must match the name of view class that implements the menu view:
+// ash/system/accessibility/select_to_speak_menu_view.h
+const SELECT_TO_SPEAK_MENU_CLASS_NAME = 'SelectToSpeakMenuView';
+
+// This must match the name of view class that implements the bubble views:
+// ash/system/tray/tray_bubble_view.h
+const TRAY_BUBBLE_VIEW_CLASS_NAME = 'TrayBubbleView';
+
+// This must match the name of view class that implements the buttons used in
+// the floating panel:
+// ash/system/accessibility/floating_menu_button.h
+const FLOATING_MENU_BUTTON_CLASS_NAME = 'FloatingMenuButton';
+
 // Matches one of the known GSuite apps which need the clipboard to find and
 // read selected text. Includes sandbox and non-sandbox versions.
 const GSUITE_APP_REGEXP =
@@ -59,6 +72,9 @@ class SelectToSpeak {
     /** @private {chrome.automation.AutomationNode} */
     this.desktop_;
 
+    /** @private {?chrome.automation.AutomationNode} */
+    this.panel_ = null;
+
     /** @private {number|undefined} */
     this.intervalRef_;
 
@@ -77,6 +93,12 @@ class SelectToSpeak {
       desktop.addEventListener(
           EventType.HOVER, this.onHitTestCheckCurrentNodeMatches_.bind(this),
           true);
+
+      // Listen to focus changes so we can grab the floating panel when it
+      // goes into focus, so it can be used later without having to search
+      // through the entire tree.
+      desktop.addEventListener(
+          EventType.FOCUS, this.onFocusChange_.bind(this), true);
     }.bind(this));
 
     /** @private {boolean} */
@@ -214,6 +236,31 @@ class SelectToSpeak {
   }
 
   /**
+   * Handles desktop-wide focus changes.
+   * @param {!AutomationEvent} evt
+   * @private
+   */
+  onFocusChange_(evt) {
+    const focusedNode = evt.target;
+
+    // As an optimization, look for the STS floating panel and store in case
+    // we need to access that node at a later point (such as focusing panel).
+    if (focusedNode.className !== FLOATING_MENU_BUTTON_CLASS_NAME) {
+      // When panel is focused, initial focus is always on one of the buttons.
+      return;
+    }
+    const windowParent =
+        AutomationUtil.getFirstAncestorWithRole(focusedNode, RoleType.WINDOW);
+    if (windowParent &&
+        windowParent.className === TRAY_BUBBLE_VIEW_CLASS_NAME &&
+        windowParent.children.length === 1 &&
+        windowParent.children[0].className ===
+            SELECT_TO_SPEAK_MENU_CLASS_NAME) {
+      this.panel_ = windowParent;
+    }
+  }
+
+  /**
    * Queues up selected text for reading by finding the Position objects
    * representing the selection.
    * @private
@@ -278,6 +325,7 @@ class SelectToSpeak {
       }
     }
 
+    this.cancelIfSpeaking_(true /* clear the focus ring */);
     this.readNodesInSelection_(firstPosition, lastPosition, focusedNode);
   }
 
@@ -414,7 +462,36 @@ class SelectToSpeak {
    * @private
    */
   onNullSelection_() {
-    this.null_selection_tone_.play();
+    if (!this.navigationControlFlag_) {
+      this.null_selection_tone_.play();
+      return;
+    }
+
+    this.focusPanel_();
+  }
+
+  /**
+   * Sets focus to the floating control panel, if present.
+   * @private
+   */
+  focusPanel_() {
+    // Used cached panel node if possible to avoid expensive desktop.find().
+    // Note: Checking role attribute to see if node is still valid.
+    if (this.panel_ && this.panel_.role) {
+      this.panel_.focus();
+      return;
+    }
+    this.panel_ = null;
+
+    // Fallback to more expensive method of finding panel.
+    const menuView = this.desktop_.find(
+        {attributes: {className: SELECT_TO_SPEAK_MENU_CLASS_NAME}});
+    if (menuView !== null && menuView.parent &&
+        menuView.parent.className === TRAY_BUBBLE_VIEW_CLASS_NAME) {
+      // The menu view's parent is the TrayBubbleView can can be assigned focus.
+      this.panel_ = menuView.parent;
+      this.panel_.focus();
+    }
   }
 
   /**
@@ -541,7 +618,6 @@ class SelectToSpeak {
       },
       // onKeystrokeSelection: Keys pressed for reading highlighted text.
       onKeystrokeSelection: () => {
-        this.cancelIfSpeaking_(true /* clear the focus ring */);
         chrome.automation.getFocus(this.requestSpeakSelectedText_.bind(this));
       },
       // onRequestCancel: User requested canceling input/speech.
