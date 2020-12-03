@@ -360,7 +360,9 @@ class FormStructure {
   // - Name for Autofill of first field
   base::string16 GetIdentifierForRefill() const;
 
-  int developer_engagement_metrics() { return developer_engagement_metrics_; }
+  int developer_engagement_metrics() const {
+    return developer_engagement_metrics_;
+  }
 
   void set_randomized_encoder(std::unique_ptr<RandomizedEncoder> encoder);
 

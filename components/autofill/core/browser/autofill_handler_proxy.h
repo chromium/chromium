@@ -66,8 +66,13 @@ class AutofillHandlerProxy : public AutofillHandler {
 
   bool ShouldParseForms(const std::vector<FormData>& forms) override;
 
-  void OnFormsParsed(
-      const std::vector<const FormData*>& form_structures) override {}
+  void OnBeforeProcessParsedForms() override {}
+
+  void OnFormProcessed(const FormData& form,
+                       const FormStructure& form_structure) override {}
+
+  void OnAfterProcessParsedForms(
+      const std::set<FormType>& form_types) override {}
 
  private:
   AutofillProvider* provider_;

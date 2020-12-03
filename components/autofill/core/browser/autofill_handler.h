@@ -51,6 +51,16 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
     virtual void OnFormParsed() = 0;
   };
 
+  // Rich queries are enabled by feature flag iff this chrome instance is
+  // neither on the STABLE nor BETA release channel.
+  static bool IsRichQueryEnabled(version_info::Channel channel);
+
+  // TODO(crbug.com/1151542): Move to anonymous namespace once
+  // AutofillManager::OnLoadedServerPredictions() moves to AutofillHandler.
+  static void LogAutofillTypePredictionsAvailable(
+      LogManager* log_manager,
+      const std::vector<FormStructure*>& forms);
+
   ~AutofillHandler() override;
 
   // Invoked when the value of textfield is changed.
@@ -166,7 +176,7 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
   FormStructure* ParseFormForTest(const FormData& form) {
     return ParseForm(form, nullptr);
   }
-#endif
+#endif  // UNIT_TEST
 
  protected:
   using FormInteractionsUkmLoggerFactoryCallback = base::RepeatingCallback<
@@ -216,8 +226,17 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
   // form_structures.
   virtual bool ShouldParseForms(const std::vector<FormData>& forms) = 0;
 
-  // Invoked when forms from OnFormsSeen() has been parsed to |form_structures|.
-  virtual void OnFormsParsed(const std::vector<const FormData*>& forms) = 0;
+  // Invoked before parsing the forms.
+  virtual void OnBeforeProcessParsedForms() = 0;
+
+  // Invoked when the given |form| has been processed to the given
+  // |form_structure|.
+  virtual void OnFormProcessed(const FormData& form,
+                               const FormStructure& form_structure) = 0;
+  // Invoked after all forms have been processed, |form_types| is a set of
+  // FormType found.
+  virtual void OnAfterProcessParsedForms(
+      const std::set<FormType>& form_types) = 0;
 
   // Returns the number of FormStructures with the given |form_signature| and
   // appends them to |form_structures|. Runs in linear time.
@@ -245,10 +264,15 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
     return &form_structures_;
   }
 
+#ifdef UNIT_TEST
   // Exposed for testing.
   void set_download_manager(AutofillDownloadManager* manager) {
     download_manager_.reset(manager);
   }
+
+  // Exposed for testing.
+  bool is_rich_query_enabled() const { return is_rich_query_enabled_; }
+#endif  // UNIT_TEST
 
  private:
   // AutofillDownloadManager::Observer:
@@ -258,6 +282,10 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
   void OnServerRequestError(FormSignature form_signature,
                             AutofillDownloadManager::RequestType request_type,
                             int http_error) override;
+
+  // Invoked when forms from OnFormsSeen() have been parsed to
+  // |form_structures|.
+  void OnFormsParsed(const std::vector<const FormData*>& forms);
 
   // Provides driver-level context to the shared code of the component. Must
   // outlive this object.
@@ -279,6 +307,9 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
   // Utility for logging URL keyed metrics.
   std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
       form_interactions_ukm_logger_;
+
+  // Tracks whether or not rich query encoding is enabled for this client.
+  const bool is_rich_query_enabled_ = false;
 
   // Will be not null only for |SaveCardBubbleViewsFullFormBrowserTest|.
   ObserverForTest* observer_for_testing_ = nullptr;

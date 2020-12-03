@@ -175,14 +175,14 @@ void SelectRightNameType(AutofillField* field, bool is_credit_card) {
 
 void LogDeveloperEngagementUkm(ukm::UkmRecorder* ukm_recorder,
                                ukm::SourceId source_id,
-                               FormStructure* form_structure) {
-  if (form_structure->developer_engagement_metrics()) {
+                               const FormStructure& form_structure) {
+  if (form_structure.developer_engagement_metrics()) {
     AutofillMetrics::LogDeveloperEngagementUkm(
-        ukm_recorder, source_id, form_structure->main_frame_origin().GetURL(),
-        form_structure->IsCompleteCreditCardForm(),
-        form_structure->GetFormTypes(),
-        form_structure->developer_engagement_metrics(),
-        form_structure->form_signature());
+        ukm_recorder, source_id, form_structure.main_frame_origin().GetURL(),
+        form_structure.IsCompleteCreditCardForm(),
+        form_structure.GetFormTypes(),
+        form_structure.developer_engagement_metrics(),
+        form_structure.form_signature());
   }
 }
 
@@ -239,26 +239,6 @@ bool IsAddressForm(FieldTypeGroup field_type_group) {
   }
   NOTREACHED();
   return false;
-}
-
-void LogAutofillTypePredictionsAvailable(
-    LogManager* log_manager,
-    const std::vector<FormStructure*>& forms) {
-  if (VLOG_IS_ON(1)) {
-    VLOG(1) << "Parsed forms:";
-    for (FormStructure* form : forms)
-      VLOG(1) << *form;
-  }
-
-  if (!log_manager || !log_manager->IsLoggingActive())
-    return;
-
-  LogBuffer buffer;
-  for (FormStructure* form : forms)
-    buffer << *form;
-
-  log_manager->Log() << LoggingScope::kParsing << LogMessage::kParsedForms
-                     << std::move(buffer);
 }
 
 // Finds the first field in |form_structure| with |field.value|=|value|.
@@ -1504,13 +1484,6 @@ bool AutofillManager::IsAutofillCreditCardEnabled() const {
   return ::autofill::prefs::IsAutofillCreditCardEnabled(client_->GetPrefs());
 }
 
-// static
-bool AutofillManager::IsRichQueryEnabled(version_info::Channel channel) {
-  return base::FeatureList::IsEnabled(features::kAutofillRichMetadataQueries) &&
-         channel != version_info::Channel::STABLE &&
-         channel != version_info::Channel::BETA;
-}
-
 const FormData& AutofillManager::last_query_form() const {
   return external_delegate_->query_form();
 }
@@ -1628,8 +1601,8 @@ AutofillManager::AutofillManager(
       app_locale_(app_locale),
       personal_data_(personal_data),
       field_filler_(app_locale, client->GetAddressNormalizer()),
-      autocomplete_history_manager_(autocomplete_history_manager->GetWeakPtr()),
-      is_rich_query_enabled_(IsRichQueryEnabled(client->GetChannel())) {
+      autocomplete_history_manager_(
+          autocomplete_history_manager->GetWeakPtr()) {
   DCHECK(driver);
   DCHECK(client_);
   // The factory callback must be set first because the logger is used to create
@@ -2018,8 +1991,7 @@ std::vector<Suggestion> AutofillManager::GetCreditCardSuggestions(
   return suggestions;
 }
 
-void AutofillManager::OnFormsParsed(const std::vector<const FormData*>& forms) {
-  DCHECK(!forms.empty());
+void AutofillManager::OnBeforeProcessParsedForms() {
   has_parsed_forms_ = true;
 
   // Record the current sync state to be used for metrics on this page.
@@ -2027,105 +1999,72 @@ void AutofillManager::OnFormsParsed(const std::vector<const FormData*>& forms) {
 
   // Setup the url for metrics that we will collect for this form.
   form_interactions_ukm_logger()->OnFormsParsed(client_->GetUkmSourceId());
+}
 
-  driver()->HandleParsedForms(forms);
+void AutofillManager::OnFormProcessed(const FormData& form,
+                                      const FormStructure& form_structure) {
+  if (data_util::ContainsPhone(data_util::DetermineGroups(form_structure))) {
+    has_observed_phone_number_field_ = true;
+  }
 
-  std::vector<FormStructure*> non_queryable_forms;
-  std::vector<FormStructure*> queryable_forms;
-  std::set<FormType> form_types;
-  for (const FormData* form : forms) {
-    FormStructure* form_structure =
-        FindCachedFormByRendererId(form->unique_renderer_id);
-    if (!form_structure) {
-      NOTREACHED();
-      continue;
-    }
+  // TODO(crbug.com/869482): avoid logging developer engagement multiple
+  // times for a given form if it or other forms on the page are dynamic.
+  LogDeveloperEngagementUkm(client_->GetUkmRecorder(),
+                            client_->GetUkmSourceId(), form_structure);
 
-    if (data_util::ContainsPhone(data_util::DetermineGroups(*form_structure))) {
-      has_observed_phone_number_field_ = true;
-    }
-
-    // TODO(crbug.com/869482): avoid logging developer engagement multiple
-    // times for a given form if it or other forms on the page are dynamic.
-    LogDeveloperEngagementUkm(client_->GetUkmRecorder(),
-                              client_->GetUkmSourceId(), form_structure);
-    std::set<FormType> current_form_types = form_structure->GetFormTypes();
-    form_types.insert(current_form_types.begin(), current_form_types.end());
-
-    // Configure the query encoding for this form and add it to the appropriate
-    // collection of forms: queryable vs non-queryable.
-    form_structure->set_is_rich_query_enabled(is_rich_query_enabled_);
-    if (form_structure->ShouldBeQueried())
-      queryable_forms.push_back(form_structure);
-    else
-      non_queryable_forms.push_back(form_structure);
-
-    // Log the type of form that was parsed.
-    bool card_form = false;
-    bool address_form = false;
-    for (const auto& field : *form_structure) {
-      if (field->Type().group() == CREDIT_CARD) {
-        card_form = true;
-      } else if (IsAddressForm(field->Type().group())) {
-        address_form = true;
-      } else if (field->Type().html_type() == HTML_TYPE_ONE_TIME_CODE) {
-        has_observed_one_time_code_field_ = true;
-      }
-    }
-    if (card_form) {
-      credit_card_form_event_logger_->OnDidParseForm(*form_structure);
-    }
-    if (address_form) {
-      address_form_event_logger_->OnDidParseForm(*form_structure);
-    }
-
-    // If a form with the same name was previously filled, and there has not
-    // been a refill attempt on that form yet, start the process of triggering a
-    // refill.
-    if (ShouldTriggerRefill(*form_structure)) {
-      FillingContext* filling_context = GetFillingContext(*form_structure);
-      DCHECK(filling_context != nullptr);
-
-      // If a timer for the refill was already running, it means the form
-      // changed again. Stop the timer and start it again.
-      if (filling_context->on_refill_timer.IsRunning())
-        filling_context->on_refill_timer.AbandonAndStop();
-
-      // Start a new timer to trigger refill.
-      filling_context->on_refill_timer.Start(
-          FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kWaitTimeForDynamicFormsMs),
-          base::BindRepeating(&AutofillManager::TriggerRefill,
-                              weak_ptr_factory_.GetWeakPtr(), *form));
+  // Log the type of form that was parsed.
+  bool card_form = false;
+  bool address_form = false;
+  for (const auto& field : form_structure) {
+    if (field->Type().group() == CREDIT_CARD) {
+      card_form = true;
+    } else if (IsAddressForm(field->Type().group())) {
+      address_form = true;
+    } else if (field->Type().html_type() == HTML_TYPE_ONE_TIME_CODE) {
+      has_observed_one_time_code_field_ = true;
     }
   }
 
-  if (!queryable_forms.empty() || !non_queryable_forms.empty()) {
-    AutofillMetrics::LogUserHappinessMetric(
-        AutofillMetrics::FORMS_LOADED, form_types,
-        client_->GetSecurityLevelForUmaHistograms(),
-        /*profile_form_bitmask=*/0);
+  if (card_form) {
+    credit_card_form_event_logger_->OnDidParseForm(form_structure);
+  }
+  if (address_form) {
+    address_form_event_logger_->OnDidParseForm(form_structure);
+  }
 
+  // If a form with the same name was previously filled, and there has not
+  // been a refill attempt on that form yet, start the process of triggering a
+  // refill.
+  if (ShouldTriggerRefill(form_structure)) {
+    FillingContext* filling_context = GetFillingContext(form_structure);
+    DCHECK(filling_context != nullptr);
+
+    // If a timer for the refill was already running, it means the form
+    // changed again. Stop the timer and start it again.
+    if (filling_context->on_refill_timer.IsRunning())
+      filling_context->on_refill_timer.AbandonAndStop();
+
+    // Start a new timer to trigger refill.
+    filling_context->on_refill_timer.Start(
+        FROM_HERE,
+        base::TimeDelta::FromMilliseconds(kWaitTimeForDynamicFormsMs),
+        base::BindRepeating(&AutofillManager::TriggerRefill,
+                            weak_ptr_factory_.GetWeakPtr(), form));
+  }
+}
+
+void AutofillManager::OnAfterProcessParsedForms(
+    const std::set<FormType>& form_types) {
+  AutofillMetrics::LogUserHappinessMetric(
+      AutofillMetrics::FORMS_LOADED, form_types,
+      client_->GetSecurityLevelForUmaHistograms(),
+      /*profile_form_bitmask=*/0);
 #if defined(OS_IOS)
-    // Log this from same location as AutofillMetrics::FORMS_LOADED to ensure
-    // that KeyboardAccessoryButtonsIOS and UserHappiness UMA metrics will be
-    // directly comparable.
-    KeyboardAccessoryMetricsLogger::OnFormsLoaded();
+  // Log this from same location as AutofillMetrics::FORMS_LOADED to ensure
+  // that KeyboardAccessoryButtonsIOS and UserHappiness UMA metrics will be
+  // directly comparable.
+  KeyboardAccessoryMetricsLogger::OnFormsLoaded();
 #endif
-  }
-
-  // Send the current type predictions to the renderer. For non-queryable forms
-  // this is all the information about them that will ever be available. The
-  // queryable forms will be updated once the field type query is complete.
-  driver()->SendAutofillTypePredictionsToRenderer(non_queryable_forms);
-  driver()->SendAutofillTypePredictionsToRenderer(queryable_forms);
-  LogAutofillTypePredictionsAvailable(log_manager_, non_queryable_forms);
-  LogAutofillTypePredictionsAvailable(log_manager_, queryable_forms);
-
-  // Query the server if at least one of the forms was parsed.
-  if (!queryable_forms.empty() && download_manager()) {
-    download_manager()->StartQueryRequest(queryable_forms);
-  }
 }
 
 int AutofillManager::BackendIDToInt(const std::string& backend_id) const {

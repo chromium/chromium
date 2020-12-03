@@ -74,12 +74,42 @@ std::string GetAPIKeyForUrl(version_info::Channel channel) {
 
 using base::TimeTicks;
 
+// static
+void AutofillHandler::LogAutofillTypePredictionsAvailable(
+    LogManager* log_manager,
+    const std::vector<FormStructure*>& forms) {
+  if (VLOG_IS_ON(1)) {
+    VLOG(1) << "Parsed forms:";
+    for (FormStructure* form : forms)
+      VLOG(1) << *form;
+  }
+
+  if (!log_manager || !log_manager->IsLoggingActive())
+    return;
+
+  LogBuffer buffer;
+  for (FormStructure* form : forms)
+    buffer << *form;
+
+  log_manager->Log() << LoggingScope::kParsing << LogMessage::kParsedForms
+                     << std::move(buffer);
+}
+
+// static
+bool AutofillHandler::IsRichQueryEnabled(version_info::Channel channel) {
+  return base::FeatureList::IsEnabled(features::kAutofillRichMetadataQueries) &&
+         channel != version_info::Channel::STABLE &&
+         channel != version_info::Channel::BETA;
+}
+
 AutofillHandler::AutofillHandler(
     AutofillDriver* driver,
     LogManager* log_manager,
     AutofillDownloadManagerState enable_download_manager,
     version_info::Channel channel)
-    : driver_(driver), log_manager_(log_manager) {
+    : driver_(driver),
+      log_manager_(log_manager),
+      is_rich_query_enabled_(IsRichQueryEnabled(channel)) {
   if (enable_download_manager == ENABLE_AUTOFILL_DOWNLOAD_MANAGER) {
     download_manager_ = std::make_unique<AutofillDownloadManager>(
         driver, this, GetAPIKeyForUrl(channel), log_manager);
@@ -150,6 +180,55 @@ void AutofillHandler::OnFormsSeen(const std::vector<FormData>& forms) {
   if (new_forms.empty())
     return;
   OnFormsParsed(new_forms);
+}
+
+void AutofillHandler::OnFormsParsed(const std::vector<const FormData*>& forms) {
+  DCHECK(!forms.empty());
+  OnBeforeProcessParsedForms();
+
+  driver()->HandleParsedForms(forms);
+
+  std::vector<FormStructure*> non_queryable_forms;
+  std::vector<FormStructure*> queryable_forms;
+  std::set<FormType> form_types;
+  for (const FormData* form : forms) {
+    FormStructure* form_structure =
+        FindCachedFormByRendererId(form->unique_renderer_id);
+    if (!form_structure) {
+      NOTREACHED();
+      continue;
+    }
+
+    std::set<FormType> current_form_types = form_structure->GetFormTypes();
+    form_types.insert(current_form_types.begin(), current_form_types.end());
+
+    // Configure the query encoding for this form and add it to the appropriate
+    // collection of forms: queryable vs non-queryable.
+    form_structure->set_is_rich_query_enabled(is_rich_query_enabled_);
+    if (form_structure->ShouldBeQueried())
+      queryable_forms.push_back(form_structure);
+    else
+      non_queryable_forms.push_back(form_structure);
+
+    OnFormProcessed(*form, *form_structure);
+  }
+
+  if (!queryable_forms.empty() || !non_queryable_forms.empty()) {
+    OnAfterProcessParsedForms(form_types);
+  }
+
+  // Send the current type predictions to the renderer. For non-queryable forms
+  // this is all the information about them that will ever be available. The
+  // queryable forms will be updated once the field type query is complete.
+  driver()->SendAutofillTypePredictionsToRenderer(non_queryable_forms);
+  driver()->SendAutofillTypePredictionsToRenderer(queryable_forms);
+  LogAutofillTypePredictionsAvailable(log_manager_, non_queryable_forms);
+  LogAutofillTypePredictionsAvailable(log_manager_, queryable_forms);
+
+  // Query the server if at least one of the forms was parsed.
+  if (!queryable_forms.empty() && download_manager()) {
+    download_manager()->StartQueryRequest(queryable_forms);
+  }
 }
 
 void AutofillHandler::OnTextFieldDidChange(const FormData& form,

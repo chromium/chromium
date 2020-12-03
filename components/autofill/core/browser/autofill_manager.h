@@ -244,10 +244,6 @@ class AutofillManager : public AutofillHandler,
   // to be uploadable. Exposed for testing.
   bool ShouldUploadForm(const FormStructure& form);
 
-  // Rich queries are enabled by feature flag iff this chrome instance is
-  // neither on the STABLE nor BETA release channel.
-  static bool IsRichQueryEnabled(version_info::Channel channel);
-
   // Returns the last form the autofill manager considered in this frame.
   virtual const FormData& last_query_form() const;
 
@@ -358,10 +354,10 @@ class AutofillManager : public AutofillHandler,
                                     const FormFieldData& field,
                                     const gfx::RectF& bounding_box) override;
   bool ShouldParseForms(const std::vector<FormData>& forms) override;
-  void OnFormsParsed(const std::vector<const FormData*>& forms) override;
-
-  // Exposed for testing.
-  bool is_rich_query_enabled() const { return is_rich_query_enabled_; }
+  void OnBeforeProcessParsedForms() override;
+  void OnFormProcessed(const FormData& form,
+                       const FormStructure& form_structure) override;
+  void OnAfterProcessParsedForms(const std::set<FormType>& form_types) override;
 
   // Exposed for testing.
   FormData* pending_form_data() { return pending_form_data_.get(); }
@@ -706,9 +702,6 @@ class AutofillManager : public AutofillHandler,
       filling_context_by_renderer_id_;
   std::map<base::string16, std::unique_ptr<FillingContext>>
       filling_context_by_unique_name_;
-
-  // Tracks whether or not rich query encoding is enabled for this client.
-  const bool is_rich_query_enabled_ = false;
 
   // Used to record metrics. This should be set at the beginning of the
   // interaction and re-used throughout the context of this manager.
