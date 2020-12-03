@@ -4,6 +4,8 @@
 
 #import "chrome/browser/chrome_browser_application_mac.h"
 
+#include <dispatch/dispatch.h>
+
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/mac/call_with_eh_frame.h"
@@ -333,8 +335,6 @@ std::string DescriptionForNSEvent(NSEvent* event) {
         content::BrowserAccessibilityState::GetInstance();
     if ([value intValue] == 1)
       accessibility_state->OnScreenReaderDetected();
-    else
-      accessibility_state->DisableAccessibility();
   }
   return [super accessibilitySetValue:value forAttribute:attribute];
 }
@@ -353,6 +353,21 @@ std::string DescriptionForNSEvent(NSEvent* event) {
 - (void)removeNativeEventProcessorObserver:
     (content::NativeEventProcessorObserver*)observer {
   _observers.RemoveObserver(observer);
+}
+
+- (NSAccessibilityRole)accessibilityRole {
+  // Our previous method of enabling a11y when the 'AXEnhancedUserInterface'
+  // attribute was set didn't work for the new VoiceControl system.  After
+  // discussions with Apple, they recommended that we turn on a11y when an AT
+  // accesses the 'accessibilityRole' property.  This works with VoiceControl,
+  // and should work with any other new ATs in the future.
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    content::BrowserAccessibilityState* accessibility_state =
+        content::BrowserAccessibilityState::GetInstance();
+    accessibility_state->OnScreenReaderDetected();
+  });
+  return [super accessibilityRole];
 }
 
 @end
