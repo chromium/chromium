@@ -76,9 +76,12 @@ void DiceInterceptedSessionStartupHelper::Startup(base::OnceClosure callback) {
     accounts_in_cookie_observer_.Observe(identity_manager);
     on_cookie_update_timeout_.Reset(base::BindOnce(
         &DiceInterceptedSessionStartupHelper::MoveTab, base::Unretained(this)));
+    // Adding accounts to the cookies can be an expensive operation. In
+    // particular the ExternalCCResult fetch may time out after multiple seconds
+    // (see kExternalCCResultTimeoutSeconds and https://crbug.com/750316#c37).
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, on_cookie_update_timeout_.callback(),
-        base::TimeDelta::FromSeconds(5));
+        base::TimeDelta::FromSeconds(12));
   }
 }
 

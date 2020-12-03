@@ -47,6 +47,10 @@ namespace {
 // The maximum number of retries for a fetcher used in this class.
 constexpr int kMaxFetcherRetries = 8;
 
+// Timeout for the ExternalCCResult fetch. See https://crbug.com/750316#c37 for
+// details on the exact duration.
+constexpr int kExternalCCResultTimeoutSeconds = 7;
+
 // In case of an error while fetching using the GaiaAuthFetcher or
 // SimpleURLLoader, retry with exponential backoff. Try up to 7 times within 15
 // minutes.
@@ -248,10 +252,10 @@ void GaiaCookieManagerService::ExternalCcResultFetcher::Start(
   helper_->gaia_auth_fetcher_->StartGetCheckConnectionInfo();
 
   // Some fetches may timeout.  Start a timer to decide when the result fetcher
-  // has waited long enough. See https://crbug.com/750316#c36 for details on
-  // exact timeout duration.
-  timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(7), this,
-               &GaiaCookieManagerService::ExternalCcResultFetcher::Timeout);
+  // has waited long enough.
+  timer_.Start(
+      FROM_HERE, base::TimeDelta::FromSeconds(kExternalCCResultTimeoutSeconds),
+      this, &GaiaCookieManagerService::ExternalCcResultFetcher::Timeout);
 }
 
 bool GaiaCookieManagerService::ExternalCcResultFetcher::IsRunning() {
