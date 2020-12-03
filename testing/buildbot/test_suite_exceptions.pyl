@@ -2692,6 +2692,8 @@
       },
     },
     'remove_from': [
+      'chromeos-kevin-rel',  # crbug.com/1141234: Restore when there's more DUTs
+
       # crbug.com/936540
       'Mac10.11 Tests',
 
