@@ -12,7 +12,6 @@
 
 #include "base/location.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/mac_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
@@ -782,9 +781,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   }
 
   // Last preference is to read the CMSampleBuffer.
-  gfx::ColorSpace colorSpace;
-  if (@available(macOS 10.11, *))
-    colorSpace = media::GetFormatDescriptionColorSpace(formatDescription);
+  gfx::ColorSpace colorSpace =
+      media::GetFormatDescriptionColorSpace(formatDescription);
   [self processSample:sampleBuffer
         captureFormat:captureFormat
            colorSpace:colorSpace

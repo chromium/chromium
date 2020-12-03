@@ -363,12 +363,10 @@ TEST(VTConfigUtil, GetImageBufferColorSpace_BT2020_PQ) {
   // When BT.2020 is unavailable the default should be BT.709.
   if (base::mac::IsAtLeastOS10_13()) {
     EXPECT_EQ(cs.ToGfxColorSpace(), image_buffer_cs);
-  } else if (base::mac::IsAtLeastOS10_11()) {
-    // 10.11 and 10.12 don't have HDR transfer functions.
+  } else {
+    // 10.12 doesn't have HDR transfer functions.
     cs.transfer = VideoColorSpace::TransferID::BT709;
     EXPECT_EQ(cs.ToGfxColorSpace(), image_buffer_cs);
-  } else {
-    EXPECT_EQ(gfx::ColorSpace::CreateREC709(), image_buffer_cs);
   }
 }
 
@@ -384,35 +382,29 @@ TEST(VTConfigUtil, GetImageBufferColorSpace_BT2020_HLG) {
   // When BT.2020 is unavailable the default should be BT.709.
   if (base::mac::IsAtLeastOS10_13()) {
     EXPECT_EQ(cs.ToGfxColorSpace(), image_buffer_cs);
-  } else if (base::mac::IsAtLeastOS10_11()) {
-    // 10.11 and 10.12 don't have HDR transfer functions.
+  } else {
+    // 10.12 doesn't have HDR transfer functions.
     cs.transfer = VideoColorSpace::TransferID::BT709;
     EXPECT_EQ(cs.ToGfxColorSpace(), image_buffer_cs);
-  } else {
-    EXPECT_EQ(gfx::ColorSpace::CreateREC709(), image_buffer_cs);
   }
 }
 
 TEST(VTConfigUtil, FormatDescriptionInvalid) {
-  if (__builtin_available(macos 10.11, *)) {
-    auto format_descriptor =
-        CreateFormatDescription(CFSTR("Cows"), CFSTR("Go"), CFSTR("Moo"));
-    ASSERT_TRUE(format_descriptor);
-    auto cs = GetFormatDescriptionColorSpace(format_descriptor);
-    EXPECT_EQ(gfx::ColorSpace::CreateREC709(), cs);
-  }
+  auto format_descriptor =
+      CreateFormatDescription(CFSTR("Cows"), CFSTR("Go"), CFSTR("Moo"));
+  ASSERT_TRUE(format_descriptor);
+  auto cs = GetFormatDescriptionColorSpace(format_descriptor);
+  EXPECT_EQ(gfx::ColorSpace::CreateREC709(), cs);
 }
 
 TEST(VTConfigUtil, FormatDescriptionBT709) {
-  if (__builtin_available(macos 10.11, *)) {
-    auto format_descriptor = CreateFormatDescription(
-        kCMFormatDescriptionColorPrimaries_ITU_R_709_2,
-        kCMFormatDescriptionTransferFunction_ITU_R_709_2,
-        kCMFormatDescriptionYCbCrMatrix_ITU_R_709_2);
-    ASSERT_TRUE(format_descriptor);
-    auto cs = GetFormatDescriptionColorSpace(format_descriptor);
-    EXPECT_EQ(ToBT709_APPLE(gfx::ColorSpace::CreateREC709()), cs);
-  }
+  auto format_descriptor =
+      CreateFormatDescription(kCMFormatDescriptionColorPrimaries_ITU_R_709_2,
+                              kCMFormatDescriptionTransferFunction_ITU_R_709_2,
+                              kCMFormatDescriptionYCbCrMatrix_ITU_R_709_2);
+  ASSERT_TRUE(format_descriptor);
+  auto cs = GetFormatDescriptionColorSpace(format_descriptor);
+  EXPECT_EQ(ToBT709_APPLE(gfx::ColorSpace::CreateREC709()), cs);
 }
 
 }  // namespace media

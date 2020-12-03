@@ -19,7 +19,7 @@ MEDIA_EXPORT gfx::ColorSpace GetImageBufferColorSpace(
     CVImageBufferRef image_buffer);
 
 MEDIA_EXPORT gfx::ColorSpace GetFormatDescriptionColorSpace(
-    CMFormatDescriptionRef format_description) API_AVAILABLE(macos(10.11));
+    CMFormatDescriptionRef format_description);
 
 MEDIA_EXPORT CFDataRef
 GenerateContentLightLevelInfo(const gfx::HDRMetadata& hdr_metadata);

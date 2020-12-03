@@ -42,11 +42,7 @@ CFStringRef GetPrimaries(media::VideoColorSpace::PrimaryID primary_id) {
       return kCMFormatDescriptionColorPrimaries_ITU_R_709_2;
 
     case media::VideoColorSpace::PrimaryID::BT2020:
-      if (@available(macos 10.11, *))
-        return kCMFormatDescriptionColorPrimaries_ITU_R_2020;
-      DLOG(WARNING) << "kCMFormatDescriptionColorPrimaries_ITU_R_2020 "
-                       "unsupported prior to 10.11";
-      return nil;
+      return kCMFormatDescriptionColorPrimaries_ITU_R_2020;
 
     case media::VideoColorSpace::PrimaryID::SMPTE170M:
     case media::VideoColorSpace::PrimaryID::SMPTE240M:
@@ -56,18 +52,10 @@ CFStringRef GetPrimaries(media::VideoColorSpace::PrimaryID primary_id) {
       return kCMFormatDescriptionColorPrimaries_EBU_3213;
 
     case media::VideoColorSpace::PrimaryID::SMPTEST431_2:
-      if (@available(macos 10.11, *))
-        return kCMFormatDescriptionColorPrimaries_DCI_P3;
-      DLOG(WARNING) << "kCMFormatDescriptionColorPrimaries_DCI_P3 unsupported "
-                       "prior to 10.11";
-      return nil;
+      return kCMFormatDescriptionColorPrimaries_DCI_P3;
 
     case media::VideoColorSpace::PrimaryID::SMPTEST432_1:
-      if (@available(macos 10.11, *))
-        return kCMFormatDescriptionColorPrimaries_P3_D65;
-      DLOG(WARNING) << "kCMFormatDescriptionColorPrimaries_P3_D65 unsupported "
-                       "prior to 10.11";
-      return nil;
+      return kCMFormatDescriptionColorPrimaries_P3_D65;
 
     default:
       DLOG(ERROR) << "Unsupported primary id: " << static_cast<int>(primary_id);
@@ -104,11 +92,7 @@ CFStringRef GetTransferFunction(
 
     case media::VideoColorSpace::TransferID::BT2020_10:
     case media::VideoColorSpace::TransferID::BT2020_12:
-      if (@available(macos 10.11, *))
-        return kCMFormatDescriptionTransferFunction_ITU_R_2020;
-      DLOG(WARNING) << "kCMFormatDescriptionTransferFunction_ITU_R_2020 "
-                       "unsupported prior to 10.11";
-      return nil;
+      return kCMFormatDescriptionTransferFunction_ITU_R_2020;
 
     case media::VideoColorSpace::TransferID::SMPTEST2084:
       if (@available(macos 10.13, *))
@@ -149,11 +133,7 @@ CFStringRef GetMatrix(media::VideoColorSpace::MatrixID matrix_id) {
       return kCMFormatDescriptionYCbCrMatrix_ITU_R_709_2;
 
     case media::VideoColorSpace::MatrixID::BT2020_NCL:
-      if (@available(macos 10.11, *))
-        return kCMFormatDescriptionYCbCrMatrix_ITU_R_2020;
-      DLOG(WARNING) << "kCVImageBufferYCbCrMatrix_ITU_R_2020 "
-                       "unsupported prior to 10.11";
-      return nil;
+      return kCMFormatDescriptionYCbCrMatrix_ITU_R_2020;
 
     case media::VideoColorSpace::MatrixID::FCC:
     case media::VideoColorSpace::MatrixID::SMPTE170M:
