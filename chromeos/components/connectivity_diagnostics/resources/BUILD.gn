@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/preprocess_grit.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
@@ -38,7 +38,7 @@ generate_grd("build_grd") {
   out_grd = "$target_gen_dir/connectivity_diagnostics_resources.grd"
 }
 
-preprocess_grit("preprocess_generated") {
+preprocess_if_expr("preprocess_generated") {
   deps = [ ":web_components" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"

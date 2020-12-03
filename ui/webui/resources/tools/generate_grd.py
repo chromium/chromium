@@ -5,7 +5,7 @@
 # Generates a grit grd file from a list of input manifest files. This is useful
 # for preventing the need to list JS files in multiple locations, as files can
 # be listed just once in the BUILD.gn file as inputs for a build rule that knows
-# how to output such a manifest (e.g. preprocess_grit).
+# how to output such a manifest (e.g. preprocess_if_expr).
 #
 # Variables:
 #   manifest-files:

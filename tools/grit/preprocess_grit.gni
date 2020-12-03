@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# This tool is no longer supported. Use preprocess_if_expr instead, which
+# also generates manifests and preprocesses <if expr> but does not also
+# inline <include>s (which are deprecated).
+
 import("//build/config/python.gni")
 import("//tools/grit/grit_defines.gni")
 

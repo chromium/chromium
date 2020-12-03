@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/preprocess_grit.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../../../tools/js_modulizer.gni")
 import("../../cr.gni")
@@ -31,7 +31,7 @@ group("preprocess") {
   ]
 }
 
-preprocess_grit("preprocess_src") {
+preprocess_if_expr("preprocess_src") {
   in_folder = "./"
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
@@ -80,7 +80,7 @@ preprocess_grit("preprocess_src") {
   }
 }
 
-preprocess_grit("preprocess_generated") {
+preprocess_if_expr("preprocess_generated") {
   deps = [ ":modulize" ]
   in_folder = target_gen_dir
   out_folder = "$preprocess_folder"

@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/grit/preprocess_grit.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 include_polymer = !is_android && !is_ios
@@ -18,7 +18,7 @@ generate_grd("build_grdp") {
   resource_path_prefix = "css"
 }
 
-preprocess_grit("preprocess_src") {
+preprocess_if_expr("preprocess_src") {
   in_folder = "./"
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"

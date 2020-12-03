@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/preprocess_grit.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
@@ -37,7 +37,7 @@ group("preprocess") {
   ]
 }
 
-preprocess_grit("preprocess_src") {
+preprocess_if_expr("preprocess_src") {
   in_folder = "./"
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
@@ -52,7 +52,7 @@ preprocess_grit("preprocess_src") {
   }
 }
 
-preprocess_grit("preprocess_mojom") {
+preprocess_if_expr("preprocess_mojom") {
   deps =
       [ "//ui/webui/resources/cr_components/customize_themes:mojom_webui_js" ]
   in_folder = "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components"
@@ -61,7 +61,7 @@ preprocess_grit("preprocess_mojom") {
   in_files = [ "customize_themes/customize_themes.mojom-webui.js" ]
 }
 
-preprocess_grit("preprocess_generated") {
+preprocess_if_expr("preprocess_generated") {
   deps = [ ":polymer3_elements" ]
   in_folder = target_gen_dir
   out_folder = "$preprocess_folder"
@@ -151,7 +151,7 @@ preprocess_grit("preprocess_generated") {
   }
 }
 
-preprocess_grit("preprocess_polymer2") {
+preprocess_if_expr("preprocess_polymer2") {
   in_folder = "./"
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_polymer2_manifest"
