@@ -984,6 +984,10 @@ DownloadFile* DownloadItemImpl::GetDownloadFile() {
   return download_file_.get();
 }
 
+DownloadItemRenameHandler* DownloadItemImpl::GetRenameHandler() {
+  return rename_handler_.get();
+}
+
 bool DownloadItemImpl::IsDangerous() const {
   return danger_type_ == DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE ||
          danger_type_ == DOWNLOAD_DANGER_TYPE_DANGEROUS_URL ||
@@ -1932,11 +1936,20 @@ void DownloadItemImpl::OnDownloadCompleting() {
   DCHECK(!IsDangerous());
 
   DCHECK(download_file_);
+
   // Unilaterally rename; even if it already has the right name,
-  // we need theannotation.
+  // we need the annotation.
   DownloadFile::RenameCompletionCallback callback =
       base::BindOnce(&DownloadItemImpl::OnDownloadRenamedToFinalName,
-                 weak_ptr_factory_.GetWeakPtr());
+                     weak_ptr_factory_.GetWeakPtr());
+
+  // If an alternate rename handler is specified, use it instead.
+  rename_handler_ = delegate_->GetRenameHandlerForDownload(this);
+  if (rename_handler_) {
+    rename_handler_->Start(this, std::move(callback));
+    return;
+  }
+
 #if defined(OS_ANDROID)
   if (GetTargetFilePath().IsContentUri()) {
     GetDownloadTaskRunner()->PostTask(
@@ -1953,6 +1966,7 @@ void DownloadItemImpl::OnDownloadCompleting() {
   auto quarantine_callback = delegate_->GetQuarantineConnectionCallback();
   if (quarantine_callback)
     quarantine_callback.Run(quarantine.InitWithNewPipeAndPassReceiver());
+
   GetDownloadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&DownloadFile::RenameAndAnnotate,

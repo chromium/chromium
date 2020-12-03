@@ -274,6 +274,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   bool GetFileExternallyRemoved() const override;
   void DeleteFile(base::OnceCallback<void(bool)> callback) override;
   DownloadFile* GetDownloadFile() override;
+  DownloadItemRenameHandler* GetRenameHandler() override;
   bool IsDangerous() const override;
   bool IsMixedContent() const override;
   DownloadDangerType GetDangerType() const override;
@@ -861,6 +862,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
 
   // Defines when to start the download. Used by download later feature.
   base::Optional<DownloadSchedule> download_schedule_;
+
+  // A handler for renaming and helping with display the item.
+  std::unique_ptr<DownloadItemRenameHandler> rename_handler_;
 
   THREAD_CHECKER(thread_checker_);
 

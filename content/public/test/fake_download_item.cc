@@ -417,6 +417,10 @@ download::DownloadFile* FakeDownloadItem::GetDownloadFile() {
   return nullptr;
 }
 
+download::DownloadItemRenameHandler* FakeDownloadItem::GetRenameHandler() {
+  return nullptr;
+}
+
 bool FakeDownloadItem::IsDangerous() const {
   NOTREACHED();
   return false;

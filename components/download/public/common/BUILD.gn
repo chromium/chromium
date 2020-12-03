@@ -37,6 +37,7 @@ component("public") {
     "download_item_factory.h",
     "download_item_impl.h",
     "download_item_impl_delegate.h",
+    "download_item_rename_handler.h",
     "download_job.h",
     "download_job_factory.h",
     "download_path_reservation_tracker.h",

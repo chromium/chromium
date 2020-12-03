@@ -89,6 +89,7 @@ class FakeDownloadItem : public download::DownloadItem {
   const std::string& GetHash() const override;
   void DeleteFile(base::OnceCallback<void(bool)> callback) override;
   download::DownloadFile* GetDownloadFile() override;
+  download::DownloadItemRenameHandler* GetRenameHandler() override;
   bool IsDangerous() const override;
   bool IsMixedContent() const override;
   download::DownloadDangerType GetDangerType() const override;

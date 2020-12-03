@@ -99,6 +99,7 @@ class MockDownloadItem : public DownloadItem {
   }
   MOCK_METHOD1(DeleteFile_, void(base::OnceCallback<void(bool)>& cb));
   MOCK_METHOD0(GetDownloadFile, DownloadFile*());
+  MOCK_METHOD0(GetRenameHandler, DownloadItemRenameHandler*());
   MOCK_CONST_METHOD0(IsDangerous, bool());
   MOCK_CONST_METHOD0(IsMixedContent, bool());
   MOCK_CONST_METHOD0(GetDangerType, DownloadDangerType());
