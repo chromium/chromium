@@ -40,22 +40,6 @@ void CreateUserAgent(std::string* user_agent) {
     base::StringAppendF(user_agent, " ARC/%s", arc_version.c_str());
 }
 
-// Returns if we are running a test or release image.
-bool IsTestImage() {
-  // If we're not running on real hardware, we're considered a test build.
-  // This check is needed because the release track is only set for real
-  // hardware.
-  if (!base::SysInfo::IsRunningOnChromeOS())
-    return true;
-
-  constexpr char kChromeOSReleaseTrack[] = "CHROMEOS_RELEASE_TRACK";
-  constexpr char kTestImageRelease[] = "testimage-channel";
-
-  std::string track;
-  bool found = base::SysInfo::GetLsbReleaseValue(kChromeOSReleaseTrack, &track);
-  return found && (track.find(kTestImageRelease) != std::string::npos);
-}
-
 }  // namespace
 
 // Get the root path for assistant files.
@@ -164,11 +148,10 @@ std::string CreateLibAssistantConfig(
                          GetBaseAssistantDir().AsUTF8Unsafe());
   }
 
-  // Inform Libassistant if we're running a test image, because Libassistant has
-  // a consistency check to ensure |libassistant_debug.so| is not used in
-  // production.
-  if (IsTestImage())
+  if (features::IsLibAssistantBetaBackendEnabled() ||
+      features::IsAssistantDebuggingEnabled()) {
     config.SetStringPath("internal.backend_type", "BETA_DOGFOOD");
+  }
 
   // Use http unless we're using the fake s3 server, which requires grpc.
   if (s3_server_uri_override)

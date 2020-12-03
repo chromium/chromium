@@ -29,7 +29,6 @@ class ChromiumApiDelegate : public assistant_client::FuchsiaApiDelegate {
   ~ChromiumApiDelegate() override;
   // assistant_client::FuchsiaApiDelegate overrides:
   assistant_client::HttpConnectionFactory* GetHttpConnectionFactory() override;
-  void OverrideDoNotDisturb(bool do_not_disturb_enabled) override;
 
  private:
   ChromiumHttpConnectionFactory http_connection_factory_;

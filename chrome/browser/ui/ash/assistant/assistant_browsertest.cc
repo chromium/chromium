@@ -25,6 +25,15 @@ constexpr int kVersion = 1;
 
 constexpr int kStartBrightnessPercent = 50;
 
+// Ensures that |value_| is within the range {min_, max_}. If it isn't, this
+// will print a nice error message.
+#define EXPECT_WITHIN_RANGE(min_, value_, max_)                \
+  ({                                                           \
+    EXPECT_TRUE(min_ <= value_ && value_ <= max_)              \
+        << "Expected " << value_ << " to be within the range " \
+        << "{" << min_ << ", " << max_ << "}.";                \
+  })
+
 }  // namespace
 
 class AssistantBrowserTest : public MixinBasedInProcessBrowserTest {

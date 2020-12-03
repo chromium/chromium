@@ -257,9 +257,11 @@ IN_PROC_BROWSER_TEST_F(AssistantTimersBrowserTest,
   // Start a timer for five minutes.
   tester()->SendTextQuery("Set a timer for 5 minutes");
   tester()->ExpectAnyOfTheseTextResponses({
-      "Alright, 5 min.",
-      "OK, 5 min.",
-      "Sure, 5 min.",
+      "Alright, 5 min. Starting… now.",
+      "OK, 5 min. And we're starting… now.",
+      "OK, 5 min. Starting… now.",
+      "Sure, 5 min. And that's starting… now.",
+      "Sure, 5 min. Starting now.",
   });
 
   // Tap status area widget (to show notifications in the Message Center).

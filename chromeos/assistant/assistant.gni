@@ -12,8 +12,6 @@ declare_args() {
 }
 
 declare_args() {
-  # TODO(b/170170824): This flag is dead and should be removed when it is no
-  # longer set in the ChromeOS build.
   # Enable Assistant integration tests using LibAssistant and a fake S3 server.
   # This requires libassistant.so to support grpc communication with the S3
   # server, which increases the library size, which is why we introduced this
