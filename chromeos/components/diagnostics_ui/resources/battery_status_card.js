@@ -68,12 +68,8 @@ Polymer({
     /** @private {!Array<!RoutineType>} */
     routines_: {
       type: Array,
-      value: () => {
-        return [
-          chromeos.diagnostics.mojom.RoutineType.kBatteryCharge,
-          chromeos.diagnostics.mojom.RoutineType.kBatteryDischarge,
-        ];
-      }
+      computed:
+          'getCurrentPowerRoutines_(batteryChargeStatus_.powerAdapterStatus)',
     },
 
     /** @protected {string} */
@@ -152,6 +148,19 @@ Polymer({
 
     this.systemDataProvider_.observeBatteryHealth(
         this.batteryHealthObserverReceiver_.$.bindNewPipeAndPassRemote());
+  },
+
+  /**
+   * Get an array of currently relevant routines based on power adaptor status
+   * @param {!chromeos.diagnostics.mojom.ExternalPowerSource} powerAdapterStatus
+   * @return {!Array<!RoutineType>}
+   * @private
+   */
+  getCurrentPowerRoutines_(powerAdapterStatus) {
+    return powerAdapterStatus ===
+            chromeos.diagnostics.mojom.ExternalPowerSource.kDisconnected ?
+        [chromeos.diagnostics.mojom.RoutineType.kBatteryDischarge] :
+        [chromeos.diagnostics.mojom.RoutineType.kBatteryCharge];
   },
 
   /**

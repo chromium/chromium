@@ -138,4 +138,29 @@ export function batteryStatusCardTestSuite() {
           assertFalse(isRunTestsButtonDisabled());
         });
   });
+
+  test('PowerRoutine', () => {
+    return initializeBatteryStatusCard(
+               fakeBatteryInfo, fakeBatteryChargeStatus, fakeBatteryHealth)
+        .then(() => {
+          const routineSectionElement = getRoutineSection();
+
+          assertEquals(routineSectionElement.routines.length, 1);
+          assertEquals(
+              routineSectionElement.routines[0],
+              chromeos.diagnostics.mojom.RoutineType.kBatteryCharge);
+
+          batteryStatusElement.onBatteryChargeStatusUpdated(
+              fakeBatteryChargeStatus[2]);
+          return flushTasks();
+        })
+        .then(() => {
+          const routineSectionElement = getRoutineSection();
+
+          assertEquals(routineSectionElement.routines.length, 1);
+          assertEquals(
+              routineSectionElement.routines[0],
+              chromeos.diagnostics.mojom.RoutineType.kBatteryDischarge);
+        });
+  });
 }

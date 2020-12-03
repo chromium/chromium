@@ -42,6 +42,7 @@ js_library("battery_status_card_test") {
     "//chromeos/components/diagnostics_ui/resources:battery_status_card",
     "//chromeos/components/diagnostics_ui/resources:diagnostics_types",
     "//chromeos/components/diagnostics_ui/resources:fake_data",
+    "//chromeos/components/diagnostics_ui/resources:routine_section",
     "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]

@@ -22,7 +22,8 @@ export const fakeBatteryChargeStatus = [
   {
     chargeNowMilliampHours: 4800,
     currentNowMilliamps: 1123,
-    powerAdapterStatus: chromeos.diagnostics.mojom.ExternalPowerSource.kAc,
+    powerAdapterStatus:
+        chromeos.diagnostics.mojom.ExternalPowerSource.kDisconnected,
     powerTime: stringToMojoString16('2h 45m'),
   }
 ];
