@@ -17,6 +17,7 @@
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_page.h"
@@ -404,9 +405,11 @@ PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan) : pcscan_(pcscan) {
             super_page, true /*with pcscan*/, [this](SlotSpan* slot_span) {
               auto* payload_begin =
                   static_cast<uintptr_t*>(SlotSpan::ToPointer(slot_span));
+              size_t provisioned_size = slot_span->GetProvisionedSize();
+              // Free & decommitted slot spans are skipped.
+              PA_DCHECK(provisioned_size > 0);
               auto* payload_end =
-                  payload_begin +
-                  (slot_span->bucket->get_bytes_per_span() / sizeof(uintptr_t));
+                  payload_begin + (provisioned_size / sizeof(uintptr_t));
               if (slot_span->bucket->slot_size >= kLargeScanAreaThreshold) {
                 large_scan_areas_.push_back(
                     {payload_begin, payload_end, slot_span->bucket->slot_size});

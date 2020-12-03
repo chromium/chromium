@@ -1120,8 +1120,46 @@ TEST_F(PartitionAllocTest, PartialPageFreelists) {
   EXPECT_TRUE(slot_span2->freelist_head);
   EXPECT_EQ(0, slot_span2->num_allocated_slots);
 
-  // And test a couple of sizes that do not cross SystemPageSize() with a single
-  // allocation.
+  // Size that doesn't divide the system page size.
+  size_t non_dividing_size = 2100 - kExtraAllocSize;
+  bucket_index = SizeToIndex(non_dividing_size + kExtraAllocSize);
+  bucket = &allocator.root()->buckets[bucket_index];
+  EXPECT_EQ(nullptr, bucket->empty_slot_spans_head);
+
+  ptr = allocator.root()->Alloc(non_dividing_size, type_name);
+  EXPECT_TRUE(ptr);
+
+  slot_span = SlotSpan::FromPointer(
+      allocator.root()->AdjustPointerForExtrasSubtract(ptr));
+  total_slots =
+      (slot_span->bucket->num_system_pages_per_slot_span * SystemPageSize()) /
+      bucket->slot_size;
+  EXPECT_EQ(16u, total_slots);
+  EXPECT_FALSE(slot_span->freelist_head);
+  EXPECT_EQ(1, slot_span->num_allocated_slots);
+  EXPECT_EQ(15, slot_span->num_unprovisioned_slots);
+
+  ptr2 = allocator.root()->Alloc(non_dividing_size, type_name);
+  EXPECT_TRUE(ptr2);
+  EXPECT_TRUE(slot_span->freelist_head);
+  EXPECT_EQ(2, slot_span->num_allocated_slots);
+  EXPECT_EQ(13, slot_span->num_unprovisioned_slots);
+
+  ptr3 = allocator.root()->Alloc(non_dividing_size, type_name);
+  EXPECT_TRUE(ptr3);
+  EXPECT_FALSE(slot_span->freelist_head);
+  EXPECT_EQ(3, slot_span->num_allocated_slots);
+  EXPECT_EQ(13, slot_span->num_unprovisioned_slots);
+
+  allocator.root()->Free(ptr);
+  allocator.root()->Free(ptr2);
+  allocator.root()->Free(ptr3);
+  EXPECT_NE(-1, slot_span->empty_cache_index);
+  EXPECT_TRUE(slot_span2->freelist_head);
+  EXPECT_EQ(0, slot_span2->num_allocated_slots);
+
+  // And test a couple of sizes that do not cross SystemPageSize() with a
+  // single allocation.
   size_t medium_size = (SystemPageSize() / 2) - kExtraAllocSize;
   bucket_index = SizeToIndex(medium_size + kExtraAllocSize);
   bucket = &allocator.root()->buckets[bucket_index];
@@ -1196,12 +1234,23 @@ TEST_F(PartitionAllocTest, PartialPageFreelists) {
   slot_span = SlotSpan::FromPointer(
       allocator.root()->AdjustPointerForExtrasSubtract(ptr));
   EXPECT_EQ(1, slot_span->num_allocated_slots);
-  EXPECT_TRUE(slot_span->freelist_head);
+  // Only the first slot was provisioned, and that's the one that was just
+  // allocated so the free list is empty.
+  EXPECT_TRUE(!slot_span->freelist_head);
   total_slots =
       (slot_span->bucket->num_system_pages_per_slot_span * SystemPageSize()) /
       (page_and_a_half_size + kExtraAllocSize);
+  EXPECT_EQ(total_slots - 1, slot_span->num_unprovisioned_slots);
+  ptr2 = allocator.root()->Alloc(page_and_a_half_size, type_name);
+  EXPECT_TRUE(ptr);
+  slot_span = SlotSpan::FromPointer(
+      allocator.root()->AdjustPointerForExtrasSubtract(ptr));
+  EXPECT_EQ(2, slot_span->num_allocated_slots);
+  // As above, only one slot was provisioned.
+  EXPECT_TRUE(!slot_span->freelist_head);
   EXPECT_EQ(total_slots - 2, slot_span->num_unprovisioned_slots);
   allocator.root()->Free(ptr);
+  allocator.root()->Free(ptr2);
 
   // And then make sure than exactly the page size only faults one page.
   size_t page_size = SystemPageSize() - kExtraAllocSize;
@@ -1383,7 +1432,7 @@ TEST_F(PartitionAllocTest, FreeCache) {
       allocator.root()->AdjustPointerForExtrasSubtract(ptr));
   EXPECT_EQ(nullptr, bucket->empty_slot_spans_head);
   EXPECT_EQ(1, slot_span->num_allocated_slots);
-  size_t expected_committed_size = PartitionPageSize();
+  size_t expected_committed_size = SystemPageSize();
   EXPECT_EQ(expected_committed_size,
             allocator.root()->get_total_size_of_committed_pages());
   allocator.root()->Free(ptr);
@@ -1397,11 +1446,7 @@ TEST_F(PartitionAllocTest, FreeCache) {
   EXPECT_FALSE(slot_span->freelist_head);
   EXPECT_EQ(-1, slot_span->empty_cache_index);
   EXPECT_EQ(0, slot_span->num_allocated_slots);
-  PartitionBucket<base::internal::ThreadSafe>* cycle_free_cache_bucket =
-      &allocator.root()->buckets[test_bucket_index_];
-  size_t expected_size =
-      cycle_free_cache_bucket->num_system_pages_per_slot_span *
-      SystemPageSize();
+  size_t expected_size = SystemPageSize();
   EXPECT_EQ(expected_size,
             allocator.root()->get_total_size_of_committed_pages());
 
@@ -2520,7 +2565,7 @@ TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
 
   // A full slot span of size 1 partition page is committed.
   void* ptr = root.Alloc(small_size - kExtraAllocSize, type_name);
-  size_t expected_committed_size = PartitionPageSize();
+  size_t expected_committed_size = SystemPageSize();
   size_t expected_super_pages_size = kSuperPageSize;
   EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
   EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
@@ -2542,7 +2587,7 @@ TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
 
   // Allocating another size commits another slot span.
   ptr = root.Alloc(2 * small_size - kExtraAllocSize, type_name);
-  expected_committed_size += PartitionPageSize();
+  expected_committed_size += SystemPageSize();
   EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
   EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
 

@@ -168,11 +168,18 @@ struct PartitionBucket {
   ALWAYS_INLINE void InitializeSlotSpan(
       SlotSpanMetadata<thread_safe>* slot_span);
 
-  // Allocates one slot from the given |slot_span| and then adds the remainder
-  // to the current bucket. If the |slot_span| was freshly allocated, it must
-  // have been passed through InitializeSlotSpan() first.
-  ALWAYS_INLINE char* AllocAndFillFreelist(
-      SlotSpanMetadata<thread_safe>* slot_span);
+  // Commit 1 or more pages in |slot_span|, enough to get the next slot, which
+  // is returned by this function. If more slots fit into the committed pages,
+  // they'll be added to the free list of the slot span (note that next pointers
+  // are stored inside the slots).
+  // The free list must be empty when calling this function.
+  //
+  // If |slot_span| was freshly allocated, it must have been passed through
+  // InitializeSlotSpan() first.
+  ALWAYS_INLINE char* ProvisionMoreSlotsAndAllocOne(
+      PartitionRoot<thread_safe>* root,
+      SlotSpanMetadata<thread_safe>* slot_span)
+      EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 };
 
 }  // namespace internal

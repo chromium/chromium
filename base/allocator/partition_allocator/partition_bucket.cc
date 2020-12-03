@@ -216,16 +216,10 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   }
 
   char* ret = root->next_partition_page;
-
-  // System pages in the super page come in a decommited state. Commit them
-  // before vending them back.
-  root->RecommitSystemPagesForData(ret, slot_span_committed_size,
-                                   PageUpdatePermissions);
   root->next_partition_page += slot_span_reserved_size;
   // Double check that we had enough space in the super page for the new slot
   // span.
   PA_DCHECK(root->next_partition_page <= root->next_partition_page_end);
-
   return ret;
 }
 
@@ -355,7 +349,8 @@ ALWAYS_INLINE void PartitionBucket<thread_safe>::InitializeSlotSpan(
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE char* PartitionBucket<thread_safe>::AllocAndFillFreelist(
+ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
+    PartitionRoot<thread_safe>* root,
     SlotSpanMetadata<thread_safe>* slot_span) {
   PA_DCHECK(slot_span !=
             SlotSpanMetadata<thread_safe>::get_sentinel_slot_span());
@@ -372,56 +367,55 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::AllocAndFillFreelist(
   size_t size = slot_size;
   char* base = reinterpret_cast<char*>(
       SlotSpanMetadata<thread_safe>::ToPointer(slot_span));
-  char* return_object = base + (size * slot_span->num_allocated_slots);
-  char* first_freelist_pointer = return_object + size;
-  char* first_freelist_pointer_extent =
-      first_freelist_pointer + sizeof(PartitionFreelistEntry*);
-  // Our goal is to fault as few system pages as possible. We calculate the
-  // page containing the "end" of the returned slot, and then allow freelist
-  // pointers to be written up to the end of that page.
-  char* sub_page_limit = reinterpret_cast<char*>(
-      RoundUpToSystemPage(reinterpret_cast<size_t>(first_freelist_pointer)));
-  char* slots_limit = return_object + (size * num_slots);
-  char* freelist_limit = sub_page_limit;
-  if (UNLIKELY(slots_limit < freelist_limit))
-    freelist_limit = slots_limit;
+  // If we got here, the first unallocated slot is either partially or fully on
+  // an uncommitted page. If the latter, it must be at the start of that page.
+  char* return_slot = base + (size * slot_span->num_allocated_slots);
+  char* next_slot = return_slot + size;
+  char* commit_start = bits::Align(return_slot, SystemPageSize());
+  PA_DCHECK(next_slot > commit_start);
+  char* commit_end = bits::Align(next_slot, SystemPageSize());
+  // If the slot was partially committed, |return_slot| and |next_slot| fall
+  // in different pages. If the slot was fully uncommitted, |return_slot| points
+  // to the page start and |next_slot| doesn't, thus only the latter gets
+  // rounded up.
+  PA_DCHECK(commit_end > commit_start);
+  // System pages in the slot span come in an initially decommitted state.
+  // Can't use PageKeepPermissionsIfPossible, because we have no knowledge
+  // which pages have been committed before.
+  root->RecommitSystemPagesForData(commit_start, commit_end - commit_start,
+                                   PageUpdatePermissions);
 
-  uint16_t num_new_freelist_entries = 0;
-  if (LIKELY(first_freelist_pointer_extent <= freelist_limit)) {
-    // Only consider used space in the slot span. If we consider wasted
-    // space, we may get an off-by-one when a freelist pointer fits in the
-    // wasted space, but a slot does not.
-    // We know we can fit at least one freelist pointer.
-    num_new_freelist_entries = 1;
-    // Any further entries require space for the whole slot span.
-    num_new_freelist_entries += static_cast<uint16_t>(
-        (freelist_limit - first_freelist_pointer_extent) / size);
-  }
-
-  // We always return an object slot -- that's the +1 below.
-  // We do not neccessarily create any new freelist entries, because we cross
-  // sub page boundaries frequently for large bucket sizes.
-  PA_DCHECK(num_new_freelist_entries + 1 <= num_slots);
-  num_slots -= (num_new_freelist_entries + 1);
-  slot_span->num_unprovisioned_slots = num_slots;
+  // The slot being returned is considered allocated, and no longer
+  // unprovisioned.
   slot_span->num_allocated_slots++;
+  slot_span->num_unprovisioned_slots--;
 
-  if (LIKELY(num_new_freelist_entries)) {
-    char* freelist_pointer = first_freelist_pointer;
-    auto* entry = reinterpret_cast<PartitionFreelistEntry*>(freelist_pointer);
-    slot_span->SetFreelistHead(entry);
-    while (--num_new_freelist_entries) {
-      freelist_pointer += size;
-      auto* next_entry =
-          reinterpret_cast<PartitionFreelistEntry*>(freelist_pointer);
-      entry->SetNext(next_entry);
-      entry = next_entry;
+  // Add all slots that fit within so far committed pages to the free list.
+  PartitionFreelistEntry* prev_entry = nullptr;
+  PartitionFreelistEntry* entry =
+      reinterpret_cast<PartitionFreelistEntry*>(next_slot);
+  char* next_slot_end = next_slot + size;
+  while (next_slot_end <= commit_end) {
+    if (!slot_span->freelist_head) {
+      PA_DCHECK(!prev_entry);
+      slot_span->SetFreelistHead(entry);
+    } else {
+      prev_entry->SetNext(entry);
     }
-    entry->SetNext(nullptr);
-  } else {
-    slot_span->SetFreelistHead(nullptr);
+    next_slot = next_slot_end;
+    next_slot_end = next_slot + size;
+    prev_entry = entry;
+    entry = reinterpret_cast<PartitionFreelistEntry*>(next_slot);
+    slot_span->num_unprovisioned_slots--;
   }
-  return return_object;
+  // Null-terminate the list, if any slot made it to the list.
+  // One might think that this isn't needed as the page was just committed thus
+  // zeroed, but it isn't always the case on OS_APPLE.
+  if (prev_entry) {
+    prev_entry->SetNext(nullptr);
+  }
+
+  return return_slot;
 }
 
 template <bool thread_safe>
@@ -566,10 +560,6 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
       PA_DCHECK(new_slot_span->bucket == this);
       PA_DCHECK(new_slot_span->is_decommitted());
       decommitted_slot_spans_head = new_slot_span->next_slot_span;
-      void* addr = SlotSpanMetadata<thread_safe>::ToPointer(new_slot_span);
-      root->RecommitSystemPagesForData(
-          addr, new_slot_span->bucket->get_bytes_per_span(),
-          PageKeepPermissionsIfPossible);
       new_slot_span->Reset();
       *is_already_zeroed = kDecommittedPagesAreAlwaysZeroed;
     }
@@ -618,9 +608,11 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
     new_slot_span->num_allocated_slots++;
     return entry;
   }
-  // Otherwise, we need to build the freelist.
+
+  // Otherwise, we need to provision more slots by committing more pages. Build
+  // the free list for the newly provisioned slots.
   PA_DCHECK(new_slot_span->num_unprovisioned_slots);
-  return AllocAndFillFreelist(new_slot_span);
+  return ProvisionMoreSlotsAndAllocOne(root, new_slot_span);
 }
 
 template struct PartitionBucket<ThreadSafe>;

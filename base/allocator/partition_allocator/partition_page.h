@@ -132,6 +132,15 @@ struct __attribute__((packed)) SlotSpanMetadata {
     return GetRawSize();
   }
 
+  // Returns the total size of the slots that are currently provisioned.
+  ALWAYS_INLINE size_t GetProvisionedSize() const {
+    size_t num_provisioned_slots =
+        bucket->get_slots_per_span() - num_unprovisioned_slots;
+    size_t provisioned_size = num_provisioned_slots * bucket->slot_size;
+    PA_DCHECK(provisioned_size <= bucket->get_bytes_per_span());
+    return provisioned_size;
+  }
+
   ALWAYS_INLINE void Reset();
 
   // TODO(ajwong): Can this be made private?  https://crbug.com/787153

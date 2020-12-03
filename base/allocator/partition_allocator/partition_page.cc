@@ -6,12 +6,14 @@
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
+#include "base/bits.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
@@ -167,7 +169,10 @@ void SlotSpanMetadata<thread_safe>::Decommit(PartitionRoot<thread_safe>* root) {
   PA_DCHECK(is_empty());
   PA_DCHECK(!bucket->is_direct_mapped());
   void* addr = SlotSpanMetadata::ToPointer(this);
-  root->DecommitSystemPagesForData(addr, bucket->get_bytes_per_span(),
+  size_t size_to_decommit = bits::Align(GetProvisionedSize(), SystemPageSize());
+  // Not decommitted slot span must've had at least 1 allocation.
+  PA_DCHECK(size_to_decommit > 0);
+  root->DecommitSystemPagesForData(addr, size_to_decommit,
                                    PageKeepPermissionsIfPossible);
 
   // We actually leave the decommitted slot span in the active list. We'll sweep
