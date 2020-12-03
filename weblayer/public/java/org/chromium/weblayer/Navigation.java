@@ -173,10 +173,15 @@ public class Navigation extends IClientNavigation.Stub {
      * headers. This means the only time the embedder can know if the navigation resulted in an
      * external intent being launched is in NavigationCallback.onNavigationFailed.
      *
+     * @return Whether an intent was launched for the navigation.
+     *
      * @since 89
      */
     public boolean wasIntentLaunched() {
         ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 89) {
+            throw new UnsupportedOperationException();
+        }
         try {
             return mNavigationImpl.wasIntentLaunched();
         } catch (RemoteException e) {
@@ -192,10 +197,15 @@ public class Navigation extends IClientNavigation.Stub {
      * means the only time the embedder can know this status definitively is in
      * NavigationCallback.onNavigationFailed.
      *
+     * @return Whether this navigation resulted in a user decision guarding external intent launch.
+     *
      * @since 89
      */
     public boolean isUserDecidingIntentLaunch() {
         ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 89) {
+            throw new UnsupportedOperationException();
+        }
         try {
             return mNavigationImpl.isUserDecidingIntentLaunch();
         } catch (RemoteException e) {
