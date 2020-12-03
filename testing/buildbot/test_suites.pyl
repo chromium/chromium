@@ -3791,6 +3791,15 @@
       'wayland_client_perftests': {},
     },
 
+    'linux_example_builder_gtests': {
+      'base_unittests': {},
+      'interactive_ui_tests': {
+        'swarming': {
+          'shards': 3,
+        },
+      },
+    },
+
     'linux_flavor_specific_chromium_gtests': {
       # Android, Chrome OS and Linux
       'sandbox_linux_unittests': {},

@@ -2686,6 +2686,9 @@
         'additional_compile_targets': [
           'chrome',
         ],
+        'test_suites': {
+          'gtest_tests': 'linux_example_builder_gtests',
+        },
       },
       'linux-fieldtrial-rel': {
         'mixins': [
