@@ -10,7 +10,7 @@ cr.define('cellular_setup', function() {
       this.properties_ = {
         activationCode: 'activation-code-' + id,
         eid: '1',
-        iccid: id,
+        iccid: id + '',
         name: {
           data: this.stringToCharCodeArray_('profile' + id),
         },
@@ -66,6 +66,21 @@ cr.define('cellular_setup', function() {
         res.push(string.charCodeAt(i));
       }
       return res;
+    }
+
+    /**
+     * @override
+     * @param {?mojoBase.mojom.String16} nickname
+     * @return {!Promise<{result:
+     *     chromeos.cellularSetup.mojom.ESimOperationResult},}>}
+     */
+    setProfileNickname(nickname) {
+      this.properties_.nickname = nickname;
+      return new Promise((res) => {
+        res({
+          result: chromeos.cellularSetup.mojom.ESimOperationResult.kSuccess
+        });
+      });
     }
   }
 

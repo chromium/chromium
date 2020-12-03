@@ -844,6 +844,38 @@ TEST_F('OSSettingsInternetDetailPageTest', 'All', () => {
   mocha.run();
 });
 
+// Test fixture for settings-internet-detail-menu.
+// eslint-disable-next-line no-var
+var OSSettingsInternetDetailMenuTest = class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload +
+        'chromeos/internet_page/internet_detail_menu.html';
+  }
+
+  /** @override */
+  get featureList() {
+    return {enabled: ['chromeos::features::kUpdatedCellularActivationUi']};
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      '//ui/webui/resources/js/promise_resolver.js',
+      '//ui/webui/resources/js/assert.js',
+      '//ui/webui/resources/js/util.js',
+      BROWSER_SETTINGS_PATH + '../test_util.js',
+      BROWSER_SETTINGS_PATH + '../fake_chrome_event.js',
+      BROWSER_SETTINGS_PATH + '../chromeos/fake_network_config_mojom.js',
+      'internet_detail_menu_test.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsInternetDetailMenuTest', 'All', () => {
+  mocha.run();
+});
+
 // Test fixture for settings-internet-page.
 // eslint-disable-next-line no-var
 var OSSettingsInternetPageTest = class extends OSSettingsBrowserTest {
@@ -866,6 +898,8 @@ var OSSettingsInternetPageTest = class extends OSSettingsBrowserTest {
       BROWSER_SETTINGS_PATH + '../test_util.js',
       BROWSER_SETTINGS_PATH + '../fake_chrome_event.js',
       BROWSER_SETTINGS_PATH + '../chromeos/fake_network_config_mojom.js',
+      BROWSER_SETTINGS_PATH +
+          '../cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js',
       'internet_page_tests.js',
     ]);
   }
@@ -972,6 +1006,32 @@ var OSSettingsCellularNetworksListTest = class extends OSSettingsBrowserTest {
 };
 
 TEST_F('OSSettingsCellularNetworksListTest', 'CellularNetworkList', () => {
+  mocha.run();
+});
+
+// Test fixture for rename esim dialog page.
+// eslint-disable-next-line no-var
+var OSSettingsEsimRenameDialogTest = class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload +
+        'chromeos/internet_page/esim_rename_dialog.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      '//ui/webui/resources/js/assert.js',
+      BROWSER_SETTINGS_PATH + '../test_util.js',
+      BROWSER_SETTINGS_PATH + '../chromeos/fake_network_config_mojom.js',
+      BROWSER_SETTINGS_PATH +
+          '../cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js',
+      'esim_rename_dialog_test.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsEsimRenameDialogTest', 'EsimRenameDialog', () => {
   mocha.run();
 });
 

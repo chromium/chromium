@@ -101,6 +101,7 @@ if (optimize_webui) {
       "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js",
       "chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js",
       "chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-lite.js",
+      "chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js",
       "chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js",
       "chrome://resources/js/cr.m.js",
       "chrome://resources/chromeos/colors/cros_colors.generated.css",

@@ -28,4 +28,5 @@ os_test_namespace_rewrites = os_settings_namespace_rewrites + [
                                "cups_printer_test_util.createCupsPrinterInfo|createCupsPrinterInfo",
                                "cups_printer_test_util.createPrinterListEntry|createPrinterListEntry",
                                "cups_printer_test_util.getPrinterEntries|getPrinterEntries",
+                               "cellular_setup.FakeESimManagerRemote|FakeESimManagerRemote",
                              ]
