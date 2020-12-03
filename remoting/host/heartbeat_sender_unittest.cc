@@ -72,15 +72,12 @@ void ValidateHeartbeat(std::unique_ptr<apis::v1::HeartbeatRequest> request,
   ASSERT_TRUE(request->has_host_os_name());
   ASSERT_TRUE(request->has_host_cpu_type());
   ASSERT_EQ(expected_is_initial_heartbeat, request->is_initial_heartbeat());
-  bool is_linux = false;
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
-  is_linux = true;
+
+#if defined(OS_WIN) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+  ASSERT_EQ(is_googler, request->has_hostname());
+#else
+  ASSERT_FALSE(request->has_hostname());
 #endif
-  if (is_googler && is_linux) {
-    ASSERT_TRUE(request->has_hostname());
-  } else {
-    ASSERT_FALSE(request->has_hostname());
-  }
 }
 
 decltype(auto) DoValidateHeartbeatAndRespondOk(

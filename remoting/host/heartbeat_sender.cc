@@ -32,6 +32,10 @@
 #include "remoting/signaling/signaling_address.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+#if defined(OS_WIN)
+#include "base/strings/utf_string_conversions.h"
+#endif
+
 namespace remoting {
 
 namespace {
@@ -103,6 +107,27 @@ const net::BackoffEntry::Policy kBackoffPolicy = {
     // Starts with initial delay.
     false,
 };
+
+std::string GetHostname() {
+#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+  return net::GetHostName();
+#elif defined(OS_WIN)
+  wchar_t buffer[MAX_PATH] = {0};
+  DWORD size = MAX_PATH;
+  if (!::GetComputerNameExW(ComputerNameDnsFullyQualified, buffer, &size)) {
+    PLOG(ERROR) << "GetComputerNameExW failed";
+    return std::string();
+  }
+  std::string hostname;
+  if (!base::UTF16ToUTF8(buffer, size, &hostname)) {
+    LOG(ERROR) << "Failed to convert from UTF16 to UTF8";
+    return std::string();
+  }
+  return hostname;
+#else
+  return std::string();
+#endif
+}
 
 }  // namespace
 
@@ -383,13 +408,14 @@ HeartbeatSender::CreateHeartbeatRequest() {
   heartbeat->set_host_os_version(GetHostOperatingSystemVersion());
   heartbeat->set_host_cpu_type(base::SysInfo::OperatingSystemArchitecture());
   heartbeat->set_is_initial_heartbeat(!initial_heartbeat_sent_);
-  // Only set the hostname if the user's email is @google.com and they are using
-  // a Linux OS.
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+
   if (is_googler_) {
-    heartbeat->set_hostname(net::GetHostName());
+    std::string hostname = GetHostname();
+    if (!hostname.empty()) {
+      heartbeat->set_hostname(hostname);
+    }
   }
-#endif
+
   return heartbeat;
 }
 
