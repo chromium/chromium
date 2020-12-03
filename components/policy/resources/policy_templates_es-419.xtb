@@ -5170,7 +5170,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8417305981081876834">Establecer la longitud máxima del PIN de pantalla bloqueada</translation>
 <translation id="8417750118762775739">Si inhabilitas la política, las ventanas emergentes destinadas a <ph name="BLANK_PAGE_NAME" /> podrán acceder (mediante JavaScript) a la página que solicitó abrir la ventana emergente.
 
-      Si habilitadas la política o no la estableces, se establecerá el valor <ph name="NULL_VALUE" /> en la propiedad <ph name="WINDOW_OPENER_PROPERTY" />, a menos que el ancla especifique el atributo <ph name="REL_OPENER_ATTRIBUTE" />.
+      Si habilitas la política o no la estableces, se establecerá el valor <ph name="NULL_VALUE" /> en la propiedad <ph name="WINDOW_OPENER_PROPERTY" />, a menos que el ancla especifique el atributo <ph name="REL_OPENER_ATTRIBUTE" />.
 
       En la versión 95 de <ph name="PRODUCT_NAME" />, se quitará esta política.
 
