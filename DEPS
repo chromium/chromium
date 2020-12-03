@@ -187,6 +187,9 @@ vars = {
   # instead of downloading the prebuilt pinned revision.
   'llvm_force_head_revision': False,
 
+  # reclient CIPD package version
+  'reclient_version': 're_client_version:0.17.0.7d283ef',
+
   'android_git': 'https://android.googlesource.com',
   'aomedia_git': 'https://aomedia.googlesource.com',
   'boringssl_git': 'https://boringssl.googlesource.com',
@@ -453,12 +456,12 @@ deps = {
   'src/tools/reclient': {
     'packages': [
       {
-        'package': 'infra/rbe/client/linux-amd64',
-        'version': 'FY971v8hquNEs2x-L-AvVGygtX9sFTRy9aloq85WbqYC',
+        'package': 'infra/rbe/client/${{platform}}',
+        'version': Var('reclient_version'),
       }
     ],
     'dep_type': 'cipd',
-    'condition': 'host_os == "linux" and checkout_reclient',
+    'condition': '(host_os == "linux" or host_os == "windows") and checkout_reclient',
   },
   'src/chrome/browser/resources/media_router/extension/src':
     Var('chromium_git') + '/media_router.git' + '@' + 'd4389c097c61fa8c5aa5eb7c3ba34ee203dd62e3',
