@@ -292,6 +292,11 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   self.view.backgroundColor = UIColor.cr_systemBackgroundColor;
 
   if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
+    self.navigationBar.translucent = NO;
+    self.toolbar.translucent = NO;
+    self.navigationBar.barTintColor =
+        [UIColor colorNamed:kSecondaryBackgroundColor];
+    self.toolbar.barTintColor = [UIColor colorNamed:kSecondaryBackgroundColor];
     self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   }
 

@@ -121,13 +121,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
                            action:nil];
   [self setToolbarItems:@[ flexibleSpace, self.deleteButton, flexibleSpace ]
                animated:YES];
-  if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
-    self.styler.tableViewBackgroundColor =
-        [UIColor colorNamed:kSecondaryBackgroundColor];
-  } else {
-    self.styler.tableViewBackgroundColor =
-        UIColor.cr_systemGroupedBackgroundColor;
-  }
+
   [super viewDidLoad];
   self.styler.cellBackgroundColor =
       UIColor.cr_secondarySystemGroupedBackgroundColor;

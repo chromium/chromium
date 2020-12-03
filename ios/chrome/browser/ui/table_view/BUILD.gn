@@ -20,6 +20,7 @@ source_set("table_view") {
     ":styler",
     ":views",
     "//base",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/material_components",
     "//ios/chrome/common/ui/colors",
@@ -48,6 +49,7 @@ source_set("styler") {
     "chrome_table_view_styler.mm",
   ]
   public_deps = [
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
   ]
