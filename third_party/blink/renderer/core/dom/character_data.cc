@@ -234,7 +234,7 @@ void CharacterData::DidModifyData(const String& old_data, UpdateSource source) {
         this,
         previousSibling(),
         nextSibling(),
-        nullptr};
+        {}};
     parentNode()->ChildrenChanged(change);
   }
 

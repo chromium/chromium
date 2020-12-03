@@ -96,8 +96,7 @@ void HTMLOptGroupElement::ChildrenChanged(const ChildrenChange& change) {
     if (auto* option = DynamicTo<HTMLOptionElement>(change.sibling_changed))
       select->OptionRemoved(*option);
   } else if (change.type == ChildrenChangeType::kAllChildrenRemoved) {
-    DCHECK(change.removed_nodes);
-    for (Node* node : *change.removed_nodes) {
+    for (Node* node : change.removed_nodes) {
       if (auto* option = DynamicTo<HTMLOptionElement>(node))
         select->OptionRemoved(*option);
     }

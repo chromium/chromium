@@ -814,11 +814,8 @@ void ContainerNode::RemoveChildren(SubtreeModificationAction action) {
     GetDocument().NodeChildrenWillBeRemoved(*this);
   }
 
-  HeapVector<Member<Node>>* removed_nodes = nullptr;
-  if (ChildrenChangedAllChildrenRemovedNeedsList()) {
-    removed_nodes =
-        MakeGarbageCollected<HeapVector<Member<Node>>>(CountChildren());
-  }
+  HeapVector<Member<Node>> removed_nodes;
+  const bool children_changed = ChildrenChangedAllChildrenRemovedNeedsList();
   {
     HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
     TreeOrderedMap::RemoveScope tree_remove_scope;
@@ -831,8 +828,8 @@ void ContainerNode::RemoveChildren(SubtreeModificationAction action) {
       while (Node* child = first_child_) {
         RemoveBetween(nullptr, child->nextSibling(), *child);
         NotifyNodeRemoved(*child);
-        if (removed_nodes)
-          removed_nodes->push_back(child);
+        if (children_changed)
+          removed_nodes.push_back(child);
       }
     }
 
@@ -841,7 +838,7 @@ void ContainerNode::RemoveChildren(SubtreeModificationAction action) {
                              nullptr,
                              nullptr,
                              nullptr,
-                             removed_nodes};
+                             std::move(removed_nodes)};
     ChildrenChanged(change);
   }
 

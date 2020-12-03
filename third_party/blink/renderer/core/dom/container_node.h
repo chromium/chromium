@@ -318,7 +318,7 @@ class CORE_EXPORT ContainerNode : public Node {
                                &node,
                                unchanged_previous,
                                unchanged_next,
-                               nullptr};
+                               {}};
       return change;
     }
 
@@ -333,7 +333,7 @@ class CORE_EXPORT ContainerNode : public Node {
                                &node,
                                previous_sibling,
                                next_sibling,
-                               nullptr};
+                               {}};
       return change;
     }
 
@@ -367,9 +367,9 @@ class CORE_EXPORT ContainerNode : public Node {
     //  - nextSibling of the last inserted node after multiple node insertion.
     Node* sibling_after_change = nullptr;
     // List of removed nodes for ChildrenChangeType::kAllChildrenRemoved.
-    // This is available only if ChildrenChangedAllChildrenRemovedNeedsList()
-    // returns true.
-    HeapVector<Member<Node>>* removed_nodes;
+    // Only populated if ChildrenChangedAllChildrenRemovedNeedsList() returns
+    // true.
+    HeapVector<Member<Node>> removed_nodes;
   };
 
   // Notifies the node that it's list of children have changed (either by adding
