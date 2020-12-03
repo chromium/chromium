@@ -119,9 +119,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   void TextChangedWithCleanLayout(Node* optional_node, AXObject*);
   void FocusableChangedWithCleanLayout(Element* element);
   void DocumentTitleChanged() override;
-  // Called when a node has just been attached, so we can make sure we have the
-  // right subclass of AXObject.
+  // Called when a layout tree for a node has just been attached, so we can make
+  // sure we have the right subclass of AXObject.
   void UpdateCacheAfterNodeIsAttached(Node*) override;
+  // A DOM node was inserted , but does not necessarily have a layout tree.
   void DidInsertChildrenOfNode(Node*) override;
 
   void HandleAttributeChanged(const QualifiedName& attr_name,
