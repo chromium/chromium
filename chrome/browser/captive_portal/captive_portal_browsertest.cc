@@ -124,7 +124,7 @@ const char* const kMockCaptivePortalTestUrl =
 // page that redirect to the above URL.  When connected to the Internet, it
 // returns a 204 response.
 const char* const kMockCaptivePortal511Url =
-    "http://mock.captive.portal.511/page511.html";
+    "http://mock.captive.portal.test/page511.html";
 
 // When behind a captive portal, this URL hangs without committing until a call
 // to FailJobs.  When that function is called, the request will time out.
