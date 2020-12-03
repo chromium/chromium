@@ -16,7 +16,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
 #include "chrome/browser/chromeos/policy/signin_profile_extensions_policy_test_base.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
@@ -283,15 +282,12 @@ IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyTest, ExtensionsEnabled) {
 // Tests that a background page is created for the installed sign-in profile
 // app.
 IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyTest, BackgroundPage) {
-  EXPECT_FALSE(
-      chromeos::ProfileHelper::SigninProfileHasLoginScreenExtensions());
   EXPECT_TRUE(extension_force_install_mixin_.ForceInstallFromCrx(
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
           .AppendASCII(kWhitelistedAppCrxPath),
       ExtensionForceInstallMixin::WaitMode::kBackgroundPageReady));
   EXPECT_TRUE(extension_force_install_mixin_.IsExtensionBackgroundPageReady(
       kWhitelistedAppId));
-  EXPECT_TRUE(chromeos::ProfileHelper::SigninProfileHasLoginScreenExtensions());
 }
 
 // Tests installation of multiple sign-in profile apps/extensions.

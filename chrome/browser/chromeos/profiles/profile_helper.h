@@ -84,11 +84,6 @@ class ProfileHelper
   // Returns true if the signin profile has been initialized.
   static bool IsSigninProfileInitialized();
 
-  // Returns true if the signin profile has force-installed extensions set by
-  // policy. This DCHECKs that the profile is created, its PrefService is
-  // initialized and the associated pref exists.
-  static bool SigninProfileHasLoginScreenExtensions();
-
   // Returns the path used for the lock screen apps profile - profile used
   // for launching platform apps that can display windows on top of the lock
   // screen.

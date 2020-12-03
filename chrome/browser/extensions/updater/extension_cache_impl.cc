@@ -13,6 +13,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/crx_installer.h"
@@ -28,14 +29,13 @@
 namespace extensions {
 
 ExtensionCacheImpl::ExtensionCacheImpl(
-    std::unique_ptr<ChromeOSExtensionCacheDelegate> delegate,
-    base::TaskPriority task_priority)
+    std::unique_ptr<ChromeOSExtensionCacheDelegate> delegate)
     : cache_(new LocalExtensionCache(
           delegate->GetCacheDir(),
           delegate->GetMaximumCacheSize(),
           delegate->GetMaximumCacheAge(),
           base::ThreadPool::CreateSequencedTaskRunner(
-              {base::MayBlock(), task_priority,
+              {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
                base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}))) {
   notification_registrar_.Add(
       this, extensions::NOTIFICATION_EXTENSION_INSTALL_ERROR,
