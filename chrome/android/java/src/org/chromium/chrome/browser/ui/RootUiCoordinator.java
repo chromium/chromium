@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareButtonController;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareOrigin;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
 import org.chromium.chrome.browser.tab.AutofillSessionLifetimeController;
@@ -450,7 +451,12 @@ public class RootUiCoordinator
 
         if (shareDelegate == null || tab == null) return;
 
-        shareDelegate.share(tab, shareDirectly);
+        if (shareDirectly) {
+            RecordUserAction.record("MobileMenuDirectShare");
+        } else {
+            RecordUserAction.record("MobileMenuShare");
+        }
+        shareDelegate.share(tab, shareDirectly, ShareOrigin.OVERFLOW_MENU);
     }
 
     // MenuOrKeyboardActionHandler implementation

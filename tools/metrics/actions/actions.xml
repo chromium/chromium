@@ -12967,13 +12967,19 @@ should be able to be added at any place in this file.
 <action name="MobileActionMode.Share">
   <owner>donnd@chromium.org</owner>
   <description>
-    The user pressed the Share button in the mobile Action Bar.
+    The user pressed the Share option in the mobile Action Bar, or in the
+    floating toolbar for Android M+. The bars are shown after the user selects
+    text.
   </description>
 </action>
 
 <action name="MobileActionMode.WebSearch">
   <owner>donnd@chromium.org</owner>
-  <description>User pressed 'Web Search' in the mobile action bar.</description>
+  <description>
+    The user pressed the Web Search option in the mobile Action Bar, or in the
+    floating toolbar for Android M+. The bars are shown after the user selects
+    text.
+  </description>
 </action>
 
 <action name="MobileAddBookmarkViaIntent">

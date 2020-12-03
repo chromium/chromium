@@ -119,8 +119,8 @@ public class ShareDelegateImplIntegrationTest {
                 void share(ShareParams params, ChromeShareExtras chromeShareParams,
                         BottomSheetController controller,
                         ActivityLifecycleDispatcher lifecycleDispatcher, Supplier<Tab> tabProvider,
-                        Callback<Tab> printCallback, boolean syncState, long shareStartTime,
-                        boolean sharingHubEnabled) {
+                        Callback<Tab> printCallback, int shareOrigin, boolean syncState,
+                        long shareStartTime, boolean sharingHubEnabled) {
                     paramsRef.set(params);
                     helper.notifyCalled();
                 }
@@ -131,7 +131,8 @@ public class ShareDelegateImplIntegrationTest {
                                           .getBottomSheetController(),
                     mActivityTestRule.getActivity().getLifecycleDispatcher(),
                     mActivityTestRule.getActivity().getActivityTabProvider(), delegate, false)
-                    .share(mActivityTestRule.getActivity().getActivityTab(), false);
+                    .share(mActivityTestRule.getActivity().getActivityTab(), false,
+                            /*shareOrigin=*/0);
         });
         helper.waitForCallback(0);
         return paramsRef.get();

@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.LensUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareOrigin;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
@@ -690,8 +691,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                             .Builder(getWindow(), ContextMenuUtils.getTitle(mParams),
                                     mParams.getUrl())
                             .build();
-            mShareDelegateSupplier.get().share(
-                    linkShareParams, new ChromeShareExtras.Builder().setSaveLastUsed(true).build());
+            mShareDelegateSupplier.get().share(linkShareParams,
+                    new ChromeShareExtras.Builder().setSaveLastUsed(true).build(),
+                    ShareOrigin.CONTEXT_MENU);
         } else if (itemId == R.id.contextmenu_read_later) {
             recordContextMenuSelection(ContextMenuUma.Action.READ_LATER);
             // TODO(crbug.com/1147475): Download the page to offline page backend.
@@ -816,7 +818,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     new ChromeShareExtras.Builder()
                             .setSaveLastUsed(true)
                             .setImageSrcUrl(mParams.getSrcUrl())
-                            .build());
+                            .build(),
+                    ShareOrigin.CONTEXT_MENU);
         });
     }
 
