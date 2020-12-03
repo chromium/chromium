@@ -20,7 +20,8 @@ CookieControlsServiceBridge::CookieControlsServiceBridge(
     : jobject_(obj) {}
 
 void CookieControlsServiceBridge::UpdateServiceIfNecessary() {
-  // TODO(https://crbug.com/1060940): Update to cover all OTR profiles.
+  // This class is only for the incognito NTP, so it is safe to always use the
+  // primary OTR profile.
   Profile* profile =
       ProfileManager::GetLastUsedProfile()->GetPrimaryOTRProfile();
   CookieControlsService* new_service =

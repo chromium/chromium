@@ -23,7 +23,8 @@ namespace {
 
 // Returns the cookie service at the client end of the mojo pipe.
 network::mojom::CookieManager* GetCookieServiceClient() {
-  // TODO(https://crbug.com/1060940): Update to cover all OTR profiles.
+  // Since restoring Incognito CCT session from cookies is not supported, it is
+  // safe to use the primary OTR profile here.
   return content::BrowserContext::GetDefaultStoragePartition(
              ProfileManager::GetPrimaryUserProfile()->GetPrimaryOTRProfile())
       ->GetCookieManagerForBrowserProcess();
@@ -62,7 +63,6 @@ void OnCookiesFetchFinished(const net::CookieList& cookies) {
 // no-op for the standard session. Typically associated with the #onPause of
 // Android's activty lifecycle.
 void JNI_CookiesFetcher_PersistCookies(JNIEnv* env) {
-  // TODO(https://crbug.com/1060940): Update to cover all OTR profiles.
   if (!ProfileManager::GetPrimaryUserProfile()->HasPrimaryOTRProfile()) {
     // There is no work to be done. We might consider calling
     // the Java callback if needed.
@@ -92,7 +92,6 @@ static void JNI_CookiesFetcher_RestoreCookies(
     jboolean same_party,
     jint source_scheme,
     jint source_port) {
-  // TODO(https://crbug.com/1060940): Update to cover all OTR profiles.
   if (!ProfileManager::GetPrimaryUserProfile()->HasPrimaryOTRProfile())
     return;  // Don't create it. There is nothing to do.
 
