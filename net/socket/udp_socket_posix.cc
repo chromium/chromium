@@ -292,6 +292,11 @@ void UDPSocketPosix::Close() {
   // crbug.com/906005.
   CHECK_EQ(socket_hash_, GetSocketFDHash(socket_));
 #if defined(OS_MAC)
+  // This is a speculative workaround for https://crbug.com/1151048. The idea is
+  // that the call to shutdown() will absorb any errors on the socket, so they
+  // won't be reported by close.
+  // TODO(ricea): Remove if this if it doesn't work or a proper fix is found.
+  HANDLE_EINTR(shutdown(socket_, SHUT_RDWR));
   PCHECK(IGNORE_EINTR(guarded_close_np(socket_, &kSocketFdGuard)) == 0);
 #else
   PCHECK(IGNORE_EINTR(close(socket_)) == 0);
