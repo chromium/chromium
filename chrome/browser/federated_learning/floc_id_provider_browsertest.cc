@@ -82,6 +82,10 @@ class FlocIdProviderBrowserTest : public InProcessBrowserTest {
     return FlocIdProviderFactory::GetForProfile(browser()->profile());
   }
 
+  PrefService* floc_prefs() {
+    return static_cast<FlocIdProviderImpl*>(floc_id_provider())->prefs_;
+  }
+
   FlocId GetFlocId() {
     return static_cast<FlocIdProviderImpl*>(floc_id_provider())->floc_id_;
   }
@@ -109,6 +113,11 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderBrowserTest, NoProviderInIncognitoMode) {
   FlocIdProvider* incognito_floc_id_provider =
       FlocIdProviderFactory::GetForProfile(off_the_record_profile);
   ASSERT_FALSE(incognito_floc_id_provider);
+}
+
+IN_PROC_BROWSER_TEST_F(FlocIdProviderBrowserTest, PrefsMember) {
+  EXPECT_EQ(floc_prefs(), browser()->profile()->GetPrefs());
+  EXPECT_NE(floc_prefs(), g_browser_process->local_state());
 }
 
 class MockFlocRemotePermissionService : public FlocRemotePermissionService {

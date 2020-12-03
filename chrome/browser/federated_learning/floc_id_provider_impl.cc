@@ -39,12 +39,14 @@ base::TimeDelta GetFlocIdScheduledUpdateInterval() {
 }  // namespace
 
 FlocIdProviderImpl::FlocIdProviderImpl(
+    PrefService* prefs,
     syncer::SyncService* sync_service,
     scoped_refptr<content_settings::CookieSettings> cookie_settings,
     FlocRemotePermissionService* floc_remote_permission_service,
     history::HistoryService* history_service,
     syncer::UserEventService* user_event_service)
-    : sync_service_(sync_service),
+    : prefs_(prefs),
+      sync_service_(sync_service),
       cookie_settings_(std::move(cookie_settings)),
       floc_remote_permission_service_(floc_remote_permission_service),
       history_service_(history_service),
@@ -53,8 +55,7 @@ FlocIdProviderImpl::FlocIdProviderImpl(
   sync_service_->AddObserver(this);
   g_browser_process->floc_sorting_lsh_clusters_service()->AddObserver(this);
 
-  PrefService* local_state = g_browser_process->local_state();
-  base::Time last_compute_time = FlocId::ReadComputeTimeFromPrefs(local_state);
+  base::Time last_compute_time = FlocId::ReadComputeTimeFromPrefs(prefs_);
 
   if (!last_compute_time.is_null()) {
     first_floc_computed_ = true;
@@ -64,7 +65,7 @@ FlocIdProviderImpl::FlocIdProviderImpl(
     if (time_since_last_compute < GetFlocIdScheduledUpdateInterval()) {
       // Keep using the last floc. Schedule a recompute event when it's
       // |GetFlocIdScheduledUpdateInterval()| from the last compute time.
-      floc_id_ = FlocId::ReadFromPrefs(local_state);
+      floc_id_ = FlocId::ReadFromPrefs(prefs_);
       ScheduleFlocComputation(GetFlocIdScheduledUpdateInterval() -
                               time_since_last_compute);
     }
@@ -118,9 +119,8 @@ void FlocIdProviderImpl::OnComputeFlocCompleted(ComputeFlocTrigger trigger,
   LogFlocComputedEvent(trigger, result);
   floc_id_ = result.floc_id;
 
-  PrefService* local_state = g_browser_process->local_state();
-  floc_id_.SaveToPrefs(local_state);
-  FlocId::SaveComputeTimeToPrefs(base::Time::Now(), local_state);
+  floc_id_.SaveToPrefs(prefs_);
+  FlocId::SaveComputeTimeToPrefs(base::Time::Now(), prefs_);
 
   ScheduleFlocComputation(GetFlocIdScheduledUpdateInterval());
 }
@@ -210,7 +210,7 @@ void FlocIdProviderImpl::OnURLsDeleted(
   // history-delete.
   LogFlocComputedEvent(ComputeFlocTrigger::kHistoryDelete, ComputeFlocResult());
   floc_id_ = FlocId();
-  floc_id_.SaveToPrefs(g_browser_process->local_state());
+  floc_id_.SaveToPrefs(prefs_);
 }
 
 void FlocIdProviderImpl::OnSortingLshClustersFileReady() {

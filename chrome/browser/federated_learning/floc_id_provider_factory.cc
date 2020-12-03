@@ -75,9 +75,9 @@ KeyedService* FlocIdProviderFactory::BuildServiceInstanceFor(
   if (!user_event_service)
     return nullptr;
 
-  return new FlocIdProviderImpl(sync_service, std::move(cookie_settings),
-                                floc_remote_permission_service, history_service,
-                                user_event_service);
+  return new FlocIdProviderImpl(
+      profile->GetPrefs(), sync_service, std::move(cookie_settings),
+      floc_remote_permission_service, history_service, user_event_service);
 }
 
 }  // namespace federated_learning

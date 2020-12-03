@@ -593,7 +593,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ChromeTracingDelegate::RegisterPrefs(registry);
   component_updater::RegisterPrefs(registry);
   ExternalProtocolHandler::RegisterPrefs(registry);
-  federated_learning::FlocId::RegisterPrefs(registry);
   flags_ui::PrefServiceFlagsStorage::RegisterPrefs(registry);
   GpuModeManager::RegisterPrefs(registry);
   signin::IdentityManager::RegisterLocalStatePrefs(registry);
@@ -805,6 +804,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   dom_distiller::DistilledPagePrefs::RegisterProfilePrefs(registry);
   dom_distiller::RegisterProfilePrefs(registry);
   DownloadPrefs::RegisterProfilePrefs(registry);
+  federated_learning::FlocId::RegisterPrefs(registry);
   HostContentSettingsMap::RegisterProfilePrefs(registry);
   HttpsImageCompressionInfoBarDecider::RegisterProfilePrefs(registry);
   image_fetcher::ImageCache::RegisterProfilePrefs(registry);

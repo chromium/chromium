@@ -101,6 +101,7 @@ class FlocIdProviderImpl : public FlocIdProvider,
       history::HistoryService::QueryHistoryCallback;
 
   FlocIdProviderImpl(
+      PrefService* prefs,
       syncer::SyncService* sync_service,
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
       FlocRemotePermissionService* floc_remote_permission_service,
@@ -203,6 +204,14 @@ class FlocIdProviderImpl : public FlocIdProvider,
   bool first_sorting_lsh_file_ready_seen_ = false;
   bool first_sync_history_enabled_seen_ = false;
 
+  // The following raw pointer references are guaranteed to outlive this object.
+  // |prefs_| is owned by Profile, and it won't be destroyed until the
+  // destructor of Profile is called, where all the profile-keyed services
+  // including this object will be destroyed. Other services are all created by
+  // profile-keyed service factories, and the dependency declared in
+  // FlocIdProviderFactory::FlocIdProviderFactory() guarantees that this object
+  // will be destroyed first among those services.
+  PrefService* prefs_;
   syncer::SyncService* sync_service_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   FlocRemotePermissionService* floc_remote_permission_service_;

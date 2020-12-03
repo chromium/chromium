@@ -204,9 +204,8 @@ class FlocIdProviderUnitTest : public testing::Test {
   ~FlocIdProviderUnitTest() override = default;
 
   void SetUp() override {
-    FlocId::RegisterPrefs(pref_service_.registry());
+    FlocId::RegisterPrefs(prefs_.registry());
     InitializeFlocPrefs();
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&pref_service_);
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
 
@@ -241,7 +240,7 @@ class FlocIdProviderUnitTest : public testing::Test {
         settings_map_.get(), &prefs_, false, "chrome-extension");
 
     floc_id_provider_ = std::make_unique<MockFlocIdProvider>(
-        test_sync_service_.get(), fake_cookie_settings_,
+        &prefs_, test_sync_service_.get(), fake_cookie_settings_,
         fake_floc_remote_permission_service_.get(), history_service_.get(),
         fake_user_event_service_.get());
 
@@ -340,7 +339,6 @@ class FlocIdProviderUnitTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
-  TestingPrefServiceSimple pref_service_;
   scoped_refptr<HostContentSettingsMap> settings_map_;
 
   std::unique_ptr<history::HistoryService> history_service_;
@@ -1335,8 +1333,8 @@ class FlocIdProviderUnitTestLastFlocUnexpired
     base::Time last_compute_time =
         base::Time::Now() - base::TimeDelta::FromHours(12);
 
-    floc_id.SaveToPrefs(&pref_service_);
-    FlocId::SaveComputeTimeToPrefs(last_compute_time, &pref_service_);
+    floc_id.SaveToPrefs(&prefs_);
+    FlocId::SaveComputeTimeToPrefs(last_compute_time, &prefs_);
   }
 
   void InitializeHistory() override {
@@ -1389,7 +1387,7 @@ TEST_F(FlocIdProviderUnitTestLastFlocUnexpired, NextScheduledUpdate) {
   task_environment_.RunUntilIdle();
 
   // Expect that the floc prefs hasn't changed at this stage.
-  EXPECT_EQ(floc_id(), FlocId::ReadFromPrefs(&pref_service_));
+  EXPECT_EQ(floc_id(), FlocId::ReadFromPrefs(&prefs_));
 
   // Fast forward by 12 hours. This should trigger a scheduled update.
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(12));
@@ -1411,9 +1409,8 @@ TEST_F(FlocIdProviderUnitTestLastFlocUnexpired, NextScheduledUpdate) {
   EXPECT_EQ(FlocId::SimHashHistory({"foo.com", "domain1.com", "domain2.com"}),
             event.floc_id());
 
-  EXPECT_EQ(floc_id(), FlocId::ReadFromPrefs(&pref_service_));
-  EXPECT_EQ(base::Time::Now(),
-            FlocId::ReadComputeTimeFromPrefs(&pref_service_));
+  EXPECT_EQ(floc_id(), FlocId::ReadFromPrefs(&prefs_));
+  EXPECT_EQ(base::Time::Now(), FlocId::ReadComputeTimeFromPrefs(&prefs_));
 }
 
 TEST_F(FlocIdProviderUnitTestLastFlocUnexpired, HistoryDelete) {
@@ -1439,9 +1436,9 @@ TEST_F(FlocIdProviderUnitTestLastFlocUnexpired, HistoryDelete) {
   // changed.
   EXPECT_EQ(0u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_FALSE(floc_id().IsValid());
-  EXPECT_FALSE(FlocId::ReadFromPrefs(&pref_service_).IsValid());
+  EXPECT_FALSE(FlocId::ReadFromPrefs(&prefs_).IsValid());
   EXPECT_EQ(base::Time::Now() - base::TimeDelta::FromHours(12),
-            FlocId::ReadComputeTimeFromPrefs(&pref_service_));
+            FlocId::ReadComputeTimeFromPrefs(&prefs_));
 }
 
 class FlocIdProviderUnitTestLastFlocExpired
@@ -1458,8 +1455,8 @@ class FlocIdProviderUnitTestLastFlocExpired
     base::Time last_compute_time =
         base::Time::Now() - base::TimeDelta::FromHours(25);
 
-    floc_id.SaveToPrefs(&pref_service_);
-    FlocId::SaveComputeTimeToPrefs(last_compute_time, &pref_service_);
+    floc_id.SaveToPrefs(&prefs_);
+    FlocId::SaveComputeTimeToPrefs(last_compute_time, &prefs_);
   }
 
   void InitializeHistory() override {
@@ -1526,9 +1523,8 @@ TEST_F(FlocIdProviderUnitTestLastFlocExpired, ComputeOnInitialSetupReady) {
             event.event_trigger());
   EXPECT_EQ(FlocId::SimHashHistory({"foo.com"}), event.floc_id());
 
-  EXPECT_EQ(floc_id(), FlocId::ReadFromPrefs(&pref_service_));
-  EXPECT_EQ(base::Time::Now(),
-            FlocId::ReadComputeTimeFromPrefs(&pref_service_));
+  EXPECT_EQ(floc_id(), FlocId::ReadFromPrefs(&prefs_));
+  EXPECT_EQ(base::Time::Now(), FlocId::ReadComputeTimeFromPrefs(&prefs_));
 }
 
 }  // namespace federated_learning

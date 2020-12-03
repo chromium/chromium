@@ -76,38 +76,38 @@ void FlocId::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kFlocIdComputeTimePrefKey, base::Time());
 }
 
-void FlocId::SaveToPrefs(PrefService* local_state) {
+void FlocId::SaveToPrefs(PrefService* prefs) {
   if (!id_.has_value()) {
-    local_state->ClearPref(kFlocIdValuePrefKey);
+    prefs->ClearPref(kFlocIdValuePrefKey);
     return;
   }
 
-  local_state->SetUint64(kFlocIdValuePrefKey, id_.value());
-  local_state->SetTime(kFlocIdHistoryBeginTimePrefKey, history_begin_time_);
-  local_state->SetTime(kFlocIdHistoryEndTimePrefKey, history_end_time_);
-  local_state->SetUint64(kFlocIdSortingLshVersionPrefKey, sorting_lsh_version_);
+  prefs->SetUint64(kFlocIdValuePrefKey, id_.value());
+  prefs->SetTime(kFlocIdHistoryBeginTimePrefKey, history_begin_time_);
+  prefs->SetTime(kFlocIdHistoryEndTimePrefKey, history_end_time_);
+  prefs->SetUint64(kFlocIdSortingLshVersionPrefKey, sorting_lsh_version_);
 }
 
 // static
-FlocId FlocId::ReadFromPrefs(PrefService* local_state) {
-  if (!local_state->HasPrefPath(kFlocIdValuePrefKey))
+FlocId FlocId::ReadFromPrefs(PrefService* prefs) {
+  if (!prefs->HasPrefPath(kFlocIdValuePrefKey))
     return FlocId();
 
-  return FlocId(local_state->GetUint64(kFlocIdValuePrefKey),
-                local_state->GetTime(kFlocIdHistoryBeginTimePrefKey),
-                local_state->GetTime(kFlocIdHistoryEndTimePrefKey),
-                local_state->GetUint64(kFlocIdSortingLshVersionPrefKey));
+  return FlocId(prefs->GetUint64(kFlocIdValuePrefKey),
+                prefs->GetTime(kFlocIdHistoryBeginTimePrefKey),
+                prefs->GetTime(kFlocIdHistoryEndTimePrefKey),
+                prefs->GetUint64(kFlocIdSortingLshVersionPrefKey));
 }
 
 // static
 void FlocId::SaveComputeTimeToPrefs(base::Time compute_time,
-                                    PrefService* local_state) {
-  local_state->SetTime(kFlocIdComputeTimePrefKey, compute_time);
+                                    PrefService* prefs) {
+  prefs->SetTime(kFlocIdComputeTimePrefKey, compute_time);
 }
 
 // static
-base::Time FlocId::ReadComputeTimeFromPrefs(PrefService* local_state) {
-  return local_state->GetTime(kFlocIdComputeTimePrefKey);
+base::Time FlocId::ReadComputeTimeFromPrefs(PrefService* prefs) {
+  return prefs->GetTime(kFlocIdComputeTimePrefKey);
 }
 
 }  // namespace federated_learning

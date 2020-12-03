@@ -56,12 +56,12 @@ class FlocId {
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  void SaveToPrefs(PrefService* local_state);
-  static FlocId ReadFromPrefs(PrefService* local_state);
+  void SaveToPrefs(PrefService* prefs);
+  static FlocId ReadFromPrefs(PrefService* prefs);
 
   static void SaveComputeTimeToPrefs(base::Time compute_time,
-                                     PrefService* local_state);
-  static base::Time ReadComputeTimeFromPrefs(PrefService* local_state);
+                                     PrefService* prefs);
+  static base::Time ReadComputeTimeFromPrefs(PrefService* prefs);
 
  private:
   base::Optional<uint64_t> id_;
