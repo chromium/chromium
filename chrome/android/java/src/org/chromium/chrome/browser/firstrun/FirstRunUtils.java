@@ -16,13 +16,15 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 
 /** Provides first run related utility functions. */
 public class FirstRunUtils {
     private static Boolean sHasGoogleAccountAuthenticator;
-    static final int SKIP_TOS_EXIT_DELAY_MS = 1000;
+    private static final int DEFAULT_SKIP_TOS_EXIT_DELAY_MS = 1000;
+    private static final int A11Y_DELAY_FACTOR = 2;
 
     /**
      * Synchronizes first run native and Java preferences.
@@ -119,6 +121,22 @@ public class FirstRunUtils {
      */
     public static boolean isCctTosDialogEnabled() {
         return FirstRunUtilsJni.get().getCctTosDialogEnabled();
+    }
+
+    /**
+     * The the number of ms delay before exiting FRE with policy. By default the delay would be
+     * {@link #DEFAULT_SKIP_TOS_EXIT_DELAY_MS}, while in a11y mode it will be extended by a factor
+     * of {@link #A11Y_DELAY_FACTOR}. This is intended to avoid screen reader being interrupted, but
+     * it is likely not going to work perfectly for all languages.
+     *
+     * @return The number of ms delay before exiting FRE with policy.
+     */
+    public static int getSkipTosExitDelayMs() {
+        int durationMs = DEFAULT_SKIP_TOS_EXIT_DELAY_MS;
+        if (ChromeAccessibilityUtil.get().isTouchExplorationEnabled()) {
+            durationMs *= A11Y_DELAY_FACTOR;
+        }
+        return durationMs;
     }
 
     @NativeMethods

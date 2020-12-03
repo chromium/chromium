@@ -262,7 +262,7 @@ public class LightweightFirstRunActivity
             mExitFreRunnable = null;
         };
         mHandler = new Handler(ThreadUtils.getUiThreadLooper());
-        mHandler.postDelayed(mExitFreRunnable, FirstRunUtils.SKIP_TOS_EXIT_DELAY_MS);
+        mHandler.postDelayed(mExitFreRunnable, FirstRunUtils.getSkipTosExitDelayMs());
     }
 
     private void exitLightweightFirstRun() {

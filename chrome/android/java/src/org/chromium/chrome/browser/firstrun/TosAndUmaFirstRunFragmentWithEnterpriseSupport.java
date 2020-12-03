@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
@@ -66,7 +67,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
     private boolean mViewCreated;
     private View mLoadingSpinnerContainer;
     private LoadingView mLoadingSpinner;
-    private View mPrivacyDisclaimer;
+    private TextView mPrivacyDisclaimer;
     private SkipTosDialogPolicyListener mSkipTosDialogPolicyListener;
     private final OneshotSupplierImpl<PolicyService> mPolicyServiceProvider =
             new OneshotSupplierImpl<>();
@@ -122,7 +123,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
         } else if (mSkipTosDialogPolicyListener.get()) {
             // Skip the FRE if we know dialog is disabled by policy.
             setTosAndUmaVisible(false);
-            exitCctFirstRun();
+            exitCctFirstRun(/*shiftA11yFocus*/ false);
         }
     }
 
@@ -155,7 +156,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
         boolean hasAccessibilityFocus = mLoadingSpinnerContainer.isAccessibilityFocused();
         mLoadingSpinnerContainer.setVisibility(View.GONE);
         if (mSkipTosDialogPolicyListener.get()) {
-            exitCctFirstRun();
+            exitCctFirstRun(hasAccessibilityFocus);
         } else {
             // Else, show the UMA as the loading spinner is GONE.
             setTosAndUmaVisible(true);
@@ -170,18 +171,26 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
         if (mViewCreated) mLoadingSpinner.hideLoadingUI();
     }
 
-    private void exitCctFirstRun() {
+    private void exitCctFirstRun(boolean shiftA11yFocus) {
         // TODO(crbug.com/1108582): Save a shared pref indicating Enterprise CCT FRE is complete,
         //  and skip waiting for future cold starts.
         Log.d(TAG, "TosAndUmaFirstRunFragmentWithEnterpriseSupport finished.");
         mPrivacyDisclaimer.setVisibility(View.VISIBLE);
-        mPrivacyDisclaimer.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+
+        // If the screen reader focus was on the loading spinner, to avoid the focus get lost from
+        // the screen, shift the focus to the disclaimer instead. Otherwise, announce the disclaimer
+        // without shifting the focus as it is not necessary.
+        if (shiftA11yFocus) {
+            mPrivacyDisclaimer.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+        } else {
+            mPrivacyDisclaimer.announceForAccessibility(mPrivacyDisclaimer.getText());
+        }
 
         mExitFreRunnable = () -> {
             getPageDelegate().exitFirstRun();
             mExitFreRunnable = null;
         };
         mHandler = new Handler(ThreadUtils.getUiThreadLooper());
-        mHandler.postDelayed(mExitFreRunnable, FirstRunUtils.SKIP_TOS_EXIT_DELAY_MS);
+        mHandler.postDelayed(mExitFreRunnable, FirstRunUtils.getSkipTosExitDelayMs());
     }
 }
