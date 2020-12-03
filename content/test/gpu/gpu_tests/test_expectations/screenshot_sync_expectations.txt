@@ -21,7 +21,7 @@
 #         debug debug-x64
 #         release release-x64 ]
 # GPU
-# tags: [ amd amd-0x6613 amd-0x679e amd-0x6821 amd-0x699f amd-0x7340
+# tags: [ amd amd-0x6613 amd-0x679e amd-0x6821 amd-0x7340
 #         apple apple-apple-a12z
 #         arm
 #         google google-0xffff google-angle-(metal-renderer:-apple-a12z)
