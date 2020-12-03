@@ -1649,7 +1649,7 @@ public class BookmarkTest {
         // Click the star button again to launch the edit activity.
         MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
                 mActivityTestRule.getActivity(), R.id.bookmark_this_page_id);
-        waitForEditActivity();
+        waitForEditActivity().finish();
     }
 
     /**
