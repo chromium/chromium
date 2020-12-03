@@ -229,6 +229,8 @@ ScreenOrientationController::ScreenOrientationController()
   SplitViewController::Get(Shell::GetPrimaryRootWindow())->AddObserver(this);
   display::Screen::GetScreen()->AddObserver(this);
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
+
+  OnTabletPhysicalStateChanged();
 }
 
 ScreenOrientationController::~ScreenOrientationController() {

@@ -262,6 +262,17 @@ constexpr TabletModeController::TabletModeBehavior kOnForDev{
     TabletModeController::ForcePhysicalTabletState::kForceTabletMode,
 };
 
+// Defines the behavior that sticks to physical tablet state. Used to implement
+// the --force-in-tablet-physical-state switch.
+constexpr TabletModeController::TabletModeBehavior kForceOnBySwitch{
+    /*use_sensor=*/false,
+    /*observe_display_events=*/false,
+    /*observe_pointer_device_events=*/true,
+    /*block_internal_input_device=*/true,
+    /*always_show_overview_button=*/false,
+    TabletModeController::ForcePhysicalTabletState::kForceTabletMode,
+};
+
 using LidState = chromeos::PowerManagerClient::LidState;
 using TabletMode = chromeos::PowerManagerClient::TabletMode;
 
@@ -571,6 +582,12 @@ void TabletModeController::OnShellInitialized() {
 
     case UiMode::kNone:
       break;
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceInTabletPhysicalState)) {
+    tablet_mode_behavior_ = kForceOnBySwitch;
+    SetIsInTabletPhysicalState(CalculateIsInTabletPhysicalState());
   }
 }
 
