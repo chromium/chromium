@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_types.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
+#include "ui/gfx/range/range.h"
 #include "ui/views/view_model.h"
 
 namespace {
@@ -169,9 +170,9 @@ void TabStripLayoutHelper::SetTabPinned(int model_index, TabPinned pinned) {
 
 void TabStripLayoutHelper::InsertGroupHeader(tab_groups::TabGroupId group,
                                              TabGroupHeader* header) {
-  std::vector<int> tabs_in_group = controller_->ListTabsInGroup(group);
+  gfx::Range tabs_in_group = controller_->ListTabsInGroup(group);
   const int header_slot_index =
-      GetSlotInsertionIndexForNewTab(tabs_in_group[0], group);
+      GetSlotInsertionIndexForNewTab(tabs_in_group.start(), group);
   slots_.insert(
       slots_.begin() + header_slot_index,
       TabSlot::CreateForGroupHeader(group, header, TabPinned::kUnpinned));
@@ -179,7 +180,7 @@ void TabStripLayoutHelper::InsertGroupHeader(tab_groups::TabGroupId group,
   // Set the starting location of the header to something reasonable for the
   // animation.
   slots_[header_slot_index].view->SetBoundsRect(
-      GetTabs()[tabs_in_group[0]]->bounds());
+      GetTabs()[tabs_in_group.start()]->bounds());
 }
 
 void TabStripLayoutHelper::RemoveGroupHeader(tab_groups::TabGroupId group) {
@@ -193,9 +194,10 @@ void TabStripLayoutHelper::UpdateGroupHeaderIndex(
   TabSlot header_slot = std::move(slots_[slot_index]);
 
   slots_.erase(slots_.begin() + slot_index);
-  std::vector<int> tabs_in_group = controller_->ListTabsInGroup(group);
+  base::Optional<int> first_tab = controller_->GetFirstTabInGroup(group);
+  DCHECK(first_tab);
   const int first_tab_slot_index =
-      GetSlotInsertionIndexForNewTab(tabs_in_group[0], group);
+      GetSlotInsertionIndexForNewTab(first_tab.value(), group);
   slots_.insert(slots_.begin() + first_tab_slot_index, std::move(header_slot));
 }
 

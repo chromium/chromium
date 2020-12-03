@@ -28,6 +28,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/range/range.h"
 
 using content::NavigationEntry;
 using content::RestoreType;
@@ -149,11 +150,10 @@ WebContents* AddRestoredTab(
   // If inserting at |tab_index| would put the tab within a different
   // group, adjust the index to put it outside.
   if (surrounding_group && surrounding_group != group) {
-    const int last_tab_in_group = tab_strip_model->group_model()
-                                      ->GetTabGroup(*surrounding_group)
-                                      ->ListTabs()
-                                      .back();
-    tab_index = last_tab_in_group + 1;
+    tab_index = tab_strip_model->group_model()
+                    ->GetTabGroup(*surrounding_group)
+                    ->ListTabs()
+                    .end();
   }
 
   WebContents* raw_web_contents = web_contents.get();

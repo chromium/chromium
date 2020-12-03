@@ -54,6 +54,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/range/range.h"
 #include "ui/gfx/text_elider.h"
 
 using base::UserMetricsAction;
@@ -667,13 +668,14 @@ void TabStripModel::MoveGroupTo(const tab_groups::TabGroupId& group,
 
   DCHECK_NE(to_index, kNoTab);
 
-  std::vector<int> tabs_in_group = group_model_->GetTabGroup(group)->ListTabs();
+  gfx::Range tabs_in_group = group_model_->GetTabGroup(group)->ListTabs();
+  DCHECK_GT(tabs_in_group.length(), 0u);
 
-  int from_index = tabs_in_group.front();
+  int from_index = tabs_in_group.start();
   if (to_index < from_index)
-    from_index = tabs_in_group.back();
+    from_index = tabs_in_group.end() - 1;
 
-  for (size_t i = 0; i < tabs_in_group.size(); ++i)
+  for (size_t i = 0; i < tabs_in_group.length(); ++i)
     MoveWebContentsAtImpl(from_index, to_index, false);
 
   MoveTabGroup(group);
@@ -962,11 +964,11 @@ void TabStripModel::AddWebContents(
   // at the end of the tab strip. Extensions can insert at an arbitrary index,
   // so we have to handle the general case.
   if (group.has_value()) {
-    auto grouped_tabs = group_model_->GetTabGroup(group.value())->ListTabs();
-    if (grouped_tabs.size() > 0) {
-      DCHECK(base::ranges::is_sorted(grouped_tabs));
-      index = base::ClampToRange(index, grouped_tabs.front(),
-                                 grouped_tabs.back() + 1);
+    gfx::Range grouped_tabs =
+        group_model_->GetTabGroup(group.value())->ListTabs();
+    if (grouped_tabs.length() > 0) {
+      index = base::ClampToRange(index, static_cast<int>(grouped_tabs.start()),
+                                 static_cast<int>(grouped_tabs.end()));
     }
   } else if (GetTabGroupForTab(index - 1) == GetTabGroupForTab(index)) {
     group = GetTabGroupForTab(index);
@@ -1119,23 +1121,29 @@ void TabStripModel::RemoveFromGroup(const std::vector<int>& indices) {
   }
 
   for (const auto& kv : indices_per_tab_group) {
-    const std::vector<int>& tabs_in_group =
-        group_model_->GetTabGroup(kv.first)->ListTabs();
+    const TabGroup* group = group_model_->GetTabGroup(kv.first);
+    const int first_tab_in_group = group->GetFirstTab().value();
+    const int last_tab_in_group = group->GetLastTab().value();
+
+    // This is an estimate. If the group is non-contiguous it will be
+    // larger than the true size. This can happen while dragging tabs in
+    // or out of a group.
+    const int num_tabs_in_group = last_tab_in_group - first_tab_in_group + 1;
+    const int group_midpoint = first_tab_in_group + num_tabs_in_group / 2;
 
     // Split group into |left_of_group| and |right_of_group| depending on
     // whether the index is closest to the left or right edge.
     std::vector<int> left_of_group;
     std::vector<int> right_of_group;
     for (int index : kv.second) {
-      if (index < tabs_in_group[tabs_in_group.size() / 2]) {
+      if (index < group_midpoint) {
         left_of_group.push_back(index);
       } else {
         right_of_group.push_back(index);
       }
     }
-    MoveTabsAndSetGroupImpl(left_of_group, tabs_in_group.front(),
-                            base::nullopt);
-    MoveTabsAndSetGroupImpl(right_of_group, tabs_in_group.back() + 1,
+    MoveTabsAndSetGroupImpl(left_of_group, first_tab_in_group, base::nullopt);
+    MoveTabsAndSetGroupImpl(right_of_group, last_tab_in_group + 1,
                             base::nullopt);
   }
 }
@@ -1919,8 +1927,9 @@ void TabStripModel::MoveTabRelative(bool forward) {
       // to move to.
       const TabGroup* group = group_model_->GetTabGroup(target_group.value());
       if (group->visual_data()->is_collapsed()) {
-        const std::vector<int> tabs_in_group = group->ListTabs();
-        target_index = forward ? tabs_in_group.back() : tabs_in_group.front();
+        const gfx::Range tabs_in_group = group->ListTabs();
+        target_index =
+            forward ? tabs_in_group.end() - 1 : tabs_in_group.start();
       } else {
         GroupTab(current_index, target_group.value());
         return;
@@ -2040,8 +2049,9 @@ void TabStripModel::AddToExistingGroupImpl(
   // Unpin tabs when grouping -- the states should be mutually exclusive.
   std::vector<int> new_indices = SetTabsPinned(indices, false);
 
-  std::vector<int> tabs_in_group = group_model_->GetTabGroup(group)->ListTabs();
-  DCHECK(base::ranges::is_sorted(tabs_in_group));
+  const TabGroup* group_object = group_model_->GetTabGroup(group);
+  int first_tab_in_group = group_object->GetFirstTab().value();
+  int last_tab_in_group = group_object->GetLastTab().value();
 
   // Split |new_indices| into |tabs_left_of_group| and |tabs_right_of_group| to
   // be moved to proper destination index. Directly set the group for indices
@@ -2049,19 +2059,17 @@ void TabStripModel::AddToExistingGroupImpl(
   std::vector<int> tabs_left_of_group;
   std::vector<int> tabs_right_of_group;
   for (int new_index : new_indices) {
-    if (new_index >= tabs_in_group.front() &&
-        new_index <= tabs_in_group.back()) {
+    if (new_index >= first_tab_in_group && new_index <= last_tab_in_group) {
       GroupTab(new_index, group);
-    } else if (new_index < tabs_in_group.front()) {
+    } else if (new_index < first_tab_in_group) {
       tabs_left_of_group.push_back(new_index);
     } else {
-      DCHECK(new_index > tabs_in_group.back());
       tabs_right_of_group.push_back(new_index);
     }
   }
 
-  MoveTabsAndSetGroupImpl(tabs_left_of_group, tabs_in_group.front(), group);
-  MoveTabsAndSetGroupImpl(tabs_right_of_group, tabs_in_group.back() + 1, group);
+  MoveTabsAndSetGroupImpl(tabs_left_of_group, first_tab_in_group, group);
+  MoveTabsAndSetGroupImpl(tabs_right_of_group, last_tab_in_group + 1, group);
 }
 
 void TabStripModel::MoveTabsAndSetGroupImpl(
@@ -2272,13 +2280,13 @@ void TabStripModel::EnsureGroupContiguity(int index) {
   const auto old_group = GetTabGroupForTab(index);
   const auto new_left_group = GetTabGroupForTab(index - 1);
   const auto new_right_group = GetTabGroupForTab(index + 1);
+
   if (old_group != new_left_group && old_group != new_right_group) {
     if (new_left_group == new_right_group && new_left_group.has_value()) {
       // The tab is in the middle of an existing group, so add it to that group.
       GroupTab(index, new_left_group.value());
     } else if (old_group.has_value() &&
-               group_model_->GetTabGroup(old_group.value())->ListTabs().size() >
-                   1) {
+               group_model_->GetTabGroup(old_group.value())->tab_count() > 1) {
       // The tab is between groups and its group is non-contiguous, so clear
       // this tab's group.
       UngroupTab(index);

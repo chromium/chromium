@@ -29,6 +29,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ipc/ipc_message.h"
+#include "ui/gfx/range/range.h"
 
 namespace chrome {
 
@@ -133,10 +134,16 @@ void BrowserTabStripModelDelegate::MoveTabsToNewWindow(
 
 void BrowserTabStripModelDelegate::MoveGroupToNewWindow(
     const tab_groups::TabGroupId& group) {
-  std::vector<int> indices = browser_->tab_strip_model()
-                                 ->group_model()
-                                 ->GetTabGroup(group)
-                                 ->ListTabs();
+  gfx::Range range = browser_->tab_strip_model()
+                         ->group_model()
+                         ->GetTabGroup(group)
+                         ->ListTabs();
+
+  std::vector<int> indices;
+  indices.reserve(range.length());
+  for (auto i = range.start(); i < range.end(); ++i)
+    indices.push_back(i);
+
   // chrome:: to disambiguate the free function from
   // BrowserTabStripModelDelegate::MoveTabsToNewWindow().
   chrome::MoveTabsToNewWindow(browser_, indices, group);

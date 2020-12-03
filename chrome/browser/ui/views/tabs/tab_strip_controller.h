@@ -7,12 +7,14 @@
 
 #include <vector>
 
+#include "base/optional.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/range/range.h"
 
 class Tab;
 class TabStrip;
@@ -165,8 +167,24 @@ class TabStripController {
       const tab_groups::TabGroupId& group,
       const tab_groups::TabGroupVisualData& visual_data) = 0;
 
-  // Returns the list of tabs in the given |group|.
-  virtual std::vector<int> ListTabsInGroup(
+  // Gets the first tab index in |group|, or nullopt if the group is
+  // currently empty. This is always safe to call unlike
+  // ListTabsInGroup().
+  virtual base::Optional<int> GetFirstTabInGroup(
+      const tab_groups::TabGroupId& group) const = 0;
+
+  // Gets the last tab index in |group|, or nullopt if the group is
+  // currently empty. This is always safe to call unlike
+  // ListTabsInGroup().
+  virtual base::Optional<int> GetLastTabInGroup(
+      const tab_groups::TabGroupId& group) const = 0;
+
+  // Returns the range of tabs in the given |group|. This must not be
+  // called during intermediate states where the group is not
+  // contiguous. For example, if tabs elsewhere in the tab strip are
+  // being moved into |group| it may not be contiguous; this method
+  // cannot be called.
+  virtual gfx::Range ListTabsInGroup(
       const tab_groups::TabGroupId& group) const = 0;
 
   // Determines whether the top frame is condensed vertically, as when the

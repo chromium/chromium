@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
@@ -38,12 +39,14 @@ void TabGroup::SetVisualData(const tab_groups::TabGroupVisualData& visual_data,
 }
 
 base::string16 TabGroup::GetContentString() const {
-  std::vector<int> tabs_in_group = ListTabs();
+  gfx::Range tabs_in_group = ListTabs();
+  DCHECK_GT(tabs_in_group.length(), 0u);
+
   TabUIHelper* const tab_ui_helper = TabUIHelper::FromWebContents(
-      controller_->GetWebContentsAt(tabs_in_group.front()));
+      controller_->GetWebContentsAt(tabs_in_group.start()));
   constexpr size_t kContextMenuTabTitleMaxLength = 30;
   base::string16 format_string = l10n_util::GetPluralStringFUTF16(
-      IDS_TAB_CXMENU_PLACEHOLDER_GROUP_TITLE, tabs_in_group.size() - 1);
+      IDS_TAB_CXMENU_PLACEHOLDER_GROUP_TITLE, tabs_in_group.length() - 1);
   base::string16 short_title;
   gfx::ElideString(tab_ui_helper->GetTitle(), kContextMenuTabTitleMaxLength,
                    &short_title);
@@ -76,11 +79,39 @@ bool TabGroup::IsCustomized() const {
   return is_customized_;
 }
 
-std::vector<int> TabGroup::ListTabs() const {
-  std::vector<int> result;
+base::Optional<int> TabGroup::GetFirstTab() const {
   for (int i = 0; i < controller_->GetTabCount(); ++i) {
     if (controller_->GetTabGroupForTab(i) == id_)
-      result.push_back(i);
+      return i;
   }
-  return result;
+
+  return base::nullopt;
+}
+
+base::Optional<int> TabGroup::GetLastTab() const {
+  for (int i = controller_->GetTabCount() - 1; i >= 0; --i) {
+    if (controller_->GetTabGroupForTab(i) == id_)
+      return i;
+  }
+
+  return base::nullopt;
+}
+
+gfx::Range TabGroup::ListTabs() const {
+  base::Optional<int> maybe_first_tab = GetFirstTab();
+  if (!maybe_first_tab)
+    return gfx::Range();
+
+  int first_tab = maybe_first_tab.value();
+  // Safe to assume GetLastTab() is not nullopt.
+  int last_tab = GetLastTab().value();
+
+  // If DCHECKs are enabled, check for group contiguity. The result
+  // doesn't really make sense if the group is discontiguous.
+  if (DCHECK_IS_ON()) {
+    for (int i = first_tab; i <= last_tab; ++i)
+      DCHECK(controller_->GetTabGroupForTab(i) == id_);
+  }
+
+  return gfx::Range(first_tab, last_tab + 1);
 }

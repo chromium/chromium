@@ -13,6 +13,7 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/range/range.h"
 
 FakeBaseTabStripController::FakeBaseTabStripController() {}
 
@@ -136,14 +137,45 @@ void FakeBaseTabStripController::MoveTabIntoGroup(
   }
 }
 
-std::vector<int> FakeBaseTabStripController::ListTabsInGroup(
+base::Optional<int> FakeBaseTabStripController::GetFirstTabInGroup(
     const tab_groups::TabGroupId& group) const {
-  std::vector<int> result;
-  for (size_t i = 0; i < tab_groups_.size(); i++) {
+  for (size_t i = 0; i < tab_groups_.size(); ++i) {
     if (tab_groups_[i] == group)
-      result.push_back(i);
+      return i;
   }
-  return result;
+
+  return base::nullopt;
+}
+
+base::Optional<int> FakeBaseTabStripController::GetLastTabInGroup(
+    const tab_groups::TabGroupId& group) const {
+  for (size_t i = tab_groups_.size(); i > 0; --i) {
+    if (tab_groups_[i - 1] == group)
+      return i - 1;
+  }
+
+  return base::nullopt;
+}
+
+gfx::Range FakeBaseTabStripController::ListTabsInGroup(
+    const tab_groups::TabGroupId& group) const {
+  int first_tab = -1;
+  int last_tab = -1;
+  for (size_t i = 0; i < tab_groups_.size(); i++) {
+    if (tab_groups_[i] != group)
+      continue;
+
+    if (first_tab == -1) {
+      first_tab = i;
+      last_tab = i + 1;
+      continue;
+    }
+
+    DCHECK_EQ(static_cast<int>(i), last_tab) << "group is not contiguous";
+    last_tab = i + 1;
+  }
+
+  return first_tab > -1 ? gfx::Range(first_tab, last_tab) : gfx::Range();
 }
 
 const ui::ListSelectionModel&

@@ -54,6 +54,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -1105,7 +1106,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabIntoGroupInNewWindow) {
                     ->group_model()
                     ->GetTabGroup(group)
                     ->ListTabs()
-                    .size());
+                    .length());
 }
 
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithGroupedTabs) {

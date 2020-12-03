@@ -66,10 +66,9 @@ gfx::Rect TabGroupViews::GetBounds() const {
 }
 
 const Tab* TabGroupViews::GetLastTabInGroup() const {
-  const std::vector<int> tabs_in_group =
-      tab_strip_->controller()->ListTabsInGroup(group_);
-  return tabs_in_group.empty() ? nullptr
-                               : tab_strip_->tab_at(tabs_in_group.back());
+  const base::Optional<int> last_tab =
+      tab_strip_->controller()->GetLastTabInGroup(group_);
+  return last_tab.has_value() ? tab_strip_->tab_at(last_tab.value()) : nullptr;
 }
 
 SkColor TabGroupViews::GetGroupColor() const {

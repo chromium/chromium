@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_handler.h"
+
+#include <algorithm>
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
@@ -40,6 +43,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/range/range.h"
 
 namespace {
 
@@ -148,6 +152,17 @@ class WebUITabContextMenu : public ui::SimpleMenuModel::Delegate,
   const int tab_index_;
 };
 
+bool IsSortedAndContiguous(base::span<const int> sequence) {
+  if (sequence.size() < 2)
+    return true;
+
+  if (!std::is_sorted(sequence.begin(), sequence.end()))
+    return false;
+
+  return sequence.back() ==
+         sequence.front() + static_cast<int>(sequence.size()) - 1;
+}
+
 }  // namespace
 
 TabStripUIHandler::TabStripUIHandler(Browser* browser,
@@ -201,12 +216,13 @@ void TabStripUIHandler::OnTabGroupChanged(const TabGroupChange& change) {
     }
 
     case TabGroupChange::kMoved: {
+      const int start_tab = browser_->tab_strip_model()
+                                ->group_model()
+                                ->GetTabGroup(change.group)
+                                ->ListTabs()
+                                .start();
       FireWebUIListener("tab-group-moved", base::Value(change.group.ToString()),
-                        base::Value(browser_->tab_strip_model()
-                                        ->group_model()
-                                        ->GetTabGroup(change.group)
-                                        ->ListTabs()
-                                        .front()));
+                        base::Value(start_tab));
       break;
     }
 
@@ -262,11 +278,17 @@ void TabStripUIHandler::OnTabStripModelChanged(
       base::Optional<tab_groups::TabGroupId> tab_group_id =
           tab_strip_model->GetTabGroupForTab(move->to_index);
       if (tab_group_id.has_value()) {
-        const std::vector<int> tabs_in_group =
-            tab_strip_model->group_model()
-                ->GetTabGroup(tab_group_id.value())
-                ->ListTabs();
-        if (tabs_in_group == selection.new_model.selected_indices()) {
+        const gfx::Range tabs_in_group = tab_strip_model->group_model()
+                                             ->GetTabGroup(tab_group_id.value())
+                                             ->ListTabs();
+
+        const auto& selected_tabs = selection.new_model.selected_indices();
+        const bool all_tabs_in_group =
+            IsSortedAndContiguous(base::make_span(selected_tabs)) &&
+            selected_tabs.front() == static_cast<int>(tabs_in_group.start()) &&
+            selected_tabs.size() == tabs_in_group.length();
+
+        if (all_tabs_in_group) {
           // If the selection includes all the tabs within the changed tab's
           // group, it is an indication that the entire group is being moved.
           // To prevent sending multiple events for each tab in the group,
@@ -607,9 +629,10 @@ void TabStripUIHandler::HandleMoveGroup(const base::ListValue* args) {
   TabGroup* group =
       source_browser->tab_strip_model()->group_model()->GetTabGroup(
           group_id.value());
+  const gfx::Range tabs_in_group = group->ListTabs();
 
   if (source_browser == target_browser) {
-    if (group->ListTabs().front() == to_index) {
+    if (static_cast<int>(tabs_in_group.start()) == to_index) {
       // If the group is already in place, don't move it. This may happen
       // if multiple drag events happen while the tab group is still
       // being moved.
@@ -622,8 +645,8 @@ void TabStripUIHandler::HandleMoveGroup(const base::ListValue* args) {
     int active_index =
         target_browser->tab_strip_model()->selection_model().active();
     ui::ListSelectionModel group_selection;
-    group_selection.SetSelectedIndex(group->ListTabs().front());
-    group_selection.SetSelectionFromAnchorTo(group->ListTabs().back());
+    group_selection.SetSelectedIndex(tabs_in_group.start());
+    group_selection.SetSelectionFromAnchorTo(tabs_in_group.end() - 1);
     group_selection.set_active(active_index);
     target_browser->tab_strip_model()->SetSelectionFromModel(group_selection);
 
@@ -635,12 +658,10 @@ void TabStripUIHandler::HandleMoveGroup(const base::ListValue* args) {
       group_id.value(),
       base::Optional<tab_groups::TabGroupVisualData>{*group->visual_data()});
 
-  std::vector<int> source_tab_indices = group->ListTabs();
-  int tab_count = source_tab_indices.size();
+  gfx::Range source_tab_indices = group->ListTabs();
+  const int tab_count = source_tab_indices.length();
+  const int from_index = source_tab_indices.start();
   for (int i = 0; i < tab_count; i++) {
-    // The index needs to account for the tabs being detached, as they will
-    // cause the indices to shift.
-    int from_index = source_tab_indices[i] - i;
     tab_strip_ui::MoveTabAcrossWindows(source_browser, from_index,
                                        target_browser, to_index + i, group_id);
   }

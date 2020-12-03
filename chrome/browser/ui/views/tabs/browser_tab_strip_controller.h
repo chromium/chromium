@@ -107,7 +107,11 @@ class BrowserTabStripController : public TabStripController,
   void SetVisualDataForGroup(
       const tab_groups::TabGroupId& group,
       const tab_groups::TabGroupVisualData& visual_data) override;
-  std::vector<int> ListTabsInGroup(
+  base::Optional<int> GetFirstTabInGroup(
+      const tab_groups::TabGroupId& group) const override;
+  base::Optional<int> GetLastTabInGroup(
+      const tab_groups::TabGroupId& group) const override;
+  gfx::Range ListTabsInGroup(
       const tab_groups::TabGroupId& group_id) const override;
   bool IsFrameCondensed() const override;
   bool HasVisibleBackgroundTabShapes() const override;

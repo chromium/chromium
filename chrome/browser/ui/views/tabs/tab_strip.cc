@@ -82,6 +82,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/range/range.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
@@ -380,9 +381,10 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
         TabSlotView::ViewType::kTabGroupHeader) {
       dragging_views.push_back(source);
 
-      const std::vector<int> grouped_tabs =
+      const gfx::Range grouped_tabs =
           tab_strip_->controller()->ListTabsInGroup(source->group().value());
-      for (int index : grouped_tabs) {
+      for (auto index = grouped_tabs.start(); index < grouped_tabs.end();
+           ++index) {
         dragging_views.push_back(GetTabAt(index));
         // Set |selection_model| if and only if the original selection does not
         // match the group exactly. See TabDragController::Init() for details
@@ -390,7 +392,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
         if (!original_selection.IsSelected(index))
           selection_model = original_selection;
       }
-      if (grouped_tabs.size() != original_selection.size())
+      if (grouped_tabs.length() != original_selection.size())
         selection_model = original_selection;
     } else {
       for (int i = 0; i < GetTabCount(); ++i) {
@@ -930,13 +932,14 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
           tab_strip_->controller()->IsGroupCollapsed(candidate_group.value()) &&
           tab_strip_->controller()->GetActiveIndex() < candidate_index) {
         return tab_strip_->controller()
-            ->ListTabsInGroup(candidate_group.value())
-            .back();
+                   ->ListTabsInGroup(candidate_group.value())
+                   .end() -
+               1;
       }
       return candidate_index;
     }
 
-    const std::vector<int> dragging_tabs =
+    const gfx::Range dragging_tabs =
         tab_strip_->controller()->ListTabsInGroup(dragging_group.value());
     base::Optional<tab_groups::TabGroupId> other_group =
         tab_strip_->tab_at(candidate_index)->group();
@@ -948,36 +951,37 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     if (dragging_group == other_group) {
       // |dragging_tabs| can only be empty if dragging in from another window,
       // in which case |dragging_group| can't be the same as |other_group|.
-      DCHECK_GT(dragging_tabs.size(), 0u);
-      if (candidate_index <= dragging_tabs.front() ||
-          dragging_tabs.back() >= GetTabCount() - 1)
-        return dragging_tabs.front();
+      DCHECK_GT(dragging_tabs.length(), 0u);
+      if (candidate_index <= static_cast<int>(dragging_tabs.start()) ||
+          static_cast<int>(dragging_tabs.end()) >= GetTabCount())
+        return dragging_tabs.start();
 
-      other_group = tab_strip_->tab_at(dragging_tabs.back() + 1)->group();
+      other_group = tab_strip_->tab_at(dragging_tabs.end())->group();
     }
 
     if (!other_group.has_value())
       return candidate_index;
 
-    const std::vector<int> other_tabs =
+    const gfx::Range other_tabs =
         tab_strip_->controller()->ListTabsInGroup(other_group.value());
 
-    if (other_tabs.size() == 0)
+    if (other_tabs.length() == 0)
       return candidate_index;
 
     // If the candidate index is in the middle of the other group, instead
     // return the nearest insertion index that is not in the other group.
     const int other_group_width =
-        ideal_bounds(other_tabs.back()).right() -
+        ideal_bounds(other_tabs.end() - 1).right() -
         tab_strip_->group_header(other_group.value())->x();
-    int left_insertion_index = other_tabs.front();
-    if (dragging_tabs.size() > 0 && dragging_tabs.front() < other_tabs.front())
-      left_insertion_index = dragging_tabs.front();
+    int left_insertion_index = other_tabs.start();
+    if (dragging_tabs.length() > 0 &&
+        dragging_tabs.start() < other_tabs.start())
+      left_insertion_index = dragging_tabs.start();
 
     if (GetDraggedX(dragged_bounds) <
         ideal_bounds(left_insertion_index).x() + other_group_width / 2)
       return left_insertion_index;
-    return left_insertion_index + other_tabs.size();
+    return left_insertion_index + other_tabs.length();
   }
 
   // Sets the ideal bounds x-coordinates to |positions|.
@@ -1402,7 +1406,7 @@ void TabStrip::OnGroupMoved(const tab_groups::TabGroupId& group) {
   layout_helper_->UpdateGroupHeaderIndex(group);
 
   TabGroupHeader* group_header = group_views_[group]->header();
-  const int first_tab = controller_->ListTabsInGroup(group).front();
+  const int first_tab = controller_->GetFirstTabInGroup(group).value();
   const int header_index = GetIndexOf(group_header);
   const int first_tab_index = GetIndexOf(tab_at(first_tab));
 
@@ -3066,13 +3070,13 @@ void TabStrip::ShiftTabRelative(Tab* tab, int offset) {
 void TabStrip::ShiftGroupRelative(const tab_groups::TabGroupId& group,
                                   int offset) {
   DCHECK_EQ(1, std::abs(offset));
-  std::vector<int> tabs_in_group = controller_->ListTabsInGroup(group);
+  gfx::Range tabs_in_group = controller_->ListTabsInGroup(group);
 
-  const int start_index = tabs_in_group.front();
+  const int start_index = tabs_in_group.start();
   int target_index = start_index + offset;
 
   if (offset > 0)
-    target_index += tabs_in_group.size() - 1;
+    target_index += tabs_in_group.length() - 1;
 
   if (!IsValidModelIndex(start_index) || !IsValidModelIndex(target_index))
     return;
@@ -3083,7 +3087,7 @@ void TabStrip::ShiftGroupRelative(const tab_groups::TabGroupId& group,
   if (target_group.has_value()) {
     target_index +=
         offset *
-        (controller_->ListTabsInGroup(target_group.value()).size() - 1);
+        (controller_->ListTabsInGroup(target_group.value()).length() - 1);
   }
 
   if (!IsValidModelIndex(target_index))

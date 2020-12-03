@@ -22,6 +22,7 @@
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/gfx/range/range.h"
 
 namespace tab_strip_ui {
 
@@ -122,7 +123,7 @@ bool DropTabsInNewBrowser(Browser* new_browser,
     return false;
 
   Browser* source_browser = nullptr;
-  std::vector<int> tab_indices_to_move;
+  gfx::Range tab_indices_to_move;
   base::Optional<tab_groups::TabGroupId> source_group_id;
 
   // TODO(https://crbug.com/1069869): de-duplicate with
@@ -141,7 +142,7 @@ bool DropTabsInNewBrowser(Browser* new_browser,
             /* contents = */ nullptr, &source_index)) {
       return false;
     }
-    tab_indices_to_move.push_back(source_index);
+    tab_indices_to_move = gfx::Range(source_index, source_index + 1);
   } else {
     std::string group_id_utf8 = base::UTF16ToUTF8(group_id_str);
     source_browser =
@@ -162,8 +163,8 @@ bool DropTabsInNewBrowser(Browser* new_browser,
         *source_group_id, *source_group->visual_data());
   }
 
-  for (size_t i = 0; i < tab_indices_to_move.size(); ++i) {
-    int source_index = tab_indices_to_move[i] - i;
+  const int source_index = tab_indices_to_move.start();
+  for (size_t i = 0; i < tab_indices_to_move.length(); ++i) {
     MoveTabAcrossWindows(source_browser, source_index, new_browser, i,
                          source_group_id);
   }

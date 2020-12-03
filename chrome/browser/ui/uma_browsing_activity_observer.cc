@@ -27,6 +27,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
+#include "ui/gfx/range/range.h"
 
 namespace chrome {
 namespace {
@@ -190,7 +191,7 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
                                  ? tab_strip_model->group_model()
                                        ->GetTabGroup(active_group.value())
                                        ->ListTabs()
-                                       .size()
+                                       .length()
                                  : 0);
   }
 

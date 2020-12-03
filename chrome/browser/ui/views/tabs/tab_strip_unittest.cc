@@ -1228,28 +1228,6 @@ TEST_P(TabStripTest, UngroupedTabMovesLeftOfHeader) {
   EXPECT_LT(header->x(), tab_strip_->tab_at(1)->x());
 }
 
-// This can happen when a tab in the middle of a group starts to close.
-TEST_P(TabStripTest, DiscontinuousGroup) {
-  SetMaxTabStripWidth(1000);
-  bounds_animator()->SetAnimationDuration(base::TimeDelta());
-
-  controller_->AddTab(0, false);
-  controller_->AddTab(1, false);
-  controller_->AddTab(2, false);
-  CompleteAnimationAndLayout();
-
-  const int first_slot_x = tab_strip_->tab_at(0)->x();
-
-  base::Optional<tab_groups::TabGroupId> group =
-      tab_groups::TabGroupId::GenerateNew();
-  controller_->MoveTabIntoGroup(0, group);
-  controller_->MoveTabIntoGroup(2, group);
-
-  std::vector<TabGroupViews*> views = ListGroupViews();
-  EXPECT_EQ(1u, views.size());
-  EXPECT_EQ(first_slot_x, views[0]->header()->x());
-}
-
 TEST_P(TabStripTest, DeleteTabGroupViewsWhenEmpty) {
   controller_->AddTab(0, false);
   controller_->AddTab(1, false);

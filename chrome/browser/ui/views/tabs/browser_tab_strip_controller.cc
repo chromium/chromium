@@ -68,6 +68,7 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/range/range.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/widget/widget.h"
 #include "url/origin.h"
@@ -421,8 +422,8 @@ bool BrowserTabStripController::ToggleTabGroupCollapsedState(
   }
   tabstrip_->ToggleTabGroup(group, !is_currently_collapsed, origin);
 
-  std::vector<int> tabs_in_group = ListTabsInGroup(group);
-  for (int i : tabs_in_group) {
+  gfx::Range tabs_in_group = ListTabsInGroup(group);
+  for (auto i = tabs_in_group.start(); i < tabs_in_group.end(); ++i) {
     tabstrip_->tab_at(i)->SetVisible(is_currently_collapsed);
     if (base::FeatureList::IsEnabled(features::kTabGroupsCollapseFreezing))
       model_->GetWebContentsAt(i)->SetPageFrozen(!is_currently_collapsed);
@@ -561,7 +562,17 @@ void BrowserTabStripController::SetVisualDataForGroup(
   model_->group_model()->GetTabGroup(group)->SetVisualData(visual_data);
 }
 
-std::vector<int> BrowserTabStripController::ListTabsInGroup(
+base::Optional<int> BrowserTabStripController::GetFirstTabInGroup(
+    const tab_groups::TabGroupId& group) const {
+  return model_->group_model()->GetTabGroup(group)->GetFirstTab();
+}
+
+base::Optional<int> BrowserTabStripController::GetLastTabInGroup(
+    const tab_groups::TabGroupId& group) const {
+  return model_->group_model()->GetTabGroup(group)->GetLastTab();
+}
+
+gfx::Range BrowserTabStripController::ListTabsInGroup(
     const tab_groups::TabGroupId& group) const {
   return model_->group_model()->GetTabGroup(group)->ListTabs();
 }

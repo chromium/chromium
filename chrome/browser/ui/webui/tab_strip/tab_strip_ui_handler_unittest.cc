@@ -229,13 +229,13 @@ TEST_F(TabStripUIHandlerTest, MoveGroup) {
   args.AppendInteger(new_index);
   handler()->HandleMoveGroup(&args);
 
-  std::vector<int> tabs_in_group = browser()
-                                       ->tab_strip_model()
-                                       ->group_model()
-                                       ->GetTabGroup(group_id)
-                                       ->ListTabs();
-  ASSERT_EQ(new_index, tabs_in_group.front());
-  ASSERT_EQ(new_index, tabs_in_group.back());
+  gfx::Range tabs_in_group = browser()
+                                 ->tab_strip_model()
+                                 ->group_model()
+                                 ->GetTabGroup(group_id)
+                                 ->ListTabs();
+  ASSERT_EQ(new_index, static_cast<int>(tabs_in_group.start()));
+  ASSERT_EQ(new_index, static_cast<int>(tabs_in_group.end()) - 1);
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
   const content::TestWebUI::CallData& call_data =

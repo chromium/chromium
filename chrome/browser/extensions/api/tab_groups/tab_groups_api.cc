@@ -32,6 +32,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "ui/gfx/range/range.h"
 
 namespace extensions {
 
@@ -237,8 +238,10 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
   }
 
   TabStripModel* source_tab_strip = source_browser->tab_strip_model();
-  std::vector<int> tabs =
+  gfx::Range tabs =
       source_tab_strip->group_model()->GetTabGroup(*group)->ListTabs();
+  if (tabs.length() == 0)
+    return false;
 
   if (window_id) {
     Browser* target_browser = nullptr;
@@ -278,11 +281,11 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
 
       target_tab_strip->group_model()->AddTabGroup(*group, *visual_data);
 
-      for (size_t i = 0; i < tabs.size(); ++i) {
+      for (size_t i = 0; i < tabs.length(); ++i) {
         // Detach tabs from the same index each time, since each detached tab is
         // removed from the model, and groups are always contiguous.
         std::unique_ptr<content::WebContents> web_contents =
-            source_tab_strip->DetachWebContentsAt(tabs.front());
+            source_tab_strip->DetachWebContentsAt(tabs.start());
 
         // Attach tabs in consecutive indices, to insert them in the same order.
         target_tab_strip->InsertWebContentsAt(new_index + i,
@@ -298,9 +301,9 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
 
   // When moving to the right, adjust the target index for the size of the
   // group, since the group itself may occupy several indices to the right.
-  const int start_index = tabs.front();
+  const int start_index = tabs.start();
   if (new_index > start_index)
-    new_index += tabs.size() - 1;
+    new_index += tabs.length() - 1;
 
   // Unlike when moving between windows, IndexSupportsGroupMove should be called
   // before clamping the index to count()-1 instead of after. Since the current
