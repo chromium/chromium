@@ -24,7 +24,8 @@ inline void ReadBigEndian(const char buf[], T* out) {
   static_assert(std::is_integral<T>::value, "T has to be an integral type.");
   // Make an unsigned version of the output type to make shift possible
   // without UB.
-  typename std::make_unsigned<T>::type unsigned_result = uint8_t{buf[0]};
+  typename std::make_unsigned<T>::type unsigned_result =
+      static_cast<uint8_t>(buf[0]);
   for (size_t i = 1; i < sizeof(T); ++i) {
     unsigned_result <<= 8;
     // Must cast to uint8_t to avoid clobbering by sign extension.
