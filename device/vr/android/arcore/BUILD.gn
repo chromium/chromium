@@ -21,8 +21,6 @@ component("arcore") {
     "arcore_anchor_manager.h",
     "arcore_device.cc",
     "arcore_device.h",
-    "arcore_device_provider_factory.cc",
-    "arcore_device_provider_factory.h",
     "arcore_gl.cc",
     "arcore_gl.h",
     "arcore_gl_thread.cc",

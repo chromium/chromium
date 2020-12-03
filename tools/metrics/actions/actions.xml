@@ -26998,6 +26998,10 @@ should be able to be added at any place in this file.
 
 <action name="XR.ARCoreDeviceProviderFactory.NotInstalled"
     not_user_triggered="true">
+  <obsolete>
+    The code that caused the issue this action was meant to track is no longer
+    present.
+  </obsolete>
   <owner>bialpio@chromium.org</owner>
   <description>
     Raised when XR service was unable to obtain necessary component. The action

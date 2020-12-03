@@ -1377,10 +1377,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         VrModuleProvider.maybeInit();
         VrModuleProvider.getDelegate().onNativeLibraryAvailable();
-        ArDelegate arDelegate = ArDelegateProvider.getDelegate();
-        if (arDelegate != null) {
-            arDelegate.init();
-        }
+
         if (getSavedInstanceState() == null && getIntent() != null) {
             VrModuleProvider.getDelegate().onNewIntentWithNative(this, getIntent());
         }

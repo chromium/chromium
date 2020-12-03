@@ -10,11 +10,6 @@ package org.chromium.components.webxr;
  */
 public interface ArDelegate {
     /**
-     * Needs to be called once native libraries are available.
-     **/
-    public void init();
-
-    /**
      * Used to let AR immersive mode intercept the Back button to exit immersive mode.
      */
     public boolean onBackPressed();

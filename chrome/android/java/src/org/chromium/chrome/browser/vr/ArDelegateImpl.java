@@ -18,11 +18,6 @@ public class ArDelegateImpl implements ArDelegate {
     public ArDelegateImpl() {}
 
     @Override
-    public void init() {
-        ArCoreDeviceUtils.installArCoreDeviceProviderFactory();
-    }
-
-    @Override
     public boolean onBackPressed() {
         return ArCoreJavaUtils.onBackPressed();
     }
