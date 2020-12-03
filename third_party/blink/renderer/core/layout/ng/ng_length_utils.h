@@ -38,10 +38,11 @@ inline bool NeedMinMaxSize(const ComputedStyle& style) {
          style.LogicalMaxWidth().IsContentOrIntrinsic();
 }
 
-LayoutUnit InlineSizeFromAspectRatio(const NGBoxStrut& border_padding,
-                                     const LogicalSize& aspect_ratio,
-                                     EBoxSizing box_sizing,
-                                     LayoutUnit block_size);
+CORE_EXPORT LayoutUnit
+InlineSizeFromAspectRatio(const NGBoxStrut& border_padding,
+                          const LogicalSize& aspect_ratio,
+                          EBoxSizing box_sizing,
+                          LayoutUnit block_size);
 
 LayoutUnit BlockSizeFromAspectRatio(const NGBoxStrut& border_padding,
                                     const LogicalSize& aspect_ratio,
