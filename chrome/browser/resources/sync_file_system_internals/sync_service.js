@@ -5,41 +5,43 @@
 /**
  * WebUI to monitor the Sync File System Service.
  */
-const SyncService = (function() {
-  'use strict';
 
-  const SyncService = {};
+import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {TabBox} from 'chrome://resources/js/cr/ui/tabs.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
+import {createElementFromText} from './utils.js';
 
   /**
    * Request Sync Service Status.
    */
   function refreshServiceStatus() {
-    cr.sendWithPromise('getServiceStatus').then(SyncService.onGetServiceStatus);
+    sendWithPromise('getServiceStatus').then(onGetServiceStatus);
   }
 
   /**
    * Called when service status is initially retrieved or updated via events.
    * @param {string} statusString Service status enum as a string.
    */
-  SyncService.onGetServiceStatus = function(statusString) {
+  function onGetServiceStatus(statusString) {
     $('service-status').textContent = statusString;
-  };
+  }
 
   /**
    * Request Google Drive Notification Source. e.g. XMPP or polling.
    */
   function refreshNotificationSource() {
-    cr.sendWithPromise('getNotificationSource')
-        .then(SyncService.onGetNotificationSource);
+    sendWithPromise('getNotificationSource').then(onGetNotificationSource);
   }
 
   /**
    * Handles callback from getNotificationSource.
    * @param {string} sourceString Notification source as a string.
    */
-  SyncService.onGetNotificationSource = function(sourceString) {
+  function onGetNotificationSource(sourceString) {
     $('notification-source').textContent = sourceString;
-  };
+  }
 
   // Keeps track of the last log event seen so it's not reprinted.
   let lastLogEventId = -1;
@@ -48,7 +50,7 @@ const SyncService = (function() {
    * Request debug log.
    */
   function refreshLog() {
-    cr.sendWithPromise('getLog', lastLogEventId).then(SyncService.onGetLog);
+    sendWithPromise('getLog', lastLogEventId).then(onGetLog);
   }
 
   /**
@@ -67,7 +69,7 @@ const SyncService = (function() {
    *   time: string,
    * }>} logEntries List of dictionaries containing 'id', 'time', 'logEvent'.
    */
-  SyncService.onGetLog = function(logEntries) {
+  function onGetLog(logEntries) {
     const itemContainer = $('log-entries');
     for (let i = 0; i < logEntries.length; i++) {
       const logEntry = logEntries[i];
@@ -81,24 +83,21 @@ const SyncService = (function() {
 
       lastLogEventId = logEntry.id;
     }
-  };
+  }
 
   /**
    * Get initial sync service values and set listeners to get updated values.
    */
   function main() {
-    cr.ui.decorate('tabbox', cr.ui.TabBox);
+    decorate('tabbox', TabBox);
     $('clear-log-button').addEventListener('click', clearLogs);
     refreshServiceStatus();
     refreshNotificationSource();
 
-    cr.addWebUIListener(
-        'service-status-changed', SyncService.onGetServiceStatus);
+    addWebUIListener('service-status-changed', onGetServiceStatus);
 
     // TODO: Look for a way to push entries to the page when necessary.
     window.setInterval(refreshLog, 1000);
   }
 
   document.addEventListener('DOMContentLoaded', main);
-  return SyncService;
-})();

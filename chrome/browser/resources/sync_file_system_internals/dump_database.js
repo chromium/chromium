@@ -5,16 +5,16 @@
 /**
  * Handles DumpDatabase tab for syncfs-internals.
  */
-const DumpDatabase = (function() {
-  'use strict';
 
-  const DumpDatabase = {};
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+import {createElementFromText} from './utils.js';
 
   /**
    * Get the database dump.
    */
   function refreshDatabaseDump() {
-    cr.sendWithPromise('getDatabaseDump').then(DumpDatabase.onGetDatabaseDump);
+    sendWithPromise('getDatabaseDump').then(onGetDatabaseDump);
   }
 
   /**
@@ -55,7 +55,7 @@ const DumpDatabase = (function() {
    * Handles callback from onGetDatabaseDump.
    * @param {Array} databaseDump List of lists for the database dump.
    */
-  DumpDatabase.onGetDatabaseDump = function(databaseDump) {
+  function onGetDatabaseDump(databaseDump) {
     const placeholder = $('dump-database-placeholder');
     placeholder.innerHTML = trustedTypes.emptyHTML;
     for (let i = 0; i < databaseDump.length; ++i) {
@@ -71,7 +71,7 @@ const DumpDatabase = (function() {
       div.appendChild(table);
       placeholder.appendChild(div);
     }
-  };
+  }
 
   function main() {
     refreshDatabaseDump();
@@ -79,5 +79,3 @@ const DumpDatabase = (function() {
   }
 
   document.addEventListener('DOMContentLoaded', main);
-  return DumpDatabase;
-})();

@@ -5,6 +5,7 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
+  uses_js_modules = true
   deps = [
     ":dump_database",
     ":extension_statuses",
@@ -18,43 +19,43 @@ js_type_check("closure_compile") {
 js_library("dump_database") {
   deps = [
     ":utils",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
   ]
 }
 
 js_library("extension_statuses") {
   deps = [
     ":utils",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
   ]
 }
 
 js_library("file_metadata") {
   deps = [
     ":utils",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:icon",
-    "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:icon.m",
+    "//ui/webui/resources/js:util.m",
   ]
 }
 
 js_library("sync_service") {
   deps = [
     ":utils",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:util",
-    "//ui/webui/resources/js/cr:ui",
-    "//ui/webui/resources/js/cr/ui:tabs",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:tabs.m",
   ]
 }
 
 js_library("task_log") {
   deps = [
     ":utils",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
   ]
 }
 

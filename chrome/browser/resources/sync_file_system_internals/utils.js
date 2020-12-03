@@ -10,7 +10,7 @@
  *     element.
  * @return {!HTMLElement} The newly created HTML element.
  */
-function createElementFromText(elementName, text, opt_attributes) {
+export function createElementFromText(elementName, text, opt_attributes) {
   const element =
       /** @type {!HTMLElement} */ (document.createElement(elementName));
   element.appendChild(document.createTextNode(text));
@@ -29,7 +29,7 @@ function createElementFromText(elementName, text, opt_attributes) {
  * element.
  * @return {!HTMLElement} The newly created HTML element.
  */
-function createElementFromDictionary(elementName, dict) {
+export function createElementFromDictionary(elementName, dict) {
   const element =
       /** @type {!HTMLElement} */ (document.createElement(elementName));
   for (const key in dict) {

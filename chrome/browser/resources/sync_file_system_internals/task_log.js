@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const TaskLog = (function() {
-  'use strict';
+import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+import {createElementFromText} from './utils.js';
 
   const nextTaskLogSeq = 1;
-  const TaskLog = {};
-
-  function observeTaskLog() {
-    chrome.send('observeTaskLog');
-  }
 
   /**
    * Handles per-task log event.
@@ -21,7 +17,7 @@ const TaskLog = (function() {
    *   details: !Array,
    * }} taskLog
    */
-  TaskLog.onTaskLogRecorded = function(taskLog) {
+  function onTaskLogRecorded(taskLog) {
     const details = document.createElement('td');
     details.classList.add('task-log-details');
 
@@ -49,16 +45,14 @@ const TaskLog = (function() {
     tr.appendChild(details);
 
     $('task-log-entries').appendChild(tr);
-  };
+  }
 
   /**
    * Get initial sync service values and set listeners to get updated values.
    */
   function main() {
-    cr.addWebUIListener('task-log-recorded', TaskLog.onTaskLogRecorded);
-    observeTaskLog();
+    addWebUIListener('task-log-recorded', onTaskLogRecorded);
+    chrome.send('observeTaskLog');
   }
 
   document.addEventListener('DOMContentLoaded', main);
-  return TaskLog;
-})();

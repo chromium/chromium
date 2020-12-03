@@ -5,16 +5,18 @@
 /**
  * WebUI to monitor File Metadata per Extension ID.
  */
-const FileMetadata = (function() {
-  'use strict';
 
-  const FileMetadata = {};
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {getImage} from 'chrome://resources/js/icon.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
+import {createElementFromDictionary, createElementFromText} from './utils.js';
 
   /**
    * Gets extension data so the select drop down can be filled.
    */
   function refreshExtensions() {
-    cr.sendWithPromise('getExtensions').then(FileMetadata.onGetExtensions);
+    sendWithPromise('getExtensions').then(onGetExtensions);
   }
 
   /**
@@ -26,7 +28,7 @@ const FileMetadata = (function() {
    * }>} extensionStatuses of dictionaries containing 'extensionName',
    *     'extensionID', 'status'.
    */
-  FileMetadata.onGetExtensions = function(extensionStatuses) {
+  function onGetExtensions(extensionStatuses) {
     const select = $('extensions-select');
 
     // Record existing drop down extension ID. If it's still there after the
@@ -49,7 +51,7 @@ const FileMetadata = (function() {
 
     // After drop down has been loaded with options, file metadata can be loaded
     refreshFileMetadata();
-  };
+  }
 
   /**
    * @return {?string} extension ID that's currently selected in drop down box.
@@ -76,14 +78,14 @@ const FileMetadata = (function() {
     }
 
     const selectedExtensionId = getSelectedExtensionId();
-    cr.sendWithPromise('getFileMetadata', selectedExtensionId)
-        .then(FileMetadata.onGetFileMetadata);
+    sendWithPromise('getFileMetadata', selectedExtensionId)
+        .then(onGetFileMetadata);
   }
 
   /**
    * Renders result of getFileMetadata as a table.
    */
-  FileMetadata.onGetFileMetadata = function(fileMetadataMap) {
+  function onGetFileMetadata(fileMetadataMap) {
     const header = $('file-metadata-header');
     // Only draw the header if it hasn't been drawn yet
     if (header.children.length === 0) {
@@ -107,7 +109,7 @@ const FileMetadata = (function() {
       tr.appendChild(createElementFromDictionary('td', metadatEntry.details));
       itemContainer.appendChild(tr);
     }
-  };
+  }
 
   /**
    * @param {string} type file type string.
@@ -117,10 +119,9 @@ const FileMetadata = (function() {
     const img = document.createElement('div');
     const lowerType = type.toLowerCase();
     if (lowerType == 'file') {
-      img.style.content =
-          cr.icon.getImage('chrome://theme/IDR_DEFAULT_FAVICON');
+      img.style.content = getImage('chrome://theme/IDR_DEFAULT_FAVICON');
     } else if (lowerType == 'folder') {
-      img.style.content = cr.icon.getImage('chrome://theme/IDR_FOLDER_CLOSED');
+      img.style.content = getImage('chrome://theme/IDR_FOLDER_CLOSED');
       img.className = 'folder-image';
     }
 
@@ -141,5 +142,3 @@ const FileMetadata = (function() {
   }
 
   document.addEventListener('DOMContentLoaded', main);
-  return FileMetadata;
-})();

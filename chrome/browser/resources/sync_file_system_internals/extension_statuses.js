@@ -5,18 +5,17 @@
 /**
  * Handles the Extension ID -> SyncStatus tab for syncfs-internals.
  */
-const ExtensionStatuses = (function() {
-  'use strict';
 
-  const ExtensionStatuses = {};
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+import {createElementFromText} from './utils.js';
 
   /**
    * Get initial map of extension statuses (pending batch sync, enabled and
    * disabled).
    */
   function refreshExtensionStatuses() {
-    cr.sendWithPromise('getExtensionStatuses')
-        .then(ExtensionStatuses.onGetExtensionStatuses);
+    sendWithPromise('getExtensionStatuses').then(onGetExtensionStatuses);
   }
 
   /**
@@ -27,7 +26,7 @@ const ExtensionStatuses = (function() {
    *   status: string,
    * }>} extensionStatuses
    */
-  ExtensionStatuses.onGetExtensionStatuses = function(extensionStatuses) {
+  function onGetExtensionStatuses(extensionStatuses) {
     const itemContainer = $('extension-entries');
     itemContainer.textContent = '';
 
@@ -39,7 +38,7 @@ const ExtensionStatuses = (function() {
       tr.appendChild(createElementFromText('td', originEntry.status));
       itemContainer.appendChild(tr);
     }
-  };
+  }
 
   function main() {
     refreshExtensionStatuses();
@@ -48,5 +47,3 @@ const ExtensionStatuses = (function() {
   }
 
   document.addEventListener('DOMContentLoaded', main);
-  return ExtensionStatuses;
-})();
