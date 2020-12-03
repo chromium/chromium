@@ -1688,33 +1688,34 @@ void DocumentLoader::CommitNavigation() {
 
   SecurityContextInit security_init(frame_->DomWindow());
 
-  // The document constructed by XSLTProcessor should inherit Feature Policy
-  // from the previous Document. Note: In XSLT commit, |response_| no longer
-  // holds header fields. Going through regular initialization will cause empty
-  // policy even if there is header on xml document.
-  // TODO(crbug.com/1151954): Fix the problem for Document Policy as well.
+  // The document constructed by XSLTProcessor should inherit Feature Policy and
+  // Document Policy from the previous Document. Note: In XSLT commit,
+  // |response_| no longer holds header fields. Going through regular
+  // initialization will cause empty policy even if there is header on xml
+  // document.
   if (commit_reason_ == CommitReason::kXSLT) {
     DCHECK(response_.HttpHeaderField(http_names::kFeaturePolicy).IsEmpty());
     DCHECK(response_.HttpHeaderField(http_names::kPermissionsPolicy).IsEmpty());
+    DCHECK(response_.HttpHeaderField(http_names::kDocumentPolicy).IsEmpty());
     security_init.InitFeaturePolicyFrom(previous_window->GetSecurityContext());
+    security_init.InitDocumentPolicyFrom(previous_window->GetSecurityContext());
   } else {
     // FeaturePolicy and DocumentPolicy require SecurityOrigin and origin trials
     // to be initialized.
     // TODO(iclelland): Add Feature-Policy-Report-Only to Origin Policy.
     security_init.ApplyFeaturePolicy(frame_.Get(), response_, origin_policy_,
                                      frame_policy_);
+    // |document_policy_| is parsed in document loader because it is
+    // compared with |frame_policy.required_document_policy| to decide
+    // whether to block the document load or not.
+    // |report_only_document_policy| does not block the page load. Its
+    // initialization is delayed to
+    // SecurityContextInit::InitializeDocumentPolicy(), similar to
+    // |report_only_feature_policy|.
+    security_init.ApplyDocumentPolicy(
+        document_policy_,
+        response_.HttpHeaderField(http_names::kDocumentPolicyReportOnly));
   }
-
-  // |document_policy_| is parsed in document loader because it is
-  // compared with |frame_policy.required_document_policy| to decide
-  // whether to block the document load or not.
-  // |report_only_document_policy| does not block the page load. Its
-  // initialization is delayed to
-  // SecurityContextInit::InitializeDocumentPolicy(), similar to
-  // |report_only_feature_policy|.
-  security_init.ApplyDocumentPolicy(
-      document_policy_,
-      response_.HttpHeaderField(http_names::kDocumentPolicyReportOnly));
 
   navigation_scroll_allowed_ = !frame_->DomWindow()->IsFeatureEnabled(
       mojom::blink::DocumentPolicyFeature::kForceLoadAtTop);

@@ -21,6 +21,21 @@ std::unique_ptr<DocumentPolicy> DocumentPolicy::CreateWithHeaderPolicy(
                                 header_policy.endpoint_map, feature_defaults);
 }
 
+// static
+std::unique_ptr<DocumentPolicy> DocumentPolicy::CopyStateFrom(
+    const DocumentPolicy* source) {
+  if (!source)
+    return nullptr;
+
+  std::unique_ptr<DocumentPolicy> new_policy =
+      DocumentPolicy::CreateWithHeaderPolicy(
+          {/* header_policy */ {}, /* endpoint_map */ {}});
+
+  new_policy->internal_feature_state_ = source->internal_feature_state_;
+  new_policy->endpoint_map_ = source->endpoint_map_;
+  return new_policy;
+}
+
 namespace {
 net::structured_headers::Item PolicyValueToItem(const PolicyValue& value) {
   switch (value.Type()) {

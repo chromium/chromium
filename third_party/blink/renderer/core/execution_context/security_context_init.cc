@@ -273,4 +273,12 @@ void SecurityContextInit::InitFeaturePolicyFrom(const SecurityContext& other) {
   security_context.SetReportOnlyFeaturePolicy(
       FeaturePolicy::CopyStateFrom(other.GetReportOnlyFeaturePolicy()));
 }
+
+void SecurityContextInit::InitDocumentPolicyFrom(const SecurityContext& other) {
+  auto& security_context = execution_context_->GetSecurityContext();
+  security_context.SetDocumentPolicy(
+      DocumentPolicy::CopyStateFrom(other.GetDocumentPolicy()));
+  security_context.SetReportOnlyDocumentPolicy(
+      DocumentPolicy::CopyStateFrom(other.GetReportOnlyDocumentPolicy()));
+}
 }  // namespace blink

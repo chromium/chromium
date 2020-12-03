@@ -36,6 +36,13 @@ class CORE_EXPORT SecurityContextInit {
   // does not have header information available.
   void InitFeaturePolicyFrom(const SecurityContext& other);
 
+  // Init |document_policy_| and |report_only_document_policy_| by copying
+  // state from another security context instance.
+  // Used to carry document policy information from previous document
+  // to current document during XSLT navigation, because XSLT navigation
+  // does not have header information available.
+  void InitDocumentPolicyFrom(const SecurityContext& other);
+
   void ApplyFeaturePolicy(LocalFrame* frame,
                           const ResourceResponse& response,
                           const base::Optional<WebOriginPolicy>& origin_policy,
