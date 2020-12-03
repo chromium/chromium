@@ -20,6 +20,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
@@ -70,6 +71,24 @@ base::Time GetNow() {
   return g_test_clock ? g_test_clock->Now() : base::Time::Now();
 }
 
+bool g_check_tab_id_on_rule_match = true;
+
+// Returns the tab ID to use for tracking a matched rule. Any ID corresponding
+// to a tab that no longer exists will be mapped to the unknown tab ID. This is
+// similar to when a tab is destroyed, its matched rules are re-mapped to the
+// unknown tab ID.
+int GetTabIdForMatchedRule(content::BrowserContext* browser_context,
+                           int request_tab_id) {
+  if (!g_check_tab_id_on_rule_match)
+    return request_tab_id;
+
+  DCHECK(ExtensionsBrowserClient::Get());
+  return ExtensionsBrowserClient::Get()->IsValidTabId(browser_context,
+                                                      request_tab_id)
+             ? request_tab_id
+             : extension_misc::kUnknownTabId;
+}
+
 }  // namespace
 
 // static
@@ -97,13 +116,22 @@ void ActionTracker::SetTimerForTest(
   StartTrimRulesTask();
 }
 
+void ActionTracker::SetCheckTabIdOnRuleMatchForTest(bool check_tab_id) {
+  g_check_tab_id_on_rule_match = check_tab_id;
+}
+
 void ActionTracker::OnRuleMatched(const RequestAction& request_action,
                                   const WebRequestInfo& request_info) {
+  const int tab_id =
+      GetTabIdForMatchedRule(browser_context_, request_info.frame_data.tab_id);
+
+  dnr_api::RequestDetails request_details = CreateRequestDetails(request_info);
+  request_details.tab_id = tab_id;
+
   DispatchOnRuleMatchedDebugIfNeeded(request_action,
-                                     CreateRequestDetails(request_info));
+                                     std::move(request_details));
 
   const ExtensionId& extension_id = request_action.extension_id;
-  const int tab_id = request_info.frame_data.tab_id;
   const bool should_record_rule =
       ShouldRecordMatchedRule(browser_context_, extension_id, tab_id);
 

@@ -38,6 +38,10 @@ class ActionTrackerTest : public DNRTestBase {
   void SetUp() override {
     DNRTestBase::SetUp();
     action_tracker_ = std::make_unique<ActionTracker>(browser_context());
+
+    // Do not check whether tab IDs correspond to valid tabs in this test as
+    // this is a unit test and no actual tabs will be created.
+    action_tracker_->SetCheckTabIdOnRuleMatchForTest(false);
   }
 
  protected:

@@ -56,6 +56,11 @@ class ActionTracker {
   void SetTimerForTest(
       std::unique_ptr<base::RetainingOneShotTimer> injected_trim_rules_timer);
 
+  // Disables checking whether a tab ID corresponds to an existing tab when a
+  // rule is matched. Used for unit tests where WebContents/actual tabs do not
+  // exist.
+  void SetCheckTabIdOnRuleMatchForTest(bool check_tab_id);
+
   // Called whenever a request matches with a rule.
   void OnRuleMatched(const RequestAction& request_action,
                      const WebRequestInfo& request_info);
