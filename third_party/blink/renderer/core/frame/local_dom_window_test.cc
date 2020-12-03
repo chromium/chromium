@@ -33,6 +33,7 @@
 #include "base/strings/stringprintf.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -80,12 +81,12 @@ TEST_F(LocalDOMWindowTest, referrerPolicyParsing) {
        false},
       // Test parsing each of the policy values.
       {"always", network::mojom::ReferrerPolicy::kAlways, true},
-      {"default", network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade,
+      {"default",
+       ReferrerUtils::MojoReferrerPolicyResolveDefault(
+           network::mojom::ReferrerPolicy::kDefault),
        true},
       {"never", network::mojom::ReferrerPolicy::kNever, true},
       {"no-referrer", network::mojom::ReferrerPolicy::kNever, false},
-      {"default", network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade,
-       true},
       {"no-referrer-when-downgrade",
        network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade, false},
       {"origin", network::mojom::ReferrerPolicy::kOrigin, false},

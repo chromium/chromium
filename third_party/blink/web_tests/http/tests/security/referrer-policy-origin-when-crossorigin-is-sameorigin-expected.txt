@@ -1,8 +1,0 @@
-This test checks the origin referrer policy when navigating from an insecure URL to a same-origin insecure URL. The test passes if the printed referrer is http://127.0.0.1:8000/security/referrer-policy-origin-when-crossorigin-is-sameorigin.html
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-HTTP Referer header is http://127.0.0.1:8000/security/resources/referrer-policy-start.html?origin-when-cross-origin
-Referrer is http://127.0.0.1:8000/security/resources/referrer-policy-start.html?origin-when-cross-origin
-

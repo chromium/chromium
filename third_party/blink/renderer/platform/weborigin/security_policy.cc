@@ -310,9 +310,13 @@ bool SecurityPolicy::ReferrerPolicyFromString(
     *result = network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin;
     return true;
   }
-  if (EqualIgnoringASCIICase(policy, "no-referrer-when-downgrade") ||
-      (support_legacy_keywords && EqualIgnoringASCIICase(policy, "default"))) {
+  if (EqualIgnoringASCIICase(policy, "no-referrer-when-downgrade")) {
     *result = network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade;
+    return true;
+  }
+  if (support_legacy_keywords && EqualIgnoringASCIICase(policy, "default")) {
+    *result = ReferrerUtils::NetToMojoReferrerPolicy(
+        ReferrerUtils::GetDefaultNetReferrerPolicy());
     return true;
   }
   return false;
