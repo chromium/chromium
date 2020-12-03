@@ -369,9 +369,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     GridCell* gridCell = base::mac::ObjCCastStrict<GridCell>(cell);
     [self configureCell:gridCell withItem:item];
   }
-  // Set the z index of cells so that lower rows are superposed during
-  // transitions between grid and horizontal layouts.
-  cell.layer.zPosition = itemIndex;
+  // Set the z index of cells so that lower rows are moving behind the upper
+  // rows during transitions between grid and horizontal layouts.
+  cell.layer.zPosition = self.items.count - itemIndex;
 
 #if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
@@ -710,6 +710,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self performModelUpdates:modelUpdates
                 collectionViewUpdates:collectionViewUpdates
       collectionViewUpdatesCompletion:completion];
+
+  [self updateVisibleCellZIndex];
 }
 
 - (void)removeItemWithID:(NSString*)removedItemID
@@ -750,6 +752,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self performModelUpdates:modelUpdates
                 collectionViewUpdates:collectionViewUpdates
       collectionViewUpdatesCompletion:completion];
+
+  [self updateVisibleCellZIndex];
 }
 
 - (void)selectItemWithID:(NSString*)selectedItemID {
@@ -804,6 +808,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self performModelUpdates:modelUpdates
                 collectionViewUpdates:collectionViewUpdates
       collectionViewUpdatesCompletion:completion];
+
+  [self updateVisibleCellZIndex];
 }
 
 #pragma mark - LayoutSwitcher
@@ -1008,6 +1014,19 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   CGFloat offset = self.offsetPastEndOfScrollView;
   self.fractionVisibleOfLastItem = base::ClampToRange<CGFloat>(
       1 - offset / kScrollThresholdForPlusSignButtonHide, 0, 1);
+}
+
+// Updates the ZIndex of the visible cells to have the cells of the upper rows
+// be above the cell of the lower rows.
+- (void)updateVisibleCellZIndex {
+  for (NSIndexPath* indexPath in self.collectionView
+           .indexPathsForVisibleItems) {
+    // Set the z index of cells so that lower rows are moving behind the upper
+    // rows during transitions between grid and horizontal layouts.
+    UICollectionViewCell* cell =
+        [self.collectionView cellForItemAtIndexPath:indexPath];
+    cell.layer.zPosition = self.items.count - indexPath.item;
+  }
 }
 
 #pragma mark - Custom Gesture-based Reordering
