@@ -1344,7 +1344,11 @@ void ProfileImpl::SetCorsOriginAccessListForOrigin(
     std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
     std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
     base::OnceClosure closure) {
-  auto barrier_closure = BarrierClosure(3, std::move(closure));
+  std::vector<Profile*> otr_profiles = GetAllOffTheRecordProfiles();
+  // We need two callbacks for the regular profile and shared cors origin access
+  // list, and one for each off-the-record profile.
+  auto barrier_closure =
+      BarrierClosure(2 + otr_profiles.size(), std::move(closure));
 
   // Keep profile storage partitions' NetworkContexts synchronized.
   auto profile_setter = base::MakeRefCounted<CorsOriginPatternSetter>(
@@ -1354,19 +1358,16 @@ void ProfileImpl::SetCorsOriginAccessListForOrigin(
       this, base::BindRepeating(&CorsOriginPatternSetter::SetLists,
                                 base::RetainedRef(profile_setter.get())));
 
-  // Keep incognito storage partitions' NetworkContexts synchronized.
-  if (HasPrimaryOTRProfile()) {
+  // Keep off-the-record storage partitions' NetworkContexts synchronized.
+  for (Profile* otr : otr_profiles) {
     auto off_the_record_setter = base::MakeRefCounted<CorsOriginPatternSetter>(
         source_origin, CorsOriginPatternSetter::ClonePatterns(allow_patterns),
         CorsOriginPatternSetter::ClonePatterns(block_patterns),
         barrier_closure);
     ForEachStoragePartition(
-        GetPrimaryOTRProfile(),
+        otr,
         base::BindRepeating(&CorsOriginPatternSetter::SetLists,
                             base::RetainedRef(off_the_record_setter.get())));
-  } else {
-    // Release unused closure reference.
-    barrier_closure.Run();
   }
 
   // Keep the per-profile access list up to date so that we can use this to

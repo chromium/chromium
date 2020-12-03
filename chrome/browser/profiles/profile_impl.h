@@ -94,8 +94,6 @@ class ProfileImpl : public Profile {
       override;
   content::BackgroundFetchDelegate* GetBackgroundFetchDelegate() override;
   content::BackgroundSyncController* GetBackgroundSyncController() override;
-  // TODO(https://crbug.com/1060940): Only supports primary OTR profile. Update
-  // to support all OTR profiles.
   void SetCorsOriginAccessListForOrigin(
       const url::Origin& source_origin,
       std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
@@ -140,9 +138,8 @@ class ProfileImpl : public Profile {
 #if !defined(OS_ANDROID)
   ChromeZoomLevelPrefs* GetZoomLevelPrefs() override;
 #endif
-  // TODO(https://crbug.com/1060940, https://crbug.com/1065444): Only supports
-  // primary OTR profile. Either update to support all OTR profiles or remove
-  // this function.
+  // TODO(https://crbug.com/1065444): Only supports primary OTR profile. Either
+  // update to support all OTR profiles or remove this function.
   PrefService* GetOffTheRecordPrefs() override;
   PrefService* GetReadOnlyOffTheRecordPrefs() override;
   policy::SchemaRegistryService* GetPolicySchemaRegistryService() override;
