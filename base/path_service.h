@@ -86,6 +86,9 @@ class BASE_EXPORT PathService {
   // was an override to remove or false if none was present.
   // NOTE: This function is intended to be used by tests only!
   static bool RemoveOverride(int key);
+
+  // Returns whether an override is present for a special directory or file.
+  static bool IsOverriddenForTests(int key);
 };
 
 }  // namespace base

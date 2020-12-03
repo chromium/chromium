@@ -303,6 +303,16 @@ bool PathService::RemoveOverride(int key) {
 }
 
 // static
+bool PathService::IsOverriddenForTests(int key) {
+  PathData* path_data = GetPathData();
+  DCHECK(path_data);
+
+  AutoLock scoped_lock(path_data->lock);
+
+  return path_data->overrides.find(key) != path_data->overrides.end();
+}
+
+// static
 void PathService::RegisterProvider(ProviderFunc func, int key_start,
                                    int key_end) {
   PathData* path_data = GetPathData();

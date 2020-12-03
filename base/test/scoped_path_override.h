@@ -7,6 +7,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/optional.h"
 
 namespace base {
 
@@ -32,8 +33,12 @@ class ScopedPathOverride {
   ~ScopedPathOverride();
 
  private:
+  // Used for saving original_override_ when an override already exists.
+  void SaveOriginal();
+
   int key_;
   ScopedTempDir temp_dir_;
+  base::Optional<FilePath> original_override_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedPathOverride);
 };
