@@ -186,7 +186,7 @@ class flat_tree {
 
   flat_tree() = default;
   flat_tree(const flat_tree&) = default;
-  flat_tree(flat_tree&&) noexcept = default;
+  flat_tree(flat_tree&&) = default;
 
   explicit flat_tree(const key_compare& comp);
 
@@ -229,8 +229,7 @@ class flat_tree {
   // Assume that move assignment invalidates iterators and references.
 
   flat_tree& operator=(const flat_tree&) = default;
-  flat_tree& operator=(flat_tree&&) noexcept(
-      std::is_nothrow_move_assignable<container_type>::value) = default;
+  flat_tree& operator=(flat_tree&&) = default;
   // Takes the first if there are duplicates in the initializer list.
   flat_tree& operator=(std::initializer_list<value_type> ilist);
 
