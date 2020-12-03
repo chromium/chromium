@@ -13727,6 +13727,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Gesture" label="With user gesture"/>
   <suffix name="NoGesture" label="Without user gesture"/>
   <affected-histogram name="Permissions.Prompt.Accepted"/>
+  <affected-histogram name="Permissions.Prompt.AcceptedOnce"/>
   <affected-histogram name="Permissions.Prompt.Denied"/>
   <affected-histogram name="Permissions.Prompt.Shown"/>
 </histogram_suffixes>
@@ -13755,6 +13756,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="VideoCapture" label="Camera permission"/>
   <suffix name="VR" label="VR permission"/>
   <affected-histogram name="Permissions.Engagement.Accepted"/>
+  <affected-histogram name="Permissions.Engagement.AcceptedOnce"/>
   <affected-histogram name="Permissions.Engagement.Denied"/>
   <affected-histogram name="Permissions.Engagement.Dismissed"/>
   <affected-histogram name="Permissions.Engagement.Ignored"/>
@@ -13804,6 +13806,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Permissions.Prompt.Accepted.PriorDismissCount2"/>
   <affected-histogram name="Permissions.Prompt.Accepted.PriorIgnoreCount"/>
   <affected-histogram name="Permissions.Prompt.Accepted.PriorIgnoreCount2"/>
+  <affected-histogram
+      name="Permissions.Prompt.AcceptedOnce.PriorDismissCount2"/>
+  <affected-histogram name="Permissions.Prompt.AcceptedOnce.PriorIgnoreCount2"/>
   <affected-histogram name="Permissions.Prompt.Denied.Persisted"/>
   <affected-histogram name="Permissions.Prompt.Denied.PriorDismissCount"/>
   <affected-histogram name="Permissions.Prompt.Denied.PriorDismissCount2"/>

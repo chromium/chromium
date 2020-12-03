@@ -108,7 +108,7 @@ void RecordEngagementMetric(const std::vector<PermissionRequest*>& requests,
     type = PermissionRequestType::MULTIPLE;
 
   DCHECK(action == "Accepted" || action == "Denied" || action == "Dismissed" ||
-         action == "Ignored");
+         action == "Ignored" || action == "AcceptedOnce");
   std::string name = "Permissions.Engagement." + action + '.' +
                      GetPermissionRequestString(type);
 
@@ -247,6 +247,12 @@ const char PermissionUmaUtil::kPermissionsPromptAcceptedGesture[] =
     "Permissions.Prompt.Accepted.Gesture";
 const char PermissionUmaUtil::kPermissionsPromptAcceptedNoGesture[] =
     "Permissions.Prompt.Accepted.NoGesture";
+const char PermissionUmaUtil::kPermissionsPromptAcceptedOnce[] =
+    "Permissions.Prompt.AcceptedOnce";
+const char PermissionUmaUtil::kPermissionsPromptAcceptedOnceGesture[] =
+    "Permissions.Prompt.AcceptedOnce.Gesture";
+const char PermissionUmaUtil::kPermissionsPromptAcceptedOnceNoGesture[] =
+    "Permissions.Prompt.AcceptedOnce.NoGesture";
 const char PermissionUmaUtil::kPermissionsPromptDenied[] =
     "Permissions.Prompt.Denied";
 const char PermissionUmaUtil::kPermissionsPromptDeniedGesture[] =
@@ -366,11 +372,11 @@ void PermissionUmaUtil::PermissionPromptResolved(
 
   switch (permission_action) {
     case PermissionAction::GRANTED:
-      RecordPromptDecided(requests, /*accepted=*/true);
+      RecordPromptDecided(requests, /*accepted=*/true, /*is_one_time=*/false);
       action_string = "Accepted";
       break;
     case PermissionAction::DENIED:
-      RecordPromptDecided(requests, /*accepted=*/false);
+      RecordPromptDecided(requests, /*accepted=*/false, /*is_one_time*/ false);
       action_string = "Denied";
       break;
     case PermissionAction::DISMISSED:
@@ -379,10 +385,15 @@ void PermissionUmaUtil::PermissionPromptResolved(
     case PermissionAction::IGNORED:
       action_string = "Ignored";
       break;
+    case PermissionAction::GRANTED_ONCE:
+      RecordPromptDecided(requests, /*accepted=*/true, /*is_one_time*/ true);
+      action_string = "AcceptedOnce";
+      break;
     default:
       NOTREACHED();
       break;
   }
+
   RecordEngagementMetric(requests, web_contents, action_string);
 
   PermissionDecisionAutoBlocker* autoblocker =
@@ -667,7 +678,8 @@ void PermissionUmaUtil::RecordPermissionAction(
 // static
 void PermissionUmaUtil::RecordPromptDecided(
     const std::vector<PermissionRequest*>& requests,
-    bool accepted) {
+    bool accepted,
+    bool is_one_time) {
   DCHECK(!requests.empty());
 
   PermissionRequestType request_type = PermissionRequestType::MULTIPLE;
@@ -679,10 +691,17 @@ void PermissionUmaUtil::RecordPromptDecided(
   }
 
   if (accepted) {
-    PERMISSION_BUBBLE_TYPE_UMA(kPermissionsPromptAccepted, request_type);
-    PERMISSION_BUBBLE_GESTURE_TYPE_UMA(kPermissionsPromptAcceptedGesture,
-                                       kPermissionsPromptAcceptedNoGesture,
-                                       gesture_type, request_type);
+    if (is_one_time) {
+      PERMISSION_BUBBLE_TYPE_UMA(kPermissionsPromptAcceptedOnce, request_type);
+      PERMISSION_BUBBLE_GESTURE_TYPE_UMA(
+          kPermissionsPromptAcceptedOnceGesture,
+          kPermissionsPromptAcceptedOnceNoGesture, gesture_type, request_type);
+    } else {
+      PERMISSION_BUBBLE_TYPE_UMA(kPermissionsPromptAccepted, request_type);
+      PERMISSION_BUBBLE_GESTURE_TYPE_UMA(kPermissionsPromptAcceptedGesture,
+                                         kPermissionsPromptAcceptedNoGesture,
+                                         gesture_type, request_type);
+    }
   } else {
     PERMISSION_BUBBLE_TYPE_UMA(kPermissionsPromptDenied, request_type);
     PERMISSION_BUBBLE_GESTURE_TYPE_UMA(kPermissionsPromptDeniedGesture,

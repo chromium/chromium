@@ -218,7 +218,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
-    Tracks the engagement score for sites where permission prompts are accepted.
+    Recorded when the user accepts the permission prompt. It tracks the Site
+    engagement score for sites. For more info check chrome/browser/engagement/
+  </summary>
+</histogram>
+
+<histogram name="Permissions.Engagement.AcceptedOnce" units="%"
+    expires_after="2021-06-19">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded when the user accepts the one time permission prompt. It tracks the
+    Site engagement score for sites. For more info check
+    chrome/browser/engagement/
   </summary>
 </histogram>
 
@@ -227,7 +239,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
-    Tracks the engagement score for sites where permission prompts are denied.
+    Recorded when the user denies the permission prompt. It tracks the Site
+    engagement score for sites. For more info check chrome/browser/engagement/
   </summary>
 </histogram>
 
@@ -236,8 +249,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
-    Tracks the engagement score for sites where permission prompts are
-    dismissed.
+    Recorded when the user dismisses the permission prompt. It tracks the Site
+    engagement score for sites. For more info check chrome/browser/engagement/
   </summary>
 </histogram>
 
@@ -246,7 +259,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
-    Tracks the engagement score for sites where permission prompts are ignored.
+    Recorded when the user ignores the permission prompt. It tracks the Site
+    engagement score for sites. For more info check chrome/browser/engagement/
   </summary>
 </histogram>
 
@@ -289,9 +303,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Permissions.Prompt.Accepted.PriorDismissCount2" units="units"
-    expires_after="2020-12-31">
+    expires_after="2021-12-31">
   <owner>engedy@chromium.org</owner>
-  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     This metric, recorded at the time of a permission prompt accept, records the
     total number of prompt dismissal events for this origin since the last time
@@ -302,15 +316,53 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Permissions.Prompt.Accepted.PriorIgnoreCount2" units="units"
-    expires_after="2021-03-07">
+    expires_after="2021-12-31">
   <owner>engedy@chromium.org</owner>
-  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     This metric, recorded at the time of a permission prompt accept, records the
     total number of prompt ignore events for this origin since the last time the
     user explicitly set the permission state or cleared history / site data and
     prior to the accept. The suffix of the histogram indicates which particular
     permission.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.Prompt.AcceptedOnce" enum="PermissionRequestType"
+    expires_after="2021-12-31">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded when the user clicks on the one-time allow button of the permission
+    prompt. Tracks the permission bubbles (merged and non-merged) that are
+    accepted once. Merged bubbles are considered accepted if all permissions are
+    allowed.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.Prompt.AcceptedOnce.PriorDismissCount2"
+    units="units" expires_after="2021-12-31">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    This metric, recorded at the time of a permission prompt one-time accept,
+    records the total number of prompt dismissal events for this origin since
+    the last time the user explicitly set the permission state or cleared
+    history / site data and prior to the accept. The suffix of the histogram
+    indicates which particular permission.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.Prompt.AcceptedOnce.PriorIgnoreCount2"
+    units="units" expires_after="2021-12-31">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    This metric, recorded at the time of a permission prompt one-time accept,
+    records the total number of prompt ignore events for this origin since the
+    last time the user explicitly set the permission state or cleared history /
+    site data and prior to the accept. The suffix of the histogram indicates
+    which particular permission.
   </summary>
 </histogram>
 
@@ -325,9 +377,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Permissions.Prompt.Denied.PriorDismissCount2" units="units"
-    expires_after="2020-12-31">
+    expires_after="2021-12-31">
   <owner>engedy@chromium.org</owner>
-  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     This metric, recorded at the time of a permission prompt deny, records the
     total number of prompt dismissal events for this origin since the last time
@@ -338,9 +390,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Permissions.Prompt.Denied.PriorIgnoreCount2" units="units"
-    expires_after="2020-12-31">
+    expires_after="2021-12-31">
   <owner>engedy@chromium.org</owner>
-  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     This metric, recorded at the time of a permission prompt deny, records the
     total number of prompt ignore events for this origin since the last time the
@@ -351,9 +403,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Permissions.Prompt.Dismissed.PriorDismissCount2" units="units"
-    expires_after="2020-12-31">
+    expires_after="2021-12-31">
   <owner>engedy@chromium.org</owner>
-  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     This metric, recorded at the time of a permission prompt dismiss, records
     the total number of prompt dismissal events for this origin since the last
@@ -364,9 +416,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Permissions.Prompt.Dismissed.PriorIgnoreCount2" units="units"
-    expires_after="2020-12-31">
+    expires_after="2021-12-31">
   <owner>engedy@chromium.org</owner>
-  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     This metric, recorded at the time of a permission prompt dismiss, records
     the total number of prompt ignore events for this origin since the last time
@@ -377,9 +429,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Permissions.Prompt.Ignored.PriorDismissCount2" units="units"
-    expires_after="2020-12-31">
+    expires_after="2021-12-31">
   <owner>engedy@chromium.org</owner>
-  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     This metric, recorded at the time of a permission prompt ignore, records the
     total number of prompt dismissal events for this origin since the last time
@@ -390,9 +442,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Permissions.Prompt.Ignored.PriorIgnoreCount2" units="units"
-    expires_after="2021-03-07">
+    expires_after="2021-12-31">
   <owner>engedy@chromium.org</owner>
-  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     This metric, recorded at the time of a permission prompt ignore, records the
     total number of prompt ignore events for this origin since the last time the

@@ -233,6 +233,7 @@ class OriginScopedNativeFileSystemPermissionContext::PermissionGrantImpl
             std::move(callback), PermissionRequestOutcome::kUserDismissed);
         break;
       case PermissionAction::REVOKED:
+      case PermissionAction::GRANTED_ONCE:
       case PermissionAction::NUM:
         NOTREACHED();
         break;
