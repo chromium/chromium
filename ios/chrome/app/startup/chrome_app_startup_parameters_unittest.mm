@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #import "ios/chrome/app/app_startup_parameters.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
@@ -299,6 +300,114 @@ TEST_F(AppStartupParametersTest, FirstRunExternalLaunchSource) {
   CheckLaunchSourceForURL(
       first_run::LAUNCH_BY_MOBILESAFARI,
       @"http://www.google.com/search?query=pony&notsafarisab=1&abc=def");
+}
+
+// Tests that search widget url is parsed correctly, and the right metric is
+// recorded.
+TEST_F(AppStartupParametersTest, ParseSearchWidgetKit) {
+  base::HistogramTester histogram_tester;
+  NSURL* url = [NSURL URLWithString:@"chromewidgetkit://search-widget/search"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  std::string expected_url_string =
+      base::StringPrintf("%s://%s/", kChromeUIScheme, kChromeUINewTabHost);
+
+  EXPECT_EQ(params.externalURL.spec(), expected_url_string);
+  EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
+  EXPECT_FALSE(params.launchInIncognito);
+  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 1, 1);
+}
+
+// Tests that quick actions widget search url is parsed correctly, and the right
+// metric is recorded.
+TEST_F(AppStartupParametersTest, ParseQuickActionsWidgetKitSearch) {
+  base::HistogramTester histogram_tester;
+  NSURL* url =
+      [NSURL URLWithString:@"chromewidgetkit://quick-actions-widget/search"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  std::string expected_url_string =
+      base::StringPrintf("%s://%s/", kChromeUIScheme, kChromeUINewTabHost);
+
+  EXPECT_EQ(params.externalURL.spec(), expected_url_string);
+  EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
+  EXPECT_FALSE(params.launchInIncognito);
+  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 2, 1);
+}
+
+// Tests that quick actions widget incognito url is parsed correctly, and the
+// right metric is recorded.
+TEST_F(AppStartupParametersTest, ParseQuickActionsWidgetKitIncognito) {
+  base::HistogramTester histogram_tester;
+  NSURL* url =
+      [NSURL URLWithString:@"chromewidgetkit://quick-actions-widget/incognito"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  std::string expected_url_string =
+      base::StringPrintf("%s://%s/", kChromeUIScheme, kChromeUINewTabHost);
+
+  EXPECT_EQ(params.externalURL.spec(), expected_url_string);
+  EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
+  EXPECT_TRUE(params.launchInIncognito);
+  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 3, 1);
+}
+
+// Tests that quick actions widget voice search url is parsed correctly, and the
+// right metric is recorded.
+TEST_F(AppStartupParametersTest, ParseQuickActionsWidgetKitVoiceSearch) {
+  base::HistogramTester histogram_tester;
+  NSURL* url = [NSURL
+      URLWithString:@"chromewidgetkit://quick-actions-widget/voicesearch"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  std::string expected_url_string =
+      base::StringPrintf("%s://%s/", kChromeUIScheme, kChromeUINewTabHost);
+
+  EXPECT_EQ(params.externalURL.spec(), expected_url_string);
+  EXPECT_EQ(params.postOpeningAction, START_VOICE_SEARCH);
+  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 4, 1);
+}
+
+// Tests that quick actions widget QR reader url is parsed correctly, and the
+// right metric is recorded.
+TEST_F(AppStartupParametersTest, ParseQuickActionsWidgetKitQRReader) {
+  base::HistogramTester histogram_tester;
+  NSURL* url =
+      [NSURL URLWithString:@"chromewidgetkit://quick-actions-widget/qrreader"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  std::string expected_url_string =
+      base::StringPrintf("%s://%s/", kChromeUIScheme, kChromeUINewTabHost);
+
+  EXPECT_EQ(params.externalURL.spec(), expected_url_string);
+  EXPECT_EQ(params.postOpeningAction, START_QR_CODE_SCANNER);
+  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 5, 1);
+}
+
+// Tests that dino widget game url is parsed correctly, and the right metric is
+// recorded.
+TEST_F(AppStartupParametersTest, ParseDinoWidgetKit) {
+  base::HistogramTester histogram_tester;
+  NSURL* url = [NSURL URLWithString:@"chromewidgetkit://dino-game-widget/game"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  GURL expected_url =
+      GURL(base::StringPrintf("%s://%s", kChromeUIScheme, kChromeUIDinoHost));
+
+  EXPECT_EQ(params.externalURL, expected_url);
+  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 0, 1);
 }
 
 }  // namespace
