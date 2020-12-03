@@ -2785,4 +2785,20 @@ TEST_F(WallpaperControllerPrefTest, InitWithPrefs) {
   EXPECT_EQ(root_window->bounds().size(), wallpaper_view->bounds().size());
 }
 
+TEST_F(WallpaperControllerTest, NoAnimationForNewRootWindowWhenLocked) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  SetSessionState(SessionState::LOCKED);
+  UpdateDisplay("800x600, 800x600");
+  auto* secondary_root_window_controller =
+      Shell::Get()->GetAllRootWindowControllers()[1];
+  EXPECT_FALSE(secondary_root_window_controller->wallpaper_widget_controller()
+                   ->IsAnimating());
+  EXPECT_FALSE(secondary_root_window_controller->wallpaper_widget_controller()
+                   ->GetWidget()
+                   ->GetLayer()
+                   ->GetAnimator()
+                   ->is_animating());
+}
+
 }  // namespace ash

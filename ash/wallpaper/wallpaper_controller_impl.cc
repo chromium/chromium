@@ -1379,7 +1379,8 @@ void WallpaperControllerImpl::OnRootWindowAdded(aura::Window* root_window) {
       ReloadWallpaper(/*clear_cache=*/true);
   }
 
-  UpdateWallpaperForRootWindow(root_window, /*lock_state_changed=*/false);
+  UpdateWallpaperForRootWindow(root_window, /*lock_state_changed=*/false,
+                               /*new_root=*/true);
 }
 
 void WallpaperControllerImpl::OnShellInitialized() {
@@ -1471,7 +1472,8 @@ void WallpaperControllerImpl::ReloadWallpaperForTesting(bool clear_cache) {
 
 void WallpaperControllerImpl::UpdateWallpaperForRootWindow(
     aura::Window* root_window,
-    bool lock_state_changed) {
+    bool lock_state_changed,
+    bool new_root) {
   DCHECK_EQ(WALLPAPER_IMAGE, wallpaper_mode_);
 
   auto* wallpaper_widget_controller =
@@ -1480,7 +1482,7 @@ void WallpaperControllerImpl::UpdateWallpaperForRootWindow(
   WallpaperProperty property =
       wallpaper_widget_controller->GetWallpaperProperty();
 
-  if (lock_state_changed) {
+  if (lock_state_changed || new_root) {
     const bool is_wallpaper_blurred_for_lock_state =
         Shell::Get()->session_controller()->IsUserSessionBlocked() &&
         IsBlurAllowedForLockState();
@@ -1501,13 +1503,13 @@ void WallpaperControllerImpl::UpdateWallpaperForRootWindow(
 
   wallpaper_widget_controller->wallpaper_view()->ClearCachedImage();
   wallpaper_widget_controller->SetWallpaperProperty(
-      property, kWallpaperLoadAnimationDuration);
+      property, new_root ? base::TimeDelta() : kWallpaperLoadAnimationDuration);
 }
 
 void WallpaperControllerImpl::UpdateWallpaperForAllRootWindows(
     bool lock_state_changed) {
   for (aura::Window* root : Shell::GetAllRootWindows())
-    UpdateWallpaperForRootWindow(root, lock_state_changed);
+    UpdateWallpaperForRootWindow(root, lock_state_changed, /*new_root=*/false);
   current_max_display_size_ = GetMaxDisplaySizeInNative();
 }
 

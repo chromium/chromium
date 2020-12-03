@@ -39,9 +39,9 @@ class ASH_EXPORT WallpaperWidgetController
                             base::OnceClosure wallpaper_set_callback);
   ~WallpaperWidgetController() override;
 
-  // Initialize the widget. |container| specifies the id of the parent container
-  // the window will be added to.
-  void Init(int container);
+  // Initialize the widget. |lock| specifies if the wallpaper should be created
+  // for the locked state.
+  void Init(bool locked);
 
   views::Widget* GetWidget();
 
