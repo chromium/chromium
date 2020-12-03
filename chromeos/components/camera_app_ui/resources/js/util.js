@@ -56,7 +56,7 @@ export function animateCancel(element) {
  *     cancelled.
  */
 function waitAnimationCompleted(element) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     let animationCount = 0;
     const onStart = (event) =>
         void (event.target === element && animationCount++);
@@ -150,8 +150,8 @@ export function openHelp() {
 
 /**
  * Sets up i18n messages on DOM subtree by i18n attributes.
- * @param {!Node} rootElement Root of DOM subtree to be set up
- *     with.
+ * @param {!Element|!DocumentFragment} rootElement Root of DOM subtree to be set
+ *     up with.
  */
 export function setupI18nElements(rootElement) {
   const getElements = (attr) => rootElement.querySelectorAll('[' + attr + ']');
@@ -319,13 +319,14 @@ export function setInkdropEffect(el) {
 /**
  * Instantiates template with the target selector.
  * @param {string} selector
- * @return {!Node}
+ * @return {!DocumentFragment}
  */
 export function instantiateTemplate(selector) {
   const tpl = dom.get(selector, HTMLTemplateElement);
-  const node = document.importNode(tpl.content, true);
-  setupI18nElements(node);
-  return node;
+  const doc = assertInstanceof(
+      document.importNode(tpl.content, true), DocumentFragment);
+  setupI18nElements(doc);
+  return doc;
 }
 
 /**

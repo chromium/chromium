@@ -653,7 +653,7 @@ export class ResolutionSettings extends BaseSettings {
       }
       input.disabled = state.get(state.State.CAMERA_CONFIGURING) ||
           state.get(state.State.TAKING);
-      input.addEventListener('change', (event) => {
+      input.addEventListener('change', () => {
         if (input.checked) {
           captionText.textContent = optTextTempl(r, resolutions);
           onChange(r);

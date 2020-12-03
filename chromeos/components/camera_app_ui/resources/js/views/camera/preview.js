@@ -121,8 +121,8 @@ export class Preview {
    * @return {!Promise} Promise for the operation.
    */
   async setSource_(stream) {
-    const node = util.instantiateTemplate('#preview-video-template');
-    const video = dom.getFrom(node, 'video', HTMLVideoElement);
+    const tpl = util.instantiateTemplate('#preview-video-template');
+    const video = dom.getFrom(tpl, 'video', HTMLVideoElement);
     await new Promise((resolve) => {
       const handler = () => {
         video.removeEventListener('canplay', handler);
@@ -132,7 +132,7 @@ export class Preview {
       video.srcObject = stream;
     });
     await video.play();
-    this.video_.parentElement.replaceChild(node, this.video_);
+    this.video_.parentElement.replaceChild(tpl, this.video_);
     this.video_.removeAttribute('srcObject');
     this.video_.load();
     this.video_ = video;
