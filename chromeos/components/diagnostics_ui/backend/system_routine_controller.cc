@@ -247,7 +247,7 @@ void SystemRoutineController::ExecuteRoutine(mojom::RoutineType routine_type) {
 
   switch (routine_type) {
     case mojom::RoutineType::kBatteryCharge:
-      diagnostics_service_->RunBatteryDischargeRoutine(
+      diagnostics_service_->RunBatteryChargeRoutine(
           kBatteryDurationInSeconds, kBatteryChargeMinimumPercent,
           base::BindOnce(&SystemRoutineController::OnPowerRoutineStarted,
                          base::Unretained(this), routine_type));
