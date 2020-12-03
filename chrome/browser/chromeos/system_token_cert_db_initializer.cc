@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
@@ -21,6 +22,7 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/network/network_cert_loader.h"
+#include "chromeos/tpm/buildflags.h"
 #include "chromeos/tpm/tpm_token_loader.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -31,6 +33,10 @@
 namespace chromeos {
 
 namespace {
+
+constexpr base::TimeDelta kInitialRequestDelay =
+    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kMaxRequestDelay = base::TimeDelta::FromMinutes(5);
 
 // Called on UI Thread when the system slot has been retrieved.
 void GotSystemSlotOnUIThread(
@@ -77,6 +83,24 @@ bool ShallAttemptTpmOwnership() {
 #endif
 }
 
+// Checks if the build flag system_slot_software_fallback is enabled.
+bool IsSystemSlotSoftwareFallbackEnabled() {
+#if BUILDFLAG(SYSTEM_SLOT_SOFTWARE_FALLBACK)
+  return true;
+#else
+  return false;
+#endif
+}
+
+// Calculates the delay before running next attempt to get the TPM state
+// (enabled/disabled), if |last_delay| was the last or initial delay.
+base::TimeDelta GetNextRequestDelay(base::TimeDelta last_delay) {
+  // This implements an exponential backoff, as we don't know in which order of
+  // magnitude the TPM token changes it's state. The delay is capped to prevent
+  // overflow. This threshold is arbitrarily chosen.
+  return std::min(last_delay * 2, kMaxRequestDelay);
+}
+
 // ChromeBrowserMainPartsChromeos owns this.
 SystemTokenCertDBInitializer* g_system_token_cert_db_initializer = nullptr;
 
@@ -85,7 +109,8 @@ SystemTokenCertDBInitializer* g_system_token_cert_db_initializer = nullptr;
 constexpr base::TimeDelta
     SystemTokenCertDBInitializer::kMaxCertDbRetrievalDelay;
 
-SystemTokenCertDBInitializer::SystemTokenCertDBInitializer() {
+SystemTokenCertDBInitializer::SystemTokenCertDBInitializer()
+    : tpm_request_delay_(kInitialRequestDelay) {
   // Only start loading the system token once cryptohome is available and only
   // if the TPM is ready (available && owned && not being owned).
   CryptohomeClient::Get()->WaitForServiceToBeAvailable(
@@ -177,6 +202,50 @@ void SystemTokenCertDBInitializer::OnCryptohomeAvailable(bool available) {
 
   VLOG(1) << "SystemTokenCertDBInitializer: Cryptohome available.";
   TpmManagerClient::Get()->AddObserver(this);
+
+  CheckTpm();
+}
+
+void SystemTokenCertDBInitializer::CheckTpm() {
+  if (IsSystemSlotSoftwareFallbackEnabled()) {
+    TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
+        ::tpm_manager::GetTpmNonsensitiveStatusRequest(),
+        base::BindOnce(&SystemTokenCertDBInitializer::OnGetTpmStatus,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    CryptohomeClient::Get()->TpmIsReady(
+        base::BindOnce(&SystemTokenCertDBInitializer::OnGotTpmIsReady,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void SystemTokenCertDBInitializer::RetryCheckTpmLater() {
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&SystemTokenCertDBInitializer::CheckTpm,
+                     weak_ptr_factory_.GetWeakPtr()),
+      tpm_request_delay_);
+  tpm_request_delay_ = GetNextRequestDelay(tpm_request_delay_);
+}
+
+void SystemTokenCertDBInitializer::OnGetTpmStatus(
+    const ::tpm_manager::GetTpmNonsensitiveStatusReply& reply) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (reply.status() != ::tpm_manager::STATUS_SUCCESS) {
+    LOG(WARNING) << "Failed to get tpm status; status: " << reply.status();
+    RetryCheckTpmLater();
+    return;
+  }
+
+  // When the software fallback flag is set and the TPM is disabled, we skip the
+  // TpmIsReady() call. Otherwise, because the TPM won't be ready and will never
+  // be signaled as such, we won't proceed to the database initialization.
+  if (!reply.is_enabled()) {
+    MaybeStartInitializingDatabase();
+    return;
+  }
+
   CryptohomeClient::Get()->TpmIsReady(
       base::BindOnce(&SystemTokenCertDBInitializer::OnGotTpmIsReady,
                      weak_ptr_factory_.GetWeakPtr()));

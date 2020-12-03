@@ -71,6 +71,11 @@ void TPMTokenInfoGetter::Start(TpmTokenInfoCallback callback) {
   Continue();
 }
 
+void TPMTokenInfoGetter::SetSystemSlotSoftwareFallback(
+    bool use_system_slot_software_fallback) {
+  use_system_slot_software_fallback_ = use_system_slot_software_fallback;
+}
+
 TPMTokenInfoGetter::TPMTokenInfoGetter(
     TPMTokenInfoGetter::Type type,
     const AccountId& account_id,
@@ -107,6 +112,15 @@ void TPMTokenInfoGetter::Continue() {
                            weak_factory_.GetWeakPtr()));
       }
       break;
+    case STATE_SYSTEM_SLOT_SOFTWARE_FALLBACK:
+      if (type_ == TYPE_SYSTEM) {
+        cryptohome_client_->Pkcs11GetTpmTokenInfo(
+            base::BindOnce(&TPMTokenInfoGetter::OnPkcs11GetTpmTokenInfo,
+                           weak_factory_.GetWeakPtr()));
+      } else {  // if (type_ == TYPE_USER)
+        NOTREACHED();
+      }
+      break;
     case STATE_DONE:
       NOTREACHED();
   }
@@ -129,6 +143,15 @@ void TPMTokenInfoGetter::OnGetTpmStatus(
   }
 
   if (!reply.is_enabled()) {
+    // In case the TPM is disabled and use_system_slot_software_fallback_ is
+    // true, we continue the token info retrieval for the system slot in order
+    // to fall back to a software-backed initialization.
+    if (use_system_slot_software_fallback_) {
+      state_ = STATE_SYSTEM_SLOT_SOFTWARE_FALLBACK;
+      Continue();
+      return;
+    }
+
     state_ = STATE_DONE;
     std::move(callback_).Run(base::nullopt);
     return;

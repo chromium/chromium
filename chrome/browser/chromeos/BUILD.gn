@@ -235,6 +235,7 @@ source_set("chromeos") {
     "//chromeos/system",
     "//chromeos/timezone",
     "//chromeos/tpm",
+    "//chromeos/tpm:buildflags",
     "//chromeos/ui/base",
     "//chromeos/ui/frame",
     "//components/arc",

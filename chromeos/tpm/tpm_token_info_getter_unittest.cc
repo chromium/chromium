@@ -292,6 +292,32 @@ TEST_F(SystemTPMTokenInfoGetterTest, TPMNotEnabled) {
   EXPECT_EQ(std::vector<int64_t>(), delays_);
 }
 
+TEST_F(SystemTPMTokenInfoGetterTest, TPMNotEnabledSystemSlotFallbackEnabled) {
+  chromeos::TpmManagerClient::Get()
+      ->GetTestInterface()
+      ->mutable_nonsensitive_status_reply()
+      ->set_is_enabled(false);
+
+  bool completed = false;
+  base::Optional<TpmTokenInfo> result;
+  tpm_token_info_getter_->SetSystemSlotSoftwareFallback(true);
+  tpm_token_info_getter_->Start(
+      base::BindOnce(&OnTpmTokenInfoGetterCompleted, &completed, &result));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(completed);
+
+  const TpmTokenInfo fake_token_info = {"TOKEN_1", "2222", 1};
+  cryptohome_client_->SetTpmTokenInfo(fake_token_info);
+
+  EXPECT_TRUE(completed);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ("TOKEN_1", result->label);
+  EXPECT_EQ("2222", result->user_pin);
+  EXPECT_EQ(1, result->slot);
+
+  EXPECT_EQ(std::vector<int64_t>(), delays_);
+}
+
 TEST_F(SystemTPMTokenInfoGetterTest, TpmEnabledCallFails) {
   chromeos::TpmManagerClient::Get()
       ->GetTestInterface()

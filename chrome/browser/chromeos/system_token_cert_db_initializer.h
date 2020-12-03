@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "crypto/scoped_nss_types.h"
 
@@ -86,6 +87,22 @@ class SystemTokenCertDBInitializer : public TpmManagerClient::Observer {
   // Called once the cryptohome service is available.
   void OnCryptohomeAvailable(bool available);
 
+  // Verifies the value of the build flag system_slot_software_fallback and
+  // decides the initialization flow based on that.
+  void CheckTpm();
+
+  // If GetTpmNonsensitiveStatus() fails (e.g. if TPM token is not yet ready)
+  // schedules the initialization step retry attempt after a timeout.
+  void RetryCheckTpmLater();
+
+  // This is a callback for the GetTpmNonsensitiveStatus() query. It is only
+  // called when the build flag system_slot_software_fallback is enabled. If the
+  // build flag is enabled and TPM is disabled, we skip the cryptohome
+  // TpmIsReady() check during initialization, otherwise we continue the normal
+  // flow with TpmIsReady() and its callback.
+  void OnGetTpmStatus(
+      const ::tpm_manager::GetTpmNonsensitiveStatusReply& reply);
+
   // This is a callback for the cryptohome TpmIsReady query. Note that this is
   // not a listener which would be called once TPM becomes ready if it was not
   // ready on startup - that event is observed by `OnOwnershipTakenSignal()`.
@@ -123,6 +140,10 @@ class SystemTokenCertDBInitializer : public TpmManagerClient::Observer {
   bool system_token_cert_db_retrieval_failed_ = false;
 
   base::OneShotTimer system_token_cert_db_retrieval_timer_;
+
+  // The current request delay before the next attempt to retrieve the TPM
+  // state. Will be adapted after each attempt.
+  base::TimeDelta tpm_request_delay_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
