@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "media/capture/video/mac/test/pixel_buffer_test_utils_mac.h"
 #include "media/capture/video/mac/video_capture_device_avfoundation_utils_mac.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -395,7 +396,14 @@ TEST_P(SampleBufferTransformerPixelTransferTest, CanConvertFullScale) {
       PixelBufferIsSingleColor(output_pixel_buffer, kColorR, kColorG, kColorB));
 }
 
-TEST_P(SampleBufferTransformerPixelTransferTest, CanConvertAndScaleDown) {
+#if defined(ARCH_CPU_ARM64)
+// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+#define MAYBE_CanConvertAndScaleDown DISABLED_CanConvertAndScaleDown
+#else
+#define MAYBE_CanConvertAndScaleDown CanConvertAndScaleDown
+#endif
+
+TEST_P(SampleBufferTransformerPixelTransferTest, MAYBE_CanConvertAndScaleDown) {
   OSType input_pixel_format;
   OSType output_pixel_format;
   std::tie(input_pixel_format, output_pixel_format) = GetParam();

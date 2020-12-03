@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "media/capture/video/mac/pixel_buffer_pool_mac.h"
 #include "media/capture/video/mac/test/pixel_buffer_test_utils_mac.h"
 #include "media/capture/video/mac/video_capture_device_avfoundation_utils_mac.h"
@@ -59,7 +60,14 @@ TEST(PixelBufferTransfererTest, CanCopyYuvsAndVerifyColor) {
                                          kColorR, kColorG, kColorB));
 }
 
-TEST(PixelBufferTransfererTest, CanScaleYuvsAndVerifyColor) {
+#if defined(ARCH_CPU_ARM64)
+// Bulk-disabled as part of arm64 bot stabilization: https://crbug.com/1154345
+#define MAYBE_CanScaleYuvsAndVerifyColor DISABLED_CanScaleYuvsAndVerifyColor
+#else
+#define MAYBE_CanScaleYuvsAndVerifyColor CanScaleYuvsAndVerifyColor
+#endif
+
+TEST(PixelBufferTransfererTest, MAYBE_CanScaleYuvsAndVerifyColor) {
   constexpr OSType kPixelFormat = kPixelFormatYuvs;
   constexpr int kSourceWidth = 32;
   constexpr int kSourceHeight = 32;
@@ -115,7 +123,16 @@ TEST(PixelBufferTransfererTest, CanScaleYuvsAndVerifyCheckerPattern) {
   EXPECT_EQ(num_tiles_across_y, kSourceNumTilesAcross);
 }
 
-TEST(PixelBufferTransfererTest, CanStretchYuvsAndVerifyCheckerPattern) {
+#if defined(ARCH_CPU_ARM64)
+// Bulk-disabled as part of arm64 bot stabilization: https://crbug.com/1154345
+#define MAYBE_CanStretchYuvsAndVerifyCheckerPattern \
+  DISABLED_CanStretchYuvsAndVerifyCheckerPattern
+#else
+#define MAYBE_CanStretchYuvsAndVerifyCheckerPattern \
+  CanStretchYuvsAndVerifyCheckerPattern
+#endif
+
+TEST(PixelBufferTransfererTest, MAYBE_CanStretchYuvsAndVerifyCheckerPattern) {
   // Note: The ARGB -> YUVS -> ARGB conversions results in a small loss of
   // information, so for the checker pattern to be intact the buffer can't be
   // tiny (e.g. 4x4).
@@ -149,7 +166,14 @@ TEST(PixelBufferTransfererTest, CanStretchYuvsAndVerifyCheckerPattern) {
   EXPECT_EQ(num_tiles_across_y, kSourceNumTilesAcross);
 }
 
-TEST(PixelBufferTransfererTest, CanStretchYuvsAndVerifyColor) {
+#if defined(ARCH_CPU_ARM64)
+// Bulk-disabled as part of arm64 bot stabilization: https://crbug.com/1154345
+#define MAYBE_CanStretchYuvsAndVerifyColor DISABLED_CanStretchYuvsAndVerifyColor
+#else
+#define MAYBE_CanStretchYuvsAndVerifyColor CanStretchYuvsAndVerifyColor
+#endif
+
+TEST(PixelBufferTransfererTest, MAYBE_CanStretchYuvsAndVerifyColor) {
   constexpr OSType kPixelFormat = kPixelFormatYuvs;
   constexpr int kSourceWidth = 32;
   constexpr int kSourceHeight = 32;
