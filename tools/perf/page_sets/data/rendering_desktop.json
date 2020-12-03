@@ -21,7 +21,13 @@
         "animometer_webgl_attrib_arrays": {
             "DEFAULT": "rendering_desktop_3a59b064d2.wprgo"
         },
+        "animometer_webgl_fast_call": {
+            "DEFAULT": "rendering_desktop_011.wprgo"
+        },
         "animometer_webgl_indexed": {
+            "DEFAULT": "rendering_desktop_e0cf9b9bd8.wprgo"
+        },
+        "animometer_webgl_indexed_fast_call": {
             "DEFAULT": "rendering_desktop_e0cf9b9bd8.wprgo"
         },
         "animometer_webgl_indexed_multi_draw": {
@@ -37,6 +43,9 @@
             "DEFAULT": "rendering_desktop_011.wprgo"
         },
         "aquarium_20k": {
+            "DEFAULT": "rendering_desktop_011.wprgo"
+        },
+        "aquarium_20k_fast_call": {
             "DEFAULT": "rendering_desktop_011.wprgo"
         },
         "blob": {
@@ -189,6 +198,9 @@
         "lost_crypt": {
             "DEFAULT": "rendering_desktop_fb80bbcb6f.wprgo"
         },
+        "lost_crypt_fast_call": {
+            "DEFAULT": "rendering_desktop_fb80bbcb6f.wprgo"
+        },
         "man_in_blue": {
             "DEFAULT": "rendering_desktop_004.wprgo"
         },
@@ -202,6 +214,9 @@
             "DEFAULT": "rendering_desktop_004.wprgo"
         },
         "microgame_fps": {
+            "DEFAULT": "rendering_desktop_fb80bbcb6f.wprgo"
+        },
+        "microgame_fps_fast_call": {
             "DEFAULT": "rendering_desktop_fb80bbcb6f.wprgo"
         },
         "microsoft_asteroid_belt": {
@@ -294,6 +309,9 @@
         "skelebuddies_wasm_2020": {
             "DEFAULT": "rendering_desktop_fb80bbcb6f.wprgo"
         },
+        "skelebuddies_wasm_2020_fast_call": {
+            "DEFAULT": "rendering_desktop_fb80bbcb6f.wprgo"
+        },
         "smash_cat": {
             "DEFAULT": "rendering_desktop_004.wprgo"
         },
@@ -304,6 +322,9 @@
             "DEFAULT": "rendering_desktop_000.wprgo"
         },
         "tiny_racing_v3_wasm_2020": {
+            "DEFAULT": "rendering_desktop_fb80bbcb6f.wprgo"
+        },
+        "tiny_racing_v3_wasm_2020_fast_call": {
             "DEFAULT": "rendering_desktop_fb80bbcb6f.wprgo"
         },
         "twitch_2018": {
