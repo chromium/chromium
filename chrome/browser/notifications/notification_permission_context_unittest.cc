@@ -325,8 +325,16 @@ TEST_F(NotificationPermissionContextTest, SecureOriginRequirement) {
                 .content_setting);
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+#define MAYBE_TestDenyInIncognitoAfterDelay \
+  DISABLED_TestDenyInIncognitoAfterDelay
+#else
+#define MAYBE_TestDenyInIncognitoAfterDelay TestDenyInIncognitoAfterDelay
+#endif
+
 // Tests auto-denial after a time delay in incognito.
-TEST_F(NotificationPermissionContextTest, TestDenyInIncognitoAfterDelay) {
+TEST_F(NotificationPermissionContextTest, MAYBE_TestDenyInIncognitoAfterDelay) {
   TestNotificationPermissionContext permission_context(
       profile()->GetPrimaryOTRProfile());
   GURL url("https://www.example.com");

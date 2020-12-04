@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/notification_image_retainer.h"
 #include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
@@ -511,7 +512,14 @@ TEST(UNNotificationBuilderMacTest, TestIcon) {
   }
 }
 
-TEST(UNNotificationBuilderMacTest, TestIconWrongPath) {
+#if defined(ARCH_CPU_ARM64)
+// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+#define MAYBE_TestIconWrongPath DISABLED_TestIconWrongPath
+#else
+#define MAYBE_TestIconWrongPath TestIconWrongPath
+#endif
+
+TEST(UNNotificationBuilderMacTest, MAYBE_TestIconWrongPath) {
   if (@available(macOS 10.14, *)) {
     base::scoped_nsobject<UNNotificationBuilder> builder =
         NewTestBuilder(NotificationHandler::Type::WEB_PERSISTENT);
