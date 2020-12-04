@@ -2105,6 +2105,7 @@ android_library("base_monochrome_module_java") {
     "//base:base_java",
     "//chrome/browser/version:java",
     "//components/version_info/android:version_constants_java",
+    "//content/public/android:content_java",
   ]
   if (webview_includes_weblayer) {
     deps += [ "//weblayer/browser/java:base_module_java" ]
@@ -2118,7 +2119,6 @@ android_library("base_module_java") {
     "java/src/com/google/ipc/invalidation/ticl/android2/channel/GcmRegistrationTaskService.java",
     "java/src/org/chromium/chrome/browser/ChromeBackgroundService.java",
     "java/src/org/chromium/chrome/browser/ChromeBackupAgent.java",
-    "java/src/org/chromium/chrome/browser/base/MainDexApplicationImpl.java",
     "java/src/org/chromium/chrome/browser/base/SplitChromeApplication.java",
     "java/src/org/chromium/chrome/browser/base/SplitCompatAppComponentFactory.java",
     "java/src/org/chromium/chrome/browser/base/SplitCompatApplication.java",
@@ -2132,16 +2132,23 @@ android_library("base_module_java") {
     "java/src/org/chromium/chrome/browser/base/SplitCompatRemoteViewsService.java",
     "java/src/org/chromium/chrome/browser/base/SplitCompatService.java",
     "java/src/org/chromium/chrome/browser/base/SplitCompatUtils.java",
+    "java/src/org/chromium/chrome/browser/base/SplitPreloader.java",
     "java/src/org/chromium/chrome/browser/bookmarkswidget/BookmarkWidgetService.java",
+    "java/src/org/chromium/chrome/browser/crash/ApplicationStatusTracker.java",
     "java/src/org/chromium/chrome/browser/crash/ChromeMinidumpUploadJobService.java",
+    "java/src/org/chromium/chrome/browser/crash/FirebaseConfig.java",
     "java/src/org/chromium/chrome/browser/crash/MinidumpUploadService.java",
+    "java/src/org/chromium/chrome/browser/crash/PureJavaExceptionHandler.java",
     "java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnectionService.java",
     "java/src/org/chromium/chrome/browser/download/DownloadBroadcastManager.java",
     "java/src/org/chromium/chrome/browser/download/DownloadForegroundService.java",
     "java/src/org/chromium/chrome/browser/incognito/IncognitoNotificationService.java",
     "java/src/org/chromium/chrome/browser/invalidation/ChromeBrowserSyncAdapterService.java",
+    "java/src/org/chromium/chrome/browser/language/AppLocaleUtils.java",
+    "java/src/org/chromium/chrome/browser/language/GlobalAppLocaleController.java",
     "java/src/org/chromium/chrome/browser/media/MediaCaptureNotificationService.java",
     "java/src/org/chromium/chrome/browser/media/ui/ChromeMediaNotificationControllerServices.java",
+    "java/src/org/chromium/chrome/browser/metrics/UmaUtils.java",
     "java/src/org/chromium/chrome/browser/notifications/NotificationJobService.java",
     "java/src/org/chromium/chrome/browser/notifications/NotificationService.java",
     "java/src/org/chromium/chrome/browser/omaha/OmahaClient.java",
@@ -2156,6 +2163,11 @@ android_library("base_module_java") {
     ":chrome_base_module_resources",
     "$google_play_services_package:google_play_services_gcm_java",
     "//base:base_java",
+    "//base:jni_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/util:java",
+    "//components/crash/android:java",
     "//components/embedder_support/android:application_java",
     "//components/media_router/browser/android:cast_options_provider_java",
     "//components/minidump_uploader:minidump_uploader_java",
@@ -2163,6 +2175,7 @@ android_library("base_module_java") {
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:androidx_collection_collection_java",
     "//third_party/android_deps:androidx_fragment_fragment_java",
+    "//third_party/google_android_play_core:com_google_android_play_core_java",
     "//ui/android:ui_no_recycler_view_java",
 
     # Deps needed for child processes.
@@ -2197,6 +2210,7 @@ android_library("base_module_java") {
   jar_excluded_patterns = [ "*/ProductConfig.class" ]
 
   resources_package = "org.chromium.chrome.base"
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 # Defines a target that derives from the monochrome public application. This

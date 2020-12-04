@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.base;
 
+import static org.chromium.chrome.browser.base.SplitCompatUtils.CHROME_SPLIT_NAME;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.pm.PackageManager;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.JNIUtils;
 
 import java.lang.reflect.Field;
 
@@ -21,6 +25,7 @@ import java.lang.reflect.Field;
  */
 public class SplitChromeApplication extends SplitCompatApplication {
     private String mChromeApplicationClassName;
+    private SplitPreloader mSplitPreloader;
 
     public SplitChromeApplication() {
         this(SplitCompatUtils.getIdentifierName(
@@ -32,21 +37,58 @@ public class SplitChromeApplication extends SplitCompatApplication {
     }
 
     @Override
-    protected void attachBaseContext(Context context) {
-        if (isBrowserProcess()) {
-            context = SplitCompatUtils.createChromeContext(context);
-            setImpl((Impl) SplitCompatUtils.newInstance(context, mChromeApplicationClassName));
-        } else {
-            setImpl(createNonBrowserApplication());
+    public void onCreate() {
+        if (mSplitPreloader != null) {
+            mSplitPreloader.wait(CHROME_SPLIT_NAME);
         }
+        super.onCreate();
+    }
+
+    @Override
+    protected void attachBaseContext(Context context) {
         super.attachBaseContext(context);
         if (isBrowserProcess()) {
+            setImplSupplier(() -> {
+                Context chromeContext = SplitCompatUtils.createChromeContext(this);
+                return (Impl) SplitCompatUtils.newInstance(
+                        chromeContext, mChromeApplicationClassName);
+            });
             applyActivityClassLoaderWorkaround();
+        } else {
+            setImplSupplier(() -> createNonBrowserApplication());
         }
     }
 
-    protected MainDexApplicationImpl createNonBrowserApplication() {
-        return new MainDexApplicationImpl();
+    @Override
+    public Context createContextForSplit(String name) throws PackageManager.NameNotFoundException {
+        if (mSplitPreloader != null) {
+            // Wait for any splits that are preloading so we don't have a race to update the
+            // class loader cache (b/172602571).
+            mSplitPreloader.wait(name);
+        }
+        return super.createContextForSplit(name);
+    }
+
+    @Override
+    protected void performBrowserProcessPreloading(Context context) {
+        // The chrome split has a large amount of code, which can slow down startup. Loading
+        // this in the background allows us to do this in parallel with startup tasks which do
+        // not depend on code in the chrome split.
+        mSplitPreloader = new SplitPreloader(context);
+        mSplitPreloader.preload(CHROME_SPLIT_NAME, (chromeContext) -> {
+            // When installed, the vr module is always loaded on startup, so preload here.
+            mSplitPreloader.preload("vr", null);
+            // If the chrome module is not enabled, chromeContext will have the same ClassLoader as
+            // the base context, so no need to replace the ClassLoaders here.
+            if (!getClassLoader().equals(chromeContext.getClassLoader())) {
+                replaceClassLoader(this, chromeContext.getClassLoader());
+                JNIUtils.setClassLoader(chromeContext.getClassLoader());
+            }
+        });
+    }
+
+    protected Impl createNonBrowserApplication() {
+        return new Impl();
     }
 
     /**
@@ -75,21 +117,24 @@ public class SplitChromeApplication extends SplitCompatApplication {
                             return;
                         }
 
-                        Context baseContext = activity.getBaseContext();
-                        while (baseContext instanceof ContextWrapper) {
-                            baseContext = ((ContextWrapper) baseContext).getBaseContext();
-                        }
-
-                        try {
-                            // baseContext should now be an instance of ContextImpl.
-                            Field classLoaderField =
-                                    baseContext.getClass().getDeclaredField("mClassLoader");
-                            classLoaderField.setAccessible(true);
-                            classLoaderField.set(baseContext, activity.getClass().getClassLoader());
-                        } catch (ReflectiveOperationException e) {
-                            throw new RuntimeException("Error fixing Activity ClassLoader.", e);
-                        }
+                        replaceClassLoader(
+                                activity.getBaseContext(), activity.getClass().getClassLoader());
                     }
                 });
+    }
+
+    private static void replaceClassLoader(Context baseContext, ClassLoader classLoader) {
+        while (baseContext instanceof ContextWrapper) {
+            baseContext = ((ContextWrapper) baseContext).getBaseContext();
+        }
+
+        try {
+            // baseContext should now be an instance of ContextImpl.
+            Field classLoaderField = baseContext.getClass().getDeclaredField("mClassLoader");
+            classLoaderField.setAccessible(true);
+            classLoaderField.set(baseContext, classLoader);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Error setting ClassLoader.", e);
+        }
     }
 }

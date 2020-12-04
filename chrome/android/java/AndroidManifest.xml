@@ -886,15 +886,6 @@ by a child template that "extends" this file.
                     android:readPermission="android.permission.GLOBAL_SEARCH" />
         </provider>
 
-        <!-- Provider for FileProvider. -->
-        <provider android:name="org.chromium.chrome.browser.util.ChromeFileProvider"
-            android:authorities="{{ manifest_package }}.FileProvider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
-
         <provider android:name="org.chromium.chrome.browser.download.DownloadFileProvider"
             android:authorities="{{ manifest_package }}.DownloadFileProvider"
             android:exported="false"
@@ -1260,6 +1251,18 @@ by a child template that "extends" this file.
           android:name=
           "com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
           android:value="org.chromium.components.media_router.caf.CastOptionsProvider"/>
+
+      <!-- Provider for FileProvider. This is declared in the base module and
+           has the initOrder attribute to ensure it is loaded first and gives
+           the chrome split preloader more time to work. -->
+      <provider android:name="org.chromium.chrome.browser.util.ChromeFileProvider"
+          android:authorities="{{ manifest_package }}.FileProvider"
+          android:exported="false"
+          android:initOrder="10000"
+          android:grantUriPermissions="true">
+          <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
+              android:resource="@xml/file_paths" />
+      </provider>
 
       {% block base_application_definitions %}
       {% endblock %}
