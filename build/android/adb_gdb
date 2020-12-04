@@ -821,7 +821,7 @@ if [ "$PULL_LIBS" -a -z "$NO_PULL_LIBS" ]; then
   # Remove the fingerprint file in case pulling one of the libs fails.
   rm -f "$PULL_LIBS_DIR/build.fingerprint"
   SYSTEM_LIBS=$(echo "$MAPPINGS" | \
-      awk '$6 ~ /\/system\/.*\.so$/ { print $6; }' | sort -u)
+      awk '$6 ~ /\/(system|apex|vendor)\/.*\.so$/ { print $6; }' | sort -u)
   for SYSLIB in /system/bin/linker$SUFFIX_64_BIT $SYSTEM_LIBS; do
     echo "Pulling from device: $SYSLIB"
     DST_FILE=$PULL_LIBS_DIR$SYSLIB
