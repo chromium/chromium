@@ -30,9 +30,7 @@ PrerenderProcessor::~PrerenderProcessor() {
 // no-state-prefetch implementation. See PrerenderContents::StartPrerendering()
 // for example.
 void PrerenderProcessor::Start(
-    blink::mojom::PrerenderAttributesPtr attributes,
-    mojo::PendingRemote<blink::mojom::PrerenderProcessorClient>
-        pending_remote) {
+    blink::mojom::PrerenderAttributesPtr attributes) {
   // Start() must be called only one time.
   if (state_ != State::kInitial) {
     mojo::ReportBadMessage("PP_START_TWICE");

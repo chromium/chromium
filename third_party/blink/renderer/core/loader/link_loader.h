@@ -34,7 +34,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/link_load_parameters.h"
-#include "third_party/blink/renderer/core/loader/private/prerender_client.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 
@@ -48,17 +47,10 @@ class ResourceClient;
 
 // The LinkLoader can load link rel types icon, dns-prefetch, prefetch, and
 // prerender.
-class CORE_EXPORT LinkLoader final : public SingleModuleClient,
-                                     public PrerenderClient {
+class CORE_EXPORT LinkLoader final : public SingleModuleClient {
  public:
   LinkLoader(LinkLoaderClient*, scoped_refptr<base::SingleThreadTaskRunner>);
   ~LinkLoader() override;
-
-  // from PrerenderClient
-  void DidStartPrerender() override;
-  void DidStopPrerender() override;
-  void DidSendLoadForPrerender() override;
-  void DidSendDOMContentLoadedForPrerender() override;
 
   void Abort();
   bool LoadLink(const LinkLoadParameters&, Document&);

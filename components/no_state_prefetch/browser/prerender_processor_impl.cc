@@ -44,8 +44,7 @@ void PrerenderProcessorImpl::Create(
 }
 
 void PrerenderProcessorImpl::Start(
-    blink::mojom::PrerenderAttributesPtr attributes,
-    mojo::PendingRemote<blink::mojom::PrerenderProcessorClient> client) {
+    blink::mojom::PrerenderAttributesPtr attributes) {
   if (!initiator_origin_.opaque() &&
       !content::ChildProcessSecurityPolicy::GetInstance()
            ->CanAccessDataForOrigin(render_process_id_,
@@ -73,7 +72,7 @@ void PrerenderProcessorImpl::Start(
   prerender_id_ = link_manager->OnStartPrerender(
       render_process_id_,
       render_frame_host->GetRenderViewHost()->GetRoutingID(),
-      std::move(attributes), initiator_origin_, std::move(client));
+      std::move(attributes), initiator_origin_);
 }
 
 void PrerenderProcessorImpl::Cancel() {

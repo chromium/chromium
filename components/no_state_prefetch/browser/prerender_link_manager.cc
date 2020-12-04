@@ -53,8 +53,6 @@ PrerenderLinkManager::LinkPrerender::LinkPrerender(
     int launcher_render_view_id,
     blink::mojom::PrerenderAttributesPtr attributes,
     const url::Origin& initiator_origin,
-    mojo::PendingRemote<blink::mojom::PrerenderProcessorClient>
-        processor_client,
     base::TimeTicks creation_time,
     PrerenderContents* deferred_launcher)
     : launcher_render_process_id(launcher_render_process_id),
@@ -64,7 +62,6 @@ PrerenderLinkManager::LinkPrerender::LinkPrerender(
       referrer(content::Referrer(*attributes->referrer)),
       initiator_origin(initiator_origin),
       size(attributes->view_size),
-      remote_processor_client(std::move(processor_client)),
       creation_time(creation_time),
       deferred_launcher(deferred_launcher),
       has_been_abandoned(false),
@@ -93,9 +90,7 @@ base::Optional<int> PrerenderLinkManager::OnStartPrerender(
     int launcher_render_process_id,
     int launcher_render_view_id,
     blink::mojom::PrerenderAttributesPtr attributes,
-    const url::Origin& initiator_origin,
-    mojo::PendingRemote<blink::mojom::PrerenderProcessorClient>
-        processor_client) {
+    const url::Origin& initiator_origin) {
 // TODO(crbug.com/722453): Use a dedicated build flag for GuestView.
 #if !defined(OS_ANDROID) && !defined(OS_IOS) && !defined(OS_FUCHSIA)
   content::RenderViewHost* rvh = content::RenderViewHost::FromID(
@@ -122,8 +117,8 @@ base::Optional<int> PrerenderLinkManager::OnStartPrerender(
 
   auto prerender = std::make_unique<LinkPrerender>(
       launcher_render_process_id, launcher_render_view_id,
-      std::move(attributes), initiator_origin, std::move(processor_client),
-      manager_->GetCurrentTimeTicks(), prerender_contents);
+      std::move(attributes), initiator_origin, manager_->GetCurrentTimeTicks(),
+      prerender_contents);
 
   // Stash pointer used only for comparison later.
   const LinkPrerender* prerender_ptr = prerender.get();
@@ -283,11 +278,9 @@ void PrerenderLinkManager::StartPrerenders() {
       pending_prerender->handle = std::move(handle);
       ++total_started_prerender_count;
       pending_prerender->handle->SetObserver(this);
-      OnPrerenderStart(pending_prerender->handle.get());
       running_launcher_and_render_view_routes.insert(
           launcher_and_render_view_route);
     } else {
-      pending_prerender->remote_processor_client->OnPrerenderStop();
       prerenders_.erase(it);
     }
   }
@@ -344,41 +337,10 @@ void PrerenderLinkManager::Shutdown() {
   has_shutdown_ = true;
 }
 
-// In practice, this is always called from
-// PrerenderLinkManager::OnStartPrerender().
-void PrerenderLinkManager::OnPrerenderStart(PrerenderHandle* prerender_handle) {
-  LinkPrerender* prerender = FindByPrerenderHandle(prerender_handle);
-  if (!prerender)
-    return;
-
-  prerender->remote_processor_client->OnPrerenderStart();
-}
-
-void PrerenderLinkManager::OnPrerenderStopLoading(
-    PrerenderHandle* prerender_handle) {
-  LinkPrerender* prerender = FindByPrerenderHandle(prerender_handle);
-  if (!prerender)
-    return;
-
-  prerender->remote_processor_client->OnPrerenderStopLoading();
-}
-
-void PrerenderLinkManager::OnPrerenderDomContentLoaded(
-    PrerenderHandle* prerender_handle) {
-  LinkPrerender* prerender = FindByPrerenderHandle(prerender_handle);
-  if (!prerender)
-    return;
-
-  prerender->remote_processor_client->OnPrerenderDomContentLoaded();
-}
-
 void PrerenderLinkManager::OnPrerenderStop(PrerenderHandle* prerender_handle) {
   LinkPrerender* prerender = FindByPrerenderHandle(prerender_handle);
   if (!prerender)
     return;
-
-  prerender->remote_processor_client->OnPrerenderStop();
-
   RemovePrerender(prerender);
   StartPrerenders();
 }

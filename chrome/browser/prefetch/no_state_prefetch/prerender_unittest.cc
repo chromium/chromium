@@ -69,19 +69,6 @@ class UnitTestPrerenderManager;
 
 namespace {
 
-class DummyPrerenderProcessorClient
-    : public blink::mojom::PrerenderProcessorClient {
- public:
-  DummyPrerenderProcessorClient() = default;
-  ~DummyPrerenderProcessorClient() override = default;
-
-  // blink::mojom::PrerenderProcessorClient implementation
-  void OnPrerenderStart() override {}
-  void OnPrerenderStopLoading() override {}
-  void OnPrerenderDomContentLoaded() override {}
-  void OnPrerenderStop() override {}
-};
-
 class DummyPrerenderContents : public PrerenderContents {
  public:
   DummyPrerenderContents(UnitTestPrerenderManager* test_prerender_manager,
@@ -116,10 +103,6 @@ class TestNetworkBytesChangedObserver
   TestNetworkBytesChangedObserver() : network_bytes_changed_(false) {}
 
   // prerender::PrerenderHandle::Observer
-  void OnPrerenderStart(PrerenderHandle* prerender_handle) override {}
-  void OnPrerenderStopLoading(PrerenderHandle* prerender_handle) override {}
-  void OnPrerenderDomContentLoaded(PrerenderHandle* prerender_handle) override {
-  }
   void OnPrerenderStop(PrerenderHandle* prerender_handle) override {}
   void OnPrerenderNetworkBytesChanged(
       PrerenderHandle* prerender_handle) override {
@@ -393,16 +376,11 @@ class PrerenderTest : public testing::Test {
         initiator_url, network::mojom::ReferrerPolicy::kDefault);
     attributes->view_size = kDefaultViewSize;
 
-    mojo::PendingRemote<blink::mojom::PrerenderProcessorClient>
-        processor_client;
-    clients_.Add(std::make_unique<DummyPrerenderProcessorClient>(),
-                 processor_client.InitWithNewPipeAndPassReceiver());
-
     // This could delete an existing prerender as a side-effect.
     base::Optional<int> prerender_id =
         prerender_link_manager()->OnStartPrerender(
             render_process_id, render_view_id, std::move(attributes),
-            url::Origin::Create(initiator_url), std::move(processor_client));
+            url::Origin::Create(initiator_url));
 
     // Check if the new prerender request was added and running.
     return prerender_id && LastPrerenderIsRunning();
@@ -461,8 +439,6 @@ class PrerenderTest : public testing::Test {
         chrome_browser_net::NETWORK_PREDICTION_ALWAYS);
   }
 
-  void DisconnectAllPrerenderProcessorClients() { clients_.Clear(); }
-
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
@@ -474,7 +450,6 @@ class PrerenderTest : public testing::Test {
   std::unique_ptr<UnitTestPrerenderManager> prerender_manager_;
   std::unique_ptr<PrerenderLinkManager> prerender_link_manager_;
   base::HistogramTester histogram_tester_;
-  mojo::UniqueReceiverSet<blink::mojom::PrerenderProcessorClient> clients_;
 };
 
 TEST_F(PrerenderTest, RespectsThirdPartyCookiesPref) {

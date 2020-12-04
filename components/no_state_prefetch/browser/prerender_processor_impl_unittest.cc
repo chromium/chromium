@@ -23,9 +23,7 @@ class MockPrerenderLinkManager final : public PrerenderLinkManager {
       int launcher_render_process_id,
       int launcher_render_view_id,
       blink::mojom::PrerenderAttributesPtr attributes,
-      const url::Origin& initiator_origin,
-      mojo::PendingRemote<blink::mojom::PrerenderProcessorClient>
-          processor_client) override {
+      const url::Origin& initiator_origin) override {
     DCHECK(!is_start_called_);
     is_start_called_ = true;
     return prerender_id_;
@@ -70,24 +68,6 @@ class MockPrerenderProcessorImplDelegate final
   MockPrerenderLinkManager* link_manager_;
 };
 
-class PrerenderProcessorClientImpl final
-    : public blink::mojom::PrerenderProcessorClient {
- public:
-  // blink::mojom::PrerenderProcessorClient:
-  void OnPrerenderStart() override {}
-  void OnPrerenderStopLoading() override {}
-  void OnPrerenderDomContentLoaded() override {}
-  void OnPrerenderStop() override {}
-
-  mojo::PendingRemote<blink::mojom::PrerenderProcessorClient>
-  BindNewPipeAndPassRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
- private:
-  mojo::Receiver<blink::mojom::PrerenderProcessorClient> receiver_{this};
-};
-
 class PrerenderProcessorImplTest : public content::RenderViewHostTestHarness {};
 
 TEST_F(PrerenderProcessorImplTest, StartCancelAbandon) {
@@ -101,11 +81,10 @@ TEST_F(PrerenderProcessorImplTest, StartCancelAbandon) {
   auto attributes = blink::mojom::PrerenderAttributes::New();
   attributes->url = GURL("https://example.com/prefetch");
   attributes->referrer = blink::mojom::Referrer::New();
-  PrerenderProcessorClientImpl client;
 
   // Start() call should be propagated to the link manager.
   EXPECT_FALSE(link_manager->is_start_called());
-  remote->Start(std::move(attributes), client.BindNewPipeAndPassRemote());
+  remote->Start(std::move(attributes));
   remote.FlushForTesting();
   EXPECT_TRUE(link_manager->is_start_called());
 
@@ -134,11 +113,10 @@ TEST_F(PrerenderProcessorImplTest, StartAbandon) {
   auto attributes = blink::mojom::PrerenderAttributes::New();
   attributes->url = GURL("https://example.com/prefetch");
   attributes->referrer = blink::mojom::Referrer::New();
-  PrerenderProcessorClientImpl client;
 
   // Start() call should be propagated to the link manager.
   EXPECT_FALSE(link_manager->is_start_called());
-  remote->Start(std::move(attributes), client.BindNewPipeAndPassRemote());
+  remote->Start(std::move(attributes));
   remote.FlushForTesting();
   EXPECT_TRUE(link_manager->is_start_called());
 
@@ -169,22 +147,20 @@ TEST_F(PrerenderProcessorImplTest, StartTwice) {
   auto attributes1 = blink::mojom::PrerenderAttributes::New();
   attributes1->url = GURL("https://example.com/prefetch");
   attributes1->referrer = blink::mojom::Referrer::New();
-  PrerenderProcessorClientImpl client1;
 
   // Start() call should be propagated to the link manager.
   EXPECT_FALSE(link_manager->is_start_called());
-  remote->Start(std::move(attributes1), client1.BindNewPipeAndPassRemote());
+  remote->Start(std::move(attributes1));
   remote.FlushForTesting();
   EXPECT_TRUE(link_manager->is_start_called());
 
   auto attributes2 = blink::mojom::PrerenderAttributes::New();
   attributes2->url = GURL("https://example.com/prefetch");
   attributes2->referrer = blink::mojom::Referrer::New();
-  PrerenderProcessorClientImpl client2;
 
   // Call Start() again. This should be reported as a bad mojo message.
   ASSERT_TRUE(bad_message_error.empty());
-  remote->Start(std::move(attributes2), client2.BindNewPipeAndPassRemote());
+  remote->Start(std::move(attributes2));
   remote.FlushForTesting();
   EXPECT_EQ(bad_message_error, "PPI_START_TWICE");
 }

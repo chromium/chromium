@@ -38,9 +38,7 @@ class CONTENT_EXPORT PrerenderProcessor final
   PrerenderProcessor& operator=(PrerenderProcessor&&) = delete;
 
   // blink::mojom::PrerenderProcessor implementation:
-  void Start(blink::mojom::PrerenderAttributesPtr attributes,
-             mojo::PendingRemote<blink::mojom::PrerenderProcessorClient>
-                 pending_remote) override;
+  void Start(blink::mojom::PrerenderAttributesPtr attributes) override;
   void Cancel() override;
 
  private:

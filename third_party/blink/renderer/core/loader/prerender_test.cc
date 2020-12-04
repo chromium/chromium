@@ -76,11 +76,8 @@ class MockPrerenderProcessor : public mojom::blink::PrerenderProcessor {
   ~MockPrerenderProcessor() override = default;
 
   // mojom::blink::PrerenderProcessor implementation
-  void Start(mojom::blink::PrerenderAttributesPtr attributes,
-             mojo::PendingRemote<mojom::blink::PrerenderProcessorClient> client)
-      override {
+  void Start(mojom::blink::PrerenderAttributesPtr attributes) override {
     attributes_ = std::move(attributes);
-    client_.Bind(std::move(client));
   }
   void Cancel() override { cancel_count_++; }
 
@@ -92,29 +89,8 @@ class MockPrerenderProcessor : public mojom::blink::PrerenderProcessor {
     return attributes_->rel_type;
   }
 
-  // Used to simulate state changes of the mock prerendered web page. These
-  // calls spin the message loop so that the client's receiver side gets a
-  // chance to run.
-  void NotifyDidStartPrerender() {
-    client_->OnPrerenderStart();
-    test::RunPendingTasks();
-  }
-  void NotifyDidSendDOMContentLoadedForPrerender() {
-    client_->OnPrerenderDomContentLoaded();
-    test::RunPendingTasks();
-  }
-  void NotifyDidSendLoadForPrerender() {
-    client_->OnPrerenderStopLoading();
-    test::RunPendingTasks();
-  }
-  void NotifyDidStopPrerender() {
-    client_->OnPrerenderStop();
-    test::RunPendingTasks();
-  }
-
  private:
   mojom::blink::PrerenderAttributesPtr attributes_;
-  mojo::Remote<mojom::blink::PrerenderProcessorClient> client_;
   mojo::Receiver<mojom::blink::PrerenderProcessor> receiver_{this};
 
   size_t cancel_count_ = 0;
@@ -172,34 +148,6 @@ class PrerenderTest : public testing::Test {
     test::RunPendingTasks();
   }
 
-  Element& Console() {
-    Document* document =
-        web_view_helper_.LocalMainFrame()->GetFrame()->GetDocument();
-    Element* console = document->getElementById("console");
-    DCHECK(IsA<HTMLUListElement>(console));
-    return *console;
-  }
-
-  unsigned ConsoleLength() { return Console().CountChildren() - 1; }
-
-  WebString ConsoleAt(unsigned i) {
-    DCHECK_GT(ConsoleLength(), i);
-
-    Node* item = NodeTraversal::ChildAt(Console(), 1 + i);
-
-    DCHECK(item);
-    DCHECK(IsA<HTMLLIElement>(item));
-    DCHECK(item->hasChildren());
-
-    return item->textContent();
-  }
-
-  bool IsUseCounted(mojom::WebFeature web_feature) {
-    Document* document =
-        web_view_helper_.LocalMainFrame()->GetFrame()->GetDocument();
-    return document->IsUseCounted(web_feature);
-  }
-
   void ExecuteScript(const char* code) {
     web_view_helper_.LocalMainFrame()->ExecuteScript(
         WebScriptSource(WebString::FromUTF8(code)));
@@ -237,32 +185,6 @@ TEST_F(PrerenderTest, SinglePrerender) {
   EXPECT_EQ(mojom::blink::PrerenderRelType::kPrerender, processor.RelType());
 
   EXPECT_EQ(0u, processor.CancelCount());
-
-  EXPECT_FALSE(IsUseCounted(WebFeature::kWebkitPrerenderStartEventFired));
-  processor.NotifyDidStartPrerender();
-  EXPECT_EQ(1u, ConsoleLength());
-  EXPECT_EQ("webkitprerenderstart", ConsoleAt(0));
-  EXPECT_TRUE(IsUseCounted(WebFeature::kWebkitPrerenderStartEventFired));
-
-  EXPECT_FALSE(
-      IsUseCounted(WebFeature::kWebkitPrerenderDOMContentLoadedEventFired));
-  processor.NotifyDidSendDOMContentLoadedForPrerender();
-  EXPECT_EQ(2u, ConsoleLength());
-  EXPECT_EQ("webkitprerenderdomcontentloaded", ConsoleAt(1));
-  EXPECT_TRUE(
-      IsUseCounted(WebFeature::kWebkitPrerenderDOMContentLoadedEventFired));
-
-  EXPECT_FALSE(IsUseCounted(WebFeature::kWebkitPrerenderLoadEventFired));
-  processor.NotifyDidSendLoadForPrerender();
-  EXPECT_EQ(3u, ConsoleLength());
-  EXPECT_EQ("webkitprerenderload", ConsoleAt(2));
-  EXPECT_TRUE(IsUseCounted(WebFeature::kWebkitPrerenderLoadEventFired));
-
-  EXPECT_FALSE(IsUseCounted(WebFeature::kWebkitPrerenderStopEventFired));
-  processor.NotifyDidStopPrerender();
-  EXPECT_EQ(4u, ConsoleLength());
-  EXPECT_EQ("webkitprerenderstop", ConsoleAt(3));
-  EXPECT_TRUE(IsUseCounted(WebFeature::kWebkitPrerenderStopEventFired));
 }
 
 TEST_F(PrerenderTest, CancelPrerender) {
@@ -271,9 +193,7 @@ TEST_F(PrerenderTest, CancelPrerender) {
   MockPrerenderProcessor& processor = *processors()[0];
 
   EXPECT_EQ(0u, processor.CancelCount());
-
   ExecuteScript("removePrerender()");
-
   EXPECT_EQ(1u, processor.CancelCount());
 }
 
@@ -288,14 +208,6 @@ TEST_F(PrerenderTest, TwoPrerenders) {
 
   EXPECT_EQ(0u, first_processor.CancelCount());
   EXPECT_EQ(0u, second_processor.CancelCount());
-
-  first_processor.NotifyDidStartPrerender();
-  EXPECT_EQ(1u, ConsoleLength());
-  EXPECT_EQ("first_webkitprerenderstart", ConsoleAt(0));
-
-  second_processor.NotifyDidStartPrerender();
-  EXPECT_EQ(2u, ConsoleLength());
-  EXPECT_EQ("second_webkitprerenderstart", ConsoleAt(1));
 }
 
 TEST_F(PrerenderTest, TwoPrerendersRemovingFirstThenNavigating) {
@@ -337,40 +249,6 @@ TEST_F(PrerenderTest, TwoPrerendersAddingThird) {
   EXPECT_EQ(0u, first_processor.CancelCount());
   EXPECT_EQ(0u, second_processor.CancelCount());
   EXPECT_EQ(0u, third_processor.CancelCount());
-}
-
-TEST_F(PrerenderTest, ShortLivedClient) {
-  Initialize("http://www.foo.com/", "prerender/single_prerender.html");
-  ASSERT_EQ(processors().size(), 1u);
-  MockPrerenderProcessor& processor = *processors()[0];
-
-  EXPECT_EQ(0u, processor.CancelCount());
-
-  NavigateAway();
-  Close();
-
-  // This test passes if this next line doesn't crash.
-  processor.NotifyDidStartPrerender();
-}
-
-TEST_F(PrerenderTest, FastRemoveElement) {
-  Initialize("http://www.foo.com/", "prerender/single_prerender.html");
-  ASSERT_EQ(processors().size(), 1u);
-  MockPrerenderProcessor& processor = *processors()[0];
-
-  EXPECT_EQ(0u, processor.CancelCount());
-
-  // Race removing & starting the prerender against each other, as if the
-  // element was removed very quickly.
-  ExecuteScript("removePrerender()");
-  processor.NotifyDidStartPrerender();
-
-  // Removing the element should cancel prerendering.
-  EXPECT_EQ(1u, processor.CancelCount());
-
-  // The page should be totally disconnected from the Prerender at this point,
-  // so the console should not have updated.
-  EXPECT_EQ(0u, ConsoleLength());
 }
 
 TEST_F(PrerenderTest, MutateTarget) {

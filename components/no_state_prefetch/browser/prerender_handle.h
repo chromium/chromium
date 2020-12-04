@@ -26,15 +26,6 @@ class PrerenderHandle : public PrerenderContents::Observer {
  public:
   class Observer {
    public:
-    // Signals that the prerender has started running.
-    virtual void OnPrerenderStart(PrerenderHandle* handle) = 0;
-
-    // Signals that the prerender has had its load event.
-    virtual void OnPrerenderStopLoading(PrerenderHandle* handle) = 0;
-
-    // Signals that the prerender has had its 'DOMContentLoaded' event.
-    virtual void OnPrerenderDomContentLoaded(PrerenderHandle* handle) = 0;
-
     // Signals that the prerender has stopped running.
     virtual void OnPrerenderStop(PrerenderHandle* handle) = 0;
 
@@ -85,10 +76,6 @@ class PrerenderHandle : public PrerenderContents::Observer {
   explicit PrerenderHandle(PrerenderManager::PrerenderData* prerender_data);
 
   // From PrerenderContents::Observer:
-  void OnPrerenderStart(PrerenderContents* prerender_contents) override;
-  void OnPrerenderStopLoading(PrerenderContents* prerender_contents) override;
-  void OnPrerenderDomContentLoaded(
-      PrerenderContents* prerender_contents) override;
   void OnPrerenderStop(PrerenderContents* prerender_contents) override;
   void OnPrerenderNetworkBytesChanged(
       PrerenderContents* prerender_contents) override;

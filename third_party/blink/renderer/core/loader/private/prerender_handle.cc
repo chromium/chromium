@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
-#include "third_party/blink/renderer/core/loader/private/prerender_client.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
@@ -44,7 +43,6 @@ namespace blink {
 // static
 PrerenderHandle* PrerenderHandle::Create(
     Document& document,
-    PrerenderClient* client,
     const KURL& url,
     mojom::blink::PrerenderRelType prerender_rel_type) {
   // Prerenders are unlike requests in most ways (for instance, they pass down
@@ -70,32 +68,18 @@ PrerenderHandle* PrerenderHandle::Create(
       prerender_processor.BindNewPipeAndPassReceiver(
           context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
 
-  mojo::PendingRemote<mojom::blink::PrerenderProcessorClient>
-      prerender_processor_client;
-  auto receiver = prerender_processor_client.InitWithNewPipeAndPassReceiver();
+  prerender_processor->Start(std::move(attributes));
 
-  prerender_processor->Start(std::move(attributes),
-                             std::move(prerender_processor_client));
-
-  return MakeGarbageCollected<PrerenderHandle>(PassKey(), context, client, url,
-                                               std::move(prerender_processor),
-                                               std::move(receiver));
+  return MakeGarbageCollected<PrerenderHandle>(PassKey(), context, url,
+                                               std::move(prerender_processor));
 }
 
 PrerenderHandle::PrerenderHandle(
     PassKey pass_key,
     ExecutionContext* context,
-    PrerenderClient* client,
     const KURL& url,
-    HeapMojoRemote<mojom::blink::PrerenderProcessor> remote_processor,
-    mojo::PendingReceiver<mojom::blink::PrerenderProcessorClient> receiver)
-    : url_(url),
-      client_(client),
-      remote_processor_(std::move(remote_processor)),
-      receiver_(this, context) {
-  receiver_.Bind(std::move(receiver),
-                 context->GetTaskRunner(TaskType::kMiscPlatformAPI));
-}
+    HeapMojoRemote<mojom::blink::PrerenderProcessor> remote_processor)
+    : url_(url), remote_processor_(std::move(remote_processor)) {}
 
 PrerenderHandle::~PrerenderHandle() = default;
 
@@ -103,37 +87,14 @@ void PrerenderHandle::Cancel() {
   if (remote_processor_.is_bound())
     remote_processor_->Cancel();
   remote_processor_.reset();
-  receiver_.reset();
 }
 
 const KURL& PrerenderHandle::Url() const {
   return url_;
 }
 
-void PrerenderHandle::OnPrerenderStart() {
-  if (client_)
-    client_->DidStartPrerender();
-}
-
-void PrerenderHandle::OnPrerenderStopLoading() {
-  if (client_)
-    client_->DidSendLoadForPrerender();
-}
-
-void PrerenderHandle::OnPrerenderDomContentLoaded() {
-  if (client_)
-    client_->DidSendDOMContentLoadedForPrerender();
-}
-
-void PrerenderHandle::OnPrerenderStop() {
-  if (client_)
-    client_->DidStopPrerender();
-}
-
 void PrerenderHandle::Trace(Visitor* visitor) const {
-  visitor->Trace(client_);
   visitor->Trace(remote_processor_);
-  visitor->Trace(receiver_);
 }
 
 }  // namespace blink

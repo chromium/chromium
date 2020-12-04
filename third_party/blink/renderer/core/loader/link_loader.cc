@@ -149,22 +149,6 @@ void LinkLoader::NotifyModuleLoadFinished(ModuleScript* module) {
     client_->LinkLoaded();
 }
 
-void LinkLoader::DidStartPrerender() {
-  client_->DidStartLinkPrerender();
-}
-
-void LinkLoader::DidStopPrerender() {
-  client_->DidStopLinkPrerender();
-}
-
-void LinkLoader::DidSendLoadForPrerender() {
-  client_->DidSendLoadForLinkPrerender();
-}
-
-void LinkLoader::DidSendDOMContentLoadedForPrerender() {
-  client_->DidSendDOMContentLoadedForLinkPrerender();
-}
-
 Resource* LinkLoader::GetResourceForTesting() {
   return finish_observer_ ? finish_observer_->GetResource() : nullptr;
 }
@@ -201,8 +185,8 @@ bool LinkLoader::LoadLink(const LinkLoadParameters& params,
   if (prerender_rel_type) {
     // The previous prerender should already be aborted by Abort().
     DCHECK(!prerender_);
-    prerender_ = PrerenderHandle::Create(document, this, params.href,
-                                         *prerender_rel_type);
+    prerender_ =
+        PrerenderHandle::Create(document, params.href, *prerender_rel_type);
   }
   return true;
 }
@@ -269,7 +253,6 @@ void LinkLoader::Trace(Visitor* visitor) const {
   visitor->Trace(client_);
   visitor->Trace(prerender_);
   SingleModuleClient::Trace(visitor);
-  PrerenderClient::Trace(visitor);
 }
 
 }  // namespace blink

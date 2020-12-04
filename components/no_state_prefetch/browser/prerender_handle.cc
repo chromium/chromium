@@ -73,32 +73,6 @@ PrerenderHandle::PrerenderHandle(
   }
 }
 
-void PrerenderHandle::OnPrerenderStart(PrerenderContents* prerender_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(prerender_data_);
-  DCHECK_EQ(prerender_data_->contents(), prerender_contents);
-  if (observer_)
-    observer_->OnPrerenderStart(this);
-}
-
-void PrerenderHandle::OnPrerenderStopLoading(
-    PrerenderContents* prerender_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(prerender_data_);
-  DCHECK_EQ(prerender_data_->contents(), prerender_contents);
-  if (observer_)
-    observer_->OnPrerenderStopLoading(this);
-}
-
-void PrerenderHandle::OnPrerenderDomContentLoaded(
-    PrerenderContents* prerender_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(prerender_data_);
-  DCHECK_EQ(prerender_data_->contents(), prerender_contents);
-  if (observer_)
-    observer_->OnPrerenderDomContentLoaded(this);
-}
-
 void PrerenderHandle::OnPrerenderStop(PrerenderContents* prerender_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (observer_)

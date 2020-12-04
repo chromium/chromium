@@ -162,10 +162,6 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   // From LinkLoaderClient
   void LinkLoaded() override;
   void LinkLoadingErrored() override;
-  void DidStartLinkPrerender() override;
-  void DidStopLinkPrerender() override;
-  void DidSendLoadForLinkPrerender() override;
-  void DidSendDOMContentLoadedForLinkPrerender() override;
   scoped_refptr<base::SingleThreadTaskRunner> GetLoadingTaskRunner() override;
 
   Member<LinkResource> link_;

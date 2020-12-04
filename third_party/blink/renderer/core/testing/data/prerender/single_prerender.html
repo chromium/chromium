@@ -1,18 +1,6 @@
 <html>
-  <head>
-    <script>
-      function log(message)
-      {
-          var item = document.createElement("li");
-          item.appendChild(document.createTextNode(message));
-          document.getElementById("console").appendChild(item);
-      }
-    </script>
-  </head>
+  <head></head>
   <body>
-    <ul id=console>
-    </ul>
-
     <link id="theprerender" rel=prerender href="http://prerender.com/"/>
 
     <script>
@@ -35,11 +23,6 @@
           var link = document.getElementById('theprerender');
           link.rel = "something-else";
       }
-
-      prerender.addEventListener('webkitprerenderstart', function() { log("webkitprerenderstart"); }, false);
-      prerender.addEventListener('webkitprerenderstop', function() { log("webkitprerenderstop"); }, false);
-      prerender.addEventListener('webkitprerenderload', function() { log("webkitprerenderload"); }, false);
-      prerender.addEventListener('webkitprerenderdomcontentloaded', function() { log("webkitprerenderdomcontentloaded"); }, false);
     </script>
   </body>
 </html>

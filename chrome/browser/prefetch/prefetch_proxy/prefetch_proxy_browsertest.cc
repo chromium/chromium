@@ -873,10 +873,6 @@ class PrefetchProxyBrowserTest
   }
 
   // prerender::PrerenderHandle::Observer:
-  void OnPrerenderStart(prerender::PrerenderHandle* handle) override {}
-  void OnPrerenderStopLoading(prerender::PrerenderHandle* handle) override {}
-  void OnPrerenderDomContentLoaded(
-      prerender::PrerenderHandle* handle) override {}
   void OnPrerenderNetworkBytesChanged(
       prerender::PrerenderHandle* handle) override {}
   void OnPrerenderStop(prerender::PrerenderHandle* handle) override {}

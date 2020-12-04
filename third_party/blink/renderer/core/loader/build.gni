@@ -104,7 +104,6 @@ blink_core_sources_loader = [
   "previews_resource_loading_hints.h",
   "private/frame_client_hints_preferences_context.cc",
   "private/frame_client_hints_preferences_context.h",
-  "private/prerender_client.h",
   "private/prerender_handle.cc",
   "private/prerender_handle.h",
   "progress_tracker.cc",

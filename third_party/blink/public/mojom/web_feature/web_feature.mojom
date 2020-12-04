@@ -2798,10 +2798,6 @@ enum WebFeature {
   // The above items are available in M86 branch.
 
   kWebTransport = 3472,
-  kWebkitPrerenderStartEventFired = 3473,
-  kWebkitPrerenderStopEventFired = 3474,
-  kWebkitPrerenderLoadEventFired = 3475,
-  kWebkitPrerenderDOMContentLoadedEventFired = 3476,
   kIdleDetectionPermissionRequested = 3477,
   kIdentifiabilityStudyReserved3478 = 3478,
   kSpeechSynthesis_GetVoices_Method = 3479,

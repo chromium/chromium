@@ -36,9 +36,7 @@ class PrerenderProcessorImpl : public blink::mojom::PrerenderProcessor {
       std::unique_ptr<PrerenderProcessorImplDelegate> delegate);
 
   // blink::mojom::PrerenderProcessor implementation
-  void Start(blink::mojom::PrerenderAttributesPtr attributes,
-             mojo::PendingRemote<blink::mojom::PrerenderProcessorClient> client)
-      override;
+  void Start(blink::mojom::PrerenderAttributesPtr attributes) override;
   void Cancel() override;
 
  private:

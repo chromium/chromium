@@ -19,26 +19,6 @@
 namespace content {
 namespace {
 
-// TODO(https://crbug.com/839030): Remove this implementation along with
-// deprecating the prefixed prerender events.
-class PrerenderProcessorClient final
-    : public blink::mojom::PrerenderProcessorClient {
- public:
-  // blink::mojom::PrerenderProcessorClient:
-  void OnPrerenderStart() override {}
-  void OnPrerenderStopLoading() override {}
-  void OnPrerenderDomContentLoaded() override {}
-  void OnPrerenderStop() override {}
-
-  mojo::PendingRemote<blink::mojom::PrerenderProcessorClient>
-  BindNewPipeAndPassRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
- private:
-  mojo::Receiver<blink::mojom::PrerenderProcessorClient> receiver_{this};
-};
-
 class PrerenderProcessorTest : public RenderViewHostImplTestHarness {
  public:
   void SetUp() override {
@@ -96,11 +76,10 @@ TEST_F(PrerenderProcessorTest, StartCancel) {
   auto attributes = blink::mojom::PrerenderAttributes::New();
   attributes->url = kPrerenderingUrl;
   attributes->referrer = blink::mojom::Referrer::New();
-  PrerenderProcessorClient client;
 
   // Start() call should register a new prerender host.
   EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
-  remote->Start(std::move(attributes), client.BindNewPipeAndPassRemote());
+  remote->Start(std::move(attributes));
   remote.FlushForTesting();
   EXPECT_TRUE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
 
@@ -122,11 +101,10 @@ TEST_F(PrerenderProcessorTest, StartDisconnect) {
   auto attributes = blink::mojom::PrerenderAttributes::New();
   attributes->url = kPrerenderingUrl;
   attributes->referrer = blink::mojom::Referrer::New();
-  PrerenderProcessorClient client;
 
   // Start() call should register a new prerender host.
   EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
-  remote->Start(std::move(attributes), client.BindNewPipeAndPassRemote());
+  remote->Start(std::move(attributes));
   remote.FlushForTesting();
   EXPECT_TRUE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
 
@@ -149,11 +127,10 @@ TEST_F(PrerenderProcessorTest, CancelOnDestruction) {
   auto attributes = blink::mojom::PrerenderAttributes::New();
   attributes->url = kPrerenderingUrl;
   attributes->referrer = blink::mojom::Referrer::New();
-  PrerenderProcessorClient client;
 
   // Start() call should register a new prerender host.
   EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
-  remote->Start(std::move(attributes), client.BindNewPipeAndPassRemote());
+  remote->Start(std::move(attributes));
   remote.FlushForTesting();
   EXPECT_TRUE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
 
@@ -182,22 +159,20 @@ TEST_F(PrerenderProcessorTest, StartTwice) {
   auto attributes1 = blink::mojom::PrerenderAttributes::New();
   attributes1->url = kPrerenderingUrl;
   attributes1->referrer = blink::mojom::Referrer::New();
-  PrerenderProcessorClient client1;
 
   // Start() call should register a new prerender host.
   EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
-  remote->Start(std::move(attributes1), client1.BindNewPipeAndPassRemote());
+  remote->Start(std::move(attributes1));
   remote.FlushForTesting();
   EXPECT_TRUE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
 
   auto attributes2 = blink::mojom::PrerenderAttributes::New();
   attributes2->url = kPrerenderingUrl;
   attributes2->referrer = blink::mojom::Referrer::New();
-  PrerenderProcessorClient client2;
 
   // Call Start() again. This should be reported as a bad mojo message.
   ASSERT_TRUE(bad_message_error.empty());
-  remote->Start(std::move(attributes2), client2.BindNewPipeAndPassRemote());
+  remote->Start(std::move(attributes2));
   remote.FlushForTesting();
   EXPECT_EQ(bad_message_error, "PP_START_TWICE");
 }
@@ -221,7 +196,6 @@ TEST_F(PrerenderProcessorTest, CancelBeforeStart) {
   auto attributes1 = blink::mojom::PrerenderAttributes::New();
   attributes1->url = kPrerenderingUrl;
   attributes1->referrer = blink::mojom::Referrer::New();
-  PrerenderProcessorClient client1;
 
   // Call Cancel() before Start(). This should be reported as a bad mojo
   // message.

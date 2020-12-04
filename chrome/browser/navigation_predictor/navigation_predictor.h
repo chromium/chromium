@@ -114,10 +114,6 @@ class NavigationPredictor : public blink::mojom::AnchorElementMetricsHost,
 
   // prerender::PrerenderHandle::Observer:
   void OnPrerenderStop(prerender::PrerenderHandle* handle) override;
-  void OnPrerenderStart(prerender::PrerenderHandle* handle) override {}
-  void OnPrerenderStopLoading(prerender::PrerenderHandle* handle) override {}
-  void OnPrerenderDomContentLoaded(
-      prerender::PrerenderHandle* handle) override {}
   void OnPrerenderNetworkBytesChanged(
       prerender::PrerenderHandle* handle) override {}
 

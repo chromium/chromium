@@ -363,23 +363,6 @@ void HTMLLinkElement::LinkLoadingErrored() {
   DispatchEvent(*Event::Create(event_type_names::kError));
 }
 
-void HTMLLinkElement::DidStartLinkPrerender() {
-  DispatchEvent(*Event::Create(event_type_names::kWebkitprerenderstart));
-}
-
-void HTMLLinkElement::DidStopLinkPrerender() {
-  DispatchEvent(*Event::Create(event_type_names::kWebkitprerenderstop));
-}
-
-void HTMLLinkElement::DidSendLoadForLinkPrerender() {
-  DispatchEvent(*Event::Create(event_type_names::kWebkitprerenderload));
-}
-
-void HTMLLinkElement::DidSendDOMContentLoadedForLinkPrerender() {
-  DispatchEvent(
-      *Event::Create(event_type_names::kWebkitprerenderdomcontentloaded));
-}
-
 scoped_refptr<base::SingleThreadTaskRunner>
 HTMLLinkElement::GetLoadingTaskRunner() {
   return GetDocument().GetTaskRunner(TaskType::kNetworking);

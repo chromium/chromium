@@ -8,24 +8,6 @@ import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// This interface is used to notify of events about prerendering from the
-// browser process to a renderer process that requested prerendering. This is
-// created per prerender request, for example, when a new <link rel=prerender>
-// element is added, when the element's href is changed, etc.
-interface PrerenderProcessorClient {
-  // Notifies that a prerender started.
-  OnPrerenderStart();
-
-  // Notifies that a prerender has stopped loading.
-  OnPrerenderStopLoading();
-
-  // Notifies that a prerender has had it's 'domcontentloaded' event.
-  OnPrerenderDomContentLoaded();
-
-  // Notifies that a prerender is no longer running.
-  OnPrerenderStop();
-};
-
 enum PrerenderRelType {
   // https://html.spec.whatwg.org/C/#link-type-prerender
   kPrerender,
@@ -47,15 +29,12 @@ struct PrerenderAttributes {
 // changed, etc.
 interface PrerenderProcessor {
   // Requests the browesr process to start prerendering with
-  // |prerender_attribute|. |prerender_processor_client| will be notified as the
-  // prerendering makes progress. This must be called only one time before any
-  // other functions.
-  Start(PrerenderAttributes prerender_attribute,
-        pending_remote<PrerenderProcessorClient> prerender_processor_client);
+  // |prerender_attribute|. This must be called only one time before any other
+  // functions.
+  Start(PrerenderAttributes prerender_attribute);
 
   // Cancels the ongoing prerendering. This is supposed to be called when the
   // <link rel=prerender> element is removed, the element's href is changed,
-  // etc. This must be called after Start(). This does not trigger
-  // OnPrerenderStop() on PrerenderProcessorClient.
+  // etc. This must be called after Start().
   Cancel();
 };

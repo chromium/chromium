@@ -44,9 +44,7 @@ class PrerenderLinkManager : public KeyedService,
       int launcher_render_process_id,
       int launcher_render_view_id,
       blink::mojom::PrerenderAttributesPtr attributes,
-      const url::Origin& initiator_origin,
-      mojo::PendingRemote<blink::mojom::PrerenderProcessorClient>
-          processor_client);
+      const url::Origin& initiator_origin);
 
   // Called when a <link rel=prerender ...> element has been explicitly removed
   // from a document.
@@ -72,8 +70,6 @@ class PrerenderLinkManager : public KeyedService,
                   int launcher_render_view_id,
                   blink::mojom::PrerenderAttributesPtr attributes,
                   const url::Origin& initiator_origin,
-                  mojo::PendingRemote<blink::mojom::PrerenderProcessorClient>
-                      processor_client,
                   base::TimeTicks creation_time,
                   PrerenderContents* deferred_launcher);
     ~LinkPrerender();
@@ -89,10 +85,6 @@ class PrerenderLinkManager : public KeyedService,
     const content::Referrer referrer;
     const url::Origin initiator_origin;
     const gfx::Size size;
-
-    // Notification interface back to the requestor of this prerender.
-    mojo::Remote<blink::mojom::PrerenderProcessorClient>
-        remote_processor_client;
 
     // The time at which this Prerender was added to PrerenderLinkManager.
     const base::TimeTicks creation_time;
@@ -140,9 +132,6 @@ class PrerenderLinkManager : public KeyedService,
   void Shutdown() override;
 
   // From PrerenderHandle::Observer:
-  void OnPrerenderStart(PrerenderHandle* prerender_handle) override;
-  void OnPrerenderStopLoading(PrerenderHandle* prerender_handle) override;
-  void OnPrerenderDomContentLoaded(PrerenderHandle* prerender_handle) override;
   void OnPrerenderStop(PrerenderHandle* prerender_handle) override;
   void OnPrerenderNetworkBytesChanged(
       PrerenderHandle* prerender_handle) override;
