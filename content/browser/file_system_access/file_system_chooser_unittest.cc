@@ -180,6 +180,32 @@ TEST_F(FileSystemChooserTest, AcceptsExtensionsAndMimeTypes) {
             dialog_params.file_types->extension_description_overrides[0]);
 }
 
+TEST_F(FileSystemChooserTest, IgnoreShellIntegratedExtensions) {
+  SelectFileDialogParams dialog_params;
+  ui::SelectFileDialog::SetFactory(
+      new CancellingSelectFileDialogFactory(&dialog_params));
+  std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts;
+  accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
+      base::ASCIIToUTF16(""), std::vector<std::string>({}),
+      std::vector<std::string>(
+          {"lnk", "foo.lnk", "foo.bar.local", "text", "local"})));
+  SyncShowDialog(std::move(accepts), /*include_accepts_all=*/false);
+
+  ASSERT_TRUE(dialog_params.file_types);
+  EXPECT_FALSE(dialog_params.file_types->include_all_files);
+  ASSERT_EQ(1u, dialog_params.file_types->extensions.size());
+  EXPECT_EQ(1, dialog_params.file_type_index);
+
+  ASSERT_EQ(1u, dialog_params.file_types->extensions[0].size());
+  EXPECT_EQ(dialog_params.file_types->extensions[0][0],
+            FILE_PATH_LITERAL("text"));
+
+  ASSERT_EQ(1u,
+            dialog_params.file_types->extension_description_overrides.size());
+  EXPECT_EQ(base::ASCIIToUTF16(""),
+            dialog_params.file_types->extension_description_overrides[0]);
+}
+
 TEST_F(FileSystemChooserTest, LocalPath) {
   const base::FilePath local_path(FILE_PATH_LITERAL("/foo/bar"));
   ui::SelectedFileInfo selected_file(local_path, local_path);
