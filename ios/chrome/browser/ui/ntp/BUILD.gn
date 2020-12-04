@@ -19,6 +19,7 @@ source_set("coordinator") {
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    ":feature_flags",
     ":ntp",
     ":ntp_internal",
     "//ios/chrome/browser/browser_state",
@@ -152,6 +153,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":coordinator",
+    ":feature_flags",
     ":ntp",
     ":ntp_internal",
     "//base",
@@ -232,4 +234,13 @@ source_set("perf_tests") {
     "//ios/chrome/browser/ui/browser_view",
     "//ios/chrome/browser/ui/commands",
   ]
+}
+
+source_set("feature_flags") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "new_tab_page_feature.h",
+    "new_tab_page_feature.mm",
+  ]
+  public_deps = [ "//base" ]
 }

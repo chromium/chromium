@@ -3370,7 +3370,7 @@
   {
     "name": "new-content-suggestions-feed",
     "owners": [ "adamta", "sczs", "gogerald", "bling-flags@google.com" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 90
   },
   {
     "name": "new-shortcut-mapping",
@@ -4056,6 +4056,11 @@
   {
     "name": "reengagement-notification",
     "owners": [ "dtrainor", "xingliu" ],
+    "expiry_milestone": 90
+  },
+  {
+    "name": "refactored-ntp",
+    "owners": [ "adamta", "sczs" ],
     "expiry_milestone": 90
   },
   {

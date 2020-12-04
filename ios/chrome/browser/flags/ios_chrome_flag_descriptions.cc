@@ -350,6 +350,11 @@ const char kPointerSupportDescription[] =
     "Enables pointer support on tablets on iOS 13.4 and above.";
 #endif  // defined(__IPHONE_13_4)
 
+const char kRefactoredNTPName[] = "Enables refactored new tab page";
+const char kRefactoredNTPDescription[] =
+    "When enabled, the new tab page is replaced with the refactored version, "
+    "which changes the ownership and containment of views.";
+
 const char kRestoreGaiaCookiesIfDeletedName[] =
     "Restore GAIA cookies if deleted";
 const char kRestoreGaiaCookiesIfDeletedDescription[] =

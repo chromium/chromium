@@ -68,6 +68,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/infobars/infobar_feature.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
@@ -488,6 +489,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kDiscoverFeedInNtp,
                                     kDiscoverFeedInNtpVariations,
                                     "IOSDiscoverFeed")},
+    {"refactored-ntp", flag_descriptions::kRefactoredNTPName,
+     flag_descriptions::kRefactoredNTPDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kRefactoredNTP)},
     {"autofill-enable-card-nickname-upstream",
      flag_descriptions::kAutofillEnableCardNicknameUpstreamName,
      flag_descriptions::kAutofillEnableCardNicknameUpstreamDescription,
