@@ -120,7 +120,7 @@ Polymer({
     /** @private {!Object} */
     padding_: {
       type: Object,
-      value: {top: 10, right: 20, bottom: 10, left: 50, tick: 10},
+      value: {top: 10, right: 5, bottom: 8, left: 50, tick: 10},
     },
 
     /** @private {number} */
