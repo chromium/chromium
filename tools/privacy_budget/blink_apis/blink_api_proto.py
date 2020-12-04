@@ -14,10 +14,13 @@ class BlinkApiProto(object):
     """BlinkApiProto converts a WebIdlDatabase to
     a identifiability.blink_apis.Snapshot proto defined in
     proto/blink_apis.proto"""
-    def __init__(self, web_idl_pickle, proto_out_file, chromium_revision):
+
+    def __init__(self, web_idl_pickle, proto_out_file, chromium_revision,
+                 web_features):
         self.web_idl_database = web_idl.Database.read_from_file(web_idl_pickle)
         self.proto_out_file = proto_out_file
         self.snapshot = pb.Snapshot()
+        self.web_features = web_features
         if chromium_revision:
             self.snapshot.chromium_revision = chromium_revision
 
@@ -41,7 +44,7 @@ class BlinkApiProto(object):
 
         for function in self.web_idl_database.callback_functions:
             self._ConvertIdlOperation(self.snapshot.callback_functions.add(),
-                                      function)
+                                      function, None)
 
         for interface in self.web_idl_database.callback_interfaces:
             self._ConvertIdlInterfaceLike(
@@ -64,22 +67,43 @@ class BlinkApiProto(object):
             return pb.HIGH_ENTROPY_DIRECT
         assert False, "Unknown HighEntropy value {}".format(val)
 
-    def _GetUseCounter(self, parent, measure, measure_as):
-        if measure_as:
-            return measure_as.value
-        if measure:
-            use_counter = capitalize(parent.identifier)
-            if not isinstance(parent, web_idl.Interface):
-                use_counter = (capitalize(parent.owner.identifier) + '_' +
-                               use_counter)
-            return use_counter
-        return None
+    def _GetUseCounter(self, member, parent, ext_attrs):
+        assert isinstance(ext_attrs, web_idl.ExtendedAttributes)
+        assert parent is None or hasattr(parent, 'identifier')
+
+        if 'MeasureAs' in ext_attrs:
+            return ext_attrs.value_of('MeasureAs')
+
+        if 'Measure' not in ext_attrs:
+            return None
+
+        if parent is not None:
+            prefix = '%s_%s' % (capitalize(
+                parent.identifier), capitalize(member.identifier))
+        else:
+            prefix = capitalize(member.identifier)
+
+        suffix = ""
+        if isinstance(member, web_idl.FunctionLike):
+            if len(member.arguments) == 0 and member.is_getter:
+                suffix = "AttributeGetter"
+            elif len(member.arguments) == 1 and member.is_setter:
+                suffix = "AttributeSetter"
+            else:
+                suffix = "Method"
+        elif isinstance(member, web_idl.Attribute):
+            suffix = "AttributeGetter"
+        else:
+            assert False, repr(member)
+
+        return "V8" + prefix + "_" + suffix
 
     def _ConvertIdlType(self, dest, idl_type):
         assert isinstance(idl_type, web_idl.IdlType)
 
         dest.idl_type_string = idl_type.type_name_without_extended_attributes
-        self._ConvertExtendedAttributes(dest.extended_attributes, idl_type)
+        self._ConvertExtendedAttributes(dest.extended_attributes, idl_type,
+                                        None)
 
         # Only look at named definitions. Simple, primitive types don't define
         # named identifiers.
@@ -96,8 +120,8 @@ class BlinkApiProto(object):
         depends_on.remove(idl_type.type_name_without_extended_attributes)
         dest.depends_on[:] = list(depends_on)
 
-    def _ConvertExtendedAttributes(self, dest, parent):
-        attr = parent.extended_attributes
+    def _ConvertExtendedAttributes(self, dest, member, interface):
+        attr = member.extended_attributes
         assert isinstance(attr, web_idl.ExtendedAttributes)
         dest.cross_origin_isolated = ('CrossOriginIsolated' in attr)
         if 'Exposed' in attr:
@@ -111,25 +135,27 @@ class BlinkApiProto(object):
                 for v in exposed.values:
                     e = dest.exposed.add()
                     e.interface = v
-                    e.member = parent.identifier
+                    e.member = member.identifier
 
         setattr(dest, 'global', ('Global' in attr))
         dest.same_object = ('SameObject' in attr)
         dest.secure_context = ('SecureContext' in attr)
         dest.high_entropy = self._GetHighEntropyType(attr.get('HighEntropy'))
         if 'Measure' in attr or 'MeasureAs' in attr:
-            dest.use_counter = self._GetUseCounter(parent, attr.get('Measure'),
-                                                   attr.get('MeasureAs'))
+            dest.use_counter = self._GetUseCounter(member, interface, attr)
+            dest.use_counter_feature_value = self.web_features[
+                dest.use_counter]
         if 'RuntimeEnabled' in attr:
             dest.runtime_enabled = attr.value_of('RuntimeEnabled')
         if 'ImplementedAs' in attr:
             dest.implemented_as = attr.value_of('ImplementedAs')
 
-    def _ConvertIdlAttribute(self, dest, attr):
+    def _ConvertIdlAttribute(self, dest, attr, interface):
         dest.name = attr.identifier
         dest.is_static = attr.is_static
         dest.is_readonly = attr.is_readonly
-        self._ConvertExtendedAttributes(dest.extended_attributes, attr)
+        self._ConvertExtendedAttributes(dest.extended_attributes, attr,
+                                        interface)
         self._ConvertIdlType(dest.idl_type, attr.idl_type)
         self._ConvertSourceLocation(dest.source_location, attr.debug_info)
 
@@ -144,12 +170,13 @@ class BlinkApiProto(object):
             return pb.SPECIAL_OP_STRINGIFIER
         return pb.SPECIAL_OP_UNSPECIFIED
 
-    def _ConvertIdlOperation(self, dest, op):
+    def _ConvertIdlOperation(self, dest, op, parent):
         dest.name = op.identifier
         dest.static = op.is_static
         dest.special_op_type = self._GetSpecialOperationType(op)
         self._ConvertIdlType(dest.return_type, op.return_type)
         self._ConvertSourceLocation(dest.source_location, op.debug_info)
+        self._ConvertExtendedAttributes(dest.extended_attributes, op, parent)
         for arg in op.arguments:
             self._ConvertIdlType(dest.arguments.add(), arg.idl_type)
 
@@ -158,30 +185,32 @@ class BlinkApiProto(object):
         dest.values[:] = enumer.values
         self._ConvertSourceLocation(dest.source_location, enumer.debug_info)
 
-    def _ConvertIdlConstant(self, dest, constant):
+    def _ConvertIdlConstant(self, dest, constant, parent):
         dest.name = constant.identifier
         dest.value = constant.value.literal
-        self._ConvertExtendedAttributes(dest.extended_attributes, constant)
+        self._ConvertExtendedAttributes(dest.extended_attributes, constant,
+                                        parent)
         self._ConvertIdlType(dest.idl_type, constant.idl_type)
         self._ConvertSourceLocation(dest.source_location, constant.debug_info)
 
-    def _ConvertIdlInterfaceLike(self, dest, interface):
-        dest.name = interface.identifier
-        if hasattr(interface, 'inherited') and interface.inherited:
-            dest.inherits_from = interface.inherited.identifier
-        self._ConvertExtendedAttributes(dest.extended_attributes, interface)
-        self._ConvertSourceLocation(dest.source_location, interface.debug_info)
-        for attr in interface.attributes:
-            self._ConvertIdlAttribute(dest.attributes.add(), attr)
-        for op in interface.operations:
-            self._ConvertIdlOperation(dest.operations.add(), op)
-        for constant in interface.constants:
-            self._ConvertIdlConstant(dest.constants.add(), constant)
+    def _ConvertIdlInterfaceLike(self, dest, parent):
+        dest.name = parent.identifier
+        if hasattr(parent, 'inherited') and parent.inherited:
+            dest.inherits_from = parent.inherited.identifier
+        self._ConvertExtendedAttributes(dest.extended_attributes, parent, None)
+        self._ConvertSourceLocation(dest.source_location, parent.debug_info)
+        for attr in parent.attributes:
+            self._ConvertIdlAttribute(dest.attributes.add(), attr, parent)
+        for op in parent.operations:
+            self._ConvertIdlOperation(dest.operations.add(), op, parent)
+        for constant in parent.constants:
+            self._ConvertIdlConstant(dest.constants.add(), constant, parent)
 
-    def _ConvertDictionaryMember(self, dest, member):
+    def _ConvertDictionaryMember(self, dest, member, interface):
         assert isinstance(member, web_idl.DictionaryMember)
         dest.name = member.identifier
-        self._ConvertExtendedAttributes(dest.extended_attributes, member)
+        self._ConvertExtendedAttributes(dest.extended_attributes, member,
+                                        interface)
         self._ConvertIdlType(dest.idl_type, member.idl_type)
         self._ConvertSourceLocation(dest.source_location, member.debug_info)
 
@@ -193,7 +222,8 @@ class BlinkApiProto(object):
         if dictionary.inherited:
             dest.inherits_from = dictionary.inherited.identifier
         for member in dictionary.members:
-            self._ConvertDictionaryMember(dest.members.add(), member)
+            self._ConvertDictionaryMember(dest.members.add(), member,
+                                          dictionary)
 
     def _ConvertIdlTypedef(self, dest, typedef):
         assert isinstance(typedef, web_idl.Typedef)
@@ -217,4 +247,5 @@ class BlinkApiProto(object):
 
         if source_file:
             dest.filename = source_file
+
             dest.line = line_no

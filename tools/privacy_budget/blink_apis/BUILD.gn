@@ -20,7 +20,8 @@ action("blink_apis") {
   inputs = [
     web_idl_database_filepath,
     "blink_api_proto.py",
-    "generate_blink_api_db.py"
+    "generate_blink_api_db.py",
+    "web_feature.py",
   ]
   output_data_file = "${root_build_dir}/blink_apis.textpb"
   outputs = [ output_data_file ]
@@ -30,6 +31,10 @@ action("blink_apis") {
     rebase_path(web_idl_database_filepath, root_build_dir),
     "--output",
     rebase_path(output_data_file, root_build_dir),
+    "--web_feature_mojom",
+    rebase_path(
+        "//third_party/blink/public/mojom/web_feature/web_feature.mojom",
+        root_build_dir),
     "--path",
     string_join(":",
                 [

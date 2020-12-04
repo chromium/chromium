@@ -40,6 +40,7 @@ enum HighEntropyType {
 //
 // The latter are described in:
 // https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/bindings/IDLExtendedAttributes.md
+// Next ID: 13
 message ExtendedAttributes {
   // https://heycam.github.io/webidl/#CrossOriginIsolated
   bool cross_origin_isolated = 1;
@@ -73,6 +74,9 @@ message ExtendedAttributes {
   //
   // https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/bindings/IDLExtendedAttributes.md#measure_i_m_a_c
   string use_counter = 7;
+
+  // The numeric value of the Use Counter feature constant.
+  int64 use_counter_feature_value = 12;
 
   // Value of [RuntimeEnabled]
   // https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/bindings/IDLExtendedAttributes.md#runtimeenabled_i_m_a_c
