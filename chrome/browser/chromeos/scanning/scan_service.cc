@@ -376,6 +376,10 @@ void ScanService::OnScanCompleted(bool success) {
 }
 
 void ScanService::OnCancelCompleted(bool success) {
+  if (success) {
+    save_failed_ = false;
+    last_scanned_file_path_.clear();
+  }
   scan_job_observer_->OnCancelComplete(success);
 }
 

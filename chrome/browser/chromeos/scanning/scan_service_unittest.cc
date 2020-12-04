@@ -95,6 +95,15 @@ std::string CreatePng() {
   return std::string(bytes.begin(), bytes.end());
 }
 
+// Returns scan settings with the given path and file type.
+mojo_ipc::ScanSettings CreateScanSettings(const base::FilePath& scan_to_path,
+                                          const mojo_ipc::FileType& file_type) {
+  mojo_ipc::ScanSettings settings;
+  settings.scan_to_path = scan_to_path;
+  settings.file_type = file_type;
+  return settings;
+}
+
 }  // namespace
 
 class FakeScanJobObserver : public mojo_ipc::ScanJobObserver {
@@ -187,10 +196,10 @@ class ScanServiceTest : public testing::Test {
     return caps;
   }
 
-  // Performs a scan with the scanner identified by |scanner_id| with the given
+  // Starts a scan with the scanner identified by |scanner_id| with the given
   // |settings| by calling ScanService::StartScan() via the mojo::Remote.
-  bool Scan(const base::UnguessableToken& scanner_id,
-            mojo_ipc::ScanSettingsPtr settings) {
+  bool StartScan(const base::UnguessableToken& scanner_id,
+                 mojo_ipc::ScanSettingsPtr settings) {
     bool success;
     mojo_ipc::ScanServiceAsyncWaiter(scan_service_remote_.get())
         .StartScan(scanner_id, std::move(settings),
@@ -294,8 +303,8 @@ TEST_F(ScanServiceTest, GetScannerCapabilities) {
 // Test that attempting to scan with a scanner ID that doesn't correspond to a
 // scanner results in a failed scan.
 TEST_F(ScanServiceTest, ScanWithBadScannerId) {
-  EXPECT_FALSE(
-      Scan(base::UnguessableToken::Create(), mojo_ipc::ScanSettings::New()));
+  EXPECT_FALSE(StartScan(base::UnguessableToken::Create(),
+                         mojo_ipc::ScanSettings::New()));
 }
 
 // Test that attempting to scan with an unsupported file path fails.
@@ -311,10 +320,9 @@ TEST_F(ScanServiceTest, ScanWithUnsupportedFilePath) {
 
   const base::FilePath my_files_path(kMyFilesPath);
   scan_service_.SetMyFilesPathForTesting(my_files_path);
-  mojo_ipc::ScanSettings settings;
-  settings.scan_to_path = my_files_path.Append("../../../var/log");
-  settings.file_type = mojo_ipc::FileType::kPng;
-  EXPECT_FALSE(Scan(scanners[0]->id, settings.Clone()));
+  const mojo_ipc::ScanSettings settings = CreateScanSettings(
+      my_files_path.Append("../../../var/log"), mojo_ipc::FileType::kPng);
+  EXPECT_FALSE(StartScan(scanners[0]->id, settings.Clone()));
 }
 
 // Test that a scan can be performed successfully.
@@ -332,8 +340,8 @@ TEST_F(ScanServiceTest, Scan) {
   base::Time::Now().LocalExplode(&scan_time);
 
   scan_service_.SetMyFilesPathForTesting(temp_dir_.GetPath());
-  mojo_ipc::ScanSettings settings;
-  settings.scan_to_path = temp_dir_.GetPath();
+  mojo_ipc::ScanSettings settings =
+      CreateScanSettings(temp_dir_.GetPath(), mojo_ipc::FileType::kPng);
   std::map<std::string, mojo_ipc::FileType> file_types = {
       {"png", mojo_ipc::FileType::kPng},
       {"jpg", mojo_ipc::FileType::kJpg},
@@ -345,7 +353,7 @@ TEST_F(ScanServiceTest, Scan) {
       EXPECT_FALSE(base::PathExists(saved_scan_path));
 
     settings.file_type = type.second;
-    EXPECT_TRUE(Scan(scanners[0]->id, settings.Clone()));
+    EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
     for (const auto& saved_scan_path : saved_scan_paths)
       EXPECT_TRUE(base::PathExists(saved_scan_path));
 
@@ -353,6 +361,123 @@ TEST_F(ScanServiceTest, Scan) {
     EXPECT_EQ(saved_scan_paths.back(),
               fake_scan_job_observer_.last_scanned_file_path());
   }
+}
+
+// Test that when a scan fails, the scan job is marked as failed.
+TEST_F(ScanServiceTest, ScanFails) {
+  // Skip setting the scan data in FakeLorgnetteScannerManager so the scan will
+  // fail.
+  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
+      {kFirstTestScannerName});
+  auto scanners = GetScanners();
+  ASSERT_EQ(scanners.size(), 1u);
+
+  scan_service_.SetMyFilesPathForTesting(temp_dir_.GetPath());
+  const mojo_ipc::ScanSettings settings =
+      CreateScanSettings(temp_dir_.GetPath(), mojo_ipc::FileType::kPng);
+
+  EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
+  EXPECT_FALSE(fake_scan_job_observer_.scan_success());
+  EXPECT_TRUE(fake_scan_job_observer_.last_scanned_file_path().empty());
+}
+
+// Test that when a page fails to save during the scan, the scan job is marked
+// as failed.
+TEST_F(ScanServiceTest, PageSaveFails) {
+  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
+      {kFirstTestScannerName});
+  // Sending an empty string in test data simulates a page saving to fail.
+  const std::vector<std::string> scan_data = {"TestData1", "", "TestData3"};
+  fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
+  auto scanners = GetScanners();
+  ASSERT_EQ(scanners.size(), 1u);
+
+  scan_service_.SetMyFilesPathForTesting(temp_dir_.GetPath());
+  const mojo_ipc::ScanSettings settings =
+      CreateScanSettings(temp_dir_.GetPath(), mojo_ipc::FileType::kJpg);
+
+  EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
+  EXPECT_FALSE(fake_scan_job_observer_.scan_success());
+  EXPECT_TRUE(fake_scan_job_observer_.last_scanned_file_path().empty());
+}
+
+// Tests that a new scan job can succeed after the previous scan failed.
+TEST_F(ScanServiceTest, ScanAfterFailedScan) {
+  // Skip setting the scan data in FakeLorgnetteScannerManager so the scan will
+  // fail.
+  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
+      {kFirstTestScannerName});
+  auto scanners = GetScanners();
+  ASSERT_EQ(scanners.size(), 1u);
+
+  scan_service_.SetMyFilesPathForTesting(temp_dir_.GetPath());
+  const mojo_ipc::ScanSettings settings =
+      CreateScanSettings(temp_dir_.GetPath(), mojo_ipc::FileType::kPng);
+
+  EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
+  EXPECT_FALSE(fake_scan_job_observer_.scan_success());
+  EXPECT_TRUE(fake_scan_job_observer_.last_scanned_file_path().empty());
+
+  // Set scan data so next scan is successful.
+  const std::vector<std::string> scan_data = {"TestData1", "TestData2",
+                                              "TestData3"};
+  fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
+  base::Time::Exploded scan_time;
+  // Since we're using mock time, this is deterministic.
+  base::Time::Now().LocalExplode(&scan_time);
+
+  const std::vector<base::FilePath> saved_scan_paths = CreateSavedScanPaths(
+      temp_dir_.GetPath(), scan_time, "png", scan_data.size());
+  for (const auto& saved_scan_path : saved_scan_paths)
+    EXPECT_FALSE(base::PathExists(saved_scan_path));
+
+  EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
+  for (const auto& saved_scan_path : saved_scan_paths)
+    EXPECT_TRUE(base::PathExists(saved_scan_path));
+
+  EXPECT_TRUE(fake_scan_job_observer_.scan_success());
+  EXPECT_EQ(saved_scan_paths.back(),
+            fake_scan_job_observer_.last_scanned_file_path());
+}
+
+// Tests that a failed scan does not retain values from the previous successful
+// scan.
+TEST_F(ScanServiceTest, FailedScanAfterSuccessfulScan) {
+  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
+      {kFirstTestScannerName});
+  const std::vector<std::string> scan_data = {"TestData1", "TestData2",
+                                              "TestData3"};
+  fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
+  auto scanners = GetScanners();
+  ASSERT_EQ(scanners.size(), 1u);
+
+  base::Time::Exploded scan_time;
+  // Since we're using mock time, this is deterministic.
+  base::Time::Now().LocalExplode(&scan_time);
+
+  scan_service_.SetMyFilesPathForTesting(temp_dir_.GetPath());
+  const mojo_ipc::ScanSettings settings =
+      CreateScanSettings(temp_dir_.GetPath(), mojo_ipc::FileType::kPng);
+  const std::vector<base::FilePath> saved_scan_paths = CreateSavedScanPaths(
+      temp_dir_.GetPath(), scan_time, "png", scan_data.size());
+  for (const auto& saved_scan_path : saved_scan_paths)
+    EXPECT_FALSE(base::PathExists(saved_scan_path));
+
+  EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
+  for (const auto& saved_scan_path : saved_scan_paths)
+    EXPECT_TRUE(base::PathExists(saved_scan_path));
+
+  EXPECT_TRUE(fake_scan_job_observer_.scan_success());
+  EXPECT_EQ(saved_scan_paths.back(),
+            fake_scan_job_observer_.last_scanned_file_path());
+
+  // Remove the scan data from FakeLorgnetteScannerManager so the scan will
+  // fail.
+  fake_lorgnette_scanner_manager_.SetScanResponse({});
+
+  EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
+  EXPECT_FALSE(fake_scan_job_observer_.scan_success());
+  EXPECT_TRUE(fake_scan_job_observer_.last_scanned_file_path().empty());
 }
 
 // Test that canceling sends an update to the observer OnCancelComplete().
@@ -365,10 +490,10 @@ TEST_F(ScanServiceTest, CancelScanBeforeScanCompletes) {
   ASSERT_EQ(scanners.size(), 1u);
 
   scan_service_.SetMyFilesPathForTesting(temp_dir_.GetPath());
-  mojo_ipc::ScanSettings settings;
-  settings.scan_to_path = temp_dir_.GetPath();
+  const mojo_ipc::ScanSettings settings =
+      CreateScanSettings(temp_dir_.GetPath(), mojo_ipc::FileType::kPng);
 
-  Scan(scanners[0]->id, settings.Clone());
+  StartScan(scanners[0]->id, settings.Clone());
   CancelScan();
   EXPECT_TRUE(fake_scan_job_observer_.cancel_scan_success());
 }
