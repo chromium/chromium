@@ -8,10 +8,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/metrics/field_trial.h"
-#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/bluetooth/bluetooth_chooser_context.h"
-#include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/ui/browser.h"
@@ -61,12 +58,11 @@ class FakeBluetoothAdapter
   void SetIsPresent(bool is_present) { is_present_ = is_present; }
 
   void SimulateDeviceAdvertisementReceived(
-      const std::string& device_address,
-      const base::Optional<std::string>& advertisement_name =
-          base::nullopt) const {
+      const std::string& device_address) const {
     for (auto& observer : observers_) {
       observer.DeviceAdvertisementReceived(
-          device_address, /*device_name=*/base::nullopt, advertisement_name,
+          device_address, /*device_name=*/base::nullopt,
+          /*advertisement_name=*/base::nullopt,
           /*rssi=*/base::nullopt, /*tx_power=*/base::nullopt,
           /*appearance=*/base::nullopt,
           /*advertised_uuids=*/{}, /*service_data_map=*/{},
@@ -714,111 +710,6 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
             return `${e.name}: ${e.message}`;
           }
         })())"));
-}
-
-IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
-                       RevokingPermissionDisconnectsTheDevice) {
-  AddFakeDevice(kDeviceAddress);
-  SetDeviceToSelect(kDeviceAddress);
-
-  // Connect to heart rate device and ensure the gatt service is connected.
-  EXPECT_EQ(kHeartRateUUIDString, content::EvalJs(web_contents_, R"(
-    var gatt;
-    var gattserverdisconnectedPromise;
-
-    (async() => {
-      try {
-        let device = await navigator.bluetooth.requestDevice({
-          filters: [{name: 'Test Device', services: ['heart_rate']}]});
-        gatt = await device.gatt.connect();
-        gattserverdisconnectedPromise = new Promise(resolve => {
-          device.addEventListener('gattserverdisconnected', _ => {
-            resolve("event fired");
-          });
-        });
-        let service = await gatt.getPrimaryService('heart_rate');
-        return service.uuid;
-      } catch(e) {
-        return `${e.name}: ${e.message}`;
-      }
-    })()
-  )"));
-
-  BluetoothChooserContext* context =
-      BluetoothChooserContextFactory::GetForProfile(browser()->profile());
-  url::Origin origin =
-      url::Origin::Create(web_contents_->GetLastCommittedURL());
-
-  // Revoke the permission.
-  const auto objects = context->GetGrantedObjects(origin, origin);
-  EXPECT_EQ(1ul, objects.size());
-  context->RevokeObjectPermission(origin, origin, objects.at(0)->value);
-
-  // Wait for gattserverdisconnect event.
-  EXPECT_EQ("event fired",
-            content::EvalJs(web_contents_, "gattserverdisconnectedPromise ")
-                .ExtractString());
-
-  // Ensure the service is disconnected.
-  EXPECT_THAT(content::EvalJs(web_contents_, R"((async() => {
-      try {
-        let service = await gatt.getPrimaryService('heart_rate');
-        return service.uuid;
-      } catch(e) {
-        return `${e.name}: ${e.message}`;
-      }
-    })())")
-                  .ExtractString(),
-              ::testing::HasSubstr("GATT Server is disconnected."));
-}
-
-IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
-                       RevokingPermissionStopsAdvertisements) {
-  // Setup the fake device.
-  AddFakeDevice(kDeviceAddress);
-  SetDeviceToSelect(kDeviceAddress);
-
-  // Request device and watch for advertisements. Record the last seen
-  // advertisement's name.
-  EXPECT_EQ("", content::EvalJs(web_contents_, R"(
-    var last_event_name;
-
-    (async() => {
-      try {
-        let device = await navigator.bluetooth.requestDevice({
-          filters: [{name: 'Test Device', services: ['heart_rate']}]});
-        device.watchAdvertisements();
-        device.addEventListener('advertisementreceived', event => {
-          last_event_name = event.name;
-        });
-        return "";
-      } catch(e) {
-        return `${e.name}: ${e.message}`;
-      }
-    })()
-  )"));
-
-  // Send first advertisement.
-  adapter_->SimulateDeviceAdvertisementReceived(kDeviceAddress,
-                                                "advertisement_name1");
-
-  // Revoke the permission.
-  BluetoothChooserContext* context =
-      BluetoothChooserContextFactory::GetForProfile(browser()->profile());
-  url::Origin origin =
-      url::Origin::Create(web_contents_->GetLastCommittedURL());
-
-  const auto objects = context->GetGrantedObjects(origin, origin);
-  EXPECT_EQ(1ul, objects.size());
-  context->RevokeObjectPermission(origin, origin, objects.at(0)->value);
-
-  // Send another advertisement after the permission was revoked.
-  adapter_->SimulateDeviceAdvertisementReceived(kDeviceAddress,
-                                                "advertisement_name2");
-
-  // Only the first advertisement should have been seen.
-  EXPECT_EQ("advertisement_name1",
-            content::EvalJs(web_contents_, "last_event_name").ExtractString());
 }
 
 }  // namespace

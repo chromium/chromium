@@ -125,12 +125,6 @@ bool FakeBluetoothDelegate::IsAllowedToAccessManufacturerData(
   return base::Contains(id_to_manufacturer_data_it->second, manufacturer_code);
 }
 
-void FakeBluetoothDelegate::AddPermissionObserver(
-    FramePermissionObserver* observer) {}
-
-void FakeBluetoothDelegate::RemovePermissionObserver(
-    FramePermissionObserver* observer) {}
-
 std::vector<blink::mojom::WebBluetoothDevicePtr>
 FakeBluetoothDelegate::GetPermittedDevices(RenderFrameHost* frame) {
   std::vector<blink::mojom::WebBluetoothDevicePtr> permitted_devices;
