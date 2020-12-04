@@ -106,6 +106,7 @@ class OMLSyncControlVSyncProvider : public SyncControlVSyncProvider {
   bool GetSyncValues(int64_t* system_time,
                      int64_t* media_stream_counter,
                      int64_t* swap_buffer_counter) override {
+    x11::Connection::Get()->Flush();
     return glXGetSyncValuesOML(x11::Connection::Get()->GetXlibDisplay(),
                                glx_window_, system_time, media_stream_counter,
                                swap_buffer_counter);
