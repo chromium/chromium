@@ -152,7 +152,8 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
                                               "fr",
                                               "se",
                                               "jp",
-                                              "hu"};
+                                              "hu",
+                                              "de"};
 
     auto mock_delegate =
         std::make_unique<MockComponentExtensionIMEManagerDelegate>();
@@ -305,6 +306,13 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
     ext_xkb_engine_hu.language_codes.emplace_back("hu");
     ext_xkb_engine_hu.layouts.emplace_back("hu");
     ext_xkb.engines.push_back(ext_xkb_engine_hu);
+
+    ComponentExtensionEngine ext_xkb_engine_de;
+    ext_xkb_engine_de.engine_id = "xkb:de::ger";
+    ext_xkb_engine_de.display_name = "xkb:de::ger";
+    ext_xkb_engine_de.language_codes.emplace_back("de");
+    ext_xkb_engine_de.layouts.emplace_back("de");
+    ext_xkb.engines.push_back(ext_xkb_engine_de);
 
     ime_list.push_back(ext_xkb);
 

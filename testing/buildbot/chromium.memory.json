@@ -8516,8 +8516,7 @@
       },
       {
         "args": [
-          "--test-launcher-print-test-stdio=always",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.unit_tests.filter"
+          "--test-launcher-print-test-stdio=always"
         ],
         "merge": {
           "args": [],
@@ -10482,8 +10481,7 @@
       },
       {
         "args": [
-          "--test-launcher-print-test-stdio=always",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.unit_tests.filter"
+          "--test-launcher-print-test-stdio=always"
         ],
         "merge": {
           "args": [],

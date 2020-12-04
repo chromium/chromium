@@ -1,4 +1,2 @@
-# TODO(crbug.com/970790): Enable this.
--InputMethodManagerImplTest.SetLoginDefaultWithAllowedKeyboardLayouts
 # TODO(crbug.com/970806): Enable this.
 -KeyboardShortcutViewerMetadataTest.ModifyAcceleratorShouldUpdateMetadata
