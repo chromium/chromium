@@ -61,6 +61,12 @@ class CONTENT_EXPORT FrameConnectedBluetoothDevices final {
   base::Optional<blink::WebBluetoothDeviceId>
   CloseConnectionToDeviceWithAddress(const std::string& device_address);
 
+  // Deletes all connections that are NOT in the list of |permitted_ids| and
+  // decrements the WebContents count of connected devices for each device that
+  // had a connection.
+  void CloseConnectionsToDevicesNotInList(
+      const std::set<blink::WebBluetoothDeviceId>& permitted_ids);
+
  private:
   // Increments the Connected Devices count of the frame's WebContents.
   void IncrementDevicesConnectedCount();
