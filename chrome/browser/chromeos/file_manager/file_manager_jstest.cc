@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MetadataModel) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MetadataProxyTest) {
-  RunTestURL("background/js/metadata_proxy_unittest_gen.html");
+  RunTestURL("background/js/metadata_proxy_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MountMetricsTest) {
