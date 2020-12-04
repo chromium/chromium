@@ -879,6 +879,13 @@
       'win64-chrome-stable': 'official_goma_x64',
     },
 
+    'tryserver.chrome.pgo': {
+      'linux-pgo-trunk': 'official_goma_linux_pgo',
+      'mac-pgo-trunk': 'official_goma_mac_pgo',
+      'win32-pgo-trunk': 'official_goma_x86_pgo',
+      'win64-pgo-trunk': 'official_goma_x64_pgo',
+    },
+
     'tryserver.chromium.chromiumos': {
       # TODO(crbug.com/913750): Enable DCHECKS on the two amd64-generic bots
       # and two kevin bots when the PFQ has it enabled.
