@@ -4,11 +4,13 @@
 
 #include "content/browser/media/media_internals_audio_focus_helper.h"
 
+#include <iterator>
 #include <list>
 #include <string>
 
 #include "base/bind.h"
 #include "base/containers/adapters.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "content/browser/media/media_internals.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -44,6 +46,7 @@ const char kMediaSessionIsControllable[] = "Controllable";
 const char kMediaSessionIsSensitive[] = "Sensitive";
 
 const char kMediaSessionHasAudio[] = "HasAudio";
+const char kMediaSessionHasVideo[] = "HasVideo";
 const char kMediaSessionHasAudioVideo[] = "HasAudioVideo";
 
 }  // namespace
@@ -288,16 +291,26 @@ std::string MediaInternalsAudioFocusHelper::BuildStateString(
       break;
   }
 
-  // Convert the audio_video_state to a string.
-  switch (state->session_info->audio_video_state) {
-    case media_session::mojom::MediaAudioVideoState::kUnknown:
-      break;
-    case media_session::mojom::MediaAudioVideoState::kAudioOnly:
-      stream << " " << kMediaSessionHasAudio;
-      break;
-    case media_session::mojom::MediaAudioVideoState::kAudioVideo:
-      stream << " " << kMediaSessionHasAudioVideo;
-      break;
+  // Convert the audio_video_states to a string.
+  if (state->session_info->audio_video_states) {
+    stream << " { ";
+    base::ranges::transform(
+        *state->session_info->audio_video_states,
+        std::ostream_iterator<const char*>(stream, " "), [](const auto& state) {
+          switch (state) {
+            case media_session::mojom::MediaAudioVideoState::kAudioOnly:
+              return kMediaSessionHasAudio;
+            case media_session::mojom::MediaAudioVideoState::kVideoOnly:
+              return kMediaSessionHasVideo;
+            case media_session::mojom::MediaAudioVideoState::kAudioVideo:
+              return kMediaSessionHasAudioVideo;
+            case media_session::mojom::MediaAudioVideoState::kDeprecatedUnknown:
+              break;
+          }
+          NOTREACHED();
+          return "";
+        });
+    stream << "}";
   }
 
   // Convert the |force_duck| boolean into a string.

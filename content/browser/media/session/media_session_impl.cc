@@ -940,7 +940,7 @@ MediaSessionImpl::GetMediaSessionInfoSync() {
     info->playback_state = MediaPlaybackState::kPlaying;
   }
 
-  info->audio_video_state = GetMediaAudioVideoState();
+  info->audio_video_states = GetMediaAudioVideoStates();
   info->is_controllable = IsControllable();
 
   // If the browser context is off the record then it should be sensitive.
@@ -1529,28 +1529,33 @@ bool MediaSessionImpl::IsAudioOutputDeviceSwitchingSupported() const {
   });
 }
 
-MediaAudioVideoState MediaSessionImpl::GetMediaAudioVideoState() {
+std::vector<MediaAudioVideoState> MediaSessionImpl::GetMediaAudioVideoStates() {
   RenderFrameHost* routed_rfh =
       routed_service_ ? routed_service_->GetRenderFrameHost() : nullptr;
-  MediaAudioVideoState state = MediaAudioVideoState::kUnknown;
+  std::vector<MediaAudioVideoState> states;
 
   ForAllPlayers(base::BindRepeating(
-      [](RenderFrameHost* routed_rfh, MediaAudioVideoState* state,
+      [](RenderFrameHost* routed_rfh, std::vector<MediaAudioVideoState>* states,
          const PlayerIdentifier& player) {
         // If we have a routed frame then we should limit the players to the
         // frame so it is aligned with the media metadata.
         if (routed_rfh && player.observer->render_frame_host() != routed_rfh)
           return;
 
-        if (player.observer->HasVideo(player.player_id))
-          *state = MediaAudioVideoState::kAudioVideo;
-
-        if (*state != MediaAudioVideoState::kAudioVideo)
-          *state = MediaAudioVideoState::kAudioOnly;
+        const bool has_audio = player.observer->HasAudio(player.player_id);
+        const bool has_video = player.observer->HasVideo(player.player_id);
+        if (has_audio && has_video) {
+          states->push_back(MediaAudioVideoState::kAudioVideo);
+        } else if (has_audio) {
+          states->push_back(MediaAudioVideoState::kAudioOnly);
+        } else {
+          DCHECK(has_video);
+          states->push_back(MediaAudioVideoState::kVideoOnly);
+        }
       },
-      routed_rfh, &state));
+      routed_rfh, &states));
 
-  return state;
+  return states;
 }
 
 void MediaSessionImpl::ForAllPlayers(

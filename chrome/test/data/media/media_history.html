@@ -80,5 +80,15 @@ function finishPlaying() {
   const video = document.querySelector('video');
   video.currentTime = video.duration;
 }
+
+function enterPictureInPicture() {
+  const video = document.querySelector('video');
+  video.requestPictureInPicture().then(() => {
+    window.domAutomationController.send(true);
+  }).catch(() => {
+    window.domAutomationController.send(false);
+  });
+}
+
 </script>
 </html>

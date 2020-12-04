@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// Next MinVersion: 10
+// Next MinVersion: 11
 
 [Stable, Extensible]
 enum MediaPlaybackState {
@@ -51,9 +51,12 @@ enum MediaPictureInPictureState {
 
 [Stable, Extensible]
 enum MediaAudioVideoState {
-  kUnknown,
+  // Unused as of version 10, see |audio_video_states|.
+  kDeprecatedUnknown,
+
   kAudioOnly,
   kAudioVideo,
+  [MinVersion=10] kVideoOnly,
 };
 
 // Album art in MediaMetadata
@@ -151,12 +154,16 @@ struct MediaSessionInfo {
   [MinVersion=7] MediaPictureInPictureState picture_in_picture_state;
 
   // The audio/video state of the Media Session (if known).
-  [MinVersion=8] MediaAudioVideoState audio_video_state;
+  // DEPRECATED, use |audio_video_states| instead.
+  [MinVersion=8] MediaAudioVideoState deprecated_audio_video_state;
 
   // The audio_sink_id tells the client the device_id of the audio output device
   // being used for this media session. A null audio_sink_id implies that the
   // default device is being used.
   [MinVersion=9] string? audio_sink_id;
+
+  // The audio/video states of all the players in the Media Session (if known).
+  [MinVersion=10] array<MediaAudioVideoState>? audio_video_states;
 };
 
 // Contains debugging information about a MediaSession. This will be displayed

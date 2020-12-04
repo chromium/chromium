@@ -56,6 +56,9 @@ class MediaSessionPlayerObserver {
   // Returns if picture-in-picture is available for |player_id|.
   virtual bool IsPictureInPictureAvailable(int player_id) const = 0;
 
+  // Returns true if the |player_id| has audio tracks.
+  virtual bool HasAudio(int player_id) const = 0;
+
   // Returns true if the |player_id| has video tracks.
   virtual bool HasVideo(int player_id) const = 0;
 

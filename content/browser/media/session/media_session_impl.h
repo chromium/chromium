@@ -409,11 +409,12 @@ class MediaSessionImpl : public MediaSession,
   void DidReceiveAction(media_session::mojom::MediaSessionAction action,
                         blink::mojom::MediaSessionActionDetailsPtr details);
 
-  // Returns the media audio video state. This is whether the players associated
-  // with the media session are audio-only or have audio and video. If we have
-  // a |routed_service_| then we limit to players on that frame because this
-  // should align with the metadata.
-  media_session::mojom::MediaAudioVideoState GetMediaAudioVideoState();
+  // Returns the media audio video state for each player. This is whether the
+  // players associated with the media session are audio-only, video-only, or
+  // have both audio and video. If we have a |routed_service_| then we limit to
+  // players on that frame because this should align with the metadata.
+  std::vector<media_session::mojom::MediaAudioVideoState>
+  GetMediaAudioVideoStates();
 
   // Calls the callback with each |PlayerIdentifier| for every player associated
   // with this media session.

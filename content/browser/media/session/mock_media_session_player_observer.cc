@@ -164,6 +164,12 @@ int MockMediaSessionPlayerObserver::received_set_audio_sink_id_calls() const {
   return received_set_audio_sink_id_calls_;
 }
 
+bool MockMediaSessionPlayerObserver::HasAudio(int player_id) const {
+  EXPECT_GE(player_id, 0);
+  EXPECT_GT(players_.size(), static_cast<size_t>(player_id));
+  return true;
+}
+
 bool MockMediaSessionPlayerObserver::HasVideo(int player_id) const {
   EXPECT_GE(player_id, 0);
   EXPECT_GT(players_.size(), static_cast<size_t>(player_id));

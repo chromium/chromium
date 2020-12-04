@@ -213,9 +213,14 @@ bool MediaSessionController::AddOrRemovePlayer() {
   return true;
 }
 
+bool MediaSessionController::HasAudio(int player_id) const {
+  DCHECK_EQ(player_id_, player_id);
+  return has_audio_;
+}
+
 bool MediaSessionController::HasVideo(int player_id) const {
   DCHECK_EQ(player_id_, player_id);
-  return has_video_ && has_audio_;
+  return has_video_;
 }
 
 std::string MediaSessionController::GetAudioOutputSinkId(int player_id) const {

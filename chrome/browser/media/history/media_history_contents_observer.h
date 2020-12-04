@@ -59,8 +59,8 @@ class MediaHistoryContentsObserver
   // Stores whether the media session on this web contents have ever played.
   bool has_been_active_ = false;
 
-  // Stores whether the media session on this web contents has video.
-  bool has_video_ = false;
+  // Stores whether the media session on this web contents has audio and video.
+  bool has_audio_and_video_ = false;
 
   // If the web contents is currently navigating then we freeze any updates to
   // the media session metadata and position. This is because it is cleared

@@ -69,11 +69,11 @@ void MediaHistoryContentsObserver::MediaSessionInfoChanged(
     has_been_active_ = true;
   }
 
-  if (session_info->audio_video_state ==
-      media_session::mojom::MediaAudioVideoState::kAudioVideo) {
-    has_video_ = true;
+  if (base::Contains(*session_info->audio_video_states,
+                     media_session::mojom::MediaAudioVideoState::kAudioVideo)) {
+    has_audio_and_video_ = true;
   } else {
-    has_video_ = false;
+    has_audio_and_video_ = false;
   }
 }
 
@@ -112,7 +112,7 @@ void MediaHistoryContentsObserver::MaybeCommitMediaSession() {
   // If the media session has never played anything, does not have any metadata
   // or does not have video then we should not commit the media session.
   if (!has_been_active_ || !cached_metadata_ || cached_metadata_->IsEmpty() ||
-      !service_ || !has_video_) {
+      !service_ || !has_audio_and_video_) {
     return;
   }
 

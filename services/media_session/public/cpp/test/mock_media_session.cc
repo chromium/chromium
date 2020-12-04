@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 
 namespace media_session {
@@ -66,10 +67,14 @@ void MockMediaSessionMojoObserver::MediaSessionInfoChanged(
       expected_controllable_ == session_info_->is_controllable) {
     run_loop_->Quit();
     expected_controllable_.reset();
-  } else if (wanted_state_ == session_info_->state ||
-             session_info_->playback_state == wanted_playback_state_ ||
-             session_info_->audio_video_state == wanted_audio_video_state_) {
-    run_loop_->Quit();
+  } else {
+    if (wanted_state_ == session_info_->state ||
+        session_info_->playback_state == wanted_playback_state_ ||
+        (wanted_audio_video_states_ &&
+         base::ranges::is_permutation(*session_info_->audio_video_states,
+                                      *wanted_audio_video_states_))) {
+      run_loop_->Quit();
+    }
   }
 }
 
@@ -151,12 +156,14 @@ void MockMediaSessionMojoObserver::WaitForPlaybackState(
   StartWaiting();
 }
 
-void MockMediaSessionMojoObserver::WaitForAudioVideoState(
-    mojom::MediaAudioVideoState wanted_state) {
-  if (session_info_ && session_info_->audio_video_state == wanted_state)
+void MockMediaSessionMojoObserver::WaitForAudioVideoStates(
+    const std::vector<mojom::MediaAudioVideoState>& wanted_states) {
+  if (session_info_ && base::ranges::is_permutation(
+                           *session_info_->audio_video_states, wanted_states)) {
     return;
+  }
 
-  wanted_audio_video_state_ = wanted_state;
+  wanted_audio_video_states_ = wanted_states;
   StartWaiting();
 }
 
