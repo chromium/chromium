@@ -9,6 +9,7 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_table_backing.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector_backing.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_buildflags.h"
@@ -263,33 +264,6 @@ template <typename T, typename U, typename V>
 struct GCInfoTrait<HeapHashSet<T, U, V>>
     : public GCInfoTrait<HashSet<T, U, V, HeapAllocator>> {};
 
-template <typename ValueArg, typename TraitsArg = HashTraits<ValueArg>>
-class HeapLinkedHashSet
-    : public LinkedHashSet<ValueArg, TraitsArg, HeapAllocator> {
-  IS_GARBAGE_COLLECTED_CONTAINER_TYPE();
-  DISALLOW_NEW();
-
-  static void CheckType() {
-    static_assert(WTF::IsMemberOrWeakMemberType<ValueArg>::value,
-                  "HeapLinkedHashSet supports only Member and WeakMember.");
-    // If not trivially destructible, we have to add a destructor which will
-    // hinder performance.
-    static_assert(std::is_trivially_destructible<HeapLinkedHashSet>::value,
-                  "HeapLinkedHashSet must be trivially destructible.");
-    static_assert(WTF::IsTraceable<ValueArg>::value,
-                  "For sets without traceable elements, use LinkedHashSet<> "
-                  "instead of HeapLinkedHashSet<>.");
-  }
-
- public:
-  template <typename>
-  static void* AllocateObject(size_t size) {
-    return ThreadHeap::Allocate<HeapLinkedHashSet<ValueArg, TraitsArg>>(size);
-  }
-
-  HeapLinkedHashSet() { CheckType(); }
-};
-
 }  // namespace blink
 
 namespace WTF {
@@ -360,10 +334,6 @@ class HeapListHashSetAllocator {
     void Swap(AllocatorProvider& other) {}
   };
 };
-
-template <typename T, typename U>
-struct GCInfoTrait<HeapLinkedHashSet<T, U>>
-    : public GCInfoTrait<LinkedHashSet<T, U, HeapAllocator>> {};
 
 template <typename ValueArg,
           wtf_size_t inlineCapacity = 0,  // The inlineCapacity is just a dummy

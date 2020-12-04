@@ -538,8 +538,6 @@ class GarbageCollected {
   using GCInfoFoldedType = typename GCInfoFolded<Derived>::Type;
 
   GarbageCollected() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(GarbageCollected);
 };
 
 // Used for passing custom sizes to MakeGarbageCollected.

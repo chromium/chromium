@@ -55,6 +55,7 @@ blink_platform_sources("heap") {
   sources = [
     "blink_gc_memory_dump_provider.h",
     "collection_support/heap_hash_table_backing.h",
+    "collection_support/heap_linked_hash_set.h",
     "collection_support/heap_linked_stack.h",
     "collection_support/heap_vector_backing.h",
     "disallow_new_wrapper.h",
