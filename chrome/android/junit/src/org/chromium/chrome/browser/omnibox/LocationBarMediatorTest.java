@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import static junit.framework.Assert.assertNull;
-
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -25,9 +24,11 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.TemplateUrlService;
 
 /** Unit tests for LocationBarMediator. */
@@ -78,12 +79,37 @@ public class LocationBarMediatorTest {
     public void testGetVoiceRecognitionHandler_safeToCallAfterDestroy() {
         mMediator.onFinishNativeInitialization();
         mMediator.destroy();
-        assertNull(mMediator.getVoiceRecognitionHandler());
+        mMediator.getVoiceRecognitionHandler();
     }
 
     @Test
     public void testOnTabLoadingNtp() {
         mMediator.onNtpStartedLoading();
         verify(mLocationBarLayout).onNtpStartedLoading();
+    }
+
+    @Test
+    public void testRevertChanges_focused() {
+        doReturn(true).when(mLocationBarLayout).isUrlBarFocused();
+        UrlBarData urlBarData = mock(UrlBarData.class);
+        doReturn(urlBarData).when(mLocationBarDataProvider).getUrlBarData();
+        mMediator.revertChanges();
+        verify(mLocationBarLayout)
+                .setUrlBarText(urlBarData, UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_ALL);
+    }
+
+    @Test
+    public void testRevertChanges_focusedNativePage() {
+        doReturn(UrlConstants.NTP_URL).when(mLocationBarDataProvider).getCurrentUrl();
+        doReturn(true).when(mLocationBarLayout).isUrlBarFocused();
+        mMediator.revertChanges();
+        verify(mLocationBarLayout).setUrlBarTextEmpty();
+    }
+
+    @Test
+    public void testRevertChanges_unFocused() {
+        doReturn("http://url.com").when(mLocationBarDataProvider).getCurrentUrl();
+        mMediator.revertChanges();
+        verify(mLocationBarLayout).setUrl("http://url.com");
     }
 }

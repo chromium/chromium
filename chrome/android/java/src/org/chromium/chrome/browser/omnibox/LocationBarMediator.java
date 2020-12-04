@@ -5,7 +5,10 @@
 package org.chromium.chrome.browser.omnibox;
 
 import android.content.Context;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.View.OnKeyListener;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,8 +16,10 @@ import androidx.annotation.Nullable;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.gsa.GSAState;
+import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
+import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
@@ -22,6 +27,7 @@ import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
@@ -30,16 +36,17 @@ import java.util.List;
  * Mediator for the LocationBar component. Intended location for LocationBar business logic;
  * currently, migration of this logic out of LocationBarLayout is in progress.
  */
-class LocationBarMediator implements LocationBar, LocationBarDataProvider.Observer,
-                                     AutocompleteDelegate, FakeboxDelegate,
-                                     VoiceRecognitionHandler.Delegate,
-                                     AssistantVoiceSearchService.Observer, UrlBarDelegate {
-    private LocationBarLayout mLocationBarLayout;
+class LocationBarMediator implements LocationBarDataProvider.Observer, AutocompleteDelegate,
+                                     FakeboxDelegate, VoiceRecognitionHandler.Delegate,
+                                     AssistantVoiceSearchService.Observer, UrlBarDelegate,
+                                     OnKeyListener {
+    private final LocationBarLayout mLocationBarLayout;
     private VoiceRecognitionHandler mVoiceRecognitionHandler;
-    private LocationBarDataProvider mLocationBarDataProvider;
+    private final LocationBarDataProvider mLocationBarDataProvider;
     private AssistantVoiceSearchService mAssistantVoiceSearchService;
-    private OneshotSupplierImpl<AssistantVoiceSearchService> mAssistantVoiceSearchSupplier;
+    private final OneshotSupplierImpl<AssistantVoiceSearchService> mAssistantVoiceSearchSupplier;
     private StatusCoordinator mStatusCoordinator;
+    private AutocompleteCoordinator mAutocompleteCoordinator;
 
     /*package */ LocationBarMediator(@NonNull LocationBarLayout locationBarLayout,
             @NonNull LocationBarDataProvider locationBarDataProvider,
@@ -50,6 +57,15 @@ class LocationBarMediator implements LocationBar, LocationBarDataProvider.Observ
         mLocationBarDataProvider.addObserver(this);
         mAssistantVoiceSearchSupplier = assistantVoiceSearchSupplier;
         mVoiceRecognitionHandler = new VoiceRecognitionHandler(this, mAssistantVoiceSearchSupplier);
+    }
+
+    /*package */ void destroy() {
+        if (mAssistantVoiceSearchService != null) {
+            mAssistantVoiceSearchService.destroy();
+            mAssistantVoiceSearchService = null;
+        }
+        mStatusCoordinator = null;
+        mAutocompleteCoordinator = null;
     }
 
     /*package */ void onUrlFocusChange(boolean hasFocus) {
@@ -84,12 +100,60 @@ class LocationBarMediator implements LocationBar, LocationBarDataProvider.Observ
      * LocationBarMediator is a delegate for them, so is constructed beforehand.
      *
      * @param statusCoordinator
+     * @param autocompleteCoordinator
      */
-    /* package */ void setCoordinators(@NonNull StatusCoordinator statusCoordinator) {
+    /* package */ void setCoordinators(@NonNull StatusCoordinator statusCoordinator,
+            @NonNull AutocompleteCoordinator autocompleteCoordinator) {
         mStatusCoordinator = statusCoordinator;
+        mAutocompleteCoordinator = autocompleteCoordinator;
+    }
+
+    /*package */ void updateVisualsForState() {
+        mLocationBarLayout.onPrimaryColorChanged();
+    }
+
+    /*package */ void setShowTitle(boolean showTitle) {
+        // This method is only used in CustomTabToolbar.
+    }
+
+    /*package */ void updateLoadingState(boolean updateUrl) {
+        mLocationBarLayout.updateLoadingState(updateUrl);
+    }
+
+    /*package */ void showUrlBarCursorWithoutFocusAnimations() {
+        mLocationBarLayout.showUrlBarCursorWithoutFocusAnimations();
+    }
+
+    /*package */ void revertChanges() {
+        if (mLocationBarLayout.isUrlBarFocused()) {
+            String currentUrl = mLocationBarDataProvider.getCurrentUrl();
+            if (NativePageFactory.isNativePageUrl(
+                        currentUrl, mLocationBarDataProvider.isIncognito())) {
+                mLocationBarLayout.setUrlBarTextEmpty();
+            } else {
+                mLocationBarLayout.setUrlBarText(mLocationBarDataProvider.getUrlBarData(),
+                        UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_ALL);
+            }
+            setKeyboardVisibility(false, false);
+        } else {
+            mLocationBarLayout.setUrl(mLocationBarDataProvider.getCurrentUrl());
+        }
+    }
+
+    /*package */ void updateStatusIcon() {
+        mLocationBarLayout.updateStatusIcon();
     }
 
     // LocationBarData.Observer implementation
+
+    @Override
+    public void onTitleChanged() {}
+
+    @Override
+    public void onUrlChanged() {
+        mLocationBarLayout.setUrl(mLocationBarDataProvider.getCurrentUrl());
+    }
+
     @Override
     public void onIncognitoStateChanged() {
         mLocationBarLayout.updateMicButtonState();
@@ -103,73 +167,6 @@ class LocationBarMediator implements LocationBar, LocationBarDataProvider.Observ
     @Override
     public void onPrimaryColorChanged() {
         mLocationBarLayout.onPrimaryColorChanged();
-    }
-
-    @Override
-    public void onTitleChanged() {}
-
-    @Override
-    public void onUrlChanged() {
-        mLocationBarLayout.setUrl(mLocationBarDataProvider.getCurrentUrl());
-    }
-
-    // LocationBar implementation.
-    @Override
-    public void destroy() {
-        mLocationBarLayout = null;
-        mVoiceRecognitionHandler = null;
-        if (mAssistantVoiceSearchService != null) {
-            mAssistantVoiceSearchService.destroy();
-            mAssistantVoiceSearchService = null;
-        }
-        mLocationBarDataProvider.removeObserver(this);
-        mLocationBarDataProvider = null;
-        mStatusCoordinator = null;
-    }
-
-    @Override
-    public void updateVisualsForState() {
-        mLocationBarLayout.onPrimaryColorChanged();
-    }
-
-    @Override
-    public void setShowTitle(boolean showTitle) {
-        // This method is only used in CustomTabToolbar.
-    }
-
-    @Override
-    public void updateLoadingState(boolean updateUrl) {
-        mLocationBarLayout.updateLoadingState(updateUrl);
-    }
-
-    @Override
-    public void showUrlBarCursorWithoutFocusAnimations() {
-        mLocationBarLayout.showUrlBarCursorWithoutFocusAnimations();
-    }
-
-    @Override
-    public void selectAll() {
-        mLocationBarLayout.selectAll();
-    }
-
-    @Override
-    public void revertChanges() {
-        mLocationBarLayout.revertChanges();
-    }
-
-    @Override
-    public void updateStatusIcon() {
-        mLocationBarLayout.updateStatusIcon();
-    }
-
-    @Override
-    public View getContainerView() {
-        return mLocationBarLayout.getContainerView();
-    }
-
-    @Override
-    public View getSecurityIconView() {
-        return mLocationBarLayout.getSecurityIconView();
     }
 
     // FakeboxDelegate implementation.
@@ -289,12 +286,6 @@ class LocationBarMediator implements LocationBar, LocationBarDataProvider.Observ
         mLocationBarLayout.updateMicButtonState();
     }
 
-    @Nullable
-    @Override
-    public FakeboxDelegate getFakeboxDelegate() {
-        return null;
-    }
-
     @Override
     public void setSearchQuery(String query) {
         mLocationBarLayout.setSearchQuery(query);
@@ -336,5 +327,39 @@ class LocationBarMediator implements LocationBar, LocationBarDataProvider.Observ
     @Override
     public void gestureDetected(boolean isLongPress) {
         mLocationBarLayout.gestureDetected(isLongPress);
+    }
+
+    // OnKeyListener implementation.
+    @Override
+    public boolean onKey(View view, int keyCode, KeyEvent event) {
+        boolean isRtl = view.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+        if (mAutocompleteCoordinator.handleKeyEvent(keyCode, event)) {
+            return true;
+        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (KeyNavigationUtil.isActionDown(event) && event.getRepeatCount() == 0) {
+                // Tell the framework to start tracking this event.
+                mLocationBarLayout.getKeyDispatcherState().startTracking(event, this);
+                return true;
+            } else if (KeyNavigationUtil.isActionUp(event)) {
+                mLocationBarLayout.getKeyDispatcherState().handleUpEvent(event);
+                if (event.isTracking() && !event.isCanceled()) {
+                    mLocationBarLayout.backKeyPressed();
+                    return true;
+                }
+            }
+        } else if (keyCode == KeyEvent.KEYCODE_ESCAPE) {
+            if (KeyNavigationUtil.isActionDown(event) && event.getRepeatCount() == 0) {
+                revertChanges();
+                return true;
+            }
+        } else if ((!isRtl && KeyNavigationUtil.isGoRight(event))
+                || (isRtl && KeyNavigationUtil.isGoLeft(event))) {
+            // Ensures URL bar doesn't lose focus, when RIGHT or LEFT (RTL) key is pressed while
+            // the cursor is positioned at the end of the text.
+            TextView tv = (TextView) view;
+            return tv.getSelectionStart() == tv.getSelectionEnd()
+                    && tv.getSelectionEnd() == tv.getText().length();
+        }
+        return false;
     }
 }
