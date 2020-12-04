@@ -946,7 +946,10 @@ ReadableStream* CrossRealmTransformReadable::CreateReadableStream(
     return nullptr;
   }
 
-  controller_ = stream->GetController();
+  // The stream is created right above, and the type of the source is not given,
+  // hence it is guaranteed that the controller is a
+  // ReadableStreamDefaultController.
+  controller_ = To<ReadableStreamDefaultController>(stream->GetController());
   return stream;
 }
 

@@ -7,10 +7,10 @@
     Exposed=(Window,Worker,Worklet),
     RuntimeEnabled=ReadableByteStream
 ] interface ReadableByteStreamController {
-    [RaisesException] readonly attribute ReadableStreamBYOBRequest? byobRequest;
-    [RaisesException] readonly attribute double? desiredSize;
+    readonly attribute ReadableStreamBYOBRequest? byobRequest;
+    readonly attribute double? desiredSize;
 
     [CallWith=ScriptState, RaisesException] void close();
     [CallWith=ScriptState, RaisesException] void enqueue(ArrayBufferView chunk);
-    [CallWith=ScriptState, RaisesException] void error(optional any e);
+    [CallWith=ScriptState] void error(optional any e);
 };

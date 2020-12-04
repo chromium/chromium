@@ -7,6 +7,7 @@
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_controller.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -70,6 +71,9 @@ class ReadableStreamDefaultController : public ReadableStreamController {
   static const char* EnqueueExceptionMessage(
       const ReadableStreamDefaultController*);
 
+  bool IsDefaultController() const override { return true; }
+  bool IsByteStreamController() const override { return false; }
+
   void Trace(Visitor*) const override;
 
   // https://streams.spec.whatwg.org/#rs-default-controller-private-cancel
@@ -123,6 +127,13 @@ class ReadableStreamDefaultController : public ReadableStreamController {
   Member<QueueWithSizes> queue_;
   double strategy_high_water_mark_ = 0.0;
   Member<StrategySizeAlgorithm> strategy_size_algorithm_;
+};
+
+template <>
+struct DowncastTraits<ReadableStreamDefaultController> {
+  static bool AllowFrom(const ReadableStreamController& controller) {
+    return controller.IsDefaultController();
+  }
 };
 
 }  // namespace blink

@@ -11,30 +11,77 @@
 
 namespace blink {
 
+ReadableStreamBYOBRequest::ReadableStreamBYOBRequest(
+    ReadableByteStreamController* controller,
+    NotShared<DOMUint8Array> view)
+    : controller_(controller), view_(view) {}
+
 NotShared<DOMArrayBufferView> ReadableStreamBYOBRequest::view(
     ExceptionState& exception_state) const {
-  ThrowUnimplemented(exception_state);
-  return NotShared<DOMArrayBufferView>();
+  // https://streams.spec.whatwg.org/#rs-byob-request-view
+  // 1. Return this.[[view]].
+  return view_;
 }
 
 void ReadableStreamBYOBRequest::respond(ScriptState* script_state,
-                                        uint64_t bytesWritten,
+                                        uint64_t bytes_written,
                                         ExceptionState& exception_state) {
-  ThrowUnimplemented(exception_state);
-  return;
+  // https://streams.spec.whatwg.org/#rs-byob-request-respond
+  // 1. If this.[[controller]] is undefined, throw a TypeError exception.
+  if (!controller_) {
+    exception_state.ThrowTypeError(
+        "Cannot respond to an invalidated ReadableStreamBYOBRequest");
+    return;
+  }
+  // 2. If IsDetachedBuffer(this.[[view]].[[ArrayBuffer]]) is true, throw a
+  // TypeError exception.
+  if (view_->buffer()->IsDetached()) {
+    exception_state.ThrowTypeError("ArrayBufferView is detached");
+    return;
+  }
+  // 3. Assert: this.[[view]].[[ByteLength]] > 0.
+  DCHECK_GT(view_->byteLength(), 0u);
+  // 4. Assert: this.[[view]].[[ViewedArrayBuffer]].[[ByteLength]] > 0.
+  DCHECK_GT(view_->buffer()->ByteLength(), 0.0);
+  // 5. Perform ? ReadableByteStreamControllerRespond(this.[[controller]],
+  // bytesWritten).
+  ReadableByteStreamController::Respond(script_state, controller_,
+                                        static_cast<size_t>(bytes_written),
+                                        exception_state);
 }
 
 void ReadableStreamBYOBRequest::respondWithNewView(
     ScriptState* script_state,
     NotShared<DOMArrayBufferView> view,
     ExceptionState& exception_state) {
-  ThrowUnimplemented(exception_state);
-  return;
+  // https://streams.spec.whatwg.org/#rs-byob-request-respond-with-new-view
+  // 1. If view.[[ByteLength]] is 0, throw a TypeError exception.
+  if (view->byteLength() == 0) {
+    exception_state.ThrowTypeError("ArrayBufferView is empty");
+    return;
+  }
+  // 2. If view.[[ViewedArrayBuffer]].[[ArrayBufferByteLength]] is 0, throw a
+  // TypeError exception.
+  if (view->buffer()->ByteLength() == 0) {
+    exception_state.ThrowTypeError("ArrayBuffer is empty");
+    return;
+  }
+  // 3. If this.[[controller]] is undefined, throw a TypeError exception.
+  if (!controller_) {
+    exception_state.ThrowTypeError(
+        "Cannot respond to an invalidated ReadableStreamBYOBRequest");
+    return;
+  }
+  // 4. Return ?
+  // ReadableByteStreamControllerRespondWithNewView(this.[[controller]], view).
+  ReadableByteStreamController::RespondWithNewView(script_state, controller_,
+                                                   view, exception_state);
 }
 
-void ReadableStreamBYOBRequest::ThrowUnimplemented(
-    ExceptionState& exception_state) {
-  exception_state.ThrowTypeError("unimplemented");
+void ReadableStreamBYOBRequest::Trace(Visitor* visitor) const {
+  visitor->Trace(controller_);
+  visitor->Trace(view_);
+  ScriptWrappable::Trace(visitor);
 }
 
 }  // namespace blink

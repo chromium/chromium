@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 224 tests; 139 PASS, 85 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 224 tests; 193 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS ReadableStreamDefaultReader includes ReadableStreamGenericReader: member names are unique
@@ -46,24 +46,24 @@ PASS ReadableStreamDefaultReader interface: (new ReadableStream()).getReader() m
 PASS ReadableStreamDefaultReader interface: (new ReadableStream()).getReader() must inherit property "closed" with the proper type
 PASS ReadableStreamDefaultReader interface: (new ReadableStream()).getReader() must inherit property "cancel(optional any)" with the proper type
 PASS ReadableStreamDefaultReader interface: calling cancel(optional any) on (new ReadableStream()).getReader() with too few arguments must throw TypeError
-FAIL ReadableStreamBYOBReader interface: existence and properties of interface object assert_own_property: self does not have own property "ReadableStreamBYOBReader" expected property "ReadableStreamBYOBReader" missing
-FAIL ReadableStreamBYOBReader interface object length assert_own_property: self does not have own property "ReadableStreamBYOBReader" expected property "ReadableStreamBYOBReader" missing
-FAIL ReadableStreamBYOBReader interface object name assert_own_property: self does not have own property "ReadableStreamBYOBReader" expected property "ReadableStreamBYOBReader" missing
-FAIL ReadableStreamBYOBReader interface: existence and properties of interface prototype object assert_own_property: self does not have own property "ReadableStreamBYOBReader" expected property "ReadableStreamBYOBReader" missing
-FAIL ReadableStreamBYOBReader interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "ReadableStreamBYOBReader" expected property "ReadableStreamBYOBReader" missing
-FAIL ReadableStreamBYOBReader interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "ReadableStreamBYOBReader" expected property "ReadableStreamBYOBReader" missing
-FAIL ReadableStreamBYOBReader interface: operation read(ArrayBufferView) assert_own_property: self does not have own property "ReadableStreamBYOBReader" expected property "ReadableStreamBYOBReader" missing
-FAIL ReadableStreamBYOBReader interface: operation releaseLock() assert_own_property: self does not have own property "ReadableStreamBYOBReader" expected property "ReadableStreamBYOBReader" missing
-FAIL ReadableStreamBYOBReader interface: attribute closed assert_own_property: self does not have own property "ReadableStreamBYOBReader" expected property "ReadableStreamBYOBReader" missing
-FAIL ReadableStreamBYOBReader interface: operation cancel(optional any) assert_own_property: self does not have own property "ReadableStreamBYOBReader" expected property "ReadableStreamBYOBReader" missing
-FAIL ReadableStreamBYOBReader must be primary interface of (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) assert_equals: Unexpected exception when evaluating object expected null but got object "RangeError: Failed to construct 'ReadableStream': bytes type is not yet implemented"
-FAIL Stringification of (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) assert_equals: Unexpected exception when evaluating object expected null but got object "RangeError: Failed to construct 'ReadableStream': bytes type is not yet implemented"
-FAIL ReadableStreamBYOBReader interface: (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) must inherit property "read(ArrayBufferView)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "RangeError: Failed to construct 'ReadableStream': bytes type is not yet implemented"
-FAIL ReadableStreamBYOBReader interface: calling read(ArrayBufferView) on (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "RangeError: Failed to construct 'ReadableStream': bytes type is not yet implemented"
-FAIL ReadableStreamBYOBReader interface: (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) must inherit property "releaseLock()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "RangeError: Failed to construct 'ReadableStream': bytes type is not yet implemented"
-FAIL ReadableStreamBYOBReader interface: (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) must inherit property "closed" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "RangeError: Failed to construct 'ReadableStream': bytes type is not yet implemented"
-FAIL ReadableStreamBYOBReader interface: (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) must inherit property "cancel(optional any)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "RangeError: Failed to construct 'ReadableStream': bytes type is not yet implemented"
-FAIL ReadableStreamBYOBReader interface: calling cancel(optional any) on (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "RangeError: Failed to construct 'ReadableStream': bytes type is not yet implemented"
+PASS ReadableStreamBYOBReader interface: existence and properties of interface object
+PASS ReadableStreamBYOBReader interface object length
+PASS ReadableStreamBYOBReader interface object name
+PASS ReadableStreamBYOBReader interface: existence and properties of interface prototype object
+PASS ReadableStreamBYOBReader interface: existence and properties of interface prototype object's "constructor" property
+PASS ReadableStreamBYOBReader interface: existence and properties of interface prototype object's @@unscopables property
+PASS ReadableStreamBYOBReader interface: operation read(ArrayBufferView)
+PASS ReadableStreamBYOBReader interface: operation releaseLock()
+PASS ReadableStreamBYOBReader interface: attribute closed
+PASS ReadableStreamBYOBReader interface: operation cancel(optional any)
+PASS ReadableStreamBYOBReader must be primary interface of (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' })
+PASS Stringification of (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' })
+PASS ReadableStreamBYOBReader interface: (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) must inherit property "read(ArrayBufferView)" with the proper type
+PASS ReadableStreamBYOBReader interface: calling read(ArrayBufferView) on (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) with too few arguments must throw TypeError
+PASS ReadableStreamBYOBReader interface: (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) must inherit property "releaseLock()" with the proper type
+PASS ReadableStreamBYOBReader interface: (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) must inherit property "closed" with the proper type
+PASS ReadableStreamBYOBReader interface: (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) must inherit property "cancel(optional any)" with the proper type
+PASS ReadableStreamBYOBReader interface: calling cancel(optional any) on (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) with too few arguments must throw TypeError
 FAIL ReadableStreamDefaultController interface: existence and properties of interface object assert_own_property: self does not have own property "ReadableStreamDefaultController" expected property "ReadableStreamDefaultController" missing
 FAIL ReadableStreamDefaultController interface object length assert_own_property: self does not have own property "ReadableStreamDefaultController" expected property "ReadableStreamDefaultController" missing
 FAIL ReadableStreamDefaultController interface object name assert_own_property: self does not have own property "ReadableStreamDefaultController" expected property "ReadableStreamDefaultController" missing
@@ -82,42 +82,42 @@ PASS ReadableStreamDefaultController interface: self.readableStreamDefaultContro
 PASS ReadableStreamDefaultController interface: calling enqueue(optional any) on self.readableStreamDefaultController with too few arguments must throw TypeError
 PASS ReadableStreamDefaultController interface: self.readableStreamDefaultController must inherit property "error(optional any)" with the proper type
 PASS ReadableStreamDefaultController interface: calling error(optional any) on self.readableStreamDefaultController with too few arguments must throw TypeError
-FAIL ReadableByteStreamController interface: existence and properties of interface object assert_own_property: self does not have own property "ReadableByteStreamController" expected property "ReadableByteStreamController" missing
-FAIL ReadableByteStreamController interface object length assert_own_property: self does not have own property "ReadableByteStreamController" expected property "ReadableByteStreamController" missing
-FAIL ReadableByteStreamController interface object name assert_own_property: self does not have own property "ReadableByteStreamController" expected property "ReadableByteStreamController" missing
-FAIL ReadableByteStreamController interface: existence and properties of interface prototype object assert_own_property: self does not have own property "ReadableByteStreamController" expected property "ReadableByteStreamController" missing
-FAIL ReadableByteStreamController interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "ReadableByteStreamController" expected property "ReadableByteStreamController" missing
-FAIL ReadableByteStreamController interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "ReadableByteStreamController" expected property "ReadableByteStreamController" missing
-FAIL ReadableByteStreamController interface: attribute byobRequest assert_own_property: self does not have own property "ReadableByteStreamController" expected property "ReadableByteStreamController" missing
-FAIL ReadableByteStreamController interface: attribute desiredSize assert_own_property: self does not have own property "ReadableByteStreamController" expected property "ReadableByteStreamController" missing
-FAIL ReadableByteStreamController interface: operation close() assert_own_property: self does not have own property "ReadableByteStreamController" expected property "ReadableByteStreamController" missing
-FAIL ReadableByteStreamController interface: operation enqueue(ArrayBufferView) assert_own_property: self does not have own property "ReadableByteStreamController" expected property "ReadableByteStreamController" missing
-FAIL ReadableByteStreamController interface: operation error(optional any) assert_own_property: self does not have own property "ReadableByteStreamController" expected property "ReadableByteStreamController" missing
-FAIL ReadableByteStreamController must be primary interface of self.readableByteStreamController assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL Stringification of self.readableByteStreamController assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ReadableByteStreamController interface: self.readableByteStreamController must inherit property "byobRequest" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ReadableByteStreamController interface: self.readableByteStreamController must inherit property "desiredSize" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ReadableByteStreamController interface: self.readableByteStreamController must inherit property "close()" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ReadableByteStreamController interface: self.readableByteStreamController must inherit property "enqueue(ArrayBufferView)" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ReadableByteStreamController interface: calling enqueue(ArrayBufferView) on self.readableByteStreamController with too few arguments must throw TypeError assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ReadableByteStreamController interface: self.readableByteStreamController must inherit property "error(optional any)" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ReadableByteStreamController interface: calling error(optional any) on self.readableByteStreamController with too few arguments must throw TypeError assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ReadableStreamBYOBRequest interface: existence and properties of interface object assert_own_property: self does not have own property "ReadableStreamBYOBRequest" expected property "ReadableStreamBYOBRequest" missing
-FAIL ReadableStreamBYOBRequest interface object length assert_own_property: self does not have own property "ReadableStreamBYOBRequest" expected property "ReadableStreamBYOBRequest" missing
-FAIL ReadableStreamBYOBRequest interface object name assert_own_property: self does not have own property "ReadableStreamBYOBRequest" expected property "ReadableStreamBYOBRequest" missing
-FAIL ReadableStreamBYOBRequest interface: existence and properties of interface prototype object assert_own_property: self does not have own property "ReadableStreamBYOBRequest" expected property "ReadableStreamBYOBRequest" missing
-FAIL ReadableStreamBYOBRequest interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "ReadableStreamBYOBRequest" expected property "ReadableStreamBYOBRequest" missing
-FAIL ReadableStreamBYOBRequest interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "ReadableStreamBYOBRequest" expected property "ReadableStreamBYOBRequest" missing
-FAIL ReadableStreamBYOBRequest interface: attribute view assert_own_property: self does not have own property "ReadableStreamBYOBRequest" expected property "ReadableStreamBYOBRequest" missing
-FAIL ReadableStreamBYOBRequest interface: operation respond(unsigned long long) assert_own_property: self does not have own property "ReadableStreamBYOBRequest" expected property "ReadableStreamBYOBRequest" missing
-FAIL ReadableStreamBYOBRequest interface: operation respondWithNewView(ArrayBufferView) assert_own_property: self does not have own property "ReadableStreamBYOBRequest" expected property "ReadableStreamBYOBRequest" missing
-FAIL ReadableStreamBYOBRequest must be primary interface of self.readableStreamByobRequest assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL Stringification of self.readableStreamByobRequest assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ReadableStreamBYOBRequest interface: self.readableStreamByobRequest must inherit property "view" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ReadableStreamBYOBRequest interface: self.readableStreamByobRequest must inherit property "respond(unsigned long long)" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ReadableStreamBYOBRequest interface: calling respond(unsigned long long) on self.readableStreamByobRequest with too few arguments must throw TypeError assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ReadableStreamBYOBRequest interface: self.readableStreamByobRequest must inherit property "respondWithNewView(ArrayBufferView)" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ReadableStreamBYOBRequest interface: calling respondWithNewView(ArrayBufferView) on self.readableStreamByobRequest with too few arguments must throw TypeError assert_equals: wrong typeof object expected "object" but got "undefined"
+PASS ReadableByteStreamController interface: existence and properties of interface object
+PASS ReadableByteStreamController interface object length
+PASS ReadableByteStreamController interface object name
+PASS ReadableByteStreamController interface: existence and properties of interface prototype object
+PASS ReadableByteStreamController interface: existence and properties of interface prototype object's "constructor" property
+PASS ReadableByteStreamController interface: existence and properties of interface prototype object's @@unscopables property
+PASS ReadableByteStreamController interface: attribute byobRequest
+PASS ReadableByteStreamController interface: attribute desiredSize
+PASS ReadableByteStreamController interface: operation close()
+PASS ReadableByteStreamController interface: operation enqueue(ArrayBufferView)
+PASS ReadableByteStreamController interface: operation error(optional any)
+PASS ReadableByteStreamController must be primary interface of self.readableByteStreamController
+PASS Stringification of self.readableByteStreamController
+PASS ReadableByteStreamController interface: self.readableByteStreamController must inherit property "byobRequest" with the proper type
+PASS ReadableByteStreamController interface: self.readableByteStreamController must inherit property "desiredSize" with the proper type
+PASS ReadableByteStreamController interface: self.readableByteStreamController must inherit property "close()" with the proper type
+PASS ReadableByteStreamController interface: self.readableByteStreamController must inherit property "enqueue(ArrayBufferView)" with the proper type
+PASS ReadableByteStreamController interface: calling enqueue(ArrayBufferView) on self.readableByteStreamController with too few arguments must throw TypeError
+PASS ReadableByteStreamController interface: self.readableByteStreamController must inherit property "error(optional any)" with the proper type
+PASS ReadableByteStreamController interface: calling error(optional any) on self.readableByteStreamController with too few arguments must throw TypeError
+PASS ReadableStreamBYOBRequest interface: existence and properties of interface object
+PASS ReadableStreamBYOBRequest interface object length
+PASS ReadableStreamBYOBRequest interface object name
+PASS ReadableStreamBYOBRequest interface: existence and properties of interface prototype object
+PASS ReadableStreamBYOBRequest interface: existence and properties of interface prototype object's "constructor" property
+PASS ReadableStreamBYOBRequest interface: existence and properties of interface prototype object's @@unscopables property
+PASS ReadableStreamBYOBRequest interface: attribute view
+PASS ReadableStreamBYOBRequest interface: operation respond(unsigned long long)
+PASS ReadableStreamBYOBRequest interface: operation respondWithNewView(ArrayBufferView)
+PASS ReadableStreamBYOBRequest must be primary interface of self.readableStreamByobRequest
+PASS Stringification of self.readableStreamByobRequest
+PASS ReadableStreamBYOBRequest interface: self.readableStreamByobRequest must inherit property "view" with the proper type
+PASS ReadableStreamBYOBRequest interface: self.readableStreamByobRequest must inherit property "respond(unsigned long long)" with the proper type
+PASS ReadableStreamBYOBRequest interface: calling respond(unsigned long long) on self.readableStreamByobRequest with too few arguments must throw TypeError
+PASS ReadableStreamBYOBRequest interface: self.readableStreamByobRequest must inherit property "respondWithNewView(ArrayBufferView)" with the proper type
+PASS ReadableStreamBYOBRequest interface: calling respondWithNewView(ArrayBufferView) on self.readableStreamByobRequest with too few arguments must throw TypeError
 PASS WritableStream interface: existence and properties of interface object
 PASS WritableStream interface object length
 PASS WritableStream interface object name

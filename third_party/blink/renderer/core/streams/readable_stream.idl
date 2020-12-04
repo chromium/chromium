@@ -4,8 +4,10 @@
 
 // https://streams.spec.whatwg.org/#rs-class
 typedef (ReadableStreamDefaultReader or ReadableStreamBYOBReader) ReadableStreamReader;
+typedef (ReadableStreamDefaultController or ReadableByteStreamController) ReadableStreamController;
 
 enum ReadableStreamReaderMode { "byob" };
+enum ReadableStreamType { "bytes" };
 
 [
     Exposed=(Window,Worker,Worklet)

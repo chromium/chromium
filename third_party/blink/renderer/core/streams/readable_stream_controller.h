@@ -15,6 +15,9 @@ class StreamPromiseResolver;
 
 class ReadableStreamController : public ScriptWrappable {
  public:
+  virtual bool IsDefaultController() const = 0;
+  virtual bool IsByteStreamController() const = 0;
+
   // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamcontroller-cancelsteps
   virtual v8::Local<v8::Promise> CancelSteps(ScriptState*,
                                              v8::Local<v8::Value> reason) = 0;

@@ -68,9 +68,21 @@ CORE_EXPORT StreamStartAlgorithm* CreateStartAlgorithm(
     const char* method_name_for_error,
     v8::Local<v8::Value> controller);
 
+// Create a StreamStartAlgorithm from the "start" method on |underlying_object|
+// for readable byte streams.
+CORE_EXPORT StreamStartAlgorithm* CreateByteStreamStartAlgorithm(
+    ScriptState*,
+    v8::Local<v8::Object> underlying_object,
+    v8::Local<v8::Value> method,
+    v8::Local<v8::Value> controller);
+
 // Returns a startAlgorithm that always returns a promise resolved with
 // undefined.
 CORE_EXPORT StreamStartAlgorithm* CreateTrivialStartAlgorithm();
+
+// Returns a streamAlgorithm that always returns a promise resolved with
+// undefined.
+CORE_EXPORT StreamAlgorithm* CreateTrivialStreamAlgorithm();
 
 // Used in place of InvokeOrNoop in spec. Always takes 1 argument.
 // https://streams.spec.whatwg.org/#invoke-or-noop
@@ -80,6 +92,15 @@ CORE_EXPORT v8::MaybeLocal<v8::Value> CallOrNoop1(ScriptState*,
                                                   const char* name_for_error,
                                                   v8::Local<v8::Value> arg0,
                                                   ExceptionState&);
+
+// Used in JavaScriptByteStreamStartAlgoirthm to call the method.
+// This is a variation of the CallOrNoop1 method where it is given the method
+// function already.
+CORE_EXPORT v8::MaybeLocal<v8::Value> Call1(ScriptState*,
+                                            v8::Local<v8::Function> method,
+                                            v8::Local<v8::Object> object,
+                                            v8::Local<v8::Value> arg0,
+                                            ExceptionState&);
 
 // https://streams.spec.whatwg.org/#promise-call
 // "PromiseCall(F, V, args)"
@@ -152,6 +173,8 @@ class StrategyUnpacker final {
   double GetHighWaterMark(ScriptState*,
                           int default_value,
                           ExceptionState&) const;
+
+  bool IsSizeUndefined() const;
 
  private:
   v8::Local<v8::Value> size_;

@@ -617,6 +617,9 @@ core_callback_function_idl_files =
                     "dom/function_string_callback.idl",
                     "dom/idle_request_callback.idl",
                     "dom/void_function.idl",
+                    "streams/underlying_source_cancel_callback.idl",
+                    "streams/underlying_source_pull_callback.idl",
+                    "streams/underlying_source_start_callback.idl",
                   ],
                   "abspath")
 
@@ -749,6 +752,7 @@ core_dictionary_idl_files =
                     "streams/readable_stream_get_reader_options.idl",
                     "streams/readable_writable_pair.idl",
                     "streams/stream_pipe_options.idl",
+                    "streams/underlying_source.idl",
                     "streams/queuing_strategy_init.idl",
                     "timing/measure_memory/memory_measurement.idl",
                     "timing/measure_memory/memory_breakdown_entry.idl",

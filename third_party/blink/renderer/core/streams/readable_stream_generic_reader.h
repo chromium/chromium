@@ -31,6 +31,9 @@ class CORE_EXPORT ReadableStreamGenericReader : public ScriptWrappable {
   ReadableStreamGenericReader();
   ~ReadableStreamGenericReader() override;
 
+  virtual bool IsDefaultReader() const = 0;
+  virtual bool IsBYOBReader() const = 0;
+
   // https://streams.spec.whatwg.org/#generic-reader-closed
   ScriptPromise closed(ScriptState*) const;
 

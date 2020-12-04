@@ -798,7 +798,6 @@ http/tests/preload/avoid_delaying_onload_link_preload.html
 http/tests/security/local-JavaScript-from-remote.html
 http/tests/security/no-javascript-refresh.php
 http/tests/shapes/crash-image-changed-during-layout.html
-http/tests/streams/chromium/get-reader-byob.html
 http/tests/uri/escaped-entity.html
 http/tests/uri/resolve-encoding-relative.html
 http/tests/uri/utf8-path.html

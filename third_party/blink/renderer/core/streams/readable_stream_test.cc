@@ -6,15 +6,18 @@
 
 #include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/readable_stream_default_reader_or_readable_stream_byob_reader.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_extras_test_utils.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/core/messaging/message_channel.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_get_reader_options.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/streams/test_underlying_source.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
@@ -216,6 +219,42 @@ TEST_F(ReadableStreamTest, GetReader) {
   EXPECT_FALSE(stream->IsDisturbed());
 
   reader->read(script_state, ASSERT_NO_EXCEPTION);
+
+  EXPECT_TRUE(stream->IsDisturbed());
+}
+
+// Testing getReader with mode BYOB.
+TEST_F(ReadableStreamTest, GetBYOBReader) {
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+  v8::Isolate* isolate = scope.GetIsolate();
+
+  ScriptValue byte_stream =
+      EvalWithPrintingError(&scope, "new ReadableStream({type: 'bytes'})");
+  ReadableStream* stream{
+      V8ReadableStream::ToImplWithTypeCheck(isolate, byte_stream.V8Value())};
+  ASSERT_TRUE(stream);
+
+  EXPECT_FALSE(stream->locked());
+  EXPECT_FALSE(stream->IsLocked());
+  EXPECT_FALSE(stream->IsDisturbed());
+
+  auto* options = ReadableStreamGetReaderOptions::Create();
+  options->setMode("byob");
+
+  ReadableStreamDefaultReaderOrReadableStreamBYOBReader return_value;
+  stream->getReader(script_state, options, return_value, ASSERT_NO_EXCEPTION);
+  ReadableStreamBYOBReader* reader =
+      return_value.GetAsReadableStreamBYOBReader();
+  ASSERT_TRUE(reader);
+
+  EXPECT_TRUE(stream->locked());
+  EXPECT_TRUE(stream->IsLocked());
+  EXPECT_FALSE(stream->IsDisturbed());
+
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  reader->read(script_state, view, ASSERT_NO_EXCEPTION);
 
   EXPECT_TRUE(stream->IsDisturbed());
 }

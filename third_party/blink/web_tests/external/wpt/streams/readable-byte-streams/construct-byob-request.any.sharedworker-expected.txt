@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL construct-byob-request Uncaught RangeError: Failed to construct 'ReadableStream': bytes type is not yet implemented
-Harness: the test ran to completion.
-

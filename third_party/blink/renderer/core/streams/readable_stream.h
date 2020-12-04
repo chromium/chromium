@@ -10,6 +10,7 @@
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_byob_reader.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
@@ -21,6 +22,8 @@ namespace blink {
 class AbortSignal;
 class ExceptionState;
 class MessagePort;
+class ReadableByteStreamController;
+class ReadableStreamController;
 class ReadableStreamDefaultController;
 class ReadableStreamDefaultReaderOrReadableStreamBYOBReader;
 class ReadableStreamGetReaderOptions;
@@ -211,6 +214,11 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
                                                            bool for_author_code,
                                                            ExceptionState&);
 
+  // https://streams.spec.whatwg.org/#acquire-readable-stream-byob-reader
+  static ReadableStreamBYOBReader* AcquireBYOBReader(ScriptState*,
+                                                     ReadableStream*,
+                                                     ExceptionState&);
+
   //
   // Functions exported for use by TransformStream. Not part of the standard.
   //
@@ -227,7 +235,7 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
     return stream->state_ == kErrored;
   }
 
-  ReadableStreamDefaultController* GetController() {
+  ReadableStreamController* GetController() {
     return readable_stream_controller_;
   }
 
@@ -239,6 +247,8 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
+  friend class ReadableByteStreamController;
+  friend class ReadableStreamBYOBReader;
   friend class ReadableStreamDefaultController;
   friend class ReadableStreamDefaultReader;
   friend class ReadableStreamGenericReader;
@@ -256,6 +266,10 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
 
   // https://streams.spec.whatwg.org/#initialize-readable-stream
   static void Initialize(ReadableStream*);
+
+  static void AddReadIntoRequest(ScriptState*,
+                                 ReadableStream*,
+                                 ReadableStreamBYOBReader::ReadIntoRequest*);
 
   // https://streams.spec.whatwg.org/#readable-stream-add-read-request
   static StreamPromiseResolver* AddReadRequest(ScriptState*, ReadableStream*);
@@ -277,14 +291,29 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   // https://streams.spec.whatwg.org/#readable-stream-error
   static void Error(ScriptState*, ReadableStream*, v8::Local<v8::Value> e);
 
+  // https://streams.spec.whatwg.org/#readable-stream-fulfill-read-into-request
+  static void FulfillReadIntoRequest(ScriptState*,
+                                     ReadableStream*,
+                                     DOMArrayBufferView* chunk,
+                                     bool done);
+
   // https://streams.spec.whatwg.org/#readable-stream-fulfill-read-request
   static void FulfillReadRequest(ScriptState*,
                                  ReadableStream*,
                                  v8::Local<v8::Value> chunk,
                                  bool done);
 
+  // https://streams.spec.whatwg.org/#readable-stream-get-num-read-into-requests
+  static int GetNumReadIntoRequests(const ReadableStream*);
+
   // https://streams.spec.whatwg.org/#readable-stream-get-num-read-requests
   static int GetNumReadRequests(const ReadableStream*);
+
+  // https://streams.spec.whatwg.org/#readable-stream-has-byob-reader
+  static bool HasBYOBReader(const ReadableStream*);
+
+  // https://streams.spec.whatwg.org/#readable-stream-has-default-reader
+  static bool HasDefaultReader(const ReadableStream*);
 
   //
   // TODO(ricea): Functions for transferable streams.
@@ -299,7 +328,7 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
 
   bool is_disturbed_ = false;
   State state_ = kReadable;
-  Member<ReadableStreamDefaultController> readable_stream_controller_;
+  Member<ReadableStreamController> readable_stream_controller_;
   Member<ReadableStreamGenericReader> reader_;
   TraceWrapperV8Reference<v8::Value> stored_error_;
   std::unique_ptr<ReadableStreamTransferringOptimizer> transferring_optimizer_;

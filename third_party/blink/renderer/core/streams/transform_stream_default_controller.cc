@@ -18,11 +18,21 @@
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
 TransformStreamDefaultController::TransformStreamDefaultController() = default;
 TransformStreamDefaultController::~TransformStreamDefaultController() = default;
+
+ReadableStreamDefaultController*
+TransformStreamDefaultController::GetDefaultController(
+    TransformStream* stream) {
+  // The TransformStreamDefaultController will always use a
+  // ReadableStreamDefaultController. Hence, it is safe to down-cast here.
+  return To<ReadableStreamDefaultController>(
+      stream->readable_->GetController());
+}
 
 base::Optional<double> TransformStreamDefaultController::desiredSize() const {
   // https://streams.spec.whatwg.org/#ts-default-controller-desired-size
@@ -30,7 +40,7 @@ base::Optional<double> TransformStreamDefaultController::desiredSize() const {
   //    this.[[controlledTransformStream]].[[readable]].
   //    [[readableStreamController]].
   const auto* readable_controller =
-      controlled_transform_stream_->readable_->GetController();
+      GetDefaultController(controlled_transform_stream_);
 
   // 3. Return !
   //    ReadableStreamDefaultControllerGetDesiredSize(readableController).
@@ -249,7 +259,7 @@ void TransformStreamDefaultController::Enqueue(
 
   // 2. Let readableController be
   //    stream.[[readable]].[[readableStreamController]].
-  auto* readable_controller = stream->readable_->GetController();
+  auto* readable_controller = GetDefaultController(stream);
 
   // 3. If !
   //    ReadableStreamDefaultControllerCanCloseOrEnqueue(readableController) is
@@ -360,7 +370,7 @@ void TransformStreamDefaultController::Terminate(
   // 2. Let readableController be
   //    stream.[[readable]].[[readableStreamController]].
   ReadableStreamDefaultController* readable_controller =
-      stream->readable_->GetController();
+      GetDefaultController(stream);
 
   // 3. If !
   //    ReadableStreamDefaultControllerCanCloseOrEnqueue(readableController) is

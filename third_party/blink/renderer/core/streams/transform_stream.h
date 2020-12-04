@@ -15,6 +15,7 @@ namespace blink {
 
 class ExceptionState;
 class ReadableStream;
+class ReadableStreamDefaultController;
 class ScriptState;
 class StrategySizeAlgorithm;
 class StreamAlgorithm;
@@ -123,6 +124,8 @@ class CORE_EXPORT TransformStream final : public ScriptWrappable {
   static void SetBackpressure(ScriptState*,
                               TransformStream*,
                               bool backpressure);
+
+  ReadableStreamDefaultController* GetReadableController();
 
   // The [[backpressure]] internal slot from the standard is here called
   // |had_backpressure_| to conform to Blink style. The initial value is
