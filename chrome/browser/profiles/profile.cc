@@ -12,7 +12,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_prefs.h"
@@ -21,7 +20,6 @@
 #include "components/media_router/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_client.h"
@@ -78,34 +76,6 @@ base::LazyInstance<std::set<content::BrowserContext*>>::Leaky
 #endif  // DCHECK_IS_ON()
 
 namespace {
-
-class ChromeVariationsClient : public variations::VariationsClient {
- public:
-  explicit ChromeVariationsClient(content::BrowserContext* browser_context)
-      : browser_context_(browser_context) {}
-
-  ~ChromeVariationsClient() override = default;
-
-  bool IsOffTheRecord() const override {
-    return browser_context_->IsOffTheRecord();
-  }
-
-  variations::mojom::VariationsHeadersPtr GetVariationsHeaders()
-      const override {
-    return variations::VariationsIdsProvider::GetInstance()
-        ->GetClientDataHeaders(IsSignedIn());
-  }
-
- private:
-  bool IsSignedIn() const {
-    Profile* profile = Profile::FromBrowserContext(browser_context_);
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile);
-    return identity_manager && identity_manager->HasPrimaryAccount();
-  }
-
-  content::BrowserContext* browser_context_;
-};
 
 const char kDevToolsOTRProfileIDPrefix[] = "Devtools::BrowserContext";
 const char kMediaRouterOTRProfileIDPrefix[] = "MediaRouter::Presentation";
@@ -513,6 +483,24 @@ Profile* Profile::GetPrimaryOTRProfile() {
 bool Profile::HasPrimaryOTRProfile() {
   return HasOffTheRecordProfile(OTRProfileID::PrimaryID());
 }
+
+class Profile::ChromeVariationsClient : public variations::VariationsClient {
+ public:
+  explicit ChromeVariationsClient(Profile* profile) : profile_(profile) {}
+
+  ~ChromeVariationsClient() override = default;
+
+  bool IsOffTheRecord() const override { return profile_->IsOffTheRecord(); }
+
+  variations::mojom::VariationsHeadersPtr GetVariationsHeaders()
+      const override {
+    return variations::VariationsIdsProvider::GetInstance()
+        ->GetClientDataHeaders(profile_->IsSignedIn());
+  }
+
+ private:
+  Profile* profile_;
+};
 
 variations::VariationsClient* Profile::GetVariationsClient() {
   if (!chrome_variations_client_)

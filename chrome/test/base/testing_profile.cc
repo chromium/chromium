@@ -86,6 +86,7 @@
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/test/model/fake_sync_change_processor.h"
 #include "components/sync/test/model/sync_error_factory_mock.h"
@@ -938,6 +939,12 @@ void TestingProfile::SetCreationTimeForTesting(base::Time creation_time) {
 
 PrefService* TestingProfile::GetOffTheRecordPrefs() {
   return nullptr;
+}
+
+bool TestingProfile::IsSignedIn() {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(this);
+  return identity_manager && identity_manager->HasPrimaryAccount();
 }
 
 storage::SpecialStoragePolicy* TestingProfile::GetSpecialStoragePolicy() {

@@ -133,6 +133,10 @@ class OffTheRecordProfileImpl : public Profile {
   GetNativeFileSystemPermissionContext() override;
   void RecordMainFrameNavigation() override;
 
+ protected:
+  // Profile implementation.
+  bool IsSignedIn() override;
+
  private:
 #if !defined(OS_ANDROID)
   // Allows a profile to track changes in zoom levels in its parent profile.

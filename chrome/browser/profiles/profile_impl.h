@@ -176,6 +176,10 @@ class ProfileImpl : public Profile {
   void SetCreationTimeForTesting(base::Time creation_time) override;
   void RecordMainFrameNavigation() override {}
 
+ protected:
+  // Profile implementation.
+  bool IsSignedIn() override;
+
  private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class chromeos::KioskTest;

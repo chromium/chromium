@@ -634,6 +634,10 @@ std::unique_ptr<Profile> Profile::CreateOffTheRecordProfile(
   return std::move(profile);
 }
 
+bool OffTheRecordProfileImpl::IsSignedIn() {
+  return false;
+}
+
 #if !defined(OS_ANDROID)
 void OffTheRecordProfileImpl::OnParentZoomLevelChanged(
     const HostZoomMap::ZoomLevelChange& change) {

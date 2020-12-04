@@ -1534,6 +1534,12 @@ void ProfileImpl::SetCreationTimeForTesting(base::Time creation_time) {
   prefs_->SetTime(prefs::kProfileCreationTime, creation_time);
 }
 
+bool ProfileImpl::IsSignedIn() {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(this);
+  return identity_manager && identity_manager->HasPrimaryAccount();
+}
+
 GURL ProfileImpl::GetHomePage() {
   // --homepage overrides any preferences.
   const base::CommandLine& command_line =

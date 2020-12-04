@@ -422,6 +422,9 @@ class TestingProfile : public Profile {
   // ref only for right type, lifecycle is managed by prefs_
   sync_preferences::TestingPrefServiceSyncable* testing_prefs_;
 
+  // Profile implementation.
+  bool IsSignedIn() override;
+
  private:
   // Common initialization between the two constructors.
   void Init();

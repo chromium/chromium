@@ -537,6 +537,9 @@ class Profile : public content::BrowserContext {
 
   void NotifyOffTheRecordProfileCreated(Profile* off_the_record);
 
+  // Returns whether the user has signed in this profile to an account.
+  virtual bool IsSignedIn() = 0;
+
  private:
   bool restored_last_session_ = false;
 
@@ -557,6 +560,7 @@ class Profile : public content::BrowserContext {
 
   base::ObserverList<ProfileObserver> observers_;
 
+  class ChromeVariationsClient;
   std::unique_ptr<variations::VariationsClient> chrome_variations_client_;
 };
 
