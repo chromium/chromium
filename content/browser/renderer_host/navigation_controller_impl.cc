@@ -3748,16 +3748,11 @@ void NavigationControllerImpl::InsertEntriesFrom(
     NavigationControllerImpl* source,
     int max_index) {
   DCHECK_LE(max_index, source->GetEntryCount());
-  size_t insert_index = 0;
   for (int i = 0; i < max_index; i++) {
-    // When cloning a tab, copy all entries except interstitial pages.
-    if (source->entries_[i]->GetPageType() != PAGE_TYPE_INTERSTITIAL) {
-      // TODO(creis): Once we start sharing FrameNavigationEntries between
-      // NavigationEntries, it will not be safe to share them with another tab.
-      // Must have a version of Clone that recreates them.
-      entries_.insert(entries_.begin() + insert_index++,
-                      source->entries_[i]->Clone());
-    }
+    // TODO(creis): Once we start sharing FrameNavigationEntries between
+    // NavigationEntries, it will not be safe to share them with another tab.
+    // Must have a version of Clone that recreates them.
+    entries_.insert(entries_.begin() + i, source->entries_[i]->Clone());
   }
   DCHECK(pending_entry_index_ == -1 ||
          pending_entry_ == GetEntryAtIndex(pending_entry_index_));

@@ -37,11 +37,7 @@ void Check(content::NavigationEntry* entry, int expected_authentication_state) {
       expected_authentication_state == AuthState::SHOWING_INTERSTITIAL) {
     EXPECT_EQ(content::PAGE_TYPE_ERROR, entry->GetPageType());
   } else {
-    EXPECT_EQ(
-        !!(expected_authentication_state & AuthState::SHOWING_INTERSTITIAL)
-            ? content::PAGE_TYPE_INTERSTITIAL
-            : content::PAGE_TYPE_NORMAL,
-        entry->GetPageType());
+    EXPECT_EQ(content::PAGE_TYPE_NORMAL, entry->GetPageType());
   }
 
   bool displayed_insecure_content =

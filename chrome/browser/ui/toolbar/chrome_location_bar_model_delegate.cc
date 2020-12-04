@@ -109,10 +109,8 @@ bool ChromeLocationBarModelDelegate::ShouldDisplayURL() const {
   if (login_tab_helper && login_tab_helper->IsShowingPrompt())
     return login_tab_helper->ShouldDisplayURL();
 
-  if (entry->IsViewSourceMode() ||
-      entry->GetPageType() == content::PAGE_TYPE_INTERSTITIAL) {
+  if (entry->IsViewSourceMode())
     return true;
-  }
 
   const auto is_ntp = [](const GURL& url) {
     return url.SchemeIs(content::kChromeUIScheme) &&

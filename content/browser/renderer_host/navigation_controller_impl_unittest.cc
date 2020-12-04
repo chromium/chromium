@@ -2478,30 +2478,6 @@ TEST_F(NavigationControllerTest, RestoreNavigateAfterFailure) {
             our_controller.GetEntryAtIndex(0)->restore_type());
 }
 
-// Make sure that the page type and stuff is correct after an interstitial.
-TEST_F(NavigationControllerTest, Interstitial) {
-  NavigationControllerImpl& controller = controller_impl();
-  // First navigate somewhere normal.
-  const GURL url1("http://foo");
-  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), url1);
-
-  // Now navigate somewhere with an interstitial.
-  const GURL url2("http://bar");
-  std::unique_ptr<NavigationSimulator> simulator =
-      NavigationSimulator::CreateBrowserInitiated(url2, contents());
-  simulator->Start();
-  controller.GetPendingEntry()->set_page_type(PAGE_TYPE_INTERSTITIAL);
-
-  // At this point the interstitial will be displayed and the load will still
-  // be pending. If the user continues, the load will commit.
-  simulator->Commit();
-
-  // The page should be a normal page again.
-  EXPECT_EQ(url2, controller.GetLastCommittedEntry()->GetURL());
-  EXPECT_EQ(PAGE_TYPE_NORMAL,
-            controller.GetLastCommittedEntry()->GetPageType());
-}
-
 TEST_F(NavigationControllerTest, RemoveEntry) {
   NavigationControllerImpl& controller = controller_impl();
   const GURL url1("http://foo/1");

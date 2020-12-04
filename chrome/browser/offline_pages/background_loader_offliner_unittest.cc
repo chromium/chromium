@@ -779,30 +779,6 @@ TEST_F(BackgroundLoaderOfflinerTest, FailsOnUnwantedContent) {
   EXPECT_EQ(Offliner::RequestStatus::LOADED_PAGE_IS_BLOCKED, request_status());
 }
 
-TEST_F(BackgroundLoaderOfflinerTest, FailsOnInterstitialPage) {
-  base::Time creation_time = base::Time::Now();
-  SavePageRequest request(kRequestId, HttpUrl(), kClientId, creation_time,
-                          kUserRequested);
-  EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
-                                      progress_callback()));
-
-  // Sets the page as being an interstitial.
-  offliner()->set_page_type(content::PageType::PAGE_TYPE_INTERSTITIAL);
-  // Called after calling LoadAndSave so we have web_contents to work with.
-  content::MockNavigationHandle handle(
-      HttpUrl(), offliner()->web_contents()->GetMainFrame());
-  handle.set_has_committed(true);
-  offliner()->DidFinishNavigation(&handle);
-
-  CompleteLoading();
-  PumpLoop();
-
-  EXPECT_FALSE(SaveInProgress());
-  EXPECT_TRUE(completion_callback_called());
-  EXPECT_EQ(Offliner::RequestStatus::LOADED_PAGE_IS_CHROME_INTERNAL,
-            request_status());
-}
-
 TEST_F(BackgroundLoaderOfflinerTest, FailsOnInternetDisconnected) {
   base::Time creation_time = base::Time::Now();
   SavePageRequest request(kRequestId, HttpUrl(), kClientId, creation_time,

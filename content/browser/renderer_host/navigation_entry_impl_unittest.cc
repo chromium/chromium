@@ -230,8 +230,8 @@ TEST_F(NavigationEntryTest, NavigationEntryAccessors) {
   // Page type
   EXPECT_EQ(PAGE_TYPE_NORMAL, entry1_->GetPageType());
   EXPECT_EQ(PAGE_TYPE_NORMAL, entry2_->GetPageType());
-  entry2_->set_page_type(PAGE_TYPE_INTERSTITIAL);
-  EXPECT_EQ(PAGE_TYPE_INTERSTITIAL, entry2_->GetPageType());
+  entry2_->set_page_type(PAGE_TYPE_ERROR);
+  EXPECT_EQ(PAGE_TYPE_ERROR, entry2_->GetPageType());
 
   // Referrer
   EXPECT_EQ(GURL(), entry1_->GetReferrer().url);

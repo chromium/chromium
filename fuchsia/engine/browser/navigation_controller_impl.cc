@@ -82,7 +82,6 @@ NavigationControllerImpl::GetVisibleNavigationState() const {
   } else {
     switch (entry->GetPageType()) {
       case content::PageType::PAGE_TYPE_NORMAL:
-      case content::PageType::PAGE_TYPE_INTERSTITIAL:
         state.set_page_type(fuchsia::web::PageType::NORMAL);
         break;
       case content::PageType::PAGE_TYPE_ERROR:
