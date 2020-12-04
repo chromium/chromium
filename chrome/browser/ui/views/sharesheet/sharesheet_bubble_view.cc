@@ -447,7 +447,7 @@ void SharesheetBubbleView::OnWidgetActivationChanged(views::Widget* widget,
   // Catch widgets that are closing due to the user clicking out of the bubble.
   // If |user_selection_made_| we should not close the bubble here as it will be
   // closed in a different code path.
-  if (!active && !user_selection_made_) {
+  if (!active && !user_selection_made_ && !is_bubble_closing_) {
     if (close_callback_) {
       std::move(close_callback_).Run(sharesheet::SharesheetResult::kCancel);
     }
