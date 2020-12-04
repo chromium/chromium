@@ -101,6 +101,19 @@ void PrintCompositeClient::RenderFrameDeleted(
   print_render_frames_.erase(render_frame_host);
 }
 
+PrintCompositeClient::RequestedSubFrame::RequestedSubFrame(
+    int render_process_id,
+    int render_frame_id,
+    int document_cookie,
+    mojom::DidPrintContentParamsPtr params,
+    bool is_live)
+    : render_process_id_(render_process_id),
+      render_frame_id_(render_frame_id),
+      document_cookie_(document_cookie),
+      params_(std::move(params)),
+      is_live_(is_live) {}
+PrintCompositeClient::RequestedSubFrame::~RequestedSubFrame() = default;
+
 void PrintCompositeClient::OnDidPrintFrameContent(
     int render_process_id,
     int render_frame_id,
@@ -121,8 +134,16 @@ void PrintCompositeClient::OnDidPrintFrameContent(
     return;
   }
 
-  if (!IsDocumentCookieValid(document_cookie))
+  if (!IsDocumentCookieValid(document_cookie)) {
+    if (!compositor_) {
+      // Queues the subframe information to |requested_subframes_| to handle it
+      // after |compositor_| is created by the main frame.
+      requested_subframes_.insert(std::make_unique<RequestedSubFrame>(
+          render_process_id, render_frame_id, document_cookie,
+          std::move(params), true));
+    }
     return;
+  }
 
   auto* render_frame_host =
       content::RenderFrameHost::FromID(render_process_id, render_frame_id);
@@ -161,8 +182,16 @@ void PrintCompositeClient::PrintCrossProcessSubframe(
     content::RenderFrameHost* subframe_host) {
   auto params = mojom::PrintFrameContentParams::New(rect, document_cookie);
   if (!subframe_host->IsRenderFrameLive()) {
-    if (!IsDocumentCookieValid(document_cookie))
+    if (!IsDocumentCookieValid(document_cookie)) {
+      if (!compositor_) {
+        // Queues the subframe information to |requested_subframes_| to handle
+        // it after |compositor_| is created by the main frame.
+        requested_subframes_.insert(std::make_unique<RequestedSubFrame>(
+            subframe_host->GetProcess()->GetID(), subframe_host->GetRoutingID(),
+            document_cookie, nullptr, false));
+      }
       return;
+    }
 
     // When the subframe is dead, no need to send message,
     // just notify the service.
@@ -178,14 +207,13 @@ void PrintCompositeClient::PrintCrossProcessSubframe(
   }
 
   // Send the request to the destination frame.
-  int render_process_id = subframe_host->GetProcess()->GetID();
-  int render_frame_id = subframe_host->GetRoutingID();
   GetPrintRenderFrame(subframe_host)
       ->PrintFrameContent(
           std::move(params),
           base::BindOnce(&PrintCompositeClient::OnDidPrintFrameContent,
-                         weak_ptr_factory_.GetWeakPtr(), render_process_id,
-                         render_frame_id));
+                         weak_ptr_factory_.GetWeakPtr(),
+                         subframe_host->GetProcess()->GetID(),
+                         subframe_host->GetRoutingID()));
   pending_subframes_.insert(subframe_host);
 }
 
@@ -253,6 +281,23 @@ void PrintCompositeClient::DoCompositeDocumentToPdf(
   DCHECK(!GetIsDocumentConcurrentlyComposited(document_cookie));
 
   auto* compositor = CreateCompositeRequest(document_cookie, render_frame_host);
+
+  for (auto& requested : requested_subframes_) {
+    if (!IsDocumentCookieValid(requested->document_cookie_))
+      continue;
+    if (requested->is_live_) {
+      OnDidPrintFrameContent(
+          requested->render_process_id_, requested->render_frame_id_,
+          requested->document_cookie_, std::move(requested->params_));
+    } else {
+      auto* render_frame_host = content::RenderFrameHost::FromID(
+          requested->render_process_id_, requested->render_frame_id_);
+      compositor->NotifyUnavailableSubframe(
+          GenerateFrameGuid(render_frame_host));
+    }
+  }
+  requested_subframes_.clear();
+
   auto region = content.metafile_data_region.Duplicate();
 
   // Since this class owns compositor, compositor will be gone when this class

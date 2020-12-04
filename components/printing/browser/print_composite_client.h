@@ -94,6 +94,9 @@ class PrintCompositeClient
 
  private:
   friend class content::WebContentsUserData<PrintCompositeClient>;
+  FRIEND_TEST_ALL_PREFIXES(PrintBrowserTest,
+                           PrintSubframeContentBeforeCompositeClientCreation);
+
   // Callback functions for getting the replies.
   static void OnDidCompositePageToPdf(
       mojom::PrintCompositor::CompositePageToPdfCallback callback,
@@ -166,6 +169,25 @@ class PrintCompositeClient
 
   // Stores the printed subframes for the composited document.
   base::flat_set<content::RenderFrameHost*> printed_subframes_;
+
+  struct RequestedSubFrame {
+    RequestedSubFrame(int render_process_id,
+                      int render_frame_id,
+                      int document_cookie,
+                      mojom::DidPrintContentParamsPtr params,
+                      bool is_live);
+    ~RequestedSubFrame();
+    RequestedSubFrame(const PrintCompositeClient::RequestedSubFrame&) = delete;
+    RequestedSubFrame& operator=(
+        const PrintCompositeClient::RequestedSubFrame&) = delete;
+
+    int render_process_id_;
+    int render_frame_id_;
+    int document_cookie_;
+    mojom::DidPrintContentParamsPtr params_;
+    bool is_live_;
+  };
+  base::flat_set<std::unique_ptr<RequestedSubFrame>> requested_subframes_;
 
   std::string user_agent_;
 
