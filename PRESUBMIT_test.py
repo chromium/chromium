@@ -3658,5 +3658,156 @@ class MojomStabilityCheckTest(unittest.TestCase):
     self.assertEqual([], errors)
 
 
+class CheckDeprecationOfPreferencesTest(unittest.TestCase):
+  # Test that a warning is generated if a preference registration is removed
+  # from a random file.
+  def testWarning(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockAffectedFile(
+            'foo.cc',
+            ['A', 'B'],
+            ['A', 'prefs->RegisterStringPref("foo", "default");', 'B'],
+            scm_diff='\n'.join([
+                '--- foo.cc.old  2020-12-02 20:40:54.430676385 +0100',
+                '+++ foo.cc.new  2020-12-02 20:41:02.086700197 +0100',
+                '@@ -1,3 +1,2 @@',
+                ' A',
+                '-prefs->RegisterStringPref("foo", "default");',
+                ' B']),
+            action='M')
+    ]
+    mock_output_api = MockOutputApi()
+    errors = PRESUBMIT.CheckDeprecationOfPreferences(mock_input_api,
+                                                     mock_output_api)
+    self.assertEqual(1, len(errors))
+    self.assertTrue(
+        'Discovered possible removal of preference registrations' in
+        errors[0].message)
+
+  # Test that a warning is inhibited if the preference registration was moved
+  # to the deprecation functions in browser prefs.
+  def testNoWarningForMigration(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        # RegisterStringPref was removed from foo.cc.
+        MockAffectedFile(
+            'foo.cc',
+            ['A', 'B'],
+            ['A', 'prefs->RegisterStringPref("foo", "default");', 'B'],
+            scm_diff='\n'.join([
+                '--- foo.cc.old  2020-12-02 20:40:54.430676385 +0100',
+                '+++ foo.cc.new  2020-12-02 20:41:02.086700197 +0100',
+                '@@ -1,3 +1,2 @@',
+                ' A',
+                '-prefs->RegisterStringPref("foo", "default");',
+                ' B']),
+            action='M'),
+        # But the preference was properly migrated.
+        MockAffectedFile(
+            'chrome/browser/prefs/browser_prefs.cc',
+            [
+                 '// BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS',
+                 '// END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS',
+                 '// BEGIN_MIGRATE_OBSOLETE_PROFILE_PREFS',
+                 'prefs->RegisterStringPref("foo", "default");',
+                 '// END_MIGRATE_OBSOLETE_PROFILE_PREFS',
+            ],
+            [
+                 '// BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS',
+                 '// END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS',
+                 '// BEGIN_MIGRATE_OBSOLETE_PROFILE_PREFS',
+                 '// END_MIGRATE_OBSOLETE_PROFILE_PREFS',
+            ],
+            scm_diff='\n'.join([
+                 '--- browser_prefs.cc.old 2020-12-02 20:51:40.812686731 +0100',
+                 '+++ browser_prefs.cc.new 2020-12-02 20:52:02.936755539 +0100',
+                 '@@ -2,3 +2,4 @@',
+                 ' // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS',
+                 ' // BEGIN_MIGRATE_OBSOLETE_PROFILE_PREFS',
+                 '+prefs->RegisterStringPref("foo", "default");',
+                 ' // END_MIGRATE_OBSOLETE_PROFILE_PREFS']),
+            action='M'),
+    ]
+    mock_output_api = MockOutputApi()
+    errors = PRESUBMIT.CheckDeprecationOfPreferences(mock_input_api,
+                                                     mock_output_api)
+    self.assertEqual(0, len(errors))
+
+  # Test that a warning is NOT inhibited if the preference registration was
+  # moved to a place outside of the migration functions in browser_prefs.cc
+  def testWarningForImproperMigration(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        # RegisterStringPref was removed from foo.cc.
+        MockAffectedFile(
+            'foo.cc',
+            ['A', 'B'],
+            ['A', 'prefs->RegisterStringPref("foo", "default");', 'B'],
+            scm_diff='\n'.join([
+                '--- foo.cc.old  2020-12-02 20:40:54.430676385 +0100',
+                '+++ foo.cc.new  2020-12-02 20:41:02.086700197 +0100',
+                '@@ -1,3 +1,2 @@',
+                ' A',
+                '-prefs->RegisterStringPref("foo", "default");',
+                ' B']),
+            action='M'),
+        # The registration call was moved to a place in browser_prefs.cc that
+        # is outside the migration functions.
+        MockAffectedFile(
+            'chrome/browser/prefs/browser_prefs.cc',
+            [
+                 'prefs->RegisterStringPref("foo", "default");',
+                 '// BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS',
+                 '// END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS',
+                 '// BEGIN_MIGRATE_OBSOLETE_PROFILE_PREFS',
+                 '// END_MIGRATE_OBSOLETE_PROFILE_PREFS',
+            ],
+            [
+                 '// BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS',
+                 '// END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS',
+                 '// BEGIN_MIGRATE_OBSOLETE_PROFILE_PREFS',
+                 '// END_MIGRATE_OBSOLETE_PROFILE_PREFS',
+            ],
+            scm_diff='\n'.join([
+                 '--- browser_prefs.cc.old 2020-12-02 20:51:40.812686731 +0100',
+                 '+++ browser_prefs.cc.new 2020-12-02 20:52:02.936755539 +0100',
+                 '@@ -1,2 +1,3 @@',
+                 '+prefs->RegisterStringPref("foo", "default");',
+                 ' // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS',
+                 ' // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS']),
+            action='M'),
+    ]
+    mock_output_api = MockOutputApi()
+    errors = PRESUBMIT.CheckDeprecationOfPreferences(mock_input_api,
+                                                     mock_output_api)
+    self.assertEqual(1, len(errors))
+    self.assertTrue(
+        'Discovered possible removal of preference registrations' in
+        errors[0].message)
+
+  # Check that the presubmit fails if a marker line in brower_prefs.cc is
+  # deleted.
+  def testDeletedMarkerRaisesError(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockAffectedFile('chrome/browser/prefs/browser_prefs.cc',
+                         [
+                           '// BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS',
+                           '// END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS',
+                           '// BEGIN_MIGRATE_OBSOLETE_PROFILE_PREFS',
+                           # The following line is deleted for this test
+                           # '// END_MIGRATE_OBSOLETE_PROFILE_PREFS',
+                         ])
+    ]
+    mock_output_api = MockOutputApi()
+    errors = PRESUBMIT.CheckDeprecationOfPreferences(mock_input_api,
+                                                     mock_output_api)
+    self.assertEqual(1, len(errors))
+    self.assertEqual(
+        'Broken .*MIGRATE_OBSOLETE_.*_PREFS markers in browser_prefs.cc.',
+        errors[0].message)
+
+
 if __name__ == '__main__':
   unittest.main()

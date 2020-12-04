@@ -179,16 +179,21 @@ class MockFile(object):
   MockInputApi for presubmit unittests.
   """
 
-  def __init__(self, local_path, new_contents, old_contents=None, action='A'):
+  def __init__(self, local_path, new_contents, old_contents=None, action='A',
+               scm_diff=None):
     self._local_path = local_path
     self._new_contents = new_contents
     self._changed_contents = [(i + 1, l) for i, l in enumerate(new_contents)]
     self._action = action
-    self._scm_diff = "--- /dev/null\n+++ %s\n@@ -0,0 +1,%d @@\n" % (local_path,
-      len(new_contents))
+    if scm_diff:
+      self._scm_diff = scm_diff
+    else:
+      self._scm_diff = (
+        "--- /dev/null\n+++ %s\n@@ -0,0 +1,%d @@\n" %
+            (local_path, len(new_contents)))
+      for l in new_contents:
+        self._scm_diff += "+%s\n" % l
     self._old_contents = old_contents
-    for l in new_contents:
-      self._scm_diff += "+%s\n" % l
 
   def Action(self):
     return self._action

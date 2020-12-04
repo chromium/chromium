@@ -1077,6 +1077,9 @@ void RegisterSigninProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
 // This method should be periodically pruned of year+ old migrations.
 void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
+  // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
+  // Please don't delete the preceding line. It is used by PRESUBMIT.py.
+
   // Added 1/2020
 #if defined(OS_MAC)
   local_state->ClearPref(kKeyCreated);
@@ -1094,10 +1097,16 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 4/2020.
   local_state->ClearPref(kSupervisedUsersNextId);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Please don't delete the following line. It is used by PRESUBMIT.py.
+  // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 }
 
 // This method should be periodically pruned of year+ old migrations.
 void MigrateObsoleteProfilePrefs(Profile* profile) {
+  // BEGIN_MIGRATE_OBSOLETE_PROFILE_PREFS
+  // Please don't delete the preceding line. It is used by PRESUBMIT.py.
+
   PrefService* profile_prefs = profile->GetPrefs();
 
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
@@ -1188,4 +1197,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 11/2020
   profile_prefs->ClearPref(kDRMSalt);
+
+  // Please don't delete the following line. It is used by PRESUBMIT.py.
+  // END_MIGRATE_OBSOLETE_PROFILE_PREFS
 }
