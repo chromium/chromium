@@ -12,6 +12,7 @@
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "content/public/browser/media_stream_request.h"
 
 // Factory creating DesktopMediaList and DesktopMediaPicker instances.
 class DesktopMediaPickerFactoryImpl : public DesktopMediaPickerFactory {
@@ -24,7 +25,8 @@ class DesktopMediaPickerFactoryImpl : public DesktopMediaPickerFactory {
 
   // DesktopMediaPickerFactory implementation
   // Can return |nullptr| if platform doesn't support DesktopMediaPicker.
-  std::unique_ptr<DesktopMediaPicker> CreatePicker() override;
+  std::unique_ptr<DesktopMediaPicker> CreatePicker(
+      const content::MediaStreamRequest* request) override;
   std::vector<std::unique_ptr<DesktopMediaList>> CreateMediaList(
       const std::vector<content::DesktopMediaID::Type>& types) override;
 

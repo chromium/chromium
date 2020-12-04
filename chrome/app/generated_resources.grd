@@ -9768,6 +9768,21 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DESKTOP_MEDIA_PICKER_MULTIPLE_SCREEN_NAME" desc="Name for screens in the desktop media picker UI when there are multiple monitors.">
         {SCREEN_INDEX, plural, =1{Screen #} other{Screen #}}
       </message>
+
+      <!-- Confirmation dialog for getCurrentBrowsingContextMedia API -->
+      <message name="IDS_GET_CURRENT_BROWSING_CONTEXT_MEDIA_DIALOG_TITLE" desc="Title for the confirmation dialog shown when getCurrentBrowsingContextMedia is requested by an app.">
+        Share this tab
+      </message>
+      <message name="IDS_GET_CURRENT_BROWSING_CONTEXT_MEDIA_DIALOG_TEXT_REQUESTED_BY_APP" desc="Text for the confirmation dialog shown when getCurrentBrowsingContextMedia is requested by an app.">
+        <ph name="TARGET_NAME">$1<ex>https://google.com</ex></ph> is asking for permission to capture the contents of this tab.
+      </message>
+      <message name="IDS_GET_CURRENT_BROWSING_CONTEXT_MEDIA_DIALOG_AUDIO_SHARE" desc="Text for the checkbox on the confirmation dialog for getCurrentBrowsingContextMedia API, when checked, audio will be shared, otherwise just video sharing">
+        Share audio
+      </message>
+      <message name="IDS_GET_CURRENT_BROWSING_CONTEXT_MEDIA_DIALOG_SHARE_BUTTON" desc="Used for Share on buttons">
+        Share
+      </message>
+
       <!-- Local Device Discovery display strings -->
       <if expr="enable_service_discovery">
         <message name="IDS_LOCAL_DISCOVERY_NOTIFICATION_TITLE_PRINTER" desc="Title of notification for one or more new printer showing up on your network. [ICU Syntax]">

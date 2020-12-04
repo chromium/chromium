@@ -17272,6 +17272,8 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="103" label="Crostini Recovery Dialog"/>
   <int value="104" label="Parent Permission ChromeOS"/>
   <int value="105" label="Signin Reauth Dialog"/>
+  <int value="106"
+      label="Confirmation Box for getCurrentBrowsingContextMedia API"/>
 </enum>
 
 <enum name="DialogOriginRelationship">

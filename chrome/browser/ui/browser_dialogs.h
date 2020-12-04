@@ -296,6 +296,7 @@ enum class DialogIdentifier {
   CROSTINI_RECOVERY = 103,
   PARENT_PERMISSION = 104,  // ChromeOS only.
   SIGNIN_REAUTH = 105,
+  CURRENT_BROWSING_CONTEXT_CONFIRMATION_BOX = 106,
   // Add values above this line with a corresponding label in
   // tools/metrics/histograms/enums.xml
   MAX_VALUE
