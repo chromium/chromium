@@ -10,16 +10,16 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_test_base.h"
-#include "chrome/browser/extensions/policy_test_utils.h"
 #include "chrome/browser/net/nss_context.h"
+#include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
@@ -27,11 +27,14 @@
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_system_nss_key_slot.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/api/test.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/cert/nss_cert_database.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,16 +42,16 @@ namespace extensions {
 
 namespace {
 
-// The test extension will query for the state of the system token.
-constexpr char kWaitingForSystemTokenStateMessage[] =
-    "Waiting for system token state message";
-
-// The message sent from a browsertest to the background script in case the
-// system token is enabled.
-constexpr char kSystemTokenEnabledMessage[] = "System token enabled.";
-// The message sent from a browsertest to the background script in case the
-// system token is disabled.
-constexpr char kSystemTokenDisabledMessage[] = "System token disabled.";
+// This message sent from a browsertest to the background script to test the API
+// behavior for an extension running in a user session with system token
+// enabled.
+constexpr char kUserSessionWithSystemTokenEnabledMode[] =
+    "User session with system token enabled mode.";
+// This message sent from a browsertest to the background script to test the API
+// behavior for an extension running in a user session with system token
+// disabled.
+constexpr char kUserSessionWithSystemTokenDisabledMode[] =
+    "User session with system token disabled mode.";
 
 // The test extension has a certificate referencing this private key which will
 // be stored in the user's token in the test setup.
@@ -121,6 +124,18 @@ const unsigned char privateKeyPkcs8System[] = {
     0xd8, 0x71, 0x69, 0x5e, 0x8d, 0xb4, 0x48, 0x1c, 0xa4, 0x01, 0xce, 0xc1,
     0xb5, 0x6f, 0xe9, 0x1b, 0x32, 0x91, 0x34, 0x38};
 
+base::FilePath GetExtensionDirName() {
+  return base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+      .Append(
+          FILE_PATH_LITERAL("extensions/api_test/enterprise_platform_keys/"));
+}
+
+base::FilePath GetExtensionPemFileName() {
+  return base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+      .Append(FILE_PATH_LITERAL(
+          "extensions/api_test/enterprise_platform_keys.pem"));
+}
+
 void ImportPrivateKeyPKCS8ToSlot(const unsigned char* pkcs8_der,
                                  size_t pkcs8_der_size,
                                  PK11SlotInfo* slot) {
@@ -141,18 +156,6 @@ void ImportPrivateKeyPKCS8ToSlot(const unsigned char* pkcs8_der,
   // Make sure that the memory allocated for the key gets freed.
   crypto::ScopedSECKEYPrivateKey seckey(seckey_raw);
 }
-
-// The managed_storage extension has a key defined in its manifest, so that
-// its extension ID is well-known and the policy system can push policies for
-// the extension.
-const char kTestExtensionID[] = "aecpbnckhoppanpmefllkdkohionpmig";
-const char kTestExtensionUpdateManifest[] =
-    R"(<?xml version='1.0' encoding='UTF-8'?>
-       <gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
-         <app appid='$1'>
-           <updatecheck codebase='$2' version='0.1' />
-         </app>
-       </gupdate>)";
 
 struct Params {
   Params(PlatformKeysTestBase::SystemTokenStatus system_token_status,
@@ -185,24 +188,10 @@ class EnterprisePlatformKeysTest
   }
 
   void SetUpOnMainThread() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-
-    embedded_test_server()->ServeFilesFromDirectory(temp_dir_.GetPath());
-
-    crx_path_ = temp_dir_.GetPath().Append(kCrxFileName);
-    update_manifest_path_ = temp_dir_.GetPath().Append(kUpdateManifestFileName);
-
-    extension_path_ = test_data_dir_.Append(kExtensionDirName);
-    pem_path_ = test_data_dir_.Append(kPemFileName);
-
-    base::FilePath created_crx_path =
-        PackExtensionWithOptions(extension_path_, crx_path_, pem_path_,
-                                 /*pem_out_path=*/base::FilePath());
-    ASSERT_EQ(created_crx_path, crx_path_);
-
-    GenerateUpdateManifestFile();
-
     PlatformKeysTestBase::SetUpOnMainThread();
+
+    extension_force_install_mixin_.InitWithMockPolicyProvider(
+        profile(), mock_policy_provider());
   }
 
   void DidGetCertDatabase(const base::Closure& done_callback,
@@ -216,18 +205,20 @@ class EnterprisePlatformKeysTest
   }
 
  protected:
-  const std::string kUpdateManifestFileName =
-      "enterprise_platform_keys_update_manifest.xml";
+  std::string GetTestMode() {
+    // Only if the system token exists, and the current user is of the same
+    // domain as the device is enrolled to, the system token is available to the
+    // extension.
+    if (system_token_status() == SystemTokenStatus::EXISTS &&
+        enrollment_status() == EnrollmentStatus::ENROLLED &&
+        user_status() == UserStatus::MANAGED_AFFILIATED_DOMAIN) {
+      return kUserSessionWithSystemTokenEnabledMode;
+    }
 
-  void SetUpTestListeners() {
-    catcher_ = std::make_unique<extensions::ResultCatcher>();
-    listener_ = std::make_unique<ExtensionTestMessageListener>(
-        kWaitingForSystemTokenStateMessage,
-        /*will_reply=*/true);
+    return kUserSessionWithSystemTokenDisabledMode;
   }
 
-  std::unique_ptr<extensions::ResultCatcher> catcher_;
-  std::unique_ptr<ExtensionTestMessageListener> listener_;
+  ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
 
  private:
   void PrepareTestSystemSlotOnIO(
@@ -238,29 +229,6 @@ class EnterprisePlatformKeysTest
                                 base::size(privateKeyPkcs8System),
                                 system_slot->slot());
   }
-
-  void GenerateUpdateManifestFile() {
-    const std::string kContent = base::ReplaceStringPlaceholders(
-        kTestExtensionUpdateManifest,
-        {kTestExtensionID,
-         embedded_test_server()->GetURL("/" + kCrxFileName).spec().c_str()},
-        /*offsets=*/nullptr);
-
-    int written_bytes = base::WriteFile(update_manifest_path_, kContent.data(),
-                                        kContent.size());
-    ASSERT_EQ(written_bytes, static_cast<int>(kContent.length()));
-  }
-
-  const std::string kCrxFileName = "enterprise_platform_keys.crx";
-  const std::string kExtensionDirName = "enterprise_platform_keys";
-  const std::string kPemFileName = "enterprise_platform_keys.pem";
-
-  base::FilePath crx_path_;
-  base::FilePath extension_path_;
-  base::FilePath pem_path_;
-  base::FilePath update_manifest_path_;
-
-  base::ScopedTempDir temp_dir_;
 
   DISALLOW_COPY_AND_ASSIGN(EnterprisePlatformKeysTest);
 };
@@ -280,26 +248,25 @@ IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, Basic) {
                        base::Unretained(this), loop.QuitClosure()));
     loop.Run();
   }
-  policy_test_utils::SetExtensionInstallForcelistPolicy(
-      kTestExtensionID,
-      embedded_test_server()->GetURL("/" + kUpdateManifestFileName), profile(),
-      mock_policy_provider());
 
-  SetUpTestListeners();
-  ASSERT_TRUE(listener_->WaitUntilSatisfied());
+  extensions::ExtensionId extension_id;
+  ASSERT_TRUE(extension_force_install_mixin_.ForceInstallFromSourceDir(
+      GetExtensionDirName(), GetExtensionPemFileName(),
+      ExtensionForceInstallMixin::WaitMode::kBackgroundPageFirstLoad,
+      &extension_id));
 
-  // Only if the system token exists, and the current user is of the same domain
-  // as the device is enrolled to, the system token is available to the
-  // extension.
-  if (system_token_status() == SystemTokenStatus::EXISTS &&
-      enrollment_status() == EnrollmentStatus::ENROLLED &&
-      user_status() == UserStatus::MANAGED_AFFILIATED_DOMAIN) {
-    listener_->Reply(kSystemTokenEnabledMessage);
-  } else {
-    listener_->Reply(kSystemTokenDisabledMessage);
-  }
+  api::test::OnMessage::Info info;
+  info.data = GetTestMode();
 
-  ASSERT_TRUE(catcher_->GetNextResult());
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::FOR_TEST,
+      extensions::api::test::OnMessage::kEventName,
+      api::test::OnMessage::Create(info), profile());
+  extensions::EventRouter::Get(profile())->DispatchEventToExtension(
+      extension_id, std::move(event));
+
+  extensions::ResultCatcher catcher;
+  ASSERT_TRUE(catcher.GetNextResult());
 }
 
 INSTANTIATE_TEST_SUITE_P(

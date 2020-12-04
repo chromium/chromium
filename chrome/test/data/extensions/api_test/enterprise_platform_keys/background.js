@@ -4,12 +4,17 @@
 
 'use strict';
 
-// The message sent from a browsertest to the background script in case the
-// system token is enabled.
-const SYSTEM_TOKEN_ENABLED_MESSAGE = 'System token enabled.';
-// The message sent from a browsertest to the background script in case the
-// system token is disabled.
-const SYSTEM_TOKEN_DISABLED_MESSAGE = 'System token disabled.';
+// TODO(crbug.com/1148294): Add LOGIN_SCREEN_MODE.
+// This message sent from a browsertest to the background script to test the API
+// behavior for an extension running in a user session with system token
+// enabled.
+const USER_SESSION_WITH_SYSTEM_TOKEN_ENABLED_MODE =
+    'User session with system token enabled mode.';
+// This message sent from a browsertest to the background script to test the API
+// behavior for an extension running in a user session with system token
+// disabled.
+const USER_SESSION_WITH_SYSTEM_TOKEN_DISABLED_MODE =
+    'User session with system token disabled mode.';
 
 var assertEq = chrome.test.assertEq;
 var assertTrue = chrome.test.assertTrue;
@@ -881,20 +886,17 @@ function runTests(userToken, systemToken) {
   chrome.test.runTests(testsIndependentOfKeys.concat(testsNotParameterized));
 }
 
-// |waitForSystemTokenStateMessage()| waits for the browser test to send a
-// message with the state of the system token to run tests accordingly. The
-// browser test logic can be found at:
+// This function is executed when the C++ side of the test sends the test mode.
+// The browser test logic can be found at:
 // c/b/e/api/enterprise_platform_keys/enterprise_platform_keys_apitest_nss.cc
-function waitForSystemTokenStateMessage(systemTokenStateMessage) {
-  if (systemTokenStateMessage == SYSTEM_TOKEN_ENABLED_MESSAGE) {
+function testModeListener(message) {
+  if (message.data === USER_SESSION_WITH_SYSTEM_TOKEN_ENABLED_MODE) {
     beforeTests(/*systemTokenEnabled=*/ true, runTests);
-  } else if (systemTokenStateMessage == SYSTEM_TOKEN_DISABLED_MESSAGE) {
+  } else if (message.data === USER_SESSION_WITH_SYSTEM_TOKEN_DISABLED_MODE) {
     beforeTests(/*systemTokenEnabled=*/ false, runTests);
   } else {
-    // No background script tests should run.
-    succeed();
+    fail();
   }
 }
 
-chrome.test.sendMessage(
-    'Waiting for system token state message', waitForSystemTokenStateMessage);
+chrome.test.onMessage.addListener(testModeListener);
