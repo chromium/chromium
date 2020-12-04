@@ -46,6 +46,7 @@ const std::string k10BitFrame0 = "bear-320x180-10bit-frame-0.h264";
 const std::string k10BitFrame1 = "bear-320x180-10bit-frame-1.h264";
 const std::string k10BitFrame2 = "bear-320x180-10bit-frame-2.h264";
 const std::string k10BitFrame3 = "bear-320x180-10bit-frame-3.h264";
+const std::string kYUV444Frame = "blackwhite_yuv444p-frame.h264";
 
 // Checks whether the decrypt config in the picture matches the decrypt config
 // passed to this matcher.
@@ -456,6 +457,12 @@ TEST_F(H264DecoderTest, DecodeProfileHigh) {
   ASSERT_TRUE(decoder_->Flush());
 }
 
+TEST_F(H264DecoderTest, DenyDecodeNonYUV420) {
+  // YUV444 frame causes kDecodeError.
+  SetInputFrameFiles({kYUV444Frame});
+  ASSERT_EQ(AcceleratedVideoDecoder::kDecodeError, Decode());
+}
+
 TEST_F(H264DecoderTest, SwitchBaselineToHigh) {
   SetInputFrameFiles({
       kBaselineFrame0, kHighFrame0, kHighFrame1, kHighFrame2, kHighFrame3,
@@ -553,6 +560,25 @@ TEST_F(H264DecoderTest, SwitchHighToBaseline) {
   }
   ASSERT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, Decode());
   ASSERT_TRUE(decoder_->Flush());
+}
+
+TEST_F(H264DecoderTest, SwitchYUV420ToNonYUV420) {
+  SetInputFrameFiles({kBaselineFrame0, kYUV444Frame});
+  // The first frame, YUV420, is decoded with no error.
+  ASSERT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode());
+  EXPECT_EQ(gfx::Size(320, 192), decoder_->GetPicSize());
+  EXPECT_EQ(H264PROFILE_BASELINE, decoder_->GetProfile());
+  EXPECT_LE(9u, decoder_->GetRequiredNumOfPictures());
+  {
+    InSequence sequence;
+    EXPECT_CALL(*accelerator_, CreateH264Picture());
+    EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _));
+    EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _));
+    EXPECT_CALL(*accelerator_, SubmitDecode(_));
+    EXPECT_CALL(*accelerator_, OutputPicture(WithPoc(0)));
+  }
+  // The second frame, YUV444, causes kDecodeError.
+  ASSERT_EQ(AcceleratedVideoDecoder::kDecodeError, Decode());
 }
 
 // Verify that the decryption config is passed to the accelerator.

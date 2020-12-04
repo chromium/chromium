@@ -44,6 +44,11 @@ bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
       return false;
   }
 }
+
+bool IsYUV420Sequence(const H265SPS& sps) {
+  // Spec 6.2
+  return sps.chroma_format_idc == 1;
+}
 }  // namespace
 
 H265Decoder::H265Accelerator::H265Accelerator() = default;
@@ -368,6 +373,10 @@ bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
   if (visible_rect_ != new_visible_rect) {
     DVLOG(2) << "New visible rect: " << new_visible_rect.ToString();
     visible_rect_ = new_visible_rect;
+  }
+  if (!IsYUV420Sequence(*sps)) {
+    DVLOG(1) << "Only YUV 4:2:0 is supported";
+    return false;
   }
 
   // Equation 7-8

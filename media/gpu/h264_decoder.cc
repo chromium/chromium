@@ -18,6 +18,7 @@
 
 namespace media {
 namespace {
+
 bool ParseBitDepth(const H264SPS& sps, uint8_t& bit_depth) {
   // Spec 7.4.2.1.1
   if (sps.bit_depth_luma_minus8 != sps.bit_depth_chroma_minus8) {
@@ -76,6 +77,11 @@ bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
       NOTREACHED();
       return false;
   }
+}
+
+bool IsYUV420Sequence(const H264SPS& sps) {
+  // Spec 6.2
+  return sps.chroma_format_idc == 1;
 }
 }  // namespace
 
@@ -1156,6 +1162,11 @@ bool H264Decoder::ProcessSPS(int sps_id, bool* need_new_buffers) {
     DVLOG(1) << "Invalid DPB size: " << max_dpb_size;
     return false;
   }
+  if (!IsYUV420Sequence(*sps)) {
+    DVLOG(1) << "Only YUV 4:2:0 is supported";
+    return false;
+  }
+
   VideoCodecProfile new_profile =
       H264Parser::ProfileIDCToVideoCodecProfile(sps->profile_idc);
   uint8_t new_bit_depth = 0;

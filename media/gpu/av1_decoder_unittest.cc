@@ -410,7 +410,17 @@ TEST_F(AV1DecoderTest, DecodeSVCStream) {
   EXPECT_EQ(Decode(buffers[1]), expected);
 }
 
-// TODO(hiroh): Add more tests, non-YUV420 stream, Reset() flow, mid-stream
-// configuration change, and reference frame tracking.
+TEST_F(AV1DecoderTest, DenyDecodeNonYUV420) {
+  const std::string kYUV444Stream("blackwhite_yuv444p-frame.av1.ivf");
+  std::vector<scoped_refptr<DecoderBuffer>> buffers = ReadIVF(kYUV444Stream);
+  ASSERT_EQ(buffers.size(), 1u);
+  std::vector<DecodeResult> expected = {DecodeResult::kDecodeError};
+  EXPECT_EQ(Decode(buffers[0]), expected);
+  // Once AV1Decoder gets into an error state, Decode() returns kDecodeError
+  // until Reset().
+  EXPECT_EQ(Decode(buffers[0]), expected);
+}
+// TODO(hiroh): Add more tests, Reset() flow, mid-stream configuration change,
+// and reference frame tracking.
 }  // namespace
 }  // namespace media

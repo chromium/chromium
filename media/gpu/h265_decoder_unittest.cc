@@ -41,6 +41,7 @@ constexpr char k10BitFrame0[] = "bear-320x180-10bit-frame-0.hevc";
 constexpr char k10BitFrame1[] = "bear-320x180-10bit-frame-1.hevc";
 constexpr char k10BitFrame2[] = "bear-320x180-10bit-frame-2.hevc";
 constexpr char k10BitFrame3[] = "bear-320x180-10bit-frame-3.hevc";
+constexpr char kYUV444Frame[] = "blackwhite_yuv444p-frame.hevc";
 
 // Checks whether the decrypt config in the picture matches the decrypt config
 // passed to this matcher.
@@ -308,6 +309,12 @@ TEST_F(H265DecoderTest, Decode10BitStream) {
 
   EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, Decode());
   EXPECT_TRUE(decoder_->Flush());
+}
+
+TEST_F(H265DecoderTest, DenyDecodeNonYUV420) {
+  // YUV444 frame causes kDecodeError.
+  SetInputFrameFiles({kYUV444Frame});
+  ASSERT_EQ(AcceleratedVideoDecoder::kDecodeError, Decode());
 }
 
 TEST_F(H265DecoderTest, OutputPictureFailureCausesDecodeToFail) {

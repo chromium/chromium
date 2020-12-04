@@ -56,7 +56,7 @@ bool SequenceUsesScalability(int operating_point_idc) {
 }
 
 bool IsYUV420Sequence(const libgav1::ColorConfig& color_config) {
-  return color_config.subsampling_x == 1 && color_config.subsampling_y == 1 &&
+  return color_config.subsampling_x == 1u && color_config.subsampling_y == 1u &&
          !color_config.is_monochrome;
 }
 

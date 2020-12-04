@@ -70,6 +70,11 @@ bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
       return false;
   }
 }
+
+bool IsYUV420Sequence(const Vp9FrameHeader& frame_header) {
+  // Spec 7.2.2
+  return frame_header.subsampling_x == 1u && frame_header.subsampling_y == 1u;
+}
 }  // namespace
 
 VP9Decoder::VP9Accelerator::VP9Accelerator() {}
@@ -235,6 +240,10 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
       DVLOG(1) << "Invalid bit depth="
                << base::strict_cast<int>(curr_frame_hdr_->bit_depth)
                << ", profile=" << GetProfileName(new_profile);
+      return kDecodeError;
+    }
+    if (!IsYUV420Sequence(*curr_frame_hdr_)) {
+      DVLOG(1) << "Only YUV 4:2:0 is supported";
       return kDecodeError;
     }
 
