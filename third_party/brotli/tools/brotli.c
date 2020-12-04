@@ -6,6 +6,11 @@
 
 /* Command line interface for Brotli library. */
 
+/* Mute strerror/strcpy warnings. */
+#if !defined(_CRT_SECURE_NO_WARNINGS)
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -86,10 +91,10 @@ typedef struct {
   /* Parameters */
   int quality;
   int lgwin;
+  int verbosity;
   BROTLI_BOOL force_overwrite;
   BROTLI_BOOL junk_source;
   BROTLI_BOOL copy_stat;
-  BROTLI_BOOL verbose;
   BROTLI_BOOL write_to_stdout;
   BROTLI_BOOL test_integrity;
   BROTLI_BOOL decompress;
@@ -121,6 +126,12 @@ typedef struct {
   const uint8_t* next_in;
   size_t available_out;
   uint8_t* next_out;
+
+  /* Reporting */
+  /* size_t would be large enough,
+     until 4GiB+ files are compressed / decompressed on 32-bit CPUs. */
+  size_t total_in;
+  size_t total_out;
 } Context;
 
 /* Parse up to 5 decimal digits. */
@@ -257,7 +268,7 @@ static Command ParseParams(Context* params) {
           return COMMAND_HELP;
         } else if (c == 'j' || c == 'k') {
           if (keep_set) {
-            fprintf(stderr, "argument --rm / -j or --keep / -n already set\n");
+            fprintf(stderr, "argument --rm / -j or --keep / -k already set\n");
             return COMMAND_INVALID;
           }
           keep_set = BROTLI_TRUE;
@@ -279,11 +290,11 @@ static Command ParseParams(Context* params) {
           command = COMMAND_TEST_INTEGRITY;
           continue;
         } else if (c == 'v') {
-          if (params->verbose) {
+          if (params->verbosity > 0) {
             fprintf(stderr, "argument --verbose / -v already set\n");
             return COMMAND_INVALID;
           }
-          params->verbose = BROTLI_TRUE;
+          params->verbosity = 1;
           continue;
         } else if (c == 'V') {
           /* Don't parse further. */
@@ -382,7 +393,7 @@ static Command ParseParams(Context* params) {
         return COMMAND_HELP;
       } else if (strcmp("keep", arg) == 0) {
         if (keep_set) {
-          fprintf(stderr, "argument --rm / -j or --keep / -n already set\n");
+          fprintf(stderr, "argument --rm / -j or --keep / -k already set\n");
           return COMMAND_INVALID;
         }
         keep_set = BROTLI_TRUE;
@@ -395,7 +406,7 @@ static Command ParseParams(Context* params) {
         params->copy_stat = BROTLI_FALSE;
       } else if (strcmp("rm", arg) == 0) {
         if (keep_set) {
-          fprintf(stderr, "argument --rm / -j or --keep / -n already set\n");
+          fprintf(stderr, "argument --rm / -j or --keep / -k already set\n");
           return COMMAND_INVALID;
         }
         keep_set = BROTLI_TRUE;
@@ -415,11 +426,11 @@ static Command ParseParams(Context* params) {
         command_set = BROTLI_TRUE;
         command = COMMAND_TEST_INTEGRITY;
       } else if (strcmp("verbose", arg) == 0) {
-        if (params->verbose) {
+        if (params->verbosity > 0) {
           fprintf(stderr, "argument --verbose / -v already set\n");
           return COMMAND_INVALID;
         }
-        params->verbose = BROTLI_TRUE;
+        params->verbosity = 1;
       } else if (strcmp("version", arg) == 0) {
         /* Don't parse further. */
         return COMMAND_VERSION;
@@ -550,11 +561,17 @@ static void PrintHelp(const char* name, BROTLI_BOOL error) {
 "  -t, --test                  test compressed file integrity\n"
 "  -v, --verbose               verbose mode\n");
   fprintf(media,
-"  -w NUM, --lgwin=NUM         set LZ77 window size (0, %d-%d)\n",
+"  -w NUM, --lgwin=NUM         set LZ77 window size (0, %d-%d)\n"
+"                              window size = 2**NUM - 16\n"
+"                              0 lets compressor choose the optimal value\n",
           BROTLI_MIN_WINDOW_BITS, BROTLI_MAX_WINDOW_BITS);
   fprintf(media,
-"                              window size = 2**NUM - 16\n"
-"                              0 lets compressor choose the optimal value\n");
+"  --large_window=NUM          use incompatible large-window brotli\n"
+"                              bitstream with window size (0, %d-%d)\n"
+"                              WARNING: this format is not compatible\n"
+"                              with brotli RFC 7932 and may not be\n"
+"                              decodable with regular brotli decoders\n",
+          BROTLI_MIN_WINDOW_BITS, BROTLI_LARGE_MAX_WINDOW_BITS);
   fprintf(media,
 "  -S SUF, --suffix=SUF        output file suffix (default:'%s')\n",
           DEFAULT_SUFFIX);
@@ -787,8 +804,12 @@ static void InitializeBuffers(Context* context) {
   context->next_in = NULL;
   context->available_out = kFileBufferSize;
   context->next_out = context->output;
+  context->total_in = 0;
+  context->total_out = 0;
 }
 
+/* This method might give the false-negative result.
+   However, after an empty / incomplete read it should tell the truth. */
 static BROTLI_BOOL HasMoreInput(Context* context) {
   return feof(context->fin) ? BROTLI_FALSE : BROTLI_TRUE;
 }
@@ -796,6 +817,7 @@ static BROTLI_BOOL HasMoreInput(Context* context) {
 static BROTLI_BOOL ProvideInput(Context* context) {
   context->available_in =
       fread(context->input, 1, kFileBufferSize, context->fin);
+  context->total_in += context->available_in;
   context->next_in = context->input;
   if (ferror(context->fin)) {
     fprintf(stderr, "failed to read input [%s]: %s\n",
@@ -808,6 +830,7 @@ static BROTLI_BOOL ProvideInput(Context* context) {
 /* Internal: should be used only in Provide-/Flush-Output. */
 static BROTLI_BOOL WriteOutput(Context* context) {
   size_t out_size = (size_t)(context->next_out - context->output);
+  context->total_out += out_size;
   if (out_size == 0) return BROTLI_TRUE;
   if (context->test_integrity) return BROTLI_TRUE;
 
@@ -833,6 +856,25 @@ static BROTLI_BOOL FlushOutput(Context* context) {
   return BROTLI_TRUE;
 }
 
+static void PrintBytes(size_t value) {
+  if (value < 1024) {
+    fprintf(stderr, "%d B", (int)value);
+  } else if (value < 1048576) {
+    fprintf(stderr, "%0.3f KiB", (double)value / 1024.0);
+  } else if (value < 1073741824) {
+    fprintf(stderr, "%0.3f MiB", (double)value / 1048576.0);
+  } else {
+    fprintf(stderr, "%0.3f GiB", (double)value / 1073741824.0);
+  }
+}
+
+static void PrintFileProcessingProgress(Context* context) {
+  fprintf(stderr, "[%s]: ", PrintablePath(context->current_input_path));
+  PrintBytes(context->total_in);
+  fprintf(stderr, " -> ");
+  PrintBytes(context->total_out);
+}
+
 static BROTLI_BOOL DecompressFile(Context* context, BrotliDecoderState* s) {
   BrotliDecoderResult result = BROTLI_DECODER_RESULT_NEEDS_MORE_INPUT;
   InitializeBuffers(context);
@@ -848,10 +890,17 @@ static BROTLI_BOOL DecompressFile(Context* context, BrotliDecoderState* s) {
       if (!ProvideOutput(context)) return BROTLI_FALSE;
     } else if (result == BROTLI_DECODER_RESULT_SUCCESS) {
       if (!FlushOutput(context)) return BROTLI_FALSE;
-      if (context->available_in != 0 || HasMoreInput(context)) {
+      int has_more_input =
+          (context->available_in != 0) || (fgetc(context->fin) != EOF);
+      if (has_more_input) {
         fprintf(stderr, "corrupt input [%s]\n",
                 PrintablePath(context->current_input_path));
         return BROTLI_FALSE;
+      }
+      if (context->verbosity > 0) {
+        fprintf(stderr, "Decompressed ");
+        PrintFileProcessingProgress(context);
+        fprintf(stderr, "\n");
       }
       return BROTLI_TRUE;
     } else {
@@ -915,7 +964,13 @@ static BROTLI_BOOL CompressFile(Context* context, BrotliEncoderState* s) {
     }
 
     if (BrotliEncoderIsFinished(s)) {
-      return FlushOutput(context);
+      if (!FlushOutput(context)) return BROTLI_FALSE;
+      if (context->verbosity > 0) {
+        fprintf(stderr, "Compressed ");
+        PrintFileProcessingProgress(context);
+        fprintf(stderr, "\n");
+      }
+      return BROTLI_TRUE;
     }
   }
 }
@@ -979,11 +1034,11 @@ int main(int argc, char** argv) {
 
   context.quality = 11;
   context.lgwin = -1;
+  context.verbosity = 0;
   context.force_overwrite = BROTLI_FALSE;
   context.junk_source = BROTLI_FALSE;
   context.copy_stat = BROTLI_TRUE;
   context.test_integrity = BROTLI_FALSE;
-  context.verbose = BROTLI_FALSE;
   context.write_to_stdout = BROTLI_FALSE;
   context.decompress = BROTLI_FALSE;
   context.large_window = BROTLI_FALSE;
