@@ -146193,8 +146193,86 @@
        {}
       ]
      ],
+     "selectors-dir-selector-change-001.html": [
+      "f952389643834f4a67062bf722d5ce4422253094",
+      [
+       null,
+       [
+        [
+         "/css/selectors/selectors-dir-selector-change-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "selectors-dir-selector-change-002.html": [
+      "bc032b59541335d49f7ffe56919cfad9b7cd2fee",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "selectors-dir-selector-change-003.html": [
+      "f4000155a8d5004b401ce5964f535979cc4ec256",
+      [
+       null,
+       [
+        [
+         "/css/selectors/selectors-dir-selector-change-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "selectors-dir-selector-change-004.html": [
+      "4c76b291bad7ffde21d624a3abc03c7b3cc99ac9",
+      [
+       null,
+       [
+        [
+         "/css/selectors/selectors-dir-selector-change-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "selectors-dir-selector-ltr-001.html": [
       "9b90832a218debcf98a8a23bed7b0e679bd472ac",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "selectors-dir-selector-ltr-002.html": [
+      "bbb3f26a780b13d434d99ca858b44f7db635047b",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "selectors-dir-selector-ltr-003.html": [
+      "821a33616fca6940618d3e27c07963eba4c0f748",
       [
        null,
        [
@@ -146213,6 +146291,19 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "selectors-dir-selector-white-space-001.html": [
+      "d3128a03734dc9806e3136ef6657b6087d9d76fa",
+      [
+       null,
+       [
+        [
+         "/css/selectors/selectors-dir-selector-white-space-001-ref.html",
          "=="
         ]
        ],
@@ -210511,6 +210602,22 @@
       "3b768b36a50cd46c3fae0de91c63f8231fde7811",
       []
      ],
+     "selectors-dir-selector-change-001-ref.html": [
+      "8c79c8328f0b2bf88b320956efdd689a97130550",
+      []
+     ],
+     "selectors-dir-selector-change-003-ref.html": [
+      "8c79c8328f0b2bf88b320956efdd689a97130550",
+      []
+     ],
+     "selectors-dir-selector-change-004-ref.html": [
+      "9a130cb2e5c71b9948e68022ad6ef89cc0ecda05",
+      []
+     ],
+     "selectors-dir-selector-white-space-001-ref.html": [
+      "955a2dd603d625975934e1ed6a42b4ea077093b7",
+      []
+     ],
      "selectors-empty-001-ref.xml": [
       "3f1b3f42a89399fec3ca03c4f69aa1e75527a0a3",
       []
@@ -231306,15 +231413,7 @@
       ],
       "pseudo-classes": {
        "dir-expected.txt": [
-        "8d4f29793fd8ae7579e70dbb941c6b754e003b6b",
-        []
-       ],
-       "dir-html-input-dynamic-text-expected.txt": [
-        "d26b681aec70675ecaf32b09d874c73487b81aa2",
-        []
-       ],
-       "dir01-expected.txt": [
-        "dc08da08ba5c7cd7ceb5d3585b23b4810ae24a4e",
+        "dc9646444d83d4389f765d7a10af342ed2168547",
         []
        ],
        "focus-iframe.html": [
@@ -244635,71 +244734,21 @@
      []
     ],
     "idlharness.any-expected.txt": [
-     "bf60a89d442ca7f26c61d19af6531aed1a2f5227",
+     "ac189daf9bf5a0ef428943eb5ec21e1cfa30d8d5",
      []
     ],
     "idlharness.any.serviceworker-expected.txt": [
-     "bf60a89d442ca7f26c61d19af6531aed1a2f5227",
+     "ac189daf9bf5a0ef428943eb5ec21e1cfa30d8d5",
      []
     ],
     "idlharness.any.sharedworker-expected.txt": [
-     "bf60a89d442ca7f26c61d19af6531aed1a2f5227",
+     "ac189daf9bf5a0ef428943eb5ec21e1cfa30d8d5",
      []
     ],
     "idlharness.any.worker-expected.txt": [
-     "bf60a89d442ca7f26c61d19af6531aed1a2f5227",
+     "ac189daf9bf5a0ef428943eb5ec21e1cfa30d8d5",
      []
     ],
-    "readable-byte-streams": {
-     "bad-buffers-and-views.any-expected.txt": [
-      "9a39ea475532ce53b4cb586da6ebb4efde071336",
-      []
-     ],
-     "bad-buffers-and-views.any.serviceworker-expected.txt": [
-      "9a39ea475532ce53b4cb586da6ebb4efde071336",
-      []
-     ],
-     "bad-buffers-and-views.any.sharedworker-expected.txt": [
-      "9a39ea475532ce53b4cb586da6ebb4efde071336",
-      []
-     ],
-     "bad-buffers-and-views.any.worker-expected.txt": [
-      "9a39ea475532ce53b4cb586da6ebb4efde071336",
-      []
-     ],
-     "construct-byob-request.any-expected.txt": [
-      "129e634e5436d76e0aa8e404b88375ad53962cd8",
-      []
-     ],
-     "construct-byob-request.any.serviceworker-expected.txt": [
-      "8804b86fbc5d89953981e414412cc32a7980e454",
-      []
-     ],
-     "construct-byob-request.any.sharedworker-expected.txt": [
-      "8ec519e10cc02b3a8cbb0374726eebd34a701441",
-      []
-     ],
-     "construct-byob-request.any.worker-expected.txt": [
-      "129e634e5436d76e0aa8e404b88375ad53962cd8",
-      []
-     ],
-     "general.any-expected.txt": [
-      "97c2cf18a6a681f73c4f4a100299c7c7cb271215",
-      []
-     ],
-     "general.any.serviceworker-expected.txt": [
-      "97c2cf18a6a681f73c4f4a100299c7c7cb271215",
-      []
-     ],
-     "general.any.sharedworker-expected.txt": [
-      "97c2cf18a6a681f73c4f4a100299c7c7cb271215",
-      []
-     ],
-     "general.any.worker-expected.txt": [
-      "97c2cf18a6a681f73c4f4a100299c7c7cb271215",
-      []
-     ]
-    },
     "readable-streams": {
      "async-iterator.any-expected.txt": [
       "8ae98efa8f5eb50dc91bc430108c9e048cd71c46",
@@ -259259,7 +259308,7 @@
        []
       ],
       "002.worker-expected.txt": [
-       "3e0b101b62232c58f425fe266ca066344ec41b46",
+       "f37a7e76aecde09accca0e424d745ac46b1c3279",
        []
       ],
       "003-expected.txt": [
@@ -259275,7 +259324,7 @@
        []
       ],
       "004.any.sharedworker-expected.txt": [
-       "7e4635f6554ad6f64867d14071735b1df001659e",
+       "8d98263fff7f785501cce3e0d371c928e9201dcb",
        []
       ]
      },
@@ -311003,6 +311052,20 @@
      ],
      "selectors-case-sensitive-001.html": [
       "68915545430fa9fb5fa65327e38693497cc66ad2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "selectors-dir-selector-auto.html": [
+      "d53e989f69e172ea8cb0eb0a11863c767f4f5bf2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "selectors-dir-selector-querySelector.html": [
+      "a05e3fea78f378e37c1b73f7f9e2e3559db12f16",
       [
        null,
        {}
@@ -383551,6 +383614,15 @@
       }
      ]
     ],
+    "MediaStreamTrack-clone.https.html": [
+     "c2b3e2bf8ab1b8c32cdc207181240c695e202656",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "MediaStreamTrack-getCapabilities-fast.html": [
      "55272d1499517a6fda0b7e06068928b4e1127b27",
      [
@@ -413695,7 +413767,7 @@
     ],
     "readable-byte-streams": {
      "bad-buffers-and-views.any.js": [
-      "0777208da44b29b822bf9345dbe20e33bb5708b9",
+      "d4ad483d9c39566b8bc5b4d09676d05eac8879e5",
       [
        null,
        {
@@ -429111,7 +429183,7 @@
        ]
       ],
       "ctor-audiobuffer.html": [
-       "9845d5eaba384cced3c63ddbf4df1400b31f4994",
+       "fbe6e42e3178f84d108bfd1c62518a4d13eb2dff",
        [
         null,
         {}
