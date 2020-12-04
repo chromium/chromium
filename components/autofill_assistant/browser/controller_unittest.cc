@@ -1563,6 +1563,13 @@ TEST_F(ControllerTest, BrowseStateWithDomainAllowlist) {
   // AA.
   SimulateNavigateToUrl(GURL("http://other-example.com/"));
   EXPECT_EQ(AutofillAssistantState::BROWSE, controller_->GetState());
+
+  // Navigation to different domain should stop AA.
+  EXPECT_CALL(
+      mock_client_,
+      RecordDropOut(Metrics::DropOutReason::DOMAIN_CHANGE_DURING_BROWSE_MODE));
+  SimulateNavigateToUrl(GURL("http://unknown.com"));
+  EXPECT_EQ(AutofillAssistantState::STOPPED, controller_->GetState());
 }
 
 TEST_F(ControllerTest, BrowseStateWithDomainAllowlistCleanup) {
