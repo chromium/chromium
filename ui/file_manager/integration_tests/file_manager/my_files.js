@@ -62,15 +62,12 @@ testcase.showMyFiles = async () => {
   // Select Downloads folder.
   await remoteCall.callRemoteTestUtil('selectVolume', appId, ['downloads']);
 
-  // Get the breadcrumbs elements.
-  const breadcrumbsQuery = ['#location-breadcrumbs .breadcrumb-path'];
-  const breadcrumbs = await remoteCall.callRemoteTestUtil(
-      'queryAllElements', appId, breadcrumbsQuery);
+  // Get the breadcrumbs element.
+  const breadcrumbs = await remoteCall.waitForElement(appId, ['bread-crumb']);
 
   // Check that My Files is displayed on breadcrumbs.
-  const expectedBreadcrumbs = 'My files > Downloads';
-  const resultBreadscrubms = breadcrumbs.map(crumb => crumb.text).join(' > ');
-  chrome.test.assertEq(expectedBreadcrumbs, resultBreadscrubms);
+  const expectedBreadcrumbs = 'My files/Downloads';
+  chrome.test.assertEq(expectedBreadcrumbs, breadcrumbs['attributes']['path']);
 };
 
 /**

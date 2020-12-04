@@ -188,14 +188,32 @@ function testExportAndRestoreColumnConfigWithHidingColumn() {
 }
 
 function testNormalizeWidth() {
-  const newContentWidth = 150;
-  const expectedWidths = [10, 20, 30, 40, 50];
+  let newContentWidth = 0;
+  const initialWidths = [
+    10 * 17,
+    20 * 17,
+    30 * 17,
+    40 * 17,
+    50 * 17,
+  ];
+  // The rounding technique used in the implementation doesn't match floor() or
+  // ceil(), it diverges by +/- 1. So hard coding here.
+  const expectedWidths = [
+    56,   // ~(17 * 10 / 3)
+    114,  // ~(17 * 20 / 3)
+    170,  // ~(17 * 30 / 3)
+    226,  // ~(17 * 40 / 3)
+    284,  // ~(17 * 50 / 3)
+  ];
 
   for (let i = 0; i < model.size; i++) {
-    model.setWidth(i, expectedWidths[i] * 17);
+    const colWidth = initialWidths[i];
+    model.setWidth(i, colWidth);
+    newContentWidth += colWidth;
   }
 
-  // Resizes columns proportionally
+  // Reduce total with to 1/3 to Resizes columns proportionally.
+  newContentWidth = newContentWidth / 3;
   model.normalizeWidths(newContentWidth);
 
   assertArrayEquals(expectedWidths, getColumnWidths(model));

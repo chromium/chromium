@@ -787,13 +787,8 @@ class FileManager extends cr.EventTarget {
     metrics.recordInterval('Load.InitDocuments');
 
     metrics.startInterval('Load.InitUI');
-    if (util.isFilesNg()) {
-      this.document_.documentElement.classList.add('files-ng');
-      this.dialogDom_.classList.add('files-ng');
-    } else {
-      this.document_.documentElement.classList.remove('files-ng');
-      this.dialogDom_.classList.remove('files-ng');
-    }
+    this.document_.documentElement.classList.add('files-ng');
+    this.dialogDom_.classList.add('files-ng');
 
     this.dialogDom_.classList.toggle(
         'camera-folder-enabled', util.isFilesCameraFolderEnabled());

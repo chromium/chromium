@@ -79,9 +79,6 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     // Whether Drive should act as if offline.
     bool offline = false;
 
-    // Whether test needs the files-ng feature.
-    bool files_ng = true;
-
     // Whether test needs the files-swa feature.
     bool files_swa = false;
 

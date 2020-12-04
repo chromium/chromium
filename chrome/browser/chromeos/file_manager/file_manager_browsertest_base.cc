@@ -729,7 +729,6 @@ std::ostream& operator<<(std::ostream& out,
   PRINT_IF_NOT_DEFAULT(arc)
   PRINT_IF_NOT_DEFAULT(browser)
   PRINT_IF_NOT_DEFAULT(documents_provider)
-  PRINT_IF_NOT_DEFAULT(files_ng)
   PRINT_IF_NOT_DEFAULT(files_swa)
   PRINT_IF_NOT_DEFAULT(media_swa)
   PRINT_IF_NOT_DEFAULT(mount_volumes)
@@ -1649,12 +1648,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
 
   std::vector<base::Feature> enabled_features;
   std::vector<base::Feature> disabled_features;
-
-  if (options.files_ng) {
-    enabled_features.push_back(chromeos::features::kFilesNG);
-  } else {
-    disabled_features.push_back(chromeos::features::kFilesNG);
-  }
 
   if (options.files_swa) {
     enabled_features.push_back(chromeos::features::kFilesSWA);

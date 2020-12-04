@@ -1427,7 +1427,7 @@ util.isFilesCameraFolderEnabled = () => {
  * @return {boolean}
  */
 util.isFilesNg = () => {
-  return loadTimeData.getBoolean('FILES_NG_ENABLED');
+  return true;
 };
 
 /**

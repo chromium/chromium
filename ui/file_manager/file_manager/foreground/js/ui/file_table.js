@@ -14,10 +14,6 @@ class FileTableColumnModel extends cr.ui.table.TableColumnModel {
 
     /** @private {?FileTableColumnModel.ColumnSnapshot} */
     this.snapshot_ = null;
-
-    if (util.isFilesNg()) {
-      FileTableColumnModel.MIN_WIDTH_ = 40;
-    }
   }
 
   /**
@@ -296,10 +292,9 @@ function renderHeader_(table) {
 /**
  * Minimum width of column. Note that is not marked private as it is used in the
  * unit tests.
- * TODO(lucmult): Revert back to const once FilesNg flag is removed.
- * @type {number}
+ * @const {number}
  */
-FileTableColumnModel.MIN_WIDTH_ = 10;
+FileTableColumnModel.MIN_WIDTH_ = 40;
 
 /**
  * A helper class for performing resizing of columns.
