@@ -53,6 +53,13 @@ MockTts.prototype = {
       this.speechCallbackStack_.pop()(utterance);
     }
   },
+  finishPendingUtterance() {
+    this.pendingUtterances_ = [];
+    this.currentlySpeaking_ = false;
+    if (this.options_) {
+      this.options_.onEvent({type: 'end'});
+    }
+  },
   stop() {
     this.pendingUtterances_ = [];
     this.currentlySpeaking_ = false;

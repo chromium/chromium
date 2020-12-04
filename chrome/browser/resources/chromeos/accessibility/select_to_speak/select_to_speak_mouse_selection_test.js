@@ -83,6 +83,7 @@ TEST_F(
                 assertEquals(this.mockTts.pendingUtterances().length, 1);
                 this.assertEqualsCollapseWhitespace(
                     utterance, 'This is some text');
+                this.mockTts.finishPendingUtterance();
               }),
               this.newCallback(function(utterance) {
                 this.assertEqualsCollapseWhitespace(
