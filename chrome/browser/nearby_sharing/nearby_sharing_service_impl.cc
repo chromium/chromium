@@ -767,7 +767,7 @@ void NearbySharingServiceImpl::DoCancel(
     bool write_cancel_frame) {
   ShareTargetInfo* info = GetShareTargetInfo(share_target);
 
-  if (!info || !info->connection() || !info->endpoint_id()) {
+  if (!info || !info->endpoint_id()) {
     NS_LOG(ERROR) << __func__
                   << ": Cancel invoked for unknown share target, returning "
                      "kOutOfOrderApiCall";
@@ -777,25 +777,45 @@ void NearbySharingServiceImpl::DoCancel(
     return;
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&NearbySharingServiceImpl::CloseConnection,
-                     weak_ptr_factory_.GetWeakPtr(), share_target),
-      kIncomingCancelDelay);
-
-  info->connection()->SetDisconnectionListener(
-      base::BindOnce(&NearbySharingServiceImpl::UnregisterShareTarget,
-                     weak_ptr_factory_.GetWeakPtr(), share_target));
-
-  if (write_cancel_frame) {
-    WriteCancel(*info->connection());
-  }
-
+  // We immediately inform the user that the transfer has been cancelled because
+  // subsequent disconnections might be interpreted as failure. The
+  // TransferUpdateDecorator will ignore subsequent statuses in favor of this
+  // cancelled status.
   if (info->transfer_update_callback()) {
     info->transfer_update_callback()->OnTransferUpdate(
         share_target, TransferMetadataBuilder()
                           .set_status(TransferMetadata::Status::kCancelled)
                           .build());
+  }
+
+  // Before disconnecting, cancel all ongoing payloads.
+  for (int64_t attachment_id : share_target.GetAttachmentIds()) {
+    base::Optional<int64_t> payload_id = GetAttachmentPayloadId(attachment_id);
+    if (payload_id) {
+      nearby_connections_manager_->Cancel(*payload_id);
+    }
+  }
+
+  // If a connection exists, close the connection. Otherwise disconnect from
+  // endpoint id directly. Note: A share attempt can be cancelled by the user
+  // before a connection is fully established, so info->connection() might be
+  // null.
+  if (info->connection()) {
+    info->connection()->SetDisconnectionListener(
+        base::BindOnce(&NearbySharingServiceImpl::UnregisterShareTarget,
+                       weak_ptr_factory_.GetWeakPtr(), share_target));
+
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&NearbySharingServiceImpl::CloseConnection,
+                       weak_ptr_factory_.GetWeakPtr(), share_target),
+        kIncomingCancelDelay);
+
+    if (write_cancel_frame) {
+      WriteCancel(*info->connection());
+    }
+  } else {
+    nearby_connections_manager_->Disconnect(*info->endpoint_id());
   }
 
   std::move(status_codes_callback).Run(StatusCodes::kOk);
