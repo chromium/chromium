@@ -29,6 +29,10 @@ class DoNotDisturbController {
 
   virtual bool IsDndEnabled() const = 0;
 
+  // Returns whether a new DoNotDisturb state can be set. If this returns false,
+  // then we are disabling the DoNotDisturb mode feature on the CrOS device.
+  virtual bool CanRequestNewDndState() const = 0;
+
   // Note: Setting DND state is not a synchronous operation, since it requires
   // sending a message to the connected phone. Use the observer interface to be
   // notified of when the state changes.
@@ -42,9 +46,11 @@ class DoNotDisturbController {
 
   DoNotDisturbController();
 
-  // This only sets the internal state of the DoNotDisturb mode and does not
-  // send a request to set the state of the remote phone device.
-  virtual void SetDoNotDisturbStateInternal(bool is_dnd_enabled) = 0;
+  // This sets the internal state of the DoNotDisturb mode and and whether the
+  // DoNotDisturb state can be changed. This does not send a request to set the
+  // state of the remote phone device.
+  virtual void SetDoNotDisturbStateInternal(bool is_dnd_enabled,
+                                            bool can_request_new_dnd_state) = 0;
 
   void NotifyDndStateChanged();
 

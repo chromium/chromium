@@ -216,7 +216,8 @@ void PhoneStatusProcessor::SetReceivedPhoneStatusModelStates(
 
   do_not_disturb_controller_->SetDoNotDisturbStateInternal(
       phone_properties.notification_mode() ==
-      proto::NotificationMode::DO_NOT_DISTURB_ON);
+          proto::NotificationMode::DO_NOT_DISTURB_ON,
+      phone_properties.profile_type() != proto::ProfileType::WORK_PROFILE);
 
   notification_access_manager_->SetHasAccessBeenGrantedInternal(
       phone_properties.notification_access_state() ==

@@ -16,7 +16,7 @@ class MessageSender;
 // feature of the user's remote phone.
 class DoNotDisturbControllerImpl : public DoNotDisturbController {
  public:
-  DoNotDisturbControllerImpl(MessageSender* message_sender);
+  explicit DoNotDisturbControllerImpl(MessageSender* message_sender);
   ~DoNotDisturbControllerImpl() override;
 
  private:
@@ -24,10 +24,13 @@ class DoNotDisturbControllerImpl : public DoNotDisturbController {
 
   // DoNotDisturbController:
   bool IsDndEnabled() const override;
-  void SetDoNotDisturbStateInternal(bool is_dnd_enabled) override;
+  void SetDoNotDisturbStateInternal(bool is_dnd_enabled,
+                                    bool can_request_new_dnd_state) override;
   void RequestNewDoNotDisturbState(bool enabled) override;
+  bool CanRequestNewDndState() const override;
 
   bool is_dnd_enabled_ = false;
+  bool can_request_new_dnd_state_ = false;
   MessageSender* message_sender_;
 };
 

@@ -50,8 +50,14 @@ class DoNotDisturbControllerImplTest : public testing::Test {
 
   bool IsDndEnabled() const { return controller_->IsDndEnabled(); }
 
-  void SetDoNotDisturbInternal(bool is_dnd_enabled) {
-    controller_->SetDoNotDisturbStateInternal(is_dnd_enabled);
+  bool CanRequestNewDndState() const {
+    return controller_->CanRequestNewDndState();
+  }
+
+  void SetDoNotDisturbInternal(bool is_dnd_enabled,
+                               bool can_request_new_dnd_state) {
+    controller_->SetDoNotDisturbStateInternal(is_dnd_enabled,
+                                              can_request_new_dnd_state);
   }
 
   void RequestNewDoNotDisturbState(bool enabled) {
@@ -77,19 +83,46 @@ class DoNotDisturbControllerImplTest : public testing::Test {
 TEST_F(DoNotDisturbControllerImplTest, SetInternalStatesWithObservers) {
   EXPECT_FALSE(IsDndEnabled());
 
-  SetDoNotDisturbInternal(/*is_dnd_enabled=*/true);
+  SetDoNotDisturbInternal(/*is_dnd_enabled=*/true,
+                          /*can_request_new_dnd_state=*/true);
   EXPECT_TRUE(IsDndEnabled());
+  EXPECT_TRUE(CanRequestNewDndState());
   EXPECT_EQ(1u, GetNumObserverCalls());
 
-  SetDoNotDisturbInternal(/*is_dnd_enabled=*/false);
+  SetDoNotDisturbInternal(/*is_dnd_enabled=*/false,
+                          /*can_request_new_dnd_state=*/true);
   EXPECT_FALSE(IsDndEnabled());
+  EXPECT_TRUE(CanRequestNewDndState());
   EXPECT_EQ(2u, GetNumObserverCalls());
 
-  // Setting internal state with the same previous state will not trigger an
+  // Setting internal dnd state with the same previous state will not trigger an
   // observer event.
-  SetDoNotDisturbInternal(/*is_dnd_enabled=*/false);
+  SetDoNotDisturbInternal(/*is_dnd_enabled=*/false,
+                          /*can_request_new_dnd_state=*/true);
   EXPECT_FALSE(IsDndEnabled());
+  EXPECT_TRUE(CanRequestNewDndState());
   EXPECT_EQ(2u, GetNumObserverCalls());
+
+  // Changing |can_request_new_dnd_state| should also trigger an observer event.
+  SetDoNotDisturbInternal(/*is_dnd_enabled=*/false,
+                          /*can_request_new_dnd_state=*/false);
+  EXPECT_FALSE(IsDndEnabled());
+  EXPECT_FALSE(CanRequestNewDndState());
+  EXPECT_EQ(3u, GetNumObserverCalls());
+
+  // No new changes, expect no observer call.
+  SetDoNotDisturbInternal(/*is_dnd_enabled=*/false,
+                          /*can_request_new_dnd_state=*/false);
+  EXPECT_FALSE(IsDndEnabled());
+  EXPECT_FALSE(CanRequestNewDndState());
+  EXPECT_EQ(3u, GetNumObserverCalls());
+
+  // Both states are changed, expect an observer call.
+  SetDoNotDisturbInternal(/*is_dnd_enabled=*/true,
+                          /*can_request_new_dnd_state=*/true);
+  EXPECT_TRUE(IsDndEnabled());
+  EXPECT_TRUE(CanRequestNewDndState());
+  EXPECT_EQ(4u, GetNumObserverCalls());
 }
 
 TEST_F(DoNotDisturbControllerImplTest, RequestNewDoNotDisturbState) {
@@ -97,13 +130,15 @@ TEST_F(DoNotDisturbControllerImplTest, RequestNewDoNotDisturbState) {
   EXPECT_TRUE(GetRecentUpdateNotificationModeRequest());
   EXPECT_EQ(1u, GetUpdateNotificationModeRequestCallCount());
   // Simulate receiving a response and setting the internal value.
-  SetDoNotDisturbInternal(/*is_dnd_enabled=*/true);
+  SetDoNotDisturbInternal(/*is_dnd_enabled=*/true,
+                          /*can_request_new_dnd_state=*/true);
 
   RequestNewDoNotDisturbState(/*enabled=*/false);
   EXPECT_FALSE(GetRecentUpdateNotificationModeRequest());
   EXPECT_EQ(2u, GetUpdateNotificationModeRequestCallCount());
   // Simulate receiving a response and setting the internal value.
-  SetDoNotDisturbInternal(/*is_dnd_enabled=*/false);
+  SetDoNotDisturbInternal(/*is_dnd_enabled=*/false,
+                          /*can_request_new_dnd_state=*/true);
 
   // Requesting for a the same state as the currently set state is a no-op.
   RequestNewDoNotDisturbState(/*enabled=*/false);

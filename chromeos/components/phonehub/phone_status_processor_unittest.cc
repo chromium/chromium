@@ -108,6 +108,8 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusSnapshotUpdate) {
   auto expected_phone_properties = std::make_unique<proto::PhoneProperties>();
   expected_phone_properties->set_notification_mode(
       proto::NotificationMode::DO_NOT_DISTURB_ON);
+  expected_phone_properties->set_profile_type(
+      proto::ProfileType::DEFAULT_PROFILE);
   expected_phone_properties->set_notification_access_state(
       proto::NotificationAccessState::ACCESS_GRANTED);
   expected_phone_properties->set_ring_status(
@@ -137,6 +139,7 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusSnapshotUpdate) {
   EXPECT_EQ(base::UTF8ToUTF16(test_remote_device_.name()),
             *mutable_phone_model_->phone_name());
   EXPECT_TRUE(fake_do_not_disturb_controller_->IsDndEnabled());
+  EXPECT_TRUE(fake_do_not_disturb_controller_->CanRequestNewDndState());
   EXPECT_EQ(FindMyDeviceController::Status::kRingingOn,
             fake_find_my_device_controller_->GetPhoneRingingStatus());
   EXPECT_TRUE(fake_notification_access_manager_->HasAccessBeenGranted());
@@ -171,6 +174,7 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
   auto expected_phone_properties = std::make_unique<proto::PhoneProperties>();
   expected_phone_properties->set_notification_mode(
       proto::NotificationMode::DO_NOT_DISTURB_ON);
+  expected_phone_properties->set_profile_type(proto::ProfileType::WORK_PROFILE);
   expected_phone_properties->set_notification_access_state(
       proto::NotificationAccessState::ACCESS_GRANTED);
   expected_phone_properties->set_ring_status(
@@ -199,6 +203,7 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
   EXPECT_EQ(base::UTF8ToUTF16(test_remote_device_.name()),
             *mutable_phone_model_->phone_name());
   EXPECT_TRUE(fake_do_not_disturb_controller_->IsDndEnabled());
+  EXPECT_FALSE(fake_do_not_disturb_controller_->CanRequestNewDndState());
   EXPECT_EQ(FindMyDeviceController::Status::kRingingOn,
             fake_find_my_device_controller_->GetPhoneRingingStatus());
   EXPECT_TRUE(fake_notification_access_manager_->HasAccessBeenGranted());
@@ -223,6 +228,7 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
   EXPECT_EQ(base::UTF8ToUTF16(test_remote_device_.name()),
             *mutable_phone_model_->phone_name());
   EXPECT_TRUE(fake_do_not_disturb_controller_->IsDndEnabled());
+  EXPECT_FALSE(fake_do_not_disturb_controller_->CanRequestNewDndState());
   EXPECT_EQ(FindMyDeviceController::Status::kRingingOn,
             fake_find_my_device_controller_->GetPhoneRingingStatus());
   EXPECT_TRUE(fake_notification_access_manager_->HasAccessBeenGranted());
