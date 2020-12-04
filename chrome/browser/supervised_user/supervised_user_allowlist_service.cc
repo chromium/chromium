@@ -151,7 +151,7 @@ SupervisedUserAllowlistService::MergeDataAndStartSyncing(
     const syncer::SyncDataList& initial_sync_data,
     std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
     std::unique_ptr<syncer::SyncErrorFactory> error_handler) {
-  DCHECK_EQ(syncer::SUPERVISED_USER_ALLOWLISTS, type);
+  DCHECK_EQ(syncer::DEPRECATED_SUPERVISED_USER_ALLOWLISTS, type);
 
   syncer::SyncChangeList change_list;
 
@@ -160,7 +160,8 @@ SupervisedUserAllowlistService::MergeDataAndStartSyncing(
   std::set<std::string> seen_ids;
 
   for (const syncer::SyncData& sync_data : initial_sync_data) {
-    DCHECK_EQ(syncer::SUPERVISED_USER_ALLOWLISTS, sync_data.GetDataType());
+    DCHECK_EQ(syncer::DEPRECATED_SUPERVISED_USER_ALLOWLISTS,
+              sync_data.GetDataType());
     const sync_pb::ManagedUserWhitelistSpecifics& allowlist =
         sync_data.GetSpecifics().managed_user_whitelist();
     std::string id = allowlist.id();
@@ -201,7 +202,7 @@ SupervisedUserAllowlistService::MergeDataAndStartSyncing(
 }
 
 void SupervisedUserAllowlistService::StopSyncing(syncer::ModelType type) {
-  DCHECK_EQ(syncer::SUPERVISED_USER_ALLOWLISTS, type);
+  DCHECK_EQ(syncer::DEPRECATED_SUPERVISED_USER_ALLOWLISTS, type);
 }
 
 syncer::SyncDataList SupervisedUserAllowlistService::GetAllSyncDataForTesting(
@@ -236,7 +237,8 @@ SupervisedUserAllowlistService::ProcessSyncChanges(
   base::DictionaryValue* pref_dict = update.Get();
   for (const syncer::SyncChange& sync_change : change_list) {
     syncer::SyncData data = sync_change.sync_data();
-    DCHECK_EQ(syncer::SUPERVISED_USER_ALLOWLISTS, data.GetDataType());
+    DCHECK_EQ(syncer::DEPRECATED_SUPERVISED_USER_ALLOWLISTS,
+              data.GetDataType());
     const sync_pb::ManagedUserWhitelistSpecifics& allowlist =
         data.GetSpecifics().managed_user_whitelist();
     std::string id = allowlist.id();

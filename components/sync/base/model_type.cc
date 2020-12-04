@@ -141,10 +141,10 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
     {APP_LIST, "APP_LIST", "app_list", "App List",
      sync_pb::EntitySpecifics::kAppListFieldNumber,
      ModelTypeForHistograms::kAppList},
-    {SUPERVISED_USER_ALLOWLISTS, "MANAGED_USER_WHITELIST",
+    {DEPRECATED_SUPERVISED_USER_ALLOWLISTS, "MANAGED_USER_WHITELIST",
      "managed_user_whitelists", "Managed User Whitelists",
      sync_pb::EntitySpecifics::kManagedUserWhitelistFieldNumber,
-     ModelTypeForHistograms::kSupervisedUserAllowlists},
+     ModelTypeForHistograms::kDeprecatedSupervisedUserAllowlists},
     {ARC_PACKAGE, "ARC_PACKAGE", "arc_package", "Arc Package",
      sync_pb::EntitySpecifics::kArcPackageFieldNumber,
      ModelTypeForHistograms::kArcPackage},
@@ -280,7 +280,7 @@ void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics) {
     case APP_LIST:
       specifics->mutable_app_list();
       break;
-    case SUPERVISED_USER_ALLOWLISTS:
+    case DEPRECATED_SUPERVISED_USER_ALLOWLISTS:
       specifics->mutable_managed_user_whitelist();
       break;
     case ARC_PACKAGE:
@@ -417,7 +417,7 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
   if (specifics.has_app_list())
     return APP_LIST;
   if (specifics.has_managed_user_whitelist())
-    return SUPERVISED_USER_ALLOWLISTS;
+    return DEPRECATED_SUPERVISED_USER_ALLOWLISTS;
   if (specifics.has_arc_package())
     return ARC_PACKAGE;
   if (specifics.has_printer())
@@ -467,7 +467,7 @@ ModelTypeSet EncryptableUserTypes() {
   encryptable_user_types.Remove(PRIORITY_PREFERENCES);
   encryptable_user_types.Remove(OS_PRIORITY_PREFERENCES);
   encryptable_user_types.Remove(SUPERVISED_USER_SETTINGS);
-  encryptable_user_types.Remove(SUPERVISED_USER_ALLOWLISTS);
+  encryptable_user_types.Remove(DEPRECATED_SUPERVISED_USER_ALLOWLISTS);
   // Proxy types have no sync representation and are therefore not encrypted.
   // Note however that proxy types map to one or more protocol types, which
   // may or may not be encrypted themselves.

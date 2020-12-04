@@ -383,9 +383,10 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
       model_type_store_factory,
       GetSyncableServiceForType(syncer::SUPERVISED_USER_SETTINGS)));
   controllers.push_back(std::make_unique<SupervisedUserSyncModelTypeController>(
-      syncer::SUPERVISED_USER_ALLOWLISTS, profile_, dump_stack,
+      syncer::DEPRECATED_SUPERVISED_USER_ALLOWLISTS, profile_, dump_stack,
       model_type_store_factory,
-      GetSyncableServiceForType(syncer::SUPERVISED_USER_ALLOWLISTS)));
+      GetSyncableServiceForType(
+          syncer::DEPRECATED_SUPERVISED_USER_ALLOWLISTS)));
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -610,7 +611,7 @@ ChromeSyncClient::GetSyncableServiceForType(syncer::ModelType type) {
       return SupervisedUserSettingsServiceFactory::GetForKey(
                  profile_->GetProfileKey())
           ->AsWeakPtr();
-    case syncer::SUPERVISED_USER_ALLOWLISTS:
+    case syncer::DEPRECATED_SUPERVISED_USER_ALLOWLISTS:
       return SupervisedUserServiceFactory::GetForProfile(profile_)
           ->GetAllowlistService()
           ->AsWeakPtr();

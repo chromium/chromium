@@ -22,7 +22,7 @@ SupervisedUserSyncModelTypeController::SupervisedUserSyncModelTypeController(
           DelegateMode::kTransportModeWithSingleModel),
       profile_(profile) {
   DCHECK(type == syncer::SUPERVISED_USER_SETTINGS ||
-         type == syncer::SUPERVISED_USER_ALLOWLISTS);
+         type == syncer::DEPRECATED_SUPERVISED_USER_ALLOWLISTS);
 }
 
 SupervisedUserSyncModelTypeController::

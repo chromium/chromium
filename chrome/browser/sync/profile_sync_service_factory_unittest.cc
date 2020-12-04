@@ -92,7 +92,7 @@ class ProfileSyncServiceFactoryTest : public testing::Test {
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     datatypes.push_back(syncer::SUPERVISED_USER_SETTINGS);
-    datatypes.push_back(syncer::SUPERVISED_USER_ALLOWLISTS);
+    datatypes.push_back(syncer::DEPRECATED_SUPERVISED_USER_ALLOWLISTS);
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

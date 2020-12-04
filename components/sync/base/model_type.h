@@ -112,7 +112,8 @@ enum ModelType {
   APP_LIST,
   // Supervised user allowlists. Each item contains a CRX ID (like an extension
   // ID) and a name.
-  SUPERVISED_USER_ALLOWLISTS,
+  // TODO(crbug.com/1155257): Remove the deprecated type.
+  DEPRECATED_SUPERVISED_USER_ALLOWLISTS,
   // ARC package items, i.e. Android apps on ChromeOS.
   ARC_PACKAGE,
   // Printer device information. ChromeOS only.
@@ -212,7 +213,7 @@ enum class ModelTypeForHistograms {
   // kDeprecatedSupervisedUserSharedSettings = 30,
   // kDeprecatedSyncedNotificationAppInfo = 31,
   // kDeprecatedWifiCredentials = 32,
-  kSupervisedUserAllowlists = 33,
+  kDeprecatedSupervisedUserAllowlists = 33,
   kAutofillWalletData = 34,
   kAutofillWalletMetadata = 35,
   kArcPackage = 36,
@@ -257,10 +258,10 @@ constexpr ModelTypeSet ProtocolTypes() {
       APP_SETTINGS, EXTENSION_SETTINGS, HISTORY_DELETE_DIRECTIVES, DICTIONARY,
       DEPRECATED_FAVICON_IMAGES, DEPRECATED_FAVICON_TRACKING, DEVICE_INFO,
       PRIORITY_PREFERENCES, SUPERVISED_USER_SETTINGS, APP_LIST,
-      SUPERVISED_USER_ALLOWLISTS, ARC_PACKAGE, PRINTERS, READING_LIST,
-      USER_EVENTS, NIGORI, USER_CONSENTS, SEND_TAB_TO_SELF, SECURITY_EVENTS,
-      WEB_APPS, WIFI_CONFIGURATIONS, OS_PREFERENCES, OS_PRIORITY_PREFERENCES,
-      SHARING_MESSAGE);
+      DEPRECATED_SUPERVISED_USER_ALLOWLISTS, ARC_PACKAGE, PRINTERS,
+      READING_LIST, USER_EVENTS, NIGORI, USER_CONSENTS, SEND_TAB_TO_SELF,
+      SECURITY_EVENTS, WEB_APPS, WIFI_CONFIGURATIONS, OS_PREFERENCES,
+      OS_PRIORITY_PREFERENCES, SHARING_MESSAGE);
 }
 
 // These are the normal user-controlled types. This is to distinguish from
@@ -273,8 +274,8 @@ constexpr ModelTypeSet UserTypes() {
 // User types, which are not user-controlled.
 constexpr ModelTypeSet AlwaysPreferredUserTypes() {
   return ModelTypeSet(DEVICE_INFO, USER_CONSENTS, SECURITY_EVENTS,
-                      SUPERVISED_USER_SETTINGS, SUPERVISED_USER_ALLOWLISTS,
-                      SHARING_MESSAGE);
+                      SUPERVISED_USER_SETTINGS,
+                      DEPRECATED_SUPERVISED_USER_ALLOWLISTS, SHARING_MESSAGE);
 }
 
 // User types which are always encrypted.
@@ -297,7 +298,7 @@ constexpr ModelTypeSet PriorityUserTypes() {
       DEVICE_INFO, SHARING_MESSAGE,
       // For supervised users, it is important to quickly deliver changes in
       // settings and in allowed sites to the supervised user.
-      SUPERVISED_USER_SETTINGS, SUPERVISED_USER_ALLOWLISTS,
+      SUPERVISED_USER_SETTINGS, DEPRECATED_SUPERVISED_USER_ALLOWLISTS,
       // These are by definition preferences for which it is important that the
       // client picks them up quickly (also because these can get changed
       // server-side). For example, such a pref could control whether a

@@ -169,16 +169,18 @@ class SupervisedUserAllowlistServiceTest : public testing::Test {
 TEST_F(SupervisedUserAllowlistServiceTest, MergeEmpty) {
   service_->Init();
 
-  ASSERT_TRUE(
-      service_->GetAllSyncDataForTesting(syncer::SUPERVISED_USER_ALLOWLISTS)
-          .empty());
+  ASSERT_TRUE(service_
+                  ->GetAllSyncDataForTesting(
+                      syncer::DEPRECATED_SUPERVISED_USER_ALLOWLISTS)
+                  .empty());
   base::Optional<syncer::ModelError> error = service_->MergeDataAndStartSyncing(
-      syncer::SUPERVISED_USER_ALLOWLISTS, syncer::SyncDataList(),
+      syncer::DEPRECATED_SUPERVISED_USER_ALLOWLISTS, syncer::SyncDataList(),
       std::unique_ptr<syncer::SyncChangeProcessor>(),
       std::unique_ptr<syncer::SyncErrorFactory>());
-  EXPECT_TRUE(
-      service_->GetAllSyncDataForTesting(syncer::SUPERVISED_USER_ALLOWLISTS)
-          .empty());
+  EXPECT_TRUE(service_
+                  ->GetAllSyncDataForTesting(
+                      syncer::DEPRECATED_SUPERVISED_USER_ALLOWLISTS)
+                  .empty());
   EXPECT_FALSE(error.has_value());
 
   EXPECT_EQ(0u, installer_->registered_allowlists().size());
@@ -215,16 +217,18 @@ TEST_F(SupervisedUserAllowlistServiceTest, MergeExisting) {
   initial_data.push_back(
       SupervisedUserAllowlistService::CreateAllowlistSyncData("cccc",
                                                               "Allowlist C"));
-  ASSERT_EQ(
-      2u, service_->GetAllSyncDataForTesting(syncer::SUPERVISED_USER_ALLOWLISTS)
-              .size());
+  ASSERT_EQ(2u, service_
+                    ->GetAllSyncDataForTesting(
+                        syncer::DEPRECATED_SUPERVISED_USER_ALLOWLISTS)
+                    .size());
   base::Optional<syncer::ModelError> error = service_->MergeDataAndStartSyncing(
-      syncer::SUPERVISED_USER_ALLOWLISTS, initial_data,
+      syncer::DEPRECATED_SUPERVISED_USER_ALLOWLISTS, initial_data,
       std::unique_ptr<syncer::SyncChangeProcessor>(),
       std::unique_ptr<syncer::SyncErrorFactory>());
-  EXPECT_EQ(
-      2u, service_->GetAllSyncDataForTesting(syncer::SUPERVISED_USER_ALLOWLISTS)
-              .size());
+  EXPECT_EQ(2u, service_
+                    ->GetAllSyncDataForTesting(
+                        syncer::DEPRECATED_SUPERVISED_USER_ALLOWLISTS)
+                    .size());
   EXPECT_FALSE(error.has_value());
 
   // Allowlist A (which was previously ready) should be removed now, and
