@@ -6,7 +6,9 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/installable/installable_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -283,7 +285,9 @@ bool AppBrowserController::HasTitlebarMenuButton() const {
 
 bool AppBrowserController::HasTitlebarAppOriginText() const {
   // Do not show origin text for System Apps.
-  return !is_for_system_web_app();
+  bool hide = is_for_system_web_app() ||
+              base::FeatureList::IsEnabled(features::kHideWebAppOriginText);
+  return !hide;
 }
 
 bool AppBrowserController::HasTitlebarContentSettings() const {
@@ -448,7 +452,22 @@ base::string16 AppBrowserController::GetTitle() const {
 
   content::NavigationEntry* entry =
       web_contents->GetController().GetVisibleEntry();
-  return entry ? entry->GetTitle() : base::string16();
+  base::string16 raw_title = entry ? entry->GetTitle() : base::string16();
+
+  if (!base::FeatureList::IsEnabled(features::kPrefixWebAppWindowsWithAppName))
+    return raw_title;
+
+  base::string16 app_name =
+      base::ASCIIToUTF16(WebAppProvider::Get(browser()->profile())
+                             ->registrar()
+                             .GetAppShortName(GetAppId()));
+  if (base::StartsWith(raw_title, app_name)) {
+    return raw_title;
+  } else if (raw_title.empty()) {
+    return app_name;
+  } else {
+    return base::StrCat({app_name, base::ASCIIToUTF16(" - "), raw_title});
+  }
 }
 
 void AppBrowserController::OnTabStripModelChanged(

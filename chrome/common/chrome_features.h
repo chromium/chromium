@@ -340,6 +340,9 @@ extern const base::Feature kHeavyAdInterventionWarning;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kHeavyAdPrivacyMitigations;
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kHideWebAppOriginText;
+
 #if defined(OS_MAC)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kImmersiveFullscreen;
@@ -461,6 +464,9 @@ extern const base::Feature kPluginVm;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPredictivePrefetchingAllowedOnAllConnectionTypes;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kPrefixWebAppWindowsWithAppName;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPrerenderFallbackToPreconnect;

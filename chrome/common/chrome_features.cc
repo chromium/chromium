@@ -516,6 +516,10 @@ const base::Feature kHeavyAdInterventionWarning{
 const base::Feature kHeavyAdPrivacyMitigations{
     "HeavyAdPrivacyMitigations", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Hides the origin text from showing up briefly in WebApp windows.
+const base::Feature kHideWebAppOriginText{"HideWebAppOriginText",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if defined(OS_MAC)
 const base::Feature kImmersiveFullscreen{"ImmersiveFullscreen",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
@@ -694,6 +698,9 @@ const base::Feature kPluginVm{"PluginVm", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kPredictivePrefetchingAllowedOnAllConnectionTypes{
     "PredictivePrefetchingAllowedOnAllConnectionTypes",
     base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kPrefixWebAppWindowsWithAppName{
+    "PrefixWebAppWindowsWithAppName", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Allows Chrome to do preconnect when prerender fails.
 const base::Feature kPrerenderFallbackToPreconnect{
