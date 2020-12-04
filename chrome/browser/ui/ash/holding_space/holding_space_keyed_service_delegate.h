@@ -19,15 +19,11 @@ class HoldingSpaceKeyedServiceDelegate : public HoldingSpaceModelObserver {
  public:
   ~HoldingSpaceKeyedServiceDelegate() override;
 
-  // Invoked by `HoldingSpaceKeyedService` to initialize the delegate
-  // immediately after its construction. Delegates accepting callbacks from
-  // the service should *not* invoke callbacks during construction but are free
-  // to do so during or anytime after initialization.
+  // Invoked by `HoldingSpaceKeyedService` to initialize the delegate.
+  // Called immediately after the delegate's construction. Delegates accepting
+  // callbacks from the service should *not* invoke callbacks during
+  // construction but are free to do so during or anytime after initialization.
   virtual void Init() = 0;
-
-  // Invoked by `HoldingSpaceKeyedService` when the service is shutting down.
-  // Delegates should perform any necessary clean up.
-  virtual void Shutdown();
 
   // Invoked by `HoldingSpaceKeyedService` to notify delegates when holding
   // space persistence has been restored.

@@ -9,6 +9,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
+#include "base/files/file_util.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -32,15 +33,26 @@ class HoldingSpaceFileSystemDelegate::FileSystemWatcher {
   FileSystemWatcher& operator=(const FileSystemWatcher&) = delete;
   ~FileSystemWatcher() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
 
-  void AddWatch(const base::FilePath& file_path) {
+  void AddWatchForParent(const base::FilePath& file_path) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (base::Contains(watchers_, file_path))
-      return;
-    watchers_[file_path] = std::make_unique<base::FilePathWatcher>();
-    watchers_[file_path]->Watch(
-        file_path, base::FilePathWatcher::Type::kNonRecursive,
-        base::Bind(&FileSystemWatcher::OnFilePathChanged,
-                   weak_factory_.GetWeakPtr()));
+
+    // Observe the file path parent directory for changes - this reduces the
+    // number of inotify requests, and works well enough for detecting file
+    // deletion.
+    const base::FilePath path_to_watch = file_path.DirName();
+
+    if (!base::Contains(watchers_, path_to_watch)) {
+      watchers_[path_to_watch] = std::make_unique<base::FilePathWatcher>();
+      watchers_[path_to_watch]->Watch(
+          path_to_watch, base::FilePathWatcher::Type::kNonRecursive,
+          base::Bind(&FileSystemWatcher::OnFilePathChanged,
+                     weak_factory_.GetWeakPtr()));
+    }
+
+    // If the target path got deleted while request to add a watcher was in
+    // flight, notify observers of path change immediately.
+    if (!base::PathExists(file_path))
+      OnFilePathChanged(path_to_watch, /*error=*/false);
   }
 
   void RemoveWatch(const base::FilePath& file_path) {
@@ -102,10 +114,6 @@ void HoldingSpaceFileSystemDelegate::Init() {
                      base::Unretained(this)));
 }
 
-void HoldingSpaceFileSystemDelegate::Shutdown() {
-  volume_manager_observer_.RemoveAll();
-}
-
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemAdded(
     const HoldingSpaceItem* item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -113,7 +121,7 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemAdded(
   if (item->IsFinalized()) {
     // Watch the directory containing `items`'s backing file. If the directory
     // is already being watched, this will no-op.
-    AddWatch(item->file_path().DirName());
+    AddWatchForParent(item->file_path());
     return;
   }
 
@@ -162,7 +170,7 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemRemoved(
 
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemFinalized(
     const HoldingSpaceItem* item) {
-  AddWatch(item->file_path().DirName());
+  AddWatchForParent(item->file_path());
 }
 
 void HoldingSpaceFileSystemDelegate::OnVolumeMounted(
@@ -188,11 +196,17 @@ void HoldingSpaceFileSystemDelegate::OnVolumeMounted(
 void HoldingSpaceFileSystemDelegate::OnVolumeUnmounted(
     chromeos::MountError error_code,
     const file_manager::Volume& volume) {
-  model()->RemoveIf(base::BindRepeating(
-      [](const base::FilePath& volume_path, const HoldingSpaceItem* item) {
-        return volume_path.IsParent(item->file_path());
-      },
-      volume.mount_path()));
+  // Schedule task to remove items under the unmounted file path from the model.
+  // During suspend, some volumes get unmounted - for example, drive FS. The
+  // file system delegate gets shutdown to avoid removing items from unmounted
+  // volumes, but depending on the order in which observers are added to power
+  // manager dbus client, the file system delegate may get shutdown after
+  // unmounting a volume. To avoid observer ordering issues, schedule
+  // asynchronous task to remove unmounted items from the model.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&HoldingSpaceFileSystemDelegate::RemoveItemsParentedByPath,
+                     weak_factory_.GetWeakPtr(), volume.mount_path()));
 }
 
 void HoldingSpaceFileSystemDelegate::OnFilePathChanged(
@@ -269,10 +283,11 @@ void HoldingSpaceFileSystemDelegate::OnFilePathValidityChecksComplete(
   }
 }
 
-void HoldingSpaceFileSystemDelegate::AddWatch(const base::FilePath& file_path) {
+void HoldingSpaceFileSystemDelegate::AddWatchForParent(
+    const base::FilePath& file_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   file_system_watcher_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&FileSystemWatcher::AddWatch,
+      FROM_HERE, base::BindOnce(&FileSystemWatcher::AddWatchForParent,
                                 file_system_watcher_->GetWeakPtr(), file_path));
 }
 
@@ -282,6 +297,15 @@ void HoldingSpaceFileSystemDelegate::RemoveWatch(
   file_system_watcher_runner_->PostTask(
       FROM_HERE, base::BindOnce(&FileSystemWatcher::RemoveWatch,
                                 file_system_watcher_->GetWeakPtr(), file_path));
+}
+
+void HoldingSpaceFileSystemDelegate::RemoveItemsParentedByPath(
+    const base::FilePath& parent_path) {
+  model()->RemoveIf(base::BindRepeating(
+      [](const base::FilePath& parent_path, const HoldingSpaceItem* item) {
+        return parent_path.IsParent(item->file_path());
+      },
+      parent_path));
 }
 
 void HoldingSpaceFileSystemDelegate::ClearNonFinalizedItems() {

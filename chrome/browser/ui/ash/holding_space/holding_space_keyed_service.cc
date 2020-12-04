@@ -96,7 +96,7 @@ HoldingSpaceKeyedService::HoldingSpaceKeyedService(Profile* profile,
   }
 
   // Otherwise we need to wait for the profile to be added.
-  profile_manager_observer_.Add(profile_manager);
+  profile_manager_observer_.Observe(profile_manager);
 }
 
 HoldingSpaceKeyedService::~HoldingSpaceKeyedService() {
@@ -269,18 +269,47 @@ void HoldingSpaceKeyedService::AddItem(std::unique_ptr<HoldingSpaceItem> item) {
 }
 
 void HoldingSpaceKeyedService::Shutdown() {
-  for (auto& delegate : delegates_)
-    delegate->Shutdown();
+  ShutdownDelegates();
 }
 
 void HoldingSpaceKeyedService::OnProfileAdded(Profile* profile) {
   if (profile == profile_) {
-    profile_manager_observer_.Remove(GetProfileManager());
+    profile_manager_observer_.RemoveObservation();
     OnProfileReady();
   }
 }
 
 void HoldingSpaceKeyedService::OnProfileReady() {
+  // Observe suspend status - the delegates will be shutdown during suspend.
+  if (chromeos::PowerManagerClient::Get())
+    power_manager_observer_.Observe(chromeos::PowerManagerClient::Get());
+
+  InitializeDelegates();
+
+  HoldingSpaceController::Get()->RegisterClientAndModelForUser(
+      account_id_, &holding_space_client_, &holding_space_model_);
+}
+
+void HoldingSpaceKeyedService::SuspendImminent(
+    power_manager::SuspendImminent::Reason reason) {
+  // Shutdown all delegates and clear the model when device suspends - some
+  // volumes may get unmounted during suspend, and may thus incorrectly get
+  // detected as deleted when device suspends - shutting down delegates during
+  // suspend avoids this issue, as it also disables file removal detection.
+  ShutdownDelegates();
+
+  // Clear the model as it will get restored from persistence when
+  // delegates are re-initialized after suspend.
+  holding_space_model_.RemoveAll();
+}
+
+void HoldingSpaceKeyedService::SuspendDone(base::TimeDelta sleep_duration) {
+  InitializeDelegates();
+}
+
+void HoldingSpaceKeyedService::InitializeDelegates() {
+  DCHECK(delegates_.empty());
+
   // The `HoldingSpaceDownloadsDelegate` monitors the status of downloads.
   delegates_.push_back(std::make_unique<HoldingSpaceDownloadsDelegate>(
       profile_, &holding_space_model_,
@@ -309,12 +338,13 @@ void HoldingSpaceKeyedService::OnProfileReady() {
     delegate->Init();
 }
 
+void HoldingSpaceKeyedService::ShutdownDelegates() {
+  delegates_.clear();
+}
+
 void HoldingSpaceKeyedService::OnPersistenceRestored() {
   for (auto& delegate : delegates_)
     delegate->NotifyPersistenceRestored();
-
-  HoldingSpaceController::Get()->RegisterClientAndModelForUser(
-      account_id_, &holding_space_client_, &holding_space_model_);
 }
 
 }  // namespace ash

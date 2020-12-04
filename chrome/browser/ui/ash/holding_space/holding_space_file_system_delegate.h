@@ -42,7 +42,6 @@ class HoldingSpaceFileSystemDelegate : public HoldingSpaceKeyedServiceDelegate,
 
   // HoldingSpaceKeyedServiceDelegate:
   void Init() override;
-  void Shutdown() override;
   void OnHoldingSpaceItemAdded(const HoldingSpaceItem* item) override;
   void OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) override;
   void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item) override;
@@ -74,8 +73,14 @@ class HoldingSpaceFileSystemDelegate : public HoldingSpaceKeyedServiceDelegate,
       std::vector<base::FilePath> invalid_paths);
 
   // Adds/removes a watch for the specified `file_path`.
-  void AddWatch(const base::FilePath& file_path);
+  // Note that `AddWatchForParent` will add a watch for the `file_path`'s parent
+  // directory.
+  void AddWatchForParent(const base::FilePath& file_path);
   void RemoveWatch(const base::FilePath& file_path);
+
+  // Removes items that are (transitively) parented by `parent_path` from the
+  // holding space model.
+  void RemoveItemsParentedByPath(const base::FilePath& parent_path);
 
   // Clears all non-finalized items from holding space model - runs with a delay
   // after profile initialization to clean up items from volumes that have not
