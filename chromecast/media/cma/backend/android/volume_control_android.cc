@@ -133,7 +133,8 @@ void VolumeControlAndroid::OnVolumeChange(
   thread_.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&VolumeControlAndroid::ReportVolumeChangeOnThread,
-                     base::Unretained(this), (AudioContentType)type, level));
+                     base::Unretained(this),
+                     static_cast<AudioContentType>(type), level));
 }
 
 void VolumeControlAndroid::OnMuteChange(
@@ -142,9 +143,9 @@ void VolumeControlAndroid::OnMuteChange(
     jint type,
     jboolean muted) {
   thread_.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VolumeControlAndroid::ReportMuteChangeOnThread,
-                     base::Unretained(this), (AudioContentType)type, muted));
+      FROM_HERE, base::BindOnce(&VolumeControlAndroid::ReportMuteChangeOnThread,
+                                base::Unretained(this),
+                                static_cast<AudioContentType>(type), muted));
 }
 
 #if BUILDFLAG(ENABLE_VOLUME_TABLES_ACCESS)
@@ -335,7 +336,7 @@ float VolumeControlAndroid::DbFSToVolumeCached(AudioContentType type,
 
 // static
 void VolumeControl::Initialize(const std::vector<std::string>& argv) {
-  // Nothing to do.
+  GetVolumeControl();
 }
 
 // static
