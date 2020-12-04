@@ -1914,6 +1914,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     void SavePreviousSize() {
       GetLayoutBox().previous_size_ = GetLayoutBox().Size();
     }
+    void ClearPreviousSize() { GetLayoutBox().previous_size_ = LayoutSize(); }
     void SavePreviousOverflowData();
     void ClearPreviousOverflowData() {
       DCHECK(!GetLayoutBox().HasVisualOverflow());

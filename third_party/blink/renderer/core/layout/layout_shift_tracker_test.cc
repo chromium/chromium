@@ -394,13 +394,13 @@ TEST_F(LayoutShiftTrackerTest, CompositedOverflowExpansion) {
 TEST_F(LayoutShiftTrackerTest, ContentVisibilityAutoFirstPaint) {
   SetBodyInnerHTML(R"HTML(
     <style>
-      #target {
+      .auto {
         content-visibility: auto;
         contain-intrinsic-size: 1px;
         width: 100px;
       }
     </style>
-    <div id=target>
+    <div id=target class=auto>
       <div style="width: 100px; height: 100px"></div>
     </div>
   )HTML");
@@ -417,24 +417,23 @@ TEST_F(LayoutShiftTrackerTest,
        ContentVisibilityAutoOffscreenAfterScrollFirstPaint) {
   SetBodyInnerHTML(R"HTML(
     <style>
-      #target {
+      .auto {
         content-visibility: auto;
         contain-intrinsic-size: 1px;
         width: 100px;
       }
     </style>
-    <div id=target style="position: relative; top: 100000px">
+    <div id=target class=auto style="position: relative; top: 100000px">
       <div style="width: 100px; height: 100px"></div>
     </div>
   )HTML");
   auto* target = To<LayoutBox>(GetLayoutObjectByElementId("target"));
-
   // #target starts offsceen, which doesn't count for CLS.
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
   EXPECT_EQ(LayoutSize(100, 1), target->Size());
 
   // In the next frame, we scroll it onto the screen, but it still doesn't
-  // count for CLS, and its subtree is not yet unskipped because the
+  // count for CLS, and its subtree is not yet unskipped, because the
   // intersection observation takes effect on the subsequent frame.
   GetDocument().domWindow()->scrollTo(0, 100000);
   UpdateAllLifecyclePhasesForTest();
@@ -453,13 +452,13 @@ TEST_F(LayoutShiftTrackerTest,
 TEST_F(LayoutShiftTrackerTest, ContentVisibilityHiddenFirstPaint) {
   SetBodyInnerHTML(R"HTML(
     <style>
-      #target {
+      .auto {
         content-visibility: hidden;
         contain-intrinsic-size: 1px;
         width: 100px;
       }
     </style>
-    <div id=target>
+    <div id=target class=auto>
       <div style="width: 100px; height: 100px"></div>
     </div>
   )HTML");
@@ -468,6 +467,93 @@ TEST_F(LayoutShiftTrackerTest, ContentVisibilityHiddenFirstPaint) {
   // Skipped subtrees don't cause CLS impact.
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
   EXPECT_EQ(LayoutSize(100, 1), target->Size());
+}
+
+TEST_F(LayoutShiftTrackerTest, ContentVisibilityAutoResize) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .auto {
+        content-visibility: auto;
+        contain-intrinsic-size: 10px 3000px;
+        width: 100px;
+      }
+      .contained {
+        height: 100px;
+      }
+    </style>
+    <div class=auto><div class=contained></div></div>
+    <div class=auto id=target><div class=contained></div></div>
+  )HTML");
+
+  // Skipped subtrees don't cause CLS impact.
+  UpdateAllLifecyclePhasesForTest();
+  auto* target = To<LayoutBox>(GetLayoutObjectByElementId("target"));
+  EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
+  EXPECT_EQ(LayoutSize(100, 100), target->Size());
+}
+
+TEST_F(LayoutShiftTrackerTest,
+       ContentVisibilityAutoOnscreenAndOffscreenAfterScrollFirstPaint) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .auto {
+        content-visibility: auto;
+        contain-intrinsic-size: 1px;
+        width: 100px;
+      }
+    </style>
+    <div id=onscreen class=auto>
+      <div style="width: 100px; height: 100px"></div>
+    </div>
+    <div id=offscreen class=auto style="position: relative; top: 100000px">
+      <div style="width: 100px; height: 100px"></div>
+    </div>
+  )HTML");
+  auto* offscreen = To<LayoutBox>(GetLayoutObjectByElementId("offscreen"));
+  auto* onscreen = To<LayoutBox>(GetLayoutObjectByElementId("onscreen"));
+
+  // #offscreen starts offsceen, which doesn't count for CLS.
+  EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
+  EXPECT_EQ(LayoutSize(100, 1), offscreen->Size());
+  EXPECT_EQ(LayoutSize(100, 100), onscreen->Size());
+
+  // In the next frame, we scroll it onto the screen, but it still doesn't
+  // count for CLS, and its subtree is not yet unskipped, because the
+  // intersection observation takes effect on the subsequent frame.
+  GetDocument().domWindow()->scrollTo(0, 100000 + 100);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
+  EXPECT_EQ(LayoutSize(100, 1), offscreen->Size());
+  EXPECT_EQ(LayoutSize(100, 100), onscreen->Size());
+
+  // Now the subtree is unskipped, and #offscreen renders at size 100x100.
+  // Nevertheless, there is no impact on CLS.
+  UpdateAllLifecyclePhasesForTest();
+  offscreen = To<LayoutBox>(GetLayoutObjectByElementId("offscreen"));
+  onscreen = To<LayoutBox>(GetLayoutObjectByElementId("onscreen"));
+
+  // Target's LayoutObject gets re-attached.
+  offscreen = To<LayoutBox>(GetLayoutObjectByElementId("offscreen"));
+  EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
+  EXPECT_EQ(LayoutSize(100, 100), offscreen->Size());
+  EXPECT_EQ(LayoutSize(100, 1), onscreen->Size());
+
+  // Now scroll the element back off-screen.
+  GetDocument().domWindow()->scrollTo(0, 0);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
+  EXPECT_EQ(LayoutSize(100, 100), offscreen->Size());
+  EXPECT_EQ(LayoutSize(100, 1), onscreen->Size());
+
+  // In the subsequent frame, #offscreen becomes locked and changes its
+  // layout size (and vice-versa for #onscreen).
+  UpdateAllLifecyclePhasesForTest();
+  offscreen = To<LayoutBox>(GetLayoutObjectByElementId("offscreen"));
+  onscreen = To<LayoutBox>(GetLayoutObjectByElementId("onscreen"));
+
+  EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
+  EXPECT_EQ(LayoutSize(100, 1), offscreen->Size());
+  EXPECT_EQ(LayoutSize(100, 100), onscreen->Size());
 }
 
 }  // namespace blink
