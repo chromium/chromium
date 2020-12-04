@@ -60,6 +60,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   PlatformWindowState GetPlatformWindowState() const override;
   void SizeConstraintsChanged() override;
   std::string GetWindowUniqueId() const override;
+  // SetUseNativeFrame and ShouldUseNativeFrame decide on
+  // xdg-decoration mode for a window.
   void SetUseNativeFrame(bool use_native_frame) override;
   bool ShouldUseNativeFrame() const override;
 
@@ -103,6 +105,9 @@ class WaylandToplevelWindow : public WaylandWindow,
   // Initializes the aura-shell surface, in the case aura-shell EXO extension
   // is available.
   void InitializeAuraShellSurface();
+
+  // Set decoration mode for a window.
+  void SetDecorationMode();
 
   // Wrappers around shell surface.
   std::unique_ptr<ShellSurfaceWrapper> shell_surface_;
@@ -151,6 +156,10 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   wl::Object<zaura_surface> aura_surface_;
 
+  // When use_native_frame is false, client-side decoration is set,
+  // e.g. lacros-browser.
+  // When use_native_frame is true, server-side decoration is set,
+  // e.g. lacros-taskmanager.
   bool use_native_frame_ = false;
 
   base::WeakPtrFactory<WaylandToplevelWindow> weak_ptr_factory_{this};

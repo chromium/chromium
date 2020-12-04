@@ -159,36 +159,6 @@ struct WaylandXdgSurface {
   DISALLOW_COPY_AND_ASSIGN(WaylandXdgSurface);
 };
 
-class WaylandXdgToplevelDecoration {
- public:
-  WaylandXdgToplevelDecoration(wl_resource* resource) : resource_(resource) {}
-
-  WaylandXdgToplevelDecoration(const WaylandXdgToplevelDecoration&) = delete;
-  WaylandXdgToplevelDecoration& operator=(const WaylandXdgToplevelDecoration&) =
-      delete;
-
-  uint32_t decoration_mode() const { return default_mode_; }
-  void SetDecorationMode(uint32_t mode) {
-    if (default_mode_ != mode) {
-      default_mode_ = mode;
-      OnConfigure(mode);
-    }
-  }
-
- private:
-  void OnConfigure(uint32_t mode) {
-    switch (mode) {
-      case ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE:
-      case ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE:
-        zxdg_toplevel_decoration_v1_send_configure(resource_, mode);
-        break;
-    }
-  }
-
-  wl_resource* const resource_;
-  uint32_t default_mode_ = ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE;
-};
-
 // Wrapper around shell surface that allows us to handle the case where the
 // xdg surface resource is destroyed before the toplevel resource.
 class WaylandToplevel : public aura::WindowObserver {
@@ -285,6 +255,11 @@ class WaylandToplevel : public aura::WindowObserver {
   void Minimize() {
     if (shell_surface_data_)
       shell_surface_data_->shell_surface->Minimize();
+  }
+
+  void SetDecorationMode(SurfaceFrameType type) {
+    if (shell_surface_data_)
+      shell_surface_data_->shell_surface->SetDecorationMode(type);
   }
 
  private:
@@ -424,6 +399,44 @@ const struct xdg_toplevel_interface xdg_toplevel_implementation = {
     xdg_toplevel_set_min_size,     xdg_toplevel_set_maximized,
     xdg_toplevel_unset_maximized,  xdg_toplevel_set_fullscreen,
     xdg_toplevel_unset_fullscreen, xdg_toplevel_set_minimized};
+
+class WaylandXdgToplevelDecoration {
+ public:
+  WaylandXdgToplevelDecoration(wl_resource* resource,
+                               wl_resource* toplevel_resource)
+      : resource_(resource),
+        top_level_(GetUserDataAs<WaylandToplevel>(toplevel_resource)) {}
+
+  WaylandXdgToplevelDecoration(const WaylandXdgToplevelDecoration&) = delete;
+  WaylandXdgToplevelDecoration& operator=(const WaylandXdgToplevelDecoration&) =
+      delete;
+
+  uint32_t decoration_mode() const { return default_mode_; }
+  void SetDecorationMode(uint32_t mode) {
+    if (default_mode_ != mode) {
+      default_mode_ = mode;
+      OnConfigure(mode);
+    }
+  }
+
+ private:
+  void OnConfigure(uint32_t mode) {
+    switch (mode) {
+      case ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE:
+        top_level_->SetDecorationMode(SurfaceFrameType::NONE);
+        break;
+      case ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE:
+        top_level_->SetDecorationMode(SurfaceFrameType::NORMAL);
+        break;
+    }
+    zxdg_toplevel_decoration_v1_send_configure(resource_, mode);
+  }
+
+  wl_resource* const resource_;
+  WaylandToplevel* top_level_;
+  // Keeps track of the xdg-decoration mode on server side.
+  uint32_t default_mode_ = ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE;
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 // xdg_popup_interface:
@@ -733,12 +746,8 @@ void decoration_manager_handle_get_toplevel_decoration(
     return;
   }
 
-  auto xdg_toplevel_decoration =
-      std::make_unique<WaylandXdgToplevelDecoration>(decoration_resource);
-
-  // Enables client-side decoration
-  xdg_toplevel_decoration->SetDecorationMode(
-      ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE);
+  auto xdg_toplevel_decoration = std::make_unique<WaylandXdgToplevelDecoration>(
+      decoration_resource, toplevel_resource);
 
   SetImplementation(decoration_resource, &toplevel_decoration_impl,
                     std::move(xdg_toplevel_decoration));

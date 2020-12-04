@@ -16,6 +16,19 @@ namespace ui {
 
 class WaylandConnection;
 
+enum class DecorationMode {
+  // Client-side decoration for a window.
+  // In this case, the client is responsible for drawing decorations
+  // for a window (e.g. caption bar, close button). This is suitable for
+  // windows using custom frame.
+  kClientSide = 1,
+  // Server-side decoration for a window.
+  // In this case, the ash window manager is responsible for drawing
+  // decorations. This is suitable for windows using native frame.
+  // e.g. taskmanager.
+  kServerSide
+};
+
 // Wrapper interface for different wayland shells shell versions.
 class ShellSurfaceWrapper {
  public:
@@ -68,12 +81,10 @@ class ShellSurfaceWrapper {
   // .desktop file and use the icon set there.
   virtual void SetAppId(const std::string& app_id) = 0;
 
-  // If |is_server_side_decoration| is true, sets a server side decoration,
-  // and a client side decoration otherwise.
-  //
-  // This function sends a request to the wayland compositor to update
-  // the decoration mode for a surface associated with this top level window.
-  virtual void SetDecoration(bool is_server_side_decoration) = 0;
+  // In case of kClientSide or kServerSide, this function sends a
+  // request to the wayland compositor to update the decoration mode
+  // for a surface associated with this top level window.
+  virtual void SetDecoration(DecorationMode decoration) = 0;
 };
 
 bool CheckIfWlArrayHasValue(struct wl_array* wl_array, uint32_t value);

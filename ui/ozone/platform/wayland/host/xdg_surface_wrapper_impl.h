@@ -48,7 +48,7 @@ class XDGSurfaceWrapperImpl : public ShellSurfaceWrapper {
   void SetMinSize(int32_t width, int32_t height) override;
   void SetMaxSize(int32_t width, int32_t height) override;
   void SetAppId(const std::string& app_id) override;
-  void SetDecoration(bool is_server_side_decoration) override;
+  void SetDecoration(DecorationMode decoration) override;
 
   // xdg_surface_listener
   static void ConfigureV6(void* data,
@@ -75,8 +75,9 @@ class XDGSurfaceWrapperImpl : public ShellSurfaceWrapper {
   static void CloseTopLevelV6(void* data,
                               struct zxdg_toplevel_v6* zxdg_toplevel_v6);
 
-  void SetTopLevelDecorationMode(
-      zxdg_toplevel_decoration_v1_mode requested_mode);
+  // Send request to wayland compositor to enable a requested decoration mode.
+  void SetTopLevelDecorationMode(DecorationMode requested_mode);
+
   // zxdg_decoration_listener
   static void ConfigureDecoration(
       void* data,
@@ -109,10 +110,9 @@ class XDGSurfaceWrapperImpl : public ShellSurfaceWrapper {
 
   bool surface_for_popup_ = false;
 
-  // Keeps track of the decoration mode currently in use if xdg-decoration
-  // protocol extension is available, otherwise CLIENT_SIDE is assumed.
-  enum zxdg_toplevel_decoration_v1_mode decoration_mode_ =
-      ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE;
+  // On client side, it keeps track of the decoration mode currently in
+  // use if xdg-decoration protocol extension is available.
+  DecorationMode decoration_mode_;
 };
 
 }  // namespace ui

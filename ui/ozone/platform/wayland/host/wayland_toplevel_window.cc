@@ -66,7 +66,7 @@ bool WaylandToplevelWindow::CreateShellSurface() {
 #else
   shell_surface_->SetAppId(wm_class_class_);
 #endif
-  shell_surface_->SetDecoration(use_native_frame_);
+  SetDecorationMode();
   shell_surface_->SetTitle(window_title_);
   SetSizeConstraints();
   TriggerStateChanges();
@@ -248,7 +248,7 @@ void WaylandToplevelWindow::SetUseNativeFrame(bool use_native_frame) {
     return;
   use_native_frame_ = use_native_frame;
   if (shell_surface_)
-    shell_surface_->SetDecoration(use_native_frame);
+    SetDecorationMode();
 }
 
 bool WaylandToplevelWindow::ShouldUseNativeFrame() const {
@@ -475,6 +475,17 @@ void WaylandToplevelWindow::InitializeAuraShellSurface() {
         connection()->zaura_shell()->wl_object(), root_surface()->surface()));
     zaura_surface_set_fullscreen_mode(aura_surface_.get(),
                                       ZAURA_SURFACE_FULLSCREEN_MODE_IMMERSIVE);
+  }
+}
+
+void WaylandToplevelWindow::SetDecorationMode() {
+  DCHECK(shell_surface_);
+  if (use_native_frame_) {
+    // Set server-side decoration for windows using a native frame,
+    // e.g. taskmanager
+    shell_surface_->SetDecoration(DecorationMode::kServerSide);
+  } else {
+    shell_surface_->SetDecoration(DecorationMode::kClientSide);
   }
 }
 

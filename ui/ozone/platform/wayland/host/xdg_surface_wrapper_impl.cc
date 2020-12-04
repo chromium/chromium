@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/hit_test.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
+#include "ui/ozone/platform/wayland/host/shell_surface_wrapper.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
@@ -18,7 +19,9 @@ namespace ui {
 
 XDGSurfaceWrapperImpl::XDGSurfaceWrapperImpl(WaylandWindow* wayland_window,
                                              WaylandConnection* connection)
-    : wayland_window_(wayland_window), connection_(connection) {}
+    : wayland_window_(wayland_window),
+      connection_(connection),
+      decoration_mode_(DecorationMode::kClientSide) {}
 
 XDGSurfaceWrapperImpl::~XDGSurfaceWrapperImpl() {}
 
@@ -163,10 +166,8 @@ void XDGSurfaceWrapperImpl::SetAppId(const std::string& app_id) {
   }
 }
 
-void XDGSurfaceWrapperImpl::SetDecoration(bool is_server_side_decoration) {
-  SetTopLevelDecorationMode(is_server_side_decoration
-                                ? ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE
-                                : ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE);
+void XDGSurfaceWrapperImpl::SetDecoration(DecorationMode decoration) {
+  SetTopLevelDecorationMode(decoration);
 }
 
 // static
@@ -211,13 +212,13 @@ void XDGSurfaceWrapperImpl::CloseTopLevelStable(
 }
 
 void XDGSurfaceWrapperImpl::SetTopLevelDecorationMode(
-    zxdg_toplevel_decoration_v1_mode requested_mode) {
+    DecorationMode requested_mode) {
   if (!zxdg_toplevel_decoration_ || requested_mode == decoration_mode_)
     return;
 
   decoration_mode_ = requested_mode;
   zxdg_toplevel_decoration_v1_set_mode(zxdg_toplevel_decoration_.get(),
-                                       requested_mode);
+                                       static_cast<uint32_t>(requested_mode));
 }
 
 // static
@@ -278,8 +279,7 @@ void XDGSurfaceWrapperImpl::ConfigureDecoration(
     uint32_t mode) {
   auto* surface = static_cast<XDGSurfaceWrapperImpl*>(data);
   DCHECK(surface);
-  surface->SetTopLevelDecorationMode(
-      static_cast<zxdg_toplevel_decoration_v1_mode>(mode));
+  surface->SetTopLevelDecorationMode(static_cast<DecorationMode>(mode));
 }
 
 bool XDGSurfaceWrapperImpl::InitializeStable(bool with_toplevel) {
@@ -359,6 +359,8 @@ bool XDGSurfaceWrapperImpl::InitializeV6(bool with_toplevel) {
   }
   zxdg_toplevel_v6_add_listener(zxdg_toplevel_v6_.get(),
                                 &zxdg_toplevel_v6_listener, this);
+
+  InitializeXdgDecoration();
 
   wayland_window_->root_surface()->Commit();
   connection_->ScheduleFlush();

@@ -125,6 +125,9 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   void SetWidgetBounds(const gfx::Rect& bounds) override;
   bool OnPreWidgetCommit() override;
 
+  // Set xdg-shell decoration mode.
+  void SetDecorationMode(SurfaceFrameType type);
+
  private:
   struct Config;
 
