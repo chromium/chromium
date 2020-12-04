@@ -30,17 +30,12 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MarginLayoutParamsCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.Callback;
-import org.chromium.base.CallbackController;
-import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.WindowDelegate;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
@@ -51,8 +46,6 @@ import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -110,8 +103,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
     private boolean mUrlFocusedWithoutAnimations;
     protected boolean mVoiceSearchEnabled;
 
-    private OmniboxPrerender mOmniboxPrerender;
-
     protected float mUrlFocusChangeFraction;
     protected LinearLayout mUrlActionContainer;
 
@@ -122,9 +113,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
     private OneshotSupplier<AssistantVoiceSearchService> mAssistantVoiceSearchServiceSupplier;
     private Runnable mKeyboardResizeModeTask;
     private Runnable mKeyboardHideTask;
-    private ObservableSupplier<Profile> mProfileSupplier;
-    private Callback<Profile> mProfileSupplierObserver;
-    private CallbackController mCallbackController = new CallbackController();
     private TemplateUrlServiceObserver mTemplateUrlObserver;
     private OverrideUrlLoadingDelegate mOverrideUrlLoadingDelegate;
 
@@ -155,17 +143,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         if (mAutocompleteCoordinator != null) {
             // Don't call destroy() on mAutocompleteCoordinator since we don't own it.
             mAutocompleteCoordinator = null;
-        }
-
-        if (mCallbackController != null) {
-            mCallbackController.destroy();
-            mCallbackController = null;
-        }
-
-        if (mProfileSupplier != null) {
-            mProfileSupplier.removeObserver(mProfileSupplierObserver);
-            mProfileSupplier = null;
-            mProfileSupplierObserver = null;
         }
 
         if (mTemplateUrlObserver != null) {
@@ -224,7 +201,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
      * @param urlCoordinator The coordinator for interacting with the url bar.
      * @param statusCoordinator The coordinator for interacting with the status icon.
      * @param locationBarDataProvider Provider of LocationBar data, e.g. url and title.
-     * @param profileSupplier Supplier of the profile for the currently active TabModel.
      * @param windowDelegate {@link WindowDelegate} that will provide {@link Window} related info.
      * @param windowAndroid {@link WindowAndroid} that is used by the owning {@link Activity}.
      */
@@ -232,7 +208,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
     public void initialize(@NonNull AutocompleteCoordinator autocompleteCoordinator,
             @NonNull UrlBarCoordinator urlCoordinator, @NonNull StatusCoordinator statusCoordinator,
             @NonNull LocationBarDataProvider locationBarDataProvider,
-            @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull WindowDelegate windowDelegate, @NonNull WindowAndroid windowAndroid,
             @NonNull OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
             @NonNull VoiceRecognitionHandler voiceRecognitionHandler,
@@ -247,12 +222,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         mVoiceRecognitionHandler = voiceRecognitionHandler;
         mAssistantVoiceSearchServiceSupplier = assistantVoiceSearchSupplier;
 
-        assert profileSupplier != null;
-        assert mProfileSupplier == null;
-        mProfileSupplier = profileSupplier;
-        mProfileSupplierObserver = mCallbackController.makeCancelable(this::setProfile);
-        mProfileSupplier.addObserver(mProfileSupplierObserver);
-
         updateButtonVisibility();
         updateShouldAnimateIconChanges();
     }
@@ -263,8 +232,7 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
     }
 
     /**
-     *  Signals to LocationBarLayout that's it safe to call code that requires native to be loaded,
-     * e.g. OmniboxPrerender.
+     *  Signals to LocationBarLayout that's it safe to call code that requires native to be loaded.
      */
     public void onFinishNativeInitialization() {
         TemplateUrlServiceFactory.get().runWhenLoaded(this::registerTemplateUrlObserver);
@@ -274,8 +242,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         mDeleteButton.setOnClickListener(this);
         mMicButton.setOnClickListener(this);
 
-        mOmniboxPrerender = new OmniboxPrerender();
-
         for (Runnable deferredRunnable : mDeferredNativeRunnables) {
             post(deferredRunnable);
         }
@@ -284,8 +250,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         onPrimaryColorChanged();
 
         updateMicButtonVisibility();
-
-        setProfile(mProfileSupplier.get());
     }
 
     /** Initiates a prefetch of autocomplete suggestions. */
@@ -351,25 +315,11 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
 
     /* package */ void onSuggestionsHidden() {}
 
-    /* package */ void onSuggestionsChanged(String autocompleteText) {
-        String userText = mUrlCoordinator.getTextWithoutAutocomplete();
-        if (mUrlCoordinator.shouldAutocomplete()) {
-            mUrlCoordinator.setAutocompleteText(userText, autocompleteText);
-        }
-
+    /* package */ void onSuggestionsChanged() {
         // Handle the case where suggestions (in particular zero suggest) are received without the
         // URL focusing happening.
         if (mUrlFocusedWithoutAnimations && mUrlHasFocus) {
             handleUrlFocusAnimation(mUrlHasFocus);
-        }
-
-        if (mNativeInitialized
-                && !CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_INSTANT)
-                && PrivacyPreferencesManagerImpl.getInstance().shouldPrerender()
-                && mLocationBarDataProvider.hasTab()) {
-            mOmniboxPrerender.prerenderMaybe(userText, getOriginalUrl(),
-                    mAutocompleteCoordinator.getCurrentNativeAutocompleteResult(),
-                    mLocationBarDataProvider.getProfile(), mLocationBarDataProvider.getTab());
         }
     }
 
@@ -643,10 +593,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         setUrlBarText(mLocationBarDataProvider.getUrlBarData(), UrlBar.ScrollType.SCROLL_TO_TLD,
                 SelectionState.SELECT_ALL);
         if (!mLocationBarDataProvider.hasTab()) return;
-
-        // Profile may be null if switching to a tab that has not yet been initialized.
-        Profile profile = mLocationBarDataProvider.getProfile();
-        if (profile != null && mOmniboxPrerender != null) mOmniboxPrerender.clear(profile);
     }
 
     /* package */ void setOmniboxEditingText(String text) {
@@ -787,20 +733,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
      */
     protected void notifyShouldAnimateIconChanges(boolean shouldAnimate) {
         mStatusCoordinator.setShouldAnimateIconChanges(shouldAnimate);
-    }
-
-    /**
-     * Updates the profile used by this LocationBar, for, e.g. determining incognito status or
-     * generating autocomplete suggestions..
-     * @param profile The profile to be used.
-     */
-    private void setProfile(Profile profile) {
-        if (profile == null || !mNativeInitialized) return;
-        mAutocompleteCoordinator.setAutocompleteProfile(profile);
-        mOmniboxPrerender.initializeForProfile(profile);
-
-        setShowIconsWhenUrlFocused(
-                SearchEngineLogoUtils.shouldShowSearchEngineLogo(profile.isOffTheRecord()));
     }
 
     /** Focuses the current page. */

@@ -50,8 +50,8 @@ public class OmniboxPrerender {
     }
 
     /**
-     * Potentailly invokes a pre-render or pre-connect given the url typed into the omnibox and
-     * a corresponding autocomplete result. This should be invoked everytime the omnibox changes
+     * Potentially invokes a pre-render or pre-connect given the url typed into the omnibox and
+     * a corresponding autocomplete result. This should be invoked every time the omnibox changes
      * (e.g. As the user types characters this method should be invoked at least once per character)
      *
      * @param url url in the omnibox.

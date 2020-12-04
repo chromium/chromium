@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.omnibox;
 
 import android.view.ActionMode;
 import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
+
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -26,6 +28,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -115,8 +118,10 @@ public final class LocationBarCoordinator
         mUrlBar = mLocationBarLayout.findViewById(R.id.url_bar);
         OneshotSupplierImpl<AssistantVoiceSearchService> assistantVoiceSearchSupplier =
                 new OneshotSupplierImpl();
-        mLocationBarMediator = new LocationBarMediator(
-                mLocationBarLayout, locationBarDataProvider, assistantVoiceSearchSupplier);
+
+        mLocationBarMediator = new LocationBarMediator(mLocationBarLayout, locationBarDataProvider,
+                assistantVoiceSearchSupplier, profileObservableSupplier,
+                PrivacyPreferencesManagerImpl.getInstance());
         mUrlCoordinator =
                 new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
@@ -128,8 +133,10 @@ public final class LocationBarCoordinator
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator = new StatusCoordinator(isTablet(), statusView, mUrlCoordinator,
                 incognitoStateProvider, modalDialogManagerSupplier, locationBarDataProvider);
-        mLocationBarMediator.setCoordinators(mStatusCoordinator, mAutocompleteCoordinator);
+        mLocationBarMediator.setCoordinators(
+                mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         mUrlBar.setOnKeyListener(mLocationBarMediator);
+
         mUrlCoordinator.addUrlTextChangeListener(mAutocompleteCoordinator);
 
         // The LocationBar's direction is tied to the UrlBar's text direction. Icons inside the
@@ -142,9 +149,8 @@ public final class LocationBarCoordinator
 
         mLocationBarLayout.addUrlFocusChangeListener(mAutocompleteCoordinator);
         mLocationBarLayout.initialize(mAutocompleteCoordinator, mUrlCoordinator, mStatusCoordinator,
-                locationBarDataProvider, profileObservableSupplier, windowDelegate, windowAndroid,
-                overrideUrlLoadingDelegate, mLocationBarMediator.getVoiceRecognitionHandler(),
-                assistantVoiceSearchSupplier);
+                locationBarDataProvider, windowDelegate, windowAndroid, overrideUrlLoadingDelegate,
+                mLocationBarMediator.getVoiceRecognitionHandler(), assistantVoiceSearchSupplier);
     }
 
     @Override

@@ -16,7 +16,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.WindowDelegate;
@@ -25,7 +24,6 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
@@ -120,14 +118,13 @@ class LocationBarTablet extends LocationBarLayout {
     public void initialize(@NonNull AutocompleteCoordinator autocompleteCoordinator,
             @NonNull UrlBarCoordinator urlCoordinator, @NonNull StatusCoordinator statusCoordinator,
             @NonNull LocationBarDataProvider locationBarDataProvider,
-            @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull WindowDelegate windowDelegate, @NonNull WindowAndroid windowAndroid,
             @NonNull OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
             @NonNull VoiceRecognitionHandler voiceRecognitionHandler,
             @NonNull OneshotSupplier<AssistantVoiceSearchService> assistantVoiceSearchSupplier) {
         super.initialize(autocompleteCoordinator, urlCoordinator, statusCoordinator,
-                locationBarDataProvider, profileSupplier, windowDelegate, windowAndroid,
-                overrideUrlLoadingDelegate, voiceRecognitionHandler, assistantVoiceSearchSupplier);
+                locationBarDataProvider, windowDelegate, windowAndroid, overrideUrlLoadingDelegate,
+                voiceRecognitionHandler, assistantVoiceSearchSupplier);
         mStatusCoordinator.setShowIconsWhenUrlFocused(true);
         if (SearchEngineLogoUtils.shouldShowSearchEngineLogo(
                     mLocationBarDataProvider.isIncognito())) {
@@ -244,8 +241,8 @@ class LocationBarTablet extends LocationBarLayout {
     }
 
     @Override
-    void onSuggestionsChanged(String autocompleteText) {
-        super.onSuggestionsChanged(autocompleteText);
+    void onSuggestionsChanged() {
+        super.onSuggestionsChanged();
         mStatusCoordinator.setFirstSuggestionIsSearchType(
                 mAutocompleteCoordinator.getSuggestionCount() > 0
                 && mAutocompleteCoordinator.getSuggestionAt(0).isSearchSuggestion());

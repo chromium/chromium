@@ -4,9 +4,13 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -16,17 +20,26 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
+import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -40,6 +53,8 @@ public class LocationBarMediatorTest {
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
 
     @Mock
     LocationBarLayout mLocationBarLayout;
@@ -51,15 +66,36 @@ public class LocationBarMediatorTest {
     private LocationBarDataProvider mLocationBarDataProvider;
     @Mock
     private OneshotSupplierImpl<AssistantVoiceSearchService> mAssistantVoiceSearchSupplier;
+    @Mock
+    private Profile.Natives mProfileNativesJniMock;
+    @Mock
+    private Tab mTab;
+    @Mock
+    private AutocompleteCoordinator mAutocompleteCoordinator;
+    @Mock
+    private UrlBarCoordinator mUrlCoordinator;
+    @Mock
+    private StatusCoordinator mStatusCoordintor;
+    @Mock
+    private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
+    @Mock
+    private OmniboxPrerender.Natives mPrerenderJni;
+    @Mock
+    private SearchEngineLogoUtils.Delegate mSearchEngineDelegate;
 
+    private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
     private LocationBarMediator mMediator;
 
     @Before
     public void setUp() {
         doReturn(mContext).when(mLocationBarLayout).getContext();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
-        mMediator = new LocationBarMediator(
-                mLocationBarLayout, mLocationBarDataProvider, mAssistantVoiceSearchSupplier);
+        mJniMocker.mock(ProfileJni.TEST_HOOKS, mProfileNativesJniMock);
+        mJniMocker.mock(OmniboxPrerenderJni.TEST_HOOKS, mPrerenderJni);
+        mMediator = new LocationBarMediator(mLocationBarLayout, mLocationBarDataProvider,
+                mAssistantVoiceSearchSupplier, mProfileSupplier, mPrivacyPreferencesManager);
+        mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordintor);
+        SearchEngineLogoUtils.setDelegateForTesting(mSearchEngineDelegate);
     }
 
     @Test
@@ -111,5 +147,37 @@ public class LocationBarMediatorTest {
         doReturn("http://url.com").when(mLocationBarDataProvider).getCurrentUrl();
         mMediator.revertChanges();
         verify(mLocationBarLayout).setUrl("http://url.com");
+    }
+
+    @Test
+    public void testOnSuggestionsChanged() {
+        ArgumentCaptor<OmniboxPrerender> omniboxPrerenderCaptor =
+                ArgumentCaptor.forClass(OmniboxPrerender.class);
+        doReturn(123L).when(mPrerenderJni).init(omniboxPrerenderCaptor.capture());
+        mMediator.onFinishNativeInitialization();
+        Profile profile = mock(Profile.class);
+        mProfileSupplier.set(profile);
+        verify(mPrerenderJni)
+                .initializeForProfile(123L, omniboxPrerenderCaptor.getValue(), profile);
+
+        doReturn(false).when(mPrivacyPreferencesManager).shouldPrerender();
+        mMediator.onSuggestionsChanged("text", true);
+        verify(mPrerenderJni, never())
+                .prerenderMaybe(
+                        anyLong(), any(), anyString(), anyString(), anyLong(), any(), any());
+
+        doReturn(true).when(mPrivacyPreferencesManager).shouldPrerender();
+        doReturn(true).when(mLocationBarDataProvider).hasTab();
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        doReturn("originalUrl").when(mLocationBarLayout).getOriginalUrl();
+        doReturn(456L).when(mAutocompleteCoordinator).getCurrentNativeAutocompleteResult();
+        doReturn("text").when(mUrlCoordinator).getTextWithoutAutocomplete();
+        doReturn(true).when(mUrlCoordinator).shouldAutocomplete();
+
+        mMediator.onSuggestionsChanged("textWithAutocomplete", true);
+        verify(mPrerenderJni)
+                .prerenderMaybe(123L, omniboxPrerenderCaptor.getValue(), "text", "originalUrl",
+                        456L, profile, mTab);
+        verify(mUrlCoordinator).setAutocompleteText("text", "textWithAutocomplete");
     }
 }

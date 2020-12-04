@@ -13,8 +13,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.CallbackController;
+import org.chromium.base.CommandLine;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
@@ -26,6 +30,8 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.ui.base.WindowAndroid;
@@ -47,16 +53,42 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, Autocompl
     private final OneshotSupplierImpl<AssistantVoiceSearchService> mAssistantVoiceSearchSupplier;
     private StatusCoordinator mStatusCoordinator;
     private AutocompleteCoordinator mAutocompleteCoordinator;
+    private OmniboxPrerender mOmniboxPrerender;
+    private UrlBarCoordinator mUrlCoordinator;
+    private ObservableSupplier<Profile> mProfileSupplier;
+    private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
+    private CallbackController mCallbackController = new CallbackController();
+
+    private boolean mNativeInitialized;
 
     /*package */ LocationBarMediator(@NonNull LocationBarLayout locationBarLayout,
             @NonNull LocationBarDataProvider locationBarDataProvider,
-            @NonNull OneshotSupplierImpl<AssistantVoiceSearchService>
-                    assistantVoiceSearchSupplier) {
+            @NonNull OneshotSupplierImpl<AssistantVoiceSearchService> assistantVoiceSearchSupplier,
+            @NonNull ObservableSupplier<Profile> profileSupplier,
+            @NonNull PrivacyPreferencesManagerImpl privacyPreferencesManager) {
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
         mLocationBarDataProvider.addObserver(this);
         mAssistantVoiceSearchSupplier = assistantVoiceSearchSupplier;
         mVoiceRecognitionHandler = new VoiceRecognitionHandler(this, mAssistantVoiceSearchSupplier);
+        mProfileSupplier = profileSupplier;
+        mProfileSupplier.addObserver(mCallbackController.makeCancelable(this::setProfile));
+        mPrivacyPreferencesManager = privacyPreferencesManager;
+    }
+
+    /**
+     * Sets coordinators post-construction; they can't be set at construction time since
+     * LocationBarMediator is a delegate for them, so is constructed beforehand.
+     *
+     * @param urlCoordinator Coordinator for the url bar.
+     * @param autocompleteCoordinator Coordinator for the autocomplete component.
+     * @param statusCoordinator Coordinator for the status icon.
+     */
+    /*package */ void setCoordinators(UrlBarCoordinator urlCoordinator,
+            AutocompleteCoordinator autocompleteCoordinator, StatusCoordinator statusCoordinator) {
+        mUrlCoordinator = urlCoordinator;
+        mAutocompleteCoordinator = autocompleteCoordinator;
+        mStatusCoordinator = statusCoordinator;
     }
 
     /*package */ void destroy() {
@@ -66,6 +98,8 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, Autocompl
         }
         mStatusCoordinator = null;
         mAutocompleteCoordinator = null;
+        mUrlCoordinator = null;
+        mPrivacyPreferencesManager = null;
     }
 
     /*package */ void onUrlFocusChange(boolean hasFocus) {
@@ -73,12 +107,15 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, Autocompl
     }
 
     /*package */ void onFinishNativeInitialization() {
+        mNativeInitialized = true;
+        mOmniboxPrerender = new OmniboxPrerender();
         Context context = mLocationBarLayout.getContext();
         mAssistantVoiceSearchService = new AssistantVoiceSearchService(context,
                 AppHooks.get().getExternalAuthUtils(), TemplateUrlServiceFactory.get(),
                 GSAState.getInstance(context), this, SharedPreferencesManager.getInstance());
         mAssistantVoiceSearchSupplier.set(mAssistantVoiceSearchService);
         mLocationBarLayout.onFinishNativeInitialization();
+        setProfile(mProfileSupplier.get());
     }
 
     /*package */ void setUrlFocusChangeFraction(float fraction) {
@@ -95,17 +132,15 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, Autocompl
         mLocationBarLayout.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
     }
 
-    /**
-     * Sets coordinators post-construction; they can't be set at construction time since
-     * LocationBarMediator is a delegate for them, so is constructed beforehand.
-     *
-     * @param statusCoordinator
-     * @param autocompleteCoordinator
-     */
-    /* package */ void setCoordinators(@NonNull StatusCoordinator statusCoordinator,
-            @NonNull AutocompleteCoordinator autocompleteCoordinator) {
-        mStatusCoordinator = statusCoordinator;
-        mAutocompleteCoordinator = autocompleteCoordinator;
+    // Private methods
+
+    private void setProfile(Profile profile) {
+        if (profile == null || !mNativeInitialized) return;
+        mAutocompleteCoordinator.setAutocompleteProfile(profile);
+        mOmniboxPrerender.initializeForProfile(profile);
+
+        mLocationBarLayout.setShowIconsWhenUrlFocused(
+                SearchEngineLogoUtils.shouldShowSearchEngineLogo(profile.isOffTheRecord()));
     }
 
     /*package */ void updateVisualsForState() {
@@ -152,6 +187,9 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, Autocompl
     @Override
     public void onUrlChanged() {
         mLocationBarLayout.setUrl(mLocationBarDataProvider.getCurrentUrl());
+        // Profile may be null if switching to a tab that has not yet been initialized.
+        Profile profile = mProfileSupplier.get();
+        if (profile != null && mOmniboxPrerender != null) mOmniboxPrerender.clear(profile);
     }
 
     @Override
@@ -210,10 +248,21 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, Autocompl
 
     @Override
     public void onSuggestionsChanged(String autocompleteText, boolean defaultMatchIsSearch) {
-        mLocationBarLayout.onSuggestionsChanged(autocompleteText);
-        // TODO (https://crbug.com/1152501): Refactor the LBM/LBC relationship such that LBM doesn't
-        // need to communicate with other coordinators like this.
         mStatusCoordinator.onDefaultMatchClassified(defaultMatchIsSearch);
+        String userText = mUrlCoordinator.getTextWithoutAutocomplete();
+        if (mUrlCoordinator.shouldAutocomplete()) {
+            mUrlCoordinator.setAutocompleteText(userText, autocompleteText);
+        }
+
+        mLocationBarLayout.onSuggestionsChanged();
+        if (mNativeInitialized
+                && !CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_INSTANT)
+                && mPrivacyPreferencesManager.shouldPrerender()
+                && mLocationBarDataProvider.hasTab()) {
+            mOmniboxPrerender.prerenderMaybe(userText, mLocationBarLayout.getOriginalUrl(),
+                    mAutocompleteCoordinator.getCurrentNativeAutocompleteResult(),
+                    mProfileSupplier.get(), mLocationBarDataProvider.getTab());
+        }
     }
 
     @Override
