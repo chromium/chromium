@@ -62,13 +62,6 @@ void StartUploadingReportsInRecoveryMode();
 // Resets the Breakpad configuration from the main bundle.
 void RestoreDefaultConfiguration();
 
-// Sets a key indicating that UI thread is frozen (if value is 'true'),
-// otherwise remove the key.
-// Setting the value is synchronous as it is expected to be set just before the
-// report generation.
-// Unsetting the value is asynchronous.
-void SetHangReport(bool value);
-
 }  // namespace breakpad_helper
 
 #endif  // IOS_CHROME_BROWSER_CRASH_REPORT_BREAKPAD_HELPER_H_

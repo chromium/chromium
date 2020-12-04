@@ -26,7 +26,23 @@ void LogRecoveryTime(base::TimeDelta time) {
   UMA_HISTOGRAM_TIMES("IOS.MainThreadFreezeDetection.RecoveredAfter", time);
 }
 
-}
+// Key indicating that UI thread is frozen.
+NSString* const kHangReportKey = @"hang-report";
+
+// Key of the UMA Startup.MobileSessionStartAction histogram.
+const char kUMAMainThreadFreezeDetectionNotRunningAfterReport[] =
+    "IOS.MainThreadFreezeDetection.NotRunningAfterReport";
+
+// Enum actions for the IOS.MainThreadFreezeDetection.NotRunningAfterReport UMA
+// metric. These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused.
+enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
+  kAfterBreakpadRef = 0,
+  kAfterFileManagerUTEMove = 1,
+  kMaxValue = kAfterFileManagerUTEMove,
+};
+
+}  // namespace
 
 @interface MainThreadFreezeDetector ()
 // The callback that is called regularly on main thread.
@@ -127,24 +143,23 @@ void LogRecoveryTime(base::TimeDelta time) {
 }
 
 - (void)runInMainLoop {
+  NSDate* oldLastSeenMainThread = self.lastSeenMainThread;
+  self.lastSeenMainThread = [NSDate date];
   if (self.reportGenerated) {
     self.reportGenerated = NO;
     // Remove information about the last session info.
     [[NSUserDefaults standardUserDefaults]
         removeObjectForKey:@(kNsUserDefaultKeyLastSessionInfo)];
     LogRecoveryTime(base::TimeDelta::FromSecondsD(
-        [[NSDate date] timeIntervalSinceDate:self.lastSeenMainThread]));
+        [[NSDate date] timeIntervalSinceDate:oldLastSeenMainThread]));
     // Restart the freeze detection.
-    dispatch_after(
-        dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)),
-        _freezeDetectionQueue, ^{
-          [self cleanAndRunInFreezeDetectionQueue];
-        });
+    dispatch_async(_freezeDetectionQueue, ^{
+      [self cleanAndRunInFreezeDetectionQueue];
+    });
   }
   if (!self.running) {
     return;
   }
-  self.lastSeenMainThread = [NSDate date];
   dispatch_after(
       dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)),
       dispatch_get_main_queue(), ^{
@@ -168,14 +183,22 @@ void LogRecoveryTime(base::TimeDelta time) {
   }
   if ([[NSDate date] timeIntervalSinceDate:self.lastSeenMainThread] >
       self.delay) {
-    breakpad_helper::SetHangReport(true);
     [[BreakpadController sharedInstance]
         withBreakpadRef:^(BreakpadRef breakpadRef) {
+          if (!self.running) {
+            UMA_HISTOGRAM_ENUMERATION(
+                kUMAMainThreadFreezeDetectionNotRunningAfterReport,
+                IOSMainThreadFreezeDetectionNotRunningAfterReportBlock::
+                    kAfterBreakpadRef);
+            return;
+          }
           if (!breakpadRef) {
             return;
           }
+          BreakpadAddUploadParameter(breakpadRef, kHangReportKey, @"yes");
           NSDictionary* breakpadReportInfo =
               BreakpadGenerateReport(breakpadRef, nil);
+          BreakpadRemoveUploadParameter(breakpadRef, kHangReportKey);
           if (!breakpadReportInfo) {
             return;
           }
@@ -201,6 +224,13 @@ void LogRecoveryTime(base::TimeDelta time) {
                                toPath:UTEConfigFile
                                 error:nil];
           [fileManager moveItemAtPath:dumpFile toPath:UTEDumpFile error:nil];
+          if (!self.running) {
+            UMA_HISTOGRAM_ENUMERATION(
+                kUMAMainThreadFreezeDetectionNotRunningAfterReport,
+                IOSMainThreadFreezeDetectionNotRunningAfterReportBlock::
+                    kAfterFileManagerUTEMove);
+            return;
+          }
           [[NSUserDefaults standardUserDefaults]
               setObject:@{
                 @"dump" : [dumpFile lastPathComponent],
@@ -209,14 +239,14 @@ void LogRecoveryTime(base::TimeDelta time) {
               }
                  forKey:@(kNsUserDefaultKeyLastSessionInfo)];
           self.reportGenerated = YES;
-          breakpad_helper::SetHangReport(false);
         }];
     return;
   }
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)),
-                 _freezeDetectionQueue, ^{
-                   [self runInFreezeDetectionQueue];
-                 });
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)),
+      _freezeDetectionQueue, ^{
+        [self runInFreezeDetectionQueue];
+      });
 }
 
 - (void)prepareCrashReportsForUpload:(ProceduralBlock)completion {

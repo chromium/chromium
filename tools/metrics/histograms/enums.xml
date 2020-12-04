@@ -39056,6 +39056,16 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="4" label="Authorized when Chrome is in use"/>
 </enum>
 
+<enum name="IOSMainThreadFreezeDetectionNotRunningAfterReportBlock">
+  <int value="0" label="After Breakpad Ref">
+    Freeze detection stopped after obtaining the breakpad lock.
+  </int>
+  <int value="1" label="After FileManager UTE move">
+    Freeze detection stopped after moving the hang report out of the Breakpad
+    directory and into the |UTE| directory.
+  </int>
+</enum>
+
 <enum name="IOSMenuAction">
   <int value="0" label="Open in New Tab"/>
   <int value="1" label="Open in New Incognito Tab"/>

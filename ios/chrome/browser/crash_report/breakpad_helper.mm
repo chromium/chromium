@@ -46,8 +46,6 @@ NSString* const kCrashReportsUploadingEnabledKey =
 NSString* const kUptimeAtRestoreInMs = @"uptime_at_restore_in_ms";
 NSString* const kUploadedInRecoveryMode = @"uploaded_in_recovery_mode";
 
-NSString* const kHangReport = @"hang-report";
-
 void DeleteAllReportsInDirectory(base::FilePath directory) {
   base::FileEnumerator enumerator(directory, false,
                                   base::FileEnumerator::FILES);
@@ -282,13 +280,6 @@ void RestoreDefaultConfiguration() {
   [[BreakpadController sharedInstance] resetConfiguration];
   [[BreakpadController sharedInstance] start:NO];
   [[BreakpadController sharedInstance] setUploadingEnabled:NO];
-}
-
-void SetHangReport(bool value) {
-  if (value)
-    AddReportParameter(kHangReport, @"yes", false);
-  else
-    RemoveReportParameter(kHangReport);
 }
 
 }  // namespace breakpad_helper

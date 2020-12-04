@@ -63,7 +63,6 @@ TEST_F(BreakpadHelperTest, CrashReportUserApplicationStateAllKeys) {
   // single breakpad record. This test should include all keys for
   // CrashReportUserApplicationState, since the whole dictionary is considered a
   // single breakpad record.
-  breakpad_helper::SetHangReport(true);
   crash_keys::SetCurrentlyInBackground(true);
   crash_keys::SetCurrentlySignedIn(true);
   crash_keys::SetMemoryWarningCount(2);
