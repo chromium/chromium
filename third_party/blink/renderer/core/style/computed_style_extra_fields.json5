@@ -1037,5 +1037,12 @@
       field_group: "*",
       default_value: "false",
     },
+    {
+      name: "DependsOnContainerQueries",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+    },
   ],
 }

@@ -1965,13 +1965,36 @@ scoped_refptr<StyleInitialData> StyleEngine::MaybeCreateAndGetInitialData() {
   return initial_data_;
 }
 
-void StyleEngine::RecalcStyle() {
+void StyleEngine::UpdateStyleAndLayoutTreeForContainer(Element& container) {
+  DCHECK(!style_recalc_root_.GetRootNode());
+  DCHECK(!container.NeedsStyleRecalc());
+  DCHECK(!in_container_query_style_recalc_);
+
+  base::AutoReset<bool> cq_recalc(&in_container_query_style_recalc_, true);
+
+  style_recalc_root_.Update(nullptr, &container);
+  RecalcStyle({StyleRecalcChange::kRecalcContainerQueryDependent});
+
+  if (container.ChildNeedsReattachLayoutTree()) {
+    DCHECK(layout_tree_rebuild_root_.GetRootNode());
+    if (layout_tree_rebuild_root_.GetRootNode()->IsDocumentNode()) {
+      // Avoid traversing from outside the container root. We know none of the
+      // elements outside the subtree should be marked dirty in this pass, but
+      // we may have fallen back to the document root.
+      layout_tree_rebuild_root_.Clear();
+      layout_tree_rebuild_root_.Update(nullptr, &container);
+    }
+    RebuildLayoutTree();
+  }
+}
+
+void StyleEngine::RecalcStyle(StyleRecalcChange change) {
   DCHECK(GetDocument().documentElement());
   Element* root_element = &style_recalc_root_.RootElement();
   Element* parent = root_element->ParentOrShadowHostElement();
 
   SelectorFilterRootScope filter_scope(parent);
-  root_element->RecalcStyle({});
+  root_element->RecalcStyle(change);
 
   for (ContainerNode* ancestor = root_element->GetStyleRecalcParent(); ancestor;
        ancestor = ancestor->GetStyleRecalcParent()) {

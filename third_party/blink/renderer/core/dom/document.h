@@ -1345,9 +1345,7 @@ class CORE_EXPORT Document : public ContainerNode,
   void DidLoadAllPendingParserBlockingStylesheets();
   void DidRemoveAllPendingStylesheets();
 
-  bool InStyleRecalc() const {
-    return lifecycle_.GetState() == DocumentLifecycle::kInStyleRecalc;
-  }
+  bool InStyleRecalc() const;
 
   // Return a Locale for the default locale if the argument is null or empty.
   Locale& GetCachedLocale(const AtomicString& locale = g_null_atom);

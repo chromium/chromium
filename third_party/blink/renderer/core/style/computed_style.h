@@ -2653,6 +2653,8 @@ class ComputedStyle : public ComputedStyleBase,
     return LogicalSize(LayoutUnit(ratio.Width()), LayoutUnit(ratio.Height()));
   }
 
+  bool IsContainerForContainerQueries() const { return ContainsLayout(); }
+
  private:
   EClear Clear() const { return ClearInternal(); }
   EFloat Floating() const { return FloatingInternal(); }

@@ -398,10 +398,16 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void UpdateViewport();
   void UpdateViewportStyle();
   void UpdateStyleAndLayoutTree();
-  void RecalcStyle();
+  // To be called from layout when container queries change for the container.
+  void UpdateStyleAndLayoutTreeForContainer(Element& container);
+  void RecalcStyle() { RecalcStyle({}); }
+
   void ClearEnsuredDescendantStyles(Element& element);
   void RebuildLayoutTree();
   bool InRebuildLayoutTree() const { return in_layout_tree_rebuild_; }
+  bool InContainerQueryStyleRecalc() const {
+    return in_container_query_style_recalc_;
+  }
 
   void SetColorSchemeFromMeta(const CSSValue* color_scheme);
   const CSSValue* GetMetaColorSchemeValue() const { return meta_color_scheme_; }
@@ -531,6 +537,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void ViewportDefiningElementDidChange();
   void PropagateWritingModeAndDirectionToHTMLRoot();
 
+  void RecalcStyle(StyleRecalcChange);
+
   Member<Document> document_;
 
   // True if this StyleEngine is for an HTML Import document.
@@ -582,6 +590,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   bool uses_rem_units_{false};
   bool in_layout_tree_rebuild_{false};
+  bool in_container_query_style_recalc_{false};
   bool in_dom_removal_{false};
   bool viewport_style_dirty_{false};
   bool fonts_need_update_{false};

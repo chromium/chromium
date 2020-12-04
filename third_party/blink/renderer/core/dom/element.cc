@@ -2880,7 +2880,7 @@ void Element::RecalcStyle(const StyleRecalcChange change) {
   if (HasCustomStyleCallbacks())
     WillRecalcStyle(change);
 
-  StyleRecalcChange child_change = change.ForChildren();
+  StyleRecalcChange child_change = change.ForChildren(*this);
   if (change.ShouldRecalcStyleFor(*this)) {
     child_change = RecalcOwnStyle(change);
     if (GetStyleChangeType() == kSubtreeStyleChange)
@@ -3029,7 +3029,7 @@ StyleRecalcChange Element::RecalcOwnStyle(const StyleRecalcChange change) {
   scoped_refptr<ComputedStyle> new_style;
   scoped_refptr<const ComputedStyle> old_style = GetComputedStyle();
 
-  StyleRecalcChange child_change = change.ForChildren();
+  StyleRecalcChange child_change = change.ForChildren(*this);
 
   if (ParentComputedStyle()) {
     if (old_style && change.IndependentInherit()) {

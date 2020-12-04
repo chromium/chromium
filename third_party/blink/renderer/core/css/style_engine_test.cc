@@ -3764,4 +3764,67 @@ TEST_F(StyleEngineTest, CSSPseudoHostDynamicSpecificity) {
   ClearUseCounter(WebFeature::kCSSPseudoHostDynamicSpecificity);
 }
 
+namespace {
+
+void SetDependsOnContainerQueries(HTMLCollection& affected) {
+  for (Element* element : affected) {
+    if (const ComputedStyle* style = element->GetComputedStyle()) {
+      scoped_refptr<ComputedStyle> cloned_style = ComputedStyle::Clone(*style);
+      cloned_style->SetDependsOnContainerQueries(true);
+      element->SetComputedStyle(cloned_style);
+    }
+  }
+}
+
+}  // namespace
+
+TEST_F(StyleEngineTest, UpdateStyleAndLayoutTreeForContainer) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div id="container1" style="contain:layout">
+      <span class="affected"></span>
+      <div id="container2" style="contain:layout" class="affected">
+        <span class="affected"></span>
+        <span></span>
+        <span class="affected"></span>
+        <span></span>
+        <span class="affected"></span>
+        <div style="display:none" class="affected">
+          <span class="affected"></span>
+        </div>
+        <div style="display:none">
+          <span class="affected"></span>
+          <span class="affected"></span>
+        </div>
+      </div>
+      <span></span>
+      <div id="container3" style="contain:layout">
+        <span class="affected"></span>
+        <span class="affected"></span>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  auto* container1 = GetDocument().getElementById("container1");
+  auto* container2 = GetDocument().getElementById("container2");
+  auto* affected = GetDocument().getElementsByClassName("affected");
+  ASSERT_TRUE(container1);
+  ASSERT_TRUE(container2);
+  ASSERT_TRUE(affected);
+  SetDependsOnContainerQueries(*affected);
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(*container1);
+
+  // The first span.affected child and #container2
+  EXPECT_EQ(2u, GetStyleEngine().StyleForElementCount() - start_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(*container2);
+
+  // Three direct span.affected children, and the two display:none elements.
+  EXPECT_EQ(5u, GetStyleEngine().StyleForElementCount() - start_count);
+}
+
 }  // namespace blink

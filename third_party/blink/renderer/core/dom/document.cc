@@ -2086,6 +2086,8 @@ bool Document::ShouldScheduleLayoutTreeUpdate() const {
   // recalc.
   if (lifecycle_.GetState() == DocumentLifecycle::kInPreLayout)
     return false;
+  if (lifecycle_.GetState() == DocumentLifecycle::kInPerformLayout)
+    return false;
   if (!ShouldScheduleLayout())
     return false;
   return true;
@@ -8544,6 +8546,11 @@ void Document::SetFindInPageActiveMatchNode(Node* node) {
 
 const Node* Document::GetFindInPageActiveMatchNode() const {
   return find_in_page_active_match_node_;
+}
+
+bool Document::InStyleRecalc() const {
+  return lifecycle_.GetState() == DocumentLifecycle::kInStyleRecalc ||
+         style_engine_->InContainerQueryStyleRecalc();
 }
 
 template class CORE_TEMPLATE_EXPORT Supplement<Document>;
