@@ -19,6 +19,7 @@
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/partition_alloc_buildflags.h"
+#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 
 // Need TLS support.
@@ -65,13 +66,27 @@ class BASE_EXPORT ThreadCacheRegistry {
   // a later point (during a deallocation).
   void PurgeAll();
 
+  // Starts a periodic timer on the current thread to purge all thread caches.
+  void StartPeriodicPurge();
+  void OnDeallocation();
+
   static PartitionLock& GetLock() { return Instance().lock_; }
 
+  bool has_pending_purge_task() const { return has_pending_purge_task_; }
+
+  static constexpr TimeDelta kPurgeInterval = TimeDelta::FromSeconds(1);
+  static constexpr int kMinMainThreadAllocationsForPurging = 1000;
+
  private:
+  void PeriodicPurge();
+  void PostDelayedPurgeTask();
   friend class NoDestructor<ThreadCacheRegistry>;
   // Not using base::Lock as the object's constructor must be constexpr.
   PartitionLock lock_;
   ThreadCache* list_head_ GUARDED_BY(GetLock()) = nullptr;
+  uint64_t allocations_at_last_purge_ = 0;
+  int deallocations_ = 0;
+  bool has_pending_purge_task_ = false;
 };
 
 constexpr ThreadCacheRegistry::ThreadCacheRegistry() = default;
@@ -175,11 +190,16 @@ class BASE_EXPORT ThreadCache {
   // Asks this cache to trigger |Purge()| at a later point. Can be called from
   // any thread.
   void SetShouldPurge();
+  void SetNotifiesRegistry(bool enabled);
   // Empties the cache.
   // The Partition lock must *not* be held when calling this.
   // Must be called from the thread this cache is for.
   void Purge();
   void AccumulateStats(ThreadCacheStats* stats) const;
+
+  // Disables the thread cache for its associated root.
+  void Disable();
+  void Enable();
 
   size_t bucket_count_for_testing(size_t index) const {
     return buckets_[index].count;
@@ -194,6 +214,7 @@ class BASE_EXPORT ThreadCache {
     uint16_t count;
     uint16_t limit;
   };
+  enum class Mode { kNormal, kPurge, kNotifyRegistry };
 
   explicit ThreadCache(PartitionRoot<ThreadSafe>* root);
   static void Delete(void* thread_cache_ptr);
@@ -203,6 +224,7 @@ class BASE_EXPORT ThreadCache {
   // Empties the |bucket| until there are at most |limit| objects in it.
   void ClearBucket(Bucket& bucket, size_t limit);
   ALWAYS_INLINE void PutInBucket(Bucket& bucket, void* ptr);
+  void HandleNonNormalMode();
 
   // TODO(lizeb): Optimize the threshold.
   static constexpr size_t kSizeThreshold = 512;
@@ -214,10 +236,11 @@ class BASE_EXPORT ThreadCache {
       kBucketCount < kNumBuckets,
       "Cannot have more cached buckets than what the allocator supports");
 
-  std::atomic<bool> should_purge_{false};
+  std::atomic<Mode> mode_{Mode::kNormal};
   Bucket buckets_[kBucketCount];
   ThreadCacheStats stats_;
   PartitionRoot<ThreadSafe>* const root_;
+  ThreadCacheRegistry* const registry_;
 #if DCHECK_IS_ON()
   bool is_in_thread_cache_ = false;
 #endif
@@ -257,8 +280,8 @@ ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* address,
     ClearBucket(bucket, bucket.limit / 2);
   }
 
-  if (UNLIKELY(should_purge_.load(std::memory_order_relaxed)))
-    PurgeInternal();
+  if (UNLIKELY(mode_.load(std::memory_order_relaxed) != Mode::kNormal))
+    HandleNonNormalMode();
 
   return true;
 }

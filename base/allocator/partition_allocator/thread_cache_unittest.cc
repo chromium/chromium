@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,9 +25,7 @@
 // With *SAN, PartitionAlloc is replaced in partition_alloc.h by ASAN, so we
 // cannot test the thread cache.
 //
-// Finally, the thread cache currently uses `thread_local`, which causes issues
-// on Windows 7 (at least). As long as it doesn't use something else on Windows,
-// disable the cache (and tests)
+// Finally, the thread cache is not supported on all platforms.
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&  \
     defined(PA_THREAD_CACHE_SUPPORTED)
@@ -103,7 +102,14 @@ class ThreadCacheTest : public ::testing::Test {
     ASSERT_TRUE(tcache);
     tcache->Purge();
   }
-  void TearDown() override {}
+
+  void TearDown() override {
+    task_env_.FastForwardUntilNoTasksRemain();
+    ASSERT_FALSE(ThreadCacheRegistry::Instance().has_pending_purge_task());
+  }
+
+  base::test::TaskEnvironment task_env_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(ThreadCacheTest, Simple) {
@@ -419,6 +425,103 @@ TEST_F(ThreadCacheTest, PurgeAll) NO_THREAD_SAFETY_ANALYSIS {
 
   purge_called.store(true, std::memory_order_release);
   PlatformThread::Join(thread_handle);
+}
+
+TEST_F(ThreadCacheTest, PeriodicPurge) {
+  ThreadCacheRegistry::Instance().StartPeriodicPurge();
+  EXPECT_TRUE(ThreadCacheRegistry::Instance().has_pending_purge_task());
+
+  std::atomic<bool> other_thread_started{false};
+  std::atomic<bool> purge_called{false};
+
+  size_t bucket_index = FillThreadCacheAndReturnIndex(kMediumSize);
+  ThreadCache* this_thread_tcache = g_root->thread_cache_for_testing();
+  ThreadCache* other_thread_tcache = nullptr;
+
+  LambdaThreadDelegate delegate{
+      BindLambdaForTesting([&]() NO_THREAD_SAFETY_ANALYSIS {
+        FillThreadCacheAndReturnIndex(kMediumSize);
+        other_thread_tcache = g_root->thread_cache_for_testing();
+
+        other_thread_started.store(true, std::memory_order_release);
+        while (!purge_called.load(std::memory_order_acquire)) {
+        }
+
+        // Purge() was not triggered from the other thread.
+        EXPECT_EQ(kFillCountForMediumBucket,
+                  other_thread_tcache->bucket_count_for_testing(bucket_index));
+        // Allocations do not trigger Purge().
+        void* data = g_root->Alloc(1, "");
+        EXPECT_EQ(kFillCountForMediumBucket,
+                  other_thread_tcache->bucket_count_for_testing(bucket_index));
+        // But deallocations do.
+        g_root->Free(data);
+        EXPECT_EQ(0u,
+                  other_thread_tcache->bucket_count_for_testing(bucket_index));
+      })};
+
+  PlatformThreadHandle thread_handle;
+  PlatformThread::Create(0, &delegate, &thread_handle);
+
+  while (!other_thread_started.load(std::memory_order_acquire)) {
+  }
+
+  EXPECT_EQ(kFillCountForMediumBucket,
+            this_thread_tcache->bucket_count_for_testing(bucket_index));
+  EXPECT_EQ(kFillCountForMediumBucket,
+            other_thread_tcache->bucket_count_for_testing(bucket_index));
+
+  task_env_.FastForwardBy(ThreadCacheRegistry::kPurgeInterval);
+  // Not enough allocations since last purge, don't reschedule it.
+  EXPECT_FALSE(ThreadCacheRegistry::Instance().has_pending_purge_task());
+
+  // This thread is synchronously purged.
+  EXPECT_EQ(0u, this_thread_tcache->bucket_count_for_testing(bucket_index));
+  // Not the other one.
+  EXPECT_EQ(kFillCountForMediumBucket,
+            other_thread_tcache->bucket_count_for_testing(bucket_index));
+
+  purge_called.store(true, std::memory_order_release);
+  PlatformThread::Join(thread_handle);
+}
+
+TEST_F(ThreadCacheTest, PeriodicPurgeStopsAndRestarts) {
+  const size_t kTestSize = 100;
+  ThreadCacheRegistry::Instance().StartPeriodicPurge();
+  EXPECT_TRUE(ThreadCacheRegistry::Instance().has_pending_purge_task());
+
+  size_t bucket_index = FillThreadCacheAndReturnIndex(kTestSize);
+  auto* tcache = ThreadCache::Get();
+  EXPECT_GT(tcache->bucket_count_for_testing(bucket_index), 0u);
+
+  task_env_.FastForwardBy(ThreadCacheRegistry::kPurgeInterval);
+  // Not enough allocations since last purge, don't reschedule it.
+  EXPECT_FALSE(ThreadCacheRegistry::Instance().has_pending_purge_task());
+
+  // This thread is synchronously purged.
+  EXPECT_EQ(0u, tcache->bucket_count_for_testing(bucket_index));
+
+  // 1 allocation is not enough to restart it.
+  FillThreadCacheAndReturnIndex(kTestSize);
+  EXPECT_FALSE(ThreadCacheRegistry::Instance().has_pending_purge_task());
+
+  for (int i = 0; i < ThreadCacheRegistry::kMinMainThreadAllocationsForPurging;
+       i++) {
+    FillThreadCacheAndReturnIndex(kTestSize);
+  }
+  EXPECT_TRUE(ThreadCacheRegistry::Instance().has_pending_purge_task());
+  EXPECT_GT(tcache->bucket_count_for_testing(bucket_index), 0u);
+
+  task_env_.FastForwardBy(ThreadCacheRegistry::kPurgeInterval);
+  EXPECT_EQ(0u, tcache->bucket_count_for_testing(bucket_index));
+  // Since there were enough allocations, another task is posted.
+  EXPECT_TRUE(ThreadCacheRegistry::Instance().has_pending_purge_task());
+
+  FillThreadCacheAndReturnIndex(kTestSize);
+  task_env_.FastForwardBy(ThreadCacheRegistry::kPurgeInterval);
+  EXPECT_EQ(0u, tcache->bucket_count_for_testing(bucket_index));
+  // Not enough this time.
+  EXPECT_FALSE(ThreadCacheRegistry::Instance().has_pending_purge_task());
 }
 
 }  // namespace internal

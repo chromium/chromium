@@ -170,6 +170,10 @@
 #include "content/common/android/cpu_affinity.h"
 #endif
 
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#include "base/allocator/partition_allocator/thread_cache.h"
+#endif
+
 namespace content {
 extern int GpuMain(const content::MainFunctionParams&);
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -1008,6 +1012,10 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
 
   // Enable PCScan once we are certain that FeatureList was initialized.
   EnablePCScanForMallocPartitionsIfNeeded();
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  base::internal::ThreadCacheRegistry::Instance().StartPeriodicPurge();
+#endif
 
   if (should_start_minimal_browser) {
     DVLOG(0) << "Chrome is running in minimal browser mode.";
