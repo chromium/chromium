@@ -255,7 +255,8 @@ TEST_P(ReportRequestQueueGeneratorTest, BasicReportIsTooBig) {
                                        0);
 }
 
-TEST_P(ReportRequestQueueGeneratorTest, ReportSeparation) {
+// TODO(1153593): Test is very flaky on all bots. Disabling until zmin@ is back.
+TEST_P(ReportRequestQueueGeneratorTest, DISABLED_ReportSeparation) {
   CreateActiveProfilesWithContent();
   auto basic_request = GenerateBasicRequest();
   auto requests = GenerateRequests(*basic_request);
