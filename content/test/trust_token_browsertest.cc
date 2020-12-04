@@ -65,7 +65,6 @@ using ::testing::Truly;
 MATCHER_P(HasHeader, name, base::StringPrintf("Has header %s", name)) {
   if (!arg.headers.HasHeader(name)) {
     *result_listener << base::StringPrintf("%s wasn't present", name);
-    LOG(INFO) << __LINE__;
     return false;
   }
   *result_listener << base::StringPrintf("%s was present", name);
@@ -80,10 +79,8 @@ MATCHER_P2(HasHeader,
   std::string header;
   if (!arg.headers.GetHeader(name, &header)) {
     *result_listener << base::StringPrintf("%s wasn't present", name);
-    LOG(INFO) << __LINE__;
     return false;
   }
-  LOG(INFO) << header;
   return ExplainMatchResult(other_matcher, header, result_listener);
 }
 
