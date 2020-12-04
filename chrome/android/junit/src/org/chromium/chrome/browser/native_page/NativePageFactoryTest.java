@@ -87,7 +87,7 @@ public class NativePageFactoryTest {
 
     private static class MockNativePageBuilder extends NativePageFactory.NativePageBuilder {
         private MockNativePageBuilder() {
-            super(null, null, null);
+            super(null, null, null, null, null);
         }
 
         @Override
@@ -161,7 +161,7 @@ public class NativePageFactoryTest {
 
     @Before
     public void setUp() {
-        mNativePageFactory = new NativePageFactory(null, null);
+        mNativePageFactory = new NativePageFactory(null, null, null, null);
         mNativePageFactory.setNativePageBuilderForTesting(new MockNativePageBuilder());
     }
 

@@ -2536,7 +2536,7 @@ public class TabListMediatorUnitTest {
                     .when(mEndpointFetcherJniMock)
                     .nativeFetchOAuth(any(Profile.class), anyString(), contains(entry.getKey()),
                             anyString(), anyString(), any(String[].class), anyString(), anyLong(),
-                            any(Callback.class));
+                            any(Callback.class), false);
         }
     }
 }

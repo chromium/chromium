@@ -74,10 +74,9 @@ public class TabUmaTest {
                 new BrowserControlsVisibilityDelegate(BrowserControlsState.BOTH) {};
         // clang-format off
         return new TabbedModeTabDelegateFactory(mActivityTestRule.getActivity(), visibilityDelegate,
-                new ObservableSupplierImpl<ShareDelegate>(), null,
-                () -> {}, mActivityTestRule.getActivity()
+                new ObservableSupplierImpl<ShareDelegate>(), null,  mActivityTestRule.getActivity()
                         .getRootUiCoordinatorForTesting()
-                        .getBottomSheetController());
+                        .getBottomSheetController(), null, null);
         // clang-format on
     }
 
