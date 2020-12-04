@@ -164,7 +164,7 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="8383794970363966105">Para utilizar Chromoting, debes añadir una cuenta de Google al dispositivo.</translation>
 <translation id="8386846956409881180">El host está configurado con credenciales de OAuth que no son válidas.</translation>
 <translation id="8397385476380433240">Conceder permiso a <ph name="PRODUCT_NAME" /></translation>
-<translation id="8406498562923498210">Selecciona la sesión que quieres iniciar en el entorno del Escritorio Remoto de Chrome. Ten en cuenta que es posible que algunos tipos de sesión no se puedan ejecutar en el Escritorio Remoto de Chrome y en la consola local al mismo tiempo.</translation>
+<translation id="8406498562923498210">Selecciona la sesión que quieres iniciar en el entorno dEscritorio Remoto de Chrome. Ten en cuenta que es posible que algunos tipos de sesión no se puedan ejecutar en Escritorio Remoto de Chrome y en la consola local al mismo tiempo.</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8445362773033888690">Ver en Google Play Store</translation>
 <translation id="8509907436388546015">Proceso de integración del escritorio</translation>
