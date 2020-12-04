@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.signin.SigninPromoUtil;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
@@ -247,6 +248,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     appMenuHandler, mActivity.getSnackbarManager(),
                     mActivity.getOverviewModeBehaviorSupplier());
             mEmptyBackgroundViewWrapper.initialize();
+        }
+
+        if (!mActivity.isTablet()
+                && (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()
+                        || TabUiFeatureUtilities.isConditionalTabStripEnabled())) {
+            getToolbarManager().enableBottomControls();
         }
 
         if (EphemeralTabCoordinator.isSupported()) {

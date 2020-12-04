@@ -88,7 +88,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ThemeColorProvider.ThemeColorObserver;
 import org.chromium.chrome.browser.toolbar.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
@@ -977,7 +976,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     /**
      * Enable the bottom controls.
      */
-    private void enableBottomControls() {
+    public void enableBottomControls() {
         mBottomControlsCoordinatorSupplier.set(
                 new BottomControlsCoordinator(mActivity, mWindowAndroid, mLayoutManager,
                         mCompositorViewHolder.getResourceManager(), mBrowserControlsSizer,
@@ -1051,12 +1050,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         // TODO(https://crbug.com/1086676, pnoland): Remove this by having MBC listen for native
         // init directly.
         mMenuButtonCoordinator.onNativeInitialized();
-
-        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
-                && (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()
-                        || TabUiFeatureUtilities.isConditionalTabStripEnabled())) {
-            enableBottomControls();
-        }
 
         TemplateUrlServiceFactory.get().runWhenLoaded(this::registerTemplateUrlObserver);
         mInitializedWithNative = true;
