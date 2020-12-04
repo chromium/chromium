@@ -49,17 +49,10 @@ void PrerenderProcessor::Start(
 
   prerendering_url_ = attributes->url;
 
-  // Start prerendering.
-  auto prerender_host = std::make_unique<PrerenderHost>(
+  GetPrerenderHostRegistry().CreateAndStartHost(
       std::move(attributes),
       initiator_render_frame_host_.GetGlobalFrameRoutingId(),
       initiator_origin_);
-  prerender_host->StartPrerendering();
-
-  // Register the prerender host to PrerenderHostRegistry so that navigation can
-  // find this prerendered contents.
-  GetPrerenderHostRegistry().RegisterHost(prerendering_url_,
-                                          std::move(prerender_host));
 }
 
 void PrerenderProcessor::Cancel() {

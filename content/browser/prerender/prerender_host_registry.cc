@@ -18,16 +18,29 @@ PrerenderHostRegistry::PrerenderHostRegistry() {
 
 PrerenderHostRegistry::~PrerenderHostRegistry() = default;
 
-void PrerenderHostRegistry::RegisterHost(
-    const GURL& prerendering_url,
-    std::unique_ptr<PrerenderHost> prerender_host) {
+void PrerenderHostRegistry::CreateAndStartHost(
+    blink::mojom::PrerenderAttributesPtr attributes,
+    const GlobalFrameRoutingId& initiator_render_frame_host_id,
+    const url::Origin& initiator_origin) {
+  DCHECK(attributes);
+
   // Ignore prerendering requests for the same URL.
-  if (base::Contains(prerender_host_by_url_, prerendering_url)) {
-    // TODO(https://crbug.com/1132746): In addition to this check, we may have
-    // to avoid duplicate requests in the PrerenderHost layer so that the
-    // prerender host doesn't start navigation for the duplicate requests.
+  const GURL prerendering_url = attributes->url;
+  if (base::Contains(prerender_host_by_url_, prerendering_url))
     return;
-  }
+
+  auto prerender_host = std::make_unique<PrerenderHost>(
+      std::move(attributes), initiator_render_frame_host_id, initiator_origin);
+
+  // Start prerendering before adding the host to the map to make sure
+  // navigation for prerendering doesn't select itself.
+  // TODO(https://crbug.com/1132746): SelectForNavigation() should avoid select
+  // a prerender host when the current NavigationRequest is for prerendering
+  // regardless of the calling order of StartPrerendering(). This modification
+  // would require the proper `is_prerendering` state in NavigationRequest,
+  // RenderFrameHostImpl, or somewhere else.
+  prerender_host->StartPrerendering();
+
   prerender_host_by_url_[prerendering_url] = std::move(prerender_host);
 }
 

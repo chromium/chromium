@@ -24,8 +24,8 @@ class RenderFrameHostImpl;
 // request (see comments on the mojom interface for details) and owned by the
 // initiator RenderFrameHostImpl's mojo::UniqueReceiverSet.
 //
-// When Start() is called from a renderer process, this instantiates a new
-// PrerenderHost, and forwards the request to the prerender host.
+// When Start() is called from a renderer process, this asks
+// PrerenderHostRegistry to create a PrerenderHost and start prerendering.
 class CONTENT_EXPORT PrerenderProcessor final
     : public blink::mojom::PrerenderProcessor {
  public:
