@@ -40,7 +40,7 @@
         assert_equals(port.readable, null);
 
         let event = await disconnectPromise;
-        assert_equals(event.port, port);
+        assert_equals(event.target, port);
 
         disconnectMessage.remove();
 
@@ -72,7 +72,7 @@
         assert_equals(port.writable, null);
 
         let event = await disconnectPromise;
-        assert_equals(event.port, port);
+        assert_equals(event.target, port);
 
         disconnectMessage.remove();
 

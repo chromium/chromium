@@ -2187,8 +2187,8 @@ external/wpt/native-file-system/showSaveFilePicker-manual.https.html [ Skip ]
 # These tests require a physical device connected.
 external/wpt/webusb/usbDevice_claimInterface-manual.https.html [ Skip ]
 wpt_internal/hid/hidDevice_collections-manual.https.html [ Skip ]
-wpt_internal/serial/serialPort_loopback-manual.https.html [ Skip ]
-wpt_internal/serial/serialPort_disconnect-manual.https.html [ Skip ]
+external/wpt/serial/serialPort_loopback-manual.https.html [ Skip ]
+external/wpt/serial/serialPort_disconnect-manual.https.html [ Skip ]
 
 # CPU test is enough for this one as there are gradient issues on the GPU
 virtual/gpu/fast/canvas/conic-gradient.html [ Skip ]
