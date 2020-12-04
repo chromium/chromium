@@ -37,6 +37,8 @@ using base::test::RunOnceCallback;
 using blink::mojom::PermissionStatus;
 using SensitiveDirectoryResult =
     NativeFileSystemPermissionContext::SensitiveDirectoryResult;
+using PathInfo = NativeFileSystemPermissionContext::PathInfo;
+using PathType = NativeFileSystemPermissionContext::PathType;
 
 static constexpr char kTestMountPoint[] = "testfs";
 
@@ -484,20 +486,17 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenDirectory_DenyAccess) {
       .WillOnce(testing::Return(true));
 
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin))
-      .WillOnce(testing::Return(NativeFileSystemPermissionContext::PathInfo()));
+      .WillOnce(testing::Return(PathInfo()));
   EXPECT_CALL(permission_context, GetDefaultDirectory())
-      .WillOnce(testing::Return(NativeFileSystemPermissionContext::PathInfo()));
+      .WillOnce(testing::Return(PathInfo()));
   EXPECT_CALL(permission_context,
-              SetLastPickedDirectory(
-                  origin, test_dir,
-                  NativeFileSystemPermissionContext::PathType::kLocal));
+              SetLastPickedDirectory(origin, test_dir, PathType::kLocal));
 
-  EXPECT_CALL(
-      permission_context,
-      ConfirmSensitiveDirectoryAccess_(
-          origin, NativeFileSystemPermissionContext::PathType::kLocal, test_dir,
-          NativeFileSystemPermissionContext::HandleType::kDirectory, frame_id,
-          testing::_))
+  EXPECT_CALL(permission_context,
+              ConfirmSensitiveDirectoryAccess_(
+                  origin, PathType::kLocal, test_dir,
+                  NativeFileSystemPermissionContext::HandleType::kDirectory,
+                  frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveDirectoryResult::kAllowed));
 
   EXPECT_CALL(permission_context,
@@ -560,16 +559,15 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       .WillOnce(testing::Return(true));
 
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin))
-      .WillOnce(testing::Return(NativeFileSystemPermissionContext::PathInfo()));
+      .WillOnce(testing::Return(PathInfo()));
   EXPECT_CALL(permission_context, GetDefaultDirectory())
-      .WillOnce(testing::Return(NativeFileSystemPermissionContext::PathInfo()));
+      .WillOnce(testing::Return(PathInfo()));
 
-  EXPECT_CALL(
-      permission_context,
-      ConfirmSensitiveDirectoryAccess_(
-          origin, NativeFileSystemPermissionContext::PathType::kLocal,
-          test_file, NativeFileSystemPermissionContext::HandleType::kFile,
-          frame_id, testing::_))
+  EXPECT_CALL(permission_context,
+              ConfirmSensitiveDirectoryAccess_(
+                  origin, PathType::kLocal, test_file,
+                  NativeFileSystemPermissionContext::HandleType::kFile,
+                  frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveDirectoryResult::kAbort));
 
   ASSERT_TRUE(
@@ -621,16 +619,15 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       .WillOnce(testing::Return(true));
 
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin))
-      .WillOnce(testing::Return(NativeFileSystemPermissionContext::PathInfo()));
+      .WillOnce(testing::Return(PathInfo()));
   EXPECT_CALL(permission_context, GetDefaultDirectory())
-      .WillOnce(testing::Return(NativeFileSystemPermissionContext::PathInfo()));
+      .WillOnce(testing::Return(PathInfo()));
 
-  EXPECT_CALL(
-      permission_context,
-      ConfirmSensitiveDirectoryAccess_(
-          origin, NativeFileSystemPermissionContext::PathType::kLocal,
-          test_file, NativeFileSystemPermissionContext::HandleType::kFile,
-          frame_id, testing::_))
+  EXPECT_CALL(permission_context,
+              ConfirmSensitiveDirectoryAccess_(
+                  origin, PathType::kLocal, test_file,
+                  NativeFileSystemPermissionContext::HandleType::kFile,
+                  frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveDirectoryResult::kAbort));
 
   ASSERT_TRUE(
@@ -705,6 +702,343 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
       shell()->web_contents()->GetMainFrame()->GetRoutingID(),
       "NativeFileSystem"));
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
+                       OpenDirectory_LastPickedDirExists) {
+  base::FilePath test_dir = CreateTestDir();
+
+  SelectFileDialogParams dialog_params;
+  ui::SelectFileDialog::SetFactory(
+      new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
+
+  testing::StrictMock<MockNativeFileSystemPermissionContext> permission_context;
+  static_cast<NativeFileSystemManagerImpl*>(
+      BrowserContext::GetStoragePartition(
+          shell()->web_contents()->GetBrowserContext(),
+          shell()->web_contents()->GetSiteInstance())
+          ->GetNativeFileSystemEntryFactory())
+      ->SetPermissionContextForTesting(&permission_context);
+
+  auto read_grant = base::MakeRefCounted<
+      testing::StrictMock<MockNativeFileSystemPermissionGrant>>();
+  auto write_grant = base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
+      PermissionStatus::GRANTED, base::FilePath());
+
+  auto origin =
+      url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
+  auto frame_id = GlobalFrameRoutingId(
+      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
+      shell()->web_contents()->GetMainFrame()->GetRoutingID());
+  EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
+      .WillOnce(testing::Return(true));
+
+  // The last picked directory exists, so do not call GetDefaultDirectory.
+  PathInfo good_dir_info;
+  good_dir_info.path = temp_dir_.GetPath();
+
+  EXPECT_CALL(permission_context, GetLastPickedDirectory(origin))
+      .WillOnce(testing::Return(good_dir_info));
+  EXPECT_CALL(permission_context,
+              SetLastPickedDirectory(origin, test_dir, PathType::kLocal));
+
+  EXPECT_CALL(permission_context,
+              ConfirmSensitiveDirectoryAccess_(
+                  origin, PathType::kLocal, test_dir,
+                  NativeFileSystemPermissionContext::HandleType::kDirectory,
+                  frame_id, testing::_))
+      .WillOnce(RunOnceCallback<5>(SensitiveDirectoryResult::kAllowed));
+
+  EXPECT_CALL(permission_context,
+              GetReadPermissionGrant(
+                  origin, test_dir,
+                  NativeFileSystemPermissionContext::HandleType::kDirectory,
+                  NativeFileSystemPermissionContext::UserAction::kOpen))
+      .WillOnce(testing::Return(read_grant));
+  EXPECT_CALL(permission_context,
+              GetWritePermissionGrant(
+                  origin, test_dir,
+                  NativeFileSystemPermissionContext::HandleType::kDirectory,
+                  NativeFileSystemPermissionContext::UserAction::kOpen))
+      .WillOnce(testing::Return(write_grant));
+
+  EXPECT_CALL(
+      *read_grant,
+      RequestPermission_(
+          frame_id,
+          NativeFileSystemPermissionGrant::UserActivationState::kNotRequired,
+          testing::_))
+      .WillOnce(RunOnceCallback<2>(NativeFileSystemPermissionGrant::
+                                       PermissionRequestOutcome::kUserGranted));
+  EXPECT_CALL(*read_grant, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::GRANTED));
+
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_EQ(test_dir.BaseName().AsUTF8Unsafe(),
+            EvalJs(shell(),
+                   "(async () => {"
+                   "  let e = await self.showDirectoryPicker();"
+                   "  self.selected_entry = e;"
+                   "  return e.name; })()"));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params.type);
+  EXPECT_EQ(good_dir_info.path, dialog_params.default_path);
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
+                       OpenDirectory_LastPickedDirNotExists) {
+  base::FilePath test_dir = CreateTestDir();
+
+  SelectFileDialogParams dialog_params;
+  ui::SelectFileDialog::SetFactory(
+      new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
+
+  testing::StrictMock<MockNativeFileSystemPermissionContext> permission_context;
+  static_cast<NativeFileSystemManagerImpl*>(
+      BrowserContext::GetStoragePartition(
+          shell()->web_contents()->GetBrowserContext(),
+          shell()->web_contents()->GetSiteInstance())
+          ->GetNativeFileSystemEntryFactory())
+      ->SetPermissionContextForTesting(&permission_context);
+
+  auto read_grant = base::MakeRefCounted<
+      testing::StrictMock<MockNativeFileSystemPermissionGrant>>();
+  auto write_grant = base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
+      PermissionStatus::GRANTED, base::FilePath());
+
+  auto origin =
+      url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
+  auto frame_id = GlobalFrameRoutingId(
+      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
+      shell()->web_contents()->GetMainFrame()->GetRoutingID());
+  EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
+      .WillOnce(testing::Return(true));
+
+  // The last picked directory no longer exists, so resort to showing the
+  // default directory, then set the test_file's dir as last picked.
+  PathInfo bad_dir_info;
+  bad_dir_info.path = temp_dir_.GetPath().AppendASCII("nonexistent");
+  PathInfo default_dir_info;
+  default_dir_info.path = temp_dir_.GetPath().AppendASCII("default");
+
+  EXPECT_CALL(permission_context, GetLastPickedDirectory(origin))
+      .WillOnce(testing::Return(bad_dir_info));
+  EXPECT_CALL(permission_context, GetDefaultDirectory())
+      .WillOnce(testing::Return(default_dir_info));
+  EXPECT_CALL(permission_context,
+              SetLastPickedDirectory(origin, test_dir, PathType::kLocal));
+
+  EXPECT_CALL(permission_context,
+              ConfirmSensitiveDirectoryAccess_(
+                  origin, PathType::kLocal, test_dir,
+                  NativeFileSystemPermissionContext::HandleType::kDirectory,
+                  frame_id, testing::_))
+      .WillOnce(RunOnceCallback<5>(SensitiveDirectoryResult::kAllowed));
+
+  EXPECT_CALL(permission_context,
+              GetReadPermissionGrant(
+                  origin, test_dir,
+                  NativeFileSystemPermissionContext::HandleType::kDirectory,
+                  NativeFileSystemPermissionContext::UserAction::kOpen))
+      .WillOnce(testing::Return(read_grant));
+  EXPECT_CALL(permission_context,
+              GetWritePermissionGrant(
+                  origin, test_dir,
+                  NativeFileSystemPermissionContext::HandleType::kDirectory,
+                  NativeFileSystemPermissionContext::UserAction::kOpen))
+      .WillOnce(testing::Return(write_grant));
+
+  EXPECT_CALL(
+      *read_grant,
+      RequestPermission_(
+          frame_id,
+          NativeFileSystemPermissionGrant::UserActivationState::kNotRequired,
+          testing::_))
+      .WillOnce(RunOnceCallback<2>(NativeFileSystemPermissionGrant::
+                                       PermissionRequestOutcome::kUserGranted));
+  EXPECT_CALL(*read_grant, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::GRANTED));
+
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_EQ(test_dir.BaseName().AsUTF8Unsafe(),
+            EvalJs(shell(),
+                   "(async () => {"
+                   "  let e = await self.showDirectoryPicker();"
+                   "  self.selected_entry = e;"
+                   "  return e.name; })()"));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params.type);
+  EXPECT_EQ(default_dir_info.path, dialog_params.default_path);
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
+                       OpenDirectory_LastPickedDirExistsExternal) {
+  base::FilePath test_dir = CreateTestDir();
+
+  SelectFileDialogParams dialog_params;
+  ui::SelectFileDialog::SetFactory(
+      new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
+
+  testing::StrictMock<MockNativeFileSystemPermissionContext> permission_context;
+  static_cast<NativeFileSystemManagerImpl*>(
+      BrowserContext::GetStoragePartition(
+          shell()->web_contents()->GetBrowserContext(),
+          shell()->web_contents()->GetSiteInstance())
+          ->GetNativeFileSystemEntryFactory())
+      ->SetPermissionContextForTesting(&permission_context);
+
+  auto read_grant = base::MakeRefCounted<
+      testing::StrictMock<MockNativeFileSystemPermissionGrant>>();
+  auto write_grant = base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
+      PermissionStatus::GRANTED, base::FilePath());
+
+  auto origin =
+      url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
+  auto frame_id = GlobalFrameRoutingId(
+      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
+      shell()->web_contents()->GetMainFrame()->GetRoutingID());
+  EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
+      .WillOnce(testing::Return(true));
+
+  // The last picked directory exists, so do not call GetDefaultDirectory.
+  PathInfo good_dir_info;
+  good_dir_info.path = base::FilePath::FromUTF8Unsafe(kTestMountPoint);
+  good_dir_info.type = PathType::kExternal;
+
+  EXPECT_CALL(permission_context, GetLastPickedDirectory(origin))
+      .WillOnce(testing::Return(good_dir_info));
+  EXPECT_CALL(permission_context,
+              SetLastPickedDirectory(origin, test_dir, PathType::kLocal));
+
+  EXPECT_CALL(permission_context,
+              ConfirmSensitiveDirectoryAccess_(
+                  origin, PathType::kLocal, test_dir,
+                  NativeFileSystemPermissionContext::HandleType::kDirectory,
+                  frame_id, testing::_))
+      .WillOnce(RunOnceCallback<5>(SensitiveDirectoryResult::kAllowed));
+
+  EXPECT_CALL(permission_context,
+              GetReadPermissionGrant(
+                  origin, test_dir,
+                  NativeFileSystemPermissionContext::HandleType::kDirectory,
+                  NativeFileSystemPermissionContext::UserAction::kOpen))
+      .WillOnce(testing::Return(read_grant));
+  EXPECT_CALL(permission_context,
+              GetWritePermissionGrant(
+                  origin, test_dir,
+                  NativeFileSystemPermissionContext::HandleType::kDirectory,
+                  NativeFileSystemPermissionContext::UserAction::kOpen))
+      .WillOnce(testing::Return(write_grant));
+
+  EXPECT_CALL(
+      *read_grant,
+      RequestPermission_(
+          frame_id,
+          NativeFileSystemPermissionGrant::UserActivationState::kNotRequired,
+          testing::_))
+      .WillOnce(RunOnceCallback<2>(NativeFileSystemPermissionGrant::
+                                       PermissionRequestOutcome::kUserGranted));
+  EXPECT_CALL(*read_grant, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::GRANTED));
+
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_EQ(test_dir.BaseName().AsUTF8Unsafe(),
+            EvalJs(shell(),
+                   "(async () => {"
+                   "  let e = await self.showDirectoryPicker();"
+                   "  self.selected_entry = e;"
+                   "  return e.name; })()"));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params.type);
+  // temp_dir_.GetPath() maps to kTestMountPoint.
+  EXPECT_EQ(temp_dir_.GetPath(), dialog_params.default_path);
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
+                       OpenDirectory_LastPickedDirNotExistsExternal) {
+  base::FilePath test_dir = CreateTestDir();
+
+  SelectFileDialogParams dialog_params;
+  ui::SelectFileDialog::SetFactory(
+      new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
+
+  testing::StrictMock<MockNativeFileSystemPermissionContext> permission_context;
+  static_cast<NativeFileSystemManagerImpl*>(
+      BrowserContext::GetStoragePartition(
+          shell()->web_contents()->GetBrowserContext(),
+          shell()->web_contents()->GetSiteInstance())
+          ->GetNativeFileSystemEntryFactory())
+      ->SetPermissionContextForTesting(&permission_context);
+
+  auto read_grant = base::MakeRefCounted<
+      testing::StrictMock<MockNativeFileSystemPermissionGrant>>();
+  auto write_grant = base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
+      PermissionStatus::GRANTED, base::FilePath());
+
+  auto origin =
+      url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
+  auto frame_id = GlobalFrameRoutingId(
+      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
+      shell()->web_contents()->GetMainFrame()->GetRoutingID());
+  EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
+      .WillOnce(testing::Return(true));
+
+  // The last picked directory no longer exists, so resort to showing the
+  // default directory, then set the test_file's dir as last picked.
+  PathInfo bad_dir_info;
+  bad_dir_info.path = base::FilePath::FromUTF8Unsafe(kTestMountPoint)
+                          .AppendASCII("nonexistent");
+  PathInfo default_dir_info;
+  default_dir_info.path = temp_dir_.GetPath().AppendASCII("default");
+
+  EXPECT_CALL(permission_context, GetLastPickedDirectory(origin))
+      .WillOnce(testing::Return(bad_dir_info));
+  EXPECT_CALL(permission_context, GetDefaultDirectory())
+      .WillOnce(testing::Return(default_dir_info));
+  EXPECT_CALL(permission_context,
+              SetLastPickedDirectory(origin, test_dir, PathType::kLocal));
+
+  EXPECT_CALL(permission_context,
+              ConfirmSensitiveDirectoryAccess_(
+                  origin, PathType::kLocal, test_dir,
+                  NativeFileSystemPermissionContext::HandleType::kDirectory,
+                  frame_id, testing::_))
+      .WillOnce(RunOnceCallback<5>(SensitiveDirectoryResult::kAllowed));
+
+  EXPECT_CALL(permission_context,
+              GetReadPermissionGrant(
+                  origin, test_dir,
+                  NativeFileSystemPermissionContext::HandleType::kDirectory,
+                  NativeFileSystemPermissionContext::UserAction::kOpen))
+      .WillOnce(testing::Return(read_grant));
+  EXPECT_CALL(permission_context,
+              GetWritePermissionGrant(
+                  origin, test_dir,
+                  NativeFileSystemPermissionContext::HandleType::kDirectory,
+                  NativeFileSystemPermissionContext::UserAction::kOpen))
+      .WillOnce(testing::Return(write_grant));
+
+  EXPECT_CALL(
+      *read_grant,
+      RequestPermission_(
+          frame_id,
+          NativeFileSystemPermissionGrant::UserActivationState::kNotRequired,
+          testing::_))
+      .WillOnce(RunOnceCallback<2>(NativeFileSystemPermissionGrant::
+                                       PermissionRequestOutcome::kUserGranted));
+  EXPECT_CALL(*read_grant, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::GRANTED));
+
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_EQ(test_dir.BaseName().AsUTF8Unsafe(),
+            EvalJs(shell(),
+                   "(async () => {"
+                   "  let e = await self.showDirectoryPicker();"
+                   "  self.selected_entry = e;"
+                   "  return e.name; })()"));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params.type);
+  EXPECT_EQ(default_dir_info.path, dialog_params.default_path);
 }
 
 }  // namespace content

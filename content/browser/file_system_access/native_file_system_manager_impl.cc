@@ -36,6 +36,7 @@
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/isolated_context.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/mojom/file_system_access/native_file_system_drag_drop_token.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/native_file_system_error.mojom.h"
@@ -49,6 +50,7 @@ using SensitiveDirectoryResult =
     NativeFileSystemPermissionContext::SensitiveDirectoryResult;
 using storage::FileSystemContext;
 using HandleType = NativeFileSystemPermissionContext::HandleType;
+using PathInfo = NativeFileSystemPermissionContext::PathInfo;
 
 namespace {
 
@@ -175,6 +177,23 @@ void GetHandleTypeFromUrl(
                                    base::BindOnce(std::move(callback), type));
           },
           std::move(reply_runner), std::move(callback)));
+}
+
+void GetDirectoryExistsFromUrl(
+    storage::FileSystemURL url,
+    base::OnceCallback<void(base::File::Error)> callback,
+    scoped_refptr<base::SequencedTaskRunner> reply_runner,
+    storage::FileSystemOperationRunner* operation_runner) {
+  operation_runner->DirectoryExists(
+      url, base::BindOnce(
+               [](scoped_refptr<base::SequencedTaskRunner> reply_runner,
+                  base::OnceCallback<void(base::File::Error)> callback,
+                  base::File::Error result) {
+                 // Post next task back on the UI thread.
+                 reply_runner->PostTask(
+                     FROM_HERE, base::BindOnce(std::move(callback), result));
+               },
+               std::move(reply_runner), std::move(callback)));
 }
 
 }  // namespace
@@ -310,21 +329,52 @@ void NativeFileSystemManagerImpl::ChooseEntries(
     return;
   }
 
-  // TODO(https://crbug.com/1142824): Check if path exists.
-  // TODO(asully): If PathType is kExternal, use FileSystemURL resolved path.
-  base::FilePath default_directory;
+  PathInfo path_info;
   if (permission_context_) {
-    default_directory =
-        permission_context_->GetLastPickedDirectory(context.origin).path;
-    if (default_directory.empty()) {
-      default_directory = permission_context_->GetDefaultDirectory().path;
-    }
+    path_info = permission_context_->GetLastPickedDirectory(context.origin);
   }
 
-  // TODO(https://crbug.com/1019408): Append suggested filename to the default
-  // directory.
+  auto url = CreateFileSystemURLFromPath(context.origin, path_info.type,
+                                         path_info.path);
+  auto fs_url = url.url;
+  operation_runner().PostTaskWithThisObject(
+      FROM_HERE,
+      base::BindOnce(
+          &GetDirectoryExistsFromUrl, std::move(fs_url),
+          base::BindOnce(
+              &NativeFileSystemManagerImpl::SetDefaultPathAndShowPicker,
+              weak_factory_.GetWeakPtr(), context, type, std::move(accepts),
+              include_accepts_all, std::move(url).url, std::move(callback)),
+          base::SequencedTaskRunnerHandle::Get()));
+}
+
+void NativeFileSystemManagerImpl::SetDefaultPathAndShowPicker(
+    const BindingContext& context,
+    blink::mojom::ChooseFileSystemEntryType type,
+    std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
+    bool include_accepts_all,
+    storage::FileSystemURL url,
+    ChooseEntriesCallback callback,
+    base::File::Error result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::FilePath default_directory;
+  if (result != base::File::Error::FILE_OK) {
+    if (permission_context_) {
+      auto default_path_info = permission_context_->GetDefaultDirectory();
+      auto default_url = CreateFileSystemURLFromPath(
+          context.origin, default_path_info.type, default_path_info.path);
+      default_directory = default_url.url.path();
+    }
+  } else /*result == base::File::Error::FILE_OK*/ {
+    default_directory = url.path();
+  }
+
+  // TODO(https://crbug.com/1019408): Append suggested filename to
+  // default_path.
   FileSystemChooser::Options options(type, std::move(accepts),
-                                     include_accepts_all, default_directory);
+                                     include_accepts_all,
+                                     std::move(default_directory));
 
   if (auto_file_picker_result_for_test_) {
     DidChooseEntries(context, options, std::move(callback),

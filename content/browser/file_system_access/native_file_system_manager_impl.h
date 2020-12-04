@@ -260,6 +260,14 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
   friend class NativeFileSystemFileHandleImpl;
 
   ~NativeFileSystemManagerImpl() override;
+  void SetDefaultPathAndShowPicker(
+      const BindingContext& context,
+      blink::mojom::ChooseFileSystemEntryType type,
+      std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
+      bool include_accepts_all,
+      storage::FileSystemURL url,
+      ChooseEntriesCallback callback,
+      base::File::Error result);
   void DidOpenSandboxedFileSystem(const BindingContext& binding_context,
                                   GetSandboxedFileSystemCallback callback,
                                   const GURL& root,
