@@ -804,7 +804,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     public Bundle getBundleForMenuItem(MenuItem item) {
         Bundle bundle = new Bundle();
         if (item.getItemId() == R.id.add_to_homescreen_id
-                || item.getItemId() == R.id.add_to_homescreen_menu_id) {
+                || item.getItemId() == R.id.add_to_homescreen_menu_id
+                || item.getItemId() == R.id.install_app_id) {
             bundle.putInt(AppBannerManager.MENU_TITLE_KEY, mAddAppTitleShown);
         }
         return bundle;

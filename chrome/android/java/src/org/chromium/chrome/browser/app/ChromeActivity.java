@@ -2069,11 +2069,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         new TabPrinter(currentTab), new PrintManagerDelegateImpl(this));
                 RecordUserAction.record("MobileMenuPrint");
             }
-        } else if (id == R.id.add_to_homescreen_id || id == R.id.add_to_homescreen_menu_id) {
+        } else if (id == R.id.add_to_homescreen_id || id == R.id.add_to_homescreen_menu_id
+                || id == R.id.install_app_id) {
             AddToHomescreenCoordinator.showForAppMenu(currentTab, this, getWindowAndroid(),
                     getModalDialogManager(), currentTab.getWebContents(), mMenuItemData);
             RecordUserAction.record("MobileMenuAddToHomescreen");
-        } else if (id == R.id.open_webapk_id) {
+        } else if (id == R.id.open_webapk_id || id == R.id.menu_open_webapk_id) {
             Context context = ContextUtils.getApplicationContext();
             String packageName =
                     WebApkValidator.queryFirstWebApkPackage(context, currentTab.getUrlString());
