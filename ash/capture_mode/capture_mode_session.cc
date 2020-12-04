@@ -257,6 +257,10 @@ class CaptureModeSession::CursorSetter {
     if (original_cursor_locked_)
       return;
 
+    if (in_cursor_update_)
+      return;
+
+    base::AutoReset<bool> auto_reset_in_cursor_update(&in_cursor_update_, true);
     const ui::mojom::CursorType current_cursor_type =
         cursor_manager_->GetCursor().type();
     const ui::mojom::CursorType new_cursor_type = cursor.type();
@@ -344,6 +348,11 @@ class CaptureModeSession::CursorSetter {
   // True if the cursor has reset back to its original cursor. It's to prevent
   // Reset() from setting the cursor to |original_cursor_| more than once.
   bool was_cursor_reset_to_original_ = true;
+
+  // True if the cursor is currently being updated. This is to prevent
+  // UpdateCursor() is called nestly more than once and the mouse is locked
+  // multiple times.
+  bool in_cursor_update_ = false;
 };
 
 CaptureModeSession::CaptureModeSession(CaptureModeController* controller)
