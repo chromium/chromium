@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_table_backing.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_list_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector_backing.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_buildflags.h"
@@ -25,16 +26,10 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table.h"
-#include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/list_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-
-class HeapListHashSetAllocator;
-template <typename ValueArg>
-class HeapListHashSetNode;
 
 namespace internal {
 
@@ -44,7 +39,7 @@ constexpr bool IsMember = WTF::IsSubclassOfTemplate<T, Member>::value;
 }  // namespace internal
 
 // This is a static-only class used as a trait on collections to make them heap
-// allocated.  However see also HeapListHashSetAllocator.
+// allocated.
 class PLATFORM_EXPORT HeapAllocator {
   STATIC_ONLY(HeapAllocator);
 
@@ -263,113 +258,6 @@ class HeapHashSet
 template <typename T, typename U, typename V>
 struct GCInfoTrait<HeapHashSet<T, U, V>>
     : public GCInfoTrait<HashSet<T, U, V, HeapAllocator>> {};
-
-}  // namespace blink
-
-namespace WTF {
-
-template <typename Value, wtf_size_t inlineCapacity>
-struct ListHashSetTraits<Value, inlineCapacity, blink::HeapListHashSetAllocator>
-    : public HashTraits<blink::Member<blink::HeapListHashSetNode<Value>>> {
-  using Allocator = blink::HeapListHashSetAllocator;
-  using Node = blink::HeapListHashSetNode<Value>;
-
-  static constexpr bool kCanTraceConcurrently =
-      HashTraits<Value>::kCanTraceConcurrently;
-};
-
-}  // namespace WTF
-
-namespace blink {
-
-template <typename ValueArg>
-class HeapListHashSetNode final
-    : public GarbageCollected<HeapListHashSetNode<ValueArg>> {
- public:
-  using NodeAllocator = HeapListHashSetAllocator;
-  using PointerType = Member<HeapListHashSetNode>;
-  using Value = ValueArg;
-
-  template <typename U>
-  static HeapListHashSetNode* Create(NodeAllocator* allocator, U&& value) {
-    return MakeGarbageCollected<HeapListHashSetNode>(std::forward<U>(value));
-  }
-
-  template <typename U>
-  explicit HeapListHashSetNode(U&& value) : value_(std::forward<U>(value)) {
-    static_assert(std::is_trivially_destructible<Value>::value,
-                  "Garbage collected types used in ListHashSet must be "
-                  "trivially destructible");
-  }
-
-  void Destroy(NodeAllocator* allocator) {}
-
-  HeapListHashSetNode* Next() const { return next_; }
-  HeapListHashSetNode* Prev() const { return prev_; }
-
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(prev_);
-    visitor->Trace(next_);
-    visitor->Trace(value_);
-  }
-
-  ValueArg value_;
-  PointerType prev_;
-  PointerType next_;
-};
-
-// Empty allocator as HeapListHashSetNode directly allocates using
-// MakeGarbageCollected().
-class HeapListHashSetAllocator {
-  DISALLOW_NEW();
-
- public:
-  using TableAllocator = HeapAllocator;
-
-  static constexpr bool kIsGarbageCollected = true;
-
-  struct AllocatorProvider final {
-    void CreateAllocatorIfNeeded() {}
-    HeapListHashSetAllocator* Get() { return nullptr; }
-    void Swap(AllocatorProvider& other) {}
-  };
-};
-
-template <typename ValueArg,
-          wtf_size_t inlineCapacity = 0,  // The inlineCapacity is just a dummy
-                                          // to match ListHashSet (off-heap).
-          typename HashArg = typename DefaultHash<ValueArg>::Hash>
-class HeapListHashSet : public ListHashSet<ValueArg,
-                                           inlineCapacity,
-                                           HashArg,
-                                           HeapListHashSetAllocator> {
-  IS_GARBAGE_COLLECTED_CONTAINER_TYPE();
-  DISALLOW_NEW();
-
-  static void CheckType() {
-    static_assert(WTF::IsMemberOrWeakMemberType<ValueArg>::value,
-                  "HeapListHashSet supports only Member and WeakMember.");
-    static_assert(std::is_trivially_destructible<HeapListHashSet>::value,
-                  "HeapListHashSet must be trivially destructible.");
-    static_assert(WTF::IsTraceable<ValueArg>::value,
-                  "For sets without traceable elements, use ListHashSet<> "
-                  "instead of HeapListHashSet<>.");
-  }
-
- public:
-  template <typename>
-  static void* AllocateObject(size_t size) {
-    return ThreadHeap::Allocate<
-        HeapListHashSet<ValueArg, inlineCapacity, HashArg>>(size);
-  }
-
-  HeapListHashSet() { CheckType(); }
-};
-
-template <typename T, wtf_size_t inlineCapacity, typename U>
-struct GCInfoTrait<HeapListHashSet<T, inlineCapacity, U>>
-    : public GCInfoTrait<
-          ListHashSet<T, inlineCapacity, U, HeapListHashSetAllocator>> {};
 
 template <typename Value,
           typename HashFunctions = typename DefaultHash<Value>::Hash,

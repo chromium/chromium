@@ -101,6 +101,10 @@ class MallocedListHashSetNode {
   explicit MallocedListHashSetNode(U&& value)
       : value_(std::forward<U>(value)) {}
 
+  MallocedListHashSetNode() = delete;
+  MallocedListHashSetNode(const MallocedListHashSetNode&) = delete;
+  MallocedListHashSetNode& operator=(const MallocedListHashSetNode&) = delete;
+
   void Destroy(NodeAllocator* allocator) {
     this->~MallocedListHashSetNode();
     allocator->Deallocate(this);

@@ -230,31 +230,28 @@ TEST_F(ConcurrentMarkingTest, SwapLinkedHashSet) {
 // HeapListHashSet
 
 template <typename T>
-class HeapListHashSetAdapter : public HeapListHashSet<T> {
- public:
-  ALWAYS_INLINE void swap(HeapListHashSetAdapter<T>& other) {
-    HeapListHashSet<T>::Swap(other);
-  }
+struct MethodAdapter<HeapListHashSet<T>>
+    : public MethodAdapterBase<HeapListHashSet<T>> {
+  static void Swap(HeapListHashSet<T>& a, HeapListHashSet<T>& b) { a.Swap(b); }
 };
 
 TEST_F(ConcurrentMarkingTest, AddToListHashSet) {
-  AddToCollection<HeapListHashSetAdapter<Member<IntegerObject>>>();
+  AddToCollection<HeapListHashSet<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromBeginningOfListHashSet) {
-  RemoveFromBeginningOfCollection<
-      HeapListHashSetAdapter<Member<IntegerObject>>>();
+  RemoveFromBeginningOfCollection<HeapListHashSet<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromMiddleOfListHashSet) {
-  RemoveFromMiddleOfCollection<HeapListHashSetAdapter<Member<IntegerObject>>>();
+  RemoveFromMiddleOfCollection<HeapListHashSet<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromEndOfListHashSet) {
-  RemoveFromEndOfCollection<HeapListHashSetAdapter<Member<IntegerObject>>>();
+  RemoveFromEndOfCollection<HeapListHashSet<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, ClearListHashSet) {
-  ClearCollection<HeapListHashSetAdapter<Member<IntegerObject>>>();
+  ClearCollection<HeapListHashSet<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, SwapListHashSet) {
-  SwapCollections<HeapListHashSetAdapter<Member<IntegerObject>>>();
+  SwapCollections<HeapListHashSet<Member<IntegerObject>>>();
 }
 
 // HeapHashCountedSet
