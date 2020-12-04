@@ -275,6 +275,17 @@ std::unique_ptr<WebrtcVideoEncoder> WebrtcVideoEncoderGpu::CreateForH264() {
 // static
 bool WebrtcVideoEncoderGpu::IsSupportedByH264(
     const WebrtcVideoEncoderSelector::Profile& profile) {
+#if defined(OS_WIN)
+  // This object is required by Chromium to ensure proper init/uninit of COM on
+  // this thread.  The guidance is to match the lifetime of this object to the
+  // lifetime of the thread if possible.  Since we are still experimenting with
+  // H.264 and run the encoder on a different thread, we use a locally scoped
+  // object for now.
+  // TODO(joedow): Use a COMscoped Autothread (or run in a separate process) if
+  // H.264 becomes a common use case for us.
+  base::win::ScopedCOMInitializer scoped_com_initializer;
+#endif
+
   media::VideoEncodeAccelerator::SupportedProfiles profiles =
       media::GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(
           CreateGpuPreferences(), CreateGpuWorkarounds());

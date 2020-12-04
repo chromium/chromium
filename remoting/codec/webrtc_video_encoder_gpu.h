@@ -7,10 +7,15 @@
 
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "build/build_config.h"
 #include "media/video/video_encode_accelerator.h"
 #include "remoting/codec/encoder_bitrate_filter.h"
 #include "remoting/codec/webrtc_video_encoder.h"
 #include "remoting/codec/webrtc_video_encoder_selector.h"
+
+#if defined(OS_WIN)
+#include "base/win/scoped_com_initializer.h"
+#endif
 
 namespace remoting {
 
@@ -71,6 +76,17 @@ class WebrtcVideoEncoderGpu : public WebrtcVideoEncoder,
   void UseOutputBitstreamBufferId(int32_t bitstream_buffer_id);
 
   void RunAnyPendingEncode();
+
+#if defined(OS_WIN)
+  // This object is required by Chromium to ensure proper init/uninit of COM on
+  // this thread.  The guidance is to match the lifetime of this object to the
+  // lifetime of the thread if possible.  Since we are still experimenting with
+  // H.264 and run the encoder on a different thread, we use an object-lifetime
+  // scoped instance for now.
+  // TODO(joedow): Use a COMscoped Autothread (or run in a separate process) if
+  // H.264 becomes a common use case for us.
+  base::win::ScopedCOMInitializer scoped_com_initializer_;
+#endif
 
   State state_;
 
