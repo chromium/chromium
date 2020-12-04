@@ -461,12 +461,12 @@ const FeatureEntry::FeatureVariation kReaderModeDiscoverabilityVariations[] = {
 #endif  // OS_ANDROID
 
 #if defined(OS_ANDROID)
-const FeatureEntry::FeatureParam kDismissButtonWithNoThanks[] = {
-    {"dismiss_button", "no_thanks"}};
+const FeatureEntry::FeatureParam kHideDismissButton[] = {
+    {"dismiss_button", "hide"}};
 
 const FeatureEntry::FeatureVariation kMobileIdentityConsistencyVariations[] = {
-    {"Dismiss No Thanks", kDismissButtonWithNoThanks,
-     base::size(kDismissButtonWithNoThanks), nullptr}};
+    {"Hide Dismiss Button", kHideDismissButton, base::size(kHideDismissButton),
+     nullptr}};
 #endif  // OS_ANDROID
 
 #if !defined(OS_CHROMEOS)
