@@ -326,8 +326,7 @@ void ArcAuthService::OnAuthorizationResult(mojom::ArcSignInResultPtr result,
     return;
   }
 
-  ProvisioningResultUMA provisioning_result_enum =
-      GetProvisioningResultUMA(provisioning_result);
+  const ProvisioningStatus status = GetProvisioningStatus(provisioning_result);
 
   if (!account->is_account_name() || !account->get_account_name() ||
       account->get_account_name().value().empty() ||
@@ -337,11 +336,9 @@ void ArcAuthService::OnAuthorizationResult(mojom::ArcSignInResultPtr result,
     // The check for |!account_name.has_value()| is for backwards compatibility
     // with older ARC versions, for which Mojo will set |account_name| to
     // empty/null.
-    DCHECK_NE(ProvisioningResultUMA::SUCCESS_ALREADY_PROVISIONED,
-              provisioning_result_enum);
-    UpdateReauthorizationResultUMA(provisioning_result_enum, profile_);
+    UpdateReauthorizationResultUMA(status, profile_);
   } else {
-    UpdateSecondarySigninResultUMA(provisioning_result_enum);
+    UpdateSecondarySigninResultUMA(status);
   }
 }
 

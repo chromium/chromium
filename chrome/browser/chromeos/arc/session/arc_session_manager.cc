@@ -624,10 +624,17 @@ void ArcSessionManager::OnProvisioningFinished(
 
     UpdateProvisioningTiming(base::TimeTicks::Now() - sign_in_start_time_,
                              provisioning_successful, profile_);
-    UpdateProvisioningResultUMA(GetProvisioningResultUMA(result), profile_);
-    if (sign_in_error && sign_in_error->is_cloud_provision_flow_error()) {
-      UpdateCloudProvisionFlowErrorUMA(
-          sign_in_error->get_cloud_provision_flow_error(), profile_);
+    UpdateProvisioningStatusUMA(GetProvisioningStatus(result), profile_);
+
+    if (sign_in_error) {
+      if (sign_in_error->is_cloud_provision_flow_error()) {
+        UpdateCloudProvisionFlowErrorUMA(
+            sign_in_error->get_cloud_provision_flow_error(), profile_);
+      } else if (sign_in_error->is_sign_in_error()) {
+        UpdateGMSSignInErrorUMA(sign_in_error->get_sign_in_error(), profile_);
+      } else if (sign_in_error->is_check_in_error()) {
+        UpdateGMSCheckInErrorUMA(sign_in_error->get_check_in_error(), profile_);
+      }
     }
 
     if (!provisioning_successful)
@@ -727,8 +734,8 @@ void ArcSessionManager::OnProvisioningFinished(
 
   base::Optional<int> error_code;
   if (support_error == ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR) {
-    error_code = static_cast<std::underlying_type_t<ProvisioningResultUMA>>(
-        GetProvisioningResultUMA(result));
+    error_code = static_cast<std::underlying_type_t<ProvisioningStatus>>(
+        GetProvisioningStatus(result));
   } else if (sign_in_error) {
     error_code = GetSignInErrorCode(sign_in_error);
   }
@@ -1250,8 +1257,8 @@ void ArcSessionManager::StartAndroidManagementCheck() {
 
   // State::STOPPED appears here in following scenario.
   // Initial provisioning finished with state
-  // ProvisioningResultUMA::ArcStop or
-  // ProvisioningResultUMA::CHROME_SERVER_COMMUNICATION_ERROR.
+  // ProvisioningStatus::ArcStop or
+  // ProvisioningStatus::CHROME_SERVER_COMMUNICATION_ERROR.
   // At this moment |prefs::kArcTermsAccepted| is set to true, once user
   // confirmed ToS prior to provisioning flow. Once user presses "Try Again"
   // button, OnRetryClicked calls this immediately.
@@ -1536,8 +1543,8 @@ void ArcSessionManager::OnRetryClicked() {
   } else {
     // Otherwise, we start ARC once it is stopped now. Usually ARC container is
     // left active after provisioning failure but in case
-    // ProvisioningResultUMA::ARC_STOPPED and
-    // ProvisioningResultUMA::CHROME_SERVER_COMMUNICATION_ERROR failures
+    // ProvisioningStatus::ARC_STOPPED and
+    // ProvisioningStatus::CHROME_SERVER_COMMUNICATION_ERROR failures
     // container is stopped. At this point ToS is already accepted and
     // IsArcTermsOfServiceNegotiationNeeded returns true or ToS needs not to be
     // shown at all. However there is an exception when this does not happen in

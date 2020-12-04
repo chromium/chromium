@@ -1023,8 +1023,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Arc.PlayAutoInstallRequest.State"/>
   <affected-histogram name="Arc.PlayAutoInstallRequest.TimeDelta"/>
   <affected-histogram name="Arc.PlayStoreShown.TimeDelta"/>
+  <affected-histogram name="Arc.Provisioning.CheckInError"/>
   <affected-histogram name="Arc.Provisioning.CloudFlowError"/>
   <affected-histogram name="Arc.Provisioning.Result"/>
+  <affected-histogram name="Arc.Provisioning.SignInError"/>
+  <affected-histogram name="Arc.Provisioning.Status"/>
   <affected-histogram name="Arc.Provisioning.TimeDelta.Failure"/>
   <affected-histogram name="Arc.Provisioning.TimeDelta.Success"/>
   <affected-histogram name="Arc.Reauthorization.Result"/>

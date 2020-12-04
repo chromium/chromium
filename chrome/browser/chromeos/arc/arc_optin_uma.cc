@@ -75,11 +75,11 @@ void UpdateOptInFlowResultUMA(OptInFlowResult result) {
   base::UmaHistogramEnumeration("Arc.OptInResult", result);
 }
 
-void UpdateProvisioningResultUMA(ProvisioningResultUMA result,
+void UpdateProvisioningStatusUMA(ProvisioningStatus status,
                                  const Profile* profile) {
-  DCHECK_NE(result, ProvisioningResultUMA::CHROME_SERVER_COMMUNICATION_ERROR);
+  DCHECK_NE(status, ProvisioningStatus::CHROME_SERVER_COMMUNICATION_ERROR);
   base::UmaHistogramEnumeration(
-      GetHistogramNameByUserType("Arc.Provisioning.Result", profile), result);
+      GetHistogramNameByUserType("Arc.Provisioning.Status", profile), status);
 }
 
 void UpdateCloudProvisionFlowErrorUMA(mojom::CloudProvisionFlowError error,
@@ -89,8 +89,22 @@ void UpdateCloudProvisionFlowErrorUMA(mojom::CloudProvisionFlowError error,
       error);
 }
 
-void UpdateSecondarySigninResultUMA(ProvisioningResultUMA result) {
-  base::UmaHistogramEnumeration("Arc.Secondary.Signin.Result", result);
+void UpdateGMSSignInErrorUMA(mojom::GMSSignInError error,
+                             const Profile* profile) {
+  base::UmaHistogramEnumeration(
+      GetHistogramNameByUserType("Arc.Provisioning.SignInError", profile),
+      error);
+}
+
+void UpdateGMSCheckInErrorUMA(mojom::GMSCheckInError error,
+                              const Profile* profile) {
+  base::UmaHistogramEnumeration(
+      GetHistogramNameByUserType("Arc.Provisioning.CheckInError", profile),
+      error);
+}
+
+void UpdateSecondarySigninResultUMA(ProvisioningStatus status) {
+  base::UmaHistogramEnumeration("Arc.Secondary.Signin.Result", status);
 }
 
 void UpdateProvisioningTiming(const base::TimeDelta& elapsed_time,
@@ -106,11 +120,11 @@ void UpdateProvisioningTiming(const base::TimeDelta& elapsed_time,
       base::TimeDelta::FromSeconds(1), base::TimeDelta::FromMinutes(6), 50);
 }
 
-void UpdateReauthorizationResultUMA(ProvisioningResultUMA result,
+void UpdateReauthorizationResultUMA(ProvisioningStatus status,
                                     const Profile* profile) {
   base::UmaHistogramEnumeration(
       GetHistogramNameByUserType("Arc.Reauthorization.Result", profile),
-      result);
+      status);
 }
 
 void UpdatePlayAutoInstallRequestState(mojom::PaiFlowState state,
@@ -206,29 +220,31 @@ void UpdateSecondaryAccountSilentAuthCodeUMA(OptInSilentAuthCode state) {
                            static_cast<int>(state));
 }
 
-ProvisioningResultUMA GetProvisioningResultUMA(
+ProvisioningStatus GetProvisioningStatus(
     const ArcProvisioningResult& provisioning_result) {
   if (provisioning_result.is_stopped())
-    return ProvisioningResultUMA::ARC_STOPPED;
+    return ProvisioningStatus::ARC_STOPPED;
 
   if (provisioning_result.is_timedout())
-    return ProvisioningResultUMA::OVERALL_SIGN_IN_TIMEOUT;
+    return ProvisioningStatus::CHROME_PROVISIONING_TIMEOUT;
 
   const mojom::ArcSignInResult* result = provisioning_result.sign_in_result();
-  if (result->is_success()) {
-    if (result->get_success() == mojom::ArcSignInSuccess::SUCCESS)
-      return ProvisioningResultUMA::SUCCESS;
-    else
-      return ProvisioningResultUMA::SUCCESS_ALREADY_PROVISIONED;
-  }
+  if (result->is_success())
+    return ProvisioningStatus::SUCCESS;
 
   if (result->get_error()->is_cloud_provision_flow_error())
-    return ProvisioningResultUMA::CLOUD_PROVISION_FLOW_ERROR;
+    return ProvisioningStatus::CLOUD_PROVISION_FLOW_ERROR;
+
+  if (result->get_error()->is_check_in_error())
+    return ProvisioningStatus::GMS_CHECK_IN_ERROR;
+
+  if (result->get_error()->is_sign_in_error())
+    return ProvisioningStatus::GMS_SIGN_IN_ERROR;
 
   if (result->get_error()->is_general_error()) {
 #define MAP_GENERAL_ERROR(name)         \
   case mojom::GeneralSignInError::name: \
-    return ProvisioningResultUMA::name
+    return ProvisioningStatus::name
 
     switch (result->get_error()->get_general_error()) {
       MAP_GENERAL_ERROR(UNKNOWN_ERROR);
@@ -243,75 +259,37 @@ ProvisioningResultUMA GetProvisioningResultUMA(
 #undef MAP_GENERAL_ERROR
   }
 
-  if (result->get_error()->is_check_in_error()) {
-#define MAP_CHECKIN_ERROR(name)      \
-  case mojom::GMSCheckInError::name: \
-    return ProvisioningResultUMA::name
-
-    switch (result->get_error()->get_check_in_error()) {
-      MAP_CHECKIN_ERROR(GMS_CHECK_IN_FAILED);
-      MAP_CHECKIN_ERROR(GMS_CHECK_IN_TIMEOUT);
-      MAP_CHECKIN_ERROR(GMS_CHECK_IN_INTERNAL_ERROR);
-    }
-#undef MAP_CHECKIN_ERROR
-  }
-
-  if (result->get_error()->is_sign_in_error()) {
-#define MAP_GMS_ERROR(name)         \
-  case mojom::GMSSignInError::name: \
-    return ProvisioningResultUMA::name
-
-    switch (result->get_error()->get_sign_in_error()) {
-      MAP_GMS_ERROR(GMS_SIGN_IN_NETWORK_ERROR);
-      MAP_GMS_ERROR(GMS_SIGN_IN_SERVICE_UNAVAILABLE);
-      MAP_GMS_ERROR(GMS_SIGN_IN_BAD_AUTHENTICATION);
-      MAP_GMS_ERROR(GMS_SIGN_IN_FAILED);
-      MAP_GMS_ERROR(GMS_SIGN_IN_TIMEOUT);
-      MAP_GMS_ERROR(GMS_SIGN_IN_INTERNAL_ERROR);
-    }
-#undef MAP_GMS_ERROR
-  }
-
-  NOTREACHED() << "unknown sign result";
-  return ProvisioningResultUMA::UNKNOWN_ERROR;
+  NOTREACHED() << "unexpected provisioning result";
+  return ProvisioningStatus::UNKNOWN_ERROR;
 }
 
-std::ostream& operator<<(std::ostream& os,
-                         const ProvisioningResultUMA& result) {
+std::ostream& operator<<(std::ostream& os, const ProvisioningStatus& status) {
 #define MAP_PROVISIONING_RESULT(name) \
-  case ProvisioningResultUMA::name:   \
+  case ProvisioningStatus::name:      \
     return os << #name
 
-  switch (result) {
+  switch (status) {
     MAP_PROVISIONING_RESULT(SUCCESS);
     MAP_PROVISIONING_RESULT(UNKNOWN_ERROR);
-    MAP_PROVISIONING_RESULT(GMS_SIGN_IN_NETWORK_ERROR);
-    MAP_PROVISIONING_RESULT(GMS_SIGN_IN_SERVICE_UNAVAILABLE);
-    MAP_PROVISIONING_RESULT(GMS_SIGN_IN_BAD_AUTHENTICATION);
-    MAP_PROVISIONING_RESULT(GMS_CHECK_IN_FAILED);
+    MAP_PROVISIONING_RESULT(GMS_SIGN_IN_ERROR);
+    MAP_PROVISIONING_RESULT(GMS_CHECK_IN_ERROR);
+    MAP_PROVISIONING_RESULT(CLOUD_PROVISION_FLOW_ERROR);
     MAP_PROVISIONING_RESULT(MOJO_VERSION_MISMATCH);
     MAP_PROVISIONING_RESULT(GENERIC_PROVISIONING_TIMEOUT);
-    MAP_PROVISIONING_RESULT(GMS_CHECK_IN_TIMEOUT);
-    MAP_PROVISIONING_RESULT(GMS_CHECK_IN_INTERNAL_ERROR);
-    MAP_PROVISIONING_RESULT(GMS_SIGN_IN_FAILED);
-    MAP_PROVISIONING_RESULT(GMS_SIGN_IN_TIMEOUT);
-    MAP_PROVISIONING_RESULT(GMS_SIGN_IN_INTERNAL_ERROR);
+    MAP_PROVISIONING_RESULT(CHROME_PROVISIONING_TIMEOUT);
     MAP_PROVISIONING_RESULT(ARC_STOPPED);
-    MAP_PROVISIONING_RESULT(OVERALL_SIGN_IN_TIMEOUT);
+    MAP_PROVISIONING_RESULT(ARC_DISABLED);
     MAP_PROVISIONING_RESULT(CHROME_SERVER_COMMUNICATION_ERROR);
     MAP_PROVISIONING_RESULT(NO_NETWORK_CONNECTION);
-    MAP_PROVISIONING_RESULT(ARC_DISABLED);
-    MAP_PROVISIONING_RESULT(SUCCESS_ALREADY_PROVISIONED);
     MAP_PROVISIONING_RESULT(UNSUPPORTED_ACCOUNT_TYPE);
     MAP_PROVISIONING_RESULT(CHROME_ACCOUNT_NOT_FOUND);
-    MAP_PROVISIONING_RESULT(CLOUD_PROVISION_FLOW_ERROR);
   }
 
 #undef MAP_PROVISIONING_RESULT
 
   // Some compilers report an error even if all values of an enum-class are
   // covered exhaustively in a switch statement.
-  NOTREACHED() << "Invalid value " << static_cast<int>(result);
+  NOTREACHED() << "Invalid value " << static_cast<int>(status);
   return os;
 }
 

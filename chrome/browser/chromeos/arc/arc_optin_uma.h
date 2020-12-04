@@ -103,70 +103,54 @@ enum class OptInSilentAuthCode {
 };
 
 // The values should be listed in ascending order. They are also persisted to
-// logs, and their values should therefore never be renumbered nor reused. For
-// detailed meaning, please consult auth.mojom.
-enum class ProvisioningResultUMA : int {
-  // Provisioning was successful. Note, SUCCESS_ALREADY_PROVISIONED is also
-  // successful state.
+// logs, and their values should therefore never be renumbered nor reused.
+enum class ProvisioningStatus {
+  // Provisioning was successful.
   SUCCESS = 0,
 
   // Unclassified failure.
   UNKNOWN_ERROR = 1,
 
-  // GMS errors. More errors defined below.
-  GMS_SIGN_IN_NETWORK_ERROR = 2,
-  GMS_SIGN_IN_SERVICE_UNAVAILABLE = 3,
-  GMS_SIGN_IN_BAD_AUTHENTICATION = 4,
-
-  // Check in error. More errors defined below.
-  GMS_CHECK_IN_FAILED = 5,
-
-  // Mojo errors.
-  MOJO_VERSION_MISMATCH = 7,
-
-  // ARC did not finish provisioning within a reasonable amount of time.
-  GENERIC_PROVISIONING_TIMEOUT = 8,
+  // Unmanaged sign-in error.
+  GMS_SIGN_IN_ERROR = 2,
 
   // Check in error.
-  GMS_CHECK_IN_TIMEOUT = 9,
-  GMS_CHECK_IN_INTERNAL_ERROR = 10,
+  GMS_CHECK_IN_ERROR = 3,
 
-  // GMS errors:
-  GMS_SIGN_IN_FAILED = 11,
-  GMS_SIGN_IN_TIMEOUT = 12,
-  GMS_SIGN_IN_INTERNAL_ERROR = 13,
+  // Managed sign-in error.
+  CLOUD_PROVISION_FLOW_ERROR = 4,
+
+  // Mojo errors.
+  MOJO_VERSION_MISMATCH = 5,
+
+  // ARC did not finish provisioning within a reasonable amount of time.
+  GENERIC_PROVISIONING_TIMEOUT = 6,
+
+  // ARC instance did not report provisioning status within a reasonable amount
+  // of time.
+  CHROME_PROVISIONING_TIMEOUT = 7,
 
   // ARC instance is stopped during the sign in procedure.
-  ARC_STOPPED = 16,
+  ARC_STOPPED = 8,
 
-  // ARC instance did not report sign in status within a reasonable amount of
-  // time.
-  OVERALL_SIGN_IN_TIMEOUT = 17,
+  // ARC is not enabled.
+  ARC_DISABLED = 9,
 
   // In Chrome, server communication error occurs.
   // For backward compatibility, the UMA is handled differently. Please see
   // ArcSessionManager::OnProvisioningFinished for details.
-  CHROME_SERVER_COMMUNICATION_ERROR = 18,
+  CHROME_SERVER_COMMUNICATION_ERROR = 10,
 
   // Network connection is unavailable in ARC.
-  NO_NETWORK_CONNECTION = 19,
-
-  // ARC is not enabled.
-  ARC_DISABLED = 20,
-
-  // Device was already provisioned.
-  SUCCESS_ALREADY_PROVISIONED = 21,
+  NO_NETWORK_CONNECTION = 11,
 
   // Account type is not supported for authorization.
-  UNSUPPORTED_ACCOUNT_TYPE = 22,
+  UNSUPPORTED_ACCOUNT_TYPE = 12,
 
   // Account is not present in Chrome OS Account Manager.
-  CHROME_ACCOUNT_NOT_FOUND = 23,
+  CHROME_ACCOUNT_NOT_FOUND = 13,
 
-  // Top level error for cloud DPC failure.
-  CLOUD_PROVISION_FLOW_ERROR = 24,
-
-  kMaxValue = CLOUD_PROVISION_FLOW_ERROR,
+  kMaxValue = CHROME_ACCOUNT_NOT_FOUND,
 };
 
 enum class OptInFlowResult : int {
@@ -226,15 +210,19 @@ void UpdateEnabledStateByUserTypeUMA();
 void UpdateOptInActionUMA(OptInActionType type);
 void UpdateOptInCancelUMA(OptInCancelReason reason);
 void UpdateOptInFlowResultUMA(OptInFlowResult result);
-void UpdateProvisioningResultUMA(ProvisioningResultUMA result,
+void UpdateProvisioningStatusUMA(ProvisioningStatus status,
                                  const Profile* profile);
 void UpdateCloudProvisionFlowErrorUMA(mojom::CloudProvisionFlowError error,
                                       const Profile* profile);
-void UpdateSecondarySigninResultUMA(ProvisioningResultUMA result);
+void UpdateGMSSignInErrorUMA(mojom::GMSSignInError error,
+                             const Profile* profile);
+void UpdateGMSCheckInErrorUMA(mojom::GMSCheckInError error,
+                              const Profile* profile);
+void UpdateSecondarySigninResultUMA(ProvisioningStatus status);
 void UpdateProvisioningTiming(const base::TimeDelta& elapsed_time,
                               bool success,
                               const Profile* profile);
-void UpdateReauthorizationResultUMA(ProvisioningResultUMA result,
+void UpdateReauthorizationResultUMA(ProvisioningStatus status,
                                     const Profile* profile);
 void UpdatePlayAutoInstallRequestState(mojom::PaiFlowState state,
                                        const Profile* profile);
@@ -266,11 +254,11 @@ void UpdateMainAccountResolutionStatus(
 // Returns the enum for use in UMA stat and displaying error code on the UI.
 // This enum should not be used anywhere else. Please work with the object
 // instead.
-ProvisioningResultUMA GetProvisioningResultUMA(
+ProvisioningStatus GetProvisioningStatus(
     const ArcProvisioningResult& provisioning_result);
 
 // Outputs the stringified |result| to |os|. This is only for logging purposes.
-std::ostream& operator<<(std::ostream& os, const ProvisioningResultUMA& result);
+std::ostream& operator<<(std::ostream& os, const ProvisioningStatus& status);
 
 }  // namespace arc
 

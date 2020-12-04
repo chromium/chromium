@@ -62,7 +62,7 @@ bool ArcProvisioningResult::is_timedout() const {
 
 std::ostream& operator<<(std::ostream& os,
                          const ArcProvisioningResult& result) {
-  return os << GetProvisioningResultUMA(result);
+  return os << GetProvisioningStatus(result);
 }
 
 }  // namespace arc

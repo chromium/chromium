@@ -1155,12 +1155,12 @@ struct ProvisioningErrorDisplayTestParam {
 constexpr ProvisioningErrorDisplayTestParam
     kProvisioningErrorDisplayTestCases[] = {
         {ArcStopReason::GENERIC_BOOT_FAILURE,
-         ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR, 16 /*ARC_STOPPED*/},
+         ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR, 8 /*ARC_STOPPED*/},
         {ArcStopReason::LOW_DISK_SPACE,
          ArcSupportHost::Error::LOW_DISK_SPACE_ERROR,
          {}},
         {ArcStopReason::CRASH, ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR,
-         16 /*ARC_STOPPED*/}};
+         8 /*ARC_STOPPED*/}};
 
 class ProvisioningErrorDisplayTest
     : public ArcSessionManagerTest,

@@ -11,7 +11,7 @@
 #include "components/arc/session/arc_stop_reason.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-enum class ProvisioningResultUMA : int;
+enum class ProvisioningStatus;
 
 namespace arc {
 

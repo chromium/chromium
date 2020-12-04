@@ -3446,6 +3446,13 @@ Unknown properties are collapsed to zero. -->
   <int value="9" label="Timeout"/>
 </enum>
 
+<enum name="ArcProvisioningCheckInError">
+  <summary>Defines ARC GMS check-in failure reasons</summary>
+  <int value="1" label="Check-in failed"/>
+  <int value="2" label="Timeout"/>
+  <int value="3" label="Internal error"/>
+</enum>
+
 <!-- These values must be in sync with ProvisionConstants in CloudDPC code -->
 
 <enum name="ArcProvisioningCloudFlowError">
@@ -3487,6 +3494,9 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="ArcProvisioningResult">
+  <obsolete>
+    Removed in Dec 2020. Replaced by ArcProvisioningStatus.
+  </obsolete>
   <summary>Defines Arc Provisioning success and failure reasons</summary>
   <int value="0" label="Success"/>
   <int value="1" label="Unclassified failure"/>
@@ -3513,6 +3523,34 @@ Unknown properties are collapsed to zero. -->
   <int value="22" label="Unsupported account type"/>
   <int value="23" label="Account is not present in Chrome"/>
   <int value="24" label="Cloud provision flow failed"/>
+</enum>
+
+<enum name="ArcProvisioningSignInError">
+  <summary>Defines ARC GMS sign-in failure reasons</summary>
+  <int value="1" label="Network error"/>
+  <int value="2" label="Sign-in service unavailble"/>
+  <int value="3" label="Bad authentication"/>
+  <int value="4" label="Unknown error"/>
+  <int value="5" label="Timeout"/>
+  <int value="6" label="Internal error"/>
+</enum>
+
+<enum name="ArcProvisioningStatus">
+  <summary>Defines ARC GMS check-in failure reasons</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Unclassified failure"/>
+  <int value="2" label="GMS sign-in failed"/>
+  <int value="3" label="GMS check-in failed"/>
+  <int value="4" label="Cloud provision flow failed"/>
+  <int value="5" label="Mojo version mistmached"/>
+  <int value="6" label="ARC provisioning timeout"/>
+  <int value="7" label="Chrome provisioning timeout"/>
+  <int value="8" label="ARC instance is stopped before complete provisioning"/>
+  <int value="9" label="Disabled"/>
+  <int value="10" label="Chrome server communication error"/>
+  <int value="11" label="Network is unavailable"/>
+  <int value="12" label="Unsupported account type"/>
+  <int value="13" label="Account is not present in Chrome"/>
 </enum>
 
 <enum name="ArcSdkVersionUpgradeType">

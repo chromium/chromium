@@ -45,7 +45,7 @@ class ArcProvisioningResult;
 class ArcTermsOfServiceNegotiator;
 class ArcUiAvailabilityReporter;
 
-enum class ProvisioningResultUMA : int;
+enum class ProvisioningStatus;
 enum class ArcStopReason;
 
 // This class is responsible for handing stages of ARC life-cycle.

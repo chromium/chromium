@@ -864,8 +864,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Time taken for ARC to render a PDF for print preview.</summary>
 </histogram>
 
+<histogram base="true" name="Arc.Provisioning.CheckInError"
+    enum="ArcProvisioningCheckInError" expires_after="2021-12-01">
+<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
+
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    The error that occurred during GMS check-in operation. Recorded when ARC++
+    provisioning flow fails.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Arc.Provisioning.CloudFlowError"
-    enum="ArcProvisioningCloudFlowError" expires_after="2021-07-01">
+    enum="ArcProvisioningCloudFlowError" expires_after="2021-12-01">
 <!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
 
   <owner>mhasank@google.com</owner>
@@ -878,6 +890,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Arc.Provisioning.Result"
     enum="ArcProvisioningResult" expires_after="2021-07-01">
+  <obsolete>
+    Removed in Dec 2020. Now reported as Arc.Provisioning.Status.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
 
   <owner>alexchau@google.com</owner>
@@ -886,6 +901,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The result (success or the type of failure) of ARC provisioning. The base
     value has been deprecated on 2016-09-15 in favour of per user type values.
   </summary>
+</histogram>
+
+<histogram base="true" name="Arc.Provisioning.SignInError"
+    enum="ArcProvisioningSignInError" expires_after="2021-12-01">
+<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
+
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    The error that occured during GMS sign-in operation. Recorded when ARC++
+    provisioning flow fails.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Arc.Provisioning.Status"
+    enum="ArcProvisioningStatus" expires_after="2021-12-01">
+<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
+
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>The status (success or error) of ARC++ provisioning.</summary>
 </histogram>
 
 <histogram name="Arc.Provisioning.TimeDelta.Failure" units="ms"
@@ -911,11 +947,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Arc.Reauthorization.Result" enum="ArcProvisioningResult"
+<histogram name="Arc.Reauthorization.Result" enum="ArcProvisioningStatus"
     expires_after="2021-02-07">
 <!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
 
   <owner>khmel@google.com</owner>
+  <owner>arc-core@gmail.com</owner>
   <summary>
     The result (success or the type of failure) of ARC reauthorization.
   </summary>
@@ -978,7 +1015,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Arc.Secondary.Signin.Result" enum="ArcProvisioningResult"
+<histogram name="Arc.Secondary.Signin.Result" enum="ArcProvisioningStatus"
     expires_after="2021-05-16">
   <owner>sinhak@google.com</owner>
   <owner>jhorwich@google.com</owner>
