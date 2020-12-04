@@ -7,6 +7,10 @@
 
 #include "ui/views/controls/button/image_button.h"
 
+namespace views {
+class InkDropContainerView;
+}  // namespace views
+
 namespace ash {
 class ClipboardHistoryItemView;
 
@@ -23,7 +27,14 @@ class ClipboardHistoryDeleteButton : public views::ImageButton {
  private:
   // views::ImageButton:
   const char* GetClassName() const override;
+  void AddLayerBeneathView(ui::Layer* layer) override;
+  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   void OnThemeChanged() override;
+  void RemoveLayerBeneathView(ui::Layer* layer) override;
+
+  // Used to accommodate the ink drop layer. It ensures that the ink drop is
+  // above the view background.
+  views::InkDropContainerView* ink_drop_container_ = nullptr;
 };
 }  // namespace ash
 

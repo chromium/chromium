@@ -197,7 +197,6 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
 
     auto delete_button =
         std::make_unique<ClipboardHistoryDeleteButton>(container_);
-    delete_button->SetVisible(false);
     delete_button->SetProperty(
         views::kMarginsKey,
         ClipboardHistoryViews::kBitmapItemDeleteButtonMargins);

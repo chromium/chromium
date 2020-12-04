@@ -9,6 +9,8 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/scoped_light_mode_as_default.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/controls/highlight_path_generator.h"
 
 namespace ash {
 ClipboardHistoryDeleteButton::ClipboardHistoryDeleteButton(
@@ -24,12 +26,38 @@ ClipboardHistoryDeleteButton::ClipboardHistoryDeleteButton(
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   SetPreferredSize(gfx::Size(ClipboardHistoryViews::kDeleteButtonSizeDip,
                              ClipboardHistoryViews::kDeleteButtonSizeDip));
+  SetVisible(false);
+  SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
+  ink_drop_container_ =
+      AddChildView(std::make_unique<views::InkDropContainerView>());
+
+  // Typically we should not create a layer for a view used in the clipboard
+  // history menu. Because if a layer extends outside of the menu's bounds, it
+  // does not get cut (in addition, due to the lack of ownership, it is hard to
+  // change this behavior). However, it is safe to paint to layer here since the
+  // default visibility is false,
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+
+  // The ink drop ripple should be circular.
+  views::InstallFixedSizeCircleHighlightPathGenerator(
+      this, ClipboardHistoryViews::kDeleteButtonSizeDip / 2);
 }
 
 ClipboardHistoryDeleteButton::~ClipboardHistoryDeleteButton() = default;
 
 const char* ClipboardHistoryDeleteButton::GetClassName() const {
   return "DeleteButton";
+}
+
+void ClipboardHistoryDeleteButton::AddLayerBeneathView(ui::Layer* layer) {
+  ink_drop_container_->AddLayerBeneathView(layer);
+}
+
+std::unique_ptr<views::InkDrop> ClipboardHistoryDeleteButton::CreateInkDrop() {
+  std::unique_ptr<views::InkDrop> ink_drop = views::Button::CreateInkDrop();
+  ink_drop->SetShowHighlightOnHover(false);
+  return ink_drop;
 }
 
 void ClipboardHistoryDeleteButton::OnThemeChanged() {
@@ -41,5 +69,15 @@ void ClipboardHistoryDeleteButton::OnThemeChanged() {
   views::ImageButton::OnThemeChanged();
   AshColorProvider::Get()->DecorateCloseButton(
       this, ClipboardHistoryViews::kDeleteButtonSizeDip, kCloseButtonIcon);
+
+  const AshColorProvider::RippleAttributes ripple_attributes =
+      AshColorProvider::Get()->GetRippleAttributes();
+  SetInkDropBaseColor(ripple_attributes.base_color);
+  SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
 }
+
+void ClipboardHistoryDeleteButton::RemoveLayerBeneathView(ui::Layer* layer) {
+  ink_drop_container_->RemoveLayerBeneathView(layer);
+}
+
 }  // namespace ash
