@@ -6,7 +6,6 @@
 
 #include <AppKit/AppKit.h>
 
-#include "base/mac/mac_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 
@@ -17,21 +16,6 @@ void TestSystemFontContainsString(FontSelectionValue desired_weight,
   NSFont* font =
       MatchNSFontFamily(font_family_names::kSystemUi, 0, desired_weight, 11);
   EXPECT_TRUE([font.description containsString:substring]);
-}
-
-TEST(FontMatcherMacTest, YosemiteFontWeights) {
-  if (!base::mac::IsOS10_10())
-    return;
-
-  TestSystemFontContainsString(FontSelectionValue(100), @"-UltraLight");
-  TestSystemFontContainsString(FontSelectionValue(200), @"-Thin");
-  TestSystemFontContainsString(FontSelectionValue(300), @"-Light");
-  TestSystemFontContainsString(FontSelectionValue(400), @"-Regular");
-  TestSystemFontContainsString(FontSelectionValue(500), @"-Medium");
-  TestSystemFontContainsString(FontSelectionValue(600), @"-Bold");
-  TestSystemFontContainsString(FontSelectionValue(700), @"-Bold");
-  TestSystemFontContainsString(FontSelectionValue(800), @"-Heavy");
-  TestSystemFontContainsString(FontSelectionValue(900), @"-Heavy");
 }
 
 TEST(FontMatcherMacTest, NoUniqueFontMatchOnUnavailableFont) {

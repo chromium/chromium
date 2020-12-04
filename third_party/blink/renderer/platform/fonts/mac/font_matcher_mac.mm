@@ -171,10 +171,8 @@ NSFont* MatchNSFontFamily(const AtomicString& desired_family_string,
   DCHECK_NE(desired_family_string, FontCache::LegacySystemFontFamily());
 
   if (desired_family_string == font_family_names::kSystemUi) {
-    NSFont* font = nil;
-    if (@available(macOS 10.11, *)) {
-      font = [NSFont systemFontOfSize:size weight:toFontWeight(desired_weight)];
-    }
+    NSFont* font = [NSFont systemFontOfSize:size
+                                     weight:toFontWeight(desired_weight)];
     if (desired_traits & IMPORTANT_FONT_TRAITS)
       font = [[NSFontManager sharedFontManager] convertFont:font
                                                 toHaveTrait:desired_traits];
