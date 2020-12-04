@@ -33,7 +33,6 @@
 #import <Foundation/Foundation.h>
 #import <math.h>
 
-#include "base/bit_cast.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
@@ -42,32 +41,9 @@
 #import "third_party/blink/renderer/platform/wtf/hash_set.h"
 #import "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
-namespace {
-
-static CGFloat toFontWeight(blink::FontSelectionValue font_weight) {
-  static uint64_t ns_font_weights[] = {
-      0xbfe99999a0000000,  // NSFontWeightUltraLight
-      0xbfe3333340000000,  // NSFontWeightThin
-      0xbfd99999a0000000,  // NSFontWeightLight
-      0x0000000000000000,  // NSFontWeightRegular
-      0x3fcd70a3e0000000,  // NSFontWeightMedium
-      0x3fd3333340000000,  // NSFontWeightSemibold
-      0x3fd99999a0000000,  // NSFontWeightBold
-      0x3fe1eb8520000000,  // NSFontWeightHeavy
-      0x3fe3d70a40000000,  // NSFontWeightBlack
-  };
-  if (font_weight <= 50 || font_weight >= 950)
-    return bit_cast<CGFloat>(ns_font_weights[3]);
-
-  size_t select_weight = roundf(font_weight / 100) - 1;
-  DCHECK_GE(select_weight, 0ul);
-  DCHECK_LE(select_weight, base::size(ns_font_weights));
-  return bit_cast<CGFloat>(ns_font_weights[select_weight]);
-}
-
-}  // namespace
-
 namespace blink {
+
+namespace {
 
 const NSFontTraitMask SYNTHESIZED_FONT_TRAITS =
     (NSBoldFontMask | NSItalicFontMask);
@@ -77,18 +53,18 @@ const NSFontTraitMask IMPORTANT_FONT_TRAITS =
      NSItalicFontMask | NSNarrowFontMask | NSPosterFontMask |
      NSSmallCapsFontMask);
 
-static BOOL AcceptableChoice(NSFontTraitMask desired_traits,
-                             NSFontTraitMask candidate_traits) {
+BOOL AcceptableChoice(NSFontTraitMask desired_traits,
+                      NSFontTraitMask candidate_traits) {
   desired_traits &= ~SYNTHESIZED_FONT_TRAITS;
   return (candidate_traits & desired_traits) == desired_traits;
 }
 
-static BOOL BetterChoice(NSFontTraitMask desired_traits,
-                         int desired_weight,
-                         NSFontTraitMask chosen_traits,
-                         int chosen_weight,
-                         NSFontTraitMask candidate_traits,
-                         int candidate_weight) {
+BOOL BetterChoice(NSFontTraitMask desired_traits,
+                  int desired_weight,
+                  NSFontTraitMask chosen_traits,
+                  int chosen_weight,
+                  NSFontTraitMask candidate_traits,
+                  int candidate_weight) {
   if (!AcceptableChoice(desired_traits, candidate_traits))
     return NO;
 
@@ -124,6 +100,23 @@ static BOOL BetterChoice(NSFontTraitMask desired_traits,
   // Otherwise, prefer the one closer to the desired weight.
   return candidate_weight_delta_magnitude < chosen_weight_delta_magnitude;
 }
+
+NSFontWeight ToFontWeight(blink::FontSelectionValue font_weight) {
+  if (font_weight <= 50 || font_weight >= 950)
+    return NSFontWeightRegular;
+
+  const NSFontWeight ns_font_weights[] = {
+      NSFontWeightUltraLight, NSFontWeightThin,   NSFontWeightLight,
+      NSFontWeightRegular,    NSFontWeightMedium, NSFontWeightSemibold,
+      NSFontWeightBold,       NSFontWeightHeavy,  NSFontWeightBlack,
+  };
+  size_t select_weight = roundf(font_weight / 100) - 1;
+  DCHECK_GE(select_weight, 0ul);
+  DCHECK_LE(select_weight, base::size(ns_font_weights));
+  return ns_font_weights[select_weight];
+}
+
+}  // namespace
 
 NSFont* MatchUniqueFont(const AtomicString& unique_font_name, float size) {
   // Testing with a large list of fonts available on Mac OS shows that matching
@@ -172,7 +165,7 @@ NSFont* MatchNSFontFamily(const AtomicString& desired_family_string,
 
   if (desired_family_string == font_family_names::kSystemUi) {
     NSFont* font = [NSFont systemFontOfSize:size
-                                     weight:toFontWeight(desired_weight)];
+                                     weight:ToFontWeight(desired_weight)];
     if (desired_traits & IMPORTANT_FONT_TRAITS)
       font = [[NSFontManager sharedFontManager] convertFont:font
                                                 toHaveTrait:desired_traits];
