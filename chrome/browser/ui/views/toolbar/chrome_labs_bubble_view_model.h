@@ -8,17 +8,33 @@
 #include <vector>
 #include "base/strings/string16.h"
 
+// Currently there are differences in both visible name and visible description
+// between about_flags and what we want for Chrome Labs. We are coordinating to
+// match these. LabInfo struct can be removed after that.
+struct LabInfo {
+  LabInfo(const std::string& internal_name,
+          const base::string16& visible_name,
+          const base::string16& visible_description)
+      : internal_name(internal_name),
+        visible_name(visible_name),
+        visible_description(visible_description) {}
+
+  std::string internal_name;
+  base::string16 visible_name;
+  base::string16 visible_description;
+};
+
 class ChromeLabsBubbleViewModel {
  public:
   ChromeLabsBubbleViewModel();
   ~ChromeLabsBubbleViewModel();
 
-  std::vector<std::string> GetLabInfo() const;
+  const std::vector<LabInfo>& GetLabInfo() const;
 
  private:
   void SetUpLabs();
 
-  std::vector<std::string> lab_internal_names_;
+  std::vector<LabInfo> lab_info_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_BUBBLE_VIEW_MODEL_H_

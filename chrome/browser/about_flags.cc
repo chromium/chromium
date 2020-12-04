@@ -4370,7 +4370,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kDoubleTapToZoomInTabletMode)},
 #endif  // defined(OS_CHROMEOS)
 
-    {"read-later", flag_descriptions::kReadLaterName,
+    {flag_descriptions::kReadLaterFlagId, flag_descriptions::kReadLaterName,
      flag_descriptions::kReadLaterDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(reading_list::switches::kReadLater)},
 
@@ -6568,7 +6568,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContentSettingsRedesignDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kContentSettingsRedesign)},
 
-    {"enable-tab-search", flag_descriptions::kEnableTabSearchName,
+    {flag_descriptions::kEnableTabSearchFlagId,
+     flag_descriptions::kEnableTabSearchName,
      flag_descriptions::kEnableTabSearchDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabSearch)},
 

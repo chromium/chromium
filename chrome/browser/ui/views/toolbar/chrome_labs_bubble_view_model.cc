@@ -4,13 +4,14 @@
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/flag_descriptions.h"
 
 ChromeLabsBubbleViewModel::ChromeLabsBubbleViewModel() {
   SetUpLabs();
 }
 
-std::vector<std::string> ChromeLabsBubbleViewModel::GetLabInfo() const {
-  return lab_internal_names_;
+const std::vector<LabInfo>& ChromeLabsBubbleViewModel::GetLabInfo() const {
+  return lab_info_;
 }
 
 // TODO(elainechien): Explore better ways to allow developers to add their
@@ -19,7 +20,19 @@ std::vector<std::string> ChromeLabsBubbleViewModel::GetLabInfo() const {
 // (Default, Enabled, Disabled states). Experiments with multiple parameters may
 // be considered in the future.
 void ChromeLabsBubbleViewModel::SetUpLabs() {
-  lab_internal_names_.push_back("read-later");
+  // Read Later.
+  lab_info_.emplace_back(LabInfo(
+      flag_descriptions::kReadLaterFlagId, base::ASCIIToUTF16("Reading List"),
+      base::ASCIIToUTF16(
+          "Right click on a tab or click the star to add tabs to a reading "
+          "list. Access from the Bookmarks bar.")));
+
+  // Tab Search.
+  lab_info_.emplace_back(
+      LabInfo(flag_descriptions::kEnableTabSearchFlagId,
+              base::ASCIIToUTF16("Tab Search"),
+              base::ASCIIToUTF16("Enable a popup bubble in Top Chrome UI to "
+                                 "search over currently open tabs.")));
 }
 
 ChromeLabsBubbleViewModel::~ChromeLabsBubbleViewModel() = default;

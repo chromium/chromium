@@ -10,10 +10,12 @@
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/view.h"
 
+struct LabInfo;
+
 class ChromeLabsItemView : public views::View {
  public:
   ChromeLabsItemView(
-      std::string internal_name,
+      const LabInfo& lab,
       int default_index,
       const flags_ui::FeatureEntry* feature_entry,
       base::RepeatingCallback<void(ChromeLabsItemView* item_view)>
@@ -30,8 +32,6 @@ class ChromeLabsItemView : public views::View {
  private:
   // Combobox with selected state of the lab.
   views::Combobox* lab_state_combobox_;
-
-  std::string internal_name_;
 
   const flags_ui::FeatureEntry* feature_entry_;
 };

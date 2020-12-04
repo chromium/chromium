@@ -10,49 +10,54 @@
 #include "chrome/browser/ui/webui/flags_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
+#include "ui/gfx/color_palette.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/layout_provider.h"
 
 namespace {
 
 ChromeLabsBubbleView* g_chrome_labs_bubble = nullptr;
 
-}  // namespace
-
-// TODO(elainechien): Add screenshots and strings for translation when UI is
-// finished.
 class ChromeLabsFooter : public views::View {
  public:
   ChromeLabsFooter() {
     SetLayoutManager(std::make_unique<views::FlexLayout>())
         ->SetOrientation(views::LayoutOrientation::kVertical);
-    AddChildView(views::Builder<views::Label>()
-                     .CopyAddressTo(&restart_label_)
-                     .SetText(base::ASCIIToUTF16(
-                         "Your changes will take effect the next time you "
-                         "relaunch Google Chrome."))
-                     .SetMultiLine(true)
-                     .Build());
+    AddChildView(
+        views::Builder<views::Label>()
+            .CopyAddressTo(&restart_label_)
+            .SetText(base::ASCIIToUTF16(
+                "Your changes will take effect the next time you "
+                "relaunch Google Chrome."))
+            .SetMultiLine(true)
+            .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+            .SetProperty(views::kFlexBehaviorKey,
+                         views::FlexSpecification(
+                             views::MinimumFlexSizeRule::kPreferred,
+                             views::MaximumFlexSizeRule::kPreferred, true))
+            .Build());
     AddChildView(views::Builder<views::MdTextButton>()
                      .CopyAddressTo(&restart_button_)
                      .SetCallback(base::BindRepeating(&chrome::AttemptRestart))
                      .SetText(base::ASCIIToUTF16("Relaunch"))
                      .Build());
-    restart_label_->SizeToFit(
-        restart_button_->CalculatePreferredSize().width());
+    SetBackground(views::CreateSolidBackground(gfx::kGoogleGrey200));
+    SetBorder(views::CreateEmptyBorder(
+        views::LayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG)));
+    SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kPreferred, true));
   }
-  // views::View
-  gfx::Size CalculatePreferredSize() const override {
-    int width = restart_button_->CalculatePreferredSize().width();
-    int height = GetHeightForWidth(width);
-    return gfx::Size(width, height);
-  }
-
  private:
   views::MdTextButton* restart_button_;
   views::Label* restart_label_;
 };
+
+}  // namespace
 
 // static
 void ChromeLabsBubbleView::Show(views::View* anchor_view) {
@@ -73,28 +78,36 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(
   SetShowCloseButton(true);
   SetTitle(base::ASCIIToUTF16("Chrome Labs"));
   SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetDefault(views::kMarginsKey, gfx::Insets(5));
+      ->SetOrientation(views::LayoutOrientation::kVertical);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
+  set_margins(gfx::Insets(0));
 
   // TODO(elainechien): ChromeOS specific logic for creating FlagsStorage
   flags_storage_ = std::make_unique<flags_ui::PrefServiceFlagsStorage>(
       g_browser_process->local_state());
   flags_state_ = about_flags::GetCurrentFlagsState();
 
-  menu_item_container_ = AddChildView(std::make_unique<views::View>());
+  menu_item_container_ = AddChildView(
+      views::Builder<views::View>()
+          .SetProperty(views::kFlexBehaviorKey,
+                       views::FlexSpecification(
+                           views::MinimumFlexSizeRule::kScaleToZero,
+                           views::MaximumFlexSizeRule::kPreferred, true))
+          .Build());
   menu_item_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kHorizontal)
+      ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetDefault(views::kMarginsKey, gfx::Insets(10));
 
   // Create each lab item.
-  std::vector<std::string> lab_internal_names = model_->GetLabInfo();
-  for (const auto& internal_name : lab_internal_names) {
+  const std::vector<LabInfo>& all_labs = model_->GetLabInfo();
+  for (const auto& lab : all_labs) {
     const flags_ui::FeatureEntry* entry =
-        flags_state_->FindFeatureEntryByName(internal_name);
+        flags_state_->FindFeatureEntryByName(lab.internal_name);
     DCHECK_EQ(entry->type, flags_ui::FeatureEntry::FEATURE_VALUE);
     int default_index = GetIndexOfEnabledLabState(entry);
     menu_item_container_->AddChildView(
-        CreateLabItem(internal_name, default_index, entry));
+        CreateLabItem(lab, default_index, entry));
   }
   // TODO(elainechien): Build UI for 0 experiments case.
   DCHECK(menu_item_container_->children().size() >= 1);
@@ -104,7 +117,7 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(
 }
 
 std::unique_ptr<ChromeLabsItemView> ChromeLabsBubbleView::CreateLabItem(
-    std::string internal_name,
+    const LabInfo& lab,
     int default_index,
     const flags_ui::FeatureEntry* entry) {
   auto combobox_callback = [](ChromeLabsBubbleView* bubble_view,
@@ -117,9 +130,16 @@ std::unique_ptr<ChromeLabsItemView> ChromeLabsBubbleView::CreateLabItem(
     bubble_view->ShowRelaunchPrompt();
   };
 
-  return std::make_unique<ChromeLabsItemView>(
-      internal_name, default_index, entry,
-      base::BindRepeating(combobox_callback, this, internal_name));
+  std::unique_ptr<ChromeLabsItemView> item_view =
+      std::make_unique<ChromeLabsItemView>(
+          lab, default_index, entry,
+          base::BindRepeating(combobox_callback, this, lab.internal_name));
+
+  item_view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred, true));
+  return item_view;
 }
 
 int ChromeLabsBubbleView::GetIndexOfEnabledLabState(

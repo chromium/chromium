@@ -573,6 +573,7 @@ extern const char kEnableResourceLoadingHintsDescription[];
 extern const char kEnableSubresourceRedirectName[];
 extern const char kEnableSubresourceRedirectDescription[];
 
+extern const char kEnableTabSearchFlagId[];
 extern const char kEnableTabSearchName[];
 extern const char kEnableTabSearchDescription[];
 
@@ -1133,6 +1134,7 @@ extern const char kContentSettingsRedesignDescription[];
 extern const char kRawClipboardName[];
 extern const char kRawClipboardDescription[];
 
+extern const char kReadLaterFlagId[];
 extern const char kReadLaterName[];
 extern const char kReadLaterDescription[];
 

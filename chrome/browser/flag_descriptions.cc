@@ -977,6 +977,7 @@ const char kEnableResourceLoadingHintsDescription[] =
     "Enable using server-provided resource loading hints to provide a preview "
     "over slow network connections.";
 
+const char kEnableTabSearchFlagId[] = "enable-tab-search";
 const char kEnableTabSearchName[] = "Enable Tab Search";
 const char kEnableTabSearchDescription[] =
     "Enable the Tab Search feature in Top Chrome UI, which will show a popup "
@@ -1943,6 +1944,7 @@ const char kRawClipboardDescription[] =
     "Allows raw / unsanitized clipboard content to be read and written. "
     "See https://github.com/WICG/raw-clipboard-access.";
 
+const char kReadLaterFlagId[] = "read-later";
 const char kReadLaterName[] = "Read Later";
 const char kReadLaterDescription[] =
     "Allow users to save tabs for later. Enables a new button and menu for "

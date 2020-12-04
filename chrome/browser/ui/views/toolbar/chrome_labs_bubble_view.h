@@ -13,6 +13,9 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 // TODO(elainechien): Use composition instead of inheritance.
+// TODO(elainechien): Add screenshots and strings for translation when UI is
+// finished.
+// TODO(elainechien): Formatting for items in child views.
 class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
  public:
   static void Show(views::View* anchor_view);
@@ -35,7 +38,7 @@ class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
                        std::unique_ptr<ChromeLabsBubbleViewModel> model);
 
   std::unique_ptr<ChromeLabsItemView> CreateLabItem(
-      std::string internal_name,
+      const LabInfo& lab,
       int default_index,
       const flags_ui::FeatureEntry* entry);
 

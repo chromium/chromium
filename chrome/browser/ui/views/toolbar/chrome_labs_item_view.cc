@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_item_view.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
 
 class LabsComboboxModel : public ui::ComboboxModel {
  public:
@@ -29,18 +31,29 @@ class LabsComboboxModel : public ui::ComboboxModel {
 };
 
 ChromeLabsItemView::ChromeLabsItemView(
-    std::string internal_name,
+    const LabInfo& lab,
     int default_index,
     const flags_ui::FeatureEntry* feature_entry,
     base::RepeatingCallback<void(ChromeLabsItemView* item_view)>
         combobox_callback)
-    : internal_name_(internal_name), feature_entry_(feature_entry) {
+    : feature_entry_(feature_entry) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kHorizontal)
+      ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetDefault(views::kMarginsKey, gfx::Insets(10));
   AddChildView(views::Builder<views::Label>()
-                   .SetText(base::ASCIIToUTF16(feature_entry->visible_name))
+                   .SetText(lab.visible_name)
+                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                    .Build());
+  AddChildView(
+      views::Builder<views::Label>()
+          .SetText(lab.visible_description)
+          .SetMultiLine(true)
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetProperty(views::kFlexBehaviorKey,
+                       views::FlexSpecification(
+                           views::MinimumFlexSizeRule::kPreferred,
+                           views::MaximumFlexSizeRule::kPreferred, true))
+          .Build());
   AddChildView(views::Builder<views::Combobox>()
                    .CopyAddressTo(&lab_state_combobox_)
                    .SetOwnedModel(std::make_unique<LabsComboboxModel>(
