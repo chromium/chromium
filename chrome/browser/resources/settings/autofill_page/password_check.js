@@ -434,7 +434,7 @@ Polymer({
    * @private
    */
   computeIconHaloClass_() {
-    return !this.isCheckInProgress_() && this.hasInsecureCredentials_() ?
+    return !this.isCheckInProgress_() && this.hasLeakedCredentials_() ?
         'warning-halo' :
         '';
   },
@@ -448,7 +448,7 @@ Polymer({
     if (!this.hasInsecureCredentialsOrErrors_()) {
       return 'settings:check-circle';
     }
-    if (this.hasInsecureCredentials_()) {
+    if (this.hasLeakedCredentials_()) {
       return 'cr:warning';
     }
     return 'cr:info';
@@ -463,7 +463,7 @@ Polymer({
     if (!this.hasInsecureCredentialsOrErrors_()) {
       return this.waitsForFirstCheck_() ? 'hidden' : 'no-security-issues';
     }
-    if (this.hasInsecureCredentials_()) {
+    if (this.hasLeakedCredentials_()) {
       return 'has-security-issues';
     }
     return '';

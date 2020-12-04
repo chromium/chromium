@@ -653,6 +653,27 @@ suite('PasswordsCheckSection', function() {
     expectFalse(icon.classList.contains('no-security-issues'));
   });
 
+  // Tests that the spinner is replaced with an info icon if only weak passwords
+  // were found.
+  test('showsInfoIconWhenFinishedWithWeakPasswords', async function() {
+    loadTimeData.overrideValues({passwordsWeaknessCheck: true});
+    const data = passwordManager.data;
+    assertEquals(PasswordCheckState.IDLE, data.checkStatus.state);
+    data.weakCredentials = [
+      makeInsecureCredential('one.com', 'test5'),
+    ];
+
+    const checkPasswordSection = createCheckPasswordSection();
+    await passwordManager.whenCalled('getPasswordCheckStatus');
+    flush();
+    const icon = checkPasswordSection.$$('iron-icon');
+    const spinner = checkPasswordSection.$$('paper-spinner-lite');
+    expectFalse(isElementVisible(spinner));
+    assertTrue(isElementVisible(icon));
+    expectFalse(icon.classList.contains('has-security-issues'));
+    expectFalse(icon.classList.contains('no-security-issues'));
+  });
+
   // Tests that the spinner is replaced with a warning on errors.
   test('showsInfoIconWhenFinishedWithErrors', async function() {
     passwordManager.data.checkStatus = makePasswordCheckStatus(
