@@ -41,11 +41,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     : public FidoDiscoveryBase::Observer {
  public:
   using RequestCallback = base::RepeatingCallback<void(const std::string&)>;
-  using BlePairingCallback =
-      base::RepeatingCallback<void(std::string authenticator_id,
-                                   base::Optional<std::string> pin_code,
-                                   base::OnceClosure success_callback,
-                                   base::OnceClosure error_callback)>;
 
   enum class RequestType { kMakeCredential, kGetAssertion };
 

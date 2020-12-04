@@ -38,8 +38,6 @@ class AuthenticatorGetAssertionResponse;
 class AuthenticatorRequestDialogModel {
  public:
   using RequestCallback = device::FidoRequestHandlerBase::RequestCallback;
-  using BlePairingCallback = device::FidoRequestHandlerBase::BlePairingCallback;
-  using BleDevicePairedCallback = base::RepeatingCallback<void(std::string)>;
   using TransportAvailabilityInfo =
       device::FidoRequestHandlerBase::TransportAvailabilityInfo;
 
