@@ -2,13 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
-
-// #import {LRUCache} from '../../common/js/lru_cache.m.js';
-
 // Namespace
 const metadataProxy = {};
 
@@ -83,6 +76,3 @@ metadataProxy.getEntryMetadata = entry => {
 metadataProxy.overrideCacheTtlForTesting = ttl => {
   metadataProxy.cache_ttl_seconds_ = ttl ? ttl : metadataProxy.MAX_TTL_SECONDS_;
 };
-
-// eslint-disable-next-line semi,no-extra-semi
-/* #export */ {metadataProxy};

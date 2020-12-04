@@ -2,14 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import {assertEquals} from 'chrome://test/chai_assert.js';
-import {reportPromise} from '../../../base/js/test_error_reporting.m.js';
-import {MockFileSystem} from '../../common/js/mock_entry.m.js';
-import {metadataProxy} from './metadata_proxy.m.js';
-// clang-format on
-
-export function testMetadataCaching(doneCallback) {
+function testMetadataCaching(doneCallback) {
   reportPromise(
       (async function() {
         const mockFileSystem = new MockFileSystem('volumeId');
@@ -37,7 +30,7 @@ export function testMetadataCaching(doneCallback) {
       doneCallback);
 }
 
-export function testMetadataCacheExpiry(doneCallback) {
+function testMetadataCacheExpiry(doneCallback) {
   reportPromise(
       (async function() {
         const mockFileSystem = new MockFileSystem('volumeId');
