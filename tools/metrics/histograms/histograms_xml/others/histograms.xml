@@ -11674,17 +11674,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Privacy.CookieControlsSetting" enum="CookieControlsMode"
-    expires_after="M89">
+    expires_after="never">
+<!-- expires-never: tracked as an important privacy metric. -->
+
   <owner>dullweber@chromium.org</owner>
   <owner>huanzhong@chromium.org</owner>
   <summary>
-    Whether the cookie controls setting is enabled. Recorded at the Profile
-    startup.
+    Whether third-party cookies are blocked in incognito mode or completely.
+    Recorded at the Profile startup.
   </summary>
 </histogram>
 
 <histogram name="Privacy.DoNotTrackSetting" enum="BooleanEnabled"
-    expires_after="2021-05-16">
+    expires_after="never">
+<!-- expires-never: tracked as an important privacy metric. -->
+
   <owner>mkwst@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <summary>
@@ -11694,7 +11698,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Privacy.ThirdPartyCookieBlockingEnabledForSite" enum="Boolean"
-    expires_after="M89">
+    expires_after="M93">
   <owner>dullweber@chromium.org</owner>
   <owner>huanzhong@chromium.org</owner>
   <summary>
@@ -17708,7 +17712,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebsiteSettings.Action" enum="WebsiteSettingsAction"
-    expires_after="M90">
+    expires_after="M93">
   <owner>estark@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
   <summary>
