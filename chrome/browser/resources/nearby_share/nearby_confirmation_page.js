@@ -213,7 +213,7 @@ Polymer({
   contactName_() {
     // TODO(crbug.com/1123943): Get contact name from ShareTarget.
     const contactName = null;
-    if (!contactName) {
+    if (!contactName || this.errorTitle_) {
       return '';
     }
     return this.i18n('nearbyShareConfirmationPageAddContactTitle', contactName);

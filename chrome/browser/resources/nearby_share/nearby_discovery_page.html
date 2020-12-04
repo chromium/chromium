@@ -160,9 +160,12 @@
     <template is="dom-if" if="[[errorTitle_]]">
       <div id="errorSection">
         <iron-icon id="errorIcon" icon="nearby20:info"></iron-icon>
-        <div id="error">
-          <div id="errorTitle">[[errorTitle_]]</div>
-          <div id="errorDescription">[[errorDescription_]]</div>
+        <div id="error" role="alert" aria-labelledby="errorTitle"
+            aria-describedby="errorDescription">
+          <div id="errorTitle" aria-hidden="true">[[errorTitle_]]</div>
+          <div id="errorDescription" aria-hidden="true">
+            [[errorDescription_]]
+          </div>
         </div>
       </div>
     </template>

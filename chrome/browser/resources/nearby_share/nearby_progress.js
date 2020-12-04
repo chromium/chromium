@@ -78,4 +78,15 @@ Polymer({
       this.updateStyles({'--progress-percentage': value});
     }
   },
+
+  /**
+   * Allow focusing on the progress bar. Ignored by Chromevox otherwise.
+   * @return {number} The tabindex to be applied to the progress wheel.
+   */
+  getProgressBarTabIndex_() {
+    if (this.progress && !this.hasError) {
+      return 0;
+    }
+    return -1;
+  },
 });

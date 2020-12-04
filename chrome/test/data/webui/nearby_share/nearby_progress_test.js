@@ -38,7 +38,7 @@ suite('ProgressTest', function() {
     });
     progressElement.shareTarget = shareTarget;
 
-    const renderedName = progressElement.$$('#device-name').textContent;
+    const renderedName = progressElement.$$('#device-name').innerText;
     assertEquals(name, renderedName);
   });
 });

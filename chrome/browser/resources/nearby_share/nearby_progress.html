@@ -89,7 +89,9 @@
   }
 </style>
 
-<div id="progress-container"
+<div id="progress-container" role="progressbar" aria-valuemin="0"
+    aria-valuemax="100" aria-valuenow$="[[progress]]"
+    tabindex$="[[getProgressBarTabIndex_(progress)]]"
     class$="[[getProgressWheelClass_(progress, hasError)]]">
   <!-- This svg is inlined so that it can be styled with css; otherwise,
        it would be better to put it in an iron-icon. -->
@@ -101,4 +103,6 @@
   <nearby-device-icon id="icon" share-target="[[shareTarget]]">
   </nearby-device-icon>
 </div>
-<div id="device-name">[[shareTarget.name]]</div>
+<div id="device-name" aria-label="$i18n{nearbyShareOnboardingPageDeviceName}">
+  [[shareTarget.name]]
+</div>

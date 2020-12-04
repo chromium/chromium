@@ -95,7 +95,7 @@ suite('ConfirmatonPageTest', function() {
     };
     const renderedName = confirmationPageElement.$$('nearby-progress')
                              .$$('#device-name')
-                             .textContent;
+                             .innerText;
     assertEquals(name, renderedName);
   });
 

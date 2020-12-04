@@ -1,6 +1,6 @@
 <style>
   #addContacts {
-    margin-top: 32px;
+    padding: 8px;
   }
 
   #addContactsLabel {
@@ -93,7 +93,7 @@
         <nearby-preview send-preview="[[sendPreview]]"
             disabled="[[errorTitle_]]">
         </nearby-preview>
-        <div id="confirmationToken">
+        <div id="confirmationToken" aria-live="polite">
           <template is="dom-if" if="[[confirmationToken_]]">
             [[i18n('nearbyShareSecureConnectionId', confirmationToken_)]]
           </template>
@@ -104,12 +104,13 @@
       </div>
     </div>
 
-    <template is="dom-if" if="[[contactName_(shareTarget)]]">
-      <cr-checkbox id="addContacts">
-        <div id="addContactsLabel">
+    <template is="dom-if" if="[[contactName_(shareTarget, errorTitle_)]]">
+      <cr-checkbox id="addContacts" aria-labelledby="addContactsLabel"
+          aria-describedby="addContactsLabelSecondary">
+        <div id="addContactsLabel" aria-hidden="true">
           [[contactName_(shareTarget)]]
         </div>
-        <div id="addContactsLabelSecondary">
+        <div id="addContactsLabelSecondary" aria-hidden="true">
           [[i18n('nearbyShareConfirmationPageAddContactSubtitle')]]
         </div>
       </cr-checkbox>
@@ -119,9 +120,12 @@
     <template is="dom-if" if="[[errorTitle_]]">
       <div id="errorSection">
         <iron-icon id="errorIcon" icon="nearby20:info"></iron-icon>
-        <div id="error">
-          <div id="errorTitle">[[errorTitle_]]</div>
-          <div id="errorDescription">[[errorDescription_]]</div>
+        <div id="error" role="alert" aria-labelledby="errorTitle"
+            aria-describedby="errorDescription">
+          <div id="errorTitle" aria-hidden="true">[[errorTitle_]]</div>
+          <div id="errorDescription" aria-hidden="true">
+            [[errorDescription_]]
+          </div>
         </div>
       </div>
     </template>
