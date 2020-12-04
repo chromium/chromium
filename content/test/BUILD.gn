@@ -387,7 +387,6 @@ static_library("test_support") {
     "//third_party/blink/public:blink",
     "//third_party/blink/public:test_support",
     "//third_party/blink/public/strings:strings_grit",
-    "//ui/gl:test_support",
   ]
 
   deps = [
@@ -460,6 +459,7 @@ static_library("test_support") {
     "//ui/events/blink",
     "//ui/gfx:test_support",
     "//ui/gl",
+    "//ui/gl:test_support",
     "//ui/native_theme",
     "//ui/resources",
     "//ui/shell_dialogs:shell_dialogs",
