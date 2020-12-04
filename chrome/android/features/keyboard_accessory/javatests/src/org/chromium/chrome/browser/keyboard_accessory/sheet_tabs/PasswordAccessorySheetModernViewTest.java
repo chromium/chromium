@@ -19,9 +19,9 @@ import static org.junit.Assert.assertTrue;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Switch;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
@@ -198,8 +198,8 @@ public class PasswordAccessorySheetModernViewTest {
 
         View switchView = mView.get().findViewById(R.id.option_toggle_switch);
         assertThat(switchView, is(not(nullValue())));
-        assertThat(switchView, instanceOf(Switch.class));
-        assertFalse(((Switch) switchView).isChecked());
+        assertThat(switchView, instanceOf(SwitchCompat.class));
+        assertFalse(((SwitchCompat) switchView).isChecked());
     }
 
     @Test

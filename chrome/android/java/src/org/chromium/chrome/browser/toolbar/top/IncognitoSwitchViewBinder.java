@@ -24,6 +24,7 @@ class IncognitoSwitchViewBinder {
      * Build a binder that handles interaction between the model and the view that make up the
      * incognito switch.
      */
+    @SuppressWarnings({"UseSwitchCompatOrMaterialCode"})
     public static void bind(PropertyModel model, Switch incognitoSwitch, PropertyKey propertyKey) {
         if (IncognitoSwitchProperties.ON_CHECKED_CHANGE_LISTENER == propertyKey) {
             incognitoSwitch.setOnCheckedChangeListener(

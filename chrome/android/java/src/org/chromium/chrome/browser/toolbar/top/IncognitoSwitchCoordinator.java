@@ -31,6 +31,7 @@ class IncognitoSwitchCoordinator {
     private TabModelSelector mTabModelSelector;
     private TabModelSelectorObserver mTabModelSelectorObserver;
 
+    @SuppressWarnings({"UseSwitchCompatOrMaterialCode"})
     public IncognitoSwitchCoordinator(ViewGroup root, TabModelSelector tabModelSelector) {
         assert tabModelSelector != null;
         mTabModelSelector = tabModelSelector;

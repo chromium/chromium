@@ -6,6 +6,7 @@
 <org.chromium.chrome.browser.toolbar.top.TabSwitcherModeTTPhone
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/tab_switcher_toolbar"
     android:layout_width="match_parent"
     android:layout_height="@dimen/toolbar_height_no_shadow"
@@ -89,7 +90,8 @@
             android:paddingEnd="16dp"
             android:thumb="@drawable/incognito_switch"
             android:track="@drawable/incognito_switch_track"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            tools:ignore="UseSwitchCompatOrMaterialXml"/>
 
         <include layout="@layout/menu_button" />
 
