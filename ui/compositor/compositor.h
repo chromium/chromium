@@ -409,7 +409,6 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
 
  private:
   friend class base::RefCounted<Compositor>;
-  friend class TotalAnimationThroughputReporter;
 
   // Called when collected metrics for the tracker of |tracker_id| is ready.
   void ReportMetricsForTracker(
