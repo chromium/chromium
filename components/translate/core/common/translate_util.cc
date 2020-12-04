@@ -25,6 +25,9 @@ const char kSecurityOrigin[] = "https://translate.googleapis.com/";
 const base::Feature kTranslateSubFrames{"TranslateSubFrames",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kTFLiteLanguageDetectionEnabled{
+    "TFLiteLanguageDetectionEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
+
 GURL GetTranslateSecurityOrigin() {
   std::string security_origin(kSecurityOrigin);
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -43,6 +46,10 @@ bool IsSubFrameLanguageDetectionEnabled() {
   return base::FeatureList::IsEnabled(kTranslateSubFrames) &&
          base::GetFieldTrialParamByFeatureAsBool(
              kTranslateSubFrames, kDetectLanguageInSubFrames, true);
+}
+
+bool IsTFLiteLanguageDetectionEnabled() {
+  return base::FeatureList::IsEnabled(kTFLiteLanguageDetectionEnabled);
 }
 
 }  // namespace translate

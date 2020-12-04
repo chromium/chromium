@@ -1,0 +1,45 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_TRANSLATE_TRANSLATE_MODEL_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_TRANSLATE_TRANSLATE_MODEL_SERVICE_FACTORY_H_
+
+#include "base/macros.h"
+#include "base/no_destructor.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+
+namespace content {
+class BrowserContext;
+}  // namespace content
+
+class TranslateModelServiceImpl;
+class Profile;
+
+// LazyInstance that owns all TranslateModelService(s) and associates
+// them with Profiles.
+class TranslateModelServiceFactory : public BrowserContextKeyedServiceFactory {
+ public:
+  // Gets the TranslateModelService for the profile.
+  //
+  // Returns null if the features that allow for this to provide useful
+  // information are disabled.
+  static TranslateModelServiceImpl* GetForProfile(Profile* profile);
+
+  // Gets the LazyInstance that owns all TranslateModelService(s).
+  static TranslateModelServiceFactory* GetInstance();
+
+ private:
+  friend base::NoDestructor<TranslateModelServiceFactory>;
+
+  TranslateModelServiceFactory();
+  ~TranslateModelServiceFactory() override;
+
+  // BrowserContextKeyedServiceFactory:
+  KeyedService* BuildServiceInstanceFor(
+      content::BrowserContext* context) const override;
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
+};
+
+#endif  //  CHROME_BROWSER_TRANSLATE_TRANSLATE_MODEL_SERVICE_FACTORY_H_
