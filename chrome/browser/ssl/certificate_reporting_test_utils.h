@@ -66,9 +66,9 @@ void SetCertReportingOptIn(Browser* browser, OptIn opt_in);
 // |report_sent_callback| when a report is sent. It also checks that a
 // report is sent or not sent according to |expect_report|.
 std::unique_ptr<SSLCertReporter> CreateMockSSLCertReporter(
-    const base::Callback<
+    base::RepeatingCallback<
         void(const std::string&,
-             const chrome_browser_ssl::CertLoggerRequest_ChromeChannel)>&
+             const chrome_browser_ssl::CertLoggerRequest_ChromeChannel)>
         report_sent_callback,
     ExpectReport expect_report);
 

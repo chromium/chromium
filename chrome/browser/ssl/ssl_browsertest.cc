@@ -242,8 +242,8 @@ class SSLInterstitialTimerObserver {
  public:
   explicit SSLInterstitialTimerObserver(WebContents* web_contents)
       : web_contents_(web_contents), message_loop_runner_(new base::RunLoop) {
-    callback_ = base::Bind(&SSLInterstitialTimerObserver::OnTimerStarted,
-                           base::Unretained(this));
+    callback_ = base::BindRepeating(
+        &SSLInterstitialTimerObserver::OnTimerStarted, base::Unretained(this));
     SSLErrorHandler::SetInterstitialTimerStartedCallbackForTesting(&callback_);
   }
 
@@ -616,9 +616,9 @@ class SSLUITestBase : public InProcessBrowserTest,
 
     std::unique_ptr<SSLCertReporter> ssl_cert_reporter =
         certificate_reporting_test_utils::CreateMockSSLCertReporter(
-            base::Bind(&certificate_reporting_test_utils::
-                           SSLCertReporterCallback::ReportSent,
-                       base::Unretained(&reporter_callback)),
+            base::BindRepeating(&certificate_reporting_test_utils::
+                                    SSLCertReporterCallback::ReportSent,
+                                base::Unretained(&reporter_callback)),
             expect_report);
 
     SSLBlockingPage* interstitial_page =
@@ -687,9 +687,9 @@ class SSLUITestBase : public InProcessBrowserTest,
 
     std::unique_ptr<SSLCertReporter> ssl_cert_reporter =
         certificate_reporting_test_utils::CreateMockSSLCertReporter(
-            base::Bind(&certificate_reporting_test_utils::
-                           SSLCertReporterCallback::ReportSent,
-                       base::Unretained(&reporter_callback)),
+            base::BindRepeating(&certificate_reporting_test_utils::
+                                    SSLCertReporterCallback::ReportSent,
+                                base::Unretained(&reporter_callback)),
             expect_report);
 
     ASSERT_TRUE(
@@ -2441,9 +2441,9 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWithExtendedReporting,
 
   std::unique_ptr<SSLCertReporter> ssl_cert_reporter =
       certificate_reporting_test_utils::CreateMockSSLCertReporter(
-          base::Bind(&certificate_reporting_test_utils::
-                         SSLCertReporterCallback::ReportSent,
-                     base::Unretained(&reporter_callback)),
+          base::BindRepeating(&certificate_reporting_test_utils::
+                                  SSLCertReporterCallback::ReportSent,
+                              base::Unretained(&reporter_callback)),
           certificate_reporting_test_utils::CERT_REPORT_EXPECTED);
 
   SSLBlockingPage* interstitial_page =
@@ -5067,8 +5067,8 @@ IN_PROC_BROWSER_TEST_F(CommonNameMismatchBrowserTest,
   // function does not support https to http redirects.
   // This must be done before ServeFilesFromSourceDirectory(), otherwise the
   // test server will serve files instead of redirecting requests to them.
-  https_server_example_domain.RegisterRequestHandler(
-      base::Bind(&HTTPSToHTTPRedirectHandler, &https_server_example_domain));
+  https_server_example_domain.RegisterRequestHandler(base::BindRepeating(
+      &HTTPSToHTTPRedirectHandler, &https_server_example_domain));
 
   https_server_example_domain.ServeFilesFromSourceDirectory(
       GetChromeTestDataDir());

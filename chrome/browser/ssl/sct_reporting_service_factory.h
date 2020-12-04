@@ -41,8 +41,6 @@ class SCTReportingServiceFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-
-  base::Callback<void()> service_reset_callback_;
 };
 
 #endif  // CHROME_BROWSER_SSL_SCT_REPORTING_SERVICE_FACTORY_H_

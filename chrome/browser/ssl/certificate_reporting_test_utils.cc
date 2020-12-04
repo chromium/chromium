@@ -35,12 +35,12 @@ namespace certificate_reporting_test_utils {
 class MockSSLCertReporter : public SSLCertReporter {
  public:
   MockSSLCertReporter(
-      const base::Callback<
+      base::RepeatingCallback<
           void(const std::string&,
-               const chrome_browser_ssl::CertLoggerRequest_ChromeChannel)>&
+               const chrome_browser_ssl::CertLoggerRequest_ChromeChannel)>
           report_sent_callback,
       ExpectReport expect_report)
-      : report_sent_callback_(report_sent_callback),
+      : report_sent_callback_(std::move(report_sent_callback)),
         expect_report_(expect_report),
         reported_(false) {}
 
@@ -62,7 +62,7 @@ class MockSSLCertReporter : public SSLCertReporter {
   }
 
  private:
-  const base::Callback<void(
+  base::RepeatingCallback<void(
       const std::string&,
       const chrome_browser_ssl::CertLoggerRequest_ChromeChannel)>
       report_sent_callback_;
@@ -104,13 +104,13 @@ void SetCertReportingOptIn(Browser* browser, OptIn opt_in) {
 #endif
 
 std::unique_ptr<SSLCertReporter> CreateMockSSLCertReporter(
-    const base::Callback<
+    base::RepeatingCallback<
         void(const std::string&,
-             const chrome_browser_ssl::CertLoggerRequest_ChromeChannel)>&
+             const chrome_browser_ssl::CertLoggerRequest_ChromeChannel)>
         report_sent_callback,
     ExpectReport expect_report) {
   return std::unique_ptr<SSLCertReporter>(
-      new MockSSLCertReporter(report_sent_callback, expect_report));
+      new MockSSLCertReporter(std::move(report_sent_callback), expect_report));
 }
 
 ExpectReport GetReportExpectedFromFinch() {

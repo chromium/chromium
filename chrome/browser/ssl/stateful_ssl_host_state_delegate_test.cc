@@ -181,8 +181,8 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest, Clear) {
   EXPECT_TRUE(state->HasAllowException(kExampleHost, tab));
 
   // Clear data for kWWWGoogleHost. kExampleHost will not be modified.
-  state->Clear(
-      base::Bind(&CStrStringMatcher, base::Unretained(kWWWGoogleHost)));
+  state->Clear(base::BindRepeating(&CStrStringMatcher,
+                                   base::Unretained(kWWWGoogleHost)));
 
   EXPECT_FALSE(state->HasAllowException(kWWWGoogleHost, tab));
   EXPECT_TRUE(state->HasAllowException(kExampleHost, tab));
@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest, Clear) {
   // Do a full clear, then make sure that both kWWWGoogleHost and kExampleHost,
   // which had a decision made, and kGoogleHost, which was untouched, are now
   // in a denied state.
-  state->Clear(base::Callback<bool(const std::string&)>());
+  state->Clear(base::RepeatingCallback<bool(const std::string&)>());
   EXPECT_FALSE(state->HasAllowException(kWWWGoogleHost, tab));
   EXPECT_EQ(content::SSLHostStateDelegate::DENIED,
             state->QueryPolicy(kWWWGoogleHost, *cert,
