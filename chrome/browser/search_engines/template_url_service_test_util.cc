@@ -8,6 +8,7 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -71,6 +72,10 @@ std::unique_ptr<TemplateURL> CreateTestTemplateURL(
     bool safe_for_autoreplace,
     bool created_by_policy,
     int prepopulate_id) {
+  DCHECK(!base::StartsWith(guid, "key"))
+      << "Don't use test GUIDs with the form \"key1\". Use \"guid1\" instead "
+         "for clarity.";
+
   TemplateURLData data;
   data.SetShortName(base::ASCIIToUTF16("unittest"));
   data.SetKeyword(keyword);
