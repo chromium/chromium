@@ -516,7 +516,7 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, DisableModeset) {
   EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
       std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET));
 
-  EXPECT_EQ(2, fake_drm_->get_commit_count());
+  EXPECT_EQ(1, fake_drm_->get_commit_count());
 }
 
 TEST_P(HardwareDisplayPlaneManagerAtomicTest, CheckPropsAfterModeset) {
