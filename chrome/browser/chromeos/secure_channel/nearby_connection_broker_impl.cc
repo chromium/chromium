@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "chrome/browser/chromeos/secure_channel/nearby_endpoint_finder.h"
+#include "chrome/browser/chromeos/secure_channel/util/histogram_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
 namespace chromeos {
@@ -264,6 +265,8 @@ void NearbyConnectionBrokerImpl::SendMessage(const std::string& message,
                                         BytesPayload::New(message_as_bytes))),
       base::BindOnce(&NearbyConnectionBrokerImpl::OnSendPayloadResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  util::LogMessageAction(util::MessageAction::kMessageSent);
 }
 
 void NearbyConnectionBrokerImpl::OnConnectionInitiated(
@@ -363,6 +366,8 @@ void NearbyConnectionBrokerImpl::OnPayloadReceived(
       payload->content->get_bytes()->bytes;
   NotifyMessageReceived(
       std::string(message_as_bytes.begin(), message_as_bytes.end()));
+
+  util::LogMessageAction(util::MessageAction::kMessageReceived);
 }
 
 std::ostream& operator<<(std::ostream& stream,
