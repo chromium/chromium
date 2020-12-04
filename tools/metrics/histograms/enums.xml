@@ -22773,6 +22773,7 @@ Called by update_document_policy_enum.py.-->
   <int value="807" label="SystemFeaturesDisableMode"/>
   <int value="808" label="IntegratedWebAuthenticationAllowed"/>
   <int value="809" label="ClearBrowsingDataOnExitList"/>
+  <int value="810" label="ProfilePickerOnStartupAvailability"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

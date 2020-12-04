@@ -2685,6 +2685,10 @@ const char kBrowserAddPersonEnabled[] = "profile.add_person_enabled";
 // Whether profile can be used before sign in.
 const char kForceBrowserSignin[] = "profile.force_browser_signin";
 
+// Whether profile picker is enabled, disabled or forced on startup.
+const char kBrowserProfilePickerAvailabilityOnStartup[] =
+    "profile.picker_availability_on_startup";
+
 // Whether to show the profile picker on startup or not.
 const char kBrowserShowProfilePickerOnStartup[] =
     "profile.show_picker_on_startup";

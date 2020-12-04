@@ -37,6 +37,16 @@ class ProfilePicker {
     kMaxValue = kNewSessionOnExistingProcess,
   };
 
+  // Values for the ProfilePickerOnStartupAvailability policy. Should not be
+  // re-numbered. See components/policy/resources/policy_templates.json for
+  // documentation.
+  enum class AvailabilityOnStartup {
+    kEnabled = 0,
+    kDisabled = 1,
+    kForced = 2,
+    kMax = kForced
+  };
+
   // Shows the Profile picker for the given `entry_point` or re-activates an
   // existing one. In the latter case, the displayed page is not updated.
   static void Show(EntryPoint entry_point);

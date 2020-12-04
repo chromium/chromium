@@ -8306,5 +8306,17 @@
         "prefs": { "browser.clear_data.clear_on_exit": { "value": ["browsing_history"]}}
       }
     ]
+  },
+  "ProfilePickerOnStartupAvailability": {
+    "os": ["win", "linux", "mac"],
+    "can_be_recommended": false,
+    "policy_pref_mapping_test": [
+      {
+        "policies": { "ProfilePickerOnStartupAvailability": 2 },
+        "prefs": {
+          "profile.picker_availability_on_startup": { "location": "local_state", "value": 2 }
+        }
+      }
+    ]
   }
 }

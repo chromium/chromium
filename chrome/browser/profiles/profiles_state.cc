@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
@@ -79,6 +80,9 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kForceBrowserSignin, false);
   registry->RegisterBooleanPref(prefs::kBrowserShowProfilePickerOnStartup,
                                 true);
+  registry->RegisterIntegerPref(
+      prefs::kBrowserProfilePickerAvailabilityOnStartup,
+      static_cast<int>(ProfilePicker::AvailabilityOnStartup::kEnabled));
 }
 
 void SetLastUsedProfile(const std::string& profile_dir) {
