@@ -1143,7 +1143,7 @@ TEST_F(TranslateManagerTest, PredefinedTargetLanguage_HonourUserSettings) {
       .WillByDefault(Return(true));
 
   translate_prefs_.BlockLanguage("de");
-  translate_prefs_.WhitelistLanguagePair("fr", "de");
+  translate_prefs_.AddLanguagePairToAlwaysTranslateList("fr", "de");
 
   ASSERT_TRUE(translate_prefs_.IsBlockedLanguage("de"));
   ASSERT_FALSE(translate_prefs_.CanTranslateLanguage(&accept_languages, "de"));

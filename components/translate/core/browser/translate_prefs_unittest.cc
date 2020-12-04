@@ -122,9 +122,9 @@ class TranslatePrefsTest : public testing::Test {
 
   void ExpectBlockedLanguageListContent(
       const std::vector<std::string>& list) const {
-    const base::ListValue* const blacklist =
+    const base::ListValue* const never_prompt_list =
         prefs_.GetList(kTranslateBlockedLanguagesPref);
-    ExpectEqualLanguageLists(*blacklist, list);
+    ExpectEqualLanguageLists(*never_prompt_list, list);
   }
 
   // Returns a vector of language codes from the elements of the given
@@ -922,28 +922,28 @@ TEST_F(TranslatePrefsTest, MoveLanguageDown) {
   ExpectLanguagePrefs("en,it,es,zh,fr");
 }
 
-TEST_F(TranslatePrefsTest, SiteBlacklist) {
-  translate_prefs_->BlacklistSite("a.com");
+TEST_F(TranslatePrefsTest, SiteNeverPromptList) {
+  translate_prefs_->AddSiteToNeverPromptList("a.com");
   base::Time t = base::Time::Now();
   base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-  translate_prefs_->BlacklistSite("b.com");
-  EXPECT_TRUE(translate_prefs_->IsSiteBlacklisted("a.com"));
-  EXPECT_TRUE(translate_prefs_->IsSiteBlacklisted("b.com"));
+  translate_prefs_->AddSiteToNeverPromptList("b.com");
+  EXPECT_TRUE(translate_prefs_->IsSiteOnNeverPromptList("a.com"));
+  EXPECT_TRUE(translate_prefs_->IsSiteOnNeverPromptList("b.com"));
 
   EXPECT_EQ(std::vector<std::string>({"a.com"}),
-            translate_prefs_->GetBlacklistedSitesBetween(base::Time(), t));
+            translate_prefs_->GetNeverPromptSitesBetween(base::Time(), t));
   EXPECT_EQ(std::vector<std::string>({"a.com", "b.com"}),
-            translate_prefs_->GetBlacklistedSitesBetween(base::Time(),
+            translate_prefs_->GetNeverPromptSitesBetween(base::Time(),
                                                          base::Time::Max()));
 
-  translate_prefs_->DeleteBlacklistedSitesBetween(t, base::Time::Max());
-  EXPECT_TRUE(translate_prefs_->IsSiteBlacklisted("a.com"));
-  EXPECT_FALSE(translate_prefs_->IsSiteBlacklisted("b.com"));
+  translate_prefs_->DeleteNeverPromptSitesBetween(t, base::Time::Max());
+  EXPECT_TRUE(translate_prefs_->IsSiteOnNeverPromptList("a.com"));
+  EXPECT_FALSE(translate_prefs_->IsSiteOnNeverPromptList("b.com"));
 
-  translate_prefs_->DeleteBlacklistedSitesBetween(base::Time(),
+  translate_prefs_->DeleteNeverPromptSitesBetween(base::Time(),
                                                   base::Time::Max());
-  EXPECT_FALSE(translate_prefs_->IsSiteBlacklisted("a.com"));
-  EXPECT_FALSE(translate_prefs_->IsSiteBlacklisted("b.com"));
+  EXPECT_FALSE(translate_prefs_->IsSiteOnNeverPromptList("a.com"));
+  EXPECT_FALSE(translate_prefs_->IsSiteOnNeverPromptList("b.com"));
 }
 
 TEST_F(TranslatePrefsTest, DefaultBlockedLanguages) {

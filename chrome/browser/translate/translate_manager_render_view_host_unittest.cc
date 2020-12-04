@@ -1228,7 +1228,7 @@ TEST_F(TranslateManagerRenderViewHostTest, NeverTranslateLanguagePref) {
       translate::TranslatePrefs::kPrefTranslateBlockedLanguages);
   translate_prefs->AddToLanguageList("fr", /*force_blocked=*/true);
   EXPECT_TRUE(translate_prefs->IsBlockedLanguage("fr"));
-  EXPECT_FALSE(translate_prefs->IsSiteBlacklisted(url.host()));
+  EXPECT_FALSE(translate_prefs->IsSiteOnNeverPromptList(url.host()));
   EXPECT_FALSE(translate_prefs->CanTranslateLanguage(accept_languages, "fr"));
 
   EXPECT_TRUE(CloseTranslateInfoBar());
@@ -1239,12 +1239,12 @@ TEST_F(TranslateManagerRenderViewHostTest, NeverTranslateLanguagePref) {
   // There should not be a translate infobar.
   EXPECT_TRUE(GetTranslateInfoBar() == NULL);
 
-  // Remove the language from the blacklist.
+  // Remove the language from the blocklist.
   SetPrefObserverExpectation(
       translate::TranslatePrefs::kPrefTranslateBlockedLanguages);
   translate_prefs->UnblockLanguage("fr");
   EXPECT_FALSE(translate_prefs->IsBlockedLanguage("fr"));
-  EXPECT_FALSE(translate_prefs->IsSiteBlacklisted(url.host()));
+  EXPECT_FALSE(translate_prefs->IsSiteOnNeverPromptList(url.host()));
   EXPECT_TRUE(translate_prefs->CanTranslateLanguage(accept_languages, "fr"));
 
   // Navigate to a page in French.
@@ -1273,19 +1273,18 @@ TEST_F(TranslateManagerRenderViewHostTest, NeverTranslateSitePref) {
   PrefService* prefs = profile->GetPrefs();
   PrefChangeRegistrar registrar;
   registrar.Init(prefs);
-  registrar.Add(
-      translate::TranslatePrefs::kPrefTranslateSiteBlacklistDeprecated,
-      pref_callback_);
+  registrar.Add(translate::TranslatePrefs::kPrefNeverPromptSitesDeprecated,
+                pref_callback_);
   std::unique_ptr<translate::TranslatePrefs> translate_prefs(
       ChromeTranslateClient::CreateTranslatePrefs(prefs));
-  EXPECT_FALSE(translate_prefs->IsSiteBlacklisted(host));
+  EXPECT_FALSE(translate_prefs->IsSiteOnNeverPromptList(host));
   translate::TranslateAcceptLanguages* accept_languages =
       ChromeTranslateClient::GetTranslateAcceptLanguages(profile);
   EXPECT_TRUE(translate_prefs->CanTranslateLanguage(accept_languages, "fr"));
   SetPrefObserverExpectation(
-      translate::TranslatePrefs::kPrefTranslateSiteBlacklistDeprecated);
-  translate_prefs->BlacklistSite(host);
-  EXPECT_TRUE(translate_prefs->IsSiteBlacklisted(host));
+      translate::TranslatePrefs::kPrefNeverPromptSitesDeprecated);
+  translate_prefs->AddSiteToNeverPromptList(host);
+  EXPECT_TRUE(translate_prefs->IsSiteOnNeverPromptList(host));
   EXPECT_TRUE(translate_prefs->CanTranslateLanguage(accept_languages, "fr"));
 
   EXPECT_TRUE(CloseTranslateInfoBar());
@@ -1296,11 +1295,11 @@ TEST_F(TranslateManagerRenderViewHostTest, NeverTranslateSitePref) {
   // There should not be a translate infobar.
   EXPECT_TRUE(GetTranslateInfoBar() == NULL);
 
-  // Remove the site from the blacklist.
+  // Remove the site from the never-prompt list.
   SetPrefObserverExpectation(
-      translate::TranslatePrefs::kPrefTranslateSiteBlacklistDeprecated);
-  translate_prefs->RemoveSiteFromBlacklist(host);
-  EXPECT_FALSE(translate_prefs->IsSiteBlacklisted(host));
+      translate::TranslatePrefs::kPrefNeverPromptSitesDeprecated);
+  translate_prefs->RemoveSiteFromNeverPromptList(host);
+  EXPECT_FALSE(translate_prefs->IsSiteOnNeverPromptList(host));
   EXPECT_TRUE(translate_prefs->CanTranslateLanguage(accept_languages, "fr"));
 
   // Navigate to a page in French.
@@ -1322,13 +1321,13 @@ TEST_F(TranslateManagerRenderViewHostTest, AlwaysTranslateLanguagePref) {
   PrefService* prefs = profile->GetPrefs();
   PrefChangeRegistrar registrar;
   registrar.Init(prefs);
-  registrar.Add(translate::TranslatePrefs::kPrefTranslateWhitelists,
+  registrar.Add(translate::TranslatePrefs::kPrefAlwaysTranslateLists,
                 pref_callback_);
   std::unique_ptr<translate::TranslatePrefs> translate_prefs(
       ChromeTranslateClient::CreateTranslatePrefs(prefs));
   SetPrefObserverExpectation(
-      translate::TranslatePrefs::kPrefTranslateWhitelists);
-  translate_prefs->WhitelistLanguagePair("fr", "en");
+      translate::TranslatePrefs::kPrefAlwaysTranslateLists);
+  translate_prefs->AddLanguagePairToAlwaysTranslateList("fr", "en");
 
   // Load a page in French.
   SimulateNavigation(GURL("http://www.google.fr"), "fr", true);
@@ -1365,8 +1364,8 @@ TEST_F(TranslateManagerRenderViewHostTest, AlwaysTranslateLanguagePref) {
   // Now revert the always translate pref and make sure we go back to expected
   // behavior, which is show a "before translate" infobar.
   SetPrefObserverExpectation(
-      translate::TranslatePrefs::kPrefTranslateWhitelists);
-  translate_prefs->RemoveLanguagePairFromWhitelist("fr", "en");
+      translate::TranslatePrefs::kPrefAlwaysTranslateLists);
+  translate_prefs->RemoveLanguagePairFromAlwaysTranslateList("fr", "en");
   SimulateNavigation(GURL("http://www.google.fr"), "fr", true);
   EXPECT_FALSE(GetTranslateMessage(&original_lang, &target_lang));
   infobar = GetTranslateInfoBar();
@@ -1381,16 +1380,16 @@ TEST_F(TranslateManagerRenderViewHostTest, ContextMenu) {
   if (TranslateService::IsTranslateBubbleEnabled())
     return;
 
-  // Blacklist www.google.fr and French for translation.
+  // Never prompt www.google.fr and French for translation.
   GURL url("http://www.google.fr");
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   std::unique_ptr<translate::TranslatePrefs> translate_prefs(
       ChromeTranslateClient::CreateTranslatePrefs(profile->GetPrefs()));
   translate_prefs->AddToLanguageList("fr", /*force_blocked=*/true);
-  translate_prefs->BlacklistSite(url.host());
+  translate_prefs->AddSiteToNeverPromptList(url.host());
   EXPECT_TRUE(translate_prefs->IsBlockedLanguage("fr"));
-  EXPECT_TRUE(translate_prefs->IsSiteBlacklisted(url.host()));
+  EXPECT_TRUE(translate_prefs->IsSiteOnNeverPromptList(url.host()));
 
   // Simulate navigating to a page in French. The translate menu should show but
   // should only be enabled when the page language has been received.
@@ -1421,9 +1420,9 @@ TEST_F(TranslateManagerRenderViewHostTest, ContextMenu) {
   EXPECT_EQ("fr", original_lang);
   EXPECT_EQ("en", target_lang);
 
-  // This should also have reverted the blacklisting of this site and language.
+  // This should also have reverted the blocklisting of this site and language.
   EXPECT_FALSE(translate_prefs->IsBlockedLanguage("fr"));
-  EXPECT_FALSE(translate_prefs->IsSiteBlacklisted(url.host()));
+  EXPECT_FALSE(translate_prefs->IsSiteOnNeverPromptList(url.host()));
 
   // Let's simulate the page being translated.
   SimulateOnPageTranslated("fr", "en");
@@ -1523,7 +1522,7 @@ TEST_F(TranslateManagerRenderViewHostTest, BeforeTranslateExtraButtons) {
   }
   // Simulate the user pressing "Always translate French".
   infobar->AlwaysTranslatePageLanguage();
-  EXPECT_TRUE(translate_prefs->IsLanguagePairWhitelisted("fr", "en"));
+  EXPECT_TRUE(translate_prefs->IsLanguagePairOnAlwaysTranslateList("fr", "en"));
   // Simulate the translate script being retrieved (it only needs to be done
   // once in the test as it is cached).
   SimulateTranslateScriptURLFetch(true);

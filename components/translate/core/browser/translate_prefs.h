@@ -128,11 +128,11 @@ class TranslatePrefs {
  public:
   static const char kPrefLanguageProfile[];
   static const char kPrefForceTriggerTranslateCount[];
-  // TODO(crbug.com/524927): Remove kPrefTranslateSiteBlacklist after
+  // TODO(crbug.com/524927): Remove kPrefNeverPromptSites after
   // 3 milestones (M74).
-  static const char kPrefTranslateSiteBlacklistDeprecated[];
-  static const char kPrefTranslateSiteBlacklistWithTime[];
-  static const char kPrefTranslateWhitelists[];
+  static const char kPrefNeverPromptSitesDeprecated[];
+  static const char kPrefNeverPromptSitesWithTime[];
+  static const char kPrefAlwaysTranslateLists[];
   static const char kPrefTranslateDeniedCount[];
   static const char kPrefTranslateIgnoredCount[];
   static const char kPrefTranslateAcceptedCount[];
@@ -179,8 +179,9 @@ class TranslatePrefs {
   void SetCountry(const std::string& country);
   std::string GetCountry() const;
 
-  // Resets the blocked languages list, the sites blacklist, the languages
-  // whitelist, the accepted/denied counts, and whether Translate is enabled.
+  // Resets the blocked languages list, the never-translate site list, the
+  // always-translate languages list, the accepted/denied counts, and whether
+  // Translate is enabled.
   void ResetToDefaults();
 
   bool IsBlockedLanguage(base::StringPiece original_language) const;
@@ -226,25 +227,26 @@ class TranslatePrefs {
       bool translate_allowed,
       std::vector<TranslateLanguageInfo>* languages);
 
-  bool IsSiteBlacklisted(base::StringPiece site) const;
-  void BlacklistSite(base::StringPiece site);
-  void RemoveSiteFromBlacklist(base::StringPiece site);
+  bool IsSiteOnNeverPromptList(base::StringPiece site) const;
+  void AddSiteToNeverPromptList(base::StringPiece site);
+  void RemoveSiteFromNeverPromptList(base::StringPiece site);
 
-  std::vector<std::string> GetBlacklistedSitesBetween(base::Time begin,
+  std::vector<std::string> GetNeverPromptSitesBetween(base::Time begin,
                                                       base::Time end) const;
-  void DeleteBlacklistedSitesBetween(base::Time begin, base::Time end);
+  void DeleteNeverPromptSitesBetween(base::Time begin, base::Time end);
 
-  bool HasWhitelistedLanguagePairs() const;
+  bool HasLanguagePairsToAlwaysTranslate() const;
 
-  bool IsLanguagePairWhitelisted(base::StringPiece original_language,
-                                 base::StringPiece target_language);
-  void WhitelistLanguagePair(base::StringPiece original_language,
-                             base::StringPiece target_language);
-  void RemoveLanguagePairFromWhitelist(base::StringPiece original_language,
-                                       base::StringPiece target_language);
+  bool IsLanguagePairOnAlwaysTranslateList(base::StringPiece original_language,
+                                           base::StringPiece target_language);
+  void AddLanguagePairToAlwaysTranslateList(base::StringPiece original_language,
+                                            base::StringPiece target_language);
+  void RemoveLanguagePairFromAlwaysTranslateList(
+      base::StringPiece original_language,
+      base::StringPiece target_language);
 
   // These methods are used to track how many times the user has denied the
-  // translation for a specific language. (So we can present a UI to black-list
+  // translation for a specific language. (So we can present a UI to blocklist
   // that language if the user keeps denying translations).
   int GetTranslationDeniedCount(base::StringPiece language) const;
   void IncrementTranslationDeniedCount(base::StringPiece language);
@@ -257,7 +259,7 @@ class TranslatePrefs {
   void ResetTranslationIgnoredCount(base::StringPiece language);
 
   // These methods are used to track how many times the user has accepted the
-  // translation for a specific language. (So we can present a UI to white-list
+  // translation for a specific language. (So we can present a UI to allowlist
   // that language if the user keeps accepting translations).
   int GetTranslationAcceptedCount(base::StringPiece language) const;
   void IncrementTranslationAcceptedCount(base::StringPiece language);
@@ -322,9 +324,9 @@ class TranslatePrefs {
   // signals that the backoff should not happen for that user.
   void ReportAcceptedAfterForceTriggerOnEnglishPages();
 
-  // Migrate the sites blacklist from a list to a dictionary that maps sites
-  // to a timestamp of the creation of this entry.
-  void MigrateSitesBlacklist();
+  // Migrate the sites to never translate from a list to a dictionary that maps
+  // sites to a timestamp of the creation of this entry.
+  void MigrateNeverPromptSites();
 
   // Prevent empty blocked languages by resetting them to the default value.
   // (crbug.com/902354)
@@ -355,13 +357,15 @@ class TranslatePrefs {
   void UpdateLanguageList(const std::vector<std::string>& languages);
 
   void ResetBlockedLanguagesToDefault();
-  void ClearBlacklistedSites();
-  void ClearWhitelistedLanguagePairs();
+  void ClearNeverPromptSiteList();
+  void ClearAlwaysTranslateLanguagePairs();
 
   // |pref_id| is the name of a list pref.
-  bool IsValueBlacklisted(const char* pref_id, base::StringPiece value) const;
-  void BlacklistValue(const char* pref_id, base::StringPiece value);
-  void RemoveValueFromBlacklist(const char* pref_id, base::StringPiece value);
+  bool IsValueOnNeverPromptList(const char* pref_id,
+                                base::StringPiece value) const;
+  void AddValueToNeverPromptList(const char* pref_id, base::StringPiece value);
+  void RemoveValueFromNeverPromptList(const char* pref_id,
+                                      base::StringPiece value);
   size_t GetListSize(const char* pref_id) const;
 
   bool IsDictionaryEmpty(const char* pref_id) const;

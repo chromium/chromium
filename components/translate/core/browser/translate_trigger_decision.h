@@ -48,7 +48,7 @@ struct TranslateTriggerDecision {
   // Returns true iff:
   // 1. Showing the UI is disallowed (otherwise it would be chosen over showing
   //    the UI).
-  // 2. It's possible to show the UI (language/site not blacklisted, connected
+  // 2. It's possible to show the UI (language/site not blocklisted, connected
   //    to the internet, etc)
   // 3. Ranker isn't requesting that the UI be suppressed.
   bool ShouldShowUI() const;
@@ -62,7 +62,7 @@ struct TranslateTriggerDecision {
 
  private:
   // These fields are private because they should only be set one way. Filters
-  // "blacklist" outcomes, so for example once |can_show_ui_| is set to false,
+  // "blocklist" outcomes, so for example once |can_show_ui_| is set to false,
   // it shouldn't be reset to true.
   bool can_auto_translate_ = true;
   bool can_show_ui_ = true;

@@ -104,7 +104,7 @@ void SiteSettingsCounter::Count() {
 
   std::vector<std::string> blacklisted_sites =
       ChromeTranslateClient::CreateTranslatePrefs(pref_service_)
-          ->GetBlacklistedSitesBetween(period_start, period_end);
+          ->GetNeverPromptSitesBetween(period_start, period_end);
   for (const auto& site : blacklisted_sites)
     hosts.insert(site);
 

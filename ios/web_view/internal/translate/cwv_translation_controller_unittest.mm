@@ -99,11 +99,11 @@ class CWVTranslationControllerTest : public TestWithLocaleAndResources {
     pref_service_.registry()->RegisterBooleanPref(prefs::kOfferTranslateEnabled,
                                                   true);
     pref_service_.registry()->RegisterListPref(
-        translate::TranslatePrefs::kPrefTranslateSiteBlacklistDeprecated);
+        translate::TranslatePrefs::kPrefNeverPromptSitesDeprecated);
     pref_service_.registry()->RegisterDictionaryPref(
-        translate::TranslatePrefs::kPrefTranslateSiteBlacklistWithTime);
+        translate::TranslatePrefs::kPrefNeverPromptSitesWithTime);
     pref_service_.registry()->RegisterDictionaryPref(
-        translate::TranslatePrefs::kPrefTranslateWhitelists);
+        translate::TranslatePrefs::kPrefAlwaysTranslateLists);
     pref_service_.registry()->RegisterDictionaryPref(
         translate::TranslatePrefs::kPrefTranslateDeniedCount);
     pref_service_.registry()->RegisterDictionaryPref(
@@ -254,13 +254,14 @@ TEST_F(CWVTranslationControllerTest, PageHostPolicy) {
   CWVTranslationPolicy* policy = [CWVTranslationPolicy translationPolicyNever];
   [translation_controller_ setTranslationPolicy:policy
                                     forPageHost:kTestPageHost];
-  EXPECT_TRUE(translate_prefs_->IsSiteBlacklisted(
+  EXPECT_TRUE(translate_prefs_->IsSiteOnNeverPromptList(
       base::SysNSStringToUTF8(kTestPageHost)));
 }
 
 // Tests CWVTranslationController properly reads page host policies.
 TEST_F(CWVTranslationControllerTest, ReadPageHostPolicy) {
-  translate_prefs_->BlacklistSite(base::SysNSStringToUTF8(kTestPageHost));
+  translate_prefs_->AddSiteToNeverPromptList(
+      base::SysNSStringToUTF8(kTestPageHost));
   CWVTranslationPolicy* policy =
       [translation_controller_ translationPolicyForPageHost:kTestPageHost];
   EXPECT_EQ(CWVTranslationPolicyNever, policy.type);

@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(TranslateLanguageBrowserTestWithTranslateRecentTarget,
   InitInIncognitoMode(false);
 
   // Before browsing: set auto translate from French to Chinese.
-  GetTranslatePrefs()->WhitelistLanguagePair("fr", "zh-CN");
+  GetTranslatePrefs()->AddLanguagePairToAlwaysTranslateList("fr", "zh-CN");
   EXPECT_EQ("", GetTranslatePrefs()->GetRecentTargetLanguage());
 
   // Load an Italian page and translate to Spanish. After this, Spanish should

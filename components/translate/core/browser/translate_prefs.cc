@@ -83,11 +83,11 @@ void PurgeUnsupportedLanguagesInLanguageFamily(base::StringPiece language,
 
 const char kForceTriggerTranslateCount[] =
     "translate_force_trigger_on_english_count_for_backoff_1";
-const char TranslatePrefs::kPrefTranslateSiteBlacklistDeprecated[] =
+const char TranslatePrefs::kPrefNeverPromptSitesDeprecated[] =
     "translate_site_blacklist";
-const char TranslatePrefs::kPrefTranslateSiteBlacklistWithTime[] =
+const char TranslatePrefs::kPrefNeverPromptSitesWithTime[] =
     "translate_site_blacklist_with_time";
-const char TranslatePrefs::kPrefTranslateWhitelists[] = "translate_whitelists";
+const char TranslatePrefs::kPrefAlwaysTranslateLists[] = "translate_whitelists";
 const char TranslatePrefs::kPrefTranslateDeniedCount[] =
     "translate_denied_count_for_language";
 const char TranslatePrefs::kPrefTranslateIgnoredCount[] =
@@ -201,7 +201,7 @@ TranslatePrefs::TranslatePrefs(PrefService* user_prefs,
 #else
   DCHECK(!preferred_languages_pref);
 #endif
-  MigrateSitesBlacklist();
+  MigrateNeverPromptSites();
   ResetEmptyBlockedLanguagesToDefaults();
 }
 
@@ -230,8 +230,8 @@ std::string TranslatePrefs::GetCountry() const {
 
 void TranslatePrefs::ResetToDefaults() {
   ResetBlockedLanguagesToDefault();
-  ClearBlacklistedSites();
-  ClearWhitelistedLanguagePairs();
+  ClearNeverPromptSiteList();
+  ClearAlwaysTranslateLanguagePairs();
   prefs_->ClearPref(kPrefTranslateDeniedCount);
   prefs_->ClearPref(kPrefTranslateIgnoredCount);
   prefs_->ClearPref(kPrefTranslateAcceptedCount);
@@ -474,32 +474,31 @@ void TranslatePrefs::UnblockLanguage(base::StringPiece input_language) {
   language_prefs_->ClearFluent(input_language);
 }
 
-bool TranslatePrefs::IsSiteBlacklisted(base::StringPiece site) const {
-  return prefs_->GetDictionary(kPrefTranslateSiteBlacklistWithTime)
-      ->FindKey(site);
+bool TranslatePrefs::IsSiteOnNeverPromptList(base::StringPiece site) const {
+  return prefs_->GetDictionary(kPrefNeverPromptSitesWithTime)->FindKey(site);
 }
 
-void TranslatePrefs::BlacklistSite(base::StringPiece site) {
+void TranslatePrefs::AddSiteToNeverPromptList(base::StringPiece site) {
   DCHECK(!site.empty());
-  BlacklistValue(kPrefTranslateSiteBlacklistDeprecated, site);
-  DictionaryPrefUpdate update(prefs_, kPrefTranslateSiteBlacklistWithTime);
+  AddValueToNeverPromptList(kPrefNeverPromptSitesDeprecated, site);
+  DictionaryPrefUpdate update(prefs_, kPrefNeverPromptSitesWithTime);
   base::DictionaryValue* dict = update.Get();
   dict->SetKey(site, util::TimeToValue(base::Time::Now()));
 }
 
-void TranslatePrefs::RemoveSiteFromBlacklist(base::StringPiece site) {
+void TranslatePrefs::RemoveSiteFromNeverPromptList(base::StringPiece site) {
   DCHECK(!site.empty());
-  RemoveValueFromBlacklist(kPrefTranslateSiteBlacklistDeprecated, site);
-  DictionaryPrefUpdate update(prefs_, kPrefTranslateSiteBlacklistWithTime);
+  RemoveValueFromNeverPromptList(kPrefNeverPromptSitesDeprecated, site);
+  DictionaryPrefUpdate update(prefs_, kPrefNeverPromptSitesWithTime);
   base::DictionaryValue* dict = update.Get();
   dict->RemoveKey(site);
 }
 
-std::vector<std::string> TranslatePrefs::GetBlacklistedSitesBetween(
+std::vector<std::string> TranslatePrefs::GetNeverPromptSitesBetween(
     base::Time begin,
     base::Time end) const {
   std::vector<std::string> result;
-  auto* dict = prefs_->GetDictionary(kPrefTranslateSiteBlacklistWithTime);
+  auto* dict = prefs_->GetDictionary(kPrefNeverPromptSitesWithTime);
   for (const auto& entry : dict->DictItems()) {
     base::Optional<base::Time> time = util::ValueToTime(entry.second);
     if (!time) {
@@ -512,17 +511,17 @@ std::vector<std::string> TranslatePrefs::GetBlacklistedSitesBetween(
   return result;
 }
 
-void TranslatePrefs::DeleteBlacklistedSitesBetween(base::Time begin,
+void TranslatePrefs::DeleteNeverPromptSitesBetween(base::Time begin,
                                                    base::Time end) {
-  for (auto& site : GetBlacklistedSitesBetween(begin, end))
-    RemoveSiteFromBlacklist(site);
+  for (auto& site : GetNeverPromptSitesBetween(begin, end))
+    RemoveSiteFromNeverPromptList(site);
 }
 
-bool TranslatePrefs::IsLanguagePairWhitelisted(
+bool TranslatePrefs::IsLanguagePairOnAlwaysTranslateList(
     base::StringPiece original_language,
     base::StringPiece target_language) {
   const base::DictionaryValue* dict =
-      prefs_->GetDictionary(kPrefTranslateWhitelists);
+      prefs_->GetDictionary(kPrefAlwaysTranslateLists);
   if (dict) {
     const std::string* auto_target_lang =
         dict->FindStringKey(original_language);
@@ -532,9 +531,10 @@ bool TranslatePrefs::IsLanguagePairWhitelisted(
   return false;
 }
 
-void TranslatePrefs::WhitelistLanguagePair(base::StringPiece original_language,
-                                           base::StringPiece target_language) {
-  DictionaryPrefUpdate update(prefs_, kPrefTranslateWhitelists);
+void TranslatePrefs::AddLanguagePairToAlwaysTranslateList(
+    base::StringPiece original_language,
+    base::StringPiece target_language) {
+  DictionaryPrefUpdate update(prefs_, kPrefAlwaysTranslateLists);
   base::DictionaryValue* dict = update.Get();
   if (!dict) {
     NOTREACHED() << "Unregistered translate whitelist pref";
@@ -543,10 +543,10 @@ void TranslatePrefs::WhitelistLanguagePair(base::StringPiece original_language,
   dict->SetStringKey(original_language, target_language);
 }
 
-void TranslatePrefs::RemoveLanguagePairFromWhitelist(
+void TranslatePrefs::RemoveLanguagePairFromAlwaysTranslateList(
     base::StringPiece original_language,
     base::StringPiece target_language) {
-  DictionaryPrefUpdate update(prefs_, kPrefTranslateWhitelists);
+  DictionaryPrefUpdate update(prefs_, kPrefAlwaysTranslateLists);
   base::DictionaryValue* dict = update.Get();
   if (!dict) {
     NOTREACHED() << "Unregistered translate whitelist pref";
@@ -559,17 +559,17 @@ void TranslatePrefs::ResetBlockedLanguagesToDefault() {
   language_prefs_->ResetFluentLanguagesToDefaults();
 }
 
-void TranslatePrefs::ClearBlacklistedSites() {
-  prefs_->ClearPref(kPrefTranslateSiteBlacklistDeprecated);
-  prefs_->ClearPref(kPrefTranslateSiteBlacklistWithTime);
+void TranslatePrefs::ClearNeverPromptSiteList() {
+  prefs_->ClearPref(kPrefNeverPromptSitesDeprecated);
+  prefs_->ClearPref(kPrefNeverPromptSitesWithTime);
 }
 
-bool TranslatePrefs::HasWhitelistedLanguagePairs() const {
-  return !IsDictionaryEmpty(kPrefTranslateWhitelists);
+bool TranslatePrefs::HasLanguagePairsToAlwaysTranslate() const {
+  return !IsDictionaryEmpty(kPrefAlwaysTranslateLists);
 }
 
-void TranslatePrefs::ClearWhitelistedLanguagePairs() {
-  prefs_->ClearPref(kPrefTranslateWhitelists);
+void TranslatePrefs::ClearAlwaysTranslateLanguagePairs() {
+  prefs_->ClearPref(kPrefAlwaysTranslateLists);
 }
 
 int TranslatePrefs::GetTranslationDeniedCount(
@@ -762,7 +762,7 @@ void TranslatePrefs::UpdateLanguageList(
 bool TranslatePrefs::CanTranslateLanguage(
     TranslateAcceptLanguages* accept_languages,
     base::StringPiece language) {
-  // Don't translate any user black-listed languages.
+  // Don't translate any user blocklisted languages.
   if (!IsBlockedLanguage(language))
     return true;
 
@@ -789,7 +789,7 @@ bool TranslatePrefs::CanTranslateLanguage(
 bool TranslatePrefs::ShouldAutoTranslate(base::StringPiece original_language,
                                          std::string* target_language) {
   const base::DictionaryValue* dict =
-      prefs_->GetDictionary(kPrefTranslateWhitelists);
+      prefs_->GetDictionary(kPrefAlwaysTranslateLists);
   if (dict && dict->GetString(original_language, target_language)) {
     DCHECK(!target_language->empty());
     return !target_language->empty();
@@ -829,13 +829,13 @@ void TranslatePrefs::ReportAcceptedAfterForceTriggerOnEnglishPages() {
 // static
 void TranslatePrefs::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterListPref(kPrefTranslateSiteBlacklistDeprecated,
+  registry->RegisterListPref(kPrefNeverPromptSitesDeprecated,
                              user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDictionaryPref(
-      kPrefTranslateSiteBlacklistWithTime,
+      kPrefNeverPromptSitesWithTime,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDictionaryPref(
-      kPrefTranslateWhitelists,
+      kPrefAlwaysTranslateLists,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDictionaryPref(
       kPrefTranslateDeniedCount,
@@ -872,22 +872,22 @@ void TranslatePrefs::RegisterProfilePrefs(
 #endif
 }
 
-void TranslatePrefs::MigrateSitesBlacklist() {
+void TranslatePrefs::MigrateNeverPromptSites() {
   // Migration should only be necessary once but there could still be old
   // Chrome instances that sync the old preference, so do it once per
   // startup.
   static bool migrated = false;
   if (migrated)
     return;
-  DictionaryPrefUpdate blacklist_update(prefs_,
-                                        kPrefTranslateSiteBlacklistWithTime);
-  base::DictionaryValue* blacklist = blacklist_update.Get();
-  if (blacklist) {
+  DictionaryPrefUpdate never_prompt_list_update(prefs_,
+                                                kPrefNeverPromptSitesWithTime);
+  base::DictionaryValue* never_prompt_list = never_prompt_list_update.Get();
+  if (never_prompt_list) {
     const base::ListValue* list =
-        prefs_->GetList(kPrefTranslateSiteBlacklistDeprecated);
+        prefs_->GetList(kPrefNeverPromptSitesDeprecated);
     for (auto& site : *list) {
-      if (!blacklist->HasKey(site.GetString())) {
-        blacklist->SetKey(site.GetString(), base::Value(0));
+      if (!never_prompt_list->HasKey(site.GetString())) {
+        never_prompt_list->SetKey(site.GetString(), base::Value(0));
       }
     }
   }
@@ -898,44 +898,44 @@ void TranslatePrefs::ResetEmptyBlockedLanguagesToDefaults() {
   language_prefs_->ResetEmptyFluentLanguagesToDefault();
 }
 
-bool TranslatePrefs::IsValueBlacklisted(const char* pref_id,
-                                        base::StringPiece value) const {
-  const base::ListValue* blacklist = prefs_->GetList(pref_id);
-  if (!blacklist)
+bool TranslatePrefs::IsValueOnNeverPromptList(const char* pref_id,
+                                              base::StringPiece value) const {
+  const base::ListValue* never_prompt_list = prefs_->GetList(pref_id);
+  if (!never_prompt_list)
     return false;
-  for (const base::Value& value_in_list : blacklist->GetList()) {
+  for (const base::Value& value_in_list : never_prompt_list->GetList()) {
     if (value_in_list.is_string() && value_in_list.GetString() == value)
       return true;
   }
   return false;
 }
 
-void TranslatePrefs::BlacklistValue(const char* pref_id,
-                                    base::StringPiece value) {
+void TranslatePrefs::AddValueToNeverPromptList(const char* pref_id,
+                                               base::StringPiece value) {
   ListPrefUpdate update(prefs_, pref_id);
-  base::ListValue* blacklist = update.Get();
-  if (!blacklist) {
-    NOTREACHED() << "Unregistered translate blacklist pref";
+  base::ListValue* never_prompt_list = update.Get();
+  if (!never_prompt_list) {
+    NOTREACHED() << "Unregistered never-translate pref";
     return;
   }
 
-  if (IsValueBlacklisted(pref_id, value)) {
+  if (IsValueOnNeverPromptList(pref_id, value)) {
     return;
   }
-  blacklist->AppendString(value);
+  never_prompt_list->AppendString(value);
 }
 
-void TranslatePrefs::RemoveValueFromBlacklist(const char* pref_id,
-                                              base::StringPiece value) {
+void TranslatePrefs::RemoveValueFromNeverPromptList(const char* pref_id,
+                                                    base::StringPiece value) {
   ListPrefUpdate update(prefs_, pref_id);
-  base::ListValue* blacklist = update.Get();
-  if (!blacklist) {
-    NOTREACHED() << "Unregistered translate blacklist pref";
+  base::ListValue* never_prompt_list = update.Get();
+  if (!never_prompt_list) {
+    NOTREACHED() << "Unregistered never-translate pref";
     return;
   }
 
-  auto list_view = blacklist->GetList();
-  blacklist->EraseListIter(std::find_if(
+  auto list_view = never_prompt_list->GetList();
+  never_prompt_list->EraseListIter(std::find_if(
       list_view.begin(), list_view.end(),
       [value](const base::Value& value_in_list) {
         return value_in_list.is_string() && value_in_list.GetString() == value;
@@ -943,8 +943,8 @@ void TranslatePrefs::RemoveValueFromBlacklist(const char* pref_id,
 }
 
 size_t TranslatePrefs::GetListSize(const char* pref_id) const {
-  const base::ListValue* blacklist = prefs_->GetList(pref_id);
-  return blacklist == nullptr ? 0 : blacklist->GetList().size();
+  const base::ListValue* never_prompt_list = prefs_->GetList(pref_id);
+  return never_prompt_list == nullptr ? 0 : never_prompt_list->GetList().size();
 }
 
 bool TranslatePrefs::IsDictionaryEmpty(const char* pref_id) const {

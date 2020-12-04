@@ -314,9 +314,10 @@ void TranslateUIDelegate::SetLanguageBlocked(bool value) {
   UMA_HISTOGRAM_BOOLEAN(kNeverTranslateLang, value);
 }
 
+// TODO(crbug.com/1028966): Update this name to use inclusive language.
 bool TranslateUIDelegate::IsSiteBlacklisted() const {
   std::string host = GetPageHost();
-  return !host.empty() && prefs_->IsSiteBlacklisted(host);
+  return !host.empty() && prefs_->IsSiteOnNeverPromptList(host);
 }
 
 bool TranslateUIDelegate::CanBlacklistSite() const {
@@ -329,7 +330,7 @@ void TranslateUIDelegate::SetSiteBlacklist(bool value) {
     return;
 
   if (value) {
-    prefs_->BlacklistSite(host);
+    prefs_->AddSiteToNeverPromptList(host);
     if (translate_manager_) {
       // Translation has been blocked for this site. Capture that in the metrics
       // Note that we don't capture a language being unblocked... which is not
@@ -338,15 +339,15 @@ void TranslateUIDelegate::SetSiteBlacklist(bool value) {
           metrics::TranslateEventProto::USER_NEVER_TRANSLATE_SITE);
     }
   } else {
-    prefs_->RemoveSiteFromBlacklist(host);
+    prefs_->RemoveSiteFromNeverPromptList(host);
   }
 
   UMA_HISTOGRAM_BOOLEAN(kNeverTranslateSite, value);
 }
 
 bool TranslateUIDelegate::ShouldAlwaysTranslate() const {
-  return prefs_->IsLanguagePairWhitelisted(GetOriginalLanguageCode(),
-                                           GetTargetLanguageCode());
+  return prefs_->IsLanguagePairOnAlwaysTranslateList(GetOriginalLanguageCode(),
+                                                     GetTargetLanguageCode());
 }
 
 bool TranslateUIDelegate::ShouldAlwaysTranslateBeCheckedByDefault() const {
@@ -369,7 +370,7 @@ void TranslateUIDelegate::SetAlwaysTranslate(bool value) {
   const std::string& original_lang = GetOriginalLanguageCode();
   const std::string& target_lang = GetTargetLanguageCode();
   if (value) {
-    prefs_->WhitelistLanguagePair(original_lang, target_lang);
+    prefs_->AddLanguagePairToAlwaysTranslateList(original_lang, target_lang);
     // A default translation mapping has been accepted for this language.
     // Capture that in the metrics. Note that we don't capture a language being
     // unmapped... which is not the same as accepting some other translation
@@ -379,7 +380,8 @@ void TranslateUIDelegate::SetAlwaysTranslate(bool value) {
           metrics::TranslateEventProto::USER_ALWAYS_TRANSLATE_LANGUAGE);
     }
   } else {
-    prefs_->RemoveLanguagePairFromWhitelist(original_lang, target_lang);
+    prefs_->RemoveLanguagePairFromAlwaysTranslateList(original_lang,
+                                                      target_lang);
   }
 
   UMA_HISTOGRAM_BOOLEAN(kAlwaysTranslateLang, value);

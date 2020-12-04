@@ -971,7 +971,7 @@ void TranslateManager::FilterForUserPrefs(
     const std::string& page_language_code) {
   TranslateAcceptLanguages* accept_languages =
       translate_client_->GetTranslateAcceptLanguages();
-  // Don't translate any user black-listed languages.
+  // Don't translate any user blocklisted languages.
   if (!translate_prefs->CanTranslateLanguage(accept_languages,
                                              page_language_code)) {
     decision->SetIsInLanguageBlocklist();
@@ -1006,9 +1006,9 @@ void TranslateManager::FilterForUserPrefs(
         TriggerDecision::kDisabledNeverTranslateLanguage);
   }
 
-  // Don't translate any user black-listed URLs.
+  // Don't translate any user blocklisted URLs.
   const GURL& page_url = translate_driver_->GetVisibleURL();
-  if (translate_prefs->IsSiteBlacklisted(page_url.HostNoBrackets())) {
+  if (translate_prefs->IsSiteOnNeverPromptList(page_url.HostNoBrackets())) {
     decision->SetIsInSiteBlocklist();
 
     decision->PreventAutoTranslate();

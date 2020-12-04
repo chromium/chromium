@@ -2388,23 +2388,23 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveZoomLevel) {
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveTranslateBlocklist) {
   auto translate_prefs =
       ChromeTranslateClient::CreateTranslatePrefs(GetProfile()->GetPrefs());
-  translate_prefs->BlacklistSite("google.com");
+  translate_prefs->AddSiteToNeverPromptList("google.com");
   base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
   base::Time t = base::Time::Now();
-  translate_prefs->BlacklistSite("maps.google.com");
+  translate_prefs->AddSiteToNeverPromptList("maps.google.com");
 
-  EXPECT_TRUE(translate_prefs->IsSiteBlacklisted("google.com"));
-  EXPECT_TRUE(translate_prefs->IsSiteBlacklisted("maps.google.com"));
+  EXPECT_TRUE(translate_prefs->IsSiteOnNeverPromptList("google.com"));
+  EXPECT_TRUE(translate_prefs->IsSiteOnNeverPromptList("maps.google.com"));
 
   BlockUntilBrowsingDataRemoved(t, base::Time::Max(),
                                 constants::DATA_TYPE_CONTENT_SETTINGS, false);
-  EXPECT_TRUE(translate_prefs->IsSiteBlacklisted("google.com"));
-  EXPECT_FALSE(translate_prefs->IsSiteBlacklisted("maps.google.com"));
+  EXPECT_TRUE(translate_prefs->IsSiteOnNeverPromptList("google.com"));
+  EXPECT_FALSE(translate_prefs->IsSiteOnNeverPromptList("maps.google.com"));
 
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_CONTENT_SETTINGS, false);
-  EXPECT_FALSE(translate_prefs->IsSiteBlacklisted("google.com"));
-  EXPECT_FALSE(translate_prefs->IsSiteBlacklisted("maps.google.com"));
+  EXPECT_FALSE(translate_prefs->IsSiteOnNeverPromptList("google.com"));
+  EXPECT_FALSE(translate_prefs->IsSiteOnNeverPromptList("maps.google.com"));
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDurablePermission) {

@@ -402,9 +402,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, PageLanguageDetection) {
 }
 
 // Tests that the language detection / HTML attribute override works correctly.
-// For languages in the whitelist, the detected language should override the
-// HTML attribute. For all other languages, the HTML attribute should be used.
-// Flaky on all platforms. https://crbug.com/1148703
+// For languages in the always-translate list, the detected language should
+// override the HTML attribute. For all other languages, the HTML attribute
+// should be used. Flaky on all platforms. https://crbug.com/1148703
 IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
                        DISABLED_PageLanguageDetectionConflict) {
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
@@ -791,8 +791,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
       ->SetIgnoreMissingKeyForTesting(true);
 
   // Before browsing: set auto translate from French to Chinese.
-  GetChromeTranslateClient()->GetTranslatePrefs()->WhitelistLanguagePair(
-      "fr", "zh-CN");
+  GetChromeTranslateClient()
+      ->GetTranslatePrefs()
+      ->AddLanguagePairToAlwaysTranslateList("fr", "zh-CN");
 
   ClickFrenchHrefTranslateLinkOnGooglePage();
 
@@ -846,7 +847,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateSiteBlocked) {
   GetChromeTranslateClient()
       ->GetTranslateManager()
       ->SetIgnoreMissingKeyForTesting(true);
-  GetChromeTranslateClient()->GetTranslatePrefs()->BlacklistSite(
+  GetChromeTranslateClient()->GetTranslatePrefs()->AddSiteToNeverPromptList(
       "www.google.com");
 
   ClickFrenchHrefTranslateLinkOnGooglePage();
@@ -874,7 +875,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
       ->SetIgnoreMissingKeyForTesting(true);
   GetChromeTranslateClient()->GetTranslatePrefs()->AddToLanguageList("fr",
                                                                      true);
-  GetChromeTranslateClient()->GetTranslatePrefs()->BlacklistSite(
+  GetChromeTranslateClient()->GetTranslatePrefs()->AddSiteToNeverPromptList(
       "www.google.com");
 
   ClickFrenchHrefTranslateLinkOnGooglePage();
@@ -1013,7 +1014,7 @@ IN_PROC_BROWSER_TEST_F(OverrideSitePrefsForUiOnlyHrefTranslateBrowserTest,
   GetChromeTranslateClient()
       ->GetTranslateManager()
       ->SetIgnoreMissingKeyForTesting(true);
-  GetChromeTranslateClient()->GetTranslatePrefs()->BlacklistSite(
+  GetChromeTranslateClient()->GetTranslatePrefs()->AddSiteToNeverPromptList(
       "www.google.com");
 
   ClickFrenchHrefTranslateLinkOnGooglePage();
@@ -1056,7 +1057,7 @@ IN_PROC_BROWSER_TEST_F(OverrideSitePrefsForAutoHrefTranslateBrowserTest,
   GetChromeTranslateClient()
       ->GetTranslateManager()
       ->SetIgnoreMissingKeyForTesting(true);
-  GetChromeTranslateClient()->GetTranslatePrefs()->BlacklistSite(
+  GetChromeTranslateClient()->GetTranslatePrefs()->AddSiteToNeverPromptList(
       "www.google.com");
 
   ClickFrenchHrefTranslateLinkOnGooglePage();
@@ -1533,8 +1534,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
 }
 
 // Tests that the language detection / HTML attribute override works correctly.
-// For languages in the whitelist, the detected language should override the
-// HTML attribute. For all other languages, the HTML attribute should be used.
+// For languages in the always-translate list, the detected language should
+// override the HTML attribute. For all other languages, the HTML attribute
+// should be used.
 IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
                        PageLanguageDetectionConflict) {
   // Open a new tab with a page in French with incorrect HTML language
@@ -1859,8 +1861,8 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   SetTranslateScript(kTestValidScript);
 
   // Before browsing: set auto translate from French to Chinese.
-  chrome_translate_client->GetTranslatePrefs()->WhitelistLanguagePair("fr",
-                                                                      "zh-CN");
+  chrome_translate_client->GetTranslatePrefs()
+      ->AddLanguagePairToAlwaysTranslateList("fr", "zh-CN");
 
   // Load a German page and detect it's language
   AddTabAtIndex(0,

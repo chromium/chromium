@@ -709,7 +709,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       handler_registry->ClearUserDefinedHandlers(delete_begin_, delete_end_);
 
     ChromeTranslateClient::CreateTranslatePrefs(prefs)
-        ->DeleteBlacklistedSitesBetween(delete_begin_, delete_end_);
+        ->DeleteNeverPromptSitesBetween(delete_begin_, delete_end_);
 
     host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
         ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA, delete_begin,

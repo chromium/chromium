@@ -260,9 +260,9 @@ TEST_F(SiteSettingsCounterTest, AllSiteSettingsMixed) {
 
   auto translate_prefs =
       ChromeTranslateClient::CreateTranslatePrefs(profile()->GetPrefs());
-  translate_prefs->BlacklistSite("www.google.com");
-  translate_prefs->BlacklistSite("docs.google.com");
-  translate_prefs->BlacklistSite("photos.google.com");
+  translate_prefs->AddSiteToNeverPromptList("www.google.com");
+  translate_prefs->AddSiteToNeverPromptList("docs.google.com");
+  translate_prefs->AddSiteToNeverPromptList("photos.google.com");
   counter()->Restart();
   EXPECT_EQ(6, GetResult());
 }
@@ -288,8 +288,8 @@ TEST_F(SiteSettingsCounterTest, ProtocolHandlerCounting) {
 TEST_F(SiteSettingsCounterTest, TranslatedSitesCounting) {
   auto translate_prefs =
       ChromeTranslateClient::CreateTranslatePrefs(profile()->GetPrefs());
-  translate_prefs->BlacklistSite("www.google.com");
-  translate_prefs->BlacklistSite("maps.google.com");
+  translate_prefs->AddSiteToNeverPromptList("www.google.com");
+  translate_prefs->AddSiteToNeverPromptList("maps.google.com");
 
   SetDeletionPeriodPref(browsing_data::TimePeriod::ALL_TIME);
   EXPECT_EQ(2, GetResult());

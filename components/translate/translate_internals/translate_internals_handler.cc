@@ -178,14 +178,14 @@ void TranslateInternalsHandler::OnRemovePrefItem(const base::ListValue* args) {
     std::string site;
     if (!args->GetString(1, &site))
       return;
-    translate_prefs->RemoveSiteFromBlacklist(site);
+    translate_prefs->RemoveSiteFromNeverPromptList(site);
   } else if (pref_name == "whitelists") {
     std::string from, to;
     if (!args->GetString(1, &from))
       return;
     if (!args->GetString(2, &to))
       return;
-    translate_prefs->RemoveLanguagePairFromWhitelist(from, to);
+    translate_prefs->RemoveLanguagePairFromAlwaysTranslateList(from, to);
   } else if (pref_name == "too_often_denied") {
     translate_prefs->ResetDenialState();
   } else {
@@ -241,9 +241,9 @@ void TranslateInternalsHandler::SendPrefsToJs() {
       language::prefs::kFluentLanguages,
       prefs::kOfferTranslateEnabled,
       translate::TranslatePrefs::kPrefTranslateRecentTarget,
-      translate::TranslatePrefs::kPrefTranslateSiteBlacklistDeprecated,
-      translate::TranslatePrefs::kPrefTranslateSiteBlacklistWithTime,
-      translate::TranslatePrefs::kPrefTranslateWhitelists,
+      translate::TranslatePrefs::kPrefNeverPromptSitesDeprecated,
+      translate::TranslatePrefs::kPrefNeverPromptSitesWithTime,
+      translate::TranslatePrefs::kPrefAlwaysTranslateLists,
       translate::TranslatePrefs::kPrefTranslateDeniedCount,
       translate::TranslatePrefs::kPrefTranslateIgnoredCount,
       translate::TranslatePrefs::kPrefTranslateAcceptedCount,
