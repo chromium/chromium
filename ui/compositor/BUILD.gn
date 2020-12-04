@@ -69,6 +69,8 @@ component("compositor") {
     "throughput_tracker.cc",
     "throughput_tracker.h",
     "throughput_tracker_host.h",
+    "total_animation_throughput_reporter.cc",
+    "total_animation_throughput_reporter.h",
     "transform_animation_curve_adapter.cc",
     "transform_animation_curve_adapter.h",
     "transform_recorder.cc",
@@ -238,6 +240,7 @@ test("compositor_unittests") {
     "layer_owner_unittest.cc",
     "layer_unittest.cc",
     "run_all_unittests.cc",
+    "total_animation_throughput_reporter_unittest.cc",
     "transform_animation_curve_adapter_unittest.cc",
   ]
 

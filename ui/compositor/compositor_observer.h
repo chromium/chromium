@@ -60,6 +60,9 @@ class COMPOSITOR_EXPORT CompositorObserver {
   virtual void OnDidPresentCompositorFrame(
       uint32_t frame_token,
       const gfx::PresentationFeedback& feedback) {}
+
+  virtual void OnFirstAnimationStarted(Compositor* compositor) {}
+  virtual void OnLastAnimationEnded(Compositor* compositor) {}
 };
 
 }  // namespace ui
