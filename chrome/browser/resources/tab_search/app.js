@@ -89,6 +89,9 @@ export class TabSearchAppElement extends PolymerElement {
         type: Boolean,
         value: () => loadTimeData.getBoolean('moveActiveTabToBottom'),
       },
+
+      /** @private */
+      searchResultText_: {type: String, value: ''}
     };
   }
 
@@ -228,6 +231,14 @@ export class TabSearchAppElement extends PolymerElement {
     /** @type {!InfiniteList} */ (this.$.tabsList).selected =
         this.filteredOpenTabs_.length > 0 ? 0 : NO_SELECTION;
 
+    this.$.searchField.announce(this.getA11ySearchResultText_());
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getA11ySearchResultText_() {
     const length = this.filteredOpenTabs_.length;
     let text;
     if (this.searchText_.length > 0) {
@@ -238,7 +249,7 @@ export class TabSearchAppElement extends PolymerElement {
       text = loadTimeData.getStringF(
           length == 1 ? 'a11yFoundTab' : 'a11yFoundTabs', length);
     }
-    this.announceA11y_(text);
+    return text;
   }
 
   /** @private */
@@ -376,10 +387,9 @@ export class TabSearchAppElement extends PolymerElement {
       e.stopPropagation();
       e.preventDefault();
 
-      // For some reasons setting combobox/aria-activedescendant on
-      // tab-search-search-field has no effect, so manually announce a11y
-      // message here.
-      this.announceA11y_(
+      // TODO(tluk): Fix this to use aria-activedescendant when it's updated to
+      // work with ShadowDOM elements.
+      this.$.searchField.announce(
           this.ariaLabel_(this.filteredOpenTabs_[this.getSelectedIndex()]));
     } else if (e.key === 'Enter') {
       this.apiProxy_.switchToTab(
@@ -437,6 +447,7 @@ export class TabSearchAppElement extends PolymerElement {
     });
     this.filteredOpenTabs_ =
         fuzzySearch(this.searchText_, result, this.fuzzySearchOptions_);
+    this.searchResultText_ = this.getA11ySearchResultText_();
   }
 
   /** return {!Tab} */

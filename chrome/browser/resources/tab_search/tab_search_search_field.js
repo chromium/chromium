@@ -40,10 +40,24 @@ export class TabSearchSearchField extends TabSearchSearchFieldBase {
         value: false,
       },
 
+      /**
+       * Text that describes the resulting tabs currently present in the list.
+       */
+      searchResultText: {
+        type: String,
+        value: '',
+      },
+
       /** @private {string} */
       shortcut_: {
         type: String,
         value: () => loadTimeData.getString('shortcutText'),
+      },
+
+      /** @private {string} */
+      announceText_: {
+        type: String,
+        value: '',
       },
     };
   }
@@ -51,6 +65,35 @@ export class TabSearchSearchField extends TabSearchSearchFieldBase {
   /** @return {!HTMLInputElement} */
   getSearchInput() {
     return /** @type {!HTMLInputElement} */ (this.$.searchInput);
+  }
+
+  /**
+   * Cause a text string to be announced by screen readers. Used for announcing
+   * when the input field has focus for better compatibility with screen
+   * readers.
+   * @param {string} text The text that should be announced.
+   */
+  announce(text) {
+    this.$.searchWrapper.append(
+        this.$.searchWrapper.removeChild(this.$.inputAnnounce));
+    if (this.announceText_ === text) {
+      // A timeout is required when announcing duplicate text for certain
+      // screen readers.
+      this.announceText_ = '';
+      setTimeout(() => {
+        this.announceText_ = text;
+      }, 100);
+    } else {
+      this.announceText_ = text;
+    }
+  }
+
+  /**
+   * Clear |announceText_| when focus leaves the input field to ensure the text
+   * is not re-announced when focus returns to the input field.
+   */
+  onInputBlur_(text) {
+    this.announceText_ = '';
   }
 }
 

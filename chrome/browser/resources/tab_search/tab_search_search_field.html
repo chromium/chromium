@@ -60,6 +60,13 @@
       color: var(--google-blue-refresh-300);
     }
   }
+
+  #inputAnnounce,
+  #searchResultText {
+    clip: rect(0,0,0,0);
+    display: inline-block;
+    position: fixed;
+  }
 </style>
 
 <iron-icon id="searchIcon" icon="mwb16:search"></iron-icon>
@@ -67,9 +74,14 @@
   <label id="searchLabel" for="searchInput" aria-hidden="true">
     <span>[[label]]</span>
     <span>[[shortcut_]]</span>
+    <span id="searchResultText">[[searchResultText]]</span>
   </label>
   <input id="searchInput" aria-labelledby="searchLabel"
       autofocus="[[autofocus]]" autocomplete="off"
       on-search="onSearchTermSearch" on-input="onSearchTermInput" type="search"
-      spellcheck="false">
+      spellcheck="false" aria-describedby="inputAnnounce"
+      on-blur="onInputBlur_">
+  <span id="inputAnnounce" aria-live="assertive">
+    [[announceText_]]
+  </span>
 </div>
