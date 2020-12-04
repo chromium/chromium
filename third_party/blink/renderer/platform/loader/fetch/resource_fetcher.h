@@ -415,6 +415,8 @@ class PLATFORM_EXPORT ResourceFetcher
 
   void WarnUnusedPreloads();
 
+  void OnBackForwardCacheEvictionTimerFired();
+
   Member<DetachableResourceFetcherProperties> properties_;
   Member<ResourceLoadObserver> resource_load_observer_;
   Member<FetchContext> context_;
@@ -468,6 +470,9 @@ class PLATFORM_EXPORT ResourceFetcher
 
   HeapHashSet<Member<SubresourceWebBundle>> subresource_web_bundles_;
 
+  base::OneShotTimer back_forward_cache_eviction_timer_;
+  base::TimeDelta back_forward_cache_timeout_;
+
   // This is not in the bit field below because we want to use AutoReset.
   bool is_in_request_resource_ = false;
 
@@ -481,6 +486,9 @@ class PLATFORM_EXPORT ResourceFetcher
   bool should_log_request_as_invalid_in_imported_document_ : 1;
 
   static constexpr uint32_t kKeepaliveInflightBytesQuota = 64 * 1024;
+
+  // NOTE: This must be the last member.
+  base::WeakPtrFactory<ResourceFetcher> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ResourceFetcher);
 };

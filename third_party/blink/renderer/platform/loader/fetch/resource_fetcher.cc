@@ -92,6 +92,7 @@
 namespace blink {
 
 constexpr uint32_t ResourceFetcher::kKeepaliveInflightBytesQuota;
+constexpr int kDefaultTimeToLiveWhileInBackForwardCacheInSeconds = 15;
 
 namespace {
 
@@ -618,6 +619,11 @@ ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
   InstanceCounters::IncrementCounter(InstanceCounters::kResourceFetcherCounter);
   if (IsMainThread())
     MainThreadFetchersSet().insert(this);
+
+  back_forward_cache_timeout_ =
+      base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
+          blink::features::kLoadingTasksUnfreezable, "max_time_to_live",
+          kDefaultTimeToLiveWhileInBackForwardCacheInSeconds));
 }
 
 ResourceFetcher::~ResourceFetcher() {
@@ -2094,6 +2100,36 @@ void ResourceFetcher::SetDefersLoading(WebURLLoader::DeferType defers) {
     loader->SetDefersLoading(defers);
   for (const auto& loader : loaders_)
     loader->SetDefersLoading(defers);
+  if (defers == WebURLLoader::DeferType::kDeferredWithBackForwardCache &&
+      !back_forward_cache_eviction_timer_.IsRunning()) {
+    back_forward_cache_eviction_timer_.SetTaskRunner(unfreezable_task_runner_);
+    back_forward_cache_eviction_timer_.Start(
+        FROM_HERE, back_forward_cache_timeout_,
+        base::BindOnce(&ResourceFetcher::OnBackForwardCacheEvictionTimerFired,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else if (defers != WebURLLoader::DeferType::kDeferredWithBackForwardCache) {
+    // The page associated with this ResourceFetcher is no longer in the
+    // back-forward cache, so stop the back-forward cache eviction timer if it's
+    // currently running.
+    if (back_forward_cache_eviction_timer_.IsRunning())
+      back_forward_cache_eviction_timer_.Stop();
+  }
+}
+
+void ResourceFetcher::OnBackForwardCacheEvictionTimerFired() {
+  // If all the loaders are keepalive, we don't need to evict.
+  bool all_loaders_are_keepalive = true;
+  for (const auto& loader : loaders_) {
+    all_loaders_are_keepalive &= loader->ShouldBeKeptAliveWhenDetached();
+  }
+  for (const auto& loader : non_blocking_loaders_) {
+    all_loaders_are_keepalive &= loader->ShouldBeKeptAliveWhenDetached();
+  }
+  if (all_loaders_are_keepalive)
+    return;
+
+  StopFetching();
+  EvictFromBackForwardCache();
 }
 
 void ResourceFetcher::UpdateAllImageResourcePriorities() {
