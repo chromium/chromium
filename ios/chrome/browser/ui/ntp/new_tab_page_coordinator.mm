@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_observer.h"
 #import "ios/chrome/browser/ui/ntp/incognito_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -31,7 +32,10 @@
 @property(nonatomic, strong)
     ContentSuggestionsCoordinator* contentSuggestionsCoordinator;
 
-// View controller for incognito.
+// View controller for the regular NTP.
+@property(nonatomic, strong) NewTabPageViewController* ntpViewController;
+
+// View controller for the incognito NTP.
 @property(nonatomic, strong) IncognitoViewController* incognitoViewController;
 
 // The timetick of the last time the NTP was displayed.
@@ -83,6 +87,11 @@
         self.panGestureHandler;
 
     [self.contentSuggestionsCoordinator start];
+
+    self.ntpViewController = [[NewTabPageViewController alloc]
+        initWithContentSuggestionsViewController:
+            self.contentSuggestionsCoordinator.viewController];
+
     base::RecordAction(base::UserMetricsAction("MobileNTPShowMostVisited"));
     SceneState* sceneState =
         SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
@@ -139,7 +148,7 @@
   if (self.browser->GetBrowserState()->IsOffTheRecord()) {
     return self.incognitoViewController;
   } else {
-    return self.contentSuggestionsCoordinator.viewController;
+    return self.ntpViewController;
   }
 }
 
