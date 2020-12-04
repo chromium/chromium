@@ -270,7 +270,6 @@ if (is_chromeos_device) {
     tast_disabled_tests = [
       # crbug.com/1115622
       "ui.ChromeLoginGAIA",
-      "inputs.VirtualKeyboardOOBE.stable",
 
       # crbug.com/1097630
       "security.OpenFDs",
@@ -317,13 +316,6 @@ if (is_chromeos_device) {
       # crbug.com/1131304
       "printer.PinPrintLexmark.no_pin",
       "printer.PinPrintLexmark.pin",
-
-      # crbug.com/1147607
-      "inputs.VirtualKeyboardAccessibility.stable",
-      "inputs.VirtualKeyboardChangeInput.stable",
-      "inputs.VirtualKeyboardDeadKeys.french_stable",
-      "inputs.VirtualKeyboardTypingApps.stable",
-      "inputs.VirtualKeyboardTypingBrowser.stable",
 
       # crbug.com/1148036
       "ui.ExistingUserLogin",
