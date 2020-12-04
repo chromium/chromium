@@ -399,6 +399,15 @@ int QuicChromiumClientStream::Handle::HandleIOComplete(int rv) {
   return net_error_;
 }
 
+void QuicChromiumClientStream::Handle::SetRequestIdempotency(
+    Idempotency idempotency) {
+  idempotency_ = idempotency;
+}
+
+Idempotency QuicChromiumClientStream::Handle::GetRequestIdempotency() const {
+  return idempotency_;
+}
+
 QuicChromiumClientStream::QuicChromiumClientStream(
     quic::QuicStreamId id,
     quic::QuicSpdyClientSessionBase* session,
@@ -541,7 +550,9 @@ size_t QuicChromiumClientStream::WriteHeaders(
   if (!session()->OneRttKeysAvailable()) {
     auto entry = header_block.find(":method");
     DCHECK(entry != header_block.end());
-    DCHECK_NE("POST", entry->second);
+    DCHECK(
+        entry->second != "POST" ||
+        (handle_ != nullptr && handle_->GetRequestIdempotency() == IDEMPOTENT));
   }
   net_log_.AddEvent(
       NetLogEventType::QUIC_CHROMIUM_CLIENT_STREAM_SEND_REQUEST_HEADERS,

@@ -18,6 +18,7 @@
 
 #include "base/macros.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/idempotency.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
@@ -186,6 +187,9 @@ class NET_EXPORT_PRIVATE HttpStream {
   virtual HttpStream* RenewStreamForAuth() = 0;
 
   virtual void SetRequestHeadersCallback(RequestHeadersCallback callback) = 0;
+
+  // Set the idempotency of the request. No-op by default.
+  virtual void SetRequestIdempotency(Idempotency idempotency) {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(HttpStream);

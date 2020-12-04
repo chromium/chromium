@@ -15,6 +15,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/idempotency.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/base/upload_data_stream.h"
@@ -134,6 +135,11 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
 
     const NetLogWithSource& net_log() const;
 
+    // Sets the idempotency of the request.
+    void SetRequestIdempotency(Idempotency idempotency);
+    // Returns the idempotency of the request.
+    Idempotency GetRequestIdempotency() const;
+
    private:
     friend class QuicChromiumClientStream;
 
@@ -188,6 +194,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
     bool is_done_reading_;
     bool is_first_stream_;
     size_t num_bytes_consumed_;
+    Idempotency idempotency_ = DEFAULT_IDEMPOTENCY;
 
     int net_error_;
 

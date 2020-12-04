@@ -791,4 +791,11 @@ int QuicHttpStream::ComputeResponseStatus() const {
   return ERR_QUIC_PROTOCOL_ERROR;
 }
 
+void QuicHttpStream::SetRequestIdempotency(Idempotency idempotency) {
+  if (stream_ == nullptr) {
+    return;
+  }
+  stream_->SetRequestIdempotency(idempotency);
+}
+
 }  // namespace net
