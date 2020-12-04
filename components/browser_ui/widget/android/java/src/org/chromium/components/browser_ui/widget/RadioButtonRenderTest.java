@@ -41,8 +41,14 @@ public class RadioButtonRenderTest extends DummyUiActivityTestCase {
     private static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
 
+    private static final int REVISION = 1;
+    private static final String REVISION_DESCRIPTION = "Updated EditText hint color for a11y";
+
     @Rule
-    public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus().build();
+    public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus()
+                                                    .setRevision(REVISION)
+                                                    .setDescription(REVISION_DESCRIPTION)
+                                                    .build();
 
     private RadioButtonWithDescriptionLayout mLayout;
 

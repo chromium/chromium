@@ -53,8 +53,16 @@ public class PaymentRequestFreeShippingTest implements MainActivityStartCallback
     public PaymentRequestTestRule mPaymentRequestTestRule =
             new PaymentRequestTestRule("payment_request_free_shipping_test.html", this, true);
 
+    private static final int RENDER_TEST_REVISION = 1;
+    private static final String RENDER_TEST_REVISION_DESCRIPTION =
+            "Updated EditText hint color for a11y";
+
     @Rule
-    public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus().build();
+    public RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(RENDER_TEST_REVISION)
+                    .setDescription(RENDER_TEST_REVISION_DESCRIPTION)
+                    .build();
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
