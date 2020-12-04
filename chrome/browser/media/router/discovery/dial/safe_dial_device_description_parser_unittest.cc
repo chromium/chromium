@@ -90,7 +90,7 @@ class SafeDialDeviceDescriptionParserTest : public testing::Test {
     parser.Parse(
         xml, app_url,
         base::BindOnce(
-            [](base::Closure quit_loop,
+            [](base::RepeatingClosure quit_loop,
                ParsedDialDeviceDescription* out_device_description,
                SafeDialDeviceDescriptionParser::ParsingError* out_error,
                const ParsedDialDeviceDescription& device_description,
