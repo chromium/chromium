@@ -39,13 +39,6 @@ bool ShouldIgnorePercentagesForMinMax(const LayoutBox& table) {
   return false;
 }
 
-// Another MinMax variant of |ShouldIgnorePercentagesForMinMax|.
-// This one is only for flexbox/grid. Fixed table-layout "infinite" max-size
-// should not be applied.
-bool ShouldIgnoreInfiniteMaxSizeForMinMax(const LayoutBlock& table) {
-  return false;
-}
-
 NGTableTypes::Caption ComputeCaptionConstraint(
     const ComputedStyle& table_style,
     const NGTableGroupedChildren& grouped_children) {
@@ -545,10 +538,8 @@ MinMaxSizesResult NGTableLayoutAlgorithm::ComputeMinMaxSizes(
       std::max(grid_min_max.min_size, caption_constraint.min_size),
       std::max(grid_min_max.max_size, caption_constraint.min_size)};
 
-  if (!ShouldIgnoreInfiniteMaxSizeForMinMax(*layout_table)) {
-    if (is_fixed_layout && Style().LogicalWidth().IsPercentOrCalc())
-      min_max.max_size = NGTableTypes::kTableMaxInlineSize;
-  }
+  if (is_fixed_layout && Style().LogicalWidth().IsPercentOrCalc())
+    min_max.max_size = NGTableTypes::kTableMaxInlineSize;
 
   DCHECK_LE(min_max.min_size, min_max.max_size);
   return MinMaxSizesResult{min_max,
