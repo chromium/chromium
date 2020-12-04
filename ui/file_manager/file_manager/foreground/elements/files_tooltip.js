@@ -102,6 +102,9 @@
    * is not dispatched. This method is used to handle these cases manually.
    */
   hideTooltip: function() {
+    if (this.showTooltipTimerId_) {
+      clearTimeout(this.showTooltipTimerId_);
+    }
     if (this.visibleTooltipTarget_) {
       this.initHidingTooltip_(this.visibleTooltipTarget_);
     }

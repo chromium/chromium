@@ -895,7 +895,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("filesTooltipMouseOver"),
                       TestCase("filesTooltipClickHides"),
                       TestCase("filesTooltipHidesOnWindowResize"),
-                      TestCase("filesCardTooltipClickHides")));
+                      TestCase("filesCardTooltipClickHides"),
+                      TestCase("filesTooltipHidesOnDeleteDialogClosed")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FileList, /* file_list.js */

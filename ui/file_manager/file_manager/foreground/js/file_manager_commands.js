@@ -1129,10 +1129,15 @@ CommandHandler.COMMANDS_['delete'] = new class extends Command {
       dialog.showModalElement();
     }
 
-    dialog.show(message, () => {
+    const deleteCallback = () => {
       dialog.doneCallback && dialog.doneCallback();
+      document.querySelector('files-tooltip').hideTooltip();
+    };
+
+    dialog.show(message, () => {
+      deleteCallback();
       fileManager.fileOperationManager.deleteEntries(entries);
-    }, dialog.doneCallback, null);
+    }, deleteCallback, null);
   }
 
   /**
