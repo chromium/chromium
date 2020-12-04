@@ -29,6 +29,7 @@ extern const char kPurgeHintsStore[];
 extern const char kPurgeModelAndFeaturesStore[];
 extern const char kDisableFetchingHintsAtNavigationStartForTesting[];
 extern const char kDisableCheckingUserPermissionsForTesting[];
+extern const char kDisableModelDownloadVerificationForTesting[];
 
 // Returns whether the hint component should be processed.
 // Available hint components are only processed if a proto override isn't being
@@ -71,6 +72,9 @@ bool DisableFetchingHintsAtNavigationStartForTesting();
 // remote Optimization Guide Service should be ignored. Returns true only in
 // tests.
 bool ShouldOverrideCheckingUserPermissionsToFetchHintsForTesting();
+
+// Returns true if the verification of model downloads should be skipped.
+bool ShouldSkipModelDownloadVerificationForTesting();
 
 }  // namespace switches
 }  // namespace optimization_guide

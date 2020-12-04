@@ -21,6 +21,7 @@
 #include "components/download/public/background_service/test/mock_download_service.h"
 #include "components/optimization_guide/optimization_guide_enums.h"
 #include "components/optimization_guide/optimization_guide_features.h"
+#include "components/optimization_guide/optimization_guide_switches.h"
 #include "components/optimization_guide/optimization_guide_util.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/in_process_unzipper.h"
@@ -158,7 +159,8 @@ class PredictionModelDownloadManagerTest
   }
 
   void TurnOffDownloadVerification() {
-    download_manager_->TurnOffVerificationForTesting();
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kDisableModelDownloadVerificationForTesting);
   }
 
  private:

@@ -66,6 +66,9 @@ const char kDisableFetchingHintsAtNavigationStartForTesting[] =
 const char kDisableCheckingUserPermissionsForTesting[] =
     "disable-checking-optimization-guide-user-permissions";
 
+const char kDisableModelDownloadVerificationForTesting[] =
+    "disable-model-download-verification";
+
 bool IsHintComponentProcessingDisabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kHintsProtoOverride);
 }
@@ -147,6 +150,11 @@ bool DisableFetchingHintsAtNavigationStartForTesting() {
 bool ShouldOverrideCheckingUserPermissionsToFetchHintsForTesting() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   return command_line->HasSwitch(kDisableCheckingUserPermissionsForTesting);
+}
+
+bool ShouldSkipModelDownloadVerificationForTesting() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line->HasSwitch(kDisableModelDownloadVerificationForTesting);
 }
 
 }  // namespace switches

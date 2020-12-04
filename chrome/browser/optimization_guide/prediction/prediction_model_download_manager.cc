@@ -24,6 +24,7 @@
 #include "components/download/public/background_service/download_service.h"
 #include "components/optimization_guide/optimization_guide_enums.h"
 #include "components/optimization_guide/optimization_guide_features.h"
+#include "components/optimization_guide/optimization_guide_switches.h"
 #include "components/optimization_guide/optimization_guide_util.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/public/cpp/unzip.h"
@@ -214,7 +215,7 @@ PredictionModelDownloadManager::ProcessDownload(
     const base::FilePath& file_path) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
 
-  if (should_verify_download_) {
+  if (!switches::ShouldSkipModelDownloadVerificationForTesting()) {
     // Verify that the |file_path| contains a file signed with a key we trust.
     crx_file::VerifierResult verifier_result = crx_file::Verify(
         file_path, crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF,
@@ -269,7 +270,7 @@ void PredictionModelDownloadManager::OnDownloadUnzipped(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Clean up original download file when this function finishes.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  background_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(base::GetDeleteFileCallback(), original_file_path));
 
@@ -349,10 +350,6 @@ void PredictionModelDownloadManager::NotifyModelReady(
 
   for (PredictionModelDownloadObserver& observer : observers_)
     observer.OnModelReady(*model);
-}
-
-void PredictionModelDownloadManager::TurnOffVerificationForTesting() {
-  should_verify_download_ = false;
 }
 
 }  // namespace optimization_guide

@@ -116,9 +116,6 @@ class PredictionModelDownloadManager {
   // Must be invoked on the UI thread.
   void NotifyModelReady(const base::Optional<proto::PredictionModel>& model);
 
-  // Turns off CRX3 verification for testing.
-  void TurnOffVerificationForTesting();
-
   // The set of GUIDs that are still pending download.
   std::set<std::string> pending_download_guids_;
 
