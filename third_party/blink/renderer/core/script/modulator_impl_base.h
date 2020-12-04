@@ -44,6 +44,8 @@ class ModulatorImplBase : public Modulator {
 
   bool ImportMapsEnabled() const override;
 
+  mojom::blink::V8CacheOptions GetV8CacheOptions() const final;
+
   ModuleRecordResolver* GetModuleRecordResolver() override {
     return module_record_resolver_.Get();
   }

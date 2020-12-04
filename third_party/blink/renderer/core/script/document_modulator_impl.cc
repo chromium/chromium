@@ -4,11 +4,7 @@
 
 #include "third_party/blink/renderer/core/script/document_modulator_impl.h"
 
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/modulescript/document_module_script_fetcher.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 
@@ -24,14 +20,6 @@ ModuleScriptFetcher* DocumentModulatorImpl::CreateModuleScriptFetcher(
 
 bool DocumentModulatorImpl::IsDynamicImportForbidden(String* reason) {
   return false;
-}
-
-mojom::blink::V8CacheOptions DocumentModulatorImpl::GetV8CacheOptions() const {
-  LocalDOMWindow* window = To<LocalDOMWindow>(GetExecutionContext());
-  const Settings* settings = window->GetFrame()->GetSettings();
-  if (settings)
-    return settings->GetV8CacheOptions();
-  return mojom::blink::V8CacheOptions::kDefault;
 }
 
 }  // namespace blink

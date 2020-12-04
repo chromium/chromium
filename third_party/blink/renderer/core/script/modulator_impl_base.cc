@@ -57,6 +57,10 @@ bool ModulatorImplBase::ImportMapsEnabled() const {
   return RuntimeEnabledFeatures::ImportMapsEnabled(GetExecutionContext());
 }
 
+mojom::blink::V8CacheOptions ModulatorImplBase::GetV8CacheOptions() const {
+  return GetExecutionContext()->GetV8CacheOptions();
+}
+
 // <specdef label="fetch-a-module-script-tree"
 // href="https://html.spec.whatwg.org/C/#fetch-a-module-script-tree">
 // <specdef label="fetch-a-module-worker-script-tree"
