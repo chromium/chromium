@@ -26,6 +26,10 @@
 
 namespace {
 
+constexpr CGFloat kNativeCheckmarkWidth = 18;
+constexpr CGFloat kNativeMenuItemHeight = 18;
+constexpr CGFloat kIPHDotSize = 6;
+
 NSImage* NewTagImage() {
   // 1. Make the attributed string.
 
@@ -92,47 +96,116 @@ NSImage* NewTagImage() {
       }];
 }
 
-}  // namespace
+NSImage* IPHDotImage() {
+  // Embed horizontal centering space as NSMenuItem will otherwise left-align
+  // it.
+  return [NSImage
+       imageWithSize:NSMakeSize(2 * kIPHDotSize, kIPHDotSize)
+             flipped:NO
+      drawingHandler:^(NSRect dest_rect) {
+        NSBezierPath* dot_path = [NSBezierPath
+            bezierPathWithOvalInRect:NSMakeRect(kIPHDotSize / 2, 0, kIPHDotSize,
+                                                kIPHDotSize)];
+        NSColor* dot_color = skia::SkColorToSRGBNSColor(
+            ui::NativeTheme::GetInstanceForNativeUi()->GetSystemColor(
+                ui::NativeTheme::kColorId_ProminentButtonColor));
+        [dot_color set];
+        [dot_path fill];
 
-@interface MenuControllerDelegate : NSObject <MenuControllerCocoaDelegate>
-@end
+        return YES;
+      }];
+}
 
-@implementation MenuControllerDelegate
-
-- (void)controllerWillAddItem:(NSMenuItem*)menuItem
-                    fromModel:(ui::MenuModel*)model
-                      atIndex:(NSInteger)index {
-  static const bool feature_enabled =
-      base::FeatureList::IsEnabled(views::features::kEnableNewBadgeOnMenuItems);
-  if (!feature_enabled || !model->IsNewFeatureAt(index))
-    return;
-
-  NSTextAttachment* attachment =
-      [[[NSTextAttachment alloc] initWithData:nil ofType:nil] autorelease];
-  attachment.image = NewTagImage();
-  NSSize newTagSize = attachment.image.size;
-  attachment.bounds = NSMakeRect(0, views::NewBadge::kNewBadgeBaselineOffsetMac,
-                                 newTagSize.width, newTagSize.height);
-
-  // Starting in 10.13, if an attributed string is set as a menu item title, and
-  // NSFontAttributeName is not specified for it, it is automatically rendered
-  // in a font matching other menu items. Prior to then, a menu item with no
-  // specified font is rendered in Helvetica. In addition, while the
-  // documentation says that -[NSFont menuFontOfSize:0] gives the standard menu
-  // font, that doesn't actually match up. Therefore, specify a font that
+NSMutableAttributedString* MutableAttributedStringForMenuItemTitleString(
+    NSString* string) {
+  // Starting in 10.13, if an attributed string is set as a menu item title,
+  // and NSFontAttributeName is not specified for it, it is automatically
+  // rendered in a font matching other menu items. Prior to then, a menu item
+  // with no specified font is rendered in Helvetica. In addition, while the
+  // documentation says that -[NSFont menuFontOfSize:0] gives the standard
+  // menu font, that doesn't actually match up. Therefore, specify a font that
   // visually matches.
   NSDictionary* attrs = nil;
   if (base::mac::IsAtMostOS10_12())
     attrs = @{NSFontAttributeName : [NSFont menuFontOfSize:14]};
 
-  base::scoped_nsobject<NSMutableAttributedString> attrTitle(
-      [[NSMutableAttributedString alloc] initWithString:menuItem.title
-                                             attributes:attrs]);
-  [attrTitle
-      appendAttributedString:[NSAttributedString
-                                 attributedStringWithAttachment:attachment]];
+  return [[[NSMutableAttributedString alloc] initWithString:string
+                                                 attributes:attrs] autorelease];
+}
 
-  menuItem.attributedTitle = attrTitle;
+}  // namespace
+
+// --- Private API begin ---
+
+@interface NSCarbonMenuImpl : NSObject
+- (void)highlightItemAtIndex:(NSInteger)index;
+@end
+
+@interface NSMenu ()
+- (NSCarbonMenuImpl*)_menuImpl;
+@end
+
+// --- Private API end ---
+
+@interface MenuControllerDelegate : NSObject <MenuControllerCocoaDelegate> {
+  id<NSObject> _menuOpenObserver;
+}
+@end
+
+@implementation MenuControllerDelegate
+
+- (void)dealloc {
+  if (_menuOpenObserver)
+    [[NSNotificationCenter defaultCenter] removeObserver:_menuOpenObserver];
+
+  [super dealloc];
+}
+
+- (void)controllerWillAddItem:(NSMenuItem*)menuItem
+                    fromModel:(ui::MenuModel*)model
+                      atIndex:(NSInteger)index {
+  static const bool newBadgeFeatureEnabled =
+      base::FeatureList::IsEnabled(views::features::kEnableNewBadgeOnMenuItems);
+  if (newBadgeFeatureEnabled && model->IsNewFeatureAt(index)) {
+    NSTextAttachment* attachment =
+        [[[NSTextAttachment alloc] initWithData:nil ofType:nil] autorelease];
+    attachment.image = NewTagImage();
+    NSSize newTagSize = attachment.image.size;
+    attachment.bounds =
+        NSMakeRect(0, views::NewBadge::kNewBadgeBaselineOffsetMac,
+                   newTagSize.width, newTagSize.height);
+
+    NSMutableAttributedString* attrTitle =
+        MutableAttributedStringForMenuItemTitleString(menuItem.title);
+    [attrTitle
+        appendAttributedString:[NSAttributedString
+                                   attributedStringWithAttachment:attachment]];
+
+    menuItem.attributedTitle = attrTitle;
+  }
+
+  if (model->IsAlertedAt(index)) {
+    NSImage* iphDotImage = IPHDotImage();
+    menuItem.onStateImage = iphDotImage;
+    menuItem.offStateImage = iphDotImage;
+    menuItem.mixedStateImage = iphDotImage;
+
+    DCHECK(!_menuOpenObserver);
+    _menuOpenObserver = [[NSNotificationCenter defaultCenter]
+        addObserverForName:NSMenuDidBeginTrackingNotification
+                    object:menuItem.menu
+                     queue:nil
+                usingBlock:^(NSNotification* note) {
+                  NSMenu* menu = note.object;
+                  if ([menu respondsToSelector:@selector(_menuImpl)]) {
+                    NSCarbonMenuImpl* menuImpl = [menu _menuImpl];
+                    if ([menuImpl respondsToSelector:@selector
+                                  (highlightItemAtIndex:)]) {
+                      [menuImpl highlightItemAtIndex:index];
+                    }
+                  }
+                }];
+  }
 }
 
 @end
@@ -140,9 +213,6 @@ NSImage* NewTagImage() {
 namespace views {
 namespace internal {
 namespace {
-
-constexpr CGFloat kNativeCheckmarkWidth = 18;
-constexpr CGFloat kNativeMenuItemHeight = 18;
 
 // Returns the first item in |menu_controller|'s menu that will be checked.
 NSMenuItem* FirstCheckedItem(MenuControllerCocoa* menu_controller) {
