@@ -1489,6 +1489,7 @@ if (!is_android) {
       "../browser/ui/views/tabs/tab_search_button_browsertest.cc",
       "../browser/ui/views/tabs/tab_strip_browsertest.cc",
       "../browser/ui/views/web_apps/web_app_frame_toolbar_browsertest.cc",
+      "../browser/ui/views/web_apps/web_app_integration_browsertest.cc",
       "../browser/ui/views/web_apps/web_app_minimal_ui_test.cc",
       "../browser/ui/views/web_apps/web_app_tab_strip_browsertest.cc",
       "../browser/ui/views/webauthn/authenticator_dialog_view_browsertest.cc",
