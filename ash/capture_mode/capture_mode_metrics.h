@@ -11,6 +11,23 @@
 
 namespace ash {
 
+// Enumeration of the reasons that lead to ending the screen recording.
+// Note that these values are persisted to histograms so existing values should
+// remain unchanged and new values should be added to the end.
+enum class EndRecordingReason {
+  kStopRecordingButton,
+  kDisplayOrWindowClosing,
+  kActiveUserChange,
+  kSessionBlocked,
+  kShuttingDown,
+  kImminentSuspend,
+  kRecordingServiceDisconnected,
+  kFileIoError,
+  kDlpInterruption,
+  kLowDiskSpace,
+  kMaxValue = kLowDiskSpace,
+};
+
 // Enumeration of capture bar buttons that can be pressed while in capture mode.
 // Note that these values are persisted to histograms so existing values should
 // remain unchanged and new values should be added to the end.
@@ -48,6 +65,9 @@ enum class CaptureModeEntryType {
   kPowerMenu,
   kMaxValue = kPowerMenu,
 };
+
+// Records the |reason| for which screen recording was ended.
+void RecordEndRecordingReason(EndRecordingReason reason);
 
 // Records capture mode bar button presses given by |button_type|.
 void RecordCaptureModeBarButtonType(CaptureModeBarButtonType button_type);

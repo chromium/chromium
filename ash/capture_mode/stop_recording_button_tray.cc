@@ -5,6 +5,7 @@
 #include "ash/capture_mode/stop_recording_button_tray.h"
 
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -39,7 +40,8 @@ bool StopRecordingButtonTray::PerformAction(const ui::Event& event) {
          event.type() == ui::ET_GESTURE_TAP);
 
   base::RecordAction(base::UserMetricsAction("Tray_StopRecording"));
-  CaptureModeController::Get()->EndVideoRecording();
+  CaptureModeController::Get()->EndVideoRecording(
+      EndRecordingReason::kStopRecordingButton);
   return true;
 }
 

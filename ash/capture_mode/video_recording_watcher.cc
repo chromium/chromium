@@ -5,6 +5,7 @@
 #include "ash/capture_mode/video_recording_watcher.h"
 
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -36,7 +37,7 @@ void VideoRecordingWatcher::OnWindowDestroying(aura::Window* window) {
 
   // EndVideoRecording() destroys |this|. No need to remove observer here, since
   // it will be done in the destructor.
-  controller_->EndVideoRecording();
+  controller_->EndVideoRecording(EndRecordingReason::kDisplayOrWindowClosing);
 }
 
 void VideoRecordingWatcher::OnWindowDestroyed(aura::Window* window) {

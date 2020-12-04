@@ -5,6 +5,7 @@
 #include "ash/public/cpp/capture_mode_test_api.h"
 
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
@@ -54,7 +55,7 @@ void CaptureModeTestApi::PerformCapture() {
 
 void CaptureModeTestApi::StopVideoRecording() {
   DCHECK(controller_->is_recording_in_progress());
-  controller_->EndVideoRecording();
+  controller_->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
 }
 
 void CaptureModeTestApi::SetOnCaptureFileSavedCallback(
