@@ -2359,6 +2359,8 @@ bool LocalFrame::IsLoadDeferred() {
 }
 
 WebURLLoader::DeferType LocalFrame::GetLoadDeferType() {
+  if (GetPage()->GetPageScheduler()->IsInBackForwardCache())
+    return WebURLLoader::DeferType::kDeferredWithBackForwardCache;
   if (paused_ || frozen_)
     return WebURLLoader::DeferType::kDeferred;
   return WebURLLoader::DeferType::kNotDeferred;
@@ -2378,7 +2380,10 @@ void LocalFrame::DidFreeze() {
         performance_manager::mojom::LifecycleState::kFrozen);
   }
 
-  WebURLLoader::DeferType defer = WebURLLoader::DeferType::kDeferred;
+  WebURLLoader::DeferType defer =
+      GetPage()->GetPageScheduler()->IsInBackForwardCache()
+          ? WebURLLoader::DeferType::kDeferredWithBackForwardCache
+          : WebURLLoader::DeferType::kDeferred;
   GetDocument()->Fetcher()->SetDefersLoading(defer);
   Loader().SetDefersLoading(defer);
 }

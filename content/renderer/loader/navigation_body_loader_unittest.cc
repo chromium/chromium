@@ -226,6 +226,18 @@ TEST_F(NavigationBodyLoaderTest, StartDeferred) {
   EXPECT_EQ("hello", TakeDataReceived());
 }
 
+TEST_F(NavigationBodyLoaderTest, StartDeferredWithBackForwardCache) {
+  CreateBodyLoader();
+  loader_->SetDefersLoading(
+      blink::WebURLLoader::DeferType::kDeferredWithBackForwardCache);
+  StartLoading();
+  Write("hello");
+  ExpectDataReceived();
+  loader_->SetDefersLoading(blink::WebURLLoader::DeferType::kNotDeferred);
+  Wait();
+  EXPECT_EQ("hello", TakeDataReceived());
+}
+
 TEST_F(NavigationBodyLoaderTest, OnCompleteThenClose) {
   CreateBodyLoader();
   StartLoading();

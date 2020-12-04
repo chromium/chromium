@@ -107,6 +107,18 @@ TEST_F(StaticDataNavigationBodyLoaderTest,
   EXPECT_EQ("world", TakeDataReceived());
 }
 
+TEST_F(StaticDataNavigationBodyLoaderTest,
+       SetDefersLoadingWithBfcacheAndWriteFromDataReceived) {
+  loader_->StartLoadingBody(this, false);
+  expecting_data_received_ = true;
+  set_defers_loading_ = WebURLLoader::DeferType::kDeferredWithBackForwardCache;
+  buffer_to_write_ = "world";
+  Write("hello");
+  EXPECT_EQ("hello", TakeDataReceived());
+  loader_->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
+  EXPECT_EQ("world", TakeDataReceived());
+}
+
 TEST_F(StaticDataNavigationBodyLoaderTest, DestroyFromDataReceived) {
   loader_->StartLoadingBody(this, false);
   expecting_data_received_ = true;
@@ -119,6 +131,17 @@ TEST_F(StaticDataNavigationBodyLoaderTest, SetDefersLoadingFromDataReceived) {
   loader_->StartLoadingBody(this, false);
   expecting_data_received_ = true;
   set_defers_loading_ = WebURLLoader::DeferType::kDeferred;
+  Write("hello");
+  EXPECT_EQ("hello", TakeDataReceived());
+  Write("world");
+  EXPECT_EQ("", TakeDataReceived());
+}
+
+TEST_F(StaticDataNavigationBodyLoaderTest,
+       SetDefersLoadingWithBfcacheFromDataReceived) {
+  loader_->StartLoadingBody(this, false);
+  expecting_data_received_ = true;
+  set_defers_loading_ = WebURLLoader::DeferType::kDeferredWithBackForwardCache;
   Write("hello");
   EXPECT_EQ("hello", TakeDataReceived());
   Write("world");
@@ -150,8 +173,32 @@ TEST_F(StaticDataNavigationBodyLoaderTest,
   EXPECT_TRUE(did_finish_);
 }
 
+TEST_F(StaticDataNavigationBodyLoaderTest,
+       SetDefersLoadingWithBfcacheFromFinishedDataReceived) {
+  Write("hello");
+  loader_->Finish();
+  expecting_data_received_ = true;
+  set_defers_loading_ = WebURLLoader::DeferType::kDeferredWithBackForwardCache;
+  loader_->StartLoadingBody(this, false);
+  EXPECT_EQ("hello", TakeDataReceived());
+  expecting_finished_ = true;
+  loader_->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
+  EXPECT_EQ("", TakeDataReceived());
+  EXPECT_TRUE(did_finish_);
+}
+
 TEST_F(StaticDataNavigationBodyLoaderTest, StartDeferred) {
   loader_->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
+  loader_->StartLoadingBody(this, false);
+  Write("hello");
+  expecting_data_received_ = true;
+  loader_->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
+  EXPECT_EQ("hello", TakeDataReceived());
+}
+
+TEST_F(StaticDataNavigationBodyLoaderTest, StartDeferredWithBackForwardCache) {
+  loader_->SetDefersLoading(
+      WebURLLoader::DeferType::kDeferredWithBackForwardCache);
   loader_->StartLoadingBody(this, false);
   Write("hello");
   expecting_data_received_ = true;
@@ -175,4 +222,12 @@ TEST_F(StaticDataNavigationBodyLoaderTest, SetDefersLoadingFromFinished) {
   EXPECT_TRUE(did_finish_);
 }
 
+TEST_F(StaticDataNavigationBodyLoaderTest,
+       SetDefersLoadingWithBfcacheFromFinished) {
+  loader_->StartLoadingBody(this, false);
+  expecting_finished_ = true;
+  set_defers_loading_ = WebURLLoader::DeferType::kDeferredWithBackForwardCache;
+  loader_->Finish();
+  EXPECT_TRUE(did_finish_);
+}
 }  // namespace blink
