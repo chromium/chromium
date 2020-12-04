@@ -42,22 +42,6 @@ constexpr bool IsMember = WTF::IsSubclassOfTemplate<T, Member>::value;
 
 }  // namespace internal
 
-#define DISALLOW_IN_CONTAINER()              \
- public:                                     \
-  using IsDisallowedInContainerMarker = int; \
-                                             \
- private:                                    \
-  friend class ::WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
-
-// IsAllowedInContainer returns true if some type T supports being nested
-// arbitrarily in other containers. This is relevant for collections where some
-// collections assume that they are placed on a non-moving arena.
-template <typename T, typename = int>
-struct IsAllowedInContainer : std::true_type {};
-template <typename T>
-struct IsAllowedInContainer<T, typename T::IsDisallowedInContainerMarker>
-    : std::false_type {};
-
 // This is a static-only class used as a trait on collections to make them heap
 // allocated.  However see also HeapListHashSetAllocator.
 class PLATFORM_EXPORT HeapAllocator {
@@ -216,12 +200,6 @@ class HeapHashMap : public HashMap<KeyArg,
     static_assert(std::is_trivially_destructible<HeapHashMap>::value,
                   "HeapHashMap must be trivially destructible.");
     static_assert(
-        IsAllowedInContainer<KeyArg>::value,
-        "Not allowed to directly nest type. Use Member<> indirection instead.");
-    static_assert(
-        IsAllowedInContainer<MappedArg>::value,
-        "Not allowed to directly nest type. Use Member<> indirection instead.");
-    static_assert(
         WTF::IsTraceable<KeyArg>::value || WTF::IsTraceable<MappedArg>::value,
         "For hash maps without traceable elements, use HashMap<> "
         "instead of HeapHashMap<>.");
@@ -266,9 +244,6 @@ class HeapHashSet
                   "HeapHashSet supports only Member and WeakMember.");
     static_assert(std::is_trivially_destructible<HeapHashSet>::value,
                   "HeapHashSet must be trivially destructible.");
-    static_assert(
-        IsAllowedInContainer<ValueArg>::value,
-        "Not allowed to directly nest type. Use Member<> indirection instead.");
     static_assert(WTF::IsTraceable<ValueArg>::value,
                   "For hash sets without traceable elements, use HashSet<> "
                   "instead of HeapHashSet<>.");
@@ -301,9 +276,6 @@ class HeapLinkedHashSet
     // hinder performance.
     static_assert(std::is_trivially_destructible<HeapLinkedHashSet>::value,
                   "HeapLinkedHashSet must be trivially destructible.");
-    static_assert(
-        IsAllowedInContainer<ValueArg>::value,
-        "Not allowed to directly nest type. Use Member<> indirection instead.");
     static_assert(WTF::IsTraceable<ValueArg>::value,
                   "For sets without traceable elements, use LinkedHashSet<> "
                   "instead of HeapLinkedHashSet<>.");
@@ -409,9 +381,6 @@ class HeapListHashSet : public ListHashSet<ValueArg,
                   "HeapListHashSet supports only Member and WeakMember.");
     static_assert(std::is_trivially_destructible<HeapListHashSet>::value,
                   "HeapListHashSet must be trivially destructible.");
-    static_assert(
-        IsAllowedInContainer<ValueArg>::value,
-        "Not allowed to directly nest type. Use Member<> indirection instead.");
     static_assert(WTF::IsTraceable<ValueArg>::value,
                   "For sets without traceable elements, use ListHashSet<> "
                   "instead of HeapListHashSet<>.");
@@ -445,9 +414,6 @@ class HeapHashCountedSet
                   "HeapHashCountedSet supports only Member and WeakMember.");
     static_assert(std::is_trivially_destructible<HeapHashCountedSet>::value,
                   "HeapHashCountedSet must be trivially destructible.");
-    static_assert(
-        IsAllowedInContainer<Value>::value,
-        "Not allowed to directly nest type. Use Member<> indirection instead.");
     static_assert(WTF::IsTraceable<Value>::value,
                   "For counted sets without traceable elements, use "
                   "HashCountedSet<> instead of HeapHashCountedSet<>.");
@@ -476,9 +442,6 @@ class HeapVector : public Vector<T, inlineCapacity, HeapAllocator> {
     static_assert(
         std::is_trivially_destructible<HeapVector>::value || inlineCapacity,
         "HeapVector must be trivially destructible.");
-    static_assert(
-        IsAllowedInContainer<T>::value,
-        "Not allowed to directly nest type. Use Member<> indirection instead.");
     static_assert(WTF::IsTraceable<T>::value,
                   "For vectors without traceable elements, use Vector<> "
                   "instead of HeapVector<>.");
@@ -527,12 +490,12 @@ class HeapVector : public Vector<T, inlineCapacity, HeapAllocator> {
     return *this;
   }
 
-  HeapVector(HeapVector&& other)
+  HeapVector(HeapVector&& other) noexcept
       : Vector<T, inlineCapacity, HeapAllocator>(std::move(other)) {
     CheckType();
   }
 
-  HeapVector& operator=(HeapVector&& other) {
+  HeapVector& operator=(HeapVector&& other) noexcept {
     Vector<T, inlineCapacity, HeapAllocator>::operator=(std::move(other));
     return *this;
   }
@@ -556,9 +519,6 @@ class HeapDeque : public Deque<T, 0, HeapAllocator> {
     static_assert(internal::IsMember<T>, "HeapDeque supports only Member.");
     static_assert(std::is_trivially_destructible<HeapDeque>::value,
                   "HeapDeque must be trivially destructible.");
-    static_assert(
-        IsAllowedInContainer<T>::value,
-        "Not allowed to directly nest type. Use Member<> indirection instead.");
     static_assert(WTF::IsTraceable<T>::value,
                   "For vectors without traceable elements, use Deque<> instead "
                   "of HeapDeque<>");
