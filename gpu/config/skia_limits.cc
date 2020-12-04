@@ -25,12 +25,7 @@ void DetermineGrCacheLimitsFromAvailableMemory(
 #if !defined(OS_NACL)
   // The limit of the bytes allocated toward GPU resources in the GrContext's
   // GPU cache.
-#if defined(OS_FUCHSIA)
-  // Reduce protected budget on fuchsia due to https://fxb/36620.
-  constexpr size_t kMaxLowEndGaneshResourceCacheBytes = 24 * 1024 * 1024;
-#else
   constexpr size_t kMaxLowEndGaneshResourceCacheBytes = 48 * 1024 * 1024;
-#endif  // defined(OS_FUCHSIA)
   constexpr size_t kMaxHighEndGaneshResourceCacheBytes = 256 * 1024 * 1024;
   // Limits for glyph cache textures.
   constexpr size_t kMaxLowEndGlyphCacheTextureBytes = 1024 * 512 * 4;
