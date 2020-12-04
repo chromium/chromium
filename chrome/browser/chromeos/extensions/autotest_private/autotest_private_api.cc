@@ -395,6 +395,8 @@ api::autotest_private::AppReadiness GetAppReadiness(
     case apps::mojom::Readiness::kUninstalledByUser:
       return api::autotest_private::AppReadiness::
           APP_READINESS_UNINSTALLEDBYUSER;
+    case apps::mojom::Readiness::kRemoved:
+      return api::autotest_private::AppReadiness::APP_READINESS_REMOVED;
     case apps::mojom::Readiness::kUnknown:
       return api::autotest_private::AppReadiness::APP_READINESS_NONE;
   }

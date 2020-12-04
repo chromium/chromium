@@ -5,7 +5,26 @@
 #include <map>
 
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+
+class MockRegistryObserver : public apps::AppRegistryCache::Observer {
+ public:
+  MOCK_METHOD(void, OnAppUpdate, (const apps::AppUpdate& update), ());
+
+  MOCK_METHOD(void,
+              OnAppRegistryCacheWillBeDestroyed,
+              (apps::AppRegistryCache * cache),
+              ());
+};
+
+MATCHER_P(HasAppId, app_id, "Has the correct app id") {
+  return arg.AppId() == app_id;
+}
+
+}  // namespace
 
 class AppRegistryCacheTest : public testing::Test,
                              public apps::AppRegistryCache::Observer {
@@ -262,6 +281,49 @@ TEST_F(AppRegistryCacheTest, ForEachApp) {
     EXPECT_EQ("e", update.AppId());
   }));
   EXPECT_FALSE(found_e);
+}
+
+TEST_F(AppRegistryCacheTest, Removed) {
+  apps::AppRegistryCache cache;
+  testing::StrictMock<MockRegistryObserver> observer;
+  cache.SetAccountId(account_id());
+  cache.AddObserver(&observer);
+
+  // Starting with an empty cache.
+  cache.ForEachApp([&observer](const apps::AppUpdate& update) {
+    observer.OnAppUpdate(update);
+  });
+
+  // We add the app, and expect to be notified.
+  EXPECT_CALL(observer, OnAppUpdate(HasAppId("app")));
+  std::vector<apps::mojom::AppPtr> apps;
+  apps.push_back(MakeApp("app", "app", apps::mojom::Readiness::kReady));
+  cache.OnApps(std::move(apps));
+
+  // We first say the app is uninstalled, then remove it.
+  apps.clear();
+  apps.push_back(
+      MakeApp("app", "app", apps::mojom::Readiness::kUninstalledByUser));
+  apps.push_back(MakeApp("app", "app", apps::mojom::Readiness::kRemoved));
+
+  // We should see one call informing us that the app was uninstalled.
+  EXPECT_CALL(observer, OnAppUpdate(HasAppId("app")))
+      .WillOnce(
+          testing::Invoke([&observer, &cache](const apps::AppUpdate& update) {
+            EXPECT_EQ(apps::mojom::Readiness::kUninstalledByUser,
+                      update.Readiness());
+            // Even though we have queued the removal, checking the cache now
+            // shows the app is still present.
+            EXPECT_CALL(observer, OnAppUpdate(HasAppId("app")));
+            cache.ForEachApp([&observer](const apps::AppUpdate& update) {
+              observer.OnAppUpdate(update);
+            });
+          }));
+  cache.OnApps(std::move(apps));
+
+  // The cache is now empty.
+  cache.ForEachApp([](const apps::AppUpdate& update) { NOTREACHED(); });
+  cache.RemoveObserver(&observer);
 }
 
 TEST_F(AppRegistryCacheTest, Observer) {

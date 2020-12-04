@@ -75,7 +75,13 @@ void AppRegistryCache::DoOnApps(std::vector<apps::mojom::AppPtr> deltas) {
   for (auto& delta : deltas) {
     auto d_iter = deltas_in_progress_.find(delta->app_id);
     if (d_iter != deltas_in_progress_.end()) {
-      AppUpdate::Merge(d_iter->second, delta.get());
+      if (delta->readiness == mojom::Readiness::kRemoved) {
+        // Ensure that removed deltas are *not* merged, so that the last update
+        // before the merge is sent separately.
+        deltas_pending_.push_back(std::move(delta));
+      } else {
+        AppUpdate::Merge(d_iter->second, delta.get());
+      }
     } else {
       deltas_in_progress_[delta->app_id] = delta.get();
     }
@@ -86,6 +92,10 @@ void AppRegistryCache::DoOnApps(std::vector<apps::mojom::AppPtr> deltas) {
 
   // Notify the observers for every de-duplicated delta.
   for (const auto& d_iter : deltas_in_progress_) {
+    // Do not update subscribers for removed apps.
+    if (d_iter.second->readiness == mojom::Readiness::kRemoved) {
+      continue;
+    }
     auto s_iter = states_.find(d_iter.first);
     apps::mojom::App* state =
         (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
@@ -103,10 +113,15 @@ void AppRegistryCache::DoOnApps(std::vector<apps::mojom::AppPtr> deltas) {
         (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
     apps::mojom::App* delta = d_iter.second;
 
-    if (state) {
-      AppUpdate::Merge(state, delta);
+    if (delta->readiness != mojom::Readiness::kRemoved) {
+      if (state) {
+        AppUpdate::Merge(state, delta);
+      } else {
+        states_.insert(std::make_pair(delta->app_id, delta->Clone()));
+      }
     } else {
-      states_.insert(std::make_pair(delta->app_id, delta->Clone()));
+      DCHECK(!state || state->readiness != mojom::Readiness::kReady);
+      states_.erase(d_iter.first);
     }
   }
   deltas_in_progress_.clear();

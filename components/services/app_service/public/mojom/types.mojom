@@ -108,6 +108,11 @@ enum Readiness {
   kDisabledByUser,       // Disabled by explicit user action.
   kTerminated,           // Renderer process crashed.
   kUninstalledByUser,
+  // Removed apps are purged from the registry cache and have their
+  // associated memory freed. Subscribers are not notified of removed
+  // apps, so publishers must set the app as uninstalled before
+  // removing it.
+  kRemoved,
 };
 
 // How the app was installed.

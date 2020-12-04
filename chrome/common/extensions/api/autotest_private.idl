@@ -60,7 +60,8 @@ namespace autotestPrivate {
     DisabledByPolicy,
     DisabledByUser,
     Terminated,
-    UninstalledByUser
+    UninstalledByUser,
+    Removed
   };
 
   // A subset of Window State types in ash::WindowStateType. We may add more

@@ -52,6 +52,10 @@ void AppUpdate::Merge(apps::mojom::App* state, const apps::mojom::App* delta) {
     return;
   }
 
+  // You can not merge removed states.
+  DCHECK(state->readiness != mojom::Readiness::kRemoved);
+  DCHECK(delta->readiness != mojom::Readiness::kRemoved);
+
   if (delta->readiness != apps::mojom::Readiness::kUnknown) {
     state->readiness = delta->readiness;
   }
