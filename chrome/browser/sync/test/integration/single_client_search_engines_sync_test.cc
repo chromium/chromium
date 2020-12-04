@@ -82,13 +82,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientSearchEnginesSyncTest,
   // "guid2" is newer, so it should be treated as better.
   fake_server_->InjectEntity(CreateFromTemplateURL(CreateTestTemplateURL(
       /*keyword=*/base::ASCIIToUTF16("key1"), /*url=*/"http://key1.com",
-      /*guid=*/"guid1", /*last_mod=*/10)));
+      /*guid=*/"guid1", base::Time::FromTimeT(10))));
   fake_server_->InjectEntity(CreateFromTemplateURL(CreateTestTemplateURL(
       /*keyword=*/base::ASCIIToUTF16("key1"), /*url=*/"http://key1.com",
-      /*guid=*/"guid2", /*last_mod=*/5)));
+      /*guid=*/"guid2", base::Time::FromTimeT(5))));
   fake_server_->InjectEntity(CreateFromTemplateURL(CreateTestTemplateURL(
       /*keyword=*/base::ASCIIToUTF16("key1"), /*url=*/"http://key1.com",
-      /*guid=*/"guid3", /*last_mod=*/5)));
+      /*guid=*/"guid3", base::Time::FromTimeT(5))));
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
