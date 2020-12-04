@@ -141,9 +141,23 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
     std::vector<ComponentExtensionIME> ime_list;
     InitImeList(ime_list);
 
+    std::set<std::string> login_layout_set = {"us",
+                                              "us(intl)",
+                                              "us(altgr-intl)",
+                                              "us(dvorak)",
+                                              "us(dvp)",
+                                              "us(colemak)",
+                                              "us(workman)",
+                                              "us(workman-intl)",
+                                              "fr",
+                                              "se",
+                                              "jp",
+                                              "hu"};
+
     auto mock_delegate =
         std::make_unique<MockComponentExtensionIMEManagerDelegate>();
     mock_delegate->set_ime_list(ime_list);
+    mock_delegate->set_login_layout_set(login_layout_set);
 
     manager_ = std::make_unique<InputMethodManagerImpl>(
         std::make_unique<FakeInputMethodDelegate>(), std::move(mock_delegate),

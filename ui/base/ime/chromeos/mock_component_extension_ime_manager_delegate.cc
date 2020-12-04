@@ -3,20 +3,13 @@
 // found in the LICENSE file.
 
 #include "ui/base/ime/chromeos/mock_component_extension_ime_manager_delegate.h"
-#include "chromeos/ime/input_methods.h"
 #include "ui/base/ime/chromeos/component_extension_ime_manager.h"
 
 namespace chromeos {
 namespace input_method {
 
 MockComponentExtensionIMEManagerDelegate::
-    MockComponentExtensionIMEManagerDelegate() {
-  for (const auto& input_method : input_method::kInputMethods) {
-    if (input_method.is_login_keyboard) {
-      login_layout_set_.insert(input_method.xkb_layout_id);
-    }
-  }
-}
+    MockComponentExtensionIMEManagerDelegate() = default;
 
 MockComponentExtensionIMEManagerDelegate::
     ~MockComponentExtensionIMEManagerDelegate() = default;

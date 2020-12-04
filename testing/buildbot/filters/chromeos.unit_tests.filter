@@ -1,6 +1,4 @@
 # TODO(crbug.com/970790): Enable this.
 -InputMethodManagerImplTest.SetLoginDefaultWithAllowedKeyboardLayouts
--InputMethodManagerImplTest.TestEnableLayoutsNonUsHardwareKeyboard
--InputMethodManagerImplTest.TestEnableMultipleHardwareKeyboardLayout
 # TODO(crbug.com/970806): Enable this.
 -KeyboardShortcutViewerMetadataTest.ModifyAcceleratorShouldUpdateMetadata

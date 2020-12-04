@@ -30,6 +30,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
   void set_ime_list(const std::vector<ComponentExtensionIME>& ime_list) {
     ime_list_ = ime_list;
   }
+  void set_login_layout_set(const std::set<std::string>& login_layout_set) {
+    login_layout_set_ = login_layout_set;
+  }
 
  private:
   std::set<std::string> login_layout_set_;
