@@ -217,14 +217,6 @@ component("protobuf_lite") {
   }
 }
 
-source_set("delimited_mesage_util") {
-  sources = [
-    "src/google/protobuf/util/delimited_message_util.cc",
-    "src/google/protobuf/util/delimited_message_util.h",
-  ]
-  deps = [ ":protobuf_lite" ]
-}
-
 # This is the full, heavy protobuf lib that's needed for c++ .protos that don't
 # specify the LITE_RUNTIME option. The protocol compiler itself (protoc) falls
 # into that category. Do not use in Chrome code.
