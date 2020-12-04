@@ -1,4 +1,4 @@
-<style>
+<style include="cr-hidden-style cr-icons">
   :host {
     align-items: center;
     cursor: default;
@@ -70,6 +70,24 @@
     color: var(--search-box-results-url-selected, var(--google-blue-refresh-700));
   }
 
+  #remove {
+    --cr-icon-button-fill-color: var(--search-box-icon, var(--google-grey-refresh-700));
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-margin-end: 0;
+    --cr-icon-button-margin-start: 0;
+    --cr-icon-button-size: 24px;
+    opacity: 0; /* Hides the button while keeping it in tab order. */
+  }
+
+  :host-context(ntp-realbox-match:hover) #remove {
+    opacity: 1;
+  }
+
+  :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)) #remove {
+    --cr-icon-button-fill-color: var(--search-box-icon-selected, var(--google-grey-refresh-700));
+    opacity: 1;
+  }
+
 </style>
 <ntp-realbox-icon id="icon" match="[[match]]"></ntp-realbox-icon>
 <div id="container">
@@ -77,7 +95,7 @@
   <span id="separator" class="dim">[[separatorText_]]</span>
   <span id="description" inner-h-t-m-l="[[descriptionHtml_]]"></span>
 </div>
-<ntp-realbox-button id="remove" tabindex="0" role="button"
-    on-click="onRemoveButtonClick_" on-keydown="onRemoveButtonKeydown_"
-    title$="[[removeButtonTitle_]]" hidden$="[[!removeButtonIsVisible_]]">
-</ntp-realbox-button>
+<cr-icon-button id="remove" class="icon-clear"
+    on-click="onRemoveButtonClick_" on-mousedown="onRemoveButtonMouseDown_"
+    title="[[removeButtonTitle_]]" hidden$="[[!removeButtonIsVisible_]]">
+</cr-icon-button>

@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import './strings.m.js';
-import './realbox_button.js';
 import './realbox_match.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
@@ -229,21 +230,8 @@ class RealboxDropdownElement extends PolymerElement {
       return;
     }
 
-    const icon = assert(this.theme.icon);
-    // Icon's background color in a hovered context (0x29 == .16).
-    // TODO(crbug.com/1041129): Share this with the Omnibox.
-    const iconBgHovered = {value: icon.value & 0x29ffffff};
-
-    const iconSelected = assert(this.theme.iconSelected);
-    // Icon's background color in a focused context (0x52 == .32).
-    // TODO(crbug.com/1041129): Share this with the Omnibox.
-    const iconBgFocused = {value: iconSelected.value & 0x52ffffff};
-
     this.updateStyles({
-      '--search-box-icon-bg-focused': skColorToRgba(iconBgFocused),
-      '--search-box-icon-bg-hovered': skColorToRgba(iconBgHovered),
-      '--search-box-icon-selected': skColorToRgba(iconSelected),
-      '--search-box-icon': skColorToRgba(icon),
+      '--search-box-icon': skColorToRgba(this.theme.icon),
       '--search-box-results-bg-hovered':
           skColorToRgba(assert(this.theme.resultsBgHovered)),
       '--search-box-results-bg-selected':
@@ -299,14 +287,8 @@ class RealboxDropdownElement extends PolymerElement {
    * @param {!Event} e
    * @private
    */
-  onToggleButtonKeydown_(e) {
-    if (e.key !== 'Enter' && e.key !== ' ') {
-      return;
-    }
-
-    // Simulate a click so that it gets handled by |onHeaderClick_|.
-    e.target.click();
-    e.preventDefault();  // Prevents default browser action.
+  onToggleButtonMouseDown_(e) {
+    e.preventDefault();  // Prevents default browser action (focus).
   }
 
   //============================================================================

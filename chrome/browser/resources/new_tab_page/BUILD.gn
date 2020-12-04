@@ -26,7 +26,6 @@ js_type_check("closure_compile") {
     ":one_google_bar_api",
     ":promo_browser_command_proxy",
     ":realbox",
-    ":realbox_button",
     ":realbox_dropdown",
     ":realbox_icon",
     ":realbox_match",
@@ -194,18 +193,12 @@ js_library("realbox") {
 js_library("realbox_dropdown") {
   deps = [
     ":browser_proxy",
-    ":realbox_button",
     ":realbox_match",
     ":utils",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("realbox_button") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
@@ -217,10 +210,10 @@ js_library("realbox_icon") {
 
 js_library("realbox_match") {
   deps = [
-    ":realbox_button",
     ":realbox_icon",
     ":utils",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
 }
@@ -265,7 +258,6 @@ html_to_js("web_components_local") {
     "middle_slot_promo.js",
     "mini_page.js",
     "most_visited.js",
-    "realbox_button.js",
     "realbox_dropdown.js",
     "realbox_icon.js",
     "realbox_match.js",
@@ -323,7 +315,6 @@ if (optimize_webui) {
       "logo.js",
       "doodle_share_dialog.js",
       "realbox.js",
-      "realbox_button.js",
       "realbox_dropdown.js",
       "realbox_icon.js",
       "realbox_match.js",

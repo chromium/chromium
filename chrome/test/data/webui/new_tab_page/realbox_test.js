@@ -248,9 +248,6 @@ suite('NewTabPageRealboxTest', () => {
     assertStyle(realbox, '--search-box-results-bg', '');
     assertStyle(realbox, '--search-box-text', '');
     assertStyle(realbox, '--search-box-icon', '');
-    assertStyle(matches, '--search-box-icon-bg-focused', '');
-    assertStyle(matches, '--search-box-icon-bg-hovered', '');
-    assertStyle(matches, '--search-box-icon-selected', '');
     assertStyle(matches, '--search-box-icon', '');
     assertStyle(matches, '--search-box-results-bg-hovered', '');
     assertStyle(matches, '--search-box-results-bg-selected', '');
@@ -271,9 +268,6 @@ suite('NewTabPageRealboxTest', () => {
     assertStyle(realbox, '--search-box-results-bg', 'rgba(0, 0, 4, 1)');
     assertStyle(realbox, '--search-box-text', 'rgba(0, 0, 13, 1)');
     assertStyle(realbox, '--search-box-icon', 'rgba(0, 0, 1, 1)');
-    assertStyle(matches, '--search-box-icon-bg-focused', 'rgba(0, 0, 2, 0.32)');
-    assertStyle(matches, '--search-box-icon-bg-hovered', 'rgba(0, 0, 1, 0.16)');
-    assertStyle(matches, '--search-box-icon-selected', 'rgba(0, 0, 2, 1)');
     assertStyle(matches, '--search-box-icon', 'rgba(0, 0, 1, 1)');
     assertStyle(matches, '--search-box-results-bg-hovered', 'rgba(0, 0, 5, 1)');
     assertStyle(
@@ -2061,17 +2055,22 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(window.getComputedStyle(headerEl).display !== 'none');
     assertEquals('Recommended for you', headerEl.textContent.trim());
     const toggleButtonEl =
-        realbox.$.matches.shadowRoot.querySelectorAll('ntp-realbox-button')[0];
+        realbox.$.matches.shadowRoot.querySelectorAll('cr-icon-button')[0];
     assertTrue(window.getComputedStyle(toggleButtonEl).display !== 'none');
 
     // Make the second match visible by pressing 'Space' on the toggle button.
-    const enter = new KeyboardEvent('keydown', {
+    toggleButtonEl.dispatchEvent(new KeyboardEvent('keydown', {
       bubbles: true,
       cancelable: true,
       composed: true,  // So it propagates across shadow DOM boundary.
       key: ' ',
-    });
-    toggleButtonEl.dispatchEvent(enter);
+    }));
+    toggleButtonEl.dispatchEvent(new KeyboardEvent('keyup', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      key: ' ',
+    }));
 
     await testProxy.handler.whenCalled('toggleSuggestionGroupIdVisibility')
         .then((args) => {
