@@ -376,6 +376,8 @@ void ArcSupportHost::ShowError(ErrorInfo error_info,
     case Error::SIGN_IN_CLOUD_PROVISION_FLOW_NETWORK_ERROR:
     case Error::SIGN_IN_CLOUD_PROVISION_FLOW_PERMANENT_ERROR:
     case Error::SIGN_IN_CLOUD_PROVISION_FLOW_TRANSIENT_ERROR:
+    case Error::SIGN_IN_SERVICE_UNAVAILABLE_ERROR:
+    case Error::SIGN_IN_GMS_NOT_AVAILABLE_ERROR:
     case Error::SIGN_IN_UNKNOWN_ERROR:
       DCHECK(error_info.arg);
       message = l10n_util::GetStringFUTF16(

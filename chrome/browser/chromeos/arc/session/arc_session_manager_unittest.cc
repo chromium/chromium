@@ -1141,12 +1141,55 @@ class ArcSessionManagerArcAlwaysStartTest : public ArcSessionManagerTest {
   DISALLOW_COPY_AND_ASSIGN(ArcSessionManagerArcAlwaysStartTest);
 };
 
+ArcProvisioningResult CreateProvisioningResult(
+    const absl::variant<arc::mojom::GeneralSignInError,
+                        arc::mojom::GMSSignInError,
+                        arc::mojom::GMSCheckInError,
+                        arc::mojom::CloudProvisionFlowError,
+                        ArcStopReason,
+                        ChromeProvisioningTimeout>& error) {
+  if (absl::holds_alternative<arc::mojom::GeneralSignInError>(error)) {
+    return ArcProvisioningResult(arc::mojom::ArcSignInResult::NewError(
+        arc::mojom::ArcSignInError::NewGeneralError(
+            absl::get<arc::mojom::GeneralSignInError>(error))));
+  }
+
+  if (absl::holds_alternative<arc::mojom::GMSSignInError>(error)) {
+    return ArcProvisioningResult(arc::mojom::ArcSignInResult::NewError(
+        arc::mojom::ArcSignInError::NewSignInError(
+            absl::get<arc::mojom::GMSSignInError>(error))));
+  }
+
+  if (absl::holds_alternative<arc::mojom::GMSCheckInError>(error)) {
+    return ArcProvisioningResult(arc::mojom::ArcSignInResult::NewError(
+        arc::mojom::ArcSignInError::NewCheckInError(
+            absl::get<arc::mojom::GMSCheckInError>(error))));
+  }
+
+  if (absl::holds_alternative<arc::mojom::CloudProvisionFlowError>(error)) {
+    return ArcProvisioningResult(arc::mojom::ArcSignInResult::NewError(
+        arc::mojom::ArcSignInError::NewCloudProvisionFlowError(
+            absl::get<arc::mojom::CloudProvisionFlowError>(error))));
+  }
+
+  if (absl::holds_alternative<ArcStopReason>(error))
+    return ArcProvisioningResult(absl::get<ArcStopReason>(error));
+
+  return ArcProvisioningResult(ChromeProvisioningTimeout{});
+}
+
 struct ProvisioningErrorDisplayTestParam {
   // the reason for arc instance stopping
-  ArcStopReason stop_reason;
+  absl::variant<arc::mojom::GeneralSignInError,
+                arc::mojom::GMSSignInError,
+                arc::mojom::GMSCheckInError,
+                arc::mojom::CloudProvisionFlowError,
+                ArcStopReason,
+                ChromeProvisioningTimeout>
+      error;
 
   // the error sent to arc support host
-  ArcSupportHost::Error error;
+  ArcSupportHost::Error message;
 
   // the error code sent to arc support host
   base::Optional<int> arg;
@@ -1160,7 +1203,16 @@ constexpr ProvisioningErrorDisplayTestParam
          ArcSupportHost::Error::LOW_DISK_SPACE_ERROR,
          {}},
         {ArcStopReason::CRASH, ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR,
-         8 /*ARC_STOPPED*/}};
+         8 /*ARC_STOPPED*/},
+        {arc::mojom::GMSSignInError::GMS_SIGN_IN_NETWORK_ERROR,
+         ArcSupportHost::Error::SIGN_IN_NETWORK_ERROR,
+         1 /*GMS_SIGN_IN_NETWORK_ERROR*/},
+        {arc::mojom::GMSSignInError::GMS_SIGN_IN_TIMEOUT,
+         ArcSupportHost::Error::SIGN_IN_SERVICE_UNAVAILABLE_ERROR,
+         5 /*GMS_SIGN_IN_TIMEOUT*/},
+        {arc::mojom::GMSCheckInError::GMS_CHECK_IN_TIMEOUT,
+         ArcSupportHost::Error::SIGN_IN_GMS_NOT_AVAILABLE_ERROR,
+         2 /*GMS_CHECK_IN_TIMEOUT*/}};
 
 class ProvisioningErrorDisplayTest
     : public ArcSessionManagerTest,
@@ -1187,11 +1239,11 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(ProvisioningErrorDisplayTest, ArcStopped) {
   ShowErrorObserver observer(arc_session_manager());
 
-  arc_session_manager()->OnProvisioningFinished(
-      ArcProvisioningResult(GetParam().stop_reason));
+  ArcProvisioningResult result = CreateProvisioningResult(GetParam().error);
+  arc_session_manager()->OnProvisioningFinished(result);
 
   ASSERT_TRUE(observer.error_info());
-  EXPECT_EQ(GetParam().error, observer.error_info().value().error);
+  EXPECT_EQ(GetParam().message, observer.error_info().value().error);
   EXPECT_EQ(GetParam().arg, observer.error_info().value().arg);
 }
 
@@ -1752,39 +1804,8 @@ TEST_P(ArcSessionRetryTest, ContainerRestarted) {
   arc_session_manager()->StartArcForTesting();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
 
-  absl::variant<arc::mojom::GeneralSignInError, arc::mojom::GMSSignInError,
-                arc::mojom::GMSCheckInError,
-                arc::mojom::CloudProvisionFlowError, ArcStopReason,
-                ChromeProvisioningTimeout>
-      error = std::move(GetParam().error);
-
-  if (absl::holds_alternative<arc::mojom::CloudProvisionFlowError>(error)) {
-    ArcProvisioningResult result(arc::mojom::ArcSignInResult::NewError(
-        arc::mojom::ArcSignInError::NewCloudProvisionFlowError(
-            absl::get<arc::mojom::CloudProvisionFlowError>(error))));
-    arc_session_manager()->OnProvisioningFinished(result);
-  } else if (absl::holds_alternative<ArcStopReason>(error)) {
-    ArcProvisioningResult result(absl::get<ArcStopReason>(error));
-    arc_session_manager()->OnProvisioningFinished(result);
-  } else if (absl::holds_alternative<arc::mojom::GeneralSignInError>(error)) {
-    ArcProvisioningResult result(arc::mojom::ArcSignInResult::NewError(
-        arc::mojom::ArcSignInError::NewGeneralError(
-            absl::get<arc::mojom::GeneralSignInError>(error))));
-    arc_session_manager()->OnProvisioningFinished(result);
-  } else if (absl::holds_alternative<arc::mojom::GMSSignInError>(error)) {
-    ArcProvisioningResult result(arc::mojom::ArcSignInResult::NewError(
-        arc::mojom::ArcSignInError::NewSignInError(
-            absl::get<arc::mojom::GMSSignInError>(error))));
-    arc_session_manager()->OnProvisioningFinished(result);
-  } else if (absl::holds_alternative<arc::mojom::GMSCheckInError>(error)) {
-    ArcProvisioningResult result(arc::mojom::ArcSignInResult::NewError(
-        arc::mojom::ArcSignInError::NewCheckInError(
-            absl::get<arc::mojom::GMSCheckInError>(error))));
-    arc_session_manager()->OnProvisioningFinished(result);
-  } else if (absl::holds_alternative<ChromeProvisioningTimeout>(error)) {
-    arc_session_manager()->OnProvisioningFinished(
-        ArcProvisioningResult(ChromeProvisioningTimeout{}));
-  }
+  ArcProvisioningResult result1 = CreateProvisioningResult(GetParam().error);
+  arc_session_manager()->OnProvisioningFinished(result1);
 
   // In case of permanent error data removal request is scheduled.
   EXPECT_EQ(GetParam().data_removed,
