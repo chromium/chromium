@@ -75,9 +75,10 @@ class BorealisApps
       const std::vector<std::string>& inserted_apps) override;
 
   // borealis::BorealisWindowManager::AnonymousAppObserver overrides.
-  void NewAnonymousAppDetected(const std::string& shelf_app_id,
-                               const std::string& shelf_app_name) override;
-  void WindowManagerWillBeDeleted(
+  void OnAnonymousAppAdded(const std::string& shelf_app_id,
+                           const std::string& shelf_app_name) override;
+  void OnAnonymousAppRemoved(const std::string& shelf_app_id) override;
+  void OnWindowManagerDeleted(
       borealis::BorealisWindowManager* window_manager) override;
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
@@ -88,7 +89,7 @@ class BorealisApps
 
   base::ScopedObservation<borealis::BorealisWindowManager,
                           borealis::BorealisWindowManager::AnonymousAppObserver>
-      anonymous_observation_{this};
+      anonymous_app_observation_{this};
 };
 
 }  // namespace apps

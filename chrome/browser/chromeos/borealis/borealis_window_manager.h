@@ -7,9 +7,11 @@
 
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "ui/aura/window_observer.h"
 
 class Profile;
 
@@ -19,7 +21,7 @@ class Window;
 
 namespace borealis {
 
-class BorealisWindowManager {
+class BorealisWindowManager : public aura::WindowObserver {
  public:
   // Returns true if this window belongs to a borealis VM (based on its app_id
   // and startup_id).
@@ -32,17 +34,22 @@ class BorealisWindowManager {
     // belongs too. The |shelf_app_name| represents the system's best-guess for
     // what the app should be called. This us usually not a localized string but
     // something we read from the window's properties.
-    virtual void NewAnonymousAppDetected(const std::string& shelf_app_id,
-                                         const std::string& shelf_app_name) = 0;
+    virtual void OnAnonymousAppAdded(const std::string& shelf_app_id,
+                                     const std::string& shelf_app_name) = 0;
+
+    // Called when the last window for the anonymous app with |shelf_app_id| is
+    // closed, and the app is no longer relevant.
+    virtual void OnAnonymousAppRemoved(const std::string& shelf_app_id) = 0;
+
     // Called when the window manager is being deleted. Observers should
     // unregister themselves from it.
-    virtual void WindowManagerWillBeDeleted(
+    virtual void OnWindowManagerDeleted(
         BorealisWindowManager* window_manager) = 0;
   };
 
   explicit BorealisWindowManager(Profile* profile);
 
-  ~BorealisWindowManager();
+  ~BorealisWindowManager() override;
 
   void AddObserver(AnonymousAppObserver* observer);
   void RemoveObserver(AnonymousAppObserver* observer);
@@ -50,10 +57,12 @@ class BorealisWindowManager {
   std::string GetShelfAppId(aura::Window* window);
 
  private:
-  void HandleAnonymousApp(const std::string& anon_id);
+  // aura::WindowObserver overrides.
+  void OnWindowDestroying(aura::Window* window) override;
 
   Profile* const profile_;
-  base::flat_set<std::string> known_anon_ids_;
+  base::flat_map<std::string, base::flat_set<aura::Window*>>
+      anon_ids_to_windows_;
   base::ObserverList<AnonymousAppObserver> observers_;
 };
 

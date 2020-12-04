@@ -66,7 +66,7 @@ BorealisApps::BorealisApps(
     : profile_(profile) {
   Registry()->AddObserver(this);
 
-  anonymous_observation_.Observe(
+  anonymous_app_observation_.Observe(
       &borealis::BorealisService::GetForProfile(profile_)->WindowManager());
 
   PublisherBase::Initialize(app_service, apps::mojom::AppType::kBorealis);
@@ -219,8 +219,8 @@ void BorealisApps::OnRegistryUpdated(
   }
 }
 
-void BorealisApps::NewAnonymousAppDetected(const std::string& shelf_app_id,
-                                           const std::string& shelf_app_name) {
+void BorealisApps::OnAnonymousAppAdded(const std::string& shelf_app_id,
+                                       const std::string& shelf_app_name) {
   apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
       apps::mojom::AppType::kBorealis, shelf_app_id,
       apps::mojom::Readiness::kReady, shelf_app_name,
@@ -238,9 +238,21 @@ void BorealisApps::NewAnonymousAppDetected(const std::string& shelf_app_id,
   Publish(std::move(app), subscribers_);
 }
 
-void BorealisApps::WindowManagerWillBeDeleted(
+void BorealisApps::OnAnonymousAppRemoved(const std::string& shelf_app_id) {
+  // First uninstall the anonymous app, then remove it.
+  for (auto readiness : {apps::mojom::Readiness::kUninstalledByUser,
+                         apps::mojom::Readiness::kRemoved}) {
+    apps::mojom::AppPtr app = apps::mojom::App::New();
+    app->app_type = apps::mojom::AppType::kBorealis;
+    app->app_id = shelf_app_id;
+    app->readiness = readiness;
+    Publish(std::move(app), subscribers_);
+  }
+}
+
+void BorealisApps::OnWindowManagerDeleted(
     borealis::BorealisWindowManager* window_manager) {
-  anonymous_observation_.Reset();
+  anonymous_app_observation_.Reset();
 }
 
 }  // namespace apps
