@@ -10,8 +10,7 @@ from benchmarks import press
 
 
 @benchmark.Info(emails=['qiangchen@chromium.org', # For smoothness metrics
-                        'mbonadei@chromium.org',
-                        'phoglund@chromium.org'],
+                        'mbonadei@chromium.org'],
                 component='Blink>WebRTC',
                 documentation_url='http://bit.ly/webrtc-benchmark')
 class WebrtcPerfBenchmark(press._PressBenchmark):  # pylint: disable=protected-access

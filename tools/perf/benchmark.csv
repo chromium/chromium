@@ -71,4 +71,4 @@ v8.browsing_mobile,"mythria@chromium.org, tmrts@chromium.org",Blink>JavaScript,,
 v8.browsing_mobile-future,"mythria@chromium.org, tmrts@chromium.org",Blink>JavaScript,,"2018,2019,2020,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
 v8.runtime_stats.top_25,"mythria@chromium.org, ulan@chromium.org",Blink>JavaScript,,"cold,hot,warm"
 views_perftests,tapted@chromium.org,Internals>Views,,
-webrtc,"qiangchen@chromium.org, mbonadei@chromium.org, phoglund@chromium.org",Blink>WebRTC,http://bit.ly/webrtc-benchmark,"datachannel,getusermedia,pauseplay,smoothness,stress,videoConstraints"
+webrtc,"qiangchen@chromium.org, mbonadei@chromium.org",Blink>WebRTC,http://bit.ly/webrtc-benchmark,"datachannel,getusermedia,pauseplay,smoothness,stress,videoConstraints"
