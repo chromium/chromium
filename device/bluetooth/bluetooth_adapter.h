@@ -307,7 +307,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
         const std::vector<uint8_t>& value) {}
   };
 
-  // Used to configure a listening servie.
+  // Used to configure a listening service.
   struct DEVICE_BLUETOOTH_EXPORT ServiceOptions {
     ServiceOptions();
     ~ServiceOptions();
@@ -315,6 +315,16 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     base::Optional<int> channel;
     base::Optional<int> psm;
     base::Optional<std::string> name;
+
+    // Clients can configure this option to choose if they want to enforce
+    // bonding with remote devices that connect to this device. Options:
+    //   * Unset: bonding is not enforced by the local device, and the remote
+    //     device can choose if they want to enforce bonding.
+    //   * Set to false: bonding is prevented by the local device. Clients which
+    //     use this are responsible for securing their communication at the
+    //     application level.
+    //   * Set to true: bonding is enforced by the local device.
+    base::Optional<bool> require_authentication;
   };
 
   // The ErrorCallback is used for methods that can fail in which case it is

@@ -198,9 +198,10 @@ void FakeAdapter::ConnectToServiceInsecurely(
   std::move(callback).Run(std::move(connect_to_service_result));
 }
 
-void FakeAdapter::CreateRfcommService(const std::string& service_name,
-                                      const device::BluetoothUUID& service_uuid,
-                                      CreateRfcommServiceCallback callback) {
+void FakeAdapter::CreateRfcommServiceInsecurely(
+    const std::string& service_name,
+    const device::BluetoothUUID& service_uuid,
+    CreateRfcommServiceInsecurelyCallback callback) {
   if (!base::Contains(allowed_connections_for_service_name_and_uuid_pair_,
                       std::make_pair(service_name, service_uuid))) {
     std::move(callback).Run(/*server_socket=*/mojo::NullRemote());

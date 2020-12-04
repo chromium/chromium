@@ -150,7 +150,7 @@ BluetoothInternalsTest.prototype = {
         return {result: null};
       }
 
-      async createRfcommService(service_name, service_uuid) {
+      async createRfcommServiceInsecurely(service_name, service_uuid) {
         return {result: null};
       }
 

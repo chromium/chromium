@@ -198,11 +198,13 @@ interface Adapter {
       => (ConnectToServiceResult? result);
 
   // Creates an RFCOMM service on this adapter advertised with |service_name|
-  // and |service_uuid|. If the service creation attempt fails, the returned
-  // |server_socket| will be null. See ServerSocket for details on how to stop
-  // listening.
+  // and |service_uuid|. This method is marked as "Insecurely" because the local
+  // device will not request bonding (pairing) with the remote device: clients
+  // are responsible for securing the connection at the application-level. If
+  // the service creation attempt fails, the returned |server_socket| will be
+  // null. See ServerSocket for details on how to stop listening.
   [Sync]
-  CreateRfcommService(string service_name, UUID service_uuid)
+  CreateRfcommServiceInsecurely(string service_name, UUID service_uuid)
       => (pending_remote<ServerSocket>? server_socket);
 };
 
