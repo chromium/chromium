@@ -404,19 +404,9 @@ SlotSpanMetadata<thread_safe>::FromPointer(void* ptr) {
 
 template <bool thread_safe>
 ALWAYS_INLINE bool SlotSpanMetadata<thread_safe>::CanStoreRawSize() const {
-  // For direct-map as well as single-slot slot spans (recognized by checking
-  // against |kMaxPartitionPagesPerSlotSpan|), we have some spare metadata space
-  // in subsequent PartitionPage to store the raw size. It isn't only metadata
-  // space though, slot spans that have more than one slot can't have raw size
-  // stored, because we wouldn't know which slot it applies to.
-  if (LIKELY(bucket->slot_size <=
-             MaxSystemPagesPerSlotSpan() * SystemPageSize()))
-    return false;
-
-  PA_DCHECK((bucket->slot_size % SystemPageSize()) == 0);
-  PA_DCHECK(bucket->is_direct_mapped() || bucket->get_slots_per_span() == 1);
-
-  return true;
+  // The answer is the same for all slot spans in a bucket, because it's based
+  // on the slot size.
+  return bucket->CanStoreRawSize();
 }
 
 template <bool thread_safe>

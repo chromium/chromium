@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
 
 namespace base {
 
@@ -214,6 +215,9 @@ void ThreadCache::FillBucket(size_t bucket_index) {
 
   size_t utilized_slot_size;
   bool is_already_zeroed;
+
+  PA_DCHECK(!root_->buckets[bucket_index].CanStoreRawSize());
+  PA_DCHECK(!root_->buckets[bucket_index].is_direct_mapped());
 
   // Same as calling RawAlloc() |count| times, but acquires the lock only once.
   internal::ScopedGuard<internal::ThreadSafe> guard(root_->lock_);

@@ -629,16 +629,16 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
     size_t raw_size,
     size_t* utilized_slot_size,
     bool* is_already_zeroed) {
-  *is_already_zeroed = false;
-
   SlotSpan* slot_span = bucket->active_slot_spans_head;
   // Check that this slot span is neither full nor freed.
   PA_DCHECK(slot_span);
   PA_DCHECK(slot_span->num_allocated_slots >= 0);
-  *utilized_slot_size = bucket->slot_size;
 
   void* ret = slot_span->freelist_head;
   if (LIKELY(ret)) {
+    *is_already_zeroed = false;
+    *utilized_slot_size = bucket->slot_size;
+
     // If these DCHECKs fire, you probably corrupted memory. TODO(palmer): See
     // if we can afford to make these CHECKs.
     PA_DCHECK(IsValidSlotSpan(slot_span));
@@ -646,6 +646,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
     // All large allocations must go through the slow path to correctly update
     // the size metadata.
     PA_DCHECK(!slot_span->CanStoreRawSize());
+    PA_DCHECK(!slot_span->bucket->is_direct_mapped());
     internal::PartitionFreelistEntry* new_head =
         slot_span->freelist_head->GetNext();
     slot_span->SetFreelistHead(new_head);
@@ -1026,9 +1027,6 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
       tcache = internal::ThreadCache::Create(this);
       with_thread_cache = true;
     }
-    // bucket->slot_size is 0 for direct-mapped allocations, as their bucket is
-    // the sentinel one. Since |bucket_index| is going to be kNumBuckets + 1,
-    // the thread cache allocation will return nullptr.
     ret = tcache->GetFromCache(bucket_index);
     is_already_zeroed = false;
     utilized_slot_size = bucket_at(bucket_index).slot_size;
@@ -1038,18 +1036,20 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
     // for a non-thread cache allocation.
     if (ret) {
       SlotSpan* slot_span = SlotSpan::FromPointerNoAlignmentCheck(ret);
+      PA_DCHECK(IsValidSlotSpan(slot_span));
+      PA_DCHECK(slot_span->bucket == &bucket_at(bucket_index));
       // All large allocations must go through the RawAlloc path to correctly
       // set |utilized_slot_size|.
       PA_DCHECK(!slot_span->CanStoreRawSize());
-      PA_DCHECK(IsValidSlotSpan(slot_span));
-      PA_DCHECK(slot_span->bucket == &bucket_at(bucket_index));
+      PA_DCHECK(!slot_span->bucket->is_direct_mapped());
     }
 #endif
   }
 
-  if (!ret)
+  if (!ret) {
     ret = RawAlloc(buckets + bucket_index, flags, raw_size, &utilized_slot_size,
                    &is_already_zeroed);
+  }
 
   if (UNLIKELY(!ret))
     return nullptr;
