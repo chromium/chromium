@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.payments.ui.PaymentUiService;
-import org.chromium.chrome.browser.payments.ui.SectionInformation;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.BrowserPaymentRequest;
@@ -398,15 +397,8 @@ public class ChromePaymentRequestService
 
         if (hasNotifiedInvokedPaymentApp) return;
 
-        if (mPaymentUiService.shouldShowShippingSection()
-                && (mPaymentUiService.getUiShippingOptions().isEmpty()
-                        || !TextUtils.isEmpty(details.error))
-                && mPaymentUiService.getShippingAddressesSection().getSelectedItem() != null) {
-            mPaymentUiService.getShippingAddressesSection().getSelectedItem().setInvalid();
-            mPaymentUiService.getShippingAddressesSection().setSelectedItemIndex(
-                    SectionInformation.INVALID_SELECTION);
-            mPaymentUiService.getShippingAddressesSection().setErrorMessage(details.error);
-        }
+        String detailsError = mSpec.getPaymentDetails().error;
+        mPaymentUiService.showShippingAddressErrorIfApplicable(detailsError);
 
         boolean providedInformationToPaymentRequestUI =
                 mPaymentUiService.enableAndUpdatePaymentRequestUIWithPaymentInfo();
@@ -451,16 +443,7 @@ public class ChromePaymentRequestService
     // Implements BrowserPaymentRequest:
     @Override
     public void onPaymentDetailsNotUpdated(@Nullable String selectedShippingOptionError) {
-        if (mPaymentUiService.shouldShowShippingSection()
-                && (mPaymentUiService.getUiShippingOptions().isEmpty()
-                        || !TextUtils.isEmpty(mSpec.selectedShippingOptionError()))
-                && mPaymentUiService.getShippingAddressesSection().getSelectedItem() != null) {
-            mPaymentUiService.getShippingAddressesSection().getSelectedItem().setInvalid();
-            mPaymentUiService.getShippingAddressesSection().setSelectedItemIndex(
-                    SectionInformation.INVALID_SELECTION);
-            mPaymentUiService.getShippingAddressesSection().setErrorMessage(
-                    selectedShippingOptionError);
-        }
+        mPaymentUiService.showShippingAddressErrorIfApplicable(selectedShippingOptionError);
 
         boolean providedInformationToPaymentRequestUI =
                 mPaymentUiService.enableAndUpdatePaymentRequestUIWithPaymentInfo();

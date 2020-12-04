@@ -908,6 +908,20 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         return isFirstUpdate;
     }
 
+    /**
+     * Shows the shipping address error if any.
+     * @param error The shipping address error, can be null.
+     */
+    public void showShippingAddressErrorIfApplicable(@Nullable String error) {
+        if (shouldShowShippingSection()
+                && (mUiShippingOptions.isEmpty() || !TextUtils.isEmpty(error))
+                && mShippingAddressesSection.getSelectedItem() != null) {
+            mShippingAddressesSection.getSelectedItem().setInvalid();
+            mShippingAddressesSection.setSelectedItemIndex(SectionInformation.INVALID_SELECTION);
+            mShippingAddressesSection.setErrorMessage(error);
+        }
+    }
+
     // Implements PaymentUiService.Delegate:
     @Override
     public boolean shouldShowShippingSection() {
