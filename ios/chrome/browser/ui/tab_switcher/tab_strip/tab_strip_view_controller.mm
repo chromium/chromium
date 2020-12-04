@@ -27,7 +27,6 @@ const CGFloat kNewTabButtonWidth = 44;
 // Default image insets for the new tab button.
 const CGFloat kNewTabButtonLeadingImageInset = -10.0;
 const CGFloat kNewTabButtonBottomImageInset = -2.0;
-
 }  // namespace
 
 @interface TabStripViewController () <TabStripCellDelegate>
@@ -40,6 +39,9 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
 @property(nonatomic, copy) NSString* selectedItemID;
 // Index of the selected item in |items|.
 @property(nonatomic, readonly) NSUInteger selectedIndex;
+// Constraints that are used when the button needs to be kept next to the last
+// cell.
+@property NSLayoutConstraint* lastCellConstraint;
 
 @end
 
@@ -72,13 +74,18 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
   [self.view addSubview:self.buttonNewTab];
   [NSLayoutConstraint activateConstraints:@[
     [self.buttonNewTab.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
+        constraintLessThanOrEqualToAnchor:self.view.trailingAnchor],
     [self.buttonNewTab.topAnchor constraintEqualToAnchor:self.view.topAnchor],
     [self.buttonNewTab.heightAnchor
         constraintEqualToAnchor:self.view.heightAnchor],
     [self.buttonNewTab.widthAnchor
         constraintEqualToConstant:kNewTabButtonWidth],
   ]];
+
+  self.lastCellConstraint = [self.buttonNewTab.leadingAnchor
+      constraintEqualToAnchor:self.view.trailingAnchor];
+  self.lastCellConstraint.priority = UILayoutPriorityDefaultHigh;
+  self.lastCellConstraint.active = YES;
 
   [self.buttonNewTab addTarget:self
                         action:@selector(sendNewTabCommand)
@@ -108,6 +115,29 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
 
   [self configureCell:cell withItem:item];
   return cell;
+}
+
+- (void)collectionView:(UICollectionView*)collectionView
+       willDisplayCell:(UICollectionViewCell*)cell
+    forItemAtIndexPath:(NSIndexPath*)indexPath {
+  NSInteger numberOfItems = [self collectionView:collectionView
+                          numberOfItemsInSection:indexPath.section];
+  if (indexPath.row == numberOfItems - 1) {
+    // Adding a constant to the button's contraints to keep it next to the last
+    // cell using the given collectionView and cell.
+    CGFloat newConstant = -(collectionView.bounds.size.width -
+                            (cell.frame.origin.x + cell.frame.size.width));
+    self.lastCellConstraint.constant = newConstant;
+  }
+}
+
+- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  // Adding a constant to the button's contraints to keep it next to the last
+  // cell while scrolling with given scrollView.
+  CGFloat newConstant = scrollView.contentSize.width -
+                        scrollView.contentOffset.x -
+                        scrollView.bounds.size.width;
+  self.lastCellConstraint.constant = newConstant;
 }
 
 #pragma mark - TabStripConsumer
