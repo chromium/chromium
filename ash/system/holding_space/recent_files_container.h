@@ -16,7 +16,6 @@ class Label;
 namespace ash {
 
 class HoldingSpaceItemChipsContainer;
-class HoldingSpaceItemViewDelegate;
 
 // Container for the recent files (e.g. screen captures, downloads, etc).
 class RecentFilesContainer : public HoldingSpaceItemViewsContainer {
@@ -29,24 +28,23 @@ class RecentFilesContainer : public HoldingSpaceItemViewsContainer {
   // HoldingSpaceItemViewsContainer:
   void ChildVisibilityChanged(views::View* child) override;
   void ViewHierarchyChanged(const views::ViewHierarchyChangedDetails&) override;
-  void AddHoldingSpaceItemView(const HoldingSpaceItem* item,
-                               bool due_to_finalization) override;
+  bool ContainsHoldingSpaceItemView(const HoldingSpaceItem* item) override;
+  bool ContainsHoldingSpaceItemViews() override;
+  bool WillAddHoldingSpaceItemView(const HoldingSpaceItem* item) override;
+  void AddHoldingSpaceItemView(const HoldingSpaceItem* item) override;
   void RemoveAllHoldingSpaceItemViews() override;
-  void RemoveHoldingSpaceItemView(const HoldingSpaceItem* item) override;
+  void AnimateIn(ui::ImplicitAnimationObserver* observer) override;
+  void AnimateOut(ui::ImplicitAnimationObserver* observer) override;
 
  private:
-  void AddHoldingSpaceScreenCaptureView(const HoldingSpaceItem* item,
-                                        size_t index);
-  void RemoveHoldingSpaceScreenCaptureView(const HoldingSpaceItem* item);
-  void AddHoldingSpaceDownloadView(const HoldingSpaceItem* item, size_t index);
-  void RemoveHoldingSpaceDownloadView(const HoldingSpaceItem* item);
+  void AddHoldingSpaceScreenCaptureView(const HoldingSpaceItem* item);
+  void AddHoldingSpaceDownloadView(const HoldingSpaceItem* item);
   void OnScreenCapturesContainerViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details);
   void OnDownloadsContainerViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details);
 
-  HoldingSpaceItemViewDelegate* const delegate_;
-
+  // Owned by view hierarchy.
   views::View* screen_captures_container_ = nullptr;
   views::Label* screen_captures_label_ = nullptr;
   HoldingSpaceItemChipsContainer* downloads_container_ = nullptr;

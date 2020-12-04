@@ -75,7 +75,7 @@ class CallbackPainter : public views::Painter {
 HoldingSpaceItemView::HoldingSpaceItemView(
     HoldingSpaceItemViewDelegate* delegate,
     const HoldingSpaceItem* item)
-    : delegate_(delegate), item_(item) {
+    : delegate_(delegate), item_(item), item_id_(item->id()) {
   SetProperty(kIsHoldingSpaceItemViewProperty, true);
 
   set_context_menu_controller(delegate_);

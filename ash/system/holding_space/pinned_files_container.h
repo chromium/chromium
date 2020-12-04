@@ -16,7 +16,6 @@ class Label;
 namespace ash {
 
 class HoldingSpaceItemChipsContainer;
-class HoldingSpaceItemViewDelegate;
 
 // Container for pinned files that the user adds to the holding space bubble.
 class PinnedFilesContainer : public HoldingSpaceItemViewsContainer {
@@ -28,14 +27,16 @@ class PinnedFilesContainer : public HoldingSpaceItemViewsContainer {
 
   // HoldingSpaceItemViewsContainer:
   void ViewHierarchyChanged(const views::ViewHierarchyChangedDetails&) override;
-  void AddHoldingSpaceItemView(const HoldingSpaceItem* item,
-                               bool due_to_finalization) override;
+  bool ContainsHoldingSpaceItemView(const HoldingSpaceItem* item) override;
+  bool ContainsHoldingSpaceItemViews() override;
+  bool WillAddHoldingSpaceItemView(const HoldingSpaceItem* item) override;
+  void AddHoldingSpaceItemView(const HoldingSpaceItem* item) override;
   void RemoveAllHoldingSpaceItemViews() override;
-  void RemoveHoldingSpaceItemView(const HoldingSpaceItem* item) override;
+  void AnimateIn(ui::ImplicitAnimationObserver* observer) override;
+  void AnimateOut(ui::ImplicitAnimationObserver* observer) override;
 
  private:
-  HoldingSpaceItemViewDelegate* const delegate_;
-
+  // Owned by view hierarchy.
   views::Label* empty_prompt_label_ = nullptr;
   HoldingSpaceItemChipsContainer* item_chips_container_ = nullptr;
 

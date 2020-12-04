@@ -56,6 +56,20 @@ void OpenItems(const std::vector<const HoldingSpaceItemView*>& views) {
 
 }  // namespace
 
+// HoldingSpaceItemViewDelegate::ScopedSelectionRestore ------------------------
+
+HoldingSpaceItemViewDelegate::ScopedSelectionRestore::ScopedSelectionRestore(
+    HoldingSpaceItemViewDelegate* delegate)
+    : delegate_(delegate) {
+  for (const HoldingSpaceItemView* view : delegate_->GetSelection())
+    selected_item_ids_.push_back(view->item_id());
+}
+
+HoldingSpaceItemViewDelegate::ScopedSelectionRestore::
+    ~ScopedSelectionRestore() {
+  delegate_->SetSelection(selected_item_ids_);
+}
+
 // HoldingSpaceItemViewDelegate ------------------------------------------------
 
 HoldingSpaceItemViewDelegate::HoldingSpaceItemViewDelegate() {
@@ -389,6 +403,12 @@ HoldingSpaceItemViewDelegate::GetSelection() {
 void HoldingSpaceItemViewDelegate::SetSelection(views::View* selection) {
   for (HoldingSpaceItemView* view : views_)
     view->SetSelected(view == selection);
+}
+
+void HoldingSpaceItemViewDelegate::SetSelection(
+    const std::vector<std::string>& item_ids) {
+  for (HoldingSpaceItemView* view : views_)
+    view->SetSelected(base::Contains(item_ids, view->item_id()));
 }
 
 }  // namespace ash

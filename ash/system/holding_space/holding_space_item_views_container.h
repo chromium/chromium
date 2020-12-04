@@ -13,15 +13,20 @@
 #include "base/scoped_observer.h"
 #include "ui/views/view.h"
 
+namespace ui {
+class ImplicitAnimationObserver;
+}  // namespace ui
+
 namespace ash {
 
 class HoldingSpaceItem;
+class HoldingSpaceItemViewDelegate;
 
 class HoldingSpaceItemViewsContainer : public views::View,
                                        public HoldingSpaceControllerObserver,
                                        public HoldingSpaceModelObserver {
  public:
-  HoldingSpaceItemViewsContainer();
+  explicit HoldingSpaceItemViewsContainer(HoldingSpaceItemViewDelegate*);
   HoldingSpaceItemViewsContainer(const HoldingSpaceItemViewsContainer& other) =
       delete;
   HoldingSpaceItemViewsContainer& operator=(
@@ -32,11 +37,6 @@ class HoldingSpaceItemViewsContainer : public views::View,
   // stop observing the holding space controller/model to ensure that no new
   // items are created while the bubble widget is being asynchronously closed.
   void Reset();
-
-  virtual void AddHoldingSpaceItemView(const HoldingSpaceItem* item,
-                                       bool due_to_finalization) = 0;
-  virtual void RemoveAllHoldingSpaceItemViews() = 0;
-  virtual void RemoveHoldingSpaceItemView(const HoldingSpaceItem* item) = 0;
 
   // views::View:
   void ChildPreferredSizeChanged(views::View* child) override;
@@ -51,7 +51,73 @@ class HoldingSpaceItemViewsContainer : public views::View,
   void OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) override;
   void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item) override;
 
+ protected:
+  // Returns whether a view for the specified `item` exists in this holding
+  // space item views container. Note that returning true will result in a call
+  // to `RemoveAllHoldingSpaceItemViews()` after which views for existing
+  // holding space items will be re-added via call to
+  // `AddHoldingSpaceItemView()`.
+  virtual bool ContainsHoldingSpaceItemView(const HoldingSpaceItem* item) = 0;
+
+  // Returns whether any views associated with holding space items exist which
+  // in this holding space item views container. Note that returning true will
+  // result in a call to `RemoveAllHoldingSpaceItemViews()`.
+  virtual bool ContainsHoldingSpaceItemViews() = 0;
+
+  // Returns whether a view for the specified `item` will be added to this
+  // holding space item views container. Note that `AddHoldingSpaceItemView()`
+  // will only be invoked if this method returns true for the given `item`.
+  virtual bool WillAddHoldingSpaceItemView(const HoldingSpaceItem* item) = 0;
+
+  // Invoked to add a view to this holding space item views container for the
+  // specified `item`.
+  virtual void AddHoldingSpaceItemView(const HoldingSpaceItem* item) = 0;
+
+  // Invoked to remove all views associated with holding space items from this
+  // holding space item views container.
+  virtual void RemoveAllHoldingSpaceItemViews() = 0;
+
+  // Invoked to initiate animate in of the contents of this holding space item
+  // views container. Any animations created must be associated with `observer`.
+  virtual void AnimateIn(ui::ImplicitAnimationObserver* observer) = 0;
+
+  // Invoked to initiate animate out of the contents of this holding space item
+  // views container. Any animations created must be associated with `observer`.
+  virtual void AnimateOut(ui::ImplicitAnimationObserver* observer) = 0;
+
+  HoldingSpaceItemViewDelegate* delegate() { return delegate_; }
+
  private:
+  enum AnimationState : uint32_t {
+    kNotAnimating = 0,
+    kAnimatingIn = 1 << 1,
+    kAnimatingOut = 1 << 2,
+  };
+
+  // Invoke to start animating in the contents of this holding space item views
+  // container. No-ops if animate in is already in progress.
+  void MaybeAnimateIn();
+
+  // Invoke to start animating out the contents of this holding space item views
+  // container. No-ops if animate out is already in progress.
+  void MaybeAnimateOut();
+
+  // Invoked when an animate in/out of the contents of this holding space item
+  // views container has been completed. If `aborted` is true, the animation
+  // completed due to abort, otherwise the animation completed normally.
+  void OnAnimateInCompleted(bool aborted);
+  void OnAnimateOutCompleted(bool aborted);
+
+  HoldingSpaceItemViewDelegate* const delegate_;
+
+  std::unique_ptr<ui::ImplicitAnimationObserver> animate_in_observer_;
+  std::unique_ptr<ui::ImplicitAnimationObserver> animate_out_observer_;
+
+  // Bit flag representation of current `AnimationState`. Note that it is
+  // briefly possible to be both `kAnimatingIn` and `kAnimatingOut` when one
+  // animation is preempting another.
+  uint32_t animation_state_ = AnimationState::kNotAnimating;
+
   ScopedObserver<HoldingSpaceController, HoldingSpaceControllerObserver>
       controller_observer_{this};
   ScopedObserver<HoldingSpaceModel, HoldingSpaceModelObserver> model_observer_{

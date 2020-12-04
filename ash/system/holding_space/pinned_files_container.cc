@@ -82,7 +82,7 @@ class HoldingSpaceScrollView : public views::ScrollView,
 
 PinnedFilesContainer::PinnedFilesContainer(
     HoldingSpaceItemViewDelegate* delegate)
-    : delegate_(delegate) {
+    : HoldingSpaceItemViewsContainer(delegate) {
   SetID(kHoldingSpacePinnedFilesContainerId);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -151,31 +151,28 @@ void PinnedFilesContainer::ViewHierarchyChanged(
   SetVisible(details.is_add);
 }
 
-void PinnedFilesContainer::AddHoldingSpaceItemView(const HoldingSpaceItem* item,
-                                                   bool due_to_finalization) {
-  DCHECK(!base::Contains(views_by_item_id_, item->id()));
+bool PinnedFilesContainer::ContainsHoldingSpaceItemView(
+    const HoldingSpaceItem* item) {
+  return base::Contains(views_by_item_id_, item->id());
+}
+
+bool PinnedFilesContainer::ContainsHoldingSpaceItemViews() {
+  return !views_by_item_id_.empty();
+}
+
+bool PinnedFilesContainer::WillAddHoldingSpaceItemView(
+    const HoldingSpaceItem* item) {
+  return item->type() == HoldingSpaceItem::Type::kPinnedFile;
+}
+
+void PinnedFilesContainer::AddHoldingSpaceItemView(
+    const HoldingSpaceItem* item) {
   DCHECK(item->IsFinalized());
-
-  if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
-    return;
-
-  size_t index = 0;
-
-  if (due_to_finalization) {
-    // Find the position at which the view should be added.
-    for (const auto& candidate :
-         base::Reversed(HoldingSpaceController::Get()->model()->items())) {
-      if (candidate->id() == item->id())
-        break;
-      if (candidate->IsFinalized() &&
-          candidate->type() == HoldingSpaceItem::Type::kPinnedFile) {
-        ++index;
-      }
-    }
-  }
+  DCHECK_EQ(item->type(), HoldingSpaceItem::Type::kPinnedFile);
+  DCHECK(!base::Contains(views_by_item_id_, item->id()));
 
   views_by_item_id_[item->id()] = item_chips_container_->AddChildViewAt(
-      std::make_unique<HoldingSpaceItemChipView>(delegate_, item), index);
+      std::make_unique<HoldingSpaceItemChipView>(delegate(), item), 0);
 }
 
 void PinnedFilesContainer::RemoveAllHoldingSpaceItemViews() {
@@ -183,14 +180,14 @@ void PinnedFilesContainer::RemoveAllHoldingSpaceItemViews() {
   item_chips_container_->RemoveAllChildViews(true);
 }
 
-void PinnedFilesContainer::RemoveHoldingSpaceItemView(
-    const HoldingSpaceItem* item) {
-  auto it = views_by_item_id_.find(item->id());
-  if (it == views_by_item_id_.end())
-    return;
+// TODO(dmblack): Implement.
+void PinnedFilesContainer::AnimateIn(ui::ImplicitAnimationObserver* observer) {
+  NOTIMPLEMENTED();
+}
 
-  item_chips_container_->RemoveChildViewT(it->second);
-  views_by_item_id_.erase(it->first);
+// TODO(dmblack): Implement.
+void PinnedFilesContainer::AnimateOut(ui::ImplicitAnimationObserver* observer) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace ash

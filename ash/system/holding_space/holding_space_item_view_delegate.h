@@ -41,6 +41,20 @@ class ASH_EXPORT HoldingSpaceItemViewDelegate
       public views::ViewObserver,
       public ui::SimpleMenuModel::Delegate {
  public:
+  // A class which caches the current selection of holding space item views on
+  // creation and restores that selection on destruction.
+  class ScopedSelectionRestore {
+   public:
+    explicit ScopedSelectionRestore(HoldingSpaceItemViewDelegate* delegate);
+    ScopedSelectionRestore(const ScopedSelectionRestore&) = delete;
+    ScopedSelectionRestore& operator=(const ScopedSelectionRestore&) = delete;
+    ~ScopedSelectionRestore();
+
+   private:
+    HoldingSpaceItemViewDelegate* const delegate_;
+    std::vector<std::string> selected_item_ids_;
+  };
+
   HoldingSpaceItemViewDelegate();
   HoldingSpaceItemViewDelegate(const HoldingSpaceItemViewDelegate&) = delete;
   HoldingSpaceItemViewDelegate& operator=(const HoldingSpaceItemViewDelegate&) =
@@ -102,6 +116,10 @@ class ASH_EXPORT HoldingSpaceItemViewDelegate
 
   // Marks `view` as selected. All other `views_` are marked unselected.
   void SetSelection(views::View* view);
+
+  // Marks any `views_` whose associated holding space items are contained in
+  // `item_ids` as selected. All other `views_` are marked unselected.
+  void SetSelection(const std::vector<std::string>& item_ids);
 
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;

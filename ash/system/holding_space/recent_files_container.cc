@@ -61,15 +61,6 @@ bool BelongsToScreenCaptureSection(HoldingSpaceItem::Type type) {
          type == HoldingSpaceItem::Type::kScreenRecording;
 }
 
-// Returns if items of the specified types belong to the same section.
-bool BelongToSameSection(HoldingSpaceItem::Type type,
-                         HoldingSpaceItem::Type other_type) {
-  return (BelongsToScreenCaptureSection(type) &&
-          BelongsToScreenCaptureSection(other_type)) ||
-         (BelongsToDownloadsSection(type) &&
-          BelongsToDownloadsSection(other_type));
-}
-
 // DownloadsHeader--------------------------------------------------------------
 
 class DownloadsHeader : public views::Button {
@@ -114,7 +105,7 @@ class DownloadsHeader : public views::Button {
 
 RecentFilesContainer::RecentFilesContainer(
     HoldingSpaceItemViewDelegate* delegate)
-    : delegate_(delegate) {
+    : HoldingSpaceItemViewsContainer(delegate) {
   SetID(kHoldingSpaceRecentFilesContainerId);
   SetVisible(false);
 
@@ -170,34 +161,31 @@ void RecentFilesContainer::ViewHierarchyChanged(
     OnDownloadsContainerViewHierarchyChanged(details);
 }
 
-void RecentFilesContainer::AddHoldingSpaceItemView(const HoldingSpaceItem* item,
-                                                   bool due_to_finalization) {
+bool RecentFilesContainer::ContainsHoldingSpaceItemView(
+    const HoldingSpaceItem* item) {
+  return base::Contains(views_by_item_id_, item->id());
+}
+
+bool RecentFilesContainer::ContainsHoldingSpaceItemViews() {
+  return !views_by_item_id_.empty();
+}
+
+bool RecentFilesContainer::WillAddHoldingSpaceItemView(
+    const HoldingSpaceItem* item) {
+  return BelongsToDownloadsSection(item->type()) ||
+         BelongsToScreenCaptureSection(item->type());
+}
+
+void RecentFilesContainer::AddHoldingSpaceItemView(
+    const HoldingSpaceItem* item) {
   DCHECK(item->IsFinalized());
 
-  if (!BelongsToScreenCaptureSection(item->type()) &&
-      !BelongsToDownloadsSection(item->type())) {
-    return;
-  }
-
-  size_t index = 0;
-
-  if (due_to_finalization) {
-    // Find the position at which the view should be added.
-    for (const auto& candidate :
-         base::Reversed(HoldingSpaceController::Get()->model()->items())) {
-      if (candidate->id() == item->id())
-        break;
-      if (candidate->IsFinalized() &&
-          BelongToSameSection(candidate->type(), item->type())) {
-        ++index;
-      }
-    }
-  }
-
   if (BelongsToScreenCaptureSection(item->type()))
-    AddHoldingSpaceScreenCaptureView(item, index);
+    AddHoldingSpaceScreenCaptureView(item);
   else if (BelongsToDownloadsSection(item->type()))
-    AddHoldingSpaceDownloadView(item, index);
+    AddHoldingSpaceDownloadView(item);
+  else
+    NOTREACHED();
 }
 
 void RecentFilesContainer::RemoveAllHoldingSpaceItemViews() {
@@ -206,22 +194,20 @@ void RecentFilesContainer::RemoveAllHoldingSpaceItemViews() {
   downloads_container_->RemoveAllChildViews(true);
 }
 
-void RecentFilesContainer::RemoveHoldingSpaceItemView(
-    const HoldingSpaceItem* item) {
-  if (BelongsToScreenCaptureSection(item->type()))
-    RemoveHoldingSpaceScreenCaptureView(item);
-  else if (BelongsToDownloadsSection(item->type()))
-    RemoveHoldingSpaceDownloadView(item);
+// TODO(dmblack): Implement.
+void RecentFilesContainer::AnimateIn(ui::ImplicitAnimationObserver* observer) {
+  NOTIMPLEMENTED();
+}
+
+// TODO(dmblack): Implement.
+void RecentFilesContainer::AnimateOut(ui::ImplicitAnimationObserver* observer) {
+  NOTIMPLEMENTED();
 }
 
 void RecentFilesContainer::AddHoldingSpaceScreenCaptureView(
-    const HoldingSpaceItem* item,
-    size_t index) {
+    const HoldingSpaceItem* item) {
   DCHECK(BelongsToScreenCaptureSection(item->type()));
   DCHECK(!base::Contains(views_by_item_id_, item->id()));
-
-  if (index >= kMaxScreenCaptures)
-    return;
 
   // Remove the last screen capture view if we are already at max capacity.
   if (screen_captures_container_->children().size() == kMaxScreenCaptures) {
@@ -234,50 +220,13 @@ void RecentFilesContainer::AddHoldingSpaceScreenCaptureView(
 
   // Add the screen capture view to the front in order to sort by recency.
   views_by_item_id_[item->id()] = screen_captures_container_->AddChildViewAt(
-      std::make_unique<HoldingSpaceItemScreenCaptureView>(delegate_, item),
-      index);
-}
-
-void RecentFilesContainer::RemoveHoldingSpaceScreenCaptureView(
-    const HoldingSpaceItem* item) {
-  DCHECK(BelongsToScreenCaptureSection(item->type()));
-
-  auto it = views_by_item_id_.find(item->id());
-  if (it == views_by_item_id_.end())
-    return;
-
-  // Remove the screen capture view associated with `item`.
-  screen_captures_container_->RemoveChildViewT(it->second);
-  views_by_item_id_.erase(it);
-
-  // Verify that we are *not* at max capacity.
-  DCHECK_LT(screen_captures_container_->children().size(), kMaxScreenCaptures);
-
-  // Since we are under max capacity, we can add at most one screen capture view
-  // to replace the view we just removed. Note that we add the replacement to
-  // the back in order to maintain sort by recency.
-  for (const auto& candidate :
-       base::Reversed(HoldingSpaceController::Get()->model()->items())) {
-    if (candidate->IsFinalized() &&
-        BelongsToScreenCaptureSection(item->type()) &&
-        !base::Contains(views_by_item_id_, candidate->id())) {
-      views_by_item_id_[candidate->id()] =
-          screen_captures_container_->AddChildView(
-              std::make_unique<HoldingSpaceItemScreenCaptureView>(
-                  delegate_, candidate.get()));
-      return;
-    }
-  }
+      std::make_unique<HoldingSpaceItemScreenCaptureView>(delegate(), item), 0);
 }
 
 void RecentFilesContainer::AddHoldingSpaceDownloadView(
-    const HoldingSpaceItem* item,
-    size_t index) {
+    const HoldingSpaceItem* item) {
   DCHECK(BelongsToDownloadsSection(item->type()));
   DCHECK(!base::Contains(views_by_item_id_, item->id()));
-
-  if (index >= kMaxDownloads)
-    return;
 
   // Remove the last download view if we are already at max capacity.
   if (downloads_container_->children().size() == kMaxDownloads) {
@@ -289,37 +238,7 @@ void RecentFilesContainer::AddHoldingSpaceDownloadView(
 
   // Add the download view to the front in order to sort by recency.
   views_by_item_id_[item->id()] = downloads_container_->AddChildViewAt(
-      std::make_unique<HoldingSpaceItemChipView>(delegate_, item), index);
-}
-
-void RecentFilesContainer::RemoveHoldingSpaceDownloadView(
-    const HoldingSpaceItem* item) {
-  DCHECK(BelongsToDownloadsSection(item->type()));
-
-  auto it = views_by_item_id_.find(item->id());
-  if (it == views_by_item_id_.end())
-    return;
-
-  // Remove the download view associated with `item`.
-  downloads_container_->RemoveChildViewT(it->second);
-  views_by_item_id_.erase(it);
-
-  // Verify that we are *not* at max capacity.
-  DCHECK_LT(downloads_container_->children().size(), kMaxDownloads);
-
-  // Since we are under max capacity, we can add at most one download view to
-  // replace the view we just removed. Note that we add the replacement to the
-  // back in order to maintain sort by recency.
-  for (const auto& candidate :
-       base::Reversed(HoldingSpaceController::Get()->model()->items())) {
-    if (candidate->IsFinalized() && BelongsToDownloadsSection(item->type()) &&
-        !base::Contains(views_by_item_id_, candidate->id())) {
-      views_by_item_id_[candidate->id()] = downloads_container_->AddChildView(
-          std::make_unique<HoldingSpaceItemChipView>(delegate_,
-                                                     candidate.get()));
-      return;
-    }
-  }
+      std::make_unique<HoldingSpaceItemChipView>(delegate(), item), 0);
 }
 
 void RecentFilesContainer::OnScreenCapturesContainerViewHierarchyChanged(
