@@ -28,6 +28,15 @@ std::string WideStringToString(FPDF_WIDESTRING wide_string) {
 
 }  // namespace
 
+// static
+PDFiumFormFiller::ScriptOption PDFiumFormFiller::DefaultScriptOption() {
+#if defined(PDF_ENABLE_XFA)
+  return ScriptOption::kJavaScriptAndXFA;
+#else   // defined(PDF_ENABLE_XFA)
+  return ScriptOption::kJavaScript;
+#endif  // defined(PDF_ENABLE_XFA)
+}
+
 PDFiumFormFiller::PDFiumFormFiller(PDFiumEngine* engine,
                                    ScriptOption script_option)
     : engine_(engine), script_option_(script_option) {

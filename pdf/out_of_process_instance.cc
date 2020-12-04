@@ -469,14 +469,6 @@ bool IsSaveDataSizeValid(size_t size) {
   return size > 0 && size <= kMaximumSavedFileSize;
 }
 
-PDFiumFormFiller::ScriptOption DefaultScriptOption() {
-#if defined(PDF_ENABLE_XFA)
-  return PDFiumFormFiller::ScriptOption::kJavaScriptAndXFA;
-#else   // defined(PDF_ENABLE_XFA)
-  return PDFiumFormFiller::ScriptOption::kJavaScript;
-#endif  // defined(PDF_ENABLE_XFA)
-}
-
 PP_PrivateAccessibilityPageInfo
 PrivateAccessibilityPageInfoFromAccessibilityPageInfo(
     const AccessibilityPageInfo& page_info) {
@@ -586,7 +578,8 @@ bool OutOfProcessInstance::Init(uint32_t argc,
 
   text_input_ = std::make_unique<pp::TextInput_Dev>(this);
 
-  PDFiumFormFiller::ScriptOption script_option = DefaultScriptOption();
+  PDFiumFormFiller::ScriptOption script_option =
+      PDFiumFormFiller::DefaultScriptOption();
   bool has_edits = false;
   const char* stream_url = nullptr;
   const char* original_url = nullptr;
