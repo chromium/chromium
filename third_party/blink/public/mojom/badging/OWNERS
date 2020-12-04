@@ -2,6 +2,3 @@ file://chrome/browser/badging/OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
-
-# COMPONENT: UI>Browser>WebAppInstalls
-# TEAM: web-apps-platform-team@chromium.org

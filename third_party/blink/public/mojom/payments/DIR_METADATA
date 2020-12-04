@@ -1,0 +1,5 @@
+monorail {
+  component: "Blink>Payments"
+}
+
+team_email: "payments-dev@chromium.org"

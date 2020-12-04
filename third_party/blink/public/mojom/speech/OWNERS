@@ -1,6 +1,5 @@
 file://third_party/blink/renderer/modules/speech/OWNERS
 
-# COMPONENT: Blink>Speech
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS

@@ -3,6 +3,3 @@ file://content/browser/appcache/OWNERS
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
 
-# TEAM: storage-dev@chromium.org
-# COMPONENT: Blink>Storage>AppCache
-

@@ -1,0 +1,5 @@
+monorail {
+  component: "Platform>DevTools"
+}
+
+team_email: "devtools-dev@chromium.org"

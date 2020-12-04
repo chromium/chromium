@@ -1,6 +1,5 @@
 file://third_party/blink/renderer/modules/webaudio/OWNERS
 
-# COMPONENT: Blink>WebAudio
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS

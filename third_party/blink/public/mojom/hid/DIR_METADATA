@@ -1,0 +1,5 @@
+monorail {
+  component: "Blink>HID"
+}
+
+team_email: "device-dev@chromium.org"
