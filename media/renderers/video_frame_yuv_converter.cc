@@ -8,7 +8,6 @@
 
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
-#include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -29,8 +28,7 @@ namespace {
 
 SkYUVColorSpace ColorSpaceToSkYUVColorSpace(
     const gfx::ColorSpace& color_space) {
-  // TODO(hubbe): This should really default to rec709.
-  // https://crbug.com/828599
+  // TODO(crbug.com/828599): This should really default to rec709.
   SkYUVColorSpace sk_color_space = kRec601_SkYUVColorSpace;
   color_space.ToSkYUVColorSpace(&sk_color_space);
   return sk_color_space;
@@ -139,20 +137,6 @@ bool YUVGrBackendTexturesToSkSurface(
 
   surface->flushAndSubmit();
   return true;
-}
-
-void FinishRasterTextureAccess(
-    const gpu::MailboxHolder& dest_mailbox_holder,
-    viz::RasterContextProvider* raster_context_provider,
-    GLuint tex_id) {
-  DCHECK(raster_context_provider);
-
-  auto* ri = raster_context_provider->RasterInterface();
-  DCHECK(ri);
-
-  if (dest_mailbox_holder.mailbox.IsSharedImage())
-    ri->EndSharedImageAccessDirectCHROMIUM(tex_id);
-  ri->DeleteGpuRasterTexture(tex_id);
 }
 
 }  // namespace
@@ -398,19 +382,23 @@ bool VideoFrameYUVConverter::IsVideoFrameFormatSupported(
          SkYUVAInfo::PlaneConfig::kUnknown;
 }
 
-void VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
+bool VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider,
     const gpu::MailboxHolder& dest_mailbox_holder) {
   VideoFrameYUVConverter converter;
-  converter.ConvertYUVVideoFrame(video_frame, raster_context_provider,
-                                 dest_mailbox_holder);
+  return converter.ConvertYUVVideoFrame(video_frame, raster_context_provider,
+                                        dest_mailbox_holder);
 }
 
-void VideoFrameYUVConverter::ConvertYUVVideoFrame(
+bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider,
-    const gpu::MailboxHolder& dest_mailbox_holder) {
+    const gpu::MailboxHolder& dest_mailbox_holder,
+    unsigned int internal_format,
+    unsigned int type,
+    bool flip_y,
+    bool use_visible_rect) {
   DCHECK(video_frame);
   DCHECK(IsVideoFrameFormatSupported(*video_frame))
       << "VideoFrame has an unsupported YUV format " << video_frame->format();
@@ -422,9 +410,9 @@ void VideoFrameYUVConverter::ConvertYUVVideoFrame(
     holder_ = std::make_unique<VideoFrameYUVMailboxesHolder>();
 
   if (raster_context_provider->GrContext()) {
-    ConvertFromVideoFrameYUVWithGrContext(video_frame, raster_context_provider,
-                                          dest_mailbox_holder);
-    return;
+    return ConvertFromVideoFrameYUVWithGrContext(
+        video_frame, raster_context_provider, dest_mailbox_holder,
+        internal_format, type, flip_y, use_visible_rect);
   }
 
   auto* ri = raster_context_provider->RasterInterface();
@@ -439,9 +427,10 @@ void VideoFrameYUVConverter::ConvertYUVVideoFrame(
   ri->ConvertYUVAMailboxesToRGB(dest_mailbox_holder.mailbox, color_space,
                                 holder_->plane_config(), holder_->subsampling(),
                                 mailboxes);
+  return true;
 }
 
-bool VideoFrameYUVConverter::ConvertYUVVideoFrameWithSkSurface(
+bool VideoFrameYUVConverter::ConvertYUVVideoFrameToDstTextureNoCaching(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider,
     const gpu::MailboxHolder& dest_mailbox_holder,
@@ -449,40 +438,68 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrameWithSkSurface(
     unsigned int type,
     bool flip_y,
     bool use_visible_rect) {
-  DCHECK(video_frame);
-  DCHECK(IsVideoFrameFormatSupported(*video_frame))
-      << "VideoFrame has an unsupported YUV format " << video_frame->format();
-  DCHECK(!video_frame->coded_size().IsEmpty())
-      << "|video_frame| must have an area > 0";
-  DCHECK(raster_context_provider);
-  DCHECK(raster_context_provider->GrContext());
+  VideoFrameYUVConverter converter;
+  return converter.ConvertYUVVideoFrame(video_frame, raster_context_provider,
+                                        dest_mailbox_holder, internal_format,
+                                        type, flip_y, use_visible_rect);
+}
 
-  if (!holder_)
-    holder_ = std::make_unique<VideoFrameYUVMailboxesHolder>();
+void VideoFrameYUVConverter::ReleaseCachedData() {
+  holder_.reset();
+}
 
+bool VideoFrameYUVConverter::ConvertFromVideoFrameYUVWithGrContext(
+    const VideoFrame* video_frame,
+    viz::RasterContextProvider* raster_context_provider,
+    const gpu::MailboxHolder& dest_mailbox_holder,
+    unsigned int internal_format,
+    unsigned int type,
+    bool flip_y,
+    bool use_visible_rect) {
   gpu::raster::RasterInterface* ri = raster_context_provider->RasterInterface();
   DCHECK(ri);
   ri->WaitSyncTokenCHROMIUM(dest_mailbox_holder.sync_token.GetConstData());
-
-  // Consume mailbox to get dst texture.
   GLuint dest_tex_id =
       ri->CreateAndConsumeForGpuRaster(dest_mailbox_holder.mailbox);
-
   if (dest_mailbox_holder.mailbox.IsSharedImage()) {
     ri->BeginSharedImageAccessDirectCHROMIUM(
         dest_tex_id, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
   }
 
+  bool result = ConvertFromVideoFrameYUVSkia(
+      video_frame, raster_context_provider, dest_mailbox_holder.texture_target,
+      dest_tex_id, internal_format, type, flip_y, use_visible_rect);
+
+  if (dest_mailbox_holder.mailbox.IsSharedImage())
+    ri->EndSharedImageAccessDirectCHROMIUM(dest_tex_id);
+  ri->DeleteGpuRasterTexture(dest_tex_id);
+
+  return result;
+}
+
+bool VideoFrameYUVConverter::ConvertFromVideoFrameYUVSkia(
+    const VideoFrame* video_frame,
+    viz::RasterContextProvider* raster_context_provider,
+    unsigned int texture_target,
+    unsigned int texture_id,
+    unsigned int internal_format,
+    unsigned int type,
+    bool flip_y,
+    bool use_visible_rect) {
   // Rendering YUV textures to SkSurface by dst texture
   GrDirectContext* gr_context = raster_context_provider->GrContext();
+  DCHECK(gr_context);
+  // TODO(crbug.com/674185): We should compare the DCHECK vs when
+  // UpdateLastImage calls this function.
+  DCHECK(IsVideoFrameFormatSupported(*video_frame));
 
   GrYUVABackendTextures yuva_backend_textures =
       holder_->VideoFrameToSkiaTextures(video_frame, raster_context_provider);
   DCHECK(yuva_backend_textures.isValid());
 
   GrGLTextureInfo result_gl_texture_info{};
-  result_gl_texture_info.fID = dest_tex_id;
-  result_gl_texture_info.fTarget = dest_mailbox_holder.texture_target;
+  result_gl_texture_info.fID = texture_id;
+  result_gl_texture_info.fTarget = texture_target;
   result_gl_texture_info.fFormat = GetSurfaceColorFormat(internal_format, type);
 
   int result_width = use_visible_rect ? video_frame->visible_rect().width()
@@ -502,8 +519,6 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrameWithSkSurface(
 
   // Terminate if surface cannot be created.
   if (!surface) {
-    FinishRasterTextureAccess(dest_mailbox_holder, raster_context_provider,
-                              dest_tex_id);
     return false;
   }
 
@@ -511,87 +526,11 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrameWithSkSurface(
                                                 yuva_backend_textures, surface,
                                                 use_visible_rect);
 
-  // Finish access of dest_tex_id
-  FinishRasterTextureAccess(dest_mailbox_holder, raster_context_provider,
-                            dest_tex_id);
-
-  return result;
-}
-
-bool VideoFrameYUVConverter::ConvertYUVVideoFrameWithSkSurfaceNoCaching(
-    const VideoFrame* video_frame,
-    viz::RasterContextProvider* raster_context_provider,
-    const gpu::MailboxHolder& dest_mailbox_holder,
-    unsigned int internal_format,
-    unsigned int type,
-    bool flip_y,
-    bool use_visible_rect) {
-  VideoFrameYUVConverter converter;
-  return converter.ConvertYUVVideoFrameWithSkSurface(
-      video_frame, raster_context_provider, dest_mailbox_holder,
-      internal_format, type, flip_y, use_visible_rect);
-}
-
-void VideoFrameYUVConverter::ReleaseCachedData() {
-  holder_.reset();
-}
-
-void VideoFrameYUVConverter::ConvertFromVideoFrameYUVWithGrContext(
-    const VideoFrame* video_frame,
-    viz::RasterContextProvider* raster_context_provider,
-    const gpu::MailboxHolder& dest_mailbox_holder) {
-  gpu::raster::RasterInterface* ri = raster_context_provider->RasterInterface();
-  DCHECK(ri);
-  ri->WaitSyncTokenCHROMIUM(dest_mailbox_holder.sync_token.GetConstData());
-  GLuint dest_tex_id =
-      ri->CreateAndConsumeForGpuRaster(dest_mailbox_holder.mailbox);
-  if (dest_mailbox_holder.mailbox.IsSharedImage()) {
-    ri->BeginSharedImageAccessDirectCHROMIUM(
-        dest_tex_id, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
-  }
-
-  ConvertFromVideoFrameYUVSkia(video_frame, raster_context_provider,
-                               dest_mailbox_holder.texture_target, dest_tex_id);
-
-  if (dest_mailbox_holder.mailbox.IsSharedImage())
-    ri->EndSharedImageAccessDirectCHROMIUM(dest_tex_id);
-  ri->DeleteGpuRasterTexture(dest_tex_id);
-}
-
-void VideoFrameYUVConverter::ConvertFromVideoFrameYUVSkia(
-    const VideoFrame* video_frame,
-    viz::RasterContextProvider* raster_context_provider,
-    unsigned int texture_target,
-    unsigned int texture_id) {
-  GrDirectContext* gr_context = raster_context_provider->GrContext();
-  DCHECK(gr_context);
-  // TODO: We should compare the DCHECK vs when UpdateLastImage calls this
-  // function. (https://crbug.com/674185)
-  DCHECK(IsVideoFrameFormatSupported(*video_frame));
-
-  GrYUVABackendTextures yuva_backend_textures =
-      holder_->VideoFrameToSkiaTextures(video_frame, raster_context_provider);
-  DCHECK(yuva_backend_textures.isValid());
-
-  GrGLTextureInfo result_gl_texture_info{};
-  result_gl_texture_info.fID = texture_id;
-  result_gl_texture_info.fTarget = texture_target;
-  result_gl_texture_info.fFormat = GL_RGBA8;
-  GrBackendTexture result_texture(video_frame->coded_size().width(),
-                                  video_frame->coded_size().height(),
-                                  GrMipMapped::kNo, result_gl_texture_info);
-
-  // Creating the SkImage triggers conversion into the dest texture. We ignore
-  // the returned image and track the result using |dest_mailbox_holder|
-  SkImage::MakeFromYUVATexturesCopyToExternal(gr_context, yuva_backend_textures,
-                                              result_texture,
-                                              kRGBA_8888_SkColorType);
-
-  gr_context->flushAndSubmit();
-
   // Release textures to guarantee |holder_| doesn't hold read access on
   // textures it doesn't own.
   holder_->ReleaseTextures();
+
+  return result;
 }
 
 }  // namespace media

@@ -1369,8 +1369,13 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
 // TODO(crbug.com/1108154): Expand this uploading path to macOS, linux
 // chromeOS after collecting perf data and resolve failure cases.
 #if defined(OS_WIN)
-    // Try direct uploading path
-    if (premultiply_alpha && level == 0) {
+    // Since skia always produces premultiply alpha outputs,
+    // trying direct uploading path when video format is opaque or premultiply
+    // alpha been requested. And dst texture mipLevel must be 0.
+    // TODO(crbug.com/1155003): Figure out whether premultiply options here are
+    // accurate.
+    if ((media::IsOpaque(video_frame->format()) || premultiply_alpha) &&
+        level == 0) {
       if (UploadVideoFrameToGLTexture(raster_context_provider, destination_gl,
                                       video_frame, target, texture,
                                       internal_format, format, type, flip_y)) {
@@ -1483,7 +1488,7 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
   destination_gl->GenUnverifiedSyncTokenCHROMIUM(
       mailbox_holder.sync_token.GetData());
 
-  if (!VideoFrameYUVConverter::ConvertYUVVideoFrameWithSkSurfaceNoCaching(
+  if (!VideoFrameYUVConverter::ConvertYUVVideoFrameToDstTextureNoCaching(
           video_frame.get(), raster_context_provider, mailbox_holder,
           internal_format, type, flip_y, true /* use visible_rect */)) {
     return false;
