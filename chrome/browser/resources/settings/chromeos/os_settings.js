@@ -9,6 +9,7 @@ import './bluetooth_page/bluetooth_page.m.js';
 import './bluetooth_page/bluetooth_subpage.m.js';
 import './bluetooth_page/bluetooth_device_list_item.m.js';
 import './internet_page/cellular_setup_dialog.m.js';
+import './internet_page/esim_remove_profile_dialog.m.js';
 import './internet_page/internet_config.m.js';
 import './internet_page/internet_detail_page.m.js';
 import './internet_page/internet_known_networks_page.m.js';
@@ -34,7 +35,6 @@ import './os_about_page/channel_switcher_dialog.m.js';
 import './os_about_page/detailed_build_info.m.js';
 import './os_about_page/update_warning_dialog.m.js';
 import './os_search_page/os_search_page.m.js';
-import './internet_page/esim_remove_profile_dialog.m.js';
 
 export {AboutPageBrowserProxyImpl, BrowserChannel, UpdateStatus} from '../about_page/about_page_browser_proxy.m.js';
 export {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.m.js';

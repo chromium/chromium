@@ -278,7 +278,7 @@ suite('InternetPage', function() {
           'Toggle mobile on/off should be focused for settingId=13.');
     });
 
-    test('Show rename profile dialog', async function() {
+    test('Show rename esim profile dialog', async function() {
       eSimManagerRemote.addEuiccForTest(1);
       await flushAsync();
 
@@ -292,6 +292,22 @@ suite('InternetPage', function() {
       await flushAsync();
       renameDialog = internetPage.$$('#esimRenameDialog');
       assertTrue(!!renameDialog);
+    });
+
+    test('Show remove esim profile dialog', async function() {
+      eSimManagerRemote.addEuiccForTest(1);
+      await flushAsync();
+
+      let removeDialog = internetPage.$$('#esimRemoveProfileDialog');
+      assertFalse(!!removeDialog);
+
+      const event = new CustomEvent(
+          'show-esim-remove-profile-dialog', {detail: {iccid: '1'}});
+      internetPage.dispatchEvent(event);
+
+      await flushAsync();
+      removeDialog = internetPage.$$('#esimRemoveProfileDialog');
+      assertTrue(!!removeDialog);
     });
   });
 

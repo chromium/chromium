@@ -137,6 +137,12 @@ Polymer({
       value: false,
     },
 
+    /** @private {boolean} */
+    showESimRemoveProfileDialog_: {
+      type: Boolean,
+      value: false,
+    },
+
     /**
      * Iccid of an esim profile, used in internet detail menu.
      * @private {string}
@@ -183,6 +189,7 @@ Polymer({
     'show-known-networks': 'onShowKnownNetworks_',
     'show-networks': 'onShowNetworks_',
     'show-esim-profile-rename-dialog': 'onShowESimProfileRenameDialog_',
+    'show-esim-remove-profile-dialog': 'onShowESimRemoveProfileDialog_'
   },
 
   /** @private  {?settings.InternetPageBrowserProxy} */
@@ -409,6 +416,20 @@ Polymer({
   /** @private */
   onCloseESimProfileRenameDialog_() {
     this.showESimProfileRenameDialog_ = false;
+  },
+
+  /**
+   * @param {!CustomEvent<!{iccid: string}>} event
+   * @private
+   */
+  onShowESimRemoveProfileDialog_(event) {
+    this.esimProfileIccid_ = event.detail.iccid;
+    this.showESimRemoveProfileDialog_ = true;
+  },
+
+  /** @private */
+  onCloseESimRemoveProfileDialog_() {
+    this.showESimRemoveProfileDialog_ = false;
   },
 
   /**

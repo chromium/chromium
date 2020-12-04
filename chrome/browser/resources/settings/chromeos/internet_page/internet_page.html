@@ -170,6 +170,13 @@
           iccid="[[esimProfileIccid_]]">
       </esim-rename-dialog>
     </template>
+
+    <template is="dom-if" if="[[showESimRemoveProfileDialog_]]" restamp>
+      <esim-remove-profile-dialog id="esimRemoveProfileDialog"
+          on-close="onCloseESimRemoveProfileDialog_"
+          iccid="[[esimProfileIccid_]]">
+      </esim-remove-profile-dialog>
+    </template>
   </template>
   <script src="internet_page.js"></script>
 </dom-module>
