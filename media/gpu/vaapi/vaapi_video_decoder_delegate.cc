@@ -142,9 +142,8 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
     DVLOG(1) << "Looking up the key data for: " << decrypt_config_->key_id();
     chromeos_cdm_context_->GetHwKeyData(
         decrypt_config_.get(), hw_identifier_,
-        BindToCurrentLoop(base::BindOnce(
-            &VaapiVideoDecoderDelegate::OnGetHwKeyData,
-            weak_factory_.GetWeakPtr(), decrypt_config_->key_id())));
+        base::BindOnce(&VaapiVideoDecoderDelegate::OnGetHwKeyData,
+                       weak_factory_.GetWeakPtr(), decrypt_config_->key_id()));
     // Don't change our state here because we are created, but we just return
     // kInProcess for now to trigger a wait/retry state.
     return ProtectedSessionState::kInProcess;
@@ -227,7 +226,6 @@ void VaapiVideoDecoderDelegate::OnGetHwKeyData(
     const std::string& key_id,
     Decryptor::Status status,
     const std::vector<uint8_t>& key_data) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (status != Decryptor::Status::kSuccess) {
     // If it's a failure, then indicate so, otherwise if it's waiting for a key,
     // then we don't do anything since we will get called again when there's a

@@ -184,22 +184,12 @@ class VaapiVideoDecoder : public DecoderInterface,
   // TODO(crbug.com/1040291): remove this keep-alive when using SharedImages.
   base::small_map<std::map<gfx::GpuMemoryBufferId, scoped_refptr<VASurface>>>
       allocated_va_surfaces_;
-
-  // We need to use a CdmContextRef so that we destruct
-  // |cdm_event_cb_registration_| before the CDM is destructed. The CDM has
-  // mechanisms to ensure destruction on the proper thread.
-  //
-  // For clarity, the MojoVideoDecoderService does hold a reference to both the
-  // decoder and the CDM to ensure the CDM doesn't get destructed before the
-  // decoder; however, in the VideoDecoderPipeline, which owns the
-  // VaapiVideoDecoder, it uses an asynchronous destructor to destroy the
-  // pipeline (and thus the VaapiVideoDecoder) on the decoder thread.
-  std::unique_ptr<CdmContextRef> cdm_context_ref_;
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // To keep the CdmContext event callback registered.
   std::unique_ptr<CallbackRegistration> cdm_event_cb_registration_;
 #endif
+
+  CdmContext* cdm_context_ = nullptr;  // Not owned.
 
   // Platform and codec specific video decoder.
   std::unique_ptr<AcceleratedVideoDecoder> decoder_;
