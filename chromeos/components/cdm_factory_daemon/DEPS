@@ -3,6 +3,7 @@ include_rules = [
   "+content/public/browser",
   "+content/public/test",
   "+media/base",
+  "+media/cdm",
   "+media/mojo/mojom",
   "+ui/display",
 ]
