@@ -21,82 +21,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
-<variants name="IPProtocolType">
-  <variant name="_TCP" summary=""/>
-  <variant name="_UDP" summary=""/>
-</variants>
-
-<variants name="NatType">
-  <variant name=".NoNAT" summary=""/>
-  <variant name=".NonSymNAT" summary=""/>
-  <variant name=".SymNAT" summary=""/>
-  <variant name=".UnknownNAT" summary=""/>
-</variants>
-
-<variants name="ScreenshareLayerStats">
-  <variant name=".FrameRate"
-      summary="Frames per second sent, in fps. The value is reported when a
-               stream is removed and is calculated as the total number of
-               frames in this layer, divided by the duration of the call."/>
-  <variant name=".Qp"
-      summary="Average quantizer (qp) of frames sent. The value is reported
-               when a stream is removed and is calculated, for this layer, as
-               the sum of all qp values divided the number of frames."/>
-  <variant name=".TargetBitrate"
-      summary="Average target bitrate in kbps. The value is reported when a
-               stream is removed and is calculated as the sum of all target
-               bitrates for this layer (sampled after frame has been encoded)
-               divided by the total number of frames for this layer."/>
-</variants>
-
-<variants name="WebRTCEchoCancellerEstimate">
-  <variant name=".Max" summary="The maximum over the time interval"/>
-  <variant name=".Min" summary="The minimum over the time interval"/>
-  <variant name=".Value"
-      summary="The last estimated value of the time interval"/>
-</variants>
-
-<variants name="WebRTCMediaType">
-  <variant name=".Audio" summary="Audio"/>
-  <variant name=".Data" summary="Data"/>
-  <variant name=".Video" summary="Video"/>
-</variants>
-
-<variants name="WebRTCVideoExperimentGroupId">
-  <variant name=".ExperimentGroup0" summary="">
-    <owner>ilnik@chromium.org</owner>
-    <owner>webrtc-video@google.com</owner>
-  </variant>
-  <variant name=".ExperimentGroup1" summary="">
-    <owner>ilnik@chromium.org</owner>
-    <owner>webrtc-video@google.com</owner>
-  </variant>
-  <variant name=".ExperimentGroup2" summary="">
-    <owner>ilnik@chromium.org</owner>
-    <owner>webrtc-video@google.com</owner>
-  </variant>
-  <variant name=".ExperimentGroup3" summary="">
-    <owner>ilnik@chromium.org</owner>
-    <owner>webrtc-video@google.com</owner>
-  </variant>
-  <variant name=".ExperimentGroup4" summary="">
-    <owner>ilnik@chromium.org</owner>
-    <owner>webrtc-video@google.com</owner>
-  </variant>
-  <variant name=".S0" summary="">
-    <owner>ilnik@chromium.org</owner>
-    <owner>webrtc-video@google.com</owner>
-  </variant>
-  <variant name=".S1" summary="">
-    <owner>ilnik@chromium.org</owner>
-    <owner>webrtc-video@google.com</owner>
-  </variant>
-  <variant name=".S2" summary="">
-    <owner>ilnik@chromium.org</owner>
-    <owner>webrtc-video@google.com</owner>
-  </variant>
-</variants>
-
 <histogram name="WebRTC.AecFilterHasDivergence" units="%" expires_after="M85">
   <owner>grunell@chromium.org</owner>
   <owner>minyue@chromium.org</owner>
@@ -499,6 +423,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Audio.EchoCanceller.Erl" units="dB (shifted)"
+    expires_after="2021-10-19">
+  <owner>gustaf@chromium.org</owner>
+  <owner>peah@chromium.org</owner>
+  <summary>
+    This histogram logs the echo return loss achieved by the WebRTC echo
+    canceller as described in ITU G.168. When the echo canceller is being used,
+    one value is logged every 10 seconds per ongoing WebRTC call.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.Audio.EchoCanceller.ErlBand0" units="dB (shifted)"
     expires_after="2020-12-01">
   <obsolete>
@@ -524,6 +459,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     This histogram logs the echo return loss achieved by the WebRTC echo
     canceller between 4 and 8 kHz. A new value is logged every 10 seconds.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Audio.EchoCanceller.Erle" units="dB"
+    expires_after="2021-10-19">
+  <owner>gustaf@chromium.org</owner>
+  <owner>peah@chromium.org</owner>
+  <summary>
+    This histogram logs the echo return loss enhancement achieved by the WebRTC
+    echo canceller as described in ITU G.168. When the echo canceller is being
+    used, one value is logged every 10 seconds per ongoing WebRTC call.
   </summary>
 </histogram>
 
@@ -553,38 +499,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     This histogram logs the echo return loss enhancement achieved by the WebRTC
     echo canceller between 4 and 8 kHz. A new value is logged every 10 seconds.
   </summary>
-</histogram>
-
-<histogram name="WebRTC.Audio.EchoCanceller.Erle{WebRTCEchoCancellerEstimate}"
-    units="dB" expires_after="2021-10-19">
-  <owner>gustaf@chromium.org</owner>
-  <owner>peah@chromium.org</owner>
-  <summary>
-    This histogram logs the echo return loss enhancement achieved by the WebRTC
-    echo canceller as described in ITU G.168. When the echo canceller is being
-    used, one value is logged every 10 seconds per ongoing WebRTC call.
-    {WebRTCEchoCancellerEstimate}
-  </summary>
-  <token key="WebRTCEchoCancellerEstimate"
-      variants="WebRTCEchoCancellerEstimate">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram name="WebRTC.Audio.EchoCanceller.Erl{WebRTCEchoCancellerEstimate}"
-    units="dB (shifted)" expires_after="2021-10-19">
-  <owner>gustaf@chromium.org</owner>
-  <owner>peah@chromium.org</owner>
-  <summary>
-    This histogram logs the echo return loss achieved by the WebRTC echo
-    canceller as described in ITU G.168. When the echo canceller is being used,
-    one value is logged every 10 seconds per ongoing WebRTC call.
-    {WebRTCEchoCancellerEstimate}
-  </summary>
-  <token key="WebRTCEchoCancellerEstimate"
-      variants="WebRTCEchoCancellerEstimate">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="WebRTC.Audio.EchoCanceller.FilterDelay" units="Blocks"
@@ -1188,17 +1102,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.PeerConnection.CandidatePairType{IPProtocolType}"
+<histogram name="WebRTC.PeerConnection.CandidatePairType"
     enum="IceCandidatePairTypes" expires_after="2020-04-05">
   <owner>qingsi@google.com</owner>
   <owner>jeroendb@google.com</owner>
   <summary>
     Counters of various ICE Endpoint types. These values are logged for the
-    first selected candidate pair of a PeerConnection. {IPProtocolType}
+    first selected candidate pair of a PeerConnection.
   </summary>
-  <token key="IPProtocolType" variants="IPProtocolType">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.ConnectionState"
@@ -1513,17 +1424,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.PeerConnection.SrtpCryptoSuite{WebRTCMediaType}"
+<histogram name="WebRTC.PeerConnection.SrtpCryptoSuite"
     enum="DTLS_SRTPCryptoSuite" expires_after="M81">
   <owner>qingsi@google.com</owner>
   <owner>jeroendb@google.com</owner>
   <summary>
     Counters on the type of SRTP crypto suites used by WebRTC. This is collected
-    whenever the transport signals the OnCompleted event. {WebRTCMediaType}
+    whenever the transport signals the OnCompleted event.
   </summary>
-  <token key="WebRTCMediaType" variants="WebRTCMediaType">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SrtpUnprotectError" enum="SrtpErrorCode"
@@ -1537,17 +1445,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.PeerConnection.SslCipherSuite{WebRTCMediaType}"
-    enum="SSLCipherSuite" expires_after="M81">
+<histogram name="WebRTC.PeerConnection.SslCipherSuite" enum="SSLCipherSuite"
+    expires_after="M81">
   <owner>qingsi@google.com</owner>
   <owner>jeroendb@google.com</owner>
   <summary>
     Counters on the type of SSL cipher suites used by WebRTC. This is collected
-    whenever the transport signals the OnCompleted event. {WebRTCMediaType}
+    whenever the transport signals the OnCompleted event.
   </summary>
-  <token key="WebRTCMediaType" variants="WebRTCMediaType">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.ThermalState" enum="ThermalState"
@@ -1646,8 +1551,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Stun.BatchSuccessPercent{NatType}" units="%"
-    expires_after="M85">
+<histogram name="WebRTC.Stun.BatchSuccessPercent" units="%" expires_after="M85">
   <owner>qingsi@google.com</owner>
   <owner>jeroendb@google.com</owner>
   <summary>
@@ -1656,72 +1560,54 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     various intervals between requests. Only the first instance of renderers
     will conduct the trial and log this result. The STUN binding requests are
     grouped into multiple batches and the success rate is calculated for an
-    individual batch. {NatType}
+    individual batch.
   </summary>
-  <token key="NatType" variants="NatType">
-    <variant name=""/>
-  </token>
 </histogram>
 
-<histogram name="WebRTC.Stun.ResponseLatency{NatType}" units="ms"
-    expires_after="M85">
+<histogram name="WebRTC.Stun.ResponseLatency" units="ms" expires_after="M85">
   <owner>qingsi@google.com</owner>
   <owner>jeroendb@google.com</owner>
   <summary>
     For clients using a shared source port per STUN binding request, average RTT
     for requests which received a response with various intervals between
     requests. Only the first instance of renderers will conduct the trial and
-    log this result. {NatType}
+    log this result.
   </summary>
-  <token key="NatType" variants="NatType">
-    <variant name=""/>
-  </token>
 </histogram>
 
-<histogram name="WebRTC.Stun.SuccessPercent{NatType}" units="%"
-    expires_after="M85">
+<histogram name="WebRTC.Stun.SuccessPercent" units="%" expires_after="M85">
   <owner>qingsi@google.com</owner>
   <owner>jeroendb@google.com</owner>
   <summary>
     For clients using a shared source port per STUN binding request, success
     rate for requests which received a response with various intervals between
     requests. Only the first instance of renderers will conduct the trial and
-    log this result. {NatType}
+    log this result.
   </summary>
-  <token key="NatType" variants="NatType">
-    <variant name=""/>
-  </token>
 </histogram>
 
-<histogram name="WebRTC.SystemMaxConsecutiveBytesDelayed{IPProtocolType}"
-    units="units" expires_after="M81">
+<histogram name="WebRTC.SystemMaxConsecutiveBytesDelayed" units="units"
+    expires_after="M81">
   <owner>qingsi@google.com</owner>
   <owner>jeroendb@google.com</owner>
   <summary>
     The maximum of consecutive delayed bytes caused by EWOULDBLOCKs from system.
     This happens when system can't send any packet synchronously at that moment.
-    {IPProtocolType}
   </summary>
-  <token key="IPProtocolType" variants="IPProtocolType">
-    <variant name=""/>
-  </token>
 </histogram>
 
-<histogram name="WebRTC.SystemPercentPacketsDelayed{IPProtocolType}" units="%"
+<histogram name="WebRTC.SystemPercentPacketsDelayed" units="%"
     expires_after="M81">
   <owner>qingsi@google.com</owner>
   <owner>jeroendb@google.com</owner>
   <summary>
     The percentage of packets delayed due to ERR_IO_PENDING from system in a
     WebRTC socket. This happens when system can't send any packet synchronously
-    at that moment. {IPProtocolType}
+    at that moment.
   </summary>
-  <token key="IPProtocolType" variants="IPProtocolType">
-    <variant name=""/>
-  </token>
 </histogram>
 
-<histogram name="WebRTC.SystemSendPacketDuration{IPProtocolType}" units="ms"
+<histogram name="WebRTC.SystemSendPacketDuration" units="ms"
     expires_after="M81">
   <owner>qingsi@google.com</owner>
   <owner>jeroendb@google.com</owner>
@@ -1731,11 +1617,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     EWOULDBLOCK from system) as well as the time system takes to finish the
     asynchronous send. For UDP, it's the time from P2PSocketHostUdp::Send to
     P2PSocketHostUdp::HandleSendResult. Tcp part is to be implemented.
-    {IPProtocolType}
   </summary>
-  <token key="IPProtocolType" variants="IPProtocolType">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="WebRTC.UnreliableDataChannelMessageSize" units="bytes"
@@ -1882,19 +1764,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Video.Decoded.Vp8.Qp{WebRTCVideoExperimentGroupId}"
-    units="qp value" expires_after="never">
+<histogram name="WebRTC.Video.Decoded.Vp8.Qp" units="qp value"
+    expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
   <owner>asapersson@chromium.org</owner>
   <summary>
     The average QP (quantizer value) per frame for a received VP8 video stream.
-    Recorded when a stream is removed. {WebRTCVideoExperimentGroupId}
+    Recorded when a stream is removed.
   </summary>
-  <token key="WebRTCVideoExperimentGroupId"
-      variants="WebRTCVideoExperimentGroupId">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="WebRTC.Video.DecodedFramesPerSecond" units="fps"
@@ -2080,36 +1958,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Video.EndToEndDelayInMs{WebRTCVideoExperimentGroupId}"
-    units="ms" expires_after="never">
+<histogram name="WebRTC.Video.EndToEndDelayInMs" units="ms"
+    expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
   <owner>asapersson@chromium.org</owner>
   <summary>
     The average end-to-end delay per frame for a received video stream. Recorded
-    when a stream is removed. {WebRTCVideoExperimentGroupId}
+    when a stream is removed.
   </summary>
-  <token key="WebRTCVideoExperimentGroupId"
-      variants="WebRTCVideoExperimentGroupId">
-    <variant name=""/>
-  </token>
 </histogram>
 
-<histogram
-    name="WebRTC.Video.EndToEndDelayMaxInMs{WebRTCVideoExperimentGroupId}"
-    units="ms" expires_after="never">
+<histogram name="WebRTC.Video.EndToEndDelayMaxInMs" units="ms"
+    expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
     The maximum end-to-end delay per frame for a received video stream. Recorded
-    when a stream is removed. {WebRTCVideoExperimentGroupId}
+    when a stream is removed.
   </summary>
-  <token key="WebRTCVideoExperimentGroupId"
-      variants="WebRTCVideoExperimentGroupId">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="WebRTC.Video.FecBitrateReceivedInKbps" units="kbps"
@@ -2248,53 +2117,38 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram
-    name="WebRTC.Video.InterframeDelay95PercentileInMs{WebRTCVideoExperimentGroupId}"
-    units="ms" expires_after="never">
+<histogram name="WebRTC.Video.InterframeDelay95PercentileInMs" units="ms"
+    expires_after="never">
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
     The 95th percentile of interframe delay for a received video stream.
-    Recorded when a stream is removed. {WebRTCVideoExperimentGroupId}
+    Recorded when a stream is removed.
   </summary>
-  <token key="WebRTCVideoExperimentGroupId"
-      variants="WebRTCVideoExperimentGroupId">
-    <variant name=""/>
-  </token>
 </histogram>
 
-<histogram
-    name="WebRTC.Video.InterframeDelayInMs{WebRTCVideoExperimentGroupId}"
-    units="ms" expires_after="never">
+<histogram name="WebRTC.Video.InterframeDelayInMs" units="ms"
+    expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
     The average interframe delay for a received video stream. Recorded when a
-    stream is removed. {WebRTCVideoExperimentGroupId}
+    stream is removed.
   </summary>
-  <token key="WebRTCVideoExperimentGroupId"
-      variants="WebRTCVideoExperimentGroupId">
-    <variant name=""/>
-  </token>
 </histogram>
 
-<histogram
-    name="WebRTC.Video.InterframeDelayMaxInMs{WebRTCVideoExperimentGroupId}"
-    units="ms" expires_after="never">
+<histogram name="WebRTC.Video.InterframeDelayMaxInMs" units="ms"
+    expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
     The maximum interframe delay for a received video stream. Recorded when a
-    stream is removed. {WebRTCVideoExperimentGroupId}
+    stream is removed.
   </summary>
-  <token key="WebRTCVideoExperimentGroupId"
-      variants="WebRTCVideoExperimentGroupId">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="WebRTC.Video.JitterBufferDelayInMs" units="ms"
@@ -2308,20 +2162,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram
-    name="WebRTC.Video.KeyFramesReceivedInPermille{WebRTCVideoExperimentGroupId}"
-    units="permille" expires_after="never">
+<histogram name="WebRTC.Video.KeyFramesReceivedInPermille" units="permille"
+    expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
   <owner>asapersson@chromium.org</owner>
   <summary>
     Permille of frames that are key frames for a received video stream. Recorded
-    when a stream is removed. {WebRTCVideoExperimentGroupId}
+    when a stream is removed.
   </summary>
-  <token key="WebRTCVideoExperimentGroupId"
-      variants="WebRTCVideoExperimentGroupId">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="WebRTC.Video.KeyFramesSentInPermille" units="permille"
@@ -2359,21 +2208,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram
-    name="WebRTC.Video.MediaBitrateReceivedInKbps{WebRTCVideoExperimentGroupId}"
-    units="kbps" expires_after="never">
+<histogram name="WebRTC.Video.MediaBitrateReceivedInKbps" units="kbps"
+    expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of received media payload bits per second for a received video
     stream. Recorded when a stream is removed. The total number of bytes is
-    divided by the time the video stream exists. {WebRTCVideoExperimentGroupId}
+    divided by the time the video stream exists.
   </summary>
-  <token key="WebRTCVideoExperimentGroupId"
-      variants="WebRTCVideoExperimentGroupId">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="WebRTC.Video.MediaBitrateSentInKbps" units="kbps"
@@ -2549,20 +2393,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram
-    name="WebRTC.Video.ReceivedHeightInPixels{WebRTCVideoExperimentGroupId}"
-    units="pixels" expires_after="never">
+<histogram name="WebRTC.Video.ReceivedHeightInPixels" units="pixels"
+    expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
   <owner>asapersson@chromium.org</owner>
   <summary>
     The average received height per frame for a received video stream. Recorded
-    when a stream is removed. {WebRTCVideoExperimentGroupId}
+    when a stream is removed.
   </summary>
-  <token key="WebRTCVideoExperimentGroupId"
-      variants="WebRTCVideoExperimentGroupId">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="WebRTC.Video.ReceivedPacketsLostInPercent" units="%"
@@ -2576,20 +2415,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram
-    name="WebRTC.Video.ReceivedWidthInPixels{WebRTCVideoExperimentGroupId}"
-    units="pixels" expires_after="never">
+<histogram name="WebRTC.Video.ReceivedWidthInPixels" units="pixels"
+    expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
   <owner>asapersson@chromium.org</owner>
   <summary>
     The average received width per frame for a received video stream. Recorded
-    when a stream is removed. {WebRTCVideoExperimentGroupId}
+    when a stream is removed.
   </summary>
-  <token key="WebRTCVideoExperimentGroupId"
-      variants="WebRTCVideoExperimentGroupId">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="WebRTC.Video.ReceiveStreamLifetimeInSeconds" units="seconds"
@@ -2735,21 +2569,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram
-    name="WebRTC.Video.Screenshare.Decoded.Vp8.Qp{WebRTCVideoExperimentGroupId}"
-    units="qp value" expires_after="never">
+<histogram name="WebRTC.Video.Screenshare.Decoded.Vp8.Qp" units="qp value"
+    expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
     The average QP (quantizer value) per frame for a received VP8 screenshare
-    stream. Recorded when a stream is removed. {WebRTCVideoExperimentGroupId}
+    stream. Recorded when a stream is removed.
   </summary>
-  <token key="WebRTCVideoExperimentGroupId"
-      variants="WebRTCVideoExperimentGroupId">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.DroppedFrames.Capturer"
@@ -2811,38 +2640,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram
-    name="WebRTC.Video.Screenshare.EndToEndDelayInMs{WebRTCVideoExperimentGroupId}"
-    units="ms" expires_after="never">
+<histogram name="WebRTC.Video.Screenshare.EndToEndDelayInMs" units="ms"
+    expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
     The average end-to-end delay per frame for a received screenshare stream.
-    Recorded when a stream is removed. {WebRTCVideoExperimentGroupId}
+    Recorded when a stream is removed.
   </summary>
-  <token key="WebRTCVideoExperimentGroupId"
-      variants="WebRTCVideoExperimentGroupId">
-    <variant name=""/>
-  </token>
 </histogram>
 
-<histogram
-    name="WebRTC.Video.Screenshare.EndToEndDelayMaxInMs{WebRTCVideoExperimentGroupId}"
-    units="ms" expires_after="never">
+<histogram name="WebRTC.Video.Screenshare.EndToEndDelayMaxInMs" units="ms"
+    expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
     The maximum end-to-end delay per frame for a received screenshare stream.
-    Recorded when a stream is removed. {WebRTCVideoExperimentGroupId}
+    Recorded when a stream is removed.
   </summary>
-  <token key="WebRTCVideoExperimentGroupId"
-      variants="WebRTCVideoExperimentGroupId">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.FecBitrateSentInKbps" units="kbps"
@@ -2927,8 +2746,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram
-    name="WebRTC.Video.Screenshare.InterframeDelay95PercentileInMs{WebRTCVideoExperimentGroupId}"
+<histogram name="WebRTC.Video.Screenshare.InterframeDelay95PercentileInMs"
     units="ms" expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
@@ -2936,50 +2754,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>webrtc-video@google.com</owner>
   <summary>
     The 95th percentile of interframe delay for a received screenshare stream.
-    Recorded when a stream is removed. {WebRTCVideoExperimentGroupId}
+    Recorded when a stream is removed.
   </summary>
-  <token key="WebRTCVideoExperimentGroupId"
-      variants="WebRTCVideoExperimentGroupId">
-    <variant name=""/>
-  </token>
 </histogram>
 
-<histogram
-    name="WebRTC.Video.Screenshare.InterframeDelayInMs{WebRTCVideoExperimentGroupId}"
-    units="ms" expires_after="never">
+<histogram name="WebRTC.Video.Screenshare.InterframeDelayInMs" units="ms"
+    expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
     The average interframe delay for a received screenshare stream. Recorded
-    when a stream is removed. {WebRTCVideoExperimentGroupId}
+    when a stream is removed.
   </summary>
-  <token key="WebRTCVideoExperimentGroupId"
-      variants="WebRTCVideoExperimentGroupId">
-    <variant name=""/>
-  </token>
 </histogram>
 
-<histogram
-    name="WebRTC.Video.Screenshare.InterframeDelayMaxInMs{WebRTCVideoExperimentGroupId}"
-    units="ms" expires_after="never">
+<histogram name="WebRTC.Video.Screenshare.InterframeDelayMaxInMs" units="ms"
+    expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
     The maximum interframe delay for a received screenshare stream. Recorded
-    when a stream is removed. {WebRTCVideoExperimentGroupId}
+    when a stream is removed.
   </summary>
-  <token key="WebRTCVideoExperimentGroupId"
-      variants="WebRTCVideoExperimentGroupId">
-    <variant name=""/>
-  </token>
 </histogram>
 
-<histogram
-    name="WebRTC.Video.Screenshare.KeyFramesReceivedInPermille{WebRTCVideoExperimentGroupId}"
+<histogram name="WebRTC.Video.Screenshare.KeyFramesReceivedInPermille"
     units="permille" expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
@@ -2987,12 +2790,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>webrtc-video@google.com</owner>
   <summary>
     Permille of frames that are key frames for a received screenshare stream.
-    Recorded when a stream is removed. {WebRTCVideoExperimentGroupId}
+    Recorded when a stream is removed.
   </summary>
-  <token key="WebRTCVideoExperimentGroupId"
-      variants="WebRTCVideoExperimentGroupId">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.KeyFramesSentInPermille"
@@ -3006,32 +2805,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Video.Screenshare.Layer0{ScreenshareLayerStats}"
-    units="units" expires_after="never">
+<histogram name="WebRTC.Video.Screenshare.Layer0" units="units"
+    expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
   <owner>sprang@chromium.org</owner>
   <summary>
     Stats for the lower layer (TL0) of a screenshare stream in conference mode.
-    {ScreenshareLayerStats}
   </summary>
-  <token key="ScreenshareLayerStats" variants="ScreenshareLayerStats">
-    <variant name=""/>
-  </token>
 </histogram>
 
-<histogram name="WebRTC.Video.Screenshare.Layer1{ScreenshareLayerStats}"
-    units="units" expires_after="never">
+<histogram name="WebRTC.Video.Screenshare.Layer1" units="units"
+    expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
   <owner>sprang@chromium.org</owner>
   <summary>
     Stats for the higher layer (TL1) of a screenshare stream in conference mode.
-    {ScreenshareLayerStats}
   </summary>
-  <token key="ScreenshareLayerStats" variants="ScreenshareLayerStats">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.MeanFreezeDurationMs" units="ms"
@@ -3058,8 +2849,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram
-    name="WebRTC.Video.Screenshare.MediaBitrateReceivedInKbps{WebRTCVideoExperimentGroupId}"
+<histogram name="WebRTC.Video.Screenshare.MediaBitrateReceivedInKbps"
     units="kbps" expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
@@ -3069,12 +2859,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The number of received media payload bits per second for a received
     screenshare stream. Recorded when a stream is removed. The total number of
     bytes is divided by the time the video stream exists.
-    {WebRTCVideoExperimentGroupId}
   </summary>
-  <token key="WebRTCVideoExperimentGroupId"
-      variants="WebRTCVideoExperimentGroupId">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.MediaBitrateSentInKbps" units="kbps"
@@ -3160,8 +2945,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram
-    name="WebRTC.Video.Screenshare.ReceivedHeightInPixels{WebRTCVideoExperimentGroupId}"
+<histogram name="WebRTC.Video.Screenshare.ReceivedHeightInPixels"
     units="pixels" expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
@@ -3169,12 +2953,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>webrtc-video@google.com</owner>
   <summary>
     The average received height per frame for a received screenshare stream.
-    Recorded when a stream is removed. {WebRTCVideoExperimentGroupId}
+    Recorded when a stream is removed.
   </summary>
-  <token key="WebRTCVideoExperimentGroupId"
-      variants="WebRTCVideoExperimentGroupId">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.ReceivedPacketsLostInPercent"
@@ -3189,21 +2969,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram
-    name="WebRTC.Video.Screenshare.ReceivedWidthInPixels{WebRTCVideoExperimentGroupId}"
-    units="pixels" expires_after="never">
+<histogram name="WebRTC.Video.Screenshare.ReceivedWidthInPixels" units="pixels"
+    expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
     The average received width per frame for a received screenshare stream.
-    Recorded when a stream is removed. {WebRTCVideoExperimentGroupId}
+    Recorded when a stream is removed.
   </summary>
-  <token key="WebRTCVideoExperimentGroupId"
-      variants="WebRTCVideoExperimentGroupId">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.ReceiveStreamLifetimeInSeconds"
