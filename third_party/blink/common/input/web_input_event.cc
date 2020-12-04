@@ -5,6 +5,12 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 
 namespace blink {
+namespace {
+constexpr int kButtonModifiers =
+    WebInputEvent::kLeftButtonDown | WebInputEvent::kMiddleButtonDown |
+    WebInputEvent::kRightButtonDown | WebInputEvent::kBackButtonDown |
+    WebInputEvent::kForwardButtonDown;
+}
 
 base::Optional<ui::ScrollInputType> WebInputEvent::GetScrollInputType() const {
   return base::nullopt;
@@ -31,7 +37,8 @@ ui::EventType WebInputEvent::GetTypeAsUiEventType() const {
     case WebInputEvent::Type::kMouseUp:
       return ui::EventType::ET_MOUSE_RELEASED;
     case WebInputEvent::Type::kMouseMove:
-      return ui::EventType::ET_MOUSE_MOVED;
+      return modifiers_ & kButtonModifiers ? ui::EventType::ET_MOUSE_DRAGGED
+                                           : ui::EventType::ET_MOUSE_MOVED;
     case WebInputEvent::Type::kMouseEnter:
       return ui::EventType::ET_MOUSE_ENTERED;
     case WebInputEvent::Type::kMouseLeave:

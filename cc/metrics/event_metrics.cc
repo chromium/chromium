@@ -48,6 +48,7 @@ constexpr struct {
     EVENT_TYPE(FirstGestureScrollUpdate,
                ui::ET_GESTURE_SCROLL_UPDATE,
                EventMetrics::ScrollUpdateType::kStarted),
+    EVENT_TYPE(MouseDragged, ui::ET_MOUSE_DRAGGED),
 #undef EVENT_TYPE
 };
 static_assert(base::size(kInterestingEvents) ==

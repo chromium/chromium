@@ -6038,6 +6038,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="EventLatency.GestureTwoFingerTap"/>
   <affected-histogram name="EventLatency.KeyPressed"/>
   <affected-histogram name="EventLatency.KeyReleased"/>
+  <affected-histogram name="EventLatency.MouseDragged"/>
   <affected-histogram name="EventLatency.MousePressed"/>
   <affected-histogram name="EventLatency.MouseReleased"/>
   <affected-histogram name="EventLatency.MouseWheel"/>
@@ -6143,6 +6144,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Event latency for key-pressed event."/>
   <suffix base="true" name="KeyReleased"
       label="Event latency for key-released event."/>
+  <suffix base="true" name="MouseDragged"
+      label="Event latency for mouse-dragged event."/>
   <suffix base="true" name="MousePressed"
       label="Event latency for mouse-pressed event."/>
   <suffix base="true" name="MouseReleased"
