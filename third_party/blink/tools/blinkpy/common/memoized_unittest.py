@@ -40,6 +40,11 @@ class _TestObject(object):
         self.call_count += 1
         return argument + 1
 
+    @memoized
+    def memoized_subtract_one(self, argument):
+        self.call_count += 1
+        return argument - 1
+
 
 class MemoizedTest(unittest.TestCase):
     def test_multiple_identical_calls(self):
@@ -63,6 +68,22 @@ class MemoizedTest(unittest.TestCase):
         add_one = test.memoized_add_one
         self.assertEqual(add_one(4), 5)
         self.assertEqual(test.call_count, 1)
+
+    def test_cache_clear(self):
+        test = _TestObject()
+        self.assertEqual(test.memoized_add_one(1), 2)
+        self.assertEqual(test.memoized_subtract_one(2), 1)
+        self.assertEqual(test.call_count, 2)
+
+        # Now clear the cache of memoized_add_one. This should only clear the
+        # cache for that function.
+        test.memoized_add_one.cache_clear()
+
+        self.assertEqual(test.memoized_subtract_one(2), 1)
+        self.assertEqual(test.call_count, 2)
+
+        self.assertEqual(test.memoized_add_one(1), 2)
+        self.assertEqual(test.call_count, 3)
 
     def test_non_hashable_args(self):
         test = _TestObject()

@@ -155,6 +155,13 @@ class WPTExpectationsUpdater(object):
             mapping tests that couldn't be rebaselined to lists of expectation
             lines written to TestExpectations.
         """
+        # The wpt_manifest function in Port is cached by default, but may be out
+        # of date if this code is called during test import. An out of date
+        # manifest will cause us to mistreat newly added tests, as they will not
+        # exist in the cached manifest. To avoid this, we invalidate the cache
+        # here. See https://crbug.com/1154650 .
+        self.port.wpt_manifest.cache_clear()
+
         issue_number = self.get_issue_number()
         if issue_number == 'None':
             raise ScriptError('No issue on current branch.')
@@ -170,7 +177,9 @@ class WPTExpectationsUpdater(object):
             if (job_status.result == 'SUCCESS' and
                     not self.options.include_unexpected_pass):
                 continue
+            # Temporary logging for https://crbug.com/1154650
             result_dicts = self.get_failing_results_dicts(build)
+            _log.info('Merging failing results dicts for %s', build)
             for result_dict in result_dicts:
                 test_expectations = self.merge_dicts(
                     test_expectations, result_dict)
@@ -363,9 +372,14 @@ class WPTExpectationsUpdater(object):
                 elif target[key] == source[key]:
                     pass
                 else:
+                    # Temporary logging for https://crbug.com/1154650.
+                    _log.info(
+                        'Error: mismatching key values in merge_dicts.\n'
+                        'target[key]: %s\nsource[key]: %s', target[key],
+                        source[key])
                     raise ValueError(
-                        'The key: %s already exist in the target dictionary.' %
-                        '.'.join(path))
+                        'The key: %s already exists in the target dictionary.'
+                        % '.'.join(path))
             else:
                 target[key] = source[key]
         return target

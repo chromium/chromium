@@ -48,7 +48,6 @@ class TestImporter(object):
     def __init__(self, host, wpt_github=None, wpt_manifests=None):
         self.host = host
         self.wpt_github = wpt_github
-        self.port = host.port_factory.get()
 
         self.executive = host.executive
         self.fs = host.filesystem
@@ -157,15 +156,15 @@ class TestImporter(object):
         # TODO(robertma): Implement `add --all` in Git (it is different from `commit --all`).
         self.chromium_git.run(['add', '--all', self.dest_path])
 
-        # Remove expectations for tests that were deleted and rename tests
-        # in expectations for renamed tests.
+        # Remove expectations for tests that were deleted and rename tests in
+        # expectations for renamed tests. This requires the old WPT manifest, so
+        # must happen before we regenerate it.
         self._expectations_updater.cleanup_test_expectations_files()
 
         self._generate_manifest()
 
         # TODO(crbug.com/800570 robertma): Re-enable it once we fix the bug.
         # self._delete_orphaned_baselines()
-
 
         if not self.chromium_git.has_working_directory_changes():
             _log.info('Done: no changes to import.')
