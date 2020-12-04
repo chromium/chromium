@@ -194,6 +194,12 @@ void ShapeResultView::CreateViewsForResult(const ShapeResultType* other,
       continue;
     // Compute start/end of the run, or of the part if ShapeResultView.
     unsigned part_start = run->start_index_ + other->StartIndexOffsetForRun();
+    if (other->Rtl()) {
+      // Under RTL and multiple parts, A RunInfoPart may have an
+      // offset_ greater than start_index. In this case, run_start
+      // would result in an invalid negative value.
+      part_start = std::max(part_start, run->OffsetToRunStartIndex());
+    }
     unsigned run_end = part_start + run->num_characters_;
     if (start_index < run_end && end_index > part_start) {
       ShapeResult::RunInfo::GlyphDataRange range;
@@ -202,10 +208,6 @@ void ShapeResultView::CreateViewsForResult(const ShapeResultType* other,
       // of |RunInfo| could be different from |part_start| for ShapeResultView.
       DCHECK_GE(part_start, run->OffsetToRunStartIndex());
       unsigned run_start = part_start - run->OffsetToRunStartIndex();
-      // TODO(jfernandez): Give a first part of 1 char (offset=2), a
-      // second part, with part_start=3 (1 + 2), this run_start will
-      // be 0. Hence, the way we are computing the adjusted_start
-      // seems incorrect.
       unsigned adjusted_start =
           start_index > run_start
               ? std::max(start_index, part_start) - run_start
