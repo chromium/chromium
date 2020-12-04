@@ -501,6 +501,16 @@ template("monochrome_public_common_apk_or_module_tmpl") {
         # TODO(crbug.com/1150459): Remove this once internal repo is updated.
         not_needed(invoker, [ "module_descs" ])
 
+        # If the manifest is being verified, add the chrome module's manifest.
+        if (defined(invoker.expected_android_manifest)) {
+          _bundle_target_gen_dir =
+              get_label_info(invoker.bundle_target, "target_gen_dir")
+          _bundle_name = get_label_info(invoker.bundle_target, "name")
+          extra_verification_manifest = "${_bundle_target_gen_dir}/${_bundle_name}__chrome_bundle_module_manifest/AndroidManifest.xml"
+          extra_verification_manifest_dep =
+              "${invoker.bundle_target}__chrome_bundle_module__merge_manifests"
+        }
+
         # The arcore manifest needs to be merged into the base module because
         # the Play Store verifies the com.google.ar.core.min_apk_version
         # meta-data tag is in the base manifest.
@@ -728,6 +738,8 @@ template("monochrome_public_common_apk_or_module_tmpl") {
       "alternative_android_sdk_dep",
       "app_as_shared_lib",
       "deps",
+      "extra_verification_manifest",
+      "extra_verification_manifest_dep",
       "is_monochrome",
       "is_trichrome",
       "isolated_splits_enabled",

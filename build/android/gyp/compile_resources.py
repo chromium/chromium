@@ -242,6 +242,11 @@ def _ParseArgs(args):
       '--uses-split',
       help='Value to set uses-split to in the AndroidManifest.xml.')
 
+  input_opts.add_argument(
+      '--extra-verification-manifest',
+      help='Path to AndroidManifest.xml which should be merged into base '
+      'manifest when performing verification.')
+
   diff_utils.AddCommandLineFlags(parser)
   options = parser.parse_args(args)
 
@@ -412,7 +417,7 @@ def _MoveImagesToNonMdpiFolders(res_root, path_info):
           os.path.relpath(dst_file, res_root))
 
 
-def _FixManifest(options, temp_dir):
+def _FixManifest(options, temp_dir, extra_manifest=None):
   """Fix the APK's AndroidManifest.xml.
 
   This adds any missing namespaces for 'android' and 'tools', and
@@ -422,6 +427,8 @@ def _FixManifest(options, temp_dir):
   Args:
     options: The command-line arguments tuple.
     temp_dir: A temporary directory where the fixed manifest will be written to.
+    extra_manifest: Path to an AndroidManifest.xml file which will get merged
+        into the application node of the base manifest.
   Returns:
     Tuple of:
      * Manifest path within |temp_dir|.
@@ -451,6 +458,11 @@ def _FixManifest(options, temp_dir):
   debug_manifest_path = os.path.join(temp_dir, 'AndroidManifest.xml')
   doc, manifest_node, app_node = manifest_utils.ParseManifest(
       options.android_manifest)
+
+  if extra_manifest:
+    _, _, extra_app_nodes = manifest_utils.ParseManifest(extra_manifest)
+    for node in extra_app_nodes:
+      app_node.append(node)
 
   manifest_utils.AssertUsesSdk(manifest_node, options.min_sdk_version,
                                options.target_sdk_version)
@@ -1039,9 +1051,10 @@ def _WriteOutputs(options, build):
       shutil.move(temp, final)
 
 
-def _CreateNormalizedManifest(options):
+def _CreateNormalizedManifestForVerification(options):
   with build_utils.TempDir() as tempdir:
-    fixed_manifest, _ = _FixManifest(options, tempdir)
+    fixed_manifest, _ = _FixManifest(
+        options, tempdir, extra_manifest=options.extra_verification_manifest)
     with open(fixed_manifest) as f:
       return manifest_utils.NormalizeManifest(f.read())
 
@@ -1140,7 +1153,7 @@ def main(args):
   options = _ParseArgs(args)
 
   if options.expected_file:
-    actual_data = _CreateNormalizedManifest(options)
+    actual_data = _CreateNormalizedManifestForVerification(options)
     diff_utils.CheckExpectations(actual_data, options)
     if options.only_verify_expectations:
       return
