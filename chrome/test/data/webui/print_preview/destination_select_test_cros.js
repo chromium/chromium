@@ -359,7 +359,8 @@ suite(printer_status_test_cros.suiteName, function() {
       destinationSelect.destination = crosEnterprisePrinter;
       destinationSelect.updateDestination();
       assertEquals(
-          'print-preview:printer-status-grey', dropdown.destinationIcon);
+          'print-preview:business-printer-status-grey',
+          dropdown.destinationIcon);
 
       destinationSelect.destination = mobilePrinter;
       destinationSelect.updateDestination();

@@ -134,16 +134,22 @@ export function computePrinterState(printerStatusReason) {
 
 /**
  * @param {?PrinterStatusReason} printerStatusReason
+ * @param {boolean} isEnterprisePrinter
  * @return {string}
  */
-export function getPrinterStatusIcon(printerStatusReason) {
+export function getPrinterStatusIcon(printerStatusReason, isEnterprisePrinter) {
   switch (computePrinterState(printerStatusReason)) {
     case PrinterState.GOOD:
-      return 'print-preview:printer-status-green';
+      return isEnterprisePrinter ?
+          'print-preview:business-printer-status-green' :
+          'print-preview:printer-status-green';
     case PrinterState.ERROR:
-      return 'print-preview:printer-status-red';
+      return isEnterprisePrinter ? 'print-preview:business-printer-status-red' :
+                                   'print-preview:printer-status-red';
     case PrinterState.UNKNOWN:
-      return 'print-preview:printer-status-grey';
+      return isEnterprisePrinter ?
+          'print-preview:business-printer-status-grey' :
+          'print-preview:printer-status-grey';
     default:
       assertNotReached();
   }

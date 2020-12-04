@@ -246,7 +246,9 @@ Polymer({
     // <if expr="chromeos">
     if (this.printerStatusFlagEnabled_ &&
         this.destination.origin === DestinationOrigin.CROS) {
-      return getPrinterStatusIcon(this.destination.printerStatusReason);
+      return getPrinterStatusIcon(
+          this.destination.printerStatusReason,
+          this.destination.isEnterprisePrinter);
     }
     // </if>
 

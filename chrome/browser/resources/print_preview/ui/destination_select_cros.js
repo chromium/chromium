@@ -146,7 +146,9 @@ Polymer({
     if (this.destination && this.destination.key === this.selectedValue) {
       if (this.printerStatusFlagEnabled_ &&
           this.isCurrentDestinationCrosLocal_) {
-        return getPrinterStatusIcon(this.destination.printerStatusReason);
+        return getPrinterStatusIcon(
+            this.destination.printerStatusReason,
+            this.destination.isEnterprisePrinter);
       }
 
       return this.destination.icon;

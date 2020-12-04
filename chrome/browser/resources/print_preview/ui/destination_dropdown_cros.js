@@ -327,10 +327,11 @@ Polymer({
 
   /**
    * @param {!PrinterStatusReason} printerStatusReason
+   * @param {boolean} isEnterprisePrinter
    * @return {string}
    * @private
    */
-  getPrinterStatusIcon_(printerStatusReason) {
-    return getPrinterStatusIcon(printerStatusReason);
+  getPrinterStatusIcon_(printerStatusReason, isEnterprisePrinter) {
+    return getPrinterStatusIcon(printerStatusReason, isEnterprisePrinter);
   }
 });

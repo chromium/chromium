@@ -125,7 +125,7 @@
               aria-description$="[[getPrinterStatusErrorString_(
                   item.printerStatusReason)]]">
             <iron-icon icon="[[getPrinterStatusIcon_(
-                item.printerStatusReason)]]">
+                item.printerStatusReason, item.isEnterprisePrinter)]]">
             </iron-icon>
             <span class="printer-display-name">[[item.displayName]]</span>
           </button>
