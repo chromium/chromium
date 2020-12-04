@@ -100,6 +100,13 @@ class ThreadCacheTest : public ::testing::Test {
 
     auto* tcache = g_root->thread_cache_for_testing();
     ASSERT_TRUE(tcache);
+
+    // Make sure that enough slot spans have been touched, otherwise cache fill
+    // becomes unpredictable (because it doesn't take slow paths in the
+    // allocator), which is an issue for tests.
+    FillThreadCacheAndReturnIndex(kSmallSize, 1000);
+    FillThreadCacheAndReturnIndex(kMediumSize, 1000);
+
     tcache->Purge();
   }
 
