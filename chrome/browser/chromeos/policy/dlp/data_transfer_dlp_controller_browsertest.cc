@@ -7,6 +7,9 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/chromeos/crostini/crostini_manager.h"
+#include "chrome/browser/chromeos/crostini/crostini_util.h"
+#include "chrome/browser/chromeos/crostini/fake_crostini_features.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"
@@ -43,6 +46,23 @@ class DataTransferDlpBrowserTest : public LoginPolicyTestBase {
     user_policy_helper()->SetPolicyAndWait(
         policy, /*recommended=*/base::DictionaryValue(),
         ProfileManager::GetActiveUserProfile());
+  }
+
+  void SetupCrostini() {
+    crostini::FakeCrostiniFeatures crostini_features;
+    crostini_features.set_is_allowed_now(true);
+    crostini_features.set_enabled(true);
+
+    // Setup CrostiniManager for testing.
+    crostini::CrostiniManager* crostini_manager =
+        crostini::CrostiniManager::GetForProfile(GetProfileForActiveUser());
+    crostini_manager->set_skip_restart_for_testing();
+    crostini_manager->AddRunningVmForTesting(crostini::kCrostiniDefaultVmName);
+    crostini_manager->AddRunningContainerForTesting(
+        crostini::kCrostiniDefaultVmName,
+        crostini::ContainerInfo(crostini::kCrostiniDefaultContainerName,
+                                "testuser", "/home/testuser",
+                                "PLACEHOLDER_IP"));
   }
 };
 
@@ -140,6 +160,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, RestrictedComponent) {
   SkipToLoginScreen();
   LogIn(kAccountId, kAccountPassword, kEmptyServices);
 
+  SetupCrostini();
+
   const std::string kUrl1 = "https://mail.google.com";
 
   base::Value rules(base::Value::Type::LIST);
@@ -171,19 +193,13 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, RestrictedComponent) {
       ui::ClipboardBuffer::kCopyPaste, &data_dst1, &result1);
   EXPECT_EQ(base::UTF8ToUTF16(kClipboardText), result1);
 
-  // `notify_if_restricted` should be set false, otherwise the test would fail,
-  // because no guest os is actually running.
-  ui::DataTransferEndpoint data_dst2(ui::EndpointType::kArc,
-                                     /*notify_if_restricted=*/false);
+  ui::DataTransferEndpoint data_dst2(ui::EndpointType::kArc);
   base::string16 result2;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst2, &result2);
   EXPECT_EQ(base::string16(), result2);
 
-  // `notify_if_restricted` should be set false, otherwise the test would fail,
-  // because no guest os is actually running.
-  ui::DataTransferEndpoint data_dst3(ui::EndpointType::kGuestOs,
-                                     /*notify_if_restricted=*/false);
+  ui::DataTransferEndpoint data_dst3(ui::EndpointType::kGuestOs);
   base::string16 result3;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst3, &result3);
