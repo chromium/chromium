@@ -28,8 +28,8 @@ using password_manager::PasswordFormMetricsRecorder;
 
 namespace {
 constexpr char kDefaultUrl[] = "http://example.com";
-constexpr char kAlternativeUrl[] = "http://bar.com";
-constexpr char kAlternativeUrlHost[] = "bar.com";
+constexpr char kUsername[] = "username";
+constexpr char kPassword[] = "password";
 constexpr char kDismissalReasonHistogramName[] =
     "PasswordManager.SaveUIDismissalReason";
 }  // namespace
@@ -43,6 +43,7 @@ class SavePasswordMessageDelegateTest : public ChromeRenderViewHostTestHarness {
 
   std::unique_ptr<MockPasswordFormManagerForUI> CreateFormManager(
       const GURL& url);
+  void SetUsernameAndPassword(base::string16 username, base::string16 password);
 
   void CreateMessage(std::unique_ptr<PasswordFormManagerForUI> form_to_save,
                      bool is_saving_google_account);
@@ -87,6 +88,13 @@ SavePasswordMessageDelegateTest::CreateFormManager(
   ON_CALL(*form_manager, GetMetricsRecorder())
       .WillByDefault(testing::Return(metrics_recorder_.get()));
   return form_manager;
+}
+
+void SavePasswordMessageDelegateTest::SetUsernameAndPassword(
+    base::string16 username,
+    base::string16 password) {
+  form_.username_value = std::move(username);
+  form_.password_value = std::move(password);
 }
 
 void SavePasswordMessageDelegateTest::CreateMessage(
@@ -134,12 +142,18 @@ void SavePasswordMessageDelegateTest::VerifyUkmMetrics(
 // Tests that message properties (title, description, icon, button text) are
 // set correctly.
 TEST_F(SavePasswordMessageDelegateTest, MessagePropertyValues) {
+  SetUsernameAndPassword(base::ASCIIToUTF16(kUsername),
+                         base::ASCIIToUTF16(kPassword));
   auto form_manager = CreateFormManager(GURL(kDefaultUrl));
   CreateMessage(std::move(form_manager), false /*is_saving_google_account*/);
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD),
             GetMessageWrapper()->GetTitle());
-  EXPECT_EQ(base::string16(), GetMessageWrapper()->GetDescription());
+  EXPECT_NE(base::string16::npos, GetMessageWrapper()->GetDescription().find(
+                                      base::ASCIIToUTF16(kUsername)));
+  EXPECT_EQ(base::string16::npos, GetMessageWrapper()->GetDescription().find(
+                                      base::ASCIIToUTF16(kPassword)));
+
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_SAVE_BUTTON),
             GetMessageWrapper()->GetPrimaryButtonText());
   EXPECT_EQ(
@@ -149,28 +163,14 @@ TEST_F(SavePasswordMessageDelegateTest, MessagePropertyValues) {
   TriggerMessageDismissedCallback();
 }
 
-// Tests that the description is set correctly when user is syncing passwords to
+// Tests that the title is set correctly when the user is syncing passwords to
 // their Google Account.
-TEST_F(SavePasswordMessageDelegateTest, SaveToGoogleDescription) {
+TEST_F(SavePasswordMessageDelegateTest, SaveToGoogleTitle) {
   auto form_manager = CreateFormManager(GURL(kDefaultUrl));
   CreateMessage(std::move(form_manager), true /*is_saving_google_account*/);
 
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD_FOOTER),
-            GetMessageWrapper()->GetDescription());
-
-  TriggerMessageDismissedCallback();
-}
-
-// Tests that the title is set correctly when form domain differs from current
-// page domain.
-TEST_F(SavePasswordMessageDelegateTest, TitleForDifferentDomainPassword) {
-  auto form_manager = CreateFormManager(GURL(kAlternativeUrl));
-  CreateMessage(std::move(form_manager), false /*is_saving_google_account*/);
-
-  EXPECT_NE(l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD_TO_GOOGLE),
             GetMessageWrapper()->GetTitle());
-  EXPECT_NE(base::string16::npos, GetMessageWrapper()->GetTitle().find(
-                                      base::ASCIIToUTF16(kAlternativeUrlHost)));
 
   TriggerMessageDismissedCallback();
 }
