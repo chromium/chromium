@@ -20,9 +20,16 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 
+static bool IsUninitializedBitmap(const SkBitmap& bitmap) {
+  return bitmap.isNull() && bitmap.colorType() == kUnknown_SkColorType &&
+         bitmap.alphaType() == kUnknown_SkAlphaType;
+}
+
 // static
 SkBitmap SkBitmapOperations::CreateInvertedBitmap(const SkBitmap& image) {
-  DCHECK(image.colorType() == kN32_SkColorType);
+  if (IsUninitializedBitmap(image))
+    return image;
+  CHECK_EQ(image.colorType(), kN32_SkColorType);
 
   SkBitmap inverted;
   inverted.allocN32Pixels(image.width(), image.height());
@@ -46,10 +53,10 @@ SkBitmap SkBitmapOperations::CreateBlendedBitmap(const SkBitmap& first,
                                                  const SkBitmap& second,
                                                  double alpha) {
   DCHECK((alpha >= 0) && (alpha <= 1));
-  DCHECK(first.width() == second.width());
-  DCHECK(first.height() == second.height());
-  DCHECK(first.bytesPerPixel() == second.bytesPerPixel());
-  DCHECK(first.colorType() == kN32_SkColorType);
+  CHECK_EQ(first.width(), second.width());
+  CHECK_EQ(first.height(), second.height());
+  CHECK_EQ(first.colorType(), kN32_SkColorType);
+  CHECK_EQ(second.colorType(), kN32_SkColorType);
 
   // Optimize for case where we won't need to blend anything.
   static const double alpha_min = 1.0 / 255;
@@ -92,11 +99,10 @@ SkBitmap SkBitmapOperations::CreateBlendedBitmap(const SkBitmap& first,
 // static
 SkBitmap SkBitmapOperations::CreateMaskedBitmap(const SkBitmap& rgb,
                                                 const SkBitmap& alpha) {
-  DCHECK(rgb.width() == alpha.width());
-  DCHECK(rgb.height() == alpha.height());
-  DCHECK(rgb.bytesPerPixel() == alpha.bytesPerPixel());
-  DCHECK(rgb.colorType() == kN32_SkColorType);
-  DCHECK(alpha.colorType() == kN32_SkColorType);
+  CHECK_EQ(rgb.width(), alpha.width());
+  CHECK_EQ(rgb.height(), alpha.height());
+  CHECK_EQ(rgb.colorType(), kN32_SkColorType);
+  CHECK_EQ(alpha.colorType(), kN32_SkColorType);
 
   SkBitmap masked;
   masked.allocN32Pixels(rgb.width(), rgb.height());
@@ -120,11 +126,8 @@ SkBitmap SkBitmapOperations::CreateMaskedBitmap(const SkBitmap& rgb,
 SkBitmap SkBitmapOperations::CreateButtonBackground(SkColor color,
                                                     const SkBitmap& image,
                                                     const SkBitmap& mask) {
-  // Despite this assert, it seems like image is actually unpremultiplied.
-  // The math producing dst_row[x] below is a correct SrcOver when
-  // bg_* are premultiplied and img_* are unpremultiplied.
-  DCHECK(image.colorType() == kN32_SkColorType);
-  DCHECK(mask.colorType() == kN32_SkColorType);
+  CHECK_EQ(image.colorType(), kN32_SkColorType);
+  CHECK_EQ(mask.colorType(), kN32_SkColorType);
 
   SkBitmap background;
   background.allocN32Pixels(mask.width(), mask.height());
@@ -476,6 +479,10 @@ const LineProcessor kLineProcessors[kNumHOps][kNumSOps][kNumLOps] = {
 SkBitmap SkBitmapOperations::CreateHSLShiftedBitmap(
     const SkBitmap& bitmap,
     const color_utils::HSL& hsl_shift) {
+  if (IsUninitializedBitmap(bitmap))
+    return bitmap;
+  CHECK_EQ(bitmap.colorType(), kN32_SkColorType);
+
   // Default to NOPs.
   HSLShift::OperationOnH H_op = HSLShift::kOpHNone;
   HSLShift::OperationOnS S_op = HSLShift::kOpSNone;
@@ -520,7 +527,7 @@ SkBitmap SkBitmapOperations::CreateHSLShiftedBitmap(
 SkBitmap SkBitmapOperations::CreateTiledBitmap(const SkBitmap& source,
                                                int src_x, int src_y,
                                                int dst_w, int dst_h) {
-  DCHECK(source.colorType() == kN32_SkColorType);
+  CHECK_EQ(source.colorType(), kN32_SkColorType);
 
   SkBitmap cropped;
   cropped.allocN32Pixels(dst_w, dst_h);
@@ -563,6 +570,10 @@ SkBitmap SkBitmapOperations::DownsampleByTwoUntilSize(const SkBitmap& bitmap,
 
 // static
 SkBitmap SkBitmapOperations::DownsampleByTwo(const SkBitmap& bitmap) {
+  if (IsUninitializedBitmap(bitmap))
+    return bitmap;
+  CHECK_EQ(bitmap.colorType(), kN32_SkColorType);
+
   // Handle the nop case.
   if ((bitmap.width() <= 1) || (bitmap.height() <= 1))
     return bitmap;
@@ -626,12 +637,12 @@ SkBitmap SkBitmapOperations::DownsampleByTwo(const SkBitmap& bitmap) {
 
 // static
 SkBitmap SkBitmapOperations::UnPreMultiply(const SkBitmap& bitmap) {
-  if (bitmap.isNull())
+  if (IsUninitializedBitmap(bitmap))
     return bitmap;
+  CHECK_EQ(bitmap.colorType(), kN32_SkColorType);
+
   if (bitmap.alphaType() != kPremul_SkAlphaType)
     return bitmap;
-  // It's expected this code is called with a 32bpp image.
-  CHECK_EQ(kN32_SkColorType, bitmap.colorType());
 
   const SkImageInfo& opaque_info =
       bitmap.info().makeAlphaType(kUnpremul_SkAlphaType);
@@ -652,7 +663,9 @@ SkBitmap SkBitmapOperations::UnPreMultiply(const SkBitmap& bitmap) {
 
 // static
 SkBitmap SkBitmapOperations::CreateTransposedBitmap(const SkBitmap& image) {
-  DCHECK(image.colorType() == kN32_SkColorType);
+  if (IsUninitializedBitmap(image))
+    return image;
+  CHECK_EQ(image.colorType(), kN32_SkColorType);
 
   SkBitmap transposed;
   transposed.allocN32Pixels(image.height(), image.width());
@@ -671,7 +684,7 @@ SkBitmap SkBitmapOperations::CreateTransposedBitmap(const SkBitmap& image) {
 // static
 SkBitmap SkBitmapOperations::CreateColorMask(const SkBitmap& bitmap,
                                              SkColor c) {
-  DCHECK(bitmap.colorType() == kN32_SkColorType);
+  CHECK_EQ(bitmap.colorType(), kN32_SkColorType);
 
   SkBitmap color_mask;
   color_mask.allocN32Pixels(bitmap.width(), bitmap.height());
@@ -689,7 +702,7 @@ SkBitmap SkBitmapOperations::CreateColorMask(const SkBitmap& bitmap,
 SkBitmap SkBitmapOperations::CreateDropShadow(
     const SkBitmap& bitmap,
     const gfx::ShadowValues& shadows) {
-  DCHECK(bitmap.colorType() == kN32_SkColorType);
+  CHECK_EQ(bitmap.colorType(), kN32_SkColorType);
 
   // Shadow margin insets are negative values because they grow outside.
   // Negate them here as grow direction is not important and only pixel value
@@ -730,6 +743,9 @@ SkBitmap SkBitmapOperations::CreateDropShadow(
 // static
 SkBitmap SkBitmapOperations::Rotate(const SkBitmap& source,
                                     RotationAmount rotation) {
+  if (IsUninitializedBitmap(source))
+    return source;
+  CHECK_EQ(source.colorType(), kN32_SkColorType);
   // SkCanvas::drawBitmap() fails silently with unpremultiplied SkBitmap.
   DCHECK_NE(source.info().alphaType(), kUnpremul_SkAlphaType);
 
