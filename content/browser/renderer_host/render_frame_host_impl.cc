@@ -644,7 +644,8 @@ void OnDataURLRetrieved(
   StartDownload(std::move(parameters), nullptr);
 }
 
-void RecordCrossOriginIsolationMetrics(RenderFrameHostImpl* rfh) {
+void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
+                                      NavigationRequest* navigation_request) {
   ContentBrowserClient* client = GetContentClient()->browser();
   if (rfh->cross_origin_opener_policy().value ==
       network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin) {
@@ -674,6 +675,45 @@ void RecordCrossOriginIsolationMetrics(RenderFrameHostImpl* rfh) {
       rfh->cross_origin_opener_policy().report_only_reporting_endpoint) {
     client->LogWebFeatureForCurrentPage(
         rfh, blink::mojom::WebFeature::kCrossOriginOpenerPolicyReporting);
+  }
+
+  // Record iframes embedded in cross-origin contexts without a CSP
+  // frame-ancestor directive.
+  bool is_embedded_in_cross_origin_context = false;
+  RenderFrameHostImpl* parent = rfh->frame_tree_node()->parent();
+  while (parent) {
+    if (!parent->GetLastCommittedOrigin().IsSameOriginWith(
+            rfh->GetLastCommittedOrigin())) {
+      is_embedded_in_cross_origin_context = true;
+      break;
+    }
+    parent = parent->frame_tree_node()->parent();
+  }
+
+  bool has_embedding_control = false;
+  if (!navigation_request->response()) {
+    // This navigation did not result in a network request. The embedding of
+    // the frame is not controlled by network headers.
+    has_embedding_control = true;
+  } else {
+    // Check if the request has a CSP frame-ancestor directive.
+    for (const auto& csp : navigation_request->response()
+                               ->parsed_headers->content_security_policy) {
+      if (csp->header->type ==
+              network::mojom::ContentSecurityPolicyType::kEnforce &&
+          csp->directives.contains(
+              network::mojom::CSPDirectiveName::FrameAncestors)) {
+        has_embedding_control = true;
+        break;
+      }
+    }
+  }
+
+  if (is_embedded_in_cross_origin_context && !has_embedding_control &&
+      !navigation_request->IsErrorPage()) {
+    client->LogWebFeatureForCurrentPage(
+        rfh,
+        blink::mojom::WebFeature::kCrossOriginSubframeWithoutEmbeddingControl);
   }
 }
 
@@ -8751,7 +8791,7 @@ void RenderFrameHostImpl::DidCommitNewDocument(
       NavigationRequest::IsLoadDataWithBaseURL(
           navigation_request->common_params());
 
-  RecordCrossOriginIsolationMetrics(this);
+  RecordWebPlatformSecurityMetrics(this, navigation_request);
 
   CrossOriginOpenerPolicyReporter::InstallAccessMonitorsIfNeeded(
       frame_tree_node_);

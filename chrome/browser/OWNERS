@@ -87,9 +87,8 @@ per-file chrome_back_forward_cache_browsertest.cc=arthursonzogni@chromium.org
 per-file chrome_back_forward_cache_browsertest.cc=altimin@chromium.org
 per-file chrome_back_forward_cache_browsertest.cc=file://content/OWNERS
 
-# Cross-Origin-Opener-Policy:
-per-file chrome_cross_origin_opener_policy_browsertest.cc=file://content/OWNERS
-per-file chrome_cross_origin_opener_policy_browsertest.cc=arthursonzogni@chromium.org
+# Web Platform security metrics tests:
+per-file chrome_web_platform_security_metrics_browsertest.cc=file://content/OWNERS
 
 # COMPONENT: UI>Browser
 # TEAM: chromium-reviews@chromium.org
