@@ -1223,6 +1223,13 @@
       'Linux FYI Release (AMD R7 240)', # https://crbug.com/915430
     ],
   },
+  'dawn_end2end_validation_layers_tests': {
+    'remove_from': [
+      # https://crbug.com/1154823
+      'Dawn Win10 x64 DEPS Release (Intel HD 630)',
+      'Dawn Win10 x86 DEPS Release (Intel HD 630)',
+    ],
+  },
   'depth_capture_tests': {
     # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
     # exception once there is enough capacity to run these tests.
