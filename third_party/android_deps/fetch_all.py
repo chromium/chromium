@@ -540,9 +540,6 @@ def main():
         Copy(_CHROMIUM_SRC, list(copied_paths.keys()), build_dir,
              list(copied_paths.values()))
 
-        if debug:
-            gradle_cmd.append('--debug')
-
         if not args.ignore_vulnerabilities:
             report_dst = os.path.join(abs_android_deps_dir,
                                       'vulnerability_reports')
