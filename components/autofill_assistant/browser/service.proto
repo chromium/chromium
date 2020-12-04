@@ -281,8 +281,12 @@ message SupportedScriptProto {
     // Show the UI if it's not shown yet. Setting this to false is useful for
     // scripts started by direct actions.
     optional bool needs_ui = 15 [default = true];
+
+    reserved 1, 2, 6, 7, 10, 11, 16 to 18;
   }
   optional PresentationProto presentation = 2;
+
+  reserved 3;
 }
 
 enum ScriptStatusProto {
