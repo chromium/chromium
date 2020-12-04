@@ -5053,26 +5053,6 @@
             ]
         }
     ],
-    "OptimizationHintsNoPersistentStore": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "batch_update_hints_for_top_hosts": "false",
-                        "persist_hints_to_disk": "false"
-                    },
-                    "enable_features": [
-                        "OptimizationHints",
-                        "OptimizationHintsFetching"
-                    ]
-                }
-            ]
-        }
-    ],
     "OptimizedRealtimeThreadingMac": [
         {
             "platforms": [
