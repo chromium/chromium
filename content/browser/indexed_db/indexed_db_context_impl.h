@@ -234,7 +234,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // backing stores); the cache will be primed as needed by checking disk.
   std::set<url::Origin>* GetOriginSet();
 
-  IndexedDBDispatcherHost indexed_db_factory_;
+  IndexedDBDispatcherHost dispatcher_host_;
 
   // Bound and accessed on the |idb_task_runner_|.
   mojo::Remote<storage::mojom::BlobStorageContext> blob_storage_context_;

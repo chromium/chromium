@@ -125,7 +125,7 @@ IndexedDBContextImpl::IndexedDBContextImpl(
                      base::TaskPriority::USER_VISIBLE,
                      // BLOCK_SHUTDOWN to support clearing session-only storage.
                      base::TaskShutdownBehavior::BLOCK_SHUTDOWN}))),
-      indexed_db_factory_(this),
+      dispatcher_host_(this),
       force_keep_session_state_(false),
       quota_manager_proxy_(quota_manager_proxy),
       io_task_runner_(io_task_runner),
@@ -177,7 +177,7 @@ void IndexedDBContextImpl::Bind(
 void IndexedDBContextImpl::BindIndexedDB(
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
-  indexed_db_factory_.AddReceiver(origin, std::move(receiver));
+  dispatcher_host_.AddReceiver(origin, std::move(receiver));
 }
 
 void IndexedDBContextImpl::GetUsage(GetUsageCallback usage_callback) {
