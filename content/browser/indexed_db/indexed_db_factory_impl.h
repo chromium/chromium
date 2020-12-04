@@ -160,8 +160,6 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
       scoped_refptr<base::SequencedTaskRunner> idb_task_runner,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
-  IndexedDBContextImpl* context() const { return context_; }
-
  private:
   friend class IndexedDBBrowserTest;
   friend class IndexedDBOriginState;
