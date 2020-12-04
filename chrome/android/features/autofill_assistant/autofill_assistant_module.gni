@@ -16,5 +16,7 @@ autofill_assistant_module_desc = {
   java_deps = [ "//chrome/android/features/autofill_assistant:java" ]
   android_manifest =
       "//chrome/android/features/autofill_assistant/java/AndroidManifest.xml"
-  uses_split = "chrome"
+
+  # TODO(crbug.com/1155277): This is breaking because it has @CalledByNative.
+  # uses_split = "chrome"
 }
