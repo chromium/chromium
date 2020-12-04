@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/optional.h"
@@ -117,7 +118,8 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
   bool ForceInstallFromCrx(const base::FilePath& crx_path,
                            WaitMode wait_mode,
                            extensions::ExtensionId* extension_id = nullptr,
-                           base::Version* extension_version = nullptr);
+                           base::Version* extension_version = nullptr)
+      WARN_UNUSED_RESULT;
   // Force-installs the extension from the given source directory (which should
   // contain the manifest.json file and all other files of the extension).
   // Under the hood, packs the directory into a CRX file and serves it like
@@ -132,7 +134,7 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
       const base::Optional<base::FilePath>& pem_path,
       WaitMode wait_mode,
       extensions::ExtensionId* extension_id = nullptr,
-      base::Version* extension_version = nullptr);
+      base::Version* extension_version = nullptr) WARN_UNUSED_RESULT;
 
   // Returns the extension, or null if it's not installed yet.
   const extensions::Extension* GetInstalledExtension(
