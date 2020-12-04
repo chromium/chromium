@@ -486,6 +486,7 @@ util.FileOperationType = {
   COPY: 'COPY',
   DELETE: 'DELETE',
   MOVE: 'MOVE',
+  RESTORE: 'RESTORE',
   ZIP: 'ZIP',
 };
 Object.freeze(util.FileOperationType);

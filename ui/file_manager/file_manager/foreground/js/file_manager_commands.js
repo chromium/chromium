@@ -1233,7 +1233,6 @@ CommandHandler.COMMANDS_['restore-from-trash'] = new class extends Command {
     fileManager.fileOperationManager.restoreDeleted(entries.map(e => {
       return /** @type {!TrashEntry} */ (e);
     }));
-    fileManager.directoryModel.rescanSoon(/*refresh=*/ false);
   }
 
   /** @override */

@@ -66,9 +66,9 @@ class FileOperationManager extends EventTarget {
   deleteEntries(entries) {}
 
   /**
-   * Restores files from trash.
+   * Schedules the files to be restored.
    *
-   * @param {Array<!FilesAppEntry>} entries The trash entries.
+   * @param {!Array<!FilesAppEntry>} entries The trash entries.
    */
   restoreDeleted(entries) {}
 

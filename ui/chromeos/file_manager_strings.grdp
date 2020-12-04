@@ -871,6 +871,15 @@
   <message name="IDS_FILE_BROWSER_DELETE_ERROR" desc="Message informing about error while deleting an item or items.">
     An error occurred. Some items may not have been deleted.
   </message>
+  <message name="IDS_FILE_BROWSER_RESTORE_FROM_TRASH_FILE_NAME" desc="File Manager status message shown when restoring items from trash / recycle bin.">
+    Restoring "<ph name="FILENAME">$1<ex>photo.jpg</ex></ph>"...
+  </message>
+  <message name="IDS_FILE_BROWSER_RESTORE_FROM_TRASH_ITEMS_REMAINING" desc="File Manager status message shown when restoring items from trash / recycle bin. 'Item' is used here as a generic term for file or directory.">
+    Restoring <ph name="COUNT">$1<ex>10</ex></ph> items...
+  </message>
+  <message name="IDS_FILE_BROWSER_RESTORE_FROM_TRASH_ERROR" desc="Message informing about error while restoring an item or items from the trash / recycle bin.">
+    An error occurred. Some items may not have been restored.
+  </message>
 
   <message name="IDS_FILE_BROWSER_COPY_PROGRESS_SUMMARY" desc="Summary message for multiple copying tasks above the progress bar.">
     Copying...

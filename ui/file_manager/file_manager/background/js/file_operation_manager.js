@@ -406,9 +406,20 @@ class FileOperationManagerImpl {
    * @param {!Array<!Entry>} entries The entries.
    */
   deleteEntries(entries) {
+    this.deleteOrRestore_(util.FileOperationType.DELETE, entries);
+  }
+
+  /**
+   * Schedule delete or restore.
+   *
+   * @param {!util.FileOperationType} operationType DELETE or RESTORE.
+   * @param {!Array<!Entry|!TrashEntry>} entries The entries.
+   * @private
+   */
+  deleteOrRestore_(operationType, entries) {
     const task =
         /** @type {!fileOperationUtil.DeleteTask} */ (Object.preventExtensions({
-          operationType: util.FileOperationType.DELETE,
+          operationType: operationType,
           entries: entries,
           taskId: this.generateTaskId(),
           entrySize: {},
@@ -449,10 +460,10 @@ class FileOperationManagerImpl {
   }
 
   /**
-   * Service all pending delete tasks, as well as any that might appear during
-   * the deletion.
+   * Service all pending delete/restore tasks, as well as any that might appear
+   * during the deletion.
    *
-   * Must not be called if there is an in-flight delete task.
+   * Must not be called if there is an in-flight delete/restore task.
    *
    * @private
    */
@@ -474,16 +485,16 @@ class FileOperationManagerImpl {
   }
 
   /**
-   * Performs the deletion.
+   * Performs the deletion or restore.
    *
-   * @param {!Object} task The delete task (see deleteEntries function).
+   * @param {!Object} task The delete task (see deleteOrRestore_()).
    * @param {function()} callback Callback run on task end.
    * @private
    */
   serviceDeleteTask_(task, callback) {
     const queue = new AsyncUtil.Queue();
 
-    // Delete each entry.
+    // Delete or restore each entry.
     let error = null;
     const deleteOneEntry = inCallback => {
       if (!task.entries.length || task.cancelRequested || error) {
@@ -492,14 +503,34 @@ class FileOperationManagerImpl {
       }
       this.eventRouter_.sendDeleteEvent(
           fileOperationUtil.EventRouter.EventType.PROGRESS, task);
-      this.trash_
-          .removeFileOrDirectory(
-              assert(this.volumeManager_), task.entries[0],
-              /*permanentlyDelete=*/ false)
-          .then(trashEntry => {
-            if (trashEntry) {
-              task.trashedEntries.push(trashEntry);
-            }
+
+      // Operation will be either delete, or restore.
+      let operation;
+      switch (task.operationType) {
+        case util.FileOperationType.DELETE:
+          operation = this.trash_
+                          .removeFileOrDirectory(
+                              assert(this.volumeManager_), task.entries[0],
+                              /*permanentlyDelete=*/ false)
+                          .then(trashEntry => {
+                            if (trashEntry) {
+                              task.trashedEntries.push(trashEntry);
+                            }
+                          });
+          break;
+
+        case util.FileOperationType.RESTORE:
+          operation =
+              this.trash_.restore(assert(this.volumeManager_), task.entries[0]);
+          break;
+
+        default:
+          operation =
+              Promise.reject('Unkonwn operation type ' + task.operationType);
+      }
+
+      operation
+          .then(() => {
             this.eventRouter_.sendEntryChangedEvent(
                 util.EntryChangedKind.DELETED, task.entries[0]);
             task.processedBytes += task.entrySize[task.entries[0].toURL()];
@@ -507,7 +538,7 @@ class FileOperationManagerImpl {
             deleteOneEntry(inCallback);
           })
           .catch(inError => {
-            error = inError;
+            error = inError.message;
             inCallback();
           });
     };
@@ -524,30 +555,22 @@ class FileOperationManagerImpl {
       } else {
         reason = EventType.SUCCESS;
       }
-      this.eventRouter_.sendDeleteEvent(reason, task);
+      this.eventRouter_.sendDeleteEvent(
+          reason, task,
+          new fileOperationUtil.Error(
+              util.FileOperationErrorType.FILESYSTEM_ERROR, error));
       inCallback();
       callback();
     });
   }
 
   /**
-   * Restores files from trash.
+   * Schedules the files to be restored.
    *
-   * @param {Array<!TrashEntry>} entries The trash entries.
+   * @param {!Array<!TrashEntry>} entries The trash entries.
    */
   restoreDeleted(entries) {
-    if (!this.volumeManager_) {
-      volumeManagerFactory.getInstance().then(volumeManager => {
-        this.volumeManager_ = volumeManager;
-        this.restoreDeleted(entries);
-      });
-      return;
-    }
-
-    while (entries.length) {
-      this.trash_.restore(assert(this.volumeManager_), entries.pop())
-          .catch(e => console.error('Error restoring deleted file', e));
-    }
+    this.deleteOrRestore_(util.FileOperationType.RESTORE, entries);
   }
 
   /**

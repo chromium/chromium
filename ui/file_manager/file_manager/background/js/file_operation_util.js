@@ -1387,11 +1387,13 @@ fileOperationUtil.EventRouter = class extends cr.EventTarget {
    *
    * @param {fileOperationUtil.EventRouter.EventType} reason Event type.
    * @param {!Object} task Delete task related with the event.
+   * @param {fileOperationUtil.Error=} error
    */
-  sendDeleteEvent(reason, task) {
+  sendDeleteEvent(reason, task, error) {
     const event =
         /** @type {FileOperationProgressEvent} */ (new Event('delete'));
     event.reason = reason;
+    event.error = error;
     event.taskId = task.taskId;
     event.entries = task.entries;
     event.status = {

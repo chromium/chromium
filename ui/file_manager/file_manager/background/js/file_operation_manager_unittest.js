@@ -153,7 +153,11 @@ class FakeVolumeManager {
    * @return {?EntryLocation}
    */
   getLocationInfo(entry) {
-    return null;
+    return /** @type {!EntryLocation} */ ({
+      rootType: 'downloads',
+      volumeInfo:
+          {volumeType: 'downloads', label: 'Downloads', remoteMountPath: ''}
+    });
   }
 }
 
@@ -281,7 +285,9 @@ let fileOperationManager;
 function setUp() {
   // Mock LoadTimeData strings.
   window.loadTimeData = {
-    data: {},
+    data: {
+      'FILES_TRASH_ENABLED': true,
+    },
     getBoolean: function(key) {
       return window.loadTimeData.data[key];
     },
@@ -868,22 +874,73 @@ function testDelete(callback) {
   reportPromise(
       waitForEvents(fileOperationManager).then(events => {
         assertEquals('delete', events[0].type);
+        assertEquals('DELETE', events[0].status.operationType);
         assertEquals('BEGIN', events[0].reason);
         assertEquals(10, events[0].status.totalBytes);
         assertEquals(0, events[0].status.processedBytes);
 
         const lastEvent = events[events.length - 1];
         assertEquals('delete', lastEvent.type);
+        assertEquals('DELETE', lastEvent.status.operationType);
         assertEquals('SUCCESS', lastEvent.reason);
         assertEquals(10, lastEvent.status.totalBytes);
         assertEquals(10, lastEvent.status.processedBytes);
 
-        assertFalse(events.some(event => {
-          return event.type === 'copy-progress';
-        }));
+        assertFalse(events.some(e => e.type === 'copy-progress'));
       }),
       callback);
 
+  fileOperationManager.deleteEntries([fileSystem.entries['/test.txt']]);
+}
+
+/**
+ * Tests fileOperationManager.restore.
+ * @param {function(boolean)} callback Callback to be passed true on error.
+ */
+function testRestore(callback) {
+  // Prepare entries and their resolver.
+  const fileSystem = createTestFileSystem('testVolume', {
+    '/': DIRECTORY_SIZE,
+    '/test.txt': 10,
+  });
+  window.webkitResolveLocalFileSystemURL = (url, success, failure) => {
+    resolveTestFileSystemURL(fileSystem, url, success, failure);
+  };
+
+  const onDeleted = (e) => {
+    if (e.status.operationType !== 'DELETE' || e.reason !== 'SUCCESS') {
+      return;
+    }
+    fileOperationManager.removeEventListener('delete', onDeleted);
+
+    // Step 2. Once we receive 'DELETE' 'COMPLETED', observe 'RESTORE' events.
+    reportPromise(
+        waitForEvents(fileOperationManager).then(events => {
+          // Step 4. Validate restore events.
+          assertEquals('delete', events[0].type);
+          assertEquals('RESTORE', events[0].status.operationType);
+          assertEquals('BEGIN', events[0].reason);
+          assertEquals(10, events[0].status.totalBytes);
+          assertEquals(0, events[0].status.processedBytes);
+
+          const lastEvent = events[events.length - 1];
+          assertEquals('delete', lastEvent.type);
+          assertEquals('RESTORE', lastEvent.status.operationType);
+          assertEquals('SUCCESS', lastEvent.reason);
+          assertEquals(10, lastEvent.status.totalBytes);
+          assertEquals(10, lastEvent.status.processedBytes);
+
+          assertFalse(events.some(e => e.type === 'copy-progress'));
+        }),
+        callback);
+
+    // Step 3. Restore files.
+    fileOperationManager.restoreDeleted(e.trashedEntries);
+  };
+
+
+  // Step 1. Delete files.
+  fileOperationManager.addEventListener('delete', onDeleted);
   fileOperationManager.deleteEntries([fileSystem.entries['/test.txt']]);
 }
 

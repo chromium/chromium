@@ -122,8 +122,10 @@ class FileOperationHandler {
   }
 
   /**
-   * Handles the delete event.
-   * @param {Event} event The delete event.
+   * Handles the delete event, and also the restore event which is similar to
+   * delete in that as items complete, they are removed from the containing
+   * directory.
+   * @param {Event} event The delete or restore event.
    * @private
    */
   onDeleteProgress_(event) {
@@ -263,6 +265,8 @@ class FileOperationHandler {
               return strf('ZIP_UNEXPECTED_ERROR', event.error.code);
             case util.FileOperationType.DELETE:
               return str('DELETE_ERROR');
+            case util.FileOperationType.RESTORE:
+              return str('RESTORE_FROM_TRASH_ERROR');
             default:
               return strf('TRANSFER_UNEXPECTED_ERROR', event.error.code);
           }
@@ -278,6 +282,8 @@ class FileOperationHandler {
           return strf('ZIP_FILE_NAME', name);
         case util.FileOperationType.DELETE:
           return strf('DELETE_FILE_NAME', name);
+        case util.FileOperationType.RESTORE:
+          return strf('RESTORE_FROM_TRASH_FILE_NAME', name);
         default:
           return strf('TRANSFER_FILE_NAME', name);
       }
@@ -292,6 +298,8 @@ class FileOperationHandler {
           return strf('ZIP_ITEMS_REMAINING', remainNumber);
         case util.FileOperationType.DELETE:
           return strf('DELETE_ITEMS_REMAINING', remainNumber);
+        case util.FileOperationType.RESTORE:
+          return strf('RESTORE_FROM_TRASH_ITEMS_REMAINING', remainNumber);
         default:
           return strf('TRANSFER_ITEMS_REMAINING', remainNumber);
       }
