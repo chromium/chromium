@@ -129,7 +129,7 @@ def _RunNinja(output_dir, args):
 def _QueryForAllGnTargets(output_dir):
   cmd = [
       os.path.join(_BUILD_ANDROID, 'list_java_targets.py'), '--gn-labels',
-      '--nested', '--build-build-configs', '--output-directory', output_dir
+      '--nested', '--build', '--output-directory', output_dir
   ]
   logging.info('Running: %r', cmd)
   return subprocess.check_output(cmd).splitlines()
