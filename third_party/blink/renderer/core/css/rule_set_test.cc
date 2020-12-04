@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/css/rule_set.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
@@ -389,6 +390,16 @@ TEST(RuleSetTest, KeyframesRulesVendorPrefixed) {
   EXPECT_TRUE(rule);
   EXPECT_EQ("foo", rule->GetName());
   EXPECT_FALSE(rule->IsVendorPrefixed());
+}
+
+TEST(RuleSetTest, UACounterStyleRules) {
+  ScopedCSSAtRuleCounterStyleForTest enabled_scope(true);
+
+  RuleSet* default_rule_set = CSSDefaultStyleSheets::Instance().DefaultStyle();
+  ASSERT_TRUE(default_rule_set);
+  ASSERT_FALSE(default_rule_set->CounterStyleRules().IsEmpty());
+
+  EXPECT_EQ("decimal", default_rule_set->CounterStyleRules()[0]->GetName());
 }
 
 }  // namespace blink

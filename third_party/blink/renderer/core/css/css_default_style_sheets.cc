@@ -94,9 +94,16 @@ CSSDefaultStyleSheets::CSSDefaultStyleSheets()
       RuntimeEnabledFeatures::ForcedColorsEnabled()
           ? UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_FORCED_COLORS_CSS)
           : String();
+  // Predefined @counter-style rules
+  String predefined_counter_styles_sheet =
+      RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()
+          ? UncompressResourceAsASCIIString(
+                IDR_UASTYLE_PREDEFINED_COUNTER_STYLES_CSS)
+          : String();
   String default_rules = UncompressResourceAsASCIIString(IDR_UASTYLE_HTML_CSS) +
                          LayoutTheme::GetTheme().ExtraDefaultStyleSheet() +
-                         forced_colors_style_sheet;
+                         forced_colors_style_sheet +
+                         predefined_counter_styles_sheet;
 
   default_style_sheet_ = ParseUASheet(default_rules);
 

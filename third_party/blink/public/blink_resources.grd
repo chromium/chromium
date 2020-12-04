@@ -14,6 +14,7 @@
       <include name="IDR_UASTYLE_VIEW_SOURCE_CSS" file="../renderer/core/css/view-source.css" type="BINDATA" compress="gzip"/>
       <include name="IDR_UASTYLE_THEME_CHROMIUM_ANDROID_CSS" file="../renderer/core/html/resources/android.css" type="BINDATA" compress="gzip"/>
       <include name="IDR_UASTYLE_FULLSCREEN_ANDROID_CSS" file="../renderer/core/css/fullscreenAndroid.css" type="BINDATA" compress="gzip"/>
+      <include name="IDR_UASTYLE_PREDEFINED_COUNTER_STYLES_CSS" file="../renderer/core/css/predefined_counter_styles.css" type="BINDATA" compress="gzip"/>
       <include name="IDR_UASTYLE_THEME_CHROMIUM_LINUX_CSS" file="../renderer/core/html/resources/linux.css" type="BINDATA" compress="gzip"/>
       <if expr="is_macosx">
         <include name="IDR_UASTYLE_THEME_MAC_CSS" file="../renderer/core/html/resources/mac.css" type="BINDATA" compress="gzip"/>

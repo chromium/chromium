@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
 #include "third_party/blink/renderer/core/css/rule_feature_set.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_stack.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -265,6 +266,9 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   const HeapVector<Member<StyleRuleProperty>>& PropertyRules() const {
     return property_rules_;
   }
+  const HeapVector<Member<StyleRuleCounterStyle>>& CounterStyleRules() const {
+    return counter_style_rules_;
+  }
   const HeapVector<Member<StyleRuleScrollTimeline>>& ScrollTimelineRules()
       const {
     return scroll_timeline_rules_;
@@ -323,6 +327,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   void AddKeyframesRule(StyleRuleKeyframes*);
   void AddPropertyRule(StyleRuleProperty*);
   void AddScrollTimelineRule(StyleRuleScrollTimeline*);
+  void AddCounterStyleRule(StyleRuleCounterStyle*);
 
   bool MatchMediaForAddRules(const MediaQueryEvaluator& evaluator,
                              const MediaQuerySet* media_queries);
@@ -371,6 +376,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<Member<StyleRuleFontFace>> font_face_rules_;
   HeapVector<Member<StyleRuleKeyframes>> keyframes_rules_;
   HeapVector<Member<StyleRuleProperty>> property_rules_;
+  HeapVector<Member<StyleRuleCounterStyle>> counter_style_rules_;
   HeapVector<Member<StyleRuleScrollTimeline>> scroll_timeline_rules_;
   HeapVector<MinimalRuleData> deep_combinator_or_shadow_pseudo_rules_;
   HeapVector<MinimalRuleData> content_pseudo_element_rules_;

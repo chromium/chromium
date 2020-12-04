@@ -945,9 +945,14 @@ StyleRuleCounterStyle* CSSParserImpl::ConsumeCounterStyleRule(
     return nullptr;
 
   if (name_token.GetType() != kIdentToken ||
-      !css_parsing_utils::IsCustomIdent<CSSValueID::kNone, CSSValueID::kDecimal,
-                                        CSSValueID::kDisc>(name_token.Id()))
+      !css_parsing_utils::IsCustomIdent<CSSValueID::kNone>(name_token.Id()))
     return nullptr;
+
+  if (GetContext()->Mode() != kUASheetMode) {
+    if (name_token.Id() == CSSValueID::kDecimal ||
+        name_token.Id() == CSSValueID::kDisc)
+      return nullptr;
+  }
 
   AtomicString name(name_token.Value().ToString());
 

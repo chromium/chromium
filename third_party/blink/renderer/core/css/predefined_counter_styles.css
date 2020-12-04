@@ -1,0 +1,19 @@
+/*
+ * Copyright 2020 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* TODO: Add the remaining counter styles */
+
+@counter-style decimal {
+  system: numeric;
+  symbols: '0' '1' '2' '3' '4' '5' '6' '7' '8' '9';
+}
+
+@counter-style disc {
+  system: cyclic;
+  symbols: \2022;
+  suffix: " ";
+}
+
