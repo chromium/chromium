@@ -1235,7 +1235,9 @@ ci.chromium_builder(
     ),
     cores = 32,
     os = os.WINDOWS_DEFAULT,
-    execution_timeout = 6 * time.hour,
+    # TODO(crbug.com/1155416):
+    # builds with PGO change take long time.
+    execution_timeout = 7 * time.hour,
     tree_closing = False,
 )
 
@@ -1272,7 +1274,9 @@ ci.chromium_builder(
     ),
     cores = 32,
     os = os.WINDOWS_DEFAULT,
-    execution_timeout = 6 * time.hour,
+    # TODO(crbug.com/1155416):
+    # builds with PGO change take long time.
+    execution_timeout = 7 * time.hour,
     tree_closing = False,
 )
 
