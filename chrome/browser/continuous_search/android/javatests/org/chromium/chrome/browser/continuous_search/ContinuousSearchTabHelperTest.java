@@ -154,12 +154,9 @@ public class ContinuousSearchTabHelperTest {
             SearchResultUserData searchResultUserData =
                     tab.getUserDataHost().getUserData(SearchResultUserData.USER_DATA_KEY);
             Assert.assertTrue(searchResultUserData.isValid());
-            Assert.assertEquals(
-                    mServer.getURLWithHostName("www.google.com", TEST_URL + "?q=cat+dog&cs=0"),
-                    observer.mMetadata.getResultUrl().getSpec());
-            Assert.assertEquals(
-                    mServer.getURLWithHostName("www.google.com", TEST_URL + "?q=cat+dog&cs=0"),
-                    observer.mUrl.getSpec());
+            String url = mServer.getURLWithHostName("www.google.com", TEST_URL + "?q=cat+dog");
+            Assert.assertTrue(observer.mMetadata.getResultUrl().getSpec().startsWith(url));
+            Assert.assertTrue(observer.mUrl.getSpec().startsWith(url));
             tab.loadUrl(new LoadUrlParams(UrlConstants.ABOUT_URL));
         });
 
