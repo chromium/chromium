@@ -543,7 +543,7 @@ TEST_P(SampleBufferTransformerLibyuvTest, CanConvertFullScale) {
       PixelBufferIsSingleColor(output_pixel_buffer, kColorR, kColorG, kColorB));
 }
 
-TEST_P(SampleBufferTransformerLibyuvTest, CanConvertAndScaleDown) {
+TEST_P(SampleBufferTransformerLibyuvTest, MAYBE_CanConvertAndScaleDown) {
   OSType input_pixel_format;
   OSType output_pixel_format;
   std::tie(input_pixel_format, output_pixel_format) = GetParam();
@@ -673,7 +673,7 @@ TEST_P(SampleBufferTransformerMjpegTest, CanConvertFullScale) {
       PixelBufferIsSingleColor(output_pixel_buffer, kColorR, kColorG, kColorB));
 }
 
-TEST_P(SampleBufferTransformerMjpegTest, CanConvertAndScaleDown) {
+TEST_P(SampleBufferTransformerMjpegTest, MAYBE_CanConvertAndScaleDown) {
   OSType output_pixel_format = GetParam();
 
   base::ScopedCFTypeRef<CMSampleBufferRef> input_sample_buffer =
