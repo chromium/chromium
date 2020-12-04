@@ -9,13 +9,14 @@
 #include <vector>
 
 #include "ash/public/cpp/holding_space/holding_space_model.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_client_impl.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_thumbnail_loader.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
@@ -40,7 +41,8 @@ namespace ash {
 // *   Manages the temporary holding space per-profile data model.
 // *   Serves as an entry point to add holding space items from Chrome.
 class HoldingSpaceKeyedService : public KeyedService,
-                                 public ProfileManagerObserver {
+                                 public ProfileManagerObserver,
+                                 public chromeos::PowerManagerClient::Observer {
  public:
   HoldingSpaceKeyedService(Profile* profile, const AccountId& account_id);
   HoldingSpaceKeyedService(const HoldingSpaceKeyedService& other) = delete;
@@ -102,8 +104,21 @@ class HoldingSpaceKeyedService : public KeyedService,
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
 
+  // PowerManagerClient::Observer
+  void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
+
   // Invoked when the associated profile is ready.
   void OnProfileReady();
+
+  // Creates and initializes holding space delegates. Called when the associated
+  // profile finishes initialization, or when device suspend ends (the delegates
+  // are shutdown during suspend).
+  void InitializeDelegates();
+
+  // Shuts down and destroys existing holding space delegates. Called on
+  // profile shutdown, or when device suspend starts.
+  void ShutdownDelegates();
 
   // Invoked when holding space persistence has been restored.
   void OnPersistenceRestored();
@@ -121,8 +136,12 @@ class HoldingSpaceKeyedService : public KeyedService,
   // service. They operate autonomously of one another.
   std::vector<std::unique_ptr<HoldingSpaceKeyedServiceDelegate>> delegates_;
 
-  ScopedObserver<ProfileManager, ProfileManagerObserver>
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observer_{this};
+
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_observer_{this};
 
   base::WeakPtrFactory<HoldingSpaceKeyedService> weak_factory_{this};
 };

@@ -102,10 +102,6 @@ void HoldingSpaceFileSystemDelegate::Init() {
                      base::Unretained(this)));
 }
 
-void HoldingSpaceFileSystemDelegate::Shutdown() {
-  volume_manager_observer_.RemoveAll();
-}
-
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemAdded(
     const HoldingSpaceItem* item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -188,11 +184,17 @@ void HoldingSpaceFileSystemDelegate::OnVolumeMounted(
 void HoldingSpaceFileSystemDelegate::OnVolumeUnmounted(
     chromeos::MountError error_code,
     const file_manager::Volume& volume) {
-  model()->RemoveIf(base::BindRepeating(
-      [](const base::FilePath& volume_path, const HoldingSpaceItem* item) {
-        return volume_path.IsParent(item->file_path());
-      },
-      volume.mount_path()));
+  // Schedule task to remove items under the unmounted file path from the model.
+  // During suspend, some volumes get unmounted - for example, drive FS. The
+  // file system delegate gets shutdown to avoid removing items from unmounted
+  // volumes, but depending on the order in which observers are added to power
+  // manager dbus client, the file system delegate may get shutdown after
+  // unmounting a volume. To avoid observer ordering issues, schedule
+  // asynchronous task to remove unmounted items from the model.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&HoldingSpaceFileSystemDelegate::RemoveItemsParentedByPath,
+                     weak_factory_.GetWeakPtr(), volume.mount_path()));
 }
 
 void HoldingSpaceFileSystemDelegate::OnFilePathChanged(
@@ -282,6 +284,15 @@ void HoldingSpaceFileSystemDelegate::RemoveWatch(
   file_system_watcher_runner_->PostTask(
       FROM_HERE, base::BindOnce(&FileSystemWatcher::RemoveWatch,
                                 file_system_watcher_->GetWeakPtr(), file_path));
+}
+
+void HoldingSpaceFileSystemDelegate::RemoveItemsParentedByPath(
+    const base::FilePath& parent_path) {
+  model()->RemoveIf(base::BindRepeating(
+      [](const base::FilePath& parent_path, const HoldingSpaceItem* item) {
+        return parent_path.IsParent(item->file_path());
+      },
+      parent_path));
 }
 
 void HoldingSpaceFileSystemDelegate::ClearNonFinalizedItems() {

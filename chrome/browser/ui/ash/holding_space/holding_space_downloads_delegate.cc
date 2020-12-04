@@ -41,10 +41,6 @@ void HoldingSpaceDownloadsDelegate::Init() {
           : content::BrowserContext::GetDownloadManager(profile()));
 }
 
-void HoldingSpaceDownloadsDelegate::Shutdown() {
-  RemoveObservers();
-}
-
 void HoldingSpaceDownloadsDelegate::OnPersistenceRestored() {
   content::DownloadManager* download_manager =
       download_manager_for_testing
