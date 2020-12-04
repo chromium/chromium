@@ -431,6 +431,9 @@ void ScreenManager::HandleMirrorIfExists(
   // CrtcController should be merged and picking the mode should be done
   // properly within HardwareDisplayController.
   if (mirror != controllers_.end() && controller != mirror) {
+    // TODO(markyacoub): RemoveCrtc makes a blocking commit to
+    // DisableOverlayPlanes. This should be redesigned and included as part of
+    // the Modeset commit.
     (*mirror)->AddCrtc((*controller)->RemoveCrtc(config.drm, config.crtc));
     controllers_.erase(controller);
   }
