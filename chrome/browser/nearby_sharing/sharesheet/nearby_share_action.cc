@@ -14,6 +14,7 @@
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/nearby_sharing/file_attachment.h"
+#include "chrome/browser/nearby_sharing/sharesheet/nearby_share_web_view.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
@@ -93,7 +94,7 @@ void NearbyShareAction::LaunchAction(
   controller->SetSharesheetSize(size.width(), size.height());
 
   auto* profile = controller->GetProfile();
-  auto view = std::make_unique<views::WebView>(profile);
+  auto view = std::make_unique<NearbyShareWebView>(profile);
   // If this is not done, we don't see anything in our view.
   view->SetPreferredSize(size);
   views::WebView* web_view = root_view->AddChildView(std::move(view));
