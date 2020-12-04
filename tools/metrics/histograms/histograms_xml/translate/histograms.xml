@@ -911,12 +911,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.TranslateTabIntentResult"
-    enum="TranslateTabIntentResult" expires_after="M89">
+    enum="TranslateTabIntentResult" expires_after="M91">
   <owner>jds@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Android: Records the result of processing a TRANSLATE_TAB intent. See
     TranslateTabIntentResult in enums.xml for possible values.
+
+    This is recorded once for each TRANSLATE_TAB intent received.
   </summary>
 </histogram>
 
