@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <limits>
 
+#include "base/strings/string_util.h"
 #include "components/query_tiles/internal/tile_config.h"
 #include "components/query_tiles/internal/tile_utils.h"
 
@@ -114,6 +115,10 @@ double CalculateTileScore(const TileStats& tile_stats,
   return tile_stats.score *
          exp(TileConfig::GetTileScoreDecayLambda() *
              (current_time - tile_stats.last_clicked_time).InDaysFloored());
+}
+
+bool IsTrendingTile(const std::string& tile_id) {
+  return base::StartsWith(tile_id, "trending_");
 }
 
 }  // namespace query_tiles

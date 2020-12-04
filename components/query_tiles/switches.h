@@ -34,6 +34,10 @@ extern const base::Feature kQueryTilesEnableQueryEditing;
 // based on local user interactions.
 extern const base::Feature kQueryTilesLocalOrdering;
 
+// Feature flag to determine whether trending tiles should disapear after
+// some time of inactivity.
+extern const base::Feature kQueryTilesRemoveTrendingTilesAfterInactivity;
+
 // Helper function to determine whether query tiles should be shown on omnibox.
 bool IsEnabledQueryTilesInOmnibox();
 

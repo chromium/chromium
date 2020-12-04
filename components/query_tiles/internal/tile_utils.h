@@ -38,6 +38,9 @@ void SortTilesAndClearUnusedStats(std::vector<std::unique_ptr<Tile>>* tiles,
 // decay over time.
 double CalculateTileScore(const TileStats& tile_stats, base::Time current_time);
 
+// Checks whether a tile ID is for trending tile.
+bool IsTrendingTile(const std::string& tile_id);
+
 }  // namespace query_tiles
 
 #endif  // COMPONENTS_QUERY_TILES_INTERNAL_TILE_UTILS_H_

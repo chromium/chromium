@@ -65,6 +65,23 @@ void ResetTestGroup(TileGroup* group) {
   group->tile_stats["guid-3-1"] = TileStats(group->last_updated_ts, 0.5);
 }
 
+std::vector<std::unique_ptr<Tile>> GetTestTrendingTileList() {
+  auto trending_tile1 = std::make_unique<Tile>();
+  trending_tile1->id = "trending_1";
+
+  auto trending_tile2 = std::make_unique<Tile>();
+  trending_tile2->id = "trending_2";
+
+  auto trending_tile3 = std::make_unique<Tile>();
+  trending_tile3->id = "trending_3";
+
+  std::vector<std::unique_ptr<Tile>> trending_tile_list;
+  trending_tile_list.emplace_back(std::move(trending_tile1));
+  trending_tile_list.emplace_back(std::move(trending_tile2));
+  trending_tile_list.emplace_back(std::move(trending_tile3));
+  return trending_tile_list;
+}
+
 bool AreTileGroupsIdentical(const TileGroup& lhs, const TileGroup& rhs) {
   if (lhs != rhs)
     return false;
