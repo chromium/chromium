@@ -72,8 +72,9 @@ void TakeElementAndGetProperty(
     return;
   }
 
+  const ElementFinder::Result* element_result_ptr = element_result.get();
   std::move(perform_and_get)
-      .Run(*element_result,
+      .Run(*element_result_ptr,
            base::BindOnce(&RetainElementAndExecuteGetCallback<R>,
                           std::move(element_result), std::move(done)));
 }

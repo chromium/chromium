@@ -284,8 +284,9 @@ void RequiredFieldsFallbackHandler::OnFindElement(
     return;
   }
 
+  const ElementFinder::Result* element_result_ptr = element_result.get();
   action_delegate_->GetWebController()->GetElementTag(
-      *element_result,
+      *element_result_ptr,
       base::BindOnce(
           &RequiredFieldsFallbackHandler::OnGetFallbackFieldElementTag,
           weak_ptr_factory_.GetWeakPtr(), value, required_fields_index,
@@ -326,17 +327,20 @@ void RequiredFieldsFallbackHandler::OnGetFallbackFieldElementTag(
         break;
     }
 
+    const ElementFinder::Result* element_ptr = element.get();
     action_delegate_->SelectOption(
-        re2, /* case_sensitive= */ false, option_comparison_attribute, *element,
+        re2, /* case_sensitive= */ false, option_comparison_attribute,
+        *element_ptr,
         base::BindOnce(&RequiredFieldsFallbackHandler::OnSetFallbackFieldValue,
                        weak_ptr_factory_.GetWeakPtr(), required_fields_index,
                        std::move(element)));
     return;
   }
 
+  const ElementFinder::Result* element_ptr = element.get();
   action_delegate_util::PerformSetFieldValue(
       action_delegate_, value, required_field.fill_strategy,
-      required_field.delay_in_millisecond, *element,
+      required_field.delay_in_millisecond, *element_ptr,
       base::BindOnce(&RequiredFieldsFallbackHandler::OnSetFallbackFieldValue,
                      weak_ptr_factory_.GetWeakPtr(), required_fields_index,
                      std::move(element)));

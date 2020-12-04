@@ -47,11 +47,12 @@ void PerformActionsSequentially(
     return;
   }
 
-  std::move((*perform_actions)[action_index])
-      .Run(element,
-           base::BindOnce(&PerformActionsSequentially,
-                          std::move(perform_actions), std::move(status_details),
-                          action_index + 1, element, std::move(done)));
+  ElementActionCallback action = std::move((*perform_actions)[action_index]);
+  std::move(action).Run(
+      element,
+      base::BindOnce(&PerformActionsSequentially, std::move(perform_actions),
+                     std::move(status_details), action_index + 1, element,
+                     std::move(done)));
 }
 
 void OnFindElement(ElementActionCallback perform,
@@ -64,8 +65,9 @@ void OnFindElement(ElementActionCallback perform,
     return;
   }
 
+  const ElementFinder::Result* element_result_ptr = element_result.get();
   std::move(perform).Run(
-      *element_result,
+      *element_result_ptr,
       base::BindOnce(&RetainElementAndExecuteCallback,
                      std::move(element_result), std::move(done)));
 }

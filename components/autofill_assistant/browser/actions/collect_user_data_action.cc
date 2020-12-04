@@ -797,9 +797,10 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
        collect_user_data.login_details().login_options()) {
     switch (login_option.type_case()) {
       case LoginDetailsProto::LoginOptionProto::kCustom: {
+        const std::string identifier = base::NumberToString(
+            collect_user_data_options_->login_choices.size());
         LoginChoice choice = {
-            base::NumberToString(
-                collect_user_data_options_->login_choices.size()),
+            identifier,
             login_option.custom().label(),
             login_option.sublabel(),
             login_option.has_sublabel_accessibility_hint()
@@ -819,7 +820,7 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
         collect_user_data_options_->login_choices.emplace_back(
             std::move(choice));
         login_details_map_.emplace(
-            choice.identifier,
+            identifier,
             std::make_unique<LoginDetails>(
                 login_option.choose_automatically_if_no_stored_login(),
                 login_option.payload()));
