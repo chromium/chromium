@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1467 tests; 1385 PASS, 82 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1417 tests; 1385 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -939,56 +939,6 @@ PASS BeforeUnloadEvent interface: existence and properties of interface prototyp
 PASS BeforeUnloadEvent interface: existence and properties of interface prototype object's "constructor" property
 PASS BeforeUnloadEvent interface: existence and properties of interface prototype object's @@unscopables property
 PASS BeforeUnloadEvent interface: attribute returnValue
-FAIL ApplicationCache interface: existence and properties of interface object assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface object length assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface object name assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: existence and properties of interface prototype object assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: constant UNCACHED on interface object assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: constant UNCACHED on interface prototype object assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: constant IDLE on interface object assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: constant IDLE on interface prototype object assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: constant CHECKING on interface object assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: constant CHECKING on interface prototype object assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: constant DOWNLOADING on interface object assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: constant DOWNLOADING on interface prototype object assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: constant UPDATEREADY on interface object assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: constant UPDATEREADY on interface prototype object assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: constant OBSOLETE on interface object assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: constant OBSOLETE on interface prototype object assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: attribute status assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: operation update() assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: operation abort() assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: operation swapCache() assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: attribute onchecking assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: attribute onerror assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: attribute onnoupdate assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: attribute ondownloading assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: attribute onprogress assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: attribute onupdateready assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: attribute oncached assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache interface: attribute onobsolete assert_own_property: self does not have own property "ApplicationCache" expected property "ApplicationCache" missing
-FAIL ApplicationCache must be primary interface of window.applicationCache assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL Stringification of window.applicationCache assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ApplicationCache interface: window.applicationCache must inherit property "UNCACHED" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ApplicationCache interface: window.applicationCache must inherit property "IDLE" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ApplicationCache interface: window.applicationCache must inherit property "CHECKING" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ApplicationCache interface: window.applicationCache must inherit property "DOWNLOADING" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ApplicationCache interface: window.applicationCache must inherit property "UPDATEREADY" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ApplicationCache interface: window.applicationCache must inherit property "OBSOLETE" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ApplicationCache interface: window.applicationCache must inherit property "status" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ApplicationCache interface: window.applicationCache must inherit property "update()" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ApplicationCache interface: window.applicationCache must inherit property "abort()" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ApplicationCache interface: window.applicationCache must inherit property "swapCache()" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ApplicationCache interface: window.applicationCache must inherit property "onchecking" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ApplicationCache interface: window.applicationCache must inherit property "onerror" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ApplicationCache interface: window.applicationCache must inherit property "onnoupdate" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ApplicationCache interface: window.applicationCache must inherit property "ondownloading" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ApplicationCache interface: window.applicationCache must inherit property "onprogress" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ApplicationCache interface: window.applicationCache must inherit property "onupdateready" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ApplicationCache interface: window.applicationCache must inherit property "oncached" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ApplicationCache interface: window.applicationCache must inherit property "onobsolete" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
 PASS ErrorEvent interface: existence and properties of interface object
 PASS ErrorEvent interface object length
 PASS ErrorEvent interface object name

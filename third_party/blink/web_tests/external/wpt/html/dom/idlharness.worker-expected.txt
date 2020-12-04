@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 804 tests; 796 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 803 tests; 795 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -418,7 +418,6 @@ PASS PopStateEvent interface: existence and properties of interface object
 PASS HashChangeEvent interface: existence and properties of interface object
 PASS PageTransitionEvent interface: existence and properties of interface object
 PASS BeforeUnloadEvent interface: existence and properties of interface object
-PASS ApplicationCache interface: existence and properties of interface object
 PASS ErrorEvent interface: existence and properties of interface object
 PASS ErrorEvent interface object length
 PASS ErrorEvent interface object name

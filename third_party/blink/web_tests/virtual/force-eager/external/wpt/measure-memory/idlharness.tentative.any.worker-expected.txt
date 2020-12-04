@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface Performance: original interface defined
+PASS Partial interface Performance: member names are unique
+FAIL Performance interface: operation measureMemory() assert_own_property: interface prototype object missing non-static operation expected property "measureMemory" missing
+Harness: the test ran to completion.
+

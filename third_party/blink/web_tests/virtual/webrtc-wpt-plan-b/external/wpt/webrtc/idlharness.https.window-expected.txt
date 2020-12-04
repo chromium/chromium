@@ -51,7 +51,7 @@ PASS RTCPeerConnection interface: attribute oniceconnectionstatechange
 PASS RTCPeerConnection interface: attribute onicegatheringstatechange
 PASS RTCPeerConnection interface: attribute onconnectionstatechange
 PASS RTCPeerConnection interface: operation createOffer(RTCSessionDescriptionCallback, RTCPeerConnectionErrorCallback, optional RTCOfferOptions)
-PASS RTCPeerConnection interface: operation setLocalDescription(optional RTCLocalSessionDescriptionInit, VoidFunction, RTCPeerConnectionErrorCallback)
+PASS RTCPeerConnection interface: operation setLocalDescription(RTCLocalSessionDescriptionInit, VoidFunction, RTCPeerConnectionErrorCallback)
 PASS RTCPeerConnection interface: operation createAnswer(RTCSessionDescriptionCallback, RTCPeerConnectionErrorCallback)
 PASS RTCPeerConnection interface: operation setRemoteDescription(RTCSessionDescriptionInit, VoidFunction, RTCPeerConnectionErrorCallback)
 FAIL RTCPeerConnection interface: operation addIceCandidate(RTCIceCandidateInit, VoidFunction, RTCPeerConnectionErrorCallback) assert_equals: property has wrong .length expected 0 but got 1
@@ -104,8 +104,8 @@ PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property 
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "onconnectionstatechange" with the proper type
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "createOffer(RTCSessionDescriptionCallback, RTCPeerConnectionErrorCallback, optional RTCOfferOptions)" with the proper type
 PASS RTCPeerConnection interface: calling createOffer(RTCSessionDescriptionCallback, RTCPeerConnectionErrorCallback, optional RTCOfferOptions) on new RTCPeerConnection() with too few arguments must throw TypeError
-PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "setLocalDescription(optional RTCLocalSessionDescriptionInit, VoidFunction, RTCPeerConnectionErrorCallback)" with the proper type
-PASS RTCPeerConnection interface: calling setLocalDescription(optional RTCLocalSessionDescriptionInit, VoidFunction, RTCPeerConnectionErrorCallback) on new RTCPeerConnection() with too few arguments must throw TypeError
+PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "setLocalDescription(RTCLocalSessionDescriptionInit, VoidFunction, RTCPeerConnectionErrorCallback)" with the proper type
+PASS RTCPeerConnection interface: calling setLocalDescription(RTCLocalSessionDescriptionInit, VoidFunction, RTCPeerConnectionErrorCallback) on new RTCPeerConnection() with too few arguments must throw TypeError
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "createAnswer(RTCSessionDescriptionCallback, RTCPeerConnectionErrorCallback)" with the proper type
 PASS RTCPeerConnection interface: calling createAnswer(RTCSessionDescriptionCallback, RTCPeerConnectionErrorCallback) on new RTCPeerConnection() with too few arguments must throw TypeError
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "setRemoteDescription(RTCSessionDescriptionInit, VoidFunction, RTCPeerConnectionErrorCallback)" with the proper type
