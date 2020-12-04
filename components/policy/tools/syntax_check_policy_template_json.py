@@ -182,22 +182,6 @@ def _GetSupportedVersionPlatformAndRange(supported_on):
                                               if supported_on_to else None)
 
 
-def _PolicyStillSupported(supported_on, current_version):
-  for s in supported_on:
-    _, _, supported_on_to = _GetSupportedVersionPlatformAndRange(s)
-
-    # If supported_on_to isn't given, this policy is still supported.
-    if supported_on_to is None:
-      return True
-
-    # If supported_on_to is equal or greater than the current version, it's
-    # still supported.
-    if current_version <= int(supported_on_to):
-      return True
-
-  return False
-
-
 def _GetPolicyValueType(policy_type):
   if policy_type == 'main':
     return bool
@@ -516,8 +500,14 @@ class PolicyTemplateChecker(object):
   def _NeedsDefault(self, policy):
     return policy.get('type') in ('int', 'main', 'string-enum', 'int-enum')
 
-  def _CheckDefault(self, policy):
+  def _CheckDefault(self, policy, current_version):
     if not self._NeedsDefault(policy):
+      return
+
+    # If a policy should have a default but it is no longer supported, we can
+    # safely ignore this error.
+    if ('default' not in policy
+        and not self._SupportedPolicy(policy, current_version)):
       return
 
     # Only validate the default when present.
@@ -559,8 +549,14 @@ class PolicyTemplateChecker(object):
     return policy.get('type') in ('main', 'int-enum', 'string-enum',
                                   'string-enum-list')
 
-  def _CheckItems(self, policy):
+  def _CheckItems(self, policy, current_version):
     if not self._NeedsItems(policy):
+      return
+
+    # If a policy should have items, but it is no longer supported, we
+    # can safely ignore this error.
+    if 'items' not in policy and not self._SupportedPolicy(
+        policy, current_version):
       return
 
     # TODO(crbug.com/1139306): Remove this check once all main policies
@@ -683,6 +679,25 @@ class PolicyTemplateChecker(object):
         self._Error('Policy %s has an unexpected owner, %s, all owners should '
                     'be committer emails or file:// paths' %
                     (policy.get('name'), owner))
+
+  def _SupportedPolicy(self, policy, current_version):
+    # If a policy has any future_on platforms, it is still supported.
+    if len(policy.get('future_on', [])) > 0:
+      return True
+
+    for s in policy.get('supported_on', []):
+      _, _, supported_on_to = _GetSupportedVersionPlatformAndRange(s)
+
+      # If supported_on_to isn't given, this policy is still supported.
+      if supported_on_to is None:
+        return True
+
+      # If supported_on_to is equal or greater than the current version, it's
+      # still supported.
+      if current_version <= int(supported_on_to):
+        return True
+
+    return False
 
   def _CheckPolicy(self, policy, is_in_group, policy_ids, deleted_policy_ids,
                    current_version):
@@ -832,7 +847,7 @@ class PolicyTemplateChecker(object):
                 'supported version must have a version larger than the '
                 'starting supported version.', 'policy', policy, supported_on)
 
-        if (not _PolicyStillSupported(supported_on, current_version)
+        if (not self._SupportedPolicy(policy, current_version)
             and not policy.get('deprecated', False)):
           self._Error(
               'Policy %s is marked as no longer supported (%s), but isn\'t '
@@ -1029,14 +1044,14 @@ class PolicyTemplateChecker(object):
             self._Error(('Example for policy %s does not comply to the ' +
                          'policy\'s validation_schema') % policy.get('name'))
 
-      self._CheckDefault(policy)
+      self._CheckDefault(policy, current_version)
 
       # Statistics.
       self.num_policies += 1
       if is_in_group:
         self.num_policies_in_groups += 1
 
-      self._CheckItems(policy)
+      self._CheckItems(policy, current_version)
 
       if policy_type == 'external':
         # Each policy referencing external data must specify a maximum data
