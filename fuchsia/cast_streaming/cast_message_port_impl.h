@@ -5,6 +5,7 @@
 #ifndef FUCHSIA_CAST_STREAMING_CAST_MESSAGE_PORT_IMPL_H_
 #define FUCHSIA_CAST_STREAMING_CAST_MESSAGE_PORT_IMPL_H_
 
+#include "base/callback.h"
 #include "components/cast/message_port/message_port.h"
 #include "third_party/openscreen/src/cast/common/public/message_port.h"
 
@@ -15,8 +16,9 @@ namespace cast_streaming {
 class CastMessagePortImpl : public openscreen::cast::MessagePort,
                             public cast_api_bindings::MessagePort::Receiver {
  public:
-  explicit CastMessagePortImpl(
-      std::unique_ptr<cast_api_bindings::MessagePort> message_port);
+  CastMessagePortImpl(
+      std::unique_ptr<cast_api_bindings::MessagePort> message_port,
+      base::OnceClosure on_close);
   ~CastMessagePortImpl() final;
 
   CastMessagePortImpl(const CastMessagePortImpl&) = delete;
@@ -47,6 +49,7 @@ class CastMessagePortImpl : public openscreen::cast::MessagePort,
 
   Client* client_ = nullptr;
   std::unique_ptr<cast_api_bindings::MessagePort> message_port_;
+  base::OnceClosure on_close_;
 };
 
 }  // namespace cast_streaming

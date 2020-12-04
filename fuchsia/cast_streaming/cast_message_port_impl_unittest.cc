@@ -33,8 +33,10 @@ class CastMessagePortImplTest : public testing::Test,
                                                &receiver);
 
     sender_message_port_->SetReceiver(&sender_message_port_receiver_);
-    receiver_message_port_ =
-        std::make_unique<CastMessagePortImpl>(std::move(receiver));
+    receiver_message_port_ = std::make_unique<CastMessagePortImpl>(
+        std::move(receiver),
+        base::BindOnce(&CastMessagePortImplTest::OnCastChannelClosed,
+                       base::Unretained(this)));
     receiver_message_port_->SetClient(this, kSenderId);
   }
 
@@ -57,6 +59,20 @@ class CastMessagePortImplTest : public testing::Test,
     base::RunLoop run_loop;
     error_closure_ = run_loop.QuitClosure();
     run_loop.Run();
+  }
+
+  void RunUntilCastChannelClosed() {
+    base::RunLoop run_loop;
+    cast_channel_closed_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  void OnCastChannelClosed() {
+    if (cast_channel_closed_closure_) {
+      std::move(cast_channel_closed_closure_).Run();
+    } else {
+      ADD_FAILURE() << "Cast Streaming Session MessagePort disconnected";
+    }
   }
 
   // openscreen::cast::MessagePort::Client implementation.
@@ -83,6 +99,7 @@ class CastMessagePortImplTest : public testing::Test,
   std::vector<CastMessage> receiver_messages_;
   base::OnceClosure receiver_message_closure_;
   base::OnceClosure error_closure_;
+  base::OnceClosure cast_channel_closed_closure_;
 
   std::unique_ptr<CastMessagePortImpl> receiver_message_port_;
   std::unique_ptr<cast_api_bindings::MessagePort> sender_message_port_;
@@ -183,6 +200,12 @@ TEST_F(CastMessagePortImplTest, BadMessage) {
   RunUntilError();
   EXPECT_EQ(latest_error_,
             openscreen::Error(openscreen::Error::Code::kCastV2InvalidMessage));
+}
+
+// Tests closing the sender-end of the Cast Channel properly runs the closure.
+TEST_F(CastMessagePortImplTest, CastChannelClosed) {
+  sender_message_port_.reset();
+  RunUntilCastChannelClosed();
 }
 
 }  // namespace cast_streaming

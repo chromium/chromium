@@ -112,7 +112,10 @@ class CastStreamingSession::Internal
            scoped_refptr<base::SequencedTaskRunner> task_runner)
       : task_runner_(task_runner),
         environment_(&openscreen::Clock::now, &task_runner_),
-        cast_message_port_impl_(std::move(message_port)),
+        cast_message_port_impl_(
+            std::move(message_port),
+            base::BindOnce(&CastStreamingSession::Internal::OnCastChannelClosed,
+                           base::Unretained(this))),
         client_(client) {
     DCHECK(task_runner);
     DCHECK(client_);
@@ -315,6 +318,11 @@ class CastStreamingSession::Internal
     receiver_session_.reset();
   }
 
+  void OnCastChannelClosed() {
+    DVLOG(1) << __func__;
+    receiver_session_.reset();
+  }
+
   openscreen_platform::TaskRunner task_runner_;
   openscreen::cast::Environment environment_;
   CastMessagePortImpl cast_message_port_impl_;
@@ -335,6 +343,7 @@ void CastStreamingSession::Start(
     Client* client,
     std::unique_ptr<cast_api_bindings::MessagePort> message_port,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  DVLOG(1) << __func__;
   DCHECK(client);
   DCHECK(!internal_);
   internal_ =
@@ -342,6 +351,7 @@ void CastStreamingSession::Start(
 }
 
 void CastStreamingSession::Stop() {
+  DVLOG(1) << __func__;
   DCHECK(internal_);
   internal_.reset();
 }

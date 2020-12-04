@@ -14,8 +14,9 @@
 namespace cast_streaming {
 
 CastMessagePortImpl::CastMessagePortImpl(
-    std::unique_ptr<cast_api_bindings::MessagePort> message_port)
-    : message_port_(std::move(message_port)) {
+    std::unique_ptr<cast_api_bindings::MessagePort> message_port,
+    base::OnceClosure on_close)
+    : message_port_(std::move(message_port)), on_close_(std::move(on_close)) {
   DVLOG(1) << __func__;
   message_port_->SetReceiver(this);
 
@@ -26,11 +27,17 @@ CastMessagePortImpl::CastMessagePortImpl(
 CastMessagePortImpl::~CastMessagePortImpl() = default;
 
 void CastMessagePortImpl::MaybeClose() {
-  if (message_port_)
+  if (message_port_) {
     message_port_.reset();
+  }
   if (client_) {
     client_->OnError(
         openscreen::Error(openscreen::Error::Code::kCastV2CastSocketError));
+  }
+  if (on_close_) {
+    // |this| might be deleted as part of |on_close_| being run. Do not add any
+    // code after running the closure.
+    std::move(on_close_).Run();
   }
 }
 
