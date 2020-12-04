@@ -24,12 +24,15 @@
 namespace media {
 namespace test {
 
-VideoFrameFileWriter::VideoFrameFileWriter(const base::FilePath& output_folder,
-                                           OutputFormat output_format,
-                                           size_t output_limit)
+VideoFrameFileWriter::VideoFrameFileWriter(
+    const base::FilePath& output_folder,
+    OutputFormat output_format,
+    size_t output_limit,
+    const base::FilePath::StringType& output_file_prefix)
     : output_folder_(output_folder),
       output_format_(output_format),
       output_limit_(output_limit),
+      output_file_prefix_(output_file_prefix),
       num_frames_writing_(0),
       frame_writer_thread_("FrameWriterThread"),
       frame_writer_cv_(&frame_writer_lock_) {
@@ -48,7 +51,8 @@ VideoFrameFileWriter::~VideoFrameFileWriter() {
 std::unique_ptr<VideoFrameFileWriter> VideoFrameFileWriter::Create(
     const base::FilePath& output_folder,
     OutputFormat output_format,
-    size_t output_limit) {
+    size_t output_limit,
+    const base::FilePath::StringType& output_file_prefix) {
   // If the directory is not absolute, consider it relative to our working dir.
   base::FilePath resolved_output_folder(output_folder);
   if (!resolved_output_folder.IsAbsolute()) {
@@ -67,7 +71,7 @@ std::unique_ptr<VideoFrameFileWriter> VideoFrameFileWriter::Create(
   }
 
   auto frame_file_writer = base::WrapUnique(new VideoFrameFileWriter(
-      resolved_output_folder, output_format, output_limit));
+      resolved_output_folder, output_format, output_limit, output_file_prefix));
   if (!frame_file_writer->Initialize()) {
     LOG(ERROR) << "Failed to initialize VideoFrameFileWriter";
     return nullptr;
@@ -129,6 +133,9 @@ void VideoFrameFileWriter::ProcessVideoFrameTask(
   const gfx::Size& visible_size = video_frame->visible_rect().size();
   base::SStringPrintf(&filename, FILE_PATH_LITERAL("frame_%04zu_%dx%d"),
                       frame_index, visible_size.width(), visible_size.height());
+  if (!output_file_prefix_.empty())
+    filename = output_file_prefix_ + FILE_PATH_LITERAL("_") + filename;
+
   // Copies to |frame| in this function so that |video_frame| stays alive until
   // in the end of function.
   auto frame = video_frame;

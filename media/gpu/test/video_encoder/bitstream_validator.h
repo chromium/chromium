@@ -44,7 +44,9 @@ class BitstreamValidator : public BitstreamProcessor {
       const VideoDecoderConfig& decoder_config,
       size_t last_frame_index,
       std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors =
-          {});
+          {},
+      base::Optional<size_t> num_vp9_temporal_layers_to_decode = base::nullopt);
+
   ~BitstreamValidator() override;
 
   // BitstreamProcessor implementation.
@@ -56,6 +58,7 @@ class BitstreamValidator : public BitstreamProcessor {
   BitstreamValidator(
       std::unique_ptr<VideoDecoder> decoder,
       size_t last_frame_index,
+      base::Optional<size_t> num_vp9_temporal_layers_to_decode,
       std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors);
   BitstreamValidator(const BitstreamValidator&) = delete;
   BitstreamValidator& operator=(const BitstreamValidator&) = delete;
@@ -73,6 +76,7 @@ class BitstreamValidator : public BitstreamProcessor {
   // Validator components touched by validator_thread_ only.
   std::unique_ptr<VideoDecoder> decoder_;
   const size_t last_frame_index_;
+  const base::Optional<size_t> num_vp9_temporal_layers_to_decode_;
   const std::vector<std::unique_ptr<VideoFrameProcessor>>
       video_frame_processors_;
   // The key is timestamp, and the value is BitstreamRef that is being processed

@@ -49,14 +49,16 @@ std::unique_ptr<VideoDecoder> CreateDecoder(VideoCodec codec) {
 std::unique_ptr<BitstreamValidator> BitstreamValidator::Create(
     const VideoDecoderConfig& decoder_config,
     size_t last_frame_index,
-    std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors) {
+    std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors,
+    base::Optional<size_t> num_vp9_temporal_layers_to_decode) {
   std::unique_ptr<VideoDecoder> decoder;
   decoder = CreateDecoder(decoder_config.codec());
   if (!decoder)
     return nullptr;
 
   auto validator = base::WrapUnique(new BitstreamValidator(
-      std::move(decoder), last_frame_index, std::move(video_frame_processors)));
+      std::move(decoder), last_frame_index, num_vp9_temporal_layers_to_decode,
+      std::move(video_frame_processors)));
   if (!validator->Initialize(decoder_config))
     return nullptr;
   return validator;
@@ -104,9 +106,11 @@ void BitstreamValidator::InitializeVideoDecoder(
 BitstreamValidator::BitstreamValidator(
     std::unique_ptr<VideoDecoder> decoder,
     size_t last_frame_index,
+    base::Optional<size_t> num_vp9_temporal_layers_to_decode,
     std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors)
     : decoder_(std::move(decoder)),
       last_frame_index_(last_frame_index),
+      num_vp9_temporal_layers_to_decode_(num_vp9_temporal_layers_to_decode),
       video_frame_processors_(std::move(video_frame_processors)),
       validator_thread_("BitstreamValidatorThread"),
       validator_cv_(&validator_lock_),
@@ -133,16 +137,26 @@ void BitstreamValidator::ProcessBitstreamTask(
     scoped_refptr<BitstreamRef> bitstream,
     size_t frame_index) {
   SEQUENCE_CHECKER(validator_thread_sequence_checker_);
-  scoped_refptr<DecoderBuffer> buffer = bitstream->buffer;
-  int64_t timestamp = buffer->timestamp().InMicroseconds();
-  decoding_buffers_.Put(timestamp,
-                        std::make_pair(frame_index, std::move(bitstream)));
-  // Validate the encoded bitstream buffer by decoding its contents using a
-  // software decoder.
-  decoder_->Decode(std::move(buffer),
-                   base::BindOnce(&BitstreamValidator::DecodeDone,
-                                  base::Unretained(this), timestamp));
-
+  const bool should_decode = !num_vp9_temporal_layers_to_decode_ ||
+                             (bitstream->metadata.vp9->temporal_idx <
+                              *num_vp9_temporal_layers_to_decode_);
+  if (should_decode) {
+    scoped_refptr<DecoderBuffer> buffer = bitstream->buffer;
+    int64_t timestamp = buffer->timestamp().InMicroseconds();
+    decoding_buffers_.Put(timestamp,
+                          std::make_pair(frame_index, std::move(bitstream)));
+    // Validate the encoded bitstream buffer by decoding its contents using a
+    // software decoder.
+    decoder_->Decode(std::move(buffer),
+                     base::BindOnce(&BitstreamValidator::DecodeDone,
+                                    base::Unretained(this), timestamp));
+  } else {
+    // Skip |bitstream| because it contains a frame in upper layers than layers
+    // to be validated.
+    base::AutoLock lock(validator_lock_);
+    num_buffers_validating_--;
+    validator_cv_.Signal();
+  }
   if (frame_index == last_frame_index_) {
     // Flush pending buffers.
     decoder_->Decode(DecoderBuffer::CreateEOSBuffer(),
