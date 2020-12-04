@@ -10,6 +10,7 @@
 #include "chrome/browser/chromeos/borealis/borealis_app_launcher.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager_impl.h"
 #include "chrome/browser/chromeos/borealis/borealis_features.h"
+#include "chrome/browser/chromeos/borealis/borealis_installer_impl.h"
 #include "chrome/browser/chromeos/borealis/borealis_window_manager.h"
 
 namespace borealis {
@@ -25,6 +26,7 @@ class BorealisServiceImpl : public BorealisService {
   BorealisAppLauncher& AppLauncher() override;
   BorealisContextManager& ContextManager() override;
   BorealisFeatures& Features() override;
+  BorealisInstaller& Installer() override;
   BorealisWindowManager& WindowManager() override;
 
   Profile* const profile_;
@@ -32,6 +34,7 @@ class BorealisServiceImpl : public BorealisService {
   BorealisAppLauncher app_launcher_;
   BorealisContextManagerImpl context_manager_;
   BorealisFeatures features_;
+  BorealisInstallerImpl installer_;
   BorealisWindowManager window_manager_;
 };
 

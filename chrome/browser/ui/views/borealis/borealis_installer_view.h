@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/borealis/borealis_installer_impl.h"
+#include "chrome/browser/chromeos/borealis/borealis_installer.h"
 #include "chrome/browser/chromeos/borealis/borealis_metrics.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -93,7 +93,6 @@ class BorealisInstallerView : public views::DialogDelegateView,
   views::BoxLayout* lower_container_layout_ = nullptr;
   views::ImageView* big_image_ = nullptr;
 
-  borealis::BorealisInstaller* borealis_installer_ = nullptr;
   State state_ = State::kConfirmInstall;
   InstallingState installing_state_ = InstallingState::kInactive;
   base::Optional<borealis::BorealisInstallResult> result_;

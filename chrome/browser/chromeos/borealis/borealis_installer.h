@@ -33,6 +33,7 @@ class BorealisInstaller : public KeyedService {
   };
 
   BorealisInstaller();
+  ~BorealisInstaller() override;
 
   static std::string GetInstallingStateName(InstallingState state);
 
@@ -45,14 +46,6 @@ class BorealisInstaller : public KeyedService {
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
-
- protected:
-  ~BorealisInstaller() override;
-
-  base::ObserverList<Observer> observers_;
-
- private:
-  base::WeakPtrFactory<BorealisInstaller> weak_ptr_factory_{this};
 };
 
 }  // namespace borealis

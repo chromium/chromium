@@ -36,6 +36,11 @@ BorealisFeatures& BorealisServiceFake::Features() {
   return *features_;
 }
 
+BorealisInstaller& BorealisServiceFake::Installer() {
+  DCHECK(installer_);
+  return *installer_;
+}
+
 BorealisWindowManager& BorealisServiceFake::WindowManager() {
   DCHECK(window_manager_);
   return *window_manager_;
@@ -53,6 +58,10 @@ void BorealisServiceFake::SetContextManagerForTesting(
 
 void BorealisServiceFake::SetFeaturesForTesting(BorealisFeatures* features) {
   features_ = features;
+}
+
+void BorealisServiceFake::SetInstallerForTesting(BorealisInstaller* installer) {
+  installer_ = installer;
 }
 
 void BorealisServiceFake::SetWindowManagerForTesting(

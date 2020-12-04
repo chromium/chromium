@@ -19,6 +19,7 @@ namespace borealis {
 class BorealisInstallerImpl : public BorealisInstaller {
  public:
   explicit BorealisInstallerImpl(Profile* profile);
+  ~BorealisInstallerImpl() override;
 
   // Disallow copy and assign.
   BorealisInstallerImpl(const BorealisInstallerImpl&) = delete;
@@ -41,8 +42,6 @@ class BorealisInstallerImpl : public BorealisInstaller {
     kCancelling,
   };
 
-  ~BorealisInstallerImpl() override;
-
   void StartDlcInstallation();
   void InstallationEnded(BorealisInstallResult result);
 
@@ -58,6 +57,7 @@ class BorealisInstallerImpl : public BorealisInstaller {
   double progress_;
   base::TimeTicks installation_start_tick_;
   Profile* profile_;
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<BorealisInstallerImpl> weak_ptr_factory_;
 };

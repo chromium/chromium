@@ -9,7 +9,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/borealis/borealis_features.h"
-#include "chrome/browser/chromeos/borealis/borealis_installer_factory.h"
 #include "chrome/browser/chromeos/borealis/borealis_metrics.h"
 #include "chrome/browser/chromeos/borealis/borealis_prefs.h"
 #include "chrome/browser/chromeos/borealis/borealis_service.h"
@@ -53,7 +52,8 @@ class BorealisInstallerTest : public testing::Test {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
     CreateProfile();
 
-    installer_ = BorealisInstallerFactory::GetForProfile(profile_.get());
+    installer_impl_ = std::make_unique<BorealisInstallerImpl>(profile_.get());
+    installer_ = installer_impl_.get();
     observer_ = std::make_unique<StrictMock<MockObserver>>();
     installer_->AddObserver(observer_.get());
 
@@ -110,6 +110,7 @@ class BorealisInstallerTest : public testing::Test {
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
+  std::unique_ptr<BorealisInstallerImpl> installer_impl_;
   BorealisInstaller* installer_;
   std::unique_ptr<MockObserver> observer_;
   content::BrowserTaskEnvironment task_environment_;

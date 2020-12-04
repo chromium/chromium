@@ -14,6 +14,7 @@ namespace borealis {
 class BorealisAppLauncher;
 class BorealisContextManager;
 class BorealisFeatures;
+class BorealisInstaller;
 class BorealisWindowManager;
 
 // A common location for all the interdependant components of borealis.
@@ -27,6 +28,7 @@ class BorealisService : public KeyedService {
   virtual BorealisAppLauncher& AppLauncher() = 0;
   virtual BorealisContextManager& ContextManager() = 0;
   virtual BorealisFeatures& Features() = 0;
+  virtual BorealisInstaller& Installer() = 0;
   virtual BorealisWindowManager& WindowManager() = 0;
 };
 
