@@ -42,6 +42,8 @@ class TestIsolationContextMetrics : public IsolationContextMetrics {
 
 class IsolationContextMetricsTest : public GraphTestHarness {
  public:
+  using Super = GraphTestHarness;
+
   IsolationContextMetricsTest()
       : GraphTestHarness(
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED,
@@ -64,6 +66,7 @@ class IsolationContextMetricsTest : public GraphTestHarness {
   static constexpr int32_t kSID3 = 3;
 
   void SetUp() override {
+    Super::SetUp();
     metrics_ = new TestIsolationContextMetrics();
 
     // Sets a valid starting time.

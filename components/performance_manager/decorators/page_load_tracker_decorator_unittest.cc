@@ -27,10 +27,13 @@ using LS = PageNode::LoadingState;
 
 class PageLoadTrackerDecoratorTest : public GraphTestHarness {
  protected:
+  using Super = GraphTestHarness;
+
   PageLoadTrackerDecoratorTest() = default;
   ~PageLoadTrackerDecoratorTest() override = default;
 
   void SetUp() override {
+    Super::SetUp();
     pltd_ = new PageLoadTrackerDecorator();
     graph()->PassToGraph(base::WrapUnique(pltd_));
   }

@@ -34,9 +34,12 @@ GURL DummyUrl() {
 #endif
 class MAYBE_MetricsCollectorTest : public GraphTestHarness {
  public:
+  using Super = GraphTestHarness;
+
   MAYBE_MetricsCollectorTest() : GraphTestHarness() {}
 
   void SetUp() override {
+    Super::SetUp();
     metrics_collector_ = new MetricsCollector();
     graph()->PassToGraph(base::WrapUnique(metrics_collector_));
   }
@@ -44,7 +47,7 @@ class MAYBE_MetricsCollectorTest : public GraphTestHarness {
   void TearDown() override {
     graph()->TakeFromGraph(metrics_collector_);  // Destroy the observer.
     metrics_collector_ = nullptr;
-    GraphTestHarness::TearDown();
+    Super::TearDown();
   }
 
  protected:

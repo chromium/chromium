@@ -271,6 +271,10 @@ class GraphTestHarness : public ::testing::Test {
   GraphFeaturesHelper graph_features_helper_;
   content::BrowserTaskEnvironment task_env_;
   std::unique_ptr<TestGraphImpl> graph_;
+
+  // Detects when the test fixture is being misused.
+  bool setup_called_ = false;
+  bool teardown_called_ = false;
 };
 
 }  // namespace performance_manager

@@ -38,10 +38,13 @@ using MockProcessNodeObserver =
 
 class FrozenFrameAggregatorTest : public GraphTestHarness {
  protected:
+  using Super = GraphTestHarness;
+
   FrozenFrameAggregatorTest() = default;
   ~FrozenFrameAggregatorTest() override = default;
 
   void SetUp() override {
+    Super::SetUp();
     ffa_ = new FrozenFrameAggregator();
     graph()->PassToGraph(base::WrapUnique(ffa_));
     process_node_ = CreateNode<ProcessNodeImpl>();

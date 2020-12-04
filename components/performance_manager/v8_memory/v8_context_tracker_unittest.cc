@@ -55,20 +55,11 @@ mojom::IframeAttributionDataPtr GetFakeIframeAttributionDataPtr() {
 
 class V8ContextTrackerTest : public GraphTestHarness {
  public:
-  // Small PassToGraph helper that returns a raw pointer to the object that
-  // became graph owned. Helps write tidy constructors.
-  template <typename DerivedType>
-  DerivedType* PassToGraph(std::unique_ptr<DerivedType> graph_owned) {
-    DerivedType* object = graph_owned.get();
-    graph()->PassToGraph(std::move(graph_owned));
-    return object;
-  }
-
   V8ContextTrackerTest()
-      : registry(
-            PassToGraph(std::make_unique<
-                        execution_context::ExecutionContextRegistryImpl>())),
-        tracker(PassToGraph(std::make_unique<V8ContextTracker>())),
+      : registry(graph()->PassToGraph(
+            std::make_unique<
+                execution_context::ExecutionContextRegistryImpl>())),
+        tracker(graph()->PassToGraph(std::make_unique<V8ContextTracker>())),
         mock_graph(graph()) {}
 
   ~V8ContextTrackerTest() override = default;

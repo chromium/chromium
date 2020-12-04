@@ -19,6 +19,8 @@ namespace metrics {
 
 class MemoryPressureMetricsTest : public GraphTestHarness {
  public:
+  using Super = GraphTestHarness;
+
   MemoryPressureMetricsTest() = default;
   ~MemoryPressureMetricsTest() override = default;
   MemoryPressureMetricsTest(const MemoryPressureMetricsTest& other) = delete;
@@ -26,6 +28,7 @@ class MemoryPressureMetricsTest : public GraphTestHarness {
       delete;
 
   void SetUp() override {
+    Super::SetUp();
     std::unique_ptr<MemoryPressureMetrics> metrics =
         std::make_unique<MemoryPressureMetrics>();
     metrics_ = metrics.get();
@@ -38,6 +41,7 @@ class MemoryPressureMetricsTest : public GraphTestHarness {
   void TearDown() override {
     process_node_.reset();
     histogram_tester_.reset();
+    Super::TearDown();
   }
 
  protected:

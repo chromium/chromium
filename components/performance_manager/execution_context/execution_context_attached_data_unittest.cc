@@ -34,10 +34,8 @@ class ExecutionContextAttachedDataTest : public GraphTestHarness {
 
   void SetUp() override {
     Super::SetUp();
-    graph()->PassToGraph(std::make_unique<ExecutionContextRegistryImpl>());
-    registry_ = GraphRegisteredImpl<ExecutionContextRegistryImpl>::GetFromGraph(
-        graph());
-    ASSERT_TRUE(registry_);
+    registry_ =
+        graph()->PassToGraph(std::make_unique<ExecutionContextRegistryImpl>());
   }
 
  protected:

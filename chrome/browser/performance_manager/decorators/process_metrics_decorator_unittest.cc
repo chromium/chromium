@@ -102,10 +102,13 @@ memory_instrumentation::mojom::GlobalMemoryDumpPtr GenerateMemoryDump(
 
 class ProcessMetricsDecoratorTest : public GraphTestHarness {
  protected:
+  using Super = GraphTestHarness;
+
   ProcessMetricsDecoratorTest() = default;
   ~ProcessMetricsDecoratorTest() override = default;
 
   void SetUp() override {
+    Super::SetUp();
     std::unique_ptr<TestProcessMetricsDecorator> decorator =
         std::make_unique<TestProcessMetricsDecorator>();
     decorator_raw_ = decorator.get();

@@ -23,10 +23,13 @@ static const freezing::FreezingVote kCanFreezeVote(
 
 class FreezingVoteDecoratorTest : public GraphTestHarness {
  public:
+  using Super = GraphTestHarness;
+
   FreezingVoteDecoratorTest() = default;
   ~FreezingVoteDecoratorTest() override = default;
 
   void SetUp() override {
+    Super::SetUp();
     graph()->PassToGraph(std::make_unique<FreezingVoteDecorator>());
   }
 };

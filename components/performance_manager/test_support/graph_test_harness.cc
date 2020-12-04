@@ -28,18 +28,32 @@ GraphTestHarness::GraphTestHarness()
       graph_(new TestGraphImpl()) {}
 
 GraphTestHarness::~GraphTestHarness() {
+  // These will fire if this class is derived from, and SetUp or TearDown are
+  // overridden but not called from the derived class.
+  static constexpr char kNotCalled[] =
+      " was not called. This probably means that the "
+      "developer has overridden the method and not called "
+      "the superclass version.";
+  CHECK(setup_called_ || IsSkipped()) << "SetUp" << kNotCalled;
+  CHECK(teardown_called_ || IsSkipped()) << "TearDown" << kNotCalled;
+
   // Ideally this would be done in TearDown(), but that would require subclasses
-  // do destroy all their nodes before invoking TearDown below.
+  // to destroy all their nodes before invoking TearDown below.
   if (graph_)
     graph_->TearDown();
 }
 
 void GraphTestHarness::SetUp() {
+  setup_called_ = true;
+
   graph_features_helper_.ConfigureGraph(graph_.get());
+
+  // This can't be done in the constructor because it is a virtual function.
   OnGraphCreated(graph_.get());
 }
 
 void GraphTestHarness::TearDown() {
+  teardown_called_ = true;
   base::RunLoop().RunUntilIdle();
 }
 

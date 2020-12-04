@@ -32,6 +32,8 @@ using MockPageLoader = ::testing::StrictMock<LenientMockPageLoader>;
 
 class BackgroundTabLoadingPolicyTest : public GraphTestHarness {
  public:
+  using Super = GraphTestHarness;
+
   BackgroundTabLoadingPolicyTest() = default;
   ~BackgroundTabLoadingPolicyTest() override = default;
   BackgroundTabLoadingPolicyTest(const BackgroundTabLoadingPolicyTest& other) =
@@ -40,6 +42,8 @@ class BackgroundTabLoadingPolicyTest : public GraphTestHarness {
       const BackgroundTabLoadingPolicyTest&) = delete;
 
   void SetUp() override {
+    Super::SetUp();
+
     // Create the policy.
     auto policy = std::make_unique<BackgroundTabLoadingPolicy>();
     policy_ = policy.get();
@@ -55,7 +59,10 @@ class BackgroundTabLoadingPolicyTest : public GraphTestHarness {
     policy_->SetFreeMemoryForTesting(150);
   }
 
-  void TearDown() override { graph()->TakeFromGraph(policy_); }
+  void TearDown() override {
+    graph()->TakeFromGraph(policy_);
+    Super::TearDown();
+  }
 
  protected:
   BackgroundTabLoadingPolicy* policy() { return policy_; }

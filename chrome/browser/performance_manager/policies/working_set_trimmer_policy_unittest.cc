@@ -25,10 +25,15 @@ class MockWorkingSetTrimmerPolicy : public WorkingSetTrimmerPolicy {
 
 class WorkingSetTrimmerPolicyTest : public GraphTestHarness {
  public:
+  using Super = GraphTestHarness;
+
   WorkingSetTrimmerPolicyTest() {}
   ~WorkingSetTrimmerPolicyTest() override {}
 
-  void SetUp() override { policy_.reset(new WorkingSetTrimmerPolicy); }
+  void SetUp() override {
+    Super::SetUp();
+    policy_.reset(new WorkingSetTrimmerPolicy);
+  }
 
   void SetLastTrimTime(const ProcessNode* node, base::TimeTicks time) {
     policy_->SetLastTrimTime(node, time);

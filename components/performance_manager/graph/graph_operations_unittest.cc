@@ -17,8 +17,11 @@ namespace {
 
 class GraphOperationsTest : public GraphTestHarness {
  public:
+  using Super = GraphTestHarness;
+
   // Sets up two parallel frame trees that span multiple processes each.
   void SetUp() override {
+    Super::SetUp();
     process1_ = CreateNode<ProcessNodeImpl>();
     process2_ = CreateNode<ProcessNodeImpl>();
     page1_ = CreateNode<PageNodeImpl>();
