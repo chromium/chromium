@@ -4,6 +4,8 @@
 
 #include "chrome/browser/nearby_sharing/nearby_share_settings.h"
 
+#include <memory>
+
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -70,13 +72,24 @@ class NearbyShareSettingsTest : public ::testing::Test {
     scoped_feature_list_.InitAndEnableFeature(features::kNearbySharing);
 
     RegisterNearbySharingPrefs(pref_service_.registry());
+    nearby_share_settings_ = std::make_unique<NearbyShareSettings>(
+        &pref_service_, &local_device_data_manager_);
+    nearby_share_settings_waiter_ =
+        std::make_unique<NearbyShareSettingsAsyncWaiter>(
+            nearby_share_settings_.get());
 
-    nearby_share_settings_.AddSettingsObserver(
+    nearby_share_settings_->AddSettingsObserver(
         observer_.receiver_.BindNewPipeAndPassRemote());
   }
   ~NearbyShareSettingsTest() override = default;
 
   void FlushMojoMessages() { observer_.receiver_.FlushForTesting(); }
+
+  NearbyShareSettings* settings() { return nearby_share_settings_.get(); }
+
+  NearbyShareSettingsAsyncWaiter* settings_waiter() {
+    return nearby_share_settings_waiter_.get();
+  }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -84,36 +97,34 @@ class NearbyShareSettingsTest : public ::testing::Test {
   TestingPrefServiceSimple pref_service_;
   FakeNearbyShareLocalDeviceDataManager local_device_data_manager_;
   FakeNearbyShareSettingsObserver observer_;
-  NearbyShareSettings nearby_share_settings_{&pref_service_,
-                                             &local_device_data_manager_};
-  NearbyShareSettingsAsyncWaiter nearby_share_settings_waiter_{
-      &nearby_share_settings_};
+  std::unique_ptr<NearbyShareSettings> nearby_share_settings_;
+  std::unique_ptr<NearbyShareSettingsAsyncWaiter> nearby_share_settings_waiter_;
 };
 
 TEST_F(NearbyShareSettingsTest, GetAndSetEnabled) {
   EXPECT_EQ(false, observer_.enabled);
-  nearby_share_settings_.SetEnabled(true);
-  EXPECT_EQ(true, nearby_share_settings_.GetEnabled());
+  settings()->SetEnabled(true);
+  EXPECT_EQ(true, settings()->GetEnabled());
   FlushMojoMessages();
   EXPECT_EQ(true, observer_.enabled);
 
   bool enabled = false;
-  nearby_share_settings_waiter_.GetEnabled(&enabled);
+  settings_waiter()->GetEnabled(&enabled);
   EXPECT_EQ(true, enabled);
 
-  nearby_share_settings_.SetEnabled(false);
-  EXPECT_EQ(false, nearby_share_settings_.GetEnabled());
+  settings()->SetEnabled(false);
+  EXPECT_EQ(false, settings()->GetEnabled());
   FlushMojoMessages();
   EXPECT_EQ(false, observer_.enabled);
 
-  nearby_share_settings_waiter_.GetEnabled(&enabled);
+  settings_waiter()->GetEnabled(&enabled);
   EXPECT_EQ(false, enabled);
 
   // Verify that setting the value to false again value doesn't trigger an
   // observer event.
   observer_.enabled = true;
-  nearby_share_settings_.SetEnabled(false);
-  EXPECT_EQ(false, nearby_share_settings_.GetEnabled());
+  settings()->SetEnabled(false);
+  EXPECT_EQ(false, settings()->GetEnabled());
   FlushMojoMessages();
   // the observers's value should not have been updated.
   EXPECT_EQ(true, observer_.enabled);
@@ -123,20 +134,20 @@ TEST_F(NearbyShareSettingsTest, ValidateDeviceName) {
   auto result = nearby_share::mojom::DeviceNameValidationResult::kValid;
   local_device_data_manager_.set_next_validation_result(
       nearby_share::mojom::DeviceNameValidationResult::kErrorEmpty);
-  nearby_share_settings_waiter_.ValidateDeviceName("", &result);
+  settings_waiter()->ValidateDeviceName("", &result);
   EXPECT_EQ(result,
             nearby_share::mojom::DeviceNameValidationResult::kErrorEmpty);
 
   local_device_data_manager_.set_next_validation_result(
       nearby_share::mojom::DeviceNameValidationResult::kValid);
-  nearby_share_settings_waiter_.ValidateDeviceName(
-      "this string is 32 bytes in UTF-8", &result);
+  settings_waiter()->ValidateDeviceName("this string is 32 bytes in UTF-8",
+                                        &result);
   EXPECT_EQ(result, nearby_share::mojom::DeviceNameValidationResult::kValid);
 }
 
 TEST_F(NearbyShareSettingsTest, GetAndSetDeviceName) {
   std::string name = "not_the_default";
-  nearby_share_settings_waiter_.GetDeviceName(&name);
+  settings_waiter()->GetDeviceName(&name);
   EXPECT_EQ(kDefaultDeviceName, name);
 
   // When we get a validation error, setting the name should not succeed.
@@ -144,51 +155,51 @@ TEST_F(NearbyShareSettingsTest, GetAndSetDeviceName) {
   auto result = nearby_share::mojom::DeviceNameValidationResult::kValid;
   local_device_data_manager_.set_next_validation_result(
       nearby_share::mojom::DeviceNameValidationResult::kErrorEmpty);
-  nearby_share_settings_waiter_.SetDeviceName("", &result);
+  settings_waiter()->SetDeviceName("", &result);
   EXPECT_EQ(result,
             nearby_share::mojom::DeviceNameValidationResult::kErrorEmpty);
-  EXPECT_EQ(kDefaultDeviceName, nearby_share_settings_.GetDeviceName());
+  EXPECT_EQ(kDefaultDeviceName, settings()->GetDeviceName());
 
   // When the name is valid, setting should succeed.
   EXPECT_EQ("uncalled", observer_.device_name);
   result = nearby_share::mojom::DeviceNameValidationResult::kValid;
   local_device_data_manager_.set_next_validation_result(
       nearby_share::mojom::DeviceNameValidationResult::kValid);
-  nearby_share_settings_waiter_.SetDeviceName("d", &result);
+  settings_waiter()->SetDeviceName("d", &result);
   EXPECT_EQ(result, nearby_share::mojom::DeviceNameValidationResult::kValid);
-  EXPECT_EQ("d", nearby_share_settings_.GetDeviceName());
+  EXPECT_EQ("d", settings()->GetDeviceName());
 
   EXPECT_EQ("uncalled", observer_.device_name);
   FlushMojoMessages();
   EXPECT_EQ("d", observer_.device_name);
 
-  nearby_share_settings_waiter_.GetDeviceName(&name);
+  settings_waiter()->GetDeviceName(&name);
   EXPECT_EQ("d", name);
 }
 
 TEST_F(NearbyShareSettingsTest, GetAndSetDataUsage) {
   EXPECT_EQ(nearby_share::mojom::DataUsage::kUnknown, observer_.data_usage);
-  nearby_share_settings_.SetDataUsage(DataUsage::kOffline);
-  EXPECT_EQ(DataUsage::kOffline, nearby_share_settings_.GetDataUsage());
+  settings()->SetDataUsage(DataUsage::kOffline);
+  EXPECT_EQ(DataUsage::kOffline, settings()->GetDataUsage());
   FlushMojoMessages();
   EXPECT_EQ(nearby_share::mojom::DataUsage::kOffline, observer_.data_usage);
 
   nearby_share::mojom::DataUsage data_usage =
       nearby_share::mojom::DataUsage::kUnknown;
-  nearby_share_settings_waiter_.GetDataUsage(&data_usage);
+  settings_waiter()->GetDataUsage(&data_usage);
   EXPECT_EQ(nearby_share::mojom::DataUsage::kOffline, data_usage);
 }
 
 TEST_F(NearbyShareSettingsTest, GetAndSetVisibility) {
   EXPECT_EQ(nearby_share::mojom::Visibility::kUnknown, observer_.visibility);
-  nearby_share_settings_.SetVisibility(Visibility::kNoOne);
-  EXPECT_EQ(Visibility::kNoOne, nearby_share_settings_.GetVisibility());
+  settings()->SetVisibility(Visibility::kNoOne);
+  EXPECT_EQ(Visibility::kNoOne, settings()->GetVisibility());
   FlushMojoMessages();
   EXPECT_EQ(nearby_share::mojom::Visibility::kNoOne, observer_.visibility);
 
   nearby_share::mojom::Visibility visibility =
       nearby_share::mojom::Visibility::kUnknown;
-  nearby_share_settings_waiter_.GetVisibility(&visibility);
+  settings_waiter()->GetVisibility(&visibility);
   EXPECT_EQ(nearby_share::mojom::Visibility::kNoOne, visibility);
 }
 
@@ -197,22 +208,22 @@ TEST_F(NearbyShareSettingsTest, GetAndSetAllowedContacts) {
 
   std::vector<std::string> allowed_contacts;
 
-  nearby_share_settings_waiter_.GetAllowedContacts(&allowed_contacts);
+  settings_waiter()->GetAllowedContacts(&allowed_contacts);
   EXPECT_EQ(0u, allowed_contacts.size());
 
-  nearby_share_settings_.SetAllowedContacts({id1});
+  settings()->SetAllowedContacts({id1});
   FlushMojoMessages();
   EXPECT_EQ(1u, observer_.allowed_contacts.size());
   EXPECT_EQ(true, base::Contains(observer_.allowed_contacts, id1));
 
-  nearby_share_settings_waiter_.GetAllowedContacts(&allowed_contacts);
+  settings_waiter()->GetAllowedContacts(&allowed_contacts);
   EXPECT_EQ(1u, allowed_contacts.size());
   EXPECT_EQ(true, base::Contains(allowed_contacts, id1));
 
-  nearby_share_settings_.SetAllowedContacts({});
+  settings()->SetAllowedContacts({});
   FlushMojoMessages();
   EXPECT_EQ(0u, observer_.allowed_contacts.size());
 
-  nearby_share_settings_waiter_.GetAllowedContacts(&allowed_contacts);
+  settings_waiter()->GetAllowedContacts(&allowed_contacts);
   EXPECT_EQ(0u, allowed_contacts.size());
 }

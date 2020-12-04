@@ -4,6 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/nearby_share_settings.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
@@ -34,6 +35,11 @@ NearbyShareSettings::NearbyShareSettings(
                           base::Unretained(this)));
 
   local_device_data_manager_->AddObserver(this);
+
+  if (GetEnabled()) {
+    base::UmaHistogramEnumeration("Nearby.Share.VisibilityChoice",
+                                  GetVisibility());
+  }
 }
 
 NearbyShareSettings::~NearbyShareSettings() {

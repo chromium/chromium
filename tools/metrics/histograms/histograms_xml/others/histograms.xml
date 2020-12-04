@@ -9984,6 +9984,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Nearby.Share.VisibilityChoice" enum="NearbyShareVisibility"
+    expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the user's chosen degree of visibility to their contacts, selected
+    during onboarding or updated in settings. Emitted at login for users that
+    have Nearby Share enabled.
+  </summary>
+</histogram>
+
 <histogram name="net.HttpIdentSrcURL" units="requests" expires_after="M85">
   <owner>tsepez@chromium.org</owner>
   <summary>

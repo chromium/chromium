@@ -50421,6 +50421,13 @@ Called by update_use_counter_css.py.-->
   <int value="8" label="Unsupported attachment type"/>
 </enum>
 
+<enum name="NearbyShareVisibility">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="No one"/>
+  <int value="2" label="All contacts"/>
+  <int value="3" label="Selected contacts"/>
+</enum>
+
 <enum name="NearOomDetectionEndReason">
   <obsolete>
     Removed in Feb 2020.
