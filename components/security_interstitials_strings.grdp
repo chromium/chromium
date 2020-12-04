@@ -524,7 +524,7 @@
     The information you’re about to submit is not secure
   </message>
   <message name="IDS_INSECURE_FORM_PRIMARY_PARAGRAPH" desc="Main paragraph of the insecure form submission warning. This warning is shown when a form shown on a secure website is submitted over an insecure connection.">
-    Because the site is using a connection that’s not completely secure, your information will be visible to others.
+    Because this form is being submitted using a connection that’s not secure, your information will be visible to others.
   </message>
   <message name="IDS_INSECURE_FORM_BACK_BUTTON" desc="Text for the button in the insecure form warning that takes the user back to the previous page">
     Go back
