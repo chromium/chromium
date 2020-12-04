@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/overlay_media_notification.h"
@@ -23,6 +22,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "components/vector_icons/vector_icons.h"
 #include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -254,9 +254,9 @@ void MediaDialogView::Init() {
   }
 
   auto live_caption_image = std::make_unique<views::ImageView>();
-  live_caption_image->SetImage(
-      gfx::CreateVectorIcon(kLiveCaptionIcon, kLiveCaptionImageWidthDip,
-                            SkColor(gfx::kGoogleGrey700)));
+  live_caption_image->SetImage(gfx::CreateVectorIcon(
+      vector_icons::kLiveCaptionOnIcon, kLiveCaptionImageWidthDip,
+      SkColor(gfx::kGoogleGrey700)));
   live_caption_container->AddChildView(std::move(live_caption_image));
 
   auto live_caption_title = std::make_unique<views::Label>(
@@ -281,9 +281,9 @@ void MediaDialogView::Init() {
     live_caption_title_->SetVisible(false);
   }
 
-  auto live_caption_button =
-      std::make_unique<views::ToggleButton>(base::BindRepeating(
-          &MediaDialogView::LiveCaptionButtonPressed, base::Unretained(this)));
+  auto live_caption_button = std::make_unique<views::ToggleButton>(
+      base::BindRepeating(&MediaDialogView::OnLiveCaptionButtonPressed,
+                          base::Unretained(this)));
   live_caption_button->SetIsOn(
       profile_->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
   live_caption_button->SetAccessibleName(live_caption_title_->GetText());
@@ -305,7 +305,7 @@ void MediaDialogView::WindowClosing() {
   }
 }
 
-void MediaDialogView::LiveCaptionButtonPressed(const ui::Event& event) {
+void MediaDialogView::OnLiveCaptionButtonPressed() {
   bool enabled = !profile_->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled);
   ToggleLiveCaption(enabled);
   base::UmaHistogramBoolean(

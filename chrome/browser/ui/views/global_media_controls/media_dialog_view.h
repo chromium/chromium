@@ -92,7 +92,7 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   void WindowClosing() override;
 
   // views::Button::PressedCallback
-  void LiveCaptionButtonPressed(const ui::Event& event);
+  void OnLiveCaptionButtonPressed();
 
   void ToggleLiveCaption(bool enabled);
   void UpdateBubbleSize();

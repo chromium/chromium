@@ -1701,6 +1701,17 @@ This file contains the strings for ash.
         Mic jack
       </message>
 
+      <!-- Status tray Live Caption strings. -->
+      <message name="IDS_ASH_STATUS_TRAY_LIVE_CAPTION_TOGGLE_TOOLTIP" desc="The tooltip text used for the button in the status tray to toggle the Live Caption feature on or off.">
+        Toggle Live Caption. <ph name="STATE_TEXT">$1<ex>Live Caption is on.</ex></ph>
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_LIVE_CAPTION_ENABLED_STATE_TOOLTIP" desc="The tooltip text indicating the Live Caption feature is on.">
+        Live Caption is on.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_LIVE_CAPTION_DISABLED_STATE_TOOLTIP" desc="The tooltip text indicating the Live Caption feature is off.">
+        Live Caption is off.
+      </message>
+
       <message name="IDS_AURA_SET_DESKTOP_WALLPAPER" desc="The label used for change wallpaper in context menu">
         Set wallpaper
       </message>

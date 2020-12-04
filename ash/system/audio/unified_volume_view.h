@@ -35,6 +35,10 @@ class UnifiedVolumeView : public UnifiedSliderView,
   // UnifiedSliderView:
   void ChildVisibilityChanged(views::View* child) override;
 
+  // views::Button::PressedCallback
+  void OnLiveCaptionButtonPressed();
+
+  views::ToggleImageButton* const live_caption_button_;
   views::Button* const more_button_;
 
   DISALLOW_COPY_AND_ASSIGN(UnifiedVolumeView);

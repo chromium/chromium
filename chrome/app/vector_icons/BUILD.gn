@@ -64,7 +64,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "keyboard_arrow_right.icon",
     "keyboard_arrow_up.icon",
     "laptop.icon",
-    "live_caption.icon",
     "media_toolbar_button.icon",
     "media_toolbar_button_touch.icon",
     "mixed_content.icon",

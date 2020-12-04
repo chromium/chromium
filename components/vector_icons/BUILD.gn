@@ -46,6 +46,8 @@ aggregate_vector_icons("components_vector_icons") {
     "insert_drive_file_outline.icon",
     "launch.icon",
     "lightbulb_outline.icon",
+    "live_caption_off.icon",
+    "live_caption_on.icon",
     "location_on.icon",
     "lock.icon",
     "media_next_track.icon",

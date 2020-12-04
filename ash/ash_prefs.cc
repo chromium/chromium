@@ -88,6 +88,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
     registry->RegisterBooleanPref(
         chromeos::prefs::kSuggestedContentEnabled, true,
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+    registry->RegisterBooleanPref(
+        prefs::kLiveCaptionEnabled, false,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   }
 }
 

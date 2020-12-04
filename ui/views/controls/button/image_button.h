@@ -138,6 +138,11 @@ class VIEWS_EXPORT ToggleImageButton : public ImageButton {
   // before the button is toggled.
   void SetToggledImage(ButtonState state, const gfx::ImageSkia* image);
 
+  // Like Views::SetBackground(), but to set the background color used for the
+  // "has been toggled" state.
+  void SetToggledBackground(std::unique_ptr<Background> b);
+  Background* toggled_background() { return toggled_background_.get(); }
+
   // Get/Set the tooltip text displayed when the button is toggled.
   base::string16 GetToggledTooltipText() const;
   void SetToggledTooltipText(const base::string16& tooltip);
@@ -153,6 +158,7 @@ class VIEWS_EXPORT ToggleImageButton : public ImageButton {
   // Overridden from View:
   base::string16 GetTooltipText(const gfx::Point& p) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnPaintBackground(gfx::Canvas* canvas) override;
 
  private:
   // The parent class's images_ member is used for the current images,
@@ -162,6 +168,8 @@ class VIEWS_EXPORT ToggleImageButton : public ImageButton {
 
   // True if the button is currently toggled.
   bool toggled_ = false;
+
+  std::unique_ptr<Background> toggled_background_;
 
   // The parent class's tooltip_text_ is displayed when not toggled, and
   // this one is shown when toggled.
