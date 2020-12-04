@@ -228,6 +228,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/autofill_assistant/user_data/AssistantCollectUserDataNativeDelegate.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/user_data/AssistantDateTime.java",
   ]
+  split_name = "autofill_assistant"
 }
 
 generate_jni("test_support_jni_headers") {
