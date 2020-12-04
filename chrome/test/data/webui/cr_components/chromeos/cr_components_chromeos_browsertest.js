@@ -60,6 +60,10 @@ GEN('#include "content/public/test/browser_test.h"');
 ].forEach(test => registerTest('NetworkComponents', 'network', ...test));
 
 [
+  ['RoutineGroup', 'network_health/routine_group_test.js', []],
+].forEach(test => registerTest('NetworkHealth', 'network', ...test));
+
+[
   ['ActivationCodePage', 'cellular_setup/activation_code_page_test.js',[
     './cellular_setup/fake_media_devices.js',
   ]],
