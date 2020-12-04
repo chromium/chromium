@@ -10,6 +10,7 @@
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/chromeos/borealis/borealis_app_launcher.h"
+#include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
 #include "chrome/browser/chromeos/borealis/borealis_features.h"
 #include "chrome/browser/chromeos/borealis/borealis_service.h"
 #include "chrome/browser/chromeos/borealis/borealis_util.h"
@@ -177,6 +178,16 @@ void BorealisApps::GetMenuModel(const std::string& app_id,
                                 int64_t display_id,
                                 GetMenuModelCallback callback) {
   apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
+
+  // TODO(b/170677773): Show shutdown in another app.
+  if (app_id == borealis::kBorealisAppId &&
+      borealis::BorealisService::GetForProfile(profile_)
+          ->ContextManager()
+          .IsRunning()) {
+    // TODO(b/174705762): Use borealis-specific strings.
+    AddCommandItem(ash::SHUTDOWN_GUEST_OS, IDS_PLUGIN_VM_SHUT_DOWN_MENU_ITEM,
+                   &menu_items);
+  }
 
   if (ShouldAddCloseItem(app_id, menu_type, profile_)) {
     AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, &menu_items);

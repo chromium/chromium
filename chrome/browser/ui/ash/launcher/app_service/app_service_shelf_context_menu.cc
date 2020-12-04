@@ -13,6 +13,9 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/chromeos/arc/app_shortcuts/arc_app_shortcuts_menu_builder.h"
+#include "chrome/browser/chromeos/borealis/borealis_service.h"
+#include "chrome/browser/chromeos/borealis/borealis_shutdown_monitor.h"
+#include "chrome/browser/chromeos/borealis/borealis_util.h"
 #include "chrome/browser/chromeos/crosapi/browser_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_shelf_utils.h"
@@ -150,6 +153,10 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
         plugin_vm::PluginVmManagerFactory::GetForProfile(
             controller()->profile())
             ->StopPluginVm(plugin_vm::kPluginVmName, /*force=*/false);
+      } else if (item().id.app_id == borealis::kBorealisAppId) {
+        borealis::BorealisService::GetForProfile(controller()->profile())
+            ->ShutdownMonitor()
+            .ShutdownNow();
       } else {
         LOG(ERROR) << "App " << item().id.app_id
                    << " should not have a shutdown guest OS command.";
