@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 106 tests; 103 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 109 tests; 106 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS SanitizerAPI sanitize function without argument should throw an error.
 PASS SanitizerAPI sanitize function for null.
 PASS SanitizerAPI with config: string, sanitize from string function for string
@@ -18,6 +18,7 @@ PASS SanitizerAPI with config: onclick scripts, sanitize from string function fo
 PASS SanitizerAPI with config: invalid config_input, sanitize from string function for invalid config_input
 PASS SanitizerAPI with config: empty dropElements list, sanitize from string function for empty dropElements list
 PASS SanitizerAPI with config: test html without close tag with dropElements list ['div'], sanitize from string function for test html without close tag with dropElements list ['div']
+PASS SanitizerAPI with config: test custom element with dropElements list ['div'], sanitize from string function for test custom element with dropElements list ['div']
 PASS SanitizerAPI with config: test script with ["script"] as dropElements list, sanitize from string function for test script with ["script"] as dropElements list
 PASS SanitizerAPI with config: dropElements list ["test", "i"]}, sanitize from string function for dropElements list ["test", "i"]}
 PASS SanitizerAPI with config: dropElements list ["I", "AM"]}, sanitize from string function for dropElements list ["I", "AM"]}
@@ -52,6 +53,7 @@ PASS SanitizerAPI with config: onclick scripts, sanitize from document function 
 PASS SanitizerAPI with config: invalid config_input, sanitize from document function for invalid config_input
 PASS SanitizerAPI with config: empty dropElements list, sanitize from document function for empty dropElements list
 PASS SanitizerAPI with config: test html without close tag with dropElements list ['div'], sanitize from document function for test html without close tag with dropElements list ['div']
+PASS SanitizerAPI with config: test custom element with dropElements list ['div'], sanitize from document function for test custom element with dropElements list ['div']
 PASS SanitizerAPI with config: test script with ["script"] as dropElements list, sanitize from document function for test script with ["script"] as dropElements list
 PASS SanitizerAPI with config: dropElements list ["test", "i"]}, sanitize from document function for dropElements list ["test", "i"]}
 PASS SanitizerAPI with config: dropElements list ["I", "AM"]}, sanitize from document function for dropElements list ["I", "AM"]}
@@ -86,6 +88,7 @@ PASS SanitizerAPI with config: onclick scripts, sanitize from document fragment 
 PASS SanitizerAPI with config: invalid config_input, sanitize from document fragment function for invalid config_input
 PASS SanitizerAPI with config: empty dropElements list, sanitize from document fragment function for empty dropElements list
 PASS SanitizerAPI with config: test html without close tag with dropElements list ['div'], sanitize from document fragment function for test html without close tag with dropElements list ['div']
+PASS SanitizerAPI with config: test custom element with dropElements list ['div'], sanitize from document fragment function for test custom element with dropElements list ['div']
 PASS SanitizerAPI with config: test script with ["script"] as dropElements list, sanitize from document fragment function for test script with ["script"] as dropElements list
 PASS SanitizerAPI with config: dropElements list ["test", "i"]}, sanitize from document fragment function for dropElements list ["test", "i"]}
 PASS SanitizerAPI with config: dropElements list ["I", "AM"]}, sanitize from document fragment function for dropElements list ["I", "AM"]}

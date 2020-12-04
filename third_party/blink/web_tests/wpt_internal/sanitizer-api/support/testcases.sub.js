@@ -15,6 +15,7 @@ const testcases = [
   {config_input: {test: 123}, value: "test", result: "test", message: "invalid config_input"},
   {config_input: {dropElements: []}, value: "test", result: "test", message: "empty dropElements list"},
   {config_input: {dropElements: ["div"]}, value: "<div>test</div><c>bla", result: "<c>bla</c>", message: "test html without close tag with dropElements list ['div']"},
+  {config_input: {dropElements: ["customElement"]}, value: "<customElement>test</customElement>bla", result: "bla", message: "test custom element with dropElements list ['div']"},
   {config_input: {dropElements: ["script"]}, value: "<script>alert('i am a test')<\/script>", result: "", message: "test script with [\"script\"] as dropElements list"},
   {config_input: {dropElements: ["test", "i"]}, value: "<div>balabala<i>test</i></div><test>t</test>", result: "<div>balabala</div>", message: "dropElements list [\"test\", \"i\"]}"},
   {config_input: {dropElements: ["I", "AM"]}, value: "<div>balabala<am>test</am></div>", result: "<div>balabala</div>", message: "dropElements list [\"I\", \"AM\"]}"},
