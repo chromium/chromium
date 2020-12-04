@@ -122,7 +122,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   // in the relevant track collection.
   static NGGridLayoutAlgorithmTrackCollection::SetIterator
   GetSetIteratorForItem(const GridItemData& item,
-                        GridTrackSizingDirection track_direction,
                         NGGridLayoutAlgorithmTrackCollection& track_collection);
 
   // Returns the size that a grid item will distribute across the tracks with an
@@ -149,8 +148,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       NGGridLayoutAlgorithmTrackCollection* row_track_collection) const;
 
   // Sets specified track lists on |track_collection|.
-  void SetSpecifiedTracks(GridTrackSizingDirection track_direction,
-                          wtf_size_t automatic_repetitions,
+  void SetSpecifiedTracks(wtf_size_t automatic_repetitions,
                           NGGridBlockTrackCollection* track_collection) const;
   // Determines the explicit column and row track starts.
   void DetermineExplicitTrackStarts(wtf_size_t automatic_column_repetitions,
@@ -164,32 +162,27 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   // "begin" and "end" such that the item spans every set from the respective
   // collection's |sets_| with an index in the range [begin, end).
   void CacheItemSetIndices(
-      GridTrackSizingDirection track_direction,
-      const NGGridLayoutAlgorithmTrackCollection* track_collection,
+      const NGGridLayoutAlgorithmTrackCollection& track_collection,
       Vector<GridItemData>* grid_items) const;
   // For every grid item, determines if it spans a track with an intrinsic or
   // flexible sizing function and caches the answer in its |GridItemData|.
   void DetermineGridItemsSpanningIntrinsicOrFlexTracks(
-      GridTrackSizingDirection track_direction,
+      const NGGridLayoutAlgorithmTrackCollection& track_collection,
       Vector<GridItemData>* grid_items,
-      Vector<wtf_size_t>* reordered_item_indices,
-      NGGridLayoutAlgorithmTrackCollection* track_collection) const;
+      Vector<wtf_size_t>* reordered_item_indices) const;
 
   // Calculates from the min and max track sizing functions the used track size.
   void ComputeUsedTrackSizes(
-      GridTrackSizingDirection track_direction,
-      Vector<GridItemData>* grid_items,
-      NGGridLayoutAlgorithmTrackCollection* track_collection) const;
+      NGGridLayoutAlgorithmTrackCollection* track_collection,
+      Vector<GridItemData>* grid_items) const;
 
   // These methods implement the steps of the algorithm for intrinsic track size
   // resolution defined in https://drafts.csswg.org/css-grid-1/#algo-content.
   void ResolveIntrinsicTrackSizes(
-      GridTrackSizingDirection track_direction,
+      NGGridLayoutAlgorithmTrackCollection* track_collection,
       Vector<GridItemData>* grid_items,
-      Vector<wtf_size_t>* reordered_item_indices,
-      NGGridLayoutAlgorithmTrackCollection* track_collection) const;
+      Vector<wtf_size_t>* reordered_item_indices) const;
   void IncreaseTrackSizesToAccommodateGridItems(
-      GridTrackSizingDirection track_direction,
       ReorderedGridItems::Iterator group_begin,
       ReorderedGridItems::Iterator group_end,
       GridItemContributionType contribution_type,
@@ -220,9 +213,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   // Calculates inline and block offsets for all tracks.
   Vector<LayoutUnit> ComputeSetOffsets(
-      GridTrackSizingDirection track_direction,
-      LayoutUnit grid_gap,
-      NGGridLayoutAlgorithmTrackCollection& track_collection) const;
+      const NGGridLayoutAlgorithmTrackCollection& track_collection,
+      LayoutUnit grid_gap) const;
 
   // Tests whether the row gap is unresolvable based on its type and the
   // available size.

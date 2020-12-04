@@ -50,22 +50,18 @@ class NGGridLayoutAlgorithmTest
         &algorithm_row_track_collection_);
 
     // Cache set indices.
-    algorithm.CacheItemSetIndices(GridTrackSizingDirection::kForColumns,
-                                  &algorithm_column_track_collection_,
+    algorithm.CacheItemSetIndices(algorithm_column_track_collection_,
                                   &grid_items_);
-    algorithm.CacheItemSetIndices(GridTrackSizingDirection::kForRows,
-                                  &algorithm_row_track_collection_,
+    algorithm.CacheItemSetIndices(algorithm_row_track_collection_,
                                   &grid_items_);
 
     // Resolve inline size.
-    algorithm.ComputeUsedTrackSizes(GridTrackSizingDirection::kForColumns,
-                                    &grid_items_,
-                                    &algorithm_column_track_collection_);
+    algorithm.ComputeUsedTrackSizes(&algorithm_column_track_collection_,
+                                    &grid_items_);
 
     // Resolve block size.
-    algorithm.ComputeUsedTrackSizes(GridTrackSizingDirection::kForRows,
-                                    &grid_items_,
-                                    &algorithm_row_track_collection_);
+    algorithm.ComputeUsedTrackSizes(&algorithm_row_track_collection_,
+                                    &grid_items_);
   }
 
   NGGridLayoutAlgorithmTrackCollection& TrackCollection(
@@ -116,15 +112,14 @@ class NGGridLayoutAlgorithmTest
   }
 
   void DetermineGridItemsSpanningIntrinsicOrFlexTracks(
-      NGGridLayoutAlgorithm& algorithm,
-      GridTrackSizingDirection track_direction) {
+      const NGGridLayoutAlgorithm& algorithm,
+      const NGGridLayoutAlgorithmTrackCollection& track_collection) {
     Vector<wtf_size_t> reordered_item_indices;
     reordered_item_indices.ReserveInitialCapacity(grid_items_.size());
     for (wtf_size_t i = 0; i < grid_items_.size(); ++i)
       reordered_item_indices.push_back(i);
     algorithm.DetermineGridItemsSpanningIntrinsicOrFlexTracks(
-        track_direction, &grid_items_, &reordered_item_indices,
-        &TrackCollection(track_direction));
+        track_collection, &grid_items_, &reordered_item_indices);
   }
 
   Vector<wtf_size_t> GridItemsSpanningIntrinsicTrack(
@@ -1196,7 +1191,8 @@ TEST_F(NGGridLayoutAlgorithmTest,
   NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   BuildGridItemsAndTrackCollections(algorithm);
 
-  DetermineGridItemsSpanningIntrinsicOrFlexTracks(algorithm, kForColumns);
+  DetermineGridItemsSpanningIntrinsicOrFlexTracks(algorithm,
+                                                  TrackCollection(kForColumns));
   Vector<wtf_size_t> expected_grid_items_spanning_intrinsic_track = {0, 1, 3};
   Vector<wtf_size_t> expected_grid_items_spanning_flex_track = {1};
 
@@ -1212,7 +1208,8 @@ TEST_F(NGGridLayoutAlgorithmTest,
   for (wtf_size_t i = 0; i < actual_items.size(); ++i)
     EXPECT_EQ(expected_grid_items_spanning_flex_track[i], actual_items[i]);
 
-  DetermineGridItemsSpanningIntrinsicOrFlexTracks(algorithm, kForRows);
+  DetermineGridItemsSpanningIntrinsicOrFlexTracks(algorithm,
+                                                  TrackCollection(kForRows));
   expected_grid_items_spanning_intrinsic_track = {1, 2, 3};
   expected_grid_items_spanning_flex_track = {2};
 

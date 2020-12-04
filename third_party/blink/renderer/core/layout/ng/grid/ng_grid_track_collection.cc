@@ -136,6 +136,10 @@ bool NGGridTrackCollectionBase::RangeRepeatIterator::SetRangeIndex(
   return true;
 }
 
+NGGridBlockTrackCollection::NGGridBlockTrackCollection(
+    GridTrackSizingDirection direction)
+    : direction_(direction) {}
+
 void NGGridBlockTrackCollection::SetSpecifiedTracks(
     const NGGridTrackList* explicit_tracks,
     const NGGridTrackList* implicit_tracks,
@@ -481,36 +485,10 @@ NGGridLayoutAlgorithmTrackCollection::Range::Range(
       starting_set_index(starting_set_index),
       is_collapsed(block_track_range.is_collapsed) {}
 
-NGGridLayoutAlgorithmTrackCollection::SetIterator::SetIterator(
-    NGGridLayoutAlgorithmTrackCollection* collection,
-    wtf_size_t begin_set_index,
-    wtf_size_t end_set_index)
-    : collection_(collection),
-      current_set_index_(begin_set_index),
-      end_set_index_(end_set_index) {
-  DCHECK(collection_);
-  DCHECK_LE(current_set_index_, end_set_index_);
-}
-
-bool NGGridLayoutAlgorithmTrackCollection::SetIterator::IsAtEnd() const {
-  DCHECK_LE(current_set_index_, end_set_index_);
-  return current_set_index_ == end_set_index_;
-}
-
-bool NGGridLayoutAlgorithmTrackCollection::SetIterator::MoveToNextSet() {
-  current_set_index_ = std::min(current_set_index_ + 1, end_set_index_);
-  return current_set_index_ < end_set_index_;
-}
-
-NGGridSet& NGGridLayoutAlgorithmTrackCollection::SetIterator::CurrentSet()
-    const {
-  DCHECK_LT(current_set_index_, end_set_index_);
-  return collection_->SetAt(current_set_index_);
-}
-
 NGGridLayoutAlgorithmTrackCollection::NGGridLayoutAlgorithmTrackCollection(
     const NGGridBlockTrackCollection& block_track_collection,
-    bool is_content_box_size_indefinite) {
+    bool is_content_box_size_indefinite)
+    : direction_(block_track_collection.Direction()) {
   for (auto range_iterator = block_track_collection.RangeIterator();
        !range_iterator.IsAtEnd(); range_iterator.MoveToNextRange()) {
     const NGGridBlockTrackCollection::Range& block_track_range =
@@ -602,17 +580,33 @@ NGGridSet& NGGridLayoutAlgorithmTrackCollection::SetAt(wtf_size_t set_index) {
   return sets_[set_index];
 }
 
+const NGGridSet& NGGridLayoutAlgorithmTrackCollection::SetAt(
+    wtf_size_t set_index) const {
+  DCHECK_LT(set_index, SetCount());
+  return sets_[set_index];
+}
+
 NGGridLayoutAlgorithmTrackCollection::SetIterator
 NGGridLayoutAlgorithmTrackCollection::GetSetIterator() {
   return SetIterator(this, 0u, SetCount());
 }
 
+NGGridLayoutAlgorithmTrackCollection::ConstSetIterator
+NGGridLayoutAlgorithmTrackCollection::GetSetIterator() const {
+  return ConstSetIterator(this, 0u, SetCount());
+}
+
 NGGridLayoutAlgorithmTrackCollection::SetIterator
 NGGridLayoutAlgorithmTrackCollection::GetSetIterator(wtf_size_t begin_set_index,
                                                      wtf_size_t end_set_index) {
-  DCHECK_LE(end_set_index, SetCount());
-  DCHECK_LE(begin_set_index, end_set_index);
   return SetIterator(this, begin_set_index, end_set_index);
+}
+
+NGGridLayoutAlgorithmTrackCollection::ConstSetIterator
+NGGridLayoutAlgorithmTrackCollection::GetSetIterator(
+    wtf_size_t begin_set_index,
+    wtf_size_t end_set_index) const {
+  return ConstSetIterator(this, begin_set_index, end_set_index);
 }
 
 wtf_size_t NGGridLayoutAlgorithmTrackCollection::RangeSetCount(
