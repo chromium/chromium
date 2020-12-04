@@ -171,6 +171,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PhoneHub.TaskCompletion.TetherConnection.Result"
+    enum="PhoneHubTetherConnectionResult" expires_after="2021-12-01">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>phonehub-dev@google.com</owner>
+  <summary>
+    Logs the result of attempting a tether connection to measure the connection
+    success rate.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.Usage.SentMessageTypeCount"
     enum="PhoneHubMessageType" expires_after="M98">
   <owner>khorimoto@chromium.org</owner>

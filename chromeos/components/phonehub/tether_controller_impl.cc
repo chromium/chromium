@@ -6,6 +6,7 @@
 
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/phonehub/phone_status_model.h"
+#include "chromeos/components/phonehub/util/histogram_util.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 
 namespace chromeos {
@@ -113,6 +114,8 @@ void TetherControllerImpl::AttemptConnection() {
   }
 
   PA_LOG(INFO) << "Attempting connection; current status is " << status_;
+  util::LogTetherConnectionResult(
+      util::TetherConnectionResult::kAttemptConnection);
 
   FeatureState feature_state =
       multidevice_setup_client_->GetFeatureState(Feature::kInstantTethering);
@@ -383,6 +386,11 @@ void TetherControllerImpl::UpdateStatus() {
 
   PA_LOG(INFO) << "TetherController status update: " << status_ << " => "
                << status;
+
+  // Log the connection attempt result if it has succeed.
+  if (status == Status::kConnected)
+    util::LogTetherConnectionResult(util::TetherConnectionResult::kSuccess);
+
   status_ = status;
 
   NotifyStatusChanged();

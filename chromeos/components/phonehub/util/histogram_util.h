@@ -20,8 +20,18 @@ enum class OptInEntryPoint {
   kMaxValue = kSettings,
 };
 
+// Enumeration of results of a tethering connection attempt.
+enum class TetherConnectionResult {
+  kAttemptConnection = 0,
+  kSuccess = 1,
+  kMaxValue = kSuccess,
+};
+
 // Logs a given opt-in |entry_point| for the PhoneHub feature.
 void LogFeatureOptInEntryPoint(OptInEntryPoint entry_point);
+
+// Logs a given |result| of a tethering connection attempt.
+void LogTetherConnectionResult(TetherConnectionResult result);
 
 }  // namespace util
 }  // namespace phonehub
