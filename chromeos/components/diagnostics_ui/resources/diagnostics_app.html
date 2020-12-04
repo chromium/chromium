@@ -1,16 +1,28 @@
 <style include="cr-shared-style diagnostics-shared diagnostics-fonts">
+  .card-width {
+    width: 100%;
+  }
+
   .diagonstics-cards-container {
     align-items: center;
     display: flex;
     flex-direction: column;
+    padding-inline: var(--container-padding);
+    width: var(--content-container-width);
   }
 
   #diagnosticsContainer {
-    --cr-centered-card-max-width: 820px;
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: inherit;
+    position: relative;
   }
 
   #header {
-   @apply --diagnostics-header-font;
+    @apply --diagnostics-header-font;
+    align-self: flex-start;
     margin-bottom: 10px;
   }
 
@@ -31,23 +43,29 @@
     padding: 5px;
   }
 </style>
-<div id="diagnosticsContainer"class="cr-centered-card-container">
+<div id="diagnosticsContainer">
   <div id="header">[[i18n('diagnosticsTitle')]]</div>
   <div class="overview-container">
     <overview-card id="overviewCard"></overview-card>
   </div>
   <div class="diagonstics-cards-container">
     <template is="dom-if" if="[[showBatteryStatusCard_]]" restamp>
-      <battery-status-card id="batteryStatusCard"
-        is-test-running="{{isTestRunning}}">
-      </battery-status-card>
+      <div class="card-width">
+        <battery-status-card id="batteryStatusCard"
+          is-test-running="{{isTestRunning}}">
+        </battery-status-card>
+      </div>
     </template>
-    <cpu-card id="cpuCard"
-      is-test-running="{{isTestRunning}}">
-    </cpu-card>
-    <memory-card id="memoryCard"
-      is-test-running="{{isTestRunning}}">
-    </memory-card>
+    <div class="card-width">
+      <cpu-card id="cpuCard"
+        is-test-running="{{isTestRunning}}">
+      </cpu-card>
+    </div>
+    <div class="card-width">
+      <memory-card id="memoryCard"
+        is-test-running="{{isTestRunning}}">
+      </memory-card>
+    </div>
   </div>
   <div class="session-log-container">
     <cr-button class="session-log-button">

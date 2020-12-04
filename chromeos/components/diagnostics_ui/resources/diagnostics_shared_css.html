@@ -19,6 +19,46 @@
       padding-inline-start: 20px;
       position: relative;
       top: 12%;
-  }
+    }
+
+    @media (min-width:600px) {
+      :host {
+        --container-padding: 24px;
+        --content-container-width: 552px;
+        --chart-width: 452px;
+        }
+    }
+
+    @media (min-width:768px) {
+      :host {
+        --container-padding: 64px;
+        --content-container-width: 640px;
+        --chart-width: 540px;
+        }
+    }
+
+    @media (min-width:960px) {
+      :host {
+        --container-padding: 160px;
+        --content-container-width: 640px;
+        --chart-width: 540px;
+      }
+    }
+
+    @media (min-width:1280px) {
+      :host {
+        --container-padding: 160px;
+        --content-container-width: 680px;
+        --chart-width: 580px;
+      }
+    }
+
+    @media (min-width:1440px) {
+      :host {
+        --container-padding: 360px;
+        --content-container-width: 720px;
+        --chart-width: 620px;
+      }
+    }
   </style>
 </template>
