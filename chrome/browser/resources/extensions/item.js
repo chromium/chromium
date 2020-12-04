@@ -23,7 +23,6 @@ import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.m.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ItemBehavior} from './item_behavior.js';
@@ -166,15 +165,6 @@ Polymer({
   /** @return {?HTMLElement} The "Errors" button, if it exists. */
   getErrorsButton() {
     return /** @type {?HTMLElement} */ (this.$$('#errors-button'));
-  },
-
-  /** @private string */
-  a11yAssociation_() {
-    // Don't use I18nBehavior.i18n because of additional checks it performs.
-    // Polymer ensures that this string is not stamped into arbitrary HTML.
-    // |this.data.name| can contain any data including html tags.
-    // ex: "My <video> download extension!"
-    return loadTimeData.getStringF('extensionA11yAssociation', this.data.name);
   },
 
   /** @private */

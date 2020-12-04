@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 /** @polymerBehavior */
 export const ItemBehavior = {
@@ -25,4 +26,17 @@ export const ItemBehavior = {
     }
     assertNotReached('Item type is not App or Extension.');
   },
+
+  /**
+   * @param {string} name
+   * @return {string} The a11y association descriptor, e.g. "Related to <ext>".
+   */
+  a11yAssociation(name) {
+    // Don't use I18nBehavior.i18n because of additional checks it performs.
+    // Polymer ensures that this string is not stamped into arbitrary HTML.
+    // `name` can contain any data including html tags, e.g.
+    // "My <video> download extension!"
+    return loadTimeData.getStringF('extensionA11yAssociation', name);
+  },
+
 };

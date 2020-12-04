@@ -125,6 +125,7 @@
           aria-label="$i18n{back}" on-click="onCloseButtonTap_">
       </cr-icon-button>
       <img id="icon" src="[[data.iconUrl]]"
+          aria-label$="[[a11yAssociation(data.name)]]"
           alt$="[[appOrExtension(
               data.type,
               '$i18nPolymer{appIcon}',
