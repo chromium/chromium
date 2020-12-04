@@ -148,7 +148,21 @@ class MostVisitedElement extends PolymerElement {
       /** @private */
       dialogSaveDisabled_: {
         type: Boolean,
-        computed: 'computeDialogSaveDisabled_(dialogTitle_, dialogTileUrl_)',
+        computed: `computeDialogSaveDisabled_(dialogTitle_, dialogTileUrl_,
+            dialogShortcutAlreadyExists_)`,
+      },
+
+      /** @private */
+      dialogShortcutAlreadyExists_: {
+        type: Boolean,
+        computed: 'computeDialogShortcutAlreadyExists_(tiles_, dialogTileUrl_)',
+      },
+
+      /** @private */
+      dialogTileUrlError_: {
+        type: String,
+        computed: `computeDialogTileUrlError_(dialogTileUrl_,
+            dialogShortcutAlreadyExists_)`,
       },
 
       /**
@@ -370,7 +384,36 @@ class MostVisitedElement extends PolymerElement {
    * @private
    */
   computeDialogSaveDisabled_() {
-    return !this.dialogTileUrl_ || normalizeUrl(this.dialogTileUrl_) === null;
+    return !this.dialogTileUrl_ || normalizeUrl(this.dialogTileUrl_) === null ||
+        this.dialogShortcutAlreadyExists_;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeDialogShortcutAlreadyExists_() {
+    const dialogTileHref = (normalizeUrl(this.dialogTileUrl_) || {}).href;
+    if (!dialogTileHref) {
+      return false;
+    }
+    return (this.tiles_ || []).some(({url: {url}}, index) => {
+      if (index === this.actionMenuTargetIndex_) {
+        return false;
+      }
+      const otherUrl = normalizeUrl(url);
+      return otherUrl && otherUrl.href === dialogTileHref;
+    });
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computeDialogTileUrlError_() {
+    return loadTimeData.getString(
+        this.dialogShortcutAlreadyExists_ ? 'shortcutAlreadyExists' :
+                                            'invalidUrl');
   }
 
   /**
@@ -593,7 +636,8 @@ class MostVisitedElement extends PolymerElement {
   /** @private */
   onDialogTileUrlBlur_() {
     if (this.dialogTileUrl_.length > 0 &&
-        normalizeUrl(this.dialogTileUrl_) === null) {
+        (normalizeUrl(this.dialogTileUrl_) === null ||
+         this.dialogShortcutAlreadyExists_)) {
       this.dialogTileUrlInvalid_ = true;
     }
   }
