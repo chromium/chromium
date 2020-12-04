@@ -964,6 +964,10 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "linux-example-builder",
+)
+
+try_.chromium_linux_builder(
     name = "linux-gcc-rel",
     goma_backend = None,
 )
