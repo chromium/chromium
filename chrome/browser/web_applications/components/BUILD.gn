@@ -101,6 +101,7 @@ source_set("components") {
     # Desktop linux, doesn't count ChromeOS.
     sources += [
       "web_app_file_handler_registration_linux.cc",
+      "web_app_run_on_os_login_linux.cc",
       "web_app_shortcut_linux.cc",
       "web_app_shortcut_linux.h",
     ]
@@ -197,6 +198,7 @@ source_set("unit_tests") {
     # Desktop linux, doesn't count ChromeOS.
     sources += [
       "web_app_file_handler_registration_linux_unittest.cc",
+      "web_app_run_on_os_login_linux_unittest.cc",
       "web_app_shortcut_linux_unittest.cc",
     ]
   }

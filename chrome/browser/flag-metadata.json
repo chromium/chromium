@@ -1507,8 +1507,8 @@
   },
   {
     "name": "enable-desktop-pwas-run-on-os-login",
-    "owners": [ "cafrias@microsoft.com", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 88
+    "owners": [ "mjackson@microsoft.com", "desktop-pwas-team@google.com" ],
+    "expiry_milestone": 90
   },
   {
     "name": "enable-desktop-pwas-tab-strip",

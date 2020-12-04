@@ -3330,7 +3330,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kDesktopPWAsMigrationUserDisplayModeCleanUp)},
     {"enable-desktop-pwas-run-on-os-login",
      flag_descriptions::kDesktopPWAsRunOnOsLoginName,
-     flag_descriptions::kDesktopPWAsRunOnOsLoginDescription, kOsWin,
+     flag_descriptions::kDesktopPWAsRunOnOsLoginDescription, kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(features::kDesktopPWAsRunOnOsLogin)},
     {"record-web-app-debug-info", flag_descriptions::kRecordWebAppDebugInfoName,
      flag_descriptions::kRecordWebAppDebugInfoDescription, kOsDesktop,

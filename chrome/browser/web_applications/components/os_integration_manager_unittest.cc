@@ -79,7 +79,8 @@ class MockOsIntegrationManager : public OsIntegrationManager {
   MOCK_METHOD(bool, UnregisterShortcutsMenu, (const AppId& app_id), (override));
   MOCK_METHOD(void,
               UnregisterRunOnOsLogin,
-              (const base::FilePath& profile_path,
+              (const AppId& app_id,
+               const base::FilePath& profile_path,
                const base::string16& shortcut_title,
                UnregisterRunOnOsLoginCallback callback),
               (override));

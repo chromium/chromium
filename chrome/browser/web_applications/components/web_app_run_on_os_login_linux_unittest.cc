@@ -11,10 +11,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
-#include "chrome/browser/web_applications/components/web_app_shortcut_win.h"
+#include "chrome/browser/web_applications/components/web_app_shortcut_linux.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
-#include "chrome/installer/util/shell_util.h"
+#include "chrome/common/auto_start_linux.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -23,22 +23,20 @@ namespace web_app {
 namespace {
 
 constexpr char kAppTitle[] = {"app"};
+constexpr char kAppId[] = {"app-id"};
+
 }  // namespace
 
-class WebAppRunOnOsLoginWinTest : public WebAppTest {
+class WebAppRunOnOsLoginLinuxTest : public WebAppTest {
  public:
   void TearDown() override {
-    base::FilePath location = GetStartupFolder();
-    std::vector<base::FilePath> shortcuts = GetShortcuts();
-    for (const auto& shortcut_file : shortcuts) {
-      base::DeleteFile(shortcut_file);
-    }
+    ASSERT_TRUE(base::DeleteFile(GetPathToAutoStartFile()));
     WebAppTest::TearDown();
   }
 
   std::unique_ptr<ShortcutInfo> GetShortcutInfo() {
     auto shortcut_info = std::make_unique<ShortcutInfo>();
-    shortcut_info->extension_id = "app-id";
+    shortcut_info->extension_id = kAppId;
     shortcut_info->title = base::UTF8ToUTF16(kAppTitle);
     shortcut_info->profile_path = profile()->GetPath();
 
@@ -51,47 +49,37 @@ class WebAppRunOnOsLoginWinTest : public WebAppTest {
     return shortcut_info;
   }
 
-  base::FilePath GetStartupFolder() {
-    base::FilePath location;
-    ShellUtil::GetShortcutPath(
-        ShellUtil::ShortcutLocation::SHORTCUT_LOCATION_STARTUP,
-        ShellUtil::ShellChange::CURRENT_USER, &location);
-    return location;
-  }
+  base::FilePath GetPathToAutoStartFile() {
+    std::unique_ptr<base::Environment> env(base::Environment::Create());
+    base::FilePath autostart_path = AutoStart::GetAutostartDirectory(env.get());
+    EXPECT_FALSE(autostart_path.empty());
 
-  std::vector<base::FilePath> GetShortcuts() {
-    return internals::FindAppShortcutsByProfileAndTitle(
-        GetStartupFolder(), profile()->GetPath(), base::UTF8ToUTF16(kAppTitle));
-  }
+    base::FilePath shortcut_filename =
+        GetAppShortcutFilename(profile()->GetPath(), kAppId);
+    EXPECT_FALSE(shortcut_filename.empty());
 
-  void VerifyShortcutCreated() {
-    std::vector<base::FilePath> shortcuts = GetShortcuts();
-    EXPECT_GT(shortcuts.size(), 0u);
-  }
-
-  void VerifyShortcutDeleted() {
-    std::vector<base::FilePath> shortcuts = GetShortcuts();
-    EXPECT_EQ(shortcuts.size(), 0u);
+    return autostart_path.Append(shortcut_filename);
   }
 };
 
-TEST_F(WebAppRunOnOsLoginWinTest, Register) {
+TEST_F(WebAppRunOnOsLoginLinuxTest, Register) {
   std::unique_ptr<ShortcutInfo> shortcut_info = GetShortcutInfo();
   bool result = internals::RegisterRunOnOsLogin(*shortcut_info);
   EXPECT_TRUE(result);
-  VerifyShortcutCreated();
+  EXPECT_TRUE(base::PathExists(GetPathToAutoStartFile()));
 }
 
-TEST_F(WebAppRunOnOsLoginWinTest, Unregister) {
+TEST_F(WebAppRunOnOsLoginLinuxTest, Unregister) {
   std::unique_ptr<ShortcutInfo> shortcut_info = GetShortcutInfo();
   bool result = internals::RegisterRunOnOsLogin(*shortcut_info);
   EXPECT_TRUE(result);
-  VerifyShortcutCreated();
+  EXPECT_TRUE(base::PathExists(GetPathToAutoStartFile()));
 
-  internals::UnregisterRunOnOsLogin(shortcut_info->extension_id,
-                                    profile()->GetPath(),
-                                    base::UTF8ToUTF16(kAppTitle));
-  VerifyShortcutDeleted();
+  result = internals::UnregisterRunOnOsLogin(shortcut_info->extension_id,
+                                             profile()->GetPath(),
+                                             base::UTF8ToUTF16(kAppTitle));
+  EXPECT_TRUE(result);
+  EXPECT_FALSE(base::PathExists(GetPathToAutoStartFile()));
 }
 
 }  // namespace web_app

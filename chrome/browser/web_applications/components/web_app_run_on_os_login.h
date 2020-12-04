@@ -39,7 +39,8 @@ bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info);
 // Unregisters the app with the OS from running on startup. Platform specific
 // implementations are required for this.
 // See web_app_run_on_os_login_win.cc for Windows implementation as example.
-bool UnregisterRunOnOsLogin(const base::FilePath& profile_path,
+bool UnregisterRunOnOsLogin(const std::string& app_id,
+                            const base::FilePath& profile_path,
                             const base::string16& shortcut_title);
 
 }  // namespace internals
@@ -53,7 +54,8 @@ void ScheduleRegisterRunOnOsLogin(std::unique_ptr<ShortcutInfo> shortcut_info,
 // Schedules a call to |UnregisterRunOnOsLogin| on the Shortcut IO thread and
 // invokes |callback| when complete. This function must be called from the UI
 // thread.
-void ScheduleUnregisterRunOnOsLogin(const base::FilePath& profile_path,
+void ScheduleUnregisterRunOnOsLogin(const std::string& app_id,
+                                    const base::FilePath& profile_path,
                                     const base::string16& shortcut_title,
                                     UnregisterRunOnOsLoginCallback callback);
 

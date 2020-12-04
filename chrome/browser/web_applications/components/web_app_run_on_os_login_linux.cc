@@ -7,14 +7,16 @@
 #include <memory>
 
 #include "base/files/file_util.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
-#include "chrome/browser/web_applications/components/web_app_shortcut_win.h"
+#include "chrome/browser/web_applications/components/web_app_shortcut_linux.h"
 
 namespace web_app {
 
 namespace internals {
 
 bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info) {
+#if !defined(OS_CHROMEOS)
   base::FilePath shortcut_data_dir = GetShortcutDataDir(shortcut_info);
 
   ShortcutLocations locations;
@@ -22,27 +24,33 @@ bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info) {
 
   return CreatePlatformShortcuts(shortcut_data_dir, locations,
                                  SHORTCUT_CREATION_BY_USER, shortcut_info);
+
+#else
+  return false;
+#endif
 }
 
 bool UnregisterRunOnOsLogin(const std::string& app_id,
                             const base::FilePath& profile_path,
                             const base::string16& shortcut_title) {
-  web_app::ShortcutLocations all_shortcut_locations;
-  all_shortcut_locations.in_startup = true;
-  std::vector<base::FilePath> all_paths =
-      GetShortcutPaths(all_shortcut_locations);
+#if !defined(OS_CHROMEOS)
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  ShortcutLocations locations;
+  locations.in_startup = true;
+
+  std::vector<base::FilePath> all_shortcut_files =
+      GetShortcutLocations(locations, profile_path, app_id);
   bool result = true;
-  // Only Startup folder is the expected path to be returned in all_paths.
-  for (const auto& path : all_paths) {
-    // Find all app's shortcuts in Startup folder to delete.
-    std::vector<base::FilePath> shortcut_files =
-        FindAppShortcutsByProfileAndTitle(path, profile_path, shortcut_title);
-    for (const auto& shortcut_file : shortcut_files) {
-      if (!base::DeleteFile(shortcut_file))
-        result = false;
-    }
+  for (const auto& shortcut_file : all_shortcut_files) {
+    if (!base::DeleteFile(shortcut_file))
+      result = false;
   }
   return result;
+#else
+  return true;
+#endif
 }
 
 }  // namespace internals

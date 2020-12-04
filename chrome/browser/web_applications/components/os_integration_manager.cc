@@ -193,7 +193,7 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
     if (os_hooks[OsHookType::kRunOnOsLogin] &&
         base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin)) {
       UnregisterRunOnOsLogin(
-          shortcut_info->profile_path, shortcut_info->title,
+          app_id, shortcut_info->profile_path, shortcut_info->title,
           barrier->CreateBarrierCallbackForType(OsHookType::kRunOnOsLogin));
     }
 
@@ -400,10 +400,11 @@ bool OsIntegrationManager::UnregisterShortcutsMenu(const AppId& app_id) {
 }
 
 void OsIntegrationManager::UnregisterRunOnOsLogin(
+    const AppId& app_id,
     const base::FilePath& profile_path,
     const base::string16& shortcut_title,
     UnregisterRunOnOsLoginCallback callback) {
-  ScheduleUnregisterRunOnOsLogin(profile_path, shortcut_title,
+  ScheduleUnregisterRunOnOsLogin(app_id, profile_path, shortcut_title,
                                  std::move(callback));
 }
 

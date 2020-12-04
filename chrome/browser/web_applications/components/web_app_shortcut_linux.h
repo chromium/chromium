@@ -55,13 +55,33 @@ void UpdateDesktopShortcuts(base::Environment* env,
 // Delete any desktop shortcuts on desktop or in the application menu that have
 // been added for the extension with |extension_id| in |profile_path|. Returns
 // true on successful deletion.
-bool DeleteDesktopShortcuts(const base::FilePath& profile_path,
+bool DeleteDesktopShortcuts(base::Environment* env,
+                            const base::FilePath& profile_path,
                             const std::string& extension_id);
 
 // Delete any desktop shortcuts on desktop or in the application menu that have
 // for the profile in |profile_path|. Returns true on successful deletion.
 bool DeleteAllDesktopShortcuts(base::Environment* env,
                                const base::FilePath& profile_path);
+
+// Returns the shortcuts that match profile for |profile_path| and
+// web app with id |appid|.
+std::vector<base::FilePath> GetShortcutLocations(
+    base::Environment* env,
+    const ShortcutLocations& locations,
+    const base::FilePath& profile_path,
+    const std::string& app_id);
+
+namespace internals {
+
+// Returns the shortcuts that match profile for |profile_path| and
+// web app with id |appid| using the default environment.
+std::vector<base::FilePath> GetShortcutLocations(
+    const ShortcutLocations& locations,
+    const base::FilePath& profile_path,
+    const std::string& app_id);
+
+}  // namespace internals
 
 }  // namespace web_app
 

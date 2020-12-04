@@ -18,17 +18,9 @@ namespace {
 
 const base::FilePath::CharType kAutostart[] = "autostart";
 
-base::FilePath GetAutostartDirectory(base::Environment* environment) {
-  base::FilePath result = base::nix::GetXDGDirectory(
-      environment,
-      base::nix::kXdgConfigHomeEnvVar,
-      base::nix::kDotConfigDir);
-  result = result.Append(kAutostart);
-  return result;
-}
-
 }  // namespace
 
+// static
 bool AutoStart::AddApplication(const std::string& autostart_filename,
                                const std::string& application_name,
                                const std::string& command_line,
@@ -59,6 +51,7 @@ bool AutoStart::AddApplication(const std::string& autostart_filename,
   return true;
 }
 
+// static
 bool AutoStart::Remove(const std::string& autostart_filename) {
   std::unique_ptr<base::Environment> environment(base::Environment::Create());
   base::FilePath autostart_directory = GetAutostartDirectory(environment.get());
@@ -67,6 +60,7 @@ bool AutoStart::Remove(const std::string& autostart_filename) {
   return base::DeleteFile(autostart_file);
 }
 
+// static
 bool AutoStart::GetAutostartFileContents(
     const std::string& autostart_filename, std::string* contents) {
   std::unique_ptr<base::Environment> environment(base::Environment::Create());
@@ -76,6 +70,7 @@ bool AutoStart::GetAutostartFileContents(
   return base::ReadFileToString(autostart_file, contents);
 }
 
+// static
 bool AutoStart::GetAutostartFileValue(const std::string& autostart_filename,
                                       const std::string& value_name,
                                       std::string* value) {
@@ -91,4 +86,13 @@ bool AutoStart::GetAutostartFileValue(const std::string& autostart_filename,
     }
   }
   return false;
+}
+
+// static
+base::FilePath AutoStart::GetAutostartDirectory(
+    base::Environment* environment) {
+  base::FilePath result = base::nix::GetXDGDirectory(
+      environment, base::nix::kXdgConfigHomeEnvVar, base::nix::kDotConfigDir);
+  result = result.Append(kAutostart);
+  return result;
 }

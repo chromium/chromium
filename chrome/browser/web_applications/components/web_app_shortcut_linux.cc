@@ -28,6 +28,7 @@
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
+#include "chrome/common/auto_start_linux.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 
@@ -158,49 +159,67 @@ std::string CreateShortcutIcon(const gfx::ImageFamily& icon_images,
   return icon_name;
 }
 
-bool CreateShortcutOnDesktop(const base::FilePath& shortcut_filename,
-                             const std::string& contents) {
+bool CreateShortcutAtLocation(const base::FilePath location_path,
+                              const base::FilePath& shortcut_filename,
+                              const std::string& contents) {
   // Make sure that we will later call openat in a secure way.
   DCHECK_EQ(shortcut_filename.BaseName().value(), shortcut_filename.value());
 
-  base::FilePath desktop_path;
-  if (!base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path)) {
-    RecordCreateShortcut(CreateShortcutResult::kFailToGetDesktopPath);
-    return false;
-  }
-
-  int desktop_fd = open(desktop_path.value().c_str(), O_RDONLY | O_DIRECTORY);
-  if (desktop_fd < 0) {
+  int location_fd = open(location_path.value().c_str(), O_RDONLY | O_DIRECTORY);
+  if (location_fd < 0) {
     RecordCreateShortcut(CreateShortcutResult::kFailToOpenDesktopDir);
     return false;
   }
 
-  int fd = openat(desktop_fd, shortcut_filename.value().c_str(),
+  int fd = openat(location_fd, shortcut_filename.value().c_str(),
                   O_CREAT | O_EXCL | O_WRONLY,
                   S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
   if (fd < 0) {
-    if (IGNORE_EINTR(close(desktop_fd)) < 0)
+    if (IGNORE_EINTR(close(location_fd)) < 0)
       PLOG(ERROR) << "close";
     RecordCreateShortcut(CreateShortcutResult::kFailToOpenShortcutFilepath);
     return false;
   }
 
   if (!base::WriteFileDescriptor(fd, contents.c_str(), contents.size())) {
-    // Delete the file. No shortuct is better than corrupted one. Use unlinkat
+    // Delete the file. No shortcut is better than corrupted one. Use unlinkat
     // to make sure we're deleting the file in the directory we think we are.
     // Even if an attacker manager to put something other at
     // |shortcut_filename| we'll just undo their action.
     RecordCreateShortcut(CreateShortcutResult::kCorruptDesktopShortcut);
-    unlinkat(desktop_fd, shortcut_filename.value().c_str(), 0);
+    unlinkat(location_fd, shortcut_filename.value().c_str(), 0);
   }
 
   if (IGNORE_EINTR(close(fd)) < 0)
     PLOG(ERROR) << "close";
 
-  if (IGNORE_EINTR(close(desktop_fd)) < 0)
+  if (IGNORE_EINTR(close(location_fd)) < 0)
     PLOG(ERROR) << "close";
 
   return true;
+}
+
+bool CreateShortcutOnDesktop(const base::FilePath& shortcut_filename,
+                             const std::string& contents) {
+  base::FilePath desktop_path;
+  if (!base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path)) {
+    RecordCreateShortcut(CreateShortcutResult::kFailToGetDesktopPath);
+    return false;
+  }
+
+  return CreateShortcutAtLocation(desktop_path, shortcut_filename, contents);
+}
+
+bool CreateShortcutInAutoStart(base::Environment* env,
+                               const base::FilePath& shortcut_filename,
+                               const std::string& contents) {
+  base::FilePath autostart_path = AutoStart::GetAutostartDirectory(env);
+  if (!base::DirectoryExists(autostart_path) &&
+      !base::CreateDirectory(autostart_path)) {
+    return false;
+  }
+
+  return CreateShortcutAtLocation(autostart_path, shortcut_filename, contents);
 }
 
 // Creates a shortcut with |shortcut_filename| and |contents| in the system
@@ -309,6 +328,12 @@ bool DeleteShortcutOnDesktop(const base::FilePath& shortcut_filename) {
   return result;
 }
 
+bool DeleteShortcutInAutoStart(base::Environment* env,
+                               const base::FilePath& shortcut_filename) {
+  base::FilePath autostart_path = AutoStart::GetAutostartDirectory(env);
+  return base::DeleteFile(autostart_path.Append(shortcut_filename));
+}
+
 bool DeleteShortcutInApplicationsMenu(
     const base::FilePath& shortcut_filename,
     const base::FilePath& directory_filename) {
@@ -346,6 +371,9 @@ bool CreateDesktopShortcut(base::Environment* env,
     if (creation_locations.on_desktop)
       DeleteShortcutOnDesktop(shortcut_filename);
 
+    if (creation_locations.in_startup)
+      DeleteShortcutInAutoStart(env, shortcut_filename);
+
     if (creation_locations.applications_menu_location !=
         APP_MENU_LOCATION_NONE) {
       DeleteShortcutInApplicationsMenu(shortcut_filename, base::FilePath());
@@ -374,12 +402,18 @@ bool CreateDesktopShortcut(base::Environment* env,
     return false;
   }
 
-  if (creation_locations.on_desktop) {
+  if (creation_locations.on_desktop || creation_locations.in_startup) {
     std::string contents = shell_integration_linux::GetDesktopFileContents(
         chrome_exe_path, app_name, shortcut_info.url,
         shortcut_info.extension_id, shortcut_info.title, icon_name,
         shortcut_info.profile_path, "", "", false);
-    success = CreateShortcutOnDesktop(shortcut_filename, contents);
+
+    if (creation_locations.on_desktop)
+      success = CreateShortcutOnDesktop(shortcut_filename, contents);
+
+    if (creation_locations.in_startup)
+      success = CreateShortcutInAutoStart(env, shortcut_filename, contents) &&
+                success;
   }
 
   if (creation_locations.applications_menu_location == APP_MENU_LOCATION_NONE) {
@@ -444,6 +478,12 @@ ShortcutLocations GetExistingShortcutLocations(
         base::PathExists(desktop_path.Append(shortcut_filename));
   }
 
+  base::FilePath autostart_path = AutoStart::GetAutostartDirectory(env);
+  if (!autostart_path.empty()) {
+    locations.in_startup =
+        base::PathExists(autostart_path.Append(shortcut_filename));
+  }
+
   // Determine whether there is a shortcut in the applications directory.
   std::string shortcut_contents;
   if (shell_integration_linux::GetExistingShortcutContents(
@@ -461,7 +501,8 @@ ShortcutLocations GetExistingShortcutLocations(
   return locations;
 }
 
-bool DeleteDesktopShortcuts(const base::FilePath& profile_path,
+bool DeleteDesktopShortcuts(base::Environment* env,
+                            const base::FilePath& profile_path,
                             const std::string& extension_id) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -475,9 +516,14 @@ bool DeleteDesktopShortcuts(const base::FilePath& profile_path,
   // Note that it is possible that shortcuts were not created in the Chrome Apps
   // directory. It doesn't matter: this will still delete the shortcut even if
   // it isn't in the directory.
+
+  bool deleted_from_autostart =
+      DeleteShortcutInAutoStart(env, shortcut_filename);
+
   bool deleted_from_application_menu = DeleteShortcutInApplicationsMenu(
       shortcut_filename, base::FilePath(kDirectoryFilename));
-  return (deleted_from_desktop && deleted_from_application_menu);
+  return (deleted_from_desktop && deleted_from_autostart &&
+          deleted_from_application_menu);
 }
 
 bool DeleteAllDesktopShortcuts(base::Environment* env,
@@ -496,6 +542,15 @@ bool DeleteAllDesktopShortcuts(base::Environment* env,
       if (!DeleteShortcutOnDesktop(shortcut))
         result = false;
     }
+  }
+
+  base::FilePath autostart_path = AutoStart::GetAutostartDirectory(env);
+  std::vector<base::FilePath> shortcut_filenames_autostart =
+      shell_integration_linux::GetExistingProfileShortcutFilenames(
+          profile_path, autostart_path);
+  for (const auto& shortcut : shortcut_filenames_autostart) {
+    if (!DeleteShortcutInAutoStart(env, shortcut))
+      result = false;
   }
 
   // Delete shortcuts from |kDirectoryFilename|.
@@ -532,6 +587,46 @@ void UpdateDesktopShortcuts(base::Environment* env,
   CreateDesktopShortcut(env, shortcut_info, creation_locations);
 }
 
+std::vector<base::FilePath> GetShortcutLocations(
+    base::Environment* env,
+    const ShortcutLocations& locations,
+    const base::FilePath& profile_path,
+    const std::string& app_id) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  std::vector<base::FilePath> shortcut_locations;
+  base::FilePath shortcut_filename =
+      GetAppShortcutFilename(profile_path, app_id);
+  DCHECK(!shortcut_filename.empty());
+
+  if (locations.on_desktop) {
+    base::FilePath desktop_path;
+    // If Get returns false, just leave |desktop_path| empty.
+    base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path);
+    if (!desktop_path.empty()) {
+      base::FilePath desktop_shortcut_path =
+          desktop_path.Append(shortcut_filename);
+      if (base::PathExists(desktop_shortcut_path))
+        shortcut_locations.push_back(desktop_shortcut_path);
+    }
+  }
+
+  if (locations.in_startup) {
+    base::FilePath autostart_path = AutoStart::GetAutostartDirectory(env);
+    if (!autostart_path.empty()) {
+      base::FilePath autostart_shortcut_path =
+          autostart_path.Append(shortcut_filename);
+      if (base::PathExists(autostart_shortcut_path))
+        shortcut_locations.push_back(autostart_shortcut_path);
+    }
+  }
+
+  // Can't retrieve file name for applications menu location.
+  DCHECK(!locations.applications_menu_location);
+  return shortcut_locations;
+}
+
 namespace internals {
 
 bool CreatePlatformShortcuts(const base::FilePath& /*web_app_path*/,
@@ -551,7 +646,8 @@ bool CreatePlatformShortcuts(const base::FilePath& /*web_app_path*/,
 bool DeletePlatformShortcuts(const base::FilePath& web_app_path,
                              const ShortcutInfo& shortcut_info) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  return DeleteDesktopShortcuts(shortcut_info.profile_path,
+  std::unique_ptr<base::Environment> env(base::Environment::Create());
+  return DeleteDesktopShortcuts(env.get(), shortcut_info.profile_path,
                                 shortcut_info.extension_id);
 #endif
   return true;
@@ -571,6 +667,17 @@ void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   DeleteAllDesktopShortcuts(env.get(), profile_path);
 #endif
+}
+
+std::vector<base::FilePath> GetShortcutLocations(
+    const ShortcutLocations& locations,
+    const base::FilePath& profile_path,
+    const std::string& app_id) {
+#if !defined(IS_CHROMEOS_ASH)
+  std::unique_ptr<base::Environment> env(base::Environment::Create());
+  return GetShortcutLocations(env.get(), locations, profile_path, app_id);
+#endif
+  return std::vector<base::FilePath>();
 }
 
 }  // namespace internals
