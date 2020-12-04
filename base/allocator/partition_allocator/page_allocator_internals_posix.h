@@ -247,14 +247,20 @@ void DecommitSystemPagesInternal(
     void* address,
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
-  if (accessibility_disposition == PageUpdatePermissions) {
-    SetSystemPagesAccess(address, length, PageInaccessible);
-  }
-
   // In POSIX, there is no decommit concept. Discarding is an effective way of
   // implementing the Windows semantics where the OS is allowed to not swap the
   // pages in the region.
   DiscardSystemPages(address, length);
+
+  // Make pages inaccessible, unless the caller requested to keep permissions.
+  //
+  // Note, there is a small window between these calls when the pages can be
+  // incorrectly touched and brought back to memory. Not ideal, but doing those
+  // operaions in the opposite order resulted in PMF regression on Mac (see
+  // crbug.com/1153021).
+  if (accessibility_disposition == PageUpdatePermissions) {
+    SetSystemPagesAccess(address, length, PageInaccessible);
+  }
 }
 
 void RecommitSystemPagesInternal(
@@ -262,12 +268,6 @@ void RecommitSystemPagesInternal(
     size_t length,
     PageAccessibilityConfiguration accessibility,
     PageAccessibilityDisposition accessibility_disposition) {
-#if defined(OS_APPLE)
-  // On macOS, to update accounting, we need to make another syscall. For more
-  // details, see https://crbug.com/823915.
-  madvise(address, length, MADV_FREE_REUSE);
-#endif
-
   // On POSIX systems, the caller need simply read the memory to recommit it.
   // This has the correct behavior because the API requires the permissions to
   // be the same as before decommitting and all configurations can read.
@@ -276,6 +276,12 @@ void RecommitSystemPagesInternal(
   if (accessibility_disposition == PageUpdatePermissions) {
     SetSystemPagesAccess(address, length, accessibility);
   }
+
+#if defined(OS_APPLE)
+  // On macOS, to update accounting, we need to make another syscall. For more
+  // details, see https://crbug.com/823915.
+  madvise(address, length, MADV_FREE_REUSE);
+#endif
 }
 
 void DiscardSystemPagesInternal(void* address, size_t length) {
