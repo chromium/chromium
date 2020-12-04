@@ -12,10 +12,12 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/scoped_file.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
-#include "base/observer_list.h"
+#include "base/observer_list_threadsafe.h"
 #include "base/observer_list_types.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread.h"
 #include "base/unguessable_token.h"
 #include "components/chromeos_camera/common/jpeg_encode_accelerator.mojom.h"
@@ -190,14 +192,6 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
       std::unique_ptr<CameraClientObserver> observer,
       base::OnceCallback<void(int32_t)> result_callback);
 
-  void AddActiveClientObserverOnProxyThread(
-      CameraActiveClientObserver* observer,
-      base::WaitableEvent* observer_added_event);
-
-  void RemoveActiveClientObserverOnProxyThread(
-      CameraActiveClientObserver* observer,
-      base::WaitableEvent* observer_removed_event);
-
   void EstablishMojoChannel(CameraClientObserver* client_observer);
 
   // Handler for incoming Mojo connection on the unix domain socket.
@@ -239,9 +233,12 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   TokenManager token_manager_;
 
+  base::Lock opened_camera_id_map_lock_;
   base::flat_map<cros::mojom::CameraClientType, base::flat_set<int32_t>>
-      opened_camera_id_map_;
-  base::ObserverList<CameraActiveClientObserver> active_client_observers_;
+      opened_camera_id_map_ GUARDED_BY(opened_camera_id_map_lock_);
+
+  scoped_refptr<base::ObserverListThreadSafe<CameraActiveClientObserver>>
+      active_client_observers_;
 
   DISALLOW_COPY_AND_ASSIGN(CameraHalDispatcherImpl);
 };

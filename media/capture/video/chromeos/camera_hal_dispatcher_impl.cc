@@ -187,25 +187,20 @@ bool CameraHalDispatcherImpl::IsStarted() {
 
 void CameraHalDispatcherImpl::AddActiveClientObserver(
     CameraActiveClientObserver* observer) {
-  base::WaitableEvent observer_added_event;
-  proxy_thread_.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &CameraHalDispatcherImpl::AddActiveClientObserverOnProxyThread,
-          base::Unretained(this), std::move(observer), &observer_added_event));
-  observer_added_event.Wait();
+  base::AutoLock lock(opened_camera_id_map_lock_);
+  for (auto& opened_camera_id_pair : opened_camera_id_map_) {
+    const auto& camera_client_type = opened_camera_id_pair.first;
+    const auto& camera_id_set = opened_camera_id_pair.second;
+    if (!camera_id_set.empty()) {
+      observer->OnActiveClientChange(camera_client_type, /*is_active=*/true);
+    }
+  }
+  active_client_observers_->AddObserver(observer);
 }
 
 void CameraHalDispatcherImpl::RemoveActiveClientObserver(
     CameraActiveClientObserver* observer) {
-  base::WaitableEvent observer_removed_event;
-  proxy_thread_.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &CameraHalDispatcherImpl::RemoveActiveClientObserverOnProxyThread,
-          base::Unretained(this), std::move(observer),
-          &observer_removed_event));
-  observer_removed_event.Wait();
+  active_client_observers_->RemoveObserver(observer);
 }
 
 void CameraHalDispatcherImpl::RegisterPluginVmToken(
@@ -326,6 +321,7 @@ void CameraHalDispatcherImpl::CameraDeviceActivityChange(
     cros::mojom::CameraClientType type) {
   VLOG(1) << type << (opened ? " opened " : " closed ") << "camera "
           << camera_id;
+  base::AutoLock lock(opened_camera_id_map_lock_);
   auto& camera_id_set = opened_camera_id_map_[type];
   if (opened) {
     auto result = camera_id_set.insert(camera_id);
@@ -336,9 +332,9 @@ void CameraHalDispatcherImpl::CameraDeviceActivityChange(
     }
     if (camera_id_set.size() == 1) {
       VLOG(1) << type << " is active";
-      for (auto& observer : active_client_observers_) {
-        observer.OnActiveClientChange(type, /*is_active=*/true);
-      }
+      active_client_observers_->Notify(
+          FROM_HERE, &CameraActiveClientObserver::OnActiveClientChange, type,
+          /*is_active=*/true);
     }
   } else {
     auto it = camera_id_set.find(camera_id);
@@ -353,9 +349,9 @@ void CameraHalDispatcherImpl::CameraDeviceActivityChange(
     camera_id_set.erase(it);
     if (camera_id_set.empty()) {
       VLOG(1) << type << " is inactive";
-      for (auto& observer : active_client_observers_) {
-        observer.OnActiveClientChange(type, /*is_active=*/false);
-      }
+      active_client_observers_->Notify(
+          FROM_HERE, &CameraActiveClientObserver::OnActiveClientChange, type,
+          /*is_active=*/false);
     }
   }
 }
@@ -532,29 +528,6 @@ void CameraHalDispatcherImpl::AddClientObserverOnProxyThread(
   VLOG(1) << "Camera HAL client registered";
 }
 
-void CameraHalDispatcherImpl::AddActiveClientObserverOnProxyThread(
-    CameraActiveClientObserver* observer,
-    base::WaitableEvent* observer_added_event) {
-  DCHECK(proxy_task_runner_->BelongsToCurrentThread());
-  for (auto& opened_camera_id_pair : opened_camera_id_map_) {
-    const auto& camera_client_type = opened_camera_id_pair.first;
-    const auto& camera_id_set = opened_camera_id_pair.second;
-    if (!camera_id_set.empty()) {
-      observer->OnActiveClientChange(camera_client_type, /*is_active=*/true);
-    }
-  }
-  active_client_observers_.AddObserver(observer);
-  observer_added_event->Signal();
-}
-
-void CameraHalDispatcherImpl::RemoveActiveClientObserverOnProxyThread(
-    CameraActiveClientObserver* observer,
-    base::WaitableEvent* observer_removed_event) {
-  DCHECK(proxy_task_runner_->BelongsToCurrentThread());
-  active_client_observers_.RemoveObserver(observer);
-  observer_removed_event->Signal();
-}
-
 void CameraHalDispatcherImpl::EstablishMojoChannel(
     CameraClientObserver* client_observer) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
@@ -577,6 +550,7 @@ void CameraHalDispatcherImpl::OnPeerConnected(
 
 void CameraHalDispatcherImpl::OnCameraHalServerConnectionError() {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
+  base::AutoLock lock(opened_camera_id_map_lock_);
   VLOG(1) << "Camera HAL server connection lost";
   camera_hal_server_.reset();
   camera_hal_server_callbacks_.reset();
@@ -584,9 +558,9 @@ void CameraHalDispatcherImpl::OnCameraHalServerConnectionError() {
     auto camera_client_type = opened_camera_id_pair.first;
     const auto& camera_id_set = opened_camera_id_pair.second;
     if (!camera_id_set.empty()) {
-      for (auto& observer : active_client_observers_) {
-        observer.OnActiveClientChange(camera_client_type, /*is_active=*/false);
-      }
+      active_client_observers_->Notify(
+          FROM_HERE, &CameraActiveClientObserver::OnActiveClientChange,
+          camera_client_type, /*is_active=*/false);
     }
   }
   opened_camera_id_map_.clear();
@@ -595,18 +569,18 @@ void CameraHalDispatcherImpl::OnCameraHalServerConnectionError() {
 void CameraHalDispatcherImpl::OnCameraHalClientConnectionError(
     CameraClientObserver* client_observer) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
-  auto type = client_observer->GetType();
-  auto opened_it = opened_camera_id_map_.find(type);
+  base::AutoLock lock(opened_camera_id_map_lock_);
+  auto camera_client_type = client_observer->GetType();
+  auto opened_it = opened_camera_id_map_.find(camera_client_type);
   if (opened_it == opened_camera_id_map_.end()) {
     // This can happen if this camera client never opened a camera.
     return;
   }
   const auto& camera_id_set = opened_it->second;
   if (!camera_id_set.empty()) {
-    for (auto& observer : active_client_observers_) {
-      observer.OnActiveClientChange(type,
-                                    /*is_active=*/false);
-    }
+    active_client_observers_->Notify(
+        FROM_HERE, &CameraActiveClientObserver::OnActiveClientChange,
+        camera_client_type, /*is_active=*/false);
   }
   opened_camera_id_map_.erase(opened_it);
 
