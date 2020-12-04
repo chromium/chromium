@@ -116,6 +116,30 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
     return video_frame;
   }
 
+  static scoped_refptr<VideoFrame> CreateTestNV12VideoFrame(int dimension) {
+    const int kDimension = 10;
+    static uint8_t y_data[kDimension * kDimension] = {0};
+    // Subsampled by 2x2, two components.
+    static uint8_t uv_data[kDimension * kDimension / 2] = {0};
+
+    const VideoPixelFormat format = PIXEL_FORMAT_NV12;
+    DCHECK_LE(dimension, kDimension);
+    const gfx::Size size(dimension, dimension);
+
+    scoped_refptr<VideoFrame> video_frame =
+        VideoFrame::WrapExternalYuvData(format,              // format
+                                        size,                // coded_size
+                                        gfx::Rect(size),     // visible_rect
+                                        size,                // natural_size
+                                        size.width(),        // y_stride
+                                        size.width(),        // uv_stride
+                                        y_data,              // y_data
+                                        uv_data,             // uv_data
+                                        base::TimeDelta());  // timestamp
+    EXPECT_TRUE(video_frame);
+    return video_frame;
+  }
+
   // Note, the X portion is set to 1 since it may use ARGB instead of
   // XRGB on some platforms.
   uint32_t as_xr30(uint32_t r, uint32_t g, uint32_t b) {
@@ -302,6 +326,22 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareNV12Frame2) {
   EXPECT_EQ(2u, frame->NumTextures());
   EXPECT_EQ(2u, sii_->shared_image_count());
   EXPECT_TRUE(frame->metadata()->read_lock_fences_enabled);
+}
+
+TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrameForNV12Input) {
+  scoped_refptr<VideoFrame> software_frame = CreateTestNV12VideoFrame(10);
+  scoped_refptr<VideoFrame> frame;
+  mock_gpu_factories_->SetVideoFrameOutputFormat(
+      media::GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB);
+  gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
+      software_frame, base::BindOnce(MaybeCreateHardwareFrameCallback, &frame));
+
+  RunUntilIdle();
+
+  EXPECT_NE(software_frame.get(), frame.get());
+  EXPECT_EQ(PIXEL_FORMAT_NV12, frame->format());
+  EXPECT_EQ(2u, frame->NumTextures());
+  EXPECT_EQ(2u, sii_->shared_image_count());
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30Frame) {
