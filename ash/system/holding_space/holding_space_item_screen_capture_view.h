@@ -32,6 +32,9 @@ class ASH_EXPORT HoldingSpaceItemScreenCaptureView
  private:
   void UpdateImage();
 
+  // Overlays a play icon over the Screen Capture preview.
+  void AddPlayIcon();
+
   RoundedImageView* image_ = nullptr;
 
   base::CallbackListSubscription image_subscription_;

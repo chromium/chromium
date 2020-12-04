@@ -53,7 +53,7 @@ class HoldingSpaceItemChipView::LabelMaskLayerOwner : public ui::LayerDelegate {
     cc::PaintFlags flags;
     flags.setAntiAlias(false);
 
-    gfx::Point gradient_end(size.width() - kHoldingSpacePinIconSize, 0);
+    gfx::Point gradient_end(size.width() - kHoldingSpaceIconSize, 0);
     gfx::Point gradient_start(
         gradient_end.x() - kHoldingSpaceChipLabelMaskGradientWidth,
         gradient_end.y());

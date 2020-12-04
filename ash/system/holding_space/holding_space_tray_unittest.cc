@@ -1316,6 +1316,31 @@ TEST_P(HoldingSpaceTrayTest,
   test_api()->Close();
 }
 
+// Screen recordings should have an overlaying play icon.
+TEST_P(HoldingSpaceTrayTest, PlayIconForScreenRecordings) {
+  StartSession();
+  test_api()->Show();
+
+  // Add one screenshot item and one screen recording item.
+  HoldingSpaceItem* screenshot_item = AddItem(
+      HoldingSpaceItem::Type::kScreenshot, base::FilePath("/tmp/fake_1"));
+  HoldingSpaceItem* screen_recording_item = AddItem(
+      HoldingSpaceItem::Type::kScreenRecording, base::FilePath("/tmp/fake_2"));
+  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+
+  std::vector<views::View*> screen_capture_chips =
+      test_api()->GetScreenCaptureViews();
+
+  EXPECT_EQ(2u, screen_capture_chips.size());
+
+  EXPECT_EQ(screenshot_item->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[1])->item()->id());
+  EXPECT_FALSE(HoldingSpaceItemView::Cast(screen_capture_chips[1])->play_icon());
+  EXPECT_EQ(screen_recording_item->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[0])->item()->id());
+  EXPECT_TRUE(HoldingSpaceItemView::Cast(screen_capture_chips[0])->play_icon());
+}
+
 INSTANTIATE_TEST_SUITE_P(All, HoldingSpaceTrayTest, testing::Bool());
 
 }  // namespace ash

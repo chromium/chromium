@@ -36,6 +36,9 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
 
   UpdateImage();
 
+  if (item->type() == HoldingSpaceItem::Type::kScreenRecording)
+    AddPlayIcon();
+
   views::View* pin_button_container =
       AddChildView(std::make_unique<views::View>());
 
@@ -63,6 +66,27 @@ void HoldingSpaceItemScreenCaptureView::UpdateImage() {
   image_->SetImage(item()->image().image_skia(),
                    kHoldingSpaceScreenCaptureSize);
   SchedulePaint();
+}
+
+void HoldingSpaceItemScreenCaptureView::AddPlayIcon() {
+  views::View* play_icon_container =
+      AddChildView(std::make_unique<views::View>());
+
+  auto* layout =
+      play_icon_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal,
+          kHoldingSpaceScreenCapturePadding));
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  views::View* play_icon = CreatePlayIcon(play_icon_container);
+
+  // Create contrasting background for the play icon.
+  play_icon->SetBackground(views::CreateRoundedRectBackground(
+      HoldingSpaceColorProvider::Get()->GetBackgroundColor(),
+      kHoldingSpaceScreenCapturePlayIconSize.width() / 2));
+  play_icon->SetPreferredSize(kHoldingSpaceScreenCapturePlayIconSize);
 }
 
 BEGIN_METADATA(HoldingSpaceItemScreenCaptureView, HoldingSpaceItemView)
