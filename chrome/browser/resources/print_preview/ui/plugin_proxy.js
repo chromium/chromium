@@ -115,8 +115,6 @@ export class PluginProxyImpl {
     this.plugin_ = /** @type {PDFPlugin} */ (
         PDFCreateOutOfProcessPlugin(srcUrl, 'chrome://print/pdf'));
     this.plugin_.classList.add('preview-area-plugin');
-    this.plugin_.setAttribute('aria-live', 'polite');
-    this.plugin_.setAttribute('aria-atomic', 'true');
     // NOTE: The plugin's 'id' field must be set to 'pdf-viewer' since
     // chrome/renderer/printing/print_render_frame_helper.cc actually
     // references it.
