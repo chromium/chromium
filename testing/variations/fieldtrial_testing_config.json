@@ -4864,7 +4864,8 @@
                         "OmniboxMaxZeroSuggestMatches",
                         "OmniboxOnFocusSuggestionsContextualWebOnContent",
                         "OmniboxTrendingZeroPrefixSuggestionsOnNTP",
-                        "OmniboxUIExperimentMaxAutocompleteMatches"
+                        "OmniboxUIExperimentMaxAutocompleteMatches",
+                        "OmniboxZeroSuggestCaching"
                     ]
                 }
             ]
