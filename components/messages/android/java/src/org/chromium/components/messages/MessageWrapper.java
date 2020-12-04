@@ -4,8 +4,6 @@
 
 package org.chromium.components.messages;
 
-import android.view.View;
-
 import androidx.annotation.DrawableRes;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -35,8 +33,7 @@ public final class MessageWrapper {
         mNativeMessageWrapper = nativeMessageWrapper;
         mMessageProperties =
                 new PropertyModel.Builder(MessageBannerProperties.SINGLE_ACTION_MESSAGE_KEYS)
-                        .with(MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER,
-                                this::handleActionClick)
+                        .with(MessageBannerProperties.ON_PRIMARY_ACTION, this::handleActionClick)
                         .with(MessageBannerProperties.ON_DISMISSED, this::handleMessageDismissed)
                         .build();
     }
@@ -91,7 +88,7 @@ public final class MessageWrapper {
         mNativeMessageWrapper = 0;
     }
 
-    private void handleActionClick(View v) {
+    private void handleActionClick() {
         if (mNativeMessageWrapper == 0) return;
         MessageWrapperJni.get().handleActionClick(mNativeMessageWrapper);
     }

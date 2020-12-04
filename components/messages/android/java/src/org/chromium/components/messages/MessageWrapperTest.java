@@ -76,7 +76,7 @@ public class MessageWrapperTest {
         final long nativePtr = 1;
         MessageWrapper message = MessageWrapper.create(nativePtr);
         PropertyModel messageProperties = message.getMessageProperties();
-        messageProperties.get(MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER).onClick(null);
+        messageProperties.get(MessageBannerProperties.ON_PRIMARY_ACTION).run();
         Mockito.verify(mNativeMock).handleActionClick(nativePtr);
         messageProperties.get(MessageBannerProperties.ON_DISMISSED).run();
         Mockito.verify(mNativeMock).handleDismissCallback(nativePtr);
@@ -93,7 +93,7 @@ public class MessageWrapperTest {
         PropertyModel messageProperties = message.getMessageProperties();
 
         message.clearNativePtr();
-        messageProperties.get(MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER).onClick(null);
+        messageProperties.get(MessageBannerProperties.ON_PRIMARY_ACTION).run();
         Mockito.verify(mNativeMock, never()).handleActionClick(nativePtr);
         messageProperties.get(MessageBannerProperties.ON_DISMISSED).run();
         Mockito.verify(mNativeMock, never()).handleDismissCallback(nativePtr);
