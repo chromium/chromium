@@ -102,11 +102,18 @@ public class LensController {
      * @param intent The intent to Google Lens.
      */
     public void startLens(WindowAndroid window, Intent intent) {}
+
+    /**
+     * Launch lens with an intent.
+     * @param window The current window.
+     * @param lensIntentParams The intent parameters for Lens
+     */
+    public void startLens(WindowAndroid window, LensIntentParams lensIntentParams) {}
+
     /**
      * Retrieve the Text resource id for "Shop with Google Lens".
      * @return The resource id for "Shop with Google Lens" string.
      */
-
     protected @StringRes int getShopWithGoogleLensTextResourceId() {
         return R.string.contextmenu_shop_image_with_google_lens;
     }
@@ -118,4 +125,10 @@ public class LensController {
     protected @DrawableRes int getLensIconResourceId() {
         return R.drawable.lens_icon;
     }
+
+    /** Starts the Lens connection. */
+    public void startLensConnection() {}
+
+    /** Terminate any active Lens connections. */
+    public void terminateLensConnections() {}
 }
