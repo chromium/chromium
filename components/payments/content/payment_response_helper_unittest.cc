@@ -94,7 +94,7 @@ class PaymentResponseHelperTest : public testing::Test,
   const mojom::PaymentResponsePtr& response() { return payment_response_; }
   autofill::AutofillProfile* test_address() { return &address_; }
   const autofill::CreditCard& test_credit_card() { return visa_card_; }
-  PaymentApp* test_app() { return autofill_app_.get(); }
+  base::WeakPtr<PaymentApp> test_app() { return autofill_app_->AsWeakPtr(); }
   PaymentRequestDelegate* test_payment_request_delegate() {
     return &test_payment_request_delegate_;
   }

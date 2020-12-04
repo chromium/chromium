@@ -396,7 +396,8 @@ void PaymentRequestState::GeneratePaymentResponse() {
 }
 
 void PaymentRequestState::OnPaymentAppWindowClosed() {
-  DCHECK(selected_app_);
+  if (!selected_app_)
+    return;
   response_helper_.reset();
   selected_app_->OnPaymentAppWindowClosed();
 }
@@ -418,14 +419,17 @@ void PaymentRequestState::RecordUseStats() {
     }
   }
 
-  selected_app_->RecordUse();
+  if (selected_app_)
+    selected_app_->RecordUse();
 }
 
 void PaymentRequestState::SetAvailablePaymentAppForRetry() {
-  DCHECK(selected_app_);
+  if (!selected_app_)
+    return;
+
   base::EraseIf(available_apps_, [this](const auto& payment_app) {
     // Remove the app if it is not selected.
-    return payment_app.get() != selected_app_;
+    return payment_app.get() != selected_app_.get();
   });
   is_retry_called_ = true;
 }
@@ -444,7 +448,7 @@ void PaymentRequestState::AddAutofillPaymentApp(
       JourneyLogger::EVENT_AVAILABLE_METHOD_BASIC_CARD);
 
   if (selected) {
-    SetSelectedApp(available_apps_.back().get());
+    SetSelectedApp(available_apps_.back()->AsWeakPtr());
   }
 }
 
@@ -530,7 +534,7 @@ void PaymentRequestState::SetSelectedContactProfile(
   }
 }
 
-void PaymentRequestState::SetSelectedApp(PaymentApp* app) {
+void PaymentRequestState::SetSelectedApp(base::WeakPtr<PaymentApp> app) {
   selected_app_ = app;
   UpdateIsReadyToPayAndNotifyObservers();
 }
@@ -668,7 +672,7 @@ void PaymentRequestState::SetDefaultProfileSelections() {
 
   selected_app_ = nullptr;
   if (!available_apps_.empty() && available_apps_[0]->CanPreselect()) {
-    selected_app_ = available_apps_[0].get();
+    selected_app_ = available_apps_[0]->AsWeakPtr();
     UpdateIsReadyToPayAndNotifyObservers();
   }
 
@@ -693,7 +697,7 @@ void PaymentRequestState::SetDefaultProfileSelections() {
 
   journey_logger_->SetNumberOfSuggestionsShown(
       JourneyLogger::Section::SECTION_PAYMENT_METHOD, available_apps().size(),
-      selected_app_);
+      selected_app_.get());
 }
 
 void PaymentRequestState::UpdateIsReadyToPayAndNotifyObservers() {
@@ -715,7 +719,7 @@ void PaymentRequestState::NotifyOnSelectedInformationChanged() {
 bool PaymentRequestState::ArePaymentDetailsSatisfied() {
   // There is no need to check for supported networks, because only supported
   // apps are listed/created in the flow.
-  return selected_app_ != nullptr && selected_app_->IsCompleteForPayment();
+  return selected_app_ && selected_app_->IsCompleteForPayment();
 }
 
 bool PaymentRequestState::ArePaymentOptionsSatisfied() {
