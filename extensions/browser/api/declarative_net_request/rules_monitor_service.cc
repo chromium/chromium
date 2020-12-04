@@ -44,6 +44,7 @@
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/api/declarative_net_request/utils.h"
+#include "extensions/common/error_utils.h"
 #include "extensions/common/extension_id.h"
 #include "tools/json_schema_compiler/util.h"
 
@@ -105,11 +106,19 @@ std::unique_ptr<RulesetMatcher> CreateSessionScopedMatcher(
   RulesetSource source(kSessionRulesetID, kSessionRulesetLimit, extension_id,
                        true /* enabled */);
 
-  // TODO(crbug.com/1043200): Rules which exceed the regex memory limit
-  // |info.regex_limit_exceeded_rules()| should be treated as errors.
   ParseInfo info = source.IndexRules(std::move(rules));
   if (info.has_error()) {
     *error = info.error();
+    return nullptr;
+  }
+
+  // Treat rules which exceed the regex memory limit as errors; just surface an
+  // error for the first such rule.
+  if (!info.regex_limit_exceeded_rules().empty()) {
+    *error = ErrorUtils::FormatErrorMessage(
+        kErrorRegexTooLarge,
+        base::NumberToString(info.regex_limit_exceeded_rules()[0]),
+        kRegexFilterKey);
     return nullptr;
   }
 

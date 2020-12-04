@@ -62,6 +62,7 @@ namespace {
 
 constexpr char kJSONRulesFilename[] = "rules_file.json";
 
+constexpr char kSmallRegexFilter[] = "http://(yahoo|google)\\.com";
 constexpr char kLargeRegexFilter[] = ".{512}x";
 
 constexpr char kId1[] = "1.json";
@@ -199,11 +200,12 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
   enum class RulesetScope { kDynamic, kSession };
 
   // Runs the updateDynamicRules/updateSessionRules extension function based on
-  // |scope|.
-  bool RunUpdateRulesFunction(const Extension& extension,
+  // |scope| and verifies the success/failure based on |expected_error|.
+  void RunUpdateRulesFunction(const Extension& extension,
                               const std::vector<int>& rule_ids_to_remove,
                               const std::vector<TestRule>& rules_to_add,
-                              RulesetScope scope) {
+                              RulesetScope scope,
+                              const std::string* expected_error = nullptr) {
     std::unique_ptr<base::Value> ids_to_remove_value =
         ListBuilder()
             .Append(rule_ids_to_remove.begin(), rule_ids_to_remove.end())
@@ -233,8 +235,15 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
     }
     update_function->set_extension(&extension);
     update_function->set_has_callback(true);
-    return api_test_utils::RunFunction(update_function.get(), json_args,
-                                       browser_context());
+    if (!expected_error) {
+      ASSERT_TRUE(api_test_utils::RunFunction(update_function.get(), json_args,
+                                              browser_context()));
+      return;
+    }
+
+    ASSERT_EQ(*expected_error,
+              api_test_utils::RunFunctionAndReturnError(
+                  update_function.get(), json_args, browser_context()));
   }
 
   // Runs getDynamicRules/getSessionRules extension function and populates
@@ -784,7 +793,7 @@ TEST_P(SingleRulesetTest, LargeRegexIgnored) {
   int id = kMinValidID;
 
   const int kNumSmallRegex = 5;
-  std::string small_regex = "http://(yahoo|google)\\.com";
+  std::string small_regex = kSmallRegexFilter;
   for (int i = 0; i < kNumSmallRegex; i++, id++) {
     rule.id = id;
     rule.condition->regex_filter = small_regex;
@@ -940,8 +949,9 @@ TEST_P(SingleRulesetTest, DynamicRulesetRace) {
 
   // Add some dynamic rules.
   std::vector<TestRule> dynamic_rules({CreateGenericRule()});
-  ASSERT_TRUE(RunUpdateRulesFunction(*extension, {} /* rule_ids_to_remove */,
-                                     dynamic_rules, RulesetScope::kDynamic));
+  ASSERT_NO_FATAL_FAILURE(
+      RunUpdateRulesFunction(*extension, {} /* rule_ids_to_remove */,
+                             dynamic_rules, RulesetScope::kDynamic));
 
   // The API function to update the dynamic ruleset should only complete once
   // the initial ruleset loading (in response to OnExtensionLoaded) is complete.
@@ -1013,8 +1023,8 @@ TEST_P(SingleRulesetTest, SessionRules) {
   rule_1.id = 1;
   TestRule rule_2 = CreateGenericRule();
   rule_2.id = 2;
-  ASSERT_TRUE(RunUpdateRulesFunction(*extension(), {}, {rule_1, rule_2},
-                                     RulesetScope::kSession));
+  ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(
+      *extension(), {}, {rule_1, rule_2}, RulesetScope::kSession));
   RunGetRulesFunction(*extension(), RulesetScope::kSession, &result);
   EXPECT_THAT(result.GetList(),
               ::testing::UnorderedElementsAre(
@@ -1027,13 +1037,39 @@ TEST_P(SingleRulesetTest, SessionRules) {
   RunGetRulesFunction(*extension(), RulesetScope::kDynamic, &result);
   EXPECT_TRUE(result.empty());
 
-  ASSERT_TRUE(RunUpdateRulesFunction(*extension(), {*rule_2.id}, {},
-                                     RulesetScope::kSession));
+  ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(*extension(), {*rule_2.id}, {},
+                                                 RulesetScope::kSession));
   RunGetRulesFunction(*extension(), RulesetScope::kSession, &result);
   EXPECT_THAT(result.GetList(), ::testing::UnorderedElementsAre(::testing::Eq(
                                     std::cref(*rule_1.ToValue()))));
   RunGetRulesFunction(*extension(), RulesetScope::kDynamic, &result);
   EXPECT_TRUE(result.empty());
+}
+
+// Ensure an error is raised when an extension adds a session-scoped regex rule
+// which consumes more memory than allowed.
+TEST_P(SingleRulesetTest, LargeRegexError_SessionRules) {
+  // Load an extension with an empty static ruleset.
+  RulesetManagerObserver ruleset_waiter(manager());
+  LoadAndExpectSuccess();
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
+
+  // Ensure adding a normal regex rule succeeds.
+  TestRule normal_regex_rule = CreateGenericRule(1);
+  normal_regex_rule.condition->url_filter.reset();
+  normal_regex_rule.condition->regex_filter = std::string(kSmallRegexFilter);
+  ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(
+      *extension(), {}, {normal_regex_rule}, RulesetScope::kSession));
+
+  // Ensure an error is raised on adding a large regex rule.
+  TestRule large_regex_rule = CreateGenericRule(2);
+  large_regex_rule.condition->url_filter.reset();
+  large_regex_rule.condition->regex_filter = std::string(kLargeRegexFilter);
+  std::string expected_error =
+      ErrorUtils::FormatErrorMessage(kErrorRegexTooLarge, "2", kRegexFilterKey);
+  ASSERT_NO_FATAL_FAILURE(
+      RunUpdateRulesFunction(*extension(), {}, {large_regex_rule},
+                             RulesetScope::kSession, &expected_error));
 }
 
 // Test fixture for a single ruleset with the
@@ -1515,10 +1551,10 @@ TEST_P(MultipleRulesetsTest, UpdateEnabledRulesets_InvalidRulesetID) {
 
   // Ensure we can't enable/disable dynamic or session-scoped rulesets using
   // updateEnabledRulesets.
-  ASSERT_TRUE(RunUpdateRulesFunction(*extension(), {}, {CreateGenericRule()},
-                                     RulesetScope::kDynamic));
-  ASSERT_TRUE(RunUpdateRulesFunction(*extension(), {}, {CreateGenericRule()},
-                                     RulesetScope::kSession));
+  ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(
+      *extension(), {}, {CreateGenericRule()}, RulesetScope::kDynamic));
+  ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(
+      *extension(), {}, {CreateGenericRule()}, RulesetScope::kSession));
   VerifyPublicRulesetIDs(*extension(), {kId1, kId3, dnr_api::DYNAMIC_RULESET_ID,
                                         dnr_api::SESSION_RULESET_ID});
   RunUpdateEnabledRulesetsFunction(
@@ -1646,10 +1682,10 @@ TEST_P(MultipleRulesetsTest, UpdateAndGetEnabledRulesets_Success) {
   // Add dynamic and session-scoped rules and ensure that the setEnabledRulesets
   // call doesn't have any effect on their associated rulesets. Also ensure that
   // the getEnabledRulesets call excludes these rulesets.
-  ASSERT_TRUE(RunUpdateRulesFunction(*extension(), {}, {CreateGenericRule()},
-                                     RulesetScope::kDynamic));
-  ASSERT_TRUE(RunUpdateRulesFunction(*extension(), {}, {CreateGenericRule()},
-                                     RulesetScope::kSession));
+  ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(
+      *extension(), {}, {CreateGenericRule()}, RulesetScope::kDynamic));
+  ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(
+      *extension(), {}, {CreateGenericRule()}, RulesetScope::kSession));
   VerifyPublicRulesetIDs(*extension(), {kId2, kId3, dnr_api::DYNAMIC_RULESET_ID,
                                         dnr_api::SESSION_RULESET_ID});
   VerifyGetEnabledRulesetsFunction(*extension(), {kId2, kId3});
