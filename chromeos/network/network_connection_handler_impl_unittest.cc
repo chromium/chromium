@@ -501,9 +501,8 @@ TEST_F(NetworkConnectionHandlerImplTest, ConnectWithCertificateSuccess) {
   EXPECT_EQ(kSuccessResult, GetResultAndReset());
 }
 
-// Disabled, see http://crbug.com/396729.
 TEST_F(NetworkConnectionHandlerImplTest,
-       DISABLED_ConnectWithCertificateRequestedBeforeCertsAreLoaded) {
+       ConnectWithCertificateRequestedBeforeCertsAreLoaded) {
   scoped_refptr<net::X509Certificate> cert = ImportTestClientCert();
   ASSERT_TRUE(cert.get());
 

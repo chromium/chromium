@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
-#include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
@@ -17,7 +16,6 @@ namespace chromeos {
 // Implementation of NetworkConnectionHandler.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
     : public NetworkConnectionHandler,
-      public LoginState::Observer,
       public NetworkCertLoader::Observer,
       public NetworkStateHandlerObserver,
       public base::SupportsWeakPtr<NetworkConnectionHandlerImpl> {
@@ -39,9 +37,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
   // NetworkStateHandlerObserver
   void NetworkListChanged() override;
   void NetworkPropertiesUpdated(const NetworkState* network) override;
-
-  // LoginState::Observer
-  void LoggedInStateChanged() override;
 
   // NetworkCertLoader::Observer
   void OnCertificatesLoaded() override;
@@ -148,9 +143,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
   std::unique_ptr<ConnectRequest> queued_connect_;
 
   // Track certificate loading state.
-  bool logged_in_;
   bool certificates_loaded_;
-  base::TimeTicks logged_in_time_;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkConnectionHandlerImpl);
 };
