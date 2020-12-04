@@ -235,7 +235,8 @@ void LayoutTreeAsText::WriteLayoutObject(WTF::TextStream& ts,
 
   if (o.IsDetailsMarker()) {
     ts << ": ";
-    switch (To<LayoutDetailsMarker>(o).GetOrientation()) {
+    const auto& marker = To<LayoutDetailsMarker>(o);
+    switch (marker.GetOrientation(marker.StyleRef(), marker.IsOpen())) {
       case LayoutDetailsMarker::kLeft:
         ts << "left";
         break;

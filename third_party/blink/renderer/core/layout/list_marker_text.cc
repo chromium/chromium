@@ -461,6 +461,8 @@ static EListStyleType EffectiveListMarkerType(EListStyleType type, int count) {
     case EListStyleType::kDecimal:
     case EListStyleType::kDevanagari:
     case EListStyleType::kDisc:
+    case EListStyleType::kDisclosureClosed:
+    case EListStyleType::kDisclosureOpen:
     case EListStyleType::kGujarati:
     case EListStyleType::kGurmukhi:
     case EListStyleType::kKannada:
@@ -535,6 +537,8 @@ UChar Suffix(EListStyleType type, int count) {
   switch (effective_type) {
     case EListStyleType::kCircle:
     case EListStyleType::kDisc:
+    case EListStyleType::kDisclosureClosed:
+    case EListStyleType::kDisclosureOpen:
     case EListStyleType::kNone:
     case EListStyleType::kSquare:
       return ' ';
@@ -616,6 +620,14 @@ String GetText(EListStyleType type, int count) {
       return String(&kWhiteBulletCharacter, 1);
     case EListStyleType::kDisc:
       return String(&kBulletCharacter, 1);
+
+    // TODO(layout-dev): Text for disclosure-* should not depend on physical
+    // shape?
+    case EListStyleType::kDisclosureClosed:
+      return String(&kBlackRightPointingSmallTriangle, 1);
+    case EListStyleType::kDisclosureOpen:
+      return String(&kBlackDownPointingSmallTriangle, 1);
+
     case EListStyleType::kSquare:
       // The CSS 2.1 test suite uses U+25EE BLACK MEDIUM SMALL SQUARE
       // instead, but I think this looks better.

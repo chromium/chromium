@@ -31,20 +31,21 @@ namespace blink {
 LayoutDetailsMarker::LayoutDetailsMarker(Element* element)
     : LayoutBlockFlow(element) {}
 
-LayoutDetailsMarker::Orientation LayoutDetailsMarker::GetOrientation() const {
-  NOT_DESTROYED();
+LayoutDetailsMarker::Orientation LayoutDetailsMarker::GetOrientation(
+    const ComputedStyle& style,
+    bool is_open) {
   // TODO(layout-dev): Sideways-lr and sideways-rl are not yet supported.
-  const auto mode = StyleRef().GetWritingMode();
+  const auto mode = style.GetWritingMode();
   DCHECK(mode != WritingMode::kSidewaysRl && mode != WritingMode::kSidewaysLr);
 
-  if (IsOpen()) {
-    if (mode == WritingMode::kHorizontalTb)
+  if (is_open) {
+    if (blink::IsHorizontalWritingMode(mode))
       return kDown;
-    return (mode == WritingMode::kVerticalRl) ? kLeft : kRight;
+    return IsFlippedBlocksWritingMode(mode) ? kLeft : kRight;
   }
-  if (mode == WritingMode::kHorizontalTb)
-    return StyleRef().IsLeftToRightDirection() ? kRight : kLeft;
-  return StyleRef().IsLeftToRightDirection() ? kDown : kUp;
+  if (blink::IsHorizontalWritingMode(mode))
+    return style.IsLeftToRightDirection() ? kRight : kLeft;
+  return style.IsLeftToRightDirection() ? kDown : kUp;
 }
 
 void LayoutDetailsMarker::Paint(const PaintInfo& paint_info) const {

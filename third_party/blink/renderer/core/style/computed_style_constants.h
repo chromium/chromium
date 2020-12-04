@@ -282,9 +282,14 @@ inline ScrollbarGutter& operator|=(ScrollbarGutter& a, ScrollbarGutter b) {
 
 // https://drafts.csswg.org/css-counter-styles-3/#predefined-counters
 enum class EListStyleType : unsigned {
+  // https://drafts.csswg.org/css-counter-styles-3/#simple-symbolic
   kDisc,
   kCircle,
   kSquare,
+  kDisclosureOpen,
+  kDisclosureClosed,
+
+  // https://drafts.csswg.org/css-counter-styles-3/#simple-numeric
   kDecimal,
   kDecimalLeadingZero,
   kArabicIndic,
@@ -307,13 +312,18 @@ enum class EListStyleType : unsigned {
   kThai,
   kLowerRoman,
   kUpperRoman,
+
+  // https://drafts.csswg.org/css-counter-styles-3/#simple-alphabetic
   kLowerGreek,
   kLowerAlpha,
   kLowerLatin,
   kUpperAlpha,
   kUpperLatin,
+
+  // https://drafts.csswg.org/css-counter-styles-3/#simple-fixed
   kCjkEarthlyBranch,
   kCjkHeavenlyStem,
+
   kEthiopicHalehame,
   kEthiopicHalehameAm,
   kEthiopicHalehameTiEr,

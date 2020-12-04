@@ -31,7 +31,8 @@ class LayoutDetailsMarker final : public LayoutBlockFlow {
 
   enum Orientation { kUp, kDown, kLeft, kRight };
 
-  Orientation GetOrientation() const;
+  static Orientation GetOrientation(const ComputedStyle& style, bool is_open);
+  bool IsOpen() const;
 
   bool CreatesNewFormattingContext() const override {
     NOT_DESTROYED();
@@ -50,8 +51,6 @@ class LayoutDetailsMarker final : public LayoutBlockFlow {
            LayoutBlockFlow::IsOfType(type);
   }
   void Paint(const PaintInfo&) const override;
-
-  bool IsOpen() const;
 };
 
 template <>

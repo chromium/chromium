@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/list_marker_text.h"
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
+#include "third_party/blink/renderer/core/paint/details_marker_painter.h"
 #include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
@@ -48,6 +49,15 @@ void ListMarkerPainter::PaintSymbol(const PaintInfo& paint_info,
     case EListStyleType::kSquare:
       context.FillRect(marker);
       break;
+    case EListStyleType::kDisclosureOpen:
+    case EListStyleType::kDisclosureClosed: {
+      Path path = DetailsMarkerPainter::GetCanonicalPath(
+          style, style.ListStyleType() == EListStyleType::kDisclosureOpen);
+      path.Transform(AffineTransform().Scale(marker.Width(), marker.Height()));
+      path.Translate(FloatSize(marker.X(), marker.Y()));
+      context.FillPath(path);
+      break;
+    }
     default:
       NOTREACHED();
       break;

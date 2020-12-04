@@ -9,6 +9,7 @@
 
 namespace blink {
 
+class ComputedStyle;
 class Path;
 class LayoutDetailsMarker;
 struct PaintInfo;
@@ -22,9 +23,9 @@ class DetailsMarkerPainter {
       : layout_details_marker_(layout_details_marker) {}
 
   void Paint(const PaintInfo&);
+  static Path GetCanonicalPath(const ComputedStyle& style, bool is_open);
 
  private:
-  Path GetCanonicalPath() const;
   Path GetPath(const PhysicalOffset& origin) const;
 
   const LayoutDetailsMarker& layout_details_marker_;

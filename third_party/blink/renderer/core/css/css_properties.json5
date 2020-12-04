@@ -2422,7 +2422,8 @@
       default_value: "ListStyleTypeData::CreateCounterStyle(\"disc\", nullptr)",
       type_name: "ListStyleTypeData",
       keywords: [
-        "disc", "circle", "square", "decimal", "decimal-leading-zero",
+        "disc", "circle", "square", "disclosure-open", "disclosure-closed",
+        "decimal", "decimal-leading-zero",
         "arabic-indic", "bengali", "cambodian", "khmer", "devanagari",
         "gujarati", "gurmukhi", "kannada", "lao", "malayalam", "mongolian",
         "myanmar", "oriya", "persian", "urdu", "telugu", "tibetan", "thai",

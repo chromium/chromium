@@ -78,8 +78,9 @@ static Path CreateRightArrowPath() {
   return CreatePath(points);
 }
 
-Path DetailsMarkerPainter::GetCanonicalPath() const {
-  switch (layout_details_marker_.GetOrientation()) {
+Path DetailsMarkerPainter::GetCanonicalPath(const ComputedStyle& style,
+                                            bool is_open) {
+  switch (LayoutDetailsMarker::GetOrientation(style, is_open)) {
     case LayoutDetailsMarker::kLeft:
       return CreateLeftArrowPath();
     case LayoutDetailsMarker::kRight:
@@ -94,7 +95,8 @@ Path DetailsMarkerPainter::GetCanonicalPath() const {
 }
 
 Path DetailsMarkerPainter::GetPath(const PhysicalOffset& origin) const {
-  Path result = GetCanonicalPath();
+  Path result = GetCanonicalPath(layout_details_marker_.StyleRef(),
+                                 layout_details_marker_.IsOpen());
   result.Transform(AffineTransform().Scale(
       layout_details_marker_.ContentWidth().ToFloat(),
       layout_details_marker_.ContentHeight().ToFloat()));

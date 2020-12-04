@@ -435,6 +435,8 @@
     "disc",
     "circle",
     "square",
+    "disclosure-open",
+    "disclosure-closed",
     "decimal",
     "decimal-leading-zero",
     "arabic-indic",
