@@ -169,7 +169,13 @@ void SlotSpanMetadata<thread_safe>::Decommit(PartitionRoot<thread_safe>* root) {
   PA_DCHECK(is_empty());
   PA_DCHECK(!bucket->is_direct_mapped());
   void* addr = SlotSpanMetadata::ToPointer(this);
-  size_t size_to_decommit = bits::Align(GetProvisionedSize(), SystemPageSize());
+  size_t size_to_decommit =
+#if defined(OS_WIN)
+      // Windows uses lazy commit, thus only provisioned slots are committed.
+      bits::Align(GetProvisionedSize(), SystemPageSize());
+#else
+      bucket->get_bytes_per_span();
+#endif
   // Not decommitted slot span must've had at least 1 allocation.
   PA_DCHECK(size_to_decommit > 0);
   root->DecommitSystemPagesForData(addr, size_to_decommit,

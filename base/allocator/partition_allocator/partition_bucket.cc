@@ -217,6 +217,14 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
 
   char* ret = root->next_partition_page;
   root->next_partition_page += slot_span_reserved_size;
+#if !defined(OS_WIN)
+  // System pages in the super page come in a decommited state. Commit them
+  // before vending them back.
+  // Windows uses lazy commit. Pages will be committed when provisioning slots,
+  // in ProvisionMoreSlotsAndAllocOne().
+  root->RecommitSystemPagesForData(ret, slot_span_committed_size,
+                                   PageUpdatePermissions);
+#endif
   // Double check that we had enough space in the super page for the new slot
   // span.
   PA_DCHECK(root->next_partition_page <= root->next_partition_page_end);
@@ -379,11 +387,15 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   // to the page start and |next_slot| doesn't, thus only the latter gets
   // rounded up.
   PA_DCHECK(commit_end > commit_start);
-  // System pages in the slot span come in an initially decommitted state.
-  // Can't use PageKeepPermissionsIfPossible, because we have no knowledge
-  // which pages have been committed before.
+#if defined(OS_WIN)
+  // Windows uses lazy commit, meaning system pages in the slot span come in an
+  // initially decommitted state. Commit them here.
+  // Note, we can't use PageKeepPermissionsIfPossible, because we have no
+  // knowledge which pages have been committed before (it doesn't matter on
+  // Windows anyway).
   root->RecommitSystemPagesForData(commit_start, commit_end - commit_start,
                                    PageUpdatePermissions);
+#endif
 
   // The slot being returned is considered allocated, and no longer
   // unprovisioned.
@@ -560,6 +572,14 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
       PA_DCHECK(new_slot_span->bucket == this);
       PA_DCHECK(new_slot_span->is_decommitted());
       decommitted_slot_spans_head = new_slot_span->next_slot_span;
+#if !defined(OS_WIN)
+      // Windows uses lazy commit. Pages will be recommitted when provisioning
+      // slots, in ProvisionMoreSlotsAndAllocOne().
+      void* addr = SlotSpanMetadata<thread_safe>::ToPointer(new_slot_span);
+      root->RecommitSystemPagesForData(
+          addr, new_slot_span->bucket->get_bytes_per_span(),
+          PageKeepPermissionsIfPossible);
+#endif
       new_slot_span->Reset();
       *is_already_zeroed = kDecommittedPagesAreAlwaysZeroed;
     }
