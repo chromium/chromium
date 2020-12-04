@@ -265,7 +265,7 @@ class RemoteCall {
       const elements =
           await this.callRemoteTestUtil('deepQueryAllElements', appId, [query]);
       if (elements.length > 0) {
-        return pending(caller, 'Elements %j is still exists.', elements);
+        return pending(caller, 'Elements %j still exists.', elements);
       }
       return true;
     });
