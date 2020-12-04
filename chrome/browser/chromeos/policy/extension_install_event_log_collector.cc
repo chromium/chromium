@@ -488,12 +488,10 @@ ConvertManifestInvalidErrorToProto(extensions::ManifestInvalidError error) {
 void AddErrorCodesToFailureEvent(
     const extensions::InstallStageTracker::InstallationData& data,
     em::ExtensionInstallReportLogEvent* event) {
-  if (data.response_code) {
+  if (data.response_code)
     event->set_fetch_error_code(data.response_code.value());
-  } else {
-    DCHECK(data.network_error_code);
+  else if (data.network_error_code)
     event->set_fetch_error_code(data.network_error_code.value());
-  }
 
   DCHECK(data.fetch_tries);
   event->set_fetch_tries(data.fetch_tries.value_or(0));
