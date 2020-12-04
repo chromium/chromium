@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
+#include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
@@ -191,8 +192,19 @@ View::View() {
 }
 
 View::~View() {
+  // Line number history to see the path through this function prior to a
+  // mysterious crash (https://crbug.com/1152152).
+  constexpr size_t kNumEntries = 16;
+  int line_number_trace[kNumEntries] = {};
+  base::debug::Alias(&line_number_trace[0]);
+  size_t next_line_entry = 0;
+  base::debug::Alias(&next_line_entry);
+  void* vtable = nullptr;
+  base::debug::Alias(&vtable);
+  line_number_trace[(next_line_entry++) % kNumEntries] = __LINE__;
   if (parent_)
     parent_->RemoveChildView(this);
+  line_number_trace[(next_line_entry++) % kNumEntries] = __LINE__;
 
   // This view should have been removed from the focus list by now.
   DCHECK_EQ(next_focusable_view_, nullptr);
@@ -204,34 +216,48 @@ View::~View() {
   // layout managers access child view properties, this would result in a
   // use-after-free error.
   layout_manager_.reset();
+  line_number_trace[(next_line_entry++) % kNumEntries] = __LINE__;
 
   {
     internal::ScopedChildrenLock lock(this);
     for (auto* child : children_) {
+      line_number_trace[(next_line_entry++) % kNumEntries] = __LINE__;
       child->parent_ = nullptr;
+      line_number_trace[(next_line_entry++) % kNumEntries] = __LINE__;
 
       // Since all children are removed here, it is safe to set
       // |child|'s focus list pointers to null and expect any references
       // to |child| will be removed subsequently.
       child->next_focusable_view_ = nullptr;
       child->previous_focusable_view_ = nullptr;
+      line_number_trace[(next_line_entry++) % kNumEntries] = __LINE__;
 
-      if (!child->owned_by_client_)
+      if (!child->owned_by_client_) {
+        // Extract the vtable pointer to allow post-mortem identification of the
+        // object type.
+        if (child)
+          vtable = reinterpret_cast<void**>(child)[0];
         delete child;
+      }
+      line_number_trace[(next_line_entry++) % kNumEntries] = __LINE__;
     }
   }
 
+  line_number_trace[(next_line_entry++) % kNumEntries] = __LINE__;
   for (ViewObserver& observer : observers_)
     observer.OnViewIsDeleting(this);
+  line_number_trace[(next_line_entry++) % kNumEntries] = __LINE__;
 
   for (ui::Layer* layer_beneath : layers_beneath_)
     layer_beneath->RemoveObserver(this);
+  line_number_trace[(next_line_entry++) % kNumEntries] = __LINE__;
 
   // Clearing properties explicitly here lets us guarantee that properties
   // outlive |this| (at least the View part of |this|). This is intentionally
   // called at the end so observers can examine properties inside
   // OnViewIsDeleting(), for instance.
   ClearProperties();
+  line_number_trace[(next_line_entry++) % kNumEntries] = __LINE__;
 }
 
 // Tree operations -------------------------------------------------------------
