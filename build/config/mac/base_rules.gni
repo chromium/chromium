@@ -230,7 +230,7 @@ template("info_plist") {
     if (is_mac) {
       substitutions += [
         "MACOSX_DEPLOYMENT_TARGET=$mac_deployment_target",
-        "CHROMIUM_MIN_SYSTEM_VERSION=$mac_min_system_version",
+        "CHROMIUM_MIN_SYSTEM_VERSION=$mac_min_system_version_for_m88",
       ]
     } else if (is_ios) {
       substitutions += [ "IOS_DEPLOYMENT_TARGET=$ios_deployment_target" ]

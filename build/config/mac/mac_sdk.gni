@@ -26,6 +26,11 @@ declare_args() {
   # Must be of the form x.x.x for Info.plist files.
   mac_min_system_version = "10.10.0"
 
+  # For M88 (branch 4324): This value is used to set the
+  # LSMinimmumSystemVersion in the Info.plist instead of the above
+  # mac_min_system_version. See https://crbug.com/1148931#c1 for details.
+  mac_min_system_version_for_m88 = "10.11.0"
+
   # Path to a specific version of the Mac SDK, not including a slash at the end.
   # If empty, the path to the lowest version greater than or equal to
   # mac_sdk_min is used.
