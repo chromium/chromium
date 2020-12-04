@@ -387,7 +387,6 @@ input[type=checkbox]:checked ~ .checkbox::before {
 
   #details.hidden,
   #main-content.hidden {
-    display: block;
     height: 0;
     opacity: 0;
     overflow: hidden;
