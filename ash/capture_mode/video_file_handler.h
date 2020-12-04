@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/callback_forward.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
@@ -58,7 +59,9 @@ class ASH_EXPORT VideoFileHandler {
   static base::SequenceBound<VideoFileHandler> Create(
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
       const base::FilePath& path,
-      size_t max_buffered_bytes);
+      size_t max_buffered_bytes,
+      size_t low_disk_space_threshold_bytes,
+      base::OnceClosure on_low_disk_space_callback);
 
   // Must be done only once before all other operations to open/create the file
   // at |path_| via |file_| in preparation for future writes. The file remains
@@ -85,7 +88,10 @@ class ASH_EXPORT VideoFileHandler {
  private:
   friend class base::SequenceBound<VideoFileHandler>;
 
-  VideoFileHandler(const base::FilePath& path, size_t max_buffered_bytes);
+  VideoFileHandler(const base::FilePath& path,
+                   size_t max_buffered_bytes,
+                   size_t low_disk_space_threshold_bytes,
+                   base::OnceClosure on_low_disk_space_callback);
   ~VideoFileHandler();
 
   // Appends the given |chunk| to |file_| at its current position, and updates
@@ -100,6 +106,11 @@ class ASH_EXPORT VideoFileHandler {
   // there's an upper bound to the memory consumed by video recording to avoid
   // OOM'in the system.
   const size_t max_buffered_bytes_;
+
+  // The number of bytes if the free disk space goes below which, we will notify
+  // the owner of this object of this condition via the
+  // |on_low_disk_space_callback_|.
+  const size_t low_disk_space_threshold_bytes_;
 
   // The opened file that exists at |path_|. All I/O operations on the file will
   // be done through this object, which must first be initialized by calling
@@ -119,6 +130,11 @@ class ASH_EXPORT VideoFileHandler {
   // file is successfully opened in |Initialize()|. After that it will be
   // repeatedly updated by each write operation.
   bool success_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+  // Called to notify the owner of this object that the low disk space threshold
+  // has been reached.
+  base::OnceClosure on_low_disk_space_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Checker to guarantee certain operations are run on the
   // |blocking_task_runner| given to |Create()|.

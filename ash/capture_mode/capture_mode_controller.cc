@@ -23,6 +23,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/status_area_widget.h"
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
@@ -242,7 +243,7 @@ void CopyImageToClipboard(const gfx::Image& image) {
 CaptureModeController::CaptureModeController(
     std::unique_ptr<CaptureModeDelegate> delegate)
     : delegate_(std::move(delegate)),
-      task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+      blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           // A task priority of BEST_EFFORT is good enough for this runner,
           // since it's used for blocking file IO such as saving the screenshots
           // or the successive webm video chunks received from the recording
@@ -633,7 +634,7 @@ void CaptureModeController::OnImageCaptured(
   }
 
   const base::FilePath path = BuildImagePath(timestamp);
-  task_runner_->PostTaskAndReplyWithResult(
+  blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&SaveFile, png_bytes, path),
       base::BindOnce(&CaptureModeController::OnImageFileSaved,
                      weak_ptr_factory_.GetWeakPtr(), png_bytes, path));
@@ -685,6 +686,7 @@ void CaptureModeController::OnVideoFileSaved(bool success) {
   if (!on_file_saved_callback_.is_null())
     std::move(on_file_saved_callback_).Run(current_video_file_path_);
 
+  low_disk_space_threshold_reached_ = false;
   recording_start_time_ = base::TimeTicks();
   current_video_file_path_.clear();
   video_file_handler_.Reset();
@@ -694,16 +696,20 @@ void CaptureModeController::ShowPreviewNotification(
     const base::FilePath& screen_capture_path,
     const gfx::Image& preview_image,
     const CaptureModeType type) {
+  const bool for_video = type == CaptureModeType::kVideo;
   const base::string16 title = l10n_util::GetStringUTF16(
-      type == CaptureModeType::kImage ? IDS_ASH_SCREEN_CAPTURE_SCREENSHOT_TITLE
-                                      : IDS_ASH_SCREEN_CAPTURE_RECORDING_TITLE);
+      for_video ? IDS_ASH_SCREEN_CAPTURE_RECORDING_TITLE
+                : IDS_ASH_SCREEN_CAPTURE_SCREENSHOT_TITLE);
   const base::string16 message =
-      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_MESSAGE);
+      for_video && low_disk_space_threshold_reached_
+          ? l10n_util::GetStringUTF16(
+                IDS_ASH_SCREEN_CAPTURE_LOW_DISK_SPACE_MESSAGE)
+          : l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_MESSAGE);
 
   message_center::RichNotificationData optional_fields;
   message_center::ButtonInfo edit_button(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_EDIT));
-  if (type == CaptureModeType::kImage)
+  if (!for_video)
     optional_fields.buttons.push_back(edit_button);
   message_center::ButtonInfo delete_button(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_DELETE));
@@ -738,7 +744,7 @@ void CaptureModeController::HandleNotificationClicked(
   if (type == CaptureModeType::kVideo) {
     DCHECK_EQ(button_index_value,
               VideoNotificationButtonIndex::BUTTON_DELETE_VIDEO);
-    DeleteFileAsync(task_runner_, screen_capture_path);
+    DeleteFileAsync(blocking_task_runner_, screen_capture_path);
     return;
   }
 
@@ -749,7 +755,7 @@ void CaptureModeController::HandleNotificationClicked(
       delegate_->OpenScreenshotInImageEditor(screen_capture_path);
       break;
     case ScreenshotNotificationButtonIndex::BUTTON_DELETE:
-      DeleteFileAsync(task_runner_, screen_capture_path);
+      DeleteFileAsync(blocking_task_runner_, screen_capture_path);
       break;
     default:
       NOTREACHED();
@@ -814,14 +820,28 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
   video_recording_watcher_ =
       std::make_unique<VideoRecordingWatcher>(this, capture_params->window);
 
-  // TODO(afakhry): Choose a real buffer capacity when the recording service is
-  // in.
   constexpr size_t kVideoBufferCapacityBytes = 512 * 1024;
+
+  // We use a threshold of 512 MB to end the video recording due to low disk
+  // space, which is the same threshold as that used by the low disk space
+  // notification (See low_disk_notification.cc).
+  constexpr size_t kLowDiskSpaceThresholdInBytes = 512 * 1024 * 1024;
+
+  // The |video_file_handler_| performs all its tasks on the
+  // |blocking_task_runner_|. However, we want the low disk space callback to be
+  // run on the UI thread.
+  base::OnceClosure on_low_disk_space_callback =
+      base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
+                         base::BindOnce(&CaptureModeController::OnLowDiskSpace,
+                                        weak_ptr_factory_.GetWeakPtr()));
+
   DCHECK(current_video_file_path_.empty());
   recording_start_time_ = base::TimeTicks::Now();
   current_video_file_path_ = BuildVideoPath(base::Time::Now());
   video_file_handler_ = VideoFileHandler::Create(
-      task_runner_, current_video_file_path_, kVideoBufferCapacityBytes);
+      blocking_task_runner_, current_video_file_path_,
+      kVideoBufferCapacityBytes, kLowDiskSpaceThresholdInBytes,
+      std::move(on_low_disk_space_callback));
   video_file_handler_.AsyncCall(&VideoFileHandler::Initialize)
       .Then(on_video_file_status_);
 
@@ -838,6 +858,18 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
 
 void CaptureModeController::InterruptVideoRecording() {
   ShowVideoRecordingStoppedNotification();
+  EndVideoRecording();
+}
+
+void CaptureModeController::OnLowDiskSpace() {
+  DCHECK(base::CurrentUIThread::IsSet());
+
+  low_disk_space_threshold_reached_ = true;
+  // We end the video recording normally (i.e. we don't consider this to be a
+  // failure). The low disk space threashold was chosen to be big enough to
+  // allow the remaining chunks to be saved normally. However,
+  // |low_disk_space_threshold_reached_| will be used to display a different
+  // message in the notification.
   EndVideoRecording();
 }
 

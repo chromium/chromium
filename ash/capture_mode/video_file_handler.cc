@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
 
 namespace ash {
@@ -23,11 +24,14 @@ constexpr size_t kReservedNumberOfChunks = 100;
 base::SequenceBound<VideoFileHandler> VideoFileHandler::Create(
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     const base::FilePath& path,
-    size_t max_buffered_bytes) {
+    size_t max_buffered_bytes,
+    size_t low_disk_space_threshold_bytes,
+    base::OnceClosure on_low_disk_space_callback) {
   DCHECK(base::CurrentUIThread::IsSet());
 
-  return base::SequenceBound<VideoFileHandler>(blocking_task_runner, path,
-                                               max_buffered_bytes);
+  return base::SequenceBound<VideoFileHandler>(
+      blocking_task_runner, path, max_buffered_bytes,
+      low_disk_space_threshold_bytes, std::move(on_low_disk_space_callback));
 }
 
 bool VideoFileHandler::Initialize() {
@@ -94,8 +98,13 @@ bool VideoFileHandler::FlushBufferedChunks() {
 }
 
 VideoFileHandler::VideoFileHandler(const base::FilePath& path,
-                                   size_t max_buffered_bytes)
-    : path_(path), max_buffered_bytes_(max_buffered_bytes) {
+                                   size_t max_buffered_bytes,
+                                   size_t low_disk_space_threshold_bytes,
+                                   base::OnceClosure on_low_disk_space_callback)
+    : path_(path),
+      max_buffered_bytes_(max_buffered_bytes),
+      low_disk_space_threshold_bytes_(low_disk_space_threshold_bytes),
+      on_low_disk_space_callback_(std::move(on_low_disk_space_callback)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(max_buffered_bytes_);
 
@@ -113,6 +122,21 @@ void VideoFileHandler::AppendToFile(const std::string& chunk) {
 
   success_ &=
       file_.WriteAtCurrentPosAndCheck(base::as_bytes(base::make_span(chunk)));
+
+  if (!on_low_disk_space_callback_)
+    return;
+
+  const int64_t remaining_disk_bytes =
+      base::SysInfo::AmountOfFreeDiskSpace(path_);
+  if (remaining_disk_bytes >= 0 &&
+      size_t{remaining_disk_bytes} < low_disk_space_threshold_bytes_) {
+    // Note that a low disk space is not considered an IO failure, and should
+    // not affect |success_|. It simply means that the available disk space is
+    // now below the threshold set by the owner of this object, and should not
+    // affect the actual writing of the chunks until the file system actually
+    // fails to write.
+    std::move(on_low_disk_space_callback_).Run();
+  }
 }
 
 }  // namespace ash
