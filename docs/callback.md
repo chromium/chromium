@@ -191,6 +191,47 @@ helper in the [base::PassThrough CL](https://chromium-review.googlesource.com/c/
 If this would be helpful for you, please let danakj@chromium.org know or ping
 the CL.
 
+### Chaining callbacks across different task runners
+
+```cpp
+// The task runner for a different thread.
+scoped_refptr<base::SequencedTaskRunner> other_task_runner = ...;
+
+// A function to compute some interesting result, except it can only be run
+// safely from `other_task_runner` and not the current thread.
+int ComputeResult();
+
+base::OnceCallback<int()> compute_result_cb = base::BindOnce(&ComputeResult);
+
+// Task runner for the current thread.
+scoped_refptr<base::SequencedTaskRunner> current_task_runner =
+    base::SequencedTaskRunnerHandle::Get();
+
+// A function to accept the result, except it can only be run safely from the
+// current thread.
+void ProvideResult(int result);
+
+base::OnceCallback<void(int)> provide_result_cb =
+    base::BindOnce(&ProvideResult);
+```
+
+Using `Then()` to join `compute_result_cb` and `provide_result_cb` directly
+would be inappropriate. `ComputeResult()` and `ProvideResult()` would run on the
+same thread which isn't safe. However, `base::BindPostTask()` can be used to
+ensure `provide_result_cb` will run on `current_task_runner`.
+
+```cpp
+// The following two statements post a task to `other_task_runner` to run
+// `task`. This will invoke ComputeResult() on a different thread to get the
+// result value then post a task back to `current_task_runner` to invoke
+// ProvideResult() with the result.
+OnceClosure task =
+    std::move(compute_result_cb)
+        .Then(base::BindPostTask(current_task_runner,
+                                 std::move(provide_result_cb)));
+other_task_runner->PostTask(FROM_HERE, std::move(task));
+```
+
 ## Quick reference for basic stuff
 
 ### Binding A Bare Function
