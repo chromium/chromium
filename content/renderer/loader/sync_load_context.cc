@@ -179,6 +179,10 @@ bool SyncLoadContext::OnReceivedRedirect(
   return true;
 }
 
+void SyncLoadContext::EvictFromBackForwardCache() {
+  return;
+}
+
 void SyncLoadContext::FollowRedirect() {
   if (!signals_->RestartAfterRedirect()) {
     CancelRedirect();

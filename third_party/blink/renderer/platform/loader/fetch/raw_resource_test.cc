@@ -67,6 +67,7 @@ class RawResourceTest : public testing::Test {
     void DidFinishLoadingBody() override {}
     void DidFailLoadingBody() override {}
     void DidCancelLoadingBody() override {}
+    void EvictFromBackForwardCache() override {}
   };
 
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>

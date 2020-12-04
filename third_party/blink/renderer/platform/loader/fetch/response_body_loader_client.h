@@ -25,6 +25,9 @@ class ResponseBodyLoaderClient : public GarbageCollectedMixin {
 
   // Called when the loader cancelled loading the body.
   virtual void DidCancelLoadingBody() = 0;
+
+  // Called when the body loader is suspended and the data pipe is drained.
+  virtual void EvictFromBackForwardCache() = 0;
 };
 
 }  // namespace blink

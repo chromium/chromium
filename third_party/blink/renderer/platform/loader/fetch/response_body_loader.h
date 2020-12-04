@@ -99,6 +99,8 @@ class PLATFORM_EXPORT ResponseBodyLoader final
   bool IsSuspended() const { return suspended_; }
   bool IsDrained() const { return drained_; }
 
+  void EvictFromBackForwardCacheIfDrained();
+
   void Trace(Visitor*) const override;
 
   // The maximal number of bytes consumed in a task. When there are more bytes
@@ -117,6 +119,7 @@ class PLATFORM_EXPORT ResponseBodyLoader final
   void DidFinishLoadingBody() override;
   void DidFailLoadingBody() override;
   void DidCancelLoadingBody() override;
+  void EvictFromBackForwardCache() override;
 
   // BytesConsumer::Client implementation.
   void OnStateChange() override;

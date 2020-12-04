@@ -202,6 +202,8 @@ class CORE_EXPORT LocalFrame final
       Frame* child) override;
   void DidFocus() override;
 
+  void EvictFromBackForwardCache();
+
   void DidChangeThemeColor();
   void DidChangeBackgroundColor(SkColor background_color, bool color_adjust);
 
@@ -773,8 +775,6 @@ class CORE_EXPORT LocalFrame final
   void DidFreeze();
   void DidResume();
   void SetContextPaused(bool);
-
-  void EvictFromBackForwardCache();
 
   HitTestResult HitTestResultForVisualViewportPos(
       const IntPoint& pos_in_viewport);

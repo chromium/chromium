@@ -72,6 +72,8 @@ void ExtensionLocalizationPeer::OnReceivedResponse(
   response_head_ = std::move(head);
 }
 
+void ExtensionLocalizationPeer::EvictFromBackForwardCache() {}
+
 void ExtensionLocalizationPeer::OnStartLoadingResponseBody(
     mojo::ScopedDataPipeConsumerHandle body) {
   data_pipe_state_.body_state_ = DataPipeState::BodyState::kReadingBody;

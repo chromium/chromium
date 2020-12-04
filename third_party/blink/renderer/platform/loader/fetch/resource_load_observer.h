@@ -96,6 +96,11 @@ class PLATFORM_EXPORT ResourceLoadObserver
                               int64_t encoded_data_length,
                               IsInternalRequest) = 0;
 
+  // Evict the page from BackForwardCache. Should be called when handling an
+  // event which can't proceed if the page is in BackForwardCache and can't be
+  // easily deferred to handle later, for example network redirect handling.
+  virtual void EvictFromBackForwardCache() {}
+
   virtual void Trace(Visitor*) const {}
 };
 
