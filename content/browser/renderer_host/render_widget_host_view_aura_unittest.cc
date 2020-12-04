@@ -6470,41 +6470,6 @@ TEST_F(RenderWidgetHostViewAuraInputMethodTest,
   input_method->RemoveObserver(this);
 }
 
-class RenderWidgetHostViewAuraInputMethodFocusTest
-    : public RenderWidgetHostViewAuraInputMethodTest,
-      public testing::WithParamInterface<bool> {
- public:
-  RenderWidgetHostViewAuraInputMethodFocusTest() = default;
-  ~RenderWidgetHostViewAuraInputMethodFocusTest() override = default;
-
-  bool ignore_input_events() { return GetParam(); }
-};
-
-INSTANTIATE_TEST_SUITE_P(RenderWidgetHostViewAuraInputMethodFocusTest,
-                         RenderWidgetHostViewAuraInputMethodFocusTest,
-                         testing::Bool());
-
-TEST_P(RenderWidgetHostViewAuraInputMethodFocusTest, OnFocusLost) {
-  render_widget_host_delegate()->set_should_ignore_input_events(
-      ignore_input_events());
-
-  ui::InputMethod* input_method = view_->GetInputMethod();
-  if (input_method != input_method_) {
-    // Some platforms doesn't support mocking input method. In that case, ignore this test.
-    return;
-  }
-  EXPECT_EQ(input_method, input_method_);
-  ActivateViewForTextInputManager(view_, ui::TEXT_INPUT_TYPE_TEXT);
-  input_method->SetFocusedTextInputClient(view_);
-
-  EXPECT_EQ(input_method->GetTextInputClient(), view_);
-  view_->OnWindowFocused(nullptr, view_->GetNativeView());
-  if (ignore_input_events())
-    EXPECT_EQ(input_method->GetTextInputClient(), view_);
-  else
-    EXPECT_EQ(input_method->GetTextInputClient(), nullptr);
-}
-
 #if defined(OS_WIN)
 class MockInputMethodKeyboardController final
     : public ui::InputMethodKeyboardController {

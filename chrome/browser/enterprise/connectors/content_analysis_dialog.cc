@@ -17,6 +17,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
@@ -209,6 +210,20 @@ void ContentAnalysisDialog::AcceptButtonCallback() {
 void ContentAnalysisDialog::CancelButtonCallback() {
   if (delegate_)
     delegate_->Cancel(is_warning());
+}
+
+void ContentAnalysisDialog::SuccessCallback() {
+#if defined(USE_AURA)
+  if (web_contents_) {
+    // It's possible focus has been lost and gained back incorrectly if the user
+    // clicked on the page between the time the scan started and the time the
+    // dialog closes. This results in the behaviour detailed in
+    // crbug.com/1139050. The fix is to preemptively take back focus when this
+    // dialog closes on its own.
+    web_contents_->SetIgnoreInputEvents(false);
+    web_contents_->Focus();
+  }
+#endif
 }
 
 bool ContentAnalysisDialog::ShouldShowCloseButton() const {
@@ -460,6 +475,9 @@ void ContentAnalysisDialog::SetupButtons() {
   } else {
     // Include no buttons otherwise.
     DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
+    DialogDelegate::SetCancelCallback(
+        base::BindOnce(&ContentAnalysisDialog::SuccessCallback,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 

@@ -1846,15 +1846,10 @@ void RenderWidgetHostViewAura::OnWindowFocused(aura::Window* gained_focus,
     return;
   }
 
-  // Only lose focus if the associated tab doesn't want input. This ensures
-  // focus losses from clicking on a page while it has a modal dialog won't
-  // break it's text cursor after the dialog goes away.
-  if (!host()->IsIgnoringInputEvents()) {
-    host()->SetActive(false);
-    host()->LostFocus();
+  host()->SetActive(false);
+  host()->LostFocus();
 
-    DetachFromInputMethod(false);
-  }
+  DetachFromInputMethod(false);
 
   // TODO(wjmaclean): Do we need to let TouchSelectionControllerClientAura
   // handle this, just in case it stomps on a new highlight in another view

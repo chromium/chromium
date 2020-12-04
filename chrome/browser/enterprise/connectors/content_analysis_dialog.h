@@ -208,6 +208,10 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   void AcceptButtonCallback();
   void CancelButtonCallback();
 
+  // This callback used by DialogDelegate::SetCancelCallback and is used to
+  // ensure the auto-closing success dialog handles focus correctly.
+  void SuccessCallback();
+
   std::unique_ptr<ContentAnalysisDelegate> delegate_;
 
   content::WebContents* web_contents_;
