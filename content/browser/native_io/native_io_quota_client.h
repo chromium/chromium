@@ -5,9 +5,7 @@
 #ifndef CONTENT_BROWSER_NATIVE_IO_NATIVE_IO_QUOTA_CLIENT_H_
 #define CONTENT_BROWSER_NATIVE_IO_NATIVE_IO_QUOTA_CLIENT_H_
 
-#include "base/macros.h"
-#include "base/memory/weak_ptr.h"
-#include "content/browser/native_io/native_io_quota_client.h"
+#include "base/sequence_checker.h"
 #include "content/common/content_export.h"
 #include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_client_type.h"
@@ -26,6 +24,9 @@ class CONTENT_EXPORT NativeIOQuotaClient : public storage::QuotaClient {
  public:
   NativeIOQuotaClient();
 
+  NativeIOQuotaClient(const NativeIOQuotaClient&) = delete;
+  NativeIOQuotaClient& operator=(const NativeIOQuotaClient&) = delete;
+
   // QuotaClient.
   void OnQuotaManagerDestroyed() override;
   void GetOriginUsage(const url::Origin& origin,
@@ -36,19 +37,16 @@ class CONTENT_EXPORT NativeIOQuotaClient : public storage::QuotaClient {
   void GetOriginsForHost(blink::mojom::StorageType type,
                          const std::string& host,
                          GetOriginsForHostCallback callback) override;
-  void DeleteOriginData(
-      const url::Origin& origin,
-      blink::mojom::StorageType type,
-      storage::QuotaClient::DeleteOriginDataCallback callback) override;
+  void DeleteOriginData(const url::Origin& origin,
+                        blink::mojom::StorageType type,
+                        DeleteOriginDataCallback callback) override;
   void PerformStorageCleanup(blink::mojom::StorageType type,
                              PerformStorageCleanupCallback callback) override;
-
-  static storage::QuotaClientType GetClientTypeFromOwner(NativeIOOwner owner);
 
  private:
   ~NativeIOQuotaClient() override;
 
-  DISALLOW_COPY_AND_ASSIGN(NativeIOQuotaClient);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace content
