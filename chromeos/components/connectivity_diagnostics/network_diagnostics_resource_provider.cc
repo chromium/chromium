@@ -108,6 +108,20 @@ constexpr WebUiResource kResources[] = {
      IDR_CR_COMPONENTS_CHROMEOS_NETWORK_DIAGNOSTICS_WARNING_ICON},
 };
 
+struct StringMap {
+  const char* name;
+  const char* value;
+};
+
+// TODO(crbug/1142857): Localize these strings after UX approval.
+constexpr StringMap kPlaceholderStrings[] = {
+    {"NetworkDiagnosticsConnectionGroup", "Connection"},
+    {"NetworkDiagnosticsWifiGroup", "WiFi"},
+    {"NetworkDiagnosticsGatewayGroup", "Gateway"},
+    {"NetworkDiagnosticsFirewallGroup", "Firewall"},
+    {"NetworkDiagnosticsDnsGroup", "DNS"},
+};
+
 }  // namespace
 
 void AddResources(content::WebUIDataSource* html_source) {
@@ -116,6 +130,9 @@ void AddResources(content::WebUIDataSource* html_source) {
 
   for (const auto& resource : kResources)
     html_source->AddResourcePath(resource.name, resource.id);
+
+  for (const auto& str : kPlaceholderStrings)
+    html_source->AddString(str.name, str.value);
 }
 
 }  // namespace network_diagnostics

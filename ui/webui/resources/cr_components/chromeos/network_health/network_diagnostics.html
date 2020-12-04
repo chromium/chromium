@@ -1,49 +1,28 @@
 <link rel="import" href="../../../html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_components/chromeos/network_health/network_diagnostics_mojo.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
 <link rel="import" href="../../../cr_elements/cr_button/cr_button.html">
 <link rel="import" href="../../../html/i18n_behavior.html">
+<link rel="import" href="network_diagnostics_mojo.html">
+<link rel="import" href="network_diagnostics_types.html">
+<link rel="import" href="routine_group.html">
 
 <dom-module id="network-diagnostics">
   <template>
-    <style>
-      .routine-container {
-        align-items: center;
-        border: 2px solid rgb(175, 175, 175);
-        display: flex;
-        height: 30px;
-        margin: 10px;
-        padding: 5px;
-      }
-
-      .routine-icon {
-        height: 25px;
-        padding-inline-end: 10px;
-        width: auto;
-      }
-
-      .routine-name {
-        flex: 1;
-        font-size: 1rem;
-      }
-    </style>
-    <template is="dom-repeat" items="[[routines_]]" as="routine">
-      <div class="routine-container" aria-label="[[i18n(routine.name)]]"
-           aria-description="[[routine.ariaDescription]]">
-        <img class="routine-icon" src="[[getRoutineIcon_(routine.result)]]">
-        <div aria-hidden="true" class="routine-name">
-          [[i18n(routine.name)]]
-        </div>
-        <div aria-hidden="true" hidden="[[!routine.resultMsg]]">
-          [[routine.resultMsg]]
-        </div>
-
-        <template is="dom-if" if="[[routine.running]]">
-          <paper-spinner-lite active></paper-spinner-lite>
-        </template>
-      </div>
-    </template>
+    <routine-group name="[[i18n('NetworkDiagnosticsConnectionGroup')]]"
+        routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.CONNECTION)]]">
+    </routine-group>
+    <routine-group name="[[i18n('NetworkDiagnosticsWifiGroup')]]"
+        routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.WIFI)]]">
+    </routine-group>
+    <routine-group name="[[i18n('NetworkDiagnosticsGatewayGroup')]]"
+        routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.GATEWAY)]]">
+    </routine-group>
+    <routine-group name="[[i18n('NetworkDiagnosticsFirewallGroup')]]"
+        routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.FIREWALL)]]">
+    </routine-group>
+    <routine-group name="[[i18n('NetworkDiagnosticsDnsGroup')]]"
+        routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.DNS)]]">
+    </routine-group>
   </template>
   <script src="network_diagnostics.js"></script>
 </dom-module>

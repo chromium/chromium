@@ -1,4 +1,3 @@
-
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -11,57 +10,19 @@
 const diagnosticsMojom = chromeos.networkDiagnostics.mojom;
 
 /**
- * A routine response from the Network Diagnostics mojo service.
- * @typedef {{
- *   verdict: chromeos.networkDiagnostics.mojom.RoutineVerdict,
- * }}
- * RoutineResponse can optionally have a `problems` field, which is an array of
- * enums relevant to the routine run. Unfortunately the closure compiler cannot
- * handle optional object fields.
- */
-let RoutineResponse;
-
-/**
- * A network diagnostics routine. Holds descriptive information about the
- * routine, and it's transient state.
- * @typedef {{
- *   name: string,
- *   type: !RoutineType,
- *   running: boolean,
- *   resultMsg: string,
- *   result: ?RoutineResponse,
- * }}
- */
-let Routine;
-
-/**
- * Definition for all Network diagnostic routine types. This enum is intended
- * to be used as an index in an array of routines.
- * @enum {number}
- */
-const RoutineType = {
-  LAN_CONNECTIVITY: 0,
-  SIGNAL_STRENGTH: 1,
-  GATEWAY_PING: 2,
-  SECURE_WIFI: 3,
-  DNS_RESOLVER: 4,
-  DNS_LATENCY: 5,
-  DNS_RESOLUTION: 6,
-  HTTP_FIREWALL: 7,
-  HTTPS_FIREWALL: 8,
-  HTTPS_LATENCY: 9,
-};
-
-/**
  * Helper function to create a routine object.
  * @param {string} name
  * @param {!RoutineType} type
+ * @param {!RoutineGroup} group
+ * @param {!function()} func
  * @return {!Routine} Routine object
  */
-function createRoutine(name, type) {
+function createRoutine(name, type, group, func) {
   return {
     name: name,
     type: type,
+    group: group,
+    func: func,
     running: false,
     resultMsg: '',
     result: null,
@@ -84,30 +45,103 @@ Polymer({
     routines_: {
       type: Array,
       value: function() {
+        const routineGroups = [
+          {
+            group: RoutineGroup.CONNECTION,
+            routines: [
+              {
+                name: 'NetworkDiagnosticsLanConnectivity',
+                type: RoutineType.LAN_CONNECTIVITY,
+                func: () => this.networkDiagnostics_.lanConnectivity(),
+              },
+            ]
+          },
+          {
+            group: RoutineGroup.WIFI,
+            routines: [
+              {
+                name: 'NetworkDiagnosticsSignalStrength',
+                type: RoutineType.SIGNAL_STRENGTH,
+                func: () => this.networkDiagnostics_.signalStrength(),
+              },
+              {
+                name: 'NetworkDiagnosticsHasSecureWiFiConnection',
+                type: RoutineType.SECURE_WIFI,
+                func: () => this.networkDiagnostics_.hasSecureWiFiConnection(),
+              },
+            ]
+          },
+          {
+            group: RoutineGroup.GATEWAY,
+            routines: [
+              {
+                name: 'NetworkDiagnosticsGatewayCanBePinged',
+                type: RoutineType.GATEWAY_PING,
+                func: () => this.networkDiagnostics_.gatewayCanBePinged(),
+              },
+            ]
+          },
+          {
+            group: RoutineGroup.FIREWALL,
+            routines: [
+              {
+                name: 'NetworkDiagnosticsHttpFirewall',
+                type: RoutineType.HTTP_FIREWALL,
+                func: () => this.networkDiagnostics_.httpFirewall(),
+              },
+              {
+                name: 'NetworkDiagnosticsHttpsFirewall',
+                type: RoutineType.HTTPS_FIREWALL,
+                func: () => this.networkDiagnostics_.httpsFirewall(),
+              },
+              {
+                name: 'NetworkDiagnosticsHttpsLatency',
+                type: RoutineType.HTTPS_LATENCY,
+                func: () => this.networkDiagnostics_.httpsLatency(),
+              },
+            ]
+          },
+          {
+            group: RoutineGroup.DNS,
+            routines: [
+              {
+                name: 'NetworkDiagnosticsDnsResolverPresent',
+                type: RoutineType.DNS_RESOLVER,
+                func: () => this.networkDiagnostics_.dnsResolverPresent(),
+              },
+              {
+                name: 'NetworkDiagnosticsDnsLatency',
+                type: RoutineType.DNS_LATENCY,
+                func: () => this.networkDiagnostics_.dnsLatency(),
+              },
+              {
+                name: 'NetworkDiagnosticsDnsResolution',
+                type: RoutineType.DNS_RESOLUTION,
+                func: () => this.networkDiagnostics_.dnsResolution(),
+              },
+            ]
+          },
+        ];
         const routines = [];
-        routines[RoutineType.LAN_CONNECTIVITY] = createRoutine(
-            'NetworkDiagnosticsLanConnectivity', RoutineType.LAN_CONNECTIVITY);
-        routines[RoutineType.SIGNAL_STRENGTH] = createRoutine(
-            'NetworkDiagnosticsSignalStrength', RoutineType.SIGNAL_STRENGTH);
-        routines[RoutineType.GATEWAY_PING] = createRoutine(
-            'NetworkDiagnosticsGatewayCanBePinged', RoutineType.GATEWAY_PING);
-        routines[RoutineType.SECURE_WIFI] = createRoutine(
-            'NetworkDiagnosticsHasSecureWiFiConnection',
-            RoutineType.SECURE_WIFI);
-        routines[RoutineType.DNS_RESOLVER] = createRoutine(
-            'NetworkDiagnosticsDnsResolverPresent', RoutineType.DNS_RESOLVER);
-        routines[RoutineType.DNS_LATENCY] = createRoutine(
-            'NetworkDiagnosticsDnsLatency', RoutineType.DNS_LATENCY);
-        routines[RoutineType.DNS_RESOLUTION] = createRoutine(
-            'NetworkDiagnosticsDnsResolution', RoutineType.DNS_RESOLUTION);
-        routines[RoutineType.HTTP_FIREWALL] = createRoutine(
-            'NetworkDiagnosticsHttpFirewall', RoutineType.HTTP_FIREWALL);
-        routines[RoutineType.HTTPS_FIREWALL] = createRoutine(
-            'NetworkDiagnosticsHttpsFirewall', RoutineType.HTTPS_FIREWALL);
-        routines[RoutineType.HTTPS_LATENCY] = createRoutine(
-            'NetworkDiagnosticsHttpsLatency', RoutineType.HTTPS_LATENCY);
+
+        for (const group of routineGroups) {
+          for (const routine of group.routines) {
+            routines[routine.type] = createRoutine(
+                routine.name, routine.type, group.group, routine.func);
+          }
+        }
+
         return routines;
       }
+    },
+
+    /**
+     * Enum of Routine Groups
+     * @private {Object}
+     */
+    RoutineGroup_: {
+      type: Object,
+      value: RoutineGroup,
     }
   },
 
@@ -160,6 +194,17 @@ Polymer({
   },
 
   /**
+   * Runs all supported network diagnostics routines.
+   * @param {!PolymerDeepPropertyChange} routines
+   * @param {Number} group
+   * @return {!Array<!Routine>}
+   * @private
+   */
+  getRoutineGroup_(routines, group) {
+    return routines.base.filter(r => r.group === group);
+  },
+
+  /**
    * @param {!Event} event
    * @private
    */
@@ -179,48 +224,8 @@ Polymer({
         `routines_.${type}.ariaDescription`,
         this.i18n('NetworkDiagnosticsRunning'));
 
-    switch (type) {
-      case RoutineType.LAN_CONNECTIVITY:
-        this.networkDiagnostics_.lanConnectivity().then(
-            result => this.evaluateRoutine_(type, result));
-        break;
-      case RoutineType.SIGNAL_STRENGTH:
-        this.networkDiagnostics_.signalStrength().then(
-            result => this.evaluateRoutine_(type, result));
-        break;
-      case RoutineType.GATEWAY_PING:
-        this.networkDiagnostics_.gatewayCanBePinged().then(
-            result => this.evaluateRoutine_(type, result));
-        break;
-      case RoutineType.SECURE_WIFI:
-        this.networkDiagnostics_.hasSecureWiFiConnection().then(
-            result => this.evaluateRoutine_(type, result));
-        break;
-      case RoutineType.DNS_RESOLVER:
-        this.networkDiagnostics_.dnsResolverPresent().then(
-            result => this.evaluateRoutine_(type, result));
-        break;
-      case RoutineType.DNS_LATENCY:
-        this.networkDiagnostics_.dnsLatency().then(
-            result => this.evaluateRoutine_(type, result));
-        break;
-      case RoutineType.DNS_RESOLUTION:
-        this.networkDiagnostics_.dnsResolution().then(
-            result => this.evaluateRoutine_(type, result));
-        break;
-      case RoutineType.HTTP_FIREWALL:
-        this.networkDiagnostics_.httpFirewall().then(
-            result => this.evaluateRoutine_(type, result));
-        break;
-      case RoutineType.HTTPS_FIREWALL:
-        this.networkDiagnostics_.httpsFirewall().then(
-            result => this.evaluateRoutine_(type, result));
-        break;
-      case RoutineType.HTTPS_LATENCY:
-        this.networkDiagnostics_.httpsLatency().then(
-            result => this.evaluateRoutine_(type, result));
-        break;
-    }
+    this.routines_[type].func().then(
+        result => this.evaluateRoutine_(type, result));
   },
 
   /**
@@ -236,29 +241,6 @@ Polymer({
     const resultMsg = this.getRoutineResult_(this.routines_[type]);
     this.set(routine + '.resultMsg', resultMsg);
     this.set(routine + '.ariaDescription', resultMsg);
-  },
-
-  /**
-   * Helper function to get the icon for a routine based on the result.
-   * @param {RoutineResponse} result
-   * @return {string}
-   * @private
-   */
-  getRoutineIcon_(result) {
-    if (!result) {
-      return 'test_not_run.png';
-    }
-
-    switch (result.verdict) {
-      case diagnosticsMojom.RoutineVerdict.kNoProblem:
-        return 'test_passed.png';
-      case diagnosticsMojom.RoutineVerdict.kProblem:
-        return 'test_failed.png';
-      case diagnosticsMojom.RoutineVerdict.kNotRun:
-        return 'test_canceled.png';
-    }
-
-    return '';
   },
 
   /**
