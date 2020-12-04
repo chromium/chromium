@@ -34,6 +34,8 @@ namespace {
 // Image buttons.
 constexpr int kImageButtonSizeDip = 40;
 constexpr int kActionButtonBetweenSpacing = 8;
+// The width of the focus ring.
+constexpr int kFocusRingWidth = 2;
 
 }  // namespace
 
@@ -62,7 +64,7 @@ class SearchResultImageButton : public views::ImageButton {
 
   void SetButtonImage(const gfx::ImageSkia& source, int icon_dimension);
 
-  int GetInkDropRadius() const;
+  int GetButtonRadius() const;
   const char* GetClassName() const override;
 
   SearchResultActionsView* parent_;
@@ -121,7 +123,7 @@ void SearchResultImageButton::OnGestureEvent(ui::GestureEvent* event) {
 std::unique_ptr<views::InkDropRipple>
 SearchResultImageButton::CreateInkDropRipple() const {
   const gfx::Point center = GetLocalBounds().CenterPoint();
-  const int ripple_radius = GetInkDropRadius();
+  const int ripple_radius = GetButtonRadius();
   gfx::Rect bounds(center.x() - ripple_radius, center.y() - ripple_radius,
                    2 * ripple_radius, 2 * ripple_radius);
   SkColor ripple_color =
@@ -152,11 +154,11 @@ void SearchResultImageButton::OnPaintBackground(gfx::Canvas* canvas) {
   if (HasFocus() || parent_->GetSelectedAction() == tag()) {
     cc::PaintFlags circle_flags;
     circle_flags.setAntiAlias(true);
-    circle_flags.setColor(
-        AppListColorProvider::Get()->GetSearchResultViewHighlightColor());
-    circle_flags.setStyle(cc::PaintFlags::kFill_Style);
-    canvas->DrawCircle(GetLocalBounds().CenterPoint(), GetInkDropRadius(),
-                       circle_flags);
+    circle_flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
+    circle_flags.setStyle(cc::PaintFlags::kStroke_Style);
+    circle_flags.setStrokeWidth(kFocusRingWidth);
+    canvas->DrawCircle(GetLocalBounds().CenterPoint(),
+                       GetButtonRadius() - kFocusRingWidth, circle_flags);
   }
 }
 
@@ -168,7 +170,7 @@ void SearchResultImageButton::SetButtonImage(const gfx::ImageSkia& source,
                gfx::Size(icon_dimension, icon_dimension)));
 }
 
-int SearchResultImageButton::GetInkDropRadius() const {
+int SearchResultImageButton::GetButtonRadius() const {
   return width() / 2;
 }
 

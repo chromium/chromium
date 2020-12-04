@@ -72,9 +72,6 @@ constexpr float kCardifyIconScale = 0.84f;
 // The drag and drop icon scaling up or down animation transition duration.
 constexpr int kDragDropAppIconScaleTransitionInMs = 200;
 
-// The color of the focus ring within a folder.
-constexpr SkColor kFolderGridFocusRingColor = gfx::kGoogleBlue600;
-
 // The color of an item selected via right-click context menu.
 constexpr SkColor kContextSelection =
     SkColorSetA(SK_ColorWHITE, 41);  // 16% opacity
@@ -691,9 +688,10 @@ void AppListItemView::PaintButtonContents(gfx::Canvas* canvas) {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     if (delegate_->KeyboardTraversalEngaged()) {
-      flags.setColor(apps_grid_view_->is_in_folder()
-                         ? kFolderGridFocusRingColor
-                         : GetAppListConfig().grid_selected_color());
+      flags.setColor(
+          apps_grid_view_->is_in_folder()
+              ? AppListColorProvider::Get()->GetFolderItemFocusRingColor()
+              : AppListColorProvider::Get()->GetFocusRingColor());
       flags.setStyle(cc::PaintFlags::kStroke_Style);
       flags.setStrokeWidth(kFocusRingWidth);
     } else {

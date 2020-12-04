@@ -41,6 +41,9 @@ namespace ash {
 
 namespace {
 
+// The width of the focus ring.
+constexpr int kFocusRingWidth = 2;
+
 constexpr int kSearchTileWidth = 80;
 constexpr int kSearchTileTopPadding = 4;
 constexpr int kSearchTitleSpacing = 7;
@@ -298,20 +301,19 @@ void SearchResultTileItemView::PaintButtonContents(gfx::Canvas* canvas) {
   gfx::Rect rect(GetContentsBounds());
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setStyle(cc::PaintFlags::kFill_Style);
+  flags.setStyle(cc::PaintFlags::kStroke_Style);
+  flags.setStrokeWidth(kFocusRingWidth);
+  flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
+
   if (IsSuggestedAppTileShownInAppPage()) {
     rect.ClampToCenteredSize(AppListConfig::instance().grid_focus_size());
-    flags.setColor(
-        AppListColorProvider::Get()->GetSearchResultViewInkDropColor());
     canvas->DrawRoundRect(gfx::RectF(rect),
                           AppListConfig::instance().grid_focus_corner_radius(),
                           flags);
   } else {
     const int kLeftRightPadding = (rect.width() - kIconSelectedSize) / 2;
-    rect.Inset(kLeftRightPadding, 0);
-    rect.set_height(kIconSelectedSize);
-    flags.setColor(
-        AppListColorProvider::Get()->GetSearchResultViewInkDropColor());
+    rect.Inset(kLeftRightPadding, kFocusRingWidth);
+    rect.set_height(kIconSelectedSize - 2 * kFocusRingWidth);
     canvas->DrawRoundRect(gfx::RectF(rect), kIconSelectedCornerRadius, flags);
   }
 }

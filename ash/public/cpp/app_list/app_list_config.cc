@@ -314,7 +314,6 @@ AppListConfig::AppListConfig(AppListConfigType type)
       page_flip_zone_size_(20),
       grid_tile_spacing_in_folder_(8),
       blur_radius_(30),
-      grid_selected_color_(gfx::kGoogleBlue300),
       page_transition_duration_(base::TimeDelta::FromMilliseconds(250)),
       overscroll_page_transition_duration_(
           base::TimeDelta::FromMilliseconds(50)),
@@ -461,7 +460,6 @@ AppListConfig::AppListConfig(const AppListConfig& base_config,
                    scale_x,
                    inner_tile_scale_y)),
       blur_radius_(base_config.blur_radius_),
-      grid_selected_color_(base_config.grid_selected_color_),
       page_transition_duration_(base_config.page_transition_duration_),
       overscroll_page_transition_duration_(
           base_config.overscroll_page_transition_duration_),

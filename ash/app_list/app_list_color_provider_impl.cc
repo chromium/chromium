@@ -186,6 +186,18 @@ SkColor AppListColorProviderImpl::GetSearchResultViewHighlightColor() const {
       SkColorSetA(gfx::kGoogleGrey900, 0x12));
 }
 
+SkColor AppListColorProviderImpl::GetFocusRingColor() const {
+  return DeprecatedGetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorActive,
+      gfx::kGoogleBlue300);
+}
+
+SkColor AppListColorProviderImpl::GetFolderItemFocusRingColor() const {
+  return DeprecatedGetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorActive,
+      gfx::kGoogleBlue600);
+}
+
 float AppListColorProviderImpl::GetFolderBackgrounBlurSigma() const {
   return static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault);
 }

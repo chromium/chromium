@@ -65,8 +65,6 @@ constexpr int kSearchBoxFocusRingWidth = 2;
 // Padding between the focus ring and the search box view
 constexpr int kSearchBoxFocusRingPadding = 4;
 
-constexpr SkColor kSearchBoxFocusRingColor = gfx::kGoogleBlue300;
-
 constexpr int kSearchBoxFocusRingCornerRadius = 28;
 
 // Minimum amount of characters required to enable autocomplete.
@@ -210,7 +208,7 @@ void SearchBoxView::OnPaintBackground(gfx::Canvas* canvas) {
     bounds.Inset(-kSearchBoxFocusRingPadding, -kSearchBoxFocusRingPadding);
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(kSearchBoxFocusRingColor);
+    flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
     flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
     flags.setStrokeWidth(kSearchBoxFocusRingWidth);
     canvas->DrawRoundRect(bounds, kSearchBoxFocusRingCornerRadius, flags);

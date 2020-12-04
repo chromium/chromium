@@ -34,7 +34,6 @@ namespace ash {
 namespace {
 
 constexpr SkColor kRippleColor = SkColorSetA(gfx::kGoogleGrey100, 0x0F);
-constexpr SkColor kFocusRingColor = gfx::kGoogleBlue300;
 constexpr int kMaxTextWidth = 192;
 constexpr int kBlurRadius = 5;
 constexpr int kIconMarginDip = 8;
@@ -61,7 +60,7 @@ SearchResultSuggestionChipView::SearchResultSuggestionChipView(
                           base::Unretained(this)));
 
   SetInstallFocusRingOnFocus(true);
-  focus_ring()->SetColor(kFocusRingColor);
+  focus_ring()->SetColor(AppListColorProvider::Get()->GetFocusRingColor());
 
   SetInkDropMode(InkDropMode::ON);
   views::InstallPillHighlightPathGenerator(this);
@@ -126,9 +125,10 @@ void SearchResultSuggestionChipView::OnPaintBackground(gfx::Canvas* canvas) {
 
   // Focus Ring should only be visible when keyboard traversal is occurring.
   if (view_delegate_->KeyboardTraversalEngaged())
-    focus_ring()->SetColor(kFocusRingColor);
+    focus_ring()->SetColor(AppListColorProvider::Get()->GetFocusRingColor());
   else
-    focus_ring()->SetColor(SkColorSetA(kFocusRingColor, 0));
+    focus_ring()->SetColor(
+        SkColorSetA(AppListColorProvider::Get()->GetFocusRingColor(), 0));
 }
 
 void SearchResultSuggestionChipView::OnFocus() {

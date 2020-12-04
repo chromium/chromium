@@ -132,6 +132,14 @@ SkColor TestAppListColorProvider::GetSearchResultViewInkDropColor() const {
   return SkColorSetA(SK_ColorWHITE, 0x17);
 }
 
+SkColor TestAppListColorProvider::GetFocusRingColor() const {
+  return gfx::kGoogleBlue300;
+}
+
+SkColor TestAppListColorProvider::GetFolderItemFocusRingColor() const {
+  return gfx::kGoogleBlue600;
+}
+
 float TestAppListColorProvider::GetFolderBackgrounBlurSigma() const {
   return 30.0f;
 }

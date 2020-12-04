@@ -46,6 +46,8 @@ class AppListColorProviderImpl : public AppListColorProvider {
   SkColor GetSeparatorColor() const override;
   SkColor GetSearchResultViewHighlightColor() const override;
   SkColor GetSearchResultViewInkDropColor() const override;
+  SkColor GetFocusRingColor() const override;
+  SkColor GetFolderItemFocusRingColor() const override;
   float GetFolderBackgrounBlurSigma() const override;
 
  private:

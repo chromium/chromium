@@ -47,8 +47,8 @@ constexpr int kDetailsLineHeight = 16;
 
 // URL color.
 constexpr SkColor kUrlColor = gfx::kGoogleBlue600;
-// Search result border color.
-constexpr SkColor kResultBorderColor = SkColorSetARGB(0xFF, 0xE5, 0xE5, 0xE5);
+// The width of the focus bar.
+constexpr int kFocusBarWidth = 3;
 
 // Delta applied to font size of all AppListSearchResult titles.
 constexpr int kSearchResultTitleTextSizeDelta = 2;
@@ -271,17 +271,6 @@ void SearchResultView::PaintButtonContents(gfx::Canvas* canvas) {
       text_bounds,
       AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor());
 
-  // Possibly call FillRect a second time (these colours are partially
-  // transparent, so the previous FillRect is not redundant).
-  if (selected() && !actions_view()->HasSelectedAction()) {
-    canvas->FillRect(
-        content_rect,
-        AppListColorProvider::Get()->GetSearchResultViewHighlightColor());
-  }
-
-  gfx::Rect border_bottom = gfx::SubtractRects(rect, content_rect);
-  canvas->FillRect(border_bottom, kResultBorderColor);
-
   if (title_text_ && details_text_) {
     gfx::Size title_size(text_bounds.width(), kTitleLineHeight);
     gfx::Size details_size(text_bounds.width(), kDetailsLineHeight);
@@ -303,6 +292,33 @@ void SearchResultView::PaintButtonContents(gfx::Canvas* canvas) {
     centered_title_rect.ClampToCenteredSize(title_size);
     title_text_->SetDisplayRect(centered_title_rect);
     title_text_->Draw(canvas);
+  }
+
+  // Possibly call FillRect a second time (these colours are partially
+  // transparent, so the previous FillRect is not redundant).
+  if (selected() && !actions_view()->HasSelectedAction()) {
+    // Fill search result view row item.
+    canvas->FillRect(
+        content_rect,
+        AppListColorProvider::Get()->GetSearchResultViewHighlightColor());
+
+    SkPath path;
+    gfx::Rect focus_ring_bounds = content_rect;
+    focus_ring_bounds.set_x(focus_ring_bounds.x() - kFocusBarWidth);
+    focus_ring_bounds.set_width(kFocusBarWidth * 2);
+    path.addRRect(SkRRect::MakeRectXY(RectToSkRect(focus_ring_bounds),
+                                      kFocusBarWidth, kFocusBarWidth));
+    canvas->ClipPath(path, true);
+
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+    flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
+    flags.setStyle(cc::PaintFlags::kStroke_Style);
+    flags.setStrokeWidth(kFocusBarWidth);
+    gfx::Point top_point = content_rect.origin();
+    gfx::Point bottom_point =
+        top_point + gfx::Vector2d(0, content_rect.height());
+    canvas->DrawLine(top_point, bottom_point, flags);
   }
 }
 

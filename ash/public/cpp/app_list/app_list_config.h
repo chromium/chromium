@@ -148,7 +148,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
     return grid_tile_spacing_in_folder_;
   }
   int blur_radius() const { return blur_radius_; }
-  SkColor grid_selected_color() const { return grid_selected_color_; }
   base::TimeDelta page_transition_duration() const {
     return page_transition_duration_;
   }
@@ -432,10 +431,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
 
   // The blur radius used in the app list.
   const int blur_radius_;
-
-  // The keyboard select color for grid views, which are on top of a black
-  // shield view for new design (12% white).
-  const SkColor grid_selected_color_;
 
   // Duration for page transition.
   const base::TimeDelta page_transition_duration_;
