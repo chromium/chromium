@@ -1388,55 +1388,6 @@ void AutofillManager::SelectFieldOptionsDidChange(const FormData& form) {
     TriggerRefill(form);
 }
 
-void AutofillManager::OnLoadedServerPredictions(
-    std::string response,
-    const std::vector<FormSignature>& queried_form_signatures) {
-  // Get the current valid FormStructures represented by
-  // |queried_form_signatures|.
-  std::vector<FormStructure*> queried_forms;
-  queried_forms.reserve(queried_form_signatures.size());
-  for (const auto& form_signature : queried_form_signatures) {
-    FindCachedFormsBySignature(form_signature, &queried_forms);
-  }
-
-  // Each form signature in |queried_form_signatures| is supposed to be unique,
-  // and therefore appear only once. This ensures that
-  // FindCachedFormsBySignature() produces an output without duplicates in the
-  // forms.
-  // TODO(crbug/1064709): |queried_forms| could be a set data structure; their
-  // order should be irrelevant.
-  DCHECK_EQ(queried_forms.size(),
-            std::set<FormStructure*>(queried_forms.begin(), queried_forms.end())
-                .size());
-
-  // If there are no current forms corresponding to the queried signatures, drop
-  // the query response.
-  if (queried_forms.empty())
-    return;
-
-  // Parse and store the server predictions.
-  FormStructure::ParseApiQueryResponse(std::move(response), queried_forms,
-                                       queried_form_signatures,
-                                       form_interactions_ukm_logger());
-
-  // Will log quality metrics for each FormStructure based on the presence of
-  // autocomplete attributes, if available.
-  for (FormStructure* cur_form : queried_forms) {
-    cur_form->LogQualityMetricsBasedOnAutocomplete(
-        form_interactions_ukm_logger());
-  }
-
-  // Send field type predictions to the renderer so that it can possibly
-  // annotate forms with the predicted types or add console warnings.
-  driver()->SendAutofillTypePredictionsToRenderer(queried_forms);
-
-  LogAutofillTypePredictionsAvailable(log_manager_, queried_forms);
-
-  // Forward form structures to the password generation manager to detect
-  // account creation forms.
-  driver()->PropagateAutofillPredictions(queried_forms);
-}
-
 void AutofillManager::OnCreditCardFetched(bool did_succeed,
                                           const CreditCard* credit_card,
                                           const base::string16& cvc) {

@@ -176,6 +176,14 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
   FormStructure* ParseFormForTest(const FormData& form) {
     return ParseForm(form, nullptr);
   }
+
+  // A public wrapper that calls |OnLoadedServerPredictions| for testing
+  // purposes only.
+  void OnLoadedServerPredictionsForTest(
+      std::string response,
+      const std::vector<FormSignature>& queried_form_signatures) {
+    OnLoadedServerPredictions(response, queried_form_signatures);
+  }
 #endif  // UNIT_TEST
 
  protected:

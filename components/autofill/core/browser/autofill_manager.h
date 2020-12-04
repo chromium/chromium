@@ -47,7 +47,6 @@ class RectF;
 namespace autofill {
 
 class AutofillDataModel;
-class AutofillDownloadManager;
 class AutofillExternalDelegate;
 class AutofillField;
 class AutofillClient;
@@ -270,14 +269,6 @@ class AutofillManager : public AutofillHandler,
                                          app_locale, submitted_form);
   }
 
-  // A public wrapper that calls |OnLoadedServerPredictions| for testing
-  // purposes only.
-  void OnLoadedServerPredictionsForTest(
-      std::string response,
-      const std::vector<FormSignature>& queried_form_signatures) {
-    OnLoadedServerPredictions(response, queried_form_signatures);
-  }
-
   // A public wrapper that calls |MakeFrontendID| for testing purposes only.
   int MakeFrontendIDForTest(const std::string& cc_backend_id,
                             const std::string& profile_backend_id) const {
@@ -423,11 +414,6 @@ class AutofillManager : public AutofillHandler,
     bool should_display_gpay_logo = false;
     SuppressReason suppress_reason = SuppressReason::kNotSuppressed;
   };
-
-  // AutofillDownloadManager::Observer:
-  void OnLoadedServerPredictions(
-      std::string response,
-      const std::vector<FormSignature>& queried_form_signatures) override;
 
   // CreditCardAccessManager::Accessor
   void OnCreditCardFetched(
