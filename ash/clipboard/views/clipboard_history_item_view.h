@@ -109,10 +109,6 @@ class ClipboardHistoryItemView : public views::View {
   // Returns the name of the accessible node.
   virtual base::string16 GetAccessibleName() const = 0;
 
-  // Returns whether the item view is enabled. The item view is disabled when
-  // it is not allowed to read clipboard data.
-  bool IsItemEnabled() const;
-
   const ClipboardHistoryItem* clipboard_history_item() const {
     return clipboard_history_item_;
   }

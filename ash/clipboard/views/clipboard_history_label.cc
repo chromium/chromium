@@ -32,12 +32,8 @@ void ClipboardHistoryLabel::OnThemeChanged() {
   // TODO(andrewxu): remove this line after https://crbug.com/1143009 is fixed.
   ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
 
-  const auto color_type =
-      GetEnabled()
-          ? ash::AshColorProvider::ContentLayerType::kTextColorPrimary
-          : ash::AshColorProvider::ContentLayerType::kTextColorSecondary;
-  SetEnabledColor(
-      ash::AshColorProvider::Get()->GetContentLayerColor(color_type));
+  SetEnabledColor(ash::AshColorProvider::Get()->GetContentLayerColor(
+      ash::AshColorProvider::ContentLayerType::kTextColorPrimary));
 }
 
 }  // namespace ash

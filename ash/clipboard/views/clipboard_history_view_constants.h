@@ -41,9 +41,6 @@ constexpr int kImageRoundedCornerRadius = 4;
 // The thickness of the image border.
 constexpr int kImageBorderThickness = 1;
 
-// The opacity of the image shown in a disabled item view.
-constexpr float kDisabledImageAlpha = 0.38f;
-
 }  // namespace ClipboardHistoryViews
 }  // namespace ash
 

@@ -12,8 +12,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/clipboard/clipboard.h"
-#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
-#include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -26,17 +24,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-
-namespace {
-bool IsDataReadAllowed(const ui::DataTransferEndpoint* source,
-                       const ui::DataTransferEndpoint* destination) {
-  ui::DataTransferPolicyController* policy_controller =
-      ui::DataTransferPolicyController::Get();
-  if (!policy_controller)
-    return true;
-  return policy_controller->IsDataReadAllowed(source, destination);
-}
-}  // namespace
 
 // static
 std::unique_ptr<ClipboardHistoryMenuModelAdapter>
@@ -74,14 +61,6 @@ void ClipboardHistoryMenuModelAdapter::Run(
                                           /*notify_if_restricted=*/false);
   for (const auto& item : items) {
     model_->AddItem(command_id, base::string16());
-
-    // Enable or disable the command depending on whether its corresponding
-    // clipboard history item is allowed to read or not.
-    // This clipboard read isn't initiated by the user, that's why it shouldn't
-    // notify if the clipboard is restricted.
-    model_->SetEnabledAt(model_->GetIndexOfCommandId(command_id),
-                         IsDataReadAllowed(item.data().source(), &data_dst));
-
     item_snapshots_.emplace(command_id, item);
     ++command_id;
   }
@@ -274,34 +253,26 @@ void ClipboardHistoryMenuModelAdapter::AdvancePseudoFocusFromSelectedItem(
   SelectMenuItemWithCommandId(next_selected_item_command);
 }
 
-base::Optional<int>
-ClipboardHistoryMenuModelAdapter::CalculateSelectedCommandIdAfterDeletion(
+int ClipboardHistoryMenuModelAdapter::CalculateSelectedCommandIdAfterDeletion(
     int command_id) const {
   // If the menu item view to be deleted is the last one, Cancel()
   // should be called so this function should not be hit.
   DCHECK_GT(item_snapshots_.size(), 1u);
 
-  auto start_item = item_snapshots_.find(command_id);
-  DCHECK(start_item != item_snapshots_.cend());
+  auto item_to_delete = item_snapshots_.find(command_id);
+  DCHECK(item_to_delete != item_snapshots_.cend());
 
-  // Search in the forward direction.
-  auto check_function = [this](const auto& key_value) -> bool {
-    return model_->IsEnabledAt(model_->GetIndexOfCommandId(key_value.first));
-  };
-  auto selectable_iter_forward = std::find_if(
-      std::next(start_item, 1), item_snapshots_.cend(), check_function);
-  if (selectable_iter_forward != item_snapshots_.cend())
-    return selectable_iter_forward->first;
+  // Use the menu item right after the one to be deleted if any. Otherwise,
+  // select the previous one.
 
-  // If no selectable item is found, then search in the reverse direction.
-  auto selectable_iter_reverse =
-      std::find_if(std::make_reverse_iterator(start_item),
-                   item_snapshots_.crend(), check_function);
-  if (selectable_iter_reverse != item_snapshots_.crend())
-    return selectable_iter_reverse->first;
+  auto next_item_iter = item_to_delete;
+  ++next_item_iter;
+  if (next_item_iter != item_snapshots_.cend())
+    return next_item_iter->first;
 
-  // No other selectable item, then returns the invalid id.
-  return base::nullopt;
+  auto previous_item_iter = item_to_delete;
+  --previous_item_iter;
+  return previous_item_iter->first;
 }
 
 void ClipboardHistoryMenuModelAdapter::RemoveItemView(int command_id) {

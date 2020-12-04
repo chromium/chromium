@@ -234,10 +234,6 @@ void ClipboardHistoryItemView::RecordButtonPressedHistogram() const {
   }
 }
 
-bool ClipboardHistoryItemView::IsItemEnabled() const {
-  return container_->GetEnabled();
-}
-
 gfx::Size ClipboardHistoryItemView::CalculatePreferredSize() const {
   const int preferred_width =
       views::MenuConfig::instance().touchable_menu_width;
@@ -283,7 +279,7 @@ Action ClipboardHistoryItemView::CalculateActionForMainButtonClick() const {
 }
 
 bool ClipboardHistoryItemView::ShouldHighlight() const {
-  return pseudo_focus_ == PseudoFocus::kMainButton && IsItemEnabled();
+  return pseudo_focus_ == PseudoFocus::kMainButton;
 }
 
 bool ClipboardHistoryItemView::ShouldShowDeleteButton() const {

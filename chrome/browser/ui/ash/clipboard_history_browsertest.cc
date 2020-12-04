@@ -866,26 +866,9 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMockDLPBrowserTest, Basics) {
       GetContextMenu()->GetMenuItemViewAtForTest(/*index=*/0);
   GetEventGenerator()->MoveMouseTo(
       inaccessible_menu_item_view->GetBoundsInScreen().CenterPoint());
-
-  // Verify that `inaccessible_menu_item_view` cannot be selected by mouse
-  // hovering. It does not respond to mouse click either.
-  EXPECT_FALSE(inaccessible_menu_item_view->IsSelected());
   GetEventGenerator()->ClickLeftButton();
+
+  // Verify that the text is not pasted and menu is closed after click.
   EXPECT_EQ("", base::UTF16ToUTF8(textfield_->GetText()));
-
-  // Move the selection through the arrow key. Then delete the item by the
-  // backspace key. After deletion, `inaccessible_menu_item_view` is left.
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
-  PressAndRelease(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
-  EXPECT_TRUE(VerifyClipboardTextData({"B"}));
-  EXPECT_EQ(1, GetContextMenu()->GetMenuItemsCount());
-
-  // Move the selection through the arrow key again. Verify that
-  // `inaccessible_menu_item_view` cannot be selected. Pressing the backspace
-  // key does not delete the item.
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
-  PressAndRelease(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
-  EXPECT_FALSE(inaccessible_menu_item_view->IsSelected());
-  EXPECT_TRUE(VerifyClipboardTextData({"B"}));
-  EXPECT_EQ(1, GetContextMenu()->GetMenuItemsCount());
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
 }

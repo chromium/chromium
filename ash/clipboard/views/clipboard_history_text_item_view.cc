@@ -33,7 +33,6 @@ class ClipboardHistoryTextItemView::TextContentsView
     auto* label =
         AddChildView(std::make_unique<ClipboardHistoryLabel>(container->text_));
     layout->SetFlexForView(label, /*flex_weight=*/1);
-    label->SetEnabled(container->IsItemEnabled());
 
     InstallDeleteButton();
   }

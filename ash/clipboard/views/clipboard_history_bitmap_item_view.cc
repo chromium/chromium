@@ -19,7 +19,6 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
@@ -51,13 +50,11 @@ class FadeImageView : public RoundedImageView,
  public:
   FadeImageView(const ClipboardHistoryItem* clipboard_history_item,
                 const ClipboardHistoryResourceManager* resource_manager,
-                float opacity,
                 base::RepeatingClosure update_callback)
       : RoundedImageView(ClipboardHistoryViews::kImageRoundedCornerRadius,
                          RoundedImageView::Alignment::kCenter),
         resource_manager_(resource_manager),
         clipboard_history_item_(*clipboard_history_item),
-        opacity_(opacity),
         update_callback_(update_callback) {
     resource_manager_->AddObserver(this);
     SetImageFromModel();
@@ -119,12 +116,7 @@ class FadeImageView : public RoundedImageView,
         *(resource_manager_->GetImageModel(clipboard_history_item_)
               .GetImage()
               .ToImageSkia());
-    if (opacity_ != 1.f) {
-      SetImage(
-          gfx::ImageSkiaOperations::CreateTransparentImage(image, opacity_));
-    } else {
       SetImage(image);
-    }
 
     // When fading in a new image, the ImageView's image has likely changed
     // sizes.
@@ -148,9 +140,6 @@ class FadeImageView : public RoundedImageView,
 
   // The ClipboardHistoryItem represented by this class.
   const ClipboardHistoryItem clipboard_history_item_;
-
-  // The opacity of the image content.
-  const float opacity_;
 
   // Used to notify of image changes.
   base::RepeatingClosure update_callback_;
@@ -231,16 +220,11 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
     // if menu items have their own layers, the part beyond the container's
     // bounds is still visible when the context menu is in overflow.
 
-    const float image_opacity =
-        container_->IsItemEnabled()
-            ? 1.f
-            : ClipboardHistoryViews::kDisabledImageAlpha;
     const auto* clipboard_history_item = container_->clipboard_history_item();
     switch (container_->data_format_) {
       case ui::ClipboardInternalFormat::kHtml:
         return std::make_unique<FadeImageView>(
             clipboard_history_item, container_->resource_manager_,
-            image_opacity,
             base::BindRepeating(&BitmapContentsView::UpdateImageViewSize,
                                 weak_ptr_factory_.GetWeakPtr()));
       case ui::ClipboardInternalFormat::kBitmap: {
@@ -249,10 +233,6 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
             RoundedImageView::Alignment::kCenter);
         gfx::ImageSkia bitmap_image = gfx::ImageSkia::CreateFrom1xBitmap(
             clipboard_history_item->data().bitmap());
-        if (image_opacity != 1.f) {
-          bitmap_image = gfx::ImageSkiaOperations::CreateTransparentImage(
-              bitmap_image, image_opacity);
-        }
         image_view->SetImage(bitmap_image);
         return image_view;
       }

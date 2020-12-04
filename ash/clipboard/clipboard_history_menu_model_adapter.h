@@ -105,11 +105,9 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   // `reverse` is true).
   void AdvancePseudoFocusFromSelectedItem(bool reverse);
 
-  // Returns the command id of the menu item to be selected if any after the
-  // menu item specified by `command_id` is deleted. If no menu item is
-  // selectable after deletion, an absent value is returned.
-  base::Optional<int> CalculateSelectedCommandIdAfterDeletion(
-      int command_id) const;
+  // Returns the command id of the menu item to be selected after the
+  // menu item specified by `command_id` is deleted.
+  int CalculateSelectedCommandIdAfterDeletion(int command_id) const;
 
   // Removes the item view specified by `command_id` from the root menu.
   void RemoveItemView(int command_id);
