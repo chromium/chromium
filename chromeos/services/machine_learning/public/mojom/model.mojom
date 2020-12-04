@@ -34,7 +34,7 @@ enum BuiltinModelId {
   // The Smart Dim (20190221) ML model.
   SMART_DIM_20190221 = 3,
   // The Top Cat (20190722) ML model.
-  TOP_CAT_20190722 = 4,
+  UNSUPPORTED_TOP_CAT_20190722 = 4,
   // The Smart Dim (20190521) ML model.
   SMART_DIM_20190521 = 5,
   // The Search Ranker (20190923) ML model.

@@ -134,26 +134,6 @@ void AppLaunchEventLogger::OnGridClicked(const std::string& id) {
                                         weak_factory_.GetWeakPtr(), event));
 }
 
-void AppLaunchEventLogger::CreateRankings() {
-  const base::TimeDelta duration = base::Time::Now() - start_time_;
-  if (!ml_app_rank_provider_) {
-    ml_app_rank_provider_ = std::make_unique<MlAppRankProvider>();
-  }
-
-  ml_app_rank_provider_->CreateRankings(
-      app_features_map_,
-      ExponentialBucket(duration.InHours(), kTotalHoursBucketSizeMultiplier),
-      Bucketize(all_clicks_last_hour_->GetTotal(duration), kClickBuckets),
-      Bucketize(all_clicks_last_24_hours_->GetTotal(duration), kClickBuckets));
-}
-
-std::map<std::string, float> AppLaunchEventLogger::RetrieveRankings() {
-  if (!ml_app_rank_provider_) {
-    return {};
-  }
-  return ml_app_rank_provider_->RetrieveRankings();
-}
-
 std::string AppLaunchEventLogger::RemoveScheme(const std::string& id) {
   std::string app_id(id);
   if (!app_id.compare(0, strlen(kExtensionSchemeWithDelimiter),

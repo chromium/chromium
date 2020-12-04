@@ -15,7 +15,6 @@
 #include "base/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_event_logger.pb.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/ml_app_rank_provider.h"
 #include "extensions/browser/extension_registry.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -153,9 +152,6 @@ class AppLaunchEventLogger {
   // minutes.
   const std::unique_ptr<chromeos::power::ml::RecentEventsCounter>
       all_clicks_last_24_hours_;
-
-  // Empty until/unless CreateRankings is called.
-  std::unique_ptr<MlAppRankProvider> ml_app_rank_provider_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<AppLaunchEventLogger> weak_factory_;
