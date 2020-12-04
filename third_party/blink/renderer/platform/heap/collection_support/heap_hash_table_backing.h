@@ -15,16 +15,15 @@ namespace blink {
 
 template <typename Table>
 class HeapHashTableBacking final
-    : public WTF::ConditionalDestructor<
+    : public GarbageCollected<HeapHashTableBacking<Table>>,
+      public WTF::ConditionalDestructor<
           HeapHashTableBacking<Table>,
           std::is_trivially_destructible<typename Table::ValueType>::value> {
-  DISALLOW_NEW();
-  IS_GARBAGE_COLLECTED_TYPE();
-
  public:
   template <typename Backing>
-  static void* AllocateObject(size_t size);
+  static void* AllocateObject(size_t);
 
+  // Conditionally invoked via destructor.
   void Finalize();
 };
 
@@ -47,10 +46,9 @@ void* HeapHashTableBacking<Table>::AllocateObject(size_t size) {
   ThreadState* state =
       ThreadStateFor<ThreadingTrait<Backing>::kAffinity>::GetState();
   DCHECK(state->IsAllocationAllowed());
-  const char* type_name = WTF_HEAP_PROFILER_TYPE_NAME(Backing);
   return state->Heap().AllocateOnArenaIndex(
       state, size, BlinkGC::kHashTableArenaIndex, GCInfoTrait<Backing>::Index(),
-      type_name);
+      WTF_HEAP_PROFILER_TYPE_NAME(Backing));
 }
 
 template <typename Table>

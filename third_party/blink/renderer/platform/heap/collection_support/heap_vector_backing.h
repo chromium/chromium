@@ -20,26 +20,27 @@ namespace blink {
 
 template <typename T, typename Traits = WTF::VectorTraits<T>>
 class HeapVectorBacking final
-    : public WTF::ConditionalDestructor<HeapVectorBacking<T, Traits>,
+    : public GarbageCollected<HeapVectorBacking<T, Traits>>,
+      public WTF::ConditionalDestructor<HeapVectorBacking<T, Traits>,
                                         !Traits::kNeedsDestruction> {
-  DISALLOW_NEW();
-  IS_GARBAGE_COLLECTED_TYPE();
-
  public:
   template <typename Backing>
-  static void* AllocateObject(size_t size) {
-    ThreadState* state =
-        ThreadStateFor<ThreadingTrait<T>::kAffinity>::GetState();
-    DCHECK(state->IsAllocationAllowed());
-    const char* type_name = WTF_HEAP_PROFILER_TYPE_NAME(Backing);
-    return state->Heap().AllocateOnArenaIndex(
-        state, size, BlinkGC::kVectorArenaIndex, GCInfoTrait<Backing>::Index(),
-        type_name);
-  }
+  static void* AllocateObject(size_t);
 
   // Conditionally invoked via destructor.
   void Finalize();
 };
+
+// static
+template <typename T, typename Traits>
+template <typename Backing>
+void* HeapVectorBacking<T, Traits>::AllocateObject(size_t size) {
+  ThreadState* state = ThreadStateFor<ThreadingTrait<T>::kAffinity>::GetState();
+  DCHECK(state->IsAllocationAllowed());
+  return state->Heap().AllocateOnArenaIndex(
+      state, size, BlinkGC::kVectorArenaIndex, GCInfoTrait<Backing>::Index(),
+      WTF_HEAP_PROFILER_TYPE_NAME(Backing));
+}
 
 template <typename T, typename Traits>
 void HeapVectorBacking<T, Traits>::Finalize() {
