@@ -30,7 +30,7 @@ BorealisContextManagerImpl::BorealisContextManagerImpl(Profile* profile)
 BorealisContextManagerImpl::~BorealisContextManagerImpl() = default;
 
 void BorealisContextManagerImpl::StartBorealis(ResultCallback callback) {
-  if (context_ && task_queue_.empty()) {
+  if (IsRunning()) {
     std::move(callback).Run(GetResult());
     return;
   }
@@ -45,7 +45,14 @@ void BorealisContextManagerImpl::StartBorealis(ResultCallback callback) {
   }
 }
 
+bool BorealisContextManagerImpl::IsRunning() {
+  return context_ && task_queue_.empty();
+}
+
 void BorealisContextManagerImpl::ShutDownBorealis() {
+  // The VM is already off.
+  if (!context_)
+    return;
   // TODO(b/172178036): This could have been a task-sequence but that
   // abstraction is proving insufficient.
   vm_tools::concierge::StopVmRequest request;

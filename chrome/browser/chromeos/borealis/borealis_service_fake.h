@@ -26,12 +26,14 @@ class BorealisServiceFake : public BorealisService {
   BorealisContextManager& ContextManager() override;
   BorealisFeatures& Features() override;
   BorealisInstaller& Installer() override;
+  BorealisShutdownMonitor& ShutdownMonitor() override;
   BorealisWindowManager& WindowManager() override;
 
   void SetAppLauncherForTesting(BorealisAppLauncher* app_launcher);
   void SetContextManagerForTesting(BorealisContextManager* context_manager);
   void SetFeaturesForTesting(BorealisFeatures* features);
   void SetInstallerForTesting(BorealisInstaller* installer);
+  void SetShutdownMonitorForTesting(BorealisShutdownMonitor* shutdown_monitor);
   void SetWindowManagerForTesting(BorealisWindowManager* window_manager);
 
  private:
@@ -39,6 +41,7 @@ class BorealisServiceFake : public BorealisService {
   BorealisContextManager* context_manager_ = nullptr;
   BorealisFeatures* features_ = nullptr;
   BorealisInstaller* installer_ = nullptr;
+  BorealisShutdownMonitor* shutdown_monitor_ = nullptr;
   BorealisWindowManager* window_manager_ = nullptr;
 };
 

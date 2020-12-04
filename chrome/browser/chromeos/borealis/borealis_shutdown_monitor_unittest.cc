@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
+#include "chrome/browser/chromeos/borealis/borealis_context_manager_mock.h"
 #include "chrome/browser/chromeos/borealis/borealis_features.h"
 #include "chrome/browser/chromeos/borealis/borealis_service_fake.h"
 #include "chrome/test/base/testing_profile.h"
@@ -16,15 +16,6 @@
 
 namespace borealis {
 namespace {
-
-class BorealisContextManagerMock : public BorealisContextManager {
- public:
-  MOCK_METHOD(void,
-              StartBorealis,
-              (BorealisContextManager::ResultCallback),
-              ());
-  MOCK_METHOD(void, ShutDownBorealis, (), ());
-};
 
 class BorealisShutdownMonitorTest : public testing::Test {
  protected:

@@ -60,6 +60,9 @@ class BorealisContextManager : public KeyedService {
   // Starts the Borealis VM and/or runs the callback when it is running.
   virtual void StartBorealis(ResultCallback callback) = 0;
 
+  // Returns true if the VM is currently running.
+  virtual bool IsRunning() = 0;
+
   // Stop the current running state, re-initializing the context manager
   // to the state it was in prior to being started. All pending callbacks are
   // invoked with kCancelled result.

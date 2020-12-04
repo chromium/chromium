@@ -3157,6 +3157,8 @@ static_library("test_support") {
     "attestation/mock_enrollment_certificate_uploader.h",
     "attestation/mock_machine_certificate_uploader.cc",
     "attestation/mock_machine_certificate_uploader.h",
+    "borealis/borealis_context_manager_mock.cc",
+    "borealis/borealis_context_manager_mock.h",
     "borealis/borealis_service_fake.cc",
     "borealis/borealis_service_fake.h",
     "cert_provisioning/mock_cert_provisioning_scheduler.cc",

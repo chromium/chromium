@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "chrome/browser/chromeos/borealis/borealis_context.h"
-#include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
+#include "chrome/browser/chromeos/borealis/borealis_context_manager_mock.h"
 #include "chrome/browser/chromeos/borealis/borealis_installer.h"
 #include "chrome/browser/chromeos/borealis/borealis_metrics.h"
 #include "chrome/browser/chromeos/borealis/borealis_service_fake.h"
@@ -38,15 +38,6 @@ class BorealisInstallerMock : public borealis::BorealisInstaller {
   MOCK_METHOD0(Cancel, void());
   MOCK_METHOD1(AddObserver, void(Observer*));
   MOCK_METHOD1(RemoveObserver, void(Observer*));
-};
-
-class BorealisContextManagerMock : public borealis::BorealisContextManager {
- public:
-  MOCK_METHOD(void,
-              StartBorealis,
-              (BorealisContextManager::ResultCallback),
-              ());
-  MOCK_METHOD(void, ShutDownBorealis, (), ());
 };
 
 class BorealisInstallerViewBrowserTest : public DialogBrowserTest {

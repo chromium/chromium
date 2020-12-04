@@ -41,6 +41,11 @@ BorealisInstaller& BorealisServiceFake::Installer() {
   return *installer_;
 }
 
+BorealisShutdownMonitor& BorealisServiceFake::ShutdownMonitor() {
+  DCHECK(shutdown_monitor_);
+  return *shutdown_monitor_;
+}
+
 BorealisWindowManager& BorealisServiceFake::WindowManager() {
   DCHECK(window_manager_);
   return *window_manager_;
@@ -62,6 +67,11 @@ void BorealisServiceFake::SetFeaturesForTesting(BorealisFeatures* features) {
 
 void BorealisServiceFake::SetInstallerForTesting(BorealisInstaller* installer) {
   installer_ = installer;
+}
+
+void BorealisServiceFake::SetShutdownMonitorForTesting(
+    BorealisShutdownMonitor* shutdown_monitor) {
+  shutdown_monitor_ = shutdown_monitor;
 }
 
 void BorealisServiceFake::SetWindowManagerForTesting(

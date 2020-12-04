@@ -29,6 +29,7 @@ class BorealisContextManagerImpl : public BorealisContextManager {
 
   // BorealisContextManager:
   void StartBorealis(ResultCallback callback) override;
+  bool IsRunning() override;
   void ShutDownBorealis() override;
 
   // Public due to testing.

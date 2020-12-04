@@ -12,6 +12,7 @@ BorealisServiceImpl::BorealisServiceImpl(Profile* profile)
       context_manager_(profile),
       features_(profile_),
       installer_(profile_),
+      shutdown_monitor_(profile_),
       window_manager_(profile_) {}
 
 BorealisServiceImpl::~BorealisServiceImpl() = default;
@@ -30,6 +31,10 @@ BorealisFeatures& BorealisServiceImpl::Features() {
 
 BorealisInstaller& BorealisServiceImpl::Installer() {
   return installer_;
+}
+
+BorealisShutdownMonitor& BorealisServiceImpl::ShutdownMonitor() {
+  return shutdown_monitor_;
 }
 
 BorealisWindowManager& BorealisServiceImpl::WindowManager() {
