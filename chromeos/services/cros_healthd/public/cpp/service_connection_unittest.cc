@@ -218,11 +218,6 @@ class MockNetworkDiagnosticsRoutines : public NetworkDiagnosticsRoutines {
               HttpsLatency,
               (NetworkDiagnosticsRoutines::HttpsLatencyCallback),
               (override));
-  MOCK_METHOD(void,
-              VideoConferencing,
-              (const base::Optional<std::string>&,
-               NetworkDiagnosticsRoutines::VideoConferencingCallback),
-              (override));
 
   mojo::PendingRemote<NetworkDiagnosticsRoutines> pending_remote() {
     if (receiver_.is_bound()) {

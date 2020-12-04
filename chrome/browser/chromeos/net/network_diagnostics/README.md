@@ -168,26 +168,6 @@ Problems:
 * `kHighLatency`: HTTPS request latency is high.
 * `kVeryHighLatency`: HTTPS request latency is very high.
 
-#### VideoConferencing
-
-Tests the device's video conferencing capabalities by testing whether the device
-can:
-1. Contact either a default or specified STUN server via UDP.
-2. Contact either a default or specified STUN server via TCP.
-3. Reach common media endpoints.
-
-Problems:
-* `kPotentialProblemUdpFailure`: Failed requests to a STUN server via UDP.
-* `kPotentialProblemTcpFailure`: Failed requests to a STUN server via TCP.
-* `kPotentialProblemMediaFailure`: Failed to establish a TLS connection to media hostnames.
-* `kPotentialProblemUdpAndMediaFailure`: Failed requests to a STUN server via
-UDP and failed to establish a TLS connection to media hostnames.
-* `kUdpAndTcpFailure`: Failed requests to a STUN server via UDP and TCP.
-* `kTcpAndMediaFailure`: Failed requests to a STUN server via TCP and failed to
-established a TLS connection to media hostnames.
-* `kUdpAndTcpAndMediaFailure`: Failed requests to a STUN server via UDP and TCP,
-and failed to establish a TLS connection to media hostnames.
-
 [Network Health and Configuration]: https://docs.google.com/document/d/10DSy-jZXaRo9I9aq1UqERy76t7HkgGvInWk57pHEkzg
 [network_diagnostics.mojom]: https://source.chromium.org/chromium/chromium/src/+/master:chromeos/services/network_health/public/mojom/network_diagnostics.mojom?originalUrl=https:%2F%2Fcs.chromium.org%2F
 [NetworkHealthService]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/chromeos/net/network_health/network_health_service.h?originalUrl=https:%2F%2Fcs.chromium.org%2F

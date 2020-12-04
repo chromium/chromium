@@ -90,21 +90,6 @@ const std::array<uint8_t, kStunHeaderSize>& GetStunHeader();
 // Returns the traffic annotation tag for STUN traffic.
 net::NetworkTrafficAnnotationTag GetStunNetworkAnnotationTag();
 
-// Returns the ports used to speak to Google's STUN server over UDP.
-std::vector<int> GetUdpPortsForGoogleStunServer();
-
-// Returns the ports used to speak to a custom STUN server over UDP.
-std::vector<int> GetUdpPortsForCustomStunServer();
-
-// Returns the ports used to speak to Google's STUN server over TCP.
-std::vector<int> GetTcpPortsForGoogleStunServer();
-
-// Returns the ports used to speak to a custom STUN server over TCP.
-std::vector<int> GetTcpPortsForCustomStunServer();
-
-// Returns the list of urls related to Google media.
-std::vector<GURL> GetDefaultMediaUrls();
-
 }  // namespace util
 
 }  // namespace network_diagnostics
