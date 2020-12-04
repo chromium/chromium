@@ -59,7 +59,8 @@ class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
       : file_path_(trace_file_path),
         completion_callback_(std::move(callback)),
         may_block_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), write_priority})) {}
+            {base::MayBlock(), write_priority,
+             base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {}
 
   void ReceiveTraceChunk(std::unique_ptr<std::string> chunk) override {
     may_block_task_runner_->PostTask(
