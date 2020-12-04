@@ -148,14 +148,13 @@ gfx::TextStyle ConsumeStyle(FuzzedDataProvider* fdp) {
 }
 
 gfx::WordWrapBehavior ConsumeWordWrap(FuzzedDataProvider* fdp) {
-  switch (fdp->ConsumeIntegralInRange(0, 4)) {
+  // TODO(1150235): ELIDE_LONG_WORDS is not supported.
+  switch (fdp->ConsumeIntegralInRange(0, 3)) {
     case 0:
       return gfx::IGNORE_LONG_WORDS;
     case 1:
       return gfx::TRUNCATE_LONG_WORDS;
     case 2:
-      return gfx::ELIDE_LONG_WORDS;
-    case 3:
       return gfx::WRAP_LONG_WORDS;
     default:
       return gfx::IGNORE_LONG_WORDS;

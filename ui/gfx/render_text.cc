@@ -583,6 +583,9 @@ size_t RenderText::GetTextIndexOfLine(size_t line) {
 }
 
 void RenderText::SetWordWrapBehavior(WordWrapBehavior behavior) {
+  // TODO(1150235): ELIDE_LONG_WORDS is not supported.
+  DCHECK_NE(behavior, ELIDE_LONG_WORDS);
+
   if (word_wrap_behavior_ != behavior) {
     word_wrap_behavior_ = behavior;
     if (multiline_) {
