@@ -142,7 +142,7 @@ public class ChromePaymentRequestService
     // Implements BrowserPaymentRequest:
     @Override
     public PaymentApp getSelectedPaymentApp() {
-        return (PaymentApp) mPaymentUiService.getSelectedPaymentApp();
+        return mPaymentUiService.getSelectedPaymentApp();
     }
 
     // Implements BrowserPaymentRequest:
@@ -300,7 +300,7 @@ public class ChromePaymentRequestService
             }
 
             assert !mPaymentUiService.getPaymentApps().isEmpty();
-            PaymentApp selectedApp = (PaymentApp) mPaymentUiService.getSelectedPaymentApp();
+            PaymentApp selectedApp = mPaymentUiService.getSelectedPaymentApp();
             dimBackgroundIfNotBottomSheetPaymentHandler(selectedApp);
             mDidRecordShowEvent = true;
             mJourneyLogger.setEventOccurred(Event.SKIPPED_SHOW);
@@ -325,7 +325,7 @@ public class ChromePaymentRequestService
             return false;
         }
 
-        PaymentApp app = (PaymentApp) mPaymentUiService.getSelectedPaymentApp();
+        PaymentApp app = mPaymentUiService.getSelectedPaymentApp();
         if (app == null || !app.isReadyForMinimalUI() || TextUtils.isEmpty(app.accountBalance())) {
             return false;
         }
@@ -648,13 +648,13 @@ public class ChromePaymentRequestService
     // Implements BrowserPaymentRequest:
     @Override
     public void onInstrumentDetailsReady() {
-        // If the payment method was an Autofill credit card with an identifier, record its use.
-        PaymentApp selectedPaymentMethod = (PaymentApp) mPaymentUiService.getSelectedPaymentApp();
-        if (selectedPaymentMethod != null
-                && selectedPaymentMethod.getPaymentAppType() == PaymentAppType.AUTOFILL
-                && !selectedPaymentMethod.getIdentifier().isEmpty()) {
+        // If the payment app was an Autofill credit card with an identifier, record its use.
+        PaymentApp selectedPaymentApp = mPaymentUiService.getSelectedPaymentApp();
+        if (selectedPaymentApp != null
+                && selectedPaymentApp.getPaymentAppType() == PaymentAppType.AUTOFILL
+                && !selectedPaymentApp.getIdentifier().isEmpty()) {
             PersonalDataManager.getInstance().recordAndLogCreditCardUse(
-                    selectedPaymentMethod.getIdentifier());
+                    selectedPaymentApp.getIdentifier());
         }
 
         // Showing the app selector UI if we were previously skipping it so the loading

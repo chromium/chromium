@@ -338,6 +338,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     /** @return The payment apps. */
     public List<PaymentApp> getPaymentApps() {
         List<PaymentApp> paymentApps = new ArrayList<>();
+        if (mPaymentMethodsSection == null) return paymentApps;
         for (EditableOption each : mPaymentMethodsSection.getItems()) {
             paymentApps.add((PaymentApp) each);
         }
@@ -349,8 +350,10 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
      * @return The selected payment app or null if none selected.
      */
     @Nullable
-    public EditableOption getSelectedPaymentApp() {
-        return mPaymentMethodsSection.getSelectedItem();
+    public PaymentApp getSelectedPaymentApp() {
+        return mPaymentMethodsSection == null
+                ? null
+                : (PaymentApp) mPaymentMethodsSection.getSelectedItem();
     }
 
     /**
@@ -472,9 +475,9 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         // Do not show the Payment Request UI dialog even if the minimal UI is suppressed.
         mPaymentUisShowStateReconciler.onBottomSheetShown();
         mMinimalUi = new MinimalUICoordinator();
+        PaymentApp selectedApp = getSelectedPaymentApp();
         return mMinimalUi.show(chromeActivity,
-                BottomSheetControllerProvider.from(chromeActivity.getWindowAndroid()),
-                (PaymentApp) mPaymentMethodsSection.getSelectedItem(),
+                BottomSheetControllerProvider.from(chromeActivity.getWindowAndroid()), selectedApp,
                 mCurrencyFormatterMap.get(mRawTotal.amount.currency), mUiShoppingCart.getTotal(),
                 readyObserver, confirmObserver, dismissObserver);
     }
@@ -491,10 +494,12 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
             MinimalUICoordinator.ErrorAndCloseObserver onMinimalUiErroredAndClosed,
             Runnable onUiCompleted) {
         // Update records of the used payment app for sorting payment apps next time.
-        EditableOption selectedPaymentMethod = mPaymentMethodsSection.getSelectedItem();
-        PaymentPreferencesUtil.increasePaymentAppUseCount(selectedPaymentMethod.getIdentifier());
+        PaymentApp paymentApp = getSelectedPaymentApp();
+        assert paymentApp != null;
+        String selectedPaymentMethod = paymentApp.getIdentifier();
+        PaymentPreferencesUtil.increasePaymentAppUseCount(selectedPaymentMethod);
         PaymentPreferencesUtil.setPaymentAppLastUseDate(
-                selectedPaymentMethod.getIdentifier(), System.currentTimeMillis());
+                selectedPaymentMethod, System.currentTimeMillis());
 
         if (mMinimalUi != null) {
             mMinimalUi.onPaymentRequestComplete(result,
@@ -642,7 +647,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     public void onRetry(PaymentValidationErrors errors) {
         // Remove all payment apps except the selected one.
         assert mPaymentMethodsSection != null;
-        PaymentApp selectedApp = (PaymentApp) mPaymentMethodsSection.getSelectedItem();
+        PaymentApp selectedApp = getSelectedPaymentApp();
         assert selectedApp != null;
         mPaymentMethodsSection = new SectionInformation(PaymentRequestUI.DataType.PAYMENT_METHODS,
                 /* selection = */ 0, new ArrayList<>(Arrays.asList(selectedApp)));
@@ -698,9 +703,8 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
 
     /** @return The selected payment app type. */
     public @PaymentAppType int getSelectedPaymentAppType() {
-        return mPaymentMethodsSection != null && mPaymentMethodsSection.getSelectedItem() != null
-                ? ((PaymentApp) mPaymentMethodsSection.getSelectedItem()).getPaymentAppType()
-                : PaymentAppType.UNDEFINED;
+        PaymentApp paymentApp = getSelectedPaymentApp();
+        return paymentApp == null ? PaymentAppType.UNDEFINED : paymentApp.getPaymentAppType();
     }
 
     /** Sets the modifier for the order summary based on the given app, if any. */
@@ -758,7 +762,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
                                       .format(modifier.total.amount.value));
         }
 
-        updateOrderSummary((PaymentApp) mPaymentMethodsSection.getSelectedItem());
+        updateOrderSummary(getSelectedPaymentApp());
     }
 
     /**
@@ -927,18 +931,14 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     public boolean shouldShowShippingSection() {
         if (mParams.hasClosed() || !mParams.getPaymentOptions().requestShipping) return false;
 
-        if (mPaymentMethodsSection == null) return true;
-
-        PaymentApp selectedApp = (PaymentApp) mPaymentMethodsSection.getSelectedItem();
+        PaymentApp selectedApp = getSelectedPaymentApp();
         return selectedApp == null || !selectedApp.handlesShippingAddress();
     }
 
     // Implements PaymentUiService.Delegate:
     @Override
     public boolean shouldShowContactSection() {
-        PaymentApp selectedApp = (mPaymentMethodsSection == null)
-                ? null
-                : (PaymentApp) mPaymentMethodsSection.getSelectedItem();
+        PaymentApp selectedApp = getSelectedPaymentApp();
         if (mParams.hasClosed()) return false;
         PaymentOptions options = mParams.getPaymentOptions();
         if (options.requestPayerName && (selectedApp == null || !selectedApp.handlesPayerName())) {
@@ -1635,9 +1635,8 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
             mPaymentUisShowStateReconciler.onPaymentRequestUiClosed();
         }
         if (mPaymentMethodsSection != null) {
-            for (int i = 0; i < mPaymentMethodsSection.getSize(); i++) {
-                EditableOption option = mPaymentMethodsSection.getItem(i);
-                ((PaymentApp) option).dismissInstrument();
+            for (PaymentApp app : getPaymentApps()) {
+                app.dismissInstrument();
             }
             mPaymentMethodsSection = null;
         }
