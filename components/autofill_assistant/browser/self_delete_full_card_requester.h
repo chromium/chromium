@@ -27,14 +27,14 @@ class SelfDeleteFullCardRequester
  private:
   ~SelfDeleteFullCardRequester() override;
 
-  // payments::FullCardRequest::ResultDelegate:
+  // autofill::payments::FullCardRequest::ResultDelegate:
   void OnFullCardRequestSucceeded(
       const autofill::payments::FullCardRequest& /* full_card_request */,
       const autofill::CreditCard& card,
       const base::string16& cvc) override;
-
-  // payments::FullCardRequest::ResultDelegate:
-  void OnFullCardRequestFailed() override;
+  void OnFullCardRequestFailed(
+      autofill::payments::FullCardRequest::FailureType /* failure_type */)
+      override;
 
   ActionDelegate::GetFullCardCallback callback_;
 

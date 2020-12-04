@@ -42,7 +42,8 @@ class MockResultDelegate : public FullCardRequest::ResultDelegate,
                void(const payments::FullCardRequest&,
                     const CreditCard&,
                     const base::string16&));
-  MOCK_METHOD0(OnFullCardRequestFailed, void());
+  MOCK_METHOD1(OnFullCardRequestFailed,
+               void(payments::FullCardRequest::FailureType));
 };
 
 // The delegate responsible for displaying the unmask prompt UI.
@@ -402,7 +403,9 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForExpiredFullServerCard) {
 
 // Only one request at a time should be allowed.
 TEST_F(FullCardRequestTest, OneRequestAtATime) {
-  EXPECT_CALL(*result_delegate(), OnFullCardRequestFailed());
+  EXPECT_CALL(
+      *result_delegate(),
+      OnFullCardRequestFailed(FullCardRequest::FailureType::GENERIC_FAILURE));
   EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
   EXPECT_CALL(*ui_delegate(), OnUnmaskVerificationResult(_)).Times(0);
 
@@ -418,7 +421,7 @@ TEST_F(FullCardRequestTest, OneRequestAtATime) {
 
 // After the first request completes, it's OK to start the second request.
 TEST_F(FullCardRequestTest, SecondRequestOkAfterFirstFinished) {
-  EXPECT_CALL(*result_delegate(), OnFullCardRequestFailed()).Times(0);
+  EXPECT_CALL(*result_delegate(), OnFullCardRequestFailed(_)).Times(0);
   EXPECT_CALL(
       *result_delegate(),
       OnFullCardRequestSucceeded(testing::Ref(*request()),
@@ -450,7 +453,9 @@ TEST_F(FullCardRequestTest, SecondRequestOkAfterFirstFinished) {
 // If the user cancels the CVC prompt,
 // FullCardRequest::Delegate::OnFullCardRequestFailed() should be invoked.
 TEST_F(FullCardRequestTest, ClosePromptWithoutUserInput) {
-  EXPECT_CALL(*result_delegate(), OnFullCardRequestFailed());
+  EXPECT_CALL(
+      *result_delegate(),
+      OnFullCardRequestFailed(FullCardRequest::FailureType::PROMPT_CLOSED));
   EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
   EXPECT_CALL(*ui_delegate(), OnUnmaskVerificationResult(_)).Times(0);
 
@@ -464,7 +469,9 @@ TEST_F(FullCardRequestTest, ClosePromptWithoutUserInput) {
 // If the server provides an empty PAN with PERMANENT_FAILURE error,
 // FullCardRequest::Delegate::OnFullCardRequestFailed() should be invoked.
 TEST_F(FullCardRequestTest, PermanentFailure) {
-  EXPECT_CALL(*result_delegate(), OnFullCardRequestFailed());
+  EXPECT_CALL(*result_delegate(),
+              OnFullCardRequestFailed(
+                  FullCardRequest::FailureType::VERIFICATION_DECLINED));
   EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
   EXPECT_CALL(*ui_delegate(),
               OnUnmaskVerificationResult(AutofillClient::PERMANENT_FAILURE));
@@ -483,7 +490,9 @@ TEST_F(FullCardRequestTest, PermanentFailure) {
 // If the server provides an empty PAN with NETWORK_ERROR error,
 // FullCardRequest::Delegate::OnFullCardRequestFailed() should be invoked.
 TEST_F(FullCardRequestTest, NetworkError) {
-  EXPECT_CALL(*result_delegate(), OnFullCardRequestFailed());
+  EXPECT_CALL(
+      *result_delegate(),
+      OnFullCardRequestFailed(FullCardRequest::FailureType::GENERIC_FAILURE));
   EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
   EXPECT_CALL(*ui_delegate(),
               OnUnmaskVerificationResult(AutofillClient::NETWORK_ERROR));
@@ -502,7 +511,9 @@ TEST_F(FullCardRequestTest, NetworkError) {
 // If the server provides an empty PAN with TRY_AGAIN_FAILURE, the user can
 // manually cancel out of the dialog.
 TEST_F(FullCardRequestTest, TryAgainFailureGiveUp) {
-  EXPECT_CALL(*result_delegate(), OnFullCardRequestFailed());
+  EXPECT_CALL(
+      *result_delegate(),
+      OnFullCardRequestFailed(FullCardRequest::FailureType::PROMPT_CLOSED));
   EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
   EXPECT_CALL(*ui_delegate(),
               OnUnmaskVerificationResult(AutofillClient::TRY_AGAIN_FAILURE));
@@ -521,7 +532,7 @@ TEST_F(FullCardRequestTest, TryAgainFailureGiveUp) {
 // If the server provides an empty PAN with TRY_AGAIN_FAILURE, the user can
 // correct their mistake and resubmit.
 TEST_F(FullCardRequestTest, TryAgainFailureRetry) {
-  EXPECT_CALL(*result_delegate(), OnFullCardRequestFailed()).Times(0);
+  EXPECT_CALL(*result_delegate(), OnFullCardRequestFailed(_)).Times(0);
   EXPECT_CALL(*result_delegate(),
               OnFullCardRequestSucceeded(
                   testing::Ref(*request()),

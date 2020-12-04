@@ -64,7 +64,8 @@ class AutofillPaymentApp
       const autofill::payments::FullCardRequest& full_card_request,
       const autofill::CreditCard& card,
       const base::string16& cvc) override;
-  void OnFullCardRequestFailed() override;
+  void OnFullCardRequestFailed(
+      autofill::payments::FullCardRequest::FailureType failure_type) override;
 
   void RecordMissingFieldsForApp() const;
 

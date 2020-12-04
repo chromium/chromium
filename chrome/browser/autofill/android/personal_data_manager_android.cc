@@ -61,6 +61,7 @@ using ::base::android::JavaParamRef;
 using ::base::android::JavaRef;
 using ::base::android::ScopedJavaGlobalRef;
 using ::base::android::ScopedJavaLocalRef;
+using payments::FullCardRequest;
 
 Profile* GetProfile() {
   return ProfileManager::GetActiveUserProfile()->GetOriginalProfile();
@@ -79,7 +80,7 @@ void MaybeSetRawInfo(AutofillProfile* profile,
 
 // Self-deleting requester of full card details, including full PAN and the CVC
 // number.
-class FullCardRequester : public payments::FullCardRequest::ResultDelegate,
+class FullCardRequester : public FullCardRequest::ResultDelegate,
                           public base::SupportsWeakPtr<FullCardRequester> {
  public:
   FullCardRequester() {}
@@ -93,28 +94,28 @@ class FullCardRequester : public payments::FullCardRequest::ResultDelegate,
     jdelegate_.Reset(env, jdelegate);
 
     if (!card_) {
-      OnFullCardRequestFailed();
+      OnFullCardRequestFailed(FullCardRequest::FailureType::GENERIC_FAILURE);
       return;
     }
 
     content::WebContents* contents =
         content::WebContents::FromJavaWebContents(jweb_contents);
     if (!contents) {
-      OnFullCardRequestFailed();
+      OnFullCardRequestFailed(FullCardRequest::FailureType::GENERIC_FAILURE);
       return;
     }
 
     ContentAutofillDriverFactory* factory =
         ContentAutofillDriverFactory::FromWebContents(contents);
     if (!factory) {
-      OnFullCardRequestFailed();
+      OnFullCardRequestFailed(FullCardRequest::FailureType::GENERIC_FAILURE);
       return;
     }
 
     ContentAutofillDriver* driver =
         factory->DriverForFrame(contents->GetMainFrame());
     if (!driver) {
-      OnFullCardRequestFailed();
+      OnFullCardRequestFailed(FullCardRequest::FailureType::GENERIC_FAILURE);
       return;
     }
 
@@ -140,7 +141,8 @@ class FullCardRequester : public payments::FullCardRequest::ResultDelegate,
   }
 
   // payments::FullCardRequest::ResultDelegate:
-  void OnFullCardRequestFailed() override {
+  void OnFullCardRequestFailed(
+      FullCardRequest::FailureType failure_type) override {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_FullCardRequestDelegate_onFullCardError(env, jdelegate_);
     delete this;

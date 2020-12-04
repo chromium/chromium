@@ -82,7 +82,7 @@ void FullCardRequest::GetFullCard(
   // |result_delegate_| is already set, then immediately reject the new request
   // through the method parameter |result_delegate_|.
   if (result_delegate_) {
-    result_delegate_->OnFullCardRequestFailed();
+    result_delegate_->OnFullCardRequestFailed(FailureType::GENERIC_FAILURE);
     return;
   }
 
@@ -160,7 +160,7 @@ void FullCardRequest::OnUnmaskPromptAccepted(
 
 void FullCardRequest::OnUnmaskPromptClosed() {
   if (result_delegate_)
-    result_delegate_->OnFullCardRequestFailed();
+    result_delegate_->OnFullCardRequestFailed(FailureType::PROMPT_CLOSED);
 
   Reset();
 }
@@ -216,10 +216,15 @@ void FullCardRequest::OnDidGetRealPan(
 
     // Neither PERMANENT_FAILURE nor NETWORK_ERROR allow retry.
     case AutofillClient::PERMANENT_FAILURE:
-    // Intentional fall through.
+      if (result_delegate_) {
+        result_delegate_->OnFullCardRequestFailed(
+            FailureType::VERIFICATION_DECLINED);
+      }
+      Reset();
+      break;
     case AutofillClient::NETWORK_ERROR: {
       if (result_delegate_)
-        result_delegate_->OnFullCardRequestFailed();
+        result_delegate_->OnFullCardRequestFailed(FailureType::GENERIC_FAILURE);
       Reset();
       break;
     }

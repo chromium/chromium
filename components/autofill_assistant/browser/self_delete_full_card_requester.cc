@@ -18,6 +18,8 @@
 
 namespace autofill_assistant {
 
+using autofill::payments::FullCardRequest;
+
 SelfDeleteFullCardRequester::SelfDeleteFullCardRequester() {}
 
 void SelfDeleteFullCardRequester::GetFullCard(
@@ -30,14 +32,14 @@ void SelfDeleteFullCardRequester::GetFullCard(
   autofill::ContentAutofillDriverFactory* factory =
       autofill::ContentAutofillDriverFactory::FromWebContents(web_contents);
   if (!factory) {
-    OnFullCardRequestFailed();
+    OnFullCardRequestFailed(FullCardRequest::FailureType::GENERIC_FAILURE);
     return;
   }
 
   autofill::ContentAutofillDriver* driver =
       factory->DriverForFrame(web_contents->GetMainFrame());
   if (!driver) {
-    OnFullCardRequestFailed();
+    OnFullCardRequestFailed(FullCardRequest::FailureType::GENERIC_FAILURE);
     return;
   }
 
@@ -50,14 +52,15 @@ void SelfDeleteFullCardRequester::GetFullCard(
 SelfDeleteFullCardRequester::~SelfDeleteFullCardRequester() = default;
 
 void SelfDeleteFullCardRequester::OnFullCardRequestSucceeded(
-    const autofill::payments::FullCardRequest& /* full_card_request */,
+    const FullCardRequest& /* full_card_request */,
     const autofill::CreditCard& card,
     const base::string16& cvc) {
   std::move(callback_).Run(std::make_unique<autofill::CreditCard>(card), cvc);
   delete this;
 }
 
-void SelfDeleteFullCardRequester::OnFullCardRequestFailed() {
+void SelfDeleteFullCardRequester::OnFullCardRequestFailed(
+    FullCardRequest::FailureType failure_type) {
   // Failed might because of cancel, so return nullptr to notice caller.
   //
   // TODO(crbug.com/806868): Split the fail notification so that "cancel" and

@@ -194,7 +194,8 @@ class CreditCardFIDOAuthenticator
       const payments::FullCardRequest& full_card_request,
       const CreditCard& card,
       const base::string16& cvc) override;
-  void OnFullCardRequestFailed() override;
+  void OnFullCardRequestFailed(
+      payments::FullCardRequest::FailureType failure_type) override;
 
   // Converts |request_options| from JSON to mojom pointer.
   PublicKeyCredentialRequestOptionsPtr ParseRequestOptions(

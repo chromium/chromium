@@ -46,7 +46,9 @@ class FakeResultDelegate
       const autofill::CreditCard& card,
       const base::string16& cvc) override {}
 
-  void OnFullCardRequestFailed() override {}
+  void OnFullCardRequestFailed(
+      autofill::payments::FullCardRequest::FailureType /* failure_type */)
+      override {}
 
   base::WeakPtr<FakeResultDelegate> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
