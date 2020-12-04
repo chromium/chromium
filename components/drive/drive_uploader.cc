@@ -20,7 +20,6 @@
 #include "services/device/public/mojom/wake_lock.mojom.h"
 
 using google_apis::CancelCallbackOnce;
-using google_apis::CancelCallbackRepeating;
 using google_apis::DRIVE_CANCELLED;
 using google_apis::DRIVE_NO_SPACE;
 using google_apis::DriveApiErrorCode;
@@ -156,7 +155,7 @@ struct DriveUploader::UploadFileInfo {
   // once Cancel() is called. DriveUploader will check this field before after
   // an async task other than HTTP requests and cancels the subsequent requests
   // if this is flagged to true.
-  CancelCallbackRepeating cancel_callback;
+  CancelCallbackOnce cancel_callback;
   bool cancelled;
 
  private:

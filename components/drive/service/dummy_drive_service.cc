@@ -10,7 +10,6 @@
 
 using google_apis::AboutResourceCallback;
 using google_apis::AuthStatusCallback;
-using google_apis::CancelCallback;
 using google_apis::CancelCallbackOnce;
 using google_apis::ChangeListCallback;
 using google_apis::DownloadActionCallback;
@@ -72,7 +71,7 @@ CancelCallbackOnce DummyDriveService::GetFileListInDirectory(
 
 CancelCallbackOnce DummyDriveService::Search(const std::string& search_query,
                                              FileListCallback callback) {
-  return CancelCallback();
+  return CancelCallbackOnce();
 }
 
 CancelCallbackOnce DummyDriveService::SearchByTitle(
@@ -82,16 +81,17 @@ CancelCallbackOnce DummyDriveService::SearchByTitle(
   return CancelCallbackOnce();
 }
 
-CancelCallback DummyDriveService::GetChangeList(int64_t start_changestamp,
-                                                ChangeListCallback callback) {
-  return CancelCallback();
+CancelCallbackOnce DummyDriveService::GetChangeList(
+    int64_t start_changestamp,
+    ChangeListCallback callback) {
+  return CancelCallbackOnce();
 }
 
-CancelCallback DummyDriveService::GetChangeListByToken(
+CancelCallbackOnce DummyDriveService::GetChangeListByToken(
     const std::string& team_drive_id,
     const std::string& start_page_token,
     ChangeListCallback callback) {
-  return CancelCallback();
+  return CancelCallbackOnce();
 }
 
 CancelCallbackOnce DummyDriveService::GetRemainingChangeList(
@@ -100,44 +100,46 @@ CancelCallbackOnce DummyDriveService::GetRemainingChangeList(
   return CancelCallbackOnce();
 }
 
-CancelCallback DummyDriveService::GetRemainingTeamDriveList(
+CancelCallbackOnce DummyDriveService::GetRemainingTeamDriveList(
     const std::string& page_token,
     TeamDriveListCallback callback) {
-  return CancelCallback();
+  return CancelCallbackOnce();
 }
 
 CancelCallbackOnce DummyDriveService::GetRemainingFileList(
     const GURL& next_link,
     FileListCallback callback) {
-  return CancelCallback();
+  return CancelCallbackOnce();
 }
 
-CancelCallback DummyDriveService::GetFileResource(
+CancelCallbackOnce DummyDriveService::GetFileResource(
     const std::string& resource_id,
     FileResourceCallback callback) {
-  return CancelCallback();
+  return CancelCallbackOnce();
 }
 
-CancelCallback DummyDriveService::GetAboutResource(
+CancelCallbackOnce DummyDriveService::GetAboutResource(
     AboutResourceCallback callback) {
-  return CancelCallback();
+  return CancelCallbackOnce();
 }
 
-CancelCallback DummyDriveService::GetStartPageToken(
+CancelCallbackOnce DummyDriveService::GetStartPageToken(
     const std::string& team_drive_id,
     google_apis::StartPageTokenCallback callback) {
-  return CancelCallback();
+  return CancelCallbackOnce();
 }
 
-CancelCallback DummyDriveService::DeleteResource(const std::string& resource_id,
-                                                 const std::string& etag,
-                                                 EntryActionCallback callback) {
-  return CancelCallback();
+CancelCallbackOnce DummyDriveService::DeleteResource(
+    const std::string& resource_id,
+    const std::string& etag,
+    EntryActionCallback callback) {
+  return CancelCallbackOnce();
 }
 
-CancelCallback DummyDriveService::TrashResource(const std::string& resource_id,
-                                                EntryActionCallback callback) {
-  return CancelCallback();
+CancelCallbackOnce DummyDriveService::TrashResource(
+    const std::string& resource_id,
+    EntryActionCallback callback) {
+  return CancelCallbackOnce();
 }
 
 CancelCallbackOnce DummyDriveService::DownloadFile(
@@ -146,19 +148,19 @@ CancelCallbackOnce DummyDriveService::DownloadFile(
     DownloadActionCallback download_action_callback,
     const GetContentCallback& get_content_callback,
     ProgressCallback progress_callback) {
-  return CancelCallback();
+  return CancelCallbackOnce();
 }
 
-CancelCallback DummyDriveService::CopyResource(
+CancelCallbackOnce DummyDriveService::CopyResource(
     const std::string& resource_id,
     const std::string& parent_resource_id,
     const std::string& new_title,
     const base::Time& last_modified,
     FileResourceCallback callback) {
-  return CancelCallback();
+  return CancelCallbackOnce();
 }
 
-CancelCallback DummyDriveService::UpdateResource(
+CancelCallbackOnce DummyDriveService::UpdateResource(
     const std::string& resource_id,
     const std::string& parent_resource_id,
     const std::string& new_title,
@@ -166,21 +168,21 @@ CancelCallback DummyDriveService::UpdateResource(
     const base::Time& last_viewed_by_me,
     const google_apis::drive::Properties& properties,
     FileResourceCallback callback) {
-  return CancelCallback();
+  return CancelCallbackOnce();
 }
 
-CancelCallback DummyDriveService::AddResourceToDirectory(
+CancelCallbackOnce DummyDriveService::AddResourceToDirectory(
     const std::string& parent_resource_id,
     const std::string& resource_id,
     EntryActionCallback callback) {
-  return CancelCallback();
+  return CancelCallbackOnce();
 }
 
 CancelCallbackOnce DummyDriveService::RemoveResourceFromDirectory(
     const std::string& parent_resource_id,
     const std::string& resource_id,
     EntryActionCallback callback) {
-  return CancelCallback();
+  return CancelCallbackOnce();
 }
 
 CancelCallbackOnce DummyDriveService::AddNewDirectory(
@@ -191,26 +193,26 @@ CancelCallbackOnce DummyDriveService::AddNewDirectory(
   return CancelCallbackOnce();
 }
 
-CancelCallback DummyDriveService::InitiateUploadNewFile(
+CancelCallbackOnce DummyDriveService::InitiateUploadNewFile(
     const std::string& content_type,
     int64_t content_length,
     const std::string& parent_resource_id,
     const std::string& title,
     const UploadNewFileOptions& options,
     InitiateUploadCallback callback) {
-  return CancelCallback();
+  return CancelCallbackOnce();
 }
 
-CancelCallback DummyDriveService::InitiateUploadExistingFile(
+CancelCallbackOnce DummyDriveService::InitiateUploadExistingFile(
     const std::string& content_type,
     int64_t content_length,
     const std::string& resource_id,
     const UploadExistingFileOptions& options,
     InitiateUploadCallback callback) {
-  return CancelCallback();
+  return CancelCallbackOnce();
 }
 
-CancelCallback DummyDriveService::ResumeUpload(
+CancelCallbackOnce DummyDriveService::ResumeUpload(
     const GURL& upload_url,
     int64_t start_position,
     int64_t end_position,
@@ -219,17 +221,17 @@ CancelCallback DummyDriveService::ResumeUpload(
     const base::FilePath& local_file_path,
     UploadRangeCallback callback,
     ProgressCallback progress_callback) {
-  return CancelCallback();
+  return CancelCallbackOnce();
 }
 
-CancelCallback DummyDriveService::GetUploadStatus(
+CancelCallbackOnce DummyDriveService::GetUploadStatus(
     const GURL& upload_url,
     int64_t content_length,
     UploadRangeCallback callback) {
-  return CancelCallback();
+  return CancelCallbackOnce();
 }
 
-CancelCallback DummyDriveService::MultipartUploadNewFile(
+CancelCallbackOnce DummyDriveService::MultipartUploadNewFile(
     const std::string& content_type,
     int64_t content_length,
     const std::string& parent_resource_id,
@@ -238,10 +240,10 @@ CancelCallback DummyDriveService::MultipartUploadNewFile(
     const UploadNewFileOptions& options,
     FileResourceCallback callback,
     ProgressCallback progress_callback) {
-  return CancelCallback();
+  return CancelCallbackOnce();
 }
 
-CancelCallback DummyDriveService::MultipartUploadExistingFile(
+CancelCallbackOnce DummyDriveService::MultipartUploadExistingFile(
     const std::string& content_type,
     int64_t content_length,
     const std::string& resource_id,
@@ -249,15 +251,15 @@ CancelCallback DummyDriveService::MultipartUploadExistingFile(
     const UploadExistingFileOptions& options,
     FileResourceCallback callback,
     ProgressCallback progress_callback) {
-  return CancelCallback();
+  return CancelCallbackOnce();
 }
 
-CancelCallback DummyDriveService::AddPermission(
+CancelCallbackOnce DummyDriveService::AddPermission(
     const std::string& resource_id,
     const std::string& email,
     google_apis::drive::PermissionRole role,
     EntryActionCallback callback) {
-  return CancelCallback();
+  return CancelCallbackOnce();
 }
 std::unique_ptr<BatchRequestConfiguratorInterface>
 DummyDriveService::StartBatchRequest() {

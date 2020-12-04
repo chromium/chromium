@@ -57,7 +57,7 @@ TEST(DriveAPIServiceTest, BatchRequestConfiguratorWithAuthFailure) {
   sender.StartRequestWithAuthRetry(std::move(request));
   BatchRequestConfigurator configurator(
       request_ptr->GetWeakPtrAsBatchUploadRequest(), task_runner.get(),
-      url_generator, google_apis::CancelCallback());
+      url_generator, google_apis::CancelCallbackRepeating());
   static_cast<TestAuthService*>(sender.auth_service())->SendHttpError();
 
   {

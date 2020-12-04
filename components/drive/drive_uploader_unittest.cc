@@ -24,8 +24,7 @@
 #include "google_apis/drive/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using google_apis::CancelCallback;
-using google_apis::CancelCallbackRepeating;
+using google_apis::CancelCallbackOnce;
 using google_apis::DRIVE_NO_CONNECTION;
 using google_apis::DRIVE_OTHER_ERROR;
 using google_apis::DriveApiErrorCode;
@@ -57,7 +56,7 @@ const char kTestUploadExistingFileURL[] =
 const int64_t kUploadChunkSize = 1024 * 1024 * 1024;
 const char kTestETag[] = "test_etag";
 
-CancelCallbackRepeating SendMultipartUploadResult(
+CancelCallbackOnce SendMultipartUploadResult(
     DriveApiErrorCode response_code,
     int64_t content_length,
     google_apis::FileResourceCallback callback,
@@ -79,7 +78,7 @@ CancelCallbackRepeating SendMultipartUploadResult(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), response_code, std::move(entry)));
-  return CancelCallbackRepeating();
+  return CancelCallbackOnce();
 }
 
 // Mock DriveService that verifies if the uploaded content matches the preset
@@ -110,7 +109,7 @@ class MockDriveServiceWithUploadExpectation : public DummyDriveService {
  private:
   // DriveServiceInterface overrides.
   // Handles a request for obtaining an upload location URL.
-  CancelCallback InitiateUploadNewFile(
+  CancelCallbackOnce InitiateUploadNewFile(
       const std::string& content_type,
       int64_t content_length,
       const std::string& parent_resource_id,
@@ -127,10 +126,10 @@ class MockDriveServiceWithUploadExpectation : public DummyDriveService {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), HTTP_SUCCESS,
                                   GURL(kTestUploadNewFileURL)));
-    return CancelCallback();
+    return CancelCallbackOnce();
   }
 
-  CancelCallback InitiateUploadExistingFile(
+  CancelCallbackOnce InitiateUploadExistingFile(
       const std::string& content_type,
       int64_t content_length,
       const std::string& resource_id,
@@ -144,7 +143,7 @@ class MockDriveServiceWithUploadExpectation : public DummyDriveService {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback), HTTP_PRECONDITION, GURL()));
-      return CancelCallback();
+      return CancelCallbackOnce();
     }
 
     // Calls back the upload URL for subsequent ResumeUpload requests.
@@ -152,18 +151,18 @@ class MockDriveServiceWithUploadExpectation : public DummyDriveService {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), HTTP_SUCCESS,
                                   GURL(kTestUploadExistingFileURL)));
-    return CancelCallback();
+    return CancelCallbackOnce();
   }
 
   // Handles a request for uploading a chunk of bytes.
-  CancelCallback ResumeUpload(const GURL& upload_location,
-                              int64_t start_position,
-                              int64_t end_position,
-                              int64_t content_length,
-                              const std::string& content_type,
-                              const base::FilePath& local_file_path,
-                              UploadRangeCallback callback,
-                              ProgressCallback progress_callback) override {
+  CancelCallbackOnce ResumeUpload(const GURL& upload_location,
+                                  int64_t start_position,
+                                  int64_t end_position,
+                                  int64_t content_length,
+                                  const std::string& content_type,
+                                  const base::FilePath& local_file_path,
+                                  UploadRangeCallback callback,
+                                  ProgressCallback progress_callback) override {
     // The upload range should start from the current first unreceived byte.
     EXPECT_EQ(received_bytes_, start_position);
     EXPECT_EQ(expected_upload_file_, local_file_path);
@@ -195,20 +194,20 @@ class MockDriveServiceWithUploadExpectation : public DummyDriveService {
     }
 
     SendUploadRangeResponse(upload_location, std::move(callback));
-    return CancelCallback();
+    return CancelCallbackOnce();
   }
 
   // Handles a request to fetch the current upload status.
-  CancelCallback GetUploadStatus(const GURL& upload_location,
-                                 int64_t content_length,
-                                 UploadRangeCallback callback) override {
+  CancelCallbackOnce GetUploadStatus(const GURL& upload_location,
+                                     int64_t content_length,
+                                     UploadRangeCallback callback) override {
     EXPECT_EQ(expected_content_length_, content_length);
     // The upload URL returned by InitiateUpload() must be used.
     EXPECT_TRUE(upload_location == kTestUploadNewFileURL ||
                 upload_location == kTestUploadExistingFileURL);
 
     SendUploadRangeResponse(upload_location, std::move(callback));
-    return CancelCallback();
+    return CancelCallbackOnce();
   }
 
   // Runs |callback| with the current upload status.
@@ -235,7 +234,7 @@ class MockDriveServiceWithUploadExpectation : public DummyDriveService {
         base::BindOnce(std::move(callback), response, std::move(entry)));
   }
 
-  CancelCallbackRepeating MultipartUploadNewFile(
+  CancelCallbackOnce MultipartUploadNewFile(
       const std::string& content_type,
       int64_t content_length,
       const std::string& parent_resource_id,
@@ -256,7 +255,7 @@ class MockDriveServiceWithUploadExpectation : public DummyDriveService {
                                      std::move(callback), progress_callback);
   }
 
-  CancelCallbackRepeating MultipartUploadExistingFile(
+  CancelCallbackOnce MultipartUploadExistingFile(
       const std::string& content_type,
       int64_t content_length,
       const std::string& resource_id,
@@ -273,7 +272,7 @@ class MockDriveServiceWithUploadExpectation : public DummyDriveService {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback), HTTP_PRECONDITION, nullptr));
-      return CancelCallbackRepeating();
+      return CancelCallbackOnce();
     }
 
     received_bytes_ = content_length;
@@ -292,7 +291,7 @@ class MockDriveServiceWithUploadExpectation : public DummyDriveService {
 // Mock DriveService that returns a failure at InitiateUpload().
 class MockDriveServiceNoConnectionAtInitiate : public DummyDriveService {
   // Returns error.
-  CancelCallback InitiateUploadNewFile(
+  CancelCallbackOnce InitiateUploadNewFile(
       const std::string& content_type,
       int64_t content_length,
       const std::string& parent_resource_id,
@@ -302,10 +301,10 @@ class MockDriveServiceNoConnectionAtInitiate : public DummyDriveService {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), DRIVE_NO_CONNECTION, GURL()));
-    return CancelCallback();
+    return CancelCallbackOnce();
   }
 
-  CancelCallback InitiateUploadExistingFile(
+  CancelCallbackOnce InitiateUploadExistingFile(
       const std::string& content_type,
       int64_t content_length,
       const std::string& resource_id,
@@ -314,23 +313,23 @@ class MockDriveServiceNoConnectionAtInitiate : public DummyDriveService {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), DRIVE_NO_CONNECTION, GURL()));
-    return CancelCallback();
+    return CancelCallbackOnce();
   }
 
   // Should not be used.
-  CancelCallback ResumeUpload(const GURL& upload_url,
-                              int64_t start_position,
-                              int64_t end_position,
-                              int64_t content_length,
-                              const std::string& content_type,
-                              const base::FilePath& local_file_path,
-                              UploadRangeCallback callback,
-                              ProgressCallback progress_callback) override {
+  CancelCallbackOnce ResumeUpload(const GURL& upload_url,
+                                  int64_t start_position,
+                                  int64_t end_position,
+                                  int64_t content_length,
+                                  const std::string& content_type,
+                                  const base::FilePath& local_file_path,
+                                  UploadRangeCallback callback,
+                                  ProgressCallback progress_callback) override {
     NOTREACHED();
-    return CancelCallback();
+    return CancelCallbackOnce();
   }
 
-  CancelCallbackRepeating MultipartUploadNewFile(
+  CancelCallbackOnce MultipartUploadNewFile(
       const std::string& content_type,
       int64_t content_length,
       const std::string& parent_resource_id,
@@ -342,10 +341,10 @@ class MockDriveServiceNoConnectionAtInitiate : public DummyDriveService {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), DRIVE_NO_CONNECTION, nullptr));
-    return CancelCallbackRepeating();
+    return CancelCallbackOnce();
   }
 
-  CancelCallbackRepeating MultipartUploadExistingFile(
+  CancelCallbackOnce MultipartUploadExistingFile(
       const std::string& content_type,
       int64_t content_length,
       const std::string& resource_id,
@@ -356,14 +355,14 @@ class MockDriveServiceNoConnectionAtInitiate : public DummyDriveService {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), DRIVE_NO_CONNECTION, nullptr));
-    return CancelCallbackRepeating();
+    return CancelCallbackOnce();
   }
 };
 
 // Mock DriveService that returns a failure at ResumeUpload().
 class MockDriveServiceNoConnectionAtResume : public DummyDriveService {
   // Succeeds and returns an upload location URL.
-  CancelCallback InitiateUploadNewFile(
+  CancelCallbackOnce InitiateUploadNewFile(
       const std::string& content_type,
       int64_t content_length,
       const std::string& parent_resource_id,
@@ -373,10 +372,10 @@ class MockDriveServiceNoConnectionAtResume : public DummyDriveService {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), HTTP_SUCCESS,
                                   GURL(kTestUploadNewFileURL)));
-    return CancelCallback();
+    return CancelCallbackOnce();
   }
 
-  CancelCallback InitiateUploadExistingFile(
+  CancelCallbackOnce InitiateUploadExistingFile(
       const std::string& content_type,
       int64_t content_length,
       const std::string& resource_id,
@@ -385,39 +384,39 @@ class MockDriveServiceNoConnectionAtResume : public DummyDriveService {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), HTTP_SUCCESS,
                                   GURL(kTestUploadExistingFileURL)));
-    return CancelCallback();
+    return CancelCallbackOnce();
   }
 
   // Returns error.
-  CancelCallback ResumeUpload(const GURL& upload_url,
-                              int64_t start_position,
-                              int64_t end_position,
-                              int64_t content_length,
-                              const std::string& content_type,
-                              const base::FilePath& local_file_path,
-                              UploadRangeCallback callback,
-                              ProgressCallback progress_callback) override {
+  CancelCallbackOnce ResumeUpload(const GURL& upload_url,
+                                  int64_t start_position,
+                                  int64_t end_position,
+                                  int64_t content_length,
+                                  const std::string& content_type,
+                                  const base::FilePath& local_file_path,
+                                  UploadRangeCallback callback,
+                                  ProgressCallback progress_callback) override {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        UploadRangeResponse(DRIVE_NO_CONNECTION, -1, -1),
                        nullptr));
-    return CancelCallback();
+    return CancelCallbackOnce();
   }
 };
 
 // Mock DriveService that returns a failure at GetUploadStatus().
 class MockDriveServiceNoConnectionAtGetUploadStatus : public DummyDriveService {
   // Returns error.
-  CancelCallback GetUploadStatus(const GURL& upload_url,
-                                 int64_t content_length,
-                                 UploadRangeCallback callback) override {
+  CancelCallbackOnce GetUploadStatus(const GURL& upload_url,
+                                     int64_t content_length,
+                                     UploadRangeCallback callback) override {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        UploadRangeResponse(DRIVE_NO_CONNECTION, -1, -1),
                        nullptr));
-    return CancelCallback();
+    return CancelCallbackOnce();
   }
 };
 
@@ -805,7 +804,7 @@ class MockDriveServiceForBatchProcessing : public DummyDriveService {
         MockDriveServiceForBatchProcessing* service)
         : service(service) {}
 
-    CancelCallback MultipartUploadNewFile(
+    CancelCallbackOnce MultipartUploadNewFile(
         const std::string& content_type,
         int64_t content_length,
         const std::string& parent_resource_id,
@@ -824,10 +823,10 @@ class MockDriveServiceForBatchProcessing : public DummyDriveService {
       info.callback = std::move(callback);
       info.progress_callback = progress_callback;
       service->files.push_back(std::move(info));
-      return CancelCallback();
+      return CancelCallbackOnce();
     }
 
-    CancelCallback MultipartUploadExistingFile(
+    CancelCallbackOnce MultipartUploadExistingFile(
         const std::string& content_type,
         int64_t content_length,
         const std::string& resource_id,
@@ -844,7 +843,7 @@ class MockDriveServiceForBatchProcessing : public DummyDriveService {
       info.callback = std::move(callback);
       info.progress_callback = progress_callback;
       service->files.push_back(std::move(info));
-      return CancelCallback();
+      return CancelCallbackOnce();
     }
 
     void Commit() override {

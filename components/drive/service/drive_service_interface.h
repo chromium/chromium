@@ -118,7 +118,7 @@ class DriveServiceBatchOperationsInterface {
   // for small files than using |InitiateUploadNewFile| and |ResumeUpload|.
   // |content_type| and |content_length| should be the ones of the file to be
   // uploaded.  |callback| must not be null. |progress_callback| may be null.
-  virtual google_apis::CancelCallbackRepeating MultipartUploadNewFile(
+  virtual google_apis::CancelCallbackOnce MultipartUploadNewFile(
       const std::string& content_type,
       int64_t content_length,
       const std::string& parent_resource_id,
@@ -132,7 +132,7 @@ class DriveServiceBatchOperationsInterface {
   // for small files than using |InitiateUploadExistingFile| and |ResumeUpload|.
   // |content_type| and |content_length| should be the ones of the file to be
   // uploaded.  |callback| must not be null. |progress_callback| may be null.
-  virtual google_apis::CancelCallbackRepeating MultipartUploadExistingFile(
+  virtual google_apis::CancelCallbackOnce MultipartUploadExistingFile(
       const std::string& content_type,
       int64_t content_length,
       const std::string& resource_id,
@@ -266,7 +266,7 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
   // GetRemainingChangeList.
   //
   // |callback| must not be null.
-  virtual google_apis::CancelCallback GetChangeList(
+  virtual google_apis::CancelCallbackOnce GetChangeList(
       int64_t start_changestamp,
       google_apis::ChangeListCallback callback) = 0;
 
@@ -279,7 +279,7 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
   // GetRemainingChangeList.
   //
   // |callback| must not be null.
-  virtual google_apis::CancelCallback GetChangeListByToken(
+  virtual google_apis::CancelCallbackOnce GetChangeListByToken(
       const std::string& team_drive_id,
       const std::string& start_page_token,
       google_apis::ChangeListCallback callback) = 0;
@@ -299,7 +299,7 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
   // method. |callback| will be called upon completion.
   //
   // |next_link| must not be empty. |callback| must not be null.
-  virtual google_apis::CancelCallback GetRemainingTeamDriveList(
+  virtual google_apis::CancelCallbackOnce GetRemainingTeamDriveList(
       const std::string& page_token,
       google_apis::TeamDriveListCallback callback) = 0;
 
@@ -317,14 +317,14 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
   // |resource_id|.
   // Upon completion, invokes |callback| with results on the calling thread.
   // |callback| must not be null.
-  virtual google_apis::CancelCallback GetFileResource(
+  virtual google_apis::CancelCallbackOnce GetFileResource(
       const std::string& resource_id,
       google_apis::FileResourceCallback callback) = 0;
 
   // Gets the about resource information from the server.
   // Upon completion, invokes |callback| with results on the calling thread.
   // |callback| must not be null.
-  virtual google_apis::CancelCallback GetAboutResource(
+  virtual google_apis::CancelCallbackOnce GetAboutResource(
       google_apis::AboutResourceCallback callback) = 0;
 
   // Gets the start page token information from the server.
@@ -332,7 +332,7 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
   // the users changelog.
   // Upon completion, invokes |callback| with results on the calling thread.
   // |callback| must not be null.
-  virtual google_apis::CancelCallback GetStartPageToken(
+  virtual google_apis::CancelCallbackOnce GetStartPageToken(
       const std::string& team_drive_id,
       google_apis::StartPageTokenCallback callback) = 0;
 
@@ -341,7 +341,7 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
   // HTTP_PRECONDITION error.
   // Upon completion, invokes |callback| with results on the calling thread.
   // |callback| must not be null.
-  virtual google_apis::CancelCallback DeleteResource(
+  virtual google_apis::CancelCallbackOnce DeleteResource(
       const std::string& resource_id,
       const std::string& etag,
       google_apis::EntryActionCallback callback) = 0;
@@ -349,7 +349,7 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
   // Trashes a resource identified by its |resource_id|.
   // Upon completion, invokes |callback| with results on the calling thread.
   // |callback| must not be null.
-  virtual google_apis::CancelCallback TrashResource(
+  virtual google_apis::CancelCallbackOnce TrashResource(
       const std::string& resource_id,
       google_apis::EntryActionCallback callback) = 0;
 
@@ -360,7 +360,7 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
   // server will be set to the date.
   // Upon completion, invokes |callback| with results on the calling thread.
   // |callback| must not be null.
-  virtual google_apis::CancelCallback CopyResource(
+  virtual google_apis::CancelCallbackOnce CopyResource(
       const std::string& resource_id,
       const std::string& parent_resource_id,
       const std::string& new_title,
@@ -374,7 +374,7 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
   // If |properties| are specified, then they will be set on |resource_id|.
   // Upon completion, invokes |callback| with results on the calling thread.
   // |callback| must not be null.
-  virtual google_apis::CancelCallback UpdateResource(
+  virtual google_apis::CancelCallbackOnce UpdateResource(
       const std::string& resource_id,
       const std::string& parent_resource_id,
       const std::string& new_title,
@@ -387,7 +387,7 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
   // |resource_id| to a collection represented by the |parent_resource_id|.
   // Upon completion, invokes |callback| with results on the calling thread.
   // |callback| must not be null.
-  virtual google_apis::CancelCallback AddResourceToDirectory(
+  virtual google_apis::CancelCallbackOnce AddResourceToDirectory(
       const std::string& parent_resource_id,
       const std::string& resource_id,
       google_apis::EntryActionCallback callback) = 0;
@@ -437,7 +437,7 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
   // |content_type| and |content_length| should be the ones of the file to be
   // uploaded.
   // |callback| must not be null.
-  virtual google_apis::CancelCallback InitiateUploadNewFile(
+  virtual google_apis::CancelCallbackOnce InitiateUploadNewFile(
       const std::string& content_type,
       int64_t content_length,
       const std::string& parent_resource_id,
@@ -449,7 +449,7 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
   // |content_type| and |content_length| should be the ones of the file to be
   // uploaded.
   // |callback| must not be null.
-  virtual google_apis::CancelCallback InitiateUploadExistingFile(
+  virtual google_apis::CancelCallbackOnce InitiateUploadExistingFile(
       const std::string& content_type,
       int64_t content_length,
       const std::string& resource_id,
@@ -458,7 +458,7 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
 
   // Resumes uploading of a document/file on the calling thread.
   // |callback| must not be null. |progress_callback| may be null.
-  virtual google_apis::CancelCallback ResumeUpload(
+  virtual google_apis::CancelCallbackOnce ResumeUpload(
       const GURL& upload_url,
       int64_t start_position,
       int64_t end_position,
@@ -472,14 +472,14 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
   // |drive_file_path| and |content_length| should be set to the same value
   // which is used for ResumeUpload.
   // |callback| must not be null.
-  virtual google_apis::CancelCallback GetUploadStatus(
+  virtual google_apis::CancelCallbackOnce GetUploadStatus(
       const GURL& upload_url,
       int64_t content_length,
       google_apis::drive::UploadRangeCallback callback) = 0;
 
   // Authorizes the account |email| to access |resource_id| as a |role|.
   // |callback| must not be null.
-  virtual google_apis::CancelCallback AddPermission(
+  virtual google_apis::CancelCallbackOnce AddPermission(
       const std::string& resource_id,
       const std::string& email,
       google_apis::drive::PermissionRole role,

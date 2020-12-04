@@ -16,7 +16,6 @@
 
 using drive::FakeDriveService;
 using drive::UploadCompletionCallback;
-using google_apis::CancelCallback;
 using google_apis::CancelCallbackOnce;
 using google_apis::DriveApiErrorCode;
 using google_apis::FileResource;
