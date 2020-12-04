@@ -19,7 +19,7 @@ class CORE_EXPORT FeaturePolicyViolationReportBody : public LocationReportBody {
                                    const String& message,
                                    const String& disposition)
       : feature_id_(feature_id),
-        message_("Feature policy violation: " +
+        message_("Permissions policy violation: " +
                  (message.IsEmpty()
                       ? feature_id + " is not allowed in this document."
                       : message)),

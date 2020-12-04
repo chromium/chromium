@@ -26,7 +26,7 @@ namespace {
 // The renderer performs its own feature policy checks so a request that gets
 // to the browser process indicates malicious code.
 const char kFeaturePolicyViolation[] =
-    "Feature policy blocks access to WebUSB.";
+    "Permissions policy blocks access to WebUSB.";
 
 }  // namespace
 

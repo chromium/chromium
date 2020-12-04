@@ -735,7 +735,7 @@ bool XMLHttpRequest::InitSend(ExceptionState& exception_state) {
         !GetExecutionContext()->IsFeatureEnabled(
             mojom::blink::FeaturePolicyFeature::kSyncXHR,
             ReportOptions::kReportOnFailure,
-            "Synchronous requests are disabled by Feature Policy.")) {
+            "Synchronous requests are disabled by permissions policy.")) {
       HandleNetworkError();
       ThrowForLoadFailureIfNeeded(exception_state, String());
       return false;

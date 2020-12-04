@@ -72,8 +72,8 @@ const char kPermissionBlockedRepeatedIgnoresMessage[] =
 #endif
 
 const char kPermissionBlockedFeaturePolicyMessage[] =
-    "%s permission has been blocked because of a Feature Policy applied to the "
-    "current document. See https://goo.gl/EuHzyv for more details.";
+    "%s permission has been blocked because of a permissions policy applied to"
+    " the current document. See https://goo.gl/EuHzyv for more details.";
 
 const char kPermissionBlockedPortalsMessage[] =
     "%s permission has been blocked because it was requested inside a portal. "

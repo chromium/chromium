@@ -122,7 +122,7 @@ ScriptPromise NavigatorRequestMediaKeySystemAccess::requestMediaKeySystemAccess(
         mojom::ConsoleMessageLevel::kWarning,
         kEncryptedMediaFeaturePolicyConsoleWarning));
     exception_state.ThrowSecurityError(
-        "requestMediaKeySystemAccess is disabled by feature policy.");
+        "requestMediaKeySystemAccess is disabled by permissions policy.");
     return ScriptPromise();
   }
 

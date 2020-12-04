@@ -29,7 +29,7 @@ namespace {
 
 const char kContextGone[] = "Script context has shut down.";
 const char kFeaturePolicyBlocked[] =
-    "Access to the feature \"serial\" is disallowed by feature policy.";
+    "Access to the feature \"serial\" is disallowed by permissions policy.";
 const char kNoPortSelected[] = "No port selected by the user.";
 
 String TokenToString(const base::UnguessableToken& token) {

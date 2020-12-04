@@ -49,10 +49,11 @@ namespace {
 
 const char kPermissionDeniedErrorMessage[] = "User denied Geolocation";
 const char kFeaturePolicyErrorMessage[] =
-    "Geolocation has been disabled in this document by Feature Policy.";
+    "Geolocation has been disabled in this document by permissions policy.";
 const char kFeaturePolicyConsoleWarning[] =
-    "Geolocation access has been blocked because of a Feature Policy applied "
-    "to the current document. See https://goo.gl/EuHzyv for more details.";
+    "Geolocation access has been blocked because of a permissions policy "
+    "applied to the current document. See https://goo.gl/EuHzyv for more "
+    "details.";
 
 Geoposition* CreateGeoposition(
     const device::mojom::blink::Geoposition& position) {

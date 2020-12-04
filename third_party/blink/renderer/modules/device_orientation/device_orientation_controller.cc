@@ -153,9 +153,9 @@ void DeviceOrientationController::LogToConsolePolicyFeaturesDisabled(
     LocalFrame& frame,
     const AtomicString& event_name) {
   const String& message = String::Format(
-      "The %s events are blocked by feature policy. "
+      "The %s events are blocked by permissions policy. "
       "See "
-      "https://github.com/WICG/feature-policy/blob/master/"
+      "https://github.com/w3c/webappsec-permissions-policy/blob/master/"
       "features.md#sensor-features",
       event_name.Ascii().c_str());
   auto* console_message = MakeGarbageCollected<ConsoleMessage>(

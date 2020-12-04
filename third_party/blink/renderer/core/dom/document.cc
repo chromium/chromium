@@ -5887,7 +5887,7 @@ void Document::setDomain(const String& raw_domain,
   }
 
   const String feature_policy_error =
-      "Setting `document.domain` is disabled by Feature Policy.";
+      "Setting `document.domain` is disabled by permissions policy.";
   if (!dom_window_->IsFeatureEnabled(
           mojom::blink::FeaturePolicyFeature::kDocumentDomain,
           ReportOptions::kReportOnFailure, feature_policy_error)) {
@@ -7206,7 +7206,7 @@ bool Document::AllowedToUseDynamicMarkUpInsertion(
   exception_state.ThrowDOMException(
       DOMExceptionCode::kNotAllowedError,
       String::Format(
-          "The use of method '%s' has been blocked by feature policy. The "
+          "The use of method '%s' has been blocked by permissions policy. The "
           "feature "
           "'document-write' is disabled in this document.",
           api_name));

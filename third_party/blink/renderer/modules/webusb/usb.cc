@@ -35,7 +35,7 @@ namespace blink {
 namespace {
 
 const char kFeaturePolicyBlocked[] =
-    "Access to the feature \"usb\" is disallowed by feature policy.";
+    "Access to the feature \"usb\" is disallowed by permissions policy.";
 const char kNoDeviceSelected[] = "No device selected.";
 
 void RejectWithTypeError(const String& error_details,

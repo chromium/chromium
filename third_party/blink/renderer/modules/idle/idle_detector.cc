@@ -28,7 +28,8 @@ using mojom::blink::IdleManagerError;
 
 const char kAbortMessage[] = "Idle detection aborted.";
 const char kFeaturePolicyBlocked[] =
-    "Access to the feature \"idle-detection\" is disallowed by feature policy.";
+    "Access to the feature \"idle-detection\" is disallowed by permissions "
+    "policy.";
 
 constexpr base::TimeDelta kMinimumThreshold = base::TimeDelta::FromSeconds(60);
 

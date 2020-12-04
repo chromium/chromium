@@ -97,9 +97,9 @@ ScriptPromise WakeLock::request(ScriptState* script_state,
       !context->IsFeatureEnabled(
           mojom::blink::FeaturePolicyFeature::kScreenWakeLock,
           ReportOptions::kReportOnFailure)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotAllowedError,
-        "Access to Screen Wake Lock features is disallowed by feature policy");
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+                                      "Access to Screen Wake Lock features is "
+                                      "disallowed by permissions policy");
     return ScriptPromise();
   }
 

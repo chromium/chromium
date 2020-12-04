@@ -347,9 +347,9 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
 
   const char kWarningMessage[] =
       "The deviceorientationabsolute events are blocked by "
-      "feature policy. See "
-      "https://github.com/WICG/feature-policy/blob/"
-      "master/features.md#sensor-features";
+      "permissions policy. See "
+      "https://github.com/w3c/webappsec-permissions-policy/blob/master/"
+      "features.md#sensor-features";
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(kWarningMessage);

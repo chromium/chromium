@@ -47,7 +47,7 @@ const char kNavigatorDetachedError[] =
 const char kPageNotVisible[] = "The page is not visible";
 
 const char kFeaturePolicyBlocked[] =
-    "Access to the feature \"xr\" is disallowed by feature policy.";
+    "Access to the feature \"xr\" is disallowed by permissions policy.";
 
 const char kActiveImmersiveSession[] =
     "There is already an active, immersive XRSession.";
@@ -1207,7 +1207,7 @@ XRSystem::RequestedXRSessionFeatureSet XRSystem::ParseRequestedFeatures(
                                            feature_enum.value())) {
         AddConsoleMessage(error_level,
                           "Feature '" + feature_string +
-                              "' is not permitted by feature policy");
+                              "' is not permitted by permissions policy");
         result.invalid_features = true;
       } else {
         DVLOG(3) << __func__ << ": Adding feature " << feature_string

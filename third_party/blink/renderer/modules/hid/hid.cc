@@ -29,7 +29,7 @@ namespace {
 
 const char kContextGone[] = "Script context has shut down.";
 const char kFeaturePolicyBlocked[] =
-    "Access to the feature \"hid\" is disallowed by feature policy.";
+    "Access to the feature \"hid\" is disallowed by permissions policy.";
 
 void RejectWithTypeError(const String& message,
                          ScriptPromiseResolver* resolver) {

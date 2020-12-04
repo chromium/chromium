@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 28: Feature policy violation: fullscreen is not allowed in this document.
+CONSOLE ERROR: line 28: Permissions policy violation: fullscreen is not allowed in this document.
 
 
 --------

@@ -67,7 +67,7 @@ const char NavigatorGamepad::kSupplementName[] = "NavigatorGamepad";
 const char kSecureContextBlocked[] =
     "Access to the feature \"gamepad\" requires a secure context";
 const char kFeaturePolicyBlocked[] =
-    "Access to the feature \"gamepad\" is disallowed by feature policy.";
+    "Access to the feature \"gamepad\" is disallowed by permissions policy.";
 
 NavigatorGamepad& NavigatorGamepad::From(Navigator& navigator) {
   NavigatorGamepad* supplement =

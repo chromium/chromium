@@ -52,7 +52,7 @@ Sensor::Sensor(ExecutionContext* execution_context,
 
   if (!AreFeaturesEnabled(execution_context, features)) {
     exception_state.ThrowSecurityError(
-        "Access to sensor features is disallowed by feature policy");
+        "Access to sensor features is disallowed by permissions policy");
     return;
   }
 
