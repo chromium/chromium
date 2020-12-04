@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_VOICE_
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MORE_TABS_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.RESET_TASK_SURFACE_HEADER_SCROLL_POSITION;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.TAB_SWITCHER_TITLE_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.TRENDY_TERMS_VISIBLE;
@@ -26,6 +27,7 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SECONDARY_SURFACE_VISIBLE;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SHOWING_OVERVIEW;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SHOWING_STACK_TAB_SWITCHER;
+import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.RESET_FEED_SURFACE_SCROLL_POSITION;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.TOP_MARGIN;
 
 import android.content.Context;
@@ -421,6 +423,13 @@ class StartSurfaceMediator
         // states.
 
         if (mPropertyModel == null || state == mStartSurfaceState) return;
+
+        // When entering the Start surface by tapping home button or new tab page, we need to reset
+        // the scrolling position.
+        if (state == StartSurfaceState.SHOWING_HOMEPAGE) {
+            mPropertyModel.set(RESET_TASK_SURFACE_HEADER_SCROLL_POSITION, true);
+            mPropertyModel.set(RESET_FEED_SURFACE_SCROLL_POSITION, true);
+        }
 
         // Cache previous state.
         if (mStartSurfaceState != StartSurfaceState.NOT_SHOWN) {

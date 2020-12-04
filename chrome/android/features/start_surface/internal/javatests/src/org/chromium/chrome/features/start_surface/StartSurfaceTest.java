@@ -64,6 +64,8 @@ import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
 
+import com.google.android.material.appbar.AppBarLayout;
+
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -1499,6 +1501,49 @@ public class StartSurfaceTest {
         assertTrue(bottomSheetTestSupport.hasSuppressionTokens());
     }
 
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    public void testShow_SingleAsHomepage_ResetScrollPosition() {
+        // clang-format on
+        if (!mImmediateReturn) {
+            onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
+        }
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        CriteriaHelper.pollUiThread(
+                () -> cta.getLayoutManager() != null && cta.getLayoutManager().overviewVisible());
+        waitForTabModel();
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+
+        // Scroll the toolbar.
+        scrollToolbar();
+        AppBarLayout taskSurfaceHeader =
+                cta.findViewById(org.chromium.chrome.tab_ui.R.id.task_surface_header);
+        assertNotEquals(taskSurfaceHeader.getBottom(), taskSurfaceHeader.getHeight());
+
+        // Verifies the case of scrolling Start surface ->  tab switcher -> tap "+1" button ->
+        // Start surface. The Start surface should reset its scroll position.
+        try {
+            TestThreadUtils.runOnUiThreadBlocking(
+                    ()
+                            -> mActivityTestRule.getActivity()
+                                       .findViewById(org.chromium.chrome.tab_ui.R.id.more_tabs)
+                                       .performClick());
+        } catch (ExecutionException e) {
+            fail("Failed to tap 'more tabs' " + e.toString());
+        }
+
+        onViewWaiting(withId(R.id.secondary_tasks_surface_view));
+        TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
+        onViewWaiting(
+                allOf(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container), isDisplayed()));
+
+        assertEquals(taskSurfaceHeader.getBottom(), taskSurfaceHeader.getHeight());
+    }
+
     private static Matcher<View> isView(final View targetView) {
         return new TypeSafeMatcher<View>() {
             @Override
@@ -1527,6 +1572,16 @@ public class StartSurfaceTest {
         // requires mImmediateReturn to be true.
         assumeTrue(mImmediateReturn);
 
+        scrollToolbar();
+
+        // Check the toolbar's background color.
+        ToolbarPhone toolbar =
+                mActivityTestRule.getActivity().findViewById(org.chromium.chrome.R.id.toolbar);
+        Assert.assertEquals(toolbar.getToolbarDataProvider().getPrimaryColor(),
+                toolbar.getBackgroundDrawable().getColor());
+    }
+
+    private void scrollToolbar() {
         onViewWaiting(allOf(withId(R.id.feed_stream_recycler_view), isDisplayed()));
 
         // Default scrollTo() cannot be used for RecyclerView. Add a customized scrollTo for
@@ -1570,12 +1625,6 @@ public class StartSurfaceTest {
 
         // Toolbar container view should show.
         onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
-
-        // Check the toolbar's background color.
-        ToolbarPhone toolbar =
-                mActivityTestRule.getActivity().findViewById(org.chromium.chrome.R.id.toolbar);
-        Assert.assertEquals(toolbar.getToolbarDataProvider().getPrimaryColor(),
-                toolbar.getBackgroundDrawable().getColor());
     }
 }
 

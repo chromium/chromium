@@ -43,8 +43,11 @@ class StartSurfaceProperties {
             new PropertyModel.WritableObjectPropertyKey<FeedSurfaceCoordinator>();
     public static final PropertyModel.WritableIntPropertyKey TOP_MARGIN =
             new PropertyModel.WritableIntPropertyKey();
+    public static final PropertyModel.WritableObjectPropertyKey RESET_FEED_SURFACE_SCROLL_POSITION =
+            new PropertyModel.WritableObjectPropertyKey<>(true /* skipEquality */);
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {BOTTOM_BAR_CLICKLISTENER,
             BOTTOM_BAR_HEIGHT, BOTTOM_BAR_SELECTED_TAB_POSITION, IS_BOTTOM_BAR_VISIBLE,
             IS_EXPLORE_SURFACE_VISIBLE, IS_SECONDARY_SURFACE_VISIBLE, IS_SHOWING_OVERVIEW,
-            IS_SHOWING_STACK_TAB_SWITCHER, FEED_SURFACE_COORDINATOR, TOP_MARGIN};
+            IS_SHOWING_STACK_TAB_SWITCHER, FEED_SURFACE_COORDINATOR, TOP_MARGIN,
+            RESET_FEED_SURFACE_SCROLL_POSITION};
 }
