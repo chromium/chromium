@@ -3,6 +3,17 @@
 // found in the LICENSE file.
 
 /**
+ * @suppress {checkTypes, constantProperty}
+ */
+chrome.fileManagerPrivate = {
+  FormatFileSystemType: {
+    VFAT: 'vfat',
+    EXFAT: 'exfat',
+    NTFS: 'ntfs',
+  },
+};
+
+/**
  * Mock implementation of strf function.
  */
 function strf(id, var_args) {

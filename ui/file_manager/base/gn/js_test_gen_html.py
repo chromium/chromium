@@ -44,6 +44,12 @@ _HTML_FOOTER = r"""
 </html>
 """
 
+_ELEMENTS_BUNDLE_IMPORTED = False
+_ELEMENTS_BUNDLE = _IMPORT % (
+  'chrome://file_manager_test/ui/file_manager/file_manager/foreground/elements'
+  '/elements_bundle.html')
+
+
 
 def _process_deps(unique_deps, dep_type, target_name):
   """Processes all deps strings, yielding each HTML tag to include the dep.
@@ -72,6 +78,26 @@ def _process_deps(unique_deps, dep_type, target_name):
       # just ignore other files files from /jstemplate/
       continue
 
+    # Ignoring Polymer files, because they're loaded by the HTML imports from
+    # other files.
+    if 'third_party/polymer/' in dep:
+      continue
+
+    # These files are loaded via HTML import. Don't load them again here: that
+    # would cause the tests to fail.
+    if 'parse_html_subset.js' in dep:
+      continue
+    if 'i18n_behavior.js' in dep:
+      continue
+
+    # Any JS from /elements/ will be HTML imported via the elements_bundle.html.
+    if 'file_manager/foreground/elements/' in dep and not'_unittest' in dep:
+      global _ELEMENTS_BUNDLE_IMPORTED
+      if not _ELEMENTS_BUNDLE_IMPORTED:
+        yield _ELEMENTS_BUNDLE
+        _ELEMENTS_BUNDLE_IMPORTED = True
+      continue
+
     # Map file_manager files:
     dep = dep.replace('ui/file_manager/',
                       'chrome://file_manager_test/ui/file_manager/', 1)
@@ -82,10 +108,6 @@ def _process_deps(unique_deps, dep_type, target_name):
 
     # WebUI files (both Polymer and non-Polymer):
     dep = dep.replace('ui/webui/resources/', 'chrome://resources/', 1)
-
-    # Polymer Files:
-    dep = dep.replace('third_party/polymer/', 'chrome://resources/polymer/', 1)
-    dep = dep.replace('components-chromium/', '', 1)
 
     # Remove the relative because all replaces above map to an absolute path in
     # chrome://* and this URL scheme doesn't allow "..".
@@ -150,8 +172,9 @@ def _process(deps, output_filename, mocks, html_import, target_name):
   with open(output_filename, 'w') as out:
     out.write(_HTML_FILE)
 
-    if html_import:
-      out.write(_HTML_IMPORT_POLYFIL + '\n')
+    # Always add the HTML polyfil and the Polymer config.
+    out.write(_HTML_IMPORT_POLYFIL + '\n')
+    out.write(_IMPORT % ('chrome://resources/html/polymer.html') + '\n')
 
     dep_type = 'html_import' if html_import else 'classic_script'
     for dep in _process_deps(mocks, dep_type, target_name):

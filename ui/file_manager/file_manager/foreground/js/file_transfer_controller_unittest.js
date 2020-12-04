@@ -36,6 +36,7 @@ function setUp() {
     '  <div tabindex="0" id="directory-tree">',
     '  </div>',
     '  <div id="list-container">',
+    '    <files-spinner class="loading-indicator" hidden></files-spinner>',
     '    <div id="detail-table">',
     '      <list id="file-list" contextmenu="#file-context-menu" tabindex="0">',
     '      </list>',
@@ -49,7 +50,7 @@ function setUp() {
     '  </div>',
     '  <div id="test-elements">',
     '    <input type="text" id="free-text">',
-    '    <cr-input id="test-input" tabindex="0">',
+    '    <cr-input id="test-input" tabindex="0"></cr-input>',
     '    <input type="button" id="button">',
     '</div>',
   ].join('');

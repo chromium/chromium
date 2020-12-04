@@ -2,6 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * TODO(lucmult): Remove this when converting to JS modules.
+ * @suppress {checkTypes, constantProperty}
+ */
+chrome.fileManagerPrivate = {
+  FormatFileSystemType: {
+    VFAT: 'vfat',
+    EXFAT: 'exfat',
+    NTFS: 'ntfs',
+  },
+};
+
 /** @type {!DisplayPanel|!Element} */
 let displayPanel;
 

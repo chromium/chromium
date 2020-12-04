@@ -16,6 +16,18 @@ let cancel;
 let unlock;
 
 /**
+ * TODO(lucmult): Remove this when converting to JS modules.
+ * @suppress {checkTypes}
+ */
+chrome.fileManagerPrivate = {
+  FormatFileSystemType: {
+    VFAT: 'vfat',
+    EXFAT: 'exfat',
+    NTFS: 'ntfs',
+  },
+};
+
+/**
  * Mock LoadTimeData strings.
  */
 function setUpPage() {

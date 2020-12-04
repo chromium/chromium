@@ -3,6 +3,18 @@
 // found in the LICENSE file.
 
 /**
+ * TODO(lucmult): Remove this when converting to JS modules.
+ * @suppress {checkTypes}
+ */
+chrome.fileManagerPrivate = {
+  FormatFileSystemType: {
+    VFAT: 'vfat',
+    EXFAT: 'exfat',
+    NTFS: 'ntfs',
+  },
+};
+
+/**
  * Adds a FilesMessage element to the page, initially hidden.
  */
 function setUpPage() {
@@ -17,7 +29,7 @@ function setUpPage() {
 function setFilesMessageContent() {
   // Get the FilesMessage element.
   /** @type {!FilesMessage|!Element} */
-  let message = assert(document.querySelector('#test-files-message'));
+  const message = assert(document.querySelector('#test-files-message'));
 
   // Use the FilesMessage.setContent() method to assign all its settable
   // properties in one go.
