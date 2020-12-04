@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientWebAppBrowserTest, OpenWebApp) {
 void TestOpenSettingFromArc(Browser* browser,
                             ChromePage page,
                             const GURL& expected_url,
-                            int expected_setting_window_count) {
+                            size_t expected_setting_window_count) {
   // Install the Settings App.
   web_app::WebAppProvider::Get(browser->profile())
       ->system_web_app_manager()
@@ -206,20 +206,20 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest,
   TestOpenSettingFromArc(
       browser(), ChromePage::AUTOFILL,
       GURL("chrome://settings/").Resolve(chrome::kAutofillSubPage),
-      /*expected_setting_window_count=*/0);
+      /*expected_setting_window_count=*/0u);
 
   // But opening an OS setting should open the OS setting window.
   TestOpenSettingFromArc(
       browser(), ChromePage::POWER,
       GURL("chrome://os-settings/")
           .Resolve(chromeos::settings::mojom::kPowerSubpagePath),
-      /*expected_setting_window_count=*/1);
+      /*expected_setting_window_count=*/1u);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest, OpenAboutChromePage) {
   // Opening an about: chrome page opens a new tab, and not the Settings window.
   ChromeNewWindowClient::Get()->OpenChromePageFromArc(ChromePage::ABOUTHISTORY);
-  EXPECT_EQ(0, GetNumberOfSettingsWindows());
+  EXPECT_EQ(0u, GetNumberOfSettingsWindows());
 
   content::WebContents* contents =
       GetLastActiveBrowser()->tab_strip_model()->GetActiveWebContents();
