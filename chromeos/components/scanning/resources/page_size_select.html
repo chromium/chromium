@@ -4,8 +4,8 @@
   <div slot="settings">
     <!-- TODO(jschettler): Verify this meets a11y expecations (e.g. ChromeVox
         should announce when a new option is focused). -->
-    <select class="md-select" value="{{selectedPageSize::change}}"
-        disabled="[[disabled]]">
+    <select id="pageSizeSelect" class="md-select"
+        value="{{selectedPageSize::change}}" disabled="[[disabled]]">
       <!-- TODO(jschettler): Sort the page sizes. -->
       <template is="dom-repeat" items="[[pageSizes]]" as="pageSize">
         <option value="[[pageSize]]"

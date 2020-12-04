@@ -4,8 +4,8 @@
   <div slot="settings">
     <!-- TODO(jschettler): Verify this meets a11y expecations (e.g. ChromeVox
         should announce when a new option is focused). -->
-    <select class="md-select" value="{{selectedResolution::change}}"
-        disabled="[[disabled]]">
+    <select id="resolutionSelect" class="md-select"
+        value="{{selectedResolution::change}}" disabled="[[disabled]]">
       <!-- TODO(jschettler): Sort the resolutions. -->
       <template is="dom-repeat" items="[[resolutions]]" as="resolution">
         <option value="[[resolution]]"

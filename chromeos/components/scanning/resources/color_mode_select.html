@@ -4,8 +4,8 @@
   <div slot="settings">
     <!-- TODO(jschettler): Verify this meets a11y expecations (e.g. ChromeVox
         should announce when a new option is focused). -->
-    <select class="md-select" value="{{selectedColorMode::change}}"
-        disabled="[[disabled]]">
+    <select id="colorModeSelect" class="md-select"
+        value="{{selectedColorMode::change}}" disabled="[[disabled]]">
       <!-- TODO(jschettler): Determine how the color modes should be sorted. -->
       <template is="dom-repeat" items="[[colorModes]]" as="colorMode">
         <option value="[[colorMode]]"
