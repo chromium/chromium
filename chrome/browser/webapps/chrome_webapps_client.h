@@ -1,0 +1,32 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_WEBAPPS_CHROME_WEBAPPS_CLIENT_H_
+#define CHROME_BROWSER_WEBAPPS_CHROME_WEBAPPS_CLIENT_H_
+
+#include "base/no_destructor.h"
+#include "components/webapps/webapps_client.h"
+
+namespace webapps {
+
+class ChromeWebappsClient : public webapps::WebappsClient {
+ public:
+  ChromeWebappsClient(const ChromeWebappsClient&) = delete;
+  ChromeWebappsClient& operator=(const ChromeWebappsClient&) = delete;
+
+  static ChromeWebappsClient* GetInstance();
+
+  // webapps::WebappsClient:
+  security_state::SecurityLevel GetSecurityLevelForWebContents(
+      content::WebContents* web_contents) override;
+
+ private:
+  friend base::NoDestructor<ChromeWebappsClient>;
+
+  ChromeWebappsClient() = default;
+};
+
+}  // namespace webapps
+
+#endif  // CHROME_BROWSER_WEBAPPS_CHROME_WEBAPPS_CLIENT_H_

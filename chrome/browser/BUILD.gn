@@ -1884,6 +1884,8 @@ static_library("browser") {
     "wake_lock/wake_lock_permission_context.h",
     "web_data_service_factory.cc",
     "web_data_service_factory.h",
+    "webapps/chrome_webapps_client.cc",
+    "webapps/chrome_webapps_client.h",
     "window_placement/window_placement_permission_context.cc",
     "window_placement/window_placement_permission_context.h",
   ]
@@ -2244,6 +2246,7 @@ static_library("browser") {
     "//components/visitedlink/common",
     "//components/web_cache/browser",
     "//components/web_resource",
+    "//components/webapps",
     "//components/webdata/common",
     "//components/webdata_services",
     "//components/webrtc",

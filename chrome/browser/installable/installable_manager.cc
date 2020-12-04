@@ -14,8 +14,8 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/installable/installable_metrics.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
+#include "components/webapps/webapps_client.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/manifest_icon_downloader.h"
@@ -280,9 +280,13 @@ bool InstallableManager::IsContentSecure(content::WebContents* web_contents) {
   if (IsOriginConsideredSecure(url))
     return true;
 
+  // This can be null in unit tests but should be non-null in production.
+  if (!webapps::WebappsClient::Get())
+    return false;
+
   return security_state::IsSslCertificateValid(
-      SecurityStateTabHelper::FromWebContents(web_contents)
-          ->GetSecurityLevel());
+      webapps::WebappsClient::Get()->GetSecurityLevelForWebContents(
+          web_contents));
 }
 
 // static

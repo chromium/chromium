@@ -75,6 +75,7 @@
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/update_client/chrome_update_query_params_delegate.h"
+#include "chrome/browser/webapps/chrome_webapps_client.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
@@ -306,6 +307,9 @@ void BrowserProcessImpl::Init() {
 
   // Make sure permissions client has been set.
   ChromePermissionsClient::GetInstance();
+
+  // Make sure webapps client has been set.
+  webapps::ChromeWebappsClient::GetInstance();
 
 #if !defined(OS_ANDROID)
   KeepAliveRegistry::GetInstance()->SetIsShuttingDown(false);
