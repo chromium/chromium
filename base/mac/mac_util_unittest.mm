@@ -174,23 +174,10 @@ TEST_F(MacUtilTest, IsOSEllipsis) {
   EXPECT_FALSE(IsAtLeastOS##V());
 
   if (major == 10) {
-    if (minor == 10) {
-      EXPECT_TRUE(IsOS10_10());
-      EXPECT_TRUE(IsAtMostOS10_10());
+    if (minor == 11) {
+      EXPECT_TRUE(IsOS10_11());
+      EXPECT_TRUE(IsAtMostOS10_11());
 
-      TEST_FOR_FUTURE_10_OS(11);
-      TEST_FOR_FUTURE_10_OS(12);
-      TEST_FOR_FUTURE_10_OS(13);
-      TEST_FOR_FUTURE_10_OS(14);
-      TEST_FOR_FUTURE_10_OS(15);
-      TEST_FOR_FUTURE_OS(11);
-
-      EXPECT_FALSE(IsOSLaterThan11_DontCallThis());
-    } else if (minor == 11) {
-      EXPECT_FALSE(IsOS10_10());
-      EXPECT_FALSE(IsAtMostOS10_10());
-
-      TEST_FOR_SAME_10_OS(11);
       TEST_FOR_FUTURE_10_OS(12);
       TEST_FOR_FUTURE_10_OS(13);
       TEST_FOR_FUTURE_10_OS(14);
@@ -199,10 +186,9 @@ TEST_F(MacUtilTest, IsOSEllipsis) {
 
       EXPECT_FALSE(IsOSLaterThan11_DontCallThis());
     } else if (minor == 12) {
-      EXPECT_FALSE(IsOS10_10());
-      EXPECT_FALSE(IsAtMostOS10_10());
+      EXPECT_FALSE(IsOS10_11());
+      EXPECT_FALSE(IsAtMostOS10_11());
 
-      TEST_FOR_PAST_10_OS(11);
       TEST_FOR_SAME_10_OS(12);
       TEST_FOR_FUTURE_10_OS(13);
       TEST_FOR_FUTURE_10_OS(14);
@@ -211,10 +197,9 @@ TEST_F(MacUtilTest, IsOSEllipsis) {
 
       EXPECT_FALSE(IsOSLaterThan11_DontCallThis());
     } else if (minor == 13) {
-      EXPECT_FALSE(IsOS10_10());
-      EXPECT_FALSE(IsAtMostOS10_10());
+      EXPECT_FALSE(IsOS10_11());
+      EXPECT_FALSE(IsAtMostOS10_11());
 
-      TEST_FOR_PAST_10_OS(11);
       TEST_FOR_PAST_10_OS(12);
       TEST_FOR_SAME_10_OS(13);
       TEST_FOR_FUTURE_10_OS(14);
@@ -223,10 +208,9 @@ TEST_F(MacUtilTest, IsOSEllipsis) {
 
       EXPECT_FALSE(IsOSLaterThan11_DontCallThis());
     } else if (minor == 14) {
-      EXPECT_FALSE(IsOS10_10());
-      EXPECT_FALSE(IsAtMostOS10_10());
+      EXPECT_FALSE(IsOS10_11());
+      EXPECT_FALSE(IsAtMostOS10_11());
 
-      TEST_FOR_PAST_10_OS(11);
       TEST_FOR_PAST_10_OS(12);
       TEST_FOR_PAST_10_OS(13);
       TEST_FOR_SAME_10_OS(14);
@@ -235,10 +219,9 @@ TEST_F(MacUtilTest, IsOSEllipsis) {
 
       EXPECT_FALSE(IsOSLaterThan11_DontCallThis());
     } else if (minor == 15) {
-      EXPECT_FALSE(IsOS10_10());
-      EXPECT_FALSE(IsAtMostOS10_10());
+      EXPECT_FALSE(IsOS10_11());
+      EXPECT_FALSE(IsAtMostOS10_11());
 
-      TEST_FOR_PAST_10_OS(11);
       TEST_FOR_PAST_10_OS(12);
       TEST_FOR_PAST_10_OS(13);
       TEST_FOR_PAST_10_OS(14);
@@ -251,10 +234,9 @@ TEST_F(MacUtilTest, IsOSEllipsis) {
       EXPECT_TRUE(false);
     }
   } else if (major == 11) {
-    EXPECT_FALSE(IsOS10_10());
-    EXPECT_FALSE(IsAtMostOS10_10());
+    EXPECT_FALSE(IsOS10_11());
+    EXPECT_FALSE(IsAtMostOS10_11());
 
-    TEST_FOR_PAST_10_OS(11);
     TEST_FOR_PAST_10_OS(12);
     TEST_FOR_PAST_10_OS(13);
     TEST_FOR_PAST_10_OS(14);
