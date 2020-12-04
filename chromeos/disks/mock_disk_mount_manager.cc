@@ -147,6 +147,11 @@ void MockDiskMountManager::SetupDefaultReplies() {
 }
 
 void MockDiskMountManager::CreateDiskEntryForMountDevice(
+    std::unique_ptr<Disk> disk) {
+  disks_[disk->device_path()] = std::move(disk);
+}
+
+void MockDiskMountManager::CreateDiskEntryForMountDevice(
     const DiskMountManager::MountPointInfo& mount_info,
     const std::string& device_id,
     const std::string& device_label,
@@ -176,7 +181,7 @@ void MockDiskMountManager::CreateDiskEntryForMountDevice(
           .SetOnRemovableDevice(on_removable_device)
           .SetFileSystemType(file_system_type)
           .Build();
-  disks_[std::string(mount_info.source_path)] = std::move(disk_ptr);
+  CreateDiskEntryForMountDevice(std::move(disk_ptr));
 }
 
 void MockDiskMountManager::RemoveDiskEntryForMountDevice(

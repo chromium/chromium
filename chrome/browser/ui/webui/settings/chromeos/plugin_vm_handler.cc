@@ -20,17 +20,17 @@ namespace chromeos {
 
 namespace {
 
-base::ListValue UsbDevicesToListValue(
-    const std::vector<CrosUsbDeviceInfo>& shared_usbs) {
+base::ListValue GetSharableUsbDevices(CrosUsbDetector* detector) {
   base::ListValue usb_devices_list;
-  for (const auto& device : shared_usbs) {
+  for (const auto& device : detector->GetDevicesSharableWithCrostini()) {
     base::Value device_info(base::Value::Type::DICTIONARY);
     device_info.SetStringKey("guid", device.guid);
     device_info.SetStringKey("label", device.label);
     bool shared = device.shared_vm_name == plugin_vm::kPluginVmName;
     device_info.SetBoolKey("shared", shared);
-    device_info.SetBoolKey("shareWillReassign",
-                           device.shared_vm_name && !shared);
+    device_info.SetBoolKey(
+        "shareWillReassign",
+        !shared && detector->SharingRequiresReassignPrompt(device));
     usb_devices_list.Append(std::move(device_info));
   }
   return usb_devices_list;
@@ -151,12 +151,9 @@ void PluginVmHandler::HandleSetPluginVmUsbDeviceShared(
 
 void PluginVmHandler::OnUsbDevicesChanged() {
   chromeos::CrosUsbDetector* detector = chromeos::CrosUsbDetector::Get();
-  if (!detector)
-    return;
-
-  FireWebUIListener(
-      "plugin-vm-shared-usb-devices-changed",
-      UsbDevicesToListValue(detector->GetDevicesSharableWithCrostini()));
+  DCHECK(detector);  // This callback is called by the detector.
+  FireWebUIListener("plugin-vm-shared-usb-devices-changed",
+                    GetSharableUsbDevices(detector));
 }
 
 void PluginVmHandler::HandleIsRelaunchNeededForNewPermissions(

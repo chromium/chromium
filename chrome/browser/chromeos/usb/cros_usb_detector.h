@@ -17,6 +17,7 @@
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/vm_plugin_dispatcher_client.h"
+#include "chromeos/disks/disk_mount_manager.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -64,6 +65,10 @@ struct CrosUsbDeviceInfo {
   base::Optional<uint8_t> guest_port;
   // Interfaces shareable with guest OSes
   uint32_t allowed_interfaces_mask = 0;
+  // For a mass storage device, the mount points for active mounts.
+  std::set<std::string> mount_points;
+  // An internal flag to suppress observer events as mount_points empties.
+  bool is_unmounting = false;
   // TODO(nverne): Add current state and errors etc.
 };
 
@@ -77,7 +82,8 @@ class CrosUsbDeviceObserver : public base::CheckedObserver {
 // with CrOS, Web or GuestOSs.
 class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
                         public chromeos::ConciergeClient::VmObserver,
-                        public chromeos::VmPluginDispatcherClient::Observer {
+                        public chromeos::VmPluginDispatcherClient::Observer,
+                        public disks::DiskMountManager::Observer {
  public:
   // Used to namespace USB notifications to avoid clashes with WebUsbDetector.
   static std::string MakeNotificationId(const std::string& guid);
@@ -132,6 +138,10 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
   // include all connected devices.
   std::vector<CrosUsbDeviceInfo> GetDevicesSharableWithCrostini() const;
 
+  // Returns whether we should prompt the user before sharing the device.
+  bool SharingRequiresReassignPrompt(
+      const CrosUsbDeviceInfo& device_info) const;
+
  private:
   // chromeos::ConciergeClient::VmObserver:
   void OnVmStarted(const vm_tools::concierge::VmStartedSignal& signal) override;
@@ -143,6 +153,12 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
       override;
   void OnVmStateChanged(
       const vm_tools::plugin_dispatcher::VmStateChangedSignal& signal) override;
+
+  // disks::DiskMountManager::Observer:
+  void OnMountEvent(
+      disks::DiskMountManager::MountEvent event,
+      MountError error_code,
+      const disks::DiskMountManager::MountPointInfo& mount_info) override;
 
   // Called after USB device access has been checked.
   void OnDeviceChecked(device::mojom::UsbDeviceInfoPtr device,
