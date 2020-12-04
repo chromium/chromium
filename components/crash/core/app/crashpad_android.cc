@@ -295,7 +295,8 @@ bool GetHandlerTrampoline(std::string* handler_trampoline,
                           std::string* handler_library) {
   // The linker doesn't support loading executables passed on its command
   // line until Q.
-  if (!base::android::BuildInfo::GetInstance()->is_at_least_q()) {
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_Q) {
     return false;
   }
 
