@@ -3,38 +3,19 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
+GEN_INCLUDE(['panel_test_base.js']);
 GEN_INCLUDE(['../testing/mock_feedback.js']);
 
 /**
  * Test fixture for the interactive tutorial.
  */
-ChromeVoxTutorialTest = class extends ChromeVoxNextE2ETest {
-  /** @override */
-  setUp() {
-    window.doCmd = this.doCmd;
-  }
-
+ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
   assertActiveLessonIndex(expectedIndex) {
     assertEquals(expectedIndex, this.getPanel().iTutorial.activeLessonIndex);
   }
 
   assertActiveScreen(expectedScreen) {
     assertEquals(expectedScreen, this.getPanel().iTutorial.activeScreen);
-  }
-
-  getPanelWindow() {
-    let panelWindow = null;
-    while (!panelWindow) {
-      panelWindow = chrome.extension.getViews().find(function(view) {
-        return view.location.href.indexOf('chromevox/panel/panel.html') > 0;
-      });
-    }
-    return panelWindow;
-  }
-
-  getPanel() {
-    return this.getPanelWindow().Panel;
   }
 
   async launchAndWaitForTutorial() {

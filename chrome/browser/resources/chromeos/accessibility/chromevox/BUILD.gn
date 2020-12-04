@@ -469,6 +469,7 @@ if (is_chromeos_ash) {
       "options/options_test.js",
       "panel/i_search_test.js",
       "panel/panel_test.js",
+      "panel/panel_test_base.js",
       "panel/tutorial_test.js",
     ]
     gen_include_files = [
