@@ -309,6 +309,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="133535873114485416">Želeni način vnosa</translation>
 <translation id="1335929031622236846">Včlanite napravo</translation>
 <translation id="1336902454946927954">Varnostni ključ je zaklenjen, ker vašega prstnega odtisa ni bilo mogoče prepoznati. Če ga želite odkleniti, vnesite PIN.</translation>
+<translation id="1337692097987160377">Deli ta zavihek z drugimi</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> želi odpreti to aplikacijo.</translation>
 <translation id="1338950911836659113">Brisanje ...</translation>
 <translation id="13392265090583506">Funkcije za ljudi s posebnimi potrebami</translation>
@@ -1613,6 +1614,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2805770823691782631">Dodatne podrobnosti</translation>
 <translation id="2806372837663997957">Naprava, s katero želite deliti vsebino, ni potrdila sprejema.</translation>
+<translation id="2806891468525657116">Bližnjica že obstaja</translation>
 <translation id="2807517655263062534">Tu so prikazane datoteke, ki jih prenesete</translation>
 <translation id="2809586584051668049">in še <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2810390687497823527">Če razširitve ne prepoznate ali če brskalnik ne deluje po pričakovanjih, lahko tukaj izklopite ali prilagodite razširitve.</translation>
@@ -5588,6 +5590,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7496732379142025470">Zaradi varčevanja z energijo akumulatorja je sprožilna beseda »Ok Google« vklopljena samo, ko je naprava priklopljena v vir napajanja. Če želite opraviti spremembe, odprite nastavitve.</translation>
 <translation id="7497215489070763236">Strežniško overjeno potrdilo</translation>
 <translation id="7497981768003291373">Nimate nedavno zajetih besedilnih dnevnikov za WebRTC.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> zahteva dovoljenje za zajem vsebine tega zavihka.</translation>
 <translation id="7502658306369382406">Naslov IPv6</translation>
 <translation id="7503191893372251637">Vrsta Netscapeovega potrdila</translation>
 <translation id="7503985202154027481">Na varnostnem ključu se bo zabeležil obisk tega spletnega mesta.</translation>

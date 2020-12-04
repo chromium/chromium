@@ -309,6 +309,7 @@
 <translation id="133535873114485416">Preferirani unos</translation>
 <translation id="1335929031622236846">Registrirajte svoj uređaj</translation>
 <translation id="1336902454946927954">Sigurnosni je ključ zaključan jer vaš otisak prsta nije prepoznat. Da biste ga otključali, unesite PIN.</translation>
+<translation id="1337692097987160377">Dijeli ovu karticu</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> želi otvoriti ovu aplikaciju.</translation>
 <translation id="1338950911836659113">Brisanje...</translation>
 <translation id="13392265090583506">Pristupačnost</translation>
@@ -1615,6 +1616,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2805770823691782631">Dodatne pojedinosti</translation>
 <translation id="2806372837663997957">Uređaj s kojim pokušavate dijeliti nije prihvatio</translation>
+<translation id="2806891468525657116">Prečac već postoji</translation>
 <translation id="2807517655263062534">Ovdje se prikazuju datoteke koje ste preuzeli</translation>
 <translation id="2809586584051668049">i još <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2810390687497823527">Ako ne prepoznajete proširenje ili ako vaš preglednik ne radi kako treba, ovdje možete isključiti proširenja ili ih prilagoditi.</translation>

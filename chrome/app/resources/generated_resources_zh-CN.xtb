@@ -306,6 +306,7 @@
 <translation id="133535873114485416">首选输入模式</translation>
 <translation id="1335929031622236846">注册您的设备</translation>
 <translation id="1336902454946927954">您的安全密钥已被锁定，因为无法识别您的指纹。若要解锁，请输入 PIN 码。</translation>
+<translation id="1337692097987160377">分享此标签页</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> 想打开此应用。</translation>
 <translation id="1338950911836659113">正在删除…</translation>
 <translation id="13392265090583506">无障碍设置</translation>
@@ -1606,6 +1607,7 @@
 <translation id="2805756323405976993">应用</translation>
 <translation id="2805770823691782631">更多详情</translation>
 <translation id="2806372837663997957">目标设备未接受您的文件分享请求</translation>
+<translation id="2806891468525657116">快捷方式已存在</translation>
 <translation id="2807517655263062534">您下载的文件会显示在此处</translation>
 <translation id="2809586584051668049">及另外<ph name="NUMBER_ADDITIONAL_DISABLED" />个扩展程序</translation>
 <translation id="2810390687497823527">如果您不认识某款扩展程序或者您的浏览器无法按预期运行，您可在此处关闭或自定义扩展程序。</translation>
@@ -5578,6 +5580,7 @@
 <translation id="7496732379142025470">为了省电，“Ok Google”仅在您的设备连接至电源时可用。要进行更改，请转到“设置”。</translation>
 <translation id="7497215489070763236">服务器 CA 证书</translation>
 <translation id="7497981768003291373">您最近未记录 WebRTC 文本日志。</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> 请求您授权其获取此标签页的内容。</translation>
 <translation id="7502658306369382406">IPv6 地址</translation>
 <translation id="7503191893372251637">Netscape 证书类型</translation>
 <translation id="7503985202154027481">您对该网站的访问记录将保留在安全密钥上。</translation>

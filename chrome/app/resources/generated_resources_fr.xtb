@@ -308,6 +308,7 @@
 <translation id="133535873114485416">Mode de saisie préféré</translation>
 <translation id="1335929031622236846">Enregistrer l'appareil</translation>
 <translation id="1336902454946927954">Empreinte digitale non reconnue. Votre clé de sécurité a été verrouillée. Pour la déverrouiller, saisissez votre code.</translation>
+<translation id="1337692097987160377">Partager cet onglet</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> souhaite ouvrir cette application.</translation>
 <translation id="1338950911836659113">Suppression en cours...</translation>
 <translation id="13392265090583506">Paramètres d'accessibilité</translation>
@@ -1612,6 +1613,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2805756323405976993">Applications</translation>
 <translation id="2805770823691782631">Informations supplémentaires</translation>
 <translation id="2806372837663997957">L'appareil avec lequel vous tentez de partager le fichier n'a pas accepté cette opération</translation>
+<translation id="2806891468525657116">Le raccourci existe déjà</translation>
 <translation id="2807517655263062534">Les fichiers téléchargés s'affichent ici</translation>
 <translation id="2809586584051668049">ainsi que <ph name="NUMBER_ADDITIONAL_DISABLED" /> autre(s) extension(s)</translation>
 <translation id="2810390687497823527">Si vous ne reconnaissez pas une extension ou si votre navigateur ne fonctionne pas comme prévu, vous pouvez désactiver ou personnaliser les extensions ici.</translation>
@@ -5586,6 +5588,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7496732379142025470">Pour économiser la batterie, la détection du mot clé "Ok Google" n'est activée que lorsque vous branchez votre appareil sur une source d'alimentation externe. Pour apporter des modifications, accédez aux paramètres.</translation>
 <translation id="7497215489070763236">Certificat de l'autorité de certification du serveur</translation>
 <translation id="7497981768003291373">Aucun journal texte WebRTC n'a été créé récemment.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> demande l'autorisation d'enregistrer le contenu de cet onglet.</translation>
 <translation id="7502658306369382406">Adresse IPv6</translation>
 <translation id="7503191893372251637">Type de certificat Netscape</translation>
 <translation id="7503985202154027481">Une trace de votre visite sur le site sera conservée sur votre clé de sécurité.</translation>

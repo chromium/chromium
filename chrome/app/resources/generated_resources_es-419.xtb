@@ -306,6 +306,7 @@
 <translation id="133535873114485416">Método de entrada preferido</translation>
 <translation id="1335929031622236846">Inscribe tu dispositivo</translation>
 <translation id="1336902454946927954">Se bloqueó la llave de seguridad porque no se reconoció tu huella digital. Para desbloquearla, ingresa el PIN.</translation>
+<translation id="1337692097987160377">Compartir esta pestaña</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> quiere abrir esta app.</translation>
 <translation id="1338950911836659113">Eliminando…</translation>
 <translation id="13392265090583506">Accesibilidad</translation>
@@ -1607,6 +1608,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="2805770823691782631">Detalles adicionales</translation>
 <translation id="2806372837663997957">El dispositivo con el que quieres compartir contenido no lo aceptó.</translation>
+<translation id="2806891468525657116">El acceso directo ya existe</translation>
 <translation id="2807517655263062534">Los archivos que descargas aparecen aquí</translation>
 <translation id="2809586584051668049">y <ph name="NUMBER_ADDITIONAL_DISABLED" /> más</translation>
 <translation id="2810390687497823527">Si no reconoces una extensión o si navegador no funciona correctamente, puedes desactivar o personalizar extensiones aquí.</translation>
@@ -5580,6 +5582,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7496732379142025470">Para ahorrar batería, "Ok Google" solo se activa cuando tu dispositivo está conectado a una fuente de energía. Para hacer cambios, ve a la configuración.</translation>
 <translation id="7497215489070763236">Certificado de CA del servidor</translation>
 <translation id="7497981768003291373">No capturaste ningún registro de texto de WebRTC recientemente.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> pide permiso para capturar el contenido de esta pestaña.</translation>
 <translation id="7502658306369382406">Dirección IPv6</translation>
 <translation id="7503191893372251637">Tipo de certificado Netscape</translation>
 <translation id="7503985202154027481">En tu llave de seguridad, se guardará un registro de tu visita a este sitio.</translation>

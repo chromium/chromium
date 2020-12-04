@@ -309,6 +309,7 @@
 <translation id="133535873114485416">Жељени начин уноса</translation>
 <translation id="1335929031622236846">Региструјте уређај</translation>
 <translation id="1336902454946927954">Ваш безбедносни кључ је закључан јер нисмо успели да препознамо отисак прста. Да бисте га откључали, унесите PIN.</translation>
+<translation id="1337692097987160377">Дели ову картицу</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> жели да отвори ову апликацију.</translation>
 <translation id="1338950911836659113">Брисање...</translation>
 <translation id="13392265090583506">Приступачност</translation>
@@ -1613,6 +1614,7 @@
 <translation id="2805756323405976993">Апликације</translation>
 <translation id="2805770823691782631">Детаљне информације</translation>
 <translation id="2806372837663997957">Уређај са којим покушавате да делите садржај га није прихватио</translation>
+<translation id="2806891468525657116">Пречица већ постоји</translation>
 <translation id="2807517655263062534">Датотеке које преузмете ће се појавити овде</translation>
 <translation id="2809586584051668049">и још <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2810390687497823527">Ако не препознајете додатак или ако прегледач не ради на очекивани начин, овде можете да искључите или прилагодите додатке.</translation>
@@ -5600,6 +5602,7 @@
 <translation id="7496732379142025470">Да бисте уштедели батерију, функција „Ок Google“ је укључена само када је уређај повезан на струју. Да бисте унели промене, идите у Подешавања.</translation>
 <translation id="7497215489070763236">CA сертификат сервера</translation>
 <translation id="7497981768003291373">Нисте недавно снимили ниједну WebRTC евиденцију текста.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> тражи дозволу за снимање садржаја ове картице.</translation>
 <translation id="7502658306369382406">IPv6 адреса</translation>
 <translation id="7503191893372251637">Тип Netscape сертификата</translation>
 <translation id="7503985202154027481">Посета овом сајту ће бити забележена на безбедносном кључу.</translation>

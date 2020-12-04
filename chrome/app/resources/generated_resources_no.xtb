@@ -307,6 +307,7 @@
 <translation id="133535873114485416">Foretrukket inndatametode</translation>
 <translation id="1335929031622236846">Registrer enheten din</translation>
 <translation id="1336902454946927954">Sikkerhetsnøkkelen er låst fordi fingeravtrykket ikke ble gjenkjent. For å låse den opp, skriv inn PIN-koden.</translation>
+<translation id="1337692097987160377">Del denne fanen</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> vil åpne denne appen.</translation>
 <translation id="1338950911836659113">Sletter …</translation>
 <translation id="13392265090583506">A11y</translation>
@@ -1611,6 +1612,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2805756323405976993">Apper</translation>
 <translation id="2805770823691782631">Flere detaljer</translation>
 <translation id="2806372837663997957">Enheten du prøver å dele med, godtok ikke delingen</translation>
+<translation id="2806891468525657116">Snarveien finnes allerede</translation>
 <translation id="2807517655263062534">Filer du laster ned, vises her</translation>
 <translation id="2809586584051668049">og <ph name="NUMBER_ADDITIONAL_DISABLED" /> til</translation>
 <translation id="2810390687497823527">Hvis det er utvidelser du ikke kjenner igjen, eller hvis nettleseren ikke fungerer som forventet, kan du slå av eller tilpasse utvidelser her.</translation>
@@ -5595,6 +5597,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7496732379142025470">For å spare batteri er «Ok Google» bare på når enheten er koblet til en strømkilde. For å gjøre endringer, gå til Innstillinger.</translation>
 <translation id="7497215489070763236">Tjenerens CA-sertifikat</translation>
 <translation id="7497981768003291373">Du har ingen nylig lagrede WebRTC-tekstlogger.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> spør om tillatelse til å ta bilde av innholdet på denne fanen.</translation>
 <translation id="7502658306369382406">IPv6-adresse</translation>
 <translation id="7503191893372251637">Netscape sertifikattype</translation>
 <translation id="7503985202154027481">Besøket ditt på dette nettstedet registreres på sikkerhetsnøkkelen.</translation>

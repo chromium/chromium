@@ -308,6 +308,7 @@
 <translation id="133535873114485416">Preferovaná metoda zadávání</translation>
 <translation id="1335929031622236846">Zaregistrujte své zařízení</translation>
 <translation id="1336902454946927954">Bezpečnostní klíč je uzamčen, protože se nepodařilo rozpoznat váš otisk prstu. Chcete-li ho odemknout, zadejte PIN.</translation>
+<translation id="1337692097987160377">Sdílet tuto kartu</translation>
 <translation id="1338802252451106843">Tuto aplikaci chce otevřít web <ph name="ORIGIN" />.</translation>
 <translation id="1338950911836659113">Mazání...</translation>
 <translation id="13392265090583506">Přístupnost</translation>
@@ -1611,6 +1612,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2805756323405976993">Aplikace</translation>
 <translation id="2805770823691782631">Další podrobnosti</translation>
 <translation id="2806372837663997957">Cílové zařízení sdílený soubor nepřijalo</translation>
+<translation id="2806891468525657116">Zkratka už existuje</translation>
 <translation id="2807517655263062534">Zde se zobrazují stažené soubory</translation>
 <translation id="2809586584051668049">a další (<ph name="NUMBER_ADDITIONAL_DISABLED" />)</translation>
 <translation id="2810390687497823527">Pokud nějaké rozšíření nepoznáváte nebo prohlížeč nefunguje podle očekávání, můžete zde rozšíření vypnout nebo si je přizpůsobit.</translation>
@@ -5583,6 +5585,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7496732379142025470">Kvůli úspoře baterie je příkaz „Ok Google“ zapnutý, jen když je zařízení připojené ke zdroji napájení. Toto chování můžete změnit v Nastavení.</translation>
 <translation id="7497215489070763236">Certifikát CA serveru</translation>
 <translation id="7497981768003291373">Nemáte žádné nedávno zaznamenané textové protokoly WebRTC.</translation>
+<translation id="7498614236023455416">Web <ph name="TARGET_NAME" /> žádá o oprávnění k zaznamenávání obsahu této karty.</translation>
 <translation id="7502658306369382406">Adresa IPv6</translation>
 <translation id="7503191893372251637">Certifikát typu Netscape</translation>
 <translation id="7503985202154027481">Na bezpečnostním klíči zůstane záznam o návštěvě tohoto webu.</translation>

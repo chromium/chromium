@@ -307,6 +307,7 @@
 <translation id="133535873114485416">Mbinu unayopendelea ya kuingiza sauti</translation>
 <translation id="1335929031622236846">Andikisha kifaa chako</translation>
 <translation id="1336902454946927954">Ufunguo wako wa usalama umefungwa kwa sababu tumeshindwa kutambua alama yako ya kidole. Ili uufungue, weka PIN yako.</translation>
+<translation id="1337692097987160377">Shiriki kichupo hiki</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> inataka kufungua programu hii.</translation>
 <translation id="1338950911836659113">Inafuta...</translation>
 <translation id="13392265090583506">Ufikivu</translation>
@@ -1611,6 +1612,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2805756323405976993">Programu</translation>
 <translation id="2805770823691782631">Maelezo ya ziada</translation>
 <translation id="2806372837663997957">Kifaa unachojaribu kushiriki nacho hakijakubali</translation>
+<translation id="2806891468525657116">Tayari umeweka njia hii ya mkato</translation>
 <translation id="2807517655263062534">Faili unazopakua zitaonekana hapa</translation>
 <translation id="2809586584051668049">na <ph name="NUMBER_ADDITIONAL_DISABLED" /> zaidi</translation>
 <translation id="2810390687497823527">Ikiwa hutambui kiendelezi au ikiwa kivinjari chako hakifanyi kazi kama inavyotarajiwa, unaweza kuzima au kuweka mapendeleo ya viendelezi hapa.</translation>
@@ -5595,6 +5597,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7496732379142025470">Ili kuokoa betri, “Ok Google” inawaka tu wakati kifaa chako kimeunganishwa kwenye chanzo cha umeme. Ili ubadilishe, nenda kwenye Mipangilio.</translation>
 <translation id="7497215489070763236">Cheti cha CA cha Seva</translation>
 <translation id="7497981768003291373">Huna kumbukumbu za maandishi ya WebRTC uliyorekodi hivi majuzi.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> inaomba ruhusa ya kurekodi maudhui ya kichupo hiki.</translation>
 <translation id="7502658306369382406">Anwani ya IPv6</translation>
 <translation id="7503191893372251637">Aina ya Cheti cha Netscape</translation>
 <translation id="7503985202154027481">Rekodi ya ulivyotembelea tovuti hii itahifadhiwa kwenye ufunguo wako wa usalama.</translation>

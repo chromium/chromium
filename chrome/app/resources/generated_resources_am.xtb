@@ -308,6 +308,7 @@
 <translation id="133535873114485416">ተመራጭ ግቤት</translation>
 <translation id="1335929031622236846">መሣሪያዎን ያስመዝግቡ</translation>
 <translation id="1336902454946927954">የእርስዎ የደህነት ቁልፍ የእርስዎ የጣት አሻራ ተለይቶ ሊታወቅ ስለሚችል ተቆልፏል። ለመክፈት የእርስዎን ፒን ያስገቡ።</translation>
+<translation id="1337692097987160377">ይህን ትር አጋራ</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> ይህን መተግበሪያ መክፈት ይፈልጋል።</translation>
 <translation id="1338950911836659113">በመሰረዝ ላይ...</translation>
 <translation id="13392265090583506">A11y</translation>
@@ -1614,6 +1615,7 @@
 <translation id="2805756323405976993">መተግበሪያዎች</translation>
 <translation id="2805770823691782631">ተጨማሪ ዝርዝሮች</translation>
 <translation id="2806372837663997957">ሊያጋሩት እየሞከሩት ያለው መሣሪያ አልተቀበለም</translation>
+<translation id="2806891468525657116">አቋራጭ አስቀድሞ አለ</translation>
 <translation id="2807517655263062534">እርስዎ የሚያወርዷቸው ፋይሎች እዚህ ይመጣሉ</translation>
 <translation id="2809586584051668049">እና <ph name="NUMBER_ADDITIONAL_DISABLED" /> ተጨማሪ</translation>
 <translation id="2810390687497823527">ቅጥያን የማያውቁት ከሆነ ወይም የእርስዎ አሳሽ እንደሚጠበቀው እየሠራ ካልሆነ፣ ቅጥያዎችን እዚህ ላይ ማጥፋት ወይም ብጁ ማድረግ ይችላሉ።</translation>
@@ -5598,6 +5600,7 @@
 <translation id="7496732379142025470">ባትሪን ለመቆጠብ መሣሪያዎ ከኃይል ምንጭ ጋር ሲገናኝ ብቻ ነው «Ok Google» የሚበራው። ለውጦችን ለማድረግ ወደ ቅንብሮች ይሂዱ።</translation>
 <translation id="7497215489070763236">የአገልጋይ CA እውቅና ማረጋገጫ</translation>
 <translation id="7497981768003291373">ምንም በቅርብ ጊዜ የተቀረጹ WebRTC የጽሑፍ ምዝግብ ማስታወሻዎች የለዎትም።</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> የዚህን ትር ይዘቶች ለመያዝ ፈቃድ በመጠየቅ ላይ ነው።</translation>
 <translation id="7502658306369382406">የIPv6 አድራሻ</translation>
 <translation id="7503191893372251637">የNetscape ሰርቲፊኬት አይነት</translation>
 <translation id="7503985202154027481">ወደዚህ ጣቢያ ያደረጉት የጉብኝትዎ መዝገብ በደህንነት ቁልፍዎ ላይ ይቀመጣል።</translation>

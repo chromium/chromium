@@ -310,6 +310,7 @@
 <translation id="133535873114485416">الإدخال المفضَّل</translation>
 <translation id="1335929031622236846">تسجيل الجهاز</translation>
 <translation id="1336902454946927954">تم قفل مفتاح الأمان لأنه لم يتم التعرّف على بصمة الإصبع. لفتح القفل، أدخِل رقم التعريف الشخصي.</translation>
+<translation id="1337692097987160377">مشاركة علامة التبويب هذه</translation>
 <translation id="1338802252451106843">يريد <ph name="ORIGIN" /> فتح هذا التطبيق.</translation>
 <translation id="1338950911836659113">جارٍ الحذف...</translation>
 <translation id="13392265090583506">إمكانية الوصول</translation>
@@ -1615,6 +1616,7 @@
 <translation id="2805756323405976993">التطبيقات</translation>
 <translation id="2805770823691782631">تفاصيل إضافية</translation>
 <translation id="2806372837663997957">رفض الجهاز الذي تحاول تنفيذ المشاركة معه طلبك.</translation>
+<translation id="2806891468525657116">الاختصار موجود من قَبل</translation>
 <translation id="2807517655263062534">هنا تظهر الملفات التي تم تنزيلها</translation>
 <translation id="2809586584051668049">و<ph name="NUMBER_ADDITIONAL_DISABLED" /> من الإضافات الأخرى</translation>
 <translation id="2810390687497823527">في حال عدم التعرُّف على إحدى الإضافات أو في حال كان متصفّحك لا يعمل كما هو متوقع، يمكنك إيقاف الإضافات أو تخصيصها هنا.</translation>
@@ -5587,6 +5589,7 @@
 <translation id="7496732379142025470">‏لتوفير طاقة البطارية، يتم تفعيل “Ok Google” فقط عند اتِّصال جهازك بمصدر طاقة. لإجراء التغييرات، يُرجى الانتقال إلى "الإعدادات".</translation>
 <translation id="7497215489070763236">‏شهادة CA للخادم</translation>
 <translation id="7497981768003291373">‏ليست لديك أي سجلَّات نصية WebRTC تم التقاطها مؤخرًا.</translation>
+<translation id="7498614236023455416">يطلُب <ph name="TARGET_NAME" /> الإذن لرقمنة محتوى علامة التبويب هذه.</translation>
 <translation id="7502658306369382406">‏عنوان IPv6</translation>
 <translation id="7503191893372251637">‏نوع شهادات Netscape</translation>
 <translation id="7503985202154027481">سيتم حفظ سجلّ زيارتك لهذا الموقع في مفتاح الأمان.</translation>

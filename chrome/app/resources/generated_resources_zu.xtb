@@ -308,6 +308,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="133535873114485416">Okokufaka okuncamelayo</translation>
 <translation id="1335929031622236846">Bhalisa idivayisi yakho</translation>
 <translation id="1336902454946927954">Ukhiye wakho wokuqinisekisa ubunikazi ukhiyiwe ngoba isigxivizo somunwe asaziwanga. Ukuze uwuvule, faka iphinikhodi yakho.</translation>
+<translation id="1337692097987160377">Yabelana ngale thebhu</translation>
 <translation id="1338802252451106843">I-<ph name="ORIGIN" /> ifuna ukuvula lolu hlelo lokusebenza.</translation>
 <translation id="1338950911836659113">Iyasusa...</translation>
 <translation id="13392265090583506">I-A11y</translation>
@@ -1613,6 +1614,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2805756323405976993">Izinhlelo zokusebenza</translation>
 <translation id="2805770823691782631">Imininingwane engeziwe</translation>
 <translation id="2806372837663997957">Idivayisi ozama ukwabelana nayo ayamukelanga</translation>
+<translation id="2806891468525657116">Isinqamuleli sesivele sikhona</translation>
 <translation id="2807517655263062534">Amafayela owalandayo azovela lapha</translation>
 <translation id="2809586584051668049">nokuningi okungu-<ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2810390687497823527">Uma ungaboni isandiso, noma uma isiphequluli sakho singasebenzi ngendlela elindelekile, ungavala ukwenza ngezifiso izandiso lapha.</translation>
@@ -5600,6 +5602,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="7496732379142025470">Ukuze ulondoloze ibhethri, okuthi "Ok Google" kuvuliwe kuphela uma idivayisi yakho ixhunywe kumthombo wamandla. Ukuze wenze izinguquko, hamba kuzilungiselelo.</translation>
 <translation id="7497215489070763236">Isitifiketi se-CA yeseva</translation>
 <translation id="7497981768003291373">Awunawo amalogi ombhalo athathwa kamuva we-WebRTC.</translation>
+<translation id="7498614236023455416">I-<ph name="TARGET_NAME" /> icela imvume yokuthatha okuqukethwe kule thebhu.</translation>
 <translation id="7502658306369382406">Ikheli le-IPv^</translation>
 <translation id="7503191893372251637">Uhlobo lwesitifiketi se-Netscape</translation>
 <translation id="7503985202154027481">Irekhodi lokuvakasha kwakho kuleli sayithi lizogcinwa kukhiye wakho wokuqinisekisa ubunikazi</translation>

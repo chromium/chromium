@@ -308,6 +308,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="133535873114485416">Preferowane urządzenie wejściowe</translation>
 <translation id="1335929031622236846">Zarejestruj swoje urządzenie</translation>
 <translation id="1336902454946927954">Klucz bezpieczeństwa jest zablokowany, bo nie udało się rozpoznać Twojego odcisku palca. Aby odblokować klucz bezpieczeństwa, wpisz kod PIN.</translation>
+<translation id="1337692097987160377">Udostępnij tę kartę</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> chce otworzyć tę aplikację.</translation>
 <translation id="1338950911836659113">Usuwam...</translation>
 <translation id="13392265090583506">Ustawienia ułatwień dostępu</translation>
@@ -1608,6 +1609,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2805756323405976993">Aplikacje</translation>
 <translation id="2805770823691782631">Dodatkowe szczegóły</translation>
 <translation id="2806372837663997957">Urządzenie, któremu chcesz udostępnić dokument, nie zaakceptowało Twojej prośby</translation>
+<translation id="2806891468525657116">Skrót już istnieje</translation>
 <translation id="2807517655263062534">Tutaj wyświetlają się pobrane pliki</translation>
 <translation id="2809586584051668049">i jeszcze <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2810390687497823527">Jeśli nie rozpoznajesz jakiegoś rozszerzenia lub przeglądarka nie działa w oczekiwany sposób, tutaj możesz wyłączyć lub dostosować rozszerzenia.</translation>
@@ -5581,6 +5583,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7496732379142025470">Aby oszczędzać baterię, polecenie „OK Google” jest włączone tylko wtedy, gdy urządzenie jest podłączone do zasilania. Możesz to zmienić w Ustawieniach.</translation>
 <translation id="7497215489070763236">Certyfikat CA serwera</translation>
 <translation id="7497981768003291373">Nie ma zapisanych ostatnio logów tekstowych WebRTC.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> prosi o uprawnienia do przechwytywania treści tej karty.</translation>
 <translation id="7502658306369382406">Adres IPv6</translation>
 <translation id="7503191893372251637">Typ certyfikatu firmy Netscape</translation>
 <translation id="7503985202154027481">Wizyta na tej stronie zostanie zarejestrowana na Twoim kluczu bezpieczeństwa.</translation>

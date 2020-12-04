@@ -306,6 +306,7 @@
 <translation id="133535873114485416">선호하는 입력 방식</translation>
 <translation id="1335929031622236846">기기 등록</translation>
 <translation id="1336902454946927954">지문을 인식할 수 없어 보안 키가 잠겼습니다. 보안 키를 잠금 해제하려면 PIN을 입력하세요.</translation>
+<translation id="1337692097987160377">탭 공유</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" />에서 이 애플리케이션을 열려고 합니다.</translation>
 <translation id="1338950911836659113">삭제 중...</translation>
 <translation id="13392265090583506">접근성</translation>
@@ -1610,6 +1611,7 @@
 <translation id="2805756323405976993">앱</translation>
 <translation id="2805770823691782631">추가 세부정보</translation>
 <translation id="2806372837663997957">공유하려는 기기에서 수락하지 않았습니다.</translation>
+<translation id="2806891468525657116">바로가기가 이미 존재합니다.</translation>
 <translation id="2807517655263062534">다운로드한 파일이 여기에 표시됩니다.</translation>
 <translation id="2809586584051668049">외 <ph name="NUMBER_ADDITIONAL_DISABLED" />개</translation>
 <translation id="2810390687497823527">알 수 없는 확장 프로그램이 있거나 브라우저가 예상대로 작동하지 않는다면 여기에서 확장 프로그램을 사용 중지하거나 맞춤설정할 수 있습니다.</translation>
@@ -5581,6 +5583,7 @@
 <translation id="7496732379142025470">배터리를 절약하기 위하여 기기가 전원에 연결된 경우에만 “Ok Google” 기능이 켜집니다. 변경하려면 설정으로 이동하세요.</translation>
 <translation id="7497215489070763236">서버 CA 인증서</translation>
 <translation id="7497981768003291373">최근 캡처한 WebRTC 텍스트 로그가 없습니다.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" />에서 탭 내용을 캡처할 권한을 요청합니다.</translation>
 <translation id="7502658306369382406">IPv6 주소</translation>
 <translation id="7503191893372251637">Netscape Certificate Type</translation>
 <translation id="7503985202154027481">이 사이트를 방문한 기록이 보안 키에 보관됩니다.</translation>

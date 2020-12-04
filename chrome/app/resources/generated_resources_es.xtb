@@ -306,6 +306,7 @@
 <translation id="133535873114485416">Método de introducción preferido</translation>
 <translation id="1335929031622236846">Registra el dispositivo</translation>
 <translation id="1336902454946927954">Tu llave de seguridad está bloqueada porque no se ha podido reconocer tu huella digital. Para desbloquearla, escribe tu PIN.</translation>
+<translation id="1337692097987160377">Compartir esta pestaña</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> quiere abrir esta aplicación.</translation>
 <translation id="1338950911836659113">Eliminando...</translation>
 <translation id="13392265090583506">Ajustes de accesibilidad</translation>
@@ -1610,6 +1611,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="2805770823691782631">Información adicional</translation>
 <translation id="2806372837663997957">El dispositivo con el que intentas compartir contenido no lo ha aceptado</translation>
+<translation id="2806891468525657116">El acceso directo ya existe</translation>
 <translation id="2807517655263062534">Los archivos que descargues aparecen aquí</translation>
 <translation id="2809586584051668049">y <ph name="NUMBER_ADDITIONAL_DISABLED" /> más</translation>
 <translation id="2810390687497823527">Si no reconoces una extensión o el navegador no funciona correctamente, aquí puedes desactivar o personalizar las extensiones.</translation>
@@ -5582,6 +5584,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7496732379142025470">Para ahorrar batería, solo está activada la frase "Ok Google" cuando el dispositivo está conectado a una fuente de alimentación. Para realizar algún cambio, ve a Ajustes.</translation>
 <translation id="7497215489070763236">Certificado AC del servidor</translation>
 <translation id="7497981768003291373">No has capturado ningún registro de texto de WebRTC recientemente.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> solicita permiso para hacer capturas del contenido de esta pestaña.</translation>
 <translation id="7502658306369382406">Dirección IPv6</translation>
 <translation id="7503191893372251637">Tipo de certificado de Netscape</translation>
 <translation id="7503985202154027481">Se guardará un registro de tu visita a este sitio web en tu llave de seguridad.</translation>

@@ -467,7 +467,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6108923351542677676">Konfigurationen pågår ...</translation>
 <translation id="6119050551270742952">Webbsidan är i inkognitoläge</translation>
 <translation id="6122191549521593678">Online</translation>
-<translation id="6125339936101702016">Hanteras av <ph name="COMPANY" />. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Objektet har tagits bort</translation>
 <translation id="6136914049981179737">Nyss</translation>
 <translation id="6144589619057374135">Öppna ${url} i inkognitoläget</translation>

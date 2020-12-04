@@ -307,6 +307,7 @@
 <translation id="133535873114485416">Hyrja e preferuar</translation>
 <translation id="1335929031622236846">Regjistro pajisjen tënde</translation>
 <translation id="1336902454946927954">Çelësi yt i sigurisë është i kyçur sepse gjurma jote e gishtit nuk mund të njihej. Për ta shkyçur, fut kodin PIN.</translation>
+<translation id="1337692097987160377">Ndaje këtë skedë</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> dëshiron që ta hapë këtë aplikacion.</translation>
 <translation id="1338950911836659113">Po fshin...</translation>
 <translation id="13392265090583506">Qasshmëria</translation>
@@ -1611,6 +1612,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2805756323405976993">Aplikacionet</translation>
 <translation id="2805770823691782631">Detaje të tjera</translation>
 <translation id="2806372837663997957">Pajisja me të cilën po përpiqesh të ndash nuk pranoi</translation>
+<translation id="2806891468525657116">Shkurtorja ekziston tashmë</translation>
 <translation id="2807517655263062534">Skedarët që shkarkon shfaqen këtu</translation>
 <translation id="2809586584051668049">dhe <ph name="NUMBER_ADDITIONAL_DISABLED" /> të tjerë</translation>
 <translation id="2810390687497823527">Nëse nuk e njeh një shtesë ose nëse shfletuesi nuk funksionon siç pritet, mund t'i çaktivizosh ose personalizosh shtesat këtu.</translation>
@@ -5596,6 +5598,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7496732379142025470">Për të kursyer bateri, “Ok Google” është aktiv vetëm kur pajisja jote është lidhur me një burim energjie. Për të bërë ndryshime, shko te "Cilësimet".</translation>
 <translation id="7497215489070763236">Certifikata CA e serverit</translation>
 <translation id="7497981768003291373">Nuk ke evidenca teksti WebRTC të regjistruara së fundi.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> po kërkon leje për të regjistruar përmbajtjen e kësaj skede.</translation>
 <translation id="7502658306369382406">Adresa IPv6</translation>
 <translation id="7503191893372251637">Lloji i certifikatës Netscape</translation>
 <translation id="7503985202154027481">Një regjistrim i vizitës sate në këtë sajt do të ruhet në çelësin tënd të sigurisë.</translation>

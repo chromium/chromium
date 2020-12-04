@@ -306,6 +306,7 @@
 <translation id="133535873114485416">Voorkeursinvoer</translation>
 <translation id="1335929031622236846">Je apparaat inschrijven</translation>
 <translation id="1336902454946927954">Je beveiligingssleutel is vergrendeld omdat je vingerafdruk niet kan worden herkend. Geef je pincode op om de sleutel te ontgrendelen.</translation>
+<translation id="1337692097987160377">Dit tabblad delen</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> wil deze app openen.</translation>
 <translation id="1338950911836659113">Verwijderen...</translation>
 <translation id="13392265090583506">A11y</translation>
@@ -1610,6 +1611,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2805770823691782631">Aanvullende informatie</translation>
 <translation id="2806372837663997957">Het apparaat waarmee je probeert te delen, accepteert dit niet</translation>
+<translation id="2806891468525657116">Snelkoppeling bestaat al</translation>
 <translation id="2807517655263062534">Bestanden die je downloadt, worden hier weergegeven</translation>
 <translation id="2809586584051668049">en <ph name="NUMBER_ADDITIONAL_DISABLED" /> meer</translation>
 <translation id="2810390687497823527">Als je een extensie niet herkent of als je browser niet werkt zoals verwacht, kun je extensies hier uitschakelen of aanpassen.</translation>
@@ -5583,6 +5585,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7496732379142025470">'Oké Google' is alleen ingeschakeld wanneer je apparaat op een voedingsbron is aangesloten om de batterij te sparen. Als je wijzigingen wilt aanbrengen, ga je naar Instellingen.</translation>
 <translation id="7497215489070763236">CA-certificaat van server</translation>
 <translation id="7497981768003291373">Je hebt geen onlangs vastgelegde WebRTC-tekstlogboeken.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> vraagt toestemming om de content van dit tabblad op te nemen.</translation>
 <translation id="7502658306369382406">IPv6-adres</translation>
 <translation id="7503191893372251637">Type Netscape-certificaat</translation>
 <translation id="7503985202154027481">Er wordt een record van je bezoek aan deze site geregistreerd in je beveiligingssleutel.</translation>

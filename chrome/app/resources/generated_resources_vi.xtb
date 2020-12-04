@@ -306,6 +306,7 @@
 <translation id="133535873114485416">Phương thức nhập ưu tiên</translation>
 <translation id="1335929031622236846">Đăng ký thiết bị của bạn</translation>
 <translation id="1336902454946927954">Khóa bảo mật của bạn đã bị khóa do hệ thống không nhận dạng được vân tay của bạn. Để mở khóa, hãy nhập mã PIN của bạn.</translation>
+<translation id="1337692097987160377">Chia sẻ thẻ này</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> muốn mở ứng dụng này.</translation>
 <translation id="1338950911836659113">Đang xóa...</translation>
 <translation id="13392265090583506">A11y</translation>
@@ -1610,6 +1611,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2805756323405976993">Ứng dụng</translation>
 <translation id="2805770823691782631">Thông tin chi tiết bổ sung</translation>
 <translation id="2806372837663997957">Thiết bị mà bạn đang cố gắng chia sẻ tệp đã không chấp nhận</translation>
+<translation id="2806891468525657116">Lối tắt đã tồn tại</translation>
 <translation id="2807517655263062534">Các tệp bạn tải xuống sẽ xuất hiện ở đây</translation>
 <translation id="2809586584051668049">và <ph name="NUMBER_ADDITIONAL_DISABLED" /> mục khác</translation>
 <translation id="2810390687497823527">Nếu không nhận ra một tiện ích hoặc nếu trình duyệt hiện không hoạt động như mong đợi, thì bạn có thể tắt hoặc tùy chỉnh các tiện ích tại đây.</translation>
@@ -5583,6 +5585,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7496732379142025470">Để tiết kiệm pin, “Ok Google” chỉ bật khi thiết bị của bạn kết nối với nguồn điện. Để thay đổi, hãy truy cập vào mục Cài đặt.</translation>
 <translation id="7497215489070763236">Chứng chỉ CA máy chủ</translation>
 <translation id="7497981768003291373">Bạn không ghi nhật ký văn bản WebRTC nào gần đây.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> đang xin phép được chụp nội dung của thẻ này.</translation>
 <translation id="7502658306369382406">Địa chỉ IPv6</translation>
 <translation id="7503191893372251637">Loại Chứng chỉ Netscape</translation>
 <translation id="7503985202154027481">Khóa bảo mật sẽ lưu giữ bản ghi lượt truy cập của bạn vào trang web này.</translation>

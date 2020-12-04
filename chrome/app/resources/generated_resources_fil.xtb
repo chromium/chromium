@@ -308,6 +308,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="133535873114485416">Gustong input</translation>
 <translation id="1335929031622236846">Ipa-enroll ang iyong device</translation>
 <translation id="1336902454946927954">Naka-lock ang iyong security key dahil hindi makilala ang fingerprint mo. Para i-unlock ito, ilagay ang iyong PIN.</translation>
+<translation id="1337692097987160377">Ibahagi ang tab na ito</translation>
 <translation id="1338802252451106843">Gustong buksan ng <ph name="ORIGIN" /> ang application na ito.</translation>
 <translation id="1338950911836659113">Nagtatanggal...</translation>
 <translation id="13392265090583506">A11y</translation>
@@ -1615,6 +1616,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2805756323405976993">Mga App</translation>
 <translation id="2805770823691782631">Mga karagdagang detalye</translation>
 <translation id="2806372837663997957">Hindi tinanggap ng device na sinusubukan mong bahaginan</translation>
+<translation id="2806891468525657116">Mayroon nang ganitong shortcut</translation>
 <translation id="2807517655263062534">Dito lalabas ang mga file na iyong ida-download</translation>
 <translation id="2809586584051668049">at <ph name="NUMBER_ADDITIONAL_DISABLED" /> pa</translation>
 <translation id="2810390687497823527">Kung hindi mo nakikilala ang isang extension, o kung hindi gumagana ang iyong browser gaya nang inaasahan, puwede mong i-off o i-customize ang mga extension dito.</translation>
@@ -5601,6 +5603,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7496732379142025470">Para makatipid ng baterya, naka-on lang ang “Ok Google” kapag nakasaksak ang iyong device. Para gumawa ng mga pagbabago, pumunta sa Mga Setting.</translation>
 <translation id="7497215489070763236">CA certificate ng server</translation>
 <translation id="7497981768003291373">Wala kang kamakailang nakuhang log ng text ng WebRTC.</translation>
+<translation id="7498614236023455416">Humihingi ng pahintulot ang <ph name="TARGET_NAME" /> na i-capture ang mga content ng tab na ito.</translation>
 <translation id="7502658306369382406">IPv6 address</translation>
 <translation id="7503191893372251637">Uri ng Netscape Certificate</translation>
 <translation id="7503985202154027481">Itatabi sa iyong security key ang tala ng pagbisita mo sa site na ito.</translation>

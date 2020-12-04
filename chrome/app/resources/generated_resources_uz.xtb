@@ -308,6 +308,7 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="133535873114485416">Asosiy matn kiritish usuli</translation>
 <translation id="1335929031622236846">Qurilmangizni qayd qiling</translation>
 <translation id="1336902454946927954">Barmoq izingiz tasdiqlanmagani sababli elektron kalitingiz qulflandi. Uni qulfdan chiqarish uchun PIN kodingizni kiriting.</translation>
+<translation id="1337692097987160377">Bu varaqni ulashish</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> bu ilovani ochmoqchi.</translation>
 <translation id="1338950911836659113">O‘chirilmoqda...</translation>
 <translation id="13392265090583506">A11y</translation>
@@ -1612,6 +1613,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2805756323405976993">Ilovalar</translation>
 <translation id="2805770823691782631">Batafsil</translation>
 <translation id="2806372837663997957">Siz fayl ulashishni xohlagan qurilma uni qabul qilmadi</translation>
+<translation id="2806891468525657116">Bunday tezkor tugma mavjud</translation>
 <translation id="2807517655263062534">Yuklab olingan fayllar shu yerda turadi</translation>
 <translation id="2809586584051668049">shuningdek, <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2810390687497823527">Kengaytmani tanimasangiz yoki brauzer kutganingizdek ishlamasa, kengaytmalarni bu yerdan faolsizlantirishingiz yoki boshqarishingiz mumkin.</translation>
@@ -5597,6 +5599,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7496732379142025470">Batareyani tejash uchun “Ok Google” iborasi faqatgina qurilma quvvat manbaiga ulanganda ishlaydi. Buni Sozlamalar orqali oʻzgartirishingiz mumkin.</translation>
 <translation id="7497215489070763236">Server CA sertifikati</translation>
 <translation id="7497981768003291373">Yaqinda yozilgan WebRTC matnli jurnallari topilmadi.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> bu varaqdagi kontentni suratga olish uchun ruxsat olmoqchi.</translation>
 <translation id="7502658306369382406">IPv6 manzil</translation>
 <translation id="7503191893372251637">Netscape sertifikati turi</translation>
 <translation id="7503985202154027481">Joriy saytga tashrifingiz haqidagi axborot elektron kalitga saqlanadi.</translation>

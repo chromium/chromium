@@ -305,6 +305,7 @@
 <translation id="133535873114485416">Tərcih edilmiş daxiletmə</translation>
 <translation id="1335929031622236846">Cihazınızı qeydiyyatdan keçirin</translation>
 <translation id="1336902454946927954">Barmaq izinizi tanımaq mümkün olmadığı üçün təhlükəsizlik açarınız kilidləndi. Onu kiliddən çıxarmaq üçün PIN'nizi daxil edin.</translation>
+<translation id="1337692097987160377">Bu tabı paylaşın</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> bu tətbiqi açmaq istəyir.</translation>
 <translation id="1338950911836659113">Silinir...</translation>
 <translation id="13392265090583506">A11y</translation>
@@ -1609,6 +1610,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2805756323405976993">Tətbiq</translation>
 <translation id="2805770823691782631">Əlavə məlumatlar</translation>
 <translation id="2806372837663997957">Paylaşım etmək istədiyiniz cihaz qəbul etmədi</translation>
+<translation id="2806891468525657116">Qısayol artıq mövcuddur</translation>
 <translation id="2807517655263062534">Endirilən fayllar burada görünür</translation>
 <translation id="2809586584051668049">və <ph name="NUMBER_ADDITIONAL_DISABLED" /> daha</translation>
 <translation id="2810390687497823527">Artırmanı tanımırsınızsa və ya brauzeriniz qaydasında işləmirsə, artırmaları burada deaktiv edə və ya fərdiləşdirə bilərsiniz.</translation>
@@ -5591,6 +5593,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7496732379142025470">Enerjiyə qənaət üçün "OK Google" yalnız cihaz cərəyan mənbəyinə qoşulu olduqda aktiv olacaq. Dəyişiklik etmək üçün Ayarlara daxil olun.</translation>
 <translation id="7497215489070763236">Server CA sertifikatı</translation>
 <translation id="7497981768003291373">Son vaxtlar WebRTC mətn girişləri çəkməmisiniz.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> bu tabın məzmununu çəkmək üçün icazə istəyir.</translation>
 <translation id="7502658306369382406">IPv6 ünvanı</translation>
 <translation id="7503191893372251637">Netscape Sertifikat növü</translation>
 <translation id="7503985202154027481">Sayta girişiniz güvənlik açarında qeyd ediləcək.</translation>

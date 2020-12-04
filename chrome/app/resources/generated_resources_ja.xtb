@@ -306,6 +306,7 @@
 <translation id="133535873114485416">優先する入力</translation>
 <translation id="1335929031622236846">デバイスを登録する</translation>
 <translation id="1336902454946927954">指紋を認識できなかったため、セキュリティ キーがロックされています。ロックを解除するには PIN を入力してください。</translation>
+<translation id="1337692097987160377">このタブを共有</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> がこのアプリケーションを開く許可を求めています。</translation>
 <translation id="1338950911836659113">削除しています...</translation>
 <translation id="13392265090583506">ユーザー補助設定</translation>
@@ -1610,6 +1611,7 @@
 <translation id="2805756323405976993">アプリ</translation>
 <translation id="2805770823691782631">詳細</translation>
 <translation id="2806372837663997957">共有先のデバイス側で承認されませんでした</translation>
+<translation id="2806891468525657116">ショートカットがすでに存在します</translation>
 <translation id="2807517655263062534">ダウンロードしたファイルがここに表示されます</translation>
 <translation id="2809586584051668049">、他 <ph name="NUMBER_ADDITIONAL_DISABLED" /> 件</translation>
 <translation id="2810390687497823527">拡張機能が認識されないかブラウザが想定どおり動作しない場合は、ここで拡張機能を無効にするかカスタマイズできます。</translation>
@@ -5583,6 +5585,7 @@
 <translation id="7496732379142025470">バッテリー消費を抑えるため、ご使用のデバイスがコンセントに接続されている場合にのみ「OK Google」に反応します。設定を変更するには、[設定] に移動してください。</translation>
 <translation id="7497215489070763236">サーバーの CA 証明書</translation>
 <translation id="7497981768003291373">最近記録された WebRTC テキストログはありません。</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> から、このタブのコンテンツをキャプチャする許可を求められています。</translation>
 <translation id="7502658306369382406">IPv6 アドレス</translation>
 <translation id="7503191893372251637">Netscape 証明書タイプ</translation>
 <translation id="7503985202154027481">このサイトへのアクセスの記録がセキュリティ キーに保存されます。</translation>

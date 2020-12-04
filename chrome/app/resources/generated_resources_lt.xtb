@@ -309,6 +309,7 @@
 <translation id="133535873114485416">Pageidaujama įvestis</translation>
 <translation id="1335929031622236846">Įrenginio registracija</translation>
 <translation id="1336902454946927954">Jūsų saugos raktas užrakintas, nes nepavyko atpažinti kontrolinio kodo. Kad jį atrakintumėte, įveskite PIN kodą.</translation>
+<translation id="1337692097987160377">Bendrinti šį skirtuką</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> nori atidaryti šią programą.</translation>
 <translation id="1338950911836659113">Ištrinama...</translation>
 <translation id="13392265090583506">Pritaikomumas</translation>
@@ -1613,6 +1614,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2805756323405976993">Taikomosios programos</translation>
 <translation id="2805770823691782631">Papildoma informacija</translation>
 <translation id="2806372837663997957">Įrenginys, su kuriuo norite bendrinti, nepriima turinio</translation>
+<translation id="2806891468525657116">Spartusis klavišas jau yra</translation>
 <translation id="2807517655263062534">Atsisiųsti failai rodomi čia</translation>
 <translation id="2809586584051668049">ir dar <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2810390687497823527">Jei neatpažįstate plėtinio arba jei jūsų naršyklė neveikia, kaip numatyta, galite išjungti arba tinkinti plėtinius čia.</translation>
@@ -5587,6 +5589,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7496732379142025470">Siekiant tausoti akumuliatoriaus energiją, funkcija „Ok Google“ įjungiama, tik kai įrenginys prijungtas prie maitinimo šaltinio. Jei norite pakeisti, eikite į „Nustatymų“ skiltį.</translation>
 <translation id="7497215489070763236">Serverio CA sertifikatas</translation>
 <translation id="7497981768003291373">Neturite neseniai užfiksuotų „WebRTC“ teksto žurnalų.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> prašo leidimo užfiksuoti šio skirtuko turinį.</translation>
 <translation id="7502658306369382406">„IPv6“ adresas</translation>
 <translation id="7503191893372251637">„Netscape“ sertifikato tipas</translation>
 <translation id="7503985202154027481">Saugos rakte bus saugomas įrašas apie apsilankymą šioje svetainėje.</translation>

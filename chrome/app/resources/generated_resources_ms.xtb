@@ -307,6 +307,7 @@
 <translation id="133535873114485416">Input pilihan</translation>
 <translation id="1335929031622236846">Daftarkan peranti anda</translation>
 <translation id="1336902454946927954">Kunci keselamatan anda dikunci kerana cap jari anda tidak dapat dikenal pasti. Untuk membuka kunci keselamatan itu, masukkan PIN anda.</translation>
+<translation id="1337692097987160377">Kongsi tab ini</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> ingin membuka aplikasi ini.</translation>
 <translation id="1338950911836659113">Memadamkan...</translation>
 <translation id="13392265090583506">A11y</translation>
@@ -1614,6 +1615,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2805756323405976993">Apl</translation>
 <translation id="2805770823691782631">Butiran tambahan</translation>
 <translation id="2806372837663997957">Peranti yang anda pilih untuk berkongsi fail tidak menerima perkongsian anda</translation>
+<translation id="2806891468525657116">Pintasan sudah wujud</translation>
 <translation id="2807517655263062534">Fail yang anda muat turun dipaparkan di sini</translation>
 <translation id="2809586584051668049">dan <ph name="NUMBER_ADDITIONAL_DISABLED" /> lagi</translation>
 <translation id="2810390687497823527">Jika anda tidak mengecam sambungan itu atau jika penyemak imbas anda tidak berfungsi seperti yang dijangkakan, anda boleh mematikan atau menyesuaikan sambungan di sini.</translation>
@@ -5600,6 +5602,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="7496732379142025470">Untuk menjimatkan bateri, “Ok Google” hanya dihidupkan apabila peranti anda disambungkan kepada bekalan kuasa. Untuk membuat perubahan, pergi ke Tetapan.</translation>
 <translation id="7497215489070763236">Sijil CA pelayan</translation>
 <translation id="7497981768003291373">Anda tiada log teks WebRTC yang dirakam baru-baru ini.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> meminta kebenaran untuk menangkap kandungan tab ini.</translation>
 <translation id="7502658306369382406">Alamat IPv6</translation>
 <translation id="7503191893372251637">Jenis Sijil Netscape</translation>
 <translation id="7503985202154027481">Rekod lawatan anda ke tapak ini akan disimpan pada kunci keselamatan anda.</translation>

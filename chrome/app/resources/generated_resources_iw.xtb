@@ -308,6 +308,7 @@
 <translation id="133535873114485416">קלט מועדף</translation>
 <translation id="1335929031622236846">רישום המכשיר שלך</translation>
 <translation id="1336902454946927954">מפתח האבטחה נעול מאחר שאי אפשר לזהות את טביעת האצבע שלך. כדי לבטל את הנעילה, יש להזין את קוד האימות.</translation>
+<translation id="1337692097987160377">שיתוף הכרטיסייה הזו</translation>
 <translation id="1338802252451106843">האתר <ph name="ORIGIN" /> רוצה לפתוח את האפליקציה הזו.</translation>
 <translation id="1338950911836659113">המחיקה מתבצעת...</translation>
 <translation id="13392265090583506">נגישות</translation>
@@ -1610,6 +1611,7 @@
 <translation id="2805756323405976993">אפליקציות</translation>
 <translation id="2805770823691782631">פרטים נוספים</translation>
 <translation id="2806372837663997957">המכשיר שעמו ניסית לשתף לא אישר</translation>
+<translation id="2806891468525657116">קיצור הדרך כבר קיים</translation>
 <translation id="2807517655263062534">קבצים שמורידים יופיעו כאן</translation>
 <translation id="2809586584051668049">ועוד <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2810390687497823527">אם לא מזהים תוסף כלשהו או אם הדפדפן לא פועל בצורה תקינה, אפשר להשבית את התוספים או להתאים אותם אישית מכאן.</translation>
@@ -5583,6 +5585,7 @@
 <translation id="7496732379142025470">‏כדי לחסוך בסוללה, הזיהוי של "Ok Google" מופעל רק כשהמכשיר מחובר למקור חשמל. אפשר לשנות את ההתנהגות הזאת דרך ההגדרות.</translation>
 <translation id="7497215489070763236">‏אישור CA של שרת</translation>
 <translation id="7497981768003291373">‏אין לך יומני טקסט של WebRTC שתועדו לאחרונה.</translation>
+<translation id="7498614236023455416">לכתובת <ph name="TARGET_NAME" /> נדרשת הרשאה לתיעוד התכנים בכרטיסיה הזו.</translation>
 <translation id="7502658306369382406">‏כתובת IPv6</translation>
 <translation id="7503191893372251637">‏סוג אישור Netscape</translation>
 <translation id="7503985202154027481">תיעוד של ביקורך באתר יישמר במפתח האבטחה שלך.</translation>

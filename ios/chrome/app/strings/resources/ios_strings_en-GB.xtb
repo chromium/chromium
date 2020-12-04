@@ -467,7 +467,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6108923351542677676">Setup in progress…</translation>
 <translation id="6119050551270742952">Current web page is on Incognito</translation>
 <translation id="6122191549521593678">Online</translation>
-<translation id="6125339936101702016">Managed by <ph name="COMPANY" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Item removed</translation>
 <translation id="6136914049981179737">Seconds ago</translation>
 <translation id="6144589619057374135">Open ${url} in Incognito</translation>

@@ -306,6 +306,7 @@
 <translation id="133535873114485416">偏好的輸入來源</translation>
 <translation id="1335929031622236846">註冊你的裝置</translation>
 <translation id="1336902454946927954">系統無法辨識你的指紋，因此你的安全金鑰已遭到鎖定。如要解鎖，請輸入你的 PIN 碼。</translation>
+<translation id="1337692097987160377">共用此分頁</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> 想要開啟這個應用程式。</translation>
 <translation id="1338950911836659113">刪除中...</translation>
 <translation id="13392265090583506">無障礙設定</translation>
@@ -1609,6 +1610,7 @@
 <translation id="2805756323405976993">應用程式</translation>
 <translation id="2805770823691782631">其他詳細資訊</translation>
 <translation id="2806372837663997957">你試圖分享檔案的目標裝置並未接受檔案分享</translation>
+<translation id="2806891468525657116">捷徑已經存在</translation>
 <translation id="2807517655263062534">你下載的檔案會顯示在這裡</translation>
 <translation id="2809586584051668049">和另外 <ph name="NUMBER_ADDITIONAL_DISABLED" /> 個</translation>
 <translation id="2810390687497823527">如果你對某個擴充功能沒有印象，或是瀏覽器無法正常運作，可以在這裡關閉或自訂擴充功能。</translation>
@@ -5581,6 +5583,7 @@
 <translation id="7496732379142025470">為了節省電力，系統只有在裝置連接到電源時才會啟動「Ok Google」。如要變更這項設定，請前往「設定」。</translation>
 <translation id="7497215489070763236">伺服器 CA 憑證</translation>
 <translation id="7497981768003291373">你最近並未擷取 WebRTC 文字記錄。</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> 要求權限以擷取這個分頁的內容。</translation>
 <translation id="7502658306369382406">IPv6 位址</translation>
 <translation id="7503191893372251637">Netscape 憑證類型</translation>
 <translation id="7503985202154027481">你的安全金鑰會保留你造訪這個網站的記錄。</translation>

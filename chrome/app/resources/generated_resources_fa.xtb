@@ -308,6 +308,7 @@
 <translation id="133535873114485416">ورودی ترجیحی</translation>
 <translation id="1335929031622236846">دستگاهتان را ثبت‌نام کنید</translation>
 <translation id="1336902454946927954">کلید امنیتی شما قفل شده است زیرا اثر انگشتتان تشخیص داده نشد. برای باز کردن قفل آن، پین را وارد کنید.</translation>
+<translation id="1337692097987160377">هم‌رسانی این برگه</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> می‌خواهد این برنامه را باز کند.</translation>
 <translation id="1338950911836659113">در حال حذف...</translation>
 <translation id="13392265090583506">A11y</translation>
@@ -1612,6 +1613,7 @@
 <translation id="2805756323405976993">برنامه‌ها</translation>
 <translation id="2805770823691782631">جزئیات دیگر</translation>
 <translation id="2806372837663997957">دستگاهی که می‌خواهید با آن هم‌رسانی کنید درخواست را نپذیرفت</translation>
+<translation id="2806891468525657116">میان‌بر از قبل وجود دارد</translation>
 <translation id="2807517655263062534">فایل‌هایی که بارگیری می‌کنید اینجا نشان داده می‌شود</translation>
 <translation id="2809586584051668049">و <ph name="NUMBER_ADDITIONAL_DISABLED" /> مورد دیگر</translation>
 <translation id="2810390687497823527">اگر افزونه‌ای برایتان آشنا نیست یا اگر مرورگری طبق انتظار کار نمی‌کند، می‌توانید افزونه‌ها را در اینجا خاموش یا سفارشی کنید.</translation>
@@ -5598,6 +5600,7 @@
 <translation id="7496732379142025470">‏برای صرفه‌جویی در مصرف باتری، «Ok Google» فقط زمانی روشن است که دستگاهتان به برق متصل باشد. برای انجام تغییرات به «تنظیمات» بروید.</translation>
 <translation id="7497215489070763236">گواهینامه مرکز صدور گواهی سرور</translation>
 <translation id="7497981768003291373">‏هیچ گزارش نوشتاری WebRTC که اخیراً ثبت شده باشد ندارید.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> اجازه می‌خواهد تا محتوای این برگه را ثبت کند.</translation>
 <translation id="7502658306369382406">‏نشانی IPv6</translation>
 <translation id="7503191893372251637">‏نوع گواهی Netscape</translation>
 <translation id="7503985202154027481">سابقه بازدیدتان از این سایت در کلید امنیتی‌تان نگه‌داری می‌شود.</translation>

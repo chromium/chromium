@@ -308,6 +308,7 @@
 <translation id="133535873114485416">Metoda preferată de introducere</translation>
 <translation id="1335929031622236846">Înregistrează dispozitivul</translation>
 <translation id="1336902454946927954">Cheia de securitate este blocată, deoarece amprenta nu a fost recunoscută. Introdu codul PIN ca să o deblochezi.</translation>
+<translation id="1337692097987160377">Distribuie această filă</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> intenționează să deschidă această aplicație.</translation>
 <translation id="1338950911836659113">Se șterge…</translation>
 <translation id="13392265090583506">A11y</translation>
@@ -1615,6 +1616,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2805756323405976993">Aplicații</translation>
 <translation id="2805770823691782631">Detalii suplimentare</translation>
 <translation id="2806372837663997957">Dispozitivul căruia încerci să îi trimiți nu a acceptat</translation>
+<translation id="2806891468525657116">Comanda rapidă există deja</translation>
 <translation id="2807517655263062534">Fișierele pe care le descarci apar aici</translation>
 <translation id="2809586584051668049">și încă <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2810390687497823527">Dacă nu recunoști o extensie sau dacă browserul nu funcționează așa cum te așteptai, poți să dezactivezi sau să personalizezi extensiile aici.</translation>
@@ -5601,6 +5603,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7496732379142025470">Pentru a economisi bateria, „Ok Google” este activat doar atunci când dispozitivul este conectat la o sursă de alimentare. Pentru a face modificări, accesează Setările.</translation>
 <translation id="7497215489070763236">Certificat CA de server</translation>
 <translation id="7497981768003291373">Nu ai jurnale text WebRTC înregistrate recent.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> solicită permisiunea de a captura conținutul acestei file.</translation>
 <translation id="7502658306369382406">Adresă IPv6</translation>
 <translation id="7503191893372251637">Tip de certificat Netscape</translation>
 <translation id="7503985202154027481">O înregistrare a vizitei site-ului va fi păstrată pe cheia ta de securitate.</translation>

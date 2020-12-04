@@ -309,6 +309,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="133535873114485416">Vēlamā ievade</translation>
 <translation id="1335929031622236846">Ierīces reģistrēšana</translation>
 <translation id="1336902454946927954">Jūsu drošības atslēga ir bloķēta, jo nevarēja atpazīt jūsu pirksta nospiedumu. Lai atbloķētu drošības atslēgu, ievadiet PIN.</translation>
+<translation id="1337692097987160377">Koplietot šo cilni</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> vēlas atvērt šo lietojumprogrammu.</translation>
 <translation id="1338950911836659113">Notiek dzēšana...</translation>
 <translation id="13392265090583506">Pieejamības iestatījumi</translation>
@@ -1616,6 +1617,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2805756323405976993">Lietotnes</translation>
 <translation id="2805770823691782631">Papildinformācija</translation>
 <translation id="2806372837663997957">Ierīce, ar kuru mēģinājāt kopīgot saturu, to nepieņēma.</translation>
+<translation id="2806891468525657116">Saīsne jau pastāv</translation>
 <translation id="2807517655263062534">Šeit ir redzami lejupielādētie faili.</translation>
 <translation id="2809586584051668049">un vēl <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2810390687497823527">Ja neatpazīstat kādu paplašinājumu vai ja pārlūkprogramma nedarbojas, kā paredzēts, šeit varat izslēgt vai pielāgot paplašinājumus.</translation>
@@ -5602,6 +5604,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7496732379142025470">Lai paildzinātu akumulatora darbības laiku, komanda “Ok Google” ir iespējota tikai tad, kad ierīce ir pievienota barošanas avotam. Lai veiktu izmaiņas, dodieties uz sadaļu Iestatījumi.</translation>
 <translation id="7497215489070763236">Servera CA sertifikāts</translation>
 <translation id="7497981768003291373">Jums nav nesen ierakstītu WebRTC tekstu žurnālu.</translation>
+<translation id="7498614236023455416">Vietne <ph name="TARGET_NAME" /> pieprasa atļauju tvert šīs cilnes satura uzņēmumu.</translation>
 <translation id="7502658306369382406">IPv6 adrese</translation>
 <translation id="7503191893372251637">Netscape sertifikāta veids</translation>
 <translation id="7503985202154027481">Ieraksts par jūsu apmeklējumu šajā vietnē tiks reģistrēts jūsu drošības atslēgā.</translation>

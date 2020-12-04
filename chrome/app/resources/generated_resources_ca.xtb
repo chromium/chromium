@@ -307,6 +307,7 @@
 <translation id="133535873114485416">Mètode d'introducció preferit</translation>
 <translation id="1335929031622236846">Inscriu el dispositiu</translation>
 <translation id="1336902454946927954">La clau de seguretat està bloquejada perquè la teva empremta digital no s'ha pogut reconèixer. Per desbloquejar-la, introdueix el PIN.</translation>
+<translation id="1337692097987160377">Comparteix aquesta pestanya</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> vol obrir aquesta aplicació.</translation>
 <translation id="1338950911836659113">S'està suprimint...</translation>
 <translation id="13392265090583506">Accessibilitat</translation>
@@ -1613,6 +1614,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2805756323405976993">Aplicacions</translation>
 <translation id="2805770823691782631">Detalls addicionals</translation>
 <translation id="2806372837663997957">El dispositiu amb què proves de compartir el fitxer no ha acceptat</translation>
+<translation id="2806891468525657116">Aquesta drecera ja existeix</translation>
 <translation id="2807517655263062534">Aquí es mostren els fitxers baixats</translation>
 <translation id="2809586584051668049">i <ph name="NUMBER_ADDITIONAL_DISABLED" /> més</translation>
 <translation id="2810390687497823527">Si no reconeixes una extensió o si el navegador no funciona de la manera esperada, pots desactivar o personalitzar les extensions aquí.</translation>
@@ -5600,6 +5602,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7496732379142025470">Per estalviar bateria, la funció "Ok Google" només estarà activada quan el dispositiu estigui connectat a una font d'alimentació. Per fer canvis, ves a Configuració.</translation>
 <translation id="7497215489070763236">Certificat de CA del servidor</translation>
 <translation id="7497981768003291373">No s'ha capturat cap registre de text de WebRTC recentment.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> ha demanat permís per capturar el contingut d'aquesta pestanya.</translation>
 <translation id="7502658306369382406">Adreça IPv6</translation>
 <translation id="7503191893372251637">Tipus de certificat de Netscape</translation>
 <translation id="7503985202154027481">La clau de seguretat conservarà un registre de la teva visita en aquest lloc web.</translation>

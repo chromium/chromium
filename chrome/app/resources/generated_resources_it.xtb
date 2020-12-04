@@ -307,6 +307,7 @@
 <translation id="133535873114485416">Metodo di immissione preferito</translation>
 <translation id="1335929031622236846">Registra il tuo dispositivo</translation>
 <translation id="1336902454946927954">Il token di sicurezza è bloccato perché non è stato possibile riconoscere la tua impronta. Per sbloccarlo, inserisci il PIN.</translation>
+<translation id="1337692097987160377">Condividi questa scheda</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> vuole aprire questa applicazione.</translation>
 <translation id="1338950911836659113">Eliminazione in corso...</translation>
 <translation id="13392265090583506">Impostazioni di accessibilità</translation>
@@ -1613,6 +1614,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2805756323405976993">App</translation>
 <translation id="2805770823691782631">Dettagli aggiuntivi</translation>
 <translation id="2806372837663997957">Il dispositivo con cui stai tentando di condividere il file non ha accettato</translation>
+<translation id="2806891468525657116">Scorciatoia già presente</translation>
 <translation id="2807517655263062534">I file scaricati vengono mostrati qui</translation>
 <translation id="2809586584051668049">e altre <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2810390687497823527">Se non riconosci un'estensione o se il browser non funziona come previsto, puoi disattivare o personalizzare le estensioni qui.</translation>
@@ -5599,6 +5601,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7496732379142025470">Per consumare meno batteria, la hotword "Ok Google" è attiva solo quando il dispositivo è collegato a una fonte di alimentazione. Per apportare modifiche, usa le Impostazioni.</translation>
 <translation id="7497215489070763236">Certificato CA del server</translation>
 <translation id="7497981768003291373">Nessun log di testo WebRTC acquisito di recente.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> chiede l'autorizzazione per acquisire i contenuti di questa scheda.</translation>
 <translation id="7502658306369382406">Indirizzo IPv6</translation>
 <translation id="7503191893372251637">Tipo di certificato Netscape</translation>
 <translation id="7503985202154027481">Sul tuo token di sicurezza verrà memorizzato un record della tua visita a questo sito.</translation>

@@ -309,6 +309,7 @@
 <translation id="133535873114485416">Željeni način unosa</translation>
 <translation id="1335929031622236846">Registrujte uređaj</translation>
 <translation id="1336902454946927954">Vaš bezbednosni ključ je zaključan jer nismo uspeli da prepoznamo otisak prsta. Da biste ga otključali, unesite PIN.</translation>
+<translation id="1337692097987160377">Deli ovu karticu</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> želi da otvori ovu aplikaciju.</translation>
 <translation id="1338950911836659113">Brisanje...</translation>
 <translation id="13392265090583506">Pristupačnost</translation>
@@ -1613,6 +1614,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2805770823691782631">Detaljne informacije</translation>
 <translation id="2806372837663997957">Uređaj sa kojim pokušavate da delite sadržaj ga nije prihvatio</translation>
+<translation id="2806891468525657116">Prečica već postoji</translation>
 <translation id="2807517655263062534">Datoteke koje preuzmete će se pojaviti ovde</translation>
 <translation id="2809586584051668049">i još <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2810390687497823527">Ako ne prepoznajete dodatak ili ako pregledač ne radi na očekivani način, ovde možete da isključite ili prilagodite dodatke.</translation>
@@ -5600,6 +5602,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7496732379142025470">Da biste uštedeli bateriju, funkcija „Ok Google“ je uključena samo kada je uređaj povezan na struju. Da biste uneli promene, idite u Podešavanja.</translation>
 <translation id="7497215489070763236">CA sertifikat servera</translation>
 <translation id="7497981768003291373">Niste nedavno snimili nijednu WebRTC evidenciju teksta.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> traži dozvolu za snimanje sadržaja ove kartice.</translation>
 <translation id="7502658306369382406">IPv6 adresa</translation>
 <translation id="7503191893372251637">Tip Netscape sertifikata</translation>
 <translation id="7503985202154027481">Poseta ovom sajtu će biti zabeležena na bezbednosnom ključu.</translation>

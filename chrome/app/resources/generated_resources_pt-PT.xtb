@@ -307,6 +307,7 @@
 <translation id="133535873114485416">Introdução preferida</translation>
 <translation id="1335929031622236846">Inscreva o seu dispositivo</translation>
 <translation id="1336902454946927954">A sua chave de segurança está bloqueada porque não foi possível reconhecer a sua impressão digital. Para a desbloquear, introduza o seu PIN.</translation>
+<translation id="1337692097987160377">Partilhar este separador</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> pretende abrir esta aplicação.</translation>
 <translation id="1338950911836659113">A eliminar...</translation>
 <translation id="13392265090583506">A11y</translation>
@@ -1613,6 +1614,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2805770823691782631">Detalhes adicionais</translation>
 <translation id="2806372837663997957">O dispositivo com o qual está a tentar efetuar a partilha não aceitou.</translation>
+<translation id="2806891468525657116">O atalho já existe.</translation>
 <translation id="2807517655263062534">Os ficheiros que transferir são apresentados aqui</translation>
 <translation id="2809586584051668049">e mais <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2810390687497823527">Se não reconhecer uma extensão ou o seu navegador não estiver a funcionar conforme esperado, pode desativar ou personalizar as extensões aqui.</translation>
@@ -5601,6 +5603,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7496732379142025470">Para poupar bateria, a funcionalidade "Ok Google" só é ativada quando o dispositivo estiver ligado a uma fonte de alimentação. Para efetuar alterações, aceda a Definições.</translation>
 <translation id="7497215489070763236">Certificado da AC do servidor</translation>
 <translation id="7497981768003291373">Não existem registos de textos WebRTC capturados recentemente.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> está a solicitar autorização para capturar o conteúdo deste separador.</translation>
 <translation id="7502658306369382406">Endereço IPv6</translation>
 <translation id="7503191893372251637">Tipo de certificado Netscape</translation>
 <translation id="7503985202154027481">É mantido um registo da sua visita a este site na sua chave de segurança.</translation>

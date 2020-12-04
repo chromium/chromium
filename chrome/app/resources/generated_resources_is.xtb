@@ -308,6 +308,7 @@
 <translation id="133535873114485416">Inntak sem skal nota</translation>
 <translation id="1335929031622236846">Skráðu tækið þitt</translation>
 <translation id="1336902454946927954">Öryggislykillinn þinn er læstur vegna þess að fingrafarið þitt þekktist ekki. Sláðu inn PIN-númerið þitt til að opna hann.</translation>
+<translation id="1337692097987160377">Deila þessum flipa</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> vill opna þetta forrit.</translation>
 <translation id="1338950911836659113">Eyðir...</translation>
 <translation id="13392265090583506">A11y</translation>
@@ -1615,6 +1616,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2805756323405976993">Forrit</translation>
 <translation id="2805770823691782631">Viðbótarupplýsingar</translation>
 <translation id="2806372837663997957">Tækið sem þú reynir að deila með samþykkti það ekki</translation>
+<translation id="2806891468525657116">Flýtileið er þegar til</translation>
 <translation id="2807517655263062534">Skrár sem þú hleður niður birtast hér</translation>
 <translation id="2809586584051668049">og <ph name="NUMBER_ADDITIONAL_DISABLED" /> í viðbót</translation>
 <translation id="2810390687497823527">Ef þú þekkir ekki viðbót eða vafrinn virkar ekki eins og hann á að gera geturðu slökkt á viðbótum eða sérstillt þær hér.</translation>
@@ -5600,6 +5602,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7496732379142025470">Til að spara rafhlöðuna er aðeins kveikt á „Ok Google“ þegar tækið þitt er tengt við aflgjafa. Þú getur breytt þessu í stillingunum.</translation>
 <translation id="7497215489070763236">CA-vottorð þjóns</translation>
 <translation id="7497981768003291373">Þú ert ekki með neina nýlega WebRTC-textaannála.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> biður um leyfi til að mynda það sem er á þessum flipa.</translation>
 <translation id="7502658306369382406">IPv6-veffang</translation>
 <translation id="7503191893372251637">Tegund Netscape-vottorðs</translation>
 <translation id="7503985202154027481">Færsla um heimsókn þína á þetta vefsvæði verður vistuð á öryggislyklinum þínum.</translation>

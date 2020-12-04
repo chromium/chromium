@@ -467,7 +467,6 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6108923351542677676">Probíhá nastavování…</translation>
 <translation id="6119050551270742952">Webová stránka je v anonymním režimu</translation>
 <translation id="6122191549521593678">Online</translation>
-<translation id="6125339936101702016">Spravováno společností <ph name="COMPANY" />. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Položka byla odstraněna</translation>
 <translation id="6136914049981179737">před chvílí</translation>
 <translation id="6144589619057374135">Otevřít ${url} v anonymním režimu</translation>

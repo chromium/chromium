@@ -306,6 +306,7 @@
 <translation id="133535873114485416">วิธีป้อนข้อมูลที่ต้องการ</translation>
 <translation id="1335929031622236846">ลงทะเบียนอุปกรณ์ของคุณ</translation>
 <translation id="1336902454946927954">คีย์ความปลอดภัยล็อกอยู่เนื่องจากระบบจดจำลายนิ้วมือของคุณไม่ได้ โปรดป้อน PIN เพื่อปลดล็อก</translation>
+<translation id="1337692097987160377">แชร์แท็บนี้</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> ต้องการเปิดแอปพลิเคชันนี้</translation>
 <translation id="1338950911836659113">กำลังลบ...</translation>
 <translation id="13392265090583506">การช่วยเหลือพิเศษ</translation>
@@ -1610,6 +1611,7 @@
 <translation id="2805756323405976993">แอป</translation>
 <translation id="2805770823691782631">รายละเอียดเพิ่มเติม</translation>
 <translation id="2806372837663997957">อุปกรณ์ที่คุณพยายามเชื่อมต่อไม่ยอมรับการแชร์ไฟล์</translation>
+<translation id="2806891468525657116">มีทางลัดนี้อยู่แล้ว</translation>
 <translation id="2807517655263062534">ไฟล์ที่คุณดาวน์โหลดจะปรากฏที่นี่</translation>
 <translation id="2809586584051668049">และอีก <ph name="NUMBER_ADDITIONAL_DISABLED" /> รายการ</translation>
 <translation id="2810390687497823527">หากคุณจำส่วนขยายไม่ได้ หรือหากเบราว์เซอร์ไม่ทำงานตามที่คิด คุณปิดหรือกำหนดค่าการทำงานของส่วนขยายด้วยตนเองได้ที่นี่</translation>
@@ -5583,6 +5585,7 @@
 <translation id="7496732379142025470">“Ok Google” จะใช้งานได้เฉพาะเมื่ออุปกรณ์เชื่อมต่อกับแหล่งจ่ายไฟเท่านั้น เพื่อประหยัดแบตเตอรี่ หากต้องการเปลี่ยนแปลง ให้ไปที่การตั้งค่า</translation>
 <translation id="7497215489070763236">ใบรับรอง CA ของเซิร์ฟเวอร์</translation>
 <translation id="7497981768003291373">คุณไม่มีบันทึกข้อความ WebRTC ที่จับภาพเมื่อเร็วๆ นี้</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> ขอสิทธิ์จับภาพเนื้อหาของแท็บนี้</translation>
 <translation id="7502658306369382406">ที่อยู่ IPv6</translation>
 <translation id="7503191893372251637">ประเภทใบรับรองของ Netscape </translation>
 <translation id="7503985202154027481">ระบบจะเก็บบันทึกการเข้าชมเว็บไซต์นี้ไว้ในคีย์ความปลอดภัย</translation>

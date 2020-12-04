@@ -306,6 +306,7 @@
 <translation id="133535873114485416">Tercih edilen giriş</translation>
 <translation id="1335929031622236846">Cihazınızı kaydettirin</translation>
 <translation id="1336902454946927954">Parmak iziniz tanınmadığı için güvenlik anahtarınız kilitlendi. Kilidini açmak için PIN'inizi girin.</translation>
+<translation id="1337692097987160377">Bu sekmeyi paylaşın</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> bu uygulamayı açmak istiyor.</translation>
 <translation id="1338950911836659113">Siliniyor...</translation>
 <translation id="13392265090583506">A11y</translation>
@@ -1610,6 +1611,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2805756323405976993">Uygulamalar</translation>
 <translation id="2805770823691782631">Ek ayrıntılar</translation>
 <translation id="2806372837663997957">Dosya paylaşmaya çalıştığınız cihaz, paylaşımı kabul etmedi</translation>
+<translation id="2806891468525657116">Kısayol zaten mevcut</translation>
 <translation id="2807517655263062534">İndirdiğiniz dosyalar burada görünür</translation>
 <translation id="2809586584051668049">ve diğer <ph name="NUMBER_ADDITIONAL_DISABLED" /> öğe</translation>
 <translation id="2810390687497823527">Bir uzantıyı tanımıyorsanız ya da tarayıcınız beklendiği gibi çalışmıyorsa uzantıları burada kapatabilir veya özelleştirebilirsiniz.</translation>
@@ -5584,6 +5586,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7496732379142025470">Pilden tasarruf etmek için, "Ok Google" özelliği yalnızca cihazınız güç kaynağına bağlıyken etkin olur. Değişiklik yapmak için Ayarlar'a gidin.</translation>
 <translation id="7497215489070763236">Sunucu CA sertifikası</translation>
 <translation id="7497981768003291373">Yakın zamanda yakalanmış herhangi bir WebRTC metin günlüğünüz yok.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> sitesi, bu sekmenin içeriğini yakalamak için izin istiyor.</translation>
 <translation id="7502658306369382406">IPv6 adresi</translation>
 <translation id="7503191893372251637">Netscape Sertifika Türü</translation>
 <translation id="7503985202154027481">Bu siteye ziyaretinizin bir kaydı güvenlik anahtarınızda tutulacak.</translation>

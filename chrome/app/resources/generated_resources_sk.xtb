@@ -309,6 +309,7 @@
 <translation id="133535873114485416">Preferovaný vstup</translation>
 <translation id="1335929031622236846">Registrácia vášho zariadenia</translation>
 <translation id="1336902454946927954">Bezpečnostný kľúč je uzamknutý, pretože sa nepodarilo rozpoznať odtlačok prsta. Ak ho chcete odomknúť, zadajte PIN.</translation>
+<translation id="1337692097987160377">Zdieľať túto kartu</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> chcete otvoriť túto aplikáciu.</translation>
 <translation id="1338950911836659113">Prebieha odstraňovanie...</translation>
 <translation id="13392265090583506">A11y</translation>
@@ -1615,6 +1616,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2805756323405976993">Aplikácie</translation>
 <translation id="2805770823691782631">Ďalšie podrobnosti</translation>
 <translation id="2806372837663997957">Zariadenie, s ktorým sa pokúšate položku zdieľať, ju neprijalo</translation>
+<translation id="2806891468525657116">Skratka už existuje</translation>
 <translation id="2807517655263062534">Tu sa zobrazia súbory, ktoré stiahnete</translation>
 <translation id="2809586584051668049">a ďalšie (počet: <ph name="NUMBER_ADDITIONAL_DISABLED" />)</translation>
 <translation id="2810390687497823527">Ak nespoznávate určité rozšírenie alebo prehliadač nefunguje očakávaným spôsobom, na tejto stránke môžete vypnúť alebo prispôsobiť rozšírenia.</translation>
@@ -5601,6 +5603,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="7496732379142025470">Rozpoznávanie kľúčového výrazu „Ok Google“ je zapnuté iba vtedy, keď je zariadenie pripojené k zdroju napájania, aby sa šetrila batéria. Ak chcete vykonať zmeny, prejdite do Nastavení.</translation>
 <translation id="7497215489070763236">Certifikát CA servera</translation>
 <translation id="7497981768003291373">Nemáte žiadne nedávno zaznamenané textové denníky WebRTC.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> žiada o povolenie nasnímať obsah tejto karty.</translation>
 <translation id="7502658306369382406">Adresa IPv6</translation>
 <translation id="7503191893372251637">Netscape – typ certifikátu </translation>
 <translation id="7503985202154027481">V bezpečnostnom kľúči sa uchová záznam vašej návštevy tohto webu.</translation>

@@ -467,7 +467,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6108923351542677676">Configuració en curs...</translation>
 <translation id="6119050551270742952">La pàgina web actual està en mode d'incògnit</translation>
 <translation id="6122191549521593678">En línia</translation>
-<translation id="6125339936101702016">Gestionat per <ph name="COMPANY" />. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">S'ha suprimit l'element</translation>
 <translation id="6136914049981179737">Fa segons</translation>
 <translation id="6144589619057374135">Obre ${url} en mode d'incògnit</translation>

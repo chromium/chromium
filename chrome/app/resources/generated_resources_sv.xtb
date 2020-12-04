@@ -307,6 +307,7 @@
 <translation id="133535873114485416">Föredraget inmatningssätt</translation>
 <translation id="1335929031622236846">Registrera din enhet</translation>
 <translation id="1336902454946927954">Säkerhetsnyckeln är låst eftersom ditt fingeravtryck inte kändes igen. Lås upp den genom att ange pinkoden.</translation>
+<translation id="1337692097987160377">Dela den här fliken</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> vill öppna den här appen.</translation>
 <translation id="1338950911836659113">Uppgifterna tas bort ...</translation>
 <translation id="13392265090583506">Tillgänglighet</translation>
@@ -1614,6 +1615,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2805756323405976993">Appar</translation>
 <translation id="2805770823691782631">Ytterligare information</translation>
 <translation id="2806372837663997957">Enheten som du försökte att dela med godkände inte delningsförsöket</translation>
+<translation id="2806891468525657116">Genvägen finns redan</translation>
 <translation id="2807517655263062534">Filer som du laddar ned visas här</translation>
 <translation id="2809586584051668049">och ytterligare <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2810390687497823527">Om du inte känner igen ett tillägg eller om webbläsaren inte fungerar som den ska kan du stänga av eller anpassa tillägg här.</translation>
@@ -5600,6 +5602,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7496732379142025470">För att spara batteri är ”Ok Google” bara aktiverat när enheten är ansluten till en strömkälla. Öppna Inställningar om du vill ändra något.</translation>
 <translation id="7497215489070763236">Serverns CA-certifikat</translation>
 <translation id="7497981768003291373">Du har inga nyligen registrerade WebRTC-textloggar.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> ber om behörighet att ta en bild av innehållet på den här fliken.</translation>
 <translation id="7502658306369382406">IPv6-adress</translation>
 <translation id="7503191893372251637">Certifieringstyp för Netscape</translation>
 <translation id="7503985202154027481">Ditt besök på webbplatsen sparas i säkerhetsnyckeln.</translation>

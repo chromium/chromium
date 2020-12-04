@@ -309,6 +309,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="133535873114485416">Preferirani način unosa</translation>
 <translation id="1335929031622236846">Prijavite uređaj</translation>
 <translation id="1336902454946927954">Vaš sigurnosni ključ je zaključan jer prepoznavanje vašeg otiska prsta nije uspjelo. Da ga otključate, unesite PIN.</translation>
+<translation id="1337692097987160377">Dijeli ovu karticu</translation>
 <translation id="1338802252451106843">Web lokacija <ph name="ORIGIN" /> želi otvoriti ovu aplikaciju.</translation>
 <translation id="1338950911836659113">Brisanje...</translation>
 <translation id="13392265090583506">Pristupačnost</translation>
@@ -1616,6 +1617,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2805770823691782631">Dodatni detalji</translation>
 <translation id="2806372837663997957">Uređaj s kojim pokušavate podijeliti fajl nije prihvatio zahtjev</translation>
+<translation id="2806891468525657116">Prečica već postoji</translation>
 <translation id="2807517655263062534">Fajlovi koje preuzmete će se pojaviti ovdje</translation>
 <translation id="2809586584051668049">i još <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2810390687497823527">Ako ne prepoznajete ekstenziju ili ako vaš preglednik ne funkcionira kako bi trebalo, ovdje možete isključiti ili prilagoditi ekstenzije.</translation>
@@ -5602,6 +5604,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7496732379142025470">Zbog uštede baterije “Ok Google” je uključen samo kada je uređaj povezan na izvor napajanja. Da ovo promijenite, idite u Postavke.</translation>
 <translation id="7497215489070763236">CA certifikat servera</translation>
 <translation id="7497981768003291373">Nemate nedavno snimljenih tekstualnih zapisnika WebRTC.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> traži odobrenje da snima sadržaj ove kartice.</translation>
 <translation id="7502658306369382406">IPv6 adresa</translation>
 <translation id="7503191893372251637">Vrsta potvrde Netscapea</translation>
 <translation id="7503985202154027481">Evidencija o vašoj posjeti ovoj web lokaciji čuvat će se na vašem sigurnosnom ključu.</translation>

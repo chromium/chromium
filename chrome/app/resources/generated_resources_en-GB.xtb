@@ -307,6 +307,7 @@
 <translation id="133535873114485416">Preferred input</translation>
 <translation id="1335929031622236846">Enrol your device</translation>
 <translation id="1336902454946927954">Your security key is locked because your fingerprint couldn't be recognised. To unlock it, enter your PIN.</translation>
+<translation id="1337692097987160377">Share this tab</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> wants to open this application.</translation>
 <translation id="1338950911836659113">Deleting...</translation>
 <translation id="13392265090583506">A11y</translation>
@@ -1614,6 +1615,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2805770823691782631">Additional details</translation>
 <translation id="2806372837663997957">The device that you’re trying to share with did not accept</translation>
+<translation id="2806891468525657116">Shortcut already exists</translation>
 <translation id="2807517655263062534">Files you download appear here</translation>
 <translation id="2809586584051668049">and <ph name="NUMBER_ADDITIONAL_DISABLED" /> more</translation>
 <translation id="2810390687497823527">If you don't recognise an extension, or if your browser isn't working as expected, you can turn off or customise extensions here.</translation>
@@ -5600,6 +5602,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7496732379142025470">To save battery, “Ok Google” is on only when your device is connected to a power source. To make changes, go to Settings.</translation>
 <translation id="7497215489070763236">Server CA certificate</translation>
 <translation id="7497981768003291373">You have no recently captured WebRTC text logs.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> is asking for permission to capture the contents of this tab.</translation>
 <translation id="7502658306369382406">IPv6 address</translation>
 <translation id="7503191893372251637">Netscape Certificate Type</translation>
 <translation id="7503985202154027481">A record of your visit to this site will be kept on your security key.</translation>

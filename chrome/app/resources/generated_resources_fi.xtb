@@ -307,6 +307,7 @@
 <translation id="133535873114485416">Syöttötapa</translation>
 <translation id="1335929031622236846">Rekisteröi laite</translation>
 <translation id="1336902454946927954">Suojausavaimesi on lukittu, koska sormenjälkeäsi ei voitu tunnistaa. Avaa lukitus lisäämällä PIN-koodisi.</translation>
+<translation id="1337692097987160377">Jaa tämä välilehti</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> haluaa avata tämän sovelluksen.</translation>
 <translation id="1338950911836659113">Poistetaan…</translation>
 <translation id="13392265090583506">A11y</translation>
@@ -1614,6 +1615,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2805756323405976993">Sovellukset</translation>
 <translation id="2805770823691782631">Lisätietoja</translation>
 <translation id="2806372837663997957">Laite, jolle yrität jakaa, ei hyväksynyt</translation>
+<translation id="2806891468525657116">Pikakuvake on jo olemassa</translation>
 <translation id="2807517655263062534">Lataamasi tiedostot näytetään tässä.</translation>
 <translation id="2809586584051668049">ja <ph name="NUMBER_ADDITIONAL_DISABLED" /> muuta</translation>
 <translation id="2810390687497823527">Jos et tunnista laajennusta tai selain ei toimi odotetusti, täällä voit muokata tai asettaa pois päältä laajennuksia.</translation>
@@ -5599,6 +5601,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7496732379142025470">Jos haluat säästää virtaa, Ok Google on käytössä vain, kun laitteesi on yhdistetty virtalähteeseen. Jos haluat tehdä muutoksia, avaa Asetukset.</translation>
 <translation id="7497215489070763236">Palvelimen CA-varmenne</translation>
 <translation id="7497981768003291373">Sinulla ei ole äskettäin tallennettuja WebRTC-tekstilokeja.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> pyytää lupaa ottaa kuvakaappaus tämän välilehden sisällöstä</translation>
 <translation id="7502658306369382406">IPv6-osoite</translation>
 <translation id="7503191893372251637">Netscape-varmennetyyppi</translation>
 <translation id="7503985202154027481">Tieto käynnistäsi tällä sivustolla tallentuu suojausavaimeesi.</translation>

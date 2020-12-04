@@ -306,6 +306,7 @@
 <translation id="133535873114485416">Bevorzugte Eingabe</translation>
 <translation id="1335929031622236846">Gerät registrieren</translation>
 <translation id="1336902454946927954">Ihr Sicherheitsschlüssel ist gesperrt, weil Ihr Fingerabdruck nicht erkannt werden konnte. Geben Sie Ihre PIN ein, um ihn zu entsperren.</translation>
+<translation id="1337692097987160377">Tab teilen</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> möchte diese Anwendung öffnen.</translation>
 <translation id="1338950911836659113">Wird gelöscht...</translation>
 <translation id="13392265090583506">Barrierefreiheit</translation>
@@ -1606,6 +1607,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2805770823691782631">Zusätzliche Informationen</translation>
 <translation id="2806372837663997957">Das Gerät, für das du Dateien freigeben möchtest, hat diese nicht angenommen</translation>
+<translation id="2806891468525657116">Verknüpfung ist bereits vorhanden</translation>
 <translation id="2807517655263062534">Hier werden heruntergeladene Dateien angezeigt</translation>
 <translation id="2809586584051668049">und <ph name="NUMBER_ADDITIONAL_DISABLED" /> weitere</translation>
 <translation id="2810390687497823527">Wenn Sie eine Erweiterung nicht wiedererkennen oder Ihr Browser nicht wie erwartet funktioniert, können Sie die Erweiterungen hier deaktivieren oder anpassen.</translation>
@@ -5579,6 +5581,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7496732379142025470">Damit der Akku geschont wird, wird "Ok Google" nur aktiviert, wenn Ihr Gerät an eine Stromquelle angeschlossen ist. Änderungen können Sie in den "Einstellungen" vornehmen.</translation>
 <translation id="7497215489070763236">CA-Serverzertifikat</translation>
 <translation id="7497981768003291373">Es sind keine kürzlich erfassten WebRTC-Textprotokolle vorhanden.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> bittet um Erlaubnis, den Inhalt dieses Tabs zu lesen.</translation>
 <translation id="7502658306369382406">IPv6-Adresse</translation>
 <translation id="7503191893372251637">Netscape-Zertifikatstyp</translation>
 <translation id="7503985202154027481">Auf Ihrem Sicherheitsschlüssel wird zum Besuch dieser Website ein Datensatz angelegt.</translation>

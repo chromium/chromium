@@ -307,6 +307,7 @@
 <translation id="133535873114485416">Entrada de voz preferida</translation>
 <translation id="1335929031622236846">Inscribir o teu dispositivo</translation>
 <translation id="1336902454946927954">Bloqueouse a chave de seguranza porque non se puido recoñecer a túa impresión dixital. Para desbloqueala, escribe o PIN.</translation>
+<translation id="1337692097987160377">Compartir esta pestana</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> quere abrir esta aplicación.</translation>
 <translation id="1338950911836659113">Eliminando...</translation>
 <translation id="13392265090583506">Accesibilidade</translation>
@@ -1613,6 +1614,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2805756323405976993">Aplicacións</translation>
 <translation id="2805770823691782631">Detalles adicionais</translation>
 <translation id="2806372837663997957">O dispositivo co que estás tentando compartir o ficheiro non o aceptou</translation>
+<translation id="2806891468525657116">O atallo xa existe</translation>
 <translation id="2807517655263062534">Os ficheiros que descargas aparecen aquí</translation>
 <translation id="2809586584051668049">e <ph name="NUMBER_ADDITIONAL_DISABLED" /> máis</translation>
 <translation id="2810390687497823527">Se non recoñeces unha extensión ou se o navegador non funciona como debería, podes desactivar ou personalizar as extensións aquí.</translation>
@@ -5598,6 +5600,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7496732379142025470">Para aforrar batería, "Ok Google" só funciona cando o dispositivo está conectado á corrente. Para facer cambios, vai a Configuración.</translation>
 <translation id="7497215489070763236">Certificado de CA do servidor</translation>
 <translation id="7497981768003291373">Non se capturou ningún rexistro WebRTC recentemente.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> solicita permiso para capturar os contidos desta pestana.</translation>
 <translation id="7502658306369382406">Enderezo IPv6</translation>
 <translation id="7503191893372251637">Tipo de certificado de Netscape</translation>
 <translation id="7503985202154027481">Conservarase un rexistro da túa visita a este sitio na túa chave de seguranza.</translation>

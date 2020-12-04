@@ -307,6 +307,7 @@
 <translation id="133535873114485416">Voorkeurinvoer</translation>
 <translation id="1335929031622236846">Skryf jou toestel in</translation>
 <translation id="1336902454946927954">Jou sekuriteitsleutel is gesluit omdat jou vingerafdruk nie herken kon word nie. Voer jou PIN in om dit te ontsluit.</translation>
+<translation id="1337692097987160377">Deel hierdie oortjie</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> wil hierdie program oopmaak.</translation>
 <translation id="1338950911836659113">Vee tans uit …</translation>
 <translation id="13392265090583506">A11y</translation>
@@ -1614,6 +1615,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2805756323405976993">Programme</translation>
 <translation id="2805770823691782631">Bykomende besonderhede</translation>
 <translation id="2806372837663997957">Die toestel waarmee jy probeer deel, het dit nie aanvaar nie</translation>
+<translation id="2806891468525657116">Kortpad bestaan reeds</translation>
 <translation id="2807517655263062534">Lêers wat jy aflaai, verskyn hier</translation>
 <translation id="2809586584051668049">en nog <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2810390687497823527">As jy nie 'n uitbreiding herken nie, of as jou blaaier nie werk soos verwag nie, kan jy uitbreidings hier afskakel of pasmaak.</translation>
@@ -5600,6 +5602,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7496732379142025470">Om batterykrag te bespaar is “Ok Google” net aan wanneer jou toestel aan 'n kragbron gekoppel is. Gaan na Instellings toe om veranderinge te maak.</translation>
 <translation id="7497215489070763236">Bediener se CA-sertifikaat</translation>
 <translation id="7497981768003291373">Jy het geen onlangs vasgevangde WebRTC-teksloglêers nie.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> vra tans vir toestemming om die inhoud van hierdie oortjie vas te vang.</translation>
 <translation id="7502658306369382406">IPv6-adres</translation>
 <translation id="7503191893372251637">Netscape-sertifikaattipe</translation>
 <translation id="7503985202154027481">'n Rekord van jou besoek aan hierdie werf sal op jou sekuriteitsleutel gehou word.</translation>

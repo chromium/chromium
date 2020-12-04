@@ -306,6 +306,7 @@
 <translation id="133535873114485416">Preferensi masukan</translation>
 <translation id="1335929031622236846">Daftarkan perangkat Anda</translation>
 <translation id="1336902454946927954">Kunci keamanan Anda dikunci karena sidik jari Anda tidak dapat dikenali. Untuk membuka kuncinya, masukkan PIN.</translation>
+<translation id="1337692097987160377">Bagikan tab ini</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> ingin membuka aplikasi ini.</translation>
 <translation id="1338950911836659113">Menghapus...</translation>
 <translation id="13392265090583506">A11y</translation>
@@ -1610,6 +1611,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2805756323405976993">Apl</translation>
 <translation id="2805770823691782631">Detail tambahan</translation>
 <translation id="2806372837663997957">Perangkat yang Anda coba ajak berbagi tidak menerima</translation>
+<translation id="2806891468525657116">Pintasan sudah ada</translation>
 <translation id="2807517655263062534">File yang Anda download muncul di sini</translation>
 <translation id="2809586584051668049">dan <ph name="NUMBER_ADDITIONAL_DISABLED" /> lainnya</translation>
 <translation id="2810390687497823527">Jika Anda tidak mengenali ekstensi, atau jika browser tidak berfungsi sesuai harapan, Anda dapat menonaktifkan atau menyesuaikan ekstensi di sini.</translation>
@@ -5583,6 +5585,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7496732379142025470">Untuk menghemat baterai, “Ok Google” hanya akan aktif saat perangkat terhubung ke sumber listrik. Untuk melakukan perubahan, buka Setelan.</translation>
 <translation id="7497215489070763236">Sertifikat CA server</translation>
 <translation id="7497981768003291373">Anda tidak memiliki log teks WebRTC yang direkam baru-baru ini.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> meminta izin untuk merekam konten tab ini.</translation>
 <translation id="7502658306369382406">Alamat IPv6</translation>
 <translation id="7503191893372251637">Netscape Certificate Type</translation>
 <translation id="7503985202154027481">Data kunjungan Anda ke situs ini akan disimpan di kunci keamanan.</translation>
