@@ -48,6 +48,13 @@ class NavigationControllerImpl : public NavigationController,
   // Returns the NavigationImpl for |navigation_id|, or null if there isn't one.
   NavigationImpl* GetNavigationImplFromId(int64_t navigation_id);
 
+  // Called when the first contentful paint page load metric is available.
+  // |navigation_start| is the navigation start time.
+  // |first_contentful_paint_ms| is the duration to first contentful paint from
+  // navigation start.
+  void OnFirstContentfulPaint(const base::TimeTicks& navigation_start,
+                              const base::TimeDelta& first_contentful_paint);
+
 #if defined(OS_ANDROID)
   void SetNavigationControllerImpl(
       JNIEnv* env,

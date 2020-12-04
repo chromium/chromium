@@ -154,6 +154,23 @@ NavigationImpl* NavigationControllerImpl::GetNavigationImplFromId(
   return nullptr;
 }
 
+void NavigationControllerImpl::OnFirstContentfulPaint(
+    const base::TimeTicks& navigation_start,
+    const base::TimeDelta& first_contentful_paint) {
+#if defined(OS_ANDROID)
+  TRACE_EVENT0("weblayer",
+               "Java_NavigationControllerImpl_onFirstContentfulPaint2");
+  int64_t first_contentful_paint_ms = first_contentful_paint.InMilliseconds();
+  Java_NavigationControllerImpl_onFirstContentfulPaint2(
+      AttachCurrentThread(), java_controller_,
+      (navigation_start - base::TimeTicks()).InMicroseconds(),
+      first_contentful_paint_ms);
+#endif
+
+  for (auto& observer : observers_)
+    observer.OnFirstContentfulPaint(navigation_start, first_contentful_paint);
+}
+
 #if defined(OS_ANDROID)
 void NavigationControllerImpl::SetNavigationControllerImpl(
     JNIEnv* env,

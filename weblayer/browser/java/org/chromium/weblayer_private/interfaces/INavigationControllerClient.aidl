@@ -33,4 +33,7 @@ interface INavigationControllerClient {
 
   // Added in M85.
   void onOldPageNoLongerRendered(in String uri) = 9;
+
+  // Added in M89.
+  void onFirstContentfulPaint2(long navigationStartMs, long firstContentfulPaintDurationMs) = 10;
 }

@@ -10,7 +10,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "weblayer/browser/no_state_prefetch/prerender_utils.h"
-#include "weblayer/browser/ukm_page_load_metrics_observer.h"
+#include "weblayer/browser/page_load_metrics_observer_impl.h"
 
 namespace weblayer {
 
@@ -39,10 +39,7 @@ class PageLoadMetricsEmbedder
   // page_load_metrics::PageLoadMetricsEmbedderBase:
   void RegisterEmbedderObservers(
       page_load_metrics::PageLoadTracker* tracker) override {
-    std::unique_ptr<page_load_metrics::PageLoadMetricsObserver> ukm_observer =
-        UkmPageLoadMetricsObserver::CreateIfNeeded();
-    if (ukm_observer)
-      tracker->AddObserver(std::move(ukm_observer));
+    tracker->AddObserver(std::make_unique<PageLoadMetricsObserverImpl>());
 
     if (g_callback_for_testing)
       (*g_callback_for_testing).Run(tracker);

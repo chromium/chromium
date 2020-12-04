@@ -5,8 +5,10 @@
 package org.chromium.weblayer_private;
 
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.webkit.WebResourceResponse;
 
+import org.chromium.base.TimeUtilsJni;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -27,6 +29,10 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
     private final TabImpl mTab;
     private long mNativeNavigationController;
     private INavigationControllerClient mNavigationControllerClient;
+
+    // Conversion between native TimeTicks and SystemClock.uptimeMillis().
+    private long mNativeTickOffsetUs;
+    private boolean mNativeTickOffsetUsComputed;
 
     public NavigationControllerImpl(TabImpl tab, INavigationControllerClient client) {
         mTab = tab;
@@ -218,6 +224,27 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
     @CalledByNative
     private void onFirstContentfulPaint() throws RemoteException {
         mNavigationControllerClient.onFirstContentfulPaint();
+    }
+
+    @CalledByNative
+    private void onFirstContentfulPaint2(
+            long navigationStartTick, long firstContentfulPaintDurationMs) throws RemoteException {
+        if (WebLayerFactoryImpl.getClientMajorVersion() < 89) return;
+
+        // See logic in CustomTabsConnection.java that this was based on.
+        if (!mNativeTickOffsetUsComputed) {
+            // Compute offset from time ticks to uptimeMillis.
+            mNativeTickOffsetUsComputed = true;
+            long nativeNowUs = TimeUtilsJni.get().getTimeTicksNowUs();
+            long javaNowUs = SystemClock.uptimeMillis() * 1000;
+            mNativeTickOffsetUs = nativeNowUs - javaNowUs;
+        }
+        // SystemClock.uptimeMillis() is used here as it (as of June 2017) uses the same system call
+        // as all the native side of Chrome, that is clock_gettime(CLOCK_MONOTONIC). Meaning that
+        // the offset relative to navigationStart is to be compared with a
+        // SystemClock.uptimeMillis() value.
+        mNavigationControllerClient.onFirstContentfulPaint2(
+                (navigationStartTick - mNativeTickOffsetUs) / 1000, firstContentfulPaintDurationMs);
     }
 
     @CalledByNative

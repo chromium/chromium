@@ -15,6 +15,7 @@ import static org.chromium.content_public.browser.test.util.TestThreadUtils.runO
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.webkit.WebResourceResponse;
 
@@ -193,6 +194,25 @@ public class NavigationTest {
             }
         }
 
+        public static class FirstContentfulPaintCallbackHelper extends CallbackHelper {
+            private long mNavigationStartMillis;
+            private long mFirstContentfulPaintMs;
+
+            public void notifyCalled(long navigationStartMillis, long firstContentfulPaintMs) {
+                mNavigationStartMillis = navigationStartMillis;
+                mFirstContentfulPaintMs = firstContentfulPaintMs;
+                notifyCalled();
+            }
+
+            public long getNavigationStartMillis() {
+                return mNavigationStartMillis;
+            }
+
+            public long getFirstContentfulPaintMs() {
+                return mFirstContentfulPaintMs;
+            }
+        }
+
         public NavigationCallbackHelper onStartedCallback = new NavigationCallbackHelper();
         public NavigationCallbackHelper onRedirectedCallback = new NavigationCallbackHelper();
         public NavigationCallbackHelper onReadyToCommitCallback = new NavigationCallbackHelper();
@@ -203,6 +223,8 @@ public class NavigationTest {
         public NavigationCallbackValueRecorder loadProgressChangedCallback =
                 new NavigationCallbackValueRecorder();
         public CallbackHelper onFirstContentfulPaintCallback = new CallbackHelper();
+        public FirstContentfulPaintCallbackHelper onFirstContentfulPaint2Callback =
+                new FirstContentfulPaintCallbackHelper();
         public UriCallbackHelper onOldPageNoLongerRenderedCallback = new UriCallbackHelper();
 
         @Override
@@ -233,6 +255,13 @@ public class NavigationTest {
         @Override
         public void onFirstContentfulPaint() {
             onFirstContentfulPaintCallback.notifyCalled();
+        }
+
+        @Override
+        public void onFirstContentfulPaint(
+                long navigationStartMillis, long firstContentfulPaintMs) {
+            onFirstContentfulPaint2Callback.notifyCalled(
+                    navigationStartMillis, firstContentfulPaintMs);
         }
 
         @Override
@@ -1208,5 +1237,30 @@ public class NavigationTest {
         runOnUiThreadBlocking(() -> { activity.getTab().getNavigationController().goBack(); });
         mCallback.onFailedCallback.assertCalledWith(
                 curFailedCount, STREAM_URL, LoadError.CONNECTIVITY_ERROR);
+    }
+
+    @MinWebLayerVersion(89)
+    @Test
+    @SmallTest
+    public void testOnFirstContentfulPaintTiming() throws Exception {
+        long activityStartTimeMs = SystemClock.uptimeMillis();
+
+        TestWebServer testServer = TestWebServer.start();
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(null);
+        setNavigationCallback(activity);
+        String url = testServer.setResponse("/ok.html", "<html>ok</html>", null);
+
+        int count = mCallback.onFirstContentfulPaint2Callback.getCallCount();
+        mActivityTestRule.navigateAndWait(url);
+        mCallback.onFirstContentfulPaint2Callback.waitForCallback(count);
+
+        long navigationStart = mCallback.onFirstContentfulPaint2Callback.getNavigationStartMillis();
+        long current = SystemClock.uptimeMillis();
+        Assert.assertTrue(navigationStart <= current);
+        Assert.assertTrue(navigationStart >= activityStartTimeMs);
+
+        long firstContentfulPaint =
+                mCallback.onFirstContentfulPaint2Callback.getFirstContentfulPaintMs();
+        Assert.assertTrue(firstContentfulPaint <= (current - navigationStart));
     }
 }
