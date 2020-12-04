@@ -401,9 +401,10 @@ void MostVisitedSites::AddOrRemoveBlockedUrl(const GURL& url, bool add_url) {
   }
 
   if (repeatable_queries_) {
-    // Restoring repeatable queries is not supported as deletion is permanent.
     if (add_url)
       repeatable_queries_->DeleteQueryWithDestinationURL(url);
+    else
+      NOTREACHED() << "Deleted repeatable queries cannot be restored.";
   }
 
   if (top_sites_) {
