@@ -37,6 +37,10 @@
     font-weight: bold;
   }
 
+  #hideDescription {
+    color: var(--cr-secondary-text-color);
+  }
+
   cr-policy-indicator {
     margin-inline-end: 24px;
   }
@@ -49,7 +53,7 @@
   <div id="hideIcon" class="cr-icon icon-visibility-off"></div>
   <div id="hideTitleContainer">
     <div id="hideTitle">$i18n{hideModules}</div>
-    $i18n{hideModulesDesc}
+    <div id="hideDescription">$i18n{hideModulesDesc}</div>
   </div>
   <cr-policy-indicator indicator-type="devicePolicy"
       hidden="[[!hideManagedByPolicy_]]">
