@@ -684,6 +684,7 @@ XrResult OpenXrApiWrapper::ProcessEvents() {
           session_running_ = false;
           xr_result = xrEndSession(session_);
           Uninitialize();
+          on_session_ended_callback_.Run();
           return xr_result;
         case XR_SESSION_STATE_SYNCHRONIZED:
           visibility_changed_callback_.Run(
@@ -856,6 +857,11 @@ void OpenXrApiWrapper::RegisterVisibilityChangeCallback(
     const base::RepeatingCallback<void(mojom::XRVisibilityState)>&
         visibility_changed_callback) {
   visibility_changed_callback_ = std::move(visibility_changed_callback);
+}
+
+void OpenXrApiWrapper::RegisterOnSessionEndedCallback(
+    const base::RepeatingCallback<void()>& on_session_ended_callback) {
+  on_session_ended_callback_ = std::move(on_session_ended_callback);
 }
 
 VRTestHook* OpenXrApiWrapper::test_hook_ = nullptr;

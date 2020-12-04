@@ -71,6 +71,8 @@ class OpenXrApiWrapper {
   void RegisterVisibilityChangeCallback(
       const base::RepeatingCallback<void(mojom::XRVisibilityState)>&
           visibility_changed_callback);
+  void RegisterOnSessionEndedCallback(
+      const base::RepeatingCallback<void()>& on_session_ended_callback);
 
   device::mojom::XREnvironmentBlendMode PickEnvironmentBlendModeForSession(
       device::mojom::XRSessionMode session_mode);
@@ -125,6 +127,7 @@ class OpenXrApiWrapper {
       interaction_profile_changed_callback_;
   base::RepeatingCallback<void(mojom::XRVisibilityState)>
       visibility_changed_callback_;
+  base::RepeatingCallback<void()> on_session_ended_callback_;
 
   // Testing objects
   static VRTestHook* test_hook_;

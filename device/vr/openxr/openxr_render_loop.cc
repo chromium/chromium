@@ -112,6 +112,8 @@ bool OpenXrRenderLoop::StartRuntime() {
                           input_helper_->GetWeakPtr()));
   openxr_->RegisterVisibilityChangeCallback(base::BindRepeating(
       &OpenXrRenderLoop::SetVisibilityState, weak_ptr_factory_.GetWeakPtr()));
+  openxr_->RegisterOnSessionEndedCallback(base::BindRepeating(
+      &OpenXrRenderLoop::ExitPresent, weak_ptr_factory_.GetWeakPtr()));
   InitializeDisplayInfo();
 
   return true;
