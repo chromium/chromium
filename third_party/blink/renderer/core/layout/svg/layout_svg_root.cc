@@ -612,6 +612,7 @@ PaintLayerType LayoutSVGRoot::LayerTypeRequired() const {
 CompositingReasons LayoutSVGRoot::AdditionalCompositingReasons() const {
   NOT_DESTROYED();
   return RuntimeEnabledFeatures::CompositeSVGEnabled() &&
+                 !RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
                  HasDescendantWithCompositingReason()
              ? CompositingReason::kSVGRoot
              : CompositingReason::kNone;
@@ -619,6 +620,7 @@ CompositingReasons LayoutSVGRoot::AdditionalCompositingReasons() const {
 
 bool LayoutSVGRoot::HasDescendantWithCompositingReason() const {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   if (has_descendant_with_compositing_reason_dirty_) {
     has_descendant_with_compositing_reason_ = false;
     for (const LayoutObject* object = FirstChild(); object;
