@@ -1,0 +1,5 @@
+monorail {
+  component: "UI>Browser>Preferences>Protector"
+}
+
+team_email: "security-dev@chromium.org"
