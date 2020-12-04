@@ -22,6 +22,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> hanterar denna användare och kan fjärrhantera inställningar och övervaka användaraktivitet.</translation>
 <translation id="150962533380566081">Ogiltig PUK-kod.</translation>
 <translation id="1510238584712386396">Startprogram</translation>
+<translation id="1621067168122174824">Kör laddningstest</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> trådar)</translation>
 <translation id="1641857168437328880">Dokumentmatare (ensidig)</translation>
 <translation id="1644574205037202324">Historik</translation>
@@ -29,6 +30,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolver finns</translation>
 <translation id="1743558184855585519">Batteriet anses förbrukat när det når gränsen</translation>
+<translation id="1792647875738159689">Skanningen avbryts</translation>
 <translation id="1905710495812624430">Du har försökt för många gånger.</translation>
 <translation id="1930797645656624981">Tjänst för inmatningsmetod för Chrome OS</translation>
 <translation id="1947737735496445907">Utskrivet</translation>
@@ -52,6 +54,7 @@
 <translation id="3008341117444806826">UPPDATERA</translation>
 <translation id="3009958530611748826">Välj vilken mapp du vill spara i</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3069085583900247081">Testet misslyckades</translation>
 <translation id="3083667275341675831">Anslutningsdiagnostik</translation>
 <translation id="3091839911843451378">Misslyckades – skrivaren har stannat</translation>
 <translation id="3102119246920354026">Cacheminne</translation>
@@ -61,6 +64,7 @@
 <translation id="3246869037381808805">Utskriftsjobb som är äldre än 1 dagar tas bort</translation>
 <translation id="3268178239013324452">Misslyckades – luckan är öppen</translation>
 <translation id="3310640316857623290">DNS-latensen är avsevärt högre än det godtagbara tröskelvärdet</translation>
+<translation id="3328783797891415197">Testet körs</translation>
 <translation id="3369013195428705271">Vill du rensa all utskriftshistorik? De pågående utskriftsjobben rensas inte.</translation>
 <translation id="3456078764689556234">Sida <ph name="PRINTED_PAGES" /> av <ph name="TOTAL_PAGES" /> har skrivits ut.</translation>
 <translation id="3459509316159669723">Skriva ut</translation>
@@ -80,6 +84,7 @@
 <translation id="4034824040120875894">Skrivare</translation>
 <translation id="4131410914670010031">Svartvitt</translation>
 <translation id="4145784616224233563">HTTP-brandvägg</translation>
+<translation id="4170700058716978431">MISSLYCKADES</translation>
 <translation id="4227825898293920515">Lösenordet upphör att gälla om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Inga utskriftsjobb pågår</translation>
 <translation id="4297501883039923494">Har stoppats – okänt fel</translation>
@@ -104,17 +109,20 @@
 <translation id="4773299976671772492">Har stoppats</translation>
 <translation id="4808449224298348341">Utskriftsjobbet <ph name="DOCUMENT_TITLE" /> har avbrutits</translation>
 <translation id="4832079907277790330">Välj en fil i appen Filer</translation>
+<translation id="4848429997038228357">KÖRS</translation>
 <translation id="4890353053343094602">Välj ett nytt omedelbart</translation>
 <translation id="4917889632206600977">Har stoppats – slut på papper</translation>
 <translation id="4921665434385737356">Har laddat <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Kör</translation>
+<translation id="500920857929044050">Avsluta testet</translation>
 <translation id="5154917547274118687">Minne</translation>
 <translation id="5168185087976003268">Batterinivå</translation>
 <translation id="520299634122159966">Det finns inga tillgängliga skannrar</translation>
 <translation id="5212543919916444558">Det finns inget på skärmen som jag kan hjälpa till med.
 Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5222676887888702881">Logga ut</translation>
+<translation id="5264277876637023664">Kör CPU-test</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Kör rutinerna igen</translation>
 <translation id="5317780077021120954">Spara</translation>
@@ -127,17 +135,22 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="54609108002486618">Hanterade</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Läs mer i hjälpcentret</translation>
+<translation id="5635169860413004179">Visa rapporten</translation>
 <translation id="5719918614880940190">Detta mäter CPU-användningen och är en sammanställning av alla kärnor</translation>
+<translation id="5797428682393400134">LYCKADES</translation>
 <translation id="5832805196449965646">Lägg till person</translation>
 <translation id="5895138241574237353">Starta om</translation>
+<translation id="5931523347251946569">Filen hittades inte</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="6048107060512778456">Misslyckades – papperstrassel</translation>
 <translation id="6050189528197190982">Gråskala</translation>
 <translation id="6058625436358447366">Slutför genom att ange det gamla och det nya lösenordet</translation>
 <translation id="6061772781719867950">Misslyckade HTTP-förfrågningar</translation>
+<translation id="6104112872696127344">Skanningen har avbrutits</translation>
 <translation id="6106186594183574873">Slutför genom att ange det gamla lösenordet</translation>
 <translation id="6108689792487843350">Gateway kan inte nås</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" /> GHz/<ph name="MAX" /> GHz</translation>
 <translation id="6146993107019042706">Slutför genom att ange det nya lösenordet</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Läs mer</translation>
@@ -148,6 +161,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="649050271426829538">Har stoppats – papperstrassel</translation>
 <translation id="6517239166834772319">Utforska</translation>
 <translation id="6527081081771465939">Okänt säkerhetsprotokoll för Wi-Fi</translation>
+<translation id="6532051501443766164">Dölj rapporten</translation>
 <translation id="65587193855025101">Flatbädd</translation>
 <translation id="6564646048574748301">Misslyckades – skrivaren kan inte nås</translation>
 <translation id="6618744767048954150">Körs</translation>
@@ -155,6 +169,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6643016212128521049">Rensa</translation>
 <translation id="6704062477274546131">DNS-matchning</translation>
 <translation id="6747215703636344499">Har stoppats – utmatningsfacket är fullt</translation>
+<translation id="6756731097889387912">Det gick inte att avbryta</translation>
 <translation id="6766275201586212568">Misslyckade DNS-matchningar</translation>
 <translation id="6768237774506518020">Hög felfrekvens för DNS-matchningar</translation>
 <translation id="6839141349259399400">Går det inte att ansluta till någon skanner?</translation>
@@ -170,6 +185,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7648838807254605802">Hög HTTPS-fördröjning</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7690294790491645610">Bekräfta det nya lösenordet</translation>
+<translation id="7732651821766520760">Test – <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7855434858642800953">Den skannade filen har sparats.</translation>
 <translation id="7928373994957558460">Visa filplats</translation>
@@ -197,6 +213,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8845001906332463065">Få hjälp</translation>
+<translation id="8881098542468797602">Testet lyckades</translation>
 <translation id="8910721771319628100">Tröskelvärdet för latens överskreds för standardnätverket</translation>
 <translation id="8919837981463578619">Misslyckades – fack saknas</translation>
 <translation id="8928727111548978589">Misslyckades – slut på papper</translation>
@@ -206,4 +223,6 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="910415269708673980">Uppdatera biljetten för <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skannar sidan <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Lås upp</translation>
+<translation id="9149391708638971077">Kör minnestest</translation>
+<translation id="982713511914535780">Kör urladdningstest</translation>
 </translationbundle>

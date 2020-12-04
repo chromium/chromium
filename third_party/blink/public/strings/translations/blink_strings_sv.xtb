@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">Ange en del följt av <ph name="ATSIGN" />. <ph name="INVALIDADDRESS" /> är ofullständig.</translation>
 <translation id="5334352251556557839">Det går inte att spela upp media.</translation>
 <translation id="537648784377940524">Tidigaste datum (<ph name="MIN_DATE_OR_TIME" />) måste vara före senaste datum (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">har utökats, en dialogruta är öppen.</translation>
 <translation id="5406322316791861025">figur</translation>
 <translation id="5425179576310518467">aktuellt datum</translation>
 <translation id="5453733299334684579">trädobjekt</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">fler alternativ</translation>
 <translation id="576709008726043716">inledning</translation>
 <translation id="57838592816432529">Stäng av ljudet</translation>
+<translation id="5787939484346677755">har utökats, autofyllförslag tillgängliga.</translation>
 <translation id="5860033963881614850">Av</translation>
 <translation id="588258955323874662">Helskärm</translation>
 <translation id="5888666972993069672">Castar till <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">listruta</translation>
 <translation id="6150588977291308318">bibliografi</translation>
 <translation id="6164829606128959761">mätare</translation>
+<translation id="6165053282446038410">har utökats, <ph name="COUNT" /> autofyllförslag tillgängliga.</translation>
 <translation id="6166809985690652833">efterord</translation>
 <translation id="6209276755895393898">Det verkar vara: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">aktuell sida</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">rubrik</translation>
 <translation id="6941933287844615239">ladda ned media</translation>
 <translation id="6981594929165378967">infogning</translation>
+<translation id="698788488269350478">har utökats.</translation>
 <translation id="6989848892321993519">Lägg till minst <ph name="MIN_CHARACTERS" /> tecken (för närvarande har du angett 1 tecken).</translation>
 <translation id="7034405885550056553">förslag</translation>
 <translation id="709897737746224366">Matcha det format som anges.</translation>
 <translation id="7102274145889307184">aktuell plats</translation>
 <translation id="7118469954320184356">Det finns ingen tillgänglig beskrivning.</translation>
 <translation id="7139483182332611405">företal</translation>
+<translation id="7198226213493847604">popupknapp för meny</translation>
 <translation id="7214187073215825913">innehållsinformation</translation>
 <translation id="7238347055216017155">betoning</translation>
 <translation id="7263440858009898357">Välj ett alternativ i listan.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">kapitel</translation>
 <translation id="8845239796550121995">Castar nu till TV:n</translation>
 <translation id="8851136666856101339">huvud</translation>
+<translation id="8861621546968757188">popupknapp för dialogruta</translation>
 <translation id="8875657656876809964">Videouppspelningsfel</translation>
 <translation id="8889402386540077796">Nyans</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>

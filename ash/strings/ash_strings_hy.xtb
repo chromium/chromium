@@ -122,6 +122,7 @@
 <translation id="2050339315714019657">Ուղղաձիգ</translation>
 <translation id="2067602449040652523">Ստեղնաշարի պայծառություն</translation>
 <translation id="2078034614700056995">Հաջորդ աշխատասեղանին անցնելու համար չորս մատով սահեցրեք աջ</translation>
+<translation id="2079504693865562705">Թաքցնել դարակի հավելվածները</translation>
 <translation id="2083190527011054446">Բարի գիշեր, <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Սարքը միացած չէ ցանցին</translation>
 <translation id="2126242104232412123">Նոր աշխատանքային տարածք</translation>
@@ -238,6 +239,7 @@
 <translation id="3226991577105957773">Եվս <ph name="COUNT" /> ծանուցում</translation>
 <translation id="3236488194889173876">Հասանելի բջջային ցանց չկա</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> պատուհանը տեղափոխվել է աշխատասեղան <ph name="ACTIVE_DESK" />-ից աշխատասեղան <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" /> տոկոս։</translation>
 <translation id="3255483164551725916">Ի՞նչ կարող ես անել:</translation>
 <translation id="3269597722229482060">Աջ սեղմում</translation>
 <translation id="3289674678944039601">Լիցքավորում ադապտերի միջոցով</translation>
@@ -369,6 +371,7 @@
 <translation id="4389184120735010762">Դուք սեղմել եք ամրացված խոշորացույցի դյուրանցման ստեղները: Ուզում եք միացնե՞լ այն:</translation>
 <translation id="4412944820643904175">«<ph name="FEATURE_NAME" />» գործառույթն անջատված է։</translation>
 <translation id="4421231901400348175">Էկրանի կառավարման համօգտագործում <ph name="HELPER_NAME" />-ի հետ Հեռակա օգնության միջոցով:</translation>
+<translation id="4427613789487709312">Կանխադրված (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Ձայնի ուժգնություն</translation>
 <translation id="4450893287417543264">Այլևս ցույց չտալ</translation>
 <translation id="445864333228800152">Բարի երեկո,</translation>
@@ -449,6 +452,7 @@
 <translation id="5078796286268621944">Սխալ PIN կոդ</translation>
 <translation id="5083553833479578423">Օգտվեք Օգնականի այլ գործառույթներից</translation>
 <translation id="5136175204352732067">Այլ ստեղնաշար է միացվել</translation>
+<translation id="5155897006997040331">Ընթերցման արագությունը</translation>
 <translation id="5168181903108465623">Առկա են հեռարձակման սարքեր</translation>
 <translation id="5170568018924773124">Ցույց տալ պանակում</translation>
 <translation id="5176318573511391780">Տեսագրել էկրանի մի մասը</translation>
@@ -712,6 +716,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ծանուցում}one{# ծանուցում}other{# ծանուցում}}</translation>
 <translation id="7724603315864178912">Կտրել</translation>
+<translation id="7745560842763881396">Ցուցադրել դարակի հավելվածները</translation>
 <translation id="7749443890790263709">Աշխատասեղանների առավելագույն թույլատրելի քանակը լրացել է:</translation>
 <translation id="776344839111254542">Հպեք՝ թարմացման մանրամասները դիտելու համար</translation>
 <translation id="7780159184141939021">Էկրանի պտտում</translation>

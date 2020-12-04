@@ -57,6 +57,7 @@
 <translation id="1056775291175587022">Sarerik ez</translation>
 <translation id="1056898198331236512">Abisua</translation>
 <translation id="1058262162121953039">PUK kodea</translation>
+<translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Idatzi PIN kode berria. PIN kodeak karaktere bat izan behar du gutxienez, eta hizkiak, zenbakiak eta bestelako karaktereak eduki ditzake.}other{Idatzi PIN kode berria. PIN kodeak # karaktere izan behar ditu gutxienez, eta hizkiak, zenbakiak eta bestelako karaktereak eduki ditzake.}}</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> fitxa aurkitu dira "<ph name="SEARCH_TEXT" />" bilaketarako</translation>
 <translation id="1060292118287751956">Pantaila eguneratzeko maiztasuna zehazten du</translation>
 <translation id="1061904396131502319">Atseden hartzeko garaia izango da laster</translation>
@@ -635,9 +636,11 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1688935057616748272">Idatzi letra bat</translation>
 <translation id="168991973552362966">Gehitu inguruko inprimagailu bat</translation>
 <translation id="1689945336726856614">Kopiatu &amp;URLa</translation>
+<translation id="1690248886740053041">Ezin da konektatu sare mugikor batera. Laguntza teknikoa eskuratzeko, jarri harremanetan operadorearekin.</translation>
 <translation id="1692115862433274081">Erabili beste kontu bat</translation>
 <translation id="1692118695553449118">Sinkronizazioa aktibatuta dago</translation>
 <translation id="1692210323591458290">More iluna</translation>
+<translation id="169279809881363536">Ez da aurkitu profilik. Beste sare bat konfiguratzeko, eskaneatu QR kodea gailuaren kamera erabiliz edo idatzi operadoreak emandako aktibazio-kodea.</translation>
 <translation id="1697150536837697295">Artea</translation>
 <translation id="1697686431566694143">Editatu fitxategia</translation>
 <translation id="1698122934742150150">Uneko ezkutuko saioan soilik</translation>
@@ -1574,6 +1577,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2770465223704140727">Kendu zerrendatik</translation>
 <translation id="2770690685823456775">Esportatu pasahitzak beste karpeta batera</translation>
 <translation id="2770929488047004208">Monitorearen bereizmena</translation>
+<translation id="2770954829020464827">Xehetasunak ezkutatu egingo dira pantaila partekatzen ari zaren bitartean</translation>
 <translation id="2771268254788431918">Aktibatu da datu-konexioa</translation>
 <translation id="2771816809568414714">Gazta</translation>
 <translation id="2772936498786524345">Ninja</translation>
@@ -1941,6 +1945,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3201422919974259695">Hemen agertuko dira erabilgarri dauden USB gailuak.</translation>
 <translation id="3202131003361292969">Bide-izena</translation>
 <translation id="3202173864863109533">Fitxaren audioa desaktibatuta dago.</translation>
+<translation id="3202218848974251205">Pribatutasunaren sandbox-a</translation>
 <translation id="3208321278970793882">Aplikazioa</translation>
 <translation id="3208584281581115441">Egiaztatu</translation>
 <translation id="3208703785962634733">Berretsi gabe</translation>
@@ -2161,6 +2166,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3459697287128633276">Kontuarekin Google Play Store atzitu ahal izateko, autentifika zaitez identitate-hornitzailearen bidez.</translation>
 <translation id="3462311546193741693">Webgune gehienetako saioa amaitzen du. Google-ko kontuan saioa hasita jarraituko duzu, sinkronizatutako datuak garbitu ahal izateko.</translation>
 <translation id="3462413494201477527">Kontuaren konfigurazioa utzi nahi duzu?</translation>
+<translation id="3464145797867108663">Gehitu laneko profila</translation>
 <translation id="346431825526753">Haurrentzako kontua da hau. Kudeatzailea: <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="3468298837301810372">Etiketa</translation>
 <translation id="3468999815377931311">Android-eko telefonoa</translation>
@@ -2282,6 +2288,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="360180734785106144">Eskuratu eginbide berriak erabilgarri dauden bezain laster</translation>
 <translation id="3602290021589620013">Aurrebista</translation>
 <translation id="3603622770190368340">Eskuratu sareko ziurtagiria</translation>
+<translation id="3604193429970465812">Bigarren mailako kontuak</translation>
 <translation id="3604713164406837697">Aldatu horma-papera</translation>
 <translation id="3605780360466892872">Enpresaria</translation>
 <translation id="3608576286259426129">Erabili irudiaren aurrebista</translation>
@@ -2606,6 +2613,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 
   <ph name="CONTROL_PANEL_APPLET_NAME" /> abiarazi nahi duzu?</translation>
 <translation id="394183848452296464">Ezin da sortu lasterbidea</translation>
+<translation id="3943494825379372497">Aplikazioak eta orriak leheneratu nahi dituzu?</translation>
 <translation id="3943582379552582368">&amp;Atzera</translation>
 <translation id="3943857333388298514">Itsatsi</translation>
 <translation id="3948116654032448504">&amp;Bilatu irudia <ph name="SEARCH_ENGINE" /> bilatzailean</translation>
@@ -2691,6 +2699,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4046013316139505482">Luzapen hauek ez daukate webgune honetako informazioa ikusi eta aldatzeko beharrik.</translation>
 <translation id="4046123991198612571">Hurrengo pista</translation>
 <translation id="4047726037116394521">Joan orri nagusira</translation>
+<translation id="4049783682480068824">{COUNT,plural, =1{# kontaktu ez dago erabilgarri. Nearby Share kontaktu horrekin erabiltzeko, gehitu kontaktuetan haren Google-ko kontuarekin lotutako helbide elektronikoa.}other{# kontaktu ez daude erabilgarri. Nearby Share kontaktu horrekin erabiltzeko, gehitu kontaktuetan haien Google-ko kontuarekin lotutako helbide elektronikoa.}}</translation>
 <translation id="4050225813016893843">Autentifikazio-metodoa</translation>
 <translation id="4052120076834320548">Oso txikia</translation>
 <translation id="4056908315660577142">Iritsi zara gurasoak Chrome-ren <ph name="APP_NAME" /> aplikazioa erabiltzeko ezarritako denbora-mugara. Bihar, <ph name="TIME_LIMIT" /> izango dituzu hura erabiltzeko.</translation>
@@ -3114,7 +3123,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="457386861538956877">Gehiago…</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
 <translation id="457564749856982089">Profilean ikastetxeko kontu bat gehituz gero, haurrak erraz hasi ahalko du saioa ikasle gisa webgune, luzapen eta aplikazioetan, baina gurasoen murriztapenen mende egoteari utzi gabe. Horrela, ezingo ditu atzitu ikastetxeko kontuarekin sinkronizatutako laster-markak, pasahitzak edo bestelako arakatze-datuak.&lt;br&gt;&lt;br&gt;
-Haurrak ikastetxean Chromebook bat erabiltzen badu, eta etxean ere ikastetxeko baldintza beretan lan egiteko aukera eskaini nahi badiozu behar duen material guztietarako sarbidea izan dezan, amaitu saioa Family Link-eko kontu honetan eta hasi saioa ikastetxeko kontuarekin Chrome OS-ko kontuen orrian (oharra: ez dira aplikatuko Family Link-en gurasoen murriztapenak).&lt;br&gt;&lt;br&gt;
+Haurrak ikastetxean Chromebook bat erabiltzen badu, eta etxean ere ikastetxeko baldintza beretan lan egiteko aukera eskaini nahi badiozu behar duen material guztietarako sarbidea izan dezan, amaitu saioa Family Link-eko kontu honetan eta hasi saioa ikastetxeko kontuarekin Chrome OS-eko kontuen orrian (oharra: ez dira aplikatuko Family Link-en gurasoen murriztapenak).&lt;br&gt;&lt;br&gt;
 Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean egiten duena Family Link-en bidez kudeatu, sakatu behean dagoen Hurrengoa botoia eta gehitu ikastetxeko kontu bat profil honetan.</translation>
 <translation id="4576541033847873020">Parekatu Bluetooth bidezko gailua</translation>
 <translation id="4579453506923101210">Ahaztu konektatutako telefonoa</translation>
@@ -3337,6 +3346,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4863769717153320198"><ph name="WIDTH" /> x <ph name="HEIGHT" /> dirudi (lehenetsia)</translation>
 <translation id="4864369630010738180">Saioa hasten…</translation>
 <translation id="4864805589453749318">Hautatu zer gurasok emango duen baimena ikastetxeko kontu bat gehitzeko.</translation>
+<translation id="4866265760644917470">Gehitu da profila.</translation>
 <translation id="486635084936119914">Ireki fitxategi mota jakin batzuk deskargatu bezain laster</translation>
 <translation id="48704129375571883">Gehitu eginbide gehiago</translation>
 <translation id="4870758487381879312">Konfigurazioari buruzko informazioa lortzeko, idatzi administratzaileak emandako pasahitza</translation>
@@ -3620,6 +3630,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5206787458656075734">{COUNT,plural, =1{Aldatu da arriskuan zegoen pasahitza. Arriskuan dauden # pasahitz gehiago daukazu. Pasahitz hori orain egiaztatzea gomendatzen dizu Chrome-k.}other{Aldatu da arriskuan zegoen pasahitza. Arriskuan dauden # pasahitz gehiago dauzkazu. Pasahitz horiek orain egiaztatzea gomendatzen dizu Chrome-k.}}</translation>
 <translation id="5207949376430453814">Nabarmendu testu-kurtsorea</translation>
 <translation id="5209320130288484488">Ez da aurkitu gailurik</translation>
+<translation id="5209572028385096813">Erabiltzailea Family Link bidez kudeatzen da</translation>
 <translation id="5210365745912300556">Itxi fitxa</translation>
 <translation id="5213481667492808996">"<ph name="NAME" />" datu-zerbitzua erabiltzeko prest dago</translation>
 <translation id="5213891612754844763">Erakutsi proxy-ezarpenak</translation>
@@ -3705,6 +3716,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5302048478445481009">Hizkuntza</translation>
 <translation id="5302932258331363306">Erakutsi ordezkapenen panela</translation>
 <translation id="5304276686222516262">Ezin da deskargatu kontaktuen zerrenda. Egiaztatu sarera konektatuta zaudela edo &lt;a href="#" id="tryAgainLink"&gt;saiatu berriro&lt;/a&gt;.</translation>
+<translation id="5305145881844743843"><ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> da kontuaren kudeatzailea</translation>
 <translation id="5305688511332277257">Ez dago ziurtagiririk instalatuta</translation>
 <translation id="5307030433605830021">Ez da onartzen iturburua</translation>
 <translation id="5308380583665731573">Konektatu</translation>
@@ -4085,6 +4097,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5740820643029013514">Erabili mezularitza isilagoa (gomendatua)</translation>
 <translation id="574104302965107104">Pantaila islatzeko modua</translation>
 <translation id="574209121243317957">Tonua</translation>
+<translation id="5742505912938664543">Bigarren mailako kontu bat gehitzen baduzu, kontu hori erabili ahal izango duzu sarean ibiltzeko, aplikazioak deskargatzeko, Gmail-eko mezuak ikusteko eta Google-ren beste zerbitzu batzuk erabiltzeko.</translation>
 <translation id="5746169159649715125">Gorde PDF gisa</translation>
 <translation id="5747552184818312860">Iraungitze-data</translation>
 <translation id="5747785204778348146">Garatzailea; egoera ezegonkorra</translation>
@@ -4425,6 +4438,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6129953537138746214">Zuriunea</translation>
 <translation id="6130692320435119637">Gehitu wifi-sarea</translation>
 <translation id="6136114942382973861">Itxi deskargen barra</translation>
+<translation id="6136287496450963112">Segurtasun-giltza ez daukazu PIN kodearekin babestuta. Erreferentzia-gako digitalak kudeatzeko, sortu PIN bat.</translation>
 <translation id="6137767437444130246">Erabiltzaile-ziurtagiria</translation>
 <translation id="6138680304137685902">SHA-384 ziurtagiria duen X9.62 ECDSA sinadura</translation>
 <translation id="6138894911715675297">Ez dago sarerik (<ph name="NETWORK_TYPE" />)</translation>
@@ -4605,6 +4619,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6331566915566907158">Lagundu Chrome OS sistemaren eginbideak eta funtzionamendua hobetzen</translation>
 <translation id="6331818708794917058">Webguneek MIDI gailuetara konektatzea eska dezakete</translation>
 <translation id="6333064448949140209">Google-ra bidaliko da fitxategia, hura araztu ahal izateko</translation>
+<translation id="6334444530352320327">Kontu honekin saioa hasten duzunean, aplikazioak eta sistema eragileko ezarpenak sinkronizatu egingo dira Chromebook batetik bestera.<ph name="LINK_BEGIN" />Sinkronizazio-ezarpenak<ph name="LINK_END" /></translation>
 <translation id="6338981933082930623">Webgune guztiek mota guztietako iragarkiak erakuts diezazkizukete</translation>
 <translation id="6339668969738228384">Sortu beste profil bat <ph name="USER_EMAIL_ADDRESS" /> helbiderako</translation>
 <translation id="6340017061976355871">Ezin izan da konektatu zerbitzarira. Egiaztatu sarera konektatuta zaudela eta saiatu berriro. Arazoak badirau, berrabiarazi Chromebook-a.</translation>
@@ -4906,6 +4921,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6709133671862442373">Albisteak</translation>
 <translation id="6709357832553498500">Konektatu <ph name="EXTENSIONNAME" /> erabilita</translation>
 <translation id="6710213216561001401">Aurrekoa</translation>
+<translation id="6713233729292711163">Gehitu laneko profila</translation>
 <translation id="6715803357256707211">Errore bat gertatu da Linux aplikazioa instalatzean. Xehetasunak ikusteko, sakatu jakinarazpena.</translation>
 <translation id="671619610707606484">Webguneek gordetako datuen <ph name="TOTAL_USAGE" /> garbituko dira</translation>
 <translation id="671928215901716392">Pantaila blokeatua</translation>
@@ -5274,6 +5290,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7121362699166175603">Helbide-barrako historia eta osatze automatikoak garbitzen ditu. Google-ko kontuko historia arakatzeko beste modu batzuk aurki zenitzake <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webgunean.</translation>
 <translation id="7121438501124788993">Garatzaileen modua</translation>
 <translation id="7121728544325372695">Marra adimendunak</translation>
+<translation id="7122353087820324370">Aplikazioak eta sistema-eragilearen ezarpenak ez daude sinkronizatuta bigarren mailako kontuekin.</translation>
 <translation id="7123030151043029868">Hainbat fitxategi deskarga ditzakete automatikoki</translation>
 <translation id="7123360114020465152">Ez da onartzen jada</translation>
 <translation id="7125148293026877011">Ezabatu Crostini</translation>
@@ -5588,6 +5605,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="750509436279396091">Ireki deskargen karpeta</translation>
 <translation id="7506093026325926984">Gailu honetan gordeko da pasahitza</translation>
 <translation id="7506130076368211615">Konfiguratu beste sare bat</translation>
+<translation id="7506242536428928412">Segurtasun-giltza berria erabiltzeko, konfiguratu PIN berri bat</translation>
 <translation id="7506541170099744506">Erregistratu duzu <ph name="DEVICE_TYPE" /> enpresak kudeatzeko.</translation>
 <translation id="7507207699631365376">Ikusi hornitzailearen <ph name="BEGIN_LINK" />pribatutasun-gidalerroak<ph name="END_LINK" /></translation>
 <translation id="7507930499305566459">Egoera-erantzulearen ziurtagiria</translation>
@@ -5751,6 +5769,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7691077781194517083">Ezin da berrezarri segurtasun-giltza. <ph name="ERROR_CODE" /> errorea.</translation>
 <translation id="7691698019618282776">Crostini-ren bertsio-berritzea</translation>
 <translation id="7696063401938172191">"<ph name="PHONE_NAME" />" telefonoan:</translation>
+<translation id="7697166915480294040">Xehetasunak ezkutatu egingo dira pantaila partekatzen ari zaren bitartean</translation>
 <translation id="7697598343108519171">Erabili kamera QR kodea eskaneatzeko</translation>
 <translation id="7699968112832915395">Ezin da gehitu kontua</translation>
 <translation id="7701040980221191251">Bat ere ez</translation>
@@ -6207,6 +6226,8 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8184472985242519288">Uniformea</translation>
 <translation id="8186609076106987817">Zerbitzariak ezin izan du fitxategia aurkitu.</translation>
 <translation id="8188389033983459049">Aurrera egiteko, egiaztatu gailuaren ezarpenak eta aktibatu giltza</translation>
+<translation id="8189306097519446565">Ikastetxeko kontuak</translation>
+<translation id="8189750580333936930">Pribatutasunaren proba-eremua</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> hornitzailera konektatzen</translation>
 <translation id="8191230140820435481">Kudeatu aplikazioak, luzapenak eta gaiak</translation>
 <translation id="8195027750202970175">Diskoko tamaina</translation>
@@ -6898,6 +6919,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8986362086234534611">Ahaztu</translation>
 <translation id="8986494364107987395">Bidali automatikoki erabilera-estatistikak eta hutsegite-txostenak Google-ra</translation>
 <translation id="8987927404178983737">Hilabetea</translation>
+<translation id="8989823300731803443">Jarraitu utzi zenuen tokitik.</translation>
 <translation id="8990209962746788689">Ezin da sortu QR kodea</translation>
 <translation id="8991520179165052608">Webguneak mikrofonoa erabil dezake</translation>
 <translation id="8992117551007229513">{COUNT,plural, =1{1 elementu}other{# elementu}}</translation>

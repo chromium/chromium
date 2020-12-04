@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">Մուտքագրեք «<ph name="ATSIGN" />»-ին հաջորդող մասը: «<ph name="INVALIDADDRESS" />»-ը թերի է:</translation>
 <translation id="5334352251556557839">Չհաջողվեց նվագարկել մեդիա ֆայլը:</translation>
 <translation id="537648784377940524">Նվազագույն ամսաթիվը (<ph name="MIN_DATE_OR_TIME" />) պետք է լինի առավելագույն ամսաթվից առաջ (<ph name="MAX_DATE_OR_TIME" />)։</translation>
+<translation id="5378437566635403538">ծավալվեց, երկխոսության պատուհանը բացվեց։</translation>
 <translation id="5406322316791861025">պատկեր</translation>
 <translation id="5425179576310518467">ընթացիկ ամսաթիվը</translation>
 <translation id="5453733299334684579">ծառի տարր</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">լրացուցիչ ընտրանքներ</translation>
 <translation id="576709008726043716">ներածություն</translation>
 <translation id="57838592816432529">Անջատել ձայնը</translation>
+<translation id="5787939484346677755">ծավալվեց, հասանելի են ինքնալրացման տարբերակներ։</translation>
 <translation id="5860033963881614850">Անջատ.</translation>
 <translation id="588258955323874662">Լիաէկրան</translation>
 <translation id="5888666972993069672">Հեռարձակում <ph name="DEVICE_FRIENDLY_NAME" /> սարքին</translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">ցուցակ</translation>
 <translation id="6150588977291308318">բիբլիոգրաֆիա</translation>
 <translation id="6164829606128959761">հաշվիչ</translation>
+<translation id="6165053282446038410">ծավալվեց, հասանելի է ինքնալրացման <ph name="COUNT" /> տարբերակ։</translation>
 <translation id="6166809985690652833">հետգրություն</translation>
 <translation id="6209276755895393898">Կարող է լինել՝ <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">ընթացիկ էջը</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">վերնագիր</translation>
 <translation id="6941933287844615239">ներբեռնել ֆայլը</translation>
 <translation id="6981594929165378967">զետեղում</translation>
+<translation id="698788488269350478">ծավալվեց։</translation>
 <translation id="6989848892321993519">Տեքստը <ph name="MIN_CHARACTERS" /> գրանշանից պակաս չի կարող լինել (ներկայումս 1 գրանշան է)։</translation>
 <translation id="7034405885550056553">առաջարկ</translation>
 <translation id="709897737746224366">Հետևեք պահանջված ձևաչափին:</translation>
 <translation id="7102274145889307184">ընթացիկ տեղադրությունը</translation>
 <translation id="7118469954320184356">Նկարագրություն չկա:</translation>
 <translation id="7139483182332611405">ներածական</translation>
+<translation id="7198226213493847604">ընտրացանկի ենող պատուհանի կոճակ</translation>
 <translation id="7214187073215825913">տեղեկություններ բովանդակության մասին</translation>
 <translation id="7238347055216017155">ընդգծում</translation>
 <translation id="7263440858009898357">Ցանկից որևէ միավոր ընտրեք:</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">գլուխ</translation>
 <translation id="8845239796550121995">Հեռարձակվում է հեռուստացույցին</translation>
 <translation id="8851136666856101339">main</translation>
+<translation id="8861621546968757188">երկխոսության ելնող պատուհանի կոճակ</translation>
 <translation id="8875657656876809964">Տեսանյութի նվագարկման սխալ</translation>
 <translation id="8889402386540077796">Երանգ</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> ԿԲ</translation>

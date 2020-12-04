@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">దయచేసి '<ph name="ATSIGN" />'కి ముందు ఉన్న భాగాన్ని నమోదు చేయండి. '<ph name="INVALIDADDRESS" />' అసంపూర్ణంగా ఉంది.</translation>
 <translation id="5334352251556557839">మీడియాను ప్లే చేయడం సాధ్యపడలేదు.</translation>
 <translation id="537648784377940524">కనిష్ఠ తేదీ (<ph name="MIN_DATE_OR_TIME" />) తప్పనిసరిగా గరిష్ఠ తేదీ (<ph name="MAX_DATE_OR_TIME" />) కంటే ముందు ఉండాలి.</translation>
+<translation id="5378437566635403538">విస్తరించబడింది, డైలాగ్ తెరవబడింది.</translation>
 <translation id="5406322316791861025">రూపం</translation>
 <translation id="5425179576310518467">ప్రస్తుత తేదీ</translation>
 <translation id="5453733299334684579">వృక్షాంశం</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">మరిన్ని ఎంపికలు</translation>
 <translation id="576709008726043716">పరిచయం</translation>
 <translation id="57838592816432529">మ్యూట్ చేయి</translation>
+<translation id="5787939484346677755">విస్తరించబడింది, ఆటోకంప్లీట్ ఆప్షన్‌లు అందుబాటులో ఉన్నాయి.</translation>
 <translation id="5860033963881614850">ఆఫ్ అయ్యింది</translation>
 <translation id="588258955323874662">పూర్తితెర</translation>
 <translation id="5888666972993069672">ఇప్పుడు <ph name="DEVICE_FRIENDLY_NAME" />కి ప్రసారం చేస్తోంది</translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">జాబితా పెట్టె</translation>
 <translation id="6150588977291308318">వివరణపట్టి</translation>
 <translation id="6164829606128959761">మీటర్</translation>
+<translation id="6165053282446038410">విస్తరించబడింది, <ph name="COUNT" /> ఆటోకంప్లీట్ ఆప్షన్‌లు అందుబాటులో ఉన్నాయి.</translation>
 <translation id="6166809985690652833">చివరిమాట</translation>
 <translation id="6209276755895393898">వీరిలా కనిపిస్తున్నారు: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">ప్రస్తుత పేజీ</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">ముఖ్య శీర్షిక</translation>
 <translation id="6941933287844615239">మీడియా అంశం డౌన్‌లోడ్ చేయి</translation>
 <translation id="6981594929165378967">చొప్పించడం</translation>
+<translation id="698788488269350478">విస్తరించబడింది.</translation>
 <translation id="6989848892321993519">దయచేసి ఈ వచనాన్ని <ph name="MIN_CHARACTERS" /> లేదా అంతకంటే ఎక్కువ అక్షరాలకు పొడిగించండి (ప్రస్తుతం మీరు 1 అక్షరాన్ని ఉపయోగిస్తున్నారు).</translation>
 <translation id="7034405885550056553">సూచన</translation>
 <translation id="709897737746224366">దయచేసి అభ్యర్థించిన ఆకృతీకరణను సరిపోల్చండి.</translation>
 <translation id="7102274145889307184">ప్రస్తుత లొకేషన్</translation>
 <translation id="7118469954320184356">వివరణ అందుబాటులో లేదు.</translation>
 <translation id="7139483182332611405">ముందుమాట</translation>
+<translation id="7198226213493847604">మెనూ పాప్ అప్ బటన్</translation>
 <translation id="7214187073215825913">కంటెంట్ సమాచారం</translation>
 <translation id="7238347055216017155">ఉద్ఘాటన</translation>
 <translation id="7263440858009898357">దయచేసి జాబితాలోని ఒక అంశాన్ని ఎంచుకోండి.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">అధ్యాయం</translation>
 <translation id="8845239796550121995">ఇప్పుడు మీ టీవీలో ప్రసారం చేస్తోంది</translation>
 <translation id="8851136666856101339">main</translation>
+<translation id="8861621546968757188">డైలాగ్ పాప్ అప్ బటన్</translation>
 <translation id="8875657656876809964">వీడియో ప్లేబ్యాక్ ఎర్రర్</translation>
 <translation id="8889402386540077796">వర్ణం</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

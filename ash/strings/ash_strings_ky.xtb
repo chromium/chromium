@@ -122,6 +122,7 @@
 <translation id="2050339315714019657">Тигинен</translation>
 <translation id="2067602449040652523">Баскычтоптун жарыктыгы</translation>
 <translation id="2078034614700056995">Кийинки иш тактага которулуу үчүн экранды төрт манжаңыз менен оңго сүрүп коюңуз</translation>
+<translation id="2079504693865562705">Текчедеги колдонмолорду жашыруу</translation>
 <translation id="2083190527011054446">Түнүңүз бейпил болсун, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Тармакка туташпай турат</translation>
 <translation id="2126242104232412123">Жаңы иш такта</translation>
@@ -238,6 +239,7 @@
 <translation id="3226991577105957773">+ дагы <ph name="COUNT" /></translation>
 <translation id="3236488194889173876">Бир да мобилдик тармак жок</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> терезеси <ph name="ACTIVE_DESK" /> иш тактасынан <ph name="TARGET_DESK" /> иш тактасына жылдырылды</translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" /> пайыз.</translation>
 <translation id="3255483164551725916">Эмне кыла аласыз?</translation>
 <translation id="3269597722229482060">Оң баскычын чыкылдатуу</translation>
 <translation id="3289674678944039601">Адаптер аркылуу кубатталууда</translation>
@@ -369,6 +371,7 @@
 <translation id="4389184120735010762">Жалгаштырылган лупаны колдонуу үчүн тез баскычты бастыңыз. Ал күйгүзүлсүнбү?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> өчүк.</translation>
 <translation id="4421231901400348175">Алыскы жардамчы аркылуу экраныңыздын көзөмөлү <ph name="HELPER_NAME" /> менен бөлүшүүдө.</translation>
+<translation id="4427613789487709312">Демейки (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Үндүн катуулугу</translation>
 <translation id="4450893287417543264">Экинчи көрүнбөсүн</translation>
 <translation id="445864333228800152">Кутмандуу кечиңиз менен,</translation>
@@ -449,6 +452,7 @@
 <translation id="5078796286268621944">Туура эмес PIN</translation>
 <translation id="5083553833479578423">Жардамчынын башка функцияларын иштетиңиз.</translation>
 <translation id="5136175204352732067">Башка баскычтоп туташтырылды</translation>
+<translation id="5155897006997040331">Окуу ылдамдыгы</translation>
 <translation id="5168181903108465623">Тышкы экранга чыгаруу түзмөктөрү жеткиликтүү</translation>
 <translation id="5170568018924773124">Куржунда көрсөтүү</translation>
 <translation id="5176318573511391780">Экрандын жарымын видеого жаздырып алуу</translation>
@@ -712,6 +716,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 билдирме}other{# билдирме}}</translation>
 <translation id="7724603315864178912">Кесүү</translation>
+<translation id="7745560842763881396">Текчедеги колдонмолорду көрсөтүү</translation>
 <translation id="7749443890790263709">Иш такталардын саны эң жогорку чегине жетти.</translation>
 <translation id="776344839111254542">Жаңыртуунун чоо-жайын көрүү үчүн чыкылдатыңыз</translation>
 <translation id="7780159184141939021">Экранды буруу</translation>

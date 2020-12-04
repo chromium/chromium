@@ -122,6 +122,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2067602449040652523">Brillo do teclado</translation>
 <translation id="2078034614700056995">Para cambiar ao escritorio seguinte, pasa catro dedos cara á dereita</translation>
+<translation id="2079504693865562705">Ocultar as aplicacións do estante</translation>
 <translation id="2083190527011054446">Boas noites, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Non hai conexión á rede</translation>
 <translation id="2126242104232412123">Novo escritorio</translation>
@@ -238,6 +239,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3226991577105957773"><ph name="COUNT" /> máis</translation>
 <translation id="3236488194889173876">Non hai ningunha rede móbil dispoñible</translation>
 <translation id="3249513730522716925">A ventá <ph name="WINDOW_TITLE" /> moveuse do escritorio <ph name="ACTIVE_DESK" /> ao escritorio <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />; intensidade do sinal: <ph name="SIGNAL_STRENGTH" /> %.</translation>
 <translation id="3255483164551725916">Que podes facer?</translation>
 <translation id="3269597722229482060">Facer clic co botón dereito</translation>
 <translation id="3289674678944039601">Cargando cun adaptador</translation>
@@ -370,6 +372,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4389184120735010762">Premiches o atallo de teclado para a lupa ancorada. Queres activala?</translation>
 <translation id="4412944820643904175">A función <ph name="FEATURE_NAME" /> está desactivada.</translation>
 <translation id="4421231901400348175">Control compartido da túa pantalla con <ph name="HELPER_NAME" /> a través de Asistencia remota.</translation>
+<translation id="4427613789487709312">Predeterminada (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4450893287417543264">Non mostrar outra vez</translation>
 <translation id="445864333228800152">Bo serán!</translation>
@@ -450,6 +453,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5078796286268621944">PIN incorrecto</translation>
 <translation id="5083553833479578423">Desbloquea máis funcións do Asistente.</translation>
 <translation id="5136175204352732067">Conectouse un teclado diferente</translation>
+<translation id="5155897006997040331">Velocidade de lectura</translation>
 <translation id="5168181903108465623">Dispositivos de emisión dispoñibles</translation>
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
 <translation id="5176318573511391780">Gravar pantalla parcial</translation>
@@ -713,6 +717,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificación}other{# notificacións}}</translation>
 <translation id="7724603315864178912">Cortar</translation>
+<translation id="7745560842763881396">Mostrar as aplicacións do estante</translation>
 <translation id="7749443890790263709">Alcanzouse o número máximo de escritorios.</translation>
 <translation id="776344839111254542">Fai clic para ver os detalles da actualización</translation>
 <translation id="7780159184141939021">Xirar a pantalla</translation>

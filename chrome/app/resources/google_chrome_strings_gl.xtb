@@ -56,6 +56,7 @@
 <translation id="2309047409763057870">Esta é unha instalación secundaria de Google Chrome e non se pode converter no teu navegador predeterminado.</translation>
 <translation id="2348335408836342058">Chrome necesita permiso para acceder á cámara e ao micrófono neste sitio</translation>
 <translation id="234869673307233423">Chrome non puido comprobar os teus contrasinais. Téntao de novo máis tarde.</translation>
+<translation id="235650106824528204">O administrador do perfil de traballo pode quitar os datos de Chrome que se xeren durante o uso deste perfil (por exemplo, os marcadores, o historial, os contrasinais e outras opcións de configuración). <ph name="LEARN_MORE" /></translation>
 <translation id="2429317896000329049">Google Chrome non puido sincronizar os teus datos porque a sincronización non está dispoñible para o teu dominio.</translation>
 <translation id="2467438592969358367">Google Chrome quere exportar os teus contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -177,12 +178,14 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="573759479754913123">Acerca de Chrome OS</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> (versión experimental de Google Chrome)</translation>
 <translation id="5804318322022881572">Non se puido iniciar Chrome. Téntao de novo.</translation>
+<translation id="5851757216820085940">Se tes varias Contas de Google, podes engadilas ao teu dispositivo (<ph name="DEVICE_TYPE" />). Ao facelo, estarán dispoñibles no navegador Chrome e en Play Store, así como noutros servizos (por exemplo, Gmail, Drive e YouTube). <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome está tentando editar os contrasinais.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> (inicio de sesión de rede)</translation>
 <translation id="5940385492829620908">Aquí podes atopar as túas páxinas web, marcadores e outros contidos de Chrome.</translation>
 <translation id="5941830788786076944">Converter Google Chrome no navegador predeterminado</translation>
 <translation id="6070348360322141662">Para obter unha maior seguranza, Google Chrome encriptará os teus datos</translation>
+<translation id="608006075545470555">Engadir un perfil de traballo a este navegador</translation>
 <translation id="6113794647360055231">Chrome introduciu melloras</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> (versión beta de Google Chrome)</translation>
@@ -194,10 +197,12 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6368958679917195344">Chrome OS está creado con <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> (Google Chrome para programadores)</translation>
 <translation id="6566149418543181476">Actualizando Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6568793831116033768">Sistema Chrome OS</translation>
 <translation id="6650333065969705433">Se queres usar Rosetta para reproducir contido multimedia protexido, debes reiniciar Chrome.</translation>
 <translation id="6676384891291319759">Accede a Internet</translation>
 <translation id="6679975945624592337">Permitir que Google Chrome se execute en segundo plano</translation>
 <translation id="6750954913813541382">Para corrixir erros ortográficos, Chrome enviaralle a Google o texto que escribas no navegador</translation>
+<translation id="6755885556185485672">Chrome OS non se pechou correctamente.</translation>
 <translation id="677276454032249905">Queres saír de Chrome de todas formas?</translation>
 <translation id="683440813066116847">Regra de entrada para Google Chrome Canary para permitir tráfico mDNS.</translation>
 <translation id="6885412569789873916">Aplicacións de Chrome Beta</translation>
@@ -256,6 +261,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8498858610309223613">Acábase de aplicar unha actualización especial de seguranza para Google Chrome. Reinicia agora o navegador para restaurar as pestanas.</translation>
 <translation id="8521348052903287641">Regra de entrada para que Google Chrome Dev permita tráfico mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8550334526674375523">Este perfil de traballo é totalmente independente do teu perfil persoal.</translation>
 <translation id="8556340503434111824">Hai unha nova versión de Google Chrome dispoñible que é máis rápida que as anteriores.</translation>
 <translation id="861359755029082151">Rosetta permite que Chrome reproduza contido multimedia protexido nesta páxina.</translation>
 <translation id="8614913330719544658">Google Chrome non responde. Queres volver inicialo agora?</translation>
@@ -274,6 +280,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8907709077090383765">Para permitir que Chrome reproduza contido multimedia protexido, debes instalar Rosetta. Queres facelo agora?</translation>
 <translation id="8914504000324227558">Reiniciar Chrome</translation>
 <translation id="8922193594870374009">Para enviar un número desde <ph name="ORIGIN" /> ao teu teléfono Android, inicia sesión en Chrome nos dous dispositivos.</translation>
+<translation id="8986207147630327271">Estás a piques de engadir un perfil de traballo a este navegador e de permitir que o teu administrador controle só o perfil de traballo.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hai unha actualización de Chrome dispoñible}=1{Hai unha actualización de Chrome dispoñible}other{Hai unha actualización de Chrome que leva dispoñible # días}}</translation>
 <translation id="9026991721384951619">Chrome OS non puido sincronizar os teus datos debido a que a información de inicio de sesión na túa conta está caducada.</translation>
 <translation id="9067395829937117663">Google Chrome require Windows 7 ou unha versión posterior.</translation>

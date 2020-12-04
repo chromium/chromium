@@ -151,7 +151,7 @@
 <translation id="5307600278924710095">Unesite dio adrese ispred znaka "<ph name="ATSIGN" />". "<ph name="INVALIDADDRESS" />" nije potpuna e-adresa.</translation>
 <translation id="5334352251556557839">Nije moguće reproducirati medijski sadržaj.</translation>
 <translation id="537648784377940524">Najraniji datum (<ph name="MIN_DATE_OR_TIME" />) mora doći prije najkasnijeg datuma (<ph name="MAX_DATE_OR_TIME" />).</translation>
-<translation id="5378437566635403538">prošireno, dijalog je otvoren.</translation>
+<translation id="5378437566635403538">prošireno, dijaloški okvir je otvoren.</translation>
 <translation id="5406322316791861025">cifra</translation>
 <translation id="5425179576310518467">trenutni datum</translation>
 <translation id="5453733299334684579">stavka stabla</translation>
@@ -168,7 +168,7 @@
 <translation id="5677946354068040947">više opcija</translation>
 <translation id="576709008726043716">uvod</translation>
 <translation id="57838592816432529">Isključi zvuk</translation>
-<translation id="5787939484346677755">prošireno, dostupne su opcije samodovršavanja.</translation>
+<translation id="5787939484346677755">prošireno, dostupne su opcije automatskog popunjavanja.</translation>
 <translation id="5860033963881614850">Isklj.</translation>
 <translation id="588258955323874662">Cijeli ekran</translation>
 <translation id="5888666972993069672">Sada se emitira na uređaj <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -182,7 +182,7 @@
 <translation id="6023896073578205740">okvir s listom</translation>
 <translation id="6150588977291308318">bibliografija</translation>
 <translation id="6164829606128959761">metar</translation>
-<translation id="6165053282446038410">prošireno, dostupan je sljedeći broj opcija samodovršavanja: <ph name="COUNT" />.</translation>
+<translation id="6165053282446038410">prošireno, broj dostupnih opcija automatskog popunjavanja: <ph name="COUNT" />.</translation>
 <translation id="6166809985690652833">pogovor</translation>
 <translation id="6209276755895393898">Čini se da je ovo: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">trenutna stranica</translation>
@@ -217,14 +217,14 @@
 <translation id="693476918119313863">zaglavlje</translation>
 <translation id="6941933287844615239">preuzmi medije</translation>
 <translation id="6981594929165378967">umetanje</translation>
-<translation id="698788488269350478">proširen.</translation>
+<translation id="698788488269350478">prošireno.</translation>
 <translation id="6989848892321993519">Produžite ovaj tekst tako da broj znakova bude najmanje <ph name="MIN_CHARACTERS" /> (trenutno koristite 1 znak).</translation>
 <translation id="7034405885550056553">prijedlog</translation>
 <translation id="709897737746224366">Udovoljite zadanom formatu.</translation>
 <translation id="7102274145889307184">trenutna lokacija</translation>
 <translation id="7118469954320184356">Nema opisa.</translation>
 <translation id="7139483182332611405">predgovor</translation>
-<translation id="7198226213493847604">skočni gumb izbornika</translation>
+<translation id="7198226213493847604">skočno dugme menija</translation>
 <translation id="7214187073215825913">informacije o sadržaju</translation>
 <translation id="7238347055216017155">isticanje</translation>
 <translation id="7263440858009898357">Odaberite stavku s liste.</translation>
@@ -292,7 +292,7 @@
 <translation id="8808573423886751634">poglavlje</translation>
 <translation id="8845239796550121995">Sada se emitira na vaš TV</translation>
 <translation id="8851136666856101339">glavni</translation>
-<translation id="8861621546968757188">skočni gumb dijaloga</translation>
+<translation id="8861621546968757188">dugme za skočni dijaloški okvir</translation>
 <translation id="8875657656876809964">Greška u reprodukciji videozapisa</translation>
 <translation id="8889402386540077796">Nijansa</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">لطفاً قسمت قبل از «<ph name="ATSIGN" />» را وارد کنید. «<ph name="INVALIDADDRESS" />» ناقص است.</translation>
 <translation id="5334352251556557839">رسانه پخش نشد.</translation>
 <translation id="537648784377940524">حداقل تاریخ (<ph name="MIN_DATE_OR_TIME" />) باید قبل از حداکثر تاریخ باشد (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">گسترده شد، کادر گفتگو باز شد.</translation>
 <translation id="5406322316791861025">شکل</translation>
 <translation id="5425179576310518467">تاریخ کنونی</translation>
 <translation id="5453733299334684579">مورد درختی</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">گزینه‌های بیشتر</translation>
 <translation id="576709008726043716">مقدمه</translation>
 <translation id="57838592816432529">بی‌صدا کردن</translation>
+<translation id="5787939484346677755">گسترده شد، گزینه‌های تکمیل خودکار دردسترس است.</translation>
 <translation id="5860033963881614850">خاموش</translation>
 <translation id="588258955323874662">تمام صفحه</translation>
 <translation id="5888666972993069672">درحال ارسال محتوا به <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">کادر فهرست</translation>
 <translation id="6150588977291308318">فهرست منابع</translation>
 <translation id="6164829606128959761">متر</translation>
+<translation id="6165053282446038410">گسترده شد، <ph name="COUNT" /> گزینه تکمیل خودکار دردسترس است.</translation>
 <translation id="6166809985690652833">سخن پایانی</translation>
 <translation id="6209276755895393898">به‌نظر می‌رسد <ph name="DESCRIPTION" /> باشد</translation>
 <translation id="6212595056017402527">صفحه کنونی</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">سرصفحه</translation>
 <translation id="6941933287844615239">بارگیری رسانه</translation>
 <translation id="6981594929165378967">درج</translation>
+<translation id="698788488269350478">گسترده شد.</translation>
 <translation id="6989848892321993519">لطفاً این نوشتار را به <ph name="MIN_CHARACTERS" /> نویسه یا بیشتر افزایش دهید (درحال‌حاضر از ۱ نویسه استفاده می‌کنید).</translation>
 <translation id="7034405885550056553">پیشنهاد</translation>
 <translation id="709897737746224366">لطفاً با قالب درخواستی مطابقت دهید.</translation>
 <translation id="7102274145889307184">مکان کنونی</translation>
 <translation id="7118469954320184356">توضیحی دردسترس نیست.</translation>
 <translation id="7139483182332611405">پیش‌گفتار</translation>
+<translation id="7198226213493847604">دکمه بالاپر منو</translation>
 <translation id="7214187073215825913">اطلاعات محتوا</translation>
 <translation id="7238347055216017155">تأکید</translation>
 <translation id="7263440858009898357">لطفاً یک مورد را در فهرست انتخاب کنید.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">فصل</translation>
 <translation id="8845239796550121995">درحال ارسال محتوا به تلویزیون</translation>
 <translation id="8851136666856101339">اصلی</translation>
+<translation id="8861621546968757188">دکمه بالاپر کادر گفتگو</translation>
 <translation id="8875657656876809964">خطا در بازپخش ویدئو</translation>
 <translation id="8889402386540077796">رنگ‌مایه</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> کیلوبایت</translation>

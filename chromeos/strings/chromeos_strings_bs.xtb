@@ -22,7 +22,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> upravlja ovim korisnikom i može udaljeno upravljati postavkama i pratiti aktivnost korisnika.</translation>
 <translation id="150962533380566081">Nevažeći PUK.</translation>
 <translation id="1510238584712386396">Pokretač</translation>
-<translation id="1621067168122174824">Pokreni test napunjenosti</translation>
+<translation id="1621067168122174824">Pokreni test punjenja</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (broj nizova: <ph name="THREAD_COUNT" />)</translation>
 <translation id="1641857168437328880">Ulagač za dokumente (jednostrano skeniranje)</translation>
 <translation id="1644574205037202324">Historija</translation>
@@ -64,7 +64,7 @@
 <translation id="3246869037381808805">Zadaci za štampanje stariji od 1 dana će se ukloniti</translation>
 <translation id="3268178239013324452">Nije uspjelo – poklopac je otvoren</translation>
 <translation id="3310640316857623290">Latentnost DNS-a je znatno iznad dozvoljenog praga</translation>
-<translation id="3328783797891415197">Test se izvodi</translation>
+<translation id="3328783797891415197">Test je u toku</translation>
 <translation id="3369013195428705271">Jeste li sigurni da želite obrisati svu historiju štampanja? Vaši trenutni zadaci štampanja se neće izbrisati.</translation>
 <translation id="3456078764689556234">Odštampanih stanica: <ph name="PRINTED_PAGES" /> od <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Štampanje</translation>
@@ -84,7 +84,7 @@
 <translation id="4034824040120875894">Štampač</translation>
 <translation id="4131410914670010031">Crno-bijelo</translation>
 <translation id="4145784616224233563">HTTP zaštitni zid</translation>
-<translation id="4170700058716978431">NIJE USPJELO</translation>
+<translation id="4170700058716978431">NEUSPJEŠNO</translation>
 <translation id="4227825898293920515">Lozinka će isteći za <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nema aktivnih zadataka za štampanje</translation>
 <translation id="4297501883039923494">Zaustavljeno – nepoznata greška</translation>
@@ -109,7 +109,7 @@
 <translation id="4773299976671772492">Zaustavljeno</translation>
 <translation id="4808449224298348341">Zadatak za štampanje dokumenta <ph name="DOCUMENT_TITLE" /> je otkazan</translation>
 <translation id="4832079907277790330">Odaberite folder u aplikaciji Fajlovi...</translation>
-<translation id="4848429997038228357">IZVODI SE</translation>
+<translation id="4848429997038228357">U TOKU</translation>
 <translation id="4890353053343094602">Odmah odaberite novu lozinku</translation>
 <translation id="4917889632206600977">Zaustavljeno – nestalo je papira</translation>
 <translation id="4921665434385737356">Napunjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
@@ -122,7 +122,7 @@
 <translation id="5212543919916444558">Ne mogu pronaći ništa na ekranu u vezi s čim mogu pomoći.
 Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="5222676887888702881">Odjava</translation>
-<translation id="5264277876637023664">Pokreni test procesora</translation>
+<translation id="5264277876637023664">Pokreni test CPU-a</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Ponovo pokreni rutine</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
@@ -135,12 +135,12 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="54609108002486618">Upravljani</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Saznajte više u Centru za pomoć</translation>
-<translation id="5635169860413004179">Pogledaj izvješće</translation>
+<translation id="5635169860413004179">Prikaži izvještaj</translation>
 <translation id="5719918614880940190">Ovim se mjeri korištenje CPU-a i predstavlja zbir svih jezgri</translation>
-<translation id="5797428682393400134">USPJEH</translation>
+<translation id="5797428682393400134">USPJEŠNO</translation>
 <translation id="5832805196449965646">Dodaj osobu</translation>
 <translation id="5895138241574237353">Ponovo pokreni</translation>
-<translation id="5931523347251946569">Datoteka nije pronađena</translation>
+<translation id="5931523347251946569">Fajl nije pronađen</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, verzija <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6048107060512778456">Nije uspjelo – papir je zaglavljen</translation>
@@ -150,7 +150,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6104112872696127344">Skeniranje je otkazano</translation>
 <translation id="6106186594183574873">Unesite staru lozinku da završite</translation>
 <translation id="6108689792487843350">Pristupnik je van dometa</translation>
-<translation id="6114428539405324828"><ph name="CURRENT" /> GHz/<ph name="MAX" /> GHz</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" /> GHz / <ph name="MAX" /> GHz</translation>
 <translation id="6146993107019042706">Unesite novu lozinku da završite</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
@@ -161,7 +161,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="649050271426829538">Zaustavljeno – papir je zaglavljen</translation>
 <translation id="6517239166834772319">Istražite</translation>
 <translation id="6527081081771465939">Nepoznati sigurnosni protokol za WiFi</translation>
-<translation id="6532051501443766164">Sakrij izvješće</translation>
+<translation id="6532051501443766164">Sakrij izvještaj</translation>
 <translation id="65587193855025101">Položeno</translation>
 <translation id="6564646048574748301">Nije uspjelo – štampač je nedostupan</translation>
 <translation id="6618744767048954150">Pokrenuto</translation>
@@ -185,7 +185,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7648838807254605802">Visoka HTTPs latentnost</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7690294790491645610">Potvrdite novu lozinku</translation>
-<translation id="7732651821766520760">Test <ph name="TEST_NAME" /></translation>
+<translation id="7732651821766520760">Test: <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7855434858642800953">Skenirani fajl je sačuvan!</translation>
 <translation id="7928373994957558460">Prikaži lokaciju fajla</translation>
@@ -213,7 +213,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Zadano</translation>
 <translation id="8845001906332463065">Potražite pomoć</translation>
-<translation id="8881098542468797602">Test je uspio</translation>
+<translation id="8881098542468797602">Test je uspješan</translation>
 <translation id="8910721771319628100">Zadana mreža je iznad praga latentnosti</translation>
 <translation id="8919837981463578619">Nije uspjelo – nedostaje ladica</translation>
 <translation id="8928727111548978589">Nije uspjelo – nema papira</translation>

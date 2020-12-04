@@ -804,7 +804,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="421066178035138955">Usar datos y dispositivos de realidad virtual</translation>
 <translation id="4214357935346142455">perfil de la pantalla de acceso</translation>
 <translation id="4215751373031079683">7x9 (Envelope)</translation>
-<translation id="4220128509585149162">Fallos</translation>
+<translation id="4220128509585149162">Fallas</translation>
 <translation id="422022731706691852">Es posible que los atacantes en <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> intenten engañarte para que instales programas que dañen tu experiencia de navegación (p. ej., al cambiar la página principal o mostrar anuncios adicionales en los sitios que visitas). <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4221630205957821124">&lt;h4&gt;Paso 1: Accede al portal&lt;/h4&gt;
     &lt;p&gt;Para acceder a las redes Wi‑Fi de sitios como cafeterías o aeropuertos, tienes que ingresar. Para ver la página de acceso, visita una página con &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
@@ -1464,7 +1464,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6888584790432772780">Chrome simplificó esta página para facilitar la lectura. Chrome recuperó la página original a través de una conexión no segura.</translation>
 <translation id="6891596781022320156">No se admite el nivel de políticas.</translation>
 <translation id="6895330447102777224">Tu tarjeta se confirmó</translation>
-<translation id="6897140037006041989">User agent</translation>
+<translation id="6897140037006041989">Usuario-agente</translation>
 <translation id="6898699227549475383">Organización (O)</translation>
 <translation id="6907293445143367439">Permitir a <ph name="SITE_NAME" />:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> desea obtener el control total de tus dispositivos MIDI</translation>
@@ -1852,7 +1852,7 @@ Detalles adicionales:
 <translation id="8371889962595521444">Certificados raíz personalizados</translation>
 <translation id="8380941800586852976">Peligrosa</translation>
 <translation id="8381674639488873545">Estos cargos pueden ser únicos o recurrentes, y es posible que no sean evidentes. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
-<translation id="8412145213513410671">Bloqueos (<ph name="CRASH_COUNT" />)</translation>
+<translation id="8412145213513410671">Fallas (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Debes ingresar la misma frase de contraseña dos veces.</translation>
 <translation id="8416694386774425977">La configuración de red no es válida y no se pudo importar.
 Detalles adicionales:

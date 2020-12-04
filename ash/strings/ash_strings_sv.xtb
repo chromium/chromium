@@ -122,6 +122,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2067602449040652523">Ljusstyrka för tangentbordet</translation>
 <translation id="2078034614700056995">Svep till höger med fyra fingrar för att byta till nästa skrivbord</translation>
+<translation id="2079504693865562705">Dölj appar på hyllan</translation>
 <translation id="2083190527011054446">Hej <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Ingen nätverksanslutning</translation>
 <translation id="2126242104232412123">Ny arbetsyta</translation>
@@ -238,6 +239,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3226991577105957773">och <ph name="COUNT" /> till</translation>
 <translation id="3236488194889173876">Det finns inget tillgängligt mobilnätverk</translation>
 <translation id="3249513730522716925">Fönstret <ph name="WINDOW_TITLE" /> flyttades från skrivbordet <ph name="ACTIVE_DESK" /> till skrivbordet <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> procent.</translation>
 <translation id="3255483164551725916">Vad kan du göra?</translation>
 <translation id="3269597722229482060">Högerklicka</translation>
 <translation id="3289674678944039601">Laddas via adapter</translation>
@@ -369,6 +371,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4389184120735010762">Du tryckte på kortkommandot för dockad skärmförstoring. Vill du aktivera funktionen?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> är av.</translation>
 <translation id="4421231901400348175">Dela kontroll över skärmen med <ph name="HELPER_NAME" /> via Fjärrhjälp.</translation>
+<translation id="4427613789487709312">Standard (<ph name="RATE" /> ggr)</translation>
 <translation id="4430019312045809116">Volym</translation>
 <translation id="4450893287417543264">Visa inte igen</translation>
 <translation id="445864333228800152">Hej!</translation>
@@ -449,6 +452,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5078796286268621944">Fel pinkod</translation>
 <translation id="5083553833479578423">Lås upp fler funktioner för Assistent</translation>
 <translation id="5136175204352732067">Ett annat tangentbord har anslutits</translation>
+<translation id="5155897006997040331">Läshastighet</translation>
 <translation id="5168181903108465623">Överföringsenheter finns tillgängliga</translation>
 <translation id="5170568018924773124">Visa i mapp</translation>
 <translation id="5176318573511391780">Spela in en del av skärmen</translation>
@@ -712,6 +716,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 avisering}other{# aviseringar}}</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
+<translation id="7745560842763881396">Visa appar på hyllan</translation>
 <translation id="7749443890790263709">Det högsta tillåtna antalet skrivbord har uppnåtts.</translation>
 <translation id="776344839111254542">Klicka här om du vill se mer information om uppdateringen</translation>
 <translation id="7780159184141939021">Rotera skärmen</translation>

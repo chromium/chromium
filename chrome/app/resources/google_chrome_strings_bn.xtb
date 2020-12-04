@@ -54,6 +54,7 @@
 <translation id="2309047409763057870">এটা Google Chrome-এর সেকেন্ডারি ইনস্টলেশন এবং একে আপনার ডিফল্ট ব্রাউজার করা যাবে না।</translation>
 <translation id="2348335408836342058">এই সাইটটির জন্য Chrome কে আপনার ক্যামেরা এবং মাইক্রোফোনে অ্যাক্সেস দিতে হবে</translation>
 <translation id="234869673307233423">Chrome আপনার পাসওয়ার্ড চেক করতে পারছে না। পরে আবার চেষ্টা করুন।</translation>
+<translation id="235650106824528204">এই প্রোফাইল ব্যবহার করার সময় জেনারেট হওয়া Chrome ডেটা (যেমন বুকমার্ক, ইতিহাস, পাসওয়ার্ড ও অন্যান্য সেটিংস) অফিস প্রোফাইল অ্যাডমিনিস্ট্রেটর মুছে দিতে পারেন। <ph name="LEARN_MORE" /></translation>
 <translation id="2429317896000329049">আপনার ডোমেনে সিঙ্ক উপলভ্য না থাকার কারণে Google Chrome সিঙ্ক করতে পারেনি৷</translation>
 <translation id="2467438592969358367">Google Chrome আপনার পাসওয়ার্ড এক্সপোর্ট করতে চাইছে। অনুমতি দিতে Windows এর পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="2485422356828889247">আনইনস্টল</translation>
@@ -173,12 +174,14 @@
 <translation id="573759479754913123">Chrome OS সম্পর্কে </translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome লঞ্চ করা যায়নি। আবার চেষ্টা করুন।</translation>
+<translation id="5851757216820085940">আপনার একাধিক Google অ্যাকাউন্ট থাকলে, সেগুলি <ph name="DEVICE_TYPE" />-এ যোগ করতে পারবেন। এই অ্যাকাউন্টের মাধ্যমে আপনি Chrome ব্রাউজার ও Play Store সহ Gmail, Drive ও YouTube-এর মতো পরিষেবা অ্যাক্সেস করতে পারবেন।<ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome আপনার পাসওয়ার্ড এডিট করার অনুমতি চাইছে।</translation>
 <translation id="5895138241574237353">পুনর্সূচনা</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - নেটওয়ার্ক সাইন-ইন</translation>
 <translation id="5940385492829620908">আপনার ওয়েব, বুকমার্ক এবং Chrome-এর অন্যান্য জিনিস এখানে রয়েছে৷</translation>
 <translation id="5941830788786076944">Google Chrome-কে ডিফল্ট ব্রাউজার করুন</translation>
 <translation id="6070348360322141662">অতিরিক্ত নিরাপত্তার জন্য, Google Chrome আপনার ডেটা এনক্রিপ্ট করবে</translation>
+<translation id="608006075545470555">এই ব্রাউজারে অফিস প্রোফাইল যোগ করুন</translation>
 <translation id="6113794647360055231">Chrome আরও ভাল হয়ে উঠেছে</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome বিটা</translation>
@@ -190,10 +193,12 @@
 <translation id="6368958679917195344">Chrome OS সম্ভবত অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" /> দিয়ে তৈরি৷</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome আপডেট হচ্ছে (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6568793831116033768">Chrome OS সিস্টেম</translation>
 <translation id="6650333065969705433">সুরক্ষিত মিডিয়া প্লে করার জন্য Rosetta ব্যবহার করতে, আপনাকে অবশ্যই Chrome রিস্টার্ট করতে হবে।</translation>
 <translation id="6676384891291319759">ইন্টারনেটটি অ্যাক্সেস করুন</translation>
 <translation id="6679975945624592337">Google Chrome-কে ব্যাকগ্রাউন্ডে চলতে দিন</translation>
 <translation id="6750954913813541382">বানান ভুল ঠিক করতে, আপনি ব্রাউজারে যে টেক্সট লেখেন Chrome সেটি Google-এ পাঠায়</translation>
+<translation id="6755885556185485672">Chrome OS ঠিকভাবে বন্ধ হয়নি।</translation>
 <translation id="677276454032249905">তা স্বত্তেও Chrome বন্ধ করতে চান?</translation>
 <translation id="683440813066116847">mDNS ট্রাফিকের অনুমতি দিতে Google Chrome Canary এর জন্য ইনবাউন্ড নিয়ম।</translation>
 <translation id="6885412569789873916">Chrome বিটা অ্যাপ</translation>
@@ -252,6 +257,7 @@
 <translation id="8498858610309223613">Google Chrome-এর জন্য একটি বিশেষ নিরাপত্তা আপডেট এইমাত্র প্রয়োগ করা হয়েছে। এখনই রিস্টার্ট করুন এবং আপনার ট্যাব আমরা রিস্টোর করব।</translation>
 <translation id="8521348052903287641">mDNS ট্রাফিকের অনুমতি দিতে Google Chrome ডেভেলপারের জন্য ইনবাউন্ড নিয়ম।</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8550334526674375523">এই অফিস প্রোফাইল আপনার ব্যক্তিগত প্রোফাইল থেকে সম্পূর্ণ আলাদা।</translation>
 <translation id="8556340503434111824">Google Chrome-এর একটি নতুন ভার্সন উপলভ্য এবং এটি আগের তুলনায় দ্রুততর৷</translation>
 <translation id="861359755029082151">Chrome চালু করার মাধ্যমে এই পৃষ্ঠাতে Rosetta সুরক্ষিত মিডিয়া প্লে করে।</translation>
 <translation id="8614913330719544658">Google Chrome প্রতিক্রিয়া করছে না৷ এখনই পুনঃলঞ্চ করবেন?</translation>
@@ -270,6 +276,7 @@
 <translation id="8907709077090383765">সুরক্ষিত মিডিয়া প্লে করার জন্য Chrome চালু করতে, আপনাকে Rosetta ইনস্টল করতে হবে। আপনি কি এখনই এটি ইনস্টল করতে চান?</translation>
 <translation id="8914504000324227558">Chrome আবার লঞ্চ করুন</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> থেকে আপনার Android ফোনে একটি নম্বর পাঠাতে, উভয় ডিভাইসের Chrome-এ সাইন-ইন করুন।</translation>
+<translation id="8986207147630327271">আপনি এই ব্রাউজারে অফিস প্রোফাইল যোগ করছেন এবং আপনার অ্যাডমিনিস্ট্রেটরকে শুধু অফিস প্রোফাইলটি নিয়ন্ত্রণ করার অধিকার দিচ্ছেন।</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome-এর একটি আপডেট উপলভ্য আছে}=1{Chrome-এর একটি আপডেট উপলভ্য আছে}one{Chrome-এর একটি আপডেট # দিন ধরে উপলভ্য আছে}other{Chrome-এর একটি আপডেট # দিন ধরে উপলভ্য আছে}}</translation>
 <translation id="9026991721384951619">আপনার অ্যাকাউন্টের সাইন-ইনের বিবরণটি পুরনো হওয়ায় Chrome OS আপনার ডেটা সিঙ্ক করতে পারেনি৷</translation>
 <translation id="9067395829937117663">Google Chrome এর জন্য Windows 7 বা উচ্চতর সংস্করণ প্রয়োজন।</translation>

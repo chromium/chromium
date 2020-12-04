@@ -2492,7 +2492,7 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 
       Si estableces esta política como False o no la estableces, no se usarán las credenciales de acceso de <ph name="PRODUCT_OS_NAME" /> para la autenticación de red.
 
-      Si estableces esta política como True, se usarán las credenciales de acceso de <ph name="PRODUCT_OS_NAME" /> para la autenticación de red de un proxy administrado. Si falla la autenticación de red con las credenciales de acceso de <ph name="PRODUCT_OS_NAME" />, se le pedirá al usuario que ingrese las credenciales.</translation>
+      Si estableces esta política como True, se usarán las credenciales de acceso de <ph name="PRODUCT_OS_NAME" /> para la autenticación de red en un proxy administrado. Si falla la autenticación de red con las credenciales de acceso de <ph name="PRODUCT_OS_NAME" />, se le pedirá al usuario que ingrese las credenciales.</translation>
 <translation id="4723829699367336876">Habilitar el cruce seguro de firewall desde clientes de acceso remoto</translation>
 <translation id="4725528134735324213">Habilitar Android Backup Service</translation>
 <translation id="4725801978265372736">Solicitar que el nombre del usuario local y el propietario del host de acceso remoto coincidan</translation>

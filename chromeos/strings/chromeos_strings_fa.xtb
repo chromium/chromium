@@ -22,6 +22,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> این کاربر را مدیریت می‌کند و می‌تواند ازراه‌دور تنظیمات را مدیریت کند و بر فعالیت کاربر نظارت داشته باشد.</translation>
 <translation id="150962533380566081">‏PUK نامعتبر.</translation>
 <translation id="1510238584712386396">راه‌انداز</translation>
+<translation id="1621067168122174824">اجرای آزمایش شارژ</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> رشته)</translation>
 <translation id="1641857168437328880">تغذیه‌کننده سند (یک‌رو)</translation>
 <translation id="1644574205037202324">سابقه</translation>
@@ -29,6 +30,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">موجود بودن رافع ساناد</translation>
 <translation id="1743558184855585519">وقتی باتری به این محدوده برسد، فرسوده به‌حساب می‌آید</translation>
+<translation id="1792647875738159689">درحال لغو اسکن کردن</translation>
 <translation id="1905710495812624430">به حداکثر تعداد مجاز تلاش رسیده‌اید.</translation>
 <translation id="1930797645656624981">‏سرویس روش ورودی سیستم‌عامل Chrome</translation>
 <translation id="1947737735496445907">چاپ‌شده</translation>
@@ -52,6 +54,7 @@
 <translation id="3008341117444806826">بازخوانی</translation>
 <translation id="3009958530611748826">پوشه‌ای را برای ذخیره در آن انتخاب کنید</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> میلی‌آمپر</translation>
+<translation id="3069085583900247081">آزمایش ناموفق بود</translation>
 <translation id="3083667275341675831">تشخیص خطای اتصال</translation>
 <translation id="3091839911843451378">انجام نشد - متوقف شده است</translation>
 <translation id="3102119246920354026">حافظه پنهان</translation>
@@ -61,6 +64,7 @@
 <translation id="3246869037381808805">کارهای چاپ قدیمی‌تر از ۱ روز برداشته می‌شوند</translation>
 <translation id="3268178239013324452">انجام نشد - در باز است</translation>
 <translation id="3310640316857623290">تأخیر در ساناد به‌میزان قابل‌توجهی از آستانه مجاز بالاتر است</translation>
+<translation id="3328783797891415197">درحال اجرای آزمایش</translation>
 <translation id="3369013195428705271">مطمئن هستید که می‌خواهید همه سابقه‌های چاپ را حذف کنید؟ کارهای چاپ شما که درحال انجام هستند حذف نخواهند شد.</translation>
 <translation id="3456078764689556234">صفحه <ph name="PRINTED_PAGES" /> از مجموع <ph name="TOTAL_PAGES" /> صفحه چاپ شده است.</translation>
 <translation id="3459509316159669723">درحال چاپ</translation>
@@ -80,6 +84,7 @@
 <translation id="4034824040120875894">چاپگر</translation>
 <translation id="4131410914670010031">سیاه و سفید</translation>
 <translation id="4145784616224233563">‏دیوار آتش HTTPS</translation>
+<translation id="4170700058716978431">ناموفق</translation>
 <translation id="4227825898293920515">گذرواژه <ph name="TIME" /> دیگر منقضی می‌شود</translation>
 <translation id="4238516577297848345">هیچ کار چاپی درحال انجام نیست</translation>
 <translation id="4297501883039923494">متوقف شد - خطای نامشخص</translation>
@@ -104,17 +109,20 @@
 <translation id="4773299976671772492">متوقف شد</translation>
 <translation id="4808449224298348341">کار چاپ <ph name="DOCUMENT_TITLE" /> لغو شد</translation>
 <translation id="4832079907277790330">‏انتخاب پوشه در برنامه Files…</translation>
+<translation id="4848429997038228357">درحال اجرا</translation>
 <translation id="4890353053343094602">انتخاب فوری موردی جدید</translation>
 <translation id="4917889632206600977">متوقف شد - کاغذ تمام شده است</translation>
 <translation id="4921665434385737356">در <ph name="NUM_SECONDS" /> ثانیه <ph name="RATE" /> شارژ شد.</translation>
 <translation id="4932733599132424254">تاریخ</translation>
 <translation id="4985509611418653372">اجرا</translation>
+<translation id="500920857929044050">توقف آزمایش</translation>
 <translation id="5154917547274118687">حافظه</translation>
 <translation id="5168185087976003268">سلامت باتری</translation>
 <translation id="520299634122159966">اسکنری دردسترس نیست</translation>
 <translation id="5212543919916444558">در صفحه‌‌تان چیزی پیدا نمی‌کنم تا درمورد آن کمکتان کنم.
 برای درخواست از من، روی میکروفون ضربه بزنید.</translation>
 <translation id="5222676887888702881">خروج از سیستم</translation>
+<translation id="5264277876637023664">اجرای آزمایش واحد پردازش مرکزی</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">اجرای دوباره روال‌ها</translation>
 <translation id="5317780077021120954">ذخیره</translation>
@@ -127,17 +135,22 @@
 <translation id="54609108002486618">مدیریت شده</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">در «مرکز راهنمایی» اطلاعات بیشتری کسب کنید</translation>
+<translation id="5635169860413004179">دیدن گزارش</translation>
 <translation id="5719918614880940190">‏این مورد میزان استفاده از CPU را اندازه‌گیری می‌کند و مجموع همه هسته‌ها است</translation>
+<translation id="5797428682393400134">موفقیت‌آمیز</translation>
 <translation id="5832805196449965646">افزودن شخص</translation>
 <translation id="5895138241574237353">راه‌اندازی مجدد</translation>
+<translation id="5931523347251946569">فایل پیدا نشد</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />، نسخه <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">بستن</translation>
 <translation id="6048107060512778456">انجام نشد - کاغذ گیر کرده است</translation>
 <translation id="6050189528197190982">سیاه‌وسفید</translation>
 <translation id="6058625436358447366">برای تکمیل کار، گذرواژه‌های قدیمی و جدیدتان را وارد کنید</translation>
 <translation id="6061772781719867950">‏درخواست‌های HTTP ناموفق بود</translation>
+<translation id="6104112872696127344">اسکن کردن لغو شده است</translation>
 <translation id="6106186594183574873">برای تکمیل کار، گذرواژه قدیمی‌تان را وارد کنید</translation>
 <translation id="6108689792487843350">دروازه قابل دسترسی نیست</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" /> گیگاهرتز / <ph name="MAX" /> گیگاهرتز</translation>
 <translation id="6146993107019042706">برای تکمیل کار،‌ گذرواژه جدیدتان را وارد کنید</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">بیشتر بدانید</translation>
@@ -148,6 +161,7 @@
 <translation id="649050271426829538">متوقف شد - کاغذ گیر کرده است</translation>
 <translation id="6517239166834772319">کاوش</translation>
 <translation id="6527081081771465939">‏پروتکل امنیتی Wi-Fi ناشناس است</translation>
+<translation id="6532051501443766164">پنهان کردن گزارش</translation>
 <translation id="65587193855025101">صفحه مسطح</translation>
 <translation id="6564646048574748301">انجام نشد - دسترسی به چاپگر ممکن نیست</translation>
 <translation id="6618744767048954150">درحال اجرا</translation>
@@ -155,6 +169,7 @@
 <translation id="6643016212128521049">پاک کردن</translation>
 <translation id="6704062477274546131">وضوح ساناد</translation>
 <translation id="6747215703636344499">متوقف شد - خروجی پُر است</translation>
+<translation id="6756731097889387912">اسکن کردن لغو نشد</translation>
 <translation id="6766275201586212568">تفکیک ساناد انجام نشد</translation>
 <translation id="6768237774506518020">میزان خطای تفکیک ساناد بالا است</translation>
 <translation id="6839141349259399400">نمی‌توانید به اسکنر متصل شوید؟</translation>
@@ -170,6 +185,7 @@
 <translation id="7648838807254605802">‏تأخیر بالا در HTTPS</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7690294790491645610">تأیید گذرواژه جدید</translation>
+<translation id="7732651821766520760">آزمایش <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">وضعیت</translation>
 <translation id="7855434858642800953">فایل اسکن‌شده ذخیره شد!</translation>
 <translation id="7928373994957558460">نمایش مکان فایل</translation>
@@ -197,6 +213,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">پیش‌فرض</translation>
 <translation id="8845001906332463065">دریافت راهنمایی</translation>
+<translation id="8881098542468797602">آزمایش موفق بود</translation>
 <translation id="8910721771319628100">آستانه تأخیر در شبکه پیش‌فرض خیلی زیاد است</translation>
 <translation id="8919837981463578619">انجام نشد - سینی موجود نیست</translation>
 <translation id="8928727111548978589">انجام نشد - کاغذ تمام شده است</translation>
@@ -206,4 +223,6 @@
 <translation id="910415269708673980">بازخوانی بلیت برای <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">درحال اسکن کردن صفحه <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">باز کردن قفل</translation>
+<translation id="9149391708638971077">اجرای آزمایش حافظه</translation>
+<translation id="982713511914535780">اجرای آزمایش تخلیه شارژ</translation>
 </translationbundle>

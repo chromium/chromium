@@ -122,6 +122,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2050339315714019657">Portret (vertikal</translation>
 <translation id="2067602449040652523">Ndriçimi i tastierës</translation>
 <translation id="2078034614700056995">Rrëshqit shpejt djathtas me katër gishta për të kaluar te tavolina tjetër e punës</translation>
+<translation id="2079504693865562705">Fshih aplikacionet në raft</translation>
 <translation id="2083190527011054446">Natën e mirë <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Nuk është lidhur në rrjet</translation>
 <translation id="2126242104232412123">Tavolinë e re</translation>
@@ -238,6 +239,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> më shumë</translation>
 <translation id="3236488194889173876">Nuk disponohet asnjë rrjet celular</translation>
 <translation id="3249513730522716925">Dritarja <ph name="WINDOW_TITLE" /> u zhvendos nga tavolina e punës <ph name="ACTIVE_DESK" /> në tavolinën e punës <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" /> për qind.</translation>
 <translation id="3255483164551725916">Çfarë mund të bësh?</translation>
 <translation id="3269597722229482060">Kliko me butonin djathtas</translation>
 <translation id="3289674678944039601">Po karikohet përmes përshtatësit</translation>
@@ -369,6 +371,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4389184120735010762">Ke shtypur shkurtoren e tastierës për zmadhuesin me puthitje. Dëshiron ta aktivizosh?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> është joaktive.</translation>
 <translation id="4421231901400348175">Po ndan kontrollin e ekranit me <ph name="HELPER_NAME" /> përmes "Ndihmës në distancë".</translation>
+<translation id="4427613789487709312">Parazgjedhja (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Volumi</translation>
 <translation id="4450893287417543264">Mos e shfaq përsëri</translation>
 <translation id="445864333228800152">Mirëmbrëma,</translation>
@@ -449,6 +452,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5078796286268621944">Kod i pasaktë PIN</translation>
 <translation id="5083553833479578423">Shkyç më shumë funksione të "Asistentit".</translation>
 <translation id="5136175204352732067">Është lidhur një tastierë tjetër</translation>
+<translation id="5155897006997040331">Shpejtësia e leximit</translation>
 <translation id="5168181903108465623">Pajisjet e transmetimit janë të disponueshme</translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
 <translation id="5176318573511391780">Regjistro ekranin e pjesshëm</translation>
@@ -712,6 +716,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 njoftim}other{# njoftime}}</translation>
 <translation id="7724603315864178912">Prite</translation>
+<translation id="7745560842763881396">Shfaq aplikacionet në raft</translation>
 <translation id="7749443890790263709">Është arritur numri maksimal i tavolinave të punës.</translation>
 <translation id="776344839111254542">Kliko për të parë detajet e përditësimit</translation>
 <translation id="7780159184141939021">Rrotullo ekranin</translation>

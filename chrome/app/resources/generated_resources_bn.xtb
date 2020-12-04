@@ -57,6 +57,7 @@
 <translation id="1056775291175587022">নেটওয়ার্ক নেই</translation>
 <translation id="1056898198331236512">সতর্কতা</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{নতুন পিন লিখুন। পিন কমপক্ষে একটি অক্ষরের হতে হবে এবং সেটিতে বর্ণ, সংখ্যা ও অন্যান্য অক্ষর থাকতে পারে।}one{নতুন পিন লিখুন। পিন কমপক্ষে #টি অক্ষরের হতে হবে এবং সেটিতে বর্ণ, সংখ্যা ও অন্যান্য অক্ষর থাকতে পারে।}other{নতুন পিন লিখুন। পিন কমপক্ষে #টি অক্ষরের হতে হবে এবং সেটিতে বর্ণ, সংখ্যা ও অন্যান্য অক্ষর থাকতে পারে।}}</translation>
 <translation id="1059944192885972544">'<ph name="SEARCH_TEXT" />'-এর জন্য <ph name="NUM" />টি ট্যাব পাওয়া গেছে</translation>
 <translation id="1060292118287751956">স্ক্রিন আপডেট হওয়ার ফ্রিকোয়েন্সি নির্ধারণ করে</translation>
 <translation id="1061904396131502319">বিরতির সময় হতে চলেছে</translation>
@@ -636,9 +637,11 @@
 <translation id="1688935057616748272">একটি অক্ষর টাইপ করুন</translation>
 <translation id="168991973552362966">আশেপাশের একটি প্রিন্টার যোগ করুন</translation>
 <translation id="1689945336726856614">ওইউআরএল কপি করুন</translation>
+<translation id="1690248886740053041">মোবাইল নেটওয়ার্কের সাথে কানেক্ট করা যাচ্ছে না। প্রযুক্তিগত সহায়তা পেতে আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
 <translation id="1692115862433274081">অন্য অ্যাকাউন্ট ব্যবহার করুন</translation>
 <translation id="1692118695553449118">সিঙ্ক চালু রয়েছে</translation>
 <translation id="1692210323591458290">গাঢ় বেগুনি</translation>
+<translation id="169279809881363536">কোনও প্রোফাইল পাওয়া যায়নি। নতুন নেটওয়ার্ক সেট-আপ করতে, ডিভাইস ক্যামেরা ব্যবহার করে QR কোড স্ক্যান করুন অথবা পরিষেবা প্রদানকারীর থেকে পাওয়া অ্যাক্টিভেশন কোড লিখুন।</translation>
 <translation id="1697150536837697295">শিল্পকলা</translation>
 <translation id="1697686431566694143">ফাইল এডিট করতে পারবে</translation>
 <translation id="1698122934742150150">শুধুমাত্র বর্তমান ছদ্মবেশী সেশন</translation>
@@ -1574,6 +1577,7 @@
 <translation id="2770465223704140727">তালিকা থেকে সরান</translation>
 <translation id="2770690685823456775">আপনার পাসওয়ার্ড অন্য ফোল্ডারে এক্সপোর্ট করুন</translation>
 <translation id="2770929488047004208">মনিটরের রেজোলিউশন</translation>
+<translation id="2770954829020464827">স্ক্রিন শেয়ার করার সময় বিজ্ঞপ্তির কন্টেন্ট লুকিয়ে রাখা হয়</translation>
 <translation id="2771268254788431918">মোবাইল ডেটা সক্রিয় করা হয়েছে</translation>
 <translation id="2771816809568414714">চিজ</translation>
 <translation id="2772936498786524345">নিনজা</translation>
@@ -1941,6 +1945,7 @@
 <translation id="3201422919974259695">উপলভ্য ইউএসবি ডিভাইসগুলি এখানে দেখা যাবে।</translation>
 <translation id="3202131003361292969">পাথ</translation>
 <translation id="3202173864863109533">এই ট্যাবের অডিও মিউট করা হচ্ছে৷</translation>
+<translation id="3202218848974251205">Privacy Sandbox</translation>
 <translation id="3208321278970793882">অ্যাপ</translation>
 <translation id="3208584281581115441">এখনই চেক করুন</translation>
 <translation id="3208703785962634733">অনিশ্চিত</translation>
@@ -2161,6 +2166,7 @@
 <translation id="3459697287128633276">আপনার অ্যাকাউন্ট থেকে Google Play স্টোর অ্যাক্সেস করার জন্য অনুগ্রহ করে পরিচয় প্রদানকারীর মাধ্যমে প্রমাণীকরণ দিন।</translation>
 <translation id="3462311546193741693">আপনাকে অধিকাংশ সাইট থেকে সাইন-আউট করে দেয়। আপনি আপনার Google অ্যাকাউন্টে সাইন-ইন করে থাকুন যাতে আপনার সিঙ্ক হওয়া ডেটা খালি করা যায়।</translation>
 <translation id="3462413494201477527">অ্যাকাউন্ট সেট-আপ বাতিল করবেন?</translation>
+<translation id="3464145797867108663">অফিস প্রোফাইল যোগ করুন</translation>
 <translation id="346431825526753">এটি <ph name="CUSTODIAN_EMAIL" />-এর দ্বারা পরিচালিত বাচ্চাদের জন্য একটি অ্যাকাউন্ট৷</translation>
 <translation id="3468298837301810372">লেবেল</translation>
 <translation id="3468999815377931311">Android ফোন</translation>
@@ -2282,6 +2288,7 @@
 <translation id="360180734785106144">নতুন ফিচার উপলভ্য হলেই তা অফার করে</translation>
 <translation id="3602290021589620013">প্রিভিউ</translation>
 <translation id="3603622770190368340">নেটওয়ার্ক সার্টিফিকেট প্রাপ্ত করুন</translation>
+<translation id="3604193429970465812">সেকেন্ডারি অ্যাকাউন্ট</translation>
 <translation id="3604713164406837697">ওয়ালপেপার পরিবর্তন করুন</translation>
 <translation id="3605780360466892872">বটনডাউন</translation>
 <translation id="3608576286259426129">ব্যবহারকারীর ছবির পূর্বদৃশ্য</translation>
@@ -2605,6 +2612,7 @@
 
 আপনি কি <ph name="CONTROL_PANEL_APPLET_NAME" /> শুরু করতে চান?</translation>
 <translation id="394183848452296464">শর্টকাট তৈরি করা যাবে না</translation>
+<translation id="3943494825379372497">অ্যাপ ও পৃষ্ঠা ফিরিয়ে আনতে চান?</translation>
 <translation id="3943582379552582368">&amp;ফিরুন</translation>
 <translation id="3943857333388298514">পেস্ট করুন</translation>
 <translation id="3948116654032448504">&amp;ইমেজের জন্য <ph name="SEARCH_ENGINE" /> সার্চ করুন</translation>
@@ -2690,6 +2698,7 @@
 <translation id="4046013316139505482">এই এক্সটেনশনগুলির এই সাইটের তথ্য দেখা ও পরিবর্তন করার দরকার নেই।</translation>
 <translation id="4046123991198612571">পরবর্তী ট্র্যাক</translation>
 <translation id="4047726037116394521">'হোম' স্ক্রিনে যান</translation>
+<translation id="4049783682480068824">{COUNT,plural, =1{#টি পরিচিতি উপলভ্য নেই। তার সাথে 'নিয়ারবাই শেয়ার' ফিচার ব্যবহার করতে, তার Google অ্যাকাউন্টের সাথে যুক্ত ইমেল আইডি আপনার পরিচিতিতে যোগ করুন।}one{#টি পরিচিতি উপলভ্য নেই। তাদের সাথে 'নিয়ারবাই শেয়ার' ফিচার ব্যবহার করতে, তাদের Google অ্যাকাউন্টের সাথে যুক্ত ইমেল আইডিগুলি আপনার পরিচিতিতে যোগ করুন।}other{#টি পরিচিতি উপলভ্য নেই। তাদের সাথে 'নিয়ারবাই শেয়ার' ফিচার ব্যবহার করতে, তাদের Google অ্যাকাউন্টের সাথে যুক্ত ইমেল আইডিগুলি আপনার পরিচিতিতে যোগ করুন।}}</translation>
 <translation id="4050225813016893843">যাচাইকরণের পদ্ধতি</translation>
 <translation id="4052120076834320548">অতি ক্ষুদ্র</translation>
 <translation id="4056908315660577142"><ph name="APP_NAME" />-এর জন্য আপনার অভিভাবক যে সময়সীমা সেট করেছেন তা পার হয়ে গেছে। আগামীকাল আপনি আবার এটি <ph name="TIME_LIMIT" />-এর জন্য ব্যবহার করতে পারবেন।</translation>
@@ -3336,6 +3345,7 @@
 <translation id="4863769717153320198">মনে হচ্ছে <ph name="WIDTH" /> x <ph name="HEIGHT" /> (সাধারণ)</translation>
 <translation id="4864369630010738180">প্রবেশ করা হচ্ছে...</translation>
 <translation id="4864805589453749318">সেই অভিভাবককে বেছে নিন যিনি স্কুল অ্যাকাউন্ট যোগ করার জন্য অনুমতি দিয়েছেন।</translation>
+<translation id="4866265760644917470">প্রোফাইল যোগ করা হয়েছে।</translation>
 <translation id="486635084936119914">নির্দিষ্ট কিছু প্রকারের ফাইল ডাউনলোডের পরে স্বয়ংক্রিয়ভাবে খুলুন</translation>
 <translation id="48704129375571883">অতিরিক্ত বৈশিষ্ট্যগুলি যোগ করুন</translation>
 <translation id="4870758487381879312">কনফিগারেশনের তথ্য পেতে অ্যাডমিনের দেওয়া পাসওয়ার্ড লিখুন</translation>
@@ -3619,6 +3629,7 @@
 <translation id="5206787458656075734">{COUNT,plural, =1{চুরি হয়ে যাওয়া পাসওয়ার্ড পরিবর্তন করা হয়েছে। আপনার আরও #টি পাসওয়ার্ড চুরি হয়েছে। Chrome আপনাকে এই পাসওয়ার্ড এখনই চেক করতে সাজেস্ট করছে।}one{চুরি হয়ে যাওয়া পাসওয়ার্ড পরিবর্তন করা হয়েছে। আপনার আরও #টি পাসওয়ার্ড চুরি হয়েছে। Chrome আপনাকে এই পাসওয়ার্ড এখনই চেক করতে সাজেস্ট করছে।}other{চুরি হয়ে যাওয়া পাসওয়ার্ড পরিবর্তন করা হয়েছে। আপনার আরও #টি পাসওয়ার্ড চুরি হয়েছে। Chrome আপনাকে এই পাসওয়ার্ডগুলি এখনই চেক করতে সাজেস্ট করছে।}}</translation>
 <translation id="5207949376430453814">পাঠ্যের কার্সার হাইলাইট করুন</translation>
 <translation id="5209320130288484488">কোনো ডিভাইস খুঁজে পাওয়া যায়নি</translation>
+<translation id="5209572028385096813">এই অ্যাকাউন্ট Family Link দিয়ে ম্যানেজ করা হয়</translation>
 <translation id="5210365745912300556">ট্যাব বন্ধ করুন</translation>
 <translation id="5213481667492808996">আপনার '<ph name="NAME" />' ডেটা পরিষেবা ব্যবহারের জন্য প্রস্তুত</translation>
 <translation id="5213891612754844763">প্রক্সি সেটিংস দেখুন</translation>
@@ -3704,6 +3715,7 @@
 <translation id="5302048478445481009">ভাষা</translation>
 <translation id="5302932258331363306">প্রতিস্থাপনের প্যানেল দেখুন</translation>
 <translation id="5304276686222516262">পরিচিতি তালিকা ডাউনলোড করা যাচ্ছে না। অনুগ্রহ করে আপনার নেটওয়ার্ক কানেকশন চেক করুন অথবা &lt;a href="#" id="tryAgainLink"&gt;আবার চেষ্টা করুন&lt;/a&gt;।</translation>
+<translation id="5305145881844743843">এই অ্যাকাউন্ট <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> ম্যানেজ করছে</translation>
 <translation id="5305688511332277257">কিছুই ইনস্টল নেই</translation>
 <translation id="5307030433605830021">সোর্সটি সমর্থিত নয়</translation>
 <translation id="5308380583665731573">সংযুক্ত করুন</translation>
@@ -4086,6 +4098,7 @@
 <translation id="5740820643029013514">অপেক্ষাকৃত কম শব্দযুক্ত মেসেজের বিকল্প বেছে নিন (সাজেস্ট করা হয়েছে)</translation>
 <translation id="574104302965107104">ডিসপ্লে মিররিং</translation>
 <translation id="574209121243317957">পিচ</translation>
+<translation id="5742505912938664543">আপনি এখানে সেকেন্ডারি অ্যাকাউন্ট যোগ করলে সেটির মাধ্যমে ওয়েব ব্রাউজ, অ্যাপ ডাউনলোড, Gmail চেক ও অন্যান্য Google পরিষেবা ব্যবহার করতে পারবেন।</translation>
 <translation id="5746169159649715125">পিডিএফ হিসেবে সেভ করুন</translation>
 <translation id="5747552184818312860">মেয়াদ শেষ হবে</translation>
 <translation id="5747785204778348146">ডেভেলপার - অস্থায়ী</translation>
@@ -4426,6 +4439,7 @@
 <translation id="6129953537138746214">ব্যবধান</translation>
 <translation id="6130692320435119637">ওয়াই-ফাই নেটওয়ার্কে কানেক্ট করুন</translation>
 <translation id="6136114942382973861">ডাউনলোড বার বন্ধ করুন</translation>
+<translation id="6136287496450963112">আপনার নিরাপত্তা কী কোনও পিন দ্বারা সুরক্ষিত নেই। আঙ্গুলের ছাপ ম্যানেজ করতে, প্রথমে পিন তৈরি করুন।</translation>
 <translation id="6137767437444130246">ব্যবহারকারীর সার্টিফিকেট</translation>
 <translation id="6138680304137685902">SHA-384 সহ X9.62 ECDSA স্বাক্ষর</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, কোনও নেটওয়ার্ক নেই</translation>
@@ -4607,6 +4621,7 @@
 <translation id="6331566915566907158">Chrome OS-এর ফিচার ও পারফরম্যান্স আরও উন্নত করে তুলতে সাহায্য করুন</translation>
 <translation id="6331818708794917058">MIDI ডিভাইসের সাথে কানেক্ট করতে, সাইট অনুমতি চাইতে পারে</translation>
 <translation id="6333064448949140209">ফাইল ডিবাগ করার জন্য Google-এ পাঠানো হবে</translation>
+<translation id="6334444530352320327">এই অ্যাকাউন্ট ব্যবহার করে সাইন-ইন করা সব Chromebooks-এ আপনার অ্যাপ ও OS সেটিংস সিঙ্ক করা থাকবে।<ph name="LINK_BEGIN" />সেটিংস সিঙ্ক করুন<ph name="LINK_END" /></translation>
 <translation id="6338981933082930623">সব সাইটই আপনাকে যেকোনও ধরনের বিজ্ঞাপন দেখাতে পারে</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> এর জন্য একটি নতুন প্রোফাইল তৈরি করুন</translation>
 <translation id="6340017061976355871">সার্ভারে সংযোগ করা যায়নি। অনুগ্রহ করে আপনার নেটওয়ার্ক সংযোগ যাচাই করে আবার চেষ্টা করুন। যদি সমস্যাটি চলতে থাকে তাহলে আপনার Chromebook রিস্টার্ট করুন।</translation>
@@ -4908,6 +4923,7 @@
 <translation id="6709133671862442373">News</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> ব্যবহার করে সংযোগ করুন</translation>
 <translation id="6710213216561001401">আগের</translation>
+<translation id="6713233729292711163">অফিস প্রোফাইল যোগ করুন</translation>
 <translation id="6715803357256707211">আপনার Linux অ্যাপ ইনস্টল করার সময় কোনও একটি সমস্যা হয়েছে। বিস্তারিত জানতে বিজ্ঞপ্তিতে ক্লিক করুন।</translation>
 <translation id="671619610707606484">এর ফলে সাইটগুলির স্টোর করা <ph name="TOTAL_USAGE" /> ডেটা মুছে যাবে</translation>
 <translation id="671928215901716392">স্ক্রিন লক করুন</translation>
@@ -5276,6 +5292,7 @@
 <translation id="7121362699166175603">অ্যাড্রেস বারের ইতিহাস এবং অটোকমপ্লিট তথ্য মুছে ফেলে। <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />-এ আপনার Google অ্যাকাউন্টের অন্যান্য ধরনের ব্রাউজিংয়ের ইতিহাস থাকতে পারে।</translation>
 <translation id="7121438501124788993">ডেভেলপার মোড</translation>
 <translation id="7121728544325372695">স্মার্ট ড্যাশ</translation>
+<translation id="7122353087820324370">অ্যাপ ও OS সেটিংস সেকেন্ডারি অ্যাকাউন্টের সাথে সিঙ্ক করা হয় না।</translation>
 <translation id="7123030151043029868">একাধিক ফাইল অটোমেটিক ডাউনলোড করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="7123360114020465152">আর সমর্থিত নয়</translation>
 <translation id="7125148293026877011">Crostini মুছুন</translation>
@@ -5590,6 +5607,7 @@
 <translation id="750509436279396091">ডাউনলোড ফোল্ডার খুলুন</translation>
 <translation id="7506093026325926984">এই পাসওয়ার্ড ডিভাইসে সেভ করা হবে</translation>
 <translation id="7506130076368211615">নতুন নেটওয়ার্ক সেট আপ করুন</translation>
+<translation id="7506242536428928412">নতুন নিরাপত্তা কী ব্যবহার করতে, নতুন পিন সেট করুন</translation>
 <translation id="7506541170099744506">আপনার <ph name="DEVICE_TYPE" /> এন্টারপ্রাইজ পরিচালনার জন্য সফলভাবে নথিভুক্ত হয়েছে।</translation>
 <translation id="7507207699631365376">এই পরিষেবা প্রদানকারীর <ph name="BEGIN_LINK" />গোপনীয়তা নীতি<ph name="END_LINK" /> দেখুন</translation>
 <translation id="7507930499305566459">স্থিতি প্রতিক্রিয়া সার্টিফিকেট</translation>
@@ -5753,6 +5771,7 @@
 <translation id="7691077781194517083">এই নিরাপত্তা কী রিসেট করা যাবে না। সমস্যা <ph name="ERROR_CODE" />।</translation>
 <translation id="7691698019618282776">Crostini আপগ্রেড করা</translation>
 <translation id="7696063401938172191">আপনার '<ph name="PHONE_NAME" />' এ:</translation>
+<translation id="7697166915480294040">স্ক্রিন শেয়ার করার সময় বিজ্ঞপ্তির কন্টেন্ট লুকিয়ে রাখা হয়</translation>
 <translation id="7697598343108519171">QR কোড স্ক্যান করতে ক্যামেরা ব্যবহার করুন</translation>
 <translation id="7699968112832915395">অ্যাকাউন্ট যোগ করা যাচ্ছে না</translation>
 <translation id="7701040980221191251">কিছু নেই</translation>
@@ -6208,6 +6227,8 @@
 <translation id="8184472985242519288">সব জায়গায় একরকম</translation>
 <translation id="8186609076106987817">সার্ভার ফাইলটি খুঁজে পায়নি৷</translation>
 <translation id="8188389033983459049">আপনার ডিভাইসের সেটিংস চেক করুন এবং চালিয়ে যেতে এটি চালু করুন</translation>
+<translation id="8189306097519446565">স্কুল অ্যাকাউন্ট</translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" />-তে সংযুক্ত হচ্ছে</translation>
 <translation id="8191230140820435481">আপনার অ্যাপ্লিকেশন, এক্সটেনশন, এবং থিম পরিচালনা করুন</translation>
 <translation id="8195027750202970175">ডিস্কের মাপ</translation>
@@ -6900,6 +6921,7 @@
 <translation id="8986362086234534611">ভুলে যান</translation>
 <translation id="8986494364107987395">ব্যবহারের পরিসংখ্যান এবং ক্র্যাশ প্রতিবেদনগুলি স্বয়ংক্রিয়ভাবে Google-এ পাঠান</translation>
 <translation id="8987927404178983737">মাস</translation>
+<translation id="8989823300731803443">আপনি যেখানে ছেড়ে গিয়েছিলেন সেখান থেকেই আবার শুরু করুন।</translation>
 <translation id="8990209962746788689">QR কোড তৈরি করা যায়নি</translation>
 <translation id="8991520179165052608">সাইটটি আপনার মাইক্রোফোন ব্যবহার করতে পারে</translation>
 <translation id="8992117551007229513">{COUNT,plural, =1{১টি আইটেম}one{#টি আইটেম}other{#টি আইটেম}}</translation>

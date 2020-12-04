@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">Sláðu inn hluta og síðan „<ph name="ATSIGN" />“. „<ph name="INVALIDADDRESS" />“ er ólokið.</translation>
 <translation id="5334352251556557839">Ekki er hægt að spila efni.</translation>
 <translation id="537648784377940524">Lágmarksdagsetning (<ph name="MIN_DATE_OR_TIME" />) verður að vera á undan hámarksdagsetningu (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">stækkað, gluggi opnaður.</translation>
 <translation id="5406322316791861025">mynd</translation>
 <translation id="5425179576310518467">núverandi dagsetning</translation>
 <translation id="5453733299334684579">trjáatriði</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">fleiri valkostir</translation>
 <translation id="576709008726043716">inngangur</translation>
 <translation id="57838592816432529">Þagga</translation>
+<translation id="5787939484346677755">stækkað, möguleikar sjálfvirkrar útfyllingar í boði.</translation>
 <translation id="5860033963881614850">Slökkt</translation>
 <translation id="588258955323874662">Allur skjárinn</translation>
 <translation id="5888666972993069672">Sendir út á <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">listareitur</translation>
 <translation id="6150588977291308318">heimildaskrá</translation>
 <translation id="6164829606128959761">mælir</translation>
+<translation id="6165053282446038410">stækkað, <ph name="COUNT" /> möguleikar sjálfvirkrar útfyllingar í boði.</translation>
 <translation id="6166809985690652833">eftirmáli</translation>
 <translation id="6209276755895393898">Virðist vera: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">núverandi síða</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">haus</translation>
 <translation id="6941933287844615239">sækja miðlaefni</translation>
 <translation id="6981594929165378967">innsetning</translation>
+<translation id="698788488269350478">stækkað.</translation>
 <translation id="6989848892321993519">Lengdu þennan texta í <ph name="MIN_CHARACTERS" /> stafi eða meira (sem stendur notarðu einn staf).</translation>
 <translation id="7034405885550056553">tillaga</translation>
 <translation id="709897737746224366">Fylgdu umbeðnu sniði.</translation>
 <translation id="7102274145889307184">núverandi staðsetning</translation>
 <translation id="7118469954320184356">Engin lýsing tiltæk.</translation>
 <translation id="7139483182332611405">formáli</translation>
+<translation id="7198226213493847604">sprettigluggahnappur valmyndar</translation>
 <translation id="7214187073215825913">upplýsingar um efni</translation>
 <translation id="7238347055216017155">áhersla</translation>
 <translation id="7263440858009898357">Veldu atriði af listanum.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">kafli</translation>
 <translation id="8845239796550121995">Sendir nú út í sjónvarpið</translation>
 <translation id="8851136666856101339">aðal</translation>
+<translation id="8861621546968757188">sprettigluggahnappur</translation>
 <translation id="8875657656876809964">Villa í spilun myndskeiðs</translation>
 <translation id="8889402386540077796">Litblær</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>

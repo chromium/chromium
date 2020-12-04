@@ -122,6 +122,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2050339315714019657">Bertikala</translation>
 <translation id="2067602449040652523">Teklatuaren distira</translation>
 <translation id="2078034614700056995">Hurrengo lan-eremura joateko, pasatu lau hatz eskuinera</translation>
+<translation id="2079504693865562705">Ezkutatu gailuak apalean</translation>
 <translation id="2083190527011054446">Gabon, <ph name="GIVEN_NAME" />:</translation>
 <translation id="209965399369889474">Ez zaude sarera konektatuta</translation>
 <translation id="2126242104232412123">Lan-eremu berria</translation>
@@ -238,6 +239,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3226991577105957773">eta beste <ph name="COUNT" /></translation>
 <translation id="3236488194889173876">Ez dago sare mugikor erabilgarririk</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> leihoa <ph name="ACTIVE_DESK" /> lan-eremutik <ph name="TARGET_DESK" /> lan-eremura eraman da</translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />.</translation>
 <translation id="3255483164551725916">Zer egin dezakezu?</translation>
 <translation id="3269597722229482060">Egin klik eskuineko botoiarekin</translation>
 <translation id="3289674678944039601">Egokigailu bidez kargatzen</translation>
@@ -370,6 +372,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4389184120735010762">Lupa ainguratuaren lasterbidea sakatu duzu. Aktibatu egin nahi duzu?</translation>
 <translation id="4412944820643904175">Desaktibatuta dago <ph name="FEATURE_NAME" />.</translation>
 <translation id="4421231901400348175">Urruneko laguntzaren bidez <ph name="HELPER_NAME" /> laguntzailearekin pantailaren kontrola partekatzen.</translation>
+<translation id="4427613789487709312">Lehenetsia (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Bolumena</translation>
 <translation id="4450893287417543264">Ez erakutsi berriro</translation>
 <translation id="445864333228800152">Arratsalde on:</translation>
@@ -450,6 +453,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5078796286268621944">Okerreko PIN kodea</translation>
 <translation id="5083553833479578423">Lortu Laguntzailea eginbidearen aukera gehiago.</translation>
 <translation id="5136175204352732067">Beste teklatu bat konektatu duzu</translation>
+<translation id="5155897006997040331">Irakurketa-abiadura</translation>
 <translation id="5168181903108465623">Igorpen-gailuak erabilgarri</translation>
 <translation id="5170568018924773124">Erakutsi karpetan</translation>
 <translation id="5176318573511391780">Grabatu pantailaren zati bat</translation>
@@ -713,6 +717,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 jakinarazpen}other{# jakinarazpen}}</translation>
 <translation id="7724603315864178912">Ebaki</translation>
+<translation id="7745560842763881396">Bistaratu aplikazioak apalean</translation>
 <translation id="7749443890790263709">Gehieneko lan-eremuen kopurura iritsi zara.</translation>
 <translation id="776344839111254542">Egin klik eguneratzearen xehetasunak ikusteko</translation>
 <translation id="7780159184141939021">Biratu pantaila</translation>

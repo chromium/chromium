@@ -122,6 +122,7 @@
 <translation id="2050339315714019657">සිරස්</translation>
 <translation id="2067602449040652523">යතුරු පුවරුවේ දීප්තිය</translation>
 <translation id="2078034614700056995">ඊළඟ මේසයට මාරු වීමට ඇඟිලි හතරකින් දකුණට ස්වයිප් කරන්න</translation>
+<translation id="2079504693865562705">රාක්කය තුළ යෙදුම් සඟවන්න</translation>
 <translation id="2083190527011054446">සුබ රාත්‍රියක් <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">ජාලයට සම්බන්ධ වී නැත</translation>
 <translation id="2126242104232412123">නව මේසය</translation>
@@ -238,6 +239,7 @@
 <translation id="3226991577105957773">තවත් +<ph name="COUNT" /></translation>
 <translation id="3236488194889173876">ලබා ගත හැකි ජංගම ජාල නොමැත</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> කවුළුව <ph name="ACTIVE_DESK" /> මේසයෙන් <ph name="TARGET_DESK" /> මේසයට ගියා</translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, සංඥා ප්‍රබලතාව සියයට <ph name="SIGNAL_STRENGTH" />.</translation>
 <translation id="3255483164551725916">ඔබට කළ හැක්කේ කුමක්ද?</translation>
 <translation id="3269597722229482060">දකුණු ක්ලික් කිරීම</translation>
 <translation id="3289674678944039601">ඇඩැප්ටරය හරහා ආරෝපණය වෙමින්</translation>
@@ -369,6 +371,7 @@
 <translation id="4389184120735010762">ඔබ ඩොක් කළ විශාලකය සඳහා යතුරුපුවරු කෙටිමඟ ඔබා ඇත. ඔබට එය සක්‍රීය කළ යුතුද?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ක්‍රියාවිරහිතයි.</translation>
 <translation id="4421231901400348175">දුරස්ථ සහයක මගින් ඔබේ තිරයේ පාලනය <ph name="HELPER_NAME" /> සමඟ බෙදාගනී.</translation>
+<translation id="4427613789487709312">පෙරනිමි (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">ශබ්ද තීව්‍රතාවය</translation>
 <translation id="4450893287417543264">නැවත නොපෙන්වන්න</translation>
 <translation id="445864333228800152">සුබ සන්ධ්‍යාවක්,</translation>
@@ -449,6 +452,7 @@
 <translation id="5078796286268621944">වැරදි PIN</translation>
 <translation id="5083553833479578423">තව සහායක අංග අගුලු හරින්න</translation>
 <translation id="5136175204352732067">වෙනස් යතුරු පුවරුවක් සම්බන්ධ කර ඇත</translation>
+<translation id="5155897006997040331">කියවීමේ වේගය</translation>
 <translation id="5168181903108465623">විකාශ උපාංග ලබා ගත හැකිය</translation>
 <translation id="5170568018924773124">ෆෝල්ඩරයේ පෙන්වන්න</translation>
 <translation id="5176318573511391780">අර්ධ තිරය පටිගත කරන්න</translation>
@@ -712,6 +716,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{දැනුම්දීම් 1ක්}one{දැනුම්දීම් #ක්}other{දැනුම්දීම් #ක්}}</translation>
 <translation id="7724603315864178912">කැපීම</translation>
+<translation id="7745560842763881396">රාක්කය තුළ යෙදුම් පෙන්වන්න</translation>
 <translation id="7749443890790263709">උපරිම මේස ගණන ළඟා විය.</translation>
 <translation id="776344839111254542">යාවත්කාලීන විස්තර බැලීමට ක්ලික් කරන්න</translation>
 <translation id="7780159184141939021">තිරය කරකවන්න</translation>

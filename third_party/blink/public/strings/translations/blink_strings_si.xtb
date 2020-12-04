@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">කරුණාකර '<ph name="ATSIGN" />' පසුපසින් යෙදෙන කොටසක් ඇතුළත් කරන්න. '<ph name="INVALIDADDRESS" />' අසම්පූර්ණයි.</translation>
 <translation id="5334352251556557839">මාධ්‍ය ධාවන කළ නොහැක.</translation>
 <translation id="537648784377940524">අවම දිනය (<ph name="MIN_DATE_OR_TIME" />) උපරිම දිනයට (<ph name="MAX_DATE_OR_TIME" />) පෙර ආ යුතුම ය.</translation>
+<translation id="5378437566635403538">දිග හරින ලදි, සංවාදය විවෘත කරන ලදි.</translation>
 <translation id="5406322316791861025">රූප සටහන</translation>
 <translation id="5425179576310518467">වර්තමාන දිනය</translation>
 <translation id="5453733299334684579">රුක් අයිතමය</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">තවත් විකල්ප</translation>
 <translation id="576709008726043716">හැඳින්වීම</translation>
 <translation id="57838592816432529">නිහඬ කරන්න</translation>
+<translation id="5787939484346677755">දිග හරින ලදි, ස්වයං සම්පූර්ණ කිරීමේ විකල්ප ලබා ගත හැකිය.</translation>
 <translation id="5860033963881614850">අක්‍රීය</translation>
 <translation id="588258955323874662">සම්පුර්ණ තිරය</translation>
 <translation id="5888666972993069672">දැන් <ph name="DEVICE_FRIENDLY_NAME" /> වෙත විකාශය කරමින්</translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">ලැයිස්තු කොටුව</translation>
 <translation id="6150588977291308318">ග්‍රන්ථ නාමාවලිය</translation>
 <translation id="6164829606128959761">මීටර්</translation>
+<translation id="6165053282446038410">දිග හරින ලදි, ස්වයං සම්පූර්ණ කිරීමේ විකල්ප <ph name="COUNT" />ක් ලබා ගත හැකිය.</translation>
 <translation id="6166809985690652833">පසුවදන</translation>
 <translation id="6209276755895393898">මේ බව පෙනේ: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">වත්මන් පිටුව</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">ශීර්ෂය</translation>
 <translation id="6941933287844615239">මාධ්‍ය බාගන්න</translation>
 <translation id="6981594929165378967">ඇතුළත් කිරීම</translation>
+<translation id="698788488269350478">දිග හරින ලදී.</translation>
 <translation id="6989848892321993519">කරුණාකර මෙම පෙළ අනුලකුණු <ph name="MIN_CHARACTERS" />කට හෝ ඊට වඩා දිගු කරන්න (ඔබ දැනට අනුලකුණු 1ක් භාවිත කරමින් සිටී).</translation>
 <translation id="7034405885550056553">යෝජනාව</translation>
 <translation id="709897737746224366">කරුණාකර ඉල්ලා සිටි ආකෘතිය ඇතුල් කරන්න.</translation>
 <translation id="7102274145889307184">වත්මන් ස්ථානය</translation>
 <translation id="7118469954320184356">විස්තරයක් ලබා ගත නොහැක.</translation>
 <translation id="7139483182332611405">පූර්විකාව</translation>
+<translation id="7198226213493847604">මෙනු උත්පතන බොත්තම</translation>
 <translation id="7214187073215825913">අන්තර්ගත තොරතුරු</translation>
 <translation id="7238347055216017155">අවධාරණය</translation>
 <translation id="7263440858009898357">කරුණාකර ලැයිස්තුවෙහි අයිතමයක් තෝරන්න.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">පරිච්ඡේදය</translation>
 <translation id="8845239796550121995">දැන් ඔබේ TV වෙත විකාශය කරමින්</translation>
 <translation id="8851136666856101339">ප්‍රධාන</translation>
+<translation id="8861621546968757188">සංවාද උත්පතන බොත්තම</translation>
 <translation id="8875657656876809964">වීඩියෝ පසුධාවන දෝෂය</translation>
 <translation id="8889402386540077796">හියු</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

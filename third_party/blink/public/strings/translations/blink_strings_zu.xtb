@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">Sicela ufake ingxenye elandelwa yi-'<ph name="ATSIGN" />'. I-'<ph name="INVALIDADDRESS" />' ayiphelele.</translation>
 <translation id="5334352251556557839">Ayikwazi ukudlala imidiya.</translation>
 <translation id="537648784377940524">Idethi encane (<ph name="MIN_DATE_OR_TIME" />) kumele ifike ngaphambi kwedethi enkulu (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">kunwetshiwe, ibhokisi livuliwe.</translation>
 <translation id="5406322316791861025">izibalo</translation>
 <translation id="5425179576310518467">idethi yamanje</translation>
 <translation id="5453733299334684579">into yesihlahla</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">izinketho eziningi</translation>
 <translation id="576709008726043716">isingeniso</translation>
 <translation id="57838592816432529">Thulisa</translation>
+<translation id="5787939484346677755">kunwetshiwe, izinketho zokuqedela ngokuzenzakalela ziyatholakala.</translation>
 <translation id="5860033963881614850">Valiwe</translation>
 <translation id="588258955323874662">Isikrini esigcwele</translation>
 <translation id="5888666972993069672">Manje isakazela ku-<ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">ibhokisi lohlu</translation>
 <translation id="6150588977291308318">i-bibliography</translation>
 <translation id="6164829606128959761">imitha</translation>
+<translation id="6165053282446038410">kunwetshiwe, <ph name="COUNT" /> izinketho zokuqedelela ngokuzenzakalela ziyatholakala.</translation>
 <translation id="6166809985690652833">amazwi angemuva</translation>
 <translation id="6209276755895393898">Kubonakala kuyilokhu: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">ikhasi lamanje</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">isihloko</translation>
 <translation id="6941933287844615239">landa imidiya</translation>
 <translation id="6981594929165378967">ukufaka</translation>
+<translation id="698788488269350478">inwetshiwe.</translation>
 <translation id="6989848892321993519">Sicela welule lo mbhalo kuya kuzinhlamvu ezingu-<ph name="MIN_CHARACTERS" /> noma ngaphezulu (okwamanje usebenzisa uhlamvu olungu1.</translation>
 <translation id="7034405885550056553">isiphakamiso</translation>
 <translation id="709897737746224366">Sicela ufanise ifomethi eceliwe.</translation>
 <translation id="7102274145889307184">indawo yamanje</translation>
 <translation id="7118469954320184356">Ayikho incazelo ekhona.</translation>
 <translation id="7139483182332611405">isingeniso</translation>
+<translation id="7198226213493847604">inkinobho yokwesikhashana kwemenyu</translation>
 <translation id="7214187073215825913">ulwazi lokuqukethwe</translation>
 <translation id="7238347055216017155">ukugxila</translation>
 <translation id="7263440858009898357">Sicela ukhethe into kuhlu.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">isahluko</translation>
 <translation id="8845239796550121995">Manje isakaza ku-TV yakho</translation>
 <translation id="8851136666856101339">enkulu</translation>
+<translation id="8861621546968757188">inkinobho yokwesikhashana yebhokisi</translation>
 <translation id="8875657656876809964">Iphutha lokudlala ividiyo</translation>
 <translation id="8889402386540077796">I-Hue</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

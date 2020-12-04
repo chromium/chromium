@@ -122,6 +122,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2050339315714019657">Na výšku</translation>
 <translation id="2067602449040652523">Jas klávesnice</translation>
 <translation id="2078034614700056995">Na ďalšiu plochu prepnete potiahnutím štyrmi prstami doprava</translation>
+<translation id="2079504693865562705">Skryť aplikácie na poličke</translation>
 <translation id="2083190527011054446">Dobrú noc, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Nemáte pripojenie k sieti</translation>
 <translation id="2126242104232412123">Nová plocha</translation>
@@ -238,6 +239,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3226991577105957773">a ďalšie (<ph name="COUNT" />)</translation>
 <translation id="3236488194889173876">Nie je k dispozícii žiadna mobilná sieť</translation>
 <translation id="3249513730522716925">Okno <ph name="WINDOW_TITLE" /> bolo presunuté z plochy <ph name="ACTIVE_DESK" /> na plochu <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, sila signálu: <ph name="SIGNAL_STRENGTH" /> %.</translation>
 <translation id="3255483164551725916">Čo dokážeš?</translation>
 <translation id="3269597722229482060">Kliknúť pravým tlačidlom</translation>
 <translation id="3289674678944039601">Nabíja sa cez adaptér</translation>
@@ -369,6 +371,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4389184120735010762">Stlačili ste klávesovú skratku ukotvenej lupy. Chcete ju zapnúť?</translation>
 <translation id="4412944820643904175">Funkcia <ph name="FEATURE_NAME" /> je vypnutá.</translation>
 <translation id="4421231901400348175">Ovládanie obrazovky sa prostredníctvom Vzdialenej pomoci zdieľa s používateľom <ph name="HELPER_NAME" />.</translation>
+<translation id="4427613789487709312">Predvolené (<ph name="RATE" />×)</translation>
 <translation id="4430019312045809116">Hlasitosť</translation>
 <translation id="4450893287417543264">Nabudúce nezobrazovať</translation>
 <translation id="445864333228800152">Dobrý večer,</translation>
@@ -449,6 +452,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5078796286268621944">Nesprávny kód PIN</translation>
 <translation id="5083553833479578423">Odblokujte ďalšie funkcie Asistenta.</translation>
 <translation id="5136175204352732067">Bola pripojená iná klávesnica</translation>
+<translation id="5155897006997040331">Rýchlosť čítania</translation>
 <translation id="5168181903108465623">Dostupné zariadenia na prenos</translation>
 <translation id="5170568018924773124">Zobraziť v priečinku</translation>
 <translation id="5176318573511391780">Nahrať časť obrazovky</translation>
@@ -712,6 +716,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 upozornenie}few{# upozornenia}many{# notifications}other{# upozornení}}</translation>
 <translation id="7724603315864178912">Vystrihnúť</translation>
+<translation id="7745560842763881396">Zobraziť aplikácie na poličke</translation>
 <translation id="7749443890790263709">Dosiahli ste maximálny počet pracovných prostredí.</translation>
 <translation id="776344839111254542">Kliknutím zobrazíte podrobnosti o aktualizácii</translation>
 <translation id="7780159184141939021">Otáčanie obrazovky</translation>

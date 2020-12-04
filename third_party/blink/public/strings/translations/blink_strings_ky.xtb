@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">'<ph name="ATSIGN" />' дегенден кийинки бөлүктү киргизиңиз. '<ph name="INVALIDADDRESS" />' толук болбой калды.</translation>
 <translation id="5334352251556557839">Аудио ойнотулбай жатат.</translation>
 <translation id="537648784377940524">Минималдуу күн (<ph name="MIN_DATE_OR_TIME" />) Максималдуу күндөн мурда болушу керек (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">жайылып көрсөтүлдү, диалог ачылды.</translation>
 <translation id="5406322316791861025">сөлөкөт</translation>
 <translation id="5425179576310518467">учурдагы күн</translation>
 <translation id="5453733299334684579">дарактагы нерсе</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">дагы параметрлер</translation>
 <translation id="576709008726043716">киришүү</translation>
 <translation id="57838592816432529">Үнсүз</translation>
+<translation id="5787939484346677755">жайылып көрсөтүлдү, автоматтык түрдө толтуруу параметрлери жеткиликтүү.</translation>
 <translation id="5860033963881614850">Өчүк</translation>
 <translation id="588258955323874662">Толук экран</translation>
 <translation id="5888666972993069672">Азыр <ph name="DEVICE_FRIENDLY_NAME" /> экранына чыгарылууда</translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">тизме кутусу</translation>
 <translation id="6150588977291308318">библиография</translation>
 <translation id="6164829606128959761">ченегич</translation>
+<translation id="6165053282446038410">жайылып көрсөтүлдү, <ph name="COUNT" /> автоматтык түрдө толтуруу параметри жеткиликтүү.</translation>
 <translation id="6166809985690652833">соңку сөз</translation>
 <translation id="6209276755895393898">Төмөнкү болуп чыкты: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">учурдагы бет</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">аталышы</translation>
 <translation id="6941933287844615239">медианы жүктөп алуу</translation>
 <translation id="6981594929165378967">киргизүү</translation>
+<translation id="698788488269350478">жайылып көрсөтүлдү.</translation>
 <translation id="6989848892321993519">Бул текстти <ph name="MIN_CHARACTERS" /> белгиге же андан көбүрөөк кылып узартыңыз (учурда 1 белги турат).</translation>
 <translation id="7034405885550056553">сунуш</translation>
 <translation id="709897737746224366">Суралган форматка туураланыз.</translation>
 <translation id="7102274145889307184">учурдагы жер</translation>
 <translation id="7118469954320184356">Эч кандай сүрөттөмө жок.</translation>
 <translation id="7139483182332611405">кириш сөз</translation>
+<translation id="7198226213493847604">менюнун калкыма терезе баскычы</translation>
 <translation id="7214187073215825913">мазмун маалыматы</translation>
 <translation id="7238347055216017155">басым</translation>
 <translation id="7263440858009898357">Тизмедеги нерсени тандап алыңыз.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">бөлүм</translation>
 <translation id="8845239796550121995">Азыр сыналгыңызга чыгарылууда</translation>
 <translation id="8851136666856101339">башкы</translation>
+<translation id="8861621546968757188">диалогдун калкыма терезе баскычы</translation>
 <translation id="8875657656876809964">Видеону ойнотууда ката кетти</translation>
 <translation id="8889402386540077796">Түс</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> Кб</translation>

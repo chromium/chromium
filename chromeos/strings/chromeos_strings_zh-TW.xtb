@@ -42,7 +42,7 @@
 <translation id="2364498172489649528">已通過</translation>
 <translation id="2375079107209812402">剩餘嘗試次數：<ph name="ATTEMPTS_LEFT" /> 次</translation>
 <translation id="2391082728065870591">傳送意見回饋報告</translation>
-<translation id="2461822463642141190">目前耗電量</translation>
+<translation id="2461822463642141190">電流</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">掃描</translation>
 <translation id="2570743873672969996">正在執行<ph name="TEST_NAME" />測試...</translation>

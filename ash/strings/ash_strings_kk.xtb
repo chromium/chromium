@@ -122,6 +122,7 @@
 <translation id="2050339315714019657">Портреттік</translation>
 <translation id="2067602449040652523">Пернетақта ашықтығы</translation>
 <translation id="2078034614700056995">Келесі жұмыс үстеліне ауысу үшін төрт саусақпен оңға сырғытыңыз.</translation>
+<translation id="2079504693865562705">Сөредегі қолданбаларды жасыру</translation>
 <translation id="2083190527011054446">Қайырлы түн, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Желіге жалғанбаған.</translation>
 <translation id="2126242104232412123">Жаңа жұмыс үстелі</translation>
@@ -238,6 +239,7 @@
 <translation id="3226991577105957773">Тағы <ph name="COUNT" /></translation>
 <translation id="3236488194889173876">Ешқандай мобильдік желі қолжетімді емес</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> терезесі <ph name="ACTIVE_DESK" /> үстелінен <ph name="TARGET_DESK" /> үстеліне көшірілді.</translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, сигнал күші <ph name="SIGNAL_STRENGTH" /> пайыз.</translation>
 <translation id="3255483164551725916">Сен не істей аласың?</translation>
 <translation id="3269597722229482060">Тінтуірдің оң жақ түймесін басу</translation>
 <translation id="3289674678944039601">Адаптер арқылы зарядталып жатыр.</translation>
@@ -369,6 +371,7 @@
 <translation id="4389184120735010762">Бекітілген ұлғайтқышқа арналған пернелер тіркесімін бастыңыз. Оны қосқыңыз келе ме?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> өшірулі.</translation>
 <translation id="4421231901400348175">Remote Assistance арқылы <ph name="HELPER_NAME" /> пайдаланушысымен экранды бөлісіп басқару.</translation>
+<translation id="4427613789487709312">Әдепкі (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Дыбыс деңгейі</translation>
 <translation id="4450893287417543264">Қайта көрсетілмесін</translation>
 <translation id="445864333228800152">Қайырлы кеш!</translation>
@@ -449,6 +452,7 @@
 <translation id="5078796286268621944">PIN коды дұрыс емес</translation>
 <translation id="5083553833479578423">Басқа да Assistant мүмкіндіктерін ашыңыз.</translation>
 <translation id="5136175204352732067">Басқа пернетақта жалғанды</translation>
+<translation id="5155897006997040331">Оқу жылдамдығы</translation>
 <translation id="5168181903108465623">Трансляциялау құрылғылары қолжетімді</translation>
 <translation id="5170568018924773124">Қалтада көрсету</translation>
 <translation id="5176318573511391780">Экранның бір бөлігін жазу</translation>
@@ -712,6 +716,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 хабарландыру}other{# хабарландыру}}</translation>
 <translation id="7724603315864178912">Қиып алу</translation>
+<translation id="7745560842763881396">Сөредегі қолданбаларды көрсету</translation>
 <translation id="7749443890790263709">Жұмыс үстелдерінің максималды санына жетті.</translation>
 <translation id="776344839111254542">Жаңарту мәліметтерін қарау үшін басыңыз</translation>
 <translation id="7780159184141939021">Экранды бұру</translation>

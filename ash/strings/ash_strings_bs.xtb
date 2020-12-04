@@ -122,7 +122,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2050339315714019657">Uspravno</translation>
 <translation id="2067602449040652523">Svjetlina tipkovnice</translation>
 <translation id="2078034614700056995">Prevucite udesno s četiri prsta da prebacite na sljedeću radnu površinu</translation>
-<translation id="2079504693865562705">Sakrij aplikacije na polici</translation>
+<translation id="2079504693865562705">Sakrijte aplikacije na polici</translation>
 <translation id="2083190527011054446">Laku noć <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Niste povezani na mrežu</translation>
 <translation id="2126242104232412123">Novi sto</translation>
@@ -239,7 +239,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3226991577105957773">i još <ph name="COUNT" /></translation>
 <translation id="3236488194889173876">Nije dostupna mobilna mreža</translation>
 <translation id="3249513730522716925">Prozor <ph name="WINDOW_TITLE" /> je premješten s radne površine <ph name="ACTIVE_DESK" /> na radnu površinu <ph name="TARGET_DESK" /></translation>
-<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, jačina signala <ph name="SIGNAL_STRENGTH" /> posto.</translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, jačina signala je <ph name="SIGNAL_STRENGTH" /> posto.</translation>
 <translation id="3255483164551725916">Šta sve možete uraditi?</translation>
 <translation id="3269597722229482060">Desni klik</translation>
 <translation id="3289674678944039601">Punjenje putem adaptera</translation>
@@ -716,7 +716,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 obavještenje}one{# obavještenje}few{# obavještenja}other{# obavještenja}}</translation>
 <translation id="7724603315864178912">Izreži</translation>
-<translation id="7745560842763881396">Prikaži aplikacije na polici</translation>
+<translation id="7745560842763881396">Pregledajte aplikacije na polici</translation>
 <translation id="7749443890790263709">Dostigli ste maksimalni broj radnih površina.</translation>
 <translation id="776344839111254542">Kliknite da vidite detalje o ažuriranju</translation>
 <translation id="7780159184141939021">Rotiranje ekrana</translation>

@@ -122,6 +122,7 @@
 <translation id="2050339315714019657">عمودی</translation>
 <translation id="2067602449040652523">روشنایی صفحه‌کلید</translation>
 <translation id="2078034614700056995">برای رفتن به میزکار بعدی، با ۴ انگشت تند به راست بکشید</translation>
+<translation id="2079504693865562705">پنهان کردن برنامه‌ها در قفسه</translation>
 <translation id="2083190527011054446">شب‌به‌خیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="209965399369889474">به شبکه متصل نیست</translation>
 <translation id="2126242104232412123">فضای کار جدید</translation>
@@ -238,6 +239,7 @@
 <translation id="3226991577105957773">+<ph name="COUNT" /> مورد دیگر</translation>
 <translation id="3236488194889173876">هیچ شبکه تلفن همراهی دردسترس نیست</translation>
 <translation id="3249513730522716925">پنجره <ph name="WINDOW_TITLE" /> از میز <ph name="ACTIVE_DESK" /> به میز <ph name="TARGET_DESK" /> منتقل شد</translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" /> درصد.</translation>
 <translation id="3255483164551725916">‏What can you do?‎ (چه کاری می‌توانی انجام دهی؟)</translation>
 <translation id="3269597722229482060">کلیک راست</translation>
 <translation id="3289674678944039601">درحال شارژ ازطریق آداپتور</translation>
@@ -369,6 +371,7 @@
 <translation id="4389184120735010762">میان‌بر صفحه‌کلید مربوط به ذره‌بین متصل را فشار دادید. می‌خواهید آن را روشن کنید؟</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> خاموش است.</translation>
 <translation id="4421231901400348175">هم‌رسانی کنترل صفحه‌تان با <ph name="HELPER_NAME" /> از طریق راهنمایی ازراه‌دور.</translation>
+<translation id="4427613789487709312">پیش‌فرض (<ph name="RATE" /> برابر)</translation>
 <translation id="4430019312045809116">میزان صدا</translation>
 <translation id="4450893287417543264">دیگر نشان داده نشود</translation>
 <translation id="445864333228800152">عصر به‌خیر،</translation>
@@ -449,6 +452,7 @@
 <translation id="5078796286268621944">پین اشتباه</translation>
 <translation id="5083553833479578423">باز کردن قفل ویژگی‌های بیشتری از «دستیار».</translation>
 <translation id="5136175204352732067">صفحه‌کلید دیگری متصل شد</translation>
+<translation id="5155897006997040331">سرعت خواندن</translation>
 <translation id="5168181903108465623">دستگاه‌های فرستادن موجود هستند</translation>
 <translation id="5170568018924773124">نمایش در پوشه</translation>
 <translation id="5176318573511391780">ضبط کردن بخشی از صفحه‌نمایش</translation>
@@ -712,6 +716,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{۱ اعلان}one{# اعلان}other{# اعلان}}</translation>
 <translation id="7724603315864178912">برش</translation>
+<translation id="7745560842763881396">نمایش برنامه‌ها در قفسه</translation>
 <translation id="7749443890790263709">به حداکثر تعداد میز رسیده‌اید.</translation>
 <translation id="776344839111254542">برای مشاهده جزئیات به‌روزرسانی کلیک کنید</translation>
 <translation id="7780159184141939021">چرخش صفحه</translation>

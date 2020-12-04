@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">Idatzi zati bat eta, ondoren, "<ph name="ATSIGN" />". "<ph name="INVALIDADDRESS" />" ez dago osorik.</translation>
 <translation id="5334352251556557839">Ezin da erreproduzitu multimedia-edukia.</translation>
 <translation id="537648784377940524">Gutxieneko datak (<ph name="MIN_DATE_OR_TIME" />) gehienekoaren aurrekoa izan behar du (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">zabalduta, leihoa ireki egin da.</translation>
 <translation id="5406322316791861025">zenbakia</translation>
 <translation id="5425179576310518467">une honetako data</translation>
 <translation id="5453733299334684579">zuhaitzeko elementua</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">aukera gehiago</translation>
 <translation id="576709008726043716">sarrera</translation>
 <translation id="57838592816432529">Desaktibatu audioa</translation>
+<translation id="5787939484346677755">zabalduta, automatikoki osatzeko aukerak daude.</translation>
 <translation id="5860033963881614850">Desaktibatuta</translation>
 <translation id="588258955323874662">Pantaila osoa</translation>
 <translation id="5888666972993069672"><ph name="DEVICE_FRIENDLY_NAME" /> gailura igortzen</translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">zerrenda-koadroa</translation>
 <translation id="6150588977291308318">bibliografia</translation>
 <translation id="6164829606128959761">neurgailua</translation>
+<translation id="6165053282446038410">zabalduta, automatikoki osatzeko <ph name="COUNT" /> aukera daude.</translation>
 <translation id="6166809985690652833">hitzatzea</translation>
 <translation id="6209276755895393898">Badirudi hau dela: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">une honetako orria</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">goiburua</translation>
 <translation id="6941933287844615239">deskargatu multimedia-edukia</translation>
 <translation id="6981594929165378967">txertatzea</translation>
+<translation id="698788488269350478">zabalduta.</translation>
 <translation id="6989848892321993519">Luzatu testua <ph name="MIN_CHARACTERS" /> karaktere izan ditzan gutxienez (1 karaktere erabiltzen ari zara).</translation>
 <translation id="7034405885550056553">iradokizuna</translation>
 <translation id="709897737746224366">Erabili eskatutako formatua.</translation>
 <translation id="7102274145889307184">uneko kokapena</translation>
 <translation id="7118469954320184356">Ez dago azalpenik erabilgarri.</translation>
 <translation id="7139483182332611405">atarikoa</translation>
+<translation id="7198226213493847604">menuaren leiho gainerakorraren botoia</translation>
 <translation id="7214187073215825913">edukiari buruzko informazioa</translation>
 <translation id="7238347055216017155">nabarmentzea</translation>
 <translation id="7263440858009898357">Hautatu zerrendako elementu bat.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">atala</translation>
 <translation id="8845239796550121995">Telebistara ari da igortzen edukia</translation>
 <translation id="8851136666856101339">nagusia</translation>
+<translation id="8861621546968757188">Leiho gainerakorraren botoia</translation>
 <translation id="8875657656876809964">Bideoaren erreprodukzio-errorea</translation>
 <translation id="8889402386540077796">Ñabardura</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

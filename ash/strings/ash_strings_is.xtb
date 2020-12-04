@@ -122,6 +122,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2050339315714019657">Skammsnið</translation>
 <translation id="2067602449040652523">Birtustig lyklaborðs</translation>
 <translation id="2078034614700056995">Strjúktu til hægri með fjórum fingrum til að skipta yfir í næsta skrifborð</translation>
+<translation id="2079504693865562705">Fela forrit á hillu</translation>
 <translation id="2083190527011054446">Góða nótt <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Engin nettenging</translation>
 <translation id="2126242104232412123">Nýtt svæði</translation>
@@ -238,6 +239,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3226991577105957773">+<ph name="COUNT" /> í viðbót</translation>
 <translation id="3236488194889173876">Ekkert farsímakerfi í boði</translation>
 <translation id="3249513730522716925">Gluggi <ph name="WINDOW_TITLE" /> færður af skjáborði <ph name="ACTIVE_DESK" /> yfir á skjáborð <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, sendistyrkur <ph name="SIGNAL_STRENGTH" /> prósent.</translation>
 <translation id="3255483164551725916">Hvað geturðu gert?</translation>
 <translation id="3269597722229482060">Hægrismella</translation>
 <translation id="3289674678944039601">Hleður með hleðslutæki</translation>
@@ -369,6 +371,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4389184120735010762">Þú ýttir á flýtilykilinn fyrir stækkunargler í föstum glugga. Viltu kveikja á því?</translation>
 <translation id="4412944820643904175">Slökkt er á <ph name="FEATURE_NAME" />.</translation>
 <translation id="4421231901400348175"><ph name="HELPER_NAME" /> deilir stjórn yfir skjánum þínum í gegnum fjaraðstoð.</translation>
+<translation id="4427613789487709312">Sjálfgefið (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Hljóðstyrkur</translation>
 <translation id="4450893287417543264">Ekki sýna þetta aftur</translation>
 <translation id="445864333228800152">Gott kvöld,</translation>
@@ -449,6 +452,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5078796286268621944">Rangt PIN-númer</translation>
 <translation id="5083553833479578423">Opnaðu fyrir fleiri eiginleika hjálparans.</translation>
 <translation id="5136175204352732067">Annað lyklaborð tengt</translation>
+<translation id="5155897006997040331">Leshraði</translation>
 <translation id="5168181903108465623">Útsendingartæki í boði</translation>
 <translation id="5170568018924773124">Sýna í möppu</translation>
 <translation id="5176318573511391780">Upptaka á hluta skjás</translation>
@@ -712,6 +716,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{Ein tilkynning}one{# tilkynning}other{# tilkynningar}}</translation>
 <translation id="7724603315864178912">Klippa</translation>
+<translation id="7745560842763881396">Sýna forrit á hillu</translation>
 <translation id="7749443890790263709">Hámarksfjölda skjáborða náð.</translation>
 <translation id="776344839111254542">Smelltu til að skoða upplýsingar um uppfærsluna</translation>
 <translation id="7780159184141939021">Snúa skjánum</translation>

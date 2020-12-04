@@ -42,6 +42,7 @@
 <translation id="2535480412977113886">Chromium OS non puido sincronizar os teus datos porque caducou a túa información de inicio de sesión na conta.</translation>
 <translation id="2560420686485554789">Chromium necesita acceder ao almacenamento para descargar ficheiros</translation>
 <translation id="2572494885440352020">Asistente de Chromium</translation>
+<translation id="2583187216237139145">O administrador do perfil de traballo pode quitar os datos de Chromium que se xeren durante o uso deste perfil (por exemplo, os marcadores, o historial, os contrasinais e outras opcións de configuración). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">É necesario reiniciar Chromium OS para aplicar a actualización.</translation>
 <translation id="2615699638672665509">Este ordenador deixará de recibir actualizacións de Chromium en breve porque xa non se admite o seu hardware.</translation>
 <translation id="2648074677641340862">Produciuse un erro no sistema operativo durante a instalación. Volve descargar Chromium.</translation>
@@ -143,6 +144,7 @@
 <translation id="6055895534982063517">Hai unha nova versión de Chromium dispoñible que é máis rápida que nunca.</translation>
 <translation id="6063093106622310249">&amp;Abrir en Chromium</translation>
 <translation id="6072279588547424923">Engadiuse a extensión <ph name="EXTENSION_NAME" /> a Chromium</translation>
+<translation id="608006075545470555">Engadir un perfil de traballo a este navegador</translation>
 <translation id="608189560609172163">Chromium non puido sincronizar os teus datos debido a un erro ao iniciar sesión.</translation>
 <translation id="6096348254544841612">Personalizar e controlar Chromium. Hai una actualización dispoñible.</translation>
 <translation id="6120345080069858279">Chromium gardará este contrasinal na túa Conta de Google. Non terás que recordalo.</translation>
@@ -163,6 +165,7 @@
 <translation id="6403826409255603130">Chromium é un navegador web que executa páxinas web e aplicacións a gran velocidade. É rápido, estable e fácil de utilizar. Chromium permíteche navegar na web de forma máis segura, xa que inclúe protección contra malware e phishing.</translation>
 <translation id="6434250628340475518">Sistema Chromium OS</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium reiniciarase en 1 segundo}other{Chromium reiniciarase en # segundos}}</translation>
+<translation id="6464340581899189425">Se tes varias Contas de Google, podes engadilas ao teu dispositivo (<ph name="DEVICE_TYPE" />). Ao facelo, estarán dispoñibles no navegador Chromium e en Play Store, así como noutros servizos (por exemplo, Gmail, Drive e YouTube). <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Tamén controla a páxina que se mostra ao iniciar Chromium.</translation>
 <translation id="6510925080656968729">Desinstalar Chromium</translation>
 <translation id="6570579332384693436">Para solucionar os erros ortográficos, Chromium envía a Google o texto que escribes nos campos de texto</translation>
@@ -222,6 +225,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="7857220146454061152">Se queres recibir actualizacións de Chromium no futuro, debes instalar o sistema operativo OS X 10.11 ou unha versión posterior. Este ordenador ten instalada a versión OS X 10.10.</translation>
 <translation id="7867198900892795913">Chromium non se puido actualizar á última versión, polo que non gozas das novas funcións e solucións de seguranza.</translation>
 <translation id="7898472181347242998">Para ver ser o teu dispositivo está actualizado, accede á <ph name="LINK_BEGIN" />configuración de Chromium OS<ph name="LINK_END" /></translation>
+<translation id="7907774600618164274">Chromium OS non se pechou correctamente.</translation>
 <translation id="7937630085815544518">Iniciaches sesión en Chromium como <ph name="USER_EMAIL_ADDRESS" />. Utiliza a mesma conta para iniciar sesión de novo.</translation>
 <translation id="7975919845073681630">Esta é unha instalación secundaria de Chromium e non se pode converter no teu navegador predeterminado.</translation>
 <translation id="7979877361127045932">Ocultar no menú de Chromium</translation>
@@ -236,6 +240,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Reinicia Chromium en 1 día}other{Reinicia Chromium en # días}}</translation>
 <translation id="8453117565092476964">O arquivo do instalador está danado ou non é válido. Volve descargar Chromium.</translation>
 <translation id="8493179195440786826">Chromium está desactualizado</translation>
+<translation id="8550334526674375523">Este perfil de traballo é totalmente independente do teu perfil persoal.</translation>
 <translation id="8558383651099478961">O teu pai ou nai desactivou esta opción en Chromium: Permisos para sitios, aplicacións e extensións. Non está permitido engadir esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8568283329061645092">Chromium pode comprobar os teus contrasinais cando inicies sesión coa túa Conta de Google</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Reservados todos os dereitos.</translation>
@@ -252,6 +257,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8907580949721785412">Chromium está tentando mostrar contrasinais. Escribe os teus contrasinais de Windows para permitir esta acción.</translation>
 <translation id="8941642502866065432">Non se puido actualizar Chromium</translation>
 <translation id="8974095189086268230">Chromium OS é posible grazas a outros <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="8986207147630327271">Estás a piques de engadir un perfil de traballo a este navegador e de permitir que o teu administrador controle só o perfil de traballo.</translation>
 <translation id="9019929317751753759">Para conseguir que Chromium resulte máis seguro, desactivamos a seguinte extensión que non aparece en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e que quizais se engadise sen o teu coñecemento.</translation>
 <translation id="9089354809943900324">Chromium está desactualizado</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium reiniciarase en 1 hora}other{Chromium reiniciarase en # horas}}</translation>
@@ -259,6 +265,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="911206726377975832">Queres eliminar tamén os teus datos de navegación?</translation>
 <translation id="9158494823179993217">O teu administrador do sistema configurou Chromium para abrir outro navegador co obxectivo de acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="9214764063801632699">Sistema Chromium OS</translation>
 <translation id="93478295209880648">É posible que Chromium non funcione correctamente porque xa non admite Windows XP nin Windows Vista</translation>
 <translation id="95514773681268843"><ph name="DOMAIN" /> require que leas e aceptes as seguintes Condicións de servizo antes de utilizar este dispositivo. Estas condicións non amplían, modifican nin limitan as condicións de Chromium OS.</translation>
 <translation id="965162752251293939">Quen está utilizando Chromium?</translation>

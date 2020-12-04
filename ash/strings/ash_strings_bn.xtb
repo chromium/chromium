@@ -122,6 +122,7 @@
 <translation id="2050339315714019657">প্রতিকৃতি</translation>
 <translation id="2067602449040652523">কীবোর্ডের উজ্জ্বলতা</translation>
 <translation id="2078034614700056995">পরবর্তী ডেস্কে সুইচ করতে, চার আঙুল ব্যবহার করে ডানদিকে সোয়াইপ করুন</translation>
+<translation id="2079504693865562705">শেল্ফে অ্যাপ লুকিয়ে রাখুন</translation>
 <translation id="2083190527011054446">শুভরাত্রি <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">কোনও নেটওয়ার্কে কানেক্ট করা নেই</translation>
 <translation id="2126242104232412123">নতুন ডেস্ক</translation>
@@ -238,6 +239,7 @@
 <translation id="3226991577105957773">+ আরও <ph name="COUNT" />টি</translation>
 <translation id="3236488194889173876">কোনো মোবাইল নেটওয়ার্ক উপলব্ধ নেই</translation>
 <translation id="3249513730522716925">Window <ph name="WINDOW_TITLE" /> ডেস্ক <ph name="ACTIVE_DESK" /> থেকে ডেস্ক <ph name="TARGET_DESK" />-এ সরানো হয়েছে</translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" /> শতাংশ।</translation>
 <translation id="3255483164551725916">আপনি কি করতে পারেন?</translation>
 <translation id="3269597722229482060">ডানদিকের বোতামে ক্লিক করুন</translation>
 <translation id="3289674678944039601">অ্যাডাপ্টার দিয়ে চার্জ হচ্ছে</translation>
@@ -369,6 +371,7 @@
 <translation id="4389184120735010762">ডক করা ম্যাগনিফায়ারের জন্য আপনি কীবোর্ড শর্টকাট টিপেছেন। আপনি কি এটি চালু করতে চান?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> বন্ধ আছে।</translation>
 <translation id="4421231901400348175">রিমোট সহায়কের মাধ্যমে <ph name="HELPER_NAME" />-এর সাথে আপনার স্ক্রিন নিয়ন্ত্রন ভাগ করুন৷</translation>
+<translation id="4427613789487709312">ডিফল্ট (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">ভলিউম</translation>
 <translation id="4450893287417543264">আর দেখতে চাই না</translation>
 <translation id="445864333228800152">শুভ সন্ধ্যা,</translation>
@@ -449,6 +452,7 @@
 <translation id="5078796286268621944">ভুল পিন</translation>
 <translation id="5083553833479578423">অ্যাসিস্ট্যান্ট-এর আরও বৈশিষ্ট্য আনলক করুন।</translation>
 <translation id="5136175204352732067">বিভিন্ন কীবোর্ড কানেক্ট করা হয়েছে</translation>
+<translation id="5155897006997040331">পড়ার গতি</translation>
 <translation id="5168181903108465623">কাস্ট ডিভাইসগুলি উপলব্ধ</translation>
 <translation id="5170568018924773124">ফোল্ডারে দেখান</translation>
 <translation id="5176318573511391780">আংশিক স্ক্রিন রেকর্ড করুন</translation>
@@ -713,6 +717,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{১টি বিজ্ঞপ্তি}one{#টি বিজ্ঞপ্তি}other{#টি বিজ্ঞপ্তি}}</translation>
 <translation id="7724603315864178912">কাটুন</translation>
+<translation id="7745560842763881396">শেল্ফে অ্যাপ দেখুন</translation>
 <translation id="7749443890790263709">সর্বাধিক সংখ্যক ডেস্ক যোগ করা হয়ে গেছে।</translation>
 <translation id="776344839111254542">আপডেটের বিশদ বিবরণ জানার জন্য ক্লিক করুন</translation>
 <translation id="7780159184141939021">স্ক্রিন ঘোরান</translation>

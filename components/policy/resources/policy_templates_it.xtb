@@ -83,6 +83,11 @@
 <translation id="1099282607296956954">Attiva isolamento sito per ogni sito</translation>
 <translation id="1117535567637097036">I gestori di protocollo impostati tramite questa norma non sono utilizzati durante la gestione degli intent di Android.</translation>
 <translation id="1118093128235245168">Consenti ai siti di chiedere all'utente di concedere l'accesso a un dispositivo USB collegato</translation>
+<translation id="1133814529606590009">Se il criterio viene impostato su Attivato, la raccolta di dati anonimizzati con chiave URL, che invia gli URL delle pagine visitate dagli utenti a Google per migliorare le esperienze di ricerca e navigazione, è sempre attiva.
+
+      Se viene impostato su Disattivato, non viene attivata alcuna raccolta di dati anonimizzati con chiave URL.
+
+      Se il criterio viene configurato, gli utenti non possono modificarlo. In caso contrario, la raccolta di dati anonimizzati con chiave URL viene attivata, ma gli utenti possono disattivarla.</translation>
 <translation id="1138294736309071213">Questa norma è attiva soltanto in modalità retail.
 
       Consente di stabilire il periodo di tempo che deve trascorrere prima della visualizzazione del salvaschermo nella schermata di accesso dei dispositivi in modalità retail.
@@ -182,6 +187,13 @@
       Se il criterio non viene impostato, l'utente può scegliere se utilizzare Google Sync o meno.
 
       Per disattivare completamente Google Sync, si consiglia di disabilitare il servizio Google Sync nella Console di amministrazione di Google.</translation>
+<translation id="128059397544257017">Quando il criterio viene impostato su Attivato, se <ph name="CHROME_CLEANUP_NAME" /> rileva un software indesiderato, potrebbe segnalare la scansione a Google, in linea con il criterio impostato da <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. <ph name="CHROME_CLEANUP_NAME" /> chiede agli utenti se vogliono ripulire il software indesiderato. I risultati vengono inviati a Google.
+
+      Quando il criterio viene impostato su Disattivato, se <ph name="CHROME_CLEANUP_NAME" /> rileva un software indesiderato, la scansione non viene segnalata a Google, a prescindere dal valore di <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. <ph name="CHROME_CLEANUP_NAME" /> chiede agli utenti se vogliono ripulire il software indesiderato. I risultati non vengono inviati a Google.
+
+      Se il criterio non viene configurato, <ph name="CHROME_CLEANUP_NAME" /> potrebbe segnalare a Google le scansioni in cui è stato rilevato un software indesiderato, in linea con il profilo impostato da <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. <ph name="CHROME_CLEANUP_NAME" /> chiede agli utenti se voglio ripulire il software indesiderato e di condividere i risultati con Google per semplificarne l'identificazione in futuro. Questi risultati includono metadati di file, estensioni installate automaticamente e chiavi del Registro di sistema, come spiegato nel white paper sulla privacy di Chrome.
+
+      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto per le istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1290634681382861275">Consente di gestire varie impostazioni, tra cui USB, Bluetooth, aggiornamento delle norme, modalità sviluppatore e altre ancora.</translation>
 <translation id="1291880496936992484">Avviso. RC4 sarà rimosso completamente da <ph name="PRODUCT_NAME" /> dopo la versione 52 (nel periodo di settembre 2016), dopodiché questa norma non sarà più attiva.
 
@@ -709,6 +721,9 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
       Se il criterio non viene configurato o se viene impostato su un elenco vuoto, non saranno disponibili modalità di sblocco rapido per i dispositivi gestiti.
 
       Questo criterio è deprecato. Usa il criterio <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" />.</translation>
+<translation id="2033784678146670379">Se il criterio viene impostato su Attivato, gli utenti possono utilizzare l'hardware sui dispositivi <ph name="PRODUCT_OS_NAME" /> per attestare da remoto la propria identità all'autorità di certificazione della privacy tramite l'<ph name="ENTERPRISE_PLATFORM_KEYS_API" /> usando la funzione <ph name="CHALLENGE_USER_KEY_FUNCTION" />.
+
+      Se viene impostato su Disattivato o se non viene configurato, le chiamate all'API non vengono eseguite correttamente e viene visualizzato un codice di errore.</translation>
 <translation id="2036522553891755455">Se il criterio viene impostato su Attivato, il rilevamento delle condivisioni (la funzionalità Condivisione file di rete di <ph name="PRODUCT_NAME" />) utilizza il protocollo <ph name="NETBIOS_PROTOCOL" /> per rilevare le condivisioni sulla rete. Se viene impostato su Disattivato, il rilevamento delle condivisioni non utilizza il protocollo per rilevare le condivisioni.
 
       Se non viene configurato, il comportamento predefinito è off per gli utenti gestiti e on per gli altri utenti.</translation>
@@ -738,6 +753,9 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 <translation id="2082205219176343977">Configura la versione minima di Chrome consentita per il dispositivo.</translation>
 <translation id="208566302163036794">Blocca le funzionalità disattivate</translation>
 <translation id="208623333578980446">Consenti wakelock schermo per la gestione dell'alimentazione</translation>
+<translation id="2090939118981888335">Se il criterio viene impostato su Attivato, il proxy di compressione dei dati è consentito. Se viene impostato su Disattivato, il proxy non è consentito.
+
+      Se viene configurato, gli utenti non possono modificarlo. In caso contrario, gli utenti possono scegliere di utilizzare la funzionalità.</translation>
 <translation id="209586405398070749">Canale stabile</translation>
 <translation id="2098658257603918882">Attiva rapporti sull'utilizzo e sui dati relativi agli arresti anomali</translation>
 <translation id="2104418465060359056">Segnala i dati delle estensioni e dei plug-in</translation>
@@ -1148,6 +1166,9 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Se il criterio viene impostato su Disattivato o se non viene configurato, questi consigli non vengono visualizzati.
 
       Se viene configurato, gli utenti non possono modificarlo.</translation>
+<translation id="2724313944474873275">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi <ph name="PRODUCT_OS_NAME" /> possono utilizzare l'attestazione da remoto (Accesso verificato) per ricevere un certificato emesso dall'autorità di certificazione di <ph name="PRODUCT_OS_NAME" /> in cui si afferma che il dispositivo è idoneo alla riproduzione di contenuti protetti. Questo processo comporta l'invio all'autorità di certificazione di <ph name="PRODUCT_OS_NAME" /> di informazioni di approvazione dell'hardware che identificano in modo univoco il dispositivo.
+
+      Se il criterio viene impostato su Disattivato, il dispositivo non utilizza l'attestazione da remoto per la protezione dei contenuti e non può riprodurre contenuti protetti.</translation>
 <translation id="2725855586003209701">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano l'elenco di utenti dei dispositivi che hanno eseguito l'accesso di recente.
 
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano l'elenco di utenti.</translation>
@@ -2121,6 +2142,13 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="4089849819635523136">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'impostazione del criterio <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> consente di specificare la parola chiave o la scorciatoia utilizzata nella barra degli indirizzi per attivare la ricerca per questo provider.
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> non viene configurato, il provider di ricerca non viene attivato da alcuna parola chiave.</translation>
+<translation id="409035987613226003">Se il criterio viene impostato su Attivato, viene abilitato l'invio a Google di rapporti anonimi relativi ai dati di utilizzo e degli arresti anomali su Chrome e gli utenti non possono modificare questa impostazione. Se viene impostato su Disattivato, queste informazioni non vengono inviate a Google.
+
+      Se viene configurato, gli utenti non possono modificarlo. In caso contrario, gli utenti sono liberi di scegliere il comportamento all'installazione o alla prima esecuzione.
+
+      Questo criterio è disponibile esclusivamente per le istanze di Windows che fanno parte di un dominio <ph name="MS_AD_NAME" />, così come per quelle di Windows 10 Pro o Enterprise registrate per la gestione dei dispositivi. Inoltre è disponibile per le istanze di macOS gestite tramite MDM o aggiunte a un dominio tramite MCX.
+
+      Per Chrome OS, consulta il criterio DeviceMetricsReportingEnabled.</translation>
 <translation id="4097556069183835428">Se il criterio è impostato su None, la Lente d'ingrandimento è disattivata.
 
       Se configuri il criterio, gli utenti non possono modificarlo. Se il criterio non è configurato, la Lente d'ingrandimento risulta disattivata all'inizio, ma gli utenti possono attivarla in qualsiasi momento.</translation>
@@ -2484,6 +2512,9 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="4725528134735324213">Attiva Android Backup Service</translation>
 <translation id="4725801978265372736">Richiedi la corrispondenza tra il nome dell'utente locale e il proprietario dell'host di accesso remoto</translation>
 <translation id="4733471537137819387">Norme relative all'autenticazione HTTP integrata.</translation>
+<translation id="4735099388031364207">Se il criterio viene impostato su Attivato, l'attestazione da remoto per il dispositivo è consentita. Un certificato viene generato e caricato automaticamente sul Server di gestione del dispositivo.
+
+      Se il criterio viene impostato su Disattivato o se non viene configurato, non viene generato alcun certificato e le chiamate all'<ph name="ENTERPRISE_PLATFORM_KEYS_API" /> non vengono eseguite correttamente.</translation>
 <translation id="4742973303930120836">Limita la modalità di stampa delle immagini di sfondo</translation>
 <translation id="4752880493649142945">Certificato client per la connessione a RemoteAccessHostTokenValidationUrl</translation>
 <translation id="4757053978738874325">Consente di attivare la funzione di accessibilità di audio in formato mono.
@@ -2572,6 +2603,11 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="489803897780524242">Parametro di controllo sostituzione termini di ricerca per fornitore ricerca predefinito</translation>
 <translation id="4899708173828500852">Consenti Navigazione sicura</translation>
 <translation id="4906194810004762807">Frequenza di aggiornamento per norma dispositivo</translation>
+<translation id="49093841899738146">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> può raccogliere log eventi WebRTC dai servizi Google, come Hangouts Meet, e caricarli su Google. Questi log hanno informazioni diagnostiche utili per il debug dei problemi relativi a riunioni audio e video in <ph name="PRODUCT_NAME" />, ad esempio data/ora e dimensioni dei pacchetti RTP, feedback sulla congestione della rete, nonché metadati su durata e qualità dei frame audio e video. Questi log non contengono l'audio o i video delle riunioni. Google potrebbe associare questi log tramite un ID sessione ad altri log raccolti dal servizio Google stesso al fine di semplificare il debug.
+
+      Se il criterio viene impostato su Disattivato, tali log non vengono raccolti né caricati.
+
+      Se il criterio non viene impostato su versioni fino alla M76 inclusa, per impostazione predefinita <ph name="PRODUCT_NAME" /> non può raccogliere e caricare questi log. A partire dalla versione M77, per impostazione predefinita <ph name="PRODUCT_NAME" /> può raccogliere e caricare questi log dalla maggior parte dei profili interessati dai criteri aziendali a livello di utente basati su cloud. Dalla versione M77 fino alla M80 inclusa, <ph name="PRODUCT_NAME" /> può anche raccogliere e caricare questi log per impostazione predefinita dai profili soggetti alla gestione on-premise di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4910101362791876581">Consente di specificare le stampanti che un utente può utilizzare.
 
       Questo criterio viene utilizzato soltanto se è selezionata l'opzione <ph name="PRINTERS_WHITELIST" /> per <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />
@@ -2583,6 +2619,9 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4919122295221518724">Attiva trattamento più restrittivo per i contenuti misti</translation>
 <translation id="4923806312383904642">Consenti a WebDriver di eseguire l'override delle norme non compatibili</translation>
+<translation id="4927214690104703256">La configurazione del criterio consente di specificare le estensioni consentite per utilizzare le funzioni dell'<ph name="ENTERPRISE_PLATFORM_KEYS_API" /> per l'attestazione da remoto. Per utilizzare l'API, le estensioni devono essere presenti in questo elenco.
+
+      Se un'estensione non è presente nell'elenco o se l'elenco non viene configurato, la chiamata all'API non va a buon fine e viene generato un codice di errore.</translation>
 <translation id="4927797103413916381">Se il criterio <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> non viene disattivato, l'impostazione di <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> su Attivato o la mancata configurazione impedisce ai siti con esperienze intrusive di aprirsi in nuove schede o finestre.
 
        Se il criterio <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> o <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> viene impostato su Disattivato, i siti con esperienze intrusive possono aprirsi in nuove schede o finestre.</translation>
@@ -2692,6 +2731,13 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="5090209345759901501">Applica l'impostazione dei contenuti Flash a tutti i contenuti</translation>
 <translation id="5090791951240382356">Consenti l'unione dei criteri del dizionario provenienti da origini diverse</translation>
 <translation id="5091315650312105069">Consenti l'autenticazione <ph name="BASIC_AUTH" /> per HTTP</translation>
+<translation id="5103112931744164177">Questo criterio consente di controllare quale stack software viene utilizzato per comunicare con il server DNS: il client DNS del sistema operativo o quello integrato di <ph name="PRODUCT_NAME" />. Questo criterio non influisce su quale server DNS viene utilizzato: se, ad esempio, il sistema operativo viene configurato in modo da usare un server DNS aziendale, lo stesso server viene usato dal client DNS integrato. Non consente nemmeno di controllare se viene utilizzato il protocollo DNS-over-HTTPS; <ph name="PRODUCT_NAME" /> userà sempre il resolver integrato per le richieste DNS-over-HTTPS. Per informazioni relative al controllo del protocollo DNS-over-HTTPS, consulta il criterio <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />.
+
+      Se il criterio viene impostato su Attivato, viene utilizzato il client DNS integrato, se disponibile.
+
+      Se viene impostato su Disattivato, il client DNS integrato viene utilizzato soltanto quando viene usato il protocollo DNS-over-HTTPS.
+
+      Se il criterio non viene configurato, il client DNS integrato viene attivato per impostazione predefinita su <ph name="MAC_OS_NAME" />, <ph name="ANDROID_NAME" /> (nel caso in cui non siano attivi né il DNS privato né la VPN) e <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5105313908130842249">Ritardo blocco schermo in caso di utilizzo della batteria</translation>
 <translation id="5108031557082757679">Stampanti aziendali associate ai dispositivi disattivate</translation>
 <translation id="5109383437323376357">Determina la disponibilità delle varianti</translation>
@@ -3570,6 +3616,11 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 
       Se questo criterio non viene impostato o se l'elenco è vuoto, sarà possibile accedere a tutti gli schemi in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6338982178236723271">Segnala informazioni sul sistema</translation>
+<translation id="6347363725343851058">Se il criterio viene impostato su Attivato, la modalità in background viene abilitata. Nella modalità in background, all'accesso al sistema operativo viene avviato un processo <ph name="PRODUCT_NAME" /> che rimane in esecuzione quando l'ultima finestra del browser viene chiusa, consentendo alle app in background e alla sessione di navigazione di rimanere attive, compresi eventuali cookie di sessione. Nella barra delle applicazioni viene visualizzata un'icona per il processo in background che consente di chiuderlo in qualsiasi momento.
+
+      Se il criterio viene impostato su Disattivato, la modalità in background viene disabilitata.
+
+      Se viene configurato, gli utenti non possono modificarlo nelle impostazioni del browser. In caso contrario, la modalità in background è disabilitata, ma gli utenti possono abilitarla.</translation>
 <translation id="6353890097388312479">Se il criterio viene impostato su All (0) o se non viene configurato, gli utenti possono modificare le impostazioni di attendibilità per tutti i certificati CA, rimuovere i certificati importati dagli utenti e importare certificati tramite Gestione certificati. Se viene impostato su UserOnly (1), gli utenti possono gestire solo i certificati importati dagli utenti, ma non possono modificare le impostazioni di attendibilità dei certificati integrati. Se viene impostato su None (2), gli utenti possono visualizzare i certificati CA, ma non possono gestirli.</translation>
 <translation id="6362856770865555544">Se il criterio viene impostato su Attivato o se non viene configurato, l'ottimizzazione WPAD (Web Proxy Auto-Discovery) viene attivata in <ph name="PRODUCT_NAME" />.
 
@@ -3895,6 +3946,9 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="6815483833848348029">Se il criterio viene impostato su Attivato o non viene configurato e se un account locale del dispositivo è configurato per l'accesso automatico senza ritardo, quando un dispositivo è offline <ph name="PRODUCT_OS_NAME" /> mostra una richiesta di configurazione della rete.
 
       Se il criterio viene impostato su Disattivato, viene visualizzato invece un messaggio di errore.</translation>
+<translation id="6819838337315703072">Se le app <ph name="LINUX_OS_NAME" /> sono supportate, l'impostazione del criterio su Attivato consente di inviare al server le informazioni relative all'utilizzo delle app <ph name="LINUX_OS_NAME" />.
+
+      Se il criterio viene impostato su Disattivato o se non viene configurato, non viene inviata alcuna informazione relativa all'utilizzo.</translation>
 <translation id="6821268164692776674">Destinazioni <ph name="CLOUD_PRINT_NAME" /> e "Salva su Google Drive"</translation>
 <translation id="6823711520976094072">La mancata configurazione o l'impostazione del criterio su valori inferiori a 1 MB implica l'utilizzo da parte di <ph name="PRODUCT_OS_NAME" /> della dimensione predefinita, corrispondente a 256 MiB, per le estensioni e le app di memorizzazione nella cache per l'installazione da parte di più utenti di un singolo dispositivo. In questo modo, non è necessario scaricare nuovamente tutte le app o estensioni per ogni utente.</translation>
 <translation id="682408981080798691">Se il criterio viene impostato su Attivato o se non viene configurato, l'integrità del codice del renderer viene attivata.
@@ -3934,6 +3988,9 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 
       Questo criterio è deprecato, al suo posto utilizza <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="684856667300805181">Questa norma è stata rimossa in <ph name="PRODUCT_NAME" /> 68 e sostituita da <ph name="ARC_GLS_POLICY_NAME" />.</translation>
+<translation id="6848721032946289937">Se il criterio viene impostato su Attivato o se non viene configurato, viene abilitata l'accelerazione hardware, se disponibile.
+
+      Se viene impostato su Disattivato, viene disabilitata l'accelerazione hardware.</translation>
 <translation id="6851199885688265233">Attiva la funzione di accessibilità di evidenziazione del cursore</translation>
 <translation id="6851315055469993882">Attiva cache di autenticazione HTTP con ambito globale</translation>
 <translation id="6854767649023671426">Se il criterio viene attivato o se non viene configurato, agli utenti viene richiesto l'accesso al dispositivo di acquisizione video, fatta eccezione per gli URL configurati nell'elenco VideoCaptureAllowedUrls.
@@ -4081,6 +4138,9 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="7027785306666625591">Configura la gestione dell'alimentazione in <ph name="PRODUCT_OS_NAME" />.
 
       Queste norme consentono di configurare il comportamento di <ph name="PRODUCT_OS_NAME" /> quando l'utente rimane inattivo per un determinato periodo di tempo.</translation>
+<translation id="7027923238554618852">La configurazione del criterio indica a <ph name="PRODUCT_OS_NAME" /> di utilizzare la configurazione del programma di pianificazione delle attività identificato dal nome specificato. Questo criterio può essere impostato su <ph name="CONSERVATIVE_VALUE" /> o su <ph name="PERFORMANCE_VALUE" />, opzioni che correggono il programma di pianificazione delle attività, rispettivamente, per la stabilità o il massimo rendimento.
+
+      Se non viene configurato, gli utenti sono liberi di fare la propria scelta.</translation>
 <translation id="7030205756530739128">Se il criterio <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> viene impostato su <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, la configurazione di <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> consente di personalizzare quando viene avviata la ricarica della batteria, in base alla percentuale di carica. Il valore deve essere di almeno 5 punti percentuali inferiore a <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Se il criterio non viene configurato, viene applicata la modalità di ricarica standard della batteria.</translation>
@@ -4209,6 +4269,11 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="718126088895133062">Questo criterio consente di specificare l'ID utente della licenza <ph name="PLUGIN_VM_NAME" /> di questo dispositivo.</translation>
 <translation id="7185078796915954712">TLS 1.3</translation>
 <translation id="7185630966939835143">Usa un servizio web di Google per correggere gli errori ortografici</translation>
+<translation id="718850220532931090">Questo criterio è deprecato. Utilizza il criterio <ph name="ATTESTATION_EXTENSION_ALLOWLIST_POLICY_NAME" />.
+
+      La configurazione del criterio consente di specificare le estensioni consentite per utilizzare la funzione <ph name="CHALLENGE_USER_KEY_FUNCTION" /> dell'<ph name="ENTERPRISE_PLATFORM_KEYS_API" /> per l'attestazione da remoto. Per utilizzare l'API, le estensioni devono essere presenti in questo elenco.
+
+      Se un'estensione non è presente nell'elenco o se l'elenco non viene configurato, la chiamata all'API non va a buon fine e viene generato un codice di errore.</translation>
 <translation id="718956142899066210">Tipi di connessioni consentiti per gli aggiornamenti</translation>
 <translation id="7190286937411178540">Attiva la funzione di accessibilità di evidenziazione dell'elemento attivo tramite tastiera</translation>
 <translation id="7193489339723768342">Se il criterio viene configurato, verrà specificato l'elenco di URL i cui pattern vengono confrontati con l'origine di sicurezza dell'URL richiedente. Una corrispondenza assicura l'accesso ai dispositivi di acquisizione audio senza richieste
@@ -5006,6 +5071,9 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8357681633047935212">Limita la durata di una sessione utente</translation>
 <translation id="8357989008292691856">Elenco di utenti autorizzati ad accedere</translation>
 <translation id="8359734107661430198">Attiva l'API ExampleDeprecatedFeature valida fino al 02/09/2008</translation>
+<translation id="8367069206652407172">Se il criterio viene impostato su Disattivato, gli utenti non possono terminare i processi nella funzionalità Task Manager.
+
+      Se viene impostato su Attivato o se non viene configurato, gli utenti possono terminare i processi nella funzionalità Task Manager.</translation>
 <translation id="8367209241899435947">Attiva Chrome Software Cleaner su Windows</translation>
 <translation id="8367473200119029349">Reporting su cloud</translation>
 <translation id="8369602308428138533">Ritardo disattivazione schermo in caso di utilizzo di CA</translation>

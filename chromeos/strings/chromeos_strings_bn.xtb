@@ -22,6 +22,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> এই ব্যবহারকারীকে ম্যানেজ করে এবং তার ফলে এটি হয়ত অন্য জায়গা থেকে সেটিংস ম্যানেজ করতে এবং ব্যবহারকারীর অ্যাক্টিভিটির উপর নজর রাখতে পারে।</translation>
 <translation id="150962533380566081">ভুল PUK।</translation>
 <translation id="1510238584712386396">লঞ্চার</translation>
+<translation id="1621067168122174824">চার্জ টেস্ট করুন</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" />টি থ্রেড)</translation>
 <translation id="1641857168437328880">ডকুমেন্ট ফিডার (এক পিঠের)</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
@@ -29,6 +30,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS সমাধানকারী স্ক্রিন পিন করা</translation>
 <translation id="1743558184855585519">ব্যাটারি নির্ধারিত সীমাতে পৌঁছে গেলেই শেষ হয়ে গেছে বলে ধরে নেওয়া হয়</translation>
+<translation id="1792647875738159689">স্ক্যানিং বাতিল করা হচ্ছে</translation>
 <translation id="1905710495812624430">সর্বোচ্চ অনুমোদিত প্রচেষ্টা ছাড়িয়ে গেছে।</translation>
 <translation id="1930797645656624981">Chrome OS ইনপুট পদ্ধতি পরিষেবা</translation>
 <translation id="1947737735496445907">প্রিন্ট করা হয়েছে</translation>
@@ -52,6 +54,7 @@
 <translation id="3008341117444806826">রিফ্রেশ করুন</translation>
 <translation id="3009958530611748826">কোন ফোল্ডারে সেভ করতে চান তা বেছে নিন</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
+<translation id="3069085583900247081">টেস্ট ব্যর্থ হয়েছে</translation>
 <translation id="3083667275341675831">কানেক্টিভিটি ডায়াগনস্টিকস</translation>
 <translation id="3091839911843451378">প্রিন্ট করা যায়নি - প্রিন্টার বন্ধ হয়ে গেছে</translation>
 <translation id="3102119246920354026">ক্যাশে</translation>
@@ -61,6 +64,7 @@
 <translation id="3246869037381808805">১ দিনের বেশি পুরনো প্রিন্ট জব সরিয়ে দেওয়া হবে</translation>
 <translation id="3268178239013324452">প্রিন্ট করা যায়নি - প্রিন্টারের ঢাকনা ভাল করে বন্ধ করা হয়নি</translation>
 <translation id="3310640316857623290">যতদূর পর্যন্ত লেটেন্সির ঊর্ধ্বসীমা অনুমোদন করা যায়, ডিএনএস লেটেন্সি উল্লেখযোগ্যভাবে তার চেয়ে বেশি</translation>
+<translation id="3328783797891415197">টেস্ট করা হচ্ছে</translation>
 <translation id="3369013195428705271">আপনি কি সব প্রিন্ট ইতিহাস মুছে ফেলতে চান? এখন যে প্রিন্ট করার কাজগুলি চলছে সেগুলি মোছা হবে না।</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />টি পৃষ্ঠার মধ্যে <ph name="PRINTED_PAGES" /> নম্বর পৃষ্ঠা প্রিন্ট করা হয়েছে।</translation>
 <translation id="3459509316159669723">প্রিন্ট হচ্ছে</translation>
@@ -80,6 +84,7 @@
 <translation id="4034824040120875894">প্রিন্টার</translation>
 <translation id="4131410914670010031">সাদা ও কালো</translation>
 <translation id="4145784616224233563">HTTP ফায়ারওয়াল</translation>
+<translation id="4170700058716978431">ব্যর্থ হয়েছে</translation>
 <translation id="4227825898293920515">পাসওয়ার্ডের মেয়াদ <ph name="TIME" />-এ শেষ হবে</translation>
 <translation id="4238516577297848345">প্রিন্ট করার কোনও কাজ চালু নেই</translation>
 <translation id="4297501883039923494">বন্ধ হয়ে গেছে - অজানা সমস্যা</translation>
@@ -104,16 +109,19 @@
 <translation id="4773299976671772492">থামানো হয়েছে</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> প্রিন্ট করার কাজ বাতিল করা হয়েছে</translation>
 <translation id="4832079907277790330">Files অ্যাপে ফোল্ডার বেছে নিন...</translation>
+<translation id="4848429997038228357">টেস্ট করা হচ্ছে</translation>
 <translation id="4890353053343094602">অবিলম্বে একটি নতুন পাসওয়ার্ড বেছে নিন</translation>
 <translation id="4917889632206600977">বন্ধ হয়ে গেছে - কাগজ শেষ হয়ে গেছে</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> সেকেন্ডে <ph name="RATE" /> চার্জ হয়েছে।</translation>
 <translation id="4932733599132424254">তারিখ</translation>
 <translation id="4985509611418653372">চালান</translation>
+<translation id="500920857929044050">টেস্ট বন্ধ করুন</translation>
 <translation id="5154917547274118687">স্মৃতি</translation>
 <translation id="5168185087976003268">ব্যাটারির স্বাস্থ্য</translation>
 <translation id="520299634122159966">স্ক্যানার উপলভ্য নেই</translation>
 <translation id="5212543919916444558">আপনাকে সাহায্য করতে পারি এমন কিছুই আপনার স্ক্রিনে আমি খুঁজে পাইনি। আমাকে কিছু জিজ্ঞাসা করতে মাইকে ট্যাপ করুন।</translation>
 <translation id="5222676887888702881">সাইন-আউট করুন</translation>
+<translation id="5264277876637023664">সিপিইউ টেস্ট করুন</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">রুটিন আবার রান করান</translation>
 <translation id="5317780077021120954">সেভ করুন</translation>
@@ -126,17 +134,22 @@
 <translation id="54609108002486618">পরিচালিত</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">সহায়তা কেন্দ্রে গিয়ে আরও জানুন</translation>
+<translation id="5635169860413004179">রিপোর্ট দেখুন</translation>
 <translation id="5719918614880940190">এটি সিপিইউয়ের ব্যবহার পরিমাপ করে এবং এটি সব কোরের সংমিশ্রণ</translation>
+<translation id="5797428682393400134">সফল হয়েছে</translation>
 <translation id="5832805196449965646">একজন ব্যক্তিকে যোগ করুন</translation>
 <translation id="5895138241574237353">পুনর্সূচনা</translation>
+<translation id="5931523347251946569">ফাইল পাওয়া যায়নি</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, ভার্সন <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
 <translation id="6048107060512778456">প্রিন্ট করা যায়নি - প্রিন্টারে কাগজ আটকে গেছে</translation>
 <translation id="6050189528197190982">গ্রেস্কেল</translation>
 <translation id="6058625436358447366">সম্পূর্ণ করতে, আপনার পুরনো ও নতুন পাসওয়ার্ড লিখুন</translation>
 <translation id="6061772781719867950">HTTP অনুরোধ সফল হয়নি</translation>
+<translation id="6104112872696127344">স্ক্যানিং বাতিল করা হয়েছে</translation>
 <translation id="6106186594183574873">সম্পূর্ণ করতে, আপনার পুরনো পাসওয়ার্ড লিখুন</translation>
 <translation id="6108689792487843350">নেটওয়ার্ক গেটওয়ে অ্যাক্সেস করা যাচ্ছে না</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" />GHz / <ph name="MAX" />GHz</translation>
 <translation id="6146993107019042706">সম্পূর্ণ করতে, আপনার নতুন পাসওয়ার্ড লিখুন</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">আরও জানুন</translation>
@@ -147,6 +160,7 @@
 <translation id="649050271426829538">বন্ধ হয়ে গেছে - প্রিন্টারে কাগজ আটকে গেছে</translation>
 <translation id="6517239166834772319">ঘুরে দেখুন</translation>
 <translation id="6527081081771465939">অজানা ওয়াই-ফাই সিকিউরিটি প্রোটোকল</translation>
+<translation id="6532051501443766164">রিপোর্ট লুকিয়ে রাখুন</translation>
 <translation id="65587193855025101">ফ্ল্যাটবেড</translation>
 <translation id="6564646048574748301">প্রিন্ট করা যায়নি - প্রিন্টারের সাথে কানেক্ট করা যাচ্ছে না</translation>
 <translation id="6618744767048954150">চলছে</translation>
@@ -154,6 +168,7 @@
 <translation id="6643016212128521049">সাফ করুন</translation>
 <translation id="6704062477274546131">DNS রেজোলিউশন</translation>
 <translation id="6747215703636344499">বন্ধ হয়ে গেছে - আউটপুট ট্রে ভর্তি হয়ে গেছে</translation>
+<translation id="6756731097889387912">স্ক্যানিং বাতিল করা যায়নি</translation>
 <translation id="6766275201586212568">DNS রেজোলিউশন সফল হয়নি</translation>
 <translation id="6768237774506518020">DNS রেজোলিউশনের বেশি ফেল রেট</translation>
 <translation id="6839141349259399400">স্ক্যানারের সাথে কানেক্ট করা যাচ্ছে না?</translation>
@@ -169,6 +184,7 @@
 <translation id="7648838807254605802">বেশি HTTPS লেটেন্সি</translation>
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7690294790491645610">নতুন পাসওয়ার্ড নিশ্চিত করুন</translation>
+<translation id="7732651821766520760"><ph name="TEST_NAME" /> টেস্ট</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
 <translation id="7855434858642800953">স্ক্যান করা ফাইল সেভ হয়েছে!</translation>
 <translation id="7928373994957558460">ফাইলের লোকেশন দেখুন</translation>
@@ -196,6 +212,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ডিফল্ট</translation>
 <translation id="8845001906332463065">সাহায্য পান</translation>
+<translation id="8881098542468797602">টেস্ট সফল হয়েছে</translation>
 <translation id="8910721771319628100">নেটওয়ার্ক লেটেন্সির যে ঊর্ধসীমা রয়েছে, তার চেয়ে ডিফল্ট নেটওয়ার্ক গেটওয়ের লেটেন্সি বেশি</translation>
 <translation id="8919837981463578619">প্রিন্ট করা যায়নি - ট্রে পাওয়া যাচ্ছে না</translation>
 <translation id="8928727111548978589">প্রিন্ট করা যায়নি - কাগজ শেষ হয়ে গেছে</translation>
@@ -205,4 +222,6 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-এর টিকিট রিফ্রেশ করুন</translation>
 <translation id="9106415115617144481">স্ক্যান করা পৃষ্ঠা <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">আনলক</translation>
+<translation id="9149391708638971077">মেমরি টেস্ট করুন</translation>
+<translation id="982713511914535780">ডিসচার্জ টেস্ট করুন</translation>
 </translationbundle>

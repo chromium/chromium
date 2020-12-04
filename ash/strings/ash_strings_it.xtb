@@ -122,6 +122,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2050339315714019657">Verticale</translation>
 <translation id="2067602449040652523">Luminosità della tastiera</translation>
 <translation id="2078034614700056995">Scorri verso destra con quattro dita per passare alla scrivania successiva</translation>
+<translation id="2079504693865562705">Nascondi app nello shelf</translation>
 <translation id="2083190527011054446">Buonanotte <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Nessuna connessione alla rete</translation>
 <translation id="2126242104232412123">Nuova scrivania</translation>
@@ -238,6 +239,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3226991577105957773">+ altre <ph name="COUNT" /></translation>
 <translation id="3236488194889173876">Nessuna rete mobile disponibile</translation>
 <translation id="3249513730522716925">La finestra <ph name="WINDOW_TITLE" /> è stata spostata dalla scrivania <ph name="ACTIVE_DESK" /> alla scrivania <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, intensità segnale: <ph name="SIGNAL_STRENGTH" /> percento.</translation>
 <translation id="3255483164551725916">Cosa sai fare?</translation>
 <translation id="3269597722229482060">Clic con il pulsante destro</translation>
 <translation id="3289674678944039601">Carica tramite adattatore</translation>
@@ -370,6 +372,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4389184120735010762">Hai premuto la scorciatoia da tastiera per la lente d'ingrandimento ancorata. Vuoi attivarla?</translation>
 <translation id="4412944820643904175">La funzionalità <ph name="FEATURE_NAME" /> è disattivata.</translation>
 <translation id="4421231901400348175">Condividi il controllo dello schermo con <ph name="HELPER_NAME" /> tramite Assistenza remota.</translation>
+<translation id="4427613789487709312">Velocità predefinita (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4450893287417543264">Non mostrare più</translation>
 <translation id="445864333228800152">Buonasera,</translation>
@@ -450,6 +453,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5078796286268621944">PIN errato</translation>
 <translation id="5083553833479578423">Sblocca altre funzioni dell'assistente.</translation>
 <translation id="5136175204352732067">Tastiera diversa collegata</translation>
+<translation id="5155897006997040331">Velocità di lettura</translation>
 <translation id="5168181903108465623">Dispositivi di trasmissione disponibili</translation>
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5176318573511391780">Registra schermo parziale</translation>
@@ -713,6 +717,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifica}other{# notifiche}}</translation>
 <translation id="7724603315864178912">Taglia</translation>
+<translation id="7745560842763881396">Mostra app nello shelf</translation>
 <translation id="7749443890790263709">Numero massimo di scrivanie raggiunto.</translation>
 <translation id="776344839111254542">Fai clic per visualizzare i dettagli dell'aggiornamento</translation>
 <translation id="7780159184141939021">Ruota lo schermo</translation>

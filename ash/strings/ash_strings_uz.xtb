@@ -122,6 +122,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2050339315714019657">Bo‘yiga</translation>
 <translation id="2067602449040652523">Klaviatura yorqinligi</translation>
 <translation id="2078034614700056995">Keyingi ish stoliga qaytish uchun 4 ta barmoq bilan oʻngga suring</translation>
+<translation id="2079504693865562705">Ilovalar ishga tushirish panelida chiqmasin</translation>
 <translation id="2083190527011054446">Xayrli tun, <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Tarmoqqa ulanmagan</translation>
 <translation id="2126242104232412123">Yangi ish stoli</translation>
@@ -238,6 +239,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3226991577105957773">yana <ph name="COUNT" /> ta</translation>
 <translation id="3236488194889173876">Birorta ham mobil tarmoq mavjud emas</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> oynasi <ph name="ACTIVE_DESK" /> ish stolidan <ph name="TARGET_DESK" /> ish stoliga koʻchirildi</translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" /> %.</translation>
 <translation id="3255483164551725916">Assistent nimalarga qodir?</translation>
 <translation id="3269597722229482060">Oʻng klik</translation>
 <translation id="3289674678944039601">Adapter orqali quvvat olmoqda</translation>
@@ -369,6 +371,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4389184120735010762">Qadalgan lupa tezkor havolasini bosdingiz. Ishga tushirilsinmi?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> yoqilmagan</translation>
 <translation id="4421231901400348175">Ekraningiz boshqaruvini masofaviy yordamchi orqali <ph name="HELPER_NAME" /> bilan ulashish.</translation>
+<translation id="4427613789487709312">Standart (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Hajmi</translation>
 <translation id="4450893287417543264">Boshqa ko‘rsatilmasin</translation>
 <translation id="445864333228800152">Xayrli kech,</translation>
@@ -449,6 +452,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5078796286268621944">Noto‘g‘ri PIN-kod</translation>
 <translation id="5083553833479578423">Assistentning boshqa imkoniyatlarini oching.</translation>
 <translation id="5136175204352732067">Boshqa klaviatura ulandi</translation>
+<translation id="5155897006997040331">Oʻqish tezligi</translation>
 <translation id="5168181903108465623">Translatsiya qurilmalari mavjud</translation>
 <translation id="5170568018924773124">&amp;Jildda ko‘rsatish</translation>
 <translation id="5176318573511391780">Ekran qismini yozib olish</translation>
@@ -712,6 +716,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ta bildirishnoma}other{# ta bildirishnoma}}</translation>
 <translation id="7724603315864178912">Qirqish</translation>
+<translation id="7745560842763881396">Ilovalarni ishga tushirish panelida chiqarish</translation>
 <translation id="7749443890790263709">Ish stollari maksimal miqdorda.</translation>
 <translation id="776344839111254542">Yangilanish tafsilotlarini ko‘rish uchun bosing</translation>
 <translation id="7780159184141939021">Ekranni burish</translation>
