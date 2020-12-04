@@ -27,8 +27,4 @@ bool OriginCanAccessServiceWorkers(const GURL& url) {
   return false;
 }
 
-bool IsPotentiallyTrustworthyOrigin(const url::Origin& origin) {
-  return network::IsOriginPotentiallyTrustworthy(origin);
-}
-
 }  // namespace content

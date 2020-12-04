@@ -90,7 +90,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/navigation_policy.h"
 #include "content/public/common/network_service_util.h"
-#include "content/public/common/origin_util.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -235,7 +234,8 @@ void UpdateLoadFlagsWithCacheFlags(int* load_flags,
 // TODO(clamy): This should be function in FrameTreeNode.
 bool IsSecureFrame(RenderFrameHostImpl* frame) {
   while (frame) {
-    if (!IsPotentiallyTrustworthyOrigin(frame->GetLastCommittedOrigin()))
+    if (!network::IsOriginPotentiallyTrustworthy(
+            frame->GetLastCommittedOrigin()))
       return false;
     frame = frame->GetParent();
   }

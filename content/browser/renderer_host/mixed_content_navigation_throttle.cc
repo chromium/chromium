@@ -20,8 +20,8 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/navigation_policy.h"
-#include "content/public/common/origin_util.h"
 #include "net/base/url_util.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -56,7 +56,7 @@ bool IsUrlPotentiallySecure(const GURL& url) {
   return url.SchemeIs(url::kBlobScheme) ||
          url.SchemeIs(url::kFileSystemScheme) ||
          blink::network_utils::IsOriginSecure(url) ||
-         IsPotentiallyTrustworthyOrigin(url::Origin::Create(url));
+         network::IsOriginPotentiallyTrustworthy(url::Origin::Create(url));
 }
 
 // This method should return the same results as

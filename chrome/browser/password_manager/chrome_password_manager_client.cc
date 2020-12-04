@@ -94,12 +94,12 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/origin_util.h"
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "net/cert/cert_status_flags.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/url_constants.h"
 
@@ -751,7 +751,7 @@ ChromePasswordManagerClient::GetAutofillDownloadManager() {
 }
 
 bool ChromePasswordManagerClient::IsCommittedMainFrameSecure() const {
-  return content::IsPotentiallyTrustworthyOrigin(
+  return network::IsOriginPotentiallyTrustworthy(
       web_contents()->GetMainFrame()->GetLastCommittedOrigin());
 }
 

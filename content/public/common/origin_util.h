@@ -16,13 +16,6 @@ namespace content {
 // http (localhost only), https, or a custom-set secure scheme.
 bool CONTENT_EXPORT OriginCanAccessServiceWorkers(const GURL& url);
 
-// This is based on SecurityOrigin::isPotentiallyTrustworthy and tries to mimic
-// its behavior.
-//
-// TODO(https://crbug.com/1153336): Remove this function and use
-// network::IsOriginPotentiallyTrustworthy instead.
-bool CONTENT_EXPORT IsPotentiallyTrustworthyOrigin(const url::Origin& origin);
-
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_COMMON_ORIGIN_UTIL_H_

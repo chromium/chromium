@@ -16,6 +16,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/common/constants.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
 #include "url/gurl.h"
@@ -110,7 +111,7 @@ TEST(ChromeContentClientTest, AdditionalSchemes) {
   EXPECT_TRUE(blink::network_utils::IsOriginSecure(chrome_url));
   EXPECT_FALSE(content::OriginCanAccessServiceWorkers(chrome_url));
   EXPECT_TRUE(
-      content::IsPotentiallyTrustworthyOrigin(url::Origin::Create(chrome_url)));
+      network::IsOriginPotentiallyTrustworthy(url::Origin::Create(chrome_url)));
 }
 
 class OriginTrialInitializationTestThread
