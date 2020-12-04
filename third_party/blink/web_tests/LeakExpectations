@@ -37,6 +37,9 @@ crbug.com/1098106 virtual/off-main-thread-css-paint/http/tests/csspaint/invalida
 crbug.com/1098106 virtual/off-main-thread-css-paint/http/tests/csspaint/invalidation-background-image.html [ Crash ]
 crbug.com/1098106 virtual/off-main-thread-css-paint/http/tests/csspaint/invalidation-content-image.html [ Crash ]
 
+# Random timeout
+crbug.com/1151861 [ Linux ] external/wpt/workers/semantics/multiple-workers/003.html [ Timeout Crash ]
+
 # -----------------------------------------------------------------
 # Flakily leaks
 # -----------------------------------------------------------------
