@@ -59,6 +59,10 @@ bool NearbyShareDelegateImpl::IsHighVisibilityOn() {
   return nearby_share_service_ && nearby_share_service_->IsInHighVisibility();
 }
 
+bool NearbyShareDelegateImpl::IsEnableHighVisibilityRequestActive() const {
+  return is_enable_high_visibility_request_active_;
+}
+
 base::TimeTicks NearbyShareDelegateImpl::HighVisibilityShutoffTime() const {
   return shutoff_time_;
 }
@@ -72,6 +76,8 @@ void NearbyShareDelegateImpl::EnableHighVisibility() {
   if (!nearby_share_service_->GetSettings()->GetEnabled()) {
     onboarding_wait_timer_.Reset();
   }
+
+  is_enable_high_visibility_request_active_ = true;
 }
 
 void NearbyShareDelegateImpl::DisableHighVisibility() {
@@ -127,6 +133,8 @@ void NearbyShareDelegateImpl::OnEnabledChanged(bool enabled) {
 }
 
 void NearbyShareDelegateImpl::OnHighVisibilityChanged(bool high_visibility_on) {
+  is_enable_high_visibility_request_active_ = false;
+
   if (high_visibility_on) {
     shutoff_time_ = base::TimeTicks::Now() + kShutoffTimeout;
     shutoff_timer_.Reset();

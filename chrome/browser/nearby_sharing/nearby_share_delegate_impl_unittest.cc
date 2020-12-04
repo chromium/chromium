@@ -139,6 +139,18 @@ TEST_F(NearbyShareDelegateImplTest, StartStopHighVisibility) {
   SetHighVisibilityOn(false);
 }
 
+TEST_F(NearbyShareDelegateImplTest, TestIsEnableHighVisibilityRequestActive) {
+  settings()->SetEnabled(true);
+
+  EXPECT_CALL(*settings_opener_, ShowSettingsPage(_));
+  EXPECT_CALL(controller_, HighVisibilityEnabledChanged(true));
+
+  delegate_.EnableHighVisibility();
+  EXPECT_TRUE(delegate_.IsEnableHighVisibilityRequestActive());
+  SetHighVisibilityOn(true);
+  EXPECT_FALSE(delegate_.IsEnableHighVisibilityRequestActive());
+}
+
 TEST_F(NearbyShareDelegateImplTest, ShowOnboardingAndTurnOnHighVisibility) {
   settings()->SetEnabled(false);
 

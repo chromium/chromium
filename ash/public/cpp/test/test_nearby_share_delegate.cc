@@ -20,6 +20,10 @@ bool TestNearbyShareDelegate::IsHighVisibilityOn() {
   return is_high_visibility_on_;
 }
 
+bool TestNearbyShareDelegate::IsEnableHighVisibilityRequestActive() const {
+  return is_enable_high_visibility_request_active_;
+}
+
 base::TimeTicks TestNearbyShareDelegate::HighVisibilityShutoffTime() const {
   return high_visibility_shutoff_time_;
 }
