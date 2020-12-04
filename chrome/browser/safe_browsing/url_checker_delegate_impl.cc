@@ -97,7 +97,7 @@ UrlCheckerDelegateImpl::~UrlCheckerDelegateImpl() = default;
 
 void UrlCheckerDelegateImpl::MaybeDestroyPrerenderContents(
     content::WebContents::OnceGetter web_contents_getter) {
-  // Destroy the prefetch with FINAL_STATUS_SAFEBROSWING.
+  // Destroy the prefetch with FINAL_STATUS_SAFE_BROWSING.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&DestroyPrerenderContents,
                                 std::move(web_contents_getter)));

@@ -259,7 +259,7 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResult(const GURL& url,
   }
 
   if (is_prefetch) {
-    // Destroy the prefetch with FINAL_STATUS_SAFEBROSWING.
+    // Destroy the prefetch with FINAL_STATUS_SAFE_BROWSING.
     if (resource_type_ == ResourceType::kMainFrame) {
       url_checker_delegate_->MaybeDestroyPrerenderContents(
           web_contents_getter_);
