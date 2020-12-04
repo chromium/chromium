@@ -125,7 +125,6 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
       const base::Optional<WebImpression>& impression,
       WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>
           initiator_csp,
-      network::mojom::blink::CSPSourcePtr initiator_self_source,
       network::mojom::IPAddressSpace,
       mojo::PendingRemote<mojom::blink::NavigationInitiator>) override;
   void DispatchWillSendSubmitEvent(HTMLFormElement*) override;

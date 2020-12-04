@@ -13,22 +13,17 @@
 
 class GURL;
 
-namespace url {
-class Origin;
-}
-
 namespace network {
-class CSPContext;
 
 COMPONENT_EXPORT(NETWORK_CPP)
 std::string ToString(const mojom::CSPSourceListPtr& source_list);
 
 // Return true when at least one source in the |source_list| matches the
-// |url| for a given |context|.
+// |url|.
 COMPONENT_EXPORT(NETWORK_CPP)
-bool CheckCSPSourceList(const mojom::CSPSourceListPtr& source_list,
+bool CheckCSPSourceList(const mojom::CSPSourceList& source_list,
                         const GURL& url,
-                        CSPContext* context,
+                        const mojom::CSPSource& self_source,
                         bool has_followed_redirect = false,
                         bool is_response_check = false);
 
@@ -40,7 +35,7 @@ bool CSPSourceListSubsumes(
     const mojom::CSPSourceList& source_list_a,
     const std::vector<const mojom::CSPSourceList*>& source_list_b,
     mojom::CSPDirectiveName directive,
-    const url::Origin& origin_b);
+    const mojom::CSPSource* origin_b);
 
 }  // namespace network
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_CONTENT_SECURITY_POLICY_CSP_SOURCE_LIST_H_

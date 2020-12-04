@@ -1431,6 +1431,10 @@ CSPDirectiveList::ExposeForNavigationalChecks() const {
 
   auto policy = network::mojom::blink::ContentSecurityPolicy::New();
 
+  policy->self_origin =
+      policy_->GetSelfSource()
+          ? policy_->GetSelfSource()->ExposeForNavigationalChecks()
+          : nullptr;
   policy->use_reporting_api = use_reporting_api_;
   policy->report_endpoints = report_endpoints_;
   policy->header = network::mojom::blink::ContentSecurityPolicyHeader::New(

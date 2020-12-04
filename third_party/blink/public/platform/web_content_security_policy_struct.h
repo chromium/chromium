@@ -91,6 +91,7 @@ struct WebCSPTrustedTypes {
 struct WebContentSecurityPolicy {
   network::mojom::ContentSecurityPolicyType disposition;
   network::mojom::ContentSecurityPolicySource source;
+  WebContentSecurityPolicySourceExpression self_origin;
   WebVector<WebContentSecurityPolicyRawDirective> raw_directives;
   WebVector<WebContentSecurityPolicyDirective> directives;
   bool upgrade_insecure_requests;

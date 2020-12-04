@@ -1024,7 +1024,6 @@ NavigationRequest::NavigationRequest(
       expected_render_process_host_id_(ChildProcessHost::kInvalidUniqueID),
       initiator_csp_context_(std::make_unique<InitiatorCSPContext>(
           std::move(common_params_->initiator_csp_info->initiator_csp),
-          std::move(common_params_->initiator_csp_info->initiator_self_source),
           std::move(navigation_initiator))),
       rfh_restored_from_back_forward_cache_(
           rfh_restored_from_back_forward_cache),

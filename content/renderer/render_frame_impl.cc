@@ -572,8 +572,6 @@ mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
   auto initiator_csp_info = mojom::InitiatorCSPInfo::New();
   initiator_csp_info->should_check_main_world_csp =
       info->should_check_main_world_content_security_policy;
-  initiator_csp_info->initiator_self_source =
-      BuildCSPSource(info->initiator_self_source);
   for (const auto& policy : info->initiator_csp) {
     initiator_csp_info->initiator_csp.push_back(
         BuildContentSecurityPolicy(policy));

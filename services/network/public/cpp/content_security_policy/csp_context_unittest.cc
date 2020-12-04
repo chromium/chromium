@@ -66,19 +66,22 @@ mojom::ContentSecurityPolicyPtr EmptyCSP() {
 }
 
 // Build a new policy made of only one directive and no report endpoints.
-mojom::ContentSecurityPolicyPtr BuildPolicy(CSPDirectiveName directive_name,
+mojom::ContentSecurityPolicyPtr BuildPolicy(mojom::CSPSourcePtr self_source,
+                                            CSPDirectiveName directive_name,
                                             mojom::CSPSourcePtr source) {
   auto source_list = mojom::CSPSourceList::New();
   source_list->sources.push_back(std::move(source));
 
   auto policy = EmptyCSP();
   policy->directives[directive_name] = std::move(source_list);
+  policy->self_origin = std::move(self_source);
 
   return policy;
 }
 
 // Build a new policy made of only one directive and no report endpoints.
-mojom::ContentSecurityPolicyPtr BuildPolicy(CSPDirectiveName directive_name,
+mojom::ContentSecurityPolicyPtr BuildPolicy(mojom::CSPSourcePtr self_source,
+                                            CSPDirectiveName directive_name,
                                             mojom::CSPSourcePtr source_1,
                                             mojom::CSPSourcePtr source_2) {
   auto source_list = mojom::CSPSourceList::New();
@@ -87,6 +90,7 @@ mojom::ContentSecurityPolicyPtr BuildPolicy(CSPDirectiveName directive_name,
 
   auto policy = EmptyCSP();
   policy->directives[directive_name] = std::move(source_list);
+  policy->self_origin = std::move(self_source);
 
   return policy;
 }
@@ -104,8 +108,11 @@ network::mojom::SourceLocationPtr SourceLocation() {
 
 TEST(CSPContextTest, SchemeShouldBypassCSP) {
   CSPContextTest context;
-  context.AddContentSecurityPolicy(BuildPolicy(
-      CSPDirectiveName::DefaultSrc, BuildCSPSource("", "example.com")));
+  auto self_source = network::mojom::CSPSource::New("http", "example.com", 80,
+                                                    "", false, false);
+  context.AddContentSecurityPolicy(
+      BuildPolicy(self_source.Clone(), CSPDirectiveName::DefaultSrc,
+                  BuildCSPSource("", "example.com")));
 
   EXPECT_FALSE(context.IsAllowedByCsp(
       CSPDirectiveName::FrameSrc, GURL("data:text/html,<html></html>"), false,
@@ -120,14 +127,15 @@ TEST(CSPContextTest, SchemeShouldBypassCSP) {
 
 TEST(CSPContextTest, MultiplePolicies) {
   CSPContextTest context;
-  context.SetSelf(url::Origin::Create(GURL("http://example.com")));
+  auto self_source = network::mojom::CSPSource::New("http", "example.com", 80,
+                                                    "", false, false);
 
-  context.AddContentSecurityPolicy(BuildPolicy(CSPDirectiveName::FrameSrc,
-                                               BuildCSPSource("", "a.com"),
-                                               BuildCSPSource("", "b.com")));
-  context.AddContentSecurityPolicy(BuildPolicy(CSPDirectiveName::FrameSrc,
-                                               BuildCSPSource("", "a.com"),
-                                               BuildCSPSource("", "c.com")));
+  context.AddContentSecurityPolicy(
+      BuildPolicy(self_source.Clone(), CSPDirectiveName::FrameSrc,
+                  BuildCSPSource("", "a.com"), BuildCSPSource("", "b.com")));
+  context.AddContentSecurityPolicy(
+      BuildPolicy(self_source.Clone(), CSPDirectiveName::FrameSrc,
+                  BuildCSPSource("", "a.com"), BuildCSPSource("", "c.com")));
 
   EXPECT_TRUE(context.IsAllowedByCsp(
       CSPDirectiveName::FrameSrc, GURL("http://a.com"), false, false,
@@ -145,11 +153,12 @@ TEST(CSPContextTest, MultiplePolicies) {
 
 TEST(CSPContextTest, SanitizeDataForUseInCspViolation) {
   CSPContextTest context;
-  context.SetSelf(url::Origin::Create(GURL("http://a.com")));
+  auto self_source =
+      network::mojom::CSPSource::New("http", "a.com", 80, "", false, false);
 
   // Content-Security-Policy: frame-src "a.com/iframe"
   context.AddContentSecurityPolicy(
-      BuildPolicy(CSPDirectiveName::FrameSrc,
+      BuildPolicy(self_source.Clone(), CSPDirectiveName::FrameSrc,
                   mojom::CSPSource::New("", "a.com", url::PORT_UNSPECIFIED,
                                         "/iframe", false, false)));
 
@@ -196,14 +205,18 @@ TEST(CSPContextTest, SanitizeDataForUseInCspViolation) {
 // When several policies are infringed, all of them must be reported.
 TEST(CSPContextTest, MultipleInfringement) {
   CSPContextTest context;
-  context.SetSelf(url::Origin::Create(GURL("http://example.com")));
+  auto self_source = network::mojom::CSPSource::New("http", "example.com", 80,
+                                                    "", false, false);
 
-  context.AddContentSecurityPolicy(
-      BuildPolicy(CSPDirectiveName::FrameSrc, BuildCSPSource("", "a.com")));
-  context.AddContentSecurityPolicy(
-      BuildPolicy(CSPDirectiveName::FrameSrc, BuildCSPSource("", "b.com")));
-  context.AddContentSecurityPolicy(
-      BuildPolicy(CSPDirectiveName::FrameSrc, BuildCSPSource("", "c.com")));
+  context.AddContentSecurityPolicy(BuildPolicy(self_source.Clone(),
+                                               CSPDirectiveName::FrameSrc,
+                                               BuildCSPSource("", "a.com")));
+  context.AddContentSecurityPolicy(BuildPolicy(self_source.Clone(),
+                                               CSPDirectiveName::FrameSrc,
+                                               BuildCSPSource("", "b.com")));
+  context.AddContentSecurityPolicy(BuildPolicy(self_source.Clone(),
+                                               CSPDirectiveName::FrameSrc,
+                                               BuildCSPSource("", "c.com")));
 
   EXPECT_FALSE(context.IsAllowedByCsp(
       CSPDirectiveName::FrameSrc, GURL("http://c.com"), false, false,
@@ -222,13 +235,17 @@ TEST(CSPContextTest, MultipleInfringement) {
 // Tests that the CheckCSPDisposition parameter is obeyed.
 TEST(CSPContextTest, CheckCSPDisposition) {
   CSPContextTest context;
+  auto self_source = network::mojom::CSPSource::New("http", "example.com", 80,
+                                                    "", false, false);
 
   // Add an enforced policy.
-  auto enforce_csp = BuildPolicy(CSPDirectiveName::FrameSrc,
-                                 BuildCSPSource("", "example.com"));
+  auto enforce_csp =
+      BuildPolicy(self_source.Clone(), CSPDirectiveName::FrameSrc,
+                  BuildCSPSource("", "example.com"));
   // Add a report-only policy.
-  auto report_only_csp = BuildPolicy(CSPDirectiveName::DefaultSrc,
-                                     BuildCSPSource("", "example.com"));
+  auto report_only_csp =
+      BuildPolicy(self_source.Clone(), CSPDirectiveName::DefaultSrc,
+                  BuildCSPSource("", "example.com"));
   report_only_csp->header->type = mojom::ContentSecurityPolicyType::kReport;
 
   context.AddContentSecurityPolicy(std::move(enforce_csp));

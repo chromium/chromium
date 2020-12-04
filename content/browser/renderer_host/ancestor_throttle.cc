@@ -156,17 +156,26 @@ NavigationThrottle::ThrottleCheckResult AncestorThrottle::WillStartRequest() {
   // attribute at the beginning of the navigation and not now, since the
   // beforeunload handlers might have modified it in the meantime.
   std::vector<network::mojom::ContentSecurityPolicyPtr> frame_csp;
-  frame_csp.emplace_back(
+  network::mojom::ContentSecurityPolicyPtr frame_csp_attribute =
       request->frame_tree_node()->csp_attribute()
           ? request->frame_tree_node()->csp_attribute()->Clone()
-          : nullptr);
+          : nullptr;
+  if (frame_csp_attribute) {
+    const GURL& url = navigation_handle()->GetURL();
+
+    // TODO(antoniosartori): Maybe we should revisit what 'self' means in the
+    // 'csp' attribute.
+    frame_csp_attribute->self_origin = network::mojom::CSPSource::New(
+        url.scheme(), url.host(), url.EffectiveIntPort(), "", false, false);
+  }
+  frame_csp.emplace_back(std::move(frame_csp_attribute));
+
   const network::mojom::ContentSecurityPolicy* parent_required_csp =
       request->frame_tree_node()->parent()->required_csp();
 
   std::string error_message;
-  if (!network::IsValidRequiredCSPAttr(
-          frame_csp, parent_required_csp,
-          url::Origin::Create(navigation_handle()->GetURL()), error_message)) {
+  if (!network::IsValidRequiredCSPAttr(frame_csp, parent_required_csp,
+                                       error_message)) {
     if (frame_csp[0]) {
       navigation_handle()->GetParentFrame()->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
@@ -485,7 +494,6 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateFrameAncestors(
   FrameAncestorCSPContext csp_context(
       NavigationRequest::From(navigation_handle())->GetRenderFrameHost(),
       content_security_policy);
-  csp_context.SetSelf(url::Origin::Create(navigation_handle()->GetURL()));
 
   // Check CSP frame-ancestors against every parent.
   // We enforce frame-ancestors in the outer delegate for portals, but not
@@ -554,8 +562,7 @@ AncestorThrottle::EvaluateCSPEmbeddedEnforcement() {
   }
   if (network::Subsumes(
           *request->required_csp(),
-          request->response()->parsed_headers->content_security_policy,
-          url::Origin::Create(navigation_handle()->GetURL()))) {
+          request->response()->parsed_headers->content_security_policy)) {
     return CheckResult::PROCEED;
   }
 

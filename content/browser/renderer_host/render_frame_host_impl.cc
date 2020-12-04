@@ -1072,18 +1072,6 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   }
   ResetFeaturePolicy();
 
-  // Content-Security-Policy: The CSP source 'self' is usually the origin of the
-  // current document, set by SetLastCommittedOrigin(). However, before a new
-  // frame commits its first navigation, 'self' should correspond to the origin
-  // of the parent (in case of a new iframe) or the opener (in case of a new
-  // window). This is necessary to correctly enforce CSP during the initial
-  // navigation.
-  FrameTreeNode* frame_owner =
-      frame_tree_node_->parent() ? frame_tree_node_->parent()->frame_tree_node()
-                                 : frame_tree_node_->opener();
-  if (frame_owner)
-    CSPContext::SetSelf(frame_owner->current_origin());
-
   // New RenderFrameHostImpl are put in their own virtual browsing context
   // group. Then, they can inherit from:
   // 1) Their opener in RenderFrameHostImpl::CreateNewWindow().
@@ -2658,7 +2646,6 @@ void RenderFrameHostImpl::DidNavigate(
 
 void RenderFrameHostImpl::SetLastCommittedOrigin(const url::Origin& origin) {
   last_committed_origin_ = origin;
-  CSPContext::SetSelf(origin);
 }
 
 void RenderFrameHostImpl::SetLastCommittedOriginForTesting(

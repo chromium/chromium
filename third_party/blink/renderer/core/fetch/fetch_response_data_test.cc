@@ -274,7 +274,8 @@ TEST_F(FetchResponseDataTest, ContentSecurityPolicy) {
                                           "frame-ancestors 'none'");
 
   mojom::blink::FetchAPIResponsePtr fetch_api_response =
-      internal_response->PopulateFetchAPIResponse(KURL());
+      internal_response->PopulateFetchAPIResponse(
+          KURL("https://www.example.org"));
   auto& csp = fetch_api_response->parsed_headers->content_security_policy;
 
   EXPECT_EQ(csp.size(), 2U);

@@ -19,6 +19,8 @@ class FormSubmissionTest : public RenderViewHostImplTestHarness {
     policy->header = network::mojom::ContentSecurityPolicyHeader::New();
     policy->directives[network::mojom::CSPDirectiveName::FormAction] =
         std::move(source_none);
+    policy->self_origin = network::mojom::CSPSource::New(
+        "https", "www.example.org", 443, "", false, false);
     main_test_rfh()->AddContentSecurityPolicy(std::move(policy));
   }
 };

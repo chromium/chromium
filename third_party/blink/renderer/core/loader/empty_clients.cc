@@ -105,7 +105,6 @@ void EmptyLocalFrameClient::BeginNavigation(
     const String&,
     const base::Optional<WebImpression>&,
     WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr> initiator_csp,
-    network::mojom::blink::CSPSourcePtr initiator_csp_self,
     network::mojom::IPAddressSpace,
     mojo::PendingRemote<mojom::blink::NavigationInitiator>) {}
 

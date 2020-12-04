@@ -10,8 +10,7 @@ namespace content {
 mojom::InitiatorCSPInfoPtr CreateInitiatorCSPInfo() {
   return mojom::InitiatorCSPInfo::New(
       network::mojom::CSPDisposition::CHECK,
-      std::vector<network::mojom::ContentSecurityPolicyPtr>() /* empty */,
-      nullptr /* initiator_self_source */
+      std::vector<network::mojom::ContentSecurityPolicyPtr>() /* empty */
   );
 }
 

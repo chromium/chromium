@@ -1176,7 +1176,7 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
   common_params->has_user_gesture = has_user_gesture_;
   common_params->initiator_csp_info = mojom::InitiatorCSPInfo::New(
       should_check_main_world_csp_,
-      std::vector<network::mojom::ContentSecurityPolicyPtr>(), nullptr);
+      std::vector<network::mojom::ContentSecurityPolicyPtr>());
 
   mojo::PendingAssociatedRemote<mojom::NavigationClient>
       navigation_client_remote;

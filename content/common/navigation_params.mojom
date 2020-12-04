@@ -51,9 +51,8 @@ struct InitiatorCSPInfo {
   network.mojom.CSPDisposition should_check_main_world_csp =
       network.mojom.CSPDisposition.CHECK;
 
-  // The relevant CSP policies and the initiator 'self' source to be used.
+  // The relevant CSP policies.
   array<network.mojom.ContentSecurityPolicy> initiator_csp;
-  network.mojom.CSPSource? initiator_self_source;
 };
 
 enum NavigationType {

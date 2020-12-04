@@ -6,7 +6,6 @@
 #include "base/strings/stringprintf.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
-#include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
@@ -19,10 +18,10 @@ namespace {
 // test expectations on one line.
 bool Allow(const mojom::CSPSourceListPtr& source_list,
            const GURL& url,
-           CSPContext* context,
+           const mojom::CSPSource& self,
            bool is_redirect = false,
            bool is_response_check = false) {
-  return CheckCSPSourceList(source_list, url, context, is_redirect,
+  return CheckCSPSourceList(*source_list, url, self, is_redirect,
                             is_response_check);
 }
 
@@ -77,8 +76,8 @@ std::vector<const mojom::CSPSourceList*> ToRawPointers(
 }  // namespace
 
 TEST(CSPSourceList, MultipleSource) {
-  CSPContext context;
-  context.SetSelf(url::Origin::Create(GURL("http://example.com")));
+  auto self = network::mojom::CSPSource::New("http", "example.com", 80, "",
+                                             false, false);
   std::vector<mojom::CSPSourcePtr> sources;
   sources.push_back(mojom::CSPSource::New("", "a.com", url::PORT_UNSPECIFIED,
                                           "", false, false));
@@ -86,92 +85,96 @@ TEST(CSPSourceList, MultipleSource) {
                                           "", false, false));
   auto source_list = mojom::CSPSourceList::New();
   source_list->sources = std::move(sources);
-  EXPECT_TRUE(Allow(source_list, GURL("http://a.com"), &context));
-  EXPECT_TRUE(Allow(source_list, GURL("http://b.com"), &context));
-  EXPECT_FALSE(Allow(source_list, GURL("http://c.com"), &context));
+  EXPECT_TRUE(Allow(source_list, GURL("http://a.com"), *self));
+  EXPECT_TRUE(Allow(source_list, GURL("http://b.com"), *self));
+  EXPECT_FALSE(Allow(source_list, GURL("http://c.com"), *self));
 }
 
 TEST(CSPSourceList, AllowStar) {
-  CSPContext context;
-  context.SetSelf(url::Origin::Create(GURL("http://example.com")));
+  auto self = network::mojom::CSPSource::New("http", "example.com", 80, "",
+                                             false, false);
   auto source_list = mojom::CSPSourceList::New();
   source_list->allow_star = true;
-  EXPECT_TRUE(Allow(source_list, GURL("http://not-example.com"), &context));
-  EXPECT_TRUE(Allow(source_list, GURL("https://not-example.com"), &context));
-  EXPECT_TRUE(Allow(source_list, GURL("ws://not-example.com"), &context));
-  EXPECT_TRUE(Allow(source_list, GURL("wss://not-example.com"), &context));
-  EXPECT_TRUE(Allow(source_list, GURL("ftp://not-example.com"), &context));
+  EXPECT_TRUE(Allow(source_list, GURL("http://not-example.com"), *self));
+  EXPECT_TRUE(Allow(source_list, GURL("https://not-example.com"), *self));
+  EXPECT_TRUE(Allow(source_list, GURL("ws://not-example.com"), *self));
+  EXPECT_TRUE(Allow(source_list, GURL("wss://not-example.com"), *self));
+  EXPECT_TRUE(Allow(source_list, GURL("ftp://not-example.com"), *self));
 
-  EXPECT_FALSE(Allow(source_list, GURL("file://not-example.com"), &context));
-  EXPECT_FALSE(Allow(source_list, GURL("applewebdata://a.test"), &context));
+  EXPECT_FALSE(Allow(source_list, GURL("file://not-example.com"), *self));
+  EXPECT_FALSE(Allow(source_list, GURL("applewebdata://a.test"), *self));
 
-  // With a protocol of 'file', '*' allow 'file:'
-  context.SetSelf(url::Origin::Create(GURL("file://example.com")));
-  EXPECT_TRUE(Allow(source_list, GURL("file://not-example.com"), &context));
-  EXPECT_FALSE(Allow(source_list, GURL("applewebdata://a.test"), &context));
+  {
+    // With a protocol of 'file', '*' allow 'file:'
+    auto self = network::mojom::CSPSource::New(
+        "file", "example.com", url::PORT_UNSPECIFIED, "", false, false);
+    EXPECT_TRUE(Allow(source_list, GURL("file://not-example.com"), *self));
+    EXPECT_FALSE(Allow(source_list, GURL("applewebdata://a.test"), *self));
+  }
 }
 
 TEST(CSPSourceList, AllowSelf) {
-  CSPContext context;
-  context.SetSelf(url::Origin::Create(GURL("http://example.com")));
+  auto self = network::mojom::CSPSource::New("http", "example.com", 80, "",
+                                             false, false);
   auto source_list = mojom::CSPSourceList::New();
   source_list->allow_self = true;
-  EXPECT_TRUE(Allow(source_list, GURL("http://example.com"), &context));
-  EXPECT_FALSE(Allow(source_list, GURL("http://not-example.com"), &context));
-  EXPECT_TRUE(Allow(source_list, GURL("https://example.com"), &context));
-  EXPECT_FALSE(Allow(source_list, GURL("ws://example.com"), &context));
+  EXPECT_TRUE(Allow(source_list, GURL("http://example.com"), *self));
+  EXPECT_FALSE(Allow(source_list, GURL("http://not-example.com"), *self));
+  EXPECT_TRUE(Allow(source_list, GURL("https://example.com"), *self));
+  EXPECT_FALSE(Allow(source_list, GURL("ws://example.com"), *self));
 }
 
 TEST(CSPSourceList, AllowStarAndSelf) {
-  CSPContext context;
-  context.SetSelf(url::Origin::Create(GURL("https://a.com")));
+  auto self =
+      network::mojom::CSPSource::New("https", "a.com", 443, "", false, false);
   auto source_list = mojom::CSPSourceList::New();
 
   // If the request is allowed by {*} and not by {'self'} then it should be
   // allowed by the union {*,'self'}.
   source_list->allow_self = true;
   source_list->allow_star = false;
-  EXPECT_FALSE(Allow(source_list, GURL("http://b.com"), &context));
+  EXPECT_FALSE(Allow(source_list, GURL("http://b.com"), *self));
   source_list->allow_self = false;
   source_list->allow_star = true;
-  EXPECT_TRUE(Allow(source_list, GURL("http://b.com"), &context));
+  EXPECT_TRUE(Allow(source_list, GURL("http://b.com"), *self));
   source_list->allow_self = true;
   source_list->allow_star = true;
-  EXPECT_TRUE(Allow(source_list, GURL("http://b.com"), &context));
+  EXPECT_TRUE(Allow(source_list, GURL("http://b.com"), *self));
 }
 
 TEST(CSPSourceList, AllowSelfWithUnspecifiedPort) {
-  CSPContext context;
-  context.SetSelf(url::Origin::Create(GURL("https://example.com/")));
+  auto self = network::mojom::CSPSource::New("https", "example.com", 443, "",
+                                             false, false);
   auto source_list = mojom::CSPSourceList::New();
   source_list->allow_self = true;
 
-  EXPECT_TRUE(
-      Allow(source_list, GURL("https://example.com/print.pdf"), &context));
+  EXPECT_TRUE(Allow(source_list, GURL("https://example.com/print.pdf"), *self));
 }
 
 TEST(CSPSourceList, AllowNone) {
-  CSPContext context;
-  context.SetSelf(url::Origin::Create(GURL("http://example.com")));
+  auto self = network::mojom::CSPSource::New("http", "example.com", 80, "",
+                                             false, false);
   auto source_list = mojom::CSPSourceList::New();
-  EXPECT_FALSE(Allow(source_list, GURL("http://example.com"), &context));
-  EXPECT_FALSE(Allow(source_list, GURL("https://example.test/"), &context));
+  EXPECT_FALSE(Allow(source_list, GURL("http://example.com"), *self));
+  EXPECT_FALSE(Allow(source_list, GURL("https://example.test/"), *self));
 }
 
 TEST(CSPSourceTest, SelfIsUnique) {
   // Policy: 'self'
   auto source_list = mojom::CSPSourceList::New();
   source_list->allow_self = true;
-  CSPContext context;
 
-  context.SetSelf(url::Origin::Create(GURL("http://a.com")));
-  EXPECT_TRUE(Allow(source_list, GURL("http://a.com"), &context));
-  EXPECT_FALSE(Allow(source_list, GURL("data:text/html,hello"), &context));
+  auto self =
+      network::mojom::CSPSource::New("http", "a.com", 80, "", false, false);
+  EXPECT_TRUE(Allow(source_list, GURL("http://a.com"), *self));
+  EXPECT_FALSE(Allow(source_list, GURL("data:text/html,hello"), *self));
 
-  context.SetSelf(
-      url::Origin::Create(GURL("data:text/html,<iframe src=[...]>")));
-  EXPECT_FALSE(Allow(source_list, GURL("http://a.com"), &context));
-  EXPECT_FALSE(Allow(source_list, GURL("data:text/html,hello"), &context));
+  // Self doesn't match anything.
+  auto no_self_source = network::mojom::CSPSource::New(
+      "", "", url::PORT_UNSPECIFIED, "", false, false);
+  EXPECT_FALSE(Allow(source_list, GURL("http://a.com"), *no_self_source));
+  EXPECT_FALSE(
+      Allow(source_list, GURL("data:text/html,hello"), *no_self_source));
 }
 
 TEST(CSPSourceList, Subsume) {
@@ -257,6 +260,8 @@ TEST(CSPSourceList, Subsume) {
       {{"http://*", "http://*.com http://*.example3.com:*/bar/"}, false},
   };
 
+  auto origin_b =
+      mojom::CSPSource::New("https", "frame.test", 443, "", false, false);
   for (const auto& test : cases) {
     auto response_sources = ParseToVectorOfSourceLists(
         mojom::CSPDirectiveName::ScriptSrc, test.response_csp);
@@ -264,8 +269,7 @@ TEST(CSPSourceList, Subsume) {
     EXPECT_EQ(test.expected,
               CSPSourceListSubsumes(
                   *required_sources, ToRawPointers(response_sources),
-                  mojom::CSPDirectiveName::ScriptSrc,
-                  url::Origin::Create(GURL("https://frame.test"))))
+                  mojom::CSPDirectiveName::ScriptSrc, origin_b.get()))
         << required << " should " << (test.expected ? "" : "not ") << "subsume "
         << base::JoinString(test.response_csp, ", ");
   }
@@ -383,11 +387,14 @@ TEST(CSPSourceList, SubsumeWithSelf) {
     auto response_sources = ParseToVectorOfSourceLists(
         mojom::CSPDirectiveName::ScriptSrc, test.response_csp);
 
+    GURL parsed_test_origin(test.origin);
+    auto origin_b = mojom::CSPSource::New(
+        parsed_test_origin.scheme(), parsed_test_origin.host(),
+        parsed_test_origin.EffectiveIntPort(), "", false, false);
     EXPECT_EQ(test.expected,
-              CSPSourceListSubsumes(*required_sources,
-                                    ToRawPointers(response_sources),
-                                    mojom::CSPDirectiveName::ScriptSrc,
-                                    url::Origin::Create(GURL(test.origin))))
+              CSPSourceListSubsumes(
+                  *required_sources, ToRawPointers(response_sources),
+                  mojom::CSPDirectiveName::ScriptSrc, origin_b.get()))
         << required << "from origin " << test.origin << " should "
         << (test.expected ? "" : "not ") << "subsume "
         << base::JoinString(test.response_csp, ", ");
@@ -489,17 +496,18 @@ TEST(CSPSourceList, SubsumeAllowAllInline) {
        true},
   };
 
+  auto origin_b =
+      mojom::CSPSource::New("https", "frame.test", 443, "", false, false);
   for (const auto& test : cases) {
     mojom::CSPSourceListPtr required_sources =
         ParseToSourceList(test.directive, test.required);
     auto response_sources =
         ParseToVectorOfSourceLists(test.directive, test.response_csp);
 
-    EXPECT_EQ(
-        test.expected,
-        CSPSourceListSubsumes(*required_sources,
-                              ToRawPointers(response_sources), test.directive,
-                              url::Origin::Create(GURL("https://frame.test"))))
+    EXPECT_EQ(test.expected,
+              CSPSourceListSubsumes(*required_sources,
+                                    ToRawPointers(response_sources),
+                                    test.directive, origin_b.get()))
         << test.required << " should " << (test.expected ? "" : "not ")
         << "subsume " << base::JoinString(test.response_csp, ", ");
   }
@@ -576,17 +584,18 @@ TEST(CSPSourceList, SubsumeUnsafeAttributes) {
        false},
   };
 
+  auto origin_b =
+      mojom::CSPSource::New("https", "frame.test", 443, "", false, false);
   for (const auto& test : cases) {
     mojom::CSPSourceListPtr required_sources =
         ParseToSourceList(test.directive, test.required);
     auto response_sources =
         ParseToVectorOfSourceLists(test.directive, test.response_csp);
 
-    EXPECT_EQ(
-        test.expected,
-        CSPSourceListSubsumes(*required_sources,
-                              ToRawPointers(response_sources), test.directive,
-                              url::Origin::Create(GURL("https://frame.test"))))
+    EXPECT_EQ(test.expected,
+              CSPSourceListSubsumes(*required_sources,
+                                    ToRawPointers(response_sources),
+                                    test.directive, origin_b.get()))
         << test.required << " should " << (test.expected ? "" : "not ")
         << "subsume " << base::JoinString(test.response_csp, ", ");
   }
@@ -728,17 +737,18 @@ TEST(CSPSourceList, SubsumeNoncesAndHashes) {
        false},
   };
 
+  auto origin_b =
+      mojom::CSPSource::New("https", "frame.test", 443, "", false, false);
   for (const auto& test : cases) {
     mojom::CSPSourceListPtr required_sources =
         ParseToSourceList(test.directive, test.required);
     auto response_sources =
         ParseToVectorOfSourceLists(test.directive, test.response_csp);
 
-    EXPECT_EQ(
-        test.expected,
-        CSPSourceListSubsumes(*required_sources,
-                              ToRawPointers(response_sources), test.directive,
-                              url::Origin::Create(GURL("https://frame.test"))))
+    EXPECT_EQ(test.expected,
+              CSPSourceListSubsumes(*required_sources,
+                                    ToRawPointers(response_sources),
+                                    test.directive, origin_b.get()))
         << test.required << " should " << (test.expected ? "" : "not ")
         << "subsume " << base::JoinString(test.response_csp, ", ");
   }
@@ -911,17 +921,18 @@ TEST(CSPSourceList, SubsumeStrictDynamic) {
        false},
   };
 
+  auto origin_b =
+      mojom::CSPSource::New("https", "frame.test", 443, "", false, false);
   for (const auto& test : cases) {
     mojom::CSPSourceListPtr required_sources =
         ParseToSourceList(test.directive, test.required);
     auto response_sources =
         ParseToVectorOfSourceLists(test.directive, test.response_csp);
 
-    EXPECT_EQ(
-        test.expected,
-        CSPSourceListSubsumes(*required_sources,
-                              ToRawPointers(response_sources), test.directive,
-                              url::Origin::Create(GURL("https://frame.test"))))
+    EXPECT_EQ(test.expected,
+              CSPSourceListSubsumes(*required_sources,
+                                    ToRawPointers(response_sources),
+                                    test.directive, origin_b.get()))
         << test.required << " should " << (test.expected ? "" : "not ")
         << "subsume " << base::JoinString(test.response_csp, ", ");
   }
@@ -982,6 +993,8 @@ TEST(CSPSourceList, SubsumeListWildcard) {
        false},
   };
 
+  auto origin_b =
+      mojom::CSPSource::New("https", "another.test", 443, "", false, false);
   for (const auto& test : cases) {
     mojom::CSPSourceListPtr required_sources =
         ParseToSourceList(mojom::CSPDirectiveName::ScriptSrc, test.required);
@@ -991,33 +1004,36 @@ TEST(CSPSourceList, SubsumeListWildcard) {
     EXPECT_EQ(test.expected,
               CSPSourceListSubsumes(
                   *required_sources, ToRawPointers(response_sources),
-                  mojom::CSPDirectiveName::ScriptSrc,
-                  url::Origin::Create(GURL("https://another.test/image.png"))))
+                  mojom::CSPDirectiveName::ScriptSrc, origin_b.get()))
         << test.required << " should " << (test.expected ? "" : "not ")
         << "subsume " << base::JoinString(test.response_csp, ", ");
   }
 }
 
 TEST(CSPSourceList, SubsumeListNoScheme) {
+  auto origin_http =
+      mojom::CSPSource::New("http", "example.org", 80, "", false, false);
+  auto origin_https =
+      mojom::CSPSource::New("https", "example.org", 443, "", false, false);
   struct TestCase {
     std::string required;
     std::vector<std::string> response_csp;
-    std::string origin;
+    mojom::CSPSource* origin;
     bool expected;
   } cases[] = {
-      {"http://a.com", {"a.com"}, "https://example.org", true},
-      {"https://a.com", {"a.com"}, "https://example.org", true},
-      {"https://a.com", {"a.com"}, "http://example.org", false},
-      {"data://a.com", {"a.com"}, "https://example.org", false},
-      {"a.com", {"a.com"}, "https://example.org", true},
-      {"a.com", {"a.com"}, "http://example.org", true},
-      {"a.com", {"https://a.com"}, "http://example.org", true},
-      {"a.com", {"https://a.com"}, "https://example.org", true},
-      {"a.com", {"http://a.com"}, "https://example.org", false},
-      {"https:", {"a.com"}, "http://example.org", false},
-      {"http:", {"a.com"}, "http://example.org", true},
-      {"https:", {"a.com", "https:"}, "http://example.org", true},
-      {"https:", {"a.com"}, "https://example.org", true},
+      {"http://a.com", {"a.com"}, origin_https.get(), true},
+      {"https://a.com", {"a.com"}, origin_https.get(), true},
+      {"https://a.com", {"a.com"}, origin_http.get(), false},
+      {"data://a.com", {"a.com"}, origin_https.get(), false},
+      {"a.com", {"a.com"}, origin_https.get(), true},
+      {"a.com", {"a.com"}, origin_http.get(), true},
+      {"a.com", {"https://a.com"}, origin_http.get(), true},
+      {"a.com", {"https://a.com"}, origin_https.get(), true},
+      {"a.com", {"http://a.com"}, origin_https.get(), false},
+      {"https:", {"a.com"}, origin_http.get(), false},
+      {"http:", {"a.com"}, origin_http.get(), true},
+      {"https:", {"a.com", "https:"}, origin_http.get(), true},
+      {"https:", {"a.com"}, origin_https.get(), true},
   };
 
   for (const auto& test : cases) {
@@ -1027,12 +1043,11 @@ TEST(CSPSourceList, SubsumeListNoScheme) {
         mojom::CSPDirectiveName::ScriptSrc, test.response_csp);
 
     EXPECT_EQ(test.expected,
-              CSPSourceListSubsumes(*required_sources,
-                                    ToRawPointers(response_sources),
-                                    mojom::CSPDirectiveName::ScriptSrc,
-                                    url::Origin::Create(GURL(test.origin))))
-        << test.required << " on origin " << test.origin << " should "
-        << (test.expected ? "" : "not ") << "subsume "
+              CSPSourceListSubsumes(
+                  *required_sources, ToRawPointers(response_sources),
+                  mojom::CSPDirectiveName::ScriptSrc, test.origin))
+        << test.required << " on origin with scheme " << test.origin->scheme
+        << " should " << (test.expected ? "" : "not ") << "subsume "
         << base::JoinString(test.response_csp, ", ");
   }
 }

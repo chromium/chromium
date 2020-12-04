@@ -409,8 +409,14 @@ void HTMLFrameOwnerElement::CSPAttributeChanged() {
 
   String fake_header =
       "HTTP/1.1 200 OK\nContent-Security-Policy: " + RequiredCsp();
+  // ParseHeaders needs a url to resolve report endpoints and for matching the
+  // keyword 'self'. However, the csp attribute does not allow report
+  // endpoints. Moreover, in the csp attribute, 'self' should not match the
+  // owner's url, but rather the frame src url. This is taken care by the
+  // Content-Security-Policy Embedded Enforcement algorithm, implemented in the
+  // AncestorThrottle. That's why we pass an empty url here.
   network::mojom::blink::ParsedHeadersPtr parsed_headers =
-      ParseHeaders(fake_header, GetDocument().Url());
+      ParseHeaders(fake_header, KURL());
 
   DCHECK_LE(parsed_headers->content_security_policy.size(), 1u);
 

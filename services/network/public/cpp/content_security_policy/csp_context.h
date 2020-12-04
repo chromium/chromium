@@ -9,10 +9,6 @@
 
 class GURL;
 
-namespace url {
-class Origin;
-}
-
 namespace network {
 
 // A CSPContext represents the Document where the Content-Security-Policy are
@@ -87,20 +83,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) CSPContext {
     return policies_;
   }
 
-  void SetSelf(const url::Origin& origin);
-  void SetSelf(mojom::CSPSourcePtr self_source);
-
-  // When a CSPSourceList contains 'self', the url is allowed when it match the
-  // CSPSource returned by this function.
-  // Sometimes there is no 'self' source. It means that the current origin is
-  // unique and no urls will match 'self' whatever they are.
-  // Note: When there is a 'self' source, its scheme is guaranteed to be
-  // non-empty.
-  const mojom::CSPSourcePtr& self_source() { return self_source_; }
-
  private:
   // TODO(arthursonzogni): This is an interface. Stop storing object in it.
-  mojom::CSPSourcePtr self_source_;  // Nullable.
   std::vector<mojom::ContentSecurityPolicyPtr> policies_;
 };
 

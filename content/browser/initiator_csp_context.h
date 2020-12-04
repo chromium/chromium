@@ -24,7 +24,6 @@ class InitiatorCSPContext : public network::CSPContext {
  public:
   InitiatorCSPContext(
       std::vector<network::mojom::ContentSecurityPolicyPtr> policies,
-      network::mojom::CSPSourcePtr self_source,
       mojo::PendingRemote<blink::mojom::NavigationInitiator>
           navigation_initiator);
   ~InitiatorCSPContext() override;

@@ -727,19 +727,11 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
 
   mojo::PendingRemote<mojom::blink::NavigationInitiator> navigation_initiator;
   WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr> initiator_csp;
-  network::mojom::blink::CSPSourcePtr initiator_self_source;
   if (origin_window && origin_window->GetContentSecurityPolicy()
                            ->ExperimentalFeaturesEnabled()) {
     ContentSecurityPolicy* origin_window_csp =
         origin_window->GetContentSecurityPolicy();
-    CSPSource* origin_window_csp_self_source =
-        origin_window_csp->GetSelfSource();
-
     initiator_csp = origin_window_csp->ExposeForNavigationalChecks();
-    if (origin_window_csp_self_source) {
-      initiator_self_source =
-          origin_window_csp_self_source->ExposeForNavigationalChecks();
-    }
     NavigationInitiatorImpl::From(*origin_window)
         .BindReceiver(navigation_initiator.InitWithNewPipeAndPassReceiver());
   }
@@ -839,8 +831,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
       request.GetTriggeringEventInfo(), request.Form(),
       should_check_main_world_csp, request.GetBlobURLToken(),
       request.GetInputStartTime(), request.HrefTranslate().GetString(),
-      request.Impression(), std::move(initiator_csp),
-      std::move(initiator_self_source), initiator_address_space,
+      request.Impression(), std::move(initiator_csp), initiator_address_space,
       std::move(navigation_initiator));
 }
 

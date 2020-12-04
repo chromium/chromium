@@ -143,10 +143,6 @@ struct BLINK_EXPORT WebNavigationInfo {
   // checks.
   WebVector<WebContentSecurityPolicy> initiator_csp;
 
-  // The navigation initiator source to be used when comparing an URL against
-  // 'self'.
-  WebContentSecurityPolicySourceExpression initiator_self_source;
-
   // The navigation initiator, if any.
   CrossVariantMojoRemote<mojom::NavigationInitiatorInterfaceBase>
       navigation_initiator_remote;

@@ -214,7 +214,7 @@ void ReportViolation(CSPContext* context,
   // ensure that these are not transmitted between different cross-origin
   // renderers.
   GURL blocked_url = (directive_name == CSPDirectiveName::FrameAncestors)
-                         ? GURL(ToString(context->self_source()))
+                         ? GURL(ToString(*policy->self_origin))
                          : url;
   auto safe_source_location =
       source_location ? source_location->Clone() : mojom::SourceLocation::New();
@@ -842,6 +842,20 @@ void WarnIfDirectiveValueNotEmpty(
   }
 }
 
+mojom::CSPSourcePtr ComputeSelfOrigin(const GURL& url) {
+  if (url.scheme() == url::kFileScheme) {
+    // Forget the host for file schemes. Host can anyway only be `localhost` or
+    // empty and this is platform dependent.
+    //
+    // TODO(antoniosartori): Consider returning mojom::CSPSource::New() for
+    // file: urls, so that 'self' for file: would match nothing.
+    return mojom::CSPSource::New(url::kFileScheme, "", url::PORT_UNSPECIFIED,
+                                 "", false, false);
+  }
+  return mojom::CSPSource::New(url.scheme(), url.host(), url.EffectiveIntPort(),
+                               "", false, false);
+}
+
 void AddContentSecurityPolicyFromHeader(base::StringPiece header,
                                         mojom::ContentSecurityPolicyType type,
                                         const GURL& base_url,
@@ -849,6 +863,7 @@ void AddContentSecurityPolicyFromHeader(base::StringPiece header,
   DirectivesMap directives = ParseHeaderValue(header);
   out->header = mojom::ContentSecurityPolicyHeader::New(
       header.as_string(), type, mojom::ContentSecurityPolicySource::kHTTP);
+  out->self_origin = ComputeSelfOrigin(base_url);
 
   for (auto directive : directives) {
     if (!base::ranges::all_of(directive.first, IsDirectiveNameCharacter)) {
@@ -1116,6 +1131,8 @@ bool CheckContentSecurityPolicy(const mojom::ContentSecurityPolicyPtr& policy,
                                 CSPContext* context,
                                 const mojom::SourceLocationPtr& source_location,
                                 bool is_form_submission) {
+  DCHECK(policy->self_origin);
+
   if (ShouldBypassContentSecurityPolicy(context, directive_name, url))
     return true;
 
@@ -1135,7 +1152,7 @@ bool CheckContentSecurityPolicy(const mojom::ContentSecurityPolicyPtr& policy,
       continue;
 
     const auto& source_list = directive->second;
-    bool allowed = CheckCSPSourceList(source_list, url, context,
+    bool allowed = CheckCSPSourceList(*source_list, url, *(policy->self_origin),
                                       has_followed_redirect, is_response_check);
 
     if (!allowed) {
@@ -1189,7 +1206,6 @@ void UpgradeInsecureRequest(GURL* url) {
 bool IsValidRequiredCSPAttr(
     const std::vector<mojom::ContentSecurityPolicyPtr>& policy,
     const mojom::ContentSecurityPolicy* context,
-    const url::Origin& origin,
     std::string& error_message) {
   DCHECK(policy.size() == 1);
   if (!policy[0])
@@ -1203,14 +1219,18 @@ bool IsValidRequiredCSPAttr(
     return false;
   }
 
-  if (!policy[0]->report_endpoints.empty()) {
+  if (!policy[0]->report_endpoints.empty() ||
+      // We really don't want any report directives, even with invalid/missing
+      // endpoints.
+      policy[0]->raw_directives.contains(mojom::CSPDirectiveName::ReportURI) ||
+      policy[0]->raw_directives.contains(mojom::CSPDirectiveName::ReportTo)) {
     error_message =
         "The csp attribute cannot contain the directives 'report-to' or "
         "'report-uri'.";
     return false;
   }
 
-  if (context && !Subsumes(*context, policy, origin)) {
+  if (context && !Subsumes(*context, policy)) {
     error_message =
         "The csp attribute Content-Security-Policy is not subsumed by the "
         "frame's parent csp attribute Content-Security-Policy.";
@@ -1221,8 +1241,7 @@ bool IsValidRequiredCSPAttr(
 }
 
 bool Subsumes(const mojom::ContentSecurityPolicy& policy_a,
-              const std::vector<mojom::ContentSecurityPolicyPtr>& policies_b,
-              const url::Origin& origin_b) {
+              const std::vector<mojom::ContentSecurityPolicyPtr>& policies_b) {
   if (policy_a.header->type == mojom::ContentSecurityPolicyType::kReport)
     return true;
 
@@ -1233,6 +1252,9 @@ bool Subsumes(const mojom::ContentSecurityPolicy& policy_a,
 
   if (policies_b.empty())
     return false;
+
+  // All policies in |policies_b| must have the same self_origin.
+  mojom::CSPSource* origin_b = policies_b[0]->self_origin.get();
 
   // A list of directives that we consider for subsumption.
   // See more about source lists here:

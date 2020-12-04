@@ -148,6 +148,10 @@ struct CSPTrustedTypes {
 };
 
 struct ContentSecurityPolicy {
+  // The origin used for matching the 'self' keyword.
+  // https://w3c.github.io/webappsec-csp/#framework-policy
+  CSPSource self_origin;
+
   // The raw, unparsed values of the specified CSP directives. Needed for
   // reporting.
   map<CSPDirectiveName, string> raw_directives;

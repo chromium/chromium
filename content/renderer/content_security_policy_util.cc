@@ -36,6 +36,8 @@ network::mojom::ContentSecurityPolicyPtr BuildContentSecurityPolicy(
     const blink::WebContentSecurityPolicy& policy_in) {
   auto policy = network::mojom::ContentSecurityPolicy::New();
 
+  policy->self_origin = BuildCSPSource(policy_in.self_origin);
+
   policy->header = network::mojom::ContentSecurityPolicyHeader::New(
       policy_in.header.Utf8(), policy_in.disposition, policy_in.source);
   policy->use_reporting_api = policy_in.use_reporting_api;

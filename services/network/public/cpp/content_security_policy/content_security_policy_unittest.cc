@@ -114,6 +114,8 @@ class CSPContextTest : public CSPContext {
 mojom::ContentSecurityPolicyPtr EmptyCSP() {
   auto policy = mojom::ContentSecurityPolicy::New();
   policy->header = mojom::ContentSecurityPolicyHeader::New();
+  policy->self_origin = network::mojom::CSPSource::New(
+      "", "", url::PORT_UNSPECIFIED, "", false, false);
   return policy;
 }
 
@@ -880,6 +882,40 @@ TEST(ContentSecurityPolicy, ParseReportEndpoint) {
   }
 }
 
+TEST(ContentSecurityPolicy, ParseStoresSelfOrigin) {
+  struct {
+    const char* url;
+    network::mojom::CSPSourcePtr self_origin;
+  } testCases[]{
+      {
+          "https://example.com",
+          network::mojom::CSPSource::New("https", "example.com", 443, "", false,
+                                         false),
+      },
+      {
+          "http://example.com/main/index.html",
+          network::mojom::CSPSource::New("http", "example.com", 80, "", false,
+                                         false),
+      },
+      {
+          "file://localhost/var/www/index.html",
+          network::mojom::CSPSource::New("file", "", url::PORT_UNSPECIFIED, "",
+                                         false, false),
+      },
+  };
+
+  for (const auto& testCase : testCases) {
+    scoped_refptr<net::HttpResponseHeaders> headers(
+        new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
+    headers->SetHeader("Content-Security-Policy", "default-src 'none'");
+    std::vector<mojom::ContentSecurityPolicyPtr> policies;
+    AddContentSecurityPolicyFromHeaders(*headers, GURL(testCase.url),
+                                        &policies);
+
+    EXPECT_TRUE(testCase.self_origin.Equals(policies[0]->self_origin));
+  }
+}
+
 // Check URL are upgraded iif "upgrade-insecure-requests" directive is defined.
 TEST(ContentSecurityPolicy, ShouldUpgradeInsecureRequest) {
   std::vector<mojom::ContentSecurityPolicyPtr> policies;
@@ -1135,7 +1171,6 @@ TEST(ContentSecurityPolicy, NavigateToChecks) {
     csp->allow_response_redirects = true;
     return csp;
   };
-  context.SetSelf(source_a());
 
   struct TestCase {
     mojom::CSPSourceListPtr navigate_to_list;
@@ -1174,6 +1209,7 @@ TEST(ContentSecurityPolicy, NavigateToChecks) {
 
   for (auto& test : cases) {
     auto policy = EmptyCSP();
+    policy->self_origin = source_a().Clone();
     policy->directives[CSPDirectiveName::NavigateTo] =
         std::move(test.navigate_to_list);
 
@@ -1407,10 +1443,7 @@ TEST(ContentSecurityPolicy, IsValidRequiredCSPAttr) {
     AddContentSecurityPolicyFromHeaders(*required_csp_headers,
                                         GURL("https://example.com/"), &csp);
     std::string out;
-    EXPECT_EQ(
-        test.expected,
-        IsValidRequiredCSPAttr(
-            csp, nullptr, url::Origin::Create(GURL("https://a.com")), out));
+    EXPECT_EQ(test.expected, IsValidRequiredCSPAttr(csp, nullptr, out));
     EXPECT_EQ(test.expected_error, out);
   }
 }
@@ -1460,9 +1493,7 @@ TEST(ContentSecurityPolicy, Subsumes) {
     std::vector<mojom::ContentSecurityPolicyPtr> returned_csp;
     AddContentSecurityPolicyFromHeaders(
         *returned_csp_headers, GURL("https://example.com/"), &returned_csp);
-    EXPECT_EQ(test.expected,
-              Subsumes(*required_csp[0], returned_csp,
-                       url::Origin::Create(GURL("https://a.com"))))
+    EXPECT_EQ(test.expected, Subsumes(*required_csp[0], returned_csp))
         << test.name;
   }
 }
@@ -1526,16 +1557,13 @@ TEST(ContentSecurityPolicy, SubsumesBasedOnCSPSourcesOnly) {
   for (const auto& test : cases) {
     std::vector<mojom::ContentSecurityPolicyPtr> policies_b =
         ParseCSP(test.policies);
-    EXPECT_EQ(Subsumes(*policy_a[0], policies_b,
-                       url::Origin::Create(GURL("https://a.com"))),
-              test.expected)
+    EXPECT_EQ(Subsumes(*policy_a[0], policies_b), test.expected)
         << csp_a << " should " << (test.expected ? "" : "not ") << "subsume "
         << test.policies;
 
     if (!policies_b.empty()) {
       // Check if first policy of `listB` subsumes `A`.
-      EXPECT_EQ(Subsumes(*policies_b[0], policy_a,
-                         url::Origin::Create(GURL("https://a.com"))),
+      EXPECT_EQ(Subsumes(*policies_b[0], policy_a),
                 test.expected_first_policy_opposite)
           << csp_a << " should "
           << (test.expected_first_policy_opposite ? "" : "not ") << "subsume "
@@ -1624,9 +1652,7 @@ TEST(ContentSecurityPolicy, SubsumesIfNoneIsPresent) {
         ParseCSP(test.policy_a);
     std::vector<mojom::ContentSecurityPolicyPtr> policies_b =
         ParseCSP(test.policies_b);
-    EXPECT_EQ(Subsumes(*policy_a[0], policies_b,
-                       url::Origin::Create(GURL("https://a.com"))),
-              test.expected)
+    EXPECT_EQ(Subsumes(*policy_a[0], policies_b), test.expected)
         << test.policy_a << " should " << (test.expected ? "" : "not ")
         << "subsume " << test.policies_b;
   }
@@ -1696,9 +1722,7 @@ TEST(ContentSecurityPolicy, SubsumesPluginTypes) {
         ParseCSP(test.policy_a);
     std::vector<mojom::ContentSecurityPolicyPtr> policies_b =
         ParseCSP(test.policies_b);
-    EXPECT_EQ(Subsumes(*policy_a[0], policies_b,
-                       url::Origin::Create(GURL("https://a.com"))),
-              test.expected)
+    EXPECT_EQ(Subsumes(*policy_a[0], policies_b), test.expected)
         << test.policy_a << " should " << (test.expected ? "" : "not ")
         << "subsume " << test.policies_b;
   }

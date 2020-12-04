@@ -287,6 +287,7 @@ WebContentSecurityPolicy ConvertToPublic(
 
   return {policy->header->type,
           policy->header->source,
+          ConvertToPublic(std::move(policy->self_origin)),
           std::move(raw_directives),
           std::move(directives),
           policy->upgrade_insecure_requests,
@@ -627,7 +628,6 @@ void LocalFrameClientImpl::BeginNavigation(
     const String& href_translate,
     const base::Optional<WebImpression>& impression,
     WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr> initiator_csp,
-    network::mojom::blink::CSPSourcePtr initiator_self_source,
     network::mojom::IPAddressSpace initiator_address_space,
     mojo::PendingRemote<mojom::blink::NavigationInitiator>
         navigation_initiator) {
@@ -656,10 +656,6 @@ void LocalFrameClientImpl::BeginNavigation(
   for (auto& csp_policy : initiator_csp) {
     navigation_info->initiator_csp.emplace_back(
         ConvertToPublic(std::move(csp_policy)));
-  }
-  if (initiator_self_source) {
-    navigation_info->initiator_self_source =
-        ConvertToPublic(std::move(initiator_self_source));
   }
   navigation_info->initiator_address_space = initiator_address_space;
   navigation_info->navigation_initiator_remote =

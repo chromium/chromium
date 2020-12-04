@@ -144,6 +144,7 @@ blink::CSPTrustedTypesPtr ConvertToBlink(CSPTrustedTypesPtr trusted_types) {
 blink::ContentSecurityPolicyPtr ConvertToBlink(
     ContentSecurityPolicyPtr policy_in) {
   return blink::ContentSecurityPolicy::New(
+      ConvertToBlink(std::move(policy_in->self_origin)),
       ConvertToBlink(std::move(policy_in->raw_directives)),
       ConvertToBlink(std::move(policy_in->directives)),
       policy_in->upgrade_insecure_requests, policy_in->treat_as_public_address,
