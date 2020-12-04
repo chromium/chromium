@@ -21,7 +21,6 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
 import org.chromium.android_webview.settings.ForceDarkBehavior;
 import org.chromium.android_webview.settings.ForceDarkMode;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -294,7 +293,9 @@ public class AwSettings {
             mDoNotUpdateSelectionOnMutatingSelectionRange =
                     doNotUpdateSelectionOnMutatingSelectionRange;
 
-            mAllowFileUrlAccess = !BuildInfo.targetsAtLeastR();
+            mAllowFileUrlAccess =
+                    ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion
+                    < Build.VERSION_CODES.R;
         }
         // Defer initializing the native side until a native WebContents instance is set.
     }

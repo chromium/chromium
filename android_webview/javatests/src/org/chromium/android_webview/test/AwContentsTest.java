@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -38,7 +39,7 @@ import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHelper;
 import org.chromium.android_webview.test.util.CommonResources;
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
@@ -957,7 +958,9 @@ public class AwContentsTest {
         final AwContents awContents = testView.getAwContents();
 
         // Before Android Q, the loadData API is expected to handle the encoding for users.
-        boolean encodeOctothorpes = !BuildInfo.targetsAtLeastQ();
+        boolean encodeOctothorpes =
+                ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion
+                < Build.VERSION_CODES.Q;
 
         // A URL with no '#' character.
         mActivityTestRule.loadDataSync(awContents, mContentsClient.getOnPageFinishedHelper(),
