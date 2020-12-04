@@ -184,7 +184,7 @@ public class ContextMenuHelper {
                 mCurrentPopulator.onMenuClosed();
                 mCurrentPopulator = null;
             }
-            if (LensUtils.enableImageChip(mIsIncognito)) {
+            if (mChipDelegate != null) {
                 // If the image was being classified terminate the classification
                 // Has no effect if the classification already succeeded.
                 mChipDelegate.onMenuClosed();
