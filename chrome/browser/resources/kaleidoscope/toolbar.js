@@ -22,13 +22,36 @@ class KaleidoscopeToolbarElement extends PolymerElement {
 
       // Sets the text displayed beside the menu button.
       pageName: {type: String, value: ''},
+
+      // Sets the text displayed in the search box.
+      searchPrompt: {type: String, value: ''},
     };
   }
 
-  constructor() {
-    super();
+  connectedCallback() {
+    super.connectedCallback();
+    this.hideSearch();
 
-    this.timeoutInterval_ = null;
+    const toolbar = /** @type {CrToolbarElement} */ (this.$.toolbar);
+    const input = toolbar.getSearchField().getSearchInput();
+    input.addEventListener('keyup', (e) => {
+      if (e.keyCode == 13) {
+        const event =
+            new CustomEvent('ks-search-updated', {detail: input.value});
+        this.dispatchEvent(event);
+      }
+    });
+  }
+
+  hideSearch() {
+    const toolbar = /** @type {CrToolbarElement} */ (this.$.toolbar);
+    toolbar.getSearchField().style.display = 'none';
+  }
+
+  showSearch() {
+    const toolbar = /** @type {CrToolbarElement} */ (this.$.toolbar);
+    toolbar.getSearchField().style.display = '';
+    toolbar.getSearchField().getSearchInput().focus();
   }
 
   /**
@@ -36,14 +59,10 @@ class KaleidoscopeToolbarElement extends PolymerElement {
    * @private
    */
   onSearchChanged_(e) {
-    clearInterval(this.timeoutInterval_);
-
-    // Add a 300ms debounce so we don't fire for every character but should not
-    // be noticeable to the user.
-    this.timeoutInterval_ = setTimeout(() => {
-      const event = new CustomEvent('ks-search-updated', {detail: e.detail});
+    if (e.detail.length == 0) {
+      const event = new CustomEvent('ks-search-cleared');
       this.dispatchEvent(event);
-    }, 300);
+    }
   }
 }
 

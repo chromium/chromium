@@ -31,5 +31,6 @@ js_library("side_nav_container") {
 js_library("toolbar") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar.m",
   ]
 }
