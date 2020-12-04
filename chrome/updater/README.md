@@ -1,8 +1,9 @@
 An updater for desktop client software using Chromium code and tools.
 
 * The code lives in //chrome/updater.
-* Design Doc: http://bit.ly/chromium-updater
-* Please join chrome-updates-dev@chromium.org for topics related to the project.
+* Design Doc: https://bit.ly/chromium-updater
+* Please join chrome-updates-dev@chromium.org or
+https://chromium.slack.com#updater for topics related to the project.
 
 The updater will be built from a common, platform neutral code base, as part of
 the Chrome build. The updater is going to be a drop-in replacement for Google
