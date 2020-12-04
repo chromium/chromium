@@ -363,6 +363,7 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
   if (HasPrimaryAccount(signin::ConsentLevel::kSync))
     SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false);
 
+  DCHECK(!HasPrimaryAccount(signin::ConsentLevel::kSync));
   // Revoke all tokens before sending signed_out notification, because there
   // may be components that don't listen for token service events when the
   // profile is not connected to an account.

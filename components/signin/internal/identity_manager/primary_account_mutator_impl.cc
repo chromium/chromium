@@ -87,10 +87,6 @@ bool PrimaryAccountMutatorImpl::ClearPrimaryAccount(
     case PrimaryAccountMutator::ClearAccountsAction::kDefault:
       primary_account_manager_->SignOut(source_metric, delete_metric);
       break;
-    case PrimaryAccountMutator::ClearAccountsAction::kKeepAll:
-      primary_account_manager_->SignOutAndKeepAllAccounts(source_metric,
-                                                          delete_metric);
-      break;
     case PrimaryAccountMutator::ClearAccountsAction::kRemoveAll:
       primary_account_manager_->SignOutAndRemoveAllAccounts(source_metric,
                                                             delete_metric);

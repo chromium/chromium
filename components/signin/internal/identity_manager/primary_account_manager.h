@@ -139,6 +139,9 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // Signs a user out, removing the preference, erasing all keys
   // associated with the authenticated user, and canceling all auth in progress.
   // Does not remove the accounts from the token service.
+  //
+  // TODO(msarda): This method is only called from within the IdentityManager
+  // and from tests and should be removed.
   void SignOutAndKeepAllAccounts(
       signin_metrics::ProfileSignout signout_source_metric,
       signin_metrics::SignoutDelete signout_delete_metric);

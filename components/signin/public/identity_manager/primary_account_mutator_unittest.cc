@@ -437,18 +437,6 @@ TEST_F(PrimaryAccountMutatorTest, ClearPrimaryAccount_Default) {
       other_account_info.account_id));
 }
 
-// Test that ClearPrimaryAccount(...) with ClearAccountTokensAction::kKeepAll
-// keep all tokens, independently of the account consistency method.
-TEST_F(PrimaryAccountMutatorTest, ClearPrimaryAccount_KeepAll) {
-  for (signin::AccountConsistencyMethod account_consistency_method :
-       kTestedAccountConsistencyMethods) {
-    RunClearPrimaryAccountTest(
-        account_consistency_method,
-        signin::PrimaryAccountMutator::ClearAccountsAction::kKeepAll,
-        RemoveAccountExpectation::kKeepAll);
-  }
-}
-
 // Test that ClearPrimaryAccount(...) with ClearAccountTokensAction::kRemoveAll
 // remove all tokens, independently of the account consistency method.
 TEST_F(PrimaryAccountMutatorTest, ClearPrimaryAccount_RemoveAll) {

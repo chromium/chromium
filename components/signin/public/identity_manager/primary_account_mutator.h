@@ -33,7 +33,6 @@ class PrimaryAccountMutator {
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.identitymanager
   enum class ClearAccountsAction {
     kDefault,    // Default action based on internal policy.
-    kKeepAll,    // Keep all accounts.
     kRemoveAll,  // Remove all accounts.
   };
 
