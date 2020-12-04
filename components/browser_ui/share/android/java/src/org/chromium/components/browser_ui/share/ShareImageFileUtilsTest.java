@@ -14,6 +14,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Looper;
 import android.provider.MediaStore;
@@ -25,7 +26,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
@@ -155,7 +155,7 @@ public class ShareImageFileUtilsTest extends DummyUiActivityTestCase {
 
     private void deleteAllTestImages() throws TimeoutException {
         AsyncTask.SERIAL_EXECUTOR.execute(() -> {
-            if (BuildInfo.isAtLeastQ()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 deleteMediaStoreFiles();
             }
             deleteExternalStorageFiles();

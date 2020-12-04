@@ -11,6 +11,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -19,7 +20,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
@@ -258,7 +258,7 @@ public class ShareImageFileUtils {
 
                 Uri uri = null;
                 if (!isTemporary) {
-                    if (BuildInfo.isAtLeastQ()) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         uri = addToMediaStore(destFile);
                     } else {
                         long downloadId = addCompletedDownload(destFile);
@@ -386,7 +386,7 @@ public class ShareImageFileUtils {
 
     @TargetApi(29)
     public static Uri addToMediaStore(File file) {
-        assert BuildInfo.isAtLeastQ();
+        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
 
         final ContentValues contentValues = new ContentValues();
         contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, file.getName());
