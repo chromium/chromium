@@ -987,6 +987,37 @@ static bool ScreenSpanningMediaFeatureEval(const MediaQueryExpValue& value,
           value.id == CSSValueID::kSingleFoldHorizontal);
 }
 
+static bool ScreenFoldPostureMediaFeatureEval(const MediaQueryExpValue& value,
+                                              MediaFeaturePrefix,
+                                              const MediaValues& media_values) {
+  // isValid() is false if there is no parameter. Without parameter we should
+  // return true to indicate that screenFoldPosture is enabled in the
+  // browser.
+  if (!value.IsValid())
+    return true;
+
+  DCHECK(value.is_id);
+
+  ScreenFoldPosture screen_fold_posture = media_values.GetScreenFoldPosture();
+  switch (value.id) {
+    case CSSValueID::kNoFold:
+      return screen_fold_posture == ScreenFoldPosture::kNoFold;
+    case CSSValueID::kLaptop:
+      return screen_fold_posture == ScreenFoldPosture::kLaptop;
+    case CSSValueID::kFlat:
+      return screen_fold_posture == ScreenFoldPosture::kFlat;
+    case CSSValueID::kTent:
+      return screen_fold_posture == ScreenFoldPosture::kTent;
+    case CSSValueID::kTablet:
+      return screen_fold_posture == ScreenFoldPosture::kTablet;
+    case CSSValueID::kBook:
+      return screen_fold_posture == ScreenFoldPosture::kBook;
+    default:
+      NOTREACHED();
+      return false;
+  }
+}
+
 void MediaQueryEvaluator::Init() {
   // Create the table.
   g_function_map = new FunctionMap;

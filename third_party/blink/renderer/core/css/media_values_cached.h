@@ -42,6 +42,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
     ForcedColors forced_colors;
     NavigationControls navigation_controls;
     ScreenSpanning screen_spanning;
+    ScreenFoldPosture screen_fold_posture;
 
     MediaValuesCachedData();
     explicit MediaValuesCachedData(Document&);
@@ -73,6 +74,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
       data.forced_colors = forced_colors;
       data.navigation_controls = navigation_controls;
       data.screen_spanning = screen_spanning;
+      data.screen_fold_posture = screen_fold_posture;
       return data;
     }
   };
@@ -115,6 +117,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   ForcedColors GetForcedColors() const override;
   NavigationControls GetNavigationControls() const override;
   ScreenSpanning GetScreenSpanning() const override;
+  ScreenFoldPosture GetScreenFoldPosture() const override;
 
   void OverrideViewportDimensions(double width, double height) override;
 

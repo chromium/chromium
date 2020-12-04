@@ -1752,6 +1752,10 @@
       status: "test",
     },
     {
+      name: "ScreenFold",
+      status: "experimental",
+    },
+    {
       name: "ScreenWakeLock",
       status: "stable",
     },

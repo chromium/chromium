@@ -40,7 +40,8 @@ MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData()
       prefers_reduced_motion(false),
       forced_colors(ForcedColors::kNone),
       navigation_controls(NavigationControls::kNone),
-      screen_spanning(ScreenSpanning::kNone) {}
+      screen_spanning(ScreenSpanning::kNone),
+      screen_fold_posture(ScreenFoldPosture::kNoFold) {}
 
 MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData(
     Document& document)
@@ -85,6 +86,7 @@ MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData(
     forced_colors = MediaValues::CalculateForcedColors();
     navigation_controls = MediaValues::CalculateNavigationControls(frame);
     screen_spanning = MediaValues::CalculateScreenSpanning(frame);
+    screen_fold_posture = MediaValues::CalculateScreenFoldPosture(frame);
   }
 }
 
@@ -223,6 +225,10 @@ NavigationControls MediaValuesCached::GetNavigationControls() const {
 
 ScreenSpanning MediaValuesCached::GetScreenSpanning() const {
   return data_.screen_spanning;
+}
+
+ScreenFoldPosture MediaValuesCached::GetScreenFoldPosture() const {
+  return data_.screen_fold_posture;
 }
 
 }  // namespace blink

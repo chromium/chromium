@@ -193,6 +193,7 @@ TEST(MediaQuerySetTest, BehindRuntimeFlag) {
   ScopedForcedColorsForTest forced_colors_flag(false);
   ScopedMediaQueryNavigationControlsForTest navigation_controls_flag(false);
   ScopedCSSFoldablesForTest foldables_flag(false);
+  ScopedScreenFoldForTest screen_fold_flag(false);
 
   // The first string represents the input string, the second string represents
   // the output string.
@@ -200,10 +201,12 @@ TEST(MediaQuerySetTest, BehindRuntimeFlag) {
       {"(forced-colors)", "not all"},
       {"(navigation-controls)", "not all"},
       {"(screen-spanning)", "not all"},
+      {"(screen-fold-posture)", "not all"},
       {"(shape: rect)", "not all"},
       {"(forced-colors: none)", "not all"},
       {"(navigation-controls: none)", "not all"},
       {"(screen-spanning:none)", "not all"},
+      {"(screen-fold-posture:none)", "not all"},
       {nullptr, nullptr}  // Do not remove the terminator line.
   };
 

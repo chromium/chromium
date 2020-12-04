@@ -263,6 +263,11 @@ ScreenSpanning MediaValues::CalculateScreenSpanning(LocalFrame* frame) {
   return ScreenSpanning::kNone;
 }
 
+ScreenFoldPosture MediaValues::CalculateScreenFoldPosture(LocalFrame* frame) {
+  // TODO(darktears): Retrieve information from the host.
+  return ScreenFoldPosture::kNoFold;
+}
+
 bool MediaValues::ComputeLengthImpl(double value,
                                     CSSPrimitiveValue::UnitType type,
                                     unsigned default_font_size,

@@ -279,6 +279,75 @@ MediaQueryEvaluatorTestCase g_screen_spanning_single_fold_horizontal_cases[] = {
     {nullptr, 0}  // Do not remove the terminator line.
 };
 
+MediaQueryEvaluatorTestCase g_screen_fold_posture_none_cases[] = {
+    {"(screen-fold-posture)", 1},
+    {"(screen-fold-posture: laptop)", 0},
+    {"(screen-fold-posture: flat)", 0},
+    {"(screen-fold-posture: tent)", 0},
+    {"(screen-fold-posture: tablet)", 0},
+    {"(screen-fold-posture: book)", 0},
+    {"(screen-fold-posture: no-fold)", 1},
+    {"(screen-fold-posture: 15)", 0},
+    {"(screen-fold-posture: 2px)", 0},
+    {"(screen-fold-posture: 16/9)", 0},
+    {nullptr, 0}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_screen_fold_posture_laptop_cases[] = {
+    {"(screen-fold-posture)", 1},
+    {"(screen-fold-posture: laptop)", 1},
+    {"(screen-fold-posture: flat)", 0},
+    {"(screen-fold-posture: tent)", 0},
+    {"(screen-fold-posture: tablet)", 0},
+    {"(screen-fold-posture: book)", 0},
+    {"(screen-fold-posture: no-fold)", 0},
+    {nullptr, 0}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_screen_fold_posture_flat_cases[] = {
+    {"(screen-fold-posture)", 1},
+    {"(screen-fold-posture: laptop)", 0},
+    {"(screen-fold-posture: flat)", 1},
+    {"(screen-fold-posture: tent)", 0},
+    {"(screen-fold-posture: tablet)", 0},
+    {"(screen-fold-posture: book)", 0},
+    {"(screen-fold-posture: no-fold)", 0},
+    {nullptr, 0}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_screen_fold_posture_tent_cases[] = {
+    {"(screen-fold-posture)", 1},
+    {"(screen-fold-posture: laptop)", 0},
+    {"(screen-fold-posture: flat)", 0},
+    {"(screen-fold-posture: tent)", 1},
+    {"(screen-fold-posture: tablet)", 0},
+    {"(screen-fold-posture: book)", 0},
+    {"(screen-fold-posture: no-fold)", 0},
+    {nullptr, 0}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_screen_fold_posture_tablet_cases[] = {
+    {"(screen-fold-posture)", 1},
+    {"(screen-fold-posture: laptop)", 0},
+    {"(screen-fold-posture: flat)", 0},
+    {"(screen-fold-posture: tent)", 0},
+    {"(screen-fold-posture: tablet)", 1},
+    {"(screen-fold-posture: book)", 0},
+    {"(screen-fold-posture: no-fold)", 0},
+    {nullptr, 0}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_screen_fold_posture_book_cases[] = {
+    {"(screen-fold-posture)", 1},
+    {"(screen-fold-posture: laptop)", 0},
+    {"(screen-fold-posture: flat)", 0},
+    {"(screen-fold-posture: tent)", 0},
+    {"(screen-fold-posture: tablet)", 0},
+    {"(screen-fold-posture: book)", 1},
+    {"(screen-fold-posture: no-fold)", 0},
+    {nullptr, 0}  // Do not remove the terminator line.
+};
+
 void TestMQEvaluator(MediaQueryEvaluatorTestCase* test_cases,
                      const MediaQueryEvaluator& media_query_evaluator,
                      CSSParserMode mode) {
@@ -533,6 +602,54 @@ TEST(MediaQueryEvaluatorTest, CachedScreenSpanning) {
     MediaQueryEvaluator media_query_evaluator(*media_values);
     TestMQEvaluator(g_screen_spanning_single_fold_horizontal_cases,
                     media_query_evaluator);
+  }
+}
+
+TEST(MediaQueryEvaluatorTest, CachedScreenFoldPosture) {
+  ScopedScreenFoldForTest scoped_feature(true);
+
+  MediaValuesCached::MediaValuesCachedData data;
+  {
+    data.screen_fold_posture = ScreenFoldPosture::kNoFold;
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_screen_fold_posture_none_cases, media_query_evaluator);
+  }
+
+  {
+    data.screen_fold_posture = ScreenFoldPosture::kLaptop;
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_screen_fold_posture_laptop_cases, media_query_evaluator);
+  }
+
+  {
+    data.screen_fold_posture = ScreenFoldPosture::kFlat;
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_screen_fold_posture_flat_cases, media_query_evaluator);
+  }
+
+  {
+    data.screen_fold_posture = ScreenFoldPosture::kTent;
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_screen_fold_posture_tent_cases, media_query_evaluator);
+  }
+
+  {
+    data.screen_fold_posture = ScreenFoldPosture::kTablet;
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_screen_fold_posture_tablet_cases, media_query_evaluator);
+  }
+
+  {
+    data.screen_fold_posture = ScreenFoldPosture::kBook;
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_screen_fold_posture_book_cases, media_query_evaluator);
   }
 }
 
