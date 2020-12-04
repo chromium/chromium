@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Process;
 import android.os.SystemClock;
 import android.telephony.CellIdentityCdma;
@@ -29,7 +30,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.compat.ApiHelperForQ;
 import org.chromium.base.task.PostTask;
@@ -337,7 +337,7 @@ class PlatformNetworksManager {
     }
 
     private static boolean hasLocationPermission(Context context) {
-        if (BuildInfo.isAtLeastQ()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION);
         }
 
@@ -352,7 +352,7 @@ class PlatformNetworksManager {
 
     private static void requestCellInfoUpdate(
             TelephonyManager telephonyManager, Callback<List<CellInfo>> callback) {
-        if (BuildInfo.isAtLeastQ()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             ApiHelperForQ.requestCellInfoUpdate(telephonyManager, callback);
             return;
         }

@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -22,7 +23,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.browser.trusted.Token;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.ChromeApplication;
@@ -237,7 +237,7 @@ public class TrustedWebActivityPermissionManager {
                 // are not able to detect if use is changing the setting to "ask every time", when
                 // there is no permission, return ASK to let the client app decide whether to show
                 // the prompt.
-                if (BuildInfo.isAtLeastR()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     if (!enabled) return ContentSettingValues.ASK;
                 }
 

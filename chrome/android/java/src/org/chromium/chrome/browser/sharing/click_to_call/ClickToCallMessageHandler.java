@@ -15,7 +15,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -128,7 +127,7 @@ public class ClickToCallMessageHandler {
      */
     private static boolean shouldOpenDialer() {
         // On Android Q and above, we never open the dialer directly.
-        if (BuildInfo.isAtLeastQ()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return false;
         }
 
@@ -151,7 +150,7 @@ public class ClickToCallMessageHandler {
     private static boolean shouldShowNotification() {
         // Always show the notification for Android Q and above. For pre-Q, only show notification
         // if device is locked.
-        return BuildInfo.isAtLeastQ()
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
                 || !DeviceConditions.isCurrentlyScreenOnAndUnlocked(
                         ContextUtils.getApplicationContext());
     }

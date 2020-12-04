@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
 /**
@@ -137,7 +136,7 @@ public class NightModeUtils {
         if (sNightModeDefaultToLightForTesting != null) {
             return sNightModeDefaultToLightForTesting;
         }
-        return !BuildInfo.isAtLeastQ();
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.Q;
     }
 
     /**

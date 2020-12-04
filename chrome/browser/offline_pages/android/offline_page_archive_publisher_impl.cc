@@ -37,7 +37,8 @@ OfflinePageArchivePublisherImpl::Delegate* GetDefaultDelegate() {
 }
 
 bool ShouldUseDownloadsCollection() {
-  return base::android::BuildInfo::GetInstance()->is_at_least_q();
+  return base::android::BuildInfo::GetInstance()->sdk_int() >=
+         base::android::SDK_VERSION_Q;
 }
 
 // Helper function to do the move and register synchronously. Make sure this is

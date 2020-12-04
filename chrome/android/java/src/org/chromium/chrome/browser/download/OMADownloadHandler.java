@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.Browser;
@@ -31,7 +32,6 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
@@ -991,7 +991,7 @@ public class OMADownloadHandler extends BroadcastReceiver {
                 String path = mDownloadInfo.getFilePath();
                 if (!TextUtils.isEmpty(path)) {
                     File fromFile = new File(path);
-                    if (BuildInfo.isAtLeastQ()) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         // Copy the downloaded content to the intermediate URI and publish it.
                         String pendingUri =
                                 DownloadCollectionBridge.createIntermediateUriForPublish(
@@ -1023,13 +1023,13 @@ public class OMADownloadHandler extends BroadcastReceiver {
                     }
                     if (!success) {
                         if (fromFile.delete()) {
-                            if (BuildInfo.isAtLeastQ()) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                                 Log.w(TAG, "Failed to publish the downloaded file.");
                             } else {
                                 Log.w(TAG, "Failed to rename the file.");
                             }
                         } else {
-                            if (BuildInfo.isAtLeastQ()) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                                 Log.w(TAG, "Failed to publish and delete the file.");
                             } else {
                                 Log.w(TAG, "Failed to rename and delete the file.");

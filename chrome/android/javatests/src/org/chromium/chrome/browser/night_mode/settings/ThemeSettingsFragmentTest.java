@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.flags.ChromeFeatureList.DARKEN_WEBSITE
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_THEME_DARKEN_WEBSITES_ENABLED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_THEME_SETTING;
 
+import android.os.Build;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -18,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -92,7 +92,7 @@ public class ThemeSettingsFragmentTest extends DummyUiActivityTestCase {
     public void testSelectThemes() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Default to light parameter is only applicable pre-Q.
-            if (mDefaultToLight && BuildInfo.isAtLeastQ()) {
+            if (mDefaultToLight && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 Assert.assertFalse("Q should not default to light.",
                         NightModeUtils.isNightModeDefaultToLight());
                 return;
@@ -137,7 +137,7 @@ public class ThemeSettingsFragmentTest extends DummyUiActivityTestCase {
     public void testDarkenWebsiteButton() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Default to light parameter is only applicable pre-Q.
-            if (mDefaultToLight && BuildInfo.isAtLeastQ()) {
+            if (mDefaultToLight && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 Assert.assertFalse("Q should not default to light.",
                         NightModeUtils.isNightModeDefaultToLight());
                 return;

@@ -6,11 +6,11 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.FieldTrialList;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -168,7 +168,7 @@ public class AutofillAssistantFacade {
      * that direct actions are available at all.
      */
     public static boolean areDirectActionsAvailable(@ActivityType int activityType) {
-        return BuildInfo.isAtLeastQ()
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
                 && (activityType == ActivityType.CUSTOM_TAB || activityType == ActivityType.TABBED)
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT_DIRECT_ACTIONS)
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT);

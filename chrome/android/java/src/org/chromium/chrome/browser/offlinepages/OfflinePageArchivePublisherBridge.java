@@ -139,7 +139,7 @@ public class OfflinePageArchivePublisherBridge {
     @CalledByNative
     @VisibleForTesting
     public static String publishArchiveToDownloadsCollection(OfflinePageItem page) {
-        assert org.chromium.base.BuildInfo.isAtLeastQ();
+        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
 
         final String isPending = "is_pending"; // MediaStore.IS_PENDING
 
