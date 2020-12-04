@@ -18219,6 +18219,17 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="XR.ARCore.DepthBufferSizeInPixels" units="pixels"
+    expires_after="2021-12-01">
+  <owner>bialpio@chromium.org</owner>
+  <owner>xr-dev@chromium.org</owner>
+  <summary>
+    Recorded on every frame for as long as depth data is requested in an XR
+    session backed by ARCore device. Measures the number of pixels (width *
+    height) in the depth buffer obtained from ARCore.
+  </summary>
+</histogram>
+
 <histogram name="XR.RuntimeUsed" enum="XRDeviceId" expires_after="2021-07-01">
   <owner>alcooper@chromium.org</owner>
   <owner>mlamouri@google.com</owner>

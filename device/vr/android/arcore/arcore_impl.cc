@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/bind.h"
 #include "base/containers/span.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/math_constants.h"
 #include "base/optional.h"
@@ -1760,6 +1761,8 @@ mojom::XRDepthDataPtr ArCoreImpl::GetDepthData() {
                           << num_planes;
 
   if (time_delta > previous_depth_data_time_) {
+    // The depth data is more recent than what was previously returned, we need
+    // to send the latest information back:
     mojom::XRDepthDataUpdatedPtr result = mojom::XRDepthDataUpdated::New();
 
     result->time_delta = time_delta;
@@ -1779,6 +1782,26 @@ mojom::XRDepthDataPtr ArCoreImpl::GetDepthData() {
       DVLOG(2) << __func__
                << ": overflow in 2 * width * height expression, returning null "
                   "depth data";
+      return nullptr;
+    }
+
+    // Log a histogram w/ the number of entries in the depth buffer to make sure
+    // we have a way of measuring the impact of the decision to suppress
+    // too-high-resolution depth buffers. Assuming various common aspect ratios
+    // & fixing the width to 160 pixels, the total number of pixels varies from
+    // ~6000 to ~20000, and w/ the threshold below set to 43200 pixels, the
+    // custom count from 5000 to 55000 with bucket size of 1000 should give us
+    // sufficient granularity of data.
+    UMA_HISTOGRAM_CUSTOM_COUNTS("XR.ARCore.DepthBufferSizeInPixels",
+                                buffer_size / 2, 5000, 55000, 50);
+
+    if (buffer_size / 2 > 240 * 180) {
+      // ARCore should report depth data buffers w/ resolution in the ballpark
+      // of 160x120. If the number of data entries is higher than 240 * 180
+      // (=43200), we should not return it. The threshold was picked by
+      // multiplying each expected dimension (160x120) by 1.5. Note that this
+      // translates to 2.25 increase in allowed number of pixels compared to
+      // the currently expected resolution.
       return nullptr;
     }
 
@@ -1805,6 +1828,8 @@ mojom::XRDepthDataPtr ArCoreImpl::GetDepthData() {
     return mojom::XRDepthData::NewUpdatedDepthData(std::move(result));
   }
 
+  // We don't have more recent data than what was already returned, inform the
+  // caller that previously returned data is still valid:
   return mojom::XRDepthData::NewDataStillValid(
       mojom::XRDepthDataStillValid::New());
 }
