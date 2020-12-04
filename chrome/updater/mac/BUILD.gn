@@ -35,7 +35,7 @@ source_set("network_fetcher_sources") {
 source_set("updater_tests") {
   testonly = true
 
-  sources = [ "net/network_unittest.mm" ]
+  sources = [ "net/network_unittest.cc" ]
 
   deps = [
     ":network_fetcher_sources",

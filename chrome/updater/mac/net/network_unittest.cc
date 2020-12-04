@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/updater/mac/net/network.h"
-#include "chrome/updater/mac/net/network_fetcher.h"
 
 #include <stdint.h>
 
@@ -11,9 +10,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "chrome/updater/mac/net/network_fetcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -21,18 +22,19 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-using base::test::RunClosure;
-using ResponseStartedCallback =
-    update_client::NetworkFetcher::ResponseStartedCallback;
-using ProgressCallback = update_client::NetworkFetcher::ProgressCallback;
-using PostRequestCompleteCallback =
-    update_client::NetworkFetcher::PostRequestCompleteCallback;
-using DownloadToFileCompleteCallback =
-    update_client::NetworkFetcher::DownloadToFileCompleteCallback;
-
 namespace updater {
+namespace {
 
-static base::FilePath testFilePath;
+using ::base::test::RunClosure;
+using ResponseStartedCallback =
+    ::update_client::NetworkFetcher::ResponseStartedCallback;
+using ProgressCallback = ::update_client::NetworkFetcher::ProgressCallback;
+using PostRequestCompleteCallback =
+    ::update_client::NetworkFetcher::PostRequestCompleteCallback;
+using DownloadToFileCompleteCallback =
+    ::update_client::NetworkFetcher::DownloadToFileCompleteCallback;
+
+}  // namespace
 
 class ChromeUpdaterNetworkMacTest : public ::testing::Test {
  public:
@@ -62,11 +64,13 @@ class ChromeUpdaterNetworkMacTest : public ::testing::Test {
     PostRequestCompleted();
   }
 
-  void DownloadCallback(int net_error, int64_t content_size) {
+  void DownloadCallback(const base::FilePath& test_file_path,
+                        int net_error,
+                        int64_t content_size) {
     EXPECT_EQ(net_error, 0);
     EXPECT_GT(content_size, 0);
-    EXPECT_FALSE(testFilePath.empty());
-    EXPECT_TRUE(base::PathExists(testFilePath));
+    EXPECT_FALSE(test_file_path.empty());
+    EXPECT_TRUE(base::PathExists(test_file_path));
     DownloadToFileCompleted();
   }
 
@@ -74,19 +78,21 @@ class ChromeUpdaterNetworkMacTest : public ::testing::Test {
       const net::test_server::HttpRequest& request) {
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();
-    http_response->set_code(net::HTTP_OK);
 
-    if (request.content.size() > 0) {
-      // Echo the posted data back if there's any.
+    if (request.method == net::test_server::HttpMethod::METHOD_POST) {
+      // Echo the posted data back.
       http_response->set_content(request.content);
-    } else {
+      http_response->AddCustomHeader("X-Retry-After", "67");
+      http_response->AddCustomHeader("ETag", "Wfhw789h");
+      http_response->AddCustomHeader("X-Cup-Server-Proof", "server-proof");
+    } else if (request.method == net::test_server::HttpMethod::METHOD_GET) {
       http_response->set_content("hello");
+      http_response->set_content_type("application/octet-stream");
+    } else {
+      NOTREACHED();
     }
-    http_response->set_content_type("application/octet-stream");
 
-    http_response->AddCustomHeader("X-Retry-After", "67");
-    http_response->AddCustomHeader("ETag", "Wfhw789h");
-    http_response->AddCustomHeader("X-Cup-Server-Proof", "server-proof");
+    http_response->set_code(net::HTTP_OK);
     return http_response;
   }
 
@@ -97,39 +103,30 @@ class ChromeUpdaterNetworkMacTest : public ::testing::Test {
 };
 
 #pragma mark - Test Methods
-TEST_F(ChromeUpdaterNetworkMacTest, NetworkFetcherMacHTTPFactory) {
-  base::RunLoop run_loop;
-  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
-  auto fetcher = base::MakeRefCounted<NetworkFetcherFactory>()->Create();
-  quit_closure.Run();
-  run_loop.Run();
-  EXPECT_NE(nullptr, fetcher.get());
-}
 
 TEST_F(ChromeUpdaterNetworkMacTest, NetworkFetcherMacPostRequest) {
   base::RunLoop run_loop;
   base::RepeatingClosure quit_closure = run_loop.QuitClosure();
   EXPECT_CALL(*this, PostRequestCompleted()).WillOnce(RunClosure(quit_closure));
 
-  auto fetcher = base::MakeRefCounted<NetworkFetcherFactory>()->Create();
-
   net::EmbeddedTestServer test_server;
   test_server.RegisterRequestHandler(base::BindRepeating(
       &ChromeUpdaterNetworkMacTest::HandleRequest, base::Unretained(this)));
-  ASSERT_TRUE(test_server.Start());
-  const GURL url = test_server.GetURL("/echo");
+  const net::test_server::EmbeddedTestServerHandle server_handle =
+      test_server.StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
 
-  constexpr char kPostData[] = {0x01, 0x00, 0x55, 0x33, 0xda, 0x10, 0x44};
-  const std::string post_data(kPostData, sizeof(kPostData));
+  const std::string kPostData = "\x01\x00\x55\x33\xda\x10\x44";
+
+  auto fetcher = base::MakeRefCounted<NetworkFetcherFactory>()->Create();
   fetcher->PostRequest(
-      url, post_data, {}, {},
+      test_server.GetURL("/echo"), kPostData, {}, {},
       base::BindOnce(&ChromeUpdaterNetworkMacTest::StartedCallback,
                      base::Unretained(this)),
       base::BindRepeating(&ChromeUpdaterNetworkMacTest::ProgressCallback,
                           base::Unretained(this)),
       base::BindOnce(&ChromeUpdaterNetworkMacTest::PostRequestCompleteCallback,
-                     base::Unretained(this), post_data));
-
+                     base::Unretained(this), kPostData));
   run_loop.Run();
 }
 
@@ -138,28 +135,29 @@ TEST_F(ChromeUpdaterNetworkMacTest, NetworkFetcherMacDownloadToFile) {
   base::RepeatingClosure quit_closure = run_loop.QuitClosure();
   EXPECT_CALL(*this, DownloadToFileCompleted())
       .WillOnce(RunClosure(quit_closure));
-  auto fetcher = base::MakeRefCounted<NetworkFetcherFactory>()->Create();
 
   net::EmbeddedTestServer test_server;
   test_server.RegisterRequestHandler(base::BindRepeating(
       &ChromeUpdaterNetworkMacTest::HandleRequest, base::Unretained(this)));
-  ASSERT_TRUE(test_server.Start());
-  const GURL url = test_server.GetURL("/echo");
+  const net::test_server::EmbeddedTestServerHandle server_handle =
+      test_server.StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  testFilePath =
+  const base::FilePath test_file_path =
       temp_dir.GetPath().Append(FILE_PATH_LITERAL("downloaded_file"));
 
+  auto fetcher = base::MakeRefCounted<NetworkFetcherFactory>()->Create();
   fetcher->DownloadToFile(
-      url, testFilePath,
+      test_server.GetURL("/echo"), test_file_path,
       base::BindOnce(&ChromeUpdaterNetworkMacTest::StartedCallback,
                      base::Unretained(this)),
       base::BindRepeating(&ChromeUpdaterNetworkMacTest::ProgressCallback,
                           base::Unretained(this)),
       base::BindOnce(&ChromeUpdaterNetworkMacTest::DownloadCallback,
-                     base::Unretained(this)));
-
+                     base::Unretained(this), test_file_path));
   run_loop.Run();
 }
+
 }  // namespace updater
