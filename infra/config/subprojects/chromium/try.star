@@ -661,6 +661,7 @@ try_.chromium_chromiumos_builder(
 try_.chromium_chromiumos_builder(
     name = "chromeos-arm-generic-rel",
     branch_selector = branches.ALL_BRANCHES,
+    builderless = not settings.is_master,
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -991,6 +992,7 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "linux-libfuzzer-asan-rel",
     branch_selector = branches.STANDARD_MILESTONE,
+    builderless = not settings.is_master,
     executable = "recipe:chromium_libfuzzer_trybot",
     main_list_view = "try",
     tryjob = try_.job(),
