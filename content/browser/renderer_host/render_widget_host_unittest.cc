@@ -544,9 +544,9 @@ class RenderWidgetHostTest : public testing::Test {
     screen_.reset(aura::TestScreen::Create(gfx::Size()));
     display::Screen::SetScreenInstance(screen_.get());
 #endif
-    host_.reset(MockRenderWidgetHost::Create(
+    host_ = MockRenderWidgetHost::Create(
         delegate_.get(), *agent_scheduling_group_host_,
-        process_->GetNextRoutingID(), widget_.GetNewRemote()));
+        process_->GetNextRoutingID(), widget_.GetNewRemote());
     // Set up the RenderWidgetHost as being for a main frame.
     host_->set_owner_delegate(&mock_owner_delegate_);
     // Act like there is no RenderWidget present in the renderer yet.

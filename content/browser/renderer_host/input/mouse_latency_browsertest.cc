@@ -80,7 +80,8 @@ class TracingRenderWidgetHost : public RenderWidgetHostImpl {
                           AgentSchedulingGroupHost& agent_scheduling_group,
                           int32_t routing_id,
                           bool hidden)
-      : RenderWidgetHostImpl(delegate,
+      : RenderWidgetHostImpl(/*self_owned=*/false,
+                             delegate,
                              agent_scheduling_group,
                              routing_id,
                              hidden,
@@ -92,8 +93,6 @@ class TracingRenderWidgetHost : public RenderWidgetHostImpl {
       blink::mojom::InputEventResultState ack_result) override {
     RenderWidgetHostImpl::OnMouseEventAck(event, ack_source, ack_result);
   }
-
- private:
 };
 
 class TracingRenderWidgetHostFactory : public RenderWidgetHostFactory {

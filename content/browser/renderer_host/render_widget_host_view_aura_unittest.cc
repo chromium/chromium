@@ -388,6 +388,8 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
     return widget_.ReceivedScreenRects();
   }
 
+  // Instance self-delete when its |agent_scheduling_groups|'s process will
+  // exit.
   static MockRenderWidgetHostImpl* Create(
       RenderWidgetHostDelegate* delegate,
       AgentSchedulingGroupHost& agent_scheduling_group,
@@ -419,7 +421,8 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
   MockRenderWidgetHostImpl(RenderWidgetHostDelegate* delegate,
                            AgentSchedulingGroupHost& agent_scheduling_group,
                            int32_t routing_id)
-      : RenderWidgetHostImpl(delegate,
+      : RenderWidgetHostImpl(/*self_owned=*/true,
+                             delegate,
                              agent_scheduling_group,
                              routing_id,
                              /*hidden=*/false,
@@ -522,8 +525,6 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     EXPECT_EQ(view, host->GetView());
     view->Destroy();
     EXPECT_EQ(nullptr, host->GetView());
-
-    delete host;
   }
 
   void SetUpEnvironment() {
@@ -584,16 +585,9 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
 
   void TearDownEnvironment() {
     sink_ = nullptr;
-    if (view_) {
+    if (view_)
       DestroyView(view_);
-    } else if (widget_host_) {
-      // Delete |widget_host_| in cases where |view_| gets destroyed
-      // by its parent, but the host does not get destroyed.
-      delete widget_host_;
-    }
-
     parent_view_->Destroy();
-    delete parent_host_;
 
     process_host_->Cleanup();
     agent_scheduling_group_host_ = nullptr;
@@ -3259,10 +3253,8 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFrames) {
   EXPECT_EQ(*views[1]->window_->layer()->GetOldestAcceptableFallback(),
             *views[1]->window_->layer()->GetSurfaceId());
 
-  for (size_t i = 0; i < renderer_count; ++i) {
+  for (size_t i = 0; i < renderer_count; ++i)
     views[i]->Destroy();
-    delete hosts[i];
-  }
 }
 
 // Test that changing the memory pressure should delete saved frames. This test
@@ -3330,10 +3322,8 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFramesWithMemoryPressure) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EVICTED(views[1]);
 
-  for (size_t i = 0; i < renderer_count; ++i) {
+  for (size_t i = 0; i < renderer_count; ++i)
     views[i]->Destroy();
-    delete hosts[i];
-  }
 }
 
 TEST_F(RenderWidgetHostViewAuraTest, SourceEventTypeExistsInLatencyInfo) {
@@ -5825,16 +5815,13 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
 
   void TearDown() override {
     view_for_first_process_->Destroy();
-    delete widget_host_for_first_process_;
 
     view_for_second_process_->Destroy();
-    delete widget_host_for_second_process_;
     second_process_host_->Cleanup();
     second_agent_scheduling_group_host_.reset();
     second_process_host_.reset();
 
     view_for_third_process_->Destroy();
-    delete widget_host_for_third_process_;
     third_process_host_->Cleanup();
     third_agent_scheduling_group_host_.reset();
     third_process_host_.reset();

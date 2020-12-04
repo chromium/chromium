@@ -56,12 +56,12 @@ class CursorManagerTest : public testing::Test {
         std::make_unique<MockRenderProcessHost>(browser_context_.get());
     agent_scheduling_group_host_ =
         std::make_unique<AgentSchedulingGroupHost>(*process_host_);
-    widget_host_.reset(MakeNewWidgetHost());
+    widget_host_ = MakeNewWidgetHost();
     top_view_ =
         new MockRenderWidgetHostViewForCursors(widget_host_.get(), true);
   }
 
-  RenderWidgetHostImpl* MakeNewWidgetHost() {
+  std::unique_ptr<RenderWidgetHostImpl> MakeNewWidgetHost() {
     int32_t routing_id = process_host_->GetNextRoutingID();
     return MockRenderWidgetHost::Create(
         &delegate_, *agent_scheduling_group_host_, routing_id);

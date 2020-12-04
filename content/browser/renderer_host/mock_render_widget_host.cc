@@ -38,25 +38,27 @@ void MockRenderWidgetHost::SetupForInputRouterTest() {
 }
 
 // static
-MockRenderWidgetHost* MockRenderWidgetHost::Create(
+std::unique_ptr<MockRenderWidgetHost> MockRenderWidgetHost::Create(
     RenderWidgetHostDelegate* delegate,
     AgentSchedulingGroupHost& agent_scheduling_group,
     int32_t routing_id) {
   mojo::AssociatedRemote<blink::mojom::Widget> blink_widget;
   auto blink_widget_receiver =
       blink_widget.BindNewEndpointAndPassDedicatedReceiver();
-  return new MockRenderWidgetHost(delegate, agent_scheduling_group, routing_id,
-                                  blink_widget.Unbind());
+  return Create(delegate, agent_scheduling_group, routing_id,
+                blink_widget.Unbind());
 }
 
-MockRenderWidgetHost* MockRenderWidgetHost::Create(
+// static
+std::unique_ptr<MockRenderWidgetHost> MockRenderWidgetHost::Create(
     RenderWidgetHostDelegate* delegate,
     AgentSchedulingGroupHost& agent_scheduling_group,
     int32_t routing_id,
     mojo::PendingAssociatedRemote<blink::mojom::Widget> pending_blink_widget) {
   DCHECK(pending_blink_widget);
-  return new MockRenderWidgetHost(delegate, agent_scheduling_group, routing_id,
-                                  std::move(pending_blink_widget));
+  return base::WrapUnique(
+      new MockRenderWidgetHost(delegate, agent_scheduling_group, routing_id,
+                               std::move(pending_blink_widget)));
 }
 
 blink::mojom::WidgetInputHandler*
@@ -73,7 +75,8 @@ MockRenderWidgetHost::MockRenderWidgetHost(
     AgentSchedulingGroupHost& agent_scheduling_group,
     int routing_id,
     mojo::PendingAssociatedRemote<blink::mojom::Widget> pending_blink_widget)
-    : RenderWidgetHostImpl(delegate,
+    : RenderWidgetHostImpl(/*self_owned=*/false,
+                           delegate,
                            agent_scheduling_group,
                            routing_id,
                            /*hidden=*/false,

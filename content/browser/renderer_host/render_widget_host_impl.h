@@ -148,10 +148,22 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       public blink::mojom::WidgetHost,
       public blink::mojom::PointerLockContext {
  public:
-  // |routing_id| must not be MSG_ROUTING_NONE.
-  // If this object outlives |delegate|, DetachDelegate() must be called when
-  // |delegate| goes away.
-  RenderWidgetHostImpl(
+  // See the constructor for documentations.
+  static std::unique_ptr<RenderWidgetHostImpl> Create(
+      RenderWidgetHostDelegate* delegate,
+      AgentSchedulingGroupHost& agent_scheduling_host,
+      int32_t routing_id,
+      bool hidden,
+      std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue);
+
+  // See the constructor for documentations.
+  //
+  // Contrary to Create(), this function doesn't give ownership of the
+  // RenderWidgetHost. Instead, this instance is self-owned. It deletes itself
+  // when:
+  // - ShutdownAndDestroyWidget(also_delete = true) is called.
+  // - its RenderProcess exit.
+  static RenderWidgetHostImpl* CreateSelfOwned(
       RenderWidgetHostDelegate* delegate,
       AgentSchedulingGroupHost& agent_scheduling_host,
       int32_t routing_id,
@@ -351,15 +363,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // Returns true if the frame content needs be stored before being evicted.
   bool ShouldShowStaleContentOnEviction();
-
-  // Signal whether this RenderWidgetHost is owned by a RenderFrameHost, in
-  // which case it does not do self-deletion.
-  void set_owned_by_render_frame_host(bool owned_by_rfh) {
-    owned_by_render_frame_host_ = owned_by_rfh;
-  }
-  bool owned_by_render_frame_host() const {
-    return owned_by_render_frame_host_;
-  }
 
   void SetFrameDepth(unsigned int depth);
   void SetIntersectsViewport(bool intersects);
@@ -807,6 +810,16 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   GetLastVisualPropertiesSentToRendererForTesting();
 
  protected:
+  // |routing_id| must not be MSG_ROUTING_NONE.
+  // If this object outlives |delegate|, DetachDelegate() must be called when
+  // |delegate| goes away.
+  RenderWidgetHostImpl(
+      bool self_owned,
+      RenderWidgetHostDelegate* delegate,
+      AgentSchedulingGroupHost& agent_scheduling_host,
+      int32_t routing_id,
+      bool hidden,
+      std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue);
   // ---------------------------------------------------------------------------
   // The following method is overridden by RenderViewHost to send upwards to
   // its delegate.
@@ -1058,6 +1071,19 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // An expiry time for resetting the pending_user_activation_timer_.
   static const base::TimeDelta kActivationNotificationExpireTime;
 
+  // RenderWidgetHost are either:
+  // - Owned by RenderViewHostImpl.
+  // - Owned by RenderFrameHost, for local root iframes.
+  // - Self owned. Lifetime is managed from the renderer process, via Mojo IPC;
+  //   This is used to implement:
+  //   - Color Chooser popup.
+  //   - Date/Time chooser popup.
+  //   - Internal popup. Essentially, the <select> element popup.
+  //
+  // self_owned RenderWidgetHost are expected to be deleted using:
+  // ShutdownAndDestroyWidget(true /* also_delete */);
+  bool self_owned_;
+
   // true if a renderer has once been valid. We use this flag to display a sad
   // tab only when we lose our renderer and not if a paint occurs during
   // initialization.
@@ -1246,10 +1272,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   using PendingSnapshotMap = std::map<int, GetSnapshotFromBrowserCallback>;
   PendingSnapshotMap pending_browser_snapshots_;
   PendingSnapshotMap pending_surface_browser_snapshots_;
-
-  // Indicates whether a RenderFramehost has ownership, in which case this
-  // object does not self destroy.
-  bool owned_by_render_frame_host_ = false;
 
   // Indicates whether this RenderWidgetHost thinks is focused. This is trying
   // to match what the renderer process knows. It is different from

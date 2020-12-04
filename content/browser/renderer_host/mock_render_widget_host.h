@@ -58,12 +58,12 @@ class MockRenderWidgetHost : public RenderWidgetHostImpl {
 
   InputRouter* input_router() { return input_router_.get(); }
 
-  static MockRenderWidgetHost* Create(
+  static std::unique_ptr<MockRenderWidgetHost> Create(
       RenderWidgetHostDelegate* delegate,
       AgentSchedulingGroupHost& agent_scheduling_group,
       int32_t routing_id);
 
-  static MockRenderWidgetHost* Create(
+  static std::unique_ptr<MockRenderWidgetHost> Create(
       RenderWidgetHostDelegate* delegate,
       AgentSchedulingGroupHost& agent_scheduling_group,
       int32_t routing_id,

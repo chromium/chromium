@@ -334,12 +334,12 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
   MOCK_METHOD0(Blur, void());
 
   ui::LatencyInfo lastWheelEventLatencyInfo;
-  static MockRenderWidgetHostImpl* Create(
+  static std::unique_ptr<MockRenderWidgetHostImpl> Create(
       RenderWidgetHostDelegate* delegate,
       AgentSchedulingGroupHost& agent_scheduling_group_host,
       int32_t routing_id) {
-    return new MockRenderWidgetHostImpl(delegate, agent_scheduling_group_host,
-                                        routing_id);
+    return base::WrapUnique(new MockRenderWidgetHostImpl(
+        delegate, agent_scheduling_group_host, routing_id));
   }
 
   MockWidgetInputHandler* input_handler() { return &input_handler_; }
@@ -356,7 +356,8 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
       RenderWidgetHostDelegate* delegate,
       AgentSchedulingGroupHost& agent_scheduling_group_host,
       int32_t routing_id)
-      : RenderWidgetHostImpl(delegate,
+      : RenderWidgetHostImpl(/*self_owned=*/false,
+                             delegate,
                              agent_scheduling_group_host,
                              routing_id,
                              /*hidden=*/false,
@@ -492,9 +493,9 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
     process_host_->Init();
     agent_scheduling_group_host_ =
         std::make_unique<AgentSchedulingGroupHost>(*process_host_);
-    host_ = base::WrapUnique(MockRenderWidgetHostImpl::Create(
-        &delegate_, *agent_scheduling_group_host_,
-        process_host_->GetNextRoutingID()));
+    host_ = MockRenderWidgetHostImpl::Create(&delegate_,
+                                             *agent_scheduling_group_host_,
+                                             process_host_->GetNextRoutingID());
     mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
     auto frame_widget_host_receiver =
         frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
@@ -1327,9 +1328,10 @@ TEST_F(RenderWidgetHostViewMacTest,
   AgentSchedulingGroupHost agent_scheduling_group_host(process_host);
   MockRenderWidgetHostDelegate delegate;
   int32_t routing_id = process_host.GetNextRoutingID();
-  MockRenderWidgetHostImpl* host = MockRenderWidgetHostImpl::Create(
-      &delegate, agent_scheduling_group_host, routing_id);
-  RenderWidgetHostViewMac* view = new RenderWidgetHostViewMac(host);
+  std::unique_ptr<MockRenderWidgetHostImpl> host =
+      MockRenderWidgetHostImpl::Create(&delegate, agent_scheduling_group_host,
+                                       routing_id);
+  RenderWidgetHostViewMac* view = new RenderWidgetHostViewMac(host.get());
   base::RunLoop().RunUntilIdle();
 
   // Send an initial wheel event for scrolling by 3 lines.
@@ -1362,7 +1364,8 @@ TEST_F(RenderWidgetHostViewMacTest,
   const base::TimeDelta max_time_between_phase_ended_and_momentum_phase_began =
       view->max_time_between_phase_ended_and_momentum_phase_began_for_test();
 
-  host->ShutdownAndDestroyWidget(true);
+  host->ShutdownAndDestroyWidget(false);
+  host.reset();
 
   // Wait for the mouse_wheel_end_dispatch_timer_ to expire after host is
   // destroyed. The pending wheel end event won't get dispatched since the
@@ -1388,9 +1391,10 @@ TEST_F(RenderWidgetHostViewMacTest,
   AgentSchedulingGroupHost agent_scheduling_group_host(process_host);
   MockRenderWidgetHostDelegate delegate;
   int32_t routing_id = process_host.GetNextRoutingID();
-  MockRenderWidgetHostImpl* host = MockRenderWidgetHostImpl::Create(
-      &delegate, agent_scheduling_group_host, routing_id);
-  RenderWidgetHostViewMac* view = new RenderWidgetHostViewMac(host);
+  std::unique_ptr<MockRenderWidgetHostImpl> host =
+      MockRenderWidgetHostImpl::Create(&delegate, agent_scheduling_group_host,
+                                       routing_id);
+  RenderWidgetHostViewMac* view = new RenderWidgetHostViewMac(host.get());
   base::RunLoop().RunUntilIdle();
 
   // Send an initial wheel event for scrolling by 3 lines.
@@ -1430,7 +1434,8 @@ TEST_F(RenderWidgetHostViewMacTest,
   ASSERT_EQ("MouseWheel GestureScrollUpdate", GetMessageNames(events));
   DCHECK(!view->HasPendingWheelEndEventForTesting());
 
-  host->ShutdownAndDestroyWidget(true);
+  host->ShutdownAndDestroyWidget(false);
+  host.reset();
   process_host.Cleanup();
 }
 
@@ -1445,9 +1450,10 @@ TEST_F(RenderWidgetHostViewMacTest,
   MockRenderWidgetHostDelegate delegate;
   AgentSchedulingGroupHost agent_scheduling_group_host(process_host);
   int32_t routing_id = process_host.GetNextRoutingID();
-  MockRenderWidgetHostImpl* host = MockRenderWidgetHostImpl::Create(
-      &delegate, agent_scheduling_group_host, routing_id);
-  RenderWidgetHostViewMac* view = new RenderWidgetHostViewMac(host);
+  std::unique_ptr<MockRenderWidgetHostImpl> host =
+      MockRenderWidgetHostImpl::Create(&delegate, agent_scheduling_group_host,
+                                       routing_id);
+  RenderWidgetHostViewMac* view = new RenderWidgetHostViewMac(host.get());
   base::RunLoop().RunUntilIdle();
 
   // Send an initial wheel event for scrolling by 3 lines.
@@ -1488,7 +1494,8 @@ TEST_F(RenderWidgetHostViewMacTest,
   ASSERT_EQ("MouseWheel GestureScrollEnd MouseWheel", GetMessageNames(events));
   DCHECK(!view->HasPendingWheelEndEventForTesting());
 
-  host->ShutdownAndDestroyWidget(true);
+  host->ShutdownAndDestroyWidget(false);
+  host.reset();
   process_host.Cleanup();
 }
 
@@ -1755,12 +1762,13 @@ class InputMethodMacTest : public RenderWidgetHostViewMacTest {
     child_widget_ = MockRenderWidgetHostImpl::Create(
         &delegate_, *child_agent_scheduling_group_host_,
         child_process_host_->GetNextRoutingID());
-    child_view_ = new TestRenderWidgetHostView(child_widget_);
+    child_view_ = new TestRenderWidgetHostView(child_widget_.get());
     base::RunLoop().RunUntilIdle();
   }
 
   void TearDown() override {
-    child_widget_->ShutdownAndDestroyWidget(true);
+    child_widget_->ShutdownAndDestroyWidget(false);
+    child_widget_.reset();
     child_process_host_->Cleanup();
     child_agent_scheduling_group_host_.reset();
     child_process_host_.reset();
@@ -1795,7 +1803,7 @@ class InputMethodMacTest : public RenderWidgetHostViewMacTest {
  protected:
   std::unique_ptr<MockRenderProcessHost> child_process_host_;
   std::unique_ptr<AgentSchedulingGroupHost> child_agent_scheduling_group_host_;
-  MockRenderWidgetHostImpl* child_widget_;
+  std::unique_ptr<MockRenderWidgetHostImpl> child_widget_;
   TestRenderWidgetHostView* child_view_;
 
  private:
@@ -1812,7 +1820,7 @@ TEST_F(InputMethodMacTest, UnmarkText) {
   // unmarkText would lead to an IPC. This assumption is made in other similar
   // tests as well). We should observe an IPC being sent to the |child_widget_|.
   SetTextInputType(child_view_, ui::TEXT_INPUT_TYPE_TEXT);
-  EXPECT_EQ(child_widget_, text_input_manager()->GetActiveWidget());
+  EXPECT_EQ(child_widget_.get(), text_input_manager()->GetActiveWidget());
   [tab_GetInProcessNSView() unmarkText];
   base::RunLoop().RunUntilIdle();
   MockWidgetInputHandler::MessageVector events =
@@ -1840,7 +1848,7 @@ TEST_F(InputMethodMacTest, SetMarkedText) {
   // Make the child view active and then call setMarkedText with some values. We
   // should observe an IPC being sent to the |child_widget_|.
   SetTextInputType(child_view_, ui::TEXT_INPUT_TYPE_TEXT);
-  EXPECT_EQ(child_widget_, text_input_manager()->GetActiveWidget());
+  EXPECT_EQ(child_widget_.get(), text_input_manager()->GetActiveWidget());
   [tab_GetInProcessNSView() setMarkedText:text
                             selectedRange:selectedRange
                          replacementRange:replacementRange];
@@ -1871,7 +1879,7 @@ TEST_F(InputMethodMacTest, InsertText) {
   // Make the child view active and then call insertText with some values. We
   // should observe an IPC being sent to the |child_widget_|.
   SetTextInputType(child_view_, ui::TEXT_INPUT_TYPE_TEXT);
-  EXPECT_EQ(child_widget_, text_input_manager()->GetActiveWidget());
+  EXPECT_EQ(child_widget_.get(), text_input_manager()->GetActiveWidget());
   [tab_GetInProcessNSView() insertText:text replacementRange:replacementRange];
   base::RunLoop().RunUntilIdle();
   MockWidgetInputHandler::MessageVector events =
@@ -1899,7 +1907,7 @@ TEST_F(InputMethodMacTest, FinishComposingText) {
   // Make child view active and then call finishComposingText. We should observe
   // an IPC being sent to the |child_widget_|.
   SetTextInputType(child_view_, ui::TEXT_INPUT_TYPE_TEXT);
-  EXPECT_EQ(child_widget_, text_input_manager()->GetActiveWidget());
+  EXPECT_EQ(child_widget_.get(), text_input_manager()->GetActiveWidget());
   // In order to finish composing text, we must first have some marked text. So,
   // we will first call setMarkedText on cocoa view. This would lead to a set
   // composition IPC in the sink, but it doesn't matter since we will be looking
@@ -1941,7 +1949,7 @@ TEST_F(InputMethodMacTest, SecurePasswordInput) {
   EXPECT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
 
   SetTextInputType(child_view_, ui::TEXT_INPUT_TYPE_PASSWORD);
-  ASSERT_EQ(child_widget_, text_input_manager()->GetActiveWidget());
+  ASSERT_EQ(child_widget_.get(), text_input_manager()->GetActiveWidget());
   ASSERT_EQ(text_input_manager(), tab_view()->GetTextInputManager());
   ASSERT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD, tab_view()->GetTextInputType());
 

@@ -25,7 +25,8 @@ TestRenderWidgetHost::TestRenderWidgetHost(
     AgentSchedulingGroupHost& agent_scheduling_group,
     int32_t routing_id,
     bool hidden)
-    : RenderWidgetHostImpl(delegate,
+    : RenderWidgetHostImpl(/*self_owned=*/false,
+                           delegate,
                            agent_scheduling_group,
                            routing_id,
                            hidden,

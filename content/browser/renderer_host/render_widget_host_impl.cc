@@ -326,13 +326,39 @@ base::LazyInstance<UnboundWidgetInputHandler>::Leaky g_unbound_input_handler =
 ///////////////////////////////////////////////////////////////////////////////
 // RenderWidgetHostImpl
 
+// static
+std::unique_ptr<RenderWidgetHostImpl> RenderWidgetHostImpl::Create(
+    RenderWidgetHostDelegate* delegate,
+    AgentSchedulingGroupHost& agent_scheduling_host,
+    int32_t routing_id,
+    bool hidden,
+    std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue) {
+  return base::WrapUnique(new RenderWidgetHostImpl(
+      /*self_owned=*/false, delegate, agent_scheduling_host, routing_id, hidden,
+      std::move(frame_token_message_queue)));
+}
+
+// static
+RenderWidgetHostImpl* RenderWidgetHostImpl::CreateSelfOwned(
+    RenderWidgetHostDelegate* delegate,
+    AgentSchedulingGroupHost& agent_scheduling_host,
+    int32_t routing_id,
+    bool hidden,
+    std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue) {
+  return new RenderWidgetHostImpl(/*self_owned=*/true, delegate,
+                                  agent_scheduling_host, routing_id, hidden,
+                                  std::move(frame_token_message_queue));
+}
+
 RenderWidgetHostImpl::RenderWidgetHostImpl(
+    bool self_owned,
     RenderWidgetHostDelegate* delegate,
     AgentSchedulingGroupHost& agent_scheduling_group,
     int32_t routing_id,
     bool hidden,
     std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue)
-    : delegate_(delegate),
+    : self_owned_(self_owned),
+      delegate_(delegate),
       agent_scheduling_group_(agent_scheduling_group),
       routing_id_(routing_id),
       clock_(base::DefaultTickClock::GetInstance()),
@@ -372,7 +398,13 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
                              routing_id_),
           this));
   CHECK(result.second) << "Inserting a duplicate item!";
-  agent_scheduling_group.GetProcess()->AddObserver(this);
+
+  // Self-owned RenderWidgetHost lifetime is managed by the renderer process.
+  // To avoid leaking any instance. They self-delete when their renderer process
+  // is gone.
+  if (self_owned_)
+    agent_scheduling_group.GetProcess()->AddObserver(this);
+
   render_process_blocked_state_changed_subscription_ =
       agent_scheduling_group.GetProcess()->RegisterBlockStateChangedCallback(
           base::BindRepeating(
@@ -394,6 +426,7 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
 }
 
 RenderWidgetHostImpl::~RenderWidgetHostImpl() {
+  CHECK(!self_owned_);
   render_frame_metadata_provider_.RemoveObserver(this);
   if (!destroyed_)
     Destroy(false);
@@ -812,7 +845,7 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   // Historically this was done by finding the RenderViewHost for the widget,
   // but a child local root would not convert to a RenderViewHost but is for a
   // frame.
-  const bool is_frame_widget = owner_delegate_ || owned_by_render_frame_host_;
+  const bool is_frame_widget = !self_owned_;
 
   blink::VisualProperties visual_properties;
 
@@ -1895,11 +1928,8 @@ RenderProcessHost::Priority RenderWidgetHostImpl::GetPriority() {
 void RenderWidgetHostImpl::RenderProcessExited(
     RenderProcessHost* host,
     const ChildProcessTerminationInfo& info) {
-  // When the RenderViewHost or the RenderFrameHost own this instance, they
-  // manage its destruction. Otherwise it is owned by the renderer process and
-  // must self-destroy when it exits.
-  if (!owner_delegate_ && !owned_by_render_frame_host_)
-    Destroy(true);
+  CHECK(self_owned_);
+  Destroy(/*also_delete=*/true);  // Delete |this|.
 }
 
 blink::mojom::WidgetInputHandler*
@@ -2199,7 +2229,10 @@ void RenderWidgetHostImpl::Destroy(bool also_delete) {
     delegate_->RenderWidgetDeleted(this);
 
   if (also_delete) {
-    CHECK(!owner_delegate_);
+    CHECK(self_owned_);
+    // The destructor CHECKs self-owned RenderWidgetHostImpl aren't destroyed
+    // externally. This bit needs to be reset to allow internal deletion.
+    self_owned_ = false;
     delete this;
   }
 }

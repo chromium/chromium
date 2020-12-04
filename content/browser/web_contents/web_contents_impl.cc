@@ -3719,7 +3719,7 @@ RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(
     return nullptr;
   }
 
-  RenderWidgetHostImpl* widget_host = new RenderWidgetHostImpl(
+  RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::CreateSelfOwned(
       this, agent_scheduling_group, route_id, IsHidden(),
       std::make_unique<FrameTokenMessageQueue>());
 

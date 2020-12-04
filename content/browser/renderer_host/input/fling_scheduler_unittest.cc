@@ -57,16 +57,17 @@ class FlingSchedulerTest : public testing::Test,
   FlingSchedulerTest() {}
   void SetUp() override {
     view_ = CreateView();
-    widget_host_->SetView(view_);
+    widget_host_->SetView(view_.get());
 
-    fling_scheduler_ = std::make_unique<FakeFlingScheduler>(widget_host_);
+    fling_scheduler_ = std::make_unique<FakeFlingScheduler>(widget_host_.get());
     fling_controller_ = std::make_unique<FlingController>(
         this, fling_scheduler_.get(), FlingController::Config());
   }
 
   void TearDown() override {
-    view_->Destroy();
-    widget_host_->ShutdownAndDestroyWidget(true);
+    view_.release()->Destroy();  // 'delete this' is called internally.
+    widget_host_->ShutdownAndDestroyWidget(false);
+    widget_host_.reset();
     process_host_->Cleanup();
     agent_scheduling_group_host_.reset();
     process_host_.reset();
@@ -75,7 +76,7 @@ class FlingSchedulerTest : public testing::Test,
     base::RunLoop().RunUntilIdle();
   }
 
-  TestRenderWidgetHostView* CreateView() {
+  std::unique_ptr<TestRenderWidgetHostView> CreateView() {
     browser_context_ = std::make_unique<TestBrowserContext>();
     process_host_ =
         std::make_unique<MockRenderProcessHost>(browser_context_.get());
@@ -84,12 +85,10 @@ class FlingSchedulerTest : public testing::Test,
         std::make_unique<AgentSchedulingGroupHost>(*process_host_);
     int32_t routing_id = process_host_->GetNextRoutingID();
     delegate_ = std::make_unique<MockRenderWidgetHostDelegate>();
-    widget_host_ =
-        TestRenderWidgetHost::Create(
-            delegate_.get(), *agent_scheduling_group_host_, routing_id, false)
-            .release();
-    delegate_->set_widget_host(widget_host_);
-    return new TestRenderWidgetHostView(widget_host_);
+    widget_host_ = TestRenderWidgetHost::Create(
+        delegate_.get(), *agent_scheduling_group_host_, routing_id, false);
+    delegate_->set_widget_host(widget_host_.get());
+    return std::make_unique<TestRenderWidgetHostView>(widget_host_.get());
   }
 
   void SimulateFlingStart(const gfx::Vector2dF& velocity) {
@@ -128,10 +127,10 @@ class FlingSchedulerTest : public testing::Test,
  private:
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowserContext> browser_context_;
-  RenderWidgetHostImpl* widget_host_;
+  std::unique_ptr<RenderWidgetHostImpl> widget_host_;
   std::unique_ptr<MockRenderProcessHost> process_host_;
   std::unique_ptr<AgentSchedulingGroupHost> agent_scheduling_group_host_;
-  TestRenderWidgetHostView* view_;
+  std::unique_ptr<TestRenderWidgetHostView> view_;
   std::unique_ptr<MockRenderWidgetHostDelegate> delegate_;
 #if defined(OS_WIN)
   display::win::test::ScopedScreenWin scoped_screen_win_;

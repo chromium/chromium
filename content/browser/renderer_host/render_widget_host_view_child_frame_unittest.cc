@@ -124,7 +124,7 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
     int32_t routing_id = process_host_->GetNextRoutingID();
     sink_ = &process_host_->sink();
 
-    widget_host_ = new RenderWidgetHostImpl(
+    widget_host_ = RenderWidgetHostImpl::Create(
         &delegate_, *agent_scheduling_group_host_, routing_id,
         /*hidden=*/false, std::make_unique<FrameTokenMessageQueue>());
 
@@ -143,7 +143,8 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
 
     blink::ScreenInfo screen_info;
     screen_info.rect = gfx::Rect(1, 2, 3, 4);
-    view_ = RenderWidgetHostViewChildFrame::Create(widget_host_, screen_info);
+    view_ =
+        RenderWidgetHostViewChildFrame::Create(widget_host_.get(), screen_info);
     // Test we get the expected ScreenInfo before the FrameDelegate is set.
     blink::ScreenInfo actual_screen_info;
     view_->GetScreenInfo(&actual_screen_info);
@@ -159,7 +160,7 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
     sink_ = nullptr;
     if (view_)
       view_->Destroy();
-    delete widget_host_;
+    widget_host_.reset();
     process_host_->Cleanup();
     agent_scheduling_group_host_ = nullptr;
     delete test_frame_connector_;
@@ -196,7 +197,7 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
 
   // Tests should set these to NULL if they've already triggered their
   // destruction.
-  RenderWidgetHostImpl* widget_host_;
+  std::unique_ptr<RenderWidgetHostImpl> widget_host_;
   RenderWidgetHostViewChildFrame* view_;
   MockFrameConnector* test_frame_connector_;
 };

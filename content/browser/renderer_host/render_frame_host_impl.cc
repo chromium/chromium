@@ -1039,7 +1039,6 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       // RenderWidgetHostImpl, the main render frame should probably start
       // owning the RenderWidgetHostImpl itself.
       DCHECK(GetLocalRenderWidgetHost());
-      DCHECK(!GetLocalRenderWidgetHost()->owned_by_render_frame_host());
     } else {
       // For local child roots, the RenderFrameHost directly creates and owns
       // its RenderWidgetHost.
@@ -1049,7 +1048,6 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       owned_render_widget_host_ = RenderWidgetHostFactory::Create(
           frame_tree_->render_widget_delegate(), agent_scheduling_group_,
           widget_routing_id, /*hidden=*/true);
-      owned_render_widget_host_->set_owned_by_render_frame_host(true);
 #if defined(OS_ANDROID)
       owned_render_widget_host_->SetForceEnableZoom(
           delegate_->GetOrCreateWebPreferences().force_enable_zoom);

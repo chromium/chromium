@@ -22,7 +22,7 @@ std::unique_ptr<RenderWidgetHostImpl> RenderWidgetHostFactory::Create(
     return factory_->CreateRenderWidgetHost(delegate, agent_scheduling_group,
                                             routing_id, hidden);
   }
-  return std::make_unique<RenderWidgetHostImpl>(
+  return RenderWidgetHostImpl::Create(
       delegate, agent_scheduling_group, routing_id, hidden,
       std::make_unique<FrameTokenMessageQueue>());
 }
