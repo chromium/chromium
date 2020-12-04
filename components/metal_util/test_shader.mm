@@ -697,8 +697,7 @@ base::ScopedDispatchObject<dispatch_data_t> GetLibraryData() {
 }
 
 // State shared between the compiler callback and the caller.
-class API_AVAILABLE(macos(10.11)) TestShaderState
-    : public base::RefCountedThreadSafe<TestShaderState> {
+class TestShaderState : public base::RefCountedThreadSafe<TestShaderState> {
  public:
   TestShaderState(TestShaderCallback callback,
                   TestShaderComponent component,
