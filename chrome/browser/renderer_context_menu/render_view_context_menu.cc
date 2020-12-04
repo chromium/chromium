@@ -794,8 +794,6 @@ void RenderViewContextMenu::WriteURLToClipboard(const GURL& url) {
 void RenderViewContextMenu::InitMenu() {
   RenderViewContextMenuBase::InitMenu();
 
-  AppendQuickAnswersItems();
-
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_PASSWORD)) {
     AppendPasswordItems();
@@ -947,6 +945,11 @@ void RenderViewContextMenu::InitMenu() {
   if (added_accessibility_labels_items && menu_model_.GetItemCount() == 1) {
     menu_model_.RemoveItemAt(0);
   }
+
+  // Always add Quick Answers view last, as it is rendered next to the context
+  // menu, meaning that each menu item added/removed in this function will cause
+  // it to visibly jump on the screen (see b/173569669).
+  AppendQuickAnswersItems();
 }
 
 Profile* RenderViewContextMenu::GetProfile() const {
