@@ -33,17 +33,16 @@ void PolicyMigrator::CopyPolicyIfUnset(PolicyMap& source,
               << "' has been copied to '" << migration.new_name << "'.";
       auto new_entry = entry->DeepCopy();
       migration.transform.Run(new_entry.value());
-      new_entry.AddError(
-          l10n_util::GetStringFUTF8(IDS_POLICY_MIGRATED_NEW_POLICY,
-                                    base::UTF8ToUTF16(migration.old_name)));
+      new_entry.AddError(IDS_POLICY_MIGRATED_NEW_POLICY,
+                         {base::UTF8ToUTF16(migration.old_name)});
       dest->Set(migration.new_name, std::move(new_entry));
     } else {
       VLOG(3) << "Legacy policy '" << migration.old_name
               << "' is ignored because '" << migration.new_name
               << "' is also set. ";
     }
-    entry->AddError(l10n_util::GetStringFUTF8(
-        IDS_POLICY_MIGRATED_OLD_POLICY, base::UTF8ToUTF16(migration.new_name)));
+    entry->AddError(IDS_POLICY_MIGRATED_OLD_POLICY,
+                    {base::UTF8ToUTF16(migration.new_name)});
   } else {
     VLOG(3) << "Legacy policy '" << migration.old_name << "' is not set.";
   }

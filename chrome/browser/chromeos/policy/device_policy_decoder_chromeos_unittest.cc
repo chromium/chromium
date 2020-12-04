@@ -5,9 +5,11 @@
 #include "chrome/browser/chromeos/policy/device_policy_decoder_chromeos.h"
 
 #include "base/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -73,9 +75,13 @@ TEST_F(DevicePolicyDecoderChromeOSTest,
   std::string error;
   base::Optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kInvalidJson, key::kDeviceWallpaperImage, &error);
+  std::string localized_error = l10n_util::GetStringFUTF8(
+      IDS_POLICY_PROTO_PARSING_ERROR, base::UTF8ToUTF16(error));
   EXPECT_FALSE(decoded_json.has_value());
-  EXPECT_NE(std::string::npos,
-            error.find("Invalid JSON string: Line: 1, column: 14"));
+  EXPECT_EQ(
+      "Policy parsing error: Invalid JSON string: Line: 1, column: 14, Syntax "
+      "error.",
+      localized_error);
 }
 
 #if GTEST_HAS_DEATH_TEST
@@ -94,10 +100,12 @@ TEST_F(DevicePolicyDecoderChromeOSTest,
   base::Optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kWallpaperJsonInvalidValue, key::kDeviceWallpaperImage, &error);
   EXPECT_FALSE(decoded_json.has_value());
+  std::string localized_error = l10n_util::GetStringFUTF8(
+      IDS_POLICY_PROTO_PARSING_ERROR, base::UTF8ToUTF16(error));
   EXPECT_EQ(
-      "Invalid policy value: The value type doesn't match the schema type. (at "
-      "url)",
-      error);
+      "Policy parsing error: Invalid policy value: The value type doesn't "
+      "match the schema type. (at url)",
+      localized_error);
 }
 
 TEST_F(DevicePolicyDecoderChromeOSTest,
@@ -105,11 +113,13 @@ TEST_F(DevicePolicyDecoderChromeOSTest,
   std::string error;
   base::Optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kWallpaperJsonUnknownProperty, key::kDeviceWallpaperImage, &error);
+  std::string localized_error = l10n_util::GetStringFUTF8(
+      IDS_POLICY_PROTO_PARSING_ERROR, base::UTF8ToUTF16(error));
   EXPECT_EQ(*GetWallpaperDict(), decoded_json.value());
   EXPECT_EQ(
-      "Dropped unknown properties: Unknown property: unknown-field (at "
-      "toplevel)",
-      error);
+      "Policy parsing error: Dropped unknown properties: Unknown property: "
+      "unknown-field (at toplevel)",
+      localized_error);
 }
 
 TEST_F(DevicePolicyDecoderChromeOSTest, DecodeJsonStringAndNormalizeSuccess) {

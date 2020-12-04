@@ -71,7 +71,8 @@ void SetJsonDevicePolicy(
                 POLICY_SOURCE_CLOUD, std::move(value_to_set),
                 std::move(external_data_fetcher));
   if (!error.empty())
-    policies->AddError(policy_name, error);
+    policies->AddError(policy_name, IDS_POLICY_PROTO_PARSING_ERROR,
+                       {base::UTF8ToUTF16(error)});
 }
 
 // Returns true and sets |level| to a PolicyLevel if the policy has been set
@@ -156,9 +157,8 @@ std::unique_ptr<base::Value> DecodeConnectionType(int value) {
 void AddDeprecationWarning(const std::string& old_name,
                            const std::string& new_name,
                            PolicyMap* policies) {
-  policies->AddError(old_name,
-                     l10n_util::GetStringFUTF8(IDS_POLICY_MIGRATED_OLD_POLICY,
-                                               base::UTF8ToUTF16(new_name)));
+  policies->AddError(old_name, IDS_POLICY_MIGRATED_OLD_POLICY,
+                     {base::UTF8ToUTF16(new_name)});
 }
 
 void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,

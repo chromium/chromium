@@ -70,8 +70,6 @@ class POLICY_EXPORT PolicyMap {
     // Returns true if |this| equals |other|.
     bool Equals(const Entry& other) const;
 
-    // Add a non-localized error given its UTF-8 string contents.
-    void AddError(base::StringPiece error);
     // Add a localized error given its l10n message ID.
     void AddError(int message_id);
     // Add a localized error given its l10n message ID and placeholder args.
@@ -128,7 +126,6 @@ class POLICY_EXPORT PolicyMap {
     base::Optional<base::Value> value_;
     bool ignored_ = false;
     bool is_default_value_ = false;
-    std::string error_strings_;
     std::map<int, base::Optional<std::vector<base::string16>>>
         error_message_ids_;
     std::map<int, base::Optional<std::vector<base::string16>>>
@@ -163,11 +160,6 @@ class POLICY_EXPORT PolicyMap {
            std::unique_ptr<ExternalDataFetcher> external_data_fetcher);
 
   void Set(const std::string& policy, Entry entry);
-
-  // Adds non-localized |error| to the map for the key |policy| that should be
-  // shown to the user alongside the value in the policy UI. This should only be
-  // called for policies that are already stored in this map.
-  void AddError(const std::string& policy, const std::string& error);
 
   // Adds a localized error with |message_id| to the map for the key |policy|
   // that should be shown to the user alongisde the value in the policy UI. This

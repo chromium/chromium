@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/policy/core/common/external_data_manager.h"
@@ -81,16 +82,18 @@ TEST_F(PolicyMapTest, SetAndGet) {
   base::Value expected_b("bbb");
   EXPECT_TRUE(expected_b.Equals(map.GetValue(kTestPolicyName1)));
   SetPolicy(&map, kTestPolicyName1, CreateExternalDataFetcher("dummy"));
-  map.AddError(kTestPolicyName1, kTestError);
+  map.AddError(kTestPolicyName1, IDS_POLICY_STORE_STATUS_VALIDATION_ERROR,
+               {base::UTF8ToUTF16(kTestError)});
   EXPECT_FALSE(map.GetValue(kTestPolicyName1));
   const PolicyMap::Entry* entry = map.Get(kTestPolicyName1);
   ASSERT_TRUE(entry != nullptr);
   EXPECT_EQ(POLICY_LEVEL_MANDATORY, entry->level);
   EXPECT_EQ(POLICY_SCOPE_USER, entry->scope);
   EXPECT_EQ(POLICY_SOURCE_CLOUD, entry->source);
+  std::string error_string = base::StrCat({"Validation error: ", kTestError});
   PolicyMap::Entry::L10nLookupFunction lookup = base::BindRepeating(
       static_cast<base::string16 (*)(int)>(&base::NumberToString16));
-  EXPECT_EQ(base::UTF8ToUTF16(kTestError), entry->GetLocalizedErrors(lookup));
+  EXPECT_EQ(base::UTF8ToUTF16(error_string), entry->GetLocalizedErrors(lookup));
   EXPECT_TRUE(
       ExternalDataFetcher::Equals(entry->external_data_fetcher.get(),
                                   CreateExternalDataFetcher("dummy").get()));
@@ -118,9 +121,6 @@ TEST_F(PolicyMapTest, AddError) {
   map.AddError(kTestPolicyName1, 5678);
   EXPECT_EQ(base::UTF8ToUTF16("1234\n5678"),
             entry1->GetLocalizedErrors(lookup));
-  map.AddError(kTestPolicyName1, "abcd");
-  EXPECT_EQ(base::UTF8ToUTF16("abcd\n1234\n5678"),
-            entry1->GetLocalizedErrors(lookup));
 
   // Add second entry to make sure errors are added individually.
   SetPolicy(&map, kTestPolicyName2, base::Value(0));
@@ -128,13 +128,13 @@ TEST_F(PolicyMapTest, AddError) {
   // Test AddError with placeholder replacement (one arg)
   map.AddError(kTestPolicyName2, IDS_POLICY_MIGRATED_OLD_POLICY,
                {base::UTF8ToUTF16("SomeNewPolicy")});
-  EXPECT_EQ(base::UTF8ToUTF16("abcd\n1234\n5678"),
+  EXPECT_EQ(base::UTF8ToUTF16("1234\n5678"),
             entry1->GetLocalizedErrors(lookup));
   EXPECT_EQ(base::UTF8ToUTF16("This policy is deprecated. You should use the "
                               "SomeNewPolicy policy instead."),
             entry2->GetLocalizedErrors(lookup));
   map.AddError(kTestPolicyName2, 1357);
-  EXPECT_EQ(base::UTF8ToUTF16("abcd\n1234\n5678"),
+  EXPECT_EQ(base::UTF8ToUTF16("1234\n5678"),
             entry1->GetLocalizedErrors(lookup));
   EXPECT_EQ(base::UTF8ToUTF16("1357\nThis policy is deprecated. You should use "
                               "the SomeNewPolicy policy instead."),
@@ -143,10 +143,9 @@ TEST_F(PolicyMapTest, AddError) {
   map.AddError(
       kTestPolicyName1, IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM,
       {base::UTF8ToUTF16("SomeSource"), base::UTF8ToUTF16("SomeDestination")});
-  EXPECT_EQ(
-      base::UTF8ToUTF16("abcd\n1234\n5678\nYour administrator has blocked "
-                        "sharing from SomeSource to SomeDestination"),
-      entry1->GetLocalizedErrors(lookup));
+  EXPECT_EQ(base::UTF8ToUTF16("1234\n5678\nYour administrator has blocked "
+                              "sharing from SomeSource to SomeDestination"),
+            entry1->GetLocalizedErrors(lookup));
   EXPECT_EQ(base::UTF8ToUTF16("1357\nThis policy is deprecated. You should use "
                               "the SomeNewPolicy policy instead."),
             entry2->GetLocalizedErrors(lookup));

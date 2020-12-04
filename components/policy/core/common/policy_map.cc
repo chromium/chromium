@@ -23,10 +23,9 @@ namespace {
 
 const base::string16 GetLocalizedString(
     PolicyMap::Entry::L10nLookupFunction lookup,
-    const base::string16& initial_string,
     const std::map<int, base::Optional<std::vector<base::string16>>>&
         localized_string_ids) {
-  base::string16 result = initial_string;
+  base::string16 result = base::string16();
   base::string16 line_feed = base::UTF8ToUTF16("\n");
   for (const auto& string_pairs : localized_string_ids) {
     if (string_pairs.second)
@@ -70,7 +69,6 @@ PolicyMap::Entry PolicyMap::Entry::DeepCopy() const {
                  ? std::make_unique<ExternalDataFetcher>(*external_data_fetcher)
                  : nullptr);
   copy.ignored_ = ignored_;
-  copy.error_strings_ = error_strings_;
   copy.error_message_ids_ = error_message_ids_;
   copy.warning_message_ids_ = warning_message_ids_;
   copy.is_default_value_ = is_default_value_;
@@ -100,7 +98,6 @@ bool PolicyMap::Entry::Equals(const PolicyMap::Entry& other) const {
       conflicts_are_equal && level == other.level && scope == other.scope &&
       source == other.source &&  // Necessary for PolicyUIHandler observers.
                                  // They have to update when sources change.
-      error_strings_ == other.error_strings_ &&
       error_message_ids_ == other.error_message_ids_ &&
       warning_message_ids_ == other.warning_message_ids_ &&
       is_default_value_ == other.is_default_value_ &&
@@ -109,10 +106,6 @@ bool PolicyMap::Entry::Equals(const PolicyMap::Entry& other) const {
       ExternalDataFetcher::Equals(external_data_fetcher.get(),
                                   other.external_data_fetcher.get());
   return equals;
-}
-
-void PolicyMap::Entry::AddError(base::StringPiece error) {
-  base::StrAppend(&error_strings_, {error, "\n"});
 }
 
 void PolicyMap::Entry::AddError(int message_id) {
@@ -152,13 +145,12 @@ void PolicyMap::Entry::ClearConflicts() {
 
 base::string16 PolicyMap::Entry::GetLocalizedErrors(
     L10nLookupFunction lookup) const {
-  return GetLocalizedString(lookup, base::UTF8ToUTF16(error_strings_),
-                            error_message_ids_);
+  return GetLocalizedString(lookup, error_message_ids_);
 }
 
 base::string16 PolicyMap::Entry::GetLocalizedWarnings(
     L10nLookupFunction lookup) const {
-  return GetLocalizedString(lookup, base::string16(), warning_message_ids_);
+  return GetLocalizedString(lookup, warning_message_ids_);
 }
 
 bool PolicyMap::Entry::ignored() const {
@@ -252,10 +244,6 @@ void PolicyMap::Set(
 
 void PolicyMap::Set(const std::string& policy, Entry entry) {
   map_[policy] = std::move(entry);
-}
-
-void PolicyMap::AddError(const std::string& policy, const std::string& error) {
-  map_[policy].AddError(error);
 }
 
 void PolicyMap::AddError(const std::string& policy, int message_id) {
