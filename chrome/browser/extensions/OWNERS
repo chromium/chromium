@@ -12,6 +12,3 @@ per-file chrome_extensions_browser_interface_binders.*=file://ipc/SECURITY_OWNER
 # For adding/renaming files for Chrome OS apps APIs.
 per-file BUILD.gn=stevenjb@chromium.org
 per-file BUILD.gn=tbarzic@chromium.org
-
-# COMPONENT: Platform>Extensions
-# TEAM: extensions-dev@chromium.org

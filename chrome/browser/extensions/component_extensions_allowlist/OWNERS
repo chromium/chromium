@@ -3,6 +3,3 @@
 set noparent
 
 file://chrome/browser/extensions/component_extensions_allowlist/EXTENSION_ALLOWLIST_OWNERS
-
-# TEAM: extensions-dev@chromium.org
-# COMPONENT: Platform>Extensions
