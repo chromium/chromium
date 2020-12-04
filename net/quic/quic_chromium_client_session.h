@@ -508,6 +508,22 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       std::unique_ptr<QuicChromiumPacketWriter> writer,
       std::unique_ptr<QuicChromiumPacketReader> reader) override;
 
+  void OnConnectionMigrationProbeSucceeded(
+      NetworkChangeNotifier::NetworkHandle network,
+      const quic::QuicSocketAddress& peer_address,
+      const quic::QuicSocketAddress& self_address,
+      std::unique_ptr<DatagramClientSocket> socket,
+      std::unique_ptr<QuicChromiumPacketWriter> writer,
+      std::unique_ptr<QuicChromiumPacketReader> reader);
+
+  void OnPortMigrationProbeSucceeded(
+      NetworkChangeNotifier::NetworkHandle network,
+      const quic::QuicSocketAddress& peer_address,
+      const quic::QuicSocketAddress& self_address,
+      std::unique_ptr<DatagramClientSocket> socket,
+      std::unique_ptr<QuicChromiumPacketWriter> writer,
+      std::unique_ptr<QuicChromiumPacketReader> reader);
+
   void OnProbeFailed(NetworkChangeNotifier::NetworkHandle network,
                      const quic::QuicSocketAddress& peer_address) override;
 

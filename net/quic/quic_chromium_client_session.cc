@@ -2180,7 +2180,28 @@ void QuicChromiumClientSession::OnMigrationTimeout(size_t num_sockets) {
                       quic::ConnectionCloseBehavior::SILENT_CLOSE);
 }
 
+// TODO(renjietang): Deprecate this method once IETF QUIC supports connection
+// migration.
 void QuicChromiumClientSession::OnProbeSucceeded(
+    NetworkChangeNotifier::NetworkHandle network,
+    const quic::QuicSocketAddress& peer_address,
+    const quic::QuicSocketAddress& self_address,
+    std::unique_ptr<DatagramClientSocket> socket,
+    std::unique_ptr<QuicChromiumPacketWriter> writer,
+    std::unique_ptr<QuicChromiumPacketReader> reader) {
+  if (current_migration_cause_ == CHANGE_PORT_ON_PATH_DEGRADING) {
+    DCHECK(allow_port_migration_);
+    OnPortMigrationProbeSucceeded(network, peer_address, self_address,
+                                  std::move(socket), std::move(writer),
+                                  std::move(reader));
+    return;
+  }
+  OnConnectionMigrationProbeSucceeded(network, peer_address, self_address,
+                                      std::move(socket), std::move(writer),
+                                      std::move(reader));
+}
+
+void QuicChromiumClientSession::OnPortMigrationProbeSucceeded(
     NetworkChangeNotifier::NetworkHandle network,
     const quic::QuicSocketAddress& peer_address,
     const quic::QuicSocketAddress& self_address,
@@ -2196,11 +2217,7 @@ void QuicChromiumClientSession::OnProbeSucceeded(
                       return NetLogProbingResultParams(network, &peer_address,
                                                        /*is_success=*/true);
                     });
-
-  if (!allow_port_migration_ &&
-      network == NetworkChangeNotifier::kInvalidNetworkHandle)
-    return;
-
+  // TODO(crbug.com/1151419): Use the name Port migration in histogram.
   LogProbeResultToHistogram(current_migration_cause_, true);
 
   // Remove |this| as the old packet writer's delegate. Write error on old
@@ -2211,10 +2228,6 @@ void QuicChromiumClientSession::OnProbeSucceeded(
       ->set_delegate(nullptr);
   writer->set_delegate(this);
   connection()->SetSelfAddress(self_address);
-
-  // Close streams that are not migratable to the probed |network|.
-  if (!allow_port_migration_)
-    ResetNonMigratableStreams();
 
   if (!migrate_idle_session_ && !HasActiveRequestStreams()) {
     // If idle sessions won't be migrated, close the connection.
@@ -2241,8 +2254,70 @@ void QuicChromiumClientSession::OnProbeSucceeded(
   LogMigrateToSocketStatus(true);
 
   // Notify the connection that migration succeeds after probing.
-  if (connection()->IsPathDegrading())
-    connection()->OnSuccessfulMigration();
+  connection()->OnSuccessfulMigration();
+  num_migrations_++;
+  HistogramAndLogMigrationSuccess(connection_id());
+}
+
+void QuicChromiumClientSession::OnConnectionMigrationProbeSucceeded(
+    NetworkChangeNotifier::NetworkHandle network,
+    const quic::QuicSocketAddress& peer_address,
+    const quic::QuicSocketAddress& self_address,
+    std::unique_ptr<DatagramClientSocket> socket,
+    std::unique_ptr<QuicChromiumPacketWriter> writer,
+    std::unique_ptr<QuicChromiumPacketReader> reader) {
+  DCHECK(socket);
+  DCHECK(writer);
+  DCHECK(reader);
+
+  net_log_.AddEvent(NetLogEventType::QUIC_SESSION_CONNECTIVITY_PROBING_FINISHED,
+                    [&] {
+                      return NetLogProbingResultParams(network, &peer_address,
+                                                       /*is_success=*/true);
+                    });
+  if (network == NetworkChangeNotifier::kInvalidNetworkHandle)
+    return;
+
+  LogProbeResultToHistogram(current_migration_cause_, true);
+
+  // Remove |this| as the old packet writer's delegate. Write error on old
+  // writers will be ignored.
+  // Set |this| to listen on socket write events on the packet writer
+  // that was used for probing.
+  static_cast<QuicChromiumPacketWriter*>(connection()->writer())
+      ->set_delegate(nullptr);
+  writer->set_delegate(this);
+  connection()->SetSelfAddress(self_address);
+
+  // Close streams that are not migratable to the probed |network|.
+  ResetNonMigratableStreams();
+
+  if (!migrate_idle_session_ && !HasActiveRequestStreams()) {
+    // If idle sessions won't be migrated, close the connection.
+    CloseSessionOnErrorLater(
+        ERR_NETWORK_CHANGED,
+        quic::QUIC_CONNECTION_MIGRATION_NO_MIGRATABLE_STREAMS,
+        quic::ConnectionCloseBehavior::SEND_CONNECTION_CLOSE_PACKET);
+    return;
+  }
+
+  if (migrate_idle_session_ && CheckIdleTimeExceedsIdleMigrationPeriod())
+    return;
+
+  // Migrate to the probed socket immediately: socket, writer and reader will
+  // be acquired by connection and used as default on success.
+  if (!MigrateToSocket(std::move(socket), std::move(reader),
+                       std::move(writer))) {
+    LogMigrateToSocketStatus(false);
+    net_log_.AddEvent(
+        NetLogEventType::QUIC_CONNECTION_MIGRATION_FAILURE_AFTER_PROBING);
+    return;
+  }
+
+  LogMigrateToSocketStatus(true);
+
+  // Notify the connection that migration succeeds after probing.
+  connection()->OnSuccessfulMigration();
 
   net_log_.AddEventWithInt64Params(
       NetLogEventType::QUIC_CONNECTION_MIGRATION_SUCCESS_AFTER_PROBING,
