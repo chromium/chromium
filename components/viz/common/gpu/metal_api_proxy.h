@@ -9,7 +9,6 @@
 #include <string>
 
 #import <Metal/Metal.h>
-#include <os/availability.h>
 
 #include "base/mac/scoped_nsobject.h"
 
@@ -17,12 +16,11 @@ namespace gl {
 class ProgressReporter;
 }  // namespace gl
 
-class API_AVAILABLE(macos(10.11)) MTLLibraryCache;
+class MTLLibraryCache;
 
 // The MTLDeviceProxy wraps all calls to an MTLDevice. It reports progress
 // to the GPU watchdog to prevent the watchdog from killing the GPU process
 // when progress is being made.
-API_AVAILABLE(macos(10.11))
 @interface MTLDeviceProxy : NSObject <MTLDevice> {
   base::scoped_nsprotocol<id<MTLDevice>> _device;
 

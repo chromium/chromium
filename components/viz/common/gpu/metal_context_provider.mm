@@ -23,8 +23,7 @@ namespace viz {
 
 namespace {
 
-struct API_AVAILABLE(macos(10.11)) MetalContextProviderImpl
-    : public MetalContextProvider {
+struct MetalContextProviderImpl : public MetalContextProvider {
  public:
   explicit MetalContextProviderImpl(id<MTLDevice> device,
                                     const GrContextOptions& context_options) {
@@ -59,20 +58,15 @@ struct API_AVAILABLE(macos(10.11)) MetalContextProviderImpl
 // static
 std::unique_ptr<MetalContextProvider> MetalContextProvider::Create(
     const GrContextOptions& context_options) {
-  if (@available(macOS 10.11, *)) {
-    // First attempt to find a low power device to use.
-    base::scoped_nsprotocol<id<MTLDevice>> device_to_use(
-        metal::CreateDefaultDevice());
-    if (!device_to_use) {
-      DLOG(ERROR) << "Failed to find MTLDevice.";
-      return nullptr;
-    }
-    return std::make_unique<MetalContextProviderImpl>(device_to_use.get(),
-                                                      context_options);
+  // First attempt to find a low power device to use.
+  base::scoped_nsprotocol<id<MTLDevice>> device_to_use(
+      metal::CreateDefaultDevice());
+  if (!device_to_use) {
+    DLOG(ERROR) << "Failed to find MTLDevice.";
+    return nullptr;
   }
-  // If no device was found, or if the macOS version is too old for Metal,
-  // return no context provider.
-  return nullptr;
+  return std::make_unique<MetalContextProviderImpl>(device_to_use.get(),
+                                                    context_options);
 }
 
 }  // namespace viz

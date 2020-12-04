@@ -29,8 +29,7 @@ namespace {
 // newRenderPipelineStateWithDescriptor:]. The completion handler may be called
 // on another thread, so all members are protected by a lock. Accessed via
 // scoped_refptr to ensure that it exists until its last accessor is gone.
-class API_AVAILABLE(macos(10.11)) AsyncMetalState
-    : public base::RefCountedThreadSafe<AsyncMetalState> {
+class AsyncMetalState : public base::RefCountedThreadSafe<AsyncMetalState> {
  public:
   AsyncMetalState() : condition_variable(&lock) {}
 
@@ -52,12 +51,11 @@ class API_AVAILABLE(macos(10.11)) AsyncMetalState
   ~AsyncMetalState() { DCHECK(has_result); }
 };
 
-id<MTLLibrary> API_AVAILABLE(macos(10.11))
-    NewLibraryWithRetry(id<MTLDevice> device,
-                        NSString* source,
-                        MTLCompileOptions* options,
-                        __autoreleasing NSError** error,
-                        gl::ProgressReporter* progress_reporter) {
+id<MTLLibrary> NewLibraryWithRetry(id<MTLDevice> device,
+                                   NSString* source,
+                                   MTLCompileOptions* options,
+                                   __autoreleasing NSError** error,
+                                   gl::ProgressReporter* progress_reporter) {
   SCOPED_UMA_HISTOGRAM_TIMER("Gpu.MetalProxy.NewLibraryTime");
   const base::TimeTicks start_time = base::TimeTicks::Now();
   auto state = base::MakeRefCounted<AsyncMetalState>();
@@ -99,11 +97,11 @@ id<MTLLibrary> API_AVAILABLE(macos(10.11))
   }
 }
 
-id<MTLRenderPipelineState> API_AVAILABLE(macos(10.11))
-    NewRenderPipelineStateWithRetry(id<MTLDevice> device,
-                                    MTLRenderPipelineDescriptor* descriptor,
-                                    __autoreleasing NSError** error,
-                                    gl::ProgressReporter* progress_reporter) {
+id<MTLRenderPipelineState> NewRenderPipelineStateWithRetry(
+    id<MTLDevice> device,
+    MTLRenderPipelineDescriptor* descriptor,
+    __autoreleasing NSError** error,
+    gl::ProgressReporter* progress_reporter) {
   // This function is almost-identical to the above NewLibraryWithRetry. See
   // comments in that function.
   SCOPED_UMA_HISTOGRAM_TIMER("Gpu.MetalProxy.NewRenderPipelineStateTime");
@@ -147,7 +145,7 @@ constexpr uint32_t kShaderCrashDumpLength = 8128;
 // to hangs. Should this significantly help the situation, a more robust (and
 // not indefinitely-growing) cache will be added either here or in Skia.
 // https://crbug.com/974219
-class API_AVAILABLE(macos(10.11)) MTLLibraryCache {
+class MTLLibraryCache {
  public:
   MTLLibraryCache() = default;
   ~MTLLibraryCache() = default;
