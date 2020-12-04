@@ -2919,7 +2919,7 @@ const FeatureEntry kFeatureEntries[] = {
         flag_descriptions::kAcceleratedVideoDecodeName,
         flag_descriptions::kAcceleratedVideoDecodeDescription,
         kOsLinux,
-        SINGLE_VALUE_TYPE(switches::kEnableAcceleratedVideoDecode),
+        FEATURE_VALUE_TYPE(media::kVaapiVideoDecodeLinux),
     },
 #else
     {

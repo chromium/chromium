@@ -897,11 +897,6 @@ const char kWebXrRuntimeWMR[] = "windows-mixed-reality";
 const char kDisableAcceleratedVideoDecode[] =
     "disable-accelerated-video-decode";
 
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && !defined(OS_ANDROID)
-// Enables hardware acceleration of video decoding on linux. (defaults to off)
-const char kEnableAcceleratedVideoDecode[] = "enable-accelerated-video-decode";
-#endif
-
 #if defined(OS_ANDROID)
 // Disable Media Session API
 const char kDisableMediaSessionAPI[] = "disable-media-session-api";

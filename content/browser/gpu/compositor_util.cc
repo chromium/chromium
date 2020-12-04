@@ -37,6 +37,7 @@
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/host/gpu_memory_buffer_support.h"
 #include "gpu/vulkan/buildflags.h"
+#include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/gl/gl_switches.h"
@@ -133,7 +134,7 @@ const GpuFeatureData GetGpuFeatureData(
      SafeGetFeatureStatus(gpu_feature_info,
                           gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE),
 #if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && !defined(OS_ANDROID)
-     !command_line.HasSwitch(switches::kEnableAcceleratedVideoDecode),
+     !base::FeatureList::IsEnabled(media::kVaapiVideoDecodeLinux),
 #else
      command_line.HasSwitch(switches::kDisableAcceleratedVideoDecode),
 #endif  //  (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))&&

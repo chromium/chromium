@@ -3185,9 +3185,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     !BUILDFLAG(IS_CHROMEOS_LACROS)
     switches::kDisableDevShmUsage,
 #endif
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && !defined(OS_ANDROID)
-    switches::kEnableAcceleratedVideoDecode,
-#endif
 #if defined(OS_MAC)
     // Allow this to be set when invoking the browser and relayed along.
     sandbox::policy::switches::kEnableSandboxLogging,
