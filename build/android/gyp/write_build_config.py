@@ -1803,8 +1803,7 @@ def main(argv):
         raise Exception('Deps %s have proguard enabled while deps %s have '
                         'proguard disabled' % (deps_proguard_enabled,
                                                deps_proguard_disabled))
-    else:
-      deps_info['proguard_enabled'] = bool(options.proguard_enabled)
+    deps_info['proguard_enabled'] = bool(options.proguard_enabled)
 
     if options.proguard_mapping_path:
       deps_info['proguard_mapping_path'] = options.proguard_mapping_path

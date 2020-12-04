@@ -115,6 +115,14 @@ class _TargetEntry(object):
     """Returns the target type from its .build_config."""
     return self.build_config()['deps_info']['type']
 
+  def proguard_enabled(self):
+    """Returns whether proguard runs for this target."""
+    # Modules set proguard_enabled, but the proguarding happens only once at the
+    # bundle level.
+    if self.get_type() == 'android_app_bundle_module':
+      return False
+    return self.build_config()['deps_info'].get('proguard_enabled', False)
+
 
 def main():
   parser = argparse.ArgumentParser(
@@ -133,7 +141,7 @@ def main():
   parser.add_argument('--print-types',
                       action='store_true',
                       help='Print type of each target')
-  parser.add_argument('--build-build-configs',
+  parser.add_argument('--build',
                       action='store_true',
                       help='Build all .build_config files.')
   parser.add_argument('--type',
@@ -143,10 +151,14 @@ def main():
   parser.add_argument('--stats',
                       action='store_true',
                       help='Print counts of each target type.')
+  parser.add_argument('--proguard-enabled',
+                      action='store_true',
+                      help='Restrict to targets that have proguard enabled')
   parser.add_argument('-v', '--verbose', default=0, action='count')
   args = parser.parse_args()
 
-  args.build_build_configs |= bool(args.type or args.print_types or args.stats)
+  args.build |= bool(args.type or args.proguard_enabled or args.print_types
+                     or args.stats)
 
   logging.basicConfig(level=logging.WARNING - (10 * args.verbose),
                       format='%(levelname).1s %(relativeCreated)6d %(message)s')
@@ -160,12 +172,15 @@ def main():
   targets = _query_for_build_config_targets(output_dir)
   entries = [_TargetEntry(t) for t in targets]
 
-  if args.build_build_configs:
+  if args.build:
     logging.warning('Building %d .build_config files...', len(entries))
     _run_ninja(output_dir, [e.ninja_build_config_target for e in entries])
 
   if args.type:
     entries = [e for e in entries if e.get_type() in args.type]
+
+  if args.proguard_enabled:
+    entries = [e for e in entries if e.proguard_enabled()]
 
   if args.stats:
     counts = collections.Counter(e.get_type() for e in entries)
@@ -180,7 +195,7 @@ def main():
 
       # Convert to top-level target
       if not args.nested:
-        to_print = to_print.replace('__test_apk__apk', '').replace('__apk', '')
+        to_print = to_print.replace('__test_apk', '').replace('__apk', '')
 
       if args.print_types:
         to_print = f'{to_print}: {e.get_type()}'
