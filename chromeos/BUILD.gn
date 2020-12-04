@@ -326,6 +326,9 @@ if (is_chromeos_device) {
 
       # crbug.com/1154794
       "policy.DefaultGeolocationSetting",
+
+      # crbug.com/1115622
+      "inputs.VirtualKeyboardOOBE",
     ]
   }
 
