@@ -2,6 +2,8 @@
 
 This is a list of changes to [Cumulative Layout Shift](https://web.dev/cls).
 
+* Chrome 88
+  * Metric definition improvement: [no penalty for first unskipped render of content-visibility:auto content](2020_11_cls.md)
 * Chrome 87
   * Metric definition improvement: [Fix problem in Cumulative Layout shift calculation of impact region](2020_10_cls_2.md)
 * Chrome 86
