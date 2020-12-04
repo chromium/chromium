@@ -273,6 +273,7 @@ class ObserverList {
       NOTREACHED() << "Observers can only be added once!";
       return;
     }
+    observers_count_++;
     observers_.emplace_back(ObserverStorageType(obs));
   }
 
@@ -284,7 +285,8 @@ class ObserverList {
         observers_, [obs](const auto& o) { return o.IsEqual(obs); });
     if (it == observers_.end())
       return;
-
+    if (!it->IsMarkedForRemoval())
+      observers_count_--;
     if (live_iterators_.empty()) {
       observers_.erase(it);
     } else {
@@ -314,8 +316,13 @@ class ObserverList {
       for (auto& observer : observers_)
         observer.MarkForRemoval();
     }
+    observers_count_ = 0;
   }
 
+  bool has_observers() const { return observers_count_ > 0; }
+
+  // Deprecated: use |has_observers()|.
+  // TODO(1155308): migrate all callers and make this test only.
   bool might_have_observers() const { return !observers_.empty(); }
 
  private:
@@ -333,6 +340,8 @@ class ObserverList {
   std::vector<ObserverStorageType> observers_;
 
   base::LinkedList<internal::WeakLinkNode<ObserverList>> live_iterators_;
+
+  size_t observers_count_{0};
 
   const ObserverListPolicy policy_;
 
