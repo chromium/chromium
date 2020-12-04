@@ -17,6 +17,7 @@ js_type_check("closure_compile") {
     ":cellular_setup",
     ":cellular_setup_delegate",
     ":cellular_types",
+    ":esim_manager_utils",
     ":final_page",
     ":mojo_interface_provider",
     ":profile_discovery_list_item",
@@ -109,6 +110,7 @@ js_library("esim_flow_ui") {
   deps = [
     ":activation_code_page",
     ":cellular_setup_delegate",
+    ":esim_manager_utils",
     ":mojo_interface_provider",
     ":profile_discovery_list_item",
     ":profile_discovery_list_page",
@@ -160,6 +162,10 @@ js_library("mojo_interface_provider") {
   ]
 }
 
+js_library("esim_manager_utils") {
+  deps = [ ":mojo_interface_provider" ]
+}
+
 # Polymer3 files
 
 js_type_check("closure_compile_module") {
@@ -172,6 +178,7 @@ js_type_check("closure_compile_module") {
     ":cellular_setup_delegate.m",
     ":cellular_types.m",
     ":esim_flow_ui.m",
+    ":esim_manager_utils.m",
     ":final_page.m",
     ":mojo_interface_provider.m",
     ":profile_discovery_list_item.m",
@@ -236,6 +243,12 @@ js_library("mojo_interface_provider.m") {
     "//chromeos/services/cellular_setup/public/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
   ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("esim_manager_utils.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/esim_manager_utils.m.js" ]
+  deps = [ ":mojo_interface_provider.m" ]
   extra_deps = [ ":modulize" ]
 }
 
@@ -325,6 +338,7 @@ js_library("esim_flow_ui.m") {
     ":activation_code_page.m",
     ":cellular_setup_delegate.m",
     ":cellular_types.m",
+    ":esim_manager_utils.m",
     ":final_page.m",
     ":mojo_interface_provider.m",
     ":profile_discovery_list_item.m",
@@ -487,6 +501,7 @@ js_modulizer("modulize") {
     "cellular_types.js",
     "cellular_setup_delegate.js",
     "mojo_interface_provider.js",
+    "esim_manager_utils.js",
     "subflow_behavior.js",
     "webview_post_util.js",
   ]

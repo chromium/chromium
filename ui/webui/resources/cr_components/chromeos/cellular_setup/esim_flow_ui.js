@@ -117,23 +117,22 @@ cr.define('cellular_setup', function() {
 
     /** @private */
     fetchProfiles_() {
+      let euicc;
       this.eSimManagerRemote_.getAvailableEuiccs()
           .then(response => {
             // TODO(crbug.com/1093185) User should have at least 1 EUICC or
             // we shouldn't have gotten to this flow. Add check for this in
             // cellular_setup.
-            this.euicc_ = response.euiccs[0];
-            return this.euicc_.requestPendingProfiles();
+            euicc = response.euiccs[0];
+            this.euicc_ = euicc;
+            return euicc.requestPendingProfiles();
           })
           .then(response => {
             if (response.result ===
                 chromeos.cellularSetup.mojom.ESimOperationResult.kFailure) {
               console.error('Error requesting pending profiles: ' + response);
             }
-            return this.euicc_.getProfileList();
-          })
-          .then(response => {
-            return this.filterForPendingProfiles_(response.profiles);
+            return cellular_setup.getPendingESimProfiles(euicc);
           })
           .then(profiles => {
             this.pendingProfiles_ = profiles;
@@ -152,28 +151,6 @@ cr.define('cellular_setup', function() {
                 break;
             }
           });
-    },
-
-    /**
-     * @private
-     * @param {!Array<!chromeos.cellularSetup.mojom.ESimProfileRemote>} profiles
-     * @return {!Promise<Array<!chromeos.cellularSetup.mojom.ESimProfileRemote>>}
-     */
-    filterForPendingProfiles_(profiles) {
-      const profilePromises = profiles.map(profile => {
-        return profile.getProperties().then(response => {
-          if (response.properties.state !==
-              chromeos.cellularSetup.mojom.ProfileState.kPending) {
-            return null;
-          }
-          return profile;
-        });
-      });
-      return Promise.all(profilePromises).then(profiles => {
-        return profiles.filter(profile => {
-          return profile !== null;
-        });
-      });
     },
 
     /**
