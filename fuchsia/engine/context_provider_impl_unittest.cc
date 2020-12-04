@@ -33,6 +33,7 @@
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
+#include "build/build_config.h"
 #include "fuchsia/engine/context_provider_impl.h"
 #include "fuchsia/engine/fake_context.h"
 #include "fuchsia/engine/switches.h"
@@ -45,8 +46,12 @@ namespace {
 
 constexpr char kTestDataFileIn[] = "DataFileIn";
 constexpr char kTestDataFileOut[] = "DataFileOut";
+
 constexpr char kUrl[] = "chrome://:emorhc";
 constexpr char kTitle[] = "Palindrome";
+
+constexpr uint64_t kTestQuotaBytes = 1024;
+constexpr char kTestQuotaBytesSwitchValue[] = "1024";
 
 MULTIPROCESS_TEST_MAIN(SpawnContextServer) {
   base::test::SingleThreadTaskEnvironment task_environment(
@@ -344,7 +349,7 @@ TEST_F(ContextProviderImplTest, WithProfileDir) {
   fuchsia::web::CreateContextParams create_params = BuildCreateContextParams();
 
   // Setup data dir.
-  EXPECT_TRUE(profile_temp_dir.CreateUniqueTempDir());
+  ASSERT_TRUE(profile_temp_dir.CreateUniqueTempDir());
   ASSERT_EQ(
       base::WriteFile(profile_temp_dir.GetPath().AppendASCII(kTestDataFileIn),
                       nullptr, 0),
@@ -559,3 +564,75 @@ TEST(ContextProviderImplParamsTest, WithInsecureOriginsAsSecure) {
 
   loop.Run();
 }
+
+TEST(ContextProviderImplConfigTest, WithDataQuotaBytes) {
+  const base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
+
+  base::RunLoop loop;
+  ContextProviderImpl context_provider;
+  context_provider.SetLaunchCallbackForTest(
+      base::BindLambdaForTesting([&loop](const base::CommandLine& command,
+                                         const base::LaunchOptions& options) {
+        EXPECT_EQ(command.GetSwitchValueASCII("data-quota-bytes"),
+                  kTestQuotaBytesSwitchValue);
+        loop.Quit();
+        return base::Process();
+      }));
+
+  fuchsia::web::ContextPtr context;
+  context.set_error_handler([&loop](zx_status_t status) {
+    ZX_LOG(ERROR, status);
+    ADD_FAILURE();
+    loop.Quit();
+  });
+
+  fuchsia::web::CreateContextParams create_params = BuildCreateContextParams();
+  base::ScopedTempDir profile_temp_dir;
+  ASSERT_TRUE(profile_temp_dir.CreateUniqueTempDir());
+  create_params.set_data_directory(
+      base::OpenDirectoryHandle(profile_temp_dir.GetPath()));
+  create_params.set_data_quota_bytes(kTestQuotaBytes);
+  context_provider.Create(std::move(create_params), context.NewRequest());
+
+  loop.Run();
+}
+
+// TODO(crbug.com/1013412): This test doesn't actually exercise DRM, so could
+// be executed everywhere if DRM support were configurable.
+#if defined(ARCH_CPU_ARM64)
+TEST(ContextProviderImplConfigTest, WithCdmDataQuotaBytes) {
+  const base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
+
+  base::RunLoop loop;
+  ContextProviderImpl context_provider;
+  context_provider.SetLaunchCallbackForTest(
+      base::BindLambdaForTesting([&loop](const base::CommandLine& command,
+                                         const base::LaunchOptions& options) {
+        EXPECT_EQ(command.GetSwitchValueASCII("cdm-data-quota-bytes"),
+                  kTestQuotaBytesSwitchValue);
+        loop.Quit();
+        return base::Process();
+      }));
+
+  fuchsia::web::ContextPtr context;
+  context.set_error_handler([&loop](zx_status_t status) {
+    ZX_LOG(ERROR, status);
+    ADD_FAILURE();
+    loop.Quit();
+  });
+
+  fuchsia::web::CreateContextParams create_params = BuildCreateContextParams();
+  base::ScopedTempDir profile_temp_dir;
+  ASSERT_TRUE(profile_temp_dir.CreateUniqueTempDir());
+  create_params.set_cdm_data_directory(
+      base::OpenDirectoryHandle(profile_temp_dir.GetPath()));
+  create_params.set_features(fuchsia::web::ContextFeatureFlags::HEADLESS |
+                             fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM);
+  create_params.set_cdm_data_quota_bytes(kTestQuotaBytes);
+  context_provider.Create(std::move(create_params), context.NewRequest());
+
+  loop.Run();
+}
+#endif  // defined(ARCH_CPU_ARM64)

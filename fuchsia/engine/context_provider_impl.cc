@@ -265,6 +265,8 @@ void ContextProviderImpl::Create(
   launch_options.handles_to_transfer.push_back(
       {kContextRequestHandleId, context_request.channel().get()});
 
+  base::CommandLine launch_command(*base::CommandLine::ForCurrentProcess());
+
   // Bind |data_directory| to /data directory, if provided.
   zx::channel data_directory_channel;
   if (params.has_data_directory()) {
@@ -285,10 +287,13 @@ void ContextProviderImpl::Create(
     }
     launch_options.paths_to_transfer.push_back(
         base::PathToTransfer{data_path, data_directory_channel.release()});
-  }
 
-  base::CommandLine launch_command = *base::CommandLine::ForCurrentProcess();
-  std::vector<zx::channel> devtools_listener_channels;
+    if (params.has_data_quota_bytes()) {
+      launch_command.AppendSwitchNative(
+          switches::kDataQuotaBytes,
+          base::NumberToString(params.data_quota_bytes()));
+    }
+  }
 
   // Process command-line settings specified in our package config-data.
   base::Value web_engine_config;
@@ -310,6 +315,7 @@ void ContextProviderImpl::Create(
         base::NumberToString(params.remote_debugging_port()));
   }
 
+  std::vector<zx::channel> devtools_listener_channels;
   if (devtools_listeners_.size() != 0) {
     // Connect DevTools listeners to the new Context process.
     std::vector<std::string> handles_ids;
