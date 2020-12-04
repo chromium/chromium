@@ -1,0 +1,7 @@
+monorail {
+  component: "Blink>Geometry"
+}
+team_email: "paint-dev@chromium.org"
+wpt {
+  notify: YES
+}

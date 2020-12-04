@@ -1,0 +1,7 @@
+monorail {
+  component: "Blink>Layout>Flexbox"
+}
+team_email: "layout-dev@chromium.org"
+wpt {
+  notify: YES
+}
