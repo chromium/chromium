@@ -16,12 +16,20 @@
 #include "components/arc/test/fake_cros_config.h"
 #include "testing/libfuzzer/libfuzzer_exports.h"
 
+namespace {
+constexpr size_t kMaxInputSize = 256 * 1024;
+}
+
 extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
   base::CommandLine::Init(*argc, *argv);
   return 0;
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  // Limit the input size to avoid timing out on ClusterFuzz.
+  if (size > kMaxInputSize)
+    return 0;
+
   FuzzedDataProvider data_provider(data, size);
 
   std::string content = data_provider.ConsumeRandomLengthString(size);
