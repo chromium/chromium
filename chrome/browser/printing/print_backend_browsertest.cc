@@ -18,6 +18,7 @@
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "printing/backend/print_backend.h"
 #include "printing/backend/test_print_backend.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -73,8 +74,16 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
   // Initialize and load the backend service with some test print drivers.
   void DoInitAndSetupTestData() {
     print_backend_service_->Init(/*locale=*/"");
-    print_backend_service_->test_print_backend_->SetDefaultPrinterName(
-        kDefaultPrinterName);
+
+    auto printer_info = std::make_unique<PrinterBasicInfo>(
+        /*printer_name=*/kDefaultPrinterName,
+        /*display_name=*/"default test printer",
+        /*printer_description=*/"Default printer for testing.",
+        /*printer_status=*/0, /*is_default=*/true,
+        /*options=*/PrinterBasicInfoOptions{});
+
+    print_backend_service_->test_print_backend_->AddValidPrinter(
+        kDefaultPrinterName, nullptr, std::move(printer_info));
   }
 
   // Public callbacks used by tests.
@@ -131,10 +140,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FailWithoutInit) {
   EXPECT_FALSE(default_printer_name.has_value());
 }
 
-// TODO(crbug.com/809738):  Re-enable after the updates for setting up the
-// printer test environment are made to print_backend_service.mojom.
-IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest,
-                       DISABLED_GetDefaultPrinterName) {
+IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, GetDefaultPrinterName) {
   base::Optional<std::string> default_printer_name;
 
   DoInitAndSetupTestData();
