@@ -118,6 +118,10 @@ def _ParseOptions():
   parser.add_argument('--show-desugar-default-interface-warnings',
                       action='store_true',
                       help='Enable desugaring warnings.')
+  parser.add_argument('--dump-inputs',
+                      action='store_true',
+                      help='Use when filing R8 bugs to capture inputs.'
+                      ' Stores inputs to r8inputs.zip')
   parser.add_argument(
       '--stamp',
       help='File to touch upon success. Mutually exclusive with --output-path')
@@ -238,6 +242,8 @@ def _OptimizeWithR8(options,
     ]
     if options.disable_outlining:
       cmd += ['-Dcom.android.tools.r8.disableOutlining=1']
+    if options.dump_inputs:
+      cmd += ['-Dcom.android.tools.r8.dumpinputtofile=r8inputs.zip']
     cmd += [
         '-cp',
         options.r8_path,

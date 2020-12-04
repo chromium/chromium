@@ -63,3 +63,13 @@ java -cp third_party/r8/lib/r8.jar com.android.tools.r8.BackportedMethodList --m
 Update instructions for desugar_jdk_libs.json:
 * Find desugar.json as described above and copy to desugar_jdk_libs.json.
 * Remove all mentions of ConcurrentHashMap (and remove any trailing commas if necessary).
+
+How to file bugs against R8:
+* Copy & paste the failing ninja command (starts with proguard.py), and add --dump-inputs.
+* File bug at go/r8bug
+* Things to include (use discretion if some are not relevant):
+  * src revision bug reproduces at
+  * Repro steps (gn gen & autoninja commands)
+    * Prefer enable_chrome_android_internal=false
+  * The r8inputs.zip from --dump-inputs
+  * Any relevant dexdump analysis
