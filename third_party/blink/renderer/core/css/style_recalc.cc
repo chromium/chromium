@@ -9,12 +9,12 @@
 
 namespace blink {
 
-bool StyleRecalcChange::TraverseChildren(const Node& node) const {
-  return RecalcChildren() || node.ChildNeedsStyleRecalc();
+bool StyleRecalcChange::TraverseChildren(const Element& element) const {
+  return RecalcChildren() || element.ChildNeedsStyleRecalc();
 }
 
-bool StyleRecalcChange::TraversePseudoElements(const Node& node) const {
-  return UpdatePseudoElements() || node.ChildNeedsStyleRecalc();
+bool StyleRecalcChange::TraversePseudoElements(const Element& element) const {
+  return UpdatePseudoElements() || element.ChildNeedsStyleRecalc();
 }
 
 bool StyleRecalcChange::TraverseChild(const Node& node) const {

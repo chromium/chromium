@@ -2003,7 +2003,7 @@ void StyleEngine::ClearEnsuredDescendantStyles(Element& root) {
 void StyleEngine::RebuildLayoutTree() {
   DCHECK(GetDocument().documentElement());
   DCHECK(!InRebuildLayoutTree());
-  in_layout_tree_rebuild_ = true;
+  base::AutoReset<bool> rebuild_scope(&in_layout_tree_rebuild_, true);
 
   // We need a root scope here in case we recalc style for ::first-letter
   // elements as part of UpdateFirstLetterPseudoElement.
@@ -2023,7 +2023,6 @@ void StyleEngine::RebuildLayoutTree() {
     ancestor->ClearChildNeedsReattachLayoutTree();
   }
   layout_tree_rebuild_root_.Clear();
-  in_layout_tree_rebuild_ = false;
 }
 
 void StyleEngine::UpdateStyleAndLayoutTree() {
@@ -2108,7 +2107,7 @@ void StyleEngine::UpdateStyleRecalcRoot(ContainerNode* ancestor,
     DCHECK(allow_mark_style_dirty_from_recalc_);
     return;
   }
-  DCHECK(!in_layout_tree_rebuild_);
+  DCHECK(!InRebuildLayoutTree());
   if (in_dom_removal_) {
     ancestor = nullptr;
     dirty_node = document_;

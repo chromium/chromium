@@ -7,6 +7,7 @@
 
 namespace blink {
 
+class Element;
 class Node;
 class PseudoElement;
 
@@ -62,9 +63,9 @@ class StyleRecalcChange {
   bool RecalcDescendants() const { return propagate_ == kRecalcDescendants; }
   bool UpdatePseudoElements() const { return propagate_ != kNo; }
   bool IndependentInherit() const { return propagate_ == kIndependentInherit; }
-  bool TraverseChildren(const Node&) const;
+  bool TraverseChildren(const Element&) const;
   bool TraverseChild(const Node&) const;
-  bool TraversePseudoElements(const Node&) const;
+  bool TraversePseudoElements(const Element&) const;
   bool ShouldRecalcStyleFor(const Node&) const;
   bool ShouldUpdatePseudoElement(const PseudoElement&) const;
 
