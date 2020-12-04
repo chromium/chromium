@@ -152,9 +152,6 @@ def Install(device, install_json, apk=None, enable_device_cache=False,
   else:
     install_dict = install_json
 
-  if install_dict.get('dont_even_try'):
-    raise Exception(install_dict['dont_even_try'])
-
   main_timer = time_profile.TimeProfile()
   install_timer = time_profile.TimeProfile()
   push_native_timer = time_profile.TimeProfile()

@@ -3267,9 +3267,6 @@ if (enable_java_templates) {
               rebase_path(_loadable_modules, root_build_dir)
           args += [ "--native-libs=$_rebased_loadable_modules" ]
         }
-        if (_load_library_from_apk) {
-          args += [ "--dont-even-try=Incremental builds do not work with load_library_from_apk. Try setting is_component_build=true in your GN args." ]
-        }
       }
       _final_deps += [
         ":$_java_target",
