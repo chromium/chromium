@@ -36,7 +36,7 @@ class AccessibilityEventRewriterDelegate
   // ash::AccessibilityEventRewriterDelegate:
   void DispatchKeyEventToChromeVox(std::unique_ptr<ui::Event> event,
                                    bool capture) override;
-  void DispatchMouseEventToChromeVox(std::unique_ptr<ui::Event> event) override;
+  void DispatchMouseEvent(std::unique_ptr<ui::Event> event) override;
   void SendSwitchAccessCommand(ash::SwitchAccessCommand command) override;
   void SendPointScanPoint(const gfx::PointF& point) override;
 

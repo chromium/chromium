@@ -298,10 +298,10 @@ AccessibilityPrivateSendSyntheticKeyEventFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
-AccessibilityPrivateEnableChromeVoxMouseEventsFunction::Run() {
+AccessibilityPrivateEnableMouseEventsFunction::Run() {
   bool enabled = false;
   EXTENSION_FUNCTION_VALIDATE(args_->GetBoolean(0, &enabled));
-  ash::EventRewriterController::Get()->SetSendMouseEventsToDelegate(enabled);
+  ash::EventRewriterController::Get()->SetSendMouseEvents(enabled);
   return RespondNow(NoArguments());
 }
 

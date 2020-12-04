@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, SpeakingTextUnderMouseForShelfItem) {
     }
 
     // Enable the function of speaking text under mouse.
-    ash::EventRewriterController::Get()->SetSendMouseEventsToDelegate(true);
+    ash::EventRewriterController::Get()->SetSendMouseEvents(true);
 
     // Focus on the Shelf because voice text for focusing on Shelf is fixed.
     // Wait until voice announcements are finished.

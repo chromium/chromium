@@ -108,8 +108,8 @@ void EventRewriterControllerImpl::CaptureAllKeysForSpokenFeedback(
   accessibility_event_rewriter_->set_chromevox_capture_all_keys(capture);
 }
 
-void EventRewriterControllerImpl::SetSendMouseEventsToDelegate(bool value) {
-  accessibility_event_rewriter_->set_chromevox_send_mouse_events(value);
+void EventRewriterControllerImpl::SetSendMouseEvents(bool value) {
+  accessibility_event_rewriter_->set_send_mouse_events(value);
 }
 
 void EventRewriterControllerImpl::OnHostInitialized(

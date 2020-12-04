@@ -51,8 +51,8 @@ class ASH_EXPORT EventRewriterController {
   // Discards key events and sends to spoken feedback when true.
   virtual void CaptureAllKeysForSpokenFeedback(bool capture) = 0;
 
-  // Sends mouse events to ChromeVox when true.
-  virtual void SetSendMouseEventsToDelegate(bool value) = 0;
+  // Sends mouse events to accessibility component extensions when true.
+  virtual void SetSendMouseEvents(bool value) = 0;
 
  protected:
   virtual ~EventRewriterController() {}

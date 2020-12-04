@@ -402,14 +402,14 @@
         "platforms": ["chromeos"]
       },
       {
-        "name": "enableChromeVoxMouseEvents",
+        "name": "enableMouseEvents",
         "type": "function",
-        "description": "Enables or disables mouse events in ChromeVox.",
+        "description": "Enables or disables mouse events in accessibility extensions",
         "parameters": [
           {
             "name": "enabled",
             "type": "boolean",
-            "description": "True if ChromeVox should receive mouse events."
+            "description": "True if accessibility component extensions should receive mouse events."
           }
         ],
         "platforms": ["chromeos"]

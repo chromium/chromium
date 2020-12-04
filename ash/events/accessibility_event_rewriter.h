@@ -56,9 +56,8 @@ class ASH_EXPORT AccessibilityEventRewriter
   void set_chromevox_capture_all_keys(bool value) {
     chromevox_capture_all_keys_ = value;
   }
-  void set_chromevox_send_mouse_events(bool value) {
-    chromevox_send_mouse_events_ = value;
-  }
+
+  void set_send_mouse_events(bool value) { send_mouse_events_ = value; }
 
   void set_suspend_switch_access_key_handling(bool suspend) {
     suspend_switch_access_key_handling_ = suspend;
@@ -89,6 +88,10 @@ class ASH_EXPORT AccessibilityEventRewriter
   // keyboard input types.
   void UpdateKeyboardDeviceIds();
 
+  // Maybe sends a mouse event to be dispatched to accessibility component
+  // extensions.
+  void MaybeSendMouseEvent(const ui::Event& event);
+
   // ui::EventRewriter:
   ui::EventDispatchDetails RewriteEvent(
       const ui::Event& event,
@@ -104,8 +107,8 @@ class ASH_EXPORT AccessibilityEventRewriter
   // extensions.
   AccessibilityEventRewriterDelegate* delegate_ = nullptr;
 
-  // Whether to send mouse events to the ChromeVox extension.
-  bool chromevox_send_mouse_events_ = false;
+  // Whether to send mouse events to accessibility component extensions.
+  bool send_mouse_events_ = false;
 
   // Whether to capture all keys for ChromeVox.
   bool chromevox_capture_all_keys_ = false;

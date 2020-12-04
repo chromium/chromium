@@ -75,15 +75,13 @@ void AccessibilityEventRewriterDelegate::DispatchKeyEventToChromeVox(
   chromeos::ForwardKeyToExtension(*(event->AsKeyEvent()), host);
 }
 
-void AccessibilityEventRewriterDelegate::DispatchMouseEventToChromeVox(
+void AccessibilityEventRewriterDelegate::DispatchMouseEvent(
     std::unique_ptr<ui::Event> event) {
   if (is_arc_window_active_)
     return;
 
-  if (event->type() == ui::ET_MOUSE_MOVED) {
-    AutomationManagerAura::GetInstance()->HandleEvent(
-        ax::mojom::Event::kMouseMoved);
-  }
+  AutomationManagerAura::GetInstance()->HandleEvent(
+      ax::mojom::Event::kMouseMoved);
 }
 
 void AccessibilityEventRewriterDelegate::SendSwitchAccessCommand(

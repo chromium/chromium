@@ -83,12 +83,11 @@ class AccessibilityPrivateSendSyntheticKeyEventFunction
 };
 
 // API function that enables or disables mouse events in ChromeVox.
-class AccessibilityPrivateEnableChromeVoxMouseEventsFunction
-    : public ExtensionFunction {
-  ~AccessibilityPrivateEnableChromeVoxMouseEventsFunction() override {}
+class AccessibilityPrivateEnableMouseEventsFunction : public ExtensionFunction {
+  ~AccessibilityPrivateEnableMouseEventsFunction() override {}
   ResponseAction Run() override;
-  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.enableChromeVoxMouseEvents",
-                             ACCESSIBILITY_PRIVATE_ENABLECHROMEVOXMOUSEEVENTS)
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.enableMouseEvents",
+                             ACCESSIBILITY_PRIVATE_ENABLEMOUSEEVENTS)
 };
 
 // API function that injects mouse events.

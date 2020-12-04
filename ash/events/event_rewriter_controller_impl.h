@@ -40,7 +40,7 @@ class ASH_EXPORT EventRewriterControllerImpl : public EventRewriterController,
   void OnUnhandledSpokenFeedbackEvent(
       std::unique_ptr<ui::Event> event) override;
   void CaptureAllKeysForSpokenFeedback(bool capture) override;
-  void SetSendMouseEventsToDelegate(bool value) override;
+  void SetSendMouseEvents(bool value) override;
 
   // aura::EnvObserver:
   void OnHostInitialized(aura::WindowTreeHost* host) override;

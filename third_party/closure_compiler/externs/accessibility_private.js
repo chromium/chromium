@@ -191,20 +191,6 @@ chrome.accessibilityPrivate.SelectToSpeakState = {
 /**
  * @enum {string}
  */
-chrome.accessibilityPrivate.SelectToSpeakPanelAction = {
-  PREVIOUS_PARAGRAPH: 'previousParagraph',
-  PREVIOUS_SENTENCE: 'previousSentence',
-  PAUSE: 'pause',
-  RESUME: 'resume',
-  NEXT_SENTENCE: 'nextSentence',
-  NEXT_PARAGRAPH: 'nextParagraph',
-  EXIT: 'exit',
-  CHANGESPEED: 'changeSpeed',
-};
-
-/**
- * @enum {string}
- */
 chrome.accessibilityPrivate.FocusType = {
   GLOW: 'glow',
   SOLID: 'solid',
@@ -236,6 +222,20 @@ chrome.accessibilityPrivate.AcceleratorAction = {
  */
 chrome.accessibilityPrivate.AccessibilityFeature = {
   SELECT_TO_SPEAK_NAVIGATION_CONTROL: 'selectToSpeakNavigationControl',
+};
+
+/**
+ * @enum {string}
+ */
+chrome.accessibilityPrivate.SelectToSpeakPanelAction = {
+  PREVIOUS_PARAGRAPH: 'previousParagraph',
+  PREVIOUS_SENTENCE: 'previousSentence',
+  PAUSE: 'pause',
+  RESUME: 'resume',
+  NEXT_SENTENCE: 'nextSentence',
+  NEXT_PARAGRAPH: 'nextParagraph',
+  EXIT: 'exit',
+  CHANGE_SPEED: 'changeSpeed',
 };
 
 /**
@@ -335,10 +335,11 @@ chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp = function
 chrome.accessibilityPrivate.sendSyntheticKeyEvent = function(keyEvent) {};
 
 /**
- * Enables or disables mouse events in ChromeVox.
- * @param {boolean} enabled True if ChromeVox should receive mouse events.
+ * Enables or disables mouse events in accessibility extensions
+ * @param {boolean} enabled True if accessibility component extensions should
+ *     receive mouse events.
  */
-chrome.accessibilityPrivate.enableChromeVoxMouseEvents = function(enabled) {};
+chrome.accessibilityPrivate.enableMouseEvents = function(enabled) {};
 
 /**
  * Sends a fabricated mouse event.
@@ -414,11 +415,10 @@ chrome.accessibilityPrivate.isFeatureEnabled = function(feature, callback) {};
  * @param {!chrome.accessibilityPrivate.ScreenRect=} anchor A rectangle
  *     indicating the bounds of the object the panel should be displayed next
  *     to.
- * @param {boolean=} isPaused Whether Select-to-speak playback is paused.
- * @param {number=} speed Current reading speed.
+ * @param {boolean=} isPaused True if Select-to-speak playback is paused.
+ * @param {number=} speed Current reading speed (TTS speech rate).
  */
-chrome.accessibilityPrivate.updateSelectToSpeakPanel = function(
-    show, anchor, isPaused, speed) {};
+chrome.accessibilityPrivate.updateSelectToSpeakPanel = function(show, anchor, isPaused, speed) {};
 
 /**
  * Fired whenever ChromeVox should output introduction.
@@ -455,7 +455,7 @@ chrome.accessibilityPrivate.onTwoFingerTouchStop;
 chrome.accessibilityPrivate.onSelectToSpeakStateChangeRequested;
 
 /**
- * Fired when an action is performed on the Select-to-speak panel.
+ * Fired when an action is performed in the Select-to-speak panel.
  * @type {!ChromeEvent}
  */
 chrome.accessibilityPrivate.onSelectToSpeakPanelAction;

@@ -168,9 +168,6 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
     return capture;
   }
 
-  if (chromevox_send_mouse_events_ && event.IsMouseEvent())
-    delegate_->DispatchMouseEventToChromeVox(ui::Event::Clone(event));
-
   return false;
 }
 
@@ -273,6 +270,16 @@ void AccessibilityEventRewriter::UpdateKeyboardDeviceIds() {
   }
 }
 
+void AccessibilityEventRewriter::MaybeSendMouseEvent(const ui::Event& event) {
+  // Mouse moves are the only pertinent event for accessibility component
+  // extensions.
+  if (send_mouse_events_ && event.type() == ui::ET_MOUSE_MOVED &&
+      (Shell::Get()->magnification_controller()->IsEnabled() ||
+       Shell::Get()->accessibility_controller()->spoken_feedback().enabled())) {
+    delegate_->DispatchMouseEvent(ui::Event::Clone(event));
+  }
+}
+
 ui::EventDispatchDetails AccessibilityEventRewriter::RewriteEvent(
     const ui::Event& event,
     const Continuation continuation) {
@@ -295,6 +302,10 @@ ui::EventDispatchDetails AccessibilityEventRewriter::RewriteEvent(
 
   if (!captured) {
     captured = RewriteEventForChromeVox(event, continuation);
+  }
+
+  if (!captured) {
+    MaybeSendMouseEvent(event);
   }
 
   return captured ? DiscardEvent(continuation)

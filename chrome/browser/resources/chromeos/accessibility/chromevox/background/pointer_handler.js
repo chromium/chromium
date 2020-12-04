@@ -47,7 +47,7 @@ PointerHandler = class extends BaseAutomationHandler {
     });
 
     if (localStorage['speakTextUnderMouse'] === String(true)) {
-      chrome.accessibilityPrivate.enableChromeVoxMouseEvents(true);
+      chrome.accessibilityPrivate.enableMouseEvents(true);
     }
   }
 
