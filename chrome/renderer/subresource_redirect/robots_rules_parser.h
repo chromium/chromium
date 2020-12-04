@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_RENDERER_SUBRESOURCE_REDIRECT_ROBOTS_RULES_DECIDER_H_
-#define CHROME_RENDERER_SUBRESOURCE_REDIRECT_ROBOTS_RULES_DECIDER_H_
+#ifndef CHROME_RENDERER_SUBRESOURCE_REDIRECT_ROBOTS_RULES_PARSER_H_
+#define CHROME_RENDERER_SUBRESOURCE_REDIRECT_ROBOTS_RULES_PARSER_H_
 
 #include <map>
 #include <vector>
@@ -20,7 +20,7 @@ namespace subresource_redirect {
 // url path is allowed or disallowed. Also supports a timeout to receive the
 // robots rules after which it will be treated as a full disallow. The check
 // result is delivered via callback asynchronously.
-class RobotsRulesDecider {
+class RobotsRulesParser {
  public:
   // The final result of robots rule retrieval.
   // This should be kept in sync with
@@ -41,11 +41,11 @@ class RobotsRulesDecider {
   // Callback to notify the check robot rules result.
   using CheckResultCallback = base::OnceCallback<void(CheckResult)>;
 
-  RobotsRulesDecider();
-  ~RobotsRulesDecider();
+  RobotsRulesParser();
+  ~RobotsRulesParser();
 
-  RobotsRulesDecider(const RobotsRulesDecider&) = delete;
-  RobotsRulesDecider& operator=(const RobotsRulesDecider&) = delete;
+  RobotsRulesParser(const RobotsRulesParser&) = delete;
+  RobotsRulesParser& operator=(const RobotsRulesParser&) = delete;
 
   // Update the robots rules. This causes any pending check requests to be
   // processed immediately and called with th result.
@@ -95,4 +95,4 @@ class RobotsRulesDecider {
 
 }  // namespace subresource_redirect
 
-#endif  // CHROME_RENDERER_SUBRESOURCE_REDIRECT_ROBOTS_RULES_DECIDER_H_
+#endif  // CHROME_RENDERER_SUBRESOURCE_REDIRECT_ROBOTS_RULES_PARSER_H_

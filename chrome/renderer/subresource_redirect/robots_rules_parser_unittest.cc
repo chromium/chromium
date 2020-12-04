@@ -9,7 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/renderer/subresource_redirect/robots_rules_decider.h"
+#include "chrome/renderer/subresource_redirect/robots_rules_parser.h"
 #include "components/data_reduction_proxy/proto/robots_rules.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -33,20 +33,20 @@ struct Rule {
 
 class CheckResultReceiver {
  public:
-  void OnCheckRobotsRulesResult(RobotsRulesDecider::CheckResult check_result) {
+  void OnCheckRobotsRulesResult(RobotsRulesParser::CheckResult check_result) {
     EXPECT_FALSE(did_receive_result_);
     did_receive_result_ = true;
     check_result_ = check_result;
   }
-  RobotsRulesDecider::CheckResultCallback GetCallback() {
+  RobotsRulesParser::CheckResultCallback GetCallback() {
     return base::BindOnce(&CheckResultReceiver::OnCheckRobotsRulesResult,
                           weak_ptr_factory_.GetWeakPtr());
   }
-  RobotsRulesDecider::CheckResult check_result() const { return check_result_; }
+  RobotsRulesParser::CheckResult check_result() const { return check_result_; }
   bool did_receive_result() const { return did_receive_result_; }
 
  private:
-  RobotsRulesDecider::CheckResult check_result_;
+  RobotsRulesParser::CheckResult check_result_;
   bool did_receive_result_ = false;
   base::WeakPtrFactory<CheckResultReceiver> weak_ptr_factory_{this};
 };
@@ -64,9 +64,9 @@ std::string GetRobotsRulesProtoString(const std::vector<Rule>& patterns) {
   return robots_rules.SerializeAsString();
 }
 
-class SubresourceRedirectRobotsRulesDeciderTest : public testing::Test {
+class SubresourceRedirectRobotsRulesParserTest : public testing::Test {
  public:
-  SubresourceRedirectRobotsRulesDeciderTest()
+  SubresourceRedirectRobotsRulesParserTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -74,14 +74,13 @@ class SubresourceRedirectRobotsRulesDeciderTest : public testing::Test {
   }
 
   void SetUpRobotsRules(const std::vector<Rule>& patterns) {
-    robots_rules_decider_.UpdateRobotsRules(
-        GetRobotsRulesProtoString(patterns));
+    robots_rules_parser_.UpdateRobotsRules(GetRobotsRulesProtoString(patterns));
   }
 
   void CheckRobotsRules(const std::string& url_path_with_query,
-                        RobotsRulesDecider::CheckResult expected_result) {
+                        RobotsRulesParser::CheckResult expected_result) {
     CheckResultReceiver result_receiver;
-    robots_rules_decider_.CheckRobotsRules(
+    robots_rules_parser_.CheckRobotsRules(
         GURL(kTestOrigin + url_path_with_query), result_receiver.GetCallback());
     EXPECT_TRUE(result_receiver.did_receive_result());
     EXPECT_EQ(expected_result, result_receiver.check_result());
@@ -90,14 +89,14 @@ class SubresourceRedirectRobotsRulesDeciderTest : public testing::Test {
   std::unique_ptr<CheckResultReceiver> CheckRobotsRulesAsync(
       const std::string& url_path_with_query) {
     auto result_receiver = std::make_unique<CheckResultReceiver>();
-    robots_rules_decider_.CheckRobotsRules(
+    robots_rules_parser_.CheckRobotsRules(
         GURL(kTestOrigin + url_path_with_query),
         result_receiver->GetCallback());
     return result_receiver;
   }
 
   void VerifyRobotsRulesReceiveResultHistogram(
-      RobotsRulesDecider::SubresourceRedirectRobotsRulesReceiveResult result) {
+      RobotsRulesParser::SubresourceRedirectRobotsRulesReceiveResult result) {
     histogram_tester().ExpectUniqueSample(
         "SubresourceRedirect.RobotRulesDecider.ReceiveResult", result, 1);
   }
@@ -118,60 +117,56 @@ class SubresourceRedirectRobotsRulesDeciderTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
-  RobotsRulesDecider robots_rules_decider_;
+  RobotsRulesParser robots_rules_parser_;
 };
 
-TEST_F(SubresourceRedirectRobotsRulesDeciderTest,
+TEST_F(SubresourceRedirectRobotsRulesParserTest,
        InvalidProtoParseErrorDisallowsAllPaths) {
-  robots_rules_decider_.UpdateRobotsRules("INVALID PROTO");
+  robots_rules_parser_.UpdateRobotsRules("INVALID PROTO");
   VerifyRobotsRulesReceiveResultHistogram(
-      RobotsRulesDecider::SubresourceRedirectRobotsRulesReceiveResult::
+      RobotsRulesParser::SubresourceRedirectRobotsRulesReceiveResult::
           kParseError);
   histogram_tester().ExpectTotalCount(
       "SubresourceRedirect.RobotRulesDecider.Count", 0);
 
   // All url paths should be disallowed.
-  CheckRobotsRules("", RobotsRulesDecider::CheckResult::kDisallowed);
-  CheckRobotsRules("/", RobotsRulesDecider::CheckResult::kDisallowed);
-  CheckRobotsRules("/foo.jpg", RobotsRulesDecider::CheckResult::kDisallowed);
-  CheckRobotsRules("/foo/bar.jpg",
-                   RobotsRulesDecider::CheckResult::kDisallowed);
+  CheckRobotsRules("", RobotsRulesParser::CheckResult::kDisallowed);
+  CheckRobotsRules("/", RobotsRulesParser::CheckResult::kDisallowed);
+  CheckRobotsRules("/foo.jpg", RobotsRulesParser::CheckResult::kDisallowed);
+  CheckRobotsRules("/foo/bar.jpg", RobotsRulesParser::CheckResult::kDisallowed);
   VerifyTotalRobotsRulesApplyHistograms(0);
 }
 
-TEST_F(SubresourceRedirectRobotsRulesDeciderTest, EmptyRulesAllowsAllPaths) {
+TEST_F(SubresourceRedirectRobotsRulesParserTest, EmptyRulesAllowsAllPaths) {
   SetUpRobotsRules({});
   VerifyRobotsRulesReceiveResultHistogram(
-      RobotsRulesDecider::SubresourceRedirectRobotsRulesReceiveResult::
-          kSuccess);
+      RobotsRulesParser::SubresourceRedirectRobotsRulesReceiveResult::kSuccess);
   VerifyReceivedRobotsRulesCountHistogram(0);
 
   // All url paths should be allowed.
-  CheckRobotsRules("", RobotsRulesDecider::CheckResult::kAllowed);
-  CheckRobotsRules("/", RobotsRulesDecider::CheckResult::kAllowed);
-  CheckRobotsRules("/foo.jpg", RobotsRulesDecider::CheckResult::kAllowed);
-  CheckRobotsRules("/foo/bar.jpg", RobotsRulesDecider::CheckResult::kAllowed);
+  CheckRobotsRules("", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/foo.jpg", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/foo/bar.jpg", RobotsRulesParser::CheckResult::kAllowed);
   VerifyTotalRobotsRulesApplyHistograms(4);
 }
 
-TEST_F(SubresourceRedirectRobotsRulesDeciderTest,
+TEST_F(SubresourceRedirectRobotsRulesParserTest,
        RulesReceiveTimeoutDisallowsAllPaths) {
   // Let the rule fetch timeout.
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
   VerifyRobotsRulesReceiveResultHistogram(
-      RobotsRulesDecider::SubresourceRedirectRobotsRulesReceiveResult::
-          kTimeout);
+      RobotsRulesParser::SubresourceRedirectRobotsRulesReceiveResult::kTimeout);
 
   // All url paths should be disallowed.
-  CheckRobotsRules("", RobotsRulesDecider::CheckResult::kDisallowed);
-  CheckRobotsRules("/", RobotsRulesDecider::CheckResult::kDisallowed);
-  CheckRobotsRules("/foo.jpg", RobotsRulesDecider::CheckResult::kDisallowed);
-  CheckRobotsRules("/foo/bar.jpg",
-                   RobotsRulesDecider::CheckResult::kDisallowed);
+  CheckRobotsRules("", RobotsRulesParser::CheckResult::kDisallowed);
+  CheckRobotsRules("/", RobotsRulesParser::CheckResult::kDisallowed);
+  CheckRobotsRules("/foo.jpg", RobotsRulesParser::CheckResult::kDisallowed);
+  CheckRobotsRules("/foo/bar.jpg", RobotsRulesParser::CheckResult::kDisallowed);
   VerifyTotalRobotsRulesApplyHistograms(0);
 }
 
-TEST_F(SubresourceRedirectRobotsRulesDeciderTest,
+TEST_F(SubresourceRedirectRobotsRulesParserTest,
        CheckResultCallbackAfterRulesReceived) {
   auto receiver1 = CheckRobotsRulesAsync("/foo.jpg");
   auto receiver2 = CheckRobotsRulesAsync("/bar");
@@ -182,55 +177,54 @@ TEST_F(SubresourceRedirectRobotsRulesDeciderTest,
   // Once the rules are received the callback should get called with the result.
   SetUpRobotsRules({{kRuleTypeAllow, "/foo"}, {kRuleTypeDisallow, "/"}});
   VerifyRobotsRulesReceiveResultHistogram(
-      RobotsRulesDecider::SubresourceRedirectRobotsRulesReceiveResult::
-          kSuccess);
+      RobotsRulesParser::SubresourceRedirectRobotsRulesReceiveResult::kSuccess);
   VerifyReceivedRobotsRulesCountHistogram(2);
 
   EXPECT_TRUE(receiver1->did_receive_result());
   EXPECT_TRUE(receiver2->did_receive_result());
-  EXPECT_EQ(RobotsRulesDecider::CheckResult::kAllowed,
+  EXPECT_EQ(RobotsRulesParser::CheckResult::kAllowed,
             receiver1->check_result());
-  EXPECT_EQ(RobotsRulesDecider::CheckResult::kDisallowed,
+  EXPECT_EQ(RobotsRulesParser::CheckResult::kDisallowed,
             receiver2->check_result());
   VerifyTotalRobotsRulesApplyHistograms(2);
 
-  CheckRobotsRules("/foo.png", RobotsRulesDecider::CheckResult::kAllowed);
-  CheckRobotsRules("/bar", RobotsRulesDecider::CheckResult::kDisallowed);
-  CheckRobotsRules("/baz", RobotsRulesDecider::CheckResult::kDisallowed);
+  CheckRobotsRules("/foo.png", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/bar", RobotsRulesParser::CheckResult::kDisallowed);
+  CheckRobotsRules("/baz", RobotsRulesParser::CheckResult::kDisallowed);
   VerifyTotalRobotsRulesApplyHistograms(5);
 }
 
 // Verify if the callback is called before the decider gets destroyed.
-TEST_F(SubresourceRedirectRobotsRulesDeciderTest,
+TEST_F(SubresourceRedirectRobotsRulesParserTest,
        VerifyCallbackCalledBeforeDeciderDestroy) {
-  auto robots_rules_decider = std::make_unique<RobotsRulesDecider>();
+  auto robots_rules_parser = std::make_unique<RobotsRulesParser>();
   auto receiver1 = std::make_unique<CheckResultReceiver>();
   auto receiver2 = std::make_unique<CheckResultReceiver>();
 
-  robots_rules_decider->CheckRobotsRules(GURL("https://test.com/foo.jpg"),
-                                         receiver1->GetCallback());
-  robots_rules_decider->CheckRobotsRules(GURL("https://test.com/bar"),
-                                         receiver2->GetCallback());
+  robots_rules_parser->CheckRobotsRules(GURL("https://test.com/foo.jpg"),
+                                        receiver1->GetCallback());
+  robots_rules_parser->CheckRobotsRules(GURL("https://test.com/bar"),
+                                        receiver2->GetCallback());
   EXPECT_FALSE(receiver1->did_receive_result());
   EXPECT_FALSE(receiver2->did_receive_result());
   VerifyTotalRobotsRulesApplyHistograms(0);
 
-  robots_rules_decider->UpdateRobotsRules(GetRobotsRulesProtoString(
+  robots_rules_parser->UpdateRobotsRules(GetRobotsRulesProtoString(
       {{kRuleTypeAllow, "/foo"}, {kRuleTypeDisallow, "/"}}));
 
   // Destroying the decider should trigger the callbacks.
-  robots_rules_decider.reset();
+  robots_rules_parser.reset();
 
   EXPECT_TRUE(receiver1->did_receive_result());
   EXPECT_TRUE(receiver2->did_receive_result());
-  EXPECT_EQ(RobotsRulesDecider::CheckResult::kAllowed,
+  EXPECT_EQ(RobotsRulesParser::CheckResult::kAllowed,
             receiver1->check_result());
-  EXPECT_EQ(RobotsRulesDecider::CheckResult::kDisallowed,
+  EXPECT_EQ(RobotsRulesParser::CheckResult::kDisallowed,
             receiver2->check_result());
   VerifyTotalRobotsRulesApplyHistograms(2);
 }
 
-TEST_F(SubresourceRedirectRobotsRulesDeciderTest,
+TEST_F(SubresourceRedirectRobotsRulesParserTest,
        CheckResultCallbackAfterRulesReceiveTimeout) {
   auto receiver1 = CheckRobotsRulesAsync("/foo.jpg");
   auto receiver2 = CheckRobotsRulesAsync("/bar");
@@ -242,104 +236,98 @@ TEST_F(SubresourceRedirectRobotsRulesDeciderTest,
   // result.
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
   VerifyRobotsRulesReceiveResultHistogram(
-      RobotsRulesDecider::SubresourceRedirectRobotsRulesReceiveResult::
-          kTimeout);
+      RobotsRulesParser::SubresourceRedirectRobotsRulesReceiveResult::kTimeout);
 
   EXPECT_TRUE(receiver1->did_receive_result());
   EXPECT_TRUE(receiver2->did_receive_result());
-  EXPECT_EQ(RobotsRulesDecider::CheckResult::kTimedout,
+  EXPECT_EQ(RobotsRulesParser::CheckResult::kTimedout,
             receiver1->check_result());
-  EXPECT_EQ(RobotsRulesDecider::CheckResult::kTimedout,
+  EXPECT_EQ(RobotsRulesParser::CheckResult::kTimedout,
             receiver2->check_result());
   VerifyTotalRobotsRulesApplyHistograms(0);
 
   SetUpRobotsRules({{kRuleTypeAllow, "/foo"}, {kRuleTypeDisallow, "/"}});
 
-  CheckRobotsRules("/foo.png", RobotsRulesDecider::CheckResult::kAllowed);
-  CheckRobotsRules("/bar", RobotsRulesDecider::CheckResult::kDisallowed);
-  CheckRobotsRules("/baz", RobotsRulesDecider::CheckResult::kDisallowed);
+  CheckRobotsRules("/foo.png", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/bar", RobotsRulesParser::CheckResult::kDisallowed);
+  CheckRobotsRules("/baz", RobotsRulesParser::CheckResult::kDisallowed);
   VerifyTotalRobotsRulesApplyHistograms(3);
 }
 
-TEST_F(SubresourceRedirectRobotsRulesDeciderTest, FullAllowRule) {
+TEST_F(SubresourceRedirectRobotsRulesParserTest, FullAllowRule) {
   SetUpRobotsRules({{kRuleTypeAllow, "*"}});
   VerifyRobotsRulesReceiveResultHistogram(
-      RobotsRulesDecider::SubresourceRedirectRobotsRulesReceiveResult::
-          kSuccess);
+      RobotsRulesParser::SubresourceRedirectRobotsRulesReceiveResult::kSuccess);
   VerifyReceivedRobotsRulesCountHistogram(1);
 
   // All url paths should be allowed.
-  CheckRobotsRules("", RobotsRulesDecider::CheckResult::kAllowed);
-  CheckRobotsRules("/", RobotsRulesDecider::CheckResult::kAllowed);
-  CheckRobotsRules("/foo.jpg", RobotsRulesDecider::CheckResult::kAllowed);
-  CheckRobotsRules("/foo/bar.jpg", RobotsRulesDecider::CheckResult::kAllowed);
+  CheckRobotsRules("", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/foo.jpg", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/foo/bar.jpg", RobotsRulesParser::CheckResult::kAllowed);
   VerifyTotalRobotsRulesApplyHistograms(4);
 }
 
-TEST_F(SubresourceRedirectRobotsRulesDeciderTest, FullDisallowRule) {
+TEST_F(SubresourceRedirectRobotsRulesParserTest, FullDisallowRule) {
   SetUpRobotsRules({{kRuleTypeDisallow, "*"}});
   VerifyRobotsRulesReceiveResultHistogram(
-      RobotsRulesDecider::SubresourceRedirectRobotsRulesReceiveResult::
-          kSuccess);
+      RobotsRulesParser::SubresourceRedirectRobotsRulesReceiveResult::kSuccess);
   VerifyReceivedRobotsRulesCountHistogram(1);
 
   // All url paths should be disallowed.
-  CheckRobotsRules("", RobotsRulesDecider::CheckResult::kDisallowed);
-  CheckRobotsRules("/", RobotsRulesDecider::CheckResult::kDisallowed);
-  CheckRobotsRules("/foo.jpg", RobotsRulesDecider::CheckResult::kDisallowed);
-  CheckRobotsRules("/foo/bar.jpg",
-                   RobotsRulesDecider::CheckResult::kDisallowed);
+  CheckRobotsRules("", RobotsRulesParser::CheckResult::kDisallowed);
+  CheckRobotsRules("/", RobotsRulesParser::CheckResult::kDisallowed);
+  CheckRobotsRules("/foo.jpg", RobotsRulesParser::CheckResult::kDisallowed);
+  CheckRobotsRules("/foo/bar.jpg", RobotsRulesParser::CheckResult::kDisallowed);
   VerifyTotalRobotsRulesApplyHistograms(4);
 }
 
-TEST_F(SubresourceRedirectRobotsRulesDeciderTest, TwoAllowRules) {
+TEST_F(SubresourceRedirectRobotsRulesParserTest, TwoAllowRules) {
   SetUpRobotsRules({{kRuleTypeAllow, "/foo"},
                     {kRuleTypeAllow, "/bar$"},
                     {kRuleTypeDisallow, "*"}});
   VerifyRobotsRulesReceiveResultHistogram(
-      RobotsRulesDecider::SubresourceRedirectRobotsRulesReceiveResult::
-          kSuccess);
+      RobotsRulesParser::SubresourceRedirectRobotsRulesReceiveResult::kSuccess);
   VerifyReceivedRobotsRulesCountHistogram(3);
 
-  CheckRobotsRules("", RobotsRulesDecider::CheckResult::kDisallowed);
-  CheckRobotsRules("/", RobotsRulesDecider::CheckResult::kDisallowed);
-  CheckRobotsRules("/foo.jpg", RobotsRulesDecider::CheckResult::kAllowed);
-  CheckRobotsRules("/foo/baz.jpg", RobotsRulesDecider::CheckResult::kAllowed);
-  CheckRobotsRules("/bar", RobotsRulesDecider::CheckResult::kAllowed);
-  CheckRobotsRules("/bar.jpg", RobotsRulesDecider::CheckResult::kDisallowed);
-  CheckRobotsRules("/baz", RobotsRulesDecider::CheckResult::kDisallowed);
-  CheckRobotsRules("foo", RobotsRulesDecider::CheckResult::kDisallowed);
-  CheckRobotsRules("bar", RobotsRulesDecider::CheckResult::kDisallowed);
+  CheckRobotsRules("", RobotsRulesParser::CheckResult::kDisallowed);
+  CheckRobotsRules("/", RobotsRulesParser::CheckResult::kDisallowed);
+  CheckRobotsRules("/foo.jpg", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/foo/baz.jpg", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/bar", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/bar.jpg", RobotsRulesParser::CheckResult::kDisallowed);
+  CheckRobotsRules("/baz", RobotsRulesParser::CheckResult::kDisallowed);
+  CheckRobotsRules("foo", RobotsRulesParser::CheckResult::kDisallowed);
+  CheckRobotsRules("bar", RobotsRulesParser::CheckResult::kDisallowed);
   VerifyTotalRobotsRulesApplyHistograms(9);
 }
 
 // When the URL path matches multiple allow and disallow rules, whichever rule
 // that comes first in the list should take precedence.
-TEST_F(SubresourceRedirectRobotsRulesDeciderTest,
+TEST_F(SubresourceRedirectRobotsRulesParserTest,
        FirstAllowRuleMatchOverridesLaterDisallowRule) {
   SetUpRobotsRules({{kRuleTypeAllow, "/foo"}, {kRuleTypeDisallow, "/foo"}});
   VerifyRobotsRulesReceiveResultHistogram(
-      RobotsRulesDecider::SubresourceRedirectRobotsRulesReceiveResult::
-          kSuccess);
+      RobotsRulesParser::SubresourceRedirectRobotsRulesReceiveResult::kSuccess);
   VerifyReceivedRobotsRulesCountHistogram(2);
 
-  CheckRobotsRules("/foo", RobotsRulesDecider::CheckResult::kAllowed);
+  CheckRobotsRules("/foo", RobotsRulesParser::CheckResult::kAllowed);
 
   SetUpRobotsRules({{kRuleTypeDisallow, "/foo"}, {kRuleTypeAllow, "/foo"}});
-  CheckRobotsRules("/foo", RobotsRulesDecider::CheckResult::kDisallowed);
+  CheckRobotsRules("/foo", RobotsRulesParser::CheckResult::kDisallowed);
 
   SetUpRobotsRules({{kRuleTypeAllow, "/foo.jpg"}, {kRuleTypeDisallow, "/foo"}});
-  CheckRobotsRules("/foo.jpg", RobotsRulesDecider::CheckResult::kAllowed);
-  CheckRobotsRules("/foo", RobotsRulesDecider::CheckResult::kDisallowed);
+  CheckRobotsRules("/foo.jpg", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/foo", RobotsRulesParser::CheckResult::kDisallowed);
 
   SetUpRobotsRules({{kRuleTypeDisallow, "/foo.jpg"}, {kRuleTypeAllow, "/foo"}});
-  CheckRobotsRules("/foo.jpg", RobotsRulesDecider::CheckResult::kDisallowed);
-  CheckRobotsRules("/foo", RobotsRulesDecider::CheckResult::kAllowed);
+  CheckRobotsRules("/foo.jpg", RobotsRulesParser::CheckResult::kDisallowed);
+  CheckRobotsRules("/foo", RobotsRulesParser::CheckResult::kAllowed);
 
   VerifyTotalRobotsRulesApplyHistograms(6);
 }
 
-TEST_F(SubresourceRedirectRobotsRulesDeciderTest, TestURLWithArguments) {
+TEST_F(SubresourceRedirectRobotsRulesParserTest, TestURLWithArguments) {
   SetUpRobotsRules({{kRuleTypeAllow, "/*.jpg$"},
                     {kRuleTypeDisallow, "/*.png?*arg_disallowed"},
                     {kRuleTypeAllow, "/*.png"},
@@ -347,46 +335,43 @@ TEST_F(SubresourceRedirectRobotsRulesDeciderTest, TestURLWithArguments) {
                     {kRuleTypeAllow, "/*.gif"},
                     {kRuleTypeDisallow, "/"}});
   VerifyRobotsRulesReceiveResultHistogram(
-      RobotsRulesDecider::SubresourceRedirectRobotsRulesReceiveResult::
-          kSuccess);
+      RobotsRulesParser::SubresourceRedirectRobotsRulesReceiveResult::kSuccess);
   VerifyReceivedRobotsRulesCountHistogram(6);
 
-  CheckRobotsRules("/allowed.jpg", RobotsRulesDecider::CheckResult::kAllowed);
-  CheckRobotsRules("/allowed.png", RobotsRulesDecider::CheckResult::kAllowed);
-  CheckRobotsRules("/allowed.gif", RobotsRulesDecider::CheckResult::kAllowed);
+  CheckRobotsRules("/allowed.jpg", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/allowed.png", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/allowed.gif", RobotsRulesParser::CheckResult::kAllowed);
   CheckRobotsRules("/disallowed.jpg?arg",
-                   RobotsRulesDecider::CheckResult::kDisallowed);
+                   RobotsRulesParser::CheckResult::kDisallowed);
   CheckRobotsRules("/allowed.png?arg",
-                   RobotsRulesDecider::CheckResult::kAllowed);
+                   RobotsRulesParser::CheckResult::kAllowed);
   CheckRobotsRules("/allowed.png?arg_allowed",
-                   RobotsRulesDecider::CheckResult::kAllowed);
+                   RobotsRulesParser::CheckResult::kAllowed);
   CheckRobotsRules("/allowed.png?arg_allowed&arg_allowed2",
-                   RobotsRulesDecider::CheckResult::kAllowed);
+                   RobotsRulesParser::CheckResult::kAllowed);
   CheckRobotsRules("/allowed.png?arg_disallowed",
-                   RobotsRulesDecider::CheckResult::kDisallowed);
+                   RobotsRulesParser::CheckResult::kDisallowed);
   CheckRobotsRules("/allowed.png?arg_disallowed&arg_disallowed2",
-                   RobotsRulesDecider::CheckResult::kDisallowed);
+                   RobotsRulesParser::CheckResult::kDisallowed);
 
   VerifyTotalRobotsRulesApplyHistograms(9);
 }
 
-TEST_F(SubresourceRedirectRobotsRulesDeciderTest, TestRulesAreCaseSensitive) {
+TEST_F(SubresourceRedirectRobotsRulesParserTest, TestRulesAreCaseSensitive) {
   SetUpRobotsRules({{kRuleTypeAllow, "/allowed"},
                     {kRuleTypeAllow, "/CamelCase"},
                     {kRuleTypeAllow, "/CAPITALIZE"},
                     {kRuleTypeDisallow, "/"}});
   VerifyReceivedRobotsRulesCountHistogram(4);
 
-  CheckRobotsRules("/allowed.jpg", RobotsRulesDecider::CheckResult::kAllowed);
-  CheckRobotsRules("/CamelCase.jpg", RobotsRulesDecider::CheckResult::kAllowed);
-  CheckRobotsRules("/CAPITALIZE.jpg",
-                   RobotsRulesDecider::CheckResult::kAllowed);
-  CheckRobotsRules("/Allowed.jpg",
-                   RobotsRulesDecider::CheckResult::kDisallowed);
+  CheckRobotsRules("/allowed.jpg", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/CamelCase.jpg", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/CAPITALIZE.jpg", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/Allowed.jpg", RobotsRulesParser::CheckResult::kDisallowed);
   CheckRobotsRules("/camelcase.jpg",
-                   RobotsRulesDecider::CheckResult::kDisallowed);
+                   RobotsRulesParser::CheckResult::kDisallowed);
   CheckRobotsRules("/capitalize.jpg",
-                   RobotsRulesDecider::CheckResult::kDisallowed);
+                   RobotsRulesParser::CheckResult::kDisallowed);
 
   VerifyTotalRobotsRulesApplyHistograms(6);
 }

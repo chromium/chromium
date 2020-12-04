@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/subresource_redirect/robots_rules_decider.h"
+#include "chrome/renderer/subresource_redirect/robots_rules_parser.h"
 
 #include "base/callback.h"
 #include "base/logging.h"
@@ -66,7 +66,7 @@ bool IsMatchingRobotsRule(const std::string& path, const std::string& pattern) {
 }
 
 void RecordRobotsRulesReceiveResultHistogram(
-    RobotsRulesDecider::SubresourceRedirectRobotsRulesReceiveResult result) {
+    RobotsRulesParser::SubresourceRedirectRobotsRulesReceiveResult result) {
   UMA_HISTOGRAM_ENUMERATION(
       "SubresourceRedirect.RobotRulesDecider.ReceiveResult", result);
 }
@@ -78,27 +78,27 @@ void RecordRobotsRulesApplyDurationHistogram(base::TimeDelta duration) {
 
 }  // namespace
 
-bool RobotsRulesDecider::RobotsRule::Match(const std::string& path) const {
+bool RobotsRulesParser::RobotsRule::Match(const std::string& path) const {
   return IsMatchingRobotsRule(path, pattern_);
 }
 
-RobotsRulesDecider::RobotsRulesDecider() {
+RobotsRulesParser::RobotsRulesParser() {
   // Using base::Unretained(this) is safe here, since the timer
   // |rules_receive_timeout_timer_| is owned by |this| and destroyed before
   // |this|.
   rules_receive_timeout_timer_.Start(
       FROM_HERE, GetRobotsRulesReceiveTimeout(),
-      base::BindOnce(&RobotsRulesDecider::OnRulesReceiveTimeout,
+      base::BindOnce(&RobotsRulesParser::OnRulesReceiveTimeout,
                      base::Unretained(this)));
 }
 
-RobotsRulesDecider::~RobotsRulesDecider() {
+RobotsRulesParser::~RobotsRulesParser() {
   // Consider this as a timeout
   if (rules_receive_timeout_timer_.IsRunning())
     rules_receive_timeout_timer_.FireNow();
 }
 
-void RobotsRulesDecider::UpdateRobotsRules(const std::string& rules) {
+void RobotsRulesParser::UpdateRobotsRules(const std::string& rules) {
   robots_rules_.reset();
   rules_receive_timeout_timer_.Stop();
 
@@ -133,8 +133,8 @@ void RobotsRulesDecider::UpdateRobotsRules(const std::string& rules) {
   pending_check_requests_.clear();
 }
 
-void RobotsRulesDecider::CheckRobotsRules(const GURL& url,
-                                          CheckResultCallback callback) {
+void RobotsRulesParser::CheckRobotsRules(const GURL& url,
+                                         CheckResultCallback callback) {
   std::string path_with_query = url.path();
   if (url.has_query())
     base::StrAppend(&path_with_query, {"?", url.query()});
@@ -149,7 +149,7 @@ void RobotsRulesDecider::CheckRobotsRules(const GURL& url,
                               : CheckResult::kDisallowed);
 }
 
-bool RobotsRulesDecider::IsAllowed(const std::string& url_path) const {
+bool RobotsRulesParser::IsAllowed(const std::string& url_path) const {
   // Rules not received. Could be rule parse error or timeout.
   if (!robots_rules_)
     return false;
@@ -167,7 +167,7 @@ bool RobotsRulesDecider::IsAllowed(const std::string& url_path) const {
   return true;
 }
 
-void RobotsRulesDecider::OnRulesReceiveTimeout() {
+void RobotsRulesParser::OnRulesReceiveTimeout() {
   DCHECK(!rules_receive_timeout_timer_.IsRunning());
   for (auto& request : pending_check_requests_)
     std::move(request.first).Run(CheckResult::kTimedout);
