@@ -11,7 +11,7 @@ from core import bot_platforms
 
 _VALID_SWARMING_DIMENSIONS = {
     'gpu', 'device_ids', 'os', 'pool', 'perf_tests', 'perf_tests_with_args',
-    'cpu', 'device_os', 'device_type', 'device_os_flavor', 'id',
+    'cpu', 'device_os', 'device_type', 'device_os_flavor', 'id', 'mac_model',
     'synthetic_product_name'
 }
 _DEFAULT_VALID_PERF_POOLS = {

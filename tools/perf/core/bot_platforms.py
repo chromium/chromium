@@ -342,6 +342,11 @@ _MAC_ARM_DTK_EXECUTABLE_CONFIGS = frozenset([
     _performance_browser_tests(190),
     _views_perftests(),
 ])
+_MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite([
+    'loading.desktop',
+]).Abridge([
+    'loading.desktop',
+])
 
 _WIN_10_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.display_locking',
@@ -480,6 +485,8 @@ MAC_ARM_DTK_ARM = PerfPlatform('mac-arm_dtk_arm-perf',
                                8,
                                'mac',
                                executables=_MAC_ARM_DTK_EXECUTABLE_CONFIGS)
+MAC_M1_MINI_2020 = PerfPlatform('mac-m1_mini_2020-perf', 'Mac M1 Mini 2020',
+                                _MAC_M1_MINI_2020_BENCHMARK_CONFIGS, 2, 'mac')
 
 # Win
 WIN_10_LOW_END = PerfPlatform(
