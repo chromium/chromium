@@ -255,6 +255,8 @@ void AutoEnrollmentCheckScreen::SignalCompletion() {
   VLOG(1) << "AutoEnrollmentCheckScreen::SignalCompletion()";
 
   network_portal_detector::GetInstance()->RemoveObserver(this);
+  error_screen_->SetHideCallback(base::OnceClosure());
+  error_screen_->SetParentScreen(OobeScreen::SCREEN_UNKNOWN);
   auto_enrollment_progress_subscription_ = {};
   connect_request_subscription_ = {};
 
