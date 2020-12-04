@@ -83,12 +83,14 @@ void SettingsUserActionTracker::RecordSettingChangeWithDetails(
   // new_value is initialized as null. Null value is used in cases that don't
   // require extra metadata.
   base::Value new_value;
-  if (value->is_bool_value()) {
-    new_value = base::Value(value->get_bool_value());
-  } else if (value->is_int_value()) {
-    new_value = base::Value(value->get_int_value());
-  } else if (value->is_string_value()) {
-    new_value = base::Value(value->get_string_value());
+  if (value) {
+    if (value->is_bool_value()) {
+      new_value = base::Value(value->get_bool_value());
+    } else if (value->is_int_value()) {
+      new_value = base::Value(value->get_int_value());
+    } else if (value->is_string_value()) {
+      new_value = base::Value(value->get_string_value());
+    }
   }
   section->LogMetric(setting, new_value);
 

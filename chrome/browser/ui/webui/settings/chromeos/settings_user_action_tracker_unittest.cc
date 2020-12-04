@@ -39,6 +39,8 @@ class SettingsUserActionTrackerTest : public testing::Test {
                                        mojom::Setting::kTouchpadSpeed);
     fake_hierarchy_.AddSettingMetadata(mojom::Section::kPeople,
                                        mojom::Setting::kAddAccount);
+    fake_hierarchy_.AddSettingMetadata(mojom::Section::kPrinting,
+                                       mojom::Setting::kScanningApp);
   }
 
   base::HistogramTester histogram_tester_;
@@ -136,6 +138,27 @@ TEST_F(SettingsUserActionTrackerTest, TestRecordSettingChangedIntPref) {
           fake_sections_.GetSection(mojom::Section::kDevice));
   EXPECT_TRUE(device_section->logged_metrics().back() ==
               mojom::Setting::kTouchpadSpeed);
+}
+
+TEST_F(SettingsUserActionTrackerTest, TestRecordSettingChangedNullValue) {
+  // Record that the Scan app is opened.
+  tracker_.RecordSettingChangeWithDetails(mojom::Setting::kScanningApp,
+                                          nullptr);
+
+  // The umbrella metric for which setting was changed should be updated. Note
+  // that kScanningApp has enum value of 1403.
+  histogram_tester_.ExpectTotalCount("ChromeOS.Settings.SettingChanged",
+                                     /*count=*/1);
+  histogram_tester_.ExpectBucketCount("ChromeOS.Settings.SettingChanged",
+                                      /*sample=*/1403,
+                                      /*count=*/1);
+
+  // The LogMetric fn in the Printing section should have been called.
+  const FakeOsSettingsSection* printing_section =
+      static_cast<const FakeOsSettingsSection*>(
+          fake_sections_.GetSection(mojom::Section::kPrinting));
+  EXPECT_TRUE(printing_section->logged_metrics().back() ==
+              mojom::Setting::kScanningApp);
 }
 
 }  // namespace settings.
