@@ -139,7 +139,7 @@ class FileOperationHandler {
         item = new ProgressCenterItem();
         item.id = event.taskId;
         item.type = ProgressItemType.DELETE;
-        item.message = FileOperationHandler.getDeleteMessage_(event);
+        item.message = FileOperationHandler.getMessage_(event);
         item.progressMax = event.totalBytes;
         item.progressValue = event.processedBytes;
         item.cancelCallback = this.fileOperationManager_.requestTaskCancel.bind(
@@ -158,7 +158,7 @@ class FileOperationHandler {
           console.error('Cannot find deleting item.');
           return;
         }
-        item.message = FileOperationHandler.getDeleteMessage_(event);
+        item.message = FileOperationHandler.getMessage_(event);
         item.progressMax = event.totalBytes;
         item.progressValue = event.processedBytes;
         if (!pending) {
@@ -179,7 +179,7 @@ class FileOperationHandler {
         }
 
         // Update the item.
-        item.message = FileOperationHandler.getDeleteMessage_(event);
+        item.message = FileOperationHandler.getMessage_(event);
         if (event.reason === EventType.SUCCESS) {
           item.state = ProgressItemState.COMPLETED;
           item.progressValue = item.progressMax;
@@ -230,11 +230,11 @@ class FileOperationHandler {
             name += '/';
           }
           switch (event.status.operationType) {
-            case 'COPY':
+            case util.FileOperationType.COPY:
               return strf('COPY_TARGET_EXISTS_ERROR', name);
-            case 'MOVE':
+            case util.FileOperationType.MOVE:
               return strf('MOVE_TARGET_EXISTS_ERROR', name);
-            case 'ZIP':
+            case util.FileOperationType.ZIP:
               return strf('ZIP_TARGET_EXISTS_ERROR', name);
             default:
               return strf('TRANSFER_TARGET_EXISTS_ERROR', name);
@@ -243,11 +243,11 @@ class FileOperationHandler {
         case util.FileOperationErrorType.FILESYSTEM_ERROR:
           const detail = util.getFileErrorString(event.error.data.name);
           switch (event.status.operationType) {
-            case 'COPY':
+            case util.FileOperationType.COPY:
               return strf('COPY_FILESYSTEM_ERROR', detail);
-            case 'MOVE':
+            case util.FileOperationType.MOVE:
               return strf('MOVE_FILESYSTEM_ERROR', detail);
-            case 'ZIP':
+            case util.FileOperationType.ZIP:
               return strf('ZIP_FILESYSTEM_ERROR', detail);
             default:
               return strf('TRANSFER_FILESYSTEM_ERROR', detail);
@@ -255,12 +255,14 @@ class FileOperationHandler {
 
         default:
           switch (event.status.operationType) {
-            case 'COPY':
+            case util.FileOperationType.COPY:
               return strf('COPY_UNEXPECTED_ERROR', event.error.code);
-            case 'MOVE':
+            case util.FileOperationType.MOVE:
               return strf('MOVE_UNEXPECTED_ERROR', event.error.code);
-            case 'ZIP':
+            case util.FileOperationType.ZIP:
               return strf('ZIP_UNEXPECTED_ERROR', event.error.code);
+            case util.FileOperationType.DELETE:
+              return str('DELETE_ERROR');
             default:
               return strf('TRANSFER_UNEXPECTED_ERROR', event.error.code);
           }
@@ -268,47 +270,31 @@ class FileOperationHandler {
     } else if (event.status.numRemainingItems === 1) {
       const name = event.status.processingEntryName;
       switch (event.status.operationType) {
-        case 'COPY':
+        case util.FileOperationType.COPY:
           return strf('COPY_FILE_NAME', name);
-        case 'MOVE':
+        case util.FileOperationType.MOVE:
           return strf('MOVE_FILE_NAME', name);
-        case 'ZIP':
+        case util.FileOperationType.ZIP:
           return strf('ZIP_FILE_NAME', name);
+        case util.FileOperationType.DELETE:
+          return strf('DELETE_FILE_NAME', name);
         default:
           return strf('TRANSFER_FILE_NAME', name);
       }
     } else {
       const remainNumber = event.status.numRemainingItems;
       switch (event.status.operationType) {
-        case 'COPY':
+        case util.FileOperationType.COPY:
           return strf('COPY_ITEMS_REMAINING', remainNumber);
-        case 'MOVE':
+        case util.FileOperationType.MOVE:
           return strf('MOVE_ITEMS_REMAINING', remainNumber);
-        case 'ZIP':
+        case util.FileOperationType.ZIP:
           return strf('ZIP_ITEMS_REMAINING', remainNumber);
+        case util.FileOperationType.DELETE:
+          return strf('DELETE_ITEMS_REMAINING', remainNumber);
         default:
           return strf('TRANSFER_ITEMS_REMAINING', remainNumber);
       }
-    }
-  }
-
-  /**
-   * Generates a delete message from the event.
-   * @param {Event} event Progress event.
-   * @return {string} message.
-   * @private
-   */
-  static getDeleteMessage_(event) {
-    event = /** @type {FileOperationProgressEvent} */ (event);
-    if (event.reason === fileOperationUtil.EventRouter.EventType.ERROR) {
-      return str('DELETE_ERROR');
-    } else if (event.entries.length == 1) {
-      const fileName = event.entries[0].name;
-      return strf('DELETE_FILE_NAME', fileName);
-    } else if (event.entries.length > 1) {
-      return strf('DELETE_ITEMS_REMAINING', event.entries.length);
-    } else {
-      return '';
     }
   }
 
@@ -320,11 +306,11 @@ class FileOperationHandler {
    */
   static getType_(operationType) {
     switch (operationType) {
-      case 'COPY':
+      case util.FileOperationType.COPY:
         return ProgressItemType.COPY;
-      case 'MOVE':
+      case util.FileOperationType.MOVE:
         return ProgressItemType.MOVE;
-      case 'ZIP':
+      case util.FileOperationType.ZIP:
         return ProgressItemType.ZIP;
       default:
         console.error('Unknown operation type.');

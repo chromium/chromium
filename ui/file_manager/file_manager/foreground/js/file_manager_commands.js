@@ -1211,7 +1211,8 @@ CommandHandler.registerUndoDeleteToast = function(fileManager) {
     fileManager.ui.toast.show(message, {
       text: str('UNDO_DELETE_ACTION_LABEL'),
       callback: () => {
-        fileManager.fileOperationManager.restoreDeleted(e.trashedEntries);
+        fileManager.fileOperationManager.restoreDeleted(
+            assert(e.trashedEntries));
       }
     });
   };

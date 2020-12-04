@@ -665,7 +665,7 @@ fileOperationUtil.Task = class {
   /**
    * Get states of the task.
    * TODO(hirono): Removes this method and sets a task to progress events.
-   * @return {Object} Status object.
+   * @return {!fileOperationUtil.Status} Status object.
    */
   getStatus() {
     const processingEntry = this.sourceEntries[this.processingSourceIndex_];
@@ -1247,6 +1247,22 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
 
 /**
  * @typedef {{
+ *   operationType: !util.FileOperationType,
+ *   numRemainingItems: number,
+ *   totalBytes: number,
+ *   processedBytes: number,
+ *   processingEntryName: string,
+ *   targetDirEntryName: string,
+ *   currentSpeed: number,
+ *   averageSpeed: number,
+ *   remainingTime: number,
+ * }}
+ */
+fileOperationUtil.Status;
+
+/**
+ * @typedef {{
+ *  operationType: !util.FileOperationType,
  *  entries: Array<Entry>,
  *  taskId: string,
  *  entrySize: Object,
@@ -1294,8 +1310,8 @@ fileOperationUtil.EventRouter = class extends cr.EventTarget {
    * FileOperationManager status. If it is an ERROR event, error should be set.
    *
    * @param {fileOperationUtil.EventRouter.EventType} type Event type.
-   * @param {Object} status Current FileOperationManager's status. See also
-   *     FileOperationManager.Task.getStatus().
+   * @param {!fileOperationUtil.Status} status Current FileOperationManager's
+   *     status. See also FileOperationManager.Task.getStatus().
    * @param {string} taskId ID of task related with the event.
    * @param {fileOperationUtil.Error=} opt_error The info for the error. This
    *     should be set iff the reason is "ERROR".
@@ -1378,8 +1394,17 @@ fileOperationUtil.EventRouter = class extends cr.EventTarget {
     event.reason = reason;
     event.taskId = task.taskId;
     event.entries = task.entries;
-    event.totalBytes = task.totalBytes;
-    event.processedBytes = task.processedBytes;
+    event.status = {
+      operationType: task.operationType,
+      numRemainingItems: task.entries.length,
+      totalBytes: task.totalBytes,
+      processedBytes: task.processedBytes,
+      processingEntryName: task.entries.length > 0 ? task.entries[0].name : '',
+      targetDirEntryName: '',
+      currentSpeed: 0,
+      averageSpeed: 0,
+      remainingTime: 0,
+    };
     event.trashedEntries = task.trashedEntries;
     this.dispatchEvent(event);
   }

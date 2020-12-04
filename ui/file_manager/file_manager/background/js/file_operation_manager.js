@@ -113,15 +113,16 @@ class FileOperationManagerImpl {
    * Returns status information for a running task.
    * @param {fileOperationUtil.Task} task The task we use to retrieve status
    *     from.
-   * @return {Object} Status object with optional volume information.
+   * @return {!fileOperationUtil.Status} Status object with optional volume
+   *     information.
    */
   getTaskStatus(task) {
     const status = task.getStatus();
     // If there's no target directory name, use the volume name for UI display.
-    if (status['targetDirEntryName'] === '' && task.targetDirEntry) {
+    if (status.targetDirEntryName === '' && task.targetDirEntry) {
       const entry = /** {Entry} */ (task.targetDirEntry);
       if (this.volumeManager_) {
-        status['targetDirEntryName'] = this.getVolumeLabel_(entry);
+        status.targetDirEntryName = this.getVolumeLabel_(entry);
       }
     }
     return status;
@@ -407,6 +408,7 @@ class FileOperationManagerImpl {
   deleteEntries(entries) {
     const task =
         /** @type {!fileOperationUtil.DeleteTask} */ (Object.preventExtensions({
+          operationType: util.FileOperationType.DELETE,
           entries: entries,
           taskId: this.generateTaskId(),
           entrySize: {},

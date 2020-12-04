@@ -869,14 +869,14 @@ function testDelete(callback) {
       waitForEvents(fileOperationManager).then(events => {
         assertEquals('delete', events[0].type);
         assertEquals('BEGIN', events[0].reason);
-        assertEquals(10, events[0].totalBytes);
-        assertEquals(0, events[0].processedBytes);
+        assertEquals(10, events[0].status.totalBytes);
+        assertEquals(0, events[0].status.processedBytes);
 
         const lastEvent = events[events.length - 1];
         assertEquals('delete', lastEvent.type);
         assertEquals('SUCCESS', lastEvent.reason);
-        assertEquals(10, lastEvent.totalBytes);
-        assertEquals(10, lastEvent.processedBytes);
+        assertEquals(10, lastEvent.status.totalBytes);
+        assertEquals(10, lastEvent.status.processedBytes);
 
         assertFalse(events.some(event => {
           return event.type === 'copy-progress';
