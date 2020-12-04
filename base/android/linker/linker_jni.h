@@ -207,8 +207,10 @@ struct LibInfo_class {
   }
 };
 
-// Variable containing LibInfo for the loaded library.
+// Variable containing LibInfo accessors for the loaded library.
 extern LibInfo_class s_lib_info_fields;
+
+extern jint JNI_OnLoad(JavaVM* vm, void* reserved);
 
 }  // namespace chromium_android_linker
 
