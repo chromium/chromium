@@ -166,6 +166,7 @@ class StartSurfaceMediator
      */
     @Nullable
     private Boolean mFeedVisibilityInSharedPreferenceOnStartUp;
+    private boolean mHadWarmStart;
 
     StartSurfaceMediator(TabSwitcher.Controller controller, TabModelSelector tabModelSelector,
             @Nullable PropertyModel propertyModel,
@@ -173,7 +174,8 @@ class StartSurfaceMediator
             @SurfaceMode int surfaceMode, NightModeStateProvider nightModeStateProvider,
             BrowserControlsStateProvider browserControlsStateProvider,
             ActivityStateChecker activityStateChecker, boolean excludeMVTiles,
-            boolean showStackTabSwitcher, OneshotSupplier<StartSurface> startSurfaceSupplier) {
+            boolean showStackTabSwitcher, OneshotSupplier<StartSurface> startSurfaceSupplier,
+            boolean hadWarmStart) {
         mController = controller;
         mTabModelSelector = tabModelSelector;
         mPropertyModel = propertyModel;
@@ -185,6 +187,7 @@ class StartSurfaceMediator
         mExcludeMVTiles = excludeMVTiles;
         mShowStackTabSwitcher = showStackTabSwitcher;
         mStartSurfaceSupplier = startSurfaceSupplier;
+        mHadWarmStart = hadWarmStart;
 
         if (mPropertyModel != null) {
             assert mSurfaceMode == SurfaceMode.SINGLE_PANE || mSurfaceMode == SurfaceMode.TWO_PANES
@@ -754,7 +757,7 @@ class StartSurfaceMediator
 
         return mSurfaceMode == SurfaceMode.SINGLE_PANE
                 && CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
-                && StartSurfaceConfiguration.getFeedArticlesVisibility();
+                && StartSurfaceConfiguration.getFeedArticlesVisibility() && !mHadWarmStart;
     }
 
     /** This interface builds the feed surface coordinator when showing if needed. */

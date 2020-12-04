@@ -97,7 +97,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     public StartSurfaceCoordinator(ChromeActivity activity, ScrimCoordinator scrimCoordinator,
             BottomSheetController sheetController,
             OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier,
-            Supplier<Tab> parentTabSupplier) {
+            Supplier<Tab> parentTabSupplier, boolean hadWarmStart) {
         mActivity = activity;
         mScrimCoordinator = scrimCoordinator;
         mSurfaceMode = computeSurfaceMode();
@@ -127,7 +127,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mActivity.getBrowserControlsManager(), this::isActivityFinishingOrDestroyed,
                 excludeMVTiles,
                 StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue(),
-                startSurfaceOneshotSupplier);
+                startSurfaceOneshotSupplier, hadWarmStart);
 
         // Show feed loading image.
         if (mStartSurfaceMediator.shouldShowFeedPlaceholder()) {

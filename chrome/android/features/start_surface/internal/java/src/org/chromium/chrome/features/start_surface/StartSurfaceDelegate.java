@@ -33,8 +33,8 @@ public class StartSurfaceDelegate {
     public static StartSurface createStartSurface(ChromeActivity activity,
             ScrimCoordinator scrimCoordinator, BottomSheetController sheetController,
             OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier,
-            Supplier<Tab> parentTabSupplier) {
+            Supplier<Tab> parentTabSupplier, boolean hadWarmStart) {
         return new StartSurfaceCoordinator(activity, scrimCoordinator, sheetController,
-                startSurfaceOneshotSupplier, parentTabSupplier);
+                startSurfaceOneshotSupplier, parentTabSupplier, hadWarmStart);
     }
 }
