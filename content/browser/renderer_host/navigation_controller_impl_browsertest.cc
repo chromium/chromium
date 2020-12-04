@@ -49,6 +49,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
@@ -68,6 +69,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/render_document_feature.h"
+#include "content/test/test_content_browser_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -450,6 +452,167 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(history_url, contents()->GetMainFrame()->GetLastCommittedURL());
 }
 #endif  // defined(OS_ANDROID)
+
+// ContentBrowserClient that blocks normal commits to any URL in
+// VerifyDidCommitParams.
+class BlockAllCommitContentBrowserClient : public TestContentBrowserClient {
+ public:
+  // Any visit to any URL will be blocked by VerifyDidCommitParams, except if
+  // the checks are skipped (e.g. loadDataWithBaseURL).
+  BlockAllCommitContentBrowserClient() = default;
+
+  bool CanCommitURL(RenderProcessHost* process_host,
+                    const GURL& site_url) override {
+    return false;
+  }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(BlockAllCommitContentBrowserClient);
+};
+
+// Tests that navigating with LoadDataWithBaseURL succeeds even when the data
+// URL is typically blocked by an embedder.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       LoadDataWithBlockedURL) {
+  // LoadDataWithBaseURL is never subject to --site-per-process policy today
+  // (this API is only used by Android WebView [where OOPIFs have not shipped
+  // yet] and GuestView cases [which always hosts guests inside a renderer
+  // without an origin lock]).  Therefore, skip the test in --site-per-process
+  // mode to avoid renderer kills which won't happen in practice as described
+  // above.
+  //
+  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // Webview or WebView guests support OOPIFs and/or origin locks.
+  if (AreAllSitesIsolatedForTesting())
+    return;
+
+  const GURL base_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL history_url("http://historyurl");
+  const std::string title = "blocked_url";
+  const std::string data = base::StringPrintf(
+      "<html><head><title>%s</title></head><body>foo</body></html>",
+      title.c_str());
+  const GURL data_url = GURL("data:text/html;charset=utf-8," + data);
+  BlockAllCommitContentBrowserClient content_browser_client;
+  ContentBrowserClient* old_client =
+      SetBrowserClientForTesting(&content_browser_client);
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
+  TitleWatcher title_watcher(shell()->web_contents(), base::UTF8ToUTF16(title));
+  shell()->LoadDataWithBaseURL(history_url, data, base_url);
+  same_tab_observer.Wait();
+  base::string16 actual_title = title_watcher.WaitAndGetTitle();
+  EXPECT_EQ(title, base::UTF16ToUTF8(actual_title));
+
+  NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+  EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
+  EXPECT_EQ(data_url, contents()->GetMainFrame()->GetLastCommittedURL());
+  {
+    // Make a same-document navigation via history.pushState.
+    TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
+    EXPECT_TRUE(
+        ExecuteScript(shell(), "history.pushState('', 'test', '#foo')"));
+    same_tab_observer.Wait();
+  }
+
+  // Verify the last committed NavigationEntry.
+  EXPECT_EQ(2, controller.GetEntryCount());
+  entry = controller.GetLastCommittedEntry();
+  EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
+  EXPECT_EQ(data_url, contents()->GetMainFrame()->GetLastCommittedURL());
+  {
+    // Go back.
+    TestNavigationObserver back_load_observer(shell()->web_contents());
+    controller.GoBack();
+    back_load_observer.Wait();
+  }
+
+  // Verify the last committed NavigationEntry.
+  EXPECT_EQ(2, controller.GetEntryCount());
+  entry = controller.GetLastCommittedEntry();
+  EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
+  EXPECT_EQ(data_url, contents()->GetMainFrame()->GetLastCommittedURL());
+
+  {
+    // Make a same-document navigation via fragment navigation.
+    TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
+    EXPECT_TRUE(ExecuteScript(shell(), "location.href = '#bar';"));
+    same_tab_observer.Wait();
+  }
+
+  // Verify the last committed NavigationEntry.
+  EXPECT_EQ(2, controller.GetEntryCount());
+  entry = controller.GetLastCommittedEntry();
+  EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
+  EXPECT_EQ(data_url, contents()->GetMainFrame()->GetLastCommittedURL());
+
+  SetBrowserClientForTesting(old_client);
+}
+
+// Tests that same-document navigations after a LoadDataWithBaseURL with an
+// invalid base_url won't succeed.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       LoadDataWithBlockedURLAndInvalidBaseURL) {
+  // LoadDataWithBaseURL is never subject to --site-per-process policy today
+  // (this API is only used by Android WebView [where OOPIFs have not shipped
+  // yet] and GuestView cases [which always hosts guests inside a renderer
+  // without an origin lock]).  Therefore, skip the test in --site-per-process
+  // mode to avoid renderer kills which won't happen in practice as described
+  // above.
+  //
+  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // Webview or WebView guests support OOPIFs and/or origin locks.
+  if (AreAllSitesIsolatedForTesting())
+    return;
+
+  const GURL base_url("http://");  // Invalid.
+  EXPECT_TRUE(!base_url.is_valid());
+  const GURL history_url("http://historyurl");
+  const std::string title = "invalid_base_url";
+  const std::string data = base::StringPrintf(
+      "<html><head><title>%s</title></head><body>foo</body></html>",
+      title.c_str());
+  const GURL data_url = GURL("data:text/html;charset=utf-8," + data);
+  BlockAllCommitContentBrowserClient content_browser_client;
+  ContentBrowserClient* old_client =
+      SetBrowserClientForTesting(&content_browser_client);
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
+  TitleWatcher title_watcher(shell()->web_contents(), base::UTF8ToUTF16(title));
+  shell()->LoadDataWithBaseURL(history_url, data, base_url);
+  same_tab_observer.Wait();
+  base::string16 actual_title = title_watcher.WaitAndGetTitle();
+  EXPECT_EQ(title, base::UTF16ToUTF8(actual_title));
+
+  // The navigation succeeds even though the base URL is invalid.
+  NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+  EXPECT_EQ(1, controller.GetEntryCount());
+  EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
+  EXPECT_EQ(data_url, contents()->GetMainFrame()->GetLastCommittedURL());
+
+  {
+    // Make a same-document navigation via history.pushState.
+    TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
+    EXPECT_TRUE(
+        ExecuteScript(shell(), "history.pushState('', 'test', '#foo')"));
+    same_tab_observer.Wait();
+  }
+
+  // Verify that the same-document navigation succeeds.
+  EXPECT_EQ(2, controller.GetEntryCount());
+  entry = controller.GetLastCommittedEntry();
+  EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
+  EXPECT_EQ(data_url.spec() + "#foo",
+            contents()->GetMainFrame()->GetLastCommittedURL().spec());
+
+  SetBrowserClientForTesting(old_client);
+}
 
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        NavigateFromLoadDataWithBaseURL) {

@@ -328,14 +328,6 @@ using TokenFrameMap = std::unordered_map<base::UnguessableToken,
 base::LazyInstance<TokenFrameMap>::Leaky g_token_frame_map =
     LAZY_INSTANCE_INITIALIZER;
 
-// Returns true if |validated_params| represents a WebView loadDataWithBaseUrl
-// navigation.
-bool IsLoadDataWithBaseURL(
-    const mojom::DidCommitProvisionalLoadParams& validated_params) {
-  return NavigationRequest::IsLoadDataWithBaseURL(validated_params.url,
-                                                  validated_params.base_url);
-}
-
 // Ensure that we reset nav_entry_id_ in DidCommitProvisionalLoad if any of
 // the validations fail and lead to an early return.  Call disable() once we
 // know the commit will be successful.  Resetting nav_entry_id_ avoids acting on
@@ -8325,11 +8317,17 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
   // WebView's loadDataWithBaseURL API is allowed to bypass normal commit
   // checks because it is allowed to commit anything into its unlocked process
   // and its data: URL and non-opaque origin would fail the normal commit
-  // checks.
+  // checks. We should also allow same-document navigations within pages loaded
+  // with loadDataWithBaseURL. Since renderer-initiated same-document
+  // navigations won't have a NavigationRequest at this point, we need to check
+  // |is_loaded_from_load_data_with_base_url_|.
+  DCHECK(navigation_request || is_same_document_navigation ||
+         !frame_tree_node_->has_committed_real_load());
   bool bypass_checks_for_webview = false;
   if ((navigation_request && NavigationRequest::IsLoadDataWithBaseURL(
                                  navigation_request->common_params())) ||
-      (is_same_document_navigation && IsLoadDataWithBaseURL(*params))) {
+      (is_same_document_navigation &&
+       is_loaded_from_load_data_with_base_url_)) {
     // Allow bypass if the process isn't locked. Otherwise run normal checks.
     bypass_checks_for_webview = !ChildProcessSecurityPolicyImpl::GetInstance()
                                      ->GetProcessLock(process->GetID())
@@ -8746,6 +8744,14 @@ void RenderFrameHostImpl::DidCommitNewDocument(
 
   is_overriding_user_agent_ = navigation_request->IsOverridingUserAgent() &&
                               frame_tree_node_->IsMainFrame();
+
+  // Mark whether the document is loaded with loadDataWithBaseURL or not. If
+  // |is_loaded_from_load_data_with_base_url_| is true, we will bypass checks
+  // in VerifyDidCommitParams for same-document navigations in the loaded
+  // document.
+  is_loaded_from_load_data_with_base_url_ =
+      NavigationRequest::IsLoadDataWithBaseURL(
+          navigation_request->common_params());
 
   RecordCrossOriginIsolationMetrics(this);
 
@@ -9352,19 +9358,10 @@ int64_t CalculatePostID(
   return last_committed_entry ? last_committed_entry->GetPostID() : -1;
 }
 
-bool DoBaseURLExpectationsMatch(const GURL& browser_base_url,
-                                const GURL& renderer_base_url,
+bool DoBaseURLExpectationsMatch(const GURL& renderer_base_url,
                                 const net::Error& net_error_code) {
-  // base_url value is currently only used in the browser side for two cases:
-  // 1) To check if the document is loaded with loadDataWithBaseURL in
-  // ValidateDidCommitParams. In this case, |renderer_base_url| should be the
-  // same as |browser_base_url|, except for when the browser sent an
-  // invalid URL - |renderer_base_url| should be empty in this case.
-  if (!browser_base_url.is_empty() && browser_base_url != renderer_base_url &&
-      (browser_base_url.is_valid() || !renderer_base_url.is_empty())) {
-    return false;
-  }
-  // 2) To check if a navigation results in an error page or not in
+  // base_url value is currently only used in the browser side to check if a
+  // navigation results in an error page or not in
   // NavigationRequest::DidCommitNavigation. This can be known by just checking
   // for the net error code value instead, as all navigations that result in an
   // error page should be known by the browser side before committing.
@@ -9426,8 +9423,8 @@ void RenderFrameHostImpl::
       data_url_as_string, request->GetNetErrorCode(),
       frame_tree_node_->IsMainFrame());
 
-  const bool base_url_expectations_match = DoBaseURLExpectationsMatch(
-      browser_base_url, params.base_url, request->GetNetErrorCode());
+  const bool base_url_expectations_match =
+      DoBaseURLExpectationsMatch(params.base_url, request->GetNetErrorCode());
 
   const int64_t browser_post_id =
       CalculatePostID(params.method, request->common_params().post_data,

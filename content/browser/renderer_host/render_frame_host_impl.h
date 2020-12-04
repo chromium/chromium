@@ -3075,6 +3075,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // not.
   bool is_overriding_user_agent_ = false;
 
+  // Whether the currently committed document is a result of webview's
+  // loadDataWithBaseURL API or not.
+  bool is_loaded_from_load_data_with_base_url_ = false;
+
   // The last reported character encoding, not canonicalized.
   std::string last_reported_encoding_;
 
