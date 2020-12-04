@@ -56,7 +56,10 @@ void ClipboardHistory::RemoveItemForId(const base::UnguessableToken& id) {
   if (iter == history_list_.cend())
     return;
 
+  auto removed = std::move(*iter);
   history_list_.erase(iter);
+  for (auto& observer : observers_)
+    observer.OnClipboardHistoryItemRemoved(removed);
 }
 
 void ClipboardHistory::OnClipboardDataChanged() {
