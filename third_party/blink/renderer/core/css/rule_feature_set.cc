@@ -128,6 +128,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoModal:
     case CSSSelector::kPseudoBackdrop:
     case CSSSelector::kPseudoLang:
+    case CSSSelector::kPseudoDir:
     case CSSSelector::kPseudoNot:
     case CSSSelector::kPseudoPlaceholder:
     case CSSSelector::kPseudoResizer:
@@ -595,6 +596,7 @@ InvalidationSet* RuleFeatureSet::InvalidationSetForSimpleSelector(
       case CSSSelector::kPseudoIndeterminate:
       case CSSSelector::kPseudoTarget:
       case CSSSelector::kPseudoLang:
+      case CSSSelector::kPseudoDir:
       case CSSSelector::kPseudoFullScreen:
       case CSSSelector::kPseudoFullScreenAncestor:
       case CSSSelector::kPseudoFullscreen:

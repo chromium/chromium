@@ -600,6 +600,10 @@
       depends_on: ["PictureInPictureAPI"],
     },
     {
+      name: "CSSPseudoDir",
+      status: "experimental",
+    },
+    {
       name: "CSSPseudoIs",
       status: "stable",
     },

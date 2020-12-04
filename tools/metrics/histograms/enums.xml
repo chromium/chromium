@@ -30464,6 +30464,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3738" label="CrossOriginJsonTypeForScript"/>
   <int value="3739" label="SameOriginStrictNosniffWouldBlock"/>
   <int value="3740" label="CrossOriginStrictNosniffWouldBlock"/>
+  <int value="3741" label="CSSSelectorPseudoDir"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

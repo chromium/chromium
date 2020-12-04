@@ -153,6 +153,8 @@ class CORE_EXPORT HTMLElement : public Element {
   virtual FormAssociated* ToFormAssociatedOrNull() { return nullptr; }
   bool IsFormAssociatedCustomElement() const;
 
+  TextDirection ComputeInheritedDirectionality() const;
+
  protected:
   enum AllowPercentage { kDontAllowPercentageValues, kAllowPercentageValues };
   enum AllowZero { kDontAllowZeroValues, kAllowZeroValues };
@@ -185,7 +187,7 @@ class CORE_EXPORT HTMLElement : public Element {
   unsigned ParseBorderWidthAttribute(const AtomicString&) const;
 
   void ChildrenChanged(const ChildrenChange&) override;
-  void CalculateAndAdjustDirectionality();
+  bool CalculateAndAdjustDirectionality();
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode& insertion_point) override;

@@ -1070,6 +1070,24 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         break;
       return true;
     }
+    case CSSSelector::kPseudoDir: {
+      const AtomicString& argument = selector.Argument();
+      if (argument.IsEmpty())
+        break;
+
+      TextDirection direction;
+      if (EqualIgnoringASCIICase(argument, "ltr"))
+        direction = TextDirection::kLtr;
+      else if (EqualIgnoringASCIICase(argument, "rtl"))
+        direction = TextDirection::kRtl;
+      else
+        break;
+
+      if (auto* html_element = DynamicTo<HTMLElement>(element)) {
+        return html_element->ComputeInheritedDirectionality() == direction;
+      }
+      break;
+    }
     case CSSSelector::kPseudoFullscreen:
     // fall through
     case CSSSelector::kPseudoFullScreen:

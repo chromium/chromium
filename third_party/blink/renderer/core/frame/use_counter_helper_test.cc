@@ -179,6 +179,17 @@ TEST_F(UseCounterHelperTest, CSSSelectorPseudoIs) {
   EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSSelectorPseudoWhere));
 }
 
+TEST_F(UseCounterHelperTest, CSSSelectorPseudoDir) {
+  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
+  Document& document = dummy_page_holder->GetDocument();
+  WebFeature feature = WebFeature::kCSSSelectorPseudoDir;
+  EXPECT_FALSE(document.IsUseCounted(feature));
+  document.documentElement()->setInnerHTML(
+      "<style>:dir(ltr) { color: red; }</style>");
+  EXPECT_TRUE(document.IsUseCounted(feature));
+}
+
 TEST_F(UseCounterHelperTest, CSSGridLayoutPercentageColumnIndefiniteWidth) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());

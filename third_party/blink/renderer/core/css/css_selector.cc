@@ -289,6 +289,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoIndeterminate:
     case kPseudoTarget:
     case kPseudoLang:
+    case kPseudoDir:
     case kPseudoNot:
     case kPseudoRoot:
     case kPseudoScope:
@@ -456,6 +457,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
 const static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"-webkit-any", CSSSelector::kPseudoAny},
     {"cue", CSSSelector::kPseudoCue},
+    {"dir", CSSSelector::kPseudoDir},
     {"host", CSSSelector::kPseudoHost},
     {"host-context", CSSSelector::kPseudoHostContext},
     {"is", CSSSelector::kPseudoIs},
@@ -499,6 +501,10 @@ static CSSSelector::PseudoType NameToPseudoType(const AtomicString& name,
                        name.length()) < 0;
       });
   if (match == pseudo_type_map_end || match->string != name.GetString())
+    return CSSSelector::kPseudoUnknown;
+
+  if (match->type == CSSSelector::kPseudoDir &&
+      !RuntimeEnabledFeatures::CSSPseudoDirEnabled())
     return CSSSelector::kPseudoUnknown;
 
   if (match->type == CSSSelector::kPseudoFocusVisible &&
@@ -667,6 +673,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoDefault:
     case kPseudoDefined:
     case kPseudoDisabled:
+    case kPseudoDir:
     case kPseudoDoubleButton:
     case kPseudoDrag:
     case kPseudoEmpty:
@@ -836,6 +843,7 @@ const CSSSelector* CSSSelector::SerializeCompound(
           builder.Append(')');
           break;
         }
+        case kPseudoDir:
         case kPseudoLang:
         case kPseudoState:
           builder.Append('(');

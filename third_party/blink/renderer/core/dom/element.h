@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_table.h"
@@ -607,6 +608,12 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   }
   bool IsUnresolvedV0CustomElement() {
     return GetV0CustomElementState() == kV0WaitingForUpgrade;
+  }
+
+  bool ComputeInheritedDirPseudoClass(TextDirection direction) const;
+  virtual bool MatchesDirPseudoClassForDirAutoAttribute(
+      TextDirection direction) const {
+    return false;
   }
 
   AtomicString ComputeInheritedLanguage() const;

@@ -762,6 +762,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       selector->SetSelectorList(std::move(selector_list));
       return selector;
     }
+    case CSSSelector::kPseudoDir:
     case CSSSelector::kPseudoState: {
       const CSSParserToken& ident = block.ConsumeIncludingWhitespace();
       if (ident.GetType() != kIdentToken || !block.AtEnd())
@@ -1322,6 +1323,10 @@ void CSSSelectorParser::RecordUsageAndDeprecations(
           break;
         case CSSSelector::kPseudoReadWrite:
           feature = WebFeature::kCSSSelectorPseudoReadWrite;
+          break;
+        case CSSSelector::kPseudoDir:
+          DCHECK(RuntimeEnabledFeatures::CSSPseudoDirEnabled());
+          feature = WebFeature::kCSSSelectorPseudoDir;
           break;
         default:
           break;

@@ -299,6 +299,7 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoEnabled)
     DEFINE_STRING_MAPPING(PseudoFullPageMedia)
     DEFINE_STRING_MAPPING(PseudoDefault)
+    DEFINE_STRING_MAPPING(PseudoDir)
     DEFINE_STRING_MAPPING(PseudoDisabled)
     DEFINE_STRING_MAPPING(PseudoOptional)
     DEFINE_STRING_MAPPING(PseudoPlaceholderShown)
