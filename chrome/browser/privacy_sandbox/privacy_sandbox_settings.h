@@ -33,11 +33,9 @@ class PrivacySandboxSettings : public KeyedService {
                          PrefService* prefs);
 
   // Determines whether FLoC is allowable in a particular context.
-  // |site_for_cookies| is used to determine whether a request is in a 3P
-  // context, while |top_frame_origin| if set, is used to check for content
-  // settings which could both affect 1P and 3P cookies.
+  // |top_frame_origin| is used to check for content settings which could both
+  // affect 1P and 3P contexts.
   bool IsFlocAllowed(const GURL& url,
-                     const GURL& site_for_cookies,
                      const base::Optional<url::Origin>& top_frame_origin) const;
 
   // Returns the point in time from which history is elligible to be used when

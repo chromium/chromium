@@ -10,6 +10,45 @@
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/prefs/pref_service.h"
+#include "url/gurl.h"
+#include "url/origin.h"
+
+namespace {
+
+bool HasNonDefaultBlockSetting(const ContentSettingsForOneType& cookie_settings,
+                               const GURL& url,
+                               const GURL& top_frame_origin) {
+  // APIs are allowed unless there is an effective non-default cookie content
+  // setting block exception. A default cookie content setting is one that has a
+  // wildcard pattern for both primary and secondary patterns. Content
+  // settings are listed in descending order of priority such that the first
+  // that matches is the effective content setting. A default setting can appear
+  // anywhere in the list. Content settings which appear after a default content
+  // setting are completely superseded by that content setting and are thus not
+  // consulted. Default settings which appear before other settings are applied
+  // from higher precedence sources, such as policy. The value of a default
+  // content setting applied by a higher precedence provider is not consulted
+  // here. For managed policies, the state will be reflected directly in the
+  // privacy sandbox preference. Other providers (such as extensions) will have
+  // been considered for the initial value of the privacy sandbox preference.
+  for (const auto& setting : cookie_settings) {
+    if (setting.primary_pattern == ContentSettingsPattern::Wildcard() &&
+        setting.secondary_pattern == ContentSettingsPattern::Wildcard()) {
+      return false;
+    }
+    if (setting.primary_pattern.Matches(url) &&
+        setting.secondary_pattern.Matches(top_frame_origin)) {
+      return setting.GetContentSetting() ==
+             ContentSetting::CONTENT_SETTING_BLOCK;
+    }
+  }
+  // ContentSettingsForOneType should always end with a default content setting
+  // from the default provider.
+  NOTREACHED();
+  return false;
+}
+
+}  // namespace
 
 PrivacySandboxSettings::PrivacySandboxSettings(
     content_settings::CookieSettings* cookie_settings,
@@ -21,12 +60,26 @@ PrivacySandboxSettings::PrivacySandboxSettings(
 
 bool PrivacySandboxSettings::IsFlocAllowed(
     const GURL& url,
-    const GURL& site_for_cookies,
     const base::Optional<url::Origin>& top_frame_origin) const {
-  // Simply respect cookie settings.
-  // TODO(crbug.com/1152336): Respect privacy sandbox settings.
-  return cookie_settings_->IsCookieAccessAllowed(url, site_for_cookies,
-                                                 top_frame_origin);
+  if (!base::FeatureList::IsEnabled(features::kPrivacySandboxSettings)) {
+    // Simply respect cookie settings if the UI is not available. An empty site
+    // for cookies is provided so the context is always as a third party.
+    return cookie_settings_->IsCookieAccessAllowed(url, GURL(),
+                                                   top_frame_origin);
+  }
+
+  if (!pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled))
+    return false;
+
+  // TODO (crbug.com/1155504): Bypassing CookieSettings to access content
+  // settings directly ignores allowlisted schemes and the storage access API.
+  // These should be taken into account here.
+  ContentSettingsForOneType cookie_settings;
+  cookie_settings_->GetCookieSettings(&cookie_settings);
+
+  return !HasNonDefaultBlockSetting(
+      cookie_settings, url,
+      top_frame_origin ? top_frame_origin->GetURL() : GURL());
 }
 
 base::Time PrivacySandboxSettings::FlocDataAccessibleSince() const {
