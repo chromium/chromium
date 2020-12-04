@@ -1,6 +1,2 @@
 file://device/fido/OWNERS
 nsatragno@chromium.org
-
-# COMPONENT: Blink>WebAuthentication
-# TEAM: identity-dev@chromium.org
-# WPT-NOTIFY: true

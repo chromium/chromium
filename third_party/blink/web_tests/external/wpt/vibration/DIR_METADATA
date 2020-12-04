@@ -1,0 +1,4 @@
+monorail {
+  component: "Blink>Vibration"
+}
+team_email: "platform-capabilities@chromium.org"

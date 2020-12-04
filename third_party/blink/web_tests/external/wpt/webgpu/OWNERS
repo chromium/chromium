@@ -1,3 +1,1 @@
-# COMPONENT: Blink>WebGPU
-# WPT-NOTIFY: true
 file://third_party/blink/renderer/modules/webgpu/OWNERS

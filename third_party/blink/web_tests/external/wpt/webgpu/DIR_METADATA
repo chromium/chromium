@@ -1,0 +1,6 @@
+monorail {
+  component: "Blink>WebGPU"
+}
+wpt {
+  notify: YES
+}
