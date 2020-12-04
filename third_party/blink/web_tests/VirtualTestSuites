@@ -4,6 +4,7 @@
     "bases": [
       "external/wpt/html/webappapis/dynamic-markup-insertion/document-write",
       "external/wpt/html/semantics/scripting-1/the-script-element/module",
+      "external/wpt/html/semantics/scripting-1/the-script-element/json-module",
       "external/wpt/service-workers/service-worker/registration-script-module.https.html",
       "external/wpt/service-workers/service-worker/update-registration-with-type.https.html",
       "external/wpt/workers/Worker-terminate-forever-during-evaluation.html",
@@ -14,7 +15,7 @@
       "fast/loader/invalid-module-specifier.html",
       "http/tests/devtools/isolated-code-cache/"
     ],
-    "args": ["--enable-features=TopLevelAwait"]
+    "args": ["--enable-features=TopLevelAwait,JSONModules"]
   },
   {
     "prefix": "disable-accept-language-header",

@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Javascript importing JSON Module should load within the context of a service worker
+PASS JSON Modules should load within the context of a service worker
+PASS JSON Module dynamic import should not load within the context of a service worker
+Harness: the test ran to completion.
+

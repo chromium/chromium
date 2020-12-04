@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/script/value_wrapper_synthetic_module_script.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_css_style_sheet_init.h"
@@ -199,7 +200,20 @@ v8::MaybeLocal<v8::Value> ValueWrapperSyntheticModuleScript::EvaluationSteps(
   DCHECK(!try_catch.HasCaught());
   DCHECK(!result.IsNothing() && result.FromJust());
 
-  return v8::Undefined(reinterpret_cast<v8::Isolate*>(isolate));
+  if (base::FeatureList::IsEnabled(features::kTopLevelAwait)) {
+    v8::Local<v8::Promise::Resolver> promise_resolver;
+    if (!v8::Promise::Resolver::New(context).ToLocal(&promise_resolver)) {
+      if (!isolate->IsExecutionTerminating()) {
+        LOG(FATAL) << "Cannot recover from failure to create a new "
+                      "v8::Promise::Resolver object (OOM?)";
+      }
+      return v8::MaybeLocal<v8::Value>();
+    }
+    promise_resolver->Resolve(context, v8::Undefined(isolate)).ToChecked();
+    return promise_resolver->GetPromise();
+  }
+
+  return v8::Undefined(isolate);
 }
 
 void ValueWrapperSyntheticModuleScript::Trace(Visitor* visitor) const {

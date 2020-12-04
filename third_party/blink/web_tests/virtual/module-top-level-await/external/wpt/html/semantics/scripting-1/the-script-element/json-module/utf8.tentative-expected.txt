@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS utf-8
+PASS shift-jis
+PASS windows-1252
+PASS utf-7
+Harness: the test ran to completion.
+
