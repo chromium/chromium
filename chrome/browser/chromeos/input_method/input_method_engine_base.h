@@ -266,7 +266,6 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
     ~PendingKeyEvent();
 
     std::string component_id;
-    KeyboardEvent key_event;
     ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback;
 
    private:
