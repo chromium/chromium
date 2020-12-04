@@ -426,6 +426,9 @@ MediaStreamTrack* MediaStreamTrack::clone(ScriptState* script_state) {
       ExecutionContext::From(script_state), cloned_component, ready_state_,
       base::DoNothing());
   DidCloneMediaStreamTrack(Component(), cloned_component);
+  if (image_capture_) {
+    cloned_track->image_capture_ = image_capture_->Clone();
+  }
   return cloned_track;
 }
 

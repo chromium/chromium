@@ -3186,6 +3186,7 @@ crbug.com/1050754 external/wpt/mediacapture-image/MediaStreamTrack-applyConstrai
 crbug.com/1050754 external/wpt/mediacapture-image/MediaStreamTrack-applyConstraints-getSettings.https.html [ Failure ]
 crbug.com/1050754 external/wpt/mediacapture-image/MediaStreamTrack-applyConstraints-reject.https.html [ Failure ]
 crbug.com/1050754 external/wpt/mediacapture-image/MediaStreamTrack-applyConstraints.https.html [ Failure ]
+crbug.com/1050754 external/wpt/mediacapture-image/MediaStreamTrack-clone.https.html [ Failure ]
 crbug.com/1050754 external/wpt/mediacapture-image/MediaStreamTrack-getCapabilities.https.html [ Failure ]
 crbug.com/1050754 external/wpt/mediacapture-image/MediaStreamTrack-getConstraints.https.html [ Failure ]
 crbug.com/1050754 external/wpt/mediacapture-image/MediaStreamTrack-getSettings.https.html [ Failure ]

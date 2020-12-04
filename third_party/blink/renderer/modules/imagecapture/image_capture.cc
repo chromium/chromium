@@ -1222,6 +1222,156 @@ bool ImageCapture::IsPageVisible() {
   return DomWindow() ? DomWindow()->document()->IsPageVisible() : false;
 }
 
+ImageCapture* ImageCapture::Clone() const {
+  ImageCapture* clone = MakeGarbageCollected<ImageCapture>(
+      GetExecutionContext(), stream_track_, HasPanTiltZoomPermissionGranted(),
+      /*callback=*/base::DoNothing());
+
+  // Copy capabilities.
+  if (capabilities_->hasWhiteBalanceMode()) {
+    clone->capabilities_->setWhiteBalanceMode(
+        capabilities_->whiteBalanceMode());
+  }
+  if (capabilities_->hasExposureMode())
+    clone->capabilities_->setExposureMode(capabilities_->exposureMode());
+  if (capabilities_->hasFocusMode())
+    clone->capabilities_->setFocusMode(capabilities_->focusMode());
+  if (capabilities_->hasExposureCompensation()) {
+    clone->capabilities_->setExposureCompensation(
+        capabilities_->exposureCompensation());
+  }
+  if (capabilities_->hasExposureTime())
+    clone->capabilities_->setExposureTime(capabilities_->exposureTime());
+  if (capabilities_->hasColorTemperature()) {
+    clone->capabilities_->setColorTemperature(
+        capabilities_->colorTemperature());
+  }
+  if (capabilities_->hasIso())
+    clone->capabilities_->setIso(capabilities_->iso());
+  if (capabilities_->hasBrightness())
+    clone->capabilities_->setBrightness(capabilities_->brightness());
+  if (capabilities_->hasContrast())
+    clone->capabilities_->setContrast(capabilities_->contrast());
+  if (capabilities_->hasSaturation())
+    clone->capabilities_->setSaturation(capabilities_->saturation());
+  if (capabilities_->hasSharpness())
+    clone->capabilities_->setSharpness(capabilities_->sharpness());
+  if (capabilities_->hasFocusDistance())
+    clone->capabilities_->setFocusDistance(capabilities_->focusDistance());
+  if (capabilities_->hasPan())
+    clone->capabilities_->setPan(capabilities_->pan());
+  if (capabilities_->hasTilt())
+    clone->capabilities_->setTilt(capabilities_->tilt());
+  if (capabilities_->hasZoom())
+    clone->capabilities_->setZoom(capabilities_->zoom());
+  if (capabilities_->hasTorch())
+    clone->capabilities_->setTorch(capabilities_->torch());
+
+  // Copy settings.
+  if (settings_->hasWhiteBalanceMode())
+    clone->settings_->setWhiteBalanceMode(settings_->whiteBalanceMode());
+  if (settings_->hasExposureMode())
+    clone->settings_->setExposureMode(settings_->exposureMode());
+  if (settings_->hasFocusMode())
+    clone->settings_->setFocusMode(settings_->focusMode());
+  if (settings_->hasPointsOfInterest() &&
+      !settings_->pointsOfInterest().IsEmpty()) {
+    clone->settings_->setPointsOfInterest(settings_->pointsOfInterest());
+  }
+  if (settings_->hasExposureCompensation()) {
+    clone->settings_->setExposureCompensation(
+        settings_->exposureCompensation());
+  }
+  if (settings_->hasExposureTime())
+    clone->settings_->setExposureTime(settings_->exposureTime());
+  if (settings_->hasColorTemperature())
+    clone->settings_->setColorTemperature(settings_->colorTemperature());
+  if (settings_->hasIso())
+    clone->settings_->setIso(settings_->iso());
+  if (settings_->hasBrightness())
+    clone->settings_->setBrightness(settings_->brightness());
+  if (settings_->hasContrast())
+    clone->settings_->setContrast(settings_->contrast());
+  if (settings_->hasSaturation())
+    clone->settings_->setSaturation(settings_->saturation());
+  if (settings_->hasSharpness())
+    clone->settings_->setSharpness(settings_->sharpness());
+  if (settings_->hasFocusDistance())
+    clone->settings_->setFocusDistance(settings_->focusDistance());
+  if (settings_->hasPan())
+    clone->settings_->setPan(settings_->pan());
+  if (settings_->hasTilt())
+    clone->settings_->setTilt(settings_->tilt());
+  if (settings_->hasZoom())
+    clone->settings_->setZoom(settings_->zoom());
+  if (settings_->hasTorch())
+    clone->settings_->setTorch(settings_->torch());
+
+  if (!current_constraints_)
+    return clone;
+
+  // Copy current constraints.
+  clone->current_constraints_ = MediaTrackConstraintSet::Create();
+  if (current_constraints_->hasWhiteBalanceMode()) {
+    clone->current_constraints_->setWhiteBalanceMode(
+        current_constraints_->whiteBalanceMode());
+  }
+  if (current_constraints_->hasExposureMode()) {
+    clone->current_constraints_->setExposureMode(
+        current_constraints_->exposureMode());
+  }
+  if (current_constraints_->hasFocusMode()) {
+    clone->current_constraints_->setFocusMode(
+        current_constraints_->focusMode());
+  }
+  if (current_constraints_->hasPointsOfInterest()) {
+    clone->current_constraints_->setPointsOfInterest(
+        current_constraints_->pointsOfInterest());
+  }
+  if (current_constraints_->hasExposureCompensation()) {
+    clone->current_constraints_->setExposureCompensation(
+        current_constraints_->exposureCompensation());
+  }
+  if (current_constraints_->hasExposureTime()) {
+    clone->current_constraints_->setExposureTime(
+        current_constraints_->exposureTime());
+  }
+  if (current_constraints_->hasColorTemperature()) {
+    clone->current_constraints_->setColorTemperature(
+        current_constraints_->colorTemperature());
+  }
+  if (current_constraints_->hasIso())
+    clone->current_constraints_->setIso(current_constraints_->iso());
+  if (current_constraints_->hasBrightness()) {
+    clone->current_constraints_->setBrightness(
+        current_constraints_->brightness());
+  }
+  if (current_constraints_->hasContrast())
+    clone->current_constraints_->setContrast(current_constraints_->contrast());
+  if (current_constraints_->hasSaturation()) {
+    clone->current_constraints_->setSaturation(
+        current_constraints_->saturation());
+  }
+  if (current_constraints_->hasSharpness()) {
+    clone->current_constraints_->setSharpness(
+        current_constraints_->sharpness());
+  }
+  if (current_constraints_->hasFocusDistance()) {
+    clone->current_constraints_->setFocusDistance(
+        current_constraints_->focusDistance());
+  }
+  if (current_constraints_->hasPan())
+    clone->current_constraints_->setPan(current_constraints_->pan());
+  if (current_constraints_->hasTilt())
+    clone->current_constraints_->setTilt(current_constraints_->tilt());
+  if (current_constraints_->hasZoom())
+    clone->current_constraints_->setZoom(current_constraints_->zoom());
+  if (current_constraints_->hasTorch())
+    clone->current_constraints_->setTorch(current_constraints_->torch());
+
+  return clone;
+}
+
 void ImageCapture::Trace(Visitor* visitor) const {
   visitor->Trace(stream_track_);
   visitor->Trace(service_);
