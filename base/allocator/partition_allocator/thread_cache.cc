@@ -298,25 +298,18 @@ void ThreadCache::FillBucket(size_t bucket_index) {
   // Same as calling RawAlloc() |count| times, but acquires the lock only once.
   internal::ScopedGuard<internal::ThreadSafe> guard(root_->lock_);
   for (int i = 0; i < count; i++) {
-    // Thread cache fill should not trigger expensive operations, to not grab
-    // the lock for a long time needlessly, but also to not inflate memory
-    // usage. Indeed, without PartitionAllocFastPathOrReturnNull, cache fill may
-    // activate a new PartitionPage, or even a new SuperPage, which is clearly
-    // not desirable.
+    // We allow the allocator to return nullptr, since filling the cache may
+    // safely fail, and the proper flag will be handled by the central
+    // allocator.
     //
     // |raw_size| is set to the slot size, as we don't know it. However, it is
     // only used for direct-mapped allocations and single-slot ones anyway,
     // which are not handled here.
     void* ptr = root_->AllocFromBucket(
-        &root_->buckets[bucket_index], PartitionAllocFastPathOrReturnNull,
+        &root_->buckets[bucket_index], PartitionAllocReturnNull,
         root_->buckets[bucket_index].slot_size /* raw_size */,
         &utilized_slot_size, &is_already_zeroed);
-
-    // Either the previous allocation would require a slow path allocation, or
-    // the central allocator is out of memory. If the bucket was filled with
-    // some objects, then the allocation will be handled normally. Otherwise,
-    // this goes to the central allocator, which will service the allocation,
-    // return nullptr or crash.
+    // Central allocator is out of memory.
     if (!ptr)
       break;
 

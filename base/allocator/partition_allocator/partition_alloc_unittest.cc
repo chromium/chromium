@@ -2746,41 +2746,6 @@ TEST_F(PartitionAllocTest, RefCountBasic) {
 
 #endif
 
-TEST_F(PartitionAllocTest, FastPathOrReturnNull) {
-  size_t allocation_size = 64;
-  // The very first allocation is never a fast path one, since it needs a new
-  // super page and a new partition page.
-  EXPECT_FALSE(allocator.root()->AllocFlagsNoHooks(
-      PartitionAllocFastPathOrReturnNull, allocation_size));
-  void* ptr = allocator.root()->AllocFlagsNoHooks(0, allocation_size);
-  ASSERT_TRUE(ptr);
-
-  // Next one is, since the partition page has been activated.
-  void* ptr2 = allocator.root()->AllocFlagsNoHooks(
-      PartitionAllocFastPathOrReturnNull, allocation_size);
-  EXPECT_TRUE(ptr2);
-
-  // First allocation of a different bucket is slow.
-  EXPECT_FALSE(allocator.root()->AllocFlagsNoHooks(
-      PartitionAllocFastPathOrReturnNull, 2 * allocation_size));
-
-  size_t allocated_size = 2 * allocation_size;
-  std::vector<void*> ptrs;
-  while (void* new_ptr = allocator.root()->AllocFlagsNoHooks(
-             PartitionAllocFastPathOrReturnNull, allocation_size)) {
-    ptrs.push_back(new_ptr);
-    allocated_size += allocation_size;
-  }
-  EXPECT_LE(allocated_size,
-            PartitionPageSize() * kMaxPartitionPagesPerSlotSpan);
-
-  for (void* ptr_to_free : ptrs)
-    allocator.root()->FreeNoHooks(ptr_to_free);
-
-  allocator.root()->FreeNoHooks(ptr);
-  allocator.root()->FreeNoHooks(ptr2);
-}
-
 }  // namespace internal
 }  // namespace base
 
