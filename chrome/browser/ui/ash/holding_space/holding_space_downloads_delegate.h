@@ -47,6 +47,7 @@ class HoldingSpaceDownloadsDelegate : public HoldingSpaceKeyedServiceDelegate,
  private:
   // HoldingSpaceKeyedServiceDelegate:
   void Init() override;
+  void Shutdown() override;
   void OnPersistenceRestored() override;
 
   // content::DownloadManager::Observer:

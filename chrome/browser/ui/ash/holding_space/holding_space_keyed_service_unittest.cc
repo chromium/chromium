@@ -1085,7 +1085,6 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveItemsFromUnmountedVolumes) {
   EXPECT_EQ(3u, holding_space_model->items().size());
 
   test_mount_1.reset();
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(1u, GetProfile()
                     ->GetPrefs()
