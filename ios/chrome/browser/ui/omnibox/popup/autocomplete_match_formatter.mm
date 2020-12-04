@@ -246,6 +246,19 @@ UIColor* DimColorIncognito() {
   return _match.has_tab_match;
 }
 
+#pragma mark tail suggest
+
+- (BOOL)isTailSuggestion {
+  return _match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL;
+}
+
+- (NSString*)commonPrefix {
+  if (![self isTailSuggestion]) {
+    return @"";
+  }
+  return base::SysUTF16ToNSString(_match.tail_suggest_common_prefix);
+}
+
 #pragma mark helpers
 
 // Create a string to display for an entire answer line.

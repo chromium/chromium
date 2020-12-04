@@ -23,8 +23,9 @@
 @property(nonatomic) NSAttributedString* detailText;
 @property(nonatomic) NSInteger numberOfLines;
 @property(nonatomic) UIImage* suggestionTypeIcon;
-
 @property(nonatomic) id<OmniboxIcon> icon;
+@property(nonatomic, assign) BOOL isTailSuggestion;
+@property(nonatomic, copy) NSString* commonPrefix;
 
 // Simple suggestion with text.
 + (instancetype)simpleSuggestion;

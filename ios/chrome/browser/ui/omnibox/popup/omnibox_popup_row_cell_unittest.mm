@@ -29,7 +29,8 @@
 @property(nonatomic, assign) GURL imageURL;
 @property(nonatomic, assign) GURL faviconPageURL;
 @property(nonatomic, strong) id<OmniboxIcon> icon;
-
+@property(nonatomic, assign) BOOL isTailSuggestion;
+@property(nonatomic, assign) NSString* commonPrefix;
 @end
 
 @implementation FakeAutocompleteMatch
