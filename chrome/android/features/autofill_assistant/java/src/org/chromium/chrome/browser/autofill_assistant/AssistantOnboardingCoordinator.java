@@ -156,12 +156,16 @@ class AssistantOnboardingCoordinator {
         mBottomSheetObserver = new EmptyBottomSheetObserver() {
             @Override
             public void onSheetStateChanged(int newState) {
+                if (mOverlayCoordinator == null) {
+                    return;
+                }
+
                 if (newState == SheetState.HIDDEN) {
-                    overlayModel.set(AssistantOverlayModel.STATE, AssistantOverlayState.HIDDEN);
+                    mOverlayCoordinator.suppress();
                 }
                 if (newState == SheetState.PEEK || newState == SheetState.HALF
                         || newState == SheetState.FULL) {
-                    overlayModel.set(AssistantOverlayModel.STATE, AssistantOverlayState.FULL);
+                    mOverlayCoordinator.restore();
                 }
             }
         };
@@ -210,6 +214,8 @@ class AssistantOnboardingCoordinator {
 
     /** Hides the UI, if one is shown. */
     void hide() {
+        mController.removeObserver(mBottomSheetObserver);
+
         if (mOverlayCoordinator != null) {
             mOverlayCoordinator.destroy();
             mOverlayCoordinator = null;
@@ -224,8 +230,6 @@ class AssistantOnboardingCoordinator {
             mWebContentsObserver.destroy();
             mWebContentsObserver = null;
         }
-
-        mController.removeObserver(mBottomSheetObserver);
     }
 
     /**
