@@ -801,8 +801,9 @@ void BrowserProcessImpl::CreateDevToolsAutoOpener() {
 
 bool BrowserProcessImpl::IsShuttingDown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/560486): Fix the tests that make the check of
+  // TODO (crbug.com/560486): Fix the tests that make the check of
   // |tearing_down_| necessary here.
+  // TODO (crbug/1155597): Maybe use browser_shutdown::HasShutdownStarted here.
   return shutting_down_ || tearing_down_;
 }
 

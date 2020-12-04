@@ -11,8 +11,21 @@ namespace browsing_data {
 
 namespace prefs {
 
-// JSON config to periodically delete some user browsing data.
-const char kBrowsingDataLifetime[] = "browsing_data_lifetime";
+// JSON config to periodically delete some browsing data as specified by
+// the BrowsingDataLifetime policy.
+const char kBrowsingDataLifetime[] =
+    "browser.clear_data.browsing_data_lifetime";
+
+// Boolean set to true while browsing data needs to be deleted per
+// ClearBrowsingDataOnExit policy.
+// TODO (crbug/1026442): Consider setting this pref to true during fast
+// shutdown if the ClearBrowsingDataOnExit policy is set.
+const char kClearBrowsingDataOnExitDeletionPending[] =
+    "browser.clear_data.clear_on_exit_pending";
+
+// List of browsing data, specified by the ClearBrowsingDataOnExit policy, to
+// delete just before browser shutdown.
+const char kClearBrowsingDataOnExitList[] = "browser.clear_data.clear_on_exit";
 
 // Clear browsing data deletion time period.
 const char kDeleteTimePeriod[] = "browser.clear_data.time_period";
@@ -43,6 +56,9 @@ const char kPreferencesMigratedToBasic[] =
 
 void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(kBrowsingDataLifetime,
+                             base::Value(base::Value::Type::LIST));
+  registry->RegisterBooleanPref(kClearBrowsingDataOnExitDeletionPending, false);
+  registry->RegisterListPref(kClearBrowsingDataOnExitList,
                              base::Value(base::Value::Type::LIST));
   registry->RegisterIntegerPref(
       kDeleteTimePeriod, 0,

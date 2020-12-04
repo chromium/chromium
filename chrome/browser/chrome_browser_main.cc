@@ -429,8 +429,10 @@ void ProcessSingletonNotificationCallbackImpl(
     const base::CommandLine& command_line,
     const base::FilePath& current_directory) {
   // Drop the request if the browser process is already shutting down.
-  if (!g_browser_process || g_browser_process->IsShuttingDown())
+  if (!g_browser_process || g_browser_process->IsShuttingDown() ||
+      browser_shutdown::HasShutdownStarted()) {
     return;
+  }
 
   g_browser_process->platform_part()->PlatformSpecificCommandLineProcessing(
       command_line);
@@ -1360,6 +1362,13 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // Desktop construction occurs here, (required before profile creation).
   PreProfileInit();
 
+#if BUILDFLAG(ENABLE_NACL)
+  // NaClBrowserDelegateImpl is accessed inside CreatePrimaryProfile().
+  // So make sure to create it before that.
+  nacl::NaClBrowser::SetDelegate(std::make_unique<NaClBrowserDelegateImpl>(
+      browser_process_->profile_manager()));
+#endif  // BUILDFLAG(ENABLE_NACL)
+
   // This step is costly and is already measured in Startup.CreateFirstProfile
   // and more directly Profile.CreateAndInitializeProfile.
   profile_ = CreatePrimaryProfile(parameters(),
@@ -1420,13 +1429,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 #if defined(OS_ANDROID)
   page_info::SetPageInfoClient(new ChromePageInfoClient());
 #endif
-
-#if BUILDFLAG(ENABLE_NACL)
-  // NaClBrowserDelegateImpl is accessed inside PostProfileInit().
-  // So make sure to create it before that.
-  nacl::NaClBrowser::SetDelegate(std::make_unique<NaClBrowserDelegateImpl>(
-      browser_process_->profile_manager()));
-#endif  // BUILDFLAG(ENABLE_NACL)
 
   // TODO(stevenjb): Move WIN and MACOSX specific code to appropriate Parts.
   // (requires supporting early exit).

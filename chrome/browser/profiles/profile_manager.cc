@@ -128,10 +128,13 @@
 #else
 #include "chrome/browser/accessibility/caption_controller.h"
 #include "chrome/browser/accessibility/caption_controller_factory.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager_factory.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "components/browsing_data/core/pref_names.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1297,6 +1300,17 @@ void ProfileManager::DoFinalInit(ProfileInfo* profile_info,
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableCaretBrowsing))
     profile->GetPrefs()->SetBoolean(prefs::kCaretBrowsingEnabled, true);
+
+  // Delete browsing data specified by the ClearBrowsingDataOnExitList policy
+  // if they were not properly deleted on the last browser shutdown.
+  auto* browsing_data_lifetime_manager =
+      ChromeBrowsingDataLifetimeManagerFactory::GetForProfile(profile);
+  if (browsing_data_lifetime_manager && !profile->IsOffTheRecord() &&
+      profile->GetPrefs()->GetBoolean(
+          browsing_data::prefs::kClearBrowsingDataOnExitDeletionPending)) {
+    browsing_data_lifetime_manager->ClearBrowsingDataForOnExitPolicy(
+        /*keep_browser_alive=*/false);
+  }
 #endif
 }
 
@@ -2012,6 +2026,17 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
     }
     // Delete if the profile is an ephemeral profile.
     ScheduleForcedEphemeralProfileForDeletion(path);
+  } else if (!profile->IsOffTheRecord()) {
+#if !defined(OS_ANDROID)
+    auto* browsing_data_lifetime_manager =
+        ChromeBrowsingDataLifetimeManagerFactory::GetForProfile(
+            original_profile);
+    if (browsing_data_lifetime_manager) {
+      // Delete browsing data set by the ClearBrowsingDataOnExitList policy.
+      browsing_data_lifetime_manager->ClearBrowsingDataForOnExitPolicy(
+          /*keep_browser_alive=*/true);
+    }
+#endif
   }
 }
 

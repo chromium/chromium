@@ -28,6 +28,9 @@ enum class KeepAliveOrigin {
   // c/b/background_sync
   BACKGROUND_SYNC,
 
+  // c/b/browsing_data
+  BROWSING_DATA_LIFETIME_MANAGER,
+
   // c/b/chromeos
   LOGIN_DISPLAY_HOST_WEBUI,
   PIN_MIGRATION,

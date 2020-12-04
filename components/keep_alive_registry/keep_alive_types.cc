@@ -24,6 +24,8 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "BACKGROUND_MODE_MANAGER_FORCE_INSTALLED_EXTENSIONS";
     case KeepAliveOrigin::BACKGROUND_SYNC:
       return out << "BACKGROUND_SYNC";
+    case KeepAliveOrigin::BROWSING_DATA_LIFETIME_MANAGER:
+      return out << "BROWSING_DATA_LIFETIME_MANAGER";
     case KeepAliveOrigin::LOGIN_DISPLAY_HOST_WEBUI:
       return out << "LOGIN_DISPLAY_HOST_WEBUI";
     case KeepAliveOrigin::PIN_MIGRATION:

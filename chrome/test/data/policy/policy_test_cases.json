@@ -8270,7 +8270,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "BrowsingDataLifetime": [{"data_types": ["browsing_history"], "time_to_live_in_hours": 2}] },
-        "prefs": { "browsing_data_lifetime": { "value": [{"data_types": ["browsing_history"], "time_to_live_in_hours": 2}]} }
+        "prefs": { "browser.clear_data.browsing_data_lifetime": { "value": [{"data_types": ["browsing_history"], "time_to_live_in_hours": 2}]} }
       }
     ]
   },
@@ -8295,6 +8295,15 @@
         "prefs": {
           "auth.integrated_web_authentication_allowed": { "local_state": true }
         }
+      }
+    ]
+  },
+  "ClearBrowsingDataOnExitList": {
+    "os": ["win", "linux", "mac", "chromeos"],
+    "policy_pref_mapping_test": [
+      {
+        "policies": { "ClearBrowsingDataOnExitList": ["browsing_history"] },
+        "prefs": { "browser.clear_data.clear_on_exit": { "value": ["browsing_history"]}}
       }
     ]
   }

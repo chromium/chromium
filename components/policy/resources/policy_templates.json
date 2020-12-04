@@ -23938,7 +23938,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         },
       },
       'future_on': ['android'],
-      'supported_on': ['chrome.*:87-', 'chrome_os:87-'],
+      'supported_on': ['chrome.*:89-', 'chrome_os:89-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -23957,9 +23957,12 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'caption': 'Browsing Data Lifetime Settings',
       'tags': [],
       'desc': '''Configures browsing data lifetime settings for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
-      This policy controls the time to live of selected browsing data. This policy has no effect if Sync is enabled.
-      The available data types are the <ph name="DATA_TYPE_BROWSING_HISTORY">'browsing_history'</ph>, <ph name="DATA_TYPE_DOWNLOAD_HISTORY">'download_history'</ph>, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA">'cookies_and_other_site_data'</ph>, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES">'cached_images_and_files'</ph>, <ph name="DATA_TYPE_PASSWORD">'password_signin'</ph>, <ph name="DATA_TYPE_AUTOFILL">'autofill'</ph>, <ph name="DATA_TYPE_SITE_SETTINGS">'site_settings'</ph> and <ph name="DATA_TYPE_HOSTED_APP_DATA">'hosted_app_data'</ph>.
+      This policy controls the time to live of selected browsing data.
+      The available data types are <ph name="DATA_TYPE_BROWSING_HISTORY">'browsing_history'</ph>, <ph name="DATA_TYPE_DOWNLOAD_HISTORY">'download_history'</ph>, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA">'cookies_and_other_site_data'</ph>, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES">'cached_images_and_files'</ph>, <ph name="DATA_TYPE_PASSWORD">'password_signin'</ph>, <ph name="DATA_TYPE_AUTOFILL">'autofill'</ph>, <ph name="DATA_TYPE_SITE_SETTINGS">'site_settings'</ph> and <ph name="DATA_TYPE_HOSTED_APP_DATA">'hosted_app_data'</ph>.
       Chrome will regularly remove data of selected types that is older than <ph name="TIME_TO_LIVE_IN_HOURS">'time_to_live_in_hours'</ph>. As this deletion only happens in certain intervals, some data might live for slightly longer but never more than twice its expected <ph name="TIME_TO_LIVE_IN_HOURS">'time_to_live_in_hours'</ph>.
+      This policy requires the <ph name="SYNC_DISABLED_POLICY_NAME">SyncDisabled</ph> policy to be set to true, otherwise it will be ignored.
+      If this policy is set at platform level, Sync should be disabled at platform level.
+      If this policy is set at user level, Sync should be disabled for that user in order for this policy to take effect.
       '''
     },
     {
@@ -24025,6 +24028,95 @@ If you disable this policy, web page scrolling to specific text fragments via UR
 
       If this policy is set to True, the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> login credentials will be used for network authentication to a managed proxy. In case the authentication with the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> login credentials fails, the user will be prompted for credentials.''',
     },
+    {
+      'name': 'ClearBrowsingDataOnExitList',
+      'owners': ['ydago@chromium.org', 'pastarmovj@chromium.org'],
+      'type': 'string-enum-list',
+      'schema': {
+        'type': 'array',
+        'items': {
+          'type': 'string',
+          'enum': [
+            'browsing_history',
+            'download_history',
+            'cookies_and_other_site_data',
+            'cached_images_and_files',
+            'password_signin',
+            'autofill',
+            'site_settings',
+            'hosted_app_data',
+          ],
+        },
+      },
+      'items': [
+        {
+          'name': 'browsing_history',
+          'value': 'browsing_history',
+          'caption': '''Browsing history''',
+        },
+        {
+          'name': 'download_history',
+          'value': 'download_history',
+          'caption': '''Download history''',
+        },
+        {
+          'name': 'cookies_and_other_site_data',
+          'value': 'cookies_and_other_site_data',
+          'caption': '''Cookies and other site data''',
+        },
+        {
+          'name': 'cached_images_and_files',
+          'value': 'cached_images_and_files',
+          'caption': '''Cached images and files''',
+        },
+        {
+          'name': 'password_signin',
+          'value': 'password_signin',
+          'caption': '''Password signin''',
+        },
+        {
+          'name': 'autofill',
+          'value': 'autofill',
+          'caption': '''Autofill''',
+        },
+        {
+          'name': 'site_settings',
+          'value': 'site_settings',
+          'caption': '''Site settings''',
+        },
+        {
+          'name': 'hosted_app_data',
+          'value': 'hosted_app_data',
+          'caption': '''Hosted apps data''',
+        },
+      ],
+      'future_on': ['android'],
+      'supported_on': ['chrome.*:89-', 'chrome_os:89-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': [
+        'browsing_history',
+        'download_history',
+        'cookies_and_other_site_data',
+        'cached_images_and_files',
+        'password_signin',
+        'autofill',
+        'site_settings',
+        'hosted_app_data',
+      ],
+      'id': 809,
+      'caption': 'Clear Browsing Data on Exit',
+      'tags': [],
+      'desc': '''Configures a list of browsing data types that should be deleted when the browser is closed.
+      The available data types are browsing history (<ph name="DATA_TYPE_BROWSING_HISTORY">browsing_history</ph>), download history (<ph name="DATA_TYPE_DOWNLOAD_HISTORY">download_history</ph>), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA">cookies_and_other_site_data</ph>), cache<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES"> (cached_images_and_files)</ph>, autofill (<ph name="DATA_TYPE_AUTOFILL">autofill</ph>), passwords (<ph name="DATA_TYPE_PASSWORD">password_signin</ph>), site settings (<ph name="DATA_TYPE_SITE_SETTINGS">site_settings</ph>) and hosted apps data (<ph name="DATA_TYPE_HOSTED_APP_DATA">hosted_app_data</ph>).
+      This policy does not take precedence over <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME">AllowDeletingBrowserHistory</ph>.
+      This policy requires the <ph name="SYNC_DISABLED_POLICY_NAME">SyncDisabled</ph> policy to be set to true, otherwise it will be ignored.
+      If this policy is set at platform level, Sync should be disabled at platform level.
+      If this policy is set at user level, Sync should be disabled for that user in order for this policy to take effect.
+      '''
+    }
   ],
 
   'messages': {
@@ -24947,6 +25039,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 808,
+  'highest_id_currently_used': 809,
   'highest_atomic_group_id_currently_used': 40
 }

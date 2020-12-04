@@ -65,6 +65,8 @@ void OnShutdownStarting(ShutdownType type);
 
 // Returns true if OnShutdownStarting has been called to note that shutdown has
 // started.
+// TODO (crbug/1155597): Make this work in sync with
+// BrowserProcessImpl::IsShuttingDown.
 bool HasShutdownStarted();
 
 // Returns true if OnShutdownStarting has been called and unload handlers (e.g.,
