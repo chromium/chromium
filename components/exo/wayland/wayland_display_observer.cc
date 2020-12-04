@@ -35,9 +35,14 @@ void WaylandDisplayHandler::AddObserver(WaylandDisplayObserver* observer) {
   observers_.AddObserver(observer);
 
   display::Display display;
-  bool rv = display::Screen::GetScreen()->GetDisplayWithDisplayId(output_->id(),
-                                                                  &display);
-  DCHECK(rv);
+  bool exists = display::Screen::GetScreen()->GetDisplayWithDisplayId(
+      output_->id(), &display);
+  if (!exists) {
+    // WaylandDisplayHandler is created asynchronously, and the
+    // display can be deleted before created. This usually won't happen
+    // in real environment, but can happen in test environment.
+    return;
+  }
 
   // Send the first round of changes to the observer.
   constexpr uint32_t all_changes = 0xFFFFFFFF;
@@ -53,6 +58,8 @@ void WaylandDisplayHandler::AddObserver(WaylandDisplayObserver* observer) {
 void WaylandDisplayHandler::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {
+  DCHECK(output_resource_);
+
   if (output_->id() != display.id())
     return;
 
@@ -68,9 +75,11 @@ void WaylandDisplayHandler::OnDisplayMetricsChanged(
     wl_client_flush(wl_resource_get_client(output_resource_));
   }
 }
-
 bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
                                                uint32_t changed_metrics) {
+  if (!output_resource_)
+    return false;
+
   // There is no need to check DISPLAY_METRIC_PRIMARY because when primary
   // changes, bounds always changes. (new primary should have had non
   // 0,0 origin).

@@ -17,8 +17,11 @@ struct wl_resource;
 namespace exo {
 namespace wayland {
 
-// Class that represent a wayland output. Tied to a specific display ID
-// and associated with a global.
+// Class that represent a wayland output. Tied to a specific display ID and
+// associated with a global, and wl_outputs created by clients.  This object
+// will self destruct upon the display removal aftrer delays up to 9 seconds (3
+// seconds x 3 times) to give time for clients to release the output they
+// created, excepf for the shutdown scenario where they're removed immediately.
 class WaylandDisplayOutput {
  public:
   explicit WaylandDisplayOutput(int64_t display_id);
@@ -33,6 +36,11 @@ class WaylandDisplayOutput {
   void RegisterOutput(wl_resource* output_resource);
 
   wl_resource* GetOutputResourceForClient(wl_client* client);
+
+  // Self destruct in 5 seconeds.
+  void OnDisplayRemoved();
+
+  int output_counts() const { return output_ids_.size(); }
 
  private:
   const int64_t id_;
