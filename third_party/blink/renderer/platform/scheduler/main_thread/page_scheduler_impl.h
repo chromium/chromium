@@ -70,7 +70,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   base::TimeTicks GetStoredInBackForwardCacheTimestamp() {
     return stored_in_back_forward_cache_timestamp_;
   }
-  bool is_stored_in_back_forward_cache() {
+  bool IsInBackForwardCache() const override {
     return is_stored_in_back_forward_cache_;
   }
   bool has_ipc_detection_enabled() { return has_ipc_detection_enabled_; }

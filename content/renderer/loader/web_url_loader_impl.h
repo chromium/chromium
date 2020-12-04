@@ -99,7 +99,7 @@ class CONTENT_EXPORT WebURLLoaderImpl : public blink::WebURLLoader {
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
       blink::WebURLLoaderClient* client) override;
-  void SetDefersLoading(bool value) override;
+  void SetDefersLoading(DeferType value) override;
   void DidChangePriority(blink::WebURLRequest::Priority new_priority,
                          int intra_priority_value) override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()

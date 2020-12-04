@@ -94,8 +94,12 @@ class WebURLLoader {
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>,
       WebURLLoaderClient*) = 0;
 
+  // |kDeferred| is when an asynchronous load is suspended.
+  // |kNotDeferred| is when an asynchronous load is resumed.
+  // SetDefersLoading can be called with any value at any point.
+  enum class DeferType { kDeferred, kNotDeferred };
   // Suspends/resumes an asynchronous load.
-  virtual void SetDefersLoading(bool) = 0;
+  virtual void SetDefersLoading(DeferType) = 0;
 
   // Notifies the loader that the priority of a WebURLRequest has changed from
   // its previous value. For example, a preload request starts with low

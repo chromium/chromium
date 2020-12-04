@@ -43,6 +43,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
+#include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
@@ -115,8 +116,9 @@ class TestResourceDispatcher : public ResourceDispatcher {
   const GURL& url() { return url_; }
   const GURL& stream_url() { return stream_url_; }
 
-  void SetDefersLoading(int request_id, bool value) override {
-    defers_loading_ = value;
+  void SetDefersLoading(int request_id,
+                        blink::WebURLLoader::DeferType value) override {
+    defers_loading_ = (value != blink::WebURLLoader::DeferType::kNotDeferred);
   }
   bool defers_loading() const { return defers_loading_; }
 
@@ -460,7 +462,8 @@ TEST_F(WebURLLoaderImplTest, DeleteOnFail) {
 }
 
 TEST_F(WebURLLoaderImplTest, DefersLoadingBeforeStart) {
-  client()->loader()->SetDefersLoading(true);
+  client()->loader()->SetDefersLoading(
+      blink::WebURLLoader::DeferType::kDeferred);
   EXPECT_FALSE(dispatcher()->defers_loading());
   DoStartAsyncRequest();
   EXPECT_TRUE(dispatcher()->defers_loading());

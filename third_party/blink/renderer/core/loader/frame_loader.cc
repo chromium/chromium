@@ -278,7 +278,7 @@ LocalFrameClient* FrameLoader::Client() const {
   return frame_->Client();
 }
 
-void FrameLoader::SetDefersLoading(bool defers) {
+void FrameLoader::SetDefersLoading(WebURLLoader::DeferType defers) {
   if (frame_->GetDocument())
     frame_->GetDocument()->Fetcher()->SetDefersLoading(defers);
   if (document_loader_)

@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/public/platform/web_url_error.h"
+#include "third_party/blink/public/platform/web_url_loader.h"
 
 namespace blink {
 
@@ -47,10 +48,10 @@ class BLINK_EXPORT WebNavigationBodyLoader {
   // including from inside any client notification.
   virtual ~WebNavigationBodyLoader() {}
 
-  // While deferred, no more data will be read and no notifications
-  // will be called on the client. This method can be called
-  // multiples times, at any moment.
-  virtual void SetDefersLoading(bool defers) = 0;
+  // While deferred, data will be read on the renderer side but will not invoke
+  // any web-exposed behavior such as dispatching messages or handling
+  // redirects. This method can be called multiple times at any moment.
+  virtual void SetDefersLoading(WebURLLoader::DeferType defers) = 0;
 
   // Starts loading the body. Client must be non-null, and will receive
   // the body, code cache and final result.

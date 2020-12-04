@@ -36,6 +36,9 @@ class PLATFORM_EXPORT NullResourceFetcherProperties final
     return 0;
   }
   bool IsPaused() const override { return false; }
+  WebURLLoader::DeferType DeferType() const override {
+    return WebURLLoader::DeferType::kNotDeferred;
+  }
   bool IsDetached() const override { return true; }
   bool IsLoadDeferred() const override { return false; }
   bool IsLoadComplete() const override { return true; }

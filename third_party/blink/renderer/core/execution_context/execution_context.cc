@@ -233,6 +233,13 @@ bool ExecutionContext::IsContextPaused() const {
   return lifecycle_state_ == mojom::blink::FrameLifecycleState::kPaused;
 }
 
+WebURLLoader::DeferType ExecutionContext::DeferType() const {
+  if (lifecycle_state_ == mojom::blink::FrameLifecycleState::kPaused) {
+    return WebURLLoader::DeferType::kDeferred;
+  }
+  return WebURLLoader::DeferType::kNotDeferred;
+}
+
 bool ExecutionContext::IsLoadDeferred() const {
   return lifecycle_state_ == mojom::blink::FrameLifecycleState::kPaused ||
          lifecycle_state_ == mojom::blink::FrameLifecycleState::kFrozen;

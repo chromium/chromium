@@ -31,7 +31,8 @@ bool TestRequestPeer::OnReceivedRedirect(
   ++context_->seen_redirects;
   context_->last_load_timing = head->load_timing;
   if (context_->defer_on_redirect)
-    dispatcher_->SetDefersLoading(context_->request_id, true);
+    dispatcher_->SetDefersLoading(context_->request_id,
+                                  blink::WebURLLoader::DeferType::kDeferred);
   return context_->follow_redirects;
 }
 
@@ -66,7 +67,8 @@ void TestRequestPeer::OnTransferSizeUpdated(int transfer_size_diff) {
     return;
   context_->total_encoded_data_length += transfer_size_diff;
   if (context_->defer_on_transfer_size_updated)
-    dispatcher_->SetDefersLoading(context_->request_id, true);
+    dispatcher_->SetDefersLoading(context_->request_id,
+                                  blink::WebURLLoader::DeferType::kDeferred);
 }
 
 void TestRequestPeer::OnReceivedCachedMetadata(mojo_base::BigBuffer data) {

@@ -354,7 +354,7 @@ ResourceFetcher* WorkerOrWorkletGlobalScope::CreateFetcherInternal(
                             nullptr /* loader_factory */, this));
   }
   if (IsContextPaused())
-    fetcher->SetDefersLoading(true);
+    fetcher->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
   resource_fetchers_.insert(fetcher);
   return fetcher;
 }
@@ -514,7 +514,7 @@ void WorkerOrWorkletGlobalScope::FetchModuleScript(
 }
 
 void WorkerOrWorkletGlobalScope::SetDefersLoadingForResourceFetchers(
-    bool defers) {
+    WebURLLoader::DeferType defers) {
   for (ResourceFetcher* resource_fetcher : resource_fetchers_)
     resource_fetcher->SetDefersLoading(defers);
 }

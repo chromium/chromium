@@ -84,7 +84,7 @@ class PLATFORM_EXPORT ResourceLoader final
   void ScheduleCancel();
   void Cancel();
 
-  void SetDefersLoading(bool);
+  void SetDefersLoading(WebURLLoader::DeferType);
 
   void DidChangePriority(ResourceLoadPriority, int intra_priority_value);
 
@@ -239,9 +239,8 @@ class PLATFORM_EXPORT ResourceLoader final
   base::Optional<DeferredFinishLoadingInfo> deferred_finish_loading_info_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_body_loader_;
 
-  // True if loading is deferred.
-  bool defers_ = false;
-  // True if the next call of SetDefersLoading(false) needs to invoke
+  WebURLLoader::DeferType defers_ = WebURLLoader::DeferType::kNotDeferred;
+  // True if the next call of SetDefersLoading(kNotDeferred) needs to invoke
   // HandleDataURL().
   bool defers_handling_data_url_ = false;
 

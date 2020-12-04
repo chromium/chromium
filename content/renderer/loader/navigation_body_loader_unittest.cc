@@ -110,8 +110,8 @@ class NavigationBodyLoaderTest : public ::testing::Test,
     }
     if (toggle_defers_loading_) {
       toggle_defers_loading_ = false;
-      loader_->SetDefersLoading(false);
-      loader_->SetDefersLoading(true);
+      loader_->SetDefersLoading(blink::WebURLLoader::DeferType::kNotDeferred);
+      loader_->SetDefersLoading(blink::WebURLLoader::DeferType::kDeferred);
     }
     if (destroy_loader_) {
       destroy_loader_ = false;
@@ -171,8 +171,8 @@ class NavigationBodyLoaderTest : public ::testing::Test,
 
 TEST_F(NavigationBodyLoaderTest, SetDefersBeforeStart) {
   CreateBodyLoader();
-  loader_->SetDefersLoading(true);
-  loader_->SetDefersLoading(false);
+  loader_->SetDefersLoading(blink::WebURLLoader::DeferType::kDeferred);
+  loader_->SetDefersLoading(blink::WebURLLoader::DeferType::kNotDeferred);
   // Should not crash.
 }
 
@@ -217,11 +217,11 @@ TEST_F(NavigationBodyLoaderTest, SetDefersLoadingFromDataReceived) {
 
 TEST_F(NavigationBodyLoaderTest, StartDeferred) {
   CreateBodyLoader();
-  loader_->SetDefersLoading(true);
+  loader_->SetDefersLoading(blink::WebURLLoader::DeferType::kDeferred);
   StartLoading();
   Write("hello");
   ExpectDataReceived();
-  loader_->SetDefersLoading(false);
+  loader_->SetDefersLoading(blink::WebURLLoader::DeferType::kNotDeferred);
   Wait();
   EXPECT_EQ("hello", TakeDataReceived());
 }

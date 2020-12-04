@@ -90,6 +90,7 @@ class FakePageScheduler final : public PageScheduler {
   scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler() override {
     return *agent_group_scheduler_;
   }
+  bool IsInBackForwardCache() const override { return false; }
 
  private:
   bool is_audio_playing_;
