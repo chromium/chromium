@@ -23,7 +23,7 @@ constexpr int kUserDemographicsGenderDefaultValue = -1;
 constexpr UserDemographicsProto_Gender kUserDemographicGenderDefaultEnumValue =
     UserDemographicsProto_Gender_Gender_MIN;
 
-// Default value for user gender when no value has been set.
+// Default value for user birth year when no value has been set.
 constexpr int kUserDemographicsBirthYearDefaultValue = -1;
 
 // Default value for birth year offset when no value has been set. Set to a

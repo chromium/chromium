@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -75,6 +76,10 @@ class TestChromeOSMetricsProvider : public ChromeOSMetricsProvider {
   }
 };
 
+const AccountId account_id1(AccountId::FromUserEmail("user1@example.com"));
+const AccountId account_id2(AccountId::FromUserEmail("user2@example.com"));
+const AccountId account_id3(AccountId::FromUserEmail("user3@example.com"));
+
 }  // namespace
 
 class ChromeOSMetricsProviderTest : public testing::Test {
@@ -100,9 +105,7 @@ class ChromeOSMetricsProviderTest : public testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-    TestingProfile* profile =
-        profile_manager_->CreateTestingProfile("test_name");
-    profile_manager_->UpdateLastUser(profile);
+    testing_profile_ = profile_manager_->CreateTestingProfile("test_name");
 
     // Set statistic provider for hardware class tests.
     chromeos::system::StatisticsProvider::SetTestProvider(
@@ -128,6 +131,7 @@ class ChromeOSMetricsProviderTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  TestingProfile* testing_profile_ = nullptr;
   std::unique_ptr<FakeMultiDeviceSetupClientImplFactory>
       fake_multidevice_setup_client_impl_factory_;
 
@@ -138,13 +142,10 @@ class ChromeOSMetricsProviderTest : public testing::Test {
 };
 
 TEST_F(ChromeOSMetricsProviderTest, MultiProfileUserCount) {
-  const AccountId account_id1(AccountId::FromUserEmail("user1@example.com"));
-  const AccountId account_id2(AccountId::FromUserEmail("user2@example.com"));
-  const AccountId account_id3(AccountId::FromUserEmail("user3@example.com"));
-
   // |scoped_enabler| takes over the lifetime of |user_manager|.
   chromeos::FakeChromeUserManager* user_manager =
       new chromeos::FakeChromeUserManager();
+  // TODO(crbug/1154780): Overload operator-> in ScopedUserManager.
   user_manager::ScopedUserManager scoped_enabler(
       base::WrapUnique(user_manager));
   user_manager->AddKioskAppUser(account_id1);
@@ -162,13 +163,10 @@ TEST_F(ChromeOSMetricsProviderTest, MultiProfileUserCount) {
 }
 
 TEST_F(ChromeOSMetricsProviderTest, MultiProfileCountInvalidated) {
-  const AccountId account_id1(AccountId::FromUserEmail("user1@example.com"));
-  const AccountId account_id2(AccountId::FromUserEmail("user2@example.com"));
-  const AccountId account_id3(AccountId::FromUserEmail("user3@example.com"));
-
   // |scoped_enabler| takes over the lifetime of |user_manager|.
   chromeos::FakeChromeUserManager* user_manager =
       new chromeos::FakeChromeUserManager();
+  // TODO(crbug/1154780): Overload operator-> in ScopedUserManager.
   user_manager::ScopedUserManager scoped_enabler(
       base::WrapUnique(user_manager));
   user_manager->AddKioskAppUser(account_id1);
@@ -202,6 +200,18 @@ TEST_F(ChromeOSMetricsProviderTest, HasLinkedAndroidPhoneAndEnabledFeatures) {
   fake_multidevice_setup_client_->SetFeatureState(
       chromeos::multidevice_setup::mojom::Feature::kMessages,
       chromeos::multidevice_setup::mojom::FeatureState::kFurtherSetupRequired);
+
+  // |scoped_enabler| takes over the lifetime of |user_manager|.
+  chromeos::FakeChromeUserManager* user_manager =
+      new chromeos::FakeChromeUserManager();
+  // TODO(crbug/1154780): Overload operator-> in ScopedUserManager.
+  user_manager::ScopedUserManager scoped_enabler(
+      base::WrapUnique(user_manager));
+  user_manager->AddKioskAppUser(account_id1);
+  user_manager->LoginUser(account_id1);
+  const user_manager::User* primary_user = user_manager->GetPrimaryUser();
+  chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+      primary_user, testing_profile_);
 
   TestChromeOSMetricsProvider provider;
   metrics::SystemProfileProto system_profile;

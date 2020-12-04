@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/sync/base/sync_prefs.h"
@@ -283,6 +284,7 @@ TEST(DemographicMetricsProviderTest,
   ChromeUserMetricsExtension uma_proto;
   provider.ProvideSyncedUserNoisedBirthYearAndGender(&uma_proto);
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Expect that the UMA proto is untouched.
   EXPECT_FALSE(uma_proto.user_demographics().has_birth_year());
   EXPECT_FALSE(uma_proto.user_demographics().has_gender());
@@ -290,6 +292,16 @@ TEST(DemographicMetricsProviderTest,
   // Verify histograms.
   histogram.ExpectUniqueSample("UMA.UserDemographics.Status",
                                UserDemographicsStatus::kMoreThanOneProfile, 1);
+#else
+  // On ChromeOS, we have a profile selection strategy, so expect UMA reporting
+  // to work.
+  EXPECT_TRUE(uma_proto.user_demographics().has_birth_year());
+  EXPECT_TRUE(uma_proto.user_demographics().has_gender());
+
+  // Verify histograms.
+  histogram.ExpectUniqueSample("UMA.UserDemographics.Status",
+                               UserDemographicsStatus::kSuccess, 1);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 TEST(DemographicMetricsProviderTest,

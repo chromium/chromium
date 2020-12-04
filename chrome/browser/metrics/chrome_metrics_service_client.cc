@@ -386,8 +386,10 @@ bool IsProcessRunning(base::ProcessId pid) {
 class ProfileClientImpl
     : public metrics::DemographicMetricsProvider::ProfileClient {
  public:
-  ~ProfileClientImpl() override {}
   ProfileClientImpl() = default;
+  ProfileClientImpl(const ProfileClientImpl&) = delete;
+  ProfileClientImpl& operator=(const ProfileClientImpl&) = delete;
+  ~ProfileClientImpl() override = default;
 
   int GetNumberOfProfilesOnDisk() override {
     return g_browser_process->profile_manager()->GetNumberOfProfiles();
@@ -425,8 +427,6 @@ class ProfileClientImpl
  private:
   // Provides the same cached Profile each time.
   metrics::CachedMetricsProfile cached_metrics_profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileClientImpl);
 };
 
 std::unique_ptr<metrics::DemographicMetricsProvider>

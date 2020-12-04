@@ -16,6 +16,7 @@ static_library("demographics") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/metrics",
     "//components/pref_registry",
     "//components/prefs",
@@ -34,6 +35,7 @@ source_set("unit_tests") {
     ":demographics",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/metrics",
     "//components/sync/base",
     "//components/sync/driver",
