@@ -38,7 +38,6 @@ import android.view.textclassifier.TextClassifier;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.UserData;
@@ -1447,7 +1446,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     @VisibleForTesting
     /* package */ void performHapticFeedback() {
-        if (BuildInfo.isAtLeastQ() && mView != null) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && mView != null) {
             mView.performHapticFeedback(HapticFeedbackConstants.TEXT_HANDLE_MOVE);
         }
     }
