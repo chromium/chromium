@@ -854,6 +854,8 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
   ui::mojom::VirtualKeyboardVisibilityRequest last_vk_visibility_request =
       ui::mojom::VirtualKeyboardVisibilityRequest::NONE;
   bool always_hide_ime = false;
+  base::Optional<gfx::Rect> control_bounds;
+  base::Optional<gfx::Rect> selection_bounds;
   if (frame_widget) {
     new_info = frame_widget->TextInputInfo();
     // This will be used to decide whether or not to show VK when VK policy is
@@ -864,6 +866,8 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
     // Check whether the keyboard should always be hidden for the currently
     // focused element.
     always_hide_ime = frame_widget->ShouldSuppressKeyboardForFocusedElement();
+    frame_widget->GetEditContextBoundsInWindow(&control_bounds,
+                                               &selection_bounds);
   }
   const ui::TextInputMode new_mode =
       ConvertWebTextInputMode(new_info.input_mode);
@@ -880,7 +884,9 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
       always_hide_ime_ != always_hide_ime || vk_policy_ != new_vk_policy ||
       (new_vk_policy == ui::mojom::VirtualKeyboardPolicy::MANUAL &&
        (last_vk_visibility_request !=
-        ui::mojom::VirtualKeyboardVisibilityRequest::NONE))) {
+        ui::mojom::VirtualKeyboardVisibilityRequest::NONE)) ||
+      (control_bounds && frame_control_bounds_ != control_bounds) ||
+      (selection_bounds && frame_selection_bounds_ != selection_bounds)) {
     ui::mojom::blink::TextInputStatePtr params =
         ui::mojom::blink::TextInputState::New();
     params->type = new_type;
@@ -889,14 +895,12 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
     params->flags = new_info.flags;
     params->vk_policy = new_vk_policy;
     params->last_vk_visibility_request = last_vk_visibility_request;
+    params->edit_context_control_bounds = control_bounds;
+    params->edit_context_selection_bounds = selection_bounds;
+
     if (!new_info.ime_text_spans.empty()) {
       params->ime_text_spans_info =
           frame_widget->GetImeTextSpansInfo(new_info.ime_text_spans);
-    }
-    if (frame_widget) {
-      frame_widget->GetEditContextBoundsInWindow(
-          &params->edit_context_control_bounds,
-          &params->edit_context_selection_bounds);
     }
 #if defined(OS_ANDROID)
     if (next_previous_flags_ == kInvalidNextPreviousFlagsValue) {
@@ -939,6 +943,10 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
     can_compose_inline_ = new_can_compose_inline;
     always_hide_ime_ = always_hide_ime;
     text_input_flags_ = new_info.flags;
+    frame_control_bounds_ = control_bounds.value_or(gfx::Rect());
+    // Selection bounds are not populated in non-EditContext scenarios.
+    // It is communicated to IMEs via |WidgetBase::UpdateSelectionBounds|.
+    frame_selection_bounds_ = selection_bounds.value_or(gfx::Rect());
     // Reset the show/hide state in the InputMethodController.
     if (frame_widget) {
       if (last_vk_visibility_request !=

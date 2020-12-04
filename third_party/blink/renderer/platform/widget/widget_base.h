@@ -405,6 +405,13 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   ui::mojom::VirtualKeyboardPolicy vk_policy_ =
       ui::mojom::VirtualKeyboardPolicy::AUTO;
 
+  // Stores the current control and selection bounds of |webwidget_|
+  // that are used to position the candidate window during IME composition.
+  // These are stored in DIPs if use-zoom-for-dsf is disabled and are relative
+  // to the widget
+  gfx::Rect frame_control_bounds_;
+  gfx::Rect frame_selection_bounds_;
+
   // Stores the current text input flags of |webwidget_|.
   int text_input_flags_ = 0;
 

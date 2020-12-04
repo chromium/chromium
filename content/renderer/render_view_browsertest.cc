@@ -1689,14 +1689,12 @@ TEST_F(RenderViewImplTextInputStateChanged,
 
 TEST_F(RenderViewImplTextInputStateChanged, ActiveElementGetLayoutBounds) {
   // Load an HTML page consisting of one input fields.
-  LoadHTML(
-      "<html>"
-      "<head>"
-      "</head>"
-      "<body>"
-      "<input id=\"test\" type=\"text\"></input>"
-      "</body>"
-      "</html>");
+  LoadHTML(R"HTML(
+    <style>
+      input { position: fixed; }
+    </style>
+      <input id='test' type='text'></input>
+    )HTML");
   ClearState();
   // Create an EditContext with control and selection bounds and set input
   // panel policy to auto.
@@ -1722,6 +1720,82 @@ TEST_F(RenderViewImplTextInputStateChanged, ActiveElementGetLayoutBounds) {
       updated_states()[0]->edit_context_control_bounds.value());
   EXPECT_EQ(actual_active_element_control_bounds,
             expected_control_bounds_in_dips);
+
+  // Update the position of the element and that should trigger control bounds
+  // update to IME.
+  ExecuteJavaScriptForTests(
+      "document.getElementById('test').style.top = 50 + "
+      "\"px\";document.getElementById('test').style.left = 350 + \"px\";");
+  // This RunLoop is waiting for styles to be processed for the active element.
+  base::RunLoop run_loop2;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                run_loop2.QuitClosure());
+  run_loop2.Run();
+  // Update the IME status and verify if our IME backend sends an IPC message
+  // to notify layout bounds of the EditContext.
+  main_frame_widget()->UpdateTextInputState();
+  // This RunLoop is to flush the TextInputState update message.
+  base::RunLoop run_loop3;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                run_loop3.QuitClosure());
+  run_loop3.Run();
+  EXPECT_EQ(2u, updated_states().size());
+  controller->GetLayoutBounds(&expected_control_bounds, &temp_selection_bounds);
+  gfx::Rect expected_control_bounds_in_dips_updated =
+      main_frame_widget()->BlinkSpaceToEnclosedDIPs(expected_control_bounds);
+  actual_active_element_control_bounds =
+      updated_states()[1]->edit_context_control_bounds.value();
+  EXPECT_EQ(actual_active_element_control_bounds,
+            expected_control_bounds_in_dips_updated);
+  // Also check that the updated bounds are different from last reported bounds.
+  EXPECT_NE(expected_control_bounds_in_dips_updated,
+            expected_control_bounds_in_dips);
+}
+
+TEST_F(RenderViewImplTextInputStateChanged,
+       ActiveElementMultipleLayoutBoundsUpdates) {
+  // Load an HTML page consisting of one input fields.
+  LoadHTML(R"HTML(
+      <input id='test' type='text'></input>
+    )HTML");
+  ClearState();
+  // Create an EditContext with control and selection bounds and set input
+  // panel policy to auto.
+  ExecuteJavaScriptForTests("document.getElementById('test').focus();");
+  // This RunLoop is waiting for focus to be processed for the active element.
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                run_loop.QuitClosure());
+  run_loop.Run();
+  // Update the IME status and verify if our IME backend sends an IPC message
+  // to notify layout bounds of the EditContext.
+  main_frame_widget()->UpdateTextInputState();
+  // This RunLoop is to flush the TextInputState update message.
+  base::RunLoop run_loop2;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                run_loop2.QuitClosure());
+  run_loop2.Run();
+  EXPECT_EQ(1u, updated_states().size());
+  blink::WebInputMethodController* controller =
+      frame()->GetWebFrame()->GetInputMethodController();
+  blink::WebRect expected_control_bounds;
+  blink::WebRect temp_selection_bounds;
+  controller->GetLayoutBounds(&expected_control_bounds, &temp_selection_bounds);
+  gfx::Rect expected_control_bounds_in_dips =
+      main_frame_widget()->BlinkSpaceToEnclosedDIPs(expected_control_bounds);
+  gfx::Rect actual_active_element_control_bounds(
+      updated_states()[0]->edit_context_control_bounds.value());
+  EXPECT_EQ(actual_active_element_control_bounds,
+            expected_control_bounds_in_dips);
+
+  // No updates in control bounds so this shouldn't trigger an update to IME.
+  main_frame_widget()->UpdateTextInputState();
+  // This RunLoop is to flush the TextInputState update message.
+  base::RunLoop run_loop3;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                run_loop3.QuitClosure());
+  run_loop3.Run();
+  EXPECT_EQ(1u, updated_states().size());
 }
 
 TEST_F(RenderViewImplTextInputStateChanged, VirtualKeyboardPolicyAuto) {
