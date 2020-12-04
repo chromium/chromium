@@ -45,6 +45,7 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
   bool pin_was_collected() { return pin_was_collected_; }
   bool internal_uv_was_retried() { return internal_uv_num_retries_ > 0u; }
   size_t internal_uv_num_retries() { return internal_uv_num_retries_; }
+  bool forced_pin_change() { return forced_pin_change_; }
   bool internal_uv_was_locked() { return internal_uv_was_locked_; }
 
  private:
@@ -52,10 +53,12 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
   void AuthenticatorSelectedForPINUVAuthToken(
       FidoAuthenticator* authenticator) override {}
   void CollectNewPIN(uint32_t min_pin_length,
+                     bool force_pin_change,
                      ProvidePINCallback provide_pin_cb) override {
     DCHECK(!pin_.empty());
     pin_was_set_ = true;
     min_pin_length_ = min_pin_length;
+    forced_pin_change_ = force_pin_change;
     std::move(provide_pin_cb).Run(pin_);
   }
   void CollectExistingPIN(int attempts,
@@ -89,6 +92,7 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
 
   bool pin_was_collected_ = false;
   bool pin_was_set_ = false;
+  bool forced_pin_change_ = false;
   size_t internal_uv_num_retries_ = 0u;
   uint32_t min_pin_length_ = 0;
   bool internal_uv_was_locked_ = false;
@@ -235,6 +239,7 @@ TEST_F(AuthTokenRequesterTest, AuthenticatorWithoutUVTokenSupport) {
     }
     EXPECT_FALSE(delegate_->internal_uv_was_retried());
     EXPECT_FALSE(delegate_->internal_uv_was_locked());
+    EXPECT_FALSE(delegate_->forced_pin_change());
   }
 }
 
@@ -320,6 +325,7 @@ TEST_F(AuthTokenRequesterTest, AuthenticatorWithUVTokenSupport) {
                         UserVerificationAvailability::kSupportedAndConfigured);
       EXPECT_FALSE(delegate_->internal_uv_was_retried());
       EXPECT_FALSE(delegate_->internal_uv_was_locked());
+      EXPECT_FALSE(delegate_->forced_pin_change());
     } else {
       EXPECT_EQ(*delegate_->result(),
                 AuthTokenRequester::Result::kPreTouchUnsatisfiableRequest);
@@ -328,6 +334,7 @@ TEST_F(AuthTokenRequesterTest, AuthenticatorWithUVTokenSupport) {
       EXPECT_FALSE(delegate_->pin_was_collected());
       EXPECT_FALSE(delegate_->internal_uv_was_retried());
       EXPECT_FALSE(delegate_->internal_uv_was_locked());
+      EXPECT_FALSE(delegate_->forced_pin_change());
     }
   }
 }
@@ -354,6 +361,7 @@ TEST_F(AuthTokenRequesterTest, PINSoftLock) {
   EXPECT_TRUE(delegate_->pin_was_collected());
   EXPECT_FALSE(delegate_->internal_uv_was_retried());
   EXPECT_FALSE(delegate_->internal_uv_was_locked());
+  EXPECT_FALSE(delegate_->forced_pin_change());
 }
 
 TEST_F(AuthTokenRequesterTest, PINHardLock) {
@@ -378,6 +386,7 @@ TEST_F(AuthTokenRequesterTest, PINHardLock) {
   EXPECT_FALSE(delegate_->pin_was_collected());
   EXPECT_FALSE(delegate_->internal_uv_was_retried());
   EXPECT_FALSE(delegate_->internal_uv_was_locked());
+  EXPECT_FALSE(delegate_->forced_pin_change());
 }
 
 TEST_F(AuthTokenRequesterTest, UVLockedPINFallback) {
@@ -402,6 +411,31 @@ TEST_F(AuthTokenRequesterTest, UVLockedPINFallback) {
   EXPECT_TRUE(delegate_->pin_was_collected());
   EXPECT_EQ(delegate_->internal_uv_num_retries(), 2u);
   EXPECT_TRUE(delegate_->internal_uv_was_locked());
+  EXPECT_FALSE(delegate_->forced_pin_change());
+}
+
+TEST_F(AuthTokenRequesterTest, ForcePINChange) {
+  VirtualCtap2Device::Config config;
+  config.pin_uv_auth_token_support = true;
+  config.ctap2_versions = {std::begin(kCtap2Versions2_1),
+                           std::end(kCtap2Versions2_1)};
+  config.min_pin_length_support = true;
+  auto state = base::MakeRefCounted<VirtualFidoDevice::State>();
+  state->force_pin_change = true;
+
+  RunTestCase(std::move(config), state,
+              TestCase{
+                  ClientPinAvailability::kSupportedAndPinSet,
+                  UserVerificationAvailability::kNotSupported,
+                  true,
+              });
+
+  EXPECT_EQ(*delegate_->result(), AuthTokenRequester::Result::kSuccess);
+  EXPECT_TRUE(delegate_->response());
+  EXPECT_TRUE(delegate_->pin_was_set());
+  EXPECT_TRUE(delegate_->pin_was_collected());
+  EXPECT_FALSE(delegate_->internal_uv_was_locked());
+  EXPECT_TRUE(delegate_->forced_pin_change());
 }
 
 }  // namespace

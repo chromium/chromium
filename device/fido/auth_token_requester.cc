@@ -261,6 +261,7 @@ void AuthTokenRequester::OnGetPINToken(
       case CtapDeviceResponseCode::kCtap2ErrPinPolicyViolation:
         // The user needs to set a new PIN before they can use the device.
         delegate_->CollectNewPIN(authenticator_->NewMinPINLength(),
+                                 /*force_pin_change=*/true,
                                  base::BindOnce(&AuthTokenRequester::HaveNewPIN,
                                                 weak_factory_.GetWeakPtr()));
         return;
@@ -286,6 +287,7 @@ void AuthTokenRequester::OnGetPINToken(
 void AuthTokenRequester::ObtainTokenFromNewPIN() {
   NotifyAuthenticatorSelected();
   delegate_->CollectNewPIN(authenticator_->NewMinPINLength(),
+                           /*force_pin_change=*/false,
                            base::BindOnce(&AuthTokenRequester::HaveNewPIN,
                                           weak_factory_.GetWeakPtr()));
 }

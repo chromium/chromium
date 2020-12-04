@@ -133,8 +133,7 @@ bool AuthenticatorRequestClientDelegate::SupportsPIN() const {
 }
 
 void AuthenticatorRequestClientDelegate::CollectPIN(
-    uint32_t min_pin_length,
-    base::Optional<int> attempts,
+    CollectPINOptions options,
     base::OnceCallback<void(std::string)> provide_pin_cb) {
   NOTREACHED();
 }

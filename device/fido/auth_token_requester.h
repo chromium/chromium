@@ -79,11 +79,14 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthTokenRequester {
 
     // CollectNewPIN is invoked to prompt the user to enter a new PIN for an
     // authenticator. |min_pin_length| is the minimum length for a valid PIN.
+    // |force_pin_change| is true iff the user must change the PIN on their
+    // security key before using it.
     //
     // The callee must provide the PIN by invoking |provide_pin_cb|. The
     // callback is weakly bound and safe to invoke even after the
     // AuthTokenRequester was freed.
     virtual void CollectNewPIN(uint32_t min_pin_length,
+                               bool force_pin_change,
                                ProvidePINCallback provide_pin_cb) = 0;
 
     // CollectExistingPIN is invoked to prompt the user to provide the existing

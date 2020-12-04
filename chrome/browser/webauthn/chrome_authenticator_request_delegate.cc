@@ -575,14 +575,13 @@ bool ChromeAuthenticatorRequestDelegate::SupportsPIN() const {
 }
 
 void ChromeAuthenticatorRequestDelegate::CollectPIN(
-    uint32_t min_pin_length,
-    base::Optional<int> attempts,
+    CollectPINOptions options,
     base::OnceCallback<void(std::string)> provide_pin_cb) {
   if (!weak_dialog_model_)
     return;
 
-  weak_dialog_model_->CollectPIN(min_pin_length, attempts,
-                                 std::move(provide_pin_cb));
+  weak_dialog_model_->CollectPIN(options.mode, options.min_pin_length,
+                                 options.attempts, std::move(provide_pin_cb));
 }
 
 void ChromeAuthenticatorRequestDelegate::StartBioEnrollment(

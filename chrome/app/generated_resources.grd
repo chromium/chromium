@@ -10712,6 +10712,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_UV_ERROR_LOCKED" desc="Error message. Displayed when the user's authenticator has been locked due to too many failed attempts to read their fingerprint, and they are required to enter a PIN to unlock it.">
         Your security key is locked because your fingerprint couldn't be recognized. To unlock it, enter your PIN.
       </message>
+      <message name="IDS_WEBAUTHN_FORCE_PIN_CHANGE" desc="An error message shown when a user attempts to use a security key (an authentication hardware device) that has a default PIN (short, often numeric codes that are often used with, for example, ATM cards) set. Before using the key, the user needs to change the PIN to a new code.">
+        To use your new security key, set a new PIN
+      </message>
 
       <!-- WebAuthn account selection for resident keys -->
       <message name="IDS_WEBAUTHN_SELECT_ACCOUNT" desc="The title on a dialog where the user is expected to select an account from a list. For example, the list may include several identities, e.g. joe@gmail.com, mary@gmail.com, and the user has to select one to login as.">

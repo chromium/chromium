@@ -20,10 +20,13 @@
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/fido_request_handler_base.h"
 #include "device/fido/public_key_credential_user_entity.h"
 
 class AuthenticatorDialogTest : public DialogBrowserTest {
  public:
+  using CollectPINMode =
+      device::FidoRequestHandlerBase::Observer::CollectPINOptions::Mode;
   AuthenticatorDialogTest() = default;
 
   // DialogBrowserTest:
@@ -41,7 +44,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
         AuthenticatorTransport::kInternal,
         AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy};
     model->set_cable_transport_info(/*cable_extension_provided=*/true,
-                                    /*have_paired_phones=*/false,
+                                    /*has_paired_phones=*/false,
                                     "fido://qrcode");
     model->StartFlow(std::move(transport_availability), base::nullopt);
 
@@ -82,19 +85,23 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
       model->SetCurrentStep(
           AuthenticatorRequestDialogModel::Step::kCableV2QRCode);
     } else if (name == "set_pin") {
-      model->CollectPIN(6, base::nullopt,
+      model->CollectPIN(CollectPINMode::kSet, 6, 0,
                         base::BindOnce([](std::string pin) {}));
     } else if (name == "get_pin") {
-      model->CollectPIN(6, 8, base::BindOnce([](std::string pin) {}));
+      model->CollectPIN(CollectPINMode::kChallenge, 6, 8,
+                        base::BindOnce([](std::string pin) {}));
     } else if (name == "get_pin_two_tries_remaining") {
       model->set_has_attempted_pin_entry_for_testing();
-      model->CollectPIN(6, 2, base::BindOnce([](std::string pin) {}));
+      model->CollectPIN(CollectPINMode::kChallenge, 6, 2,
+                        base::BindOnce([](std::string pin) {}));
     } else if (name == "get_pin_one_try_remaining") {
       model->set_has_attempted_pin_entry_for_testing();
-      model->CollectPIN(6, 1, base::BindOnce([](std::string pin) {}));
+      model->CollectPIN(CollectPINMode::kChallenge, 6, 1,
+                        base::BindOnce([](std::string pin) {}));
     } else if (name == "get_pin_fallback") {
       model->set_internal_uv_locked();
-      model->CollectPIN(6, 8, base::BindOnce([](std::string pin) {}));
+      model->CollectPIN(CollectPINMode::kChallenge, 6, 8,
+                        base::BindOnce([](std::string pin) {}));
     } else if (name == "inline_bio_enrollment") {
       model->StartInlineBioEnrollment(base::DoNothing());
       timer_.Start(
@@ -115,6 +122,9 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
       model->OnRetryUserVerification(2);
     } else if (name == "retry_uv_one_try_remaining") {
       model->OnRetryUserVerification(1);
+    } else if (name == "force_pin_change") {
+      model->CollectPIN(CollectPINMode::kChange, 6, 0,
+                        base::BindOnce([](std::string pin) {}));
     } else if (name == "second_tap") {
       model->SetCurrentStep(
           AuthenticatorRequestDialogModel::Step::kClientPinTapAgain);
@@ -182,6 +192,10 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
 //   --gtest_filter=BrowserUiTest.Invoke --test-launcher-interactive \
 //   --ui=AuthenticatorDialogTest.InvokeUi_default
 IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_default) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_force_pin_change) {
   ShowAndVerifyUi();
 }
 

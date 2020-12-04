@@ -47,10 +47,9 @@ class MockObserver : public FidoRequestHandlerBase::Observer {
                void(const FidoAuthenticator& authenticator));
   MOCK_METHOD1(FidoAuthenticatorRemoved, void(base::StringPiece device_id));
   MOCK_CONST_METHOD0(SupportsPIN, bool());
-  MOCK_METHOD3(CollectPIN,
-               void(uint32_t,
-                    base::Optional<int>,
-                    base::OnceCallback<void(std::string)>));
+  MOCK_METHOD2(CollectPIN,
+               void(CollectPINOptions, base::OnceCallback<void(std::string)>));
+  MOCK_METHOD0(OnForcePINChange, void());
   MOCK_METHOD1(StartBioEnrollment, void(base::OnceClosure));
   MOCK_METHOD1(OnSampleCollected, void(int));
   MOCK_METHOD0(FinishCollectToken, void());

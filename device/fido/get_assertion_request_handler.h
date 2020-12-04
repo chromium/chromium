@@ -93,6 +93,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
   void AuthenticatorSelectedForPINUVAuthToken(
       FidoAuthenticator* authenticator) override;
   void CollectNewPIN(uint32_t min_pin_length,
+                     bool force_pin_change,
                      ProvidePINCallback provide_pin_cb) override;
   void CollectExistingPIN(int attempts,
                           uint32_t min_pin_length,

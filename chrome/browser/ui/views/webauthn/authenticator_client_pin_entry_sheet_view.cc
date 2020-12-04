@@ -24,9 +24,8 @@ AuthenticatorClientPinEntrySheetView::pin_entry_sheet_model() {
 std::unique_ptr<views::View>
 AuthenticatorClientPinEntrySheetView::BuildStepSpecificContent() {
   return std::make_unique<AuthenticatorClientPinEntryView>(
-      this, pin_entry_sheet_model()->mode() ==
-                AuthenticatorClientPinEntrySheetModel::Mode::
-                    kPinSetup /* show_confirmation_text_field */);
+      this, /*show_confirmation_text_field=*/pin_entry_sheet_model()->mode() !=
+                AuthenticatorClientPinEntrySheetModel::Mode::kPinEntry);
 }
 
 void AuthenticatorClientPinEntrySheetView::OnPincodeChanged(

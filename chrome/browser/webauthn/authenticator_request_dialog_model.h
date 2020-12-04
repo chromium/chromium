@@ -82,6 +82,7 @@ class AuthenticatorRequestDialogModel {
     kCableV2QRCode,
 
     // Authenticator Client PIN.
+    kClientPinChange,
     kClientPinEntry,
     kClientPinSetup,
     kClientPinTapAgain,
@@ -365,9 +366,11 @@ class AuthenticatorRequestDialogModel {
 
   const std::string& cable_qr_string() const { return *cable_qr_string_; }
 
-  void CollectPIN(uint32_t min_pin_length,
-                  base::Optional<int> attempts,
-                  base::OnceCallback<void(std::string)> provide_pin_cb);
+  void CollectPIN(
+      device::FidoRequestHandlerBase::Observer::CollectPINOptions::Mode mode,
+      uint32_t min_pin_length,
+      int attempts,
+      base::OnceCallback<void(std::string)> provide_pin_cb);
   bool has_attempted_pin_entry() const {
     return ephemeral_state_.has_attempted_pin_entry_;
   }

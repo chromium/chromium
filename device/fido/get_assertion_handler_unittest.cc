@@ -761,8 +761,7 @@ class TestObserver : public FidoRequestHandlerBase::Observer {
   void FidoAuthenticatorRemoved(base::StringPiece device_id) override {}
   bool SupportsPIN() const override { return false; }
   void CollectPIN(
-      uint32_t min_pin_length,
-      base::Optional<int> attempts,
+      CollectPINOptions options,
       base::OnceCallback<void(std::string)> provide_pin_cb) override {
     NOTREACHED();
   }

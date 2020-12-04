@@ -18,6 +18,9 @@
 
 namespace {
 
+using CollectPINMode =
+    device::FidoRequestHandlerBase::Observer::CollectPINOptions::Mode;
+
 // Attempts to auto-select the most likely transport that will be used to
 // service this request, or returns base::nullopt if unsure.
 base::Optional<device::FidoTransportProtocol> SelectMostLikelyTransport(
@@ -536,17 +539,24 @@ void AuthenticatorRequestDialogModel::SetSelectedAuthenticatorForTesting(
 }
 
 void AuthenticatorRequestDialogModel::CollectPIN(
+    CollectPINMode mode,
     uint32_t min_pin_length,
-    base::Optional<int> attempts,
+    int attempts,
     base::OnceCallback<void(std::string)> provide_pin_cb) {
   pin_callback_ = std::move(provide_pin_cb);
   min_pin_length_ = min_pin_length;
   Step new_step;
-  if (attempts) {
-    pin_attempts_ = attempts;
-    new_step = Step::kClientPinEntry;
-  } else {
-    new_step = Step::kClientPinSetup;
+  switch (mode) {
+    case CollectPINMode::kChallenge:
+      pin_attempts_ = attempts;
+      new_step = Step::kClientPinEntry;
+      break;
+    case CollectPINMode::kChange:
+      new_step = Step::kClientPinChange;
+      break;
+    case CollectPINMode::kSet:
+      new_step = Step::kClientPinSetup;
+      break;
   }
   if (new_step != current_step_) {
     ephemeral_state_.has_attempted_pin_entry_ = false;

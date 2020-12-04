@@ -292,9 +292,9 @@ class AuthenticatorPaaskV2SheetModel : public AuthenticatorSheetModelBase {
 class AuthenticatorClientPinEntrySheetModel
     : public AuthenticatorSheetModelBase {
  public:
-  // Indicates whether the view should accommodate setting up a new PIN or
-  // entering an existing one.
-  enum class Mode { kPinEntry, kPinSetup };
+  // Indicates whether the view should accommodate changing an existing PIN,
+  // setting up a new PIN or entering an existing one.
+  enum class Mode { kPinChange, kPinEntry, kPinSetup };
   AuthenticatorClientPinEntrySheetModel(
       AuthenticatorRequestDialogModel* dialog_model,
       Mode mode);
@@ -425,7 +425,7 @@ class AuthenticatorGenericErrorSheetModel : public AuthenticatorSheetModelBase {
 class AuthenticatorResidentCredentialConfirmationSheetView
     : public AuthenticatorSheetModelBase {
  public:
-  AuthenticatorResidentCredentialConfirmationSheetView(
+  explicit AuthenticatorResidentCredentialConfirmationSheetView(
       AuthenticatorRequestDialogModel* dialog_model);
   ~AuthenticatorResidentCredentialConfirmationSheetView() override;
 

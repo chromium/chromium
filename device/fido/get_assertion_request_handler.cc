@@ -439,10 +439,14 @@ void GetAssertionRequestHandler::AuthenticatorSelectedForPINUVAuthToken(
 
 void GetAssertionRequestHandler::CollectNewPIN(
     uint32_t min_pin_length,
+    bool force_pin_change,
     ProvidePINCallback provide_pin_cb) {
   DCHECK_EQ(state_, State::kWaitingForToken);
-  observer()->CollectPIN(min_pin_length, /*attempts=*/base::nullopt,
-                         std::move(provide_pin_cb));
+  observer()->CollectPIN(
+      {.mode = force_pin_change ? Observer::CollectPINOptions::Mode::kChange
+                                : Observer::CollectPINOptions::Mode::kSet,
+       .min_pin_length = min_pin_length},
+      std::move(provide_pin_cb));
 }
 
 void GetAssertionRequestHandler::CollectExistingPIN(
@@ -450,7 +454,10 @@ void GetAssertionRequestHandler::CollectExistingPIN(
     uint32_t min_pin_length,
     ProvidePINCallback provide_pin_cb) {
   DCHECK_EQ(state_, State::kWaitingForToken);
-  observer()->CollectPIN(min_pin_length, attempts, std::move(provide_pin_cb));
+  observer()->CollectPIN({.mode = Observer::CollectPINOptions::Mode::kChallenge,
+                          .min_pin_length = min_pin_length,
+                          .attempts = attempts},
+                         std::move(provide_pin_cb));
 }
 
 void GetAssertionRequestHandler::PromptForInternalUVRetry(int attempts) {

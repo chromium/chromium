@@ -663,7 +663,7 @@ AuthenticatorClientPinEntrySheetModel::AuthenticatorClientPinEntrySheetModel(
     return;
   }
 
-  DCHECK(mode_ == AuthenticatorClientPinEntrySheetModel::Mode::kPinSetup);
+  DCHECK(mode_ == Mode::kPinSetup || mode_ == Mode::kPinChange);
   error_ = l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_SETUP_ERROR_FAILED);
 }
 
@@ -677,7 +677,7 @@ void AuthenticatorClientPinEntrySheetModel::SetPinCode(
 
 void AuthenticatorClientPinEntrySheetModel::SetPinConfirmation(
     base::string16 pin_confirmation) {
-  DCHECK(mode_ == AuthenticatorClientPinEntrySheetModel::Mode::kPinSetup);
+  DCHECK(mode_ == Mode::kPinSetup || mode_ == Mode::kPinChange);
   pin_confirmation_ = std::move(pin_confirmation);
 }
 
@@ -694,10 +694,14 @@ base::string16 AuthenticatorClientPinEntrySheetModel::GetStepTitle() const {
 
 base::string16 AuthenticatorClientPinEntrySheetModel::GetStepDescription()
     const {
-  return l10n_util::GetStringUTF16(
-      mode_ == AuthenticatorClientPinEntrySheetModel::Mode::kPinEntry
-          ? IDS_WEBAUTHN_PIN_ENTRY_DESCRIPTION
-          : IDS_WEBAUTHN_PIN_SETUP_DESCRIPTION);
+  switch (mode_) {
+    case Mode::kPinChange:
+      return l10n_util::GetStringUTF16(IDS_WEBAUTHN_FORCE_PIN_CHANGE);
+    case Mode::kPinEntry:
+      return l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_ENTRY_DESCRIPTION);
+    case Mode::kPinSetup:
+      return l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_SETUP_DESCRIPTION);
+  }
 }
 
 base::string16 AuthenticatorClientPinEntrySheetModel::GetError() const {
@@ -723,7 +727,7 @@ static bool IsValidUTF16(const base::string16& str16) {
 }
 
 void AuthenticatorClientPinEntrySheetModel::OnAccept() {
-  if (mode_ == AuthenticatorClientPinEntrySheetModel::Mode::kPinSetup) {
+  if (mode_ == Mode::kPinSetup || mode_ == Mode::kPinChange) {
     // Validate a new PIN.
     base::Optional<base::string16> error;
     if (!pin_code_.empty() && !IsValidUTF16(pin_code_)) {

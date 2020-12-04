@@ -22,6 +22,7 @@
 #include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
 #include "build/build_config.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_transport_protocol.h"
 
@@ -100,6 +101,29 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
 
   class COMPONENT_EXPORT(DEVICE_FIDO) Observer {
    public:
+    struct COMPONENT_EXPORT(DEVICE_FIDO) CollectPINOptions {
+      enum class Mode {
+        // Indicates a new PIN is being set. |attempts| should be ignored.
+        kSet,
+
+        // The existing PIN must be changed before using this authenticator.
+        kChange,
+
+        // The existing PIN is being collected to prove user verification.
+        kChallenge
+      };
+
+      // Why this PIN is being collected.
+      Mode mode;
+
+      // The minimum PIN length the authenticator will accept for the PIN.
+      uint32_t min_pin_length = device::kMinPinLength;
+
+      // The number of attempts remaining before a hard lock. Should be ignored
+      // unless |mode| is kChallenge.
+      int attempts = 0;
+    };
+
     virtual ~Observer();
 
     // This method will not be invoked until the observer is set.
@@ -133,8 +157,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // to set a PIN, or contains the number of PIN attempts remaining before a
     // hard lock.
     virtual void CollectPIN(
-        uint32_t min_pin_length,
-        base::Optional<int> attempts,
+        CollectPINOptions options,
         base::OnceCallback<void(std::string)> provide_pin_cb) = 0;
 
     virtual void FinishCollectToken() = 0;
