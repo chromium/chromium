@@ -30,7 +30,7 @@ class SODAInstaller {
   };
 
   SODAInstaller();
-  ~SODAInstaller();
+  virtual ~SODAInstaller();
   SODAInstaller(const SODAInstaller&) = delete;
   SODAInstaller& operator=(const SODAInstaller&) = delete;
 

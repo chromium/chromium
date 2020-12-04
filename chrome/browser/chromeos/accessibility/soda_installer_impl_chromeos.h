@@ -17,7 +17,7 @@ namespace speech {
 class SODAInstallerImplChromeOS : public SODAInstaller {
  public:
   SODAInstallerImplChromeOS();
-  ~SODAInstallerImplChromeOS();
+  ~SODAInstallerImplChromeOS() override;
   SODAInstallerImplChromeOS(const SODAInstallerImplChromeOS&) = delete;
   SODAInstallerImplChromeOS& operator=(const SODAInstallerImplChromeOS&) =
       delete;
