@@ -53,7 +53,7 @@ class CORE_EXPORT ProfilerGroup
 
   // Cancels a profiler, discarding its associated trace.
   void CancelProfiler(Profiler*);
-  // Asynchronously cancels a profiler. Invoked on Profiler descrution.
+  // Asynchronously cancels a profiler. Invoked on Profiler destruction.
   void CancelProfilerAsync(ScriptState*, Profiler*);
   // Internal implementation of cancel.
   void CancelProfilerImpl(String profiler_id);

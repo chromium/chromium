@@ -90,34 +90,50 @@ Profiler* ProfilerGroup::CreateProfiler(ScriptState* script_state,
                                       : v8::CpuProfilingOptions::kNoSampleLimit,
                                   static_cast<int>(sample_interval_us));
 
-  cpu_profiler_->StartProfiling(V8String(isolate_, profiler_id), options);
+  v8::CpuProfilingStatus status =
+      cpu_profiler_->StartProfiling(V8String(isolate_, profiler_id), options);
 
-  // Limit non-crossorigin script frames to the origin that started the
-  // profiler.
-  auto* execution_context = ExecutionContext::From(script_state);
-  scoped_refptr<const SecurityOrigin> source_origin(
-      execution_context->GetSecurityOrigin());
+  switch (status) {
+    case v8::CpuProfilingStatus::kErrorTooManyProfilers: {
+      exception_state.ThrowTypeError(
+          "Reached maximum concurrent amount of profilers");
+      return nullptr;
+    }
+    case v8::CpuProfilingStatus::kAlreadyStarted: {
+      // Since we increment the profiler id for every invocation of
+      // StartProfiling, we do not expect to hit kAlreadyStarted status
+      DCHECK(false);
+      return nullptr;
+    }
+    case v8::CpuProfilingStatus::kStarted: {
+      // Limit non-crossorigin script frames to the origin that started the
+      // profiler.
+      auto* execution_context = ExecutionContext::From(script_state);
+      scoped_refptr<const SecurityOrigin> source_origin(
+          execution_context->GetSecurityOrigin());
 
-  // The V8 CPU profiler ticks in multiples of the base sampling interval. This
-  // effectively means that we gather samples at the multiple of the base
-  // sampling interval that's greater than or equal to the requested interval.
-  int effective_sample_interval_ms =
-      static_cast<int>(sample_interval.InMilliseconds());
-  if (effective_sample_interval_ms % kBaseSampleIntervalMs != 0 ||
-      effective_sample_interval_ms == 0) {
-    effective_sample_interval_ms +=
-        (kBaseSampleIntervalMs -
-         effective_sample_interval_ms % kBaseSampleIntervalMs);
+      // The V8 CPU profiler ticks in multiples of the base sampling interval.
+      // This effectively means that we gather samples at the multiple of the
+      // base sampling interval that's greater than or equal to the requested
+      // interval.
+      int effective_sample_interval_ms =
+          static_cast<int>(sample_interval.InMilliseconds());
+      if (effective_sample_interval_ms % kBaseSampleIntervalMs != 0 ||
+          effective_sample_interval_ms == 0) {
+        effective_sample_interval_ms +=
+            (kBaseSampleIntervalMs -
+             effective_sample_interval_ms % kBaseSampleIntervalMs);
+      }
+
+      auto* profiler = MakeGarbageCollected<Profiler>(
+          this, script_state, profiler_id, effective_sample_interval_ms,
+          source_origin, time_origin);
+      profilers_.insert(profiler);
+
+      num_active_profilers_++;
+      return profiler;
+    }
   }
-
-  auto* profiler = MakeGarbageCollected<Profiler>(
-      this, script_state, profiler_id, effective_sample_interval_ms,
-      source_origin, time_origin);
-  profilers_.insert(profiler);
-
-  num_active_profilers_++;
-
-  return profiler;
 }
 
 ProfilerGroup::~ProfilerGroup() {

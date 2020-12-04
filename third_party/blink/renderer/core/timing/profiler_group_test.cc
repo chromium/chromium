@@ -16,24 +16,9 @@ namespace blink {
 namespace {
 
 static constexpr int kLargeProfilerCount = 128;
+static constexpr int kMaxConcurrentProfilerCount = 100;
 
 }  // namespace
-
-// Tests that a leaked profiler doesn't crash the isolate on heap teardown.
-TEST(ProfilerGroupTest, LeakProfiler) {
-  V8TestingScope scope;
-
-  ProfilerGroup* profiler_group = ProfilerGroup::From(scope.GetIsolate());
-
-  ProfilerInitOptions* init_options = ProfilerInitOptions::Create();
-  init_options->setSampleInterval(0);
-  init_options->setMaxBufferSize(0);
-  Profiler* profiler = profiler_group->CreateProfiler(
-      scope.GetScriptState(), *init_options, base::TimeTicks(),
-      scope.GetExceptionState());
-
-  EXPECT_FALSE(profiler->stopped());
-}
 
 TEST(ProfilerGroupTest, StopProfiler) {
   V8TestingScope scope;
@@ -83,6 +68,9 @@ TEST(ProfilerGroupTest, CreateProfiler) {
 
   EXPECT_FALSE(profiler->stopped());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+  // clean up
+  profiler->stop(scope.GetScriptState());
 }
 
 TEST(ProfilerGroupTest, ClampedSamplingIntervalZero) {
@@ -102,6 +90,9 @@ TEST(ProfilerGroupTest, ClampedSamplingIntervalZero) {
   // interval.
   EXPECT_EQ(profiler->sampleInterval(),
             ProfilerGroup::GetBaseSampleInterval().InMilliseconds());
+
+  // clean up
+  profiler->stop(scope.GetScriptState());
 }
 
 TEST(ProfilerGroupTest, ClampedSamplingIntervalNext) {
@@ -123,6 +114,42 @@ TEST(ProfilerGroupTest, ClampedSamplingIntervalNext) {
   // interval.
   EXPECT_EQ(profiler->sampleInterval(),
             (ProfilerGroup::GetBaseSampleInterval() * 2).InMilliseconds());
+
+  // clean up
+  profiler->stop(scope.GetScriptState());
+}
+
+TEST(ProfilerGroupTest, V8ProfileLimitThrowsExceptionWhenMaxConcurrentReached) {
+  V8TestingScope scope;
+
+  HeapVector<Member<Profiler>> profilers;
+  ProfilerGroup* profiler_group = ProfilerGroup::From(scope.GetIsolate());
+  ProfilerInitOptions* init_options = ProfilerInitOptions::Create();
+
+  for (auto i = 0; i < kMaxConcurrentProfilerCount; i++) {
+    init_options->setSampleInterval(i);
+    profilers.push_back(profiler_group->CreateProfiler(
+        scope.GetScriptState(), *init_options, base::TimeTicks(),
+        scope.GetExceptionState()));
+    EXPECT_FALSE(scope.GetExceptionState().HadException());
+  }
+
+  // check kErrorTooManyProfilers
+  ProfilerGroup* extra_profiler_group = ProfilerGroup::From(scope.GetIsolate());
+  ProfilerInitOptions* extra_init_options = ProfilerInitOptions::Create();
+  extra_init_options->setSampleInterval(100);
+  for (auto i = kMaxConcurrentProfilerCount; i < kLargeProfilerCount; i++) {
+    extra_profiler_group->CreateProfiler(scope.GetScriptState(),
+                                         *extra_init_options, base::TimeTicks(),
+                                         scope.GetExceptionState());
+    EXPECT_TRUE(scope.GetExceptionState().HadException());
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "Reached maximum concurrent amount of profilers");
+  }
+
+  for (auto profiler : profilers) {
+    profiler->stop(scope.GetScriptState());
+  }
 }
 
 TEST(ProfilerGroupTest, NegativeSamplingInterval) {
@@ -150,30 +177,6 @@ TEST(ProfilerGroupTest, OverflowSamplingInterval) {
                                  base::TimeTicks(), scope.GetExceptionState());
 
   EXPECT_TRUE(scope.GetExceptionState().HadException());
-}
-
-// Tests behaviour when exceeding the maximum number of concurrent profiles
-// supported by the V8 profiling API (https://crbug.com/1052341).
-TEST(ProfilerGroupTest, V8ProfileLimit) {
-  V8TestingScope scope;
-
-  ProfilerGroup* profiler_group = ProfilerGroup::From(scope.GetIsolate());
-
-  ProfilerInitOptions* init_options = ProfilerInitOptions::Create();
-  init_options->setSampleInterval(0);
-
-  HeapVector<Member<Profiler>> profilers;
-  for (auto i = 0; i < kLargeProfilerCount; i++) {
-    // TODO(acomminos): The V8 public API should likely be changed to expose
-    // exceeding the profile limit during creation. This would enable
-    // instantiation of profiles to cause a promise rejection instead.
-    profilers.push_back(profiler_group->CreateProfiler(
-        scope.GetScriptState(), *init_options, base::TimeTicks(),
-        scope.GetExceptionState()));
-  }
-  for (auto profiler : profilers) {
-    profiler->stop(scope.GetScriptState());
-  }
 }
 
 TEST(ProfilerGroupTest, Bug1119865) {
@@ -206,6 +209,27 @@ TEST(ProfilerGroupTest, Bug1119865) {
 
   auto function = ExpectNoCallFunction::Create(scope.GetScriptState());
   profiler->stop(scope.GetScriptState()).Then(function);
+}
+
+/*
+ *  LEAK TESTS - SHOULD RUN LAST
+ */
+
+// Tests that a leaked profiler doesn't crash the isolate on heap teardown.
+// These should run last
+TEST(ProfilerGroupTest, LeakProfiler) {
+  V8TestingScope scope;
+
+  ProfilerGroup* profiler_group = ProfilerGroup::From(scope.GetIsolate());
+
+  ProfilerInitOptions* init_options = ProfilerInitOptions::Create();
+  init_options->setSampleInterval(0);
+  init_options->setMaxBufferSize(0);
+  Profiler* profiler = profiler_group->CreateProfiler(
+      scope.GetScriptState(), *init_options, base::TimeTicks(),
+      scope.GetExceptionState());
+
+  EXPECT_FALSE(profiler->stopped());
 }
 
 // Tests that a leaked profiler doesn't crash when disposed alongside its
