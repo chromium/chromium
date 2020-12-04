@@ -1,9 +1,7 @@
 monorail {
-  project: "chromium"
   component: "Blink>Infra>Ecosystem"
 }
 team_email: "ecosystem-infra@chromium.org"
-os: LINUX
 wpt {
   notify: YES
 }
