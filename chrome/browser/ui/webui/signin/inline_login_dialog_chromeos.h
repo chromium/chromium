@@ -103,6 +103,7 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
 
   // ui::WebDialogDelegate overrides
   void GetDialogSize(gfx::Size* size) const override;
+  ui::ModalType GetDialogModalType() const override;
   std::string GetDialogArgs() const override;
   bool ShouldShowDialogTitle() const override;
   void OnDialogShown(content::WebUI* webui) override;

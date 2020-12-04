@@ -13,7 +13,8 @@
     width: 100%;
   }
 
-  .container {
+  .container,
+  #addAccount.active {
     align-items: center;
     display: flex;
     flex-grow: 1;
@@ -21,8 +22,14 @@
   }
 
 <if expr="chromeos">
-  .container {
+  /* Content of the webview already has 64px border, add negative margin to make
+   * distance to the top 64px. */
+  #addAccount {
     margin-top: calc(-1 * var(--dialog-top-border-size));
+  }
+  /* Make distance to the top 64px. */
+  #welcome {
+    margin-top: calc(64px - var(--dialog-top-border-size));
   }
 </if>
 
@@ -36,7 +43,8 @@
     padding: 0 32px 32px;
   }
 
-  .action-buttons {
+  .action-buttons,
+  .next-button {
     margin-inline-start: auto;
   }
 
@@ -53,24 +61,48 @@
 </style>
 
 <div class="container">
-  <webview id="signinFrame" name="signin-frame" class="signin-frame"
-      hidden$="[[loading_]]" allowscaling></webview>
-  <paper-spinner-lite active="[[loading_]]">
-  </paper-spinner-lite>
+  <cr-view-manager id="viewManager">
+    <!-- Show welcome screen on Chrome OS to clarify that account will be
+         available in ARC. -->
+    <if expr="chromeos">
+      <div id="[[View.welcome]]" slot="view">
+        <welcome-page-app on-opened-new-window="closeDialog_">
+        </welcome-page-app>
+      </div>
+    </if>
+
+    <div id="[[View.addAccount]]" slot="view">
+      <paper-spinner-lite active="[[loading_]]">
+      </paper-spinner-lite>
+
+      <webview id="signinFrame" name="signin-frame" class="signin-frame"
+        hidden$="[[loading_]]" allowscaling>
+      </webview>
+    </div>
+  </cr-view-manager>
 </div>
 
 <if expr="chromeos">
   <div class="buttons" hidden$="[[loading_]]">
     <cr-button class="back-button"
         aria-label="$i18n{accessibleBackButtonLabel}"
-        on-click="handleGoBack_">
+        on-click="handleGoBack_"
+        hidden$="[[!shouldShowBackButton_(currentView_)]]">
       <iron-icon icon="[[getBackButtonIcon_()]]"></iron-icon>
       $i18n{accessibleBackButtonLabel}
     </cr-button>
 
-    <div class="action-buttons" hidden$="[[!enableGaiaActionButtons_]]">
+    <div class="action-buttons"
+        hidden$="[[!shouldShowGaiaButtons_(currentView_)]]">
       <gaia-action-buttons authenticator="[[authExtHost_]]">
       </gaia-action-buttons>
     </div>
+
+    <cr-button class="next-button action-button"
+        aria-label="$i18n{ok}"
+        on-tap="onOkButtonClick_"
+        hidden$="[[!shouldShowOkButton_(currentView_)]]">
+      $i18n{ok}
+    </cr-button>
   </div>
 </if>

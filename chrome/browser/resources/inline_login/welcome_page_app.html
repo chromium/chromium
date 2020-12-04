@@ -1,0 +1,30 @@
+<style include="shared-css">
+  .image-container {
+    margin-top: 40px;
+  }
+  .welcome-image {
+    width: 338px;
+  }
+  .google-full-logo {
+    width: 74px;
+  }
+  .secondary {
+    color: var(--cr-secondary-text-color);
+  }
+</style>
+
+<div class="main-container">
+  <if expr="_google_chrome">
+    <img class="google-full-logo"
+            src="chrome://theme/IDR_LOGO_GOOGLE_COLOR_90" alt="">
+  </if>
+  <h1>[[getWelcomeTitle_()]]</h1>
+  <p class="secondary" inner-h-t-m-l="[[getWelcomeBody_()]]"></p>
+  <if expr="_google_chrome">
+    <div class="image-container">
+      <img class="welcome-image" alt=""
+          srcset="account_manager_welcome_1x.png 1x,
+                  account_manager_welcome_2x.png 2x">
+    </div>
+  </if>
+</div>

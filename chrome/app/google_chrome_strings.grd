@@ -1105,6 +1105,14 @@ Google Chrome is unable to recover your settings.
         </message>
       </if>
 
+      <!-- Chrome OS in-session 'Add account' flow -->
+      <if expr="chromeos">
+        <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY" desc="Text body for the Welcome screen in Chrome OS 'Add account' dialog.">
+          You can manage this and other Google Accounts you've added for <ph name="USER_NAME">$1<ex>John</ex></ph> from one place in <ph name="LINK_BEGIN">&lt;a id="osSettingsLink" href="$2<ex>https://google.com/</ex>"&gt;</ph>Settings<ph name="LINK_END">&lt;/a&gt;</ph>.
+          Permissions you have granted to websites in the Chrome browser and apps from Google Play may apply to all accounts.
+        </message>
+      </if>
+
       <!-- Native notifications for Windows 10 -->
       <if expr="is_win">
         <message name="IDS_WIN_NOTIFICATION_SETTINGS_CONTEXT_MENU_ITEM_NAME" desc="The name of the button in Windows Notification Center which leads to Chrome notification settings.">

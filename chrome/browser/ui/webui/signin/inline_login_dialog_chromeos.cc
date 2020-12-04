@@ -22,6 +22,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -192,6 +193,12 @@ void InlineLoginDialogChromeOS::GetDialogSize(gfx::Size* size) const {
       display::Screen::GetScreen()->GetDisplayNearestWindow(dialog_window());
   size->SetSize(std::min(kSigninDialogWidth, display.work_area().width()),
                 std::min(kSigninDialogHeight, display.work_area().height()));
+}
+
+ui::ModalType InlineLoginDialogChromeOS::GetDialogModalType() const {
+  return chromeos::features::IsAccountManagementFlowsV2Enabled()
+             ? ui::MODAL_TYPE_SYSTEM
+             : ui::MODAL_TYPE_NONE;
 }
 
 std::string InlineLoginDialogChromeOS::GetDialogArgs() const {
