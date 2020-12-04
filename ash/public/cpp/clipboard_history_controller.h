@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/observer_list_types.h"
 #include "ui/base/ui_base_types.h"
 
 namespace gfx {
@@ -26,8 +27,19 @@ class ScopedClipboardHistoryPause;
 // clipboard history menu.
 class ASH_PUBLIC_EXPORT ClipboardHistoryController {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the clipboard history menu is shown.
+    virtual void OnClipboardHistoryMenuShown() {}
+    // Called when the user pastes from the clipboard history menu.
+    virtual void OnClipboardHistoryPasted() {}
+  };
+
   // Returns the singleton instance.
   static ClipboardHistoryController* Get();
+
+  virtual void AddObserver(Observer* observer) const = 0;
+  virtual void RemoveObserver(Observer* observer) const = 0;
 
   // Returns whether the clipboard history menu is able to show.
   virtual bool CanShowMenu() const = 0;

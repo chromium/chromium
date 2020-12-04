@@ -202,11 +202,13 @@ ClipboardHistoryControllerImpl::~ClipboardHistoryControllerImpl() {
   clipboard_history_->RemoveObserver(this);
 }
 
-void ClipboardHistoryControllerImpl::AddObserver(Observer* observer) const {
+void ClipboardHistoryControllerImpl::AddObserver(
+    ClipboardHistoryController::Observer* observer) const {
   observers_.AddObserver(observer);
 }
 
-void ClipboardHistoryControllerImpl::RemoveObserver(Observer* observer) const {
+void ClipboardHistoryControllerImpl::RemoveObserver(
+    ClipboardHistoryController::Observer* observer) const {
   observers_.RemoveObserver(observer);
 }
 

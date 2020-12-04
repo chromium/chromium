@@ -37,14 +37,6 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
     : public ClipboardHistoryController,
       public ClipboardHistory::Observer {
  public:
-  class Observer : public base::CheckedObserver {
-   public:
-    // Called when the clipboard history menu is shown.
-    virtual void OnClipboardHistoryMenuShown() = 0;
-    // Called when the user pastes from the clipboard history menu.
-    virtual void OnClipboardHistoryPasted() = 0;
-  };
-
   ClipboardHistoryControllerImpl();
   ClipboardHistoryControllerImpl(const ClipboardHistoryControllerImpl&) =
       delete;
@@ -52,8 +44,10 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
       const ClipboardHistoryControllerImpl&) = delete;
   ~ClipboardHistoryControllerImpl() override;
 
-  void AddObserver(Observer* observer) const;
-  void RemoveObserver(Observer* observer) const;
+  void AddObserver(
+      ClipboardHistoryController::Observer* observer) const override;
+  void RemoveObserver(
+      ClipboardHistoryController::Observer* observer) const override;
 
   // Returns if the contextual menu is currently showing.
   bool IsMenuShowing() const;
@@ -123,7 +117,7 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
 
   // Mutable to allow adding/removing from |observers_| through a const
   // ClipboardHistoryControllerImpl.
-  mutable base::ObserverList<Observer> observers_;
+  mutable base::ObserverList<ClipboardHistoryController::Observer> observers_;
 
   // The menu being shown.
   std::unique_ptr<ClipboardHistoryMenuModelAdapter> context_menu_;

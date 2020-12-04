@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
+#include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
@@ -36,7 +37,7 @@ class ASH_EXPORT ClipboardNudgeController
     : public ClipboardHistory::Observer,
       public ui::ClipboardObserver,
       public SessionObserver,
-      public ClipboardHistoryControllerImpl::Observer {
+      public ClipboardHistoryController::Observer {
  public:
   ClipboardNudgeController(
       ClipboardHistory* clipboard_history,
