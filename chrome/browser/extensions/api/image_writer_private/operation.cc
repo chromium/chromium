@@ -115,7 +115,7 @@ void Operation::Unzip(const base::Closure& continuation) {
   SetStage(image_writer_api::STAGE_UNZIP);
 
   auto unzip_helper = base::MakeRefCounted<UnzipHelper>(
-      task_runner(), base::Bind(&Operation::OnUnzipOpenComplete, this),
+      base::Bind(&Operation::OnUnzipOpenComplete, this),
       base::Bind(&Operation::CompleteAndContinue, this, continuation),
       base::Bind(&Operation::OnUnzipFailure, this),
       base::Bind(&Operation::OnUnzipProgress, this));

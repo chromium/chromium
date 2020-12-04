@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
@@ -18,13 +17,11 @@ namespace extensions {
 namespace image_writer {
 
 UnzipHelper::UnzipHelper(
-    scoped_refptr<base::SequencedTaskRunner> owner_task_runner,
     const base::Callback<void(const base::FilePath&)>& open_callback,
     const base::Closure& complete_callback,
     const base::Callback<void(const std::string&)>& failure_callback,
     const base::Callback<void(int64_t, int64_t)>& progress_callback)
-    : owner_task_runner_(owner_task_runner),
-      open_callback_(open_callback),
+    : open_callback_(open_callback),
       complete_callback_(complete_callback),
       failure_callback_(failure_callback),
       progress_callback_(progress_callback),
@@ -34,15 +31,6 @@ UnzipHelper::~UnzipHelper() {}
 
 void UnzipHelper::Unzip(const base::FilePath& image_path,
                         const base::FilePath& temp_dir_path) {
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-  task_runner->PostTask(FROM_HERE, base::BindOnce(&UnzipHelper::UnzipImpl, this,
-                                                  image_path, temp_dir_path));
-}
-
-void UnzipHelper::UnzipImpl(const base::FilePath& image_path,
-                            const base::FilePath& temp_dir_path) {
   if (!zip_reader_->Open(image_path) || !zip_reader_->AdvanceToNextEntry() ||
       !zip_reader_->OpenCurrentEntryInZip()) {
     OnError(error::kUnzipGenericError);
@@ -74,22 +62,19 @@ void UnzipHelper::UnzipImpl(const base::FilePath& image_path,
 }
 
 void UnzipHelper::OnError(const std::string& error) {
-  owner_task_runner_->PostTask(FROM_HERE,
-                               base::BindOnce(failure_callback_, error));
+  failure_callback_.Run(error);
 }
 
 void UnzipHelper::OnOpenSuccess(const base::FilePath& image_path) {
-  owner_task_runner_->PostTask(FROM_HERE,
-                               base::BindOnce(open_callback_, image_path));
+  open_callback_.Run(image_path);
 }
 
 void UnzipHelper::OnComplete() {
-  owner_task_runner_->PostTask(FROM_HERE, complete_callback_);
+  complete_callback_.Run();
 }
 
 void UnzipHelper::OnProgress(int64_t total_bytes, int64_t curr_bytes) {
-  owner_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(progress_callback_, total_bytes, curr_bytes));
+  progress_callback_.Run(total_bytes, curr_bytes);
 }
 
 }  // namespace image_writer
