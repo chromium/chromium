@@ -56,7 +56,8 @@ scoped_refptr<UsbDeviceAndroid> UsbDeviceAndroid::Create(
   // Reading the serial number requires device access permission when
   // targeting the Q SDK.
   base::string16 serial_number;
-  if (service->HasDevicePermission(wrapper) || !build_info->is_at_least_q()) {
+  if (service->HasDevicePermission(wrapper) ||
+      build_info->sdk_int() < base::android::SDK_VERSION_Q) {
     ScopedJavaLocalRef<jstring> serial_jstring =
         Java_ChromeUsbDevice_getSerialNumber(env, wrapper);
     if (!serial_jstring.is_null())
