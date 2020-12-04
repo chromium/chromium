@@ -169,8 +169,17 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
   }
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+#define MAYBE_FirstPaintAfterBackForwardCacheRestoreBackground \
+  DISABLED_FirstPaintAfterBackForwardCacheRestoreBackground
+#else
+#define MAYBE_FirstPaintAfterBackForwardCacheRestoreBackground \
+  FirstPaintAfterBackForwardCacheRestoreBackground
+#endif
+
 IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
-                       FirstPaintAfterBackForwardCacheRestoreBackground) {
+                       MAYBE_FirstPaintAfterBackForwardCacheRestoreBackground) {
   Start();
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -218,8 +227,18 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
-                       FirstInputDelayAfterBackForwardCacheRestoreBackground) {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+#define MAYBE_FirstInputDelayAfterBackForwardCacheRestoreBackground \
+  DISABLED_FirstInputDelayAfterBackForwardCacheRestoreBackground
+#else
+#define MAYBE_FirstInputDelayAfterBackForwardCacheRestoreBackground \
+  FirstInputDelayAfterBackForwardCacheRestoreBackground
+#endif
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCachePageLoadMetricsObserverBrowserTest,
+    MAYBE_FirstInputDelayAfterBackForwardCacheRestoreBackground) {
   Start();
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
