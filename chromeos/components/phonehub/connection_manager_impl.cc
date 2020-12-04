@@ -53,8 +53,7 @@ void ConnectionManagerImpl::MetricsRecorder::OnConnectionStatusChanged() {
     case ConnectionManager::Status::kDisconnected:
       if (prev_status == ConnectionManager::Status::kConnected) {
         UMA_HISTOGRAM_TIMES("PhoneHub.Connectivity.Duration", delta);
-      } else {
-        DCHECK(prev_status == ConnectionManager::Status::kConnecting);
+      } else if (prev_status == ConnectionManager::Status::kConnecting) {
         RecordConnectionSuccessMetric(false);
       }
       break;
