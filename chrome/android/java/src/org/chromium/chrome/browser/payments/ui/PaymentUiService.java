@@ -384,16 +384,6 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         updateAppModifiedTotals();
     }
 
-    /** Get the ShippingAddressesSection of the PaymentRequest UI. */
-    public SectionInformation getShippingAddressesSection() {
-        return mShippingAddressesSection;
-    }
-
-    /** Get the ContactSection of the PaymentRequest UI. */
-    public ContactDetailsSection getContactSection() {
-        return mContactSection;
-    }
-
     /** Set the AutofillPaymentAppCreator. */
     public void setAutofillPaymentAppCreator(AutofillPaymentAppCreator autofillPaymentAppCreator) {
         mAutofillPaymentAppCreator = autofillPaymentAppCreator;
@@ -416,14 +406,6 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     @Override
     public void getShoppingCart(Callback<ShoppingCart> callback) {
         mHandler.post(callback.bind(mUiShoppingCart));
-    }
-
-    /**
-     * The UI model for the shipping options. Includes the label and sublabel for each shipping
-     * option. Also keeps track of the selected shipping option. This data is passed to the UI.
-     */
-    public SectionInformation getUiShippingOptions() {
-        return mUiShippingOptions;
     }
 
     /** @return The selected contact, can be null. */

@@ -319,8 +319,7 @@ public class ChromePaymentRequestService
      * @return Whether the minimal UI should be shown.
      */
     private boolean isMinimalUiApplicable(boolean isUserGestureShow) {
-        if (!isUserGestureShow || mPaymentUiService.getPaymentApps().isEmpty()
-                || mPaymentUiService.getPaymentApps().size() != 1) {
+        if (!isUserGestureShow || mPaymentUiService.getPaymentApps().size() != 1) {
             return false;
         }
 
@@ -428,7 +427,7 @@ public class ChromePaymentRequestService
         if (mDidRecordShowEvent) {
             assert mSpec.getRawTotal() != null;
             mJourneyLogger.recordTransactionAmount(mSpec.getRawTotal().amount.currency,
-                    mSpec.getRawTotal().amount.value, false /*completed*/);
+                    mSpec.getRawTotal().amount.value, /*completed=*/false);
         }
 
         if (isFinishedQueryingPaymentApps && !mHasSkippedAppSelector) {
