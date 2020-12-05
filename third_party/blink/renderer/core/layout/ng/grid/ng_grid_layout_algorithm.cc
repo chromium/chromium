@@ -69,7 +69,59 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
 
 MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesInput& input) const {
-  return {MinMaxSizes(), /* depends_on_percentage_block_size */ true};
+  // TODO(janewman): Handle the cases typically done via:
+  // CalculateMinMaxSizesIgnoringChildren.
+
+  // Measure Items
+  Vector<GridItemData> grid_items;
+  ConstructAndAppendGridItems(&grid_items);
+
+  NGGridLayoutAlgorithmTrackCollection algorithm_column_track_collection;
+  NGGridLayoutAlgorithmTrackCollection algorithm_row_track_collection;
+  BuildAlgorithmTrackCollections(&grid_items,
+                                 &algorithm_column_track_collection,
+                                 &algorithm_row_track_collection);
+
+  // Cache set indices.
+  CacheItemSetIndices(algorithm_column_track_collection, &grid_items);
+
+  // Resolve inline size.
+  ComputeUsedTrackSizes(&algorithm_column_track_collection, &grid_items);
+
+  const LayoutUnit grid_gap = GridGap(kForColumns);
+
+  // Now the columns should have their used track size and growth limit, each
+  // adding up to match the min and max size of the grid respectively.
+  MinMaxSizes grid_min_max_sizes;
+
+  // If the track collection does not have any tracks, then we do not want to
+  // subtract the grid gap from the last track.
+  bool has_tracks = false;
+  for (auto column_set_iterator =
+           algorithm_column_track_collection.GetSetIterator();
+       !column_set_iterator.IsAtEnd(); column_set_iterator.MoveToNextSet()) {
+    const auto& set = column_set_iterator.CurrentSet();
+    has_tracks |= set.TrackCount();
+    LayoutUnit gap = set.TrackCount() * grid_gap;
+
+    // Aggregate min/max size contributions for this set of tracks.
+    LayoutUnit min_size_contribution = set.BaseSize() + gap;
+    grid_min_max_sizes.min_size += min_size_contribution;
+    grid_min_max_sizes.max_size += set.GrowthLimit() == kIndefiniteSize
+                                       ? min_size_contribution
+                                       : set.GrowthLimit() + gap;
+  }
+
+  // Subtract the gap from the end of the last track. Only do this if there is
+  // at least one track.
+  if (has_tracks)
+    grid_min_max_sizes -= grid_gap;
+
+  grid_min_max_sizes += BorderScrollbarPadding().InlineSum();
+
+  // TODO(janewman): determine what cases need depends_on_percentage_block_size
+  // to be set.
+  return {grid_min_max_sizes, /* depends_on_percentage_block_size */ true};
 }
 
 NGGridLayoutAlgorithm::GridItemData::GridItemData(const NGBlockNode node)
@@ -220,14 +272,13 @@ void NGGridLayoutAlgorithm::ConstructAndAppendGridItems(
     Vector<GridItemData>* grid_items,
     Vector<GridItemData>* out_of_flow_items) const {
   DCHECK(grid_items);
-  DCHECK(out_of_flow_items);
   NGGridChildIterator iterator(Node());
   for (NGBlockNode child = iterator.NextChild(); child;
        child = iterator.NextChild()) {
     GridItemData grid_item = MeasureGridItem(child);
     // Store out-of-flow items separately, as they do not contribute to track
     // sizing or auto placement.
-    if (child.IsOutOfFlowPositioned())
+    if (out_of_flow_items && child.IsOutOfFlowPositioned())
       out_of_flow_items->emplace_back(grid_item);
     else
       grid_items->emplace_back(grid_item);

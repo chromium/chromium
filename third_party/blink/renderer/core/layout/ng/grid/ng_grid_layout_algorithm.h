@@ -133,7 +133,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   void ConstructAndAppendGridItems(
       Vector<GridItemData>* grid_items,
-      Vector<GridItemData>* out_of_flow_items) const;
+      Vector<GridItemData>* out_of_flow_items = nullptr) const;
   GridItemData MeasureGridItem(const NGBlockNode node) const;
   NGConstraintSpace BuildSpaceForGridItem(const NGBlockNode node) const;
 
