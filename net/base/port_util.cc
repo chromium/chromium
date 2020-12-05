@@ -37,6 +37,7 @@ const int kRestrictedPorts[] = {
     42,    // name
     43,    // nicname
     53,    // domain
+    69,    // tftp
     77,    // priv-rjs
     79,    // finger
     87,    // ttylink
@@ -54,8 +55,10 @@ const int kRestrictedPorts[] = {
     119,   // nntp
     123,   // NTP
     135,   // loc-srv /epmap
+    137,   // netbios
     139,   // netbios
     143,   // imap2
+    161,   // snmp
     179,   // BGP
     389,   // ldap
     427,   // SLP (Also used by Apple Filing Protocol)
@@ -70,6 +73,7 @@ const int kRestrictedPorts[] = {
     532,   // netnews
     540,   // uucp
     548,   // AFP (Apple Filing Protocol)
+    554,   // rtsp
     556,   // remotefs
     563,   // nntp+ssl
     587,   // smtp (rfc6409)
@@ -77,12 +81,16 @@ const int kRestrictedPorts[] = {
     636,   // ldap+ssl
     993,   // ldap+ssl
     995,   // pop3+ssl
+    1719,  // h323gatestat
+    1720,  // h323hostcall
+    1723,  // pptp
     2049,  // nfs
     3659,  // apple-sasl / PasswordServer
     4045,  // lockd
     5060,  // sip
     5061,  // sips
     6000,  // X11
+    6566,  // sane-port
     6665,  // Alternate IRC [Apple addition]
     6666,  // Alternate IRC [Apple addition]
     6667,  // Standard IRC [Apple addition]
