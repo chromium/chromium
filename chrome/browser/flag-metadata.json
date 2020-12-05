@@ -1240,7 +1240,7 @@
   {
     "name": "enable-auto-select",
     "owners": ["croissant-eng"],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
   },
   {
     "name": "enable-autofill-account-wallet-storage",
