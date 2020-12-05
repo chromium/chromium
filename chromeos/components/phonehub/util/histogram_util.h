@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_COMPONENTS_PHONEHUB_UTIL_HISTOGRAM_UTIL_H_
 #define CHROMEOS_COMPONENTS_PHONEHUB_UTIL_HISTOGRAM_UTIL_H_
 
+#include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
+
 namespace chromeos {
 namespace phonehub {
 namespace util {
@@ -27,11 +29,23 @@ enum class TetherConnectionResult {
   kMaxValue = kSuccess,
 };
 
+// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PhoneHubMessageResult {
+  kRequestAttempted = 0,
+  kResponseReceived = 1,
+  kMaxValue = kResponseReceived,
+};
+
 // Logs a given opt-in |entry_point| for the PhoneHub feature.
 void LogFeatureOptInEntryPoint(OptInEntryPoint entry_point);
 
 // Logs a given |result| of a tethering connection attempt.
 void LogTetherConnectionResult(TetherConnectionResult result);
+
+// Logs a given |result| for a request message.
+void LogMessageResult(proto::MessageType message, PhoneHubMessageResult result);
 
 }  // namespace util
 }  // namespace phonehub

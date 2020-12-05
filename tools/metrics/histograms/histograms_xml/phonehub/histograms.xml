@@ -181,6 +181,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PhoneHub.TaskCompletion.{MessageType}.Result"
+    enum="PhoneHubMessageResult" expires_after="2021-12-03">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>phonehub-dev@google.com</owner>
+  <summary>
+    Tracks the result of each type of message request. Logged each time a
+    request message was sent and a response was received.
+  </summary>
+  <token key="MessageType">
+    <variant name="LocatePhone"/>
+    <variant name="NotificationDismissal"/>
+    <variant name="NotificationInlineReply"/>
+    <variant name="ShowNotificationAccessSetup"/>
+    <variant name="SilencePhone"/>
+    <variant name="UpdateBatteryMode"/>
+  </token>
+</histogram>
+
 <histogram name="PhoneHub.Usage.SentMessageTypeCount"
     enum="PhoneHubMessageType" expires_after="M98">
   <owner>khorimoto@chromium.org</owner>

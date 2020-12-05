@@ -58264,6 +58264,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Confirm Clicked"/>
 </enum>
 
+<enum name="PhoneHubMessageResult">
+  <int value="0" label="Request message was sent"/>
+  <int value="1" label="Response was sent back"/>
+</enum>
+
 <enum name="PhoneHubMessageType">
   <int value="0" label="Provide CrOS State"/>
   <int value="1" label="Phone status snapshot"/>

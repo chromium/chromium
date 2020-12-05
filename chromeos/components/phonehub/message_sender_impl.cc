@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/phonehub/connection_manager.h"
+#include "chromeos/components/phonehub/util/histogram_util.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -109,6 +110,8 @@ void MessageSenderImpl::SendMessage(proto::MessageType message_type,
   connection_manager_->SendMessage(SerializeMessage(message_type, request));
   UMA_HISTOGRAM_ENUMERATION("PhoneHub.Usage.SentMessageTypeCount", message_type,
                             proto::MessageType_MAX);
+  util::LogMessageResult(message_type,
+                         util::PhoneHubMessageResult::kRequestAttempted);
 }
 
 }  // namespace phonehub
