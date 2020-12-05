@@ -15,7 +15,7 @@ interface DeviceCursor {
   // Sets the cursor |bitmaps| on |window| at |point| with
   // |frame_delay_ms|.
   SetCursor(gfx.mojom.AcceleratedWidget window,
-            array<skia.mojom.BitmapWithArbitraryBpp> bitmaps,
+            array<skia.mojom.BitmapN32> bitmaps,
             gfx.mojom.Point point,
             int32 frame_delay_ms);
 
