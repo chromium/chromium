@@ -41,7 +41,6 @@ class MediaStringView : public views::View,
 
   // views::View:
   const char* GetClassName() const override;
-  void VisibilityChanged(View* starting_from, bool is_visible) override;
 
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
