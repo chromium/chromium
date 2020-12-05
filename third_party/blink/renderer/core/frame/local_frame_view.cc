@@ -341,24 +341,24 @@ void LocalFrameView::ForAllChildLocalFrameViews(const Function& function) {
   }
 }
 
-// Call function for each non-throttled frame view in pre-order. If this logic
-// is updated, consider updating |ForAllThrottledLocalFrameViews| too.
+// Call function for each non-throttled frame view in pre-order (by default) or
+// post-order. If this logic is updated, consider updating
+// |ForAllThrottledLocalFrameViews| too.
 template <typename Function>
-void LocalFrameView::ForAllNonThrottledLocalFrameViews(
-    const Function& function) {
+void LocalFrameView::ForAllNonThrottledLocalFrameViews(const Function& function,
+                                                       TraversalOrder order) {
   if (ShouldThrottleRendering())
     return;
 
-  function(*this);
+  if (order == kPreOrder)
+    function(*this);
 
-  for (Frame* child = frame_->Tree().FirstChild(); child;
-       child = child->Tree().NextSibling()) {
-    auto* child_local_frame = DynamicTo<LocalFrame>(child);
-    if (!child_local_frame)
-      continue;
-    if (LocalFrameView* child_view = child_local_frame->View())
-      child_view->ForAllNonThrottledLocalFrameViews(function);
-  }
+  ForAllChildLocalFrameViews([&function, order](LocalFrameView& child_view) {
+    child_view.ForAllNonThrottledLocalFrameViews(function, order);
+  });
+
+  if (order == kPostOrder)
+    function(*this);
 }
 
 // Call function for each throttled frame view in pre-order. If this logic is
@@ -368,14 +368,9 @@ void LocalFrameView::ForAllThrottledLocalFrameViews(const Function& function) {
   if (ShouldThrottleRendering())
     function(*this);
 
-  for (Frame* child = frame_->Tree().FirstChild(); child;
-       child = child->Tree().NextSibling()) {
-    auto* child_local_frame = DynamicTo<LocalFrame>(child);
-    if (!child_local_frame)
-      continue;
-    if (LocalFrameView* child_view = child_local_frame->View())
-      child_view->ForAllThrottledLocalFrameViews(function);
-  }
+  ForAllChildLocalFrameViews([&function](LocalFrameView& child_view) {
+    child_view.ForAllThrottledLocalFrameViews(function);
+  });
 }
 
 void LocalFrameView::ForAllThrottledLocalFrameViewsForTesting(
@@ -2976,10 +2971,34 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
   auto* layout_view = GetLayoutView();
   DCHECK(layout_view);
   paint_frame_count_++;
-  ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
-    frame_view.MarkFirstEligibleToPaint();
-    frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kInPaint);
-  });
+  ForAllNonThrottledLocalFrameViews(
+      [](LocalFrameView& frame_view) {
+        frame_view.MarkFirstEligibleToPaint();
+        frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kInPaint);
+        // Propagate child frame PaintLayer NeedsRepaint flag into the owner
+        // frame.
+        if (auto* frame_layout_view = frame_view.GetLayoutView()) {
+          if (auto* owner = frame_view.GetFrame().OwnerLayoutObject()) {
+            PaintLayer* frame_root_layer = frame_layout_view->Layer();
+            DCHECK(frame_root_layer);
+            DCHECK(owner->Layer());
+            // In pre-CompositeAfterPaint the root layer's SelfNeedsRepaint()
+            // means it's compositing state has changed, so propagate the flag
+            // to owner. Or propagate DescendantNeedsRepaint only if it is not
+            // composited. In CompositeAfterPaint, the whole condition can be
+            // changed to |if
+            // (frame_root_layer->SelfOrDescendantNeedsRepaint())|.
+            if (frame_root_layer->SelfNeedsRepaint() ||
+                (frame_root_layer->DescendantNeedsRepaint() &&
+                 frame_root_layer->GetCompositingState() !=
+                     kPaintsIntoOwnBacking))
+              owner->Layer()->SetDescendantNeedsRepaint();
+          }
+        }
+      },
+      // Use post-order to ensure correct flag propagation for nested frames.
+      kPostOrder);
+
   ForAllThrottledLocalFrameViews(
       [](LocalFrameView& frame_view) { frame_view.MarkIneligibleToPaint(); });
 

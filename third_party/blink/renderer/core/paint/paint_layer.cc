@@ -3589,6 +3589,13 @@ void PaintLayer::SetSelfNeedsRepaint() {
   static_cast<DisplayItemClient*>(this)->Invalidate();
 }
 
+void PaintLayer::SetDescendantNeedsRepaint() {
+  if (descendant_needs_repaint_)
+    return;
+  descendant_needs_repaint_ = true;
+  MarkCompositingContainerChainForNeedsRepaint();
+}
+
 void PaintLayer::MarkCompositingContainerChainForNeedsRepaint() {
   PaintLayer* layer = this;
   while (true) {
@@ -3597,13 +3604,13 @@ void PaintLayer::MarkCompositingContainerChainForNeedsRepaint() {
       // when compositingState() changes.
       DisableCompositingQueryAsserts disabler;
       if (layer->GetCompositingState() == kPaintsIntoOwnBacking)
-        return;
+        break;
       if (CompositedLayerMapping* grouped_mapping = layer->GroupedMapping()) {
         // TODO(wkorman): As we clean up the CompositedLayerMapping needsRepaint
         // logic to delegate to scrollbars, we may be able to remove the line
         // below as well.
         grouped_mapping->OwningLayer().SetNeedsRepaint();
-        return;
+        break;
       }
     }
 
@@ -3615,23 +3622,18 @@ void PaintLayer::MarkCompositingContainerChainForNeedsRepaint() {
     if (layer->Parent() && !layer->IsSelfPaintingLayer())
       layer->Parent()->SetNeedsRepaint();
 
+    // Don't mark across frame boundary here. LocalFrameView::PaintTree() will
+    // propagate child frame NeedsRepaint flag into the owning frame.
     PaintLayer* container = layer->CompositingContainer();
-    if (!container) {
-      auto* owner = layer->GetLayoutObject().GetFrame()->OwnerLayoutObject();
-      if (!owner)
-        break;
-      container = owner->EnclosingLayer();
-    }
-
-    // If the container already needs descendants repaint, break out of the
-    // loop. Also, if the layer doesn't need painting itself (which means we're
-    // propagating a bit from its children) and it blocks child painting via
-    // display lock, then stop propagating the dirty bit.
-    if (container->descendant_needs_repaint_ ||
-        (!layer->SelfNeedsRepaint() &&
-         layer->GetLayoutObject().ChildPaintBlockedByDisplayLock())) {
+    if (!container || container->descendant_needs_repaint_)
       break;
-    }
+
+    // If the layer doesn't need painting itself (which means we're propagating
+    // a bit from its children) and it blocks child painting via display lock,
+    // then stop propagating the dirty bit.
+    if (!layer->SelfNeedsRepaint() &&
+        layer->GetLayoutObject().ChildPaintBlockedByDisplayLock())
+      break;
 
     container->descendant_needs_repaint_ = true;
     layer = container;

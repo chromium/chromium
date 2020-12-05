@@ -1019,6 +1019,7 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
     return self_needs_repaint_ || descendant_needs_repaint_;
   }
   void SetNeedsRepaint();
+  void SetDescendantNeedsRepaint();
   void ClearNeedsRepaintRecursively();
 
   // These previousXXX() functions are for subsequence caching. They save the

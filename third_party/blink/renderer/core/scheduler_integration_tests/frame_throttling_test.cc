@@ -1247,8 +1247,14 @@ TEST_P(FrameThrottlingTest, ThrottleInnerCompositedLayer) {
   // And a throttled full lifecycle update.
   UpdateAllLifecyclePhases();
 
-  // The inner div is no longer composited.
-  EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "div").size());
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    // Leave the composited layer of the inner div as-is because we don't
+    // repaint it.
+    EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "div").size());
+  } else {
+    // The inner div is no longer composited.
+    EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "div").size());
+  }
 
   auto commands_throttled1 = CompositeFrame();
   EXPECT_LT(commands_throttled1.DrawCount(), full_draw_count);
@@ -1752,6 +1758,56 @@ TEST_P(FrameThrottlingTest, NestedFramesInRemoteFrameHiddenAndShown) {
   EXPECT_FALSE(frame_view->CanThrottleRendering());
   // The child frame's throttling status should be updated now.
   EXPECT_FALSE(child_view->CanThrottleRendering());
+}
+
+TEST_P(FrameThrottlingTest, LifecycleThrottledFrameNeedsRepaint) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest frame_resource("https://example.com/iframe.html", "text/html");
+
+  LoadURL("https://example.com/");
+  // The frame is initially throttled.
+  main_resource.Complete("<iframe id='frame' src='iframe.html'></iframe>");
+  frame_resource.Complete("<body style='background: red'></body>");
+
+  auto commands = CompositeFrame();
+  EXPECT_TRUE(commands.Contains(SimCanvas::kRect, "red"));
+
+  auto* frame_element =
+      To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
+  auto* frame_document = frame_element->contentDocument();
+  frame_document->View()->SetLifecycleUpdatesThrottledForTesting(true);
+  GetDocument().View()->ScheduleAnimation();
+  EXPECT_TRUE(frame_document->View()->ShouldThrottleRenderingForTest());
+
+  commands = CompositeFrame();
+  // The throttled frame is omitted for paint.
+  EXPECT_FALSE(commands.Contains(SimCanvas::kRect, "red"));
+
+  frame_document->body()->setAttribute(kStyleAttr, "background: green");
+  // Update life cycle update except paint without throttling, which will do
+  // paint invalidation.
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kTest);
+  EXPECT_TRUE(
+      frame_document->GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint());
+  // The NeedsRepaint flag doesn't propagte across frame boundary for now.
+  EXPECT_FALSE(
+      GetDocument().GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint());
+
+  commands = CompositeFrame();
+  EXPECT_FALSE(commands.Contains(SimCanvas::kRect, "green"));
+  EXPECT_TRUE(
+      frame_document->GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint());
+  EXPECT_FALSE(
+      GetDocument().GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint());
+
+  frame_document->View()->BeginLifecycleUpdates();
+  commands = CompositeFrame();
+  EXPECT_TRUE(commands.Contains(SimCanvas::kRect, "green"));
+  EXPECT_FALSE(
+      frame_document->GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint());
+  EXPECT_FALSE(
+      GetDocument().GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint());
 }
 
 }  // namespace blink
