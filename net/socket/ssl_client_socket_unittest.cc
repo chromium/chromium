@@ -5841,7 +5841,8 @@ TEST_F(SSLClientSocketZeroRTTTest, EarlyDataReasonZeroRTT) {
 
 // Check that we're correctly logging 0-rtt success when the handshake
 // concludes during a Read.
-TEST_F(SSLClientSocketZeroRTTTest, EarlyDataReasonReadServerHello) {
+// Disabled due to flake, see crbug.com/1057921 .
+TEST_F(SSLClientSocketZeroRTTTest, DISABLED_EarlyDataReasonReadServerHello) {
   const char kReasonHistogram[] = "Net.SSLHandshakeEarlyDataReason";
   ASSERT_TRUE(StartServer());
   ASSERT_TRUE(RunInitialConnection());
