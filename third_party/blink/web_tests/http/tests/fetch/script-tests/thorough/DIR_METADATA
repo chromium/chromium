@@ -1,0 +1,4 @@
+monorail {
+  component: "Blink>Network>FetchAPI"
+}
+team_email: "blink-network-dev@chromium.org"
