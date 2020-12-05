@@ -807,7 +807,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool SupportsARIADragging() const { return false; }
   virtual void Dropeffects(
       Vector<ax::mojom::blink::Dropeffect>& dropeffects) const {}
-  virtual bool SupportsARIAOwns() const { return false; }
   bool SupportsARIAReadOnly() const;
 
   // Returns 0-based index.
@@ -1199,8 +1198,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual void SelectionChanged();
 
   // Static helper functions.
+  // TODO(accessibility) Move these to a static helper util class.
   static bool IsARIAControl(ax::mojom::blink::Role);
   static bool IsARIAInput(ax::mojom::blink::Role);
+  static bool HasARIAOwns(Element* element);
   // Is this a widget that requires container widget.
   bool IsSubWidget() const;
   static ax::mojom::blink::Role AriaRoleToWebCoreRole(const String&);

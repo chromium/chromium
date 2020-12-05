@@ -178,7 +178,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool HasAriaAttribute() const override;
   void AriaDescribedbyElements(AXObjectVector&) const override;
   void AriaOwnsElements(AXObjectVector&) const override;
-  bool SupportsARIAOwns() const override;
   bool SupportsARIADragging() const override;
   void Dropeffects(
       Vector<ax::mojom::blink::Dropeffect>& dropeffects) const override;

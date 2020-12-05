@@ -1855,7 +1855,7 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   if (RuntimeEnabledFeatures::AccessibilityExposeIgnoredNodesEnabled())
     return true;
 
-  if (AXObjectCache().IsAriaOwned(this)) {
+  if (AXObjectCache().IsAriaOwned(this) || HasARIAOwns(GetElement())) {
     // Always include an aria-owned object. It must be a child of the
     // element with aria-owns.
     return true;
@@ -4310,6 +4310,25 @@ bool AXObject::IsARIAInput(ax::mojom::blink::Role aria_role) {
          aria_role == ax::mojom::blink::Role::kTextFieldWithComboBox;
 }
 
+// static
+bool AXObject::HasARIAOwns(Element* element) {
+  if (!element)
+    return false;
+
+  // A LayoutObject is not required, because an invisible object can still
+  // use aria-owns to point to visible children.
+
+  const AtomicString& aria_owns =
+      element->FastGetAttribute(html_names::kAriaOwnsAttr);
+
+  // TODO: do we need to check !AriaOwnsElements.empty() ? Is that fundamentally
+  // different from HasExplicitlySetAttrAssociatedElements()? And is an element
+  // even necessary in the case of virtual nodes?
+  return !aria_owns.IsEmpty() ||
+         element->HasExplicitlySetAttrAssociatedElements(
+             html_names::kAriaOwnsAttr);
+}
+
 ax::mojom::blink::Role AXObject::AriaRoleToWebCoreRole(const String& value) {
   DCHECK(!value.IsEmpty());
 
@@ -4735,7 +4754,7 @@ String AXObject::ToString(bool verbose) const {
     }
 
     // Add properties of interest that often contribute to errors:
-    if (SupportsARIAOwns())
+    if (HasARIAOwns(GetElement()))
       string_builder = string_builder + " @aria-owns";
     if (GetAOMPropertyOrARIAAttribute(AOMRelationProperty::kActiveDescendant))
       string_builder = string_builder + " @aria-activedescendant";
