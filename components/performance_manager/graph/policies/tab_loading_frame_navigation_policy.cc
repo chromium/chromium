@@ -77,7 +77,8 @@ bool TabLoadingFrameNavigationPolicy::ShouldThrottleWebContents(
 
   // Don't throttle unless http or https.
   bool throttled = true;
-  const GURL& url = contents->GetLastCommittedURL();
+  // Use `GetVisibleURL()` since we haven't committed the navigation yet.
+  const GURL& url = contents->GetVisibleURL();
   if (!CanThrottleUrlScheme(url))
     throttled = false;
 
