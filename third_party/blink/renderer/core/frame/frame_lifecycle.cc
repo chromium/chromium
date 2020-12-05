@@ -16,12 +16,12 @@ void FrameLifecycle::AdvanceTo(State state) {
     case kAttached:
     case kDetached:
       // Normally, only allow state to move forward.
-      CHECK_GT(state, state_);
+      DCHECK_GT(state, state_);
       break;
     case kDetaching:
       // We can go from Detaching to Detaching since the detach() method can be
       // re-entered.
-      CHECK_GE(state, state_);
+      DCHECK_GE(state, state_);
       break;
   }
   state_ = state;
