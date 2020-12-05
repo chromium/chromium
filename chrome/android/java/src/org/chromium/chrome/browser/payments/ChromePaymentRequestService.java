@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
@@ -671,10 +670,9 @@ public class ChromePaymentRequestService
     // Implements BrowserPaymentRequest:
     @Override
     public void onInstrumentDetailsError(String errorMessage) {
-        if (mPaymentUiService.getMinimalUI() != null) {
+        if (mPaymentUiService.isShowingMinimalUi()) {
             mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-            mPaymentUiService.getMinimalUI().showErrorAndClose(
-                    /*observer=*/this::close, R.string.payments_error_message);
+            mPaymentUiService.closeMinimalUiOnError(this::close);
             return;
         }
 

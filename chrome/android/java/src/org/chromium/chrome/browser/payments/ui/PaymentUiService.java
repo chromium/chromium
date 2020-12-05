@@ -443,9 +443,20 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         return mHaveRequestedAutofillData;
     }
 
-    /** @return The minimal UI coordinator. */
-    public MinimalUICoordinator getMinimalUI() {
-        return mMinimalUi;
+    /**
+     * Closes the minimal UI and shows an error message, called only when isShowingMinimalUi()
+     * returns true.
+     * @param onClosed Called when the minimal UI is closed.
+     */
+    public void closeMinimalUiOnError(Runnable onClosed) {
+        assert mMinimalUi != null;
+        mMinimalUi.showErrorAndClose(
+                /*observer=*/onClosed::run, R.string.payments_error_message);
+    }
+
+    /** @return Whether the minimal UI is showing. */
+    public boolean isShowingMinimalUi() {
+        return mMinimalUi != null;
     }
 
     // Implements PaymentUiServiceTestInterface:
