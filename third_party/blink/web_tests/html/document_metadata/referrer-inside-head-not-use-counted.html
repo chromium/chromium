@@ -10,8 +10,6 @@
 
   test(() => {
     const kHTMLMetaElementReferrerPolicyOutsideHead = 3314; // from web_feature.mojom
-    const kHTMLMetaElementReferrerPolicyMultipleTokens = 3315;
     assert_false(internals.isUseCounted(document, kHTMLMetaElementReferrerPolicyOutsideHead));
-    assert_true(internals.isUseCounted(document, kHTMLMetaElementReferrerPolicyMultipleTokens));
-  }, '<meta name=referrer> with multiple tokens is use counted');
+  }, '<meta name=referrer> inside <head> is not use counted');
 </script>

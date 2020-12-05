@@ -100,6 +100,8 @@ enum ReasonForCallingCanExecuteScripts {
   kNotAboutToExecuteScript
 };
 
+enum ReferrerPolicySource { kPolicySourceHttpHeader, kPolicySourceMetaTag };
+
 // An environment in which script can execute. This class exposes the common
 // properties of script execution environments on the web (i.e, common between
 // script executing in a window and script executing in a worker), such as:
@@ -280,32 +282,19 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // https://w3c.github.io/webappsec-referrer-policy/#determine-requests-referrer
   virtual String OutgoingReferrer() const;
 
-  // Parses a comma-separated list of referrer policy tokens, and sets
-  // the context's referrer policy to the last one that is a valid
-  // policy. Logs a message to the console if none of the policy
-  // tokens are valid policies.
+  // Parses a referrer policy directive using either Header or Meta rules and
+  // sets the context to use that policy. If the supplied policy is invalid,
+  // the context's policy is unchanged and a message is logged to the console.
   //
-  // If |supportLegacyKeywords| is true, then the legacy keywords
-  // "never", "default", "always", and "origin-when-crossorigin" are
-  // parsed as valid policies.
-  //
-  // If |from_meta_tag_with_list_of_policies| is *false*, also updates
-  // |referrer_policy_but_for_meta_tags_with_lists_of_policies_|, which
-  // maintains a counterfactual to determine what the policy would look like if
-  // we started ignoring <meta name=referrer content=policy1,policy2,...> tags
-  // in order to align with the HTML standard (crbug.com/1092930).
-  void ParseAndSetReferrerPolicy(
-      const String& policies,
-      bool support_legacy_keywords = false,
-      bool from_meta_tag_with_list_of_policies = false);
-  void SetReferrerPolicy(network::mojom::ReferrerPolicy,
-                         bool from_meta_tag_with_list_of_policies = false);
+  // For a header-set policy, parses a comma-delimited list of tokens, and sets
+  // the context's policy to the last one that is a valid policy. For a meta-set
+  // policy, accepts only a single token, and allows the legacy tokens defined
+  // in the HTML specification.
+  void ParseAndSetReferrerPolicy(const String& policy,
+                                 ReferrerPolicySource source);
+  void SetReferrerPolicy(network::mojom::ReferrerPolicy);
   virtual network::mojom::ReferrerPolicy GetReferrerPolicy() const {
     return referrer_policy_;
-  }
-  virtual network::mojom::blink::ReferrerPolicy
-  ReferrerPolicyButForMetaTagsWithListsOfPolicies() const {
-    return referrer_policy_but_for_meta_tags_with_lists_of_policies_;
   }
 
   virtual CoreProbeSink* GetProbeSink() { return nullptr; }
@@ -468,14 +457,6 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   int window_interaction_tokens_;
 
   network::mojom::ReferrerPolicy referrer_policy_;
-
-  // This is the same value as |referrer_policy_| except that it ignores
-  // referrer policies set as the result of parsing <meta name=referrer> tags
-  // whose values are comma-separated lists of policies. Its purpose is to allow
-  // evaluating the impact of switching to a behavior of no longer supporting
-  // these lists (crbug.com/1092930).
-  network::mojom::blink::ReferrerPolicy
-      referrer_policy_but_for_meta_tags_with_lists_of_policies_;
 
   network::mojom::blink::IPAddressSpace address_space_;
 

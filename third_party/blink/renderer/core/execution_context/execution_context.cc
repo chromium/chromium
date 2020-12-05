@@ -355,46 +355,57 @@ String ExecutionContext::OutgoingReferrer() const {
 }
 
 void ExecutionContext::ParseAndSetReferrerPolicy(
-    const String& policies,
-    bool support_legacy_keywords,
-    bool from_meta_tag_with_list_of_policies) {
+    const String& policy,
+    const ReferrerPolicySource source) {
   network::mojom::ReferrerPolicy referrer_policy;
+  bool policy_is_valid = false;
 
-  if (!SecurityPolicy::ReferrerPolicyFromHeaderValue(
-          policies,
-          support_legacy_keywords ? kSupportReferrerPolicyLegacyKeywords
-                                  : kDoNotSupportReferrerPolicyLegacyKeywords,
-          &referrer_policy)) {
-    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::ConsoleMessageSource::kRendering,
-        mojom::ConsoleMessageLevel::kError,
-        "Failed to set referrer policy: The value '" + policies +
-            "' is not one of " +
-            (support_legacy_keywords
-                 ? "'always', 'default', 'never', 'origin-when-crossorigin', "
-                 : "") +
-            "'no-referrer', 'no-referrer-when-downgrade', 'origin', "
-            "'origin-when-cross-origin', 'same-origin', 'strict-origin', "
-            "'strict-origin-when-cross-origin', or 'unsafe-url'. The referrer "
-            "policy "
-            "has been left unchanged."));
+  if (source == kPolicySourceHttpHeader) {
+    policy_is_valid = SecurityPolicy::ReferrerPolicyFromHeaderValue(
+        policy, kDoNotSupportReferrerPolicyLegacyKeywords, &referrer_policy);
+  } else if (source == kPolicySourceMetaTag) {
+    policy_is_valid = (SecurityPolicy::ReferrerPolicyFromString(
+        policy, kSupportReferrerPolicyLegacyKeywords, &referrer_policy));
+  } else {
+    NOTREACHED();
     return;
   }
 
-  SetReferrerPolicy(referrer_policy, from_meta_tag_with_list_of_policies);
+  if (policy_is_valid) {
+    SetReferrerPolicy(referrer_policy);
+  } else {
+    String error_reason;
+    if (source == kPolicySourceMetaTag && policy.Contains(',')) {
+      // Only a single token is permitted for Meta-specified policies
+      // (https://crbug.com/1093914).
+      error_reason =
+          "A policy specified by a meta element must contain only one token.";
+    } else {
+      error_reason =
+          "The value '" + policy + "' is not one of " +
+          ((source == kPolicySourceMetaTag)
+               ? "'always', 'default', 'never', 'origin-when-crossorigin', "
+               : "") +
+          "'no-referrer', 'no-referrer-when-downgrade', 'origin', "
+          "'origin-when-cross-origin', 'same-origin', 'strict-origin', "
+          "'strict-origin-when-cross-origin', or 'unsafe-url'.";
+    }
+
+    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::ConsoleMessageSource::kRendering,
+        mojom::ConsoleMessageLevel::kError,
+        "Failed to set referrer policy: " + error_reason +
+            " The referrer policy has been left unchanged."));
+  }
 }
 
 void ExecutionContext::SetReferrerPolicy(
-    network::mojom::ReferrerPolicy referrer_policy,
-    bool from_meta_tag_with_list_of_policies) {
+    network::mojom::ReferrerPolicy referrer_policy) {
   // When a referrer policy has already been set, the latest value takes
   // precedence.
   UseCounter::Count(this, WebFeature::kSetReferrerPolicy);
   if (referrer_policy_ != network::mojom::ReferrerPolicy::kDefault)
     UseCounter::Count(this, WebFeature::kResetReferrerPolicy);
-
-  if (!from_meta_tag_with_list_of_policies)
-    referrer_policy_but_for_meta_tags_with_lists_of_policies_ = referrer_policy;
 
   referrer_policy_ = referrer_policy;
 }

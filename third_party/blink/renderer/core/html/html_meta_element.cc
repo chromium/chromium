@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
@@ -589,18 +590,9 @@ void HTMLMetaElement::ProcessContent() {
       UseCounter::Count(&GetDocument(),
                         WebFeature::kHTMLMetaElementReferrerPolicyOutsideHead);
     }
-    bool comma_in_content_value = false;
-    if (content_value.Contains(',')) {
-      comma_in_content_value = true;
-      UseCounter::Count(
-          &GetDocument(),
-          WebFeature::kHTMLMetaElementReferrerPolicyMultipleTokens);
-    }
 
-    GetExecutionContext()->ParseAndSetReferrerPolicy(
-        content_value, true /* support legacy keywords */,
-        /*from_meta_tag_with_list_of_policies=*/
-        comma_in_content_value);
+    GetExecutionContext()->ParseAndSetReferrerPolicy(content_value,
+                                                     kPolicySourceMetaTag);
     if (base::FeatureList::IsEnabled(blink::features::kPolicyContainer)) {
       LocalFrame* frame = GetDocument().GetFrame();
       // If frame is null, this document is not attached to a frame, hence it
@@ -649,4 +641,4 @@ const AtomicString& HTMLMetaElement::HttpEquiv() const {
 const AtomicString& HTMLMetaElement::GetName() const {
   return FastGetAttribute(html_names::kNameAttr);
 }
-}
+}  // namespace blink

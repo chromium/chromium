@@ -295,9 +295,9 @@ std::unique_ptr<TracedValue> ResourcePrioritySetData(
 
 // This function corresponds with step 2 substep 7 of
 // https://fetch.spec.whatwg.org/#main-fetch.
-void SetReferrer(ResourceRequest& request,
-                 const FetchClientSettingsObject& fetch_client_settings_object,
-                 UseCounter& use_counter) {
+void SetReferrer(
+    ResourceRequest& request,
+    const FetchClientSettingsObject& fetch_client_settings_object) {
   String referrer_to_use = request.ReferrerString();
   network::mojom::ReferrerPolicy referrer_policy_to_use =
       request.GetReferrerPolicy();
@@ -305,41 +305,11 @@ void SetReferrer(ResourceRequest& request,
   if (referrer_to_use == Referrer::ClientReferrerString())
     referrer_to_use = fetch_client_settings_object.GetOutgoingReferrer();
 
-  bool used_referrer_policy_from_context = false;
-  if (referrer_policy_to_use == network::mojom::ReferrerPolicy::kDefault) {
-    used_referrer_policy_from_context = true;
+  if (referrer_policy_to_use == network::mojom::ReferrerPolicy::kDefault)
     referrer_policy_to_use = fetch_client_settings_object.GetReferrerPolicy();
-  }
 
   Referrer generated_referrer = SecurityPolicy::GenerateReferrer(
       referrer_policy_to_use, request.Url(), referrer_to_use);
-
-  // The request's referrer would be different in the absence of <meta
-  // name=referrer> tags with comma-separated-list values exactly when both
-  // 1. the request falls back to its client settings object's policy; and
-  // 2. if we recompute the referrer using the value of the client settings
-  // object's policy, disregarding any policy that came from a meta tag with a
-  // comma-separated value, we obtain a different referrer.
-  if (used_referrer_policy_from_context) {
-    base::Optional<network::mojom::blink::ReferrerPolicy>
-        policy_but_for_meta_tags_with_policy_lists =
-            fetch_client_settings_object
-                .GetReferrerPolicyDisregardingMetaTagsContainingLists();
-
-    bool referrer_would_be_different_absent_meta_tags_with_policy_lists =
-        policy_but_for_meta_tags_with_policy_lists.has_value() &&
-        (generated_referrer.referrer !=
-         SecurityPolicy::GenerateReferrer(
-             *policy_but_for_meta_tags_with_policy_lists, request.Url(),
-             referrer_to_use)
-             .referrer);
-
-    if (referrer_would_be_different_absent_meta_tags_with_policy_lists) {
-      use_counter.CountUse(
-          mojom::WebFeature::
-              kHTMLMetaElementReferrerPolicyMultipleTokensAffectingRequest);
-    }
-  }
 
   request.SetReferrerString(generated_referrer.referrer);
   request.SetReferrerPolicy(generated_referrer.referrer_policy);
@@ -965,8 +935,7 @@ base::Optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
                                              http_names::kGET &&
                                          !params.IsStaleRevalidation());
 
-  SetReferrer(resource_request, properties_->GetFetchClientSettingsObject(),
-              GetUseCounter());
+  SetReferrer(resource_request, properties_->GetFetchClientSettingsObject());
 
   resource_request.SetExternalRequestStateFromRequestorAddressSpace(
       properties_->GetFetchClientSettingsObject().GetAddressSpace());

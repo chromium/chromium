@@ -388,20 +388,6 @@ network::mojom::ReferrerPolicy LocalDOMWindow::GetReferrerPolicy() const {
   return frame->DomWindow()->GetReferrerPolicy();
 }
 
-network::mojom::blink::ReferrerPolicy
-LocalDOMWindow::ReferrerPolicyButForMetaTagsWithListsOfPolicies() const {
-  network::mojom::ReferrerPolicy policy =
-      ExecutionContext::ReferrerPolicyButForMetaTagsWithListsOfPolicies();
-  // For srcdoc documents without their own policy, walk up the frame tree
-  // analogously to when getting the referrer policy.
-  if (!GetFrame() || policy != network::mojom::ReferrerPolicy::kDefault ||
-      !document()->IsSrcdocDocument()) {
-    return policy;
-  }
-  LocalFrame* frame = To<LocalFrame>(GetFrame()->Tree().Parent());
-  return frame->DomWindow()->ReferrerPolicyButForMetaTagsWithListsOfPolicies();
-}
-
 CoreProbeSink* LocalDOMWindow::GetProbeSink() {
   return probe::ToCoreProbeSink(GetFrame());
 }

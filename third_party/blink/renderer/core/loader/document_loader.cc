@@ -1645,14 +1645,15 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     // ignore them.
     if (frame_->GetPolicyContainer()) {
       frame_->DomWindow()->SetReferrerPolicy(
-          frame_->GetPolicyContainer()->GetReferrerPolicy(), false);
+          frame_->GetPolicyContainer()->GetReferrerPolicy());
     }
   }
   String referrer_policy_header =
       response_.HttpHeaderField(http_names::kReferrerPolicy);
   if (!referrer_policy_header.IsNull()) {
     CountUse(WebFeature::kReferrerPolicyHeader);
-    frame_->DomWindow()->ParseAndSetReferrerPolicy(referrer_policy_header);
+    frame_->DomWindow()->ParseAndSetReferrerPolicy(referrer_policy_header,
+                                                   kPolicySourceHttpHeader);
     if (base::FeatureList::IsEnabled(blink::features::kPolicyContainer)) {
       if (frame_->GetPolicyContainer()) {
         frame_->GetPolicyContainer()->UpdateReferrerPolicy(

@@ -38,13 +38,6 @@ FetchClientSettingsObjectImpl::GetReferrerPolicy() const {
   return execution_context_->GetReferrerPolicy();
 }
 
-base::Optional<network::mojom::blink::ReferrerPolicy>
-FetchClientSettingsObjectImpl::
-    GetReferrerPolicyDisregardingMetaTagsContainingLists() const {
-  DCHECK(execution_context_->IsContextThread());
-  return execution_context_->ReferrerPolicyButForMetaTagsWithListsOfPolicies();
-}
-
 const String FetchClientSettingsObjectImpl::GetOutgoingReferrer() const {
   DCHECK(execution_context_->IsContextThread());
   return execution_context_->OutgoingReferrer();

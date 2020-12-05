@@ -68,7 +68,7 @@ TEST_F(LocalDOMWindowTest, referrerPolicyParsing) {
   struct TestCase {
     const char* policy;
     network::mojom::ReferrerPolicy expected;
-    bool is_legacy;
+    bool uses_legacy_tokens;
   } tests[] = {
       {"", network::mojom::ReferrerPolicy::kDefault, false},
       // Test that invalid policy values are ignored.
@@ -101,18 +101,47 @@ TEST_F(LocalDOMWindowTest, referrerPolicyParsing) {
       {"unsafe-url", network::mojom::ReferrerPolicy::kAlways},
   };
 
-  for (auto test : tests) {
+  for (const auto test : tests) {
     window->SetReferrerPolicy(network::mojom::ReferrerPolicy::kDefault);
-    if (test.is_legacy) {
-      // Legacy keyword support must be explicitly enabled for the policy to
-      // parse successfully.
-      window->ParseAndSetReferrerPolicy(test.policy);
+    if (test.uses_legacy_tokens) {
+      // Legacy tokens are supported only for meta-specified policy.
+      window->ParseAndSetReferrerPolicy(test.policy, kPolicySourceHttpHeader);
       EXPECT_EQ(network::mojom::ReferrerPolicy::kDefault,
                 window->GetReferrerPolicy());
-      window->ParseAndSetReferrerPolicy(test.policy, true);
+      window->ParseAndSetReferrerPolicy(test.policy, kPolicySourceMetaTag);
     } else {
-      window->ParseAndSetReferrerPolicy(test.policy);
+      window->ParseAndSetReferrerPolicy(test.policy, kPolicySourceHttpHeader);
     }
+    EXPECT_EQ(test.expected, window->GetReferrerPolicy()) << test.policy;
+  }
+}
+
+TEST_F(LocalDOMWindowTest, referrerPolicyParsingWithCommas) {
+  LocalDOMWindow* window = GetFrame().DomWindow();
+  EXPECT_EQ(network::mojom::ReferrerPolicy::kDefault,
+            window->GetReferrerPolicy());
+
+  struct TestCase {
+    const char* policy;
+    network::mojom::ReferrerPolicy expected;
+  } tests[] = {
+      {"same-origin,strict-origin",
+       network::mojom::ReferrerPolicy::kStrictOrigin},
+      {"same-origin,not-a-real-policy,strict-origin",
+       network::mojom::ReferrerPolicy::kStrictOrigin},
+      {"strict-origin, same-origin, not-a-real-policy",
+       network::mojom::ReferrerPolicy::kSameOrigin},
+  };
+
+  for (const auto test : tests) {
+    window->SetReferrerPolicy(network::mojom::ReferrerPolicy::kDefault);
+    // Policies containing commas are ignored when specified by a Meta element.
+    window->ParseAndSetReferrerPolicy(test.policy, kPolicySourceMetaTag);
+    EXPECT_EQ(network::mojom::ReferrerPolicy::kDefault,
+              window->GetReferrerPolicy());
+
+    // Header-specified policy permits commas and returns the last valid policy.
+    window->ParseAndSetReferrerPolicy(test.policy, kPolicySourceHttpHeader);
     EXPECT_EQ(test.expected, window->GetReferrerPolicy()) << test.policy;
   }
 }

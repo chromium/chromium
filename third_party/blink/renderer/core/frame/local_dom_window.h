@@ -157,8 +157,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   EventTarget* ErrorEventTarget() final { return this; }
   String OutgoingReferrer() const final;
   network::mojom::ReferrerPolicy GetReferrerPolicy() const final;
-  network::mojom::blink::ReferrerPolicy
-  ReferrerPolicyButForMetaTagsWithListsOfPolicies() const final;
   CoreProbeSink* GetProbeSink() final;
   BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() final;
   FrameOrWorkerScheduler* GetScheduler() final;
