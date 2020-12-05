@@ -6,6 +6,9 @@
 
 #include <algorithm>
 
+#include "base/command_line.h"
+#include "chromeos/constants/chromeos_switches.h"
+
 namespace policy {
 
 namespace {
@@ -16,6 +19,13 @@ namespace {
 // successful upload or if the upload request is canceled.
 const int kMinRetryBackoffMs = 10 * 1000;            // 10 seconds
 const int kMaxRetryBackoffMs = 24 * 60 * 60 * 1000;  // 24 hours
+
+// If install-log-fast-upload-for-tests flag is enabled, do not increase retry
+// backoff.
+bool FastUploadForTestsEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      chromeos::switches::kInstallLogFastUploadForTests);
+}
 
 }  // namespace
 
@@ -81,6 +91,8 @@ void InstallEventLogUploaderBase::OnUploadDone(bool success) {
     return;
   }
   PostTaskForStartSerialization();
+  if (FastUploadForTestsEnabled())
+    return;
   retry_backoff_ms_ = std::min(retry_backoff_ms_ << 1, kMaxRetryBackoffMs);
 }
 

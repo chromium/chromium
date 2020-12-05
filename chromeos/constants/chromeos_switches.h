@@ -168,6 +168,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kHomedir[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kIgnoreArcVmDevConf[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kIgnoreUserProfileMappingForTests[];
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const char kInstallLogFastUploadForTests[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kKernelnextRestrictVMs[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kLacrosChromeAdditionalArgs[];

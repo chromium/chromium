@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/location.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
@@ -16,6 +17,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/constants/chromeos_switches.h"
 
 namespace policy {
 
@@ -24,6 +26,8 @@ namespace {
 // Delay after which a change to the log contents is stored to disk. Further
 // changes during this time window are picked up by the same store operation.
 constexpr base::TimeDelta kStoreDelay = base::TimeDelta::FromSeconds(5);
+// Reduce store delay for integration tests.
+constexpr base::TimeDelta kFastStoreDelay = base::TimeDelta::FromSeconds(1);
 
 // Interval between subsequent uploads to the server, if the log is not empty.
 constexpr base::TimeDelta kUploadInterval = base::TimeDelta::FromHours(3);
@@ -33,12 +37,22 @@ constexpr base::TimeDelta kUploadInterval = base::TimeDelta::FromHours(3);
 // getting full.
 constexpr base::TimeDelta kExpeditedUploadDelay =
     base::TimeDelta::FromMinutes(15);
+// Reduce upload delay for integration tests.
+constexpr base::TimeDelta kFastUploadDelay = base::TimeDelta::FromSeconds(30);
 
 // An expedited upload is scheduled whenever the total number of log entries
 // exceeds |kTotalSizeExpeditedUploadThreshold| or the number of log entries for
 // any single app exceeds |kMaxSizeExpeditedUploadThreshold|.
 constexpr int kTotalSizeExpeditedUploadThreshold = 2048;
 constexpr int kMaxSizeExpeditedUploadThreshold = 512;
+
+// If install-log-fast-upload-for-tests flag is enabled, upload logs with
+// reduced delay.
+bool FastUploadForTestsEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      chromeos::switches::kInstallLogFastUploadForTests);
+}
+
 }  // namespace
 
 InstallEventLogManagerBase::LogTaskRunnerWrapper::LogTaskRunnerWrapper() =
@@ -91,7 +105,7 @@ void InstallEventLogManagerBase::LogUpload::OnLogChange(
         FROM_HERE,
         base::BindOnce(&InstallEventLogManagerBase::LogUpload::StoreLog,
                        store_weak_factory_.GetWeakPtr()),
-        kStoreDelay);
+        FastUploadForTestsEnabled() ? kFastStoreDelay : kStoreDelay);
   }
 
   EnsureUpload(log_size.total_size > kTotalSizeExpeditedUploadThreshold ||
@@ -110,11 +124,16 @@ void InstallEventLogManagerBase::LogUpload::EnsureUpload(bool expedited) {
   upload_scheduled_ = true;
   expedited_upload_scheduled_ = expedited;
 
+  base::TimeDelta upload_delay =
+      expedited ? kExpeditedUploadDelay : kUploadInterval;
+  if (FastUploadForTestsEnabled())
+    upload_delay = kFastUploadDelay;
+
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&InstallEventLogManagerBase::LogUpload::RequestUpload,
                      upload_weak_factory_.GetWeakPtr()),
-      expedited ? kExpeditedUploadDelay : kUploadInterval);
+      upload_delay);
 }
 
 void InstallEventLogManagerBase::LogUpload::RequestUpload() {

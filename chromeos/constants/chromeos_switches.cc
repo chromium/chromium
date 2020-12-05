@@ -418,6 +418,10 @@ const char kIgnoreArcVmDevConf[] = "ignore-arcvm-dev-conf";
 const char kIgnoreUserProfileMappingForTests[] =
     "ignore-user-profile-mapping-for-tests";
 
+// Decreases delay in uploading installation event logs for integration test.
+const char kInstallLogFastUploadForTests[] =
+    "install-log-fast-upload-for-tests";
+
 // If set, the Chrome settings will not expose the option to enable crostini
 // unless the enable-experimental-kernel-vm-support flag is set in
 // chrome://flags
