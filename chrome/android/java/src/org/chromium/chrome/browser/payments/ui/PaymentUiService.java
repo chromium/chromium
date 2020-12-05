@@ -321,9 +321,13 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         };
     }
 
-    /** @return The PaymentRequestUI. */
-    public PaymentRequestUI getPaymentRequestUI() {
-        return mPaymentRequestUI;
+    /**
+     * @return Whether the PaymentRequest UI is alive. The UI comes to live when
+     *         buildPaymentRequestUi() has been called to create it; it stops being alive when
+     *         close() is called to destroy it.
+     */
+    public boolean isPaymentRequestUiAlive() {
+        return mPaymentRequestUI != null;
     }
 
     /**
@@ -1140,6 +1144,53 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
                 if (!mRetryQueue.isEmpty()) mHandler.post(mRetryQueue.remove());
             }
         });
+    }
+
+    /**
+     * Dims the background of the payment UIs. Precondition: isPaymentRequestUiAlive() needs to be
+     * true for the method to take effect.
+     */
+    public void dimBackground() {
+        if (mPaymentRequestUI == null) return;
+        mPaymentRequestUI.dimBackground();
+    }
+
+    /**
+     * Shows the app selector UI. Precondition: isPaymentRequestUiAlive() needs to be true for
+     * the method to take effect.
+     * @param isShowWaitingForUpdatedDetails
+     *        Whether showing payment app or the app selector is blocked on the updated payment
+     *        details.
+     */
+    public void showAppSelector(boolean isShowWaitingForUpdatedDetails) {
+        if (mPaymentRequestUI == null) return;
+        mPaymentRequestUI.show(isShowWaitingForUpdatedDetails);
+    }
+
+    /**
+     * Shows the processing message. Precondition: isPaymentRequestUiAlive() needs to be true for
+     * the method to take effect.
+     */
+    public void showProcessingMessage() {
+        if (mPaymentRequestUI == null) return;
+        mPaymentRequestUI.showProcessingMessage();
+    }
+
+    /**
+     *  Shows the processing message after payment details have been loaded in the case the
+     *  app selector UI has been skipped. Precondition: isPaymentRequestUiAlive() needs to be
+     *  true for the method to take effect.
+     */
+    public void showProcessingMessageAfterUiSkip() {
+        if (mPaymentRequestUI != null) mPaymentRequestUI.showProcessingMessageAfterUiSkip();
+    }
+
+    /**
+     * Called when user cancelled out of the UI that was shown after they clicked [PAY] button.
+     * Precondition: isPaymentRequestUiAlive() needs to be true for the method to take effect.
+     */
+    public void onPayButtonProcessingCancelled() {
+        if (mPaymentRequestUI != null) mPaymentRequestUI.onPayButtonProcessingCancelled();
     }
 
     /**

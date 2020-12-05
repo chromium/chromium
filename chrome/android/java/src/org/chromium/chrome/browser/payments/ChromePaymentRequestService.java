@@ -251,7 +251,7 @@ public class ChromePaymentRequestService
         if (shouldSkipAppSelector) {
             mHasSkippedAppSelector = true;
         } else {
-            mPaymentUiService.getPaymentRequestUI().show(isShowWaitingForUpdatedDetails);
+            mPaymentUiService.showAppSelector(isShowWaitingForUpdatedDetails);
         }
         return null;
     }
@@ -269,7 +269,7 @@ public class ChromePaymentRequestService
             // are the only ones that can open the bottom-sheet.
             return;
         }
-        mPaymentUiService.getPaymentRequestUI().dimBackground();
+        mPaymentUiService.dimBackground();
     }
 
     // Implements BrowserPaymentRequest:
@@ -279,7 +279,7 @@ public class ChromePaymentRequestService
         // immediately after we determine the apps are ready and UI is shown.
         if (mHasSkippedAppSelector) {
             assert !mPaymentUiService.getPaymentApps().isEmpty();
-            assert mPaymentUiService.getPaymentRequestUI() != null;
+            assert mPaymentUiService.isPaymentRequestUiAlive();
 
             if (isMinimalUiApplicable(isUserGestureShow)) {
                 ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
@@ -414,7 +414,7 @@ public class ChromePaymentRequestService
 
         // Do not create shipping section When UI is not built yet. This happens when the show
         // promise gets resolved before all apps are ready.
-        if (mPaymentUiService.getPaymentRequestUI() != null
+        if (mPaymentUiService.isPaymentRequestUiAlive()
                 && mPaymentUiService.shouldShowShippingSection()) {
             mPaymentUiService.createShippingSectionForPaymentRequestUI(chromeActivity);
         }
@@ -475,13 +475,8 @@ public class ChromePaymentRequestService
     // Implements BrowserPaymentRequest:
     @Override
     public void onInstrumentDetailsLoading() {
-        if (mPaymentUiService.getPaymentRequestUI() == null) {
-            return;
-        }
-
         assert mPaymentUiService.getSelectedPaymentAppType() == PaymentAppType.AUTOFILL;
-
-        mPaymentUiService.getPaymentRequestUI().showProcessingMessage();
+        mPaymentUiService.showProcessingMessage();
     }
 
     // Implements PaymentUiService.Delegate:
@@ -656,8 +651,8 @@ public class ChromePaymentRequestService
 
         // Showing the app selector UI if we were previously skipping it so the loading
         // spinner shows up until the merchant notifies that payment was completed.
-        if (mHasSkippedAppSelector && mPaymentUiService.getPaymentRequestUI() != null) {
-            mPaymentUiService.getPaymentRequestUI().showProcessingMessageAfterUiSkip();
+        if (mHasSkippedAppSelector) {
+            mPaymentUiService.showProcessingMessageAfterUiSkip();
         }
     }
 
@@ -682,7 +677,7 @@ public class ChromePaymentRequestService
             mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
             disconnectFromClientWithDebugMessage(errorMessage);
         } else {
-            mPaymentUiService.getPaymentRequestUI().onPayButtonProcessingCancelled();
+            mPaymentUiService.onPayButtonProcessingCancelled();
             PaymentDetailsUpdateServiceHelper.getInstance().reset();
         }
     }
