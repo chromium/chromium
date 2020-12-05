@@ -297,9 +297,10 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitSlice(
 
   bool uses_crypto = false;
   VAEncryptionParameters crypto_params = {};
-  if ((!subsamples.empty() && subsamples[0].cypher_bytes) ||
-      IsProtectedSession()) {
-    ProtectedSessionState state =
+  const bool encrypted_bytes_present =
+      !subsamples.empty() && subsamples[0].cypher_bytes;
+  if (encrypted_bytes_present || IsProtectedSession()) {
+    const ProtectedSessionState state =
         SetupDecryptDecode(/*full_sample=*/false, size, &crypto_params,
                            &encryption_segment_info_, subsamples);
     if (state == ProtectedSessionState::kFailed) {

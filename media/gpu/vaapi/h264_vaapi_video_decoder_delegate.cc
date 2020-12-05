@@ -366,11 +366,12 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
 
   bool uses_crypto = false;
   VAEncryptionParameters crypto_params = {};
-  if ((!subsamples.empty() && subsamples[0].cypher_bytes) ||
-      IsProtectedSession()) {
+  const bool encrypted_bytes_present =
+      !subsamples.empty() && subsamples[0].cypher_bytes;
+  if (encrypted_bytes_present || IsProtectedSession()) {
     // If there is only one clear byte, then this is CENC v1, full sample
     // encryption (i.e. only the NALU header is unencrypted).
-    ProtectedSessionState state = SetupDecryptDecode(
+    const ProtectedSessionState state = SetupDecryptDecode(
         !subsamples.empty() && subsamples[0].clear_bytes == 1, size,
         &crypto_params, &encryption_segment_info_, subsamples);
     if (state == ProtectedSessionState::kFailed) {

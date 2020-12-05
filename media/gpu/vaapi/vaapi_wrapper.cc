@@ -830,8 +830,16 @@ bool GetRequiredAttribs(const base::Lock* va_lock,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (mode == VaapiWrapper::kDecodeProtected && profile != VAProfileProtected) {
+    // TODO(jkardatzke): Remove this workarond once the iHD bug for full vs.
+    // subsample dependency here is fixed. VA_ENCRYPTION_TYPE_CTR_128 works for
+    // VP9. VA_ENCRYPTION_TYPE_CENC_CTR is needed for H264 full sample (and also
+    // works for H264 subsample). We can't know full vs. subsample at this point
+    // though, we only know codec.
     required_attribs->push_back(
-        {VAConfigAttribEncryption, VA_ENCRYPTION_TYPE_CENC_CTR});
+        {VAConfigAttribEncryption,
+         (profile == VAProfileVP9Profile0 || profile == VAProfileVP9Profile2)
+             ? VA_ENCRYPTION_TYPE_CTR_128
+             : VA_ENCRYPTION_TYPE_CENC_CTR});
   }
 #endif
 

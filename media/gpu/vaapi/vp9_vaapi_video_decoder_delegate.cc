@@ -58,7 +58,6 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
 
   VADecPictureParameterBufferVP9 pic_param{};
   VASliceParameterBufferVP9 slice_param{};
-  VAEncryptionParameters crypto_param{};
 
   if (!picture_params_) {
     picture_params_ = vaapi_wrapper_->CreateVABuffer(
@@ -83,29 +82,33 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
   bool uses_crypto = false;
   const DecryptConfig* decrypt_config = pic->decrypt_config();
   std::vector<VAEncryptionSegmentInfo> encryption_segment_info;
-  if (decrypt_config) {
-    if (!SetDecryptConfig(decrypt_config->Clone()))
+  if (decrypt_config && !SetDecryptConfig(decrypt_config->Clone()))
+    return DecodeStatus::kFail;
+
+  VAEncryptionParameters crypto_param{};
+  const bool encrypted_bytes_present =
+      decrypt_config && !decrypt_config->subsamples().empty() &&
+      decrypt_config->subsamples()[0].cypher_bytes;
+  if (encrypted_bytes_present || IsProtectedSession()) {
+    const ProtectedSessionState state = SetupDecryptDecode(
+        /*full_sample=*/false, frame_hdr->frame_size, &crypto_param,
+        &encryption_segment_info,
+        decrypt_config ? decrypt_config->subsamples()
+                       : std::vector<SubsampleEntry>());
+    if (state == ProtectedSessionState::kFailed) {
+      LOG(ERROR)
+          << "SubmitDecode fails because we couldn't setup the protected "
+             "session";
       return DecodeStatus::kFail;
-    if (!decrypt_config->subsamples().empty() &&
-        decrypt_config->subsamples()[0].cypher_bytes) {
-      ProtectedSessionState state = SetupDecryptDecode(
-          false /* full_sample */, frame_hdr->frame_size, &crypto_param,
-          &encryption_segment_info, decrypt_config->subsamples());
-      if (state == ProtectedSessionState::kFailed) {
-        LOG(ERROR)
-            << "SubmitDecode fails because we couldn't setup the protected "
-               "session";
+    } else if (state != ProtectedSessionState::kCreated) {
+      return DecodeStatus::kTryAgain;
+    }
+    uses_crypto = true;
+    if (!crypto_params_) {
+      crypto_params_ = vaapi_wrapper_->CreateVABuffer(
+          VAEncryptionParameterBufferType, sizeof(crypto_param));
+      if (!crypto_params_)
         return DecodeStatus::kFail;
-      } else if (state != ProtectedSessionState::kCreated) {
-        return DecodeStatus::kTryAgain;
-      }
-      uses_crypto = true;
-      if (!crypto_params_) {
-        crypto_params_ = vaapi_wrapper_->CreateVABuffer(
-            VAEncryptionParameterBufferType, sizeof(crypto_param));
-        if (!crypto_params_)
-          return DecodeStatus::kFail;
-      }
     }
   }
 
@@ -242,6 +245,7 @@ void VP9VaapiVideoDecoderDelegate::OnVAContextDestructionSoon() {
   // that will be destroyed soon.
   picture_params_.reset();
   slice_params_.reset();
+  crypto_params_.reset();
 }
 
 }  // namespace media
