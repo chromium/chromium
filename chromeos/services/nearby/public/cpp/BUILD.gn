@@ -3,7 +3,11 @@
 # found in the LICENSE file.
 
 static_library("cpp") {
-  sources = [ "nearby_process_manager.h" ]
+  sources = [
+    "nearby_client_uuids.cc",
+    "nearby_client_uuids.h",
+    "nearby_process_manager.h",
+  ]
 
   deps = [
     "//base",

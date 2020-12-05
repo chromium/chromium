@@ -175,6 +175,11 @@ void Adapter::ConnectToServiceInsecurely(
     const std::string& address,
     const device::BluetoothUUID& service_uuid,
     ConnectToServiceInsecurelyCallback callback) {
+  if (!base::Contains(allowed_uuids_, service_uuid)) {
+    std::move(callback).Run(/*result=*/nullptr);
+    return;
+  }
+
   auto* device = adapter_->GetDevice(address);
   if (device) {
     OnDeviceFetchedForInsecureServiceConnection(service_uuid,
@@ -203,6 +208,11 @@ void Adapter::CreateRfcommServiceInsecurely(
     const std::string& service_name,
     const device::BluetoothUUID& service_uuid,
     CreateRfcommServiceInsecurelyCallback callback) {
+  if (!base::Contains(allowed_uuids_, service_uuid)) {
+    std::move(callback).Run(/*server_socket=*/mojo::NullRemote());
+    return;
+  }
+
   device::BluetoothAdapter::ServiceOptions service_options;
   service_options.name = service_name;
   service_options.require_authentication = false;
@@ -284,6 +294,11 @@ void Adapter::GattServicesDiscovered(device::BluetoothAdapter* adapter,
       ++it;
     }
   }
+}
+
+void Adapter::AllowConnectionsForUuid(
+    const device::BluetoothUUID& service_uuid) {
+  allowed_uuids_.emplace(service_uuid);
 }
 
 void Adapter::OnDeviceFetchedForInsecureServiceConnection(

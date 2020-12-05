@@ -13,6 +13,7 @@ source_set("bluetooth_adapter_util") {
 
   deps = [
     "//base",
+    "//chromeos/services/nearby/public/cpp",
     "//device/bluetooth",
     "//device/bluetooth:deprecated_experimental_mojo",
     "//mojo/public/cpp/bindings",

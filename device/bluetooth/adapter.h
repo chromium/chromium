@@ -48,8 +48,6 @@ class Adapter : public mojom::Adapter,
                        SetDiscoverableCallback callback) override;
   void SetName(const std::string& name, SetNameCallback callback) override;
   void StartDiscoverySession(StartDiscoverySessionCallback callback) override;
-  // TODO(b/162975217): Add a mechanism to allowlist which address and UUID
-  // pairs clients are allowed to create a connection to.
   void ConnectToServiceInsecurely(
       const std::string& address,
       const device::BluetoothUUID& service_uuid,
@@ -76,6 +74,10 @@ class Adapter : public mojom::Adapter,
                      device::BluetoothDevice* device) override;
   void GattServicesDiscovered(device::BluetoothAdapter* adapter,
                               device::BluetoothDevice* device) override;
+
+  // Permit untrusted clients to initiate outgoing connections, or listen on
+  // incoming connections, with |service_uuid|.
+  void AllowConnectionsForUuid(const device::BluetoothUUID& service_uuid);
 
  private:
   void OnDeviceFetchedForInsecureServiceConnection(
@@ -131,6 +133,10 @@ class Adapter : public mojom::Adapter,
                          device::BluetoothUUID,
                          ConnectToServiceInsecurelyCallback>>
       pending_connect_to_service_args_;
+
+  // Allowed UUIDs for untrusted clients to initiate outgoing connections, or
+  // listen on incoming connections.
+  std::set<device::BluetoothUUID> allowed_uuids_;
 
   base::WeakPtrFactory<Adapter> weak_ptr_factory_{this};
 
