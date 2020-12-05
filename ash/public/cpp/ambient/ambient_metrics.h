@@ -36,6 +36,10 @@ ASH_PUBLIC_EXPORT void RecordAmbientModeActivation(AmbientUiMode ui_mode,
 ASH_PUBLIC_EXPORT void RecordAmbientModeTimeElapsed(base::TimeDelta time_delta,
                                                     bool tablet_mode);
 
+ASH_PUBLIC_EXPORT void RecordAmbientModeTotalNumberOfAlbums(int num_albums);
+
+ASH_PUBLIC_EXPORT void RecordAmbientModeSelectedNumberOfAlbums(int num_albums);
+
 }  // namespace ambient
 }  // namespace ash
 

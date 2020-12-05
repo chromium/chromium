@@ -69,5 +69,15 @@ void RecordAmbientModeTimeElapsed(base::TimeDelta time_delta,
       /*buckets=*/kAmbientModeElapsedTimeHistogramBuckets);
 }
 
+void RecordAmbientModeTotalNumberOfAlbums(int num_albums) {
+  base::UmaHistogramCounts100("Ash.AmbientMode.TotalNumberOfAlbums",
+                              num_albums);
+}
+
+void RecordAmbientModeSelectedNumberOfAlbums(int num_albums) {
+  base::UmaHistogramCounts100("Ash.AmbientMode.SelectedNumberOfAlbums",
+                              num_albums);
+}
+
 }  // namespace ambient
 }  // namespace ash
