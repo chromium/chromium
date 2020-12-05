@@ -90,6 +90,9 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
   void CopyVideoFrame(media::PaintCanvasVideoRenderer* video_render,
                       media::VideoFrame* video_frame,
                       cc::PaintCanvas* canvas) override {}
+  viz::RasterContextProvider* RasterContextProvider() const override {
+    return nullptr;
+  }
 
  private:
   cc::StubDecodeCache stub_image_decode_cache_;

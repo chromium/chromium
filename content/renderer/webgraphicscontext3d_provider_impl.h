@@ -57,10 +57,7 @@ class CONTENT_EXPORT WebGraphicsContext3DProviderImpl
   void CopyVideoFrame(media::PaintCanvasVideoRenderer* video_render,
                       media::VideoFrame* video_frame,
                       cc::PaintCanvas* canvas) override;
-
-  viz::ContextProviderCommandBuffer* context_provider() const {
-    return provider_.get();
-  }
+  viz::RasterContextProvider* RasterContextProvider() const override;
 
  private:
   // viz::ContextLostObserver implementation.

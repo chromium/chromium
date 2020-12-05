@@ -198,7 +198,12 @@ void WebGraphicsContext3DProviderImpl::CopyVideoFrame(
     media::PaintCanvasVideoRenderer* video_renderer,
     media::VideoFrame* video_frame,
     cc::PaintCanvas* canvas) {
-  video_renderer->Copy(video_frame, canvas, context_provider());
+  video_renderer->Copy(video_frame, canvas, provider_.get());
+}
+
+viz::RasterContextProvider*
+WebGraphicsContext3DProviderImpl::RasterContextProvider() const {
+  return provider_.get();
 }
 
 }  // namespace content

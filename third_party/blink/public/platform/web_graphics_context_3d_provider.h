@@ -65,7 +65,11 @@ class RasterInterface;
 namespace webgpu {
 class WebGPUInterface;
 }
-}
+}  // namespace gpu
+
+namespace viz {
+class RasterContextProvider;
+}  // namespace viz
 
 namespace blink {
 enum AntialiasingMode {
@@ -111,6 +115,7 @@ class WebGraphicsContext3DProvider {
   virtual void CopyVideoFrame(media::PaintCanvasVideoRenderer* video_render,
                               media::VideoFrame* video_frame,
                               cc::PaintCanvas* canvas) = 0;
+  virtual viz::RasterContextProvider* RasterContextProvider() const = 0;
 };
 
 }  // namespace blink
