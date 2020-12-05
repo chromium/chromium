@@ -2106,6 +2106,15 @@ bool LocalFrame::IsProvisional() const {
   // this state can no longer be accurately calculated.
   CHECK(!IsDetached());
 
+  // TODO(https://crbug.com/838348): Sadly, there are situations where Blink may
+  // attempt to detach a main frame twice due to a bug. That rewinds
+  // FrameLifecycle from kDetached to kDetaching, but GetPage() will already be
+  // null. Early returning false in that case is "safe enough", as the frame has
+  // already been detached, so any detach work gated on IsProvisional() has
+  // already been done.
+  if (!GetPage())
+    return false;
+
   if (IsMainFrame()) {
     return GetPage()->MainFrame() != this;
   }
