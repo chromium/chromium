@@ -5,13 +5,16 @@
 #include "third_party/blink/renderer/modules/payments/payment_request.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 namespace {
@@ -297,6 +300,35 @@ TEST(PaymentRequestTest, CannotShowAfterAborted) {
   EXPECT_EQ(scope.GetExceptionState().Code(),
             ToExceptionCode(DOMExceptionCode::kInvalidStateError));
   ;
+}
+
+TEST(PaymentRequestTest, CannotShowWithoutUserActivation) {
+  RuntimeEnabledFeatures::SetPaymentRequestShowConsumesUserActivationEnabled(
+      true);
+  PaymentRequestV8TestingScope scope;
+  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  PaymentRequest* request = PaymentRequest::Create(
+      scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
+      BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
+  request->show(scope.GetScriptState(), scope.GetExceptionState());
+  EXPECT_EQ(scope.GetExceptionState().Code(),
+            ToExceptionCode(DOMExceptionCode::kNotAllowedError));
+  ;
+}
+
+TEST(PaymentRequestTest, ShowConsumesUserActivation) {
+  RuntimeEnabledFeatures::SetPaymentRequestShowConsumesUserActivationEnabled(
+      true);
+  PaymentRequestV8TestingScope scope;
+  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  PaymentRequest* request = PaymentRequest::Create(
+      scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
+      BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
+
+  LocalFrame::NotifyUserActivation(
+      &(scope.GetFrame()), mojom::UserActivationNotificationType::kTest);
+  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
+      .Then(funcs.ExpectNoCall(), funcs.ExpectNoCall());
 }
 
 TEST(PaymentRequestTest, RejectShowPromiseOnErrorPaymentMethodNotSupported) {

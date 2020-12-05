@@ -808,13 +808,21 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  // TODO(crbug.com/825270): Reject with SecurityError DOMException if triggered
-  // without user activation.
   bool is_user_gesture =
       LocalFrame::HasTransientUserActivation(DomWindow()->GetFrame());
   if (!is_user_gesture) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kPaymentRequestShowWithoutGesture);
+  }
+  if (RuntimeEnabledFeatures::PaymentRequestShowConsumesUserActivationEnabled(
+          GetExecutionContext())) {
+    if (!is_user_gesture) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          "show() must be called with transient user activation");
+      return ScriptPromise();
+    }
+    // TODO(crbug.com/1130553): consume the user activation as well.
   }
 
   // TODO(crbug.com/825270): Pretend that a user gesture is provided to allow
