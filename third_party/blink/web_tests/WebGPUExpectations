@@ -49,21 +49,50 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,mapping:mapAsync,sta
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,mapping:mapAsync,usage,* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,mapping:mapAsync_,* [ Failure ]
 
+# Precision. Need a better way to compare expected values
 wpt_internal/webgpu/cts.html?q=webgpu:util,texture,texelData:unorm_texel_data_in_shader:format="rgba8unorm-srgb";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:util,texture,texelData:unorm_texel_data_in_shader:format="bgra8unorm-srgb";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:util,texture,texelData:ufloat_texel_data_in_shader:format="rg11b10ufloat";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:util,texture,texelData:ufloat_texel_data_in_shader:format="rgb9e5ufloat";* [ Failure ]
 
-# Many formats failing on Mac. Crash with validation layer on Linux. Also slow.
-# TODO: Split, once failures are cleaned up.
-wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="Sample";* [ Slow Failure Crash ]
+# Many formats failing on Windows
+[ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="Sample";* [ Failure ]
 
-# All failing, crash with validation layer. Seems also slow.
-wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="DepthTest";* [ Slow Failure Crash ]
+# r8unorm+rg8unorm only fail on Mac Intel mipLevelCount=5;uninitializeMethod="StoreOpClear";nonPowerOfTwo=false;
+[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="Sample";format="r8unorm";* [ Failure ]
+[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="Sample";format="rg8unorm";* [ Failure ]
+[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="Sample";format="rg11b10ufloat";* [ Failure ]
+[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="Sample";format="rgb9e5ufloat";* [ Failure ]
 
-# Failing on Mac in a few cases (same as CopyToBuffer).
+# Passing on Linux. Split by format.
+[ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="Sample";format="r8unorm";* [ Pass ]
+
+# Failing because crbug.com/tint/329 breaks FragDepth writes.
+# Win missing resource state D3D12_RESOURCE_STATE_DEPTH_WRITE
+[ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="DepthTest";* [ Failure ]
+[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="DepthTest";* [ Failure ]
+[ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="DepthTest";* [ Slow Failure Crash ]
+
+# Crash with validation layer. May also be slow.
+# Missing D3D12_RESOURCE_STATE_DEPTH_WRITE
+[ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="StencilTest";* [ Slow Failure Crash ]
+
 # Many cases failing on Windows. May also be slow.
-wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="CopyToTexture";* [ Slow Failure ]
+[ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="CopyToTexture";* [ Slow Failure ]
+[ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="CopyToBuffer";format="bgra8unorm";* [ Slow Pass ]
+
+# Only on Mac Intel mipLevelCount=5; ...; uninitializeMethod=StoreOpClear
+[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="CopyToBuffer";format="depth32float";* [ Failure ]
+[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="CopyToTexture";format="depth32float";* [ Failure ]
+
+# Only on Mac Intel ...;aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="_StoreOpClear;dimension="2d";sliceCount=1;nonPowerOfTwo=false
+[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="CopyToBuffer";format="r8unorm";* [ Failure ]
+[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="CopyToBuffer";format="rg8unorm";* [ Failure ]
+[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="CopyToTexture";format="r8unorm";* [ Failure ]
+[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="CopyToTexture";format="rg8unorm";* [ Failure ]
+
+[ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="CopyToTexture";format="bgra8unorm";* [ Pass ]
+[ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="CopyToBuffer";format="bgra8unorm";* [ Pass ]
 
 # Fails or crashes on numerous combinations of backends, hardware, and validation layers
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pass,resolve:* [ Failure Crash ]
@@ -127,15 +156,9 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,index_access:
 # Rendering differs slightly from ref.
 crbug.com/1083478 [ Mac ] wpt_internal/webgpu/webgpu/web_platform/reftests/canvas_complex_bgra8unorm.html [ Failure ]
 
+# Precision. Need a better way to compare expected values
 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:util,texture,texelData:unorm_texel_data_in_shader:format="rgb10a2unorm";* [ Failure ]
 
-# Widespread failures with depth32float
-[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="CopyToBuffer";format="depth32float";* [ Failure ]
-[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="CopyToTexture";format="depth32float";* [ Failure ]
-
-# Only ...;aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="_StoreOpClear;dimension="2d";sliceCount=1;nonPowerOfTwo=false
-[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="CopyToBuffer";format="r8unorm";* [ Failure ]
-[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="CopyToBuffer";format="rg8unorm";* [ Failure ]
 
 #
 # Linux (Vulkan) specific
@@ -157,5 +180,3 @@ crbug.com/1087130 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation
 # Very flaky on Windows/Linux, especially (but not exclusively!) with backend validation
 crbug.com/1087130 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:* [ RetryOnFailure ]
 
-# Crash with validation layer. May also be slow.
-[ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="StencilTest";* [ Slow Failure Crash ]
