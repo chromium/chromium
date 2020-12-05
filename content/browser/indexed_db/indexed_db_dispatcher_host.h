@@ -64,8 +64,6 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
 
   // A shortcut for accessing our context.
   IndexedDBContextImpl* context() const { return indexed_db_context_; }
-  storage::mojom::BlobStorageContext* mojo_blob_storage_context();
-  storage::mojom::NativeFileSystemContext* native_file_system_context();
 
   // Must be called on the IDB sequence.
   base::WeakPtr<IndexedDBDispatcherHost> AsWeakPtr() {
@@ -96,6 +94,9 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
 
  private:
   friend class IndexedDBDispatcherHostTest;
+
+  storage::mojom::BlobStorageContext* mojo_blob_storage_context();
+  storage::mojom::NativeFileSystemContext* native_file_system_context();
 
   // blink::mojom::IDBFactory implementation:
   void GetDatabaseInfo(mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
