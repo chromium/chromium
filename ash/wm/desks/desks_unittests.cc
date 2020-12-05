@@ -373,8 +373,8 @@ TEST_F(DesksTest, DesksCreationAndRemoval) {
 
   // Expect we've reached the max number of desks, and we've been notified only
   // with the newly created desks.
-  EXPECT_EQ(desks_util::kMaxNumberOfDesks, controller->desks().size());
-  EXPECT_EQ(desks_util::kMaxNumberOfDesks - 1, observer.desks().size());
+  EXPECT_EQ(desks_util::GetMaxNumberOfDesks(), controller->desks().size());
+  EXPECT_EQ(desks_util::GetMaxNumberOfDesks() - 1, observer.desks().size());
   EXPECT_TRUE(controller->CanRemoveDesks());
 
   // Remove all desks until no longer possible, and expect that there's always
@@ -420,11 +420,11 @@ TEST_F(DesksTest, DesksBarViewDeskCreation) {
 
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(button_center);
-  for (size_t i = 0; i < desks_util::kMaxNumberOfDesks + 2; ++i)
+  for (size_t i = 0; i < desks_util::GetMaxNumberOfDesks() + 2; ++i)
     event_generator->ClickLeftButton();
 
   EXPECT_TRUE(overview_grid->IsDesksBarViewActive());
-  EXPECT_EQ(desks_util::kMaxNumberOfDesks, controller->desks().size());
+  EXPECT_EQ(desks_util::GetMaxNumberOfDesks(), controller->desks().size());
   EXPECT_EQ(controller->desks().size(), desks_bar_view->mini_views().size());
   EXPECT_FALSE(controller->CanCreateDesks());
   EXPECT_TRUE(controller->CanRemoveDesks());
@@ -446,7 +446,7 @@ TEST_F(DesksTest, DesksBarViewDeskCreation) {
   event_generator->ClickLeftButton();
 
   // The new desk button is now enabled again.
-  EXPECT_EQ(desks_util::kMaxNumberOfDesks - 1, controller->desks().size());
+  EXPECT_EQ(desks_util::GetMaxNumberOfDesks() - 1, controller->desks().size());
   EXPECT_EQ(controller->desks().size(), desks_bar_view->mini_views().size());
   EXPECT_TRUE(controller->CanCreateDesks());
   EXPECT_TRUE(new_desk_button->GetEnabled());
@@ -490,7 +490,7 @@ TEST_F(DesksTest, GestureTapOnNewDeskButton) {
   // Gesture tap multiple times on the new desk button until it's disabled, and
   // verify the button state.
   auto* event_generator = GetEventGenerator();
-  for (size_t i = 0; i < desks_util::kMaxNumberOfDesks + 2; ++i)
+  for (size_t i = 0; i < desks_util::GetMaxNumberOfDesks() + 2; ++i)
     GestureTapOnView(new_desk_button, event_generator);
 
   EXPECT_FALSE(new_desk_button->GetEnabled());
@@ -2206,7 +2206,7 @@ TEST_F(TabletModeDesksTest, DesksCreationRemovalCycle) {
   // containers are reused for new desks, their backdrop state are always
   // correct, and there are no crashes as desks are removed.
   auto* desks_controller = DesksController::Get();
-  for (size_t i = 0; i < 2 * desks_util::kMaxNumberOfDesks; ++i) {
+  for (size_t i = 0; i < 2 * desks_util::GetMaxNumberOfDesks(); ++i) {
     NewDesk();
     ASSERT_EQ(2u, desks_controller->desks().size());
     const Desk* desk_1 = desks_controller->desks()[0].get();
@@ -3277,9 +3277,10 @@ namespace {
 
 TEST_F(DesksAcceleratorsTest, NewDesk) {
   auto* controller = DesksController::Get();
-  // It's possible to add up to `kMaxNumberOfDesks` desks using the shortcut.
+  // It's possible to add up to `GetMaxNumberOfDesks()` desks using the
+  // shortcut.
   const int flags = ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN;
-  for (size_t num_desks = 1; num_desks < desks_util::kMaxNumberOfDesks;
+  for (size_t num_desks = 1; num_desks < desks_util::GetMaxNumberOfDesks();
        ++num_desks) {
     DeskSwitchAnimationWaiter waiter;
     SendAccelerator(ui::VKEY_OEM_PLUS, flags);
@@ -3290,9 +3291,9 @@ TEST_F(DesksAcceleratorsTest, NewDesk) {
   }
 
   // When we reach the limit, the shortcut does nothing.
-  EXPECT_EQ(desks_util::kMaxNumberOfDesks, controller->desks().size());
+  EXPECT_EQ(desks_util::GetMaxNumberOfDesks(), controller->desks().size());
   SendAccelerator(ui::VKEY_OEM_PLUS, flags);
-  EXPECT_EQ(desks_util::kMaxNumberOfDesks, controller->desks().size());
+  EXPECT_EQ(desks_util::GetMaxNumberOfDesks(), controller->desks().size());
 }
 
 TEST_F(DesksAcceleratorsTest, CannotRemoveLastDesk) {
@@ -3784,6 +3785,8 @@ class DesksBentoTest : public DesksTest {
 // Tests desks name nudges, i.e. when a user creates a new desk, focus + clear
 // the new desk's renaming textfield.
 TEST_F(DesksBentoTest, NameNudges) {
+  // Make sure the display is large enough to hold the max number of desks.
+  UpdateDisplay("1200x800");
   auto* controller = DesksController::Get();
 
   // Start overview.
@@ -3805,7 +3808,7 @@ TEST_F(DesksBentoTest, NameNudges) {
   // time a new desk is created the new desk's name view should have focus, be
   // empty and have its accessible name set to the default desk name. Also, the
   // previous desk should be left with a default name.
-  for (size_t i = 1; i < desks_util::kMaxNumberOfDesks; ++i) {
+  for (size_t i = 1; i < desks_util::GetMaxNumberOfDesks(); ++i) {
     event_generator->ClickLeftButton();
     auto* desk_name_view = desks_bar_view->mini_views()[i]->desk_name_view();
     EXPECT_TRUE(desk_name_view->HasFocus());

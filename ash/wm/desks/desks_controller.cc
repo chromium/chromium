@@ -60,6 +60,14 @@ constexpr char kNumberOfWindowsOnDesk_3_HistogramName[] =
     "Ash.Desks.NumberOfWindowsOnDesk_3";
 constexpr char kNumberOfWindowsOnDesk_4_HistogramName[] =
     "Ash.Desks.NumberOfWindowsOnDesk_4";
+constexpr char kNumberOfWindowsOnDesk_5_HistogramName[] =
+    "Ash.Desks.NumberOfWindowsOnDesk_5";
+constexpr char kNumberOfWindowsOnDesk_6_HistogramName[] =
+    "Ash.Desks.NumberOfWindowsOnDesk_6";
+constexpr char kNumberOfWindowsOnDesk_7_HistogramName[] =
+    "Ash.Desks.NumberOfWindowsOnDesk_7";
+constexpr char kNumberOfWindowsOnDesk_8_HistogramName[] =
+    "Ash.Desks.NumberOfWindowsOnDesk_8";
 
 constexpr char kNumberOfDeskTraversalsHistogramName[] =
     "Ash.Desks.NumberOfDeskTraversals";
@@ -70,6 +78,12 @@ constexpr int kDeskTraversalsMaxValue = 20;
 // interval.
 constexpr base::TimeDelta kDeskTraversalsTimeout =
     base::TimeDelta::FromSeconds(5);
+
+constexpr int kDeskDefaultNameIds[] = {
+    IDS_ASH_DESKS_DESK_1_MINI_VIEW_TITLE, IDS_ASH_DESKS_DESK_2_MINI_VIEW_TITLE,
+    IDS_ASH_DESKS_DESK_3_MINI_VIEW_TITLE, IDS_ASH_DESKS_DESK_4_MINI_VIEW_TITLE,
+    IDS_ASH_DESKS_DESK_5_MINI_VIEW_TITLE, IDS_ASH_DESKS_DESK_6_MINI_VIEW_TITLE,
+    IDS_ASH_DESKS_DESK_7_MINI_VIEW_TITLE, IDS_ASH_DESKS_DESK_8_MINI_VIEW_TITLE};
 
 // Appends the given |windows| to the end of the currently active overview mode
 // session such that the most-recently used window is added first. If
@@ -232,15 +246,8 @@ DesksController* DesksController::Get() {
 
 // static
 base::string16 DesksController::GetDeskDefaultName(size_t desk_index) {
-  DCHECK_LT(desk_index, desks_util::kMaxNumberOfDesks);
-  constexpr int kStringIds[] = {IDS_ASH_DESKS_DESK_1_MINI_VIEW_TITLE,
-                                IDS_ASH_DESKS_DESK_2_MINI_VIEW_TITLE,
-                                IDS_ASH_DESKS_DESK_3_MINI_VIEW_TITLE,
-                                IDS_ASH_DESKS_DESK_4_MINI_VIEW_TITLE};
-  static_assert(desks_util::kMaxNumberOfDesks == base::size(kStringIds),
-                "Wrong default desks' names.");
-
-  return l10n_util::GetStringUTF16(kStringIds[desk_index]);
+  DCHECK_LT(desk_index, desks_util::GetMaxNumberOfDesks());
+  return l10n_util::GetStringUTF16(kDeskDefaultNameIds[desk_index]);
 }
 
 const Desk* DesksController::GetTargetActiveDesk() const {
@@ -280,7 +287,7 @@ bool DesksController::AreDesksBeingModified() const {
 }
 
 bool DesksController::CanCreateDesks() const {
-  return desks_.size() < desks_util::kMaxNumberOfDesks;
+  return desks_.size() < desks_util::GetMaxNumberOfDesks();
 }
 
 Desk* DesksController::GetNextDesk() const {
@@ -812,7 +819,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
 
   desks_restore_util::UpdatePrimaryUserDesksPrefs();
 
-  DCHECK_LE(available_container_ids_.size(), desks_util::kMaxNumberOfDesks);
+  DCHECK_LE(available_container_ids_.size(), desks_util::GetMaxNumberOfDesks());
 }
 
 const Desk* DesksController::FindDeskOfWindow(aura::Window* window) const {
@@ -850,6 +857,26 @@ void DesksController::ReportNumberOfWindowsPerDeskHistogram() const {
                                  windows_count);
         break;
 
+      case 4:
+        UMA_HISTOGRAM_COUNTS_100(kNumberOfWindowsOnDesk_5_HistogramName,
+                                 windows_count);
+        break;
+
+      case 5:
+        UMA_HISTOGRAM_COUNTS_100(kNumberOfWindowsOnDesk_6_HistogramName,
+                                 windows_count);
+        break;
+
+      case 6:
+        UMA_HISTOGRAM_COUNTS_100(kNumberOfWindowsOnDesk_7_HistogramName,
+                                 windows_count);
+        break;
+
+      case 7:
+        UMA_HISTOGRAM_COUNTS_100(kNumberOfWindowsOnDesk_8_HistogramName,
+                                 windows_count);
+        break;
+
       default:
         NOTREACHED();
         break;
@@ -858,9 +885,9 @@ void DesksController::ReportNumberOfWindowsPerDeskHistogram() const {
 }
 
 void DesksController::ReportDesksCountHistogram() const {
-  DCHECK_LE(desks_.size(), desks_util::kMaxNumberOfDesks);
+  DCHECK_LE(desks_.size(), desks_util::GetMaxNumberOfDesks());
   UMA_HISTOGRAM_EXACT_LINEAR(kDesksCountHistogramName, desks_.size(),
-                             desks_util::kMaxNumberOfDesks);
+                             desks_util::GetMaxNumberOfDesks());
 }
 
 void DesksController::UpdateDesksDefaultNames() {

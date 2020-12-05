@@ -36,6 +36,10 @@ class ASH_EXPORT AshFocusRules : public ::wm::BaseFocusRules {
       aura::Window* container,
       aura::Window* ignore) const;
 
+  // List of container IDs in the order of actiavation. This list doesn't change
+  // for the lifetime of this object.
+  const std::vector<int> activatable_container_ids_;
+
   DISALLOW_COPY_AND_ASSIGN(AshFocusRules);
 };
 

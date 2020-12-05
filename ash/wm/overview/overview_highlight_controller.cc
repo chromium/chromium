@@ -200,7 +200,7 @@ std::vector<OverviewHighlightController::OverviewHighlightableView*>
 OverviewHighlightController::GetTraversableViews() const {
   std::vector<OverviewHighlightableView*> traversable_views;
   traversable_views.reserve(overview_session_->num_items() +
-                            (desks_util::kMaxNumberOfDesks + 1) *
+                            (desks_util::GetMaxNumberOfDesks() + 1) *
                                 Shell::Get()->GetAllRootWindows().size());
   for (auto& grid : overview_session_->grid_list()) {
     auto* bar_view = grid->desks_bar_view();

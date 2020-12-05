@@ -4,6 +4,8 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 
+#include <array>
+
 #include "ash/public/cpp/ash_features.h"
 #include "base/stl_util.h"
 
@@ -11,7 +13,11 @@ namespace ash {
 
 namespace {
 
-constexpr std::array<int, 19> kActivatableContainersIds = {
+// TODO(minch): Consolidate the below lists when we launch Bento.
+
+// List of IDs of the containers whose windows are actiavated *before* windows
+// in the desks containers.
+constexpr std::array<int, 11> kPreDesksActivatableContainersIds = {
     kShellWindowId_OverlayContainer,
     kShellWindowId_LockSystemModalContainer,
     kShellWindowId_AccessibilityBubbleContainer,
@@ -23,10 +29,11 @@ constexpr std::array<int, 19> kActivatableContainersIds = {
     kShellWindowId_SystemModalContainer,
     kShellWindowId_AlwaysOnTopContainer,
     kShellWindowId_AppListContainer,
-    kShellWindowId_DefaultContainerDeprecated,
-    kShellWindowId_DeskContainerB,
-    kShellWindowId_DeskContainerC,
-    kShellWindowId_DeskContainerD,
+};
+
+// List of IDs of the containers whose windows are actiavated *after* windows in
+// the desks containers.
+constexpr std::array<int, 4> kPostDesksActivatableContainersIds = {
     kShellWindowId_HomeScreenContainer,
 
     // Launcher and status are intentionally checked after other containers
@@ -39,14 +46,30 @@ constexpr std::array<int, 19> kActivatableContainersIds = {
 
 }  // namespace
 
-// Note: this function avoids having a copy of |kActivatableContainersIds| in
-// each translation unit that references it.
-const std::array<int, 19>& GetActivatableShellWindowIds() {
-  return kActivatableContainersIds;
+std::vector<int> GetActivatableShellWindowIds() {
+  std::vector<int> ids(kPreDesksActivatableContainersIds.begin(),
+                       kPreDesksActivatableContainersIds.end());
+
+  // Add the desks containers IDs. Can't use desks_util since we're in
+  // ash/public here.
+  ids.emplace_back(kShellWindowId_DefaultContainerDeprecated);
+  ids.emplace_back(kShellWindowId_DeskContainerB);
+  ids.emplace_back(kShellWindowId_DeskContainerC);
+  ids.emplace_back(kShellWindowId_DeskContainerD);
+  if (features::IsBentoEnabled()) {
+    ids.emplace_back(kShellWindowId_DeskContainerE);
+    ids.emplace_back(kShellWindowId_DeskContainerF);
+    ids.emplace_back(kShellWindowId_DeskContainerG);
+    ids.emplace_back(kShellWindowId_DeskContainerH);
+  }
+
+  ids.insert(ids.end(), kPostDesksActivatableContainersIds.begin(),
+             kPostDesksActivatableContainersIds.end());
+  return ids;
 }
 
 bool IsActivatableShellWindowId(int id) {
-  return base::Contains(kActivatableContainersIds, id);
+  return base::Contains(GetActivatableShellWindowIds(), id);
 }
 
 }  // namespace ash

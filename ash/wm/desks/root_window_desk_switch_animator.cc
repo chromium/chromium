@@ -145,7 +145,7 @@ RootWindowDeskSwitchAnimator::RootWindowDeskSwitchAnimator(
   DCHECK_NE(starting_desk_index_, ending_desk_index_);
   DCHECK(delegate_);
 
-  screenshot_layers_.resize(desks_util::kMaxNumberOfDesks);
+  screenshot_layers_.resize(desks_util::GetMaxNumberOfDesks());
 }
 
 RootWindowDeskSwitchAnimator::~RootWindowDeskSwitchAnimator() {

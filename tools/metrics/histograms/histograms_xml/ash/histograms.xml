@@ -528,7 +528,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_1" units="units"
-    expires_after="2021-04-11">
+    expires_after="2021-06-30">
   <owner>afakhry@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
@@ -538,7 +538,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_2" units="units"
-    expires_after="2021-04-11">
+    expires_after="2021-06-30">
   <owner>afakhry@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
@@ -548,7 +548,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_3" units="units"
-    expires_after="2021-04-11">
+    expires_after="2021-06-30">
   <owner>afakhry@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
@@ -558,11 +558,51 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_4" units="units"
-    expires_after="2021-04-11">
+    expires_after="2021-06-30">
   <owner>afakhry@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
     The number of windows on the fourth desk. Emitted when a desk is removed, or
+    a window is moved to another desk.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.NumberOfWindowsOnDesk_5" units="units"
+    expires_after="2021-06-30">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    The number of windows on the fifth desk. Emitted when a desk is removed, or
+    a window is moved to another desk.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.NumberOfWindowsOnDesk_6" units="units"
+    expires_after="2021-06-30">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    The number of windows on the sixth desk. Emitted when a desk is removed, or
+    a window is moved to another desk.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.NumberOfWindowsOnDesk_7" units="units"
+    expires_after="2021-06-30">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    The number of windows on the seventh desk. Emitted when a desk is removed,
+    or a window is moved to another desk.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.NumberOfWindowsOnDesk_8" units="units"
+    expires_after="2021-06-30">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    The number of windows on the eighth desk. Emitted when a desk is removed, or
     a window is moved to another desk.
   </summary>
 </histogram>

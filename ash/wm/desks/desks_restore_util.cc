@@ -38,7 +38,7 @@ PrefService* GetPrimaryUserPrefService() {
 bool IsValidDeskIndex(int desk_index) {
   return desk_index >= 0 &&
          desk_index < int{DesksController::Get()->desks().size()} &&
-         desk_index < int{desks_util::kMaxNumberOfDesks};
+         desk_index < int{desks_util::GetMaxNumberOfDesks()};
 }
 
 }  // namespace
@@ -69,7 +69,7 @@ void RestorePrimaryUserDesks() {
 
   // If we don't have any restore data, or the list is corrupt for some reason,
   // abort.
-  if (!restore_size || restore_size > desks_util::kMaxNumberOfDesks)
+  if (!restore_size || restore_size > desks_util::GetMaxNumberOfDesks())
     return;
 
   auto* desks_controller = DesksController::Get();

@@ -579,7 +579,8 @@ TEST_F(DesksOverviewHighlightControllerTest,
   while (desks_controller->CanCreateDesks())
     SendKey(ui::VKEY_RETURN);
   EXPECT_FALSE(new_desk_button->GetEnabled());
-  EXPECT_EQ(desks_util::kMaxNumberOfDesks, desks_controller->desks().size());
+  EXPECT_EQ(desks_util::GetMaxNumberOfDesks(),
+            desks_controller->desks().size());
 
   // Tests that after the button is disabled, it is no longer highlighted.
   EXPECT_FALSE(GetHighlightedView());
@@ -737,6 +738,8 @@ class BentoOverviewHighlightControllerTest
 // desk button and Bento is enabled.
 TEST_F(BentoOverviewHighlightControllerTest,
        ActivateCloseHighlightOnNewDeskButton) {
+  // Make sure the display is large enough to hold the max number of desks.
+  UpdateDisplay("1200x800");
   ToggleOverview();
   const auto* desk_bar_view =
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
@@ -769,7 +772,8 @@ TEST_F(BentoOverviewHighlightControllerTest,
     SendKey(ui::VKEY_TAB);
   }
   EXPECT_FALSE(new_desk_button->GetEnabled());
-  EXPECT_EQ(desks_util::kMaxNumberOfDesks, desks_controller->desks().size());
+  EXPECT_EQ(desks_util::GetMaxNumberOfDesks(),
+            desks_controller->desks().size());
 }
 
 }  // namespace ash

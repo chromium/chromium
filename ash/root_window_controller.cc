@@ -224,10 +224,6 @@ void ReparentWindow(aura::Window* window, aura::Window* new_parent) {
 void ReparentAllWindows(aura::Window* src, aura::Window* dst) {
   // Set of windows to move.
   constexpr int kContainerIdsToMove[] = {
-      kShellWindowId_DefaultContainerDeprecated,
-      kShellWindowId_DeskContainerB,
-      kShellWindowId_DeskContainerC,
-      kShellWindowId_DeskContainerD,
       kShellWindowId_AlwaysOnTopContainer,
       kShellWindowId_PipContainer,
       kShellWindowId_SystemModalContainer,
@@ -241,8 +237,11 @@ void ReparentAllWindows(aura::Window* src, aura::Window* dst) {
       kShellWindowId_LockScreenContainer,
   };
 
-  std::vector<int> container_ids{std::begin(kContainerIdsToMove),
-                                 std::end(kContainerIdsToMove)};
+  // Desk container ids are different depends on whether Bento feature is
+  // enabled or not.
+  std::vector<int> container_ids = desks_util::GetDesksContainersIds();
+  for (const int id : kContainerIdsToMove)
+    container_ids.emplace_back(id);
 
   // Check the display mode as this is also necessary when trasitioning between
   // mirror and unified mode.
