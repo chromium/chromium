@@ -1,0 +1,16 @@
+<html>
+  <body style="height:5000px">
+    <p>A page that will rotate on touch.</p>
+  </body>
+  <script>
+    async function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+        await screen.orientation.lock("landscape-primary");
+      } else {
+        document.exitFullscreen();
+      }
+    }
+    document.addEventListener('touchend', function(e) { toggleFullscreen(); }, false);
+  </script>
+</html>

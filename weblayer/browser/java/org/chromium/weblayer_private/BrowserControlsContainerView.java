@@ -376,7 +376,12 @@ class BrowserControlsContainerView extends FrameLayout {
         mLastHeight = height;
         if (mLastWidth > 0 && mLastHeight > 0 && mViewResourceAdapter == null) {
             createAdapterAndLayer();
-            if (mLastShownAmountWithView == DEFAULT_LAST_SHOWN_AMOUNT && mSavedState != null) {
+            if (mIsFullscreen) {
+                // This calls setControlsOffset() as onOffsetsChanged() does (mostly) nothing when
+                // fullscreen.
+                setControlsOffset(mIsTop ? -mLastHeight : mLastHeight, 0);
+            } else if (mLastShownAmountWithView == DEFAULT_LAST_SHOWN_AMOUNT
+                    && mSavedState != null) {
                 // If there wasn't a View before and we have non-empty saved state from a previous
                 // BrowserControlsContainerView instance, apply those saved offsets now. We can't
                 // rely on BrowserControlsOffsetManager to notify us of the correct location as we
