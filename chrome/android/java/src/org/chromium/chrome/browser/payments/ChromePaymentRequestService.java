@@ -490,9 +490,6 @@ public class ChromePaymentRequestService
     public boolean invokePaymentApp(EditableOption selectedShippingAddress,
             EditableOption selectedShippingOption, PaymentApp selectedPaymentApp) {
         if (mPaymentRequestService == null || mSpec == null || mSpec.isDestroyed()) return false;
-        EditableOption selectedContact = mPaymentUiService.getContactSection() != null
-                ? mPaymentUiService.getContactSection().getSelectedItem()
-                : null;
         selectedPaymentApp.setPaymentHandlerHost(getPaymentHandlerHost());
         // Only native apps can use PaymentDetailsUpdateService.
         if (selectedPaymentApp.getPaymentAppType() == PaymentAppType.NATIVE_MOBILE_APP) {
@@ -500,9 +497,10 @@ public class ChromePaymentRequestService
                     ((AndroidPaymentApp) selectedPaymentApp).packageName(),
                     mPaymentRequestService /* PaymentApp.PaymentRequestUpdateEventListener */);
         }
-        PaymentResponseHelperInterface paymentResponseHelper = new ChromePaymentResponseHelper(
-                selectedShippingAddress, selectedShippingOption, selectedContact,
-                selectedPaymentApp, mSpec.getPaymentOptions(), mSkipToGPayHelper != null);
+        PaymentResponseHelperInterface paymentResponseHelper =
+                new ChromePaymentResponseHelper(selectedShippingAddress, selectedShippingOption,
+                        mPaymentUiService.getSelectedContact(), selectedPaymentApp,
+                        mSpec.getPaymentOptions(), mSkipToGPayHelper != null);
         mPaymentRequestService.invokePaymentApp(selectedPaymentApp, paymentResponseHelper);
         return !selectedPaymentApp.isAutofillInstrument();
     }

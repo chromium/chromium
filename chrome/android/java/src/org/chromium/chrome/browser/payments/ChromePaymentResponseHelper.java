@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.payments;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.NormalizedAddressRequestDelegate;
@@ -22,6 +24,7 @@ import org.chromium.payments.mojom.PaymentResponse;
  */
 public class ChromePaymentResponseHelper
         implements NormalizedAddressRequestDelegate, PaymentResponseHelperInterface {
+    @Nullable
     private final AutofillContact mSelectedContact;
     private final PaymentApp mSelectedPaymentApp;
     private final PaymentOptions mPaymentOptions;
@@ -37,13 +40,13 @@ public class ChromePaymentResponseHelper
      * Builds a helper to contruct and fill a PaymentResponse.
      * @param selectedShippingAddress The shipping address picked by the user.
      * @param selectedShippingOption  The shipping option picked by the user.
-     * @param selectedContact         The contact info picked by the user.
+     * @param selectedContact         The contact info picked by the user, can be null.
      * @param selectedPaymentApp      The payment app picked by the user.
      * @param paymentOptions          The paymentOptions of the corresponding payment request.
      * @param skipToGpay              Whether or not Gpay bridge is activated for skip to Gpay.
      */
     public ChromePaymentResponseHelper(EditableOption selectedShippingAddress,
-            EditableOption selectedShippingOption, EditableOption selectedContact,
+            EditableOption selectedShippingOption, @Nullable AutofillContact selectedContact,
             PaymentApp selectedPaymentApp, PaymentOptions paymentOptions, boolean skipToGpay) {
         mPaymentResponse = new PaymentResponse();
         mPaymentResponse.payer = new PayerDetail();
@@ -52,9 +55,7 @@ public class ChromePaymentResponseHelper
         mPaymentOptions = paymentOptions;
         mSkipToGpay = skipToGpay;
 
-        // Contacts are created in ChromePaymentRequestService.init(). These should all be instances
-        // of AutofillContact.
-        mSelectedContact = (AutofillContact) selectedContact;
+        mSelectedContact = selectedContact;
 
         // Set up the shipping option section of the response when it comes from payment sheet
         // (Shipping option comes from payment app when the app can handle shipping, or from Gpay

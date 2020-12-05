@@ -422,6 +422,12 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         return mUiShippingOptions;
     }
 
+    /** @return The selected contact, can be null. */
+    @Nullable
+    public AutofillContact getSelectedContact() {
+        return mContactSection != null ? (AutofillContact) mContactSection.getSelectedItem() : null;
+    }
+
     /** Get the contact editor on PaymentRequest UI. */
     public ContactEditor getContactEditor() {
         return mContactEditor;
