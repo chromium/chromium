@@ -8,14 +8,14 @@
 
 namespace printing {
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kAllowedColorModes[] = "allowedColorModes";
 const char kAllowedDuplexModes[] = "allowedDuplexModes";
 const char kAllowedPinModes[] = "allowedPinModes";
 const char kDefaultColorMode[] = "defaultColorMode";
 const char kDefaultDuplexMode[] = "defaultDuplexMode";
 const char kDefaultPinMode[] = "defaultPinMode";
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const char kPaperSizeName[] = "name";
 const char kPaperSizeNameCustomOption[] = "custom";

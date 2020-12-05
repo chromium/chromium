@@ -16,9 +16,9 @@ namespace features {
 // The following features are declared alphabetically. The features should be
 // documented with descriptions of their behaviors in the .cc file.
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 PRINTING_EXPORT extern const base::Feature kAdvancedPpdAttributes;
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_MAC)
 PRINTING_EXPORT extern const base::Feature kCupsIppPrintingBackend;

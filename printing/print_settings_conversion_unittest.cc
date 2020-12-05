@@ -61,7 +61,7 @@ TEST(PrintSettingsConversionTest, ConversionTest) {
   std::unique_ptr<PrintSettings> settings =
       PrintSettingsFromJobSettings(value.value());
   ASSERT_TRUE(settings);
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(settings->send_user_info());
   EXPECT_EQ("username@domain.net", settings->username());
   EXPECT_EQ("0000", settings->pin_value());
@@ -78,7 +78,7 @@ TEST(PrintSettingsConversionTest, ConversionTest) {
   EXPECT_FALSE(settings);
 }
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST(PrintSettingsConversionTest, ConversionTest_DontSendUsername) {
   base::Optional<base::Value> value = base::JSONReader::Read(kPrinterSettings);
   ASSERT_TRUE(value.has_value());

@@ -10,7 +10,7 @@
 
 namespace printing {
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Allowed printing modes as a bitmask.
 // This is used in pref file and should never change.
 enum class ColorModeRestriction {
@@ -46,7 +46,7 @@ PRINTING_EXPORT extern const char kAllowedPinModes[];
 PRINTING_EXPORT extern const char kDefaultColorMode[];
 PRINTING_EXPORT extern const char kDefaultDuplexMode[];
 PRINTING_EXPORT extern const char kDefaultPinMode[];
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Allowed background graphics modes.
 // This is used in pref file and should never change.

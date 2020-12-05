@@ -285,7 +285,7 @@ TEST_F(PrintBackendCupsIppHelperTest, OmitPapersWithSpecialVendorIds) {
                          "iso b0")));
 }
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PrintBackendCupsIppHelperTest, PinSupported) {
   printer_->SetSupportedOptions("job-password", MakeInteger(ipp_, 4));
   printer_->SetSupportedOptions("job-password-encryption",
@@ -364,6 +364,6 @@ TEST_F(PrintBackendCupsIppHelperTest, AdvancedCaps) {
   EXPECT_EQ(3u, caps.advanced_capabilities[5].values.size());
   histograms.ExpectUniqueSample("Printing.CUPS.IppAttributesCount", 5, 1);
 }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace printing

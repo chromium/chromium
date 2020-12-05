@@ -87,7 +87,7 @@ class PRINTING_EXPORT PrintingContext {
   // settings information.
   Result UpdatePrintSettings(base::Value job_settings);
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Updates Print Settings.
   Result UpdatePrintSettingsFromPOD(
       std::unique_ptr<PrintSettings> job_settings);

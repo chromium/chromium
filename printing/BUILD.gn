@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/sysroot.gni")
 import("//build/config/ui.gni")
@@ -14,7 +15,7 @@ if (is_mac) {
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
-if (use_cups && is_chromeos) {
+if (use_cups && is_chromeos_ash) {
   import("//printing/backend/tools/code_generator.gni")
 }
 
@@ -28,7 +29,7 @@ if ((enable_basic_printing && is_win) || enable_print_preview) {
 # Enable the CUPS IPP printing backend.
 # TODO(crbug.com/226176): Remove this after CUPS PPD API calls are removed.
 declare_args() {
-  use_cups_ipp = use_cups && !is_linux
+  use_cups_ipp = use_cups && !(is_linux || is_chromeos_lacros)
 }
 
 # Several targets want to include this header file. We separate it out
@@ -37,7 +38,7 @@ source_set("printing_export") {
   sources = [ "printing_export.h" ]
 }
 
-if (use_cups_ipp && is_chromeos) {
+if (use_cups_ipp && is_chromeos_ash) {
   ipp_handler_map_path = "$target_gen_dir/backend/ipp_handler_map.cc"
 
   ipp_code_generate("ipp_handlers_generate") {
@@ -125,7 +126,7 @@ component("printing") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     defines += [ "PRINT_BACKEND_AVAILABLE" ]
 
     sources += [
@@ -136,7 +137,7 @@ component("printing") {
     ]
   }
 
-  if (is_linux) {
+  if (is_linux || is_chromeos_lacros) {
     sources += [
       "printed_document_linux.cc",
       "printing_context_linux.cc",
@@ -239,7 +240,7 @@ component("printing") {
       ]
     }
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       deps += [ ":ipp_handlers_generate" ]
 
       sources += [
@@ -272,7 +273,7 @@ component("printing") {
     }
   }
 
-  if (use_cups_ipp || is_chromeos) {
+  if (use_cups_ipp || is_chromeos_ash) {
     sources += [
       "printer_query_result.h",
       "printer_status.cc",
@@ -381,7 +382,7 @@ test("printing_unittests") {
       sources += [ "backend/cups_ipp_helper_unittest.cc" ]
     }
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [ "printing_context_chromeos_unittest.cc" ]
     } else {
       sources += [

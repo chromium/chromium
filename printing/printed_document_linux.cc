@@ -8,7 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "printing/printing_context_linux.h"
 
-#if defined(OS_ANDROID) || BUILDFLAG(IS_ASH)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 #error "This file is not used on Android / ChromeOS ash-chrome"
 #endif
 

@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "printing/backend/mojom/print_backend.mojom.h"
 #include "printing/backend/print_backend.h"
@@ -29,7 +30,7 @@ const printing::PrinterSemanticCapsAndDefaults::Paper kPaperLedger{
     /*display_name=*/"Ledger", /*vendor_id=*/"89",
     /*size_um=*/gfx::Size(6600, 10200)};
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const printing::AdvancedCapability kAdvancedCapability1(
     /*name=*/"advanced_cap_bool",
     /*display_name=*/"Advanced Capability #1 (bool)",
@@ -55,7 +56,7 @@ const printing::AdvancedCapability kAdvancedCapability2(
     });
 const printing::AdvancedCapabilities kAdvancedCapabilities{
     kAdvancedCapability1, kAdvancedCapability2};
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 static constexpr bool kCollateCapable = true;
 static constexpr bool kCollateDefault = true;
@@ -83,7 +84,7 @@ static constexpr gfx::Size kDpi1200(1200, 1200);
 static constexpr gfx::Size kDpi1200x600(1200, 600);
 const std::vector<gfx::Size> kDpis{kDpi600, kDpi1200, kDpi1200x600};
 static constexpr gfx::Size kDefaultDpi = kDpi600;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 static constexpr bool kPinSupported = true;
 #endif
 
@@ -105,10 +106,10 @@ GenerateSamplePrinterSemanticCapsAndDefaults() {
   caps.default_paper = kPaperLetter;
   caps.dpis = kDpis;
   caps.default_dpi = kDefaultDpi;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   caps.pin_supported = kPinSupported;
   caps.advanced_capabilities = kAdvancedCapabilities;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return caps;
 }
@@ -189,7 +190,7 @@ TEST(PrintBackendMojomTraitsTest, TestSerializeAndDeserializePaper) {
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST(PrintBackendMojomTraitsTest,
      TestSerializeAndDeserializeAdvancedCapability) {
   for (const auto& advanced_capability : kAdvancedCapabilities) {
@@ -200,7 +201,7 @@ TEST(PrintBackendMojomTraitsTest,
     EXPECT_EQ(advanced_capability, output);
   }
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST(PrintBackendMojomTraitsTest,
      TestSerializeAndDeserializePrinterSemanticCapsAndDefaults) {
@@ -225,10 +226,10 @@ TEST(PrintBackendMojomTraitsTest,
   EXPECT_TRUE(kDefaultPaper == output.default_paper);
   EXPECT_EQ(kDpis, output.dpis);
   EXPECT_EQ(kDefaultDpi, output.default_dpi);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(kPinSupported, output.pin_supported);
   EXPECT_EQ(kAdvancedCapabilities, output.advanced_capabilities);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 TEST(PrintBackendMojomTraitsTest,
@@ -257,14 +258,14 @@ TEST(
   const printing::PrinterSemanticCapsAndDefaults::Papers
       kEmptyUserDefinedPapers{};
   const std::vector<gfx::Size> kEmptyDpis{};
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const printing::AdvancedCapabilities kEmptyAdvancedCapabilities{};
 #endif
 
   input.duplex_modes = kEmptyDuplexModes;
   input.user_defined_papers = kEmptyUserDefinedPapers;
   input.dpis = kEmptyDpis;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   input.advanced_capabilities = kEmptyAdvancedCapabilities;
 #endif
 
@@ -274,7 +275,7 @@ TEST(
   EXPECT_EQ(kEmptyDuplexModes, output.duplex_modes);
   EXPECT_EQ(kEmptyUserDefinedPapers, output.user_defined_papers);
   EXPECT_EQ(kEmptyDpis, output.dpis);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(kEmptyAdvancedCapabilities, output.advanced_capabilities);
 #endif
 }
@@ -331,7 +332,7 @@ TEST(
   EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
                printing::mojom::PrinterSemanticCapsAndDefaults>(input, output));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Use an advanced capability with same name but different other fields.
   printing::AdvancedCapability advancedCapability1Prime = kAdvancedCapability1;
   advancedCapability1Prime.type = printing::AdvancedCapability::Type::kInteger;

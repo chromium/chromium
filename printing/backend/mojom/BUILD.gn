@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
@@ -30,11 +31,14 @@ mojom("mojom") {
       ]
       traits_sources = [ "print_backend_mojom_traits.cc" ]
       traits_headers = [ "print_backend_mojom_traits.h" ]
-      traits_deps = [ "//printing:printing" ]
+      traits_deps = [
+        "//build:chromeos_buildflags",
+        "//printing:printing",
+      ]
     },
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     cpp_typemaps += [
       {
         types = [

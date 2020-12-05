@@ -25,7 +25,7 @@ PRINTING_EXPORT extern const char kIppPinEncryption[];
 PRINTING_EXPORT extern const char kCollated[];
 PRINTING_EXPORT extern const char kUncollated[];
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 PRINTING_EXPORT extern const char kIppDocumentAttributes[];
 PRINTING_EXPORT extern const char kIppJobAttributes[];
@@ -35,7 +35,7 @@ PRINTING_EXPORT extern const char kPinEncryptionNone[];
 PRINTING_EXPORT extern const char kOptionFalse[];
 PRINTING_EXPORT extern const char kOptionTrue[];
 
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace printing
 

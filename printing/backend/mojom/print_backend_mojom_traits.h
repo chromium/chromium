@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "build/chromeos_buildflags.h"
 #include "printing/backend/mojom/print_backend.mojom-shared.h"
 #include "printing/backend/print_backend.h"
 #include "printing/mojom/print.mojom.h"
@@ -63,7 +64,7 @@ struct StructTraits<printing::mojom::PaperDataView,
                    printing::PrinterSemanticCapsAndDefaults::Paper* out);
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 template <>
 struct EnumTraits<printing::mojom::AdvancedCapabilityType,
                   ::printing::AdvancedCapability::Type> {
@@ -114,7 +115,7 @@ struct StructTraits<printing::mojom::AdvancedCapabilityDataView,
   static bool Read(printing::mojom::AdvancedCapabilityDataView data,
                    ::printing::AdvancedCapability* out);
 };
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 template <>
 struct StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
@@ -174,7 +175,7 @@ struct StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
     return p.default_dpi;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   static bool pin_supported(const printing::PrinterSemanticCapsAndDefaults& p) {
     return p.pin_supported;
   }
@@ -182,7 +183,7 @@ struct StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
       const printing::PrinterSemanticCapsAndDefaults& p) {
     return p.advanced_capabilities;
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   static bool Read(printing::mojom::PrinterSemanticCapsAndDefaultsDataView data,
                    printing::PrinterSemanticCapsAndDefaults* out);
