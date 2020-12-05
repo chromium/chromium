@@ -76,7 +76,8 @@ constexpr LayoutUnit NGTableTypes::kTableMaxInlineSize;
 // "outer min-content and outer max-content widths for colgroups"
 NGTableTypes::Column NGTableTypes::CreateColumn(
     const ComputedStyle& style,
-    base::Optional<LayoutUnit> default_inline_size) {
+    base::Optional<LayoutUnit> default_inline_size,
+    bool is_table_fixed) {
   base::Optional<LayoutUnit> inline_size;
   base::Optional<LayoutUnit> min_inline_size;
   base::Optional<LayoutUnit> max_inline_size;
@@ -97,7 +98,8 @@ NGTableTypes::Column NGTableTypes::CreateColumn(
                 percentage_inline_size,
                 LayoutUnit() /* percent_border_padding */,
                 is_constrained,
-                is_collapsed};
+                is_collapsed,
+                is_table_fixed};
 }
 
 // Implements https://www.w3.org/TR/css-tables-3/#computing-cell-measures
@@ -280,6 +282,10 @@ void NGTableTypes::CellInlineConstraint::Encompass(
 void NGTableTypes::Column::Encompass(
     const base::Optional<NGTableTypes::CellInlineConstraint>& cell) {
   if (!cell)
+    return;
+
+  // Constrained columns in fixed tables take precedence over cells.
+  if (is_constrained && is_table_fixed)
     return;
 
   if (min_inline_size) {

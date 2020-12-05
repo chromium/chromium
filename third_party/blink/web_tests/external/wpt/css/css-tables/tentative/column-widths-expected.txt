@@ -39,5 +39,7 @@ PASS table 28
 PASS table 29
 PASS table 30
 PASS table 31
+PASS table 32
+PASS table 33
 Harness: the test ran to completion.
 

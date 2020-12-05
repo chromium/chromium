@@ -243,10 +243,12 @@ class ColumnConstraintsBuilder {
                 wtf_size_t span) {
     // COL creates SPAN constraints. Its width is col css width, or enclosing
     // colgroup css width.
-    NGTableTypes::Column col_constraint = NGTableTypes::CreateColumn(
-        column.Style(), !is_fixed_layout_ && colgroup_constraint_
-                            ? colgroup_constraint_->max_inline_size
-                            : base::nullopt);
+    NGTableTypes::Column col_constraint =
+        NGTableTypes::CreateColumn(column.Style(),
+                                   !is_fixed_layout_ && colgroup_constraint_
+                                       ? colgroup_constraint_->max_inline_size
+                                       : base::nullopt,
+                                   is_fixed_layout_);
     for (wtf_size_t i = 0; i < span; ++i)
       column_constraints_->data.push_back(col_constraint);
     column.GetLayoutBox()->ClearNeedsLayout();
@@ -254,8 +256,8 @@ class ColumnConstraintsBuilder {
 
   void EnterColgroup(const NGLayoutInputNode& colgroup,
                      wtf_size_t start_column_index) {
-    colgroup_constraint_ =
-        NGTableTypes::CreateColumn(colgroup.Style(), base::nullopt);
+    colgroup_constraint_ = NGTableTypes::CreateColumn(
+        colgroup.Style(), base::nullopt, is_fixed_layout_);
   }
 
   void LeaveColgroup(const NGLayoutInputNode& colgroup,

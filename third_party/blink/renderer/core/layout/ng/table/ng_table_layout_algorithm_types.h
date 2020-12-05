@@ -66,6 +66,7 @@ class CORE_EXPORT NGTableTypes {
     // True if any cell for this column is constrained.
     bool is_constrained = false;
     bool is_collapsed = false;
+    bool is_table_fixed = false;
 
     void Encompass(const base::Optional<NGTableTypes::CellInlineConstraint>&);
     LayoutUnit ResolvePercentInlineSize(
@@ -180,7 +181,8 @@ class CORE_EXPORT NGTableTypes {
   };
 
   static Column CreateColumn(const ComputedStyle&,
-                             base::Optional<LayoutUnit> default_inline_size);
+                             base::Optional<LayoutUnit> default_inline_size,
+                             bool is_table_fixed);
 
   static CellInlineConstraint CreateCellInlineConstraint(
       const NGBlockNode&,
