@@ -720,6 +720,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   StartupData* startup_data() { return &startup_data_; }
 
+  std::unique_ptr<content::IdentityRequestDialogController>
+  CreateIdentityRequestDialogController() override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

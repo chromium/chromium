@@ -159,6 +159,7 @@
 #include "chrome/browser/ui/sync/sync_promo_ui.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webid/identity_dialog_controller.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/ui/webui/log_web_ui_url.h"
 #include "chrome/browser/usb/frame_usb_services.h"
@@ -5931,6 +5932,11 @@ bool ChromeContentBrowserClient::HasErrorPage(int http_status_code) {
   // Use an internal error page, if we have one for the status code.
   return error_page::LocalizedError::HasStrings(
       error_page::Error::kHttpErrorDomain, http_status_code);
+}
+
+std::unique_ptr<content::IdentityRequestDialogController>
+ChromeContentBrowserClient::CreateIdentityRequestDialogController() {
+  return std::make_unique<IdentityDialogController>();
 }
 
 void ChromeContentBrowserClient::OnKeepaliveTimerFired(

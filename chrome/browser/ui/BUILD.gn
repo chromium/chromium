@@ -185,6 +185,8 @@ static_library("ui") {
     "uninstall_browser_prompt.h",
     "view_ids.h",
     "webauthn/authenticator_request_dialog.h",
+    "webid/identity_dialog_controller.cc",
+    "webid/identity_dialog_controller.h",
     "webui/about_ui.cc",
     "webui/about_ui.h",
     "webui/autofill_and_password_manager_internals/autofill_internals_ui.cc",

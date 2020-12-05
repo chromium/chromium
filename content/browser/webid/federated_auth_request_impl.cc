@@ -7,6 +7,7 @@
 #include "base/callback.h"
 #include "base/strings/string_piece.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/common/content_client.h"
 #include "url/url_constants.h"
 
 using blink::mojom::RequestIdTokenStatus;
@@ -87,9 +88,12 @@ void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
   network_manager_ =
       IdpNetworkRequestManager::Create(provider, render_frame_host());
   if (!network_manager_) {
-    std::move(callback_).Run(RequestIdTokenStatus::kError, "");
+    CompleteRequest(RequestIdTokenStatus::kError, "");
     return;
   }
+
+  request_dialog_controller_ =
+      GetContentClient()->browser()->CreateIdentityRequestDialogController();
 
   network_manager_->FetchIDPWellKnown(
       base::BindOnce(&FederatedAuthRequestImpl::OnWellKnownFetched,
@@ -101,12 +105,12 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
     const std::string& idp_endpoint) {
   switch (status) {
     case IdpNetworkRequestManager::FetchStatus::kWebIdNotSupported: {
-      std::move(callback_).Run(
-          RequestIdTokenStatus::kErrorWebIdNotSupportedByProvider, "");
+      CompleteRequest(RequestIdTokenStatus::kErrorWebIdNotSupportedByProvider,
+                      "");
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kFetchError: {
-      std::move(callback_).Run(RequestIdTokenStatus::kError, "");
+      CompleteRequest(RequestIdTokenStatus::kError, "");
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kSuccess: {
@@ -119,18 +123,19 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
   // provider, or is that not a requirement?
   // https://crbug.com/1141125
   if (!IdpUrlIsValid(idp_endpoint_url_)) {
-    std::move(callback_).Run(RequestIdTokenStatus::kError, "");
+    CompleteRequest(RequestIdTokenStatus::kError, "");
     return;
   }
 
-  // TODO(kenrb): Call out to the consent UI with OnSigninApproved as a
-  // callback. https://crbug.com/1141125.
-  OnSigninApproved(true);
+  request_dialog_controller_->ShowInitialPermissionDialog(
+      base::BindOnce(&FederatedAuthRequestImpl::OnSigninApproved,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FederatedAuthRequestImpl::OnSigninApproved(bool approval_granted) {
-  if (!approval_granted) {
-    std::move(callback_).Run(RequestIdTokenStatus::kApprovalDeclined, "");
+void FederatedAuthRequestImpl::OnSigninApproved(
+    IdentityRequestDialogController::UserApproval approval) {
+  if (approval != IdentityRequestDialogController::UserApproval::kApproved) {
+    CompleteRequest(RequestIdTokenStatus::kApprovalDeclined, "");
     return;
   }
 
@@ -149,23 +154,54 @@ void FederatedAuthRequestImpl::OnSigninResponseReceived(
     case IdpNetworkRequestManager::SigninResponse::kLoadIdp: {
       GURL idp_signin_page_url = GURL(base::StringPiece(response));
       if (!IdpUrlIsValid(idp_signin_page_url)) {
-        std::move(callback_).Run(RequestIdTokenStatus::kError, "");
+        CompleteRequest(RequestIdTokenStatus::kError, "");
         return;
       }
-    }
-      // TODO(kenrb): Create window and load IDP URL. For now just return
-      // success. https://crbug.com/1141125.
-      std::move(callback_).Run(RequestIdTokenStatus::kSuccess, "");
+      request_dialog_controller_->ShowIdProviderWindow(
+          idp_signin_page_url,
+          base::BindOnce(&FederatedAuthRequestImpl::OnIdpPageClosed,
+                         weak_ptr_factory_.GetWeakPtr()));
       return;
+    }
     case IdpNetworkRequestManager::SigninResponse::kTokenGranted: {
-      std::move(callback_).Run(RequestIdTokenStatus::kSuccess, response);
+      // TODO(kenrb): Returning success here has to be dependent on whether
+      // a WebID flow has succeeded in the past, otherwise jump to
+      // the token permission dialog.
+      CompleteRequest(RequestIdTokenStatus::kSuccess, response);
       return;
     }
     case IdpNetworkRequestManager::SigninResponse::kSigninError: {
-      std::move(callback_).Run(RequestIdTokenStatus::kError, "");
+      CompleteRequest(RequestIdTokenStatus::kError, "");
       return;
     }
   }
+}
+
+void FederatedAuthRequestImpl::OnIdpPageClosed() {
+  // TODO(kenrb): This needs to take a token that was provided by the IDP,
+  // or have an abort path if none provided.
+  request_dialog_controller_->ShowTokenExchangePermissionDialog(
+      base::BindOnce(&FederatedAuthRequestImpl::OnTokenProvisionApproved,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FederatedAuthRequestImpl::OnTokenProvisionApproved(
+    IdentityRequestDialogController::UserApproval approval) {
+  if (approval != IdentityRequestDialogController::UserApproval::kApproved) {
+    CompleteRequest(RequestIdTokenStatus::kApprovalDeclined, "");
+    return;
+  }
+
+  // TODO(kenrb): Token gets returned here.
+  CompleteRequest(RequestIdTokenStatus::kSuccess, "");
+}
+
+void FederatedAuthRequestImpl::CompleteRequest(
+    blink::mojom::RequestIdTokenStatus status,
+    const std::string& id_token) {
+  request_dialog_controller_.reset();
+  network_manager_.reset();
+  std::move(callback_).Run(status, id_token);
 }
 
 }  // namespace content

@@ -187,7 +187,7 @@ void IdpNetworkRequestManager::SendSigninRequest(
 
 void IdpNetworkRequestManager::OnWellKnownLoaded(
     std::unique_ptr<std::string> response_body) {
-  url_loader_.reset(nullptr);
+  url_loader_.reset();
 
   int response_code = -1;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
@@ -245,7 +245,7 @@ void IdpNetworkRequestManager::OnSigninRequestResponse(
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
     response_code = url_loader_->ResponseInfo()->headers->response_code();
 
-  url_loader_.reset(nullptr);
+  url_loader_.reset();
 
   if (!response_body) {
     std::move(signin_request_callback_)

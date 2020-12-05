@@ -13,6 +13,7 @@
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_service_base.h"
+#include "content/public/browser/identity_request_dialog_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/gurl.h"
@@ -35,10 +36,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   static void Create(RenderFrameHost*,
                      mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
 
-  ~FederatedAuthRequestImpl() override;
-
   FederatedAuthRequestImpl(const FederatedAuthRequestImpl&) = delete;
   FederatedAuthRequestImpl& operator=(const FederatedAuthRequestImpl&) = delete;
+
+  ~FederatedAuthRequestImpl() override;
 
   // blink::mojom::FederatedAuthRequest:
   void RequestIdToken(const GURL& provider,
@@ -52,11 +53,19 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   void OnWellKnownFetched(IdpNetworkRequestManager::FetchStatus status,
                           const std::string& idp_endpoint);
-  void OnSigninApproved(bool approval_granted);
+
+  void OnSigninApproved(IdentityRequestDialogController::UserApproval approval);
   void OnSigninResponseReceived(IdpNetworkRequestManager::SigninResponse status,
                                 const std::string& response);
+  void OnIdpPageClosed();
+  void OnTokenProvisionApproved(
+      IdentityRequestDialogController::UserApproval approval);
+
+  void CompleteRequest(blink::mojom::RequestIdTokenStatus,
+                       const std::string& id_token);
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
+  std::unique_ptr<IdentityRequestDialogController> request_dialog_controller_;
 
   // Parameters of auth request.
   GURL provider_;

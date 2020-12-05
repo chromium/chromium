@@ -26,6 +26,7 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/browser/client_certificate_delegate.h"
+#include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/navigation_ui_data.h"
@@ -1143,6 +1144,11 @@ void ContentBrowserClient::GetHyphenationDictionary(
 
 bool ContentBrowserClient::HasErrorPage(int http_status_code) {
   return false;
+}
+
+std::unique_ptr<IdentityRequestDialogController>
+ContentBrowserClient::CreateIdentityRequestDialogController() {
+  return nullptr;
 }
 
 }  // namespace content
