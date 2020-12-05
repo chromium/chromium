@@ -70,6 +70,7 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
   void rotate(SkScalar degrees) override;
   void concat(const SkMatrix& matrix) override;
   void setMatrix(const SkMatrix& matrix) override;
+  void setMatrix(const SkM44& matrix) override;
 
   void clipRect(const SkRect& rect, SkClipOp op, bool do_anti_alias) override;
   void clipRRect(const SkRRect& rrect,

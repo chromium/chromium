@@ -352,6 +352,7 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
       case PaintOpType::Concat:
       case PaintOpType::Scale:
       case PaintOpType::SetMatrix:
+      case PaintOpType::SetMatrix44:
       case PaintOpType::Restore:
       case PaintOpType::Rotate:
       case PaintOpType::Save:

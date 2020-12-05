@@ -48,6 +48,7 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   void rotate(SkScalar degrees) override;
   void concat(const SkMatrix& matrix) override;
   void setMatrix(const SkMatrix& matrix) override;
+  void setMatrix(const SkM44& matrix) override;
 
   void clipRect(const SkRect& rect, SkClipOp op, bool antialias) override;
   void clipRRect(const SkRRect& rrect, SkClipOp op, bool antialias) override;

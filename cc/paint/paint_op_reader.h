@@ -71,6 +71,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(sk_sp<PaintFilter>* filter);
   void Read(sk_sp<PaintShader>* shader);
   void Read(SkMatrix* matrix);
+  void Read(SkM44* matrix);
   void Read(SkColorType* color_type);
   void Read(SkImageInfo* info);
   void Read(sk_sp<SkColorSpace>* color_space);

@@ -646,6 +646,10 @@ void PaintOpReader::Read(SkMatrix* matrix) {
   FixupMatrixPostSerialization(matrix);
 }
 
+void PaintOpReader::Read(SkM44* matrix) {
+  ReadSimple(matrix);
+}
+
 void PaintOpReader::Read(SkColorType* color_type) {
   uint32_t raw_color_type = kUnknown_SkColorType;
   ReadSimple(&raw_color_type);

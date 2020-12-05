@@ -1103,6 +1103,21 @@ std::vector<SkMatrix> test_matrices = {
     }(),
 };
 
+std::vector<SkM44> test_matrix44s = {
+    SkM44(),
+    SkM44::Scale(3.91f, 4.31f, 1.0f),
+    SkM44::Translate(-5.2f, 8.7f, 0.0f),
+    [] {
+      SkScalar buffer[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+      return SkM44::RowMajor(buffer);
+    }(),
+    [] {
+      SkScalar buffer[] = {1, 2,  3,  4,  5,  6,  7,  8,
+                           9, 10, 11, 12, 13, 14, 15, 16};
+      return SkM44::RowMajor(buffer);
+    }(),
+};
+
 std::vector<SkPath> test_paths = {
     [] {
       SkPath path;
@@ -1663,6 +1678,12 @@ void PushSetMatrixOps(PaintOpBuffer* buffer) {
   ValidateOps<SetMatrixOp>(buffer);
 }
 
+void PushSetMatrix44Ops(PaintOpBuffer* buffer) {
+  for (auto& test_matrix44 : test_matrix44s)
+    buffer->push<SetMatrix44Op>(test_matrix44);
+  ValidateOps<SetMatrix44Op>(buffer);
+}
+
 void PushTranslateOps(PaintOpBuffer* buffer) {
   for (size_t i = 0; i < test_floats.size() - 1; i += 2)
     buffer->push<TranslateOp>(test_floats[i], test_floats[i + 1]);
@@ -1764,6 +1785,9 @@ class PaintOpSerializationTest : public ::testing::TestWithParam<uint8_t> {
         break;
       case PaintOpType::SetMatrix:
         PushSetMatrixOps(&buffer_);
+        break;
+      case PaintOpType::SetMatrix44:
+        PushSetMatrix44Ops(&buffer_);
         break;
       case PaintOpType::Translate:
         PushTranslateOps(&buffer_);

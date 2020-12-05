@@ -207,6 +207,12 @@ class PaintOpHelper {
             << PaintOpHelper::SkiaTypeToString(op->matrix) << ")";
         break;
       }
+      case PaintOpType::SetMatrix44: {
+        const auto* op = static_cast<const SetMatrix44Op*>(base_op);
+        str << "SetMatrix44Op(matrix="
+            << PaintOpHelper::SkiaTypeToString(op->matrix) << ")";
+        break;
+      }
       case PaintOpType::Translate: {
         const auto* op = static_cast<const TranslateOp*>(base_op);
         str << "TranslateOp(dx=" << PaintOpHelper::SkiaTypeToString(op->dx)

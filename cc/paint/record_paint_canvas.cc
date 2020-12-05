@@ -117,6 +117,11 @@ void RecordPaintCanvas::setMatrix(const SkMatrix& matrix) {
   GetCanvas()->setMatrix(matrix);
 }
 
+void RecordPaintCanvas::setMatrix(const SkM44& matrix) {
+  list_->push<SetMatrix44Op>(matrix);
+  GetCanvas()->setMatrix(matrix);
+}
+
 void RecordPaintCanvas::clipRect(const SkRect& rect,
                                  SkClipOp op,
                                  bool antialias) {

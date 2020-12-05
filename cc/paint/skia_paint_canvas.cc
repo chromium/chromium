@@ -93,6 +93,10 @@ void SkiaPaintCanvas::rotate(SkScalar degrees) {
   canvas_->rotate(degrees);
 }
 
+void SkiaPaintCanvas::setMatrix(const SkM44& matrix) {
+  canvas_->setMatrix(matrix);
+}
+
 void SkiaPaintCanvas::concat(const SkMatrix& matrix) {
   canvas_->concat(matrix);
 }

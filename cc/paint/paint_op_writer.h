@@ -53,6 +53,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
 
   void Write(SkScalar data);
   void Write(SkMatrix data);
+  void Write(const SkM44& data);
   void Write(uint8_t data);
   void Write(uint32_t data);
   void Write(uint64_t data);

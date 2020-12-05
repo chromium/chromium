@@ -34,6 +34,7 @@ class MockPaintCanvas : public cc::PaintCanvas {
   MOCK_METHOD1(rotate, void(SkScalar degrees));
   MOCK_METHOD1(concat, void(const SkMatrix& matrix));
   MOCK_METHOD1(setMatrix, void(const SkMatrix& matrix));
+  MOCK_METHOD1(setMatrix, void(const SkM44& matrix));
   MOCK_METHOD3(clipRect,
                void(const SkRect& rect, SkClipOp op, bool do_anti_alias));
   MOCK_METHOD3(clipRRect,

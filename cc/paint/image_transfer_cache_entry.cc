@@ -260,7 +260,7 @@ bool ClientImageTransferCacheEntry::Serialize(base::span<uint8_t> data) const {
   // We don't need to populate the SerializeOptions here since the writer is
   // only used for serializing primitives.
   PaintOp::SerializeOptions options(nullptr, nullptr, nullptr, nullptr, nullptr,
-                                    nullptr, false, false, 0, SkMatrix::I());
+                                    nullptr, false, false, 0, SkM44());
   PaintOpWriter writer(data.data(), data.size(), options);
   writer.Write(plane_config_);
 

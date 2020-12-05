@@ -20,7 +20,7 @@ StructTraits<viz::mojom::PaintFilterDataView, sk_sp<cc::PaintFilter>>::data(
   // and serialization of PaintRecords.
   cc::PaintOp::SerializeOptions options(nullptr, nullptr, nullptr, nullptr,
                                         nullptr, nullptr, false, false, 0,
-                                        SkMatrix::I());
+                                        SkM44());
   cc::PaintOpWriter writer(memory.data(), memory.size(), options,
                            true /* enable_security_constraints */);
   writer.Write(filter.get());

@@ -105,6 +105,7 @@ enum class PaintOpType : uint8_t {
   SaveLayerAlpha,
   Scale,
   SetMatrix,
+  SetMatrix44,
   SetNodeId,
   Translate,
   LastPaintOpType = Translate,
@@ -130,6 +131,7 @@ struct CC_PAINT_EXPORT PlaybackParams {
   PlaybackParams& operator=(const PlaybackParams& other);
 
   ImageProvider* image_provider;
+  // TODO(aaronhk) turn this into an SkM44
   SkMatrix original_ctm;
   CustomDataRasterCallback custom_callback;
   DidDrawOpCallback did_draw_op_callback;
@@ -166,7 +168,7 @@ class CC_PAINT_EXPORT PaintOp {
                      bool can_use_lcd_text,
                      bool context_supports_distance_field_text,
                      int max_texture_size,
-                     const SkMatrix& original_ctm);
+                     const SkM44& original_ctm);
     SerializeOptions(const SerializeOptions&);
     SerializeOptions& operator=(const SerializeOptions&);
     ~SerializeOptions();
@@ -181,7 +183,7 @@ class CC_PAINT_EXPORT PaintOp {
     bool can_use_lcd_text = false;
     bool context_supports_distance_field_text = true;
     int max_texture_size = 0;
-    SkMatrix original_ctm = SkMatrix::I();
+    SkM44 original_ctm = SkM44();  // Identity
 
     // Optional.
     // The flags to use when serializing this op. This can be used to override
@@ -332,6 +334,7 @@ class CC_PAINT_EXPORT PaintOp {
   static bool AreSkRectsEqual(const SkRect& left, const SkRect& right);
   static bool AreSkRRectsEqual(const SkRRect& left, const SkRRect& right);
   static bool AreSkMatricesEqual(const SkMatrix& left, const SkMatrix& right);
+  static bool AreSkM44sEqual(const SkM44& left, const SkM44& right);
   static bool AreSkFlattenablesEqual(SkFlattenable* left, SkFlattenable* right);
 
   static constexpr bool kIsDrawOp = false;
@@ -954,6 +957,24 @@ class CC_PAINT_EXPORT SetMatrixOp final : public PaintOp {
 
  private:
   SetMatrixOp() : PaintOp(kType) {}
+};
+
+class CC_PAINT_EXPORT SetMatrix44Op final : public PaintOp {
+ public:
+  static constexpr PaintOpType kType = PaintOpType::SetMatrix44;
+  explicit SetMatrix44Op(const SkM44& matrix)
+      : PaintOp(kType), matrix(matrix) {}
+  static void Raster(const SetMatrix44Op* op,
+                     SkCanvas* canvas,
+                     const PlaybackParams& params);
+  bool IsValid() const { return true; }
+  static bool AreEqual(const PaintOp* left, const PaintOp* right);
+  HAS_SERIALIZATION_FUNCTIONS();
+
+  SkM44 matrix;
+
+ private:
+  SetMatrix44Op() : PaintOp(kType) {}
 };
 
 class CC_PAINT_EXPORT SetNodeIdOp final : public PaintOp {

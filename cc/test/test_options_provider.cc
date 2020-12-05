@@ -47,7 +47,7 @@ TestOptionsProvider::TestOptionsProvider()
                          can_use_lcd_text_,
                          context_supports_distance_field_text_,
                          max_texture_size_,
-                         SkMatrix::I()),
+                         SkM44()),
       deserialize_options_(this,
                            &service_paint_cache_,
                            &strike_client_,

@@ -380,7 +380,7 @@ PaintOp::SerializeOptions PaintOpBufferSerializer::MakeSerializeOptions() {
       image_provider_, transfer_cache_, paint_cache_, text_blob_canvas_.get(),
       strike_server_, color_space_, can_use_lcd_text_,
       context_supports_distance_field_text_, max_texture_size_,
-      text_blob_canvas_->getTotalMatrix());
+      text_blob_canvas_->getLocalToDevice());
 }
 
 SimpleBufferSerializer::SimpleBufferSerializer(

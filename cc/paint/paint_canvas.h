@@ -76,8 +76,12 @@ class CC_PAINT_EXPORT PaintCanvas {
   virtual void translate(SkScalar dx, SkScalar dy) = 0;
   virtual void scale(SkScalar sx, SkScalar sy) = 0;
   virtual void rotate(SkScalar degrees) = 0;
+  // TODO(aaronhk): crbug.com/1153330 deprecate these in favor of the SkM44
+  // versions. Also add concat with a SkM44 argument
   virtual void concat(const SkMatrix& matrix) = 0;
   virtual void setMatrix(const SkMatrix& matrix) = 0;
+
+  virtual void setMatrix(const SkM44& matrix) = 0;
 
   virtual void clipRect(const SkRect& rect,
                         SkClipOp op,
