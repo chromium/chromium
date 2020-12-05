@@ -21,9 +21,11 @@ COMPONENT_EXPORT(CFM_FEATURES)
 extern const base::FeatureParam<bool> kCfmTelemetryParam;
 
 // Whether cross platform mojo connections is enabled.
+COMPONENT_EXPORT(CFM_FEATURES)
 bool IsCfmMojoEnabled();
 
 // Whether Telemetry through Encrypted Reporting Pipeline is enabled.
+COMPONENT_EXPORT(CFM_FEATURES)
 bool IsCfmTelemetryEnabled();
 
 }  // namespace features
