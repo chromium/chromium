@@ -300,7 +300,8 @@ bool IsDefaultSupportedVideoType(const VideoType& type) {
       return IsColorSpaceSupported(type.color_space);
 #else
 #if defined(OS_ANDROID)
-      if (base::android::BuildInfo::GetInstance()->is_at_least_q() &&
+      if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+              base::android::SDK_VERSION_Q &&
           IsColorSpaceSupported(type.color_space)) {
         return true;
       }

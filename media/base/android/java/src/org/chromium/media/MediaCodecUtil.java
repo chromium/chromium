@@ -18,7 +18,6 @@ import android.os.Build;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -427,7 +426,7 @@ class MediaCodecUtil {
                 return false;
             }
         } else if (mime.equals(MimeTypes.VIDEO_AV1)) {
-            if (!BuildInfo.isAtLeastQ()) return false;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return false;
         }
         // *************************************************************
         // *** DO NOT ADD ANY NEW CODECS WITHOUT UPDATING MIME_UTIL. ***
