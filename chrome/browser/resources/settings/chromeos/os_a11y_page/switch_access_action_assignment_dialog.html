@@ -16,6 +16,10 @@
         width: 420px;
       }
 
+      #prompt {
+        height: 40px;
+      }
+
       #switchAssignments {
         background-color: var(--google-grey-refresh-100);
         border-radius: 4px;
@@ -39,7 +43,7 @@
     <cr-dialog id="switchAccessActionAssignmentDialog" show-on-attach>
       <div slot="title">[[dialogTitle_]]</div>
       <div slot="body">
-        <div aria-live="polite">
+        <div id="prompt" aria-live="polite">
           [[promptText_]]
         </div>
         <div id="switchAssignments">
