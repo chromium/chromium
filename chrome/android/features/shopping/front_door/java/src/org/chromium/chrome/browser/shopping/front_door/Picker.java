@@ -6,6 +6,7 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ViewBuilder;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -90,6 +92,36 @@ public class Picker {
         }
 
         mRecyclerView.setAdapter(mAdapter);
+
+        RecyclerView.RecyclerListener recyclerListener = (holder) -> {
+            Log.e("Meil", "picker on recycle");
+            View view = holder.itemView;
+
+            if (isCategoryPicker) {
+            } else {
+                ImageView favicon = (ImageView) view.findViewById(R.id.favicon);
+                clearResource(favicon);
+
+                ImageView startImage = (ImageView) view.findViewById(R.id.start_image);
+                clearResource(startImage);
+
+                ImageView endTopImage = (ImageView) view.findViewById(R.id.end_top_image);
+                clearResource(endTopImage);
+
+                ImageView endBottomImage = (ImageView) view.findViewById(R.id.end_bottom_image);
+                clearResource(endBottomImage);
+            }
+        };
+        mRecyclerView.setRecyclerListener(recyclerListener);
+    }
+
+    private void clearResource(ImageView imageView) {
+        if (imageView == null) {
+            Log.e("Meil_pickerRecyclerListen", "image view is null");
+            return;
+        }
+        imageView.setImageResource(org.chromium.chrome.browser.shopping.front_door.R.color
+                                           .thumbnail_placeholder_on_primary_bg);
     }
 
     public View getView() {

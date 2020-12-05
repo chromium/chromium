@@ -20,6 +20,7 @@ public class OnboardBrandParser {
     private static final String BRAND_MID_KEY = "brandMid";
     private static final String BRAND_CATEGORY_LIST_KEY = "categories";
     private static final String BRAND_REPRESENTATIVE_IMAGES_KEY = "representativeImageUrls";
+    private static final String BRAND_LOGO_KEY = "imageUrl";
 
     public static void parse(
             String json, Map<String, List<BrandInfo>> categoryKeyToBrandResultMap) {
@@ -39,9 +40,38 @@ public class OnboardBrandParser {
                 for (int i = 0; i < brands.length(); i++) {
                     JSONObject brand = brands.getJSONObject(i);
 
-                    String brandName = brand.getString(BRAND_NAME_KEY);
-                    String brandUrl = brand.getString(BRAND_URL_KEY);
-                    String brandMid = brand.getString(BRAND_MID_KEY);
+                    String brandName;
+                    String brandUrl;
+                    String brandMid;
+
+                    if (brand.has(BRAND_NAME_KEY)) {
+                        brandName = brand.getString(BRAND_NAME_KEY);
+                    } else {
+                        Log.e("Meil_brand_parser", "brand does not contain: " + BRAND_NAME_KEY);
+                        continue;
+                    }
+
+                    if (brand.has(BRAND_URL_KEY)) {
+                        brandUrl = brand.getString(BRAND_URL_KEY);
+                    } else {
+                        Log.e("Meil_brand_parser", "brand does not contain: " + BRAND_URL_KEY);
+                        continue;
+                    }
+
+                    if (brand.has(BRAND_MID_KEY)) {
+                        brandMid = brand.getString(BRAND_MID_KEY);
+                    } else {
+                        Log.e("Meil_brand_parser", "brand does not contain: " + BRAND_MID_KEY);
+                        continue;
+                    }
+
+                  String brandLogoUrl = "";
+                    if (brand.has(BRAND_LOGO_KEY)) {
+                      brandLogoUrl = brand.getString(BRAND_LOGO_KEY);
+                    } else {
+                      Log.e("Meil_brand_parser", "brand does not contain: " + BRAND_LOGO_KEY);
+                      continue;
+                    }
 
                     JSONArray representativeImageUrlJson =
                             brand.getJSONArray(BRAND_REPRESENTATIVE_IMAGES_KEY);
@@ -57,6 +87,7 @@ public class OnboardBrandParser {
                                                   .withId(brandMid)
                                                   .withUrl(brandUrl)
                                                   .withImageUrls(representativeImageUrls)
+                                                  .withLogoUrl(brandLogoUrl)
                                                   .build();
 
                     categoryKeyToBrandResultMap.get(categoryKey).add(brandInfo);

@@ -225,7 +225,7 @@ class ShoppingProductListMediator {
     }
 
     void addOfferItem(List<ProductInfo> productList) {
-        Log.e("Meil", "Add offer section");
+        Log.e("Meil", "Add offer section with productList: " + productList.size());
         int headerIndex = mOnboardingViewProvider.hasDoneOnboarding() ? 0 : 1;
         String headerString = mContext.getString(R.string.section_header_resume);
         addSectionHeader(headerString, headerIndex);

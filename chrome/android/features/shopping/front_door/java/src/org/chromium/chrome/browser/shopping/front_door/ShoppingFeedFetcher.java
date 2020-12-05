@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.shopping.front_door;
 
+import java.util.Locale;
+import org.chromium.base.ContextUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -103,8 +105,10 @@ public class ShoppingFeedFetcher {
         JSONObject jsonRequestObject = new JSONObject();
         try {
             jsonRequestObject.put("categoryIds", new JSONArray(categoryKeys));
-            // TODO(meiliang): update us to ja for japanese.
-            jsonRequestObject.put("studyRegion", "us");
+            String country = ContextUtils.getApplicationContext().getResources().getConfiguration().
+                locale.getCountry().toLowerCase();
+            country = !country.equals(Locale.JAPAN.toString().toLowerCase()) ? "us" : country;
+            jsonRequestObject.put("studyRegion", country);
         } catch (JSONException e) {
             Log.e("Meil",
                     "building post body json for fetching product lines error: " + e.getMessage());

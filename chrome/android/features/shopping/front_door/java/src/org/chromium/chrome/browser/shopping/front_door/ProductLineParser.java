@@ -21,6 +21,12 @@ public class ProductLineParser {
     private static final String PRODUCT_LINE_IMAGE_URL_KEY = "representativeImageUrl";
     private static final String PRODUCT_LINE_SRP_URL_KEY = "generatedSearchResultsUrl";
 
+    private static boolean validKey(JSONObject jsonObject, String key) {
+        if (jsonObject.has(key)) return true;
+        Log.e("Meil_productLineParser", "Prodcutline object missing: " + key);
+        return false;
+    }
+
     public static void parse(String json, Callback<ProductLineInfo> callback) {
         try {
             JSONObject jsonObject = new JSONObject(json);
@@ -29,13 +35,24 @@ public class ProductLineParser {
             for (int i = 0; i < brands.length(); i++) {
                 JSONObject brand = brands.getJSONObject(i);
 
+                if (!validKey(brand, BRAND_NAME_KEY)) {
+                    continue;
+                }
                 String brandName = brand.getString(BRAND_NAME_KEY);
-                String brandUrl = "";
-                if (brand.has(BRAND_IMAGE_URL_KEY)) {
-                    brandUrl = brand.getString(BRAND_IMAGE_URL_KEY);
+
+                if (!validKey(brand, BRAND_IMAGE_URL_KEY)) {
+                    continue;
+                }
+                String brandUrl = brand.getString(BRAND_IMAGE_URL_KEY);
+
+                if (!validKey(brand, BRAND_MID_KEY)) {
+                    continue;
                 }
                 String brandMid = brand.getString(BRAND_MID_KEY);
 
+                if (!validKey(brand, BRAND_CATEGORY_LIST_KEY)) {
+                    continue;
+                }
                 JSONArray categoryKeys = brand.getJSONArray(BRAND_CATEGORY_LIST_KEY);
                 List<String> categoryKeyList = getCategoryKeys(categoryKeys);
 

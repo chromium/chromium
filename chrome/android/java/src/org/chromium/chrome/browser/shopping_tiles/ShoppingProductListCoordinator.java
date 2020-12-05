@@ -56,6 +56,8 @@ public class ShoppingProductListCoordinator
         public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {HEADER_STRING};
     }
 
+    private static final int MICROS_TO_UNITS = 1000000;
+
     public static class ProductViewBinder {
         public static void bindProductItem(
                 PropertyModel model, ViewGroup view, @Nullable PropertyKey propertyKey) {
@@ -64,9 +66,12 @@ public class ShoppingProductListCoordinator
                 TextView productName = view.findViewById(R.id.name);
                 productName.setText(model.get(ShoppingProductProperties.PRODUCT_NAME));
             } else if (propertyKey == ShoppingProductProperties.PRICE) {
-                TextView price = view.findViewById(R.id.price);
+                TextView priceView = view.findViewById(R.id.price);
                 NumberFormat priceFormat = NumberFormat.getCurrencyInstance();
-                price.setText(priceFormat.format(model.get(ShoppingProductProperties.PRICE)));
+                float price =
+                        model.get(ShoppingProductProperties.PRICE) * 100 / MICROS_TO_UNITS / 100.f;
+                Log.e("Meil_bindOfferItem", "Price is " + priceFormat.format(price));
+                priceView.setText(priceFormat.format(price));
             } else if (propertyKey == ShoppingProductProperties.PRICE_STR) {
                 TextView price = view.findViewById(R.id.price);
                 price.setText(model.get(ShoppingProductProperties.PRICE_STR));
@@ -295,7 +300,17 @@ public class ShoppingProductListCoordinator
         // TODO(meiliang): Add recycler listen to verify view is being recycle. Not triggered since
         //  all product has been loaded to RecyclerView at once
         RecyclerView.RecyclerListener recyclerListener = (holder) -> {
-            Log.d("Meil", "on recycle");
+            Log.e("Meil", "on recycle");
+            int itemType = holder.getItemViewType();
+            View view = holder.itemView;
+
+            if (itemType == ItemType.OFFER_ITEM) {
+                ImageView imageView = (ImageView) view.findViewById(R.id.image);
+                clearResource(imageView);
+            } else if (itemType == ItemType.PRODUCT_LINE_ITEM) {
+                ImageView imageView = (ImageView) view.findViewById(R.id.image_container);
+                clearResource(imageView);
+            }
         };
         mProductRecyclerView.setRecyclerListener(recyclerListener);
 
@@ -393,6 +408,15 @@ public class ShoppingProductListCoordinator
                 ((NestedRecyclerView) view).setParentRecycler(null);
             }
         });
+    }
+
+    private void clearResource(ImageView imageView) {
+        if (imageView == null) {
+            Log.e("Meil_pickerRecyclerListen", "image view is null");
+            return;
+        }
+        imageView.setImageResource(org.chromium.chrome.browser.shopping.front_door.R.color
+                                           .thumbnail_placeholder_on_primary_bg);
     }
 
     public void setProductList(List<ProductInfo> productList) {

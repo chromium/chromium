@@ -17,68 +17,112 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DummyProductProvider implements ShoppingProductsProvider {
+    private static final String RECENTLY_VIEW_KEY = "Recently Viewed";
+
+    private static boolean validKey(JSONObject jsonObject, String key) {
+        if (jsonObject.has(key)) return true;
+        Log.e("Meil_productParser", "Product object missing: " + key);
+        return false;
+    }
+
     private void parse(String json, Callback<ProductInfo> addProductCallback) {
-        Log.e("Meil", "parse response");
+        Log.e("Meil_productParser", "parse response");
         try {
             JSONObject jsonObject = new JSONObject(json);
+
+            if (!validKey(jsonObject, "modules")) {
+                return;
+            }
             JSONArray jsonModules = jsonObject.getJSONArray("modules");
-            Log.e("Meil", "modules size: " + jsonModules.length());
+            Log.e("Meil_productParser", "modules size: " + jsonModules.length());
 
             for (int i = 0; i < jsonModules.length() && (mSize == -1 || mProducts.size() < mSize);
                     i++) {
                 // Module
                 JSONObject module = jsonModules.getJSONObject(i);
                 if (!module.has("collections")) {
-                    Log.e("Meil", "Module does not has collections");
+                    Log.e("Meil_productParser", "Module does not has collections");
                     continue;
                 }
                 JSONArray moduleCollection = module.getJSONArray("collections");
 
                 // ModuleCollection
-                Log.e("Meil", "Module Collection size: " + moduleCollection.length());
+                Log.e("Meil_productParser", "Module Collection size: " + moduleCollection.length());
                 for (int j = 0;
                         j < moduleCollection.length() && (mSize == -1 || mProducts.size() < mSize);
                         j++) {
                     JSONObject collection = moduleCollection.getJSONObject(j);
+                    if (!validKey(collection, "title")) {
+                        continue;
+                    }
                     String collectionTitle = collection.getString("title");
+
+                    boolean isRecentlyViewed = false;
+                    if (collectionTitle.compareTo(RECENTLY_VIEW_KEY) == 0) {
+                        isRecentlyViewed = true;
+                    }
+
+                    if (!validKey(collection, "category")) {
+                        continue;
+                    }
                     String collectionCategory = collection.getString("category");
-                    Log.e("Meil",
+                    Log.e("Meil_productParser",
                             "Collection: " + collectionTitle + "; category: " + collectionCategory);
+
+                    if (!validKey(collection, "products")) {
+                        continue;
+                    }
                     JSONArray collectionProducts = collection.getJSONArray("products");
 
                     // Product list in collection
-                    Log.e("Meil", "products size: " + collectionProducts.length());
+                    Log.e("Meil_productParser", "products size: " + collectionProducts.length());
                     for (int k = 0; k < collectionProducts.length()
                             && (mSize == -1 || mProducts.size() < mSize);
                             k++) {
-                        Log.e("Meil", "Product:");
+                        Log.e("Meil_productParser", "Product:");
                         JSONObject jsonProduct = collectionProducts.getJSONObject(k);
 
+                        if (!validKey(jsonProduct, "title")) {
+                            continue;
+                        }
                         String name = jsonProduct.getString("title");
                         String url = "";
                         if (jsonProduct.has("productClickUrl")) {
-                            url = jsonProduct.getString("productClickUrl");
                             JSONObject urlObject = jsonProduct.getJSONObject("productClickUrl");
+                            if (!validKey(urlObject, "url")) {
+                                continue;
+                            }
                             url = urlObject.getString("url");
+                        } else {
+                            Log.e("Meil_productParser", "Product object missing: productClickUrl");
+                            continue;
                         }
 
+                        if (!validKey(jsonProduct, "imageUrl")) {
+                            continue;
+                        }
                         String imageUrl = jsonProduct.getString("imageUrl");
 
                         if (!jsonProduct.has("currentPrice")) {
-                            Log.e("Meil", "Product does not has price");
+                            Log.e("Meil_productParser", "Product does not has price");
                             continue;
                         }
 
                         JSONObject priceObject = jsonProduct.getJSONObject("currentPrice");
-                        String price = priceObject.getString("amountMicros");
+                        if (!validKey(priceObject, "amountMicros")) {
+                            continue;
+                        }
+                        String priceStr = priceObject.getString("amountMicros");
+                        float price = Float.parseFloat(priceStr);
 
-                        Log.e("Meil", "product title: " + name);
+                        Log.e("Meil_productParser", "product title: " + name);
 
                         addProductCallback.onResult(new ProductInfo.Builder()
                                                             .withName(name)
                                                             .withUrl(url)
                                                             .withImageUrl(imageUrl)
-                                                            .withPriceStr(price)
+                                                            .withPrice(price)
+                                                            .withRecentlyView(isRecentlyViewed)
                                                             .build());
                     }
                 }
@@ -87,11 +131,15 @@ public class DummyProductProvider implements ShoppingProductsProvider {
         } catch (JSONException e) {
             Log.e("Meil",
                     String.format(
-                            "There was a problem parsing the JSON\n Details: %s", e.getMessage()));
+                            "There was a problem parsing the offer product JSON\n Details: %s",
+                            e.getMessage()));
         }
     }
 
     private List<ProductInfo> mProducts = new ArrayList<>();
+
+    private List<ProductInfo> mRecentlyViewProducts = new ArrayList<>();
+    private List<ProductInfo> mRecommendedProducts = new ArrayList<>();
     private Callback<List<ProductInfo>> mCallback;
     private int mSize;
     private static final boolean DEBUG = true;
@@ -102,7 +150,12 @@ public class DummyProductProvider implements ShoppingProductsProvider {
     }
 
     private void addProduct(ProductInfo productInfo) {
-        mProducts.add(productInfo);
+        if (productInfo.isRecentlyView) {
+            mRecentlyViewProducts.add(productInfo);
+        } else {
+            mRecommendedProducts.add(productInfo);
+        }
+        // mProducts.add(productInfo);
     }
 
     @Override
@@ -124,6 +177,18 @@ public class DummyProductProvider implements ShoppingProductsProvider {
         Log.e("Meil", "response: " + response);
         if (DEBUG) writeResponseToFile(response);
         parse(response, this::addProduct);
+        supplyProductToCallback();
+    }
+
+    private void supplyProductToCallback() {
+        for (int i = 0; i < mRecentlyViewProducts.size() && i < 4; i++) {
+            mProducts.add(mRecentlyViewProducts.get(i));
+        }
+        int recentlyViewSize = mProducts.size();
+        for (int i = 0; i < mRecommendedProducts.size() && i < 8 - recentlyViewSize; i++) {
+            mProducts.add(mRecommendedProducts.get(i));
+        }
+        mCallback.onResult(mProducts);
     }
 
     private void writeResponseToFile(String response) {

@@ -4,6 +4,7 @@
 package org.chromium.ui.widget;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -20,6 +21,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -49,6 +51,7 @@ public class ChipView extends LinearLayout {
     private final int mEndIconStartPadding;
     private final int mEndIconEndPadding;
     private final int mCornerRadius;
+    private final ColorStateList mColorList;
 
     private ViewGroup mEndIconWrapper;
     private TextView mSecondaryText;
@@ -123,6 +126,8 @@ public class ChipView extends LinearLayout {
                 R.styleable.ChipView_secondaryTextAppearance, R.style.TextAppearance_ChipText);
         int verticalInset = a.getDimensionPixelSize(R.styleable.ChipView_verticalInset,
                 getResources().getDimensionPixelSize(R.dimen.chip_bg_vertical_inset));
+        mColorList = AppCompatResources.getColorStateList(context,
+            R.color.modern_blue_600);
         boolean allowMultipleLines = a.getBoolean(R.styleable.ChipView_allowMultipleLines, false);
         boolean textAlignStart = a.getBoolean(R.styleable.ChipView_textAlignStart, false);
         a.recycle();
@@ -193,7 +198,7 @@ public class ChipView extends LinearLayout {
 
         mStartIcon.setVisibility(ViewGroup.VISIBLE);
         mStartIcon.setImageResource(icon);
-        setTint(tintWithTextColor);
+        ApiCompatibilityUtils.setImageTintList(mStartIcon, mColorList);
     }
 
     /**

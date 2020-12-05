@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -120,7 +121,7 @@ class FrontDoorOnBoardingMediator {
         public static final PropertyModel.WritableObjectPropertyKey<String> DOMAIN_URL =
                 new PropertyModel.WritableObjectPropertyKey<>();
 
-        public static final PropertyModel.WritableObjectPropertyKey<Drawable> FAVICON =
+        public static final PropertyModel.WritableObjectPropertyKey<String> LOGO_URL =
                 new WritableObjectPropertyKey<>();
 
         public static final PropertyModel.WritableObjectPropertyKey<ImageFetcher> IMAGE_FETCHER =
@@ -136,7 +137,7 @@ class FrontDoorOnBoardingMediator {
 
         public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
                 PickerItemPropertyModel.IS_PICKABLE, PickerItemPropertyModel.IS_PICKED,
-                PickerItemPropertyModel.PICKER_EFFECT_CALLBACK, ID, NAME, DOMAIN_URL, FAVICON,
+                PickerItemPropertyModel.PICKER_EFFECT_CALLBACK, ID, NAME, DOMAIN_URL, LOGO_URL,
                 ON_CLICK_CALLBACK, IMAGE_FETCHER, REPRESENTATIVE_IMAGE_URLS};
     }
 
@@ -180,15 +181,12 @@ class FrontDoorOnBoardingMediator {
                             .run(brandId, brandName, !isPicked);
                     model.set(PickerItemPropertyModel.IS_PICKED, !isPicked);
                 });
-            } else if (propertyKey == OnBoardBrandItemProperties.FAVICON) {
-                ((ImageView) view.findViewById(R.id.favicon))
-                        .setImageDrawable(model.get(OnBoardBrandItemProperties.FAVICON));
             } else if (propertyKey == OnBoardBrandItemProperties.IMAGE_FETCHER) {
-                updateImages(view.findViewById(R.id.images_container), model);
+                updateImages(view.findViewById(R.id.images_container), ((ImageView) view.findViewById(R.id.favicon)), model);
             }
         }
 
-        private static void updateImages(View imageViews, PropertyModel model) {
+        private static void updateImages(View imageViews, ImageView logoView, PropertyModel model) {
             assert imageViews != null;
 
             ImageFetcher fetcher = model.get(OnBoardBrandItemProperties.IMAGE_FETCHER);
@@ -196,7 +194,15 @@ class FrontDoorOnBoardingMediator {
                     model.get(OnBoardBrandItemProperties.REPRESENTATIVE_IMAGE_URLS);
 
             assert imageUrls.size() == 3;
-
+            
+            String logo = model.get(OnBoardBrandItemProperties.LOGO_URL);
+            if (!TextUtils.isEmpty(logo)) {
+                logoView.setVisibility(View.VISIBLE);
+                fetchAndUpdateImage(logoView, fetcher, logo);
+            } else {
+                logoView.setVisibility(View.GONE);
+            }
+            
             ImageView startImageView = (ImageView) imageViews.findViewById(R.id.start_image);
             fetchAndUpdateImage(startImageView, fetcher, imageUrls.get(0));
 
@@ -637,7 +643,7 @@ class FrontDoorOnBoardingMediator {
                             .with(OnBoardBrandItemProperties.IMAGE_FETCHER, imageFetcher)
                             .with(OnBoardBrandItemProperties.REPRESENTATIVE_IMAGE_URLS,
                                     info.imageUrls)
-                            // .with(OnBoardBrandItemProperties.FAVICON, drawable)
+                            .with(OnBoardBrandItemProperties.LOGO_URL, info.logoUrl)
                             .with(OnBoardBrandItemProperties.ON_CLICK_CALLBACK,
                                     this::pickBrandListener)
                             .build();
@@ -649,7 +655,7 @@ class FrontDoorOnBoardingMediator {
                 assert bitmap != null : "Meil Favicon bitmap should not be null";
                 Drawable favicon = FaviconUtils.createRoundedBitmapDrawable(mContext.getResources(),
                         Bitmap.createScaledBitmap(bitmap, size, size, true));
-                item.set(OnBoardBrandItemProperties.FAVICON, favicon);
+                //item.set(OnBoardBrandItemProperties.FAVICON, favicon);
             };
 
             FaviconImageCallback faviconCallback = (bitmap, url) -> {

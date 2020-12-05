@@ -64,14 +64,14 @@
     </style>
 
     <style name="Chip">
-        <item name="android:minHeight">@dimen/min_touch_target_size</item>
+        <item name="android:minHeight">36dp</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:orientation">horizontal</item>
         <item name="chipColor">@color/chip_background_color</item>
         <item name="primaryTextAppearance">@style/TextAppearance.ChipText</item>
         <item name="secondaryTextAppearance">@style/TextAppearance.ChipHint</item>
         <item name="rippleColor">@color/chip_ripple_color</item>
-        <item name="verticalInset">@dimen/chip_bg_vertical_inset</item>
+        <item name="verticalInset">4dp</item>
     </style>
     <style name="SuggestionChip" parent="Chip" tools:ignore="UnusedResources">
         <item name="primaryTextAppearance">@style/TextAppearance.ChipHint</item>

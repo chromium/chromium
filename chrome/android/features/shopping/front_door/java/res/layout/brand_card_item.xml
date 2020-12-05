@@ -8,6 +8,7 @@
       android:layout_height="match_parent"
       android:layout_gravity="center"
       android:background="@drawable/hairline_border_card_background"
+      android:padding="1dp"
       android:orientation="vertical">
     <LinearLayout
         android:id="@+id/brand_info"
@@ -18,17 +19,23 @@
         android:gravity="center_vertical"
         android:layout_marginStart="8dp"
         android:layout_marginBottom="4dp" >
-      <org.chromium.ui.widget.ChromeImageView
+      <org.chromium.components.browser_ui.widget.RoundedCornerImageView
           android:id="@+id/favicon"
-          android:layout_width="36dp"
-          android:layout_height="36dp"
+          android:layout_width="40dp"
+          android:layout_height="40dp"
           android:layout_gravity="center_vertical"
-          android:scaleType="center"
-          app:srcCompat="@drawable/ic_globe_24dp"/>
+          android:adjustViewBounds="true"
+          android:scaleType="fitCenter"
+          app:srcCompat="@drawable/ic_globe_24dp"
+          app:cornerRadiusTopStart="4dp"
+          app:cornerRadiusTopEnd="4dp"
+          app:cornerRadiusBottomStart="4dp"
+          app:cornerRadiusBottomEnd="4dp" />
       <LinearLayout
           android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_weight="1"
+          android:layout_marginStart="12dp"
           android:orientation="vertical"
           android:layout_gravity="center_vertical" >
 
