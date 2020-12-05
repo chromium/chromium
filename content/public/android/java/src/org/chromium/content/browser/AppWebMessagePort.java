@@ -26,7 +26,7 @@ import org.chromium.mojo.bindings.MessageReceiver;
 import org.chromium.mojo.system.Core;
 import org.chromium.mojo.system.Pair;
 import org.chromium.mojo_base.BigBufferUtil;
-import org.chromium.skia.mojom.BitmapWithArbitraryBpp;
+import org.chromium.skia.mojom.BitmapN32;
 
 /**
  * Represents the MessageChannel MessagePort object. Inspired from
@@ -299,7 +299,7 @@ public class AppWebMessagePort implements MessagePort {
         msg.message.nativeFileSystemTokens = new NativeFileSystemTransferToken[0];
         msg.message.senderOrigin = null;
         msg.arrayBufferContentsArray = new SerializedArrayBufferContents[0];
-        msg.imageBitmapContentsArray = new BitmapWithArbitraryBpp[0];
+        msg.imageBitmapContentsArray = new BitmapN32[0];
         msg.ports = ports;
         msg.streamChannels = new MessagePortDescriptor[0];
         mConnector.accept(msg.serializeWithHeader(mMojoCore, MESSAGE_HEADER));
