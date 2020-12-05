@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/path_service.h"
+#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -271,7 +272,8 @@ class JpegClient : public JpegEncodeAccelerator::Client {
  public:
   JpegClient(const std::vector<TestImage*>& test_aligned_images,
              const std::vector<TestImage*>& test_images,
-             media::test::ClientStateNotification<ClientState>* note);
+             media::test::ClientStateNotification<ClientState>* note,
+             size_t exif_size);
   ~JpegClient() override;
   void CreateJpegEncoder();
   void DestroyJpegEncoder();
@@ -325,6 +327,10 @@ class JpegClient : public JpegEncodeAccelerator::Client {
   // this.
   media::test::ClientStateNotification<ClientState>* note_;
 
+  // EXIF data size for testing.
+  size_t exif_size_;
+  // Input buffer for EXIF data.
+  media::BitstreamBuffer exif_buffer_;
   // Output buffer prepared for JpegEncodeAccelerator.
   media::BitstreamBuffer encoded_buffer_;
 
@@ -348,11 +354,13 @@ class JpegClient : public JpegEncodeAccelerator::Client {
 
 JpegClient::JpegClient(const std::vector<TestImage*>& test_aligned_images,
                        const std::vector<TestImage*>& test_images,
-                       media::test::ClientStateNotification<ClientState>* note)
+                       media::test::ClientStateNotification<ClientState>* note,
+                       size_t exif_size)
     : test_aligned_images_(test_aligned_images),
       test_unaligned_images_(test_images),
       state_(ClientState::CREATED),
       note_(note),
+      exif_size_(exif_size),
       gpu_memory_buffer_manager_(new media::LocalGpuMemoryBufferManager()) {}
 
 JpegClient::~JpegClient() {}
@@ -547,6 +555,14 @@ TestImage* JpegClient::GetTestImage(int32_t bitstream_buffer_id) {
 void JpegClient::PrepareMemory(int32_t bitstream_buffer_id) {
   TestImage* test_image = GetTestImage(bitstream_buffer_id);
 
+  if (exif_size_ > 0) {
+    auto shm = base::UnsafeSharedMemoryRegion::Create(exif_size_);
+    auto shm_mapping = shm.Map();
+    base::RandBytes(shm_mapping.memory(), exif_size_);
+    exif_buffer_ =
+        media::BitstreamBuffer(bitstream_buffer_id, std::move(shm), exif_size_);
+  }
+
   size_t input_size = test_image->image_data.size();
   if (!in_mapping_.IsValid() || input_size > in_mapping_.size()) {
     in_shm_ = base::UnsafeSharedMemoryRegion::Create(input_size);
@@ -632,7 +648,8 @@ void JpegClient::StartEncode(int32_t bitstream_buffer_id) {
   input_frame_->BackWithSharedMemory(&in_shm_);
 
   buffer_id_to_start_time_[bitstream_buffer_id] = base::TimeTicks::Now();
-  encoder_->Encode(input_frame_, kJpegDefaultQuality, nullptr,
+  encoder_->Encode(input_frame_, kJpegDefaultQuality,
+                   exif_size_ > 0 ? &exif_buffer_ : nullptr,
                    std::move(encoded_buffer_));
 }
 
@@ -672,14 +689,17 @@ void JpegClient::StartEncodeDmaBuf(int32_t bitstream_buffer_id) {
 
   buffer_id_to_start_time_[bitstream_buffer_id] = base::TimeTicks::Now();
   encoder_->EncodeWithDmaBuf(input_frame, hw_out_frame_, kJpegDefaultQuality,
-                             bitstream_buffer_id, nullptr);
+                             bitstream_buffer_id,
+                             exif_size_ > 0 ? &exif_buffer_ : nullptr);
 }
 
 class JpegEncodeAcceleratorTest : public ::testing::Test {
  protected:
   JpegEncodeAcceleratorTest() {}
 
-  void TestEncode(size_t num_concurrent_encoders, bool is_dma);
+  void TestEncode(size_t num_concurrent_encoders,
+                  bool is_dma,
+                  size_t exif_size);
 
   // This is needed to allow the usage of methods in post_task.h in
   // JpegEncodeAccelerator implementations.
@@ -695,7 +715,8 @@ class JpegEncodeAcceleratorTest : public ::testing::Test {
 };
 
 void JpegEncodeAcceleratorTest::TestEncode(size_t num_concurrent_encoders,
-                                           bool is_dma) {
+                                           bool is_dma,
+                                           size_t exif_size) {
   base::Thread encoder_thread("EncoderThread");
   ASSERT_TRUE(encoder_thread.Start());
 
@@ -709,7 +730,8 @@ void JpegEncodeAcceleratorTest::TestEncode(size_t num_concurrent_encoders,
     notes.push_back(
         std::make_unique<media::test::ClientStateNotification<ClientState>>());
     clients.push_back(std::make_unique<JpegClient>(
-        test_aligned_images_, test_unaligned_images_, notes.back().get()));
+        test_aligned_images_, test_unaligned_images_, notes.back().get(),
+        exif_size));
     encoder_thread.task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&JpegClient::CreateJpegEncoder,
                                   base::Unretained(clients.back().get())));
@@ -800,32 +822,37 @@ TEST_F(JpegEncodeAcceleratorTest, SimpleEncode) {
       test_aligned_images_.push_back(image.get());
     }
   }
-  TestEncode(1, false);
+  TestEncode(/*num_concurrent_encoders=*/1u, /*is_dma=*/false,
+             /*exif_size=*/0u);
 }
 
 TEST_F(JpegEncodeAcceleratorTest, MultipleEncoders) {
   for (auto& image : g_env->image_data_user_) {
     test_aligned_images_.push_back(image.get());
   }
-  TestEncode(3, false);
+  TestEncode(/*num_concurrent_encoders=*/3u, /*is_dma=*/false,
+             /*exif_size=*/0u);
 }
 
 TEST_F(JpegEncodeAcceleratorTest, ResolutionChange) {
   test_aligned_images_.push_back(g_env->image_data_640x368_black_.get());
   test_aligned_images_.push_back(g_env->image_data_1280x720_white_.get());
-  TestEncode(1, false);
+  TestEncode(/*num_concurrent_encoders=*/1u, /*is_dma=*/false,
+             /*exif_size=*/0u);
 }
 
 TEST_F(JpegEncodeAcceleratorTest, AlignedSizes) {
   test_aligned_images_.push_back(g_env->image_data_2560x1920_white_.get());
   test_aligned_images_.push_back(g_env->image_data_1280x720_white_.get());
   test_aligned_images_.push_back(g_env->image_data_640x480_black_.get());
-  TestEncode(1, false);
+  TestEncode(/*num_concurrent_encoders=*/1u, /*is_dma=*/false,
+             /*exif_size=*/0u);
 }
 
 TEST_F(JpegEncodeAcceleratorTest, CodedSizeAlignment) {
   test_unaligned_images_.push_back(g_env->image_data_640x360_black_.get());
-  TestEncode(1, false);
+  TestEncode(/*num_concurrent_encoders=*/1u, /*is_dma=*/false,
+             /*exif_size=*/0u);
 }
 
 TEST_F(JpegEncodeAcceleratorTest, SimpleDmaEncode) {
@@ -834,32 +861,49 @@ TEST_F(JpegEncodeAcceleratorTest, SimpleDmaEncode) {
       test_aligned_images_.push_back(image.get());
     }
   }
-  TestEncode(1, true);
+  TestEncode(/*num_concurrent_encoders=*/1u, /*is_dma=*/true, /*exif_size=*/0u);
 }
 
 TEST_F(JpegEncodeAcceleratorTest, MultipleDmaEncoders) {
   for (auto& image : g_env->image_data_user_) {
     test_aligned_images_.push_back(image.get());
   }
-  TestEncode(3, true);
+  TestEncode(/*num_concurrent_encoders=*/3u, /*is_dma=*/true, /*exif_size=*/0u);
 }
 
 TEST_F(JpegEncodeAcceleratorTest, ResolutionChangeDma) {
   test_aligned_images_.push_back(g_env->image_data_640x368_black_.get());
   test_aligned_images_.push_back(g_env->image_data_1280x720_white_.get());
-  TestEncode(1, true);
+  TestEncode(/*num_concurrent_encoders=*/1u, /*is_dma=*/true, /*exif_size=*/0u);
 }
 
 TEST_F(JpegEncodeAcceleratorTest, AlignedSizesDma) {
   test_aligned_images_.push_back(g_env->image_data_2560x1920_white_.get());
   test_aligned_images_.push_back(g_env->image_data_1280x720_white_.get());
   test_aligned_images_.push_back(g_env->image_data_640x480_black_.get());
-  TestEncode(1, true);
+  TestEncode(/*num_concurrent_encoders=*/1u, /*is_dma=*/true, /*exif_size=*/0u);
 }
 
 TEST_F(JpegEncodeAcceleratorTest, CodedSizeAlignmentDma) {
   test_unaligned_images_.push_back(g_env->image_data_640x360_black_.get());
-  TestEncode(1, true);
+  TestEncode(/*num_concurrent_encoders=*/1u, /*is_dma=*/true, /*exif_size=*/0u);
+}
+
+TEST_F(JpegEncodeAcceleratorTest, ExifSizesDma) {
+  for (size_t i = 0; i < g_env->repeat_; i++) {
+    for (auto& image : g_env->image_data_user_) {
+      test_aligned_images_.push_back(image.get());
+    }
+  }
+  // Intel iHD driver is known to fail when |exif_size| % 1020 == 411, so we
+  // sample more around these numbers.
+  constexpr size_t kTestExifSizes[] = {
+      8000u,  8571u,  9000u,  9591u,  10000u,
+      10609u, 10610u, 10611u, 10612u, 11111u,
+  };
+  for (size_t exif_size : kTestExifSizes) {
+    TestEncode(/*num_concurrent_encoders=*/1u, /*is_dma=*/true, exif_size);
+  }
 }
 
 }  // namespace
