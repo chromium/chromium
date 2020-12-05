@@ -131,14 +131,13 @@ class DmServerUploadService {
   // Will asynchronously create a DMServerUploadService with handlers.
   // On successful completion will call |created_cb| with DMServerUploadService.
   // If |client| is null, will call |created_cb| with error::INVALID_ARGUMENT.
-  // If any handlers fail to create, or the policy::CloudPolicyClient is null,
-  // will call |created_cb| with error::UNAVAILABLE.
+  // If any handlers fail to create, will call |created_cb| with
+  // error::UNAVAILABLE.
   //
-  // |client| must not be null.
   // |report_upload_success_cb| should report back to the holder of the created
   // object whenever a record set is successfully uploaded.
   static void Create(
-      std::unique_ptr<policy::CloudPolicyClient> client,
+      policy::CloudPolicyClient* client,
       ReportSuccessfulUploadCallback report_upload_success_cb,
       base::OnceCallback<void(StatusOr<std::unique_ptr<DmServerUploadService>>)>
           created_cb);
@@ -147,7 +146,7 @@ class DmServerUploadService {
   Status EnqueueUpload(std::unique_ptr<std::vector<EncryptedRecord>> record);
 
  private:
-  DmServerUploadService(std::unique_ptr<policy::CloudPolicyClient> client,
+  DmServerUploadService(policy::CloudPolicyClient* client,
                         ReportSuccessfulUploadCallback completion_cb);
 
   static void InitRecordHandler(
@@ -159,7 +158,7 @@ class DmServerUploadService {
 
   policy::CloudPolicyClient* GetClient();
 
-  std::unique_ptr<policy::CloudPolicyClient> client_;
+  policy::CloudPolicyClient* client_;
   ReportSuccessfulUploadCallback upload_cb_;
   std::unique_ptr<RecordHandler> handler_;
 

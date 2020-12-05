@@ -27,7 +27,7 @@ class UploadClient {
       base::RepeatingCallback<void(SequencingInformation)>;
 
   static void Create(
-      std::unique_ptr<policy::CloudPolicyClient> cloud_policy_client,
+      policy::CloudPolicyClient* cloud_policy_client,
       ReportSuccessfulUploadCallback report_upload_success_cb,
       base::OnceCallback<void(StatusOr<std::unique_ptr<UploadClient>>)>
           created_cb);

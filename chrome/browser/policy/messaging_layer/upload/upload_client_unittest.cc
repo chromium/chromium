@@ -212,7 +212,7 @@ TEST_F(UploadClientTest, CreateUploadClientAndUploadRecords) {
           records->back().sequencing_information());
 
   TestEvent<StatusOr<std::unique_ptr<UploadClient>>> e;
-  UploadClient::Create(std::move(client), completion_cb, e.cb());
+  UploadClient::Create(client.get(), completion_cb, e.cb());
   StatusOr<std::unique_ptr<UploadClient>> upload_client_result = e.result();
   ASSERT_OK(upload_client_result) << upload_client_result.status();
 

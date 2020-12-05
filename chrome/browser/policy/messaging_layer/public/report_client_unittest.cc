@@ -89,11 +89,11 @@ class ReportClientTest : public testing::Test {
         std::move(mock_user_manager));
 #endif  // OS_CHROMEOS
     // Provide a mock cloud policy client.
-    auto client = std::make_unique<policy::MockCloudPolicyClient>();
-    client->SetDMToken(
+    auto client_ = std::make_unique<policy::MockCloudPolicyClient>();
+    client_->SetDMToken(
         policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
     test_reporting_ =
-        std::make_unique<ReportingClient::TestEnvironment>(std::move(client));
+        std::make_unique<ReportingClient::TestEnvironment>(client_.get());
   }
 
   void TearDown() override {
@@ -110,6 +110,7 @@ class ReportClientTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
 #endif  // OS_CHROMEOS
+  std::unique_ptr<policy::MockCloudPolicyClient> client_;
   const DMToken dm_token_ = DMToken::CreateValidTokenForTesting("TOKEN");
   const Destination destination_ = Destination::UPLOAD_EVENTS;
   ReportQueueConfiguration::PolicyCheckCallback policy_checker_callback_ =

@@ -169,7 +169,7 @@ Status DmServerUploader::IsRecordValid(
 }
 
 void DmServerUploadService::Create(
-    std::unique_ptr<policy::CloudPolicyClient> client,
+    policy::CloudPolicyClient* client,
     ReportSuccessfulUploadCallback report_upload_success_cb,
     base::OnceCallback<void(StatusOr<std::unique_ptr<DmServerUploadService>>)>
         created_cb) {
@@ -185,23 +185,13 @@ void DmServerUploadService::Create(
 }
 
 DmServerUploadService::DmServerUploadService(
-    std::unique_ptr<policy::CloudPolicyClient> client,
+    policy::CloudPolicyClient* client,
     ReportSuccessfulUploadCallback upload_cb)
     : client_(std::move(client)),
       upload_cb_(upload_cb),
       sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})) {}
 
-DmServerUploadService::~DmServerUploadService() {
-  if (client_) {
-    base::PostTask(
-        FROM_HERE, {content::BrowserThread::UI},
-        base::BindOnce(
-            [](std::unique_ptr<policy::CloudPolicyClient> cloud_policy_client) {
-              cloud_policy_client.reset();
-            },
-            std::move(client_)));
-  }
-}
+DmServerUploadService::~DmServerUploadService() = default;
 
 Status DmServerUploadService::EnqueueUpload(
     std::unique_ptr<std::vector<EncryptedRecord>> records) {
@@ -239,7 +229,7 @@ void DmServerUploadService::UploadCompletion(
 }
 
 CloudPolicyClient* DmServerUploadService::GetClient() {
-  return client_.get();
+  return client_;
 }
 
 }  // namespace reporting
