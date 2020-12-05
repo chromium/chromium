@@ -16,6 +16,7 @@
 #include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/user_education/feature_promo_controller.h"
+#include "chrome/browser/ui/user_education/feature_promo_text_replacements.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_params.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
@@ -93,8 +94,11 @@ void PwaInstallView::UpdateImpl() {
     if (controller) {
       // Reset the iph flag when it's shown again.
       install_icon_clicked_after_iph_shown_ = false;
-      controller->MaybeShowPromo(
+      controller->MaybeShowPromoWithTextReplacements(
           feature_engagement::kIPHDesktopPwaInstallFeature,
+          FeaturePromoTextReplacements::WithString(
+              banners::AppBannerManager::GetInstallableWebAppName(
+                  web_contents)),
           base::Bind(&PwaInstallView::OnIphClosed,
                      weak_ptr_factory_.GetWeakPtr()));
     }
