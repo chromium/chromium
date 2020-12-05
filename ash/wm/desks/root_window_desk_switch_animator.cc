@@ -248,9 +248,10 @@ bool RootWindowDeskSwitchAnimator::ReplaceAnimation(int new_ending_desk_index) {
   return true;
 }
 
-bool RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(float scroll_delta_x) {
+base::Optional<int> RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(
+    float scroll_delta_x) {
   if (!starting_desk_screenshot_taken_ || !ending_desk_screenshot_taken_)
-    return false;
+    return base::nullopt;
 
   const float translation_delta_x =
       TouchpadToXTranslation(scroll_delta_x, x_translation_offset_);
@@ -304,13 +305,16 @@ bool RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(float scroll_delta_x) {
           : transformed_animation_layer_bounds.x() >
                 -kMinDistanceBeforeScreenshotDp;
 
+  // TODO(sammiequon): Make GetIndexOfMostVisibleDeskScreenshot() public and
+  // have DeskActivationAnimation keep track of |visible_desk_index_|. Right now
+  // OnVisibleDeskChanged will get called once for each display.
   const int old_visible_desk_index = visible_desk_index_;
   visible_desk_index_ = GetIndexOfMostVisibleDeskScreenshot();
   if (old_visible_desk_index != visible_desk_index_)
     delegate_->OnVisibleDeskChanged();
 
   if (!going_out_of_bounds)
-    return false;
+    return base::nullopt;
 
   // The upcoming desk we need to show will be an adjacent desk to the desk at
   // |visible_desk_index_| based on |moving_left|.
@@ -318,13 +322,17 @@ bool RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(float scroll_delta_x) {
 
   if (new_desk_index < 0 ||
       new_desk_index >= int{DesksController::Get()->desks().size()}) {
-    return false;
+    return base::nullopt;
   }
 
-  ending_desk_index_ = new_desk_index;
+  return new_desk_index;
+}
+
+void RootWindowDeskSwitchAnimator::PrepareForEndingDeskScreenshot(
+    int new_ending_desk_index) {
+  ending_desk_index_ = new_ending_desk_index;
   ending_desk_screenshot_retries_ = 0;
   ending_desk_screenshot_taken_ = false;
-  return true;
 }
 
 int RootWindowDeskSwitchAnimator::EndSwipeAnimation() {
