@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL An ARIA cell without a layout object does not crash assert_equals: expected "AXRole: AXCell" but got "AXRole: AXGenericContainer"
-PASS An ARIA row in a select in a canvas does not crash
-Harness: the test ran to completion.
-

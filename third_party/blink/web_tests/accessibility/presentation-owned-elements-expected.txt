@@ -84,7 +84,7 @@ AXRole: AXGenericContainer
             AXRole: AXInlineTextBox "The row for "Explicit th" has a row role even if table has a presentation role because it has an explicit role."
     AXRole: AXPresentational
         AXRole: AXGenericContainer
-            AXRole: AXGenericContainer
+            AXRole: AXRow
                 AXRole: AXGenericContainer
                     AXRole: AXStaticText "Explicit th"
                         AXRole: AXInlineTextBox "Explicit th"

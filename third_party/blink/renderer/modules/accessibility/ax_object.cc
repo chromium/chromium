@@ -2984,8 +2984,6 @@ ax::mojom::blink::Role AXObject::DetermineAriaRoleAttribute() const {
   if (role == ax::mojom::blink::Role::kButton)
     role = ButtonRoleType();
 
-  role = RemapAriaRoleDueToParent(role);
-
   // Distinguish between different uses of the "combobox" role:
   //
   // ax::mojom::blink::Role::kComboBoxGrouping:
@@ -3005,60 +3003,6 @@ ax::mojom::blink::Role AXObject::DetermineAriaRoleAttribute() const {
     return role;
 
   return ax::mojom::blink::Role::kUnknown;
-}
-
-ax::mojom::blink::Role AXObject::RemapAriaRoleDueToParent(
-    ax::mojom::blink::Role role) const {
-  // Some objects change their role based on their parent.
-  // However, asking for the unignoredParent calls accessibilityIsIgnored(),
-  // which can trigger a loop.  While inside the call stack of creating an
-  // element, we need to avoid accessibilityIsIgnored().
-  // https://bugs.webkit.org/show_bug.cgi?id=65174
-
-  // Don't return table roles unless inside a table-like container.
-  switch (role) {
-    case ax::mojom::blink::Role::kRow:
-    case ax::mojom::blink::Role::kRowGroup:
-    case ax::mojom::blink::Role::kCell:
-    case ax::mojom::blink::Role::kRowHeader:
-    case ax::mojom::blink::Role::kColumnHeader:
-      for (AXObject* ancestor = ParentObjectUnignored(); ancestor;
-           ancestor = ancestor->ParentObjectUnignored()) {
-        ax::mojom::blink::Role ancestor_aria_role =
-            ancestor->AriaRoleAttribute();
-        if (ancestor_aria_role == ax::mojom::blink::Role::kCell)
-          return ax::mojom::blink::Role::kGenericContainer;  // In another cell,
-                                                             // illegal.
-        if (ancestor->IsTableLikeRole())
-          return role;  // Inside a table: ARIA role is legal.
-      }
-      return ax::mojom::blink::Role::kGenericContainer;  // Not in a table.
-    default:
-      break;
-  }
-
-  if (role != ax::mojom::blink::Role::kListBoxOption &&
-      role != ax::mojom::blink::Role::kMenuItem)
-    return role;
-
-  for (AXObject* parent = ParentObject();
-       parent && !parent->AccessibilityIsIgnored();
-       parent = parent->ParentObject()) {
-    ax::mojom::blink::Role parent_aria_role = parent->AriaRoleAttribute();
-
-    // Selects and listboxes both have options as child roles, but they map to
-    // different roles within WebCore.
-    if (role == ax::mojom::blink::Role::kListBoxOption &&
-        parent_aria_role == ax::mojom::blink::Role::kMenu)
-      return ax::mojom::blink::Role::kMenuItem;
-
-    // If the parent had a different role, then we don't need to continue
-    // searching up the chain.
-    if (parent_aria_role != ax::mojom::blink::Role::kUnknown)
-      break;
-  }
-
-  return role;
 }
 
 bool AXObject::IsEditableRoot() const {

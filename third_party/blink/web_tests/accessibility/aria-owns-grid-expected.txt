@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Aria-owns works on ARIA grids. assert_equals: expected 3 but got 0
-Harness: the test ran to completion.
-
