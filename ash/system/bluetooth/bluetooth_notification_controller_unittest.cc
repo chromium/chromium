@@ -18,6 +18,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/services/nearby/public/cpp/nearby_client_uuids.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
@@ -253,6 +254,20 @@ TEST_F(BluetoothNotificationControllerTest,
 
   VerifyPairedNotificationIsNotVisible(bluetooth_device_1_.get());
   EXPECT_EQ(0, system_tray_client_->show_bluetooth_settings_count());
+}
+
+TEST_F(BluetoothNotificationControllerTest,
+       PairedDeviceNotification_DeviceConnectionInitiatedByNearbyClient) {
+  VerifyPairedNotificationIsNotVisible(bluetooth_device_1_.get());
+
+  base::flat_set<device::BluetoothUUID> uuid_set;
+  uuid_set.insert(chromeos::nearby::GetNearbyClientUuids()[0]);
+  ON_CALL(*bluetooth_device_1_, GetUUIDs()).WillByDefault(Return(uuid_set));
+
+  ShowPairedNotification(notification_controller_.get(),
+                         bluetooth_device_1_.get());
+
+  VerifyPairedNotificationIsNotVisible(bluetooth_device_1_.get());
 }
 
 }  // namespace ash

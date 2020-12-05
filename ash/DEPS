@@ -80,6 +80,7 @@ include_rules = [
   "+chromeos/services/assistant/public" ,
   "+chromeos/services/assistant/test_support",
   "+chromeos/services/multidevice_setup/public",
+  "+chromeos/services/nearby/public",
   "+chromeos/services/network_config/public",
   "+chromeos/services/power/public",
   # TODO(https://crbug.com/644361): Eliminate this.
