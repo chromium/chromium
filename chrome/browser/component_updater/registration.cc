@@ -79,10 +79,6 @@
 #include "ui/aura/env.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/component_updater/supervised_user_whitelist_installer.h"
-#endif
-
 namespace component_updater {
 
 void RegisterComponentsForUpdate(bool is_off_the_record_profile,
@@ -112,12 +108,6 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
 #endif  // defined(OS_CHROMEOS)
     RegisterPnaclComponent(cus);
 #endif  // BUILDFLAG(ENABLE_NACL) && !defined(OS_ANDROID)
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  component_updater::SupervisedUserWhitelistInstaller* whitelist_installer =
-      g_browser_process->supervised_user_whitelist_installer();
-  whitelist_installer->RegisterComponents();
-#endif
 
   RegisterSubresourceFilterComponent(cus);
   RegisterFlocComponent(cus,

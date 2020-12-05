@@ -75,6 +75,7 @@ class MostVisitedSitesSupervisor {
   // If true, |url| should not be shown on the NTP.
   virtual bool IsBlocked(const GURL& url) = 0;
 
+  // TODO(crbug.com/1149782): Remove the allowlists from New Tab Page.
   // Explicitly-specified sites to show on NTP.
   virtual std::vector<Allowlist> GetAllowlists() = 0;
 

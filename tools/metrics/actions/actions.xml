@@ -12011,29 +12011,32 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManagedUsers_Whitelist_Added">
+  <obsolete>Deprecated as of 11/2020.</obsolete>
   <owner>bauerb@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <owner>pam@chromium.org</owner>
   <description>
-    A new whitelist has been installed for a supervised user.
+    A new allowlist has been installed for a supervised user.
   </description>
 </action>
 
 <action name="ManagedUsers_Whitelist_Removed">
+  <obsolete>Deprecated as of 11/2020.</obsolete>
   <owner>bauerb@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <owner>pam@chromium.org</owner>
   <description>
-    A whitelist has been uninstalled for a supervised user.
+    An allowlist has been uninstalled for a supervised user.
   </description>
 </action>
 
 <action name="ManagedUsers_Whitelist_UncleanUninstall">
+  <obsolete>Deprecated as of 11/2020.</obsolete>
   <owner>bauerb@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <owner>pam@chromium.org</owner>
   <description>
-    Recorded at startup if an unregistered whitelist has been found. This
+    Recorded at startup if an unregistered allowlist has been found. This
     usually means that an uninstallation did not complete.
   </description>
 </action>

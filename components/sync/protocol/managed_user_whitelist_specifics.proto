@@ -16,6 +16,7 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+// TODO(crbug.com/1149788): Deprecate.
 // Properties of supervised user whitelist sync objects.
 // The fields here are a subset of the fields in an ExtensionSpecifics.
 message ManagedUserWhitelistSpecifics {

@@ -133,10 +133,6 @@ class TestingBrowserProcess : public BrowserProcess {
 #endif
 
   component_updater::ComponentUpdateService* component_updater() override;
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  component_updater::SupervisedUserWhitelistInstaller*
-  supervised_user_whitelist_installer() override;
-#endif
   MediaFileSystemRegistry* media_file_system_registry() override;
 
   WebRtcLogUploader* webrtc_log_uploader() override;

@@ -6165,8 +6165,6 @@ static_library("browser") {
 
   if (enable_supervised_users) {
     sources += [
-      "component_updater/supervised_user_whitelist_installer.cc",
-      "component_updater/supervised_user_whitelist_installer.h",
       "content_settings/content_settings_supervised_provider.cc",
       "content_settings/content_settings_supervised_provider.h",
       "supervised_user/child_accounts/child_account_service.cc",
@@ -6186,8 +6184,6 @@ static_library("browser") {
       "supervised_user/kids_management_url_checker_client.cc",
       "supervised_user/kids_management_url_checker_client.h",
       "supervised_user/permission_request_creator.h",
-      "supervised_user/supervised_user_allowlist_service.cc",
-      "supervised_user/supervised_user_allowlist_service.h",
       "supervised_user/supervised_user_constants.cc",
       "supervised_user/supervised_user_constants.h",
       "supervised_user/supervised_user_denylist.cc",

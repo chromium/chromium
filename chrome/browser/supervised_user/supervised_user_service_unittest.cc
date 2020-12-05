@@ -23,14 +23,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/permission_request_creator.h"
-#include "chrome/browser/supervised_user/supervised_user_allowlist_service.h"
 #include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/common/chrome_paths.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
-#include "components/prefs/scoped_user_pref_update.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -114,37 +110,6 @@ class SupervisedUserURLFilterObserver
       scoped_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(SupervisedUserURLFilterObserver);
-};
-
-class SiteListObserver : public AsyncTestHelper {
- public:
-  SiteListObserver() {}
-  ~SiteListObserver() {}
-
-  void Init(SupervisedUserAllowlistService* service) {
-    service->AddSiteListsChangedCallback(base::Bind(
-        &SiteListObserver::OnSiteListsChanged, base::Unretained(this)));
-
-    // The initial call to AddSiteListsChangedCallback will call
-    // OnSiteListsChanged(), so we balance it out by calling Wait().
-    Wait();
-  }
-
-  const std::vector<scoped_refptr<SupervisedUserSiteList>>& site_lists() {
-    return site_lists_;
-  }
-
- private:
-  void OnSiteListsChanged(
-      const std::vector<scoped_refptr<SupervisedUserSiteList>>& site_lists) {
-    site_lists_ = site_lists;
-
-    QuitRunLoop();
-  }
-
-  std::vector<scoped_refptr<SupervisedUserSiteList>> site_lists_;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteListObserver);
 };
 
 class AsyncResultHolder {
@@ -351,15 +316,11 @@ class SupervisedUserServiceExtensionTestBase
     SupervisedUserService* service =
         SupervisedUserServiceFactory::GetForProfile(profile_.get());
     service->Init();
-    site_list_observer_.Init(service->GetAllowlistService());
 
     SupervisedUserURLFilter* url_filter = service->GetURLFilter();
     url_filter->SetBlockingTaskRunnerForTesting(
         base::ThreadTaskRunnerHandle::Get());
     url_filter_observer_.Init(url_filter);
-
-    // Wait for the initial update to finish.
-    url_filter_observer_.Wait();
   }
 
   void TearDown() override {
@@ -395,7 +356,6 @@ class SupervisedUserServiceExtensionTestBase
 
   bool is_supervised_;
   extensions::ScopedCurrentChannel channel_;
-  SiteListObserver site_list_observer_;
   SupervisedUserURLFilterObserver url_filter_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -519,107 +479,5 @@ TEST_F(SupervisedUserServiceExtensionTest,
 #if DCHECK_IS_ON()
   EXPECT_FALSE(supervised_user_service->GetDebugPolicyProviderName().empty());
 #endif
-}
-
-TEST_F(SupervisedUserServiceExtensionTest, NoContentPacks) {
-  InitSupervisedUserInitiatedExtensionInstallFeature(true);
-
-  SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile_.get());
-  SupervisedUserURLFilter* url_filter = supervised_user_service->GetURLFilter();
-
-  // ASSERT_EQ instead of ASSERT_TRUE([...].empty()) so that the error
-  // message contains the size in case of failure.
-  ASSERT_EQ(0u, site_list_observer_.site_lists().size());
-
-  GURL url("http://youtube.com");
-  EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
-            url_filter->GetFilteringBehaviorForURL(url));
-}
-
-TEST_F(SupervisedUserServiceExtensionTest, InstallContentPacks) {
-  InitSupervisedUserInitiatedExtensionInstallFeature(true);
-
-  SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile_.get());
-  SupervisedUserURLFilter* url_filter = supervised_user_service->GetURLFilter();
-
-  const std::string id1 = "ID 1";
-  const base::string16 title1 = base::ASCIIToUTF16("Title 1");
-  const std::string id2 = "ID 2";
-  const base::string16 title2 = base::ASCIIToUTF16("Title 2");
-
-  GURL youtube_url("http://www.youtube.com");
-  GURL moose_url("http://moose.org");
-  EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
-            url_filter->GetFilteringBehaviorForURL(youtube_url));
-
-  profile_->GetPrefs()->SetInteger(
-      prefs::kDefaultSupervisedUserFilteringBehavior,
-      SupervisedUserURLFilter::BLOCK);
-  EXPECT_EQ(SupervisedUserURLFilter::BLOCK,
-            url_filter->GetFilteringBehaviorForURL(youtube_url));
-
-  profile_->GetPrefs()->SetInteger(
-      prefs::kDefaultSupervisedUserFilteringBehavior,
-      SupervisedUserURLFilter::WARN);
-  EXPECT_EQ(SupervisedUserURLFilter::WARN,
-            url_filter->GetFilteringBehaviorForURL(youtube_url));
-
-  // Load a allowlist.
-  base::FilePath test_data_dir;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
-  SupervisedUserAllowlistService* allowlist_service =
-      supervised_user_service->GetAllowlistService();
-  base::FilePath allowlist_path =
-      test_data_dir.AppendASCII("allowlists/content_pack/site_list.json");
-  allowlist_service->LoadAllowlistForTesting(id1, title1, allowlist_path);
-  site_list_observer_.Wait();
-
-  ASSERT_EQ(1u, site_list_observer_.site_lists().size());
-  EXPECT_EQ(id1, site_list_observer_.site_lists()[0]->id());
-  EXPECT_EQ(title1, site_list_observer_.site_lists()[0]->title());
-  EXPECT_EQ(youtube_url, site_list_observer_.site_lists()[0]->entry_point());
-
-  url_filter_observer_.Wait();
-  EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
-            url_filter->GetFilteringBehaviorForURL(youtube_url));
-  EXPECT_EQ(SupervisedUserURLFilter::WARN,
-            url_filter->GetFilteringBehaviorForURL(moose_url));
-
-  // Load a second allowlist.
-  allowlist_path =
-      test_data_dir.AppendASCII("allowlists/content_pack_2/site_list.json");
-  allowlist_service->LoadAllowlistForTesting(id2, title2, allowlist_path);
-  site_list_observer_.Wait();
-
-  ASSERT_EQ(2u, site_list_observer_.site_lists().size());
-  EXPECT_EQ(id1, site_list_observer_.site_lists()[0]->id());
-  EXPECT_EQ(title1, site_list_observer_.site_lists()[0]->title());
-  EXPECT_EQ(youtube_url, site_list_observer_.site_lists()[0]->entry_point());
-  EXPECT_EQ(id2, site_list_observer_.site_lists()[1]->id());
-  EXPECT_EQ(title2, site_list_observer_.site_lists()[1]->title());
-  EXPECT_TRUE(site_list_observer_.site_lists()[1]->entry_point().is_empty());
-
-  url_filter_observer_.Wait();
-  EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
-            url_filter->GetFilteringBehaviorForURL(youtube_url));
-  EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
-            url_filter->GetFilteringBehaviorForURL(moose_url));
-
-  // Unload the first allowlist.
-  allowlist_service->UnloadAllowlist(id1);
-  site_list_observer_.Wait();
-
-  ASSERT_EQ(1u, site_list_observer_.site_lists().size());
-  EXPECT_EQ(id2, site_list_observer_.site_lists()[0]->id());
-  EXPECT_EQ(title2, site_list_observer_.site_lists()[0]->title());
-  EXPECT_TRUE(site_list_observer_.site_lists()[0]->entry_point().is_empty());
-
-  url_filter_observer_.Wait();
-  EXPECT_EQ(SupervisedUserURLFilter::WARN,
-            url_filter->GetFilteringBehaviorForURL(youtube_url));
-  EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
-            url_filter->GetFilteringBehaviorForURL(moose_url));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

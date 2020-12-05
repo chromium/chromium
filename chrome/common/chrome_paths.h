@@ -118,9 +118,6 @@ enum {
   DIR_CHROMEOS_CUSTOM_WALLPAPERS,     // Directory where custom wallpapers
                                       // reside.
 #endif
-  DIR_SUPERVISED_USER_INSTALLED_WHITELISTS,  // Directory where sanitized
-                                             // supervised user whitelists are
-                                             // installed.
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
   DIR_NATIVE_MESSAGING,       // System directory where native messaging host
                               // manifest files are stored.

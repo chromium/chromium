@@ -408,13 +408,6 @@ bool PathProvider(int key, base::FilePath* result) {
       cur = cur.Append(FILE_PATH_LITERAL("custom_wallpapers"));
       break;
 #endif
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    case chrome::DIR_SUPERVISED_USER_INSTALLED_WHITELISTS:
-      if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur))
-        return false;
-      cur = cur.Append(FILE_PATH_LITERAL("SupervisedUserInstalledWhitelists"));
-      break;
-#endif
     // The following are only valid in the development environment, and
     // will fail if executed from an installed executable (because the
     // generated path won't exist).

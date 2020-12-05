@@ -8730,12 +8730,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="ManagedUsers.Whitelist.Count" units="whitelists"
-    expires_after="2021-06-02">
+<histogram name="ManagedUsers.Whitelist.Count" units="allowlists"
+    expires_after="M88">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families@google.com</owner>
   <summary>
-    The number of whitelists installed for a supervised user. Recorded at every
+    The number of allowlists installed for a supervised user. Recorded at every
     profile startup.
   </summary>
 </histogram>

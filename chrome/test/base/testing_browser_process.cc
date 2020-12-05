@@ -392,13 +392,6 @@ TestingBrowserProcess::component_updater() {
   return nullptr;
 }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-component_updater::SupervisedUserWhitelistInstaller*
-TestingBrowserProcess::supervised_user_whitelist_installer() {
-  return nullptr;
-}
-#endif
-
 MediaFileSystemRegistry* TestingBrowserProcess::media_file_system_registry() {
 #if defined(OS_ANDROID)
   NOTIMPLEMENTED();

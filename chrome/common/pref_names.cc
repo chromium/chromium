@@ -203,11 +203,6 @@ const char kSupervisedUserSecondCustodianProfileURL[] =
 // the format.
 const char kSupervisedUserSharedSettings[] = "profile.managed.shared_settings";
 
-// A dictionary storing allowlists for a supervised user. The key is the CRX ID
-// of the allowlist, the value a dictionary containing allowlist properties
-// (currently the name).
-const char kSupervisedUserAllowlists[] = "profile.managed.whitelists";
-
 #if BUILDFLAG(ENABLE_RLZ)
 // Integer. RLZ ping delay in seconds.
 const char kRlzPingDelaySeconds[] = "rlz_ping_delay";
@@ -2727,11 +2722,6 @@ const char kEasyUnlockLocalStateUserPrefs[] = "easy_unlock.user_prefs";
 // Boolean that indicates whether elevation is needed to recover Chrome upgrade.
 const char kRecoveryComponentNeedsElevation[] =
     "recovery_component.needs_elevation";
-
-// A dictionary that maps from supervised user whitelist IDs to their properties
-// (name and a list of clients that registered the whitelist).
-const char kRegisteredSupervisedUserWhitelists[] =
-    "supervised_users.whitelists";
 
 #if !defined(OS_ANDROID)
 // Boolean that indicates whether Chrome enterprise extension request is enabled

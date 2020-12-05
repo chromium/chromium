@@ -62,7 +62,6 @@ extern const char kSupervisedUserSecondCustodianObfuscatedGaiaId[];
 extern const char kSupervisedUserSecondCustodianProfileImageURL[];
 extern const char kSupervisedUserSecondCustodianProfileURL[];
 extern const char kSupervisedUserSharedSettings[];
-extern const char kSupervisedUserAllowlists[];
 extern const char kURLsToRestoreOnStartup[];
 extern const char kUserFeedbackAllowed[];
 
@@ -912,7 +911,6 @@ extern const char kEasyUnlockLocalStateUserPrefs[];
 
 extern const char kRecoveryComponentNeedsElevation[];
 
-extern const char kRegisteredSupervisedUserWhitelists[];
 
 #if !defined(OS_ANDROID)
 extern const char kCloudExtensionRequestEnabled[];

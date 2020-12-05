@@ -93,17 +93,8 @@ bool SupervisorBridge::IsBlocked(const GURL& url) {
 
 std::vector<ntp_tiles::MostVisitedSitesSupervisor::Allowlist>
 SupervisorBridge::GetAllowlists() {
-  std::vector<MostVisitedSitesSupervisor::Allowlist> results;
-  SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile_);
-  for (const auto& allowlist : supervised_user_service->allowlists()) {
-    results.emplace_back(Allowlist{
-        allowlist->title(),
-        allowlist->entry_point(),
-        allowlist->large_icon_path(),
-    });
-  }
-  return results;
+  // TODO(crbug.com/1149782): Remove allowlists from New Tab Page.
+  return {};
 }
 
 bool SupervisorBridge::IsChildProfile() {

@@ -105,7 +105,6 @@
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/supervised_user/supervised_user_allowlist_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service.h"
@@ -382,11 +381,6 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
       syncer::SUPERVISED_USER_SETTINGS, profile_, dump_stack,
       model_type_store_factory,
       GetSyncableServiceForType(syncer::SUPERVISED_USER_SETTINGS)));
-  controllers.push_back(std::make_unique<SupervisedUserSyncModelTypeController>(
-      syncer::DEPRECATED_SUPERVISED_USER_ALLOWLISTS, profile_, dump_stack,
-      model_type_store_factory,
-      GetSyncableServiceForType(
-          syncer::DEPRECATED_SUPERVISED_USER_ALLOWLISTS)));
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -610,10 +604,6 @@ ChromeSyncClient::GetSyncableServiceForType(syncer::ModelType type) {
     case syncer::SUPERVISED_USER_SETTINGS:
       return SupervisedUserSettingsServiceFactory::GetForKey(
                  profile_->GetProfileKey())
-          ->AsWeakPtr();
-    case syncer::DEPRECATED_SUPERVISED_USER_ALLOWLISTS:
-      return SupervisedUserServiceFactory::GetForProfile(profile_)
-          ->GetAllowlistService()
           ->AsWeakPtr();
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)

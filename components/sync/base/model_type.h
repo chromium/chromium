@@ -110,9 +110,9 @@ enum ModelType {
   SUPERVISED_USER_SETTINGS,
   // App List items, used by the ChromeOS app launcher.
   APP_LIST,
+  // TODO(crbug.com/1155257): Remove the deprecated type, because it isn't used.
   // Supervised user allowlists. Each item contains a CRX ID (like an extension
   // ID) and a name.
-  // TODO(crbug.com/1155257): Remove the deprecated type.
   DEPRECATED_SUPERVISED_USER_ALLOWLISTS,
   // ARC package items, i.e. Android apps on ChromeOS.
   ARC_PACKAGE,

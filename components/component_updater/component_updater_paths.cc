@@ -18,9 +18,6 @@ static int g_components_user_root_key = -1;
 
 }  // namespace
 
-const base::FilePath::CharType kSupervisedUserWhitelistDirName[] =
-    FILE_PATH_LITERAL("SupervisedUserWhitelists");
-
 bool PathProvider(int key, base::FilePath* result) {
   DCHECK_GT(g_components_user_root_key, 0);
   DCHECK_GT(g_components_preinstalled_root_key, 0);
@@ -53,9 +50,6 @@ bool PathProvider(int key, base::FilePath* result) {
       break;
     case DIR_SWIFT_SHADER:
       cur = cur.Append(FILE_PATH_LITERAL("SwiftShader"));
-      break;
-    case DIR_SUPERVISED_USER_ALLOWLISTS:
-      cur = cur.Append(kSupervisedUserWhitelistDirName);
       break;
     default:
       return false;

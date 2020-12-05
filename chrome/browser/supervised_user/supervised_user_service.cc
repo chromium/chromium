@@ -25,11 +25,9 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/component_updater/supervised_user_whitelist_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/supervised_user/permission_request_creator.h"
-#include "chrome/browser/supervised_user/supervised_user_allowlist_service.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_filtering_switches.h"
@@ -163,10 +161,6 @@ void SupervisedUserService::Init() {
       base::Bind(&SupervisedUserService::OnSupervisedUserIdChanged,
           base::Unretained(this)));
 
-  allowlist_service_->AddSiteListsChangedCallback(
-      base::Bind(&SupervisedUserService::OnSiteListsChanged,
-                 weak_ptr_factory_.GetWeakPtr()));
-
   SetActive(IsChild());
 }
 
@@ -186,9 +180,6 @@ SupervisedUserURLFilter* SupervisedUserService::GetURLFilter() {
   return &url_filter_;
 }
 
-SupervisedUserAllowlistService* SupervisedUserService::GetAllowlistService() {
-  return allowlist_service_.get();
-}
 
 bool SupervisedUserService::AccessRequestsEnabled() {
   return FindEnabledPermissionRequestCreator(0) < permissions_creators_.size();
@@ -327,12 +318,6 @@ SupervisedUserService::SupervisedUserService(Profile* profile)
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   registry_observer_.Add(extensions::ExtensionRegistry::Get(profile));
 #endif
-
-  std::string client_id = component_updater::SupervisedUserWhitelistInstaller::
-      ClientIdForProfilePath(profile_->GetPath());
-  allowlist_service_ = std::make_unique<SupervisedUserAllowlistService>(
-      profile_->GetPrefs(),
-      g_browser_process->supervised_user_whitelist_installer(), client_id);
 }
 
 void SupervisedUserService::SetPrimaryPermissionCreatorForTest(
@@ -487,7 +472,6 @@ void SupervisedUserService::SetActive(bool active) {
     // Initialize the filter.
     OnDefaultFilteringBehaviorChanged();
     OnSafeSitesSettingChanged();
-    allowlist_service_->Init();
     UpdateManualHosts();
     UpdateManualURLs();
 
@@ -634,12 +618,6 @@ void SupervisedUserService::UpdateAsyncUrlChecker() {
       url_filter_.ClearAsyncURLChecker();
     }
   }
-}
-
-void SupervisedUserService::OnSiteListsChanged(
-    const std::vector<scoped_refptr<SupervisedUserSiteList> >& site_lists) {
-  allowlists_ = site_lists;
-  url_filter_.LoadAllowlists(site_lists);
 }
 
 void SupervisedUserService::LoadDenylist(const base::FilePath& path,

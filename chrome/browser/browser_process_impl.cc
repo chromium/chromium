@@ -201,10 +201,6 @@
 #include "chrome/browser/error_reporting/chrome_js_error_report_processor.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/component_updater/supervised_user_whitelist_installer.h"
-#endif
-
 #if (defined(OS_WIN) || defined(OS_LINUX)) && !defined(OS_CHROMEOS)
 // How often to check if the persistent instance of Chrome needs to restart
 // to install an update.
@@ -406,12 +402,6 @@ void BrowserProcessImpl::StartTearDown() {
   // before the profiles, since if there are any still showing we will access
   // those things during teardown.
   notification_ui_manager_.reset();
-#endif
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  // The SupervisedUserWhitelistInstaller observes the ProfileAttributesStorage,
-  // so it needs to be shut down before the ProfileManager.
-  supervised_user_whitelist_installer_.reset();
 #endif
 
   // Debugger must be cleaned up before ProfileManager.
@@ -1067,20 +1057,6 @@ BrowserProcessImpl::component_updater() {
 
   return component_updater_.get();
 }
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-component_updater::SupervisedUserWhitelistInstaller*
-BrowserProcessImpl::supervised_user_whitelist_installer() {
-  if (!supervised_user_whitelist_installer_) {
-    supervised_user_whitelist_installer_ =
-        component_updater::SupervisedUserWhitelistInstaller::Create(
-            component_updater(),
-            &profile_manager()->GetProfileAttributesStorage(),
-            local_state());
-  }
-  return supervised_user_whitelist_installer_.get();
-}
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 void BrowserProcessImpl::OnKeepAliveStateChanged(bool is_keeping_alive) {
   if (is_keeping_alive)

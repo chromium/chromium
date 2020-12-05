@@ -200,7 +200,6 @@
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
-#include "chrome/browser/supervised_user/supervised_user_allowlist_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #endif
 
@@ -458,6 +457,13 @@ const char kPreviewsLPROriginProbeCache[] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Deprecated 4/2020
 const char kSupervisedUsersNextId[] = "LocallyManagedUsersNextId";
+
+// Deprecated 11/2020
+const char kRegisteredSupervisedUserAllowlists[] =
+    "supervised_users.whitelists";
+
+// Deprecated 11/2020
+const char kSupervisedUserAllowlists[] = "profile.managed.whitelists";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Deprecated 6/2020
@@ -509,6 +515,7 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kInvalidatorClientId, std::string());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterDictionaryPref(kRegisteredSupervisedUserAllowlists);
   registry->RegisterIntegerPref(kSupervisedUsersNextId, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
@@ -525,6 +532,7 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(
       kDisplayRotationAcceleratorDialogHasBeenAccepted, false);
+  registry->RegisterDictionaryPref(kSupervisedUserAllowlists);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   registry->RegisterBooleanPref(kBlacklistedCredentialsNormalized, false);
@@ -893,7 +901,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   ChildAccountService::RegisterProfilePrefs(registry);
   SupervisedUserService::RegisterProfilePrefs(registry);
-  SupervisedUserAllowlistService::RegisterProfilePrefs(registry);
 #endif
 
 #if defined(OS_ANDROID)
@@ -1096,6 +1103,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Added 4/2020.
   local_state->ClearPref(kSupervisedUsersNextId);
+
+  // Added 11/2020.
+  local_state->ClearPref(kRegisteredSupervisedUserAllowlists);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
@@ -1197,6 +1207,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 11/2020
   profile_prefs->ClearPref(kDRMSalt);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 11/2020.
+  profile_prefs->ClearPref(kSupervisedUserAllowlists);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
