@@ -174,6 +174,26 @@ base::Value NetLogQuicConnectionCloseFrameParams(
     const quic::QuicConnectionCloseFrame* frame) {
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetIntKey("quic_error", frame->quic_error_code);
+  if (frame->wire_error_code != frame->quic_error_code) {
+    dict.SetIntKey("quic_wire_error", frame->wire_error_code);
+  }
+  std::string close_type;
+  switch (frame->close_type) {
+    case quic::GOOGLE_QUIC_CONNECTION_CLOSE:
+      close_type = "gQUIC";
+      break;
+    case quic::IETF_QUIC_TRANSPORT_CONNECTION_CLOSE:
+      close_type = "Transport";
+      break;
+    case quic::IETF_QUIC_APPLICATION_CONNECTION_CLOSE:
+      close_type = "Application";
+      break;
+  }
+  dict.SetStringKey("close_type", close_type);
+  if (frame->transport_close_frame_type != 0) {
+    dict.SetKey("transport_close_frame_type",
+                NetLogNumberValue(frame->transport_close_frame_type));
+  }
   dict.SetStringKey("details", frame->error_details);
   return dict;
 }
