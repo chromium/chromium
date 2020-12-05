@@ -511,4 +511,12 @@ Polymer({
   onHideNotificationSetupAccessDialog_() {
     this.showNotificationAccessSetupDialog_ = false;
   },
+
+  /** @private */
+  handleNearbySetUpClick_() {
+    const params = new URLSearchParams();
+    params.set('onboarding', '');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.NEARBY_SHARE, params);
+  },
 });

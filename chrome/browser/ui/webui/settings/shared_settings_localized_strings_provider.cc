@@ -244,6 +244,8 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
 void AddNearbyShareData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"nearbyShareTitle", IDS_SETTINGS_NEARBY_SHARE_TITLE},
+      {"nearbyShareSetUpButtonTitle",
+       IDS_SETTINGS_NEARBY_SHARE_SET_UP_BUTTON_TITLE},
       {"nearbyShareDeviceNameRowTitle",
        IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_ROW_TITLE},
       {"nearbyShareDeviceNameDialogTitle",

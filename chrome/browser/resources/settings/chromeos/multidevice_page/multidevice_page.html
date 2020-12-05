@@ -34,6 +34,10 @@
       cr-policy-indicator {
         padding: 0 var(--cr-controlled-by-spacing);
       }
+
+      #nearbySetUp {
+        margin: 0 16px;
+      }
     </style>
     <settings-animated-pages id="pages" section="multidevice"
         focus-config="[[focusConfig_]]">
@@ -133,10 +137,21 @@
               </template>
             </div>
             <div class="separator"></div>
-            <settings-toggle-button id="nearbySharingToggleButton"
-                pref="{{prefs.nearby_sharing.enabled}}"
-                deep-link-focus-id$="[[Setting.kNearbyShareOnOff]]">
-            </settings-toggle-button>
+            <template is="dom-if"
+                if="[[prefs.nearby_sharing.onboarding_complete.value]]"
+                restamp>
+              <settings-toggle-button id="nearbySharingToggleButton"
+                  pref="{{prefs.nearby_sharing.enabled}}"
+                  deep-link-focus-id$="[[Setting.kNearbyShareOnOff]]">
+              </settings-toggle-button>
+            </template>
+            <template is="dom-if"
+                if="[[!prefs.nearby_sharing.onboarding_complete.value]]"
+                restamp>
+              <cr-button id="nearbySetUp" on-click="handleNearbySetUpClick_">
+                $i18n{nearbyShareSetUpButtonTitle}
+              </cr-button>
+            </template>
           </div>
         </template>
       </div>
