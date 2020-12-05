@@ -739,30 +739,34 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
 }
 
 void RenderFrameHostManager::ValidateSpeculativeRenderFrameHostForBug1146573() {
+  ValidateSpeculativeRenderFrameHostForBug1146573(
+      render_frame_host_.get(), speculative_render_frame_host_.get());
+}
+
+// Static
+void RenderFrameHostManager::ValidateSpeculativeRenderFrameHostForBug1146573(
+    RenderFrameHostImpl* current,
+    RenderFrameHostImpl* pending) {
   // TODO(https://crbug.com/1146573): Remove this when the bug is closed.
   if (ShouldCreateNewHostForSameSiteSubframe())
     return;
   // This can happen during destruction after the RFH has been cleared.
-  if (!render_frame_host_)
+  if (!current)
     return;
-  if (!speculative_render_frame_host_)
+  if (!pending)
     return;
-  if (speculative_render_frame_host_->GetSiteInstance() ==
-      render_frame_host_->GetSiteInstance()) {
+  if (pending->GetSiteInstance() == current->GetSiteInstance()) {
     // This should never be true.
-    SCOPED_CRASH_KEY_BOOL(ValidateSpeculative, HostsEqual,
-                          speculative_render_frame_host_ == render_frame_host_);
-    DCHECK_NE(speculative_render_frame_host_, render_frame_host_);
+    SCOPED_CRASH_KEY_BOOL(ValidateSpeculative, HostsEqual, pending == current);
+    DCHECK_NE(pending, current);
     SCOPED_CRASH_KEY_BOOL(ValidateSpeculative, Live,
-                          render_frame_host_->IsRenderFrameLive());
-    SCOPED_CRASH_KEY_STRING256(
-        ValidateSpeculative, OldSiteInstance,
-        render_frame_host_->GetSiteInstance()->GetSiteURL().spec());
-    SCOPED_CRASH_KEY_STRING256(
-        ValidateSpeculative, NewSiteInstance,
-        speculative_render_frame_host_->GetSiteInstance()->GetSiteURL().spec());
+                          current->IsRenderFrameLive());
+    SCOPED_CRASH_KEY_STRING256(ValidateSpeculative, OldSiteInstance,
+                               current->GetSiteInstance()->GetSiteURL().spec());
+    SCOPED_CRASH_KEY_STRING256(ValidateSpeculative, NewSiteInstance,
+                               pending->GetSiteInstance()->GetSiteURL().spec());
     SCOPED_CRASH_KEY_BOOL(ValidateSpeculative, MustBeReplaced,
-                          render_frame_host_->must_be_replaced());
+                          current->must_be_replaced());
     NOTREACHED();
     base::debug::DumpWithoutCrashing();
   }
@@ -3207,6 +3211,13 @@ void RenderFrameHostManager::CommitPending(
 
 std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
     std::unique_ptr<RenderFrameHostImpl> render_frame_host) {
+  // It's expected that a same-site swap will occur via here when
+  // ShouldSkipEarlyCommitPendingForCrashedFrame is true, so only check when
+  // that's not the case.
+  if (!(render_frame_host_ && render_frame_host_->must_be_replaced())) {
+    RenderFrameHostManager::ValidateSpeculativeRenderFrameHostForBug1146573(
+        render_frame_host_.get(), render_frame_host.get());
+  }
   // Swap the two.
   std::unique_ptr<RenderFrameHostImpl> old_render_frame_host =
       std::move(render_frame_host_);

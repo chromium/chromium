@@ -329,6 +329,9 @@ class CONTENT_EXPORT RenderFrameHostManager
   // Validate the speculative RFH and DumpWithoutCrashing if it's invalid.
   // TODO(https://crbug.com/1146573): Remove this when the bug is closed.
   void ValidateSpeculativeRenderFrameHostForBug1146573();
+  static void ValidateSpeculativeRenderFrameHostForBug1146573(
+      RenderFrameHostImpl* current,
+      RenderFrameHostImpl* pending);
 
   // Called (possibly several times) during a navigation to select or create an
   // appropriate RenderFrameHost for the provided URL. The returned pointer will
