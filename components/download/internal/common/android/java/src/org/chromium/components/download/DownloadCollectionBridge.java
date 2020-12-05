@@ -22,7 +22,6 @@ import android.text.format.DateUtils;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
@@ -132,7 +131,7 @@ public class DownloadCollectionBridge {
      */
     @CalledByNative
     public static boolean shouldPublishDownload(final String filePath) {
-        if (isAtLeastQ()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (filePath == null) return false;
             // Only need to publish downloads that are on primary storage.
             return !sDownloadDelegate.isDownloadOnSDCard(filePath);
@@ -297,7 +296,7 @@ public class DownloadCollectionBridge {
      * @return whether download collection is supported.
      */
     public static boolean supportsDownloadCollection() {
-        return isAtLeastQ();
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
     }
 
     /**
@@ -331,10 +330,6 @@ public class DownloadCollectionBridge {
      */
     public static int getExpirationDurationInDays() {
         return DownloadCollectionBridgeJni.get().getExpirationDurationInDays();
-    }
-
-    private static boolean isAtLeastQ() {
-        return BuildInfo.isAtLeastQ() || Build.VERSION.SDK_INT >= 29;
     }
 
     /**

@@ -576,7 +576,8 @@ void InProgressDownloadManager::OnDBInitialized(
     std::unique_ptr<std::vector<DownloadDBEntry>> entries) {
 #if defined(OS_ANDROID)
   // Retrieve display names for all downloads from media store if needed.
-  if (base::android::BuildInfo::GetInstance()->is_at_least_q()) {
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SDK_VERSION_Q) {
     DownloadCollectionBridge::GetDisplayNamesCallback callback =
         base::BindOnce(&InProgressDownloadManager::OnDownloadNamesRetrieved,
                        weak_factory_.GetWeakPtr(), std::move(entries));
