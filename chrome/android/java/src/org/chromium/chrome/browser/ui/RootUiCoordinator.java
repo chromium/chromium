@@ -229,7 +229,7 @@ public class RootUiCoordinator
         // require the compatibility mode introduced in Android P.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             mAutofillSessionLifetimeController = new AutofillSessionLifetimeController(
-                    activity, mActivityTabProvider);
+                    activity, activity.getLifecycleDispatcher(), mActivityTabProvider);
         } else {
             mAutofillSessionLifetimeController = null;
         }

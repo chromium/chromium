@@ -10,7 +10,7 @@ import android.os.Build;
 
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.content_public.browser.NavigationHandle;
 
@@ -28,10 +28,12 @@ import org.chromium.content_public.browser.NavigationHandle;
  * Autofill sessions are cancelled:
  * 1. when the domain part of the UrlBar content changes:
  *    In this case the session is cancelled by the Android Autofill service's compat mode.
- * 2. right before the tab is hidden:
+ * 2. right before the tab is hidden, unless Chrome itself is being stopped:
  *    Ensures that no save UI is shown when the user switches to a different tab or the tab
  *    switcher. By cancelling the session in onInteractabilityChanged, we catch both cases at a
- *    point where tab contents are not yet hidden.
+ *    point where tab contents are not yet hidden. Since some third-party Autofill services use
+ *    fullscreen authentication flows before they fill, the session must be preserved through
+ *    the main activity's lifecycle events.
  * 3. when browser-initiated navigation occurs:
  *    As opposed to renderer-initiated navigation (e.g., submitting a form), navigation initiated by
  *    browser controls should never trigger save UI. In order to cancel the session before web
@@ -44,7 +46,9 @@ public class AutofillSessionLifetimeController implements Destroyable {
 
     @TargetApi(Build.VERSION_CODES.O)
     public AutofillSessionLifetimeController(
-            ChromeActivity activity, ActivityTabProvider activityTabProvider) {
+            Activity activity,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            ActivityTabProvider activityTabProvider) {
         mActivity = activity;
         mActivityTabObserver = new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider) {
             @Override
@@ -56,12 +60,17 @@ public class AutofillSessionLifetimeController implements Destroyable {
 
             @Override
             public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
-                if (!isInteractable) {
+                // While onInteractabilityChanged is called in ChromeActivity.onStop(), the session
+                // must remain active to allow Autofill services' fullscreen authentication flows to
+                // succeed.
+                boolean isStopped = lifecycleDispatcher.getCurrentActivityState() ==
+                        ActivityLifecycleDispatcher.ActivityState.STOPPED_WITH_NATIVE;
+                if (!isInteractable && !isStopped) {
                     ApiHelperForO.cancelAutofillSession(mActivity);
                 }
             }
         };
-        activity.getLifecycleDispatcher().register(this);
+        lifecycleDispatcher.register(this);
     }
 
     // Destroyable
