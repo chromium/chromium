@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "components/version_info/version_info.h"
@@ -103,22 +102,13 @@ std::string WebEngineContentBrowserClient::GetProduct() {
 }
 
 std::string WebEngineContentBrowserClient::GetUserAgent() {
-  std::string user_agent;
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseLegacyAndroidUserAgent)) {
-    user_agent =
-        content::BuildUserAgentFromOSAndProduct("Linux; Android", GetProduct());
-  } else {
-    user_agent = content::BuildUserAgentFromProduct(GetProduct());
-  }
-
+  std::string user_agent = content::BuildUserAgentFromProduct(GetProduct());
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUserAgentProductAndVersion)) {
     user_agent +=
         " " + base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
                   switches::kUserAgentProductAndVersion);
   }
-
   return user_agent;
 }
 
