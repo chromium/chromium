@@ -5,6 +5,7 @@
 #include "base/allocator/partition_allocator/pcscan.h"
 
 #include <algorithm>
+#include <condition_variable>
 #include <map>
 #include <mutex>
 #include <numeric>
