@@ -108,13 +108,13 @@ void SODAInstallerImpl::OnEvent(Events event, const std::string& id) {
       }
     } break;
     case Events::COMPONENT_UPDATED:
-    case Events::COMPONENT_NOT_UPDATED:
       NotifyOnSODAInstalled();
       break;
     case Events::COMPONENT_UPDATE_ERROR:
       NotifyOnSODAError();
       break;
     case Events::COMPONENT_CHECKING_FOR_UPDATES:
+    case Events::COMPONENT_NOT_UPDATED:
       // Do nothing.
       break;
   }

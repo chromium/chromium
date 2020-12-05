@@ -23,7 +23,9 @@ namespace settings {
 
 CaptionsHandler::CaptionsHandler(PrefService* prefs) : prefs_(prefs) {}
 
-CaptionsHandler::~CaptionsHandler() = default;
+CaptionsHandler::~CaptionsHandler() {
+  speech::SODAInstaller::GetInstance()->RemoveObserver(this);
+}
 
 void CaptionsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
