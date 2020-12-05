@@ -484,11 +484,6 @@ bool IsBlockedDriver(VaapiWrapper::CodecMode mode, VAProfile va_profile) {
   return false;
 }
 
-bool IsValidVABufferType(VABufferType type) {
-  return type < VABufferTypeMax || type == VAEncryptionParameterBufferType ||
-         type == VACencStatusParameterBufferType;
-}
-
 // This class is a wrapper around its |va_display_| (and its associated
 // |va_lock_|) to guarantee mutual exclusion and singleton behaviour.
 class VADisplayState {

@@ -181,6 +181,9 @@ void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
                            VAProbabilityDataBufferVP8* prob_buf,
                            VAPictureParameterBufferVP8* pic_param,
                            VASliceParameterBufferVP8* slice_param);
+
+bool IsValidVABufferType(VABufferType type);
+
 }  // namespace media
 
 #endif  // MEDIA_GPU_VAAPI_VAAPI_UTILS_H_
