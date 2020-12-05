@@ -162,7 +162,8 @@ PhoneStatusView::PhoneStatusView(chromeos::phonehub::PhoneModel* phone_model,
   settings_button_ = new TopShortcutButton(
       base::BindRepeating(&Delegate::OpenConnectedDevicesSettings,
                           base::Unretained(delegate)),
-      kSystemMenuSettingsIcon, IDS_ASH_STATUS_TRAY_SETTINGS);
+      kSystemMenuSettingsIcon,
+      IDS_ASH_PHONE_HUB_CONNECTED_DEVICE_SETTINGS_LABEL);
   AddView(TriView::Container::END, settings_button_);
 
   separator_->SetVisible(delegate->CanOpenConnectedDeviceSettings());

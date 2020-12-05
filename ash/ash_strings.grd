@@ -1201,6 +1201,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_CONTINUE_BROWSING_TAB_LABEL" desc="Label inside a Phone Hub continue browsing card that describes the index of the card, title of the webpage, and webpage url.">
         Browser tab <ph name="INDEX">$1<ex>1</ex></ph> of <ph name="TOTAL_COUNT">$2<ex>2</ex></ph>. <ph name="SITE_TITLE">$3<ex>Google</ex></ph>, <ph name="SITE_URL">$4<ex>https://google.com</ex></ph>
       </message>
+      <message name="IDS_ASH_PHONE_HUB_CONNECTED_DEVICE_SETTINGS_LABEL" desc="Label for the settings button in the Phone Hub UI that lets users know that the button routes to the Chrome OS Settings app page for connected devices (e.g. to disable Phone Hub features, enable/disable Smartlock, etc)">
+        Connected devices settings
+      </message>
 
       <message name="IDS_ASH_STYLUS_TOOLS_CAPTURE_REGION_ACTION" desc="Title of the capture region action in the stylus tools (a pop-up panel next to the status tray). This causes a partial screenshot to be taken (the user selects an area of the screen to take a screenshot of).">
         Capture region
