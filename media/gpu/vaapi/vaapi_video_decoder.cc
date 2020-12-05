@@ -171,10 +171,10 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
       std::move(init_cb).Run(StatusCode::kEncryptedContentUnsupported);
       return;
     }
-    cdm_context_ = cdm_context;
-    cdm_event_cb_registration_ = cdm_context_->RegisterEventCB(
+    cdm_event_cb_registration_ = cdm_context->RegisterEventCB(
         base::BindRepeating(&VaapiVideoDecoder::OnCdmContextEvent,
                             weak_this_factory_.GetWeakPtr()));
+    cdm_context_ref_ = cdm_context->GetChromeOsCdmContext()->GetCdmContextRef();
 #endif
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   } else if (config.codec() == kCodecHEVC &&
@@ -214,7 +214,8 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
   const VideoCodecProfile profile = config.profile();
   vaapi_wrapper_ = VaapiWrapper::CreateForVideoCodec(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      !cdm_context_ ? VaapiWrapper::kDecode : VaapiWrapper::kDecodeProtected,
+      !cdm_context_ref_ ? VaapiWrapper::kDecode
+                        : VaapiWrapper::kDecodeProtected,
 #else
       VaapiWrapper::kDecode,
 #endif
@@ -523,7 +524,7 @@ void VaapiVideoDecoder::ApplyResolutionChange() {
   CHECK(format_fourcc);
   if (!frame_pool_->Initialize(
           *format_fourcc, pic_size, visible_rect, natural_size,
-          decoder_->GetRequiredNumOfPictures(), !!cdm_context_)) {
+          decoder_->GetRequiredNumOfPictures(), !!cdm_context_ref_)) {
     DLOG(WARNING) << "Failed Initialize()ing the frame pool.";
     SetState(State::kError);
     return;
@@ -544,7 +545,8 @@ void VaapiVideoDecoder::ApplyResolutionChange() {
     profile_ = decoder_->GetProfile();
     auto new_vaapi_wrapper = VaapiWrapper::CreateForVideoCodec(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-        !cdm_context_ ? VaapiWrapper::kDecode : VaapiWrapper::kDecodeProtected,
+        !cdm_context_ref_ ? VaapiWrapper::kDecode
+                          : VaapiWrapper::kDecodeProtected,
 #else
         VaapiWrapper::kDecode,
 #endif
@@ -701,7 +703,8 @@ Status VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
           &VaapiVideoDecoder::ProtectedSessionUpdate, weak_this_));
   if (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) {
     auto accelerator = std::make_unique<H264VaapiVideoDecoderDelegate>(
-        this, vaapi_wrapper_, std::move(protected_update_cb), cdm_context_);
+        this, vaapi_wrapper_, std::move(protected_update_cb),
+        cdm_context_ref_ ? cdm_context_ref_->GetCdmContext() : nullptr);
     decoder_delegate_ = accelerator.get();
 
     decoder_.reset(
@@ -714,7 +717,8 @@ Status VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
     decoder_.reset(new VP8Decoder(std::move(accelerator)));
   } else if (profile_ >= VP9PROFILE_MIN && profile_ <= VP9PROFILE_MAX) {
     auto accelerator = std::make_unique<VP9VaapiVideoDecoderDelegate>(
-        this, vaapi_wrapper_, std::move(protected_update_cb), cdm_context_);
+        this, vaapi_wrapper_, std::move(protected_update_cb),
+        cdm_context_ref_ ? cdm_context_ref_->GetCdmContext() : nullptr);
     decoder_delegate_ = accelerator.get();
 
     decoder_.reset(
@@ -723,7 +727,8 @@ Status VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   else if (profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX) {
     auto accelerator = std::make_unique<H265VaapiVideoDecoderDelegate>(
-        this, vaapi_wrapper_, std::move(protected_update_cb), cdm_context_);
+        this, vaapi_wrapper_, std::move(protected_update_cb),
+        cdm_context_ref_ ? cdm_context_ref_->GetCdmContext() : nullptr);
     decoder_delegate_ = accelerator.get();
 
     decoder_.reset(
@@ -774,7 +779,7 @@ void VaapiVideoDecoder::SetState(State state) {
              state_ == State::kResetting);
       break;
     case State::kWaitingForProtected:
-      DCHECK(!!cdm_context_);
+      DCHECK(!!cdm_context_ref_);
       FALLTHROUGH;
     case State::kWaitingForOutput:
       DCHECK(current_decode_task_);

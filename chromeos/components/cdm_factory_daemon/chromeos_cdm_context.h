@@ -5,10 +5,12 @@
 #ifndef CHROMEOS_COMPONENTS_CDM_FACTORY_DAEMON_CHROMEOS_CDM_CONTEXT_H_
 #define CHROMEOS_COMPONENTS_CDM_FACTORY_DAEMON_CHROMEOS_CDM_CONTEXT_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
+#include "media/base/cdm_context.h"
 #include "media/base/decryptor.h"
 
 namespace media {
@@ -32,6 +34,9 @@ class ChromeOsCdmContext {
   virtual void GetHwKeyData(const media::DecryptConfig* decrypt_config,
                             const std::vector<uint8_t>& hw_identifier,
                             GetHwKeyDataCB callback) = 0;
+
+  // Gets a CdmContextRef linked with the associated CDM for keeping it alive.
+  virtual std::unique_ptr<media::CdmContextRef> GetCdmContextRef() = 0;
 
  protected:
   virtual ~ChromeOsCdmContext() = default;
