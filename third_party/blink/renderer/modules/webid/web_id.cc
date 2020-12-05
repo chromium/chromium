@@ -19,7 +19,15 @@ namespace blink {
 namespace {
 
 void OnRequestIdToken(ScriptPromiseResolver* resolver,
+                      mojom::blink::RequestIdTokenStatus status,
                       const WTF::String& id_token) {
+  // TODO(kenrb): Provide better messages for different error codes.
+  if (status != mojom::blink::RequestIdTokenStatus::kSuccess) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNetworkError,
+        "Error loading the identity provider."));
+    return;
+  }
   resolver->Resolve(id_token);
 }
 
@@ -33,8 +41,8 @@ ScriptPromise WebID::get(ScriptState* script_state,
                          ExceptionState& exception_state) {
   auto* context = GetExecutionContext();
 
-  if (!options->hasProvider()) {
-    exception_state.ThrowTypeError("Provider is required.");
+  if (!options->hasProvider() || !options->hasRequest()) {
+    exception_state.ThrowTypeError("Invalid WebIDRequestOptions");
     return ScriptPromise();
   }
 
@@ -62,7 +70,8 @@ ScriptPromise WebID::get(ScriptState* script_state,
   ScriptPromise promise = resolver->Promise();
 
   auth_request_->RequestIdToken(
-      provider, WTF::Bind(&OnRequestIdToken, WrapPersistent(resolver)));
+      provider, options->request(),
+      WTF::Bind(&OnRequestIdToken, WrapPersistent(resolver)));
 
   return promise;
 }

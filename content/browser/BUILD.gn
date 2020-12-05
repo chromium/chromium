@@ -1865,6 +1865,8 @@ source_set("browser") {
     "webauth/webauth_request_security_checker.h",
     "webid/federated_auth_request_impl.cc",
     "webid/federated_auth_request_impl.h",
+    "webid/idp_network_request_manager.cc",
+    "webid/idp_network_request_manager.h",
     "webrtc/webrtc_internals.cc",
     "webrtc/webrtc_internals.h",
     "webrtc/webrtc_internals_connections_observer.h",
