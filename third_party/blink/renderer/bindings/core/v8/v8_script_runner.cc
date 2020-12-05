@@ -375,24 +375,13 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
     const KURL& base_url,
     SanitizeScriptErrors sanitize_script_errors,
     const ScriptFetchOptions& fetch_options,
-    ScriptController::ExecuteScriptPolicy policy,
     RethrowErrorsOption rethrow_errors) {
   DCHECK_EQ(isolate, script_state->GetIsolate());
 
-  if (policy == ScriptController::kDoNotExecuteScriptWhenScriptsDisabled &&
-      !execution_context->CanExecuteScripts(kAboutToExecuteScript)) {
-    return ScriptEvaluationResult::FromClassicNotRun();
-  }
+  v8::Context::Scope scope(script_state->GetContext());
 
   LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(execution_context);
   LocalFrame* frame = window ? window->GetFrame() : nullptr;
-
-  if (window && window->document()->IsInitialEmptyDocument()) {
-    window->GetFrame()->Loader().DidAccessInitialDocument();
-  }
-
-  v8::Context::Scope scope(script_state->GetContext());
-
   TRACE_EVENT1("devtools.timeline", "EvaluateScript", "data",
                inspector_evaluate_script_event::Data(
                    frame, source.Url().GetString(), source.StartPosition()));
