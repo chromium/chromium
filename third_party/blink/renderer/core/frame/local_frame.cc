@@ -2380,6 +2380,10 @@ void LocalFrame::DidFreeze() {
         performance_manager::mojom::LifecycleState::kFrozen);
   }
 
+  if (GetPage()->GetPageScheduler()->IsInBackForwardCache()) {
+    DomWindow()->SetIsInBackForwardCache(true);
+  }
+
   WebURLLoader::DeferType defer =
       GetPage()->GetPageScheduler()->IsInBackForwardCache()
           ? WebURLLoader::DeferType::kDeferredWithBackForwardCache
@@ -2407,6 +2411,8 @@ void LocalFrame::DidResume() {
   GetDocument()->Fetcher()->SetDefersLoading(
       WebURLLoader::DeferType::kNotDeferred);
   Loader().SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
+
+  DomWindow()->SetIsInBackForwardCache(false);
 }
 
 void LocalFrame::MaybeLogAdClickNavigation() {
