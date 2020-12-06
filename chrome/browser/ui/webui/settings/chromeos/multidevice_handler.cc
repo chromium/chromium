@@ -43,7 +43,7 @@ const char kPageContentDataPhoneHubTaskContinuationStateKey[] =
     "phoneHubTaskContinuationState";
 const char kPageContentDataWifiSyncStateKey[] = "wifiSyncState";
 const char kPageContentDataSmartLockStateKey[] = "smartLockState";
-const char kIsNotificationAccessGranted[] = "isNotificationAccessGranted";
+const char kNotificationAccessStatus[] = "notificationAccessStatus";
 const char kIsAndroidSmsPairingComplete[] = "isAndroidSmsPairingComplete";
 
 constexpr char kAndroidSmsInfoOriginKey[] = "origin";
@@ -473,11 +473,16 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
           ? android_sms_pairing_state_tracker_->IsAndroidSmsPairingComplete()
           : false);
 
-  page_content_dictionary->SetBoolean(
-      kIsNotificationAccessGranted,
-      notification_access_manager_
-          ? notification_access_manager_->HasAccessBeenGranted()
-          : false);
+  // TODO(khorimoto): Send prohibited value if notification access is
+  // prohibited.
+  static const int kAccessNotGranted = 1;
+  static const int kAccessGranted = 2;
+  int access_value = kAccessNotGranted;
+  if (notification_access_manager_ &&
+      notification_access_manager_->HasAccessBeenGranted()) {
+    access_value = kAccessGranted;
+  }
+  page_content_dictionary->SetInteger(kNotificationAccessStatus, access_value);
 
   return page_content_dictionary;
 }

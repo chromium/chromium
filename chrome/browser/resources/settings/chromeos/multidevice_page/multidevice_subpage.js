@@ -157,5 +157,13 @@ Polymer({
     return !this.isSuiteOn() ||
         messagesFeatureState ===
         settings.MultiDeviceFeatureState.PROHIBITED_BY_POLICY;
-  }
+  },
+
+  getPhoneHubNotificationsTooltip_() {
+    if (!this.isPhoneHubNotificationAccessProhibited()) {
+      return '';
+    }
+
+    return this.i18n('multideviceNotificationAccessProhibitedTooltip');
+  },
 });

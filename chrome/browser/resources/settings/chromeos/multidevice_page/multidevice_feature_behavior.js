@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {MultiDeviceSettingsMode, MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData } from './multidevice_constants.m.js';
+// #import {MultiDeviceSettingsMode, MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, PhoneHubNotificationAccessStatus} from './multidevice_constants.m.js';
 // #import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 // clang-format on
 
@@ -72,6 +72,16 @@ const MultiDeviceFeatureBehaviorImpl = {
   },
 
   /**
+   * @return {boolean} Whether or not Phone Hub notification access is
+   *     prohibited (i.e., due to the user having a work profile).
+   */
+  isPhoneHubNotificationAccessProhibited() {
+    return this.pageContentData &&
+        this.pageContentData.notificationAccessStatus ===
+        settings.PhoneHubNotificationAccessStatus.PROHIBITED;
+  },
+
+  /**
    * Whether the user is prevented from attempted to change a given feature. In
    * the UI this corresponds to a disabled toggle.
    * @param {!settings.MultiDeviceFeature} feature
@@ -82,6 +92,13 @@ const MultiDeviceFeatureBehaviorImpl = {
     // (as opposed to the full suite).
     if (feature !== settings.MultiDeviceFeature.BETTER_TOGETHER_SUITE &&
         !this.isSuiteOn()) {
+      return false;
+    }
+
+    // Cannot edit the Phone Hub notification toggle if notification access is
+    // prohibited.
+    if (feature === settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS &&
+        this.isPhoneHubNotificationAccessProhibited()) {
       return false;
     }
 
