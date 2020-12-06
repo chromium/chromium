@@ -36,7 +36,10 @@ class MultideviceSetupStateUpdaterTest : public testing::Test {
   }
 
   void SetNotififcationAccess(bool enabled) {
-    fake_notification_access_manager_.SetHasAccessBeenGrantedInternal(enabled);
+    fake_notification_access_manager_.SetAccessStatusInternal(
+        enabled
+            ? NotificationAccessManager::AccessStatus::kAccessGranted
+            : NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
   }
 
   void SetFeatureState(Feature feature, FeatureState feature_state) {

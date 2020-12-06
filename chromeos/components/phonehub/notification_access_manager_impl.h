@@ -20,9 +20,6 @@ class ConnectionScheduler;
 
 // Implements NotificationAccessManager by persisting the last-known
 // notification access value to user prefs.
-// TODO(khorimoto): Currently HasAccessBeenGranted() always returns false. Have
-// it return true once the phone has sent a message indicating that it has
-// granted access.
 class NotificationAccessManagerImpl : public NotificationAccessManager,
                                       public FeatureStatusProvider::Observer {
  public:
@@ -39,8 +36,8 @@ class NotificationAccessManagerImpl : public NotificationAccessManager,
   friend class NotificationAccessManagerImplTest;
 
   // NotificationAccessManager:
-  bool HasAccessBeenGranted() const override;
-  void SetHasAccessBeenGrantedInternal(bool has_access_been_granted) override;
+  AccessStatus GetAccessStatus() const override;
+  void SetAccessStatusInternal(AccessStatus access_status) override;
   void OnSetupRequested() override;
 
   bool HasNotificationSetupUiBeenDismissed() const override;

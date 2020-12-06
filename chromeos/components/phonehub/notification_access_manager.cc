@@ -18,7 +18,9 @@ NotificationAccessManager::~NotificationAccessManager() = default;
 std::unique_ptr<NotificationAccessSetupOperation>
 NotificationAccessManager::AttemptNotificationSetup(
     NotificationAccessSetupOperation::Delegate* delegate) {
-  if (HasAccessBeenGranted())
+  // Should only be able to start the setup process if notification access is
+  // available but not yet granted.
+  if (GetAccessStatus() != AccessStatus::kAvailableButNotGranted)
     return nullptr;
 
   int operation_id = next_operation_id_;
@@ -73,6 +75,22 @@ void NotificationAccessManager::OnSetupOperationDeleted(int operation_id) {
 
   if (id_to_operation_map_.empty())
     PA_LOG(INFO) << "Notification access setup operation has ended.";
+}
+
+std::ostream& operator<<(std::ostream& stream,
+                         NotificationAccessManager::AccessStatus status) {
+  switch (status) {
+    case NotificationAccessManager::AccessStatus::kProhibited:
+      stream << "[Access prohibited]";
+      break;
+    case NotificationAccessManager::AccessStatus::kAvailableButNotGranted:
+      stream << "[Access available but not granted]";
+      break;
+    case NotificationAccessManager::AccessStatus::kAccessGranted:
+      stream << "[Access granted]";
+      break;
+  }
+  return stream;
 }
 
 }  // namespace phonehub

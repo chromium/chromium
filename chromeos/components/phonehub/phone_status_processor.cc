@@ -108,6 +108,21 @@ PhoneStatusModel::BatterySaverState GetBatterySaverStateFromProto(
   }
 }
 
+NotificationAccessManager::AccessStatus ComputeNotificationAccessState(
+    const proto::PhoneProperties& phone_properties) {
+  // If the user has a Work Profile active, notification access is not allowed
+  // by Android. See https://crbug.com/1155151.
+  if (phone_properties.profile_type() == proto::ProfileType::WORK_PROFILE)
+    return NotificationAccessManager::AccessStatus::kProhibited;
+
+  if (phone_properties.notification_access_state() ==
+      proto::NotificationAccessState::ACCESS_GRANTED) {
+    return NotificationAccessManager::AccessStatus::kAccessGranted;
+  }
+
+  return NotificationAccessManager::AccessStatus::kAvailableButNotGranted;
+}
+
 base::Optional<Notification> ProcessNotificationProto(
     const proto::Notification& proto) {
   // Only process notifications that are messaging apps with inline-replies.
@@ -219,9 +234,8 @@ void PhoneStatusProcessor::SetReceivedPhoneStatusModelStates(
           proto::NotificationMode::DO_NOT_DISTURB_ON,
       phone_properties.profile_type() != proto::ProfileType::WORK_PROFILE);
 
-  notification_access_manager_->SetHasAccessBeenGrantedInternal(
-      phone_properties.notification_access_state() ==
-      proto::NotificationAccessState::ACCESS_GRANTED);
+  notification_access_manager_->SetAccessStatusInternal(
+      ComputeNotificationAccessState(phone_properties));
 
   find_my_device_controller_->SetIsPhoneRingingInternal(
       phone_properties.ring_status() == proto::FindMyDeviceRingStatus::RINGING);

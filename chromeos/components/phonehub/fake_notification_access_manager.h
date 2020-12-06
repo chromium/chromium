@@ -12,24 +12,25 @@ namespace phonehub {
 
 class FakeNotificationAccessManager : public NotificationAccessManager {
  public:
-  explicit FakeNotificationAccessManager(bool has_access_been_granted = false);
+  explicit FakeNotificationAccessManager(
+      AccessStatus access_status = AccessStatus::kAvailableButNotGranted);
   ~FakeNotificationAccessManager() override;
 
   using NotificationAccessManager::IsSetupOperationInProgress;
 
-  void SetHasAccessBeenGrantedInternal(bool has_access_been_granted) override;
+  void SetAccessStatusInternal(AccessStatus access_status) override;
   void SetNotificationSetupOperationStatus(
       NotificationAccessSetupOperation::Status new_status);
 
   // NotificationAccessManager:
-  bool HasAccessBeenGranted() const override;
+  AccessStatus GetAccessStatus() const override;
   bool HasNotificationSetupUiBeenDismissed() const override;
   void DismissSetupRequiredUi() override;
 
   void ResetHasNotificationSetupUiBeenDismissed();
 
  private:
-  bool has_access_been_granted_;
+  AccessStatus access_status_;
   bool has_notification_setup_ui_been_dismissed_ = false;
 };
 

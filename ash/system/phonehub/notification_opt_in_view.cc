@@ -156,8 +156,13 @@ void NotificationOptInView::InitLayout() {
 
 void NotificationOptInView::UpdateVisibility() {
   DCHECK(notification_access_manager_);
+
+  // Can only request access if it is available but has not yet been granted.
+  bool can_request_access = notification_access_manager_->GetAccessStatus() ==
+                            chromeos::phonehub::NotificationAccessManager::
+                                AccessStatus::kAvailableButNotGranted;
   const bool should_show =
-      !notification_access_manager_->HasAccessBeenGranted() &&
+      can_request_access &&
       !notification_access_manager_->HasNotificationSetupUiBeenDismissed();
   SetVisible(should_show);
 }

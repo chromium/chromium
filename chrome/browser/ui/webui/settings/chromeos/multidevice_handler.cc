@@ -379,9 +379,12 @@ void MultideviceHandler::HandleAttemptNotificationSetup(
   DCHECK(features::IsPhoneHubEnabled());
   DCHECK(!notification_access_operation_);
 
-  if (notification_access_manager_->HasAccessBeenGranted()) {
-    PA_LOG(WARNING) << "Phonehub notification access has already been granted, "
-                       "returning early.";
+  phonehub::NotificationAccessManager::AccessStatus access_status =
+      notification_access_manager_->GetAccessStatus();
+  if (access_status != phonehub::NotificationAccessManager::AccessStatus::
+                           kAvailableButNotGranted) {
+    PA_LOG(WARNING) << "Cannot request notification access setup flow; current "
+                    << "status: " << access_status;
     return;
   }
 
@@ -473,16 +476,12 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
           ? android_sms_pairing_state_tracker_->IsAndroidSmsPairingComplete()
           : false);
 
-  // TODO(khorimoto): Send prohibited value if notification access is
-  // prohibited.
-  static const int kAccessNotGranted = 1;
-  static const int kAccessGranted = 2;
-  int access_value = kAccessNotGranted;
-  if (notification_access_manager_ &&
-      notification_access_manager_->HasAccessBeenGranted()) {
-    access_value = kAccessGranted;
-  }
-  page_content_dictionary->SetInteger(kNotificationAccessStatus, access_value);
+  phonehub::NotificationAccessManager::AccessStatus access_status = phonehub::
+      NotificationAccessManager::AccessStatus::kAvailableButNotGranted;
+  if (notification_access_manager_)
+    access_status = notification_access_manager_->GetAccessStatus();
+  page_content_dictionary->SetInteger(kNotificationAccessStatus,
+                                      static_cast<int32_t>(access_status));
 
   return page_content_dictionary;
 }

@@ -205,7 +205,9 @@ TEST_F(PhoneHubTrayTest, FocusBubbleWhenOpenedByKeyboard) {
 }
 
 TEST_F(PhoneHubTrayTest, ShowNotificationOptInViewWhenAccessNotGranted) {
-  GetNotificationAccessManager()->SetHasAccessBeenGrantedInternal(false);
+  GetNotificationAccessManager()->SetAccessStatusInternal(
+      chromeos::phonehub::NotificationAccessManager::AccessStatus::
+          kAvailableButNotGranted);
 
   ClickTrayButton();
 
@@ -223,7 +225,19 @@ TEST_F(PhoneHubTrayTest, ShowNotificationOptInViewWhenAccessNotGranted) {
 }
 
 TEST_F(PhoneHubTrayTest, HideNotificationOptInViewWhenAccessHasBeenGranted) {
-  GetNotificationAccessManager()->SetHasAccessBeenGrantedInternal(true);
+  GetNotificationAccessManager()->SetAccessStatusInternal(
+      chromeos::phonehub::NotificationAccessManager::AccessStatus::
+          kAccessGranted);
+
+  ClickTrayButton();
+
+  EXPECT_TRUE(notification_opt_in_view());
+  EXPECT_FALSE(notification_opt_in_view()->GetVisible());
+}
+
+TEST_F(PhoneHubTrayTest, HideNotificationOptInViewWhenAccessIsProhibited) {
+  GetNotificationAccessManager()->SetAccessStatusInternal(
+      chromeos::phonehub::NotificationAccessManager::AccessStatus::kProhibited);
 
   ClickTrayButton();
 
@@ -232,7 +246,9 @@ TEST_F(PhoneHubTrayTest, HideNotificationOptInViewWhenAccessHasBeenGranted) {
 }
 
 TEST_F(PhoneHubTrayTest, StartNotificationSetUpFlow) {
-  GetNotificationAccessManager()->SetHasAccessBeenGrantedInternal(false);
+  GetNotificationAccessManager()->SetAccessStatusInternal(
+      chromeos::phonehub::NotificationAccessManager::AccessStatus::
+          kAvailableButNotGranted);
 
   ClickTrayButton();
   EXPECT_TRUE(notification_opt_in_view());
@@ -251,13 +267,17 @@ TEST_F(PhoneHubTrayTest, StartNotificationSetUpFlow) {
   ClickOnAndWait(notification_opt_in_set_up_button());
 
   // Simulate that notification access has been granted.
-  GetNotificationAccessManager()->SetHasAccessBeenGrantedInternal(true);
+  GetNotificationAccessManager()->SetAccessStatusInternal(
+      chromeos::phonehub::NotificationAccessManager::AccessStatus::
+          kAccessGranted);
 
   // This view should be dismissed.
   EXPECT_FALSE(notification_opt_in_view()->GetVisible());
 
   // Simulate that notification access has been revoked by the phone.
-  GetNotificationAccessManager()->SetHasAccessBeenGrantedInternal(false);
+  GetNotificationAccessManager()->SetAccessStatusInternal(
+      chromeos::phonehub::NotificationAccessManager::AccessStatus::
+          kAvailableButNotGranted);
 
   // This view should show up again.
   EXPECT_TRUE(notification_opt_in_view()->GetVisible());

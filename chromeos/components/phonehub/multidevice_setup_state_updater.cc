@@ -43,8 +43,10 @@ MultideviceSetupStateUpdater::~MultideviceSetupStateUpdater() {
 }
 
 void MultideviceSetupStateUpdater::OnNotificationAccessChanged() {
-  if (notification_access_manager_->HasAccessBeenGranted())
+  if (notification_access_manager_->GetAccessStatus() ==
+      NotificationAccessManager::AccessStatus::kAccessGranted) {
     return;
+  }
 
   PA_LOG(INFO) << "Disabling PhoneHubNotifications feature.";
 
