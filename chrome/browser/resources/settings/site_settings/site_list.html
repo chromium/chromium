@@ -42,7 +42,8 @@
           hidden$="[[!showNoSearchResults_(searchFilter, sites.*)]]">
         <div class="list-item secondary">$i18n{searchNoResults}</div>
       </div>
-      <div class="list-frame menu-content vertical-list" id="listContainer">
+      <div class="list-frame menu-content vertical-list" id="listContainer"
+          hidden$="[[!hasSites_(sites.*)]]">
         <iron-list items="[[getFilteredSites_(searchFilter, sites.*)]]"
             preserve-focus risk-selection>
           <template>
@@ -56,9 +57,8 @@
         </iron-list>
       </div>
     </div>
-    <paper-tooltip id="tooltip"
-        fit-to-visible-bounds manual-mode
-        position="top">
+    <paper-tooltip id="tooltip" hidden="[[!tooltipText_]]]"
+        fit-to-visible-bounds manual-mode position="top">
       [[tooltipText_]]
     </paper-tooltip>
     <template is="dom-if" if="[[showEditExceptionDialog_]]" restamp>
