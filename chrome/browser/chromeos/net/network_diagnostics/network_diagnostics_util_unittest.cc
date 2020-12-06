@@ -76,5 +76,11 @@ TEST(NetworkDiagnosticsUtilTest,
   }
 }
 
+TEST(NetworkDiagnosticsUtilTest, TestDefaultMediaHostnamesAreValidUrls) {
+  for (const GURL& url : util::GetDefaultMediaUrls()) {
+    EXPECT_TRUE(url.is_valid());
+  }
+}
+
 }  // namespace network_diagnostics
 }  // namespace chromeos
