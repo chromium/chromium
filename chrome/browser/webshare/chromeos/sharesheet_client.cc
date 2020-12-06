@@ -13,6 +13,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
+#include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/webshare/chromeos/store_files_task.h"
 #include "chrome/browser/webshare/share_service_impl.h"
 #include "chrome/common/chrome_features.h"
-#include "chromeos/dbus/cros_disks_client.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -33,7 +33,7 @@ using content::WebContents;
 namespace {
 
 constexpr base::FilePath::CharType kWebShareDirname[] =
-    FILE_PATH_LITERAL("WebShare");
+    FILE_PATH_LITERAL(".WebShare");
 
 // We don't use |supplied_name| as it may contain special characters, and it may
 // not be unique. The suffix has been checked by
@@ -97,10 +97,14 @@ void SharesheetClient::Share(
     return;
   }
 
+  Profile* const profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  DCHECK(profile);
+
   current_share_ = CurrentShare();
   current_share_->files = std::move(files);
   current_share_->directory =
-      chromeos::CrosDisksClient::GetArchiveMountPoint().Append(
+      file_manager::util::GetMyFilesFolderForProfile(profile).Append(
           kWebShareDirname);
   if (share_url.is_valid()) {
     if (text.empty())

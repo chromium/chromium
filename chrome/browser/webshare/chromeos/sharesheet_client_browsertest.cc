@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
@@ -112,6 +113,12 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, ShareTwoFiles) {
 
   EXPECT_EQ("share succeeded", content::EvalJs(contents, script));
   EXPECT_EQ(file_paths.size(), 2U);
+
+  const base::FilePath my_files =
+      file_manager::util::GetMyFilesFolderForProfile(browser()->profile());
+  EXPECT_EQ(file_paths[0], my_files.AppendASCII(".WebShare/share1.mp3"));
+  EXPECT_EQ(file_paths[1], my_files.AppendASCII(".WebShare/share2.mp4"));
+
   CheckSize(file_paths[0], /*expected_size=*/345);
   CheckSize(file_paths[1], /*expected_size=*/67890);
 }
