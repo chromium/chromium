@@ -266,6 +266,31 @@ void KaleidoscopeDataProviderImpl::RecordDialogClosedHistogram(bool value) {
   base::UmaHistogramBoolean("Media.Kaleidoscope.DialogClosed", value);
 }
 
+void KaleidoscopeDataProviderImpl::GetNewMediaFeeds(
+    GetNewMediaFeedsCallback cb) {
+  auto* prefs = profile_->GetPrefs();
+  DCHECK(prefs);
+
+  const bool auto_enabled =
+      prefs->GetBoolean(kaleidoscope::prefs::kKaleidoscopeAutoSelectMediaFeeds);
+
+  GetMediaHistoryService()->GetMediaFeeds(
+      media_history::MediaHistoryKeyedService::GetMediaFeedsRequest::
+          CreateNewFeeds(),
+      base::BindOnce(
+          [](GetNewMediaFeedsCallback cb, bool auto_enabled,
+             std::vector<media_feeds::mojom::MediaFeedPtr> feeds) {
+            std::move(cb).Run(std::move(feeds), auto_enabled);
+          },
+          std::move(cb), auto_enabled));
+}
+
+void KaleidoscopeDataProviderImpl::UpdateFeedUserStatus(
+    int64_t feed_id,
+    media_feeds::mojom::FeedUserStatus status) {
+  GetMediaHistoryService()->UpdateFeedUserStatus(feed_id, status);
+}
+
 media_history::MediaHistoryKeyedService*
 KaleidoscopeDataProviderImpl::GetMediaHistoryService() {
   return media_history::MediaHistoryKeyedServiceFactory::GetForProfile(

@@ -3078,6 +3078,41 @@ TEST_P(MediaHistoryStoreFeedsTest, GetSelectedFeedsForFetch) {
   }
 }
 
+TEST_P(MediaHistoryStoreFeedsTest, GetNewFeeds) {
+  const GURL feed_url_a("https://www.google.com/feed");
+  const GURL feed_url_b("https://www.google.co.uk/feed");
+  const GURL feed_url_c("https://www.google.co.tv/feed");
+
+  DiscoverMediaFeed(feed_url_a);
+  DiscoverMediaFeed(feed_url_b);
+  DiscoverMediaFeed(feed_url_c);
+  WaitForDB();
+
+  // If we are read only we should use -1 as a placeholder feed id because the
+  // feed will not have been stored. This is so we can run the rest of the test
+  // to ensure a no-op.
+  const int feed_id_a = IsReadOnly() ? -1 : GetMediaFeedsSync(service())[0]->id;
+  const int feed_id_b = IsReadOnly() ? -1 : GetMediaFeedsSync(service())[1]->id;
+  const int feed_id_c = IsReadOnly() ? -1 : GetMediaFeedsSync(service())[2]->id;
+
+  service()->UpdateFeedUserStatus(
+      feed_id_a, media_feeds::mojom::FeedUserStatus::kDisabled);
+  service()->UpdateFeedUserStatus(feed_id_b,
+                                  media_feeds::mojom::FeedUserStatus::kEnabled);
+  WaitForDB();
+
+  auto feeds = GetMediaFeedsSync(
+      service(),
+      MediaHistoryKeyedService::GetMediaFeedsRequest::CreateNewFeeds());
+
+  if (IsReadOnly()) {
+    EXPECT_TRUE(feeds.empty());
+  } else {
+    ASSERT_EQ(1u, feeds.size());
+    EXPECT_EQ(feed_id_c, feeds[0]->id);
+  }
+}
+
 #endif  // !defined(OS_ANDROID)
 
 }  // namespace media_history

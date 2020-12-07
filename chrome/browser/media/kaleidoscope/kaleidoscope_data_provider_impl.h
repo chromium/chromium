@@ -69,6 +69,9 @@ class KaleidoscopeDataProviderImpl
       const std::vector<std::string>& providers) override;
   void RecordTimeTakenToStartWatchHistogram(base::TimeDelta time) override;
   void RecordDialogClosedHistogram(bool value) override;
+  void GetNewMediaFeeds(GetNewMediaFeedsCallback cb) override;
+  void UpdateFeedUserStatus(int64_t feed_id,
+                            media_feeds::mojom::FeedUserStatus status) override;
 
  private:
   media_history::MediaHistoryKeyedService* GetMediaHistoryService();

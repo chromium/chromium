@@ -324,6 +324,15 @@ std::vector<media_feeds::mojom::MediaFeedPtr> MediaHistoryFeedsTable::GetRows(
 
     statement.BindInt64(
         0, static_cast<int>(media_feeds::mojom::FeedUserStatus::kEnabled));
+  } else if (request.type ==
+             MediaHistoryKeyedService::GetMediaFeedsRequest::Type::kNewFeeds) {
+    sql.push_back("FROM mediaFeed WHERE user_status = ?");
+
+    statement.Assign(DB()->GetCachedStatement(
+        SQL_FROM_HERE, base::JoinString(sql, " ").c_str()));
+
+    statement.BindInt64(
+        0, static_cast<int>(media_feeds::mojom::FeedUserStatus::kAuto));
   } else {
     sql.push_back("FROM mediaFeed");
 

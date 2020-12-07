@@ -112,6 +112,16 @@ interface KaleidoscopeDataProvider {
   // Records a histogram when the dialog was closed of whether the user selected
   // a link from the dialog.
   RecordDialogClosedHistogram(bool value);
+
+  // Returns Media Feeds that are "new" and should be displayed to the user so
+  // that they know this Media Feed is now being fetched.
+  GetNewMediaFeeds() => (
+    array<media_feeds.mojom.MediaFeed> feeds,
+    bool automatic_selection_enabled);
+
+  // Update the selection the user made as to whether they want this Media Feed
+  // displayed in Kaleidoscope.
+  UpdateFeedUserStatus(int64 feed_id, media_feeds.mojom.FeedUserStatus status);
 };
 
 // Handles identity related tasks.

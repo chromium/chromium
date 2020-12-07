@@ -250,8 +250,11 @@ class MediaHistoryKeyedService : public KeyedService,
       // |origin_audio_video_watchtime_percentile| field in |MediaFeedPtr|.
       kTopFeedsForDisplay,
 
-      // Returns the feeeds that have been selected by the user to be fetched.
+      // Returns the feeds that have been selected by the user to be fetched.
       kSelectedFeedsForFetch,
+
+      // Returns the feeds that have been newly discovered.
+      kNewFeeds,
     };
 
     static GetMediaFeedsRequest CreateTopFeedsForFetch(
@@ -265,6 +268,8 @@ class MediaHistoryKeyedService : public KeyedService,
         base::Optional<media_feeds::mojom::MediaFeedItemType> filter_by_type);
 
     static GetMediaFeedsRequest CreateSelectedFeedsForFetch();
+
+    static GetMediaFeedsRequest CreateNewFeeds();
 
     GetMediaFeedsRequest();
     GetMediaFeedsRequest(const GetMediaFeedsRequest& t);

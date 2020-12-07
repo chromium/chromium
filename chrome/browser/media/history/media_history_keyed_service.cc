@@ -433,6 +433,13 @@ MediaHistoryKeyedService::GetMediaFeedsRequest::CreateSelectedFeedsForFetch() {
   return request;
 }
 
+MediaHistoryKeyedService::GetMediaFeedsRequest
+MediaHistoryKeyedService::GetMediaFeedsRequest::CreateNewFeeds() {
+  GetMediaFeedsRequest request;
+  request.type = Type::kNewFeeds;
+  return request;
+}
+
 MediaHistoryKeyedService::GetMediaFeedsRequest::GetMediaFeedsRequest() =
     default;
 
