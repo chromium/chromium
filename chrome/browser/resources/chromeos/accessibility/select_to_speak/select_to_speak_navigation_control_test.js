@@ -141,3 +141,34 @@ TEST_F(
         this.triggerReadMouseSelectedText(event1, event1);
       });
     });
+
+TEST_F('SelectToSpeakNavigationControlTest', 'PauseAndResume', function() {
+  const bodyHtml = `
+      <p id="p1">Paragraph 1</p>'
+    `;
+  this.runWithLoadedTree(
+      this.generateHtmlWithSelectedElement('p1', bodyHtml), () => {
+        this.triggerReadSelectedText();
+
+        // Speaks the first word.
+        this.mockTts.speakUntilCharIndex(10);
+        assertTrue(this.mockTts.currentlySpeaking());
+        assertEquals(this.mockTts.pendingUtterances().length, 1);
+        this.assertEqualsCollapseWhitespace(
+            this.mockTts.pendingUtterances()[0], 'Paragraph 1');
+
+        // Hitting pause will stop the current TTS.
+        selectToSpeak.onSelectToSpeakPanelAction_(
+            chrome.accessibilityPrivate.SelectToSpeakPanelAction.PAUSE);
+        assertFalse(this.mockTts.currentlySpeaking());
+        assertEquals(this.mockTts.pendingUtterances().length, 0);
+
+        // Hitting resume will start from the next position.
+        selectToSpeak.onSelectToSpeakPanelAction_(
+            chrome.accessibilityPrivate.SelectToSpeakPanelAction.RESUME);
+        assertTrue(this.mockTts.currentlySpeaking());
+        assertEquals(this.mockTts.pendingUtterances().length, 1);
+        this.assertEqualsCollapseWhitespace(
+            this.mockTts.pendingUtterances()[0], '1');
+      });
+});

@@ -66,6 +66,21 @@ class SelectToSpeak {
      */
     this.state_ = SelectToSpeakState.INACTIVE;
 
+    /**
+     * Whether the TTS is on pause. When |this.state_| is
+     * SelectToSpeakState.SPEAKING, |this.paused_| indicates whether we are
+     * putting TTS on hold.
+     * TODO(leileilei): use SelectToSpeakState.PAUSE to indicate the status.
+     * @private {boolean}
+     */
+    this.ttsPaused_ = false;
+
+    /**
+     * Function to be called when STS finishes a pausing request.
+     * @private {?function()}
+     */
+    this.pauseCompleteCallback_ = null;
+
     /** @type {InputHandler} */
     this.inputHandler_ = null;
 
@@ -164,6 +179,14 @@ class SelectToSpeak {
        */
       currentEndCharIndex: undefined,
     };
+
+    /**
+     * The position of the current focus ring, which usually highlights the
+     * entire paragraph. Keep this as a member variable so that the control
+     * panel can be updated easily.
+     * @private {!Array<!chrome.accessibilityPrivate.ScreenRect>}
+     */
+    this.currentFocusRing_ = [];
 
     /** @private {?AutomationNode} */
     this.currentBlockParent_ = null;
@@ -557,6 +580,62 @@ class SelectToSpeak {
   }
 
   /**
+   * Whether the STS is on a pause state, where |this.ttsPaused_| is true and
+   * |this.state_| is SPEAKING.
+   * @private
+   * TODO(leileilei): use SelectToSpeakState.PAUSE to indicate the status.
+   */
+  isPaused_() {
+    return this.ttsPaused_ && this.state_ === SelectToSpeakState.SPEAKING;
+  }
+
+  /**
+   * Set |this.ttsPaused_| and |this.state_| according to pause status.
+   * @param {boolean} shouldPause whether the TTS is on pause or speaking.
+   * @private
+   * TODO(leileilei): use SelectToSpeakState.PAUSE to indicate the status.
+   */
+  updatePauseStatusFromTtsEvent_(shouldPause) {
+    this.ttsPaused_ = shouldPause;
+    this.onStateChanged_(SelectToSpeakState.SPEAKING);
+    if (shouldPause && this.pauseCompleteCallback_) {
+      this.pauseCompleteCallback_();
+    }
+  }
+
+  /**
+   * Pause the TTS. We do not assert isPaused_() before stopping TTS in case
+   * |this.ttsPaused_| was true while tts is speaking. This function also sets
+   * the |this.pauseCompleteCallback_|, which will be executed at the end of
+   * the pause process in |updatePauseStatusFromTtsEvent_|. This enables us to
+   * execute functions when the pause request is finished. For example, we can
+   * adjust |this.navigationState_| after a pause is fulfilled, and then resume
+   * to navigate to different positions.
+   * @return {!Promise}
+   * @private
+   */
+  pause_() {
+    return new Promise((resolve) => {
+      this.pauseCompleteCallback_ = () => {
+        this.pauseCompleteCallback_ = null;
+        resolve();
+      };
+      chrome.tts.stop();
+    });
+  }
+
+  /**
+   * Resume the TTS. Currently, we just ask the TTS engine to pick up where it
+   * quited last time in |this.startCurrentNodeGroup_|.
+   * @private
+   */
+  resume_() {
+    if (this.isPaused_()) {
+      this.startCurrentNodeGroup_();
+    }
+  }
+
+  /**
    * Stop speech. If speech was in-progress, the interruption
    * event will be caught and clearFocusRingAndNode_ will be
    * called, stopping visual feedback as well.
@@ -603,6 +682,25 @@ class SelectToSpeak {
   }
 
   /**
+   * Update the navigation floating panel.
+   * @private
+   */
+  updateNavigationPanel_() {
+    if (this.shouldShowNavigationControls_() && this.currentFocusRing_.length) {
+      // If the feature is enabled and we have a valid focus ring, flip the
+      // pause and resume button according to the current STS and TTS state.
+      // Also, update the location of the panel according to the focus ring.
+      chrome.accessibilityPrivate.updateSelectToSpeakPanel(
+          /* show= */ true, /* anchor= */ this.currentFocusRing_[0],
+          /* isPaused= */ this.isPaused_(), /* speed= */ 1.2);
+    } else {
+      // Dismiss the panel if either the feature is disabled or the focus ring
+      // is not valid.
+      chrome.accessibilityPrivate.updateSelectToSpeakPanel(/* show= */ false);
+    }
+  }
+
+  /**
    * Clears the focus ring, but does not clear the current
    * node.
    * @private
@@ -611,9 +709,7 @@ class SelectToSpeak {
     this.setFocusRings_([], false /* do not draw background */);
     chrome.accessibilityPrivate.setHighlights(
         [], this.prefsManager_.highlightColor());
-    if (this.shouldShowNavigationControls_()) {
-      chrome.accessibilityPrivate.updateSelectToSpeakPanel(/* show= */ false);
-    }
+    this.updateNavigationPanel_();
   }
 
   /**
@@ -624,6 +720,7 @@ class SelectToSpeak {
    * @private
    */
   setFocusRings_(rects, drawBackground) {
+    this.currentFocusRing_ = rects;
     let color = '#0000';  // Fully transparent.
     if (drawBackground && this.prefsManager_.backgroundShadingEnabled()) {
       color = DEFAULT_BACKGROUND_SHADING_COLOR;
@@ -765,6 +862,12 @@ class SelectToSpeak {
         break;
       case SelectToSpeakPanelAction.EXIT:
         this.stopAll_();
+        break;
+      case SelectToSpeakPanelAction.PAUSE:
+        this.pause_();
+        break;
+      case SelectToSpeakPanelAction.RESUME:
+        this.resume_();
         break;
       default:
         // TODO(crbug.com/1140216): Implement other actions.
@@ -962,7 +1065,7 @@ class SelectToSpeak {
 
     options.onEvent = (event) => {
       if (event.type === 'start' && nodeGroup.nodes.length > 0) {
-        this.onStateChanged_(SelectToSpeakState.SPEAKING);
+        this.updatePauseStatusFromTtsEvent_(false /* shouldPause */);
         this.currentBlockParent_ = nodeGroup.blockParent;
 
         // Update |currentCharIndex|. Find the first non-space char index in
@@ -989,9 +1092,16 @@ class SelectToSpeak {
           this.testCurrentNode_();
         }
       } else if (event.type === 'interrupted' || event.type === 'cancelled') {
-        if (!this.shouldShowNavigationControls_()) {
-          // Auto dismiss when navigation control is not enabled.
+        if (!this.shouldShowNavigationControls_() ||
+            !this.pauseCompleteCallback_) {
+          // Auto dismiss when navigation control is not enabled. In addition,
+          // if the interrupted or cancelled events are not triggered by
+          // |this.pause_| (e.g., from stopAll_), we should leave STS as
+          // INACTIVE. Currently, we check |this.pauseCompleteCallback_| as a
+          // proxy to see if the interrupted events are from |this.pause_|.
           this.onStateChanged_(SelectToSpeakState.INACTIVE);
+        } else {
+          this.updatePauseStatusFromTtsEvent_(true /* shouldPause */);
         }
       } else if (event.type === 'end') {
         this.startNodeGroupAfter_(
@@ -1166,6 +1276,9 @@ class SelectToSpeak {
       }
     } else {
       this.currentNodeWord_ = null;
+      // There are many cases where we won't update the node highlight or test
+      // the node. Thus, we need to update the panel independently.
+      this.updateNavigationPanel_();
     }
   }
 
@@ -1318,14 +1431,7 @@ class SelectToSpeak {
       focusRingRect = node.location;
     }
     this.setFocusRings_([focusRingRect], true /* draw background */);
-    if (this.shouldShowNavigationControls_()) {
-      // TODO(crbug.com/1143817): Update paused state correctly once
-      // pause/resume functionality is implemented.
-      // TODO(crbug.com/): Set actual initial speed.
-      chrome.accessibilityPrivate.updateSelectToSpeakPanel(
-          /* show= */ true, /* anchor= */ focusRingRect, /* isPaused= */ false,
-          /* speed= */ 1.2);
-    }
+    this.updateNavigationPanel_();
   }
 
   /**

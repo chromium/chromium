@@ -60,6 +60,17 @@ MockTts.prototype = {
       this.options_.onEvent({type: 'end'});
     }
   },
+  /**
+   * Mock the speaking process of TTS, and simulate a word end event.
+   * @param {number} nextStartIndex The start char index of the word to be
+   *     spoken.
+   */
+  speakUntilCharIndex(nextStartIndex) {
+    this.currentlySpeaking_ = true;
+    if (this.options_) {
+      this.options_.onEvent({type: 'word', charIndex: nextStartIndex});
+    }
+  },
   stop() {
     this.pendingUtterances_ = [];
     this.currentlySpeaking_ = false;
