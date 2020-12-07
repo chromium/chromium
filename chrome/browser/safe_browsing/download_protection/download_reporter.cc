@@ -69,13 +69,17 @@ void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (profile) {
     std::string raw_digest_sha256 = download->GetHash();
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile)
-        ->OnDangerousDownloadEvent(
-            download->GetURL(), download->GetTargetFilePath().AsUTF8Unsafe(),
-            base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
-            DangerTypeToThreatType(download->GetDangerType()),
-            download->GetMimeType(), download->GetTotalBytes(),
-            EventResult::WARNED);
+    auto* router =
+        extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
+            profile);
+    if (router) {
+      router->OnDangerousDownloadEvent(
+          download->GetURL(), download->GetTargetFilePath().AsUTF8Unsafe(),
+          base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
+          DangerTypeToThreatType(download->GetDangerType()),
+          download->GetMimeType(), download->GetTotalBytes(),
+          EventResult::WARNED);
+    }
   }
 }
 
@@ -87,12 +91,16 @@ void ReportDangerousDownloadWarningBypassed(
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (profile) {
     std::string raw_digest_sha256 = download->GetHash();
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile)
-        ->OnDangerousDownloadWarningBypassed(
-            download->GetURL(), download->GetTargetFilePath().AsUTF8Unsafe(),
-            base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
-            DangerTypeToThreatType(original_danger_type),
-            download->GetMimeType(), download->GetTotalBytes());
+    auto* router =
+        extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
+            profile);
+    if (router) {
+      router->OnDangerousDownloadWarningBypassed(
+          download->GetURL(), download->GetTargetFilePath().AsUTF8Unsafe(),
+          base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
+          DangerTypeToThreatType(original_danger_type), download->GetMimeType(),
+          download->GetTotalBytes());
+    }
   }
 }
 

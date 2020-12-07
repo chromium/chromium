@@ -3515,6 +3515,8 @@ static_library("browser") {
       "enterprise/connectors/connectors_manager.h",
       "enterprise/connectors/connectors_prefs.cc",
       "enterprise/connectors/connectors_prefs.h",
+      "enterprise/connectors/connectors_service.cc",
+      "enterprise/connectors/connectors_service.h",
       "enterprise/connectors/content_analysis_delegate.cc",
       "enterprise/connectors/content_analysis_delegate.h",
       "enterprise/connectors/content_analysis_dialog.cc",

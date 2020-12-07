@@ -1,0 +1,178 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+
+#include "base/json/json_reader.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
+#include "content/public/test/browser_task_environment.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+
+namespace enterprise_connectors {
+
+namespace {
+
+constexpr char kEmptySettingsPref[] = "[]";
+
+constexpr char kNormalAnalysisSettingsPref[] = R"([
+  {
+    "service_provider": "google",
+    "enable": [
+      {"url_list": ["*"], "tags": ["dlp", "malware"]}
+    ],
+    "disable": [
+      {"url_list": ["no.dlp.com", "no.dlp.or.malware.ca"], "tags": ["dlp"]},
+      {"url_list": ["no.malware.com", "no.dlp.or.malware.ca"],
+           "tags": ["malware"]}
+    ],
+    "block_until_verdict": 1,
+    "block_password_protected": true,
+    "block_large_files": true,
+    "block_unsupported_file_types": true
+  }
+])";
+
+constexpr char kNormalReportingSettingsPref[] = R"([
+  {
+    "service_provider": "google"
+  }
+])";
+
+constexpr char kDlpAndMalwareUrl[] = "https://foo.com";
+constexpr char kOnlyDlpUrl[] = "https://no.malware.com";
+constexpr char kOnlyMalwareUrl[] = "https://no.dlp.com";
+constexpr char kNoTagsUrl[] = "https://no.dlp.or.malware.ca";
+
+}  // namespace
+class ConnectorsServiceTest : public testing::Test {
+ public:
+  ConnectorsServiceTest()
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    EXPECT_TRUE(profile_manager_.SetUp());
+    profile_ = profile_manager_.CreateTestingProfile("test-user");
+  }
+
+ protected:
+  content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  TestingProfileManager profile_manager_;
+  TestingProfile* profile_;
+};
+
+class ConnectorsServiceAnalysisNoFeatureTest
+    : public ConnectorsServiceTest,
+      public testing::WithParamInterface<AnalysisConnector> {
+ public:
+  ConnectorsServiceAnalysisNoFeatureTest() {
+    scoped_feature_list_.InitWithFeatures({}, {kEnterpriseConnectorsEnabled});
+  }
+
+  AnalysisConnector connector() { return GetParam(); }
+};
+
+TEST_P(ConnectorsServiceAnalysisNoFeatureTest, AnalysisConnectors) {
+  profile_->GetPrefs()->Set(
+      ConnectorPref(connector()),
+      *base::JSONReader::Read(kNormalAnalysisSettingsPref));
+  auto* service = ConnectorsServiceFactory::GetForBrowserContext(profile_);
+  for (const char* url :
+       {kDlpAndMalwareUrl, kOnlyDlpUrl, kOnlyMalwareUrl, kNoTagsUrl}) {
+    // Only base::nullopt should be returned when the feature is disabled,
+    // regardless of what Connector or URL is used.
+    auto settings = service->GetAnalysisSettings(GURL(url), connector());
+    ASSERT_FALSE(settings.has_value());
+  }
+
+  // No cached settings imply the connector value was never read.
+  ASSERT_TRUE(service->ConnectorsManagerForTesting()
+                  ->GetAnalysisConnectorsSettingsForTesting()
+                  .empty());
+}
+
+INSTANTIATE_TEST_CASE_P(,
+                        ConnectorsServiceAnalysisNoFeatureTest,
+                        testing::Values(FILE_ATTACHED,
+                                        FILE_DOWNLOADED,
+                                        BULK_DATA_ENTRY));
+
+// Tests to make sure getting reporting settings work with both the feature flag
+// and the OnSecurityEventEnterpriseConnector policy. The parameter for these
+// tests is a tuple of:
+//
+//   enum class ReportingConnector[]: array of all reporting connectors.
+//   bool: enable feature flag.
+//   int: policy value.  0: don't set, 1: set to normal, 2: set to empty.
+class ConnectorsServiceReportingFeatureTest
+    : public ConnectorsServiceTest,
+      public testing::WithParamInterface<
+          std::tuple<ReportingConnector, bool, int>> {
+ public:
+  ConnectorsServiceReportingFeatureTest() {
+    if (enable_feature_flag()) {
+      scoped_feature_list_.InitWithFeatures({kEnterpriseConnectorsEnabled}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures({}, {kEnterpriseConnectorsEnabled});
+    }
+  }
+
+  ReportingConnector connector() const { return std::get<0>(GetParam()); }
+  bool enable_feature_flag() const { return std::get<1>(GetParam()); }
+  int policy_value() const { return std::get<2>(GetParam()); }
+
+  const char* pref() const { return ConnectorPref(connector()); }
+
+  const char* pref_value() const {
+    switch (policy_value()) {
+      case 1:
+        return kNormalReportingSettingsPref;
+      case 2:
+        return kEmptySettingsPref;
+    }
+    NOTREACHED();
+    return nullptr;
+  }
+
+  bool reporting_enabled() const {
+    return enable_feature_flag() && policy_value() == 1;
+  }
+
+  void ValidateSettings(const ReportingSettings& settings) {
+    // For now, the URL is the same for both legacy and new policies, so
+    // checking the specific URL here.  When service providers become
+    // configurable this will change.
+    ASSERT_EQ(GURL("https://chromereporting-pa.googleapis.com/v1/events"),
+              settings.reporting_url);
+  }
+};
+
+TEST_P(ConnectorsServiceReportingFeatureTest, Test) {
+  if (policy_value() != 0)
+    profile_->GetPrefs()->Set(pref(), *base::JSONReader::Read(pref_value()));
+
+  auto settings = ConnectorsServiceFactory::GetForBrowserContext(profile_)
+                      ->GetReportingSettings(connector());
+  EXPECT_EQ(reporting_enabled(), settings.has_value());
+  if (settings.has_value())
+    ValidateSettings(settings.value());
+
+  EXPECT_EQ(enable_feature_flag() && policy_value() == 1,
+            !ConnectorsServiceFactory::GetForBrowserContext(profile_)
+                 ->ConnectorsManagerForTesting()
+                 ->GetReportingConnectorsSettingsForTesting()
+                 .empty());
+}
+
+INSTANTIATE_TEST_CASE_P(
+    ,
+    ConnectorsServiceReportingFeatureTest,
+    testing::Combine(testing::Values(ReportingConnector::SECURITY_EVENT),
+                     testing::Bool(),
+                     testing::ValuesIn({0, 1, 2})));
+
+}  // namespace enterprise_connectors

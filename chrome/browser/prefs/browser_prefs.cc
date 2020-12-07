@@ -518,6 +518,13 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kRegisteredSupervisedUserAllowlists);
   registry->RegisterIntegerPref(kSupervisedUsersNextId, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !defined(OS_ANDROID)
+  registry->RegisterListPref(enterprise_connectors::kOnFileAttachedPref);
+  registry->RegisterListPref(enterprise_connectors::kOnFileDownloadedPref);
+  registry->RegisterListPref(enterprise_connectors::kOnBulkDataEntryPref);
+  registry->RegisterListPref(enterprise_connectors::kOnSecurityEventPref);
+#endif  // !defined(OS_ANDROID)
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -662,7 +669,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(first_run::kTosDialogBehavior, 0);
 #else  // defined(OS_ANDROID)
-  enterprise_connectors::RegisterLocalStatePrefs(registry);
   enterprise_reporting::RegisterLocalStatePrefs(registry);
   gcm::RegisterPrefs(registry);
   IntranetRedirectDetector::RegisterPrefs(registry);
@@ -928,6 +934,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   captions::CaptionController::RegisterProfilePrefs(registry);
   ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(registry);
   DevToolsWindow::RegisterProfilePrefs(registry);
+  enterprise_connectors::RegisterProfilePrefs(registry);
   enterprise_reporting::RegisterProfilePrefs(registry);
   extensions::CommandService::RegisterProfilePrefs(registry);
   extensions::TabsCaptureVisibleTabFunction::RegisterProfilePrefs(registry);
@@ -1107,6 +1114,14 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 11/2020.
   local_state->ClearPref(kRegisteredSupervisedUserAllowlists);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !defined(OS_ANDROID)
+  // Added 11/2020
+  local_state->ClearPref(enterprise_connectors::kOnFileAttachedPref);
+  local_state->ClearPref(enterprise_connectors::kOnFileDownloadedPref);
+  local_state->ClearPref(enterprise_connectors::kOnBulkDataEntryPref);
+  local_state->ClearPref(enterprise_connectors::kOnSecurityEventPref);
+#endif  // !defined(OS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

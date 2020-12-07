@@ -18,7 +18,6 @@ class DeepScanningBrowserTestBase : public InProcessBrowserTest {
   DeepScanningBrowserTestBase();
   ~DeepScanningBrowserTestBase() override;
 
-  void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
   // Sets up a FakeContentAnalysisDelegate to use this class's StatusCallback

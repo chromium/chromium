@@ -70,7 +70,8 @@ DeviceManagementServiceConfigurationIOS::GetEncryptedReportingServerUrl() {
 }
 
 std::string
-DeviceManagementServiceConfigurationIOS::GetReportingConnectorServerUrl() {
+DeviceManagementServiceConfigurationIOS::GetReportingConnectorServerUrl(
+    content::BrowserContext* context) {
   return std::string();
 }
 

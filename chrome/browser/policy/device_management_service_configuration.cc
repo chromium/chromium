@@ -13,6 +13,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/browser_context.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/system/statistics_provider.h"
@@ -21,7 +22,7 @@
 #if defined(OS_WIN) || defined(OS_MAC) || \
     ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && !defined(OS_ANDROID))
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #endif
 
 namespace policy {
@@ -94,13 +95,18 @@ DeviceManagementServiceConfiguration::GetEncryptedReportingServerUrl() {
 }
 
 std::string
-DeviceManagementServiceConfiguration::GetReportingConnectorServerUrl() {
+DeviceManagementServiceConfiguration::GetReportingConnectorServerUrl(
+    content::BrowserContext* context) {
 #if defined(OS_WIN) || defined(OS_MAC) || \
     ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && !defined(OS_ANDROID))
-  auto settings =
-      enterprise_connectors::ConnectorsManager::GetInstance()
-          ->GetReportingSettings(
-              enterprise_connectors::ReportingConnector::SECURITY_EVENT);
+  auto* service =
+      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+          context);
+  if (!service)
+    return std::string();
+
+  auto settings = service->GetReportingSettings(
+      enterprise_connectors::ReportingConnector::SECURITY_EVENT);
   return settings ? settings->reporting_url.spec() : std::string();
 #else
   return std::string();

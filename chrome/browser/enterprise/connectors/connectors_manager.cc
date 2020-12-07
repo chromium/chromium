@@ -19,111 +19,30 @@
 
 namespace enterprise_connectors {
 
-const base::Feature kEnterpriseConnectorsEnabled{
-    "EnterpriseConnectorsEnabled", base::FEATURE_ENABLED_BY_DEFAULT};
-
-const char kServiceProviderConfig[] = R"({
-  "version": "1",
-  "service_providers" : [
-    {
-      "name": "google",
-      "display_name": "Google Cloud",
-      "version": {
-        "1": {
-          "analysis": {
-            "url": "https://safebrowsing.google.com/safebrowsing/uploads/scan",
-            "supported_tags": [
-              {
-                "name": "malware",
-                "display_name": "Threat protection",
-                "mime_types": [
-                  "application/vnd.microsoft.portable-executable",
-                  "application/vnd.rar",
-                  "application/x-msdos-program",
-                  "application/zip"
-                ],
-                "max_file_size": 52428800
-              },
-              {
-                "name": "dlp",
-                "display_name": "Sensitive data protection",
-                "mime_types": [
-                  "application/gzip",
-                  "application/msword",
-                  "application/pdf",
-                  "application/postscript",
-                  "application/rtf",
-                  "application/vnd.google-apps.document.internal",
-                  "application/vnd.google-apps.spreadsheet.internal",
-                  "application/vnd.ms-cab-compressed",
-                  "application/vnd.ms-excel",
-                  "application/vnd.ms-powerpoint",
-                  "application/vnd.ms-xpsdocument",
-                  "application/vnd.oasis.opendocument.text",
-                  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                  "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
-                  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                  "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
-                  "application/vnd.ms-excel.sheet.macroenabled.12",
-                  "application/vnd.ms-excel.template.macroenabled.12",
-                  "application/vnd.ms-word.document.macroenabled.12",
-                  "application/vnd.ms-word.template.macroenabled.12",
-                  "application/vnd.rar",
-                  "application/vnd.wordperfect",
-                  "application/x-7z-compressed",
-                  "application/x-bzip",
-                  "application/x-bzip2",
-                  "application/x-tar",
-                  "application/zip",
-                  "text/csv",
-                  "text/plain"
-                ],
-                "max_file_size": 52428800
-              }
-            ]
-          },
-          "reporting": {
-            "url": "https://chromereporting-pa.googleapis.com/v1/events"
-          }
-        }
-      }
-    }
-  ]
-})";
-
-ConnectorsManager::ConnectorsManager() {
-  StartObservingPrefs();
+ConnectorsManager::ConnectorsManager(PrefService* pref_service,
+                                     ServiceProviderConfig* config,
+                                     bool observe_prefs)
+    : service_provider_config_(config) {
+  if (observe_prefs)
+    StartObservingPrefs(pref_service);
 }
 
 ConnectorsManager::~ConnectorsManager() = default;
 
-// static
-ConnectorsManager* ConnectorsManager::GetInstance() {
-  static base::NoDestructor<ConnectorsManager> manager;
-  return manager.get();
-}
-
 bool ConnectorsManager::IsConnectorEnabled(AnalysisConnector connector) const {
-  if (!base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabled))
-    return false;
-
   if (analysis_connector_settings_.count(connector) == 1)
     return true;
 
   const char* pref = ConnectorPref(connector);
-  return pref && g_browser_process->local_state()->HasPrefPath(pref);
+  return pref && pref_change_registrar_.prefs()->HasPrefPath(pref);
 }
 
 bool ConnectorsManager::IsConnectorEnabled(ReportingConnector connector) const {
-  if (!base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabled))
-    return false;
-
   if (reporting_connector_settings_.count(connector) == 1)
     return true;
 
   const char* pref = ConnectorPref(connector);
-  return pref && g_browser_process->local_state()->HasPrefPath(pref);
+  return pref && pref_change_registrar_.prefs()->HasPrefPath(pref);
 }
 
 base::Optional<ReportingSettings> ConnectorsManager::GetReportingSettings(
@@ -189,11 +108,11 @@ void ConnectorsManager::CacheAnalysisConnectorPolicy(
   DCHECK(pref);
 
   const base::ListValue* policy_value =
-      g_browser_process->local_state()->GetList(pref);
+      pref_change_registrar_.prefs()->GetList(pref);
   if (policy_value && policy_value->is_list()) {
     for (const base::Value& service_settings : policy_value->GetList())
       analysis_connector_settings_[connector].emplace_back(
-          service_settings, service_provider_config_);
+          service_settings, *service_provider_config_);
   }
 }
 
@@ -206,11 +125,11 @@ void ConnectorsManager::CacheReportingConnectorPolicy(
   DCHECK(pref);
 
   const base::ListValue* policy_value =
-      g_browser_process->local_state()->GetList(pref);
+      pref_change_registrar_.prefs()->GetList(pref);
   if (policy_value && policy_value->is_list()) {
     for (const base::Value& service_settings : policy_value->GetList())
       reporting_connector_settings_[connector].emplace_back(
-          service_settings, service_provider_config_);
+          service_settings, *service_provider_config_);
   }
 }
 
@@ -229,14 +148,12 @@ bool ConnectorsManager::DelayUntilVerdict(AnalysisConnector connector) {
   return false;
 }
 
-void ConnectorsManager::StartObservingPrefs() {
-  pref_change_registrar_.Init(g_browser_process->local_state());
-  if (base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabled)) {
-    StartObservingPref(AnalysisConnector::FILE_ATTACHED);
-    StartObservingPref(AnalysisConnector::FILE_DOWNLOADED);
-    StartObservingPref(AnalysisConnector::BULK_DATA_ENTRY);
-    StartObservingPref(ReportingConnector::SECURITY_EVENT);
-  }
+void ConnectorsManager::StartObservingPrefs(PrefService* pref_service) {
+  pref_change_registrar_.Init(pref_service);
+  StartObservingPref(AnalysisConnector::FILE_ATTACHED);
+  StartObservingPref(AnalysisConnector::FILE_DOWNLOADED);
+  StartObservingPref(AnalysisConnector::BULK_DATA_ENTRY);
+  StartObservingPref(ReportingConnector::SECURITY_EVENT);
 }
 
 void ConnectorsManager::StartObservingPref(AnalysisConnector connector) {
@@ -269,20 +186,6 @@ ConnectorsManager::GetAnalysisConnectorsSettingsForTesting() const {
 const ConnectorsManager::ReportingConnectorsSettings&
 ConnectorsManager::GetReportingConnectorsSettingsForTesting() const {
   return reporting_connector_settings_;
-}
-
-void ConnectorsManager::SetUpForTesting() {
-  StartObservingPrefs();
-}
-
-void ConnectorsManager::TearDownForTesting() {
-  pref_change_registrar_.RemoveAll();
-  ClearCacheForTesting();
-}
-
-void ConnectorsManager::ClearCacheForTesting() {
-  analysis_connector_settings_.clear();
-  reporting_connector_settings_.clear();
 }
 
 }  // namespace enterprise_connectors

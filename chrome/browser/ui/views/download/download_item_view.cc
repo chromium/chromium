@@ -33,8 +33,7 @@
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/download/drag_download_item.h"
-#include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/icon_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
@@ -781,7 +780,8 @@ void DownloadItemView::UpdateButtons() {
 
   const bool allow_open_during_deep_scan =
       (mode_ == Mode::kDeepScanning) &&
-      !enterprise_connectors::ConnectorsManager::GetInstance()
+      !enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+           model_->profile())
            ->DelayUntilVerdict(
                enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
   open_button_->SetEnabled((mode_ == Mode::kNormal) || prompt_to_scan ||

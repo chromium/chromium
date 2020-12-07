@@ -14,7 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/fake_content_analysis_delegate.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -40,15 +40,6 @@ class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
         {enterprise_connectors::kEnterpriseConnectorsEnabled}, {});
   }
 
-  void SetUp() override {
-    enterprise_connectors::ConnectorsManager::GetInstance()->SetUpForTesting();
-  }
-
-  void TearDown() override {
-    enterprise_connectors::ConnectorsManager::GetInstance()
-        ->TearDownForTesting();
-  }
-
   void RunUntilDone() { run_loop_->Run(); }
 
   content::WebContents* contents() {
@@ -72,15 +63,16 @@ class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
               ],
               "block_until_verdict": 1
           })";
-      safe_browsing::SetAnalysisConnector(enterprise_connectors::FILE_ATTACHED,
-                                          kEnabled);
       safe_browsing::SetAnalysisConnector(
-          enterprise_connectors::BULK_DATA_ENTRY, kEnabled);
+          profile_->GetPrefs(), enterprise_connectors::FILE_ATTACHED, kEnabled);
+      safe_browsing::SetAnalysisConnector(
+          profile_->GetPrefs(), enterprise_connectors::BULK_DATA_ENTRY,
+          kEnabled);
     } else {
       safe_browsing::ClearAnalysisConnector(
-          enterprise_connectors::FILE_ATTACHED);
+          profile_->GetPrefs(), enterprise_connectors::FILE_ATTACHED);
       safe_browsing::ClearAnalysisConnector(
-          enterprise_connectors::BULK_DATA_ENTRY);
+          profile_->GetPrefs(), enterprise_connectors::BULK_DATA_ENTRY);
     }
 
     run_loop_.reset(new base::RunLoop());

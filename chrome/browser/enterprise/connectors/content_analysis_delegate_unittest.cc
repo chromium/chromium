@@ -20,7 +20,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/fake_content_analysis_delegate.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -146,12 +146,6 @@ class BaseTest : public testing::Test {
     }
   }
 
-  void SetUp() override { ConnectorsManager::GetInstance()->SetUpForTesting(); }
-
-  void TearDown() override {
-    ConnectorsManager::GetInstance()->TearDownForTesting();
-  }
-
   Profile* profile() { return profile_; }
 
   content::WebContents* contents() {
@@ -217,7 +211,7 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, NoDMTokenNoPref) {
 
 TEST_F(ContentAnalysisDelegateIsEnabledTest, NoDMToken) {
   EnableFeatures();
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
                                       kBlockingScansForDlpAndMalware);
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateInvalidTokenForTesting());
@@ -243,7 +237,7 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, NoFeatureNoPref) {
 
 TEST_F(ContentAnalysisDelegateIsEnabledTest, NoFeatureNoDMToken) {
   DisableFeatures();
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
                                       kBlockingScansForDlpAndMalware);
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateInvalidTokenForTesting());
@@ -259,7 +253,7 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, NoFeature) {
   DisableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
                                       kBlockingScansForDlpAndMalware);
 
   ContentAnalysisDelegate::Data data;
@@ -285,7 +279,8 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpNoPref2) {
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, kNothingEnabled);
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
+                                      kNothingEnabled);
 
   ContentAnalysisDelegate::Data data;
   EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
@@ -298,7 +293,7 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpNoPref3) {
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  safe_browsing::SetAnalysisConnector(FILE_DOWNLOADED,
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_DOWNLOADED,
                                       kBlockingScansForDlpAndMalware);
 
   ContentAnalysisDelegate::Data data;
@@ -312,7 +307,8 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpEnabled) {
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, kBlockingScansForDlp);
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
+                                      kBlockingScansForDlp);
 
   ContentAnalysisDelegate::Data data;
   EXPECT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
@@ -325,8 +321,10 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpEnabled2) {
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, kBlockingScansForDlp);
-  safe_browsing::SetAnalysisConnector(FILE_DOWNLOADED, kBlockingScansForDlp);
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
+                                      kBlockingScansForDlp);
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_DOWNLOADED,
+                                      kBlockingScansForDlp);
 
   ContentAnalysisDelegate::Data data;
   EXPECT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
@@ -339,8 +337,10 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpEnabledWithUrl) {
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, kBlockingScansForDlp);
-  safe_browsing::SetAnalysisConnector(FILE_DOWNLOADED, kBlockingScansForDlp);
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
+                                      kBlockingScansForDlp);
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_DOWNLOADED,
+                                      kBlockingScansForDlp);
   GURL url(kTestUrl);
 
   ContentAnalysisDelegate::Data data;
@@ -355,7 +355,7 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpDisabledByList) {
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
                                       R"(
         {
           "service_provider": "google",
@@ -385,7 +385,7 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpDisabledByListWithPatterns) {
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
                                       R"(
         {
           "service_provider": "google",
@@ -450,7 +450,8 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareNoPref2) {
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, kNothingEnabled);
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
+                                      kNothingEnabled);
 
   ContentAnalysisDelegate::Data data;
   EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
@@ -463,7 +464,7 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareNoPref3) {
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  safe_browsing::SetAnalysisConnector(FILE_DOWNLOADED,
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_DOWNLOADED,
                                       kBlockingScansForDlpAndMalware);
 
   ContentAnalysisDelegate::Data data;
@@ -477,7 +478,7 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareEnabled) {
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
                                       R"(
         {
           "service_provider": "google",
@@ -502,7 +503,7 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, NoScanInIncognito) {
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
                                       kBlockingScansForDlpAndMalware);
 
   ContentAnalysisDelegate::Data data;
@@ -524,7 +525,7 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareEnabledWithPatterns) {
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
                                       R"(
         {
           "service_provider": "google",
@@ -593,15 +594,17 @@ class ContentAnalysisDelegateAuditOnlyTest : public BaseTest {
 
     for (auto connector : {FILE_ATTACHED, BULK_DATA_ENTRY}) {
       if (include_dlp_ && include_malware_) {
-        safe_browsing::SetAnalysisConnector(connector,
+        safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), connector,
                                             kBlockingScansForDlpAndMalware);
       } else if (include_dlp_) {
-        safe_browsing::SetAnalysisConnector(connector, kBlockingScansForDlp);
+        safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), connector,
+                                            kBlockingScansForDlp);
       } else if (include_malware_) {
-        safe_browsing::SetAnalysisConnector(connector,
+        safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), connector,
                                             kBlockingScansForMalware);
       } else {
-        safe_browsing::SetAnalysisConnector(connector, kNothingEnabled);
+        safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), connector,
+                                            kNothingEnabled);
       }
     }
   }
@@ -610,9 +613,9 @@ class ContentAnalysisDelegateAuditOnlyTest : public BaseTest {
     BaseTest::SetUp();
 
     EnableFeatures();
-    safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+    safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
                                         kBlockingScansForDlpAndMalware);
-    safe_browsing::SetAnalysisConnector(BULK_DATA_ENTRY,
+    safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), BULK_DATA_ENTRY,
                                         kBlockingScansForDlpAndMalware);
 
     ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
@@ -862,7 +865,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileDataPositiveMalwareVerdict) {
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileIsEncrypted) {
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
 
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, R"(
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED, R"(
     {
       "service_provider": "google",
       "enable": [
@@ -913,7 +916,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest,
        MAYBE_FileIsEncrypted_PolicyAllows) {
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
 
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, R"(
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED, R"(
     {
       "service_provider": "google",
       "enable": [
@@ -1221,7 +1224,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringFileDataPartialSuccess) {
 }
 
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, NoDelay) {
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, R"(
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED, R"(
     {
       "service_provider": "google",
       "enable": [
@@ -1388,7 +1391,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, UnsupportedTypesDefaultPolicy) {
 }
 
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, UnsupportedTypesBlockPolicy) {
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, R"(
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED, R"(
     {
       "service_provider": "google",
       "enable": [
@@ -1531,7 +1534,7 @@ class ContentAnalysisDelegateResultHandlingTest
   void SetUp() override {
     BaseTest::SetUp();
     EnableFeatures();
-    safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+    safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
                                         kBlockingScansForDlpAndMalware);
 
     ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
@@ -1616,13 +1619,9 @@ class ContentAnalysisDelegateSettingsTest
   const char* bool_setting() const { return GetParam() ? "true" : "false"; }
 
   AnalysisSettings settings() {
-    // Clear the cache before getting settings so there's no race with the pref
-    // change and the cached values being updated.
-    ConnectorsManager::GetInstance()->ClearCacheForTesting();
-
     base::Optional<AnalysisSettings> settings =
-        ConnectorsManager::GetInstance()->GetAnalysisSettings(GURL(kTestUrl),
-                                                              FILE_ATTACHED);
+        ConnectorsServiceFactory::GetForBrowserContext(profile())
+            ->GetAnalysisSettings(GURL(kTestUrl), FILE_ATTACHED);
     EXPECT_TRUE(settings.has_value());
     return std::move(settings.value());
   }
@@ -1640,7 +1639,8 @@ TEST_P(ContentAnalysisDelegateSettingsTest, BlockLargeFile) {
       "block_large_files": %s
     })",
                                  bool_setting());
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, pref);
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
+                                      pref);
   EXPECT_EQ(allowed(),
             ContentAnalysisDelegate::ResultShouldAllowDataUse(
                 safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE,
@@ -1655,7 +1655,8 @@ TEST_P(ContentAnalysisDelegateSettingsTest, BlockPasswordProtected) {
       "block_password_protected": %s
     })",
                                  bool_setting());
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, pref);
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
+                                      pref);
   EXPECT_EQ(allowed(),
             ContentAnalysisDelegate::ResultShouldAllowDataUse(
                 safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED,
@@ -1670,7 +1671,8 @@ TEST_P(ContentAnalysisDelegateSettingsTest, BlockUnsupportedFileTypes) {
       "block_unsupported_file_types": %s
     })",
                                  bool_setting());
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, pref);
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
+                                      pref);
   EXPECT_EQ(allowed(), ContentAnalysisDelegate::ResultShouldAllowDataUse(
                            safe_browsing::BinaryUploadService::Result::
                                DLP_SCAN_UNSUPPORTED_FILE_TYPE,

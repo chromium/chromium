@@ -11,6 +11,10 @@
 #include "base/macros.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 
+namespace content {
+class BrowserContext;
+}
+
 namespace policy {
 
 // The real implementation of the device management service configuration that
@@ -29,7 +33,8 @@ class DeviceManagementServiceConfiguration
   std::string GetPlatformParameter() override;
   std::string GetRealtimeReportingServerUrl() override;
   std::string GetEncryptedReportingServerUrl() override;
-  std::string GetReportingConnectorServerUrl() override;
+  std::string GetReportingConnectorServerUrl(
+      content::BrowserContext* context) override;
 
  private:
   const std::string dm_server_url_;

@@ -33,7 +33,8 @@ class MockDeviceManagementServiceConfiguration
   std::string GetPlatformParameter() override;
   std::string GetRealtimeReportingServerUrl() override;
   std::string GetEncryptedReportingServerUrl() override;
-  std::string GetReportingConnectorServerUrl() override;
+  std::string GetReportingConnectorServerUrl(
+      content::BrowserContext* context) override;
 
  private:
   const std::string server_url_;

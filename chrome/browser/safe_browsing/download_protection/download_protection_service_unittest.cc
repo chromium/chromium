@@ -37,7 +37,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -371,13 +371,9 @@ class DownloadProtectionServiceTestBase
 
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
-
-    enterprise_connectors::ConnectorsManager::GetInstance()->SetUpForTesting();
   }
 
   void TearDown() override {
-    enterprise_connectors::ConnectorsManager::GetInstance()
-        ->TearDownForTesting();
     client_download_request_subscription_ = {};
     ppapi_download_request_subscription_ = {};
     native_file_system_write_request_subscription_ = {};
@@ -3015,7 +3011,8 @@ TEST_P(DeepScanningDownloadTest, PasswordProtectedArchivesBlockedByPreference) {
       enterprise_connectors::ContentAnalysisResponse());
 
   {
-    SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED, R"(
+    SetAnalysisConnector(profile()->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [
@@ -3036,7 +3033,8 @@ TEST_P(DeepScanningDownloadTest, PasswordProtectedArchivesBlockedByPreference) {
   }
 
   {
-    SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED, R"(
+    SetAnalysisConnector(profile()->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [
@@ -3088,7 +3086,8 @@ TEST_P(DeepScanningDownloadTest, LargeFileBlockedByPreference) {
       enterprise_connectors::ContentAnalysisResponse());
 
   {
-    SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED, R"(
+    SetAnalysisConnector(profile()->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [
@@ -3109,7 +3108,8 @@ TEST_P(DeepScanningDownloadTest, LargeFileBlockedByPreference) {
   }
 
   {
-    SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED, R"(
+    SetAnalysisConnector(profile()->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [
@@ -3168,7 +3168,8 @@ TEST_P(DeepScanningDownloadTest, UnsupportedFiletypeBlockedByPreference) {
       .Times(2);
 
   {
-    SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED, R"(
+    SetAnalysisConnector(profile()->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [
@@ -3189,7 +3190,8 @@ TEST_P(DeepScanningDownloadTest, UnsupportedFiletypeBlockedByPreference) {
   }
 
   {
-    SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED, R"(
+    SetAnalysisConnector(profile()->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [
@@ -3897,7 +3899,8 @@ TEST_P(DeepScanningDownloadTest, PolicyEnabled) {
               ExtractImageFeatures(
                   tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
 
-  SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED,
+  SetAnalysisConnector(profile()->GetPrefs(),
+                       enterprise_connectors::FILE_DOWNLOADED,
                        R"({
                             "service_provider": "google",
                             "enable": [
@@ -3952,7 +3955,8 @@ TEST_P(DeepScanningDownloadTest, PolicyDisabled) {
               ExtractImageFeatures(
                   tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
 
-  ClearAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED);
+  ClearAnalysisConnector(profile()->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED);
 
   TestBinaryUploadService* test_upload_service =
       static_cast<TestBinaryUploadService*>(
@@ -3999,7 +4003,8 @@ TEST_P(DeepScanningDownloadTest, SafeVerdictPrecedence) {
                 ExtractImageFeatures(
                     tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
 
-    SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED, R"(
+    SetAnalysisConnector(profile()->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [

@@ -118,16 +118,19 @@ void ReportAnalysisConnectorWarningBypass(
                        return (c >= '0' && c <= '9') ||
                               (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
                      }));
+  auto* router =
+      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
+  if (!router)
+    return;
 
   for (const auto& result : response.results()) {
     // Only report results with triggered rules.
     if (result.triggered_rules().empty())
       continue;
 
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile)
-        ->OnAnalysisConnectorWarningBypassed(
-            url, file_name, download_digest_sha256, mime_type, trigger,
-            access_point, result, content_size);
+    router->OnAnalysisConnectorWarningBypassed(
+        url, file_name, download_digest_sha256, mime_type, trigger,
+        access_point, result, content_size);
   }
 }
 

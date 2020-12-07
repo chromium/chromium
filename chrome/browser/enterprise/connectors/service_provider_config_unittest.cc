@@ -5,7 +5,7 @@
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 
 #include "base/json/json_reader.h"
-#include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise_connectors {

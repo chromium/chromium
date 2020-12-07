@@ -5,7 +5,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_browsertest_base.h"
 #include "base/callback_helpers.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/content_analysis_dialog.h"
 #include "chrome/browser/enterprise/connectors/fake_content_analysis_delegate.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -80,18 +80,16 @@ DeepScanningBrowserTestBase::DeepScanningBrowserTestBase() {
 
 DeepScanningBrowserTestBase::~DeepScanningBrowserTestBase() = default;
 
-void DeepScanningBrowserTestBase::SetUpOnMainThread() {
-  enterprise_connectors::ConnectorsManager::GetInstance()->SetUpForTesting();
-}
-
 void DeepScanningBrowserTestBase::TearDownOnMainThread() {
-  enterprise_connectors::ConnectorsManager::GetInstance()->TearDownForTesting();
   enterprise_connectors::ContentAnalysisDelegate::ResetFactoryForTesting();
 
-  ClearAnalysisConnector(enterprise_connectors::FILE_ATTACHED);
-  ClearAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED);
-  ClearAnalysisConnector(enterprise_connectors::BULK_DATA_ENTRY);
-  SetOnSecurityEventReporting(false);
+  ClearAnalysisConnector(browser()->profile()->GetPrefs(),
+                         enterprise_connectors::FILE_ATTACHED);
+  ClearAnalysisConnector(browser()->profile()->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED);
+  ClearAnalysisConnector(browser()->profile()->GetPrefs(),
+                         enterprise_connectors::BULK_DATA_ENTRY);
+  SetOnSecurityEventReporting(browser()->profile()->GetPrefs(), false);
 }
 
 void DeepScanningBrowserTestBase::SetUpDelegate() {

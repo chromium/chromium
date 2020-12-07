@@ -29,6 +29,10 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/proto/record.pb.h"
 
+namespace content {
+class BrowserContext;
+}
+
 namespace network {
 class SharedURLLoaderFactory;
 }
@@ -304,9 +308,10 @@ class POLICY_EXPORT CloudPolicyClient {
       StatusCallback callback);
 
   // Uploads a report containing enterprise connectors real-time security
-  // events. As above, the client must be in a registered state.  The |callback|
-  // will be called when the operation completes.
-  virtual void UploadSecurityEventReport(base::Value report,
+  // events for |context|. As above, the client must be in a registered state.
+  // The |callback| will be called when the operation completes.
+  virtual void UploadSecurityEventReport(content::BrowserContext* context,
+                                         base::Value report,
                                          StatusCallback callback);
 
   // Uploads a report containing an EncryptedRecord. The client must be in a

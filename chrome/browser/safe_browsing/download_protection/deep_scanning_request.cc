@@ -13,7 +13,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -167,18 +167,21 @@ std::string GetTriggerName(DeepScanningRequest::DeepScanTrigger trigger) {
 /* static */
 base::Optional<enterprise_connectors::AnalysisSettings>
 DeepScanningRequest::ShouldUploadBinary(download::DownloadItem* item) {
-  auto* connectors_manager =
-      enterprise_connectors::ConnectorsManager::GetInstance();
+  auto* service =
+      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+          content::DownloadItemUtils::GetBrowserContext(item));
 
   // If the download Connector is not enabled, don't scan.
-  if (!connectors_manager->IsConnectorEnabled(
-          enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED))
+  if (!service ||
+      !service->IsConnectorEnabled(
+          enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED)) {
     return base::nullopt;
+  }
 
   // Check that item->GetURL() matches the appropriate URL patterns by getting
   // settings. No settings means no matches were found and that the downloaded
   // file shouldn't be uploaded.
-  return connectors_manager->GetAnalysisSettings(
+  return service->GetAnalysisSettings(
       item->GetURL(),
       enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
 }

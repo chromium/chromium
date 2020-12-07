@@ -554,11 +554,14 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
     const download::DownloadItem* item,
     Profile* profile) {
   std::string raw_digest_sha256 = item->GetHash();
-  extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile)
-      ->OnDangerousDownloadOpened(
-          item->GetURL(), item->GetTargetFilePath().AsUTF8Unsafe(),
-          base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
-          item->GetMimeType(), item->GetTotalBytes());
+  auto* router =
+      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
+  if (router) {
+    router->OnDangerousDownloadOpened(
+        item->GetURL(), item->GetTargetFilePath().AsUTF8Unsafe(),
+        base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
+        item->GetMimeType(), item->GetTotalBytes());
+  }
 }
 
 bool DownloadProtectionService::MaybeBeginFeedbackForDownload(

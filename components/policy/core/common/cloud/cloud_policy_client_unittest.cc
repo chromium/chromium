@@ -1543,7 +1543,7 @@ TEST_F(CloudPolicyClientTest, UploadSecurityEventReport) {
       base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
                      base::Unretained(&callback_observer_));
 
-  client_->UploadSecurityEventReport(MakeDefaultRealtimeReport(),
+  client_->UploadSecurityEventReport(nullptr, MakeDefaultRealtimeReport(),
                                      std::move(callback));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(

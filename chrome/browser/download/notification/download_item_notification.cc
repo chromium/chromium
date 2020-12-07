@@ -23,7 +23,7 @@
 #include "chrome/browser/download/download_crx_util.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/notification/download_notification_manager.h"
-#include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
@@ -901,7 +901,6 @@ base::string16 DownloadItemNotification::GetInProgressSubStatusString() const {
   bool time_remaining_known = (!item_->IsPaused() &&
                                item_->TimeRemaining(&time_remaining));
 
-
   // A download scheduled to be opened when complete.
   if (item_->GetOpenWhenComplete()) {
     // "Opening when complete"
@@ -1037,9 +1036,12 @@ bool DownloadItemNotification::IsScanning() const {
 }
 
 bool DownloadItemNotification::AllowedToOpenWhileScanning() const {
-  return !enterprise_connectors::ConnectorsManager::GetInstance()
-              ->DelayUntilVerdict(
-                  enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
+  auto* service =
+      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+          profile());
+  return !service ||
+         !service->DelayUntilVerdict(
+             enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
 }
 
 Browser* DownloadItemNotification::GetBrowser() const {

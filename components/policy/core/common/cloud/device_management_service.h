@@ -32,6 +32,10 @@ namespace base {
 class SequencedTaskRunner;
 }
 
+namespace content {
+class BrowserContext;
+}
+
 namespace network {
 class SharedURLLoaderFactory;
 }
@@ -117,7 +121,8 @@ class POLICY_EXPORT DeviceManagementService {
 
     // Server at which to contact the real time reporting service for
     // enterprise connectors.
-    virtual std::string GetReportingConnectorServerUrl() = 0;
+    virtual std::string GetReportingConnectorServerUrl(
+        content::BrowserContext* context) = 0;
   };
 
   // A DeviceManagementService job manages network requests to the device

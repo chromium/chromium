@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -33,6 +34,7 @@ SafeBrowsingPrivateEventRouterFactory::SafeBrowsingPrivateEventRouterFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(enterprise_connectors::ConnectorsServiceFactory::GetInstance());
 }
 
 SafeBrowsingPrivateEventRouterFactory::

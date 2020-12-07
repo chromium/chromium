@@ -20,7 +20,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -894,7 +894,8 @@ void SafeBrowsingPrivateEventRouter::OnCloudPolicyClientAvailable(
 
 bool SafeBrowsingPrivateEventRouter::IsRealtimeReportingEnabled() {
   auto settings =
-      enterprise_connectors::ConnectorsManager::GetInstance()
+      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+          context_)
           ->GetReportingSettings(
               enterprise_connectors::ReportingConnector::SECURITY_EVENT);
   return settings.has_value();
@@ -964,6 +965,7 @@ void SafeBrowsingPrivateEventRouter::ReportRealtimeEventCallback(
   event_list.Append(std::move(wrapper));
 
   client_->UploadSecurityEventReport(
+      context_,
       policy::RealtimeReportingJobConfiguration::BuildReport(
           std::move(event_list),
           reporting::GetContext(Profile::FromBrowserContext(context_))),

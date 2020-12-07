@@ -1250,17 +1250,25 @@ void ChromePasswordProtectionService::MaybeReportPasswordReuseDetected(
     // is called.
     std::string username_or_email =
         username.empty() ? GetAccountInfo().email : username;
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
-        ->OnPolicySpecifiedPasswordReuseDetected(
-            web_contents->GetLastCommittedURL(), username_or_email,
-            is_phishing_url);
+    auto* router =
+        extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
+            profile_);
+    if (router) {
+      router->OnPolicySpecifiedPasswordReuseDetected(
+          web_contents->GetLastCommittedURL(), username_or_email,
+          is_phishing_url);
+    }
   }
 }
 
 void ChromePasswordProtectionService::ReportPasswordChanged() {
   if (!IsIncognito()) {
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
-        ->OnPolicySpecifiedPasswordChanged(GetAccountInfo().email);
+    auto* router =
+        extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
+            profile_);
+    if (router) {
+      router->OnPolicySpecifiedPasswordChanged(GetAccountInfo().email);
+    }
   }
 }
 #endif

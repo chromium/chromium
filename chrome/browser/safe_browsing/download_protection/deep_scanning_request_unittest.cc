@@ -11,8 +11,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -183,14 +183,10 @@ class DeepScanningRequestTest : public testing::Test {
 
     SetDMTokenForTesting(
         policy::DMToken::CreateValidTokenForTesting("dm_token"));
-
-    enterprise_connectors::ConnectorsManager::GetInstance()->SetUpForTesting();
   }
 
   void TearDown() override {
     SetDMTokenForTesting(policy::DMToken::CreateEmptyTokenForTesting());
-    enterprise_connectors::ConnectorsManager::GetInstance()
-        ->TearDownForTesting();
   }
 
   void AddUrlToProfilePrefList(const char* pref_name, const GURL& url) {
@@ -240,13 +236,10 @@ class DeepScanningRequestTest : public testing::Test {
   void SetLastResult(DownloadCheckResult result) { last_result_ = result; }
 
   base::Optional<enterprise_connectors::AnalysisSettings> settings() {
-    // Clear the cache before getting settings so there's no race with the pref
-    // change and the cached values being updated.
-    enterprise_connectors::ConnectorsManager::GetInstance()
-        ->ClearCacheForTesting();
-
     return DeepScanningRequest::ShouldUploadBinary(&item_);
   }
+
+  TestingProfile* profile() { return profile_; }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -268,7 +261,8 @@ class DeepScanningRequestTest : public testing::Test {
 };
 
 TEST_F(DeepScanningRequestTest, ChecksFeatureFlags) {
-  SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED,
+  SetAnalysisConnector(profile_->GetPrefs(),
+                       enterprise_connectors::FILE_DOWNLOADED,
                        kScanForDlpAndMalware);
 
   // Try each request with settings indicating both DLP and Malware requests
@@ -319,7 +313,8 @@ TEST_F(DeepScanningRequestTest, GeneratesCorrectRequestFromPolicy) {
   EnableAllFeatures();
 
   {
-    SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED,
+    SetAnalysisConnector(profile_->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED,
                          kScanForDlpAndMalware);
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
@@ -343,7 +338,8 @@ TEST_F(DeepScanningRequestTest, GeneratesCorrectRequestFromPolicy) {
   }
 
   {
-    SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED,
+    SetAnalysisConnector(profile_->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED,
                          kScanForMalware);
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
@@ -359,7 +355,8 @@ TEST_F(DeepScanningRequestTest, GeneratesCorrectRequestFromPolicy) {
   }
 
   {
-    SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED, kScanForDlp);
+    SetAnalysisConnector(profile_->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED, kScanForDlp);
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
         base::DoNothing(), &download_protection_service_, settings().value());
@@ -373,7 +370,8 @@ TEST_F(DeepScanningRequestTest, GeneratesCorrectRequestFromPolicy) {
   }
 
   {
-    SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED, kNoScan);
+    SetAnalysisConnector(profile_->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED, kNoScan);
     EXPECT_FALSE(settings().has_value());
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
@@ -444,7 +442,7 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
     download_protection_service_.GetFakeBinaryUploadService()
         ->SetAuthForTesting(true);
 
-    SetOnSecurityEventReporting(true);
+    SetOnSecurityEventReporting(profile_->GetPrefs(), true);
     EnableAllFeatures();
   }
 
@@ -460,7 +458,8 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
 };
 
 TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
-  SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED,
+  SetAnalysisConnector(profile_->GetPrefs(),
+                       enterprise_connectors::FILE_DOWNLOADED,
                        kScanForDlpAndMalware);
 
   {
@@ -807,7 +806,8 @@ INSTANTIATE_TEST_SUITE_P(
         DownloadPrefs::DownloadRestriction::MALICIOUS_FILES));
 
 TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
-  SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED, kScanForMalware);
+  SetAnalysisConnector(profile_->GetPrefs(),
+                       enterprise_connectors::FILE_DOWNLOADED, kScanForMalware);
   {
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
@@ -893,7 +893,8 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
 TEST_F(DeepScanningRequestTest, ShouldUploadBinary_MalwareListPolicy) {
   SetFeatures(/*enabled*/ {enterprise_connectors::kEnterpriseConnectorsEnabled},
               /*disabled*/ {});
-  SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED, kScanForMalware);
+  SetAnalysisConnector(profile_->GetPrefs(),
+                       enterprise_connectors::FILE_DOWNLOADED, kScanForMalware);
 
   content::DownloadItemUtils::AttachInfo(&item_, profile_, nullptr);
   EXPECT_CALL(item_, GetURL()).WillRepeatedly(ReturnRef(download_url_));
@@ -908,7 +909,8 @@ TEST_F(DeepScanningRequestTest, ShouldUploadBinary_MalwareListPolicy) {
 
   // With the new malware policy list set, the item should not be uploaded since
   // DeepScanningRequest honours that policy.
-  SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED,
+  SetAnalysisConnector(profile_->GetPrefs(),
+                       enterprise_connectors::FILE_DOWNLOADED,
                        base::StringPrintf(
                            R"({
                             "service_provider": "google",
@@ -924,7 +926,8 @@ TEST_F(DeepScanningRequestTest, ShouldUploadBinary_MalwareListPolicy) {
 }
 
 TEST_F(DeepScanningRequestTest, PopulatesRequest) {
-  SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED,
+  SetAnalysisConnector(profile_->GetPrefs(),
+                       enterprise_connectors::FILE_DOWNLOADED,
                        kScanForDlpAndMalware);
 
   EnableAllFeatures();

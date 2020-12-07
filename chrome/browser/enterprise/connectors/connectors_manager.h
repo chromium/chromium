@@ -6,35 +6,20 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONNECTORS_MANAGER_H_
 
 #include "base/callback_forward.h"
-#include "base/feature_list.h"
 #include "base/optional.h"
 #include "chrome/browser/enterprise/connectors/analysis_service_settings.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/reporting_service_settings.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "url/gurl.h"
-
-namespace base {
-template <typename T>
-class NoDestructor;
-}
 
 namespace enterprise_connectors {
 
-// Controls whether the Enterprise Connectors policies should be read by
-// ConnectorsManager.
-extern const base::Feature kEnterpriseConnectorsEnabled;
-
-// For the moment, service provider configurations are static and only support
-// google endpoints.  Therefore the configurtion is placed here directly.
-// Once the configuation becomes more dynamic this static string will be
-// removed and replaced with a service to keep it up to date.
-extern const char kServiceProviderConfig[];
-
-// Manages access to Connector policies. This class is responsible for caching
-// the Connector policies, validate them against approved service providers and
-// provide a simple interface to them.
+// Manages access to Connector policies for a given profile. This class is
+// responsible for caching the Connector policies, validate them against
+// approved service providers and provide a simple interface to them.
 class ConnectorsManager {
  public:
   // Maps used to cache connectors settings.
@@ -43,7 +28,10 @@ class ConnectorsManager {
   using ReportingConnectorsSettings =
       std::map<ReportingConnector, std::vector<ReportingServiceSettings>>;
 
-  static ConnectorsManager* GetInstance();
+  ConnectorsManager(PrefService* pref_service,
+                    ServiceProviderConfig* config,
+                    bool observe_prefs = true);
+  ~ConnectorsManager();
 
   // Validates which settings should be applied to a reporting event
   // against cached policies. Cache the policy value the first time this is
@@ -70,20 +58,7 @@ class ConnectorsManager {
   const ReportingConnectorsSettings& GetReportingConnectorsSettingsForTesting()
       const;
 
-  // Helpers to reset the ConnectorManager instance across test since it would
-  // otherwise persist its state.
-  void SetUpForTesting();
-  void TearDownForTesting();
-  void ClearCacheForTesting();
-
  private:
-  friend class base::NoDestructor<ConnectorsManager>;
-
-  // Constructor and destructor are declared as private so callers use
-  // GetInstance instead.
-  ConnectorsManager();
-  ~ConnectorsManager();
-
   // Validates which settings should be applied to an analysis connector event
   // against connector policies. Cache the policy value the first time this is
   // called for every different connector.
@@ -95,9 +70,9 @@ class ConnectorsManager {
   void CacheAnalysisConnectorPolicy(AnalysisConnector connector);
   void CacheReportingConnectorPolicy(ReportingConnector connector);
 
-  // Sets up |pref_change_registrar_| if kEnterpriseConntorsEnabled is true.
-  // Used by the constructor and SetUpForTesting.
-  void StartObservingPrefs();
+  // Sets up |pref_change_registrar_|. Used by the constructor and
+  // SetUpForTesting.
+  void StartObservingPrefs(PrefService* pref_service);
   void StartObservingPref(AnalysisConnector connector);
   void StartObservingPref(ReportingConnector connector);
 
@@ -109,8 +84,7 @@ class ConnectorsManager {
 
   // Cached values of available service providers. This information validates
   // the Connector policies have a valid provider.
-  ServiceProviderConfig service_provider_config_ =
-      ServiceProviderConfig(kServiceProviderConfig);
+  ServiceProviderConfig* service_provider_config_;
 
   // Cached values of the connector policies. Updated when a connector is first
   // used or when a policy is updated.

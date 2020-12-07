@@ -594,13 +594,15 @@ void CloudPolicyClient::UploadChromeOsUserReport(
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }
 
-void CloudPolicyClient::UploadSecurityEventReport(base::Value report,
-                                                  StatusCallback callback) {
+void CloudPolicyClient::UploadSecurityEventReport(
+    content::BrowserContext* context,
+    base::Value report,
+    StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_registered());
   CreateNewRealtimeReportingJob(
       std::move(report),
-      service()->configuration()->GetReportingConnectorServerUrl(),
+      service()->configuration()->GetReportingConnectorServerUrl(context),
       add_connector_url_params_, std::move(callback));
 }
 

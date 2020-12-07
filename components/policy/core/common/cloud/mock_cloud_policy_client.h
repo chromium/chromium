@@ -100,11 +100,15 @@ class MockCloudPolicyClient : public CloudPolicyClient {
                void(enterprise_management::ChromeOsUserReportRequest*,
                     StatusCallback&));
 
-  void UploadSecurityEventReport(base::Value value,
+  void UploadSecurityEventReport(content::BrowserContext* context,
+                                 base::Value value,
                                  StatusCallback callback) override {
-    UploadSecurityEventReport_(value, callback);
+    UploadSecurityEventReport_(context, value, callback);
   }
-  MOCK_METHOD2(UploadSecurityEventReport_, void(base::Value&, StatusCallback&));
+  MOCK_METHOD3(UploadSecurityEventReport_,
+               void(content::BrowserContext* context,
+                    base::Value&,
+                    StatusCallback&));
 
   MOCK_METHOD3(UploadEncryptedReport,
                void(const ::reporting::EncryptedRecord&,

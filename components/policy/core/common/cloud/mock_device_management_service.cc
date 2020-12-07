@@ -108,7 +108,8 @@ MockDeviceManagementServiceConfiguration::GetEncryptedReportingServerUrl() {
 }
 
 std::string
-MockDeviceManagementServiceConfiguration::GetReportingConnectorServerUrl() {
+MockDeviceManagementServiceConfiguration::GetReportingConnectorServerUrl(
+    content::BrowserContext* context) {
   return server_url_;
 }
 

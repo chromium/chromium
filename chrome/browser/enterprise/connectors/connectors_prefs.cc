@@ -16,7 +16,7 @@ const char kOnBulkDataEntryPref[] = "enterprise_connectors.on_bulk_data_entry";
 
 const char kOnSecurityEventPref[] = "enterprise_connectors.on_security_event";
 
-void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kOnFileAttachedPref);
   registry->RegisterListPref(kOnFileDownloadedPref);
   registry->RegisterListPref(kOnBulkDataEntryPref);

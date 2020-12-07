@@ -427,7 +427,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogBehaviorBrowserTest, Test) {
 
   // Setup policies to enable deep scanning, its UI and the responses to be
   // simulated.
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+  safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
+                                      FILE_ATTACHED,
                                       kBlockingScansForDlpAndMalware);
   SetStatusCallbackResponse(
       safe_browsing::SimpleContentAnalysisResponseForTesting(
@@ -489,7 +490,8 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogCancelPendingScanBrowserTest,
 
   // Setup policies to enable deep scanning, its UI and the responses to be
   // simulated.
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, kBlockingScansForDlp);
+  safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
+                                      FILE_ATTACHED, kBlockingScansForDlp);
   SetStatusCallbackResponse(
       safe_browsing::SimpleContentAnalysisResponseForTesting(
           /*dlp=*/true, /*malware=*/base::nullopt));
@@ -531,7 +533,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogWarningBrowserTest, Test) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Setup policies.
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, kBlockingScansForDlp);
+  safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
+                                      FILE_ATTACHED, kBlockingScansForDlp);
 
   // Setup the DLP warning response.
   enterprise_connectors::ContentAnalysisResponse response;
@@ -588,7 +591,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogAppearanceBrowserTest, Test) {
 
   // Setup policies to enable deep scanning, its UI and the responses to be
   // simulated.
-  safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+  safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
+                                      FILE_ATTACHED,
                                       kBlockingScansForDlpAndMalware);
 
   SetStatusCallbackResponse(

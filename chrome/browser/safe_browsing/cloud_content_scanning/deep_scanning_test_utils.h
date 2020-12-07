@@ -146,10 +146,12 @@ class EventReportValidator {
 };
 
 // Helper functions that set Connector policies for testing.
-void SetAnalysisConnector(enterprise_connectors::AnalysisConnector connector,
+void SetAnalysisConnector(PrefService* prefs,
+                          enterprise_connectors::AnalysisConnector connector,
                           const std::string& pref_value);
-void SetOnSecurityEventReporting(bool enabled);
-void ClearAnalysisConnector(enterprise_connectors::AnalysisConnector connector);
+void SetOnSecurityEventReporting(PrefService* prefs, bool enabled);
+void ClearAnalysisConnector(PrefService* prefs,
+                            enterprise_connectors::AnalysisConnector connector);
 
 }  // namespace safe_browsing
 

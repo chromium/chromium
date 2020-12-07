@@ -7773,7 +7773,7 @@
             }
           ]
         },
-        "prefs": { "enterprise_connectors.on_file_attached": { "location": "local_state" } }
+        "prefs": { "enterprise_connectors.on_file_attached": {} }
       }
     ]
   },
@@ -7808,7 +7808,7 @@
             }
           ]
         },
-        "prefs": { "enterprise_connectors.on_file_downloaded": { "location": "local_state" } }
+        "prefs": { "enterprise_connectors.on_file_downloaded": {} }
       }
     ]
   },
@@ -7841,7 +7841,7 @@
             }
           ]
         },
-        "prefs": { "enterprise_connectors.on_bulk_data_entry": { "location": "local_state" } }
+        "prefs": { "enterprise_connectors.on_bulk_data_entry": {} }
       }
     ]
   },
@@ -7857,7 +7857,7 @@
             }
           ]
         },
-        "prefs": { "enterprise_connectors.on_security_event": { "location": "local_state" } }
+        "prefs": { "enterprise_connectors.on_security_event": {} }
       }
     ]
   },

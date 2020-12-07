@@ -5,7 +5,7 @@
 #include "chrome/browser/enterprise/connectors/reporting_service_settings.h"
 #include "base/json/json_reader.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
