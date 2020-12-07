@@ -1,0 +1,7 @@
+monorail {
+  component: "Blink>Layout>MultiCol"
+}
+team_email: "layout-dev@chromium.org"
+wpt {
+  notify: YES
+}
