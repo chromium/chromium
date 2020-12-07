@@ -148,6 +148,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     void setDisplayedView(@ViewState int state) {
         mViewFlipper.setDisplayedChild(state);
         View titleView = mViewFlipper.getChildAt(state).findViewById(sTitleIds[state]);
+        titleView.setFocusable(true);
         titleView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 
