@@ -138,15 +138,16 @@ double ConsecutiveMatchWithGaps(const base::string16& needle,
 
 namespace commander {
 
-double FuzzyFind(const base::string16& needle,
-                 const base::string16& haystack,
-                 std::vector<gfx::Range>* matched_ranges) {
-  if (needle.size() == 0)
-    return 0;
-  DCHECK(needle == base::i18n::FoldCase(needle));
+FuzzyFinder::FuzzyFinder(const base::string16& needle)
+    : needle_(base::i18n::FoldCase(needle)) {}
+
+double FuzzyFinder::Find(const base::string16& haystack,
+                         std::vector<gfx::Range>* matched_ranges) {
   matched_ranges->clear();
+  if (needle_.size() == 0)
+    return 0;
   const base::string16& folded = base::i18n::FoldCase(haystack);
-  size_t m = needle.size();
+  size_t m = needle_.size();
   size_t n = folded.size();
   // Special case 0: M > N. We don't allow skipping anything in |needle|, so
   // no match possible.
@@ -156,8 +157,8 @@ double FuzzyFind(const base::string16& needle,
   // Special case 1: M == N. It must be either an exact match,
   // or a non-match.
   if (m == n) {
-    if (folded == needle) {
-      matched_ranges->emplace_back(0, needle.length());
+    if (folded == needle_) {
+      matched_ranges->emplace_back(0, needle_.length());
       return kMaxScore;
     } else {
       return 0;
@@ -174,7 +175,7 @@ double FuzzyFind(const base::string16& needle,
   //      Scored based on how far into haystack needle is found, normalized by
   //      haystack length.
   if (m == 1) {
-    size_t substring_position = folded.find(needle);
+    size_t substring_position = folded.find(needle_);
     while (substring_position != std::string::npos) {
       if (substring_position == 0) {
         // Prefix match.
@@ -196,7 +197,7 @@ double FuzzyFind(const base::string16& needle,
                                        substring_position + 1);
         }
       }
-      substring_position = folded.find(needle, substring_position + 1);
+      substring_position = folded.find(needle_, substring_position + 1);
     }
     if (matched_ranges->empty()) {
       return 0;
@@ -214,7 +215,7 @@ double FuzzyFind(const base::string16& needle,
   //    full O(mn) matching algorithm.
   // ***TEMPORARY***: The full algorithm isn't implemented yet, so we will use
   // this unconditionally for now.
-  return ConsecutiveMatchWithGaps(needle, folded, matched_ranges);
+  return ConsecutiveMatchWithGaps(needle_, folded, matched_ranges);
 }
 
 }  // namespace commander

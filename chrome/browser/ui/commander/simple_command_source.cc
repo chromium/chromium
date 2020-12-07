@@ -66,14 +66,14 @@ CommandSource::CommandResults SimpleCommandSource::GetCommands(
       {IDC_DEV_TOOLS_TOGGLE, base::ASCIIToUTF16("Toggle developer tools")},
   };
   CommandSource::CommandResults results;
-  const base::string16& folded_input = base::i18n::FoldCase(input);
+  FuzzyFinder finder(input);
   std::vector<gfx::Range> ranges;
   for (const auto& command_spec : command_map) {
     if (!chrome::IsCommandEnabled(browser, command_spec.id))
       continue;
     base::string16 title = command_spec.title;
     base::Erase(title, '&');
-    double score = FuzzyFind(folded_input, title, &ranges);
+    double score = finder.Find(title, &ranges);
     if (score == 0)
       continue;
 

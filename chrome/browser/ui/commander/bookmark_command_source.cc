@@ -49,10 +49,10 @@ CommandSource::CommandResults GetMatchingBookmarks(
   DCHECK(model && model->loaded());
   std::vector<bookmarks::UrlAndTitle> bookmarks;
   model->GetBookmarks(&bookmarks);
-  const base::string16& folded_input = base::i18n::FoldCase(input);
+  FuzzyFinder finder(input);
   std::vector<gfx::Range> ranges;
   for (bookmarks::UrlAndTitle& bookmark : bookmarks) {
-    double score = FuzzyFind(folded_input, bookmark.title, &ranges);
+    double score = finder.Find(bookmark.title, &ranges);
     if (score > 0) {
       auto item = CreateOpenBookmarkItem(bookmark, browser);
       item->score = score;
@@ -83,12 +83,12 @@ CommandSource::CommandResults BookmarkCommandSource::GetCommands(
     results = GetMatchingBookmarks(browser, input);
   }
 
-  const base::string16& folded_input = base::i18n::FoldCase(input);
+  FuzzyFinder finder(input);
   std::vector<gfx::Range> ranges;
   // TODO(lgrey): Temporarily using an untranslated string since it's not
   // yet clear which commands will ship.
   base::string16 open_title = base::ASCIIToUTF16("Open bookmark...");
-  double score = FuzzyFind(folded_input, open_title, &ranges);
+  double score = finder.Find(open_title, &ranges);
   if (score > 0) {
     auto verb = std::make_unique<CommandItem>();
     verb->title = open_title;

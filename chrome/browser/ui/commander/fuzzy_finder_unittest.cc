@@ -9,6 +9,17 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace commander {
+
+namespace {
+// Convenience function to avoid visual noise from constructing FuzzyFinder
+// objects in-test.
+double FuzzyFind(const base::string16& needle,
+                 const base::string16& haystack,
+                 std::vector<gfx::Range>* matched_ranges) {
+  return FuzzyFinder(needle).Find(haystack, matched_ranges);
+}
+}  // namespace
+
 TEST(CommanderFuzzyFinder, NonmatchIsZero) {
   std::vector<gfx::Range> ranges;
   EXPECT_EQ(0, FuzzyFind(base::ASCIIToUTF16("orange"),
@@ -39,15 +50,14 @@ TEST(CommanderFuzzyFinder, NeedleHaystackSameLength) {
 // coverage rather than ensuring the path is taken).
 TEST(CommanderFuzzyFinder, SingleCharNeedle) {
   std::vector<gfx::Range> ranges;
+  FuzzyFinder finder(base::ASCIIToUTF16("o"));
 
-  double prefix_score =
-      FuzzyFind(base::ASCIIToUTF16("o"), base::ASCIIToUTF16("orange"), &ranges);
+  double prefix_score = finder.Find(base::ASCIIToUTF16("orange"), &ranges);
   EXPECT_EQ(ranges, std::vector<gfx::Range>({{0, 1}}));
-  double internal_score =
-      FuzzyFind(base::ASCIIToUTF16("o"), base::ASCIIToUTF16("phone"), &ranges);
+  double internal_score = finder.Find(base::ASCIIToUTF16("phone"), &ranges);
   EXPECT_EQ(ranges, std::vector<gfx::Range>({{2, 3}}));
-  double boundary_score = FuzzyFind(
-      base::ASCIIToUTF16("o"), base::ASCIIToUTF16("phone operator"), &ranges);
+  double boundary_score =
+      finder.Find(base::ASCIIToUTF16("phone operator"), &ranges);
   EXPECT_EQ(ranges, std::vector<gfx::Range>({{6, 7}}));
 
   // Expected ordering:
@@ -59,8 +69,7 @@ TEST(CommanderFuzzyFinder, SingleCharNeedle) {
   EXPECT_GT(boundary_score, internal_score);
 
   // ...and non-matches should have score = 0.
-  EXPECT_EQ(0, FuzzyFind(base::ASCIIToUTF16("o"),
-                         base::ASCIIToUTF16("aquarium"), &ranges));
+  EXPECT_EQ(0, finder.Find(base::ASCIIToUTF16("aquarium"), &ranges));
   EXPECT_TRUE(ranges.empty());
 }
 
@@ -73,12 +82,10 @@ TEST(CommanderFuzzyFinder, CaseInsensitive) {
 
 TEST(CommanderFuzzyFinder, PrefixRanksHigherThanInternal) {
   std::vector<gfx::Range> ranges;
-
-  double prefix_rank = FuzzyFind(base::ASCIIToUTF16("orange"),
-                                 base::ASCIIToUTF16("Orange juice"), &ranges);
+  FuzzyFinder finder(base::ASCIIToUTF16("orange"));
+  double prefix_rank = finder.Find(base::ASCIIToUTF16("Orange juice"), &ranges);
   double non_prefix_rank =
-      FuzzyFind(base::ASCIIToUTF16("orange"),
-                base::ASCIIToUTF16("William of Orange"), &ranges);
+      finder.Find(base::ASCIIToUTF16("William of Orange"), &ranges);
 
   EXPECT_GT(prefix_rank, 0);
   EXPECT_GT(non_prefix_rank, 0);

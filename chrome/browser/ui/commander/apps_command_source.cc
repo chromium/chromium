@@ -32,11 +32,11 @@ CommandSource::CommandResults AppsCommandSource::GetCommands(
   };
 
   CommandSource::CommandResults results;
-  const base::string16& folded_input = base::i18n::FoldCase(input);
   std::vector<gfx::Range> ranges;
+  FuzzyFinder finder(input);
   for (const auto& command_spec : command_map) {
     base::string16 title = base::ASCIIToUTF16(command_spec.title);
-    double score = FuzzyFind(folded_input, title, &ranges);
+    double score = finder.Find(title, &ranges);
     if (score == 0)
       continue;
 
