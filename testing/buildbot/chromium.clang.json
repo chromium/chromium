@@ -24524,7 +24524,7 @@
   },
   "ToTMacASan": {
     "additional_compile_targets": [
-      "all"
+      "chromium_builder_asan"
     ],
     "gtest_tests": [
       {

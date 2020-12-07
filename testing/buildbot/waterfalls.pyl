@@ -1612,7 +1612,7 @@
           '--test-launcher-print-test-stdio=always',
         ],
         'additional_compile_targets': [
-          'all',
+          'chromium_builder_asan',
         ],
       },
       # Used on an internal builder.
