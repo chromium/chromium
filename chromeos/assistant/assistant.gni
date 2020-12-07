@@ -4,7 +4,6 @@ import("//build/config/chromeos/ui_mode.gni")
 declare_args() {
   # Enable assistant implementation based on libassistant.
   enable_cros_libassistant = is_chromeos_ash && is_chrome_branded
-  enable_cros_on_device_assistant = false
 
   # Enable a fake microphone, which can replay audio files as microphone input.
   # See chromeos/assistant/tools/send-audio.sh
