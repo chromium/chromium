@@ -6,56 +6,47 @@
 
 from __future__ import print_function
 
+import json
 import os
 import subprocess
-import sys
 import textwrap
 
 _SRC_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-_SWARMING_CLIENT = os.path.join(_SRC_ROOT, 'tools', 'swarming_client',
-                                'swarming.py')
+_SWARMING_CLIENT = os.path.join(_SRC_ROOT, 'tools', 'luci-go', 'swarming')
 _SWARMING_SERVER = 'chromium-swarm.appspot.com'
 
 
 def _get_bots(swarming_server, pool, cache):
   cmd = [
-      sys.executable,
       _SWARMING_CLIENT,
       'bots',
-      '-b',
       '-S',
       swarming_server,
-      '-d',
-      'caches',
-      cache,
-      '-d',
-      'pool',
-      pool,
+      '-dimension',
+      'caches=' + cache,
+      '-dimension',
+      'pool=' + pool,
   ]
-  return subprocess.check_output(cmd).splitlines()
+  return [bot['bot_id'] for bot in json.loads(subprocess.check_output(cmd))]
 
 
 def _trigger_clobber(swarming_server, pool, cache, bot, mount_rel_path,
                      dry_run):
   cmd = [
-      sys.executable,
       _SWARMING_CLIENT,
       'trigger',
       '-S',
       swarming_server,
-      '-d',
-      'pool',
-      pool,
-      '-d',
-      'id',
-      bot,
-      '--cipd-package',
-      'cpython:infra/python/cpython/${platform}:latest',
-      '--named-cache',
-      cache,
-      mount_rel_path,
-      '--priority=10',
-      '--raw-cmd',
+      '-dimension',
+      'pool=' + pool,
+      '-dimension',
+      'id=' + bot,
+      '-cipd-package',
+      'cpython:infra/python/cpython/${platform}=latest',
+      '-named-cache',
+      cache + '=' + mount_rel_path,
+      '-priority',
+      '10',
       '--',
       'cpython/bin/python${EXECUTABLE_SUFFIX}',
       '-c',
