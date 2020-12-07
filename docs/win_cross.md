@@ -41,7 +41,7 @@ If you're at Google, this will automatically download the Windows SDK for you.
 If this fails with an error:
 
     Please follow the instructions at
-    https://chromium.googlesource.com/chromium/src/+/master/docs/win_cross.md
+    https://chromium.googlesource.com/chromium/src/+/HEAD/docs/win_cross.md
 
 then you may need to re-authenticate via:
 
