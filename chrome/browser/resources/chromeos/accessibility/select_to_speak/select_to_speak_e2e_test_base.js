@@ -75,4 +75,17 @@ SelectToSpeakE2ETest = class extends E2ETestBase {
         {keyCode: SelectToSpeak.READ_SELECTION_KEY_CODE});
     selectToSpeak.fireMockKeyUpEvent({keyCode: SelectToSpeak.SEARCH_KEY_CODE});
   }
+
+  /**
+   * Triggers speech using the search key and clicking with the mouse.
+   * @param {Object} downEvent The mouse-down event.
+   * @param {Object} upEvent The mouse-up event.
+   */
+  triggerReadMouseSelectedText(downEvent, upEvent) {
+    selectToSpeak.fireMockKeyDownEvent(
+        {keyCode: SelectToSpeak.SEARCH_KEY_CODE});
+    selectToSpeak.fireMockMouseDownEvent(downEvent);
+    selectToSpeak.fireMockMouseUpEvent(upEvent);
+    selectToSpeak.fireMockKeyUpEvent({keyCode: SelectToSpeak.SEARCH_KEY_CODE});
+  }
 };

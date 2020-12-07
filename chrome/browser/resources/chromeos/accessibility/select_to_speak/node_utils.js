@@ -466,36 +466,81 @@ class NodeUtils {
    *     within the paragraph adjacent to the given node.
    */
   static getNextParagraph(node, direction) {
+    const blockParent = ParagraphUtils.getFirstBlockAncestor(node);
+    if (blockParent === null) {
+      return [];
+    }
     let nextNode = AutomationUtil.findNextNode(
-        node, direction, AutomationPredicate.leafWithText,
-        {skipInitialSubtree: true});
-    while (
-        nextNode !== null &&
-        (NodeUtils.shouldIgnoreNode(nextNode, /* includeOffscreen= */ true) ||
-         NodeUtils.isNotSelectable(nextNode) ||
-         ParagraphUtils.inSameParagraph(node, nextNode))) {
+        node, direction, NodeUtils.isValidLeafNode, {skipInitialSubtree: true});
+    while (nextNode !== null &&
+           ParagraphUtils.getFirstBlockAncestor(nextNode) === blockParent) {
       nextNode = AutomationUtil.findNextNode(
-          nextNode, direction, AutomationPredicate.leafWithText);
+          nextNode, direction, NodeUtils.isValidLeafNode);
     }
     if (nextNode === null) {
       return [];
     }
 
     // Now construct an array with all leaf nodes within the block.
-    const nodes = [];
-    do {
-      if (!NodeUtils.shouldIgnoreNode(nextNode, /* includeOffscreen= */ true) &&
-          !NodeUtils.isNotSelectable(nextNode)) {
-        nodes.push(nextNode);
-      }
-      nextNode = AutomationUtil.findNextNode(
-          nextNode, direction, AutomationPredicate.leafWithText);
-    } while (nextNode !== null &&
-             ParagraphUtils.inSameParagraph(nodes[0], nextNode));
+    const nodes = NodeUtils.getNextNodesInParagraph(nextNode, direction);
+    if (direction === constants.Dir.FORWARD) {
+      nodes.unshift(nextNode);
+    } else {
+      nodes.push(nextNode);
+    }
+    return nodes;
+  }
+
+  /**
+   * @param {!AutomationNode} node Leaf node.
+   * @param {constants.Dir} direction
+   * @return {!Array<!AutomationNode>} The selectable leaf nodes in the given
+   *     direction from the given node, until a paragraph break is reached.
+   */
+  static getNextNodesInParagraph(node, direction) {
+    const blockParent = ParagraphUtils.getFirstBlockAncestor(node);
+    if (blockParent === null) {
+      return [];
+    }
+    const nodes = AutomationUtil.findAllNodes(
+        node, direction,
+        /* pred= */ NodeUtils.isValidLeafNode, /* opt_restrictions= */ {
+          root: (node) =>
+              node === blockParent,  // Only traverse within the block
+        });
 
     // Reverse the nodes if we were traversing backward, so the returned result
     // is in natural DOM order.
     return direction === constants.Dir.BACKWARD ? nodes.reverse() : nodes;
+  }
+
+  /**
+   * @param {!AutomationNode} node Leaf node.
+   * @return {!Array<!AutomationNode>} All selectable leaf nodes in the
+   *     paragraph that the given leaf node belongs to.
+   */
+  static getAllNodesInParagraph(node) {
+    const blockParent = ParagraphUtils.getFirstBlockAncestor(node);
+    if (blockParent === null) {
+      return [];
+    }
+    return AutomationUtil.findAllNodes(
+        blockParent, constants.Dir.FORWARD,
+        /* pred= */ NodeUtils.isValidLeafNode, /* opt_restrictions= */ {
+          root: (node) =>
+              node === blockParent,  // Only traverse within the block
+        });
+  }
+
+  /**
+   * @param {!AutomationNode} node
+   * @return {boolean} Whether the given node is a valid leaf node that is can
+   *     be ingested by Select-to-speak.
+   */
+  static isValidLeafNode(node) {
+    return AutomationPredicate.leafWithText(node) &&
+        !NodeUtils.shouldIgnoreNode(node, /* includeOffscreen= */ true) &&
+        !NodeUtils.isNotSelectable(node);
   }
 }
 

@@ -16,19 +16,6 @@ SelectToSpeakMouseSelectionTest = class extends SelectToSpeakE2ETest {
     chrome.tts = this.mockTts;
   }
 
-  /**
-   * Triggers speech using the search key and clicking with the mouse.
-   * @param {Object} downEvent The mouse-down event.
-   * @param {Object} upEvent The mouse-up event.
-   */
-  selectRangeForSpeech(downEvent, upEvent) {
-    selectToSpeak.fireMockKeyDownEvent(
-        {keyCode: SelectToSpeak.SEARCH_KEY_CODE});
-    selectToSpeak.fireMockMouseDownEvent(downEvent);
-    selectToSpeak.fireMockMouseUpEvent(upEvent);
-    selectToSpeak.fireMockKeyUpEvent({keyCode: SelectToSpeak.SEARCH_KEY_CODE});
-  }
-
   tapTrayButton(desktop, callback) {
     const button = desktop.find({
       roleType: 'button',
@@ -64,7 +51,7 @@ TEST_F('SelectToSpeakMouseSelectionTest', 'SpeaksNodeWhenClicked', function() {
           screenX: textNode.location.left + 1,
           screenY: textNode.location.top + 1
         };
-        this.selectRangeForSpeech(event, event);
+        this.triggerReadMouseSelectedText(event, event);
       });
 });
 
@@ -100,7 +87,7 @@ TEST_F(
               screenX: lastNode.location.left + lastNode.location.width,
               screenY: lastNode.location.top + lastNode.location.height
             };
-            this.selectRangeForSpeech(downEvent, upEvent);
+            this.triggerReadMouseSelectedText(downEvent, upEvent);
           });
     });
 
@@ -134,7 +121,7 @@ TEST_F(
               screenX: lastNode.location.left + lastNode.location.width,
               screenY: lastNode.location.top + lastNode.location.height
             };
-            this.selectRangeForSpeech(downEvent, upEvent);
+            this.triggerReadMouseSelectedText(downEvent, upEvent);
           });
     });
 
@@ -227,7 +214,7 @@ TEST_F(
               screenX: textNode.location.left + 1,
               screenY: textNode.location.top + 1
             };
-            this.selectRangeForSpeech(event, event);
+            this.triggerReadMouseSelectedText(event, event);
           });
     });
 

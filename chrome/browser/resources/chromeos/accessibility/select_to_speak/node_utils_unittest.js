@@ -551,6 +551,90 @@ TEST_F('SelectToSpeakNodeUtilsUnitTest', 'getNextParagraph', function() {
   assertEquals(result.length, 0);
 });
 
+TEST_F('SelectToSpeakNodeUtilsUnitTest', 'getNextNodesInParagraph', function() {
+  const root = createMockNode({role: 'rootWebArea'});
+  createMockNode({role: 'paragraph', display: 'block', parent: root, root});
+  const paragraph2 =
+      createMockNode({role: 'paragraph', display: 'block', parent: root, root});
+  const text1 = createMockNode(
+      {role: 'staticText', parent: paragraph2, root, name: 'Line 1'});
+  const text2 = createMockNode(
+      {role: 'staticText', parent: paragraph2, root, name: 'Line 2'});
+  const text3 = createMockNode(
+      {role: 'staticText', parent: paragraph2, root, name: 'Line 3'});
+  createMockNode({role: 'paragraph', display: 'block', parent: root, root});
+
+  let result = NodeUtils.getNextNodesInParagraph(text2, constants.Dir.FORWARD);
+  assertEquals(result.length, 1);
+  assertEquals(result[0], text3);
+
+  result = NodeUtils.getNextNodesInParagraph(text1, constants.Dir.FORWARD);
+  assertEquals(result.length, 2);
+  assertEquals(result[0], text2);
+  assertEquals(result[1], text3);
+
+  result = NodeUtils.getNextNodesInParagraph(text3, constants.Dir.FORWARD);
+  assertEquals(result.length, 0);
+
+  result = NodeUtils.getNextNodesInParagraph(text3, constants.Dir.BACKWARD);
+  assertEquals(result.length, 2);
+  assertEquals(result[0], text1);
+  assertEquals(result[1], text2);
+
+  result = NodeUtils.getNextNodesInParagraph(text2, constants.Dir.BACKWARD);
+  assertEquals(result.length, 1);
+  assertEquals(result[0], text1);
+
+  result = NodeUtils.getNextNodesInParagraph(text1, constants.Dir.BACKWARD);
+  assertEquals(result.length, 0);
+});
+
+TEST_F('SelectToSpeakNodeUtilsUnitTest', 'getAllNodesInParagraph', function() {
+  const root = createMockNode({role: 'rootWebArea'});
+  const paragraph1 =
+      createMockNode({role: 'paragraph', display: 'block', parent: root, root});
+  const text1 = createMockNode(
+      {role: 'staticText', parent: paragraph1, root, name: 'Line 1'});
+  const text2 = createMockNode(
+      {role: 'staticText', parent: paragraph1, root, name: 'Line 2'});
+  const paragraph2 =
+      createMockNode({role: 'paragraph', display: 'block', parent: root, root});
+  const text3 = createMockNode(
+      {role: 'staticText', parent: paragraph2, root, name: 'Line 3'});
+  const text4 = createMockNode(
+      {role: 'staticText', parent: paragraph2, root, name: 'Line 4'});
+  const text5 = createMockNode(
+      {role: 'staticText', parent: paragraph2, root, name: 'Line 5'});
+
+  let result = NodeUtils.getAllNodesInParagraph(text1);
+  assertEquals(result.length, 2);
+  assertEquals(result[0], text1);
+  assertEquals(result[1], text2);
+
+  result = NodeUtils.getAllNodesInParagraph(text2);
+  assertEquals(result.length, 2);
+  assertEquals(result[0], text1);
+  assertEquals(result[1], text2);
+
+  result = NodeUtils.getAllNodesInParagraph(text3);
+  assertEquals(result.length, 3);
+  assertEquals(result[0], text3);
+  assertEquals(result[1], text4);
+  assertEquals(result[2], text5);
+
+  result = NodeUtils.getAllNodesInParagraph(text4);
+  assertEquals(result.length, 3);
+  assertEquals(result[0], text3);
+  assertEquals(result[1], text4);
+  assertEquals(result[2], text5);
+
+  result = NodeUtils.getAllNodesInParagraph(text5);
+  assertEquals(result.length, 3);
+  assertEquals(result[0], text3);
+  assertEquals(result[1], text4);
+  assertEquals(result[2], text5);
+});
+
 /**
  * Creates a AutomationNode-like object.
  * @param {!Object} properties

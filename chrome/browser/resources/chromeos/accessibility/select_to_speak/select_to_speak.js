@@ -277,6 +277,15 @@ class SelectToSpeak {
         // more items are being read.
         return;
       }
+      if (this.navigationControlFlag_ && nodes.length === 1 &&
+          nodes[0].role === RoleType.INLINE_TEXT_BOX &&
+          (rect.width === 0 || rect.height === 0)) {
+        // If this is a single click (zero sized selection) on a text node, then
+        // expand to entire paragraph.
+        // TODO(crbug.com/1143823): Navigate to the sentence instead of whole
+        // block.
+        nodes = NodeUtils.getAllNodesInParagraph(nodes[0]);
+      }
       this.startSpeechQueue_(nodes, {clearFocusRing: true});
       MetricsUtils.recordStartEvent(
           MetricsUtils.StartSpeechMethod.MOUSE, this.prefsManager_);

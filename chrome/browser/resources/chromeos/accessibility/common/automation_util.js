@@ -107,29 +107,44 @@ AutomationUtil = class {
    * @return {AutomationNode}
    */
   static findNextNode(cur, dir, pred, opt_restrictions) {
-    const restrictions = {};
-    opt_restrictions = opt_restrictions || {
-      leaf: undefined,
-      root: undefined,
-      visit: undefined,
-      skipInitialSubtree: !AutomationPredicate.container(cur) && pred(cur)
-    };
-
-    restrictions.root = opt_restrictions.root || AutomationPredicate.root;
-    restrictions.leaf = opt_restrictions.leaf || function(node) {
-      // Treat nodes matched by |pred| as leaves except for containers.
-      return !AutomationPredicate.container(node) && pred(node);
-    };
-
-    restrictions.skipInitialSubtree = opt_restrictions.skipInitialSubtree;
-    restrictions.skipInitialAncestry = opt_restrictions.skipInitialAncestry;
-
-    restrictions.visit = function(node) {
-      return pred(node) && !AutomationPredicate.shouldIgnoreNode(node);
-    };
-
-    const walker = new AutomationTreeWalker(cur, dir, restrictions);
+    const walker = createWalker(cur, dir, pred, opt_restrictions);
     return walker.next().node;
+  }
+
+  /**
+   * Finds all nodes in the given direction in depth first order.
+   *
+   * Let D be the dfs linearization of |cur.root|. Then, let F be the list after
+   * applying |pred| as a filter to D. This method will return the directed next
+   * node of |cur| in F.
+   * The restrictions option will further filter F. For example,
+   * |skipInitialSubtree| will remove any |pred| matches in the subtree of |cur|
+   * from F.
+   * @param {!AutomationNode} cur Node to begin the search
+   *     from.
+   * @param {Dir} dir
+   * @param {AutomationPredicate.Unary} pred A predicate to apply
+   *     to a candidate node.
+   * @param {AutomationTreeWalkerRestriction=} opt_restrictions |leaf|, |root|,
+   *     |skipInitialAncestry|, and |skipInitialSubtree| are valid restrictions
+   *     used when finding the next node.
+   *     By default:
+   *        the root predicate ges set to |AutomationPredicate.root|.
+   *        |skipInitialSubtree| is false if |cur| is a container or matches
+   *        |pred|. This alleviates the caller from syncing forwards.
+   *        Leaves are nodes matched by |prred| which are not also containers.
+   *        This takes care of syncing backwards.
+   * @return {!Array<!AutomationNode>}
+   */
+  static findAllNodes(cur, dir, pred, opt_restrictions) {
+    const walker = createWalker(cur, dir, pred, opt_restrictions);
+    const nodes = [];
+    let currentNode = walker.next().node;
+    while (currentNode) {
+      nodes.push(currentNode);
+      currentNode = walker.next().node;
+    }
+    return nodes;
   }
 
   /**
@@ -443,4 +458,42 @@ AutomationUtil = class {
     return null;
   }
 };
+
+/**
+ * @param {!AutomationNode} cur Node to begin the search
+ *     from.
+ * @param {Dir} dir
+ * @param {AutomationPredicate.Unary} pred A predicate to apply
+ *     to a candidate node.
+ * @param {AutomationTreeWalkerRestriction=} opt_restrictions |leaf|, |root|,
+ *     |skipInitialAncestry|, and |skipInitialSubtree| are valid restrictions
+ *     used when finding the next node.
+ * @return {!AutomationTreeWalker} Instance of tree walker initialized with
+ *    given parameters.
+ */
+function createWalker(cur, dir, pred, opt_restrictions) {
+  const restrictions = {};
+  opt_restrictions = opt_restrictions || {
+    leaf: undefined,
+    root: undefined,
+    visit: undefined,
+    skipInitialSubtree: !AutomationPredicate.container(cur) && pred(cur)
+  };
+
+  restrictions.root = opt_restrictions.root || AutomationPredicate.root;
+  restrictions.leaf = opt_restrictions.leaf || function(node) {
+    // Treat nodes matched by |pred| as leaves except for containers.
+    return !AutomationPredicate.container(node) && pred(node);
+  };
+
+  restrictions.skipInitialSubtree = opt_restrictions.skipInitialSubtree;
+  restrictions.skipInitialAncestry = opt_restrictions.skipInitialAncestry;
+
+  restrictions.visit = function(node) {
+    return pred(node) && !AutomationPredicate.shouldIgnoreNode(node);
+  };
+
+  return new AutomationTreeWalker(cur, dir, restrictions);
+}
+
 });  // goog.scope

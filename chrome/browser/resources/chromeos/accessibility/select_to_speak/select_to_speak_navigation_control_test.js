@@ -99,3 +99,45 @@ TEST_F(
                 this.mockTts.pendingUtterances()[0], 'Paragraph 1');
           });
     });
+
+TEST_F(
+    'SelectToSpeakNavigationControlTest', 'ReadsParagraphOnClick', function() {
+      const bodyHtml = `
+      <p id="p1">Sentence <span>one</span>. Sentence two.</p>
+      <p id="p2">Paragraph <span>two</span></p>'
+    `;
+      this.runWithLoadedTree(bodyHtml, (root) => {
+        this.mockTts.setOnSpeechCallbacks([this.newCallback((utterance) => {
+          // Speech for first click.
+          assertTrue(this.mockTts.currentlySpeaking());
+          assertEquals(this.mockTts.pendingUtterances().length, 1);
+          this.assertEqualsCollapseWhitespace(
+              this.mockTts.pendingUtterances()[0],
+              'Sentence one . Sentence two.');
+
+          this.mockTts.setOnSpeechCallbacks([this.newCallback((utterance) => {
+            // Speech for second click.
+            assertTrue(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 1);
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0], 'Paragraph two');
+          })]);
+
+          // Click on node in second paragraph.
+          const textNode2 = this.findTextNode(root, 'two');
+          const mouseEvent2 = {
+            screenX: textNode2.location.left + 1,
+            screenY: textNode2.location.top + 1
+          };
+          this.triggerReadMouseSelectedText(mouseEvent2, mouseEvent2);
+        })]);
+
+        // Click on node in first paragraph.
+        const textNode1 = this.findTextNode(root, 'one');
+        const event1 = {
+          screenX: textNode1.location.left + 1,
+          screenY: textNode1.location.top + 1
+        };
+        this.triggerReadMouseSelectedText(event1, event1);
+      });
+    });
