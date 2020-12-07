@@ -603,9 +603,9 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
     }
   }
   READ_UE_OR_RETURN(&sps->log2_min_luma_coding_block_size_minus3);
-  // This enforces that min_cb_log2_size_y below will be <= 31 and prevents
+  // This enforces that min_cb_log2_size_y below will be <= 30 and prevents
   // integer overflow math there.
-  TRUE_OR_RETURN(sps->log2_min_luma_coding_block_size_minus3 <= 28);
+  TRUE_OR_RETURN(sps->log2_min_luma_coding_block_size_minus3 <= 27);
   READ_UE_OR_RETURN(&sps->log2_diff_max_min_luma_coding_block_size);
 
   int min_cb_log2_size_y = sps->log2_min_luma_coding_block_size_minus3 + 3;
@@ -615,7 +615,7 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
     return kInvalidStream;
 
   sps->ctb_log2_size_y = ctb_log2_size_y.ValueOrDefault(0);
-  TRUE_OR_RETURN(sps->ctb_log2_size_y <= 31);
+  TRUE_OR_RETURN(sps->ctb_log2_size_y <= 30);
   int min_cb_size_y = 1 << min_cb_log2_size_y;
   int ctb_size_y = 1 << sps->ctb_log2_size_y;
   sps->pic_width_in_ctbs_y = base::ClampCeil(
