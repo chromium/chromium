@@ -4,10 +4,10 @@
 
 #include "chrome/browser/chromeos/net/network_diagnostics/http_firewall_routine.h"
 
-#include <deque>
 #include <memory>
 #include <utility>
 
+#include "base/containers/circular_deque.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -53,7 +53,7 @@ class FakeHostResolver : public network::mojom::HostResolver {
   };
 
   FakeHostResolver(mojo::PendingReceiver<network::mojom::HostResolver> receiver,
-                   std::deque<DnsResult*> fake_dns_results)
+                   base::circular_deque<DnsResult*> fake_dns_results)
       : receiver_(this, std::move(receiver)),
         fake_dns_results_(std::move(fake_dns_results)) {}
   ~FakeHostResolver() override {}
@@ -84,7 +84,7 @@ class FakeHostResolver : public network::mojom::HostResolver {
   mojo::Receiver<network::mojom::HostResolver> receiver_;
   // Use the list of fake dns results to fake different responses for multiple
   // calls to the host_resolver's ResolveHost().
-  std::deque<DnsResult*> fake_dns_results_;
+  base::circular_deque<DnsResult*> fake_dns_results_;
 };
 
 class FakeNetworkContext : public network::TestNetworkContext {
@@ -92,7 +92,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
   FakeNetworkContext() = default;
 
   explicit FakeNetworkContext(
-      std::deque<FakeHostResolver::DnsResult*> fake_dns_results)
+      base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results)
       : fake_dns_results_(std::move(fake_dns_results)) {}
 
   ~FakeNetworkContext() override {}
@@ -108,7 +108,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
 
  private:
   std::unique_ptr<FakeHostResolver> resolver_;
-  std::deque<FakeHostResolver::DnsResult*> fake_dns_results_;
+  base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results_;
 };
 
 class MockTCPSocket : public net::MockTCPClientSocket {
@@ -128,7 +128,7 @@ class MockTCPSocket : public net::MockTCPClientSocket {
 class FakeClientSocketFactory : public net::ClientSocketFactory {
  public:
   FakeClientSocketFactory(
-      std::deque<net::SocketDataProvider*> fake_socket_data_providers)
+      base::circular_deque<net::SocketDataProvider*> fake_socket_data_providers)
       : socket_data_providers_(fake_socket_data_providers) {}
   FakeClientSocketFactory(const FakeClientSocketFactory&) = delete;
   FakeClientSocketFactory& operator=(const FakeClientSocketFactory&) = delete;
@@ -178,7 +178,7 @@ class FakeClientSocketFactory : public net::ClientSocketFactory {
   }
 
  private:
-  std::deque<net::SocketDataProvider*> socket_data_providers_;
+  base::circular_deque<net::SocketDataProvider*> socket_data_providers_;
 };
 
 }  // namespace
@@ -214,8 +214,9 @@ class HttpFirewallRoutineTest : public ::testing::Test {
   }
 
   void SetUpFakeProperties(
-      std::deque<FakeHostResolver::DnsResult*> fake_dns_results,
-      std::deque<net::SocketDataProvider*> fake_socket_data_providers) {
+      base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results,
+      base::circular_deque<net::SocketDataProvider*>
+          fake_socket_data_providers) {
     ASSERT_TRUE(profile_manager_.SetUp());
 
     fake_network_context_ =
@@ -246,8 +247,8 @@ class HttpFirewallRoutineTest : public ::testing::Test {
   // |expected_problems|: Represents the expected problem
   // reported by this test.
   void SetUpAndRunRoutine(
-      std::deque<FakeHostResolver::DnsResult*> fake_dns_results,
-      std::deque<net::SocketDataProvider*> fake_socket_data_providers,
+      base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results,
+      base::circular_deque<net::SocketDataProvider*> fake_socket_data_providers,
       mojom::RoutineVerdict expected_routine_verdict,
       const std::vector<mojom::HttpFirewallProblem>& expected_problems) {
     SetUpFakeProperties(std::move(fake_dns_results),
@@ -274,8 +275,8 @@ class HttpFirewallRoutineTest : public ::testing::Test {
 };
 
 TEST_F(HttpFirewallRoutineTest, TestDnsResolutionFailuresAboveThreshold) {
-  std::deque<FakeHostResolver::DnsResult*> fake_dns_results;
-  std::deque<net::SocketDataProvider*> fake_socket_data_providers;
+  base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results;
+  base::circular_deque<net::SocketDataProvider*> fake_socket_data_providers;
   std::vector<std::unique_ptr<FakeHostResolver::DnsResult>> resolutions;
   std::vector<std::unique_ptr<net::SocketDataProvider>> providers;
 
@@ -310,8 +311,8 @@ TEST_F(HttpFirewallRoutineTest, TestDnsResolutionFailuresAboveThreshold) {
 }
 
 TEST_F(HttpFirewallRoutineTest, TestFirewallDetection) {
-  std::deque<FakeHostResolver::DnsResult*> fake_dns_results;
-  std::deque<net::SocketDataProvider*> fake_socket_data_providers;
+  base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results;
+  base::circular_deque<net::SocketDataProvider*> fake_socket_data_providers;
   std::vector<std::unique_ptr<FakeHostResolver::DnsResult>> resolutions;
   std::vector<std::unique_ptr<net::SocketDataProvider>> providers;
   // kTotalHosts = 9
@@ -336,8 +337,8 @@ TEST_F(HttpFirewallRoutineTest, TestFirewallDetection) {
 }
 
 TEST_F(HttpFirewallRoutineTest, TestPotentialFirewallDetection) {
-  std::deque<FakeHostResolver::DnsResult*> fake_dns_results;
-  std::deque<net::SocketDataProvider*> fake_socket_data_providers;
+  base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results;
+  base::circular_deque<net::SocketDataProvider*> fake_socket_data_providers;
   std::vector<std::unique_ptr<FakeHostResolver::DnsResult>> resolutions;
   std::vector<std::unique_ptr<net::SocketDataProvider>> providers;
   // kTotalHosts = 9
@@ -368,8 +369,8 @@ TEST_F(HttpFirewallRoutineTest, TestPotentialFirewallDetection) {
 }
 
 TEST_F(HttpFirewallRoutineTest, TestNoFirewallIssues) {
-  std::deque<FakeHostResolver::DnsResult*> fake_dns_results;
-  std::deque<net::SocketDataProvider*> fake_socket_data_providers;
+  base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results;
+  base::circular_deque<net::SocketDataProvider*> fake_socket_data_providers;
   std::vector<std::unique_ptr<FakeHostResolver::DnsResult>> resolutions;
   std::vector<std::unique_ptr<net::SocketDataProvider>> providers;
   // kTotalHosts = 9
@@ -399,8 +400,8 @@ TEST_F(HttpFirewallRoutineTest, TestNoFirewallIssues) {
 }
 
 TEST_F(HttpFirewallRoutineTest, TestContinousRetries) {
-  std::deque<FakeHostResolver::DnsResult*> fake_dns_results;
-  std::deque<net::SocketDataProvider*> fake_socket_data_providers;
+  base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results;
+  base::circular_deque<net::SocketDataProvider*> fake_socket_data_providers;
   std::vector<std::unique_ptr<FakeHostResolver::DnsResult>> resolutions;
   std::vector<std::unique_ptr<net::SocketDataProvider>> providers;
   // kTotalHosts = 9

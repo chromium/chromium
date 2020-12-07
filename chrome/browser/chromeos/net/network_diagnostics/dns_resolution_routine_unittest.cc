@@ -4,8 +4,7 @@
 
 #include "chrome/browser/chromeos/net/network_diagnostics/dns_resolution_routine.h"
 
-#include <deque>
-
+#include "base/containers/circular_deque.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -45,7 +44,7 @@ class FakeHostResolver : public network::mojom::HostResolver {
   };
 
   FakeHostResolver(mojo::PendingReceiver<network::mojom::HostResolver> receiver,
-                   std::deque<DnsResult*> fake_dns_results)
+                   base::circular_deque<DnsResult*> fake_dns_results)
       : receiver_(this, std::move(receiver)),
         fake_dns_results_(std::move(fake_dns_results)) {}
   ~FakeHostResolver() override {}
@@ -76,7 +75,7 @@ class FakeHostResolver : public network::mojom::HostResolver {
   mojo::Receiver<network::mojom::HostResolver> receiver_;
   // Use the list of fake dns results to fake different responses for multiple
   // calls to the host_resolver's ResolveHost().
-  std::deque<DnsResult*> fake_dns_results_;
+  base::circular_deque<DnsResult*> fake_dns_results_;
 };
 
 class FakeNetworkContext : public network::TestNetworkContext {
@@ -84,7 +83,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
   FakeNetworkContext() = default;
 
   explicit FakeNetworkContext(
-      std::deque<FakeHostResolver::DnsResult*> fake_dns_results)
+      base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results)
       : fake_dns_results_(std::move(fake_dns_results)) {}
 
   ~FakeNetworkContext() override {}
@@ -100,7 +99,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
 
  private:
   std::unique_ptr<FakeHostResolver> resolver_;
-  std::deque<FakeHostResolver::DnsResult*> fake_dns_results_;
+  base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results_;
 };
 
 }  // namespace
@@ -136,7 +135,7 @@ class DnsResolutionRoutineTest : public ::testing::Test {
   }
 
   void SetUpFakeProperties(
-      std::deque<FakeHostResolver::DnsResult*> fake_dns_results) {
+      base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results) {
     ASSERT_TRUE(profile_manager_.SetUp());
 
     fake_network_context_ =
@@ -159,7 +158,7 @@ class DnsResolutionRoutineTest : public ::testing::Test {
   // reported by this test. |expected_problems|: Represents the expected problem
   // reported by this test.
   void SetUpAndRunRoutine(
-      std::deque<FakeHostResolver::DnsResult*> fake_dns_results,
+      base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results,
       mojom::RoutineVerdict expected_routine_verdict,
       const std::vector<mojom::DnsResolutionProblem>& expected_problems) {
     SetUpFakeProperties(std::move(fake_dns_results));
@@ -182,7 +181,7 @@ class DnsResolutionRoutineTest : public ::testing::Test {
 // A passing routine requires an error code of net::OK and a non-empty
 // net::AddressList for the DNS resolution.
 TEST_F(DnsResolutionRoutineTest, TestSuccessfulResolution) {
-  std::deque<FakeHostResolver::DnsResult*> fake_dns_results;
+  base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results;
   auto successful_resolution = std::make_unique<FakeHostResolver::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK),
       net::AddressList(FakeIPAddress()));
@@ -194,7 +193,7 @@ TEST_F(DnsResolutionRoutineTest, TestSuccessfulResolution) {
 // Set up the |fake_dns_results| to return a DnsResult with an error code
 // net::ERR_NAME_NOT_RESOLVED faking a failed DNS resolution.
 TEST_F(DnsResolutionRoutineTest, TestResolutionFailure) {
-  std::deque<FakeHostResolver::DnsResult*> fake_dns_results;
+  base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results;
   auto failed_resolution = std::make_unique<FakeHostResolver::DnsResult>(
       net::ERR_NAME_NOT_RESOLVED,
       net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED), net::AddressList());
@@ -208,7 +207,7 @@ TEST_F(DnsResolutionRoutineTest, TestResolutionFailure) {
 // net::ERR_DNS_TIMED_OUT faking a timed out DNS resolution. On the second
 // host resolution attempt, fake a net::OK resolution.
 TEST_F(DnsResolutionRoutineTest, TestSuccessOnRetry) {
-  std::deque<FakeHostResolver::DnsResult*> fake_dns_results;
+  base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results;
   auto timed_out_resolution = std::make_unique<FakeHostResolver::DnsResult>(
       net::ERR_DNS_TIMED_OUT, net::ResolveErrorInfo(net::ERR_DNS_TIMED_OUT),
       net::AddressList());

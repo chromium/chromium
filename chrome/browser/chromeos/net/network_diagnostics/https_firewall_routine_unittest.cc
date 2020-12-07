@@ -4,11 +4,11 @@
 
 #include "chrome/browser/chromeos/net/network_diagnostics/https_firewall_routine.h"
 
-#include <deque>
 #include <memory>
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/containers/circular_deque.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/fake_host_resolver.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/fake_network_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -90,7 +90,8 @@ class HttpsFirewallRoutineTest : public ::testing::Test {
     run_loop_.Quit();
   }
 
-  void SetUpRoutine(std::deque<TlsProberReturnValue> fake_probe_results) {
+  void SetUpRoutine(
+      base::circular_deque<TlsProberReturnValue> fake_probe_results) {
     fake_probe_results_ = std::move(fake_probe_results);
     https_firewall_routine_ = std::make_unique<HttpsFirewallRoutine>();
     https_firewall_routine_->set_tls_prober_getter_callback_for_testing(
@@ -108,7 +109,7 @@ class HttpsFirewallRoutineTest : public ::testing::Test {
   // |expected_problems|: Represents the expected problem
   // reported by this test.
   void SetUpAndRunRoutine(
-      std::deque<TlsProberReturnValue> fake_probe_results,
+      base::circular_deque<TlsProberReturnValue> fake_probe_results,
       mojom::RoutineVerdict expected_routine_verdict,
       const std::vector<mojom::HttpsFirewallProblem>& expected_problems) {
     SetUpRoutine(std::move(fake_probe_results));
@@ -132,13 +133,13 @@ class HttpsFirewallRoutineTest : public ::testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::RunLoop run_loop_;
-  std::deque<TlsProberReturnValue> fake_probe_results_;
+  base::circular_deque<TlsProberReturnValue> fake_probe_results_;
   std::unique_ptr<HttpsFirewallRoutine> https_firewall_routine_;
   base::WeakPtrFactory<HttpsFirewallRoutineTest> weak_factory_{this};
 };
 
 TEST_F(HttpsFirewallRoutineTest, TestHighDnsResolutionFailuresRate) {
-  std::deque<TlsProberReturnValue> fake_probe_results;
+  base::circular_deque<TlsProberReturnValue> fake_probe_results;
   // kTotalHosts = 9
   for (int i = 0; i < kTotalHosts; i++) {
     if (i < 2) {
@@ -157,7 +158,7 @@ TEST_F(HttpsFirewallRoutineTest, TestHighDnsResolutionFailuresRate) {
 }
 
 TEST_F(HttpsFirewallRoutineTest, TestFirewallDetection) {
-  std::deque<TlsProberReturnValue> fake_probe_results;
+  base::circular_deque<TlsProberReturnValue> fake_probe_results;
   // kTotalHosts = 9
   for (int i = 0; i < kTotalHosts; i++) {
     fake_probe_results.push_back(TlsProberReturnValue{
@@ -169,7 +170,7 @@ TEST_F(HttpsFirewallRoutineTest, TestFirewallDetection) {
 }
 
 TEST_F(HttpsFirewallRoutineTest, TestPotentialFirewallDetection) {
-  std::deque<TlsProberReturnValue> fake_probe_results;
+  base::circular_deque<TlsProberReturnValue> fake_probe_results;
   // kTotalHosts = 9
   for (int i = 0; i < kTotalHosts; i++) {
     if (i < 5) {
@@ -188,7 +189,7 @@ TEST_F(HttpsFirewallRoutineTest, TestPotentialFirewallDetection) {
 }
 
 TEST_F(HttpsFirewallRoutineTest, TestNoFirewallIssues) {
-  std::deque<TlsProberReturnValue> fake_probe_results;
+  base::circular_deque<TlsProberReturnValue> fake_probe_results;
   // kTotalHosts = 9
   for (int i = 0; i < kTotalHosts; i++) {
     if (i < 8) {
@@ -206,7 +207,7 @@ TEST_F(HttpsFirewallRoutineTest, TestNoFirewallIssues) {
 }
 
 TEST_F(HttpsFirewallRoutineTest, TestContinousRetries) {
-  std::deque<TlsProberReturnValue> fake_probe_results;
+  base::circular_deque<TlsProberReturnValue> fake_probe_results;
   // kTotalHosts = 9
   for (int i = 0; i < kTotalHosts; i++) {
     if (i < 8) {

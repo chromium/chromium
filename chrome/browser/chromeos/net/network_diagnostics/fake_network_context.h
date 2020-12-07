@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_CHROMEOS_NET_NETWORK_DIAGNOSTICS_FAKE_NETWORK_CONTEXT_H_
 #define CHROME_BROWSER_CHROMEOS_NET_NETWORK_DIAGNOSTICS_FAKE_NETWORK_CONTEXT_H_
 
-#include <deque>
 #include <memory>
 #include <utility>
 
+#include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/optional.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/fake_host_resolver.h"
@@ -119,7 +119,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
   // Fake host resolver.
   std::unique_ptr<FakeHostResolver> resolver_;
   // Fake DNS lookup results.
-  std::deque<FakeHostResolver::DnsResult*> fake_dns_results_;
+  base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results_;
   // Fake DNS lookup result.
   std::unique_ptr<FakeHostResolver::DnsResult> fake_dns_result_;
   // Provides the TCP socket functionality for tests.
