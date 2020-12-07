@@ -161,13 +161,13 @@ class DemoSetupTestBase : public OobeBaseTest {
   }
 
   void IsConfirmationDialogShown() {
-    test::OobeJS().ExpectHasAttribute(
-      "open", {"connect", "demoModeConfirmationDialog", "helpDialog"});
+    test::OobeJS().ExpectAttributeEQ(
+        "open", {"connect", "demoModeConfirmationDialog"}, true);
   }
 
   void IsConfirmationDialogHidden() {
-    test::OobeJS().ExpectHasNoAttribute(
-      "open", {"connect", "demoModeConfirmationDialog", "helpDialog"});
+    test::OobeJS().ExpectAttributeEQ(
+        "open", {"connect", "demoModeConfirmationDialog"}, false);
   }
 
   // TODO(michaelpg): Replace this with IsScreenDialogElementVisible, which is

@@ -52,7 +52,6 @@ constexpr char kTestUser1GaiaId[] = "test-user1@gmail.com";
 // HTML Elements
 constexpr char kResetScreen[] = "reset";
 constexpr char kConfirmationDialog[] = "confirmationDialog";
-constexpr char kHelpDialog[] = "helpDialog";
 constexpr char kTpmUpdate[] = "tpmFirmwareUpdate";
 constexpr char kTpmUpdateCheckbox[] = "tpmFirmwareUpdateCheckbox";
 
@@ -96,23 +95,23 @@ void ClickDismissConfirmationButton() {
 
 void WaitForConfirmationDialogToOpen() {
   test::OobeJS()
-      .CreateAttributePresenceWaiter(
-          "open", true /*present*/,
-          {kResetScreen, kConfirmationDialog, kHelpDialog})
+      .CreateWaiter(
+          test::GetOobeElementPath({kResetScreen, kConfirmationDialog}) +
+          ".open")
       ->Wait();
 }
 
 void WaitForConfirmationDialogToClose() {
   test::OobeJS()
-      .CreateAttributePresenceWaiter(
-          "open", false /*present*/,
-          {kResetScreen, kConfirmationDialog, kHelpDialog})
+      .CreateWaiter(
+          test::GetOobeElementPath({kResetScreen, kConfirmationDialog}) +
+          ".open === false")
       ->Wait();
 }
 
 void ExpectConfirmationDialogClosed() {
-  test::OobeJS().ExpectHasNoAttribute(
-      "open", {kResetScreen, kConfirmationDialog, kHelpDialog});
+  test::OobeJS().ExpectAttributeEQ("open", {kResetScreen, kConfirmationDialog},
+                                   false);
 }
 
 }  // namespace

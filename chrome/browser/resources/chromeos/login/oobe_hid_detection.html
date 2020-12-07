@@ -100,7 +100,7 @@
     </oobe-dialog>
 
     <!-- Popup that displays the PIN for pairing with a bluetooth keyboard. -->
-    <oobe-help-dialog id="hid-pin-popup" on-close="onPinDialogClosed_">
+    <oobe-modal-dialog id="hid-pin-popup" on-close="onPinDialogClosed_">
       <h1 slot="title">[[pinDialogTitle]]</h1>
       <div slot="content" class="content-padding">
         <div>
@@ -119,6 +119,6 @@
           [[i18nDynamic(locale, 'hidDetectionBluetoothPairingCodeExplanation')]]
         </div>
       </div>
-    </oobe-help-dialog>
+    </oobe-modal-dialog>
   </template>
 </dom-module>

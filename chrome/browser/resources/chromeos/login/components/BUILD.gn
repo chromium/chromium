@@ -25,7 +25,7 @@ js_type_check("closure_compile_local") {
     ":multi_step_behavior",
     ":oobe_buttons",
     ":oobe_dialog_host_behavior",
-    ":oobe_help_dialog",
+    ":oobe_modal_dialog",
     ":oobe_types",
   ]
 }
@@ -64,7 +64,7 @@ js_library("oobe_buttons") {
 js_library("oobe_dialog_host_behavior") {
 }
 
-js_library("oobe_help_dialog") {
+js_library("oobe_modal_dialog") {
   deps = [ "oobe_i18n_behavior:oobe_i18n_behavior" ]
 }
 

@@ -394,15 +394,15 @@ IN_PROC_BROWSER_TEST_F(ArcTermsOfServiceScreenTest, LearnMoreDialogs) {
     std::string html_element_id;
     std::string popup_html_element_id;
     std::tie(html_element_id, popup_html_element_id) = pair;
-    test::OobeJS().ExpectHasNoAttribute(
-        "open", {kArcTosID, popup_html_element_id, "helpDialog"});
+    test::OobeJS().ExpectAttributeEQ(
+        "open", {kArcTosID, popup_html_element_id}, false);
     test::OobeJS().ClickOnPath({kArcTosID, html_element_id});
-    test::OobeJS().ExpectHasAttribute(
-        "open", {kArcTosID, popup_html_element_id, "helpDialog"});
+    test::OobeJS().ExpectAttributeEQ(
+        "open", {kArcTosID, popup_html_element_id}, true);
     test::OobeJS().ClickOnPath(
         {kArcTosID, popup_html_element_id, "closeButton"});
-    test::OobeJS().ExpectHasNoAttribute(
-        "open", {kArcTosID, popup_html_element_id, "helpDialog"});
+    test::OobeJS().ExpectAttributeEQ(
+        "open", {kArcTosID, popup_html_element_id}, false);
   }
   EXPECT_FALSE(screen_exit_result().has_value());
   EXPECT_THAT(

@@ -69,6 +69,7 @@ js_library("oobe_welcome") {
     "components:fake_oobe",
     "components:login_screen_behavior",
     "components:oobe_dialog_host_behavior",
+    "components:oobe_modal_dialog",
     "components/oobe_dialog:oobe_dialog",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
     "//ui/webui/resources/js/cr/ui:dialogs",
@@ -116,7 +117,7 @@ js_library("app_downloading") {
 js_library("arc_terms_of_service") {
   deps = [
     "components:oobe_dialog_host_behavior",
-    "components:oobe_help_dialog",
+    "components:oobe_modal_dialog",
     "components/oobe_dialog:oobe_dialog",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
@@ -257,6 +258,7 @@ js_library("oobe_eula") {
     ":web_view_helper",
     "components:login_screen_behavior",
     "components:oobe_dialog_host_behavior",
+    "components:oobe_modal_dialog",
     "components/oobe_dialog:oobe_dialog",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
@@ -277,6 +279,7 @@ js_library("oobe_network") {
 js_library("oobe_reset") {
   deps = [
     "components:oobe_dialog_host_behavior",
+    "components:oobe_modal_dialog",
     "components/oobe_dialog:oobe_dialog",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
@@ -350,6 +353,7 @@ js_library("user_creation") {
     "components:login_screen_behavior",
     "components:multi_step_behavior",
     "components:oobe_dialog_host_behavior",
+    "components:oobe_modal_dialog",
     "components/oobe_dialog:oobe_dialog",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
@@ -358,6 +362,7 @@ js_library("user_creation") {
 js_library("saml_confirm_password") {
   deps = [
     "components:oobe_dialog_host_behavior",
+    "components:oobe_modal_dialog",
     "components/oobe_dialog:oobe_dialog",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
@@ -376,6 +381,7 @@ js_library("update_required_card") {
     "components:login_screen_behavior",
     "components:multi_step_behavior",
     "components:oobe_dialog_host_behavior",
+    "components:oobe_modal_dialog",
     "components/oobe_dialog:oobe_dialog",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]

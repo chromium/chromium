@@ -411,7 +411,7 @@ Polymer({
    * Shows additional terms of service dialog.
    */
   showAdditionalTosDialog() {
-    this.$.additionalToS.showModal();
+    this.$.additionalToS.showDialog();
     this.$.additionalToS.focus();
   },
 
@@ -421,7 +421,7 @@ Polymer({
    * @private
    */
   hideToSDialog_() {
-    this.$.additionalToS.close();
+    this.$.additionalToS.hideDialog();
   },
 
   /**

@@ -11,9 +11,9 @@
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 
 <!--
-OOBE Help Dialog
+OOBE Modal Dialog
 
-Implements the 'OOBE Help Dialog' according to MD specs.
+Implements the 'OOBE Modal Dialog' according to MD specs.
 
 The dialog provides two properties that can be set directly from HTML.
   - titleKey - ID of the localized string to be used for the title.
@@ -26,31 +26,37 @@ The dialog provides two properties that can be set directly from HTML.
   a default button with the text 'Close' will be shown. Users might want to
   trigger some action on their side by using 'on-close=myMethod'.
 -->
-<dom-module id="oobe-help-dialog">
+<dom-module id="oobe-modal-dialog">
   <template>
     <style include="oobe-common">
       :host {
         flex: 1 1 auto;
-        --cr-dialog-title-slot-padding-bottom: 8px;
-        --cr-dialog-width: 552px;
+        --cr-dialog-title-slot-padding-bottom:
+            var(--oobe-modal-dialog-title-slot-padding-bottom, 8px);
+        --cr-dialog-width: var(--oobe-modal-dialog-width, 552px);
         --cr-primary-text-color: var(--oobe-header-text-color);
         --cr-secondary-text-color: var(--oobe-text-color);
       }
 
-      #helpDialogTitle {
-        @apply --oobe-help-dialog-header-font;
+      #modalDialogTitle {
+        @apply --oobe-modal-dialog-header-font;
         margin: 0;
         user-select: none;
       }
 
       #contentContainer {
         @apply --oobe-default-font;
-        padding-bottom: 12px;
+        padding-bottom:
+            var(--oobe-modal-dialog-content-slot-padding-bottom, 12px);
+        padding-inline-end:
+            var(--oobe-modal-dialog-content-slot-padding-end, 20px);
+        padding-inline-start:
+            var(--oobe-modal-dialog-content-slot-padding-start, 20px);
       }
     </style>
-    <cr-dialog id="helpDialog" on-close="onClose_">
+    <cr-dialog id="modalDialog" on-close="onClose_">
       <!-- Title -->
-      <div id="helpDialogTitle" slot="title">
+      <div id="modalDialogTitle" slot="title">
         <slot name="title">[[i18nDynamic(locale, titleKey)]]</slot>
       </div>
       <!-- Content to be shown -->

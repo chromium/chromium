@@ -142,7 +142,7 @@
             text-key="[[acceptTextKey]]"></oobe-text-button>
       </div>
     </oobe-dialog>
-    <oobe-help-dialog id="arcMetricsPopup" on-close="onOverlayClosed_"
+    <oobe-modal-dialog id="arcMetricsPopup" on-close="onOverlayClosed_"
         title-key="arcLearnMoreStatisticsTitle">
       <div slot="content">
         <p>[[i18nDynamic(locale, 'arcLearnMoreStatisticsP1')]]</p>
@@ -150,8 +150,8 @@
         <p>[[i18nDynamic(locale, 'arcLearnMoreStatisticsP3')]]</p>
         <p>[[i18nDynamic(locale, 'arcLearnMoreStatisticsP4')]]</p>
       </div>
-    </oobe-help-dialog>
-    <oobe-help-dialog id="arcBackupRestorePopup" on-close="onOverlayClosed_"
+    </oobe-modal-dialog>
+    <oobe-modal-dialog id="arcBackupRestorePopup" on-close="onOverlayClosed_"
         title-key="arcLearnMoreBackupAndRestoreTitle">
       <div slot="content">
         <p>[[i18nDynamic(locale, 'arcLearnMoreBackupAndRestoreP1')]]</p>
@@ -160,8 +160,8 @@
         <p>[[i18nDynamic(locale, 'arcLearnMoreBackupAndRestoreP4')]]</p>
         <p>[[i18nDynamic(locale, 'arcLearnMoreBackupAndRestoreP5')]]</p>
       </div>
-    </oobe-help-dialog>
-    <oobe-help-dialog id="arcBackupRestoreChildPopup"
+    </oobe-modal-dialog>
+    <oobe-modal-dialog id="arcBackupRestoreChildPopup"
         on-close="onOverlayClosed_"
         title-key="arcLearnMoreBackupAndRestoreTitle">
       <div slot="content">
@@ -169,22 +169,22 @@
         <p>[[i18nDynamic(locale, 'arcLearnMoreBackupAndRestoreChildP2')]]</p>
         <p>[[i18nDynamic(locale, 'arcLearnMoreBackupAndRestoreChildP3')]]</p>
       </div>
-    </oobe-help-dialog>
-    <oobe-help-dialog id="arcLocationServicePopup"
+    </oobe-modal-dialog>
+    <oobe-modal-dialog id="arcLocationServicePopup"
         on-close="onOverlayClosed_"
         title-key="arcLearnMoreLocationServiceTitle">
       <div slot="content">
         <p>[[i18nDynamic(locale, 'arcLearnMoreLocationServiceP1')]]</p>
         <p>[[i18nDynamic(locale, 'arcLearnMoreLocationServiceP2')]]</p>
       </div>
-    </oobe-help-dialog>
-    <oobe-help-dialog id="arcPaiPopup" on-close="onOverlayClosed_"
+    </oobe-modal-dialog>
+    <oobe-modal-dialog id="arcPaiPopup" on-close="onOverlayClosed_"
         title-key="arcLearnMorePaiServiceTitle">
       <div slot="content">
         <p>[[i18nDynamic(locale, 'arcLearnMorePaiService')]]</p>
       </div>
-    </oobe-help-dialog>
-    <oobe-help-dialog id="arcTosOverlayPrivacyPolicy"
+    </oobe-modal-dialog>
+    <oobe-modal-dialog id="arcTosOverlayPrivacyPolicy"
         on-close="onOverlayClosed_">
       <div slot="content" id = "arcTosOverlayWebviewContainer">
         <webview id="arcTosOverlayWebview" hidden="[[overlayLoading_]]"
@@ -194,6 +194,6 @@
             hidden="[[!overlayLoading_]]" style="height: 100%;">
         </throbber-notice>
       </div>
-    </oobe-help-dialog>
+    </oobe-modal-dialog>
   </template>
 </dom-module>

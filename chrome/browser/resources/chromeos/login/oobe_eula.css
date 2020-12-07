@@ -13,8 +13,18 @@ a {
   min-height: 300px;
 }
 
+#additionalToS {
+  --oobe-modal-dialog-content-slot-padding-bottom: 0;
+  --oobe-modal-dialog-content-slot-padding-end: 0;
+  --oobe-modal-dialog-content-slot-padding-start: 0;
+  --oobe-modal-dialog-title-slot-padding-bottom: 16px;
+  --oobe-modal-dialog-width: 512px;
+}
+
 #additionalChromeToSFrame {
   height: 300px;
+  padding-inline-end: 20px;
+  padding-inline-start: 20px;
 }
 
 #securitySettings,
@@ -53,4 +63,3 @@ cr-checkbox {
 #settings-close-button {
   padding-inline-end: 18px;
 }
-

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 Polymer({
-  is: 'oobe-help-dialog',
+  is: 'oobe-modal-dialog',
 
   behaviors: [OobeI18nBehavior],
 
@@ -22,17 +22,21 @@ Polymer({
     },
   },
 
-  ready: function() {},
+  get open() {
+    return this.$.modalDialog.open;
+  },
 
-  /* Shows the help dialog and changes the focus to the close button. */
-  showDialog: function() {
+  ready() {},
+
+  /* Shows the modal dialog and changes the focus to the close button. */
+  showDialog() {
     chrome.send('enableShelfButtons', [false]);
-    this.$.helpDialog.showModal();
+    this.$.modalDialog.showModal();
     this.$.closeButton.focus();
   },
 
-  hideDialog: function() {
-    this.$.helpDialog.close();
+  hideDialog() {
+    this.$.modalDialog.close();
   },
 
   onClose_() {

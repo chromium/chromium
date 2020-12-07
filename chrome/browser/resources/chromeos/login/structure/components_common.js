@@ -13,7 +13,7 @@ function loadCommonComponents() {
 // <include src="../components/login_screen_behavior.js">
 // <include src="../components/multi_step_behavior.js">
 // <include src="../components/oobe_buttons.js">
-// <include src="../components/oobe_help_dialog.js">
+// <include src="../components/oobe_modal_dialog.js">
 // <include src="../components/html-echo.js">
 // <include src="../notification_card.js">
 

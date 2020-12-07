@@ -104,7 +104,7 @@
     </oobe-dialog>
 
     <!-- Powerwash confirmation dialog (depends on powerwash mode) -->
-    <oobe-help-dialog id="confirmationDialog" on-close="onDialogClosed_">
+    <oobe-modal-dialog id="confirmationDialog" on-close="onDialogClosed_">
       <div slot="title">[[confirmationDialogTitle_]]</div>
       <div slot="content">[[confirmationDialogText_]]</div>
       <div slot="buttons">
@@ -114,6 +114,6 @@
             id="confirmPowerwash"
             text-key="confirmResetButton"></oobe-text-button>
       </div>
-    </oobe-help-dialog>
+    </oobe-modal-dialog>
   </template>
 </dom-module>

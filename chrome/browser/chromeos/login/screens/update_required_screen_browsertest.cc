@@ -64,8 +64,8 @@ const test::UIPath kEolNoUsersDataMsg = {"update-required",
                                          "noUsersDataMessage"};
 const test::UIPath kEolDeleteUsersDataLink = {"update-required",
                                               "deleteDataLink"};
-const test::UIPath kEolDeleteUsersDataConfirmDialog = {
-    "update-required", "confirmationDialog", "helpDialog"};
+const test::UIPath kEolDeleteUsersDataConfirmDialog = {"update-required",
+                                                       "confirmationDialog"};
 const test::UIPath kEolDeleteUsersDataConfirmButton = {"update-required",
                                                        "confirmDelete"};
 const test::UIPath kEolDeleteUsersDataCancelButton = {"update-required",
@@ -116,15 +116,17 @@ void SetConnected(const std::string& service_path) {
 
 void WaitForConfirmationDialogToOpen() {
   test::OobeJS()
-      .CreateAttributePresenceWaiter("open", true /*present*/,
-                                     kEolDeleteUsersDataConfirmDialog)
+      .CreateWaiter(
+          test::GetOobeElementPath({kEolDeleteUsersDataConfirmDialog}) +
+          ".open")
       ->Wait();
 }
 
 void WaitForConfirmationDialogToClose() {
   test::OobeJS()
-      .CreateAttributePresenceWaiter("open", false /*present*/,
-                                     kEolDeleteUsersDataConfirmDialog)
+      .CreateWaiter(
+          test::GetOobeElementPath({kEolDeleteUsersDataConfirmDialog}) +
+          ".open === false")
       ->Wait();
 }
 

@@ -82,7 +82,7 @@ Polymer({
 
   reset() {
     if (this.$.cancelConfirmDlg.open)
-      this.$.cancelConfirmDlg.close();
+      this.$.cancelConfirmDlg.hideDialog();
     this.setUIStep(UIState.PASSWORD);
     this.$.passwordInput.invalid = false;
     this.$.passwordInput.value = '';
@@ -93,15 +93,15 @@ Polymer({
   },
 
   onCancel_() {
-    this.$.cancelConfirmDlg.showModal();
+    this.$.cancelConfirmDlg.showDialog();
   },
 
   onCancelNo_() {
-    this.$.cancelConfirmDlg.close();
+    this.$.cancelConfirmDlg.hideDialog();
   },
 
   onCancelYes_() {
-    this.$.cancelConfirmDlg.close();
+    this.$.cancelConfirmDlg.hideDialog();
 
     cr.ui.Oobe.showScreen({id: 'gaia-signin'});
     cr.ui.Oobe.resetSigninUI(true);
