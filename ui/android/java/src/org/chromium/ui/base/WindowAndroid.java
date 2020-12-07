@@ -32,7 +32,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.LifetimeAssert;
@@ -227,7 +226,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         // if the API is used. See crbug.com/990646.
         // Disable refresh rate change on TV platforms, as it may cause black screen flicker due to
         // display mode changes.
-        mAllowChangeRefreshRate = BuildInfo.isAtLeastQ() && !isTv(context);
+        mAllowChangeRefreshRate = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !isTv(context);
 
         // Multiple refresh rate support is only available on M+.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) recomputeSupportedRefreshRates();
@@ -712,7 +711,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     // gamut (on supported hardware and os). However it is important for embedders like WebView
     // which do not make the wide gamut decision to check this at run time.
     private boolean getWindowIsWideColorGamut() {
-        if (!BuildInfo.isAtLeastQ()) return false;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return false;
         Window window = getWindow();
         if (window == null) return false;
         return ApiHelperForOMR1.isWideColorGamut(window);

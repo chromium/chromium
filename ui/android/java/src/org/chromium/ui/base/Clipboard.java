@@ -26,7 +26,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
@@ -393,7 +392,9 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
      * @param hasFocus Whether or not {@code activity} gained or lost focus.
      */
     public void onWindowFocusChanged(boolean hasFocus) {
-        if (mNativeClipboard == 0 || !hasFocus || !BuildInfo.isAtLeastQ()) return;
+        if (mNativeClipboard == 0 || !hasFocus || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            return;
+        }
         onPrimaryClipTimestampInvalidated();
     }
 
