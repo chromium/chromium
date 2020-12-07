@@ -8,6 +8,9 @@
   <link rel="help" href="https://drafts.csswg.org/selectors-4/#the-focus-visible-pseudo" />
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
   <style>
     :focus-visible {
       outline: darkgreen dotted 1px; /* fallback for Edge */
@@ -37,7 +40,7 @@
   <div>
     <input data-tested="false" id="input3" type="email" value="Focus me."></input>
   </div>
-  <div>
+   <div>
     <input data-tested="false" id="input4" type="password" value="Focus me."></input>
   </div>
   <div>
@@ -78,6 +81,11 @@
   </div>
   <script>
     async_test(function(t) {
+        function mouseClickInTarget(selector) {
+            let target = document.querySelector(selector);
+            return test_driver.click(target);
+        }
+
         function testNextTarget(e) {
             let el = e.target;
             assert_equals(getComputedStyle(el).outlineColor, "rgb(0, 100, 0)");
@@ -91,6 +99,8 @@
             }
         }
         input1.addEventListener("click", t.step_func(testNextTarget));
+
+        mouseClickInTarget("[data-tested=false]");
     }, "Mouse focus on elements which would show a virtual keyboard should match :focus-visible");
   </script>
 </body>
