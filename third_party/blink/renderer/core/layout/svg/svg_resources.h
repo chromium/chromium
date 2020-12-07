@@ -31,16 +31,16 @@
 namespace blink {
 
 class ComputedStyle;
-class FilterEffect;
+class FilterEffectBuilder;
 class LayoutObject;
 class LayoutSVGResourceClipper;
 class LayoutSVGResourceFilter;
 class LayoutSVGResourceMarker;
 class LayoutSVGResourceMasker;
 class LayoutSVGResourcePaintServer;
+class ReferenceFilterOperation;
 class SVGElement;
 class SVGElementResourceClient;
-class SVGFilterGraphNodeMap;
 
 // Holds a set of resources associated with a LayoutObject
 class SVGResources {
@@ -189,27 +189,6 @@ class SVGResources {
   LayoutSVGResourceContainer* linked_resource_;
 };
 
-class FilterData final : public GarbageCollected<FilterData> {
- public:
-  FilterData(FilterEffect* last_effect, SVGFilterGraphNodeMap* node_map)
-      : last_effect_(last_effect), node_map_(node_map) {}
-
-  sk_sp<PaintFilter> BuildPaintFilter();
-  // Perform a finegrained invalidation of the filter chain for the
-  // specified filter primitive and attribute. Returns false if no
-  // further invalidation is required, otherwise true.
-  bool Invalidate(SVGFilterPrimitiveStandardAttributes& primitive,
-                  const QualifiedName& attribute);
-
-  void Dispose();
-
-  void Trace(Visitor*) const;
-
- private:
-  Member<FilterEffect> last_effect_;
-  Member<SVGFilterGraphNodeMap> node_map_;
-};
-
 class SVGElementResourceClient final
     : public GarbageCollected<SVGElementResourceClient>,
       public SVGResourceClient {
@@ -230,6 +209,12 @@ class SVGElementResourceClient final
   void Trace(Visitor*) const override;
 
  private:
+  class FilterData;
+
+  static FilterData* CreateFilterDataWithNodeMap(
+      FilterEffectBuilder&,
+      const ReferenceFilterOperation&);
+
   Member<SVGElement> element_;
   Member<FilterData> filter_data_;
   bool filter_data_dirty_;

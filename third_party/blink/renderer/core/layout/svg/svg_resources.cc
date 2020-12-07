@@ -625,31 +625,45 @@ void SVGResources::ClearMarkers(SVGElement& element,
     marker_resource->RemoveClient(*client);
 }
 
-sk_sp<PaintFilter> FilterData::BuildPaintFilter() {
-  return paint_filter_builder::Build(last_effect_, kInterpolationSpaceSRGB);
-}
+class SVGElementResourceClient::FilterData final
+    : public GarbageCollected<SVGElementResourceClient::FilterData> {
+ public:
+  FilterData(FilterEffect* last_effect, SVGFilterGraphNodeMap* node_map)
+      : last_effect_(last_effect), node_map_(node_map) {}
 
-bool FilterData::Invalidate(SVGFilterPrimitiveStandardAttributes& primitive,
-                            const QualifiedName& attribute) {
-  if (FilterEffect* effect = node_map_->EffectForElement(primitive)) {
-    if (!primitive.SetFilterEffectAttribute(effect, attribute))
-      return false;  // No change
-    node_map_->InvalidateDependentEffects(effect);
+  sk_sp<PaintFilter> BuildPaintFilter() {
+    return paint_filter_builder::Build(last_effect_, kInterpolationSpaceSRGB);
   }
-  return true;
-}
 
-void FilterData::Trace(Visitor* visitor) const {
-  visitor->Trace(last_effect_);
-  visitor->Trace(node_map_);
-}
+  // Perform a finegrained invalidation of the filter chain for the
+  // specified filter primitive and attribute. Returns false if no
+  // further invalidation is required, otherwise true.
+  bool Invalidate(SVGFilterPrimitiveStandardAttributes& primitive,
+                  const QualifiedName& attribute) {
+    if (FilterEffect* effect = node_map_->EffectForElement(primitive)) {
+      if (!primitive.SetFilterEffectAttribute(effect, attribute))
+        return false;  // No change
+      node_map_->InvalidateDependentEffects(effect);
+    }
+    return true;
+  }
 
-void FilterData::Dispose() {
-  node_map_ = nullptr;
-  if (last_effect_)
-    last_effect_->DisposeImageFiltersRecursive();
-  last_effect_ = nullptr;
-}
+  void Dispose() {
+    node_map_ = nullptr;
+    if (last_effect_)
+      last_effect_->DisposeImageFiltersRecursive();
+    last_effect_ = nullptr;
+  }
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(last_effect_);
+    visitor->Trace(node_map_);
+  }
+
+ private:
+  Member<FilterEffect> last_effect_;
+  Member<SVGFilterGraphNodeMap> node_map_;
+};
 
 SVGElementResourceClient::SVGElementResourceClient(SVGElement* element)
     : element_(element), filter_data_dirty_(false) {}
@@ -731,7 +745,8 @@ void SVGElementResourceClient::FilterPrimitiveChanged(
   MarkFilterDataDirty();
 }
 
-static FilterData* CreateFilterDataWithNodeMap(
+SVGElementResourceClient::FilterData*
+SVGElementResourceClient::CreateFilterDataWithNodeMap(
     FilterEffectBuilder& builder,
     const ReferenceFilterOperation& reference_filter) {
   auto* node_map = MakeGarbageCollected<SVGFilterGraphNodeMap>();
