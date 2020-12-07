@@ -938,8 +938,10 @@ class CORE_EXPORT LocalFrameView final
   template <typename Function>
   void ForAllChildLocalFrameViews(const Function&);
 
+  enum TraversalOrder { kPreOrder, kPostOrder };
   template <typename Function>
-  void ForAllNonThrottledLocalFrameViews(const Function&);
+  void ForAllNonThrottledLocalFrameViews(const Function&,
+                                         TraversalOrder = kPreOrder);
 
   template <typename Function>
   void ForAllThrottledLocalFrameViews(const Function&);
