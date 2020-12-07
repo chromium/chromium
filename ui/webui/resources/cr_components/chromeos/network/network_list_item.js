@@ -104,6 +104,14 @@ Polymer({
       type: String,
       value: '',
     },
+
+    /** @private */
+    isUpdatedCellularUiEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('updatedCellularActivationUi');
+      }
+    },
   },
 
   /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
@@ -140,25 +148,20 @@ Polymer({
   setProviderName_() {
     const mojom = chromeos.networkConfig.mojom;
 
-    if (this.networkState.type !== mojom.NetworkType.kTether &&
-        this.networkState.type !== mojom.NetworkType.kCellular) {
+    if (this.networkState.type !== mojom.NetworkType.kCellular ||
+        !this.isUpdatedCellularUiEnabled_) {
       return;
     }
 
     this.networkConfig_.getManagedProperties(this.networkState.guid)
         .then(response => {
-          if (!response || !response.result) {
+          if (!response || !response.result ||
+              !response.result.typeProperties.cellular.eid) {
             return;
           }
           const managedProperty = response.result;
 
-          if (managedProperty.type === mojom.NetworkType.kTether &&
-              managedProperty.typeProperties.tether) {
-            this.providerName_ = managedProperty.typeProperties.tether.carrier;
-          }
-
-          if (managedProperty.type === mojom.NetworkType.kCellular &&
-              managedProperty.typeProperties.cellular.homeProvider) {
+          if (managedProperty.typeProperties.cellular.homeProvider) {
             this.providerName_ =
                 managedProperty.typeProperties.cellular.homeProvider.name;
           }

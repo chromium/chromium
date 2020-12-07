@@ -16,9 +16,10 @@
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
 // #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // clang-format on
 
-suite('NetworkListTest', function() {
+suite('NetworkListItemTest', function() {
   /** @type {!NetworkListItem|undefined} */
   let listItem;
 
@@ -27,6 +28,10 @@ suite('NetworkListTest', function() {
   let mojoApi_ = null;
 
   setup(function() {
+    loadTimeData.overrideValues({
+      updatedCellularActivationUi: true,
+    });
+
     mojom = chromeos.networkConfig.mojom;
     mojoApi_ = new FakeNetworkConfig();
     network_config.MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
@@ -69,19 +74,21 @@ suite('NetworkListTest', function() {
     let providerName = listItem.$$('#networkProviderName');
     assertFalse(!!providerName.textContent.trim());
 
-    const tether = OncMojo.getDefaultManagedProperties(
-        chromeos.networkConfig.mojom.NetworkType.kTether, 'tether1_guid', '');
-    tether.name = OncMojo.createManagedString('tether1');
-    tether.typeProperties.tether.carrier = 'Google Fi';
-    initProperties(tether);
+    const cellular = OncMojo.getDefaultManagedProperties(
+        chromeos.networkConfig.mojom.NetworkType.kCellular, 'cellular1_guid',
+        '');
+    cellular.name = OncMojo.createManagedString('cellular1');
+    cellular.typeProperties.cellular.homeProvider = {name: 'Verizon Wireless'};
+    cellular.typeProperties.cellular.eid = '10000';
+    initProperties(cellular);
 
-    listItem.item =
-        OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1');
+    listItem.item = OncMojo.getDefaultNetworkState(
+        mojom.NetworkType.kCellular, 'cellular1');
 
     await flushAsync();
 
     providerName = listItem.$$('#networkProviderName');
     assertTrue(!!providerName);
-    assertEquals('Google Fi', providerName.textContent.trim());
+    assertEquals('Verizon Wireless', providerName.textContent.trim());
   });
 });
