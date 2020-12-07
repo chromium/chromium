@@ -208,7 +208,7 @@
       "alternate_urls": [
         "https://m.sogou.com/web/{google:pathWildcard}?ie={inputEncoding}&keyword={searchTerms}"
       ],
-      "suggest_url": "http://api.sugg.sogou.com/su?type=addrbar&key={searchTerms}&ie={inputEncoding}",
+      "suggest_url": "https://sugg.sogou.com/sugg/ajaj_json.jsp?type=addrbar&key={searchTerms}&ie={inputEncoding}&from=google",
       "type": "SEARCH_ENGINE_SOGOU",
       "id": 56
     },
