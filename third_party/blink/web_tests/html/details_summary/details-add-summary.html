@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<script>
+function createNewElement(tag, id, text) {
+  var result = document.createElement(tag);
+  if (id)
+    result.setAttribute('id', id);
+  result.innerHTML = text;
+  return result;
+}
+
+function clickOn(element, x, y) {
+  const rect = element.getBoundingClientRect();
+  return new Promise((resolve, reject) => {
+    chrome.gpuBenchmarking.pointerActionSequence([
+        {source: 'mouse',
+         actions: [
+             {name: 'pointerMove', x: rect.x + x, y: rect.y + y},
+             {name: 'pointerDown', x: rect.x + x, y: rect.y + y, button: 0},
+             {name: 'pointerUp', button: 0}]
+        }], resolve);
+  });
+}
+
+const $ = document.querySelector.bind(document);
+
+async function runTests() {
+  $('#dt1').appendChild(createNewElement('summary', null, 'new 1'));
+
+  $('#dt1c').appendChild(createNewElement("summary", null, "new 1"));
+  await clickOn($('#dt1c'), 2, 2);
+
+  $('#dt2').appendChild(createNewElement("summary", null, "new 1"));
+  $('#dt2').appendChild(createNewElement("summary", null, "new 2"));
+
+  $('#dt2c').appendChild(createNewElement("summary", null, "new 1"));
+  $('#dt2c').appendChild(createNewElement("summary", null, "new 2"));
+  await clickOn($('#dt2c'), 2, 2);
+
+  $('#dt3').appendChild(createNewElement("summary", "new3", "new 1"));
+  $('#dt3').insertBefore(createNewElement("summary", null, "new 2"), $('#new3'));
+
+  $('#dt3c').appendChild(createNewElement("summary", "new3c", "new 1"));
+  $('#dt3c').insertBefore(createNewElement("summary", null, "new 2"), $('#new3c'));
+  await clickOn($('#dt3c'), 2, 2);
+
+  $('#dt4').appendChild(createNewElement("summary", null, "new 1"));
+
+  $('#dt4c').appendChild(createNewElement("summary", null, "new 1"));
+  await clickOn($('#dt4c'), 2, 2);
+
+  $('#dt5').insertBefore(createNewElement("summary", null, "new 1"), $('#summary5'));
+
+  $('#dt5c').insertBefore(createNewElement("summary", null, "new 1"), $('#summary5c'));
+  await clickOn($('#dt5c'), 2, 2);
+
+  $('#dt6').appendChild(createNewElement("summary", null, "new 1"));
+
+  $('#dt6c').appendChild(createNewElement("summary", null, "new 1"));
+  await clickOn($('#dt6c'), 2, 2);
+
+  $('#dt7').appendChild(createNewElement("summary", null, "new 1"));
+  $('#dt7').appendChild(createNewElement("summary", null, "new 2"));
+
+  $('#dt7c').appendChild(createNewElement("summary", null, "new 1"));
+  $('#dt7c').appendChild(createNewElement("summary", null, "new 2"));
+  await clickOn($('#dt7c'), 2, 2);
+
+  $('#dt8').appendChild(createNewElement("summary", "new8", "new 1"));
+  $('#dt8').insertBefore(createNewElement("summary", null, "new 2"), $('#new8'));
+
+  $('#dt8c').appendChild(createNewElement("summary", "new8c", "new 1"));
+  $('#dt8c').insertBefore(createNewElement("summary", null, "new 2"), $('#new8c'));
+  await clickOn($('#dt8c'), 2, 2);
+
+  $('#dt9').appendChild(createNewElement("summary", null, "new 1"));
+
+  $('#dt9c').appendChild(createNewElement("summary", null, "new 1"));
+  await clickOn($('#dt9c'), 2, 2);
+
+  $('#dt10').insertBefore(createNewElement("summary", null, "new 1"), $('#summary10'));
+
+  $('#dt10c').insertBefore(createNewElement("summary", null, "new 1"), $('#summary10c'));
+  await clickOn($('#dt10c'), 2, 2);
+
+  testRunner.notifyDone();
+}
+
+testRunner.waitUntilDone();
+
+</script>
+<body onload="runTests()">
+<details id="dt1"></details>
+<details id="dt1c"></details>
+<details id="dt2"></details>
+<details id="dt2c"></details>
+<details id="dt3"></details>
+<details id="dt3c"></details>
+<details id="dt4"><summary>summary</summary></details>
+<details id="dt4c"><summary>summary</summary></details>
+<details id="dt5"><summary id="summary5">summary</summary></details>
+<details id="dt5c"><summary id="summary5c">summary</summary></details>
+<details id="dt6" open></details>
+<details id="dt6c" open></details>
+<details id="dt7" open></details>
+<details id="dt7c" open></details>
+<details id="dt8" open></details>
+<details id="dt8c" open></details>
+<details id="dt9" open><summary>summary</summary></details>
+<details id="dt9c" open><summary>summary</summary></details>
+<details id="dt10" open><summary id="summary10">summary</summary></details>
+<details id="dt10c" open><summary id="summary10c">summary</summary></details>
+</body>
