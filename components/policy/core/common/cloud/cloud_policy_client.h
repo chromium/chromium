@@ -79,6 +79,11 @@ class POLICY_EXPORT CloudPolicyClient {
   using DeviceDMTokenCallback = base::RepeatingCallback<std::string(
       const std::vector<std::string>& user_affiliation_ids)>;
 
+  // A callback that processes response value received from the server,
+  // or nullopt, if there was a failure.
+  using ResponseCallback =
+      base::OnceCallback<void(base::Optional<base::Value>)>;
+
   using ClientCertProvisioningStartCsrCallback = base::OnceCallback<void(
       DeviceManagementStatus,
       base::Optional<
@@ -319,7 +324,7 @@ class POLICY_EXPORT CloudPolicyClient {
   // completes.
   virtual void UploadEncryptedReport(const ::reporting::EncryptedRecord& record,
                                      base::Optional<base::Value> context,
-                                     StatusCallback callback);
+                                     ResponseCallback callback);
 
   // Uploads a report on the status of app push-installs. The client must be in
   // a registered state. The |callback| will be called when the operation
@@ -647,7 +652,7 @@ class POLICY_EXPORT CloudPolicyClient {
                                        const base::Value& response);
 
   // Callback for encrypted report upload requests.
-  void OnEncryptedReportUploadCompleted(StatusCallback callback,
+  void OnEncryptedReportUploadCompleted(ResponseCallback callback,
                                         DeviceManagementService::Job* job,
                                         DeviceManagementStatus status,
                                         int net_error,

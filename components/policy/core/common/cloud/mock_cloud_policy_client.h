@@ -113,7 +113,7 @@ class MockCloudPolicyClient : public CloudPolicyClient {
   MOCK_METHOD3(UploadEncryptedReport,
                void(const ::reporting::EncryptedRecord&,
                     base::Optional<base::Value>,
-                    StatusCallback));
+                    ResponseCallback));
 
   void UploadAppInstallReport(base::Value value,
                               StatusCallback callback) override {

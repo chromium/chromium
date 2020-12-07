@@ -81,6 +81,21 @@ class TestCompletionResponder {
               (DmServerUploadService::CompletionResponse));
 };
 
+// Helper function composes JSON represented as base::Value from Sequencing
+// information.
+base::Value ValueFromSucceededSequencingInfo(
+    const SequencingInformation& sequencing_information) {
+  base::Value sequencing_info(base::Value::Type::DICTIONARY);
+  sequencing_info.SetIntKey("sequencingId",
+                            sequencing_information.sequencing_id());
+  sequencing_info.SetIntKey("generationId",
+                            sequencing_information.generation_id());
+  sequencing_info.SetIntKey("priority", sequencing_information.priority());
+  base::Value result(base::Value::Type::DICTIONARY);
+  result.SetPath("lastSucceedUploadedRecord", std::move(sequencing_info));
+  return result;
+}
+
 class RecordHandlerImplTest : public testing::Test {
  public:
   RecordHandlerImplTest()
@@ -124,9 +139,12 @@ TEST_F(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
   TestCallbackWaiterWithCounter client_waiter{kNumTestRecords};
   EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
       .Times(kNumTestRecords)
-      .WillRepeatedly(WithArgs<2>(
-          Invoke([&client_waiter](base::OnceCallback<void(bool)> callback) {
-            std::move(callback).Run(true);
+      .WillRepeatedly(WithArgs<0, 2>(
+          Invoke([&client_waiter](
+                     const ::reporting::EncryptedRecord& record,
+                     policy::CloudPolicyClient::ResponseCallback callback) {
+            std::move(callback).Run(ValueFromSucceededSequencingInfo(
+                record.sequencing_information()));
             client_waiter.Signal();
           })));
 
@@ -134,6 +152,7 @@ TEST_F(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
 
   TestCallbackWaiter responder_waiter;
   TestCompletionResponder responder;
+  ::testing::InSequence seq;
   EXPECT_CALL(responder, RecordsHandled(ValueEqualsProto(
                              test_records->back().sequencing_information())))
       .WillOnce(Invoke([&responder_waiter]() { responder_waiter.Signal(); }));
@@ -159,15 +178,19 @@ TEST_F(RecordHandlerImplTest, ReportsEarlyFailure) {
   ::testing::InSequence seq;
   EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
       .Times(kNumSuccessfulUploads)
-      .WillRepeatedly(WithArgs<2>(
-          Invoke([&client_waiter](base::OnceCallback<void(bool)> callback) {
-            std::move(callback).Run(true);
+      .WillRepeatedly(WithArgs<0, 2>(Invoke(
+          [&client_waiter](
+              const ::reporting::EncryptedRecord& record,
+              base::OnceCallback<void(base::Optional<base::Value>)> callback) {
+            std::move(callback).Run(ValueFromSucceededSequencingInfo(
+                record.sequencing_information()));
             client_waiter.Signal();
           })));
   EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
-      .WillOnce(WithArgs<2>(
-          Invoke([&client_waiter](base::OnceCallback<void(bool)> callback) {
-            std::move(callback).Run(false);
+      .WillOnce(WithArgs<2>(Invoke(
+          [&client_waiter](
+              base::OnceCallback<void(base::Optional<base::Value>)> callback) {
+            std::move(callback).Run(base::nullopt);
             client_waiter.Signal();
           })));
 

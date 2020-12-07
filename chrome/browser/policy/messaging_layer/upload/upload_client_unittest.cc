@@ -119,6 +119,21 @@ class TestCallbackWaiterWithCounter : public TestCallbackWaiter {
   std::atomic<size_t> counter_limit_;
 };
 
+// Helper function composes JSON represented as base::Value from Sequencing
+// information.
+base::Value ValueFromSucceededSequencingInfo(
+    const SequencingInformation& sequencing_information) {
+  base::Value sequencing_info(base::Value::Type::DICTIONARY);
+  sequencing_info.SetIntKey("sequencingId",
+                            sequencing_information.sequencing_id());
+  sequencing_info.SetIntKey("generationId",
+                            sequencing_information.generation_id());
+  sequencing_info.SetIntKey("priority", sequencing_information.priority());
+  base::Value result(base::Value::Type::DICTIONARY);
+  result.SetPath("lastSucceedUploadedRecord", std::move(sequencing_info));
+  return result;
+}
+
 class UploadClientTest : public ::testing::Test {
  public:
   UploadClientTest() = default;
@@ -195,9 +210,11 @@ TEST_F(UploadClientTest, CreateUploadClientAndUploadRecords) {
       policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
 
   EXPECT_CALL(*client, UploadEncryptedReport(_, _, _))
-      .WillRepeatedly(WithArgs<2>(
-          Invoke([&waiter](base::OnceCallback<void(bool)> callback) {
-            std::move(callback).Run(true);
+      .WillRepeatedly(WithArgs<0, 2>(Invoke(
+          [&waiter](const ::reporting::EncryptedRecord& record,
+                    policy::CloudPolicyClient::ResponseCallback callback) {
+            std::move(callback).Run(ValueFromSucceededSequencingInfo(
+                record.sequencing_information()));
             base::ThreadPool::PostTask(
                 FROM_HERE, {base::TaskPriority::BEST_EFFORT},
                 base::BindOnce(&TestCallbackWaiterWithCounter::Signal,

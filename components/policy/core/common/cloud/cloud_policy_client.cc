@@ -609,10 +609,10 @@ void CloudPolicyClient::UploadSecurityEventReport(
 void CloudPolicyClient::UploadEncryptedReport(
     const ::reporting::EncryptedRecord& record,
     base::Optional<base::Value> context,
-    StatusCallback callback) {
+    ResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_registered()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(base::nullopt);
     return;
   }
 
@@ -1295,20 +1295,23 @@ void CloudPolicyClient::OnRealtimeReportUploadCompleted(
 
 // |job| can be null if the owning EncryptedReportingJobConfiguration is
 // destroyed prior to calling OnUploadComplete. In that case, callback will be
-// called with false value.
+// called with nullopt value.
 void CloudPolicyClient::OnEncryptedReportUploadCompleted(
-    StatusCallback callback,
+    ResponseCallback callback,
     DeviceManagementService::Job* job,
     DeviceManagementStatus status,
     int net_error,
     const base::Value& response) {
   if (job == nullptr) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(base::nullopt);
     return;
   }
-
-  OnRealtimeReportUploadCompleted(std::move(callback), job, status, net_error,
-                                  response);
+  status_ = status;
+  if (status != DM_STATUS_SUCCESS) {
+    NotifyClientError();
+  }
+  std::move(callback).Run(response.Clone());
+  RemoveJob(job);
 }
 
 void CloudPolicyClient::OnRemoteCommandsFetched(

@@ -31,6 +31,42 @@
 
 namespace reporting {
 
+// ReportUploader handles enqueuing events on the |report_queue_|,
+// and uploading those events with the |client_|.
+class RecordHandlerImpl::ReportUploader
+    : public TaskRunnerContext<DmServerUploadService::CompletionResponse> {
+ public:
+  ReportUploader(
+      std::unique_ptr<std::vector<EncryptedRecord>> records,
+      policy::CloudPolicyClient* client,
+      DmServerUploadService::CompletionCallback upload_complete_cb,
+      scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
+
+ private:
+  ~ReportUploader() override;
+
+  void OnStart() override;
+
+  void StartUpload(const EncryptedRecord& encrypted_record);
+  void OnUploadComplete(base::Optional<base::Value> response);
+  void HandleFailedUpload();
+  void HandleSuccessfulUpload();
+
+  void Complete(DmServerUploadService::CompletionResponse result);
+
+  std::unique_ptr<std::vector<EncryptedRecord>> records_;
+  policy::CloudPolicyClient* client_;
+
+  // Last successful response to be processed.
+  // Note: I could not find a way to pass it as a parameter,
+  // so it is a class member variable. |last_response_| must be processed before
+  // any attempt to retry calling the client, otherwise it will be overwritten.
+  base::Value last_response_;
+
+  // Set for the highest record being uploaded.
+  base::Optional<SequencingInformation> highest_sequencing_information_;
+};
+
 RecordHandlerImpl::ReportUploader::ReportUploader(
     std::unique_ptr<std::vector<EncryptedRecord>> records,
     policy::CloudPolicyClient* client,
@@ -81,7 +117,7 @@ void RecordHandlerImpl::ReportUploader::StartUpload(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(
           [](policy::CloudPolicyClient* client, const EncryptedRecord& record,
-             base::OnceCallback<void(bool)> cb) {
+             base::OnceCallback<void(base::Optional<base::Value>)> cb) {
             client->UploadEncryptedReport(
                 record,
                 reporting::GetContext(ProfileManager::GetPrimaryUserProfile()),
@@ -90,12 +126,14 @@ void RecordHandlerImpl::ReportUploader::StartUpload(
           client_, encrypted_record, std::move(cb)));
 }
 
-void RecordHandlerImpl::ReportUploader::OnUploadComplete(bool success) {
-  if (!success) {
+void RecordHandlerImpl::ReportUploader::OnUploadComplete(
+    base::Optional<base::Value> response) {
+  if (!response.has_value()) {
     Schedule(&RecordHandlerImpl::ReportUploader::HandleFailedUpload,
              base::Unretained(this));
     return;
   }
+  last_response_ = std::move(response.value());
   Schedule(&RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload,
            base::Unretained(this));
 }
@@ -116,7 +154,36 @@ void RecordHandlerImpl::ReportUploader::HandleFailedUpload() {
 }
 
 void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
-  highest_sequencing_information_ = records_->back().sequencing_information();
+  // Decypher 'response' containing a base::Value dictionary that looks like:
+  //  {
+  //    "lastSucceedUploadedRecord": ... // SequencingInformation proto
+  //    "firstFailedUploadedRecord": {
+  //      "failedUploadedRecord": ... // SequencingInformation proto
+  //      "failureStatus": ... // Status proto
+  //    }
+  //  }
+  // TODO(b/169883262): Factor out the decoding into a separate class.
+
+  const base::Value* last_succeed_uploaded_record =
+      last_response_.FindDictKey("lastSucceedUploadedRecord");
+  if (last_succeed_uploaded_record != nullptr) {
+    SequencingInformation seq_info;
+    // Note: Fields below are 'int', should be converted into 'uint64_t'.
+    const auto sequencing_id =
+        last_succeed_uploaded_record->FindIntKey("sequencingId");
+    const auto generation_id =
+        last_succeed_uploaded_record->FindIntKey("generationId");
+    const auto priority = last_succeed_uploaded_record->FindIntKey("priority");
+    if (sequencing_id.has_value() && generation_id.has_value() &&
+        priority.has_value() && Priority_IsValid(priority.value())) {
+      seq_info.set_sequencing_id(sequencing_id.value());
+      seq_info.set_generation_id(generation_id.value());
+      seq_info.set_priority(Priority(priority.value()));
+      highest_sequencing_information_ = std::move(seq_info);
+    }
+  }
+  // TODO(b/169883262): Decode and handle failure information.
+  // TODO(b/170054326): Handle the encryption settings.
 
   // Pop the last record that was processed.
   records_->pop_back();

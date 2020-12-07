@@ -46,9 +46,15 @@ using testing::_;
 using testing::DoAll;
 using testing::ElementsAre;
 using testing::Mock;
+using testing::Not;
 using testing::Return;
 using testing::SaveArg;
 using testing::StrictMock;
+
+// Matcher for base::Optional. Can be combined with Not().
+MATCHER(HasValue, "Has value") {
+  return arg.has_value();
+}
 
 // The type for variables containing an error from DM Server response.
 using CertProvisioningResponseErrorType =
@@ -140,6 +146,13 @@ class MockRobotAuthCodeCallbackObserver {
 
   MOCK_METHOD2(OnRobotAuthCodeFetched,
                void(DeviceManagementStatus, const std::string&));
+};
+
+class MockResponseCallbackObserver {
+ public:
+  MockResponseCallbackObserver() = default;
+
+  MOCK_METHOD1(OnResponseReceived, void(base::Optional<base::Value>));
 };
 
 }  // namespace
@@ -595,11 +608,11 @@ class CloudPolicyClientTest : public testing::Test {
   void AttemptUploadEncryptedWaitUntilIdle(
       const ::reporting::EncryptedRecord& record,
       base::Optional<base::Value> context = base::nullopt) {
-    CloudPolicyClient::StatusCallback callback =
-        base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
-                       base::Unretained(&callback_observer_));
+    CloudPolicyClient::ResponseCallback response_callback =
+        base::BindOnce(&MockResponseCallbackObserver::OnResponseReceived,
+                       base::Unretained(&response_callback_observer_));
     client_->UploadEncryptedReport(record, std::move(context),
-                                   std::move(callback));
+                                   std::move(response_callback));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -652,6 +665,7 @@ class CloudPolicyClientTest : public testing::Test {
       device_dmtoken_callback_observer_;
   StrictMock<MockRobotAuthCodeCallbackObserver>
       robot_auth_code_callback_observer_;
+  StrictMock<MockResponseCallbackObserver> response_callback_observer_;
   FakeSigningService fake_signing_service_;
   std::unique_ptr<CloudPolicyClient> client_;
   network::TestURLLoaderFactory url_loader_factory_;
@@ -1676,7 +1690,8 @@ TEST_F(CloudPolicyClientTest, UploadEncryptedReport) {
   RegisterClient();
   ExpectEncryptedReport();
 
-  EXPECT_CALL(callback_observer_, OnCallbackComplete(true)).Times(1);
+  EXPECT_CALL(response_callback_observer_, OnResponseReceived(HasValue()))
+      .Times(1);
   AttemptUploadEncryptedWaitUntilIdle(record);
 
   EXPECT_EQ(
@@ -1691,17 +1706,23 @@ TEST_F(CloudPolicyClientTest, DenyPoorlyFormedEncryptedRecords) {
   // Create empty record
   ::reporting::EncryptedRecord record;
 
-  EXPECT_CALL(callback_observer_, OnCallbackComplete(false)).Times(4);
-
+  EXPECT_CALL(response_callback_observer_, OnResponseReceived(Not(HasValue())))
+      .Times(1);
   AttemptUploadEncryptedWaitUntilIdle(record);
 
   // Add encrypted_wrapped_record without sequencing information.
   record.set_encrypted_wrapped_record("Enterprise");
+
+  EXPECT_CALL(response_callback_observer_, OnResponseReceived(Not(HasValue())))
+      .Times(1);
   AttemptUploadEncryptedWaitUntilIdle(record);
 
   // Incorrectly set sequencing information by only setting sequencing id.
   auto* sequencing_information = record.mutable_sequencing_information();
   sequencing_information->set_sequencing_id(1701);
+
+  EXPECT_CALL(response_callback_observer_, OnResponseReceived(Not(HasValue())))
+      .Times(1);
   AttemptUploadEncryptedWaitUntilIdle(record);
 
   // Finish correctly setting sequencing information but incorrectly set
@@ -1712,12 +1733,15 @@ TEST_F(CloudPolicyClientTest, DenyPoorlyFormedEncryptedRecords) {
   auto* encryption_info = record.mutable_encryption_info();
   encryption_info->set_encryption_key("Key");
 
+  EXPECT_CALL(response_callback_observer_, OnResponseReceived(Not(HasValue())))
+      .Times(1);
   AttemptUploadEncryptedWaitUntilIdle(record);
 
   // Finish correctly setting encryption info - expect complete call.
   encryption_info->set_public_key_id(1234);
 
-  EXPECT_CALL(callback_observer_, OnCallbackComplete(true)).Times(1);
+  EXPECT_CALL(response_callback_observer_, OnResponseReceived(HasValue()))
+      .Times(1);
   ExpectEncryptedReport();
 
   AttemptUploadEncryptedWaitUntilIdle(record);

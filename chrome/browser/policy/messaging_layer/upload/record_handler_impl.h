@@ -32,36 +32,6 @@ namespace reporting {
 // queue.
 class RecordHandlerImpl : public DmServerUploadService::RecordHandler {
  public:
-  // ReportUploader handles enqueuing events on the |report_queue_|,
-  // and uploading those events with the |client_|.
-  class ReportUploader
-      : public TaskRunnerContext<DmServerUploadService::CompletionResponse> {
-   public:
-    ReportUploader(
-        std::unique_ptr<std::vector<EncryptedRecord>> records,
-        policy::CloudPolicyClient* client,
-        DmServerUploadService::CompletionCallback upload_complete_cb,
-        scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
-
-   private:
-    ~ReportUploader() override;
-
-    void OnStart() override;
-
-    void StartUpload(const EncryptedRecord& encrypted_record);
-    void OnUploadComplete(bool success);
-    void HandleFailedUpload();
-    void HandleSuccessfulUpload();
-
-    void Complete(DmServerUploadService::CompletionResponse completion_result);
-
-    std::unique_ptr<std::vector<EncryptedRecord>> records_;
-    policy::CloudPolicyClient* client_;
-
-    // Set for the highest record being uploaded.
-    base::Optional<SequencingInformation> highest_sequencing_information_;
-  };
-
   explicit RecordHandlerImpl(policy::CloudPolicyClient* client);
   ~RecordHandlerImpl() override;
 
@@ -71,6 +41,14 @@ class RecordHandlerImpl : public DmServerUploadService::RecordHandler {
       DmServerUploadService::CompletionCallback upload_complete) override;
 
  private:
+  // Helper |ReportUploader| class handles enqueuing events on the
+  // |report_queue_|, and uploading those events with the |client_|.
+  class ReportUploader;
+
+  // Processes last JSON response received from the server in case of success,
+  // or nullopt in case of failures on all attempts.
+  void ProcessResponse(const base::Value& response);
+
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 };
 
