@@ -54,7 +54,7 @@ const CGFloat kMostVisitedBottomMargin = 13;
 const CGFloat kCardBorderRadius = 11;
 const CGFloat kDiscoverFeedContentWith = 430;
 // Value representing offset from bottom of the page to trigger pagination.
-const CGFloat kPaginationOffset = 400;
+const CGFloat kPaginationOffset = 800;
 // Height for the Discover Feed section header.
 const CGFloat kDiscoverFeedFeaderHeight = 30;
 // Minimum height of the Discover feed content to indicate that the articles
