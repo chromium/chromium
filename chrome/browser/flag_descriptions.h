@@ -2554,6 +2554,11 @@ extern const char kIntentPickerPWAPersistenceDescription[];
 extern const char kInteractiveWindowCycleList[];
 extern const char kInteractiveWindowCycleListDescription[];
 
+extern const char kLacrosStabilityName[];
+extern const char kLacrosStabilityDescription[];
+extern const char kLacrosStabilityLessStableDescription[];
+extern const char kLacrosStabilityMoreStableDescription[];
+
 extern const char kLacrosSupportName[];
 extern const char kLacrosSupportDescription[];
 

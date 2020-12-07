@@ -14,6 +14,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
 
@@ -21,14 +22,39 @@ namespace crosapi {
 
 namespace {
 
-constexpr char kLacrosComponentName[] = "lacros-fishfood";
+// The Lacros dogfood is the logical successor to the Lacros fishfood. They are
+// no intrinsic differences other than a slight change to the app ids used for
+// deployment. This feature is a temporary measure to ensure that when the new
+// app ids are ready, ash can be immediately switched to the dogfood deployment.
+// At that point, this feature can only be removed from the code and we can
+// switch unconditionally to the dogfood deployment..
+const base::Feature kLacrosPreferDogfoodOverFishfood{
+    "LacrosPreferDogfoodOverFishfood", base::FEATURE_DISABLED_BY_DEFAULT};
+
+std::string GetLacrosComponentName() {
+  if (!base::FeatureList::IsEnabled(kLacrosPreferDogfoodOverFishfood))
+    return "lacros-fishfood";
+
+  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
+  if (cmdline->HasSwitch(browser_util::kLacrosStabilitySwitch)) {
+    std::string value =
+        cmdline->GetSwitchValueASCII(browser_util::kLacrosStabilitySwitch);
+    if (value == browser_util::kLacrosStabilityLessStable) {
+      return "lacros-dogfood-dev";
+    } else if (value == browser_util::kLacrosStabilityMoreStable) {
+      return "lacros-dogfood-stable";
+    }
+  }
+  // Use more frequent updates by default.
+  return "lacros-dogfood-dev";
+}
 
 // Returns whether lacros-fishfood component is already installed.
 // If it is, delete the user directory, too, because it will be
 // uninstalled.
 bool CheckInstalledAndMaybeRemoveUserDirectory(
     scoped_refptr<component_updater::CrOSComponentManager> manager) {
-  if (!manager->IsRegisteredMayBlock(kLacrosComponentName))
+  if (!manager->IsRegisteredMayBlock(GetLacrosComponentName()))
     return false;
 
   // Since we're already on a background thread, delete the user-data-dir
@@ -70,7 +96,7 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
   }
 
   component_manager_->Load(
-      kLacrosComponentName,
+      GetLacrosComponentName(),
       component_updater::CrOSComponentManager::MountPolicy::kMount,
       component_updater::CrOSComponentManager::UpdatePolicy::kForce,
       base::BindOnce(&BrowserLoader::OnLoadComplete, weak_factory_.GetWeakPtr(),
@@ -117,7 +143,7 @@ void BrowserLoader::OnCheckInstalled(bool was_installed) {
 
 void BrowserLoader::UnloadAfterCleanUp(const std::string& ignored_salt) {
   CHECK(chromeos::SystemSaltGetter::Get()->GetRawSalt());
-  component_manager_->Unload(kLacrosComponentName);
+  component_manager_->Unload(GetLacrosComponentName());
 }
 
 }  // namespace crosapi

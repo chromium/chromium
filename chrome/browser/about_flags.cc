@@ -206,6 +206,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "ash/public/cpp/ash_switches.h"
+#include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
@@ -686,6 +687,17 @@ const FeatureEntry::Choice kTopChromeTouchUiChoices[] = {
 
 #if defined(OS_CHROMEOS)
 const char kLacrosSupportInternalName[] = "lacros-support";
+const char kLacrosStabilityInternalName[] = "lacros-stability";
+
+const FeatureEntry::Choice kLacrosStabilityChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {flag_descriptions::kLacrosStabilityLessStableDescription,
+     crosapi::browser_util::kLacrosStabilitySwitch,
+     crosapi::browser_util::kLacrosStabilityLessStable},
+    {flag_descriptions::kLacrosStabilityMoreStableDescription,
+     crosapi::browser_util::kLacrosStabilitySwitch,
+     crosapi::browser_util::kLacrosStabilityMoreStable},
+};
 
 const FeatureEntry::Choice kUiShowCompositedLayerBordersChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -2865,6 +2877,9 @@ const FeatureEntry kFeatureEntries[] = {
     {kLacrosSupportInternalName, flag_descriptions::kLacrosSupportName,
      flag_descriptions::kLacrosSupportDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kLacrosSupport)},
+    {kLacrosStabilityInternalName, flag_descriptions::kLacrosStabilityName,
+     flag_descriptions::kLacrosStabilityDescription, kOsCrOS,
+     MULTI_VALUE_TYPE(kLacrosStabilityChoices)},
     {"list-all-display-modes", flag_descriptions::kListAllDisplayModesName,
      flag_descriptions::kListAllDisplayModesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(display::features::kListAllDisplayModes)},
@@ -6959,12 +6974,13 @@ bool SkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
     return true;
   }
 
-  if (!strcmp(kLacrosSupportInternalName, entry.internal_name) &&
-      channel != version_info::Channel::BETA &&
-      channel != version_info::Channel::DEV &&
-      channel != version_info::Channel::CANARY &&
-      channel != version_info::Channel::UNKNOWN) {
-    return true;
+  if (!strcmp(kLacrosSupportInternalName, entry.internal_name) ||
+      !strcmp(kLacrosStabilityInternalName, entry.internal_name)) {
+    if (!base::FeatureList::IsEnabled(
+            crosapi::browser_util::kLacrosAllowOnStableChannel) &&
+        channel == version_info::Channel::STABLE) {
+      return true;
+    }
   }
 
   // The following flags are only available to teamfooders.

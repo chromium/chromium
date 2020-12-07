@@ -43,10 +43,6 @@ namespace crosapi {
 namespace browser_util {
 namespace {
 
-// When this feature is enabled, Lacros will be available on stable channel.
-const base::Feature kLacrosAllowOnStableChannel{
-    "LacrosAllowOnStableChannel", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Some account types require features that aren't yet supported by lacros.
 // See https://crbug.com/1080693
 bool IsUserTypeAllowed(const User* user) {
@@ -92,6 +88,14 @@ mojom::LacrosInitParamsPtr GetLacrosInitParams(
 }
 
 }  // namespace
+
+// When this feature is enabled, Lacros will be available on stable channel.
+const base::Feature kLacrosAllowOnStableChannel{
+    "LacrosAllowOnStableChannel", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const char kLacrosStabilitySwitch[] = "lacros-stability";
+const char kLacrosStabilityLessStable[] = "less-stable";
+const char kLacrosStabilityMoreStable[] = "more-stable";
 
 const char kLaunchOnLoginPref[] = "lacros.launch_on_login";
 

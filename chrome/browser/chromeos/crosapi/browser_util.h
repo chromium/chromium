@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/token.h"
 #include "chrome/browser/chromeos/crosapi/environment_provider.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -34,6 +35,14 @@ enum class Channel;
 // These methods are used by ash-chrome.
 namespace crosapi {
 namespace browser_util {
+
+extern const base::Feature kLacrosAllowOnStableChannel;
+
+// A command-line switch that can also be set from chrome://flags that affects
+// the frequency of Lacros updates.
+extern const char kLacrosStabilitySwitch[];
+extern const char kLacrosStabilityLessStable[];
+extern const char kLacrosStabilityMoreStable[];
 
 // Boolean preference. Whether to launch lacros-chrome on login.
 extern const char kLaunchOnLoginPref[];

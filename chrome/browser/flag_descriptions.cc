@@ -4376,6 +4376,14 @@ const char kInteractiveWindowCycleListDescription[] =
     "Adds mouse behavior, three-finger touchpad swipe, left/right "
     "arrow navigation, and space/enter confirmation to Alt-Tab.";
 
+const char kLacrosStabilityName[] = "Lacros stability";
+const char kLacrosStabilityDescription[] = "Frequency of Lacros updates.";
+
+const char kLacrosStabilityLessStableDescription[] =
+    "More frequent updates / less stable";
+const char kLacrosStabilityMoreStableDescription[] =
+    "Less frequent updates / more stable";
+
 const char kLacrosSupportName[] = "Lacros support";
 const char kLacrosSupportDescription[] =
     "Support for the experimental lacros-chrome browser.";

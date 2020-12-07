@@ -50,6 +50,10 @@ const ComponentConfig kConfigs[] = {
      "93c093ebac788581389015e9c59c5af111d2fa5174d206eb795042e6376cbd10"},
     {"lacros-fishfood", "",
      "7a85ffb4b316a3b89135a3f43660ef3049950a61a2f8df4237e1ec213852b848"},
+    {"lacros-dogfood-dev", "",
+     "b3e1ef1780c0acd2d3fa44b4d73c657a0f1ed3ad83fd8c964a18a3502ccf5f4f"},
+    {"lacros-dogfood-stable", "",
+     "7d5c1428f7f67b56f95123851adec1da105980c56b5c126352040f3b65d3e43b"},
 };
 
 const ComponentConfig* FindConfig(const std::string& name) {
