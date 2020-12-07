@@ -320,6 +320,8 @@ static_library("protobuf_full") {
               "src/google/protobuf/type.pb.h",
               "src/google/protobuf/unknown_field_set.cc",
               "src/google/protobuf/unknown_field_set.h",
+              "src/google/protobuf/util/delimited_message_util.cc",
+              "src/google/protobuf/util/delimited_message_util.h",
               "src/google/protobuf/util/field_comparator.cc",
               "src/google/protobuf/util/field_comparator.h",
               "src/google/protobuf/util/field_mask_util.cc",
