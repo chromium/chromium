@@ -88,6 +88,16 @@ message ContentAnalysisResponse {
     }
     optional Status status = 2;
 
+    message CustomMessage {
+      // An admin-provided url that should lead to a page where the user can
+      // learn more about the restrictions in place in their organization.
+      optional string learn_more_url = 1;
+      // An admin-provided message that will be shown to the user when a scan
+      // results is not clean. This message should not be more than 200
+      // characters long.
+      optional string message = 2;
+    }
+
     // Identifies the detection rules that were triggered by the analysis.
     // Only relevant when status is SUCCESS.
     message TriggeredRule {
@@ -100,8 +110,19 @@ message ContentAnalysisResponse {
       optional Action action = 1;
       optional string rule_name = 2;
       optional string rule_id = 3;
+      // This field contains a custom message that is specific to the rules
+      // triggered by this scan, if any. This messages can be shown in addition
+      // to the OU-based message found in the client-side policy or at the
+      // top-level of the Result message.
+      optional CustomMessage custom_message = 4;
     }
     repeated TriggeredRule triggered_rules = 3;
+
+    // This field is meant to override the OU-based custom messages set in the
+    // client-side policies. When the result requires a
+    // warning, if this field has a value it's the one that will be displayed to
+    // the user, otherwise the client-side policy's custom message will be used.
+    optional CustomMessage custom_message = 7;
 
     // TODO(crbug.com/1147036): Remove fields 4-6 once a definitive approach is
     // agreed upon.
