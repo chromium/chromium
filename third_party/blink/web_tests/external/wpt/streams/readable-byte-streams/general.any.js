@@ -108,6 +108,11 @@ promise_test(() => {
 
 }, 'ReadableStream with byte source: No automatic pull call if start doesn\'t finish');
 
+test(() => {
+  assert_throws_js(Error, () => new ReadableStream({ start() { throw new Error(); }, type:'bytes' }),
+      'start() can throw an exception with type: bytes');
+}, 'ReadableStream with byte source: start() throws an exception');
+
 promise_test(t => {
   new ReadableStream({
     pull: t.unreached_func('pull() should not be called'),
