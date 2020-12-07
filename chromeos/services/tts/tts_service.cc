@@ -87,11 +87,6 @@ void TtsService::AddAudioBuffer(AudioBuffer buf) {
   buffers_.emplace_back(std::move(buf));
 }
 
-void TtsService::AddExplicitTimepoint(int char_index, base::TimeDelta delay) {
-  base::AutoLock al(state_lock_);
-  timepoints_.push_back({char_index, delay});
-}
-
 void TtsService::Stop() {
   base::AutoLock al(state_lock_);
   StopLocked();
@@ -123,9 +118,10 @@ int TtsService::Render(base::TimeDelta delay,
                        media::AudioBus* dest) {
   size_t frames_in_buf = 0;
   int32_t status = -1;
+  int char_index = -1;
+  bool is_first_buffer = false;
   {
     base::AutoLock al(state_lock_);
-
     if (buffers_.empty())
       return 0;
 
@@ -143,31 +139,24 @@ int TtsService::Render(base::TimeDelta delay,
       return 0;
     }
 
-    if (buf.is_first_buffer) {
-      start_playback_time_ = base::Time::Now();
-      tts_event_observer_->OnStart();
-    }
-
-    // Implied timepoint.
-    if (buf.char_index != -1)
-      tts_event_observer_->OnTimepoint(buf.char_index);
-
-    // Explicit timepoint(s).
-    base::TimeDelta start_to_now = base::Time::Now() - start_playback_time_;
-    while (!timepoints_.empty() && timepoints_.front().second <= start_to_now) {
-      tts_event_observer_->OnTimepoint(timepoints_.front().first);
-      timepoints_.pop_front();
-    }
-
+    char_index = buf.char_index;
+    is_first_buffer = buf.is_first_buffer;
+    const float* frames = &buf.frames[0];
     frames_in_buf = buf.frames.size();
-    const float* frames = nullptr;
-    if (!buf.frames.empty())
-      frames = &buf.frames[0];
     float* channel = dest->channel(0);
     for (size_t i = 0; i < frames_in_buf; i++)
       channel[i] = frames[i];
     buffers_.pop_front();
   }
+
+  if (is_first_buffer)
+    tts_event_observer_->OnStart();
+
+  if (frames_in_buf == 0)
+    return 0;
+
+  if (char_index != -1)
+    tts_event_observer_->OnTimepoint(char_index);
 
   return frames_in_buf;
 }
@@ -176,10 +165,8 @@ void TtsService::OnRenderError() {}
 
 void TtsService::StopLocked(bool clear_buffers) {
   output_device_->Pause();
-  if (clear_buffers) {
+  if (clear_buffers)
     buffers_.clear();
-    timepoints_.clear();
-  }
 }
 
 void TtsService::ProcessPendingTtsStreamFactories() {
