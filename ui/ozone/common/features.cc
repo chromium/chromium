@@ -8,14 +8,8 @@
 
 namespace ui {
 
-const base::Feature kWaylandOverlayDelegation {
-  "WaylandOverlayDelegation",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-};
+const base::Feature kWaylandOverlayDelegation{"WaylandOverlayDelegation",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsWaylandOverlayDelegationEnabled() {
   return base::FeatureList::IsEnabled(kWaylandOverlayDelegation);

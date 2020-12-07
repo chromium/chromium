@@ -582,6 +582,9 @@ bool WaylandWindow::CommitOverlays(
   if (!ArrangeSubsurfaceStack(above, below))
     return false;
 
+  if (wayland_overlay_delegation_enabled_)
+    connection_->buffer_manager_host()->StartFrame(root_surface());
+
   {
     // Iterate through |subsurface_stack_below_|, setup subsurfaces and place
     // them in corresponding order. Commit wl_buffers once a subsurface is
@@ -606,7 +609,8 @@ bool WaylandWindow::CommitOverlays(
             nullptr, reference_above);
         connection_->buffer_manager_host()->CommitBufferInternal(
             (*iter)->wayland_surface(), (*overlay_iter)->buffer_id, gfx::Rect(),
-            /*wait_for_frame_callback=*/false,
+            /*wait_for_frame_callback=*/true,
+            /*commit_synced_subsurface=*/true,
             std::move((*overlay_iter)->access_fence_handle));
       } else {
         // If there're more subsurfaces requested that we don't need at the
@@ -636,7 +640,8 @@ bool WaylandWindow::CommitOverlays(
             reference_below, nullptr);
         connection_->buffer_manager_host()->CommitBufferInternal(
             (*iter)->wayland_surface(), (*overlay_iter)->buffer_id, gfx::Rect(),
-            /*wait_for_frame_callback=*/false,
+            /*wait_for_frame_callback=*/true,
+            /*commit_synced_subsurface=*/true,
             std::move((*overlay_iter)->access_fence_handle));
       } else {
         // If there're more subsurfaces requested that we don't need at the
@@ -660,7 +665,8 @@ bool WaylandWindow::CommitOverlays(
     connection_->buffer_manager_host()->CommitBufferInternal(
         primary_subsurface_->wayland_surface(), (*split)->buffer_id,
         (*split)->damage_region,
-        /*wait_for_frame_callback=*/false,
+        /*wait_for_frame_callback=*/true,
+        /*commit_synced_subsurface=*/true,
         std::move((*split)->access_fence_handle));
   }
 
@@ -672,15 +678,12 @@ bool WaylandWindow::CommitOverlays(
   }
 
   if (should_attach_background_buffer_) {
-    connection_->buffer_manager_host()->CommitBufferInternal(
-        root_surface(), background_buffer_id_, /*damage_region=*/gfx::Rect(),
-        /*wait_for_frame_callback=*/true);
+    connection_->buffer_manager_host()->EndFrame(background_buffer_id_);
     should_attach_background_buffer_ = false;
   } else {
     // Subsurfaces are set to sync, above surface configs will only take effect
     // when root_surface is committed.
-    connection_->buffer_manager_host()->CommitWithoutBufferInternal(
-        root_surface(), /*wait_for_frame_callback=*/true);
+    connection_->buffer_manager_host()->EndFrame();
   }
 
   return true;
