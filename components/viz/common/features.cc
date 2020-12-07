@@ -146,7 +146,7 @@ bool IsDynamicColorGamutEnabled() {
   if (viz::AlwaysUseWideColorGamut())
     return false;
   auto* build_info = base::android::BuildInfo::GetInstance();
-  if (!build_info->is_at_least_q())
+  if (build_info->sdk_int() < base::android::SDK_VERSION_Q)
     return false;
   return base::FeatureList::IsEnabled(kDynamicColorGamut);
 }
