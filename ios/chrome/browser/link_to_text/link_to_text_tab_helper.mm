@@ -6,7 +6,9 @@
 
 #import "base/bind.h"
 #import "base/optional.h"
+#import "base/timer/elapsed_timer.h"
 #import "base/values.h"
+#import "ios/chrome/browser/link_to_text/link_to_text_constants.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
@@ -18,7 +20,6 @@
 #endif
 
 namespace {
-const double kJavaScriptFunctionCallTimeoutMs = 200.0;
 const char kGetLinkToTextJavaScript[] = "linkToText.getLinkToText";
 }  // namespace
 
@@ -44,6 +45,8 @@ bool LinkToTextTabHelper::ShouldOffer() {
 }
 
 void LinkToTextTabHelper::GetLinkToText(LinkToTextCallback callback) {
+  link_generation_timer_ = std::make_unique<base::ElapsedTimer>();
+
   base::WeakPtr<LinkToTextTabHelper> weak_ptr = weak_ptr_factory_.GetWeakPtr();
   web_state_->GetWebFramesManager()->GetMainWebFrame()->CallJavaScriptFunction(
       kGetLinkToTextJavaScript, {},
@@ -52,15 +55,26 @@ void LinkToTextTabHelper::GetLinkToText(LinkToTextCallback callback) {
           weak_ptr->OnJavaScriptResponseReceived(callback, response);
         }
       }),
-      base::TimeDelta::FromMilliseconds(kJavaScriptFunctionCallTimeoutMs));
+      base::TimeDelta::FromMilliseconds(
+          link_to_text::kLinkGenerationTimeoutInMs));
 }
 
 void LinkToTextTabHelper::OnJavaScriptResponseReceived(
     LinkToTextCallback callback,
     const base::Value* response) {
   if (callback) {
+    base::TimeDelta latency;
+    if (link_generation_timer_) {
+      // Compute latency.
+      latency = link_generation_timer_->Elapsed();
+
+      // Reset variable.
+      link_generation_timer_.reset();
+    }
+
     callback([LinkToTextResponse linkToTextResponseWithValue:response
-                                                    webState:web_state_]);
+                                                    webState:web_state_
+                                                     latency:latency]);
   }
 }
 

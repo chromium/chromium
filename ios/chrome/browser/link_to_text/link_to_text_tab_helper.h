@@ -7,9 +7,14 @@
 
 #import "base/macros.h"
 #import "base/memory/weak_ptr.h"
+#import "base/timer/elapsed_timer.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_response.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
+
+namespace base {
+class ElapsedTimer;
+}  // namespace base
 
 @protocol CRWWebViewProxy;
 
@@ -55,6 +60,9 @@ class LinkToTextTabHelper : public web::WebStateObserver,
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
   web::WebState* web_state_ = nullptr;
+
+  // Timer used to calculate the link generation latency.
+  std::unique_ptr<base::ElapsedTimer> link_generation_timer_;
 
   base::WeakPtrFactory<LinkToTextTabHelper> weak_ptr_factory_;
 

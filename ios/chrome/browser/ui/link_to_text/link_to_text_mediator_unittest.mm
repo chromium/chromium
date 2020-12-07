@@ -19,6 +19,7 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/ukm/test_ukm_recorder.h"
 #import "ios/chrome/browser/link_to_text/link_generation_outcome.h"
+#import "ios/chrome/browser/link_to_text/link_to_text_constants.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_payload.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_tab_helper.h"
 #import "ios/chrome/browser/ui/link_to_text/link_to_text_consumer.h"
@@ -175,7 +176,9 @@ class LinkToTextMediatorTest : public PlatformTest {
                                     static_cast<int64_t>(error));
   }
 
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::Options::DEFAULT,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
   TestWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
@@ -234,6 +237,8 @@ TEST_F(LinkToTextMediatorTest, HandleLinkToTextSelectionTriggersCommandNoZoom) {
   histogram_tester.ExpectUniqueSample("SharedHighlights.LinkGenerated", true,
                                       1);
   ValidateLinkGeneratedSuccessUkm();
+  histogram_tester.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.TimeToGenerate", 1);
 }
 
 // Tests that the shareHighlight command is triggered with the right parameters
@@ -277,6 +282,8 @@ TEST_F(LinkToTextMediatorTest,
   histogram_tester.ExpectUniqueSample("SharedHighlights.LinkGenerated", true,
                                       1);
   ValidateLinkGeneratedSuccessUkm();
+  histogram_tester.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.TimeToGenerate", 1);
 }
 
 // Tests that the consumer is informed of a failure to generate a link when an
@@ -309,6 +316,8 @@ TEST_F(LinkToTextMediatorTest, LinkGenerationError) {
   histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
                                      error, 1);
   ValidateLinkGeneratedErrorUkm(error);
+  histogram_tester.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.Error.TimeToGenerate", 1);
 }
 
 // Tests that the consumer is informed of a failure to generate a link when an
@@ -340,6 +349,8 @@ TEST_F(LinkToTextMediatorTest, EmptyResponseLinkGenerationError) {
   histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
                                      error, 1);
   ValidateLinkGeneratedErrorUkm(error);
+  histogram_tester.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.Error.TimeToGenerate", 1);
 }
 
 // Tests that the consumer is informed of a failure to generate a link when an
@@ -373,6 +384,8 @@ TEST_F(LinkToTextMediatorTest, BadResponseLinkGenerationError) {
   histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
                                      error, 1);
   ValidateLinkGeneratedErrorUkm(error);
+  histogram_tester.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.Error.TimeToGenerate", 1);
 }
 
 // Tests that the consumer is informed of a failure to generate a link when an
@@ -405,6 +418,8 @@ TEST_F(LinkToTextMediatorTest, StringResponseLinkGenerationError) {
   histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
                                      error, 1);
   ValidateLinkGeneratedErrorUkm(error);
+  histogram_tester.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.Error.TimeToGenerate", 1);
 }
 
 // Tests that the consumer is informed of a failure to generate a link when a
@@ -437,4 +452,48 @@ TEST_F(LinkToTextMediatorTest, LinkGenerationSuccessButNoPayload) {
   histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
                                      error, 1);
   ValidateLinkGeneratedErrorUkm(error);
+  histogram_tester.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.Error.TimeToGenerate", 1);
+}
+
+// Tests that a timeout error is recorded when the link generation requests
+// actually times out.
+TEST_F(LinkToTextMediatorTest, LinkGenerationTimeout) {
+  base::HistogramTester histogram_tester;
+
+  // Set-up with any response, which doesn't matter since the mocked WebFrame
+  // will simply invoke the callback with nullptr (due to a timeout).
+  std::unique_ptr<base::Value> success_response =
+      CreateErrorResponse(LinkGenerationOutcome::kSuccess);
+  SetLinkToTextResponse(std::move(success_response), /*zoom=*/1.0);
+
+  main_frame_->set_force_timeout(true);
+
+  __block BOOL callback_invoked = NO;
+  [[[mocked_consumer_ expect] andDo:^(NSInvocation*) {
+    callback_invoked = YES;
+  }] linkGenerationFailed];
+
+  [mediator_ handleLinkToTextSelection];
+
+  // Advance time to skip waiting for the timeout.
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(
+      link_to_text::kLinkGenerationTimeoutInMs + 10));
+
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^BOOL {
+    base::RunLoop().RunUntilIdle();
+    return callback_invoked;
+  }));
+
+  [mocked_consumer_ verify];
+
+  // Make sure the correct metric were recorded.
+  LinkGenerationError error = LinkGenerationError::kTimeout;
+  histogram_tester.ExpectUniqueSample("SharedHighlights.LinkGenerated", false,
+                                      1);
+  histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
+                                     error, 1);
+  ValidateLinkGeneratedErrorUkm(error);
+  histogram_tester.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.Error.TimeToGenerate", 1);
 }

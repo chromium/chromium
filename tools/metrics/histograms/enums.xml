@@ -41068,6 +41068,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8" label="Tab crash"/>
   <int value="9" label="Unknown"/>
   <int value="10" label="Iframe"/>
+  <int value="11" label="Timeout"/>
 </enum>
 
 <enum name="LinkMonitorFailureType">

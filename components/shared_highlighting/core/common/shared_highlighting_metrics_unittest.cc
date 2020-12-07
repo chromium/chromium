@@ -41,111 +41,102 @@ class SharedHighlightingMetricsTest : public testing::Test {
                                static_cast<int64_t>(source));
   }
 
+  base::HistogramTester histogram_tester_;
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(SharedHighlightingMetricsTest, LogTextFragmentAmbiguousMatch) {
-  base::HistogramTester histogram_tester;
-
   LogTextFragmentAmbiguousMatch(true);
-  histogram_tester.ExpectBucketCount("TextFragmentAnchor.AmbiguousMatch", 1, 1);
+  histogram_tester_.ExpectBucketCount("TextFragmentAnchor.AmbiguousMatch", 1,
+                                      1);
 
   LogTextFragmentAmbiguousMatch(false);
-  histogram_tester.ExpectBucketCount("TextFragmentAnchor.AmbiguousMatch", 0, 1);
-  histogram_tester.ExpectTotalCount("TextFragmentAnchor.AmbiguousMatch", 2);
+  histogram_tester_.ExpectBucketCount("TextFragmentAnchor.AmbiguousMatch", 0,
+                                      1);
+  histogram_tester_.ExpectTotalCount("TextFragmentAnchor.AmbiguousMatch", 2);
 }
 
 TEST_F(SharedHighlightingMetricsTest, LogTextFragmentLinkOpenSource) {
-  base::HistogramTester histogram_tester;
-
   GURL search_engine_url(kSearchEngineUrl);
   LogTextFragmentLinkOpenSource(search_engine_url);
-  histogram_tester.ExpectBucketCount("TextFragmentAnchor.LinkOpenSource",
-                                     TextFragmentLinkOpenSource::kSearchEngine,
-                                     1);
+  histogram_tester_.ExpectBucketCount("TextFragmentAnchor.LinkOpenSource",
+                                      TextFragmentLinkOpenSource::kSearchEngine,
+                                      1);
 
   GURL non_search_engine_url("https://example.com");
   LogTextFragmentLinkOpenSource(non_search_engine_url);
-  histogram_tester.ExpectBucketCount("TextFragmentAnchor.LinkOpenSource",
-                                     TextFragmentLinkOpenSource::kUnknown, 1);
-  histogram_tester.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 2);
+  histogram_tester_.ExpectBucketCount("TextFragmentAnchor.LinkOpenSource",
+                                      TextFragmentLinkOpenSource::kUnknown, 1);
+  histogram_tester_.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 2);
 
   GURL empty_gurl("");
   LogTextFragmentLinkOpenSource(empty_gurl);
-  histogram_tester.ExpectBucketCount("TextFragmentAnchor.LinkOpenSource",
-                                     TextFragmentLinkOpenSource::kUnknown, 2);
-  histogram_tester.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 3);
+  histogram_tester_.ExpectBucketCount("TextFragmentAnchor.LinkOpenSource",
+                                      TextFragmentLinkOpenSource::kUnknown, 2);
+  histogram_tester_.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 3);
 }
 
 TEST_F(SharedHighlightingMetricsTest, LogTextFragmentMatchRate) {
-  base::HistogramTester histogram_tester;
+  LogTextFragmentMatchRate(/*matches=*/2, /*text_fragments=*/2);
+  histogram_tester_.ExpectBucketCount("TextFragmentAnchor.MatchRate", 100, 1);
 
-  LogTextFragmentMatchRate(/*matches=*/2, /*nb_selectors=*/2);
-  histogram_tester.ExpectBucketCount("TextFragmentAnchor.MatchRate", 100, 1);
-
-  LogTextFragmentMatchRate(/*matches=*/1, /*nb_selectors=*/2);
-  histogram_tester.ExpectBucketCount("TextFragmentAnchor.MatchRate", 50, 1);
-  histogram_tester.ExpectTotalCount("TextFragmentAnchor.MatchRate", 2);
+  LogTextFragmentMatchRate(/*matches=*/1, /*text_fragments=*/2);
+  histogram_tester_.ExpectBucketCount("TextFragmentAnchor.MatchRate", 50, 1);
+  histogram_tester_.ExpectTotalCount("TextFragmentAnchor.MatchRate", 2);
 }
 
 TEST_F(SharedHighlightingMetricsTest, LogTextFragmentSelectorCount) {
-  base::HistogramTester histogram_tester;
-
   LogTextFragmentSelectorCount(1);
-  histogram_tester.ExpectBucketCount("TextFragmentAnchor.SelectorCount", 1, 1);
+  histogram_tester_.ExpectBucketCount("TextFragmentAnchor.SelectorCount", 1, 1);
 
   LogTextFragmentSelectorCount(20);
-  histogram_tester.ExpectBucketCount("TextFragmentAnchor.SelectorCount", 20, 1);
-  histogram_tester.ExpectTotalCount("TextFragmentAnchor.SelectorCount", 2);
+  histogram_tester_.ExpectBucketCount("TextFragmentAnchor.SelectorCount", 20,
+                                      1);
+  histogram_tester_.ExpectTotalCount("TextFragmentAnchor.SelectorCount", 2);
 }
 
 TEST_F(SharedHighlightingMetricsTest, LogLinkGenerationStatus) {
-  base::HistogramTester histogram_tester;
-
   LogLinkGenerationStatus(true);
-  histogram_tester.ExpectUniqueSample("SharedHighlights.LinkGenerated", true,
-                                      1);
+  histogram_tester_.ExpectUniqueSample("SharedHighlights.LinkGenerated", true,
+                                       1);
 
   LogLinkGenerationStatus(false);
-  histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated", false,
-                                     1);
-  histogram_tester.ExpectTotalCount("SharedHighlights.LinkGenerated", 2);
+  histogram_tester_.ExpectBucketCount("SharedHighlights.LinkGenerated", false,
+                                      1);
+  histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated", 2);
 }
 
 TEST_F(SharedHighlightingMetricsTest, LogLinkGenerationErrorReason) {
-  base::HistogramTester histogram_tester;
-
   LogLinkGenerationErrorReason(LinkGenerationError::kIncorrectSelector);
-  histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
-                                     LinkGenerationError::kIncorrectSelector,
-                                     1);
+  histogram_tester_.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
+                                      LinkGenerationError::kIncorrectSelector,
+                                      1);
 
   LogLinkGenerationErrorReason(LinkGenerationError::kEmptySelection);
-  histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
-                                     LinkGenerationError::kEmptySelection, 1);
-  histogram_tester.ExpectTotalCount("SharedHighlights.LinkGenerated.Error", 2);
+  histogram_tester_.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
+                                      LinkGenerationError::kEmptySelection, 1);
+  histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated.Error", 2);
 }
 
 TEST_F(SharedHighlightingMetricsTest, LogAndroidLinkGenerationErrorReason) {
-  base::HistogramTester histogram_tester;
-
   LogGenerateErrorTabHidden();
-  histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
-                                     LinkGenerationError::kTabHidden, 1);
+  histogram_tester_.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
+                                      LinkGenerationError::kTabHidden, 1);
 
   LogGenerateErrorOmniboxNavigation();
-  histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
-                                     LinkGenerationError::kOmniboxNavigation,
-                                     1);
+  histogram_tester_.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
+                                      LinkGenerationError::kOmniboxNavigation,
+                                      1);
 
   LogGenerateErrorTabCrash();
-  histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
-                                     LinkGenerationError::kTabCrash, 1);
-  histogram_tester.ExpectTotalCount("SharedHighlights.LinkGenerated.Error", 3);
+  histogram_tester_.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
+                                      LinkGenerationError::kTabCrash, 1);
+  histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated.Error", 3);
 }
 
-TEST_F(SharedHighlightingMetricsTest, LinkOpenedUkm_Success_SearchEngine) {
+TEST_F(SharedHighlightingMetricsTest, LinkOpenedUkmSuccessSearchEngine) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   ukm::SourceId source_id = 1;
   bool success = true;
@@ -156,7 +147,7 @@ TEST_F(SharedHighlightingMetricsTest, LinkOpenedUkm_Success_SearchEngine) {
                         TextFragmentLinkOpenSource::kSearchEngine);
 }
 
-TEST_F(SharedHighlightingMetricsTest, LinkOpenedUkm_Fail_SearchEngine) {
+TEST_F(SharedHighlightingMetricsTest, LinkOpenedUkmFailSearchEngine) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   ukm::SourceId source_id = 1;
   bool success = false;
@@ -167,7 +158,7 @@ TEST_F(SharedHighlightingMetricsTest, LinkOpenedUkm_Fail_SearchEngine) {
                         TextFragmentLinkOpenSource::kSearchEngine);
 }
 
-TEST_F(SharedHighlightingMetricsTest, LinkOpenedUkm_Success_UnknownSource) {
+TEST_F(SharedHighlightingMetricsTest, LinkOpenedUkmSuccessUnknownSource) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   ukm::SourceId source_id = 1;
   bool success = true;
@@ -178,7 +169,7 @@ TEST_F(SharedHighlightingMetricsTest, LinkOpenedUkm_Success_UnknownSource) {
                         TextFragmentLinkOpenSource::kUnknown);
 }
 
-TEST_F(SharedHighlightingMetricsTest, LinkOpenedUkm_Fail_UnknownSource) {
+TEST_F(SharedHighlightingMetricsTest, LinkOpenedUkmFailUnknownSource) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   ukm::SourceId source_id = 1;
   bool success = false;
@@ -189,7 +180,7 @@ TEST_F(SharedHighlightingMetricsTest, LinkOpenedUkm_Fail_UnknownSource) {
                         TextFragmentLinkOpenSource::kUnknown);
 }
 
-TEST_F(SharedHighlightingMetricsTest, LinkOpenedUkm_InvalidSourceId) {
+TEST_F(SharedHighlightingMetricsTest, LinkOpenedUkmInvalidSourceId) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   LogLinkOpenedUkmEvent(ukm::kInvalidSourceId, GURL(kSearchEngineUrl),
@@ -202,7 +193,7 @@ TEST_F(SharedHighlightingMetricsTest, LinkOpenedUkm_InvalidSourceId) {
 
 // Tests that using the endpoints with a custom recorder won't use the static
 // UKM recorder.
-TEST_F(SharedHighlightingMetricsTest, LinkOpenedUkm_CustomRecorder) {
+TEST_F(SharedHighlightingMetricsTest, LinkOpenedUkmCustomRecorder) {
   ukm::TestAutoSetUkmRecorder static_ukm_recorder;
   ukm::TestUkmRecorder custom_ukm_recorder;
   ukm::SourceId source_id = 1;
@@ -219,7 +210,7 @@ TEST_F(SharedHighlightingMetricsTest, LinkOpenedUkm_CustomRecorder) {
   EXPECT_EQ(1U, custom_entries.size());
 }
 
-TEST_F(SharedHighlightingMetricsTest, LinkGeneratedUkm_Success) {
+TEST_F(SharedHighlightingMetricsTest, LinkGeneratedUkmSuccess) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   ukm::SourceId source_id = 1;
 
@@ -234,7 +225,7 @@ TEST_F(SharedHighlightingMetricsTest, LinkGeneratedUkm_Success) {
   EXPECT_FALSE(ukm_recorder.GetEntryMetric(entry, kErrorUkmMetric));
 }
 
-TEST_F(SharedHighlightingMetricsTest, LinkGeneratedUkm_Error) {
+TEST_F(SharedHighlightingMetricsTest, LinkGeneratedUkmError) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   ukm::SourceId source_id = 1;
   LinkGenerationError error = LinkGenerationError::kEmptySelection;
@@ -251,8 +242,7 @@ TEST_F(SharedHighlightingMetricsTest, LinkGeneratedUkm_Error) {
                                  static_cast<int64_t>(error));
 }
 
-TEST_F(SharedHighlightingMetricsTest,
-       LinkGeneratedUkm_Success_InvalidSourceId) {
+TEST_F(SharedHighlightingMetricsTest, LinkGeneratedUkmSuccessInvalidSourceId) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   LogLinkGeneratedSuccessUkmEvent(ukm::kInvalidSourceId);
@@ -264,7 +254,7 @@ TEST_F(SharedHighlightingMetricsTest,
 
 // Tests that using the endpoints with a custom recorder won't use the static
 // UKM recorder.
-TEST_F(SharedHighlightingMetricsTest, LinkGeneratedUkm_CustomRecorder) {
+TEST_F(SharedHighlightingMetricsTest, LinkGeneratedUkmCustomRecorder) {
   ukm::TestAutoSetUkmRecorder static_ukm_recorder;
   ukm::TestUkmRecorder custom_ukm_recorder;
   ukm::SourceId source_id = 1;
@@ -280,6 +270,26 @@ TEST_F(SharedHighlightingMetricsTest, LinkGeneratedUkm_CustomRecorder) {
   auto custom_entries = custom_ukm_recorder.GetEntriesByName(
       ukm::builders::SharedHighlights_LinkGenerated::kEntryName);
   EXPECT_EQ(2U, custom_entries.size());
+}
+
+// Tests that link generation success latency logs to the right histogram.
+TEST_F(SharedHighlightingMetricsTest, LinkGeneratedSuccessLatency) {
+  base::TimeDelta test_delta = base::TimeDelta::FromMilliseconds(2000);
+
+  LogGenerateSuccessLatency(test_delta);
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "SharedHighlights.LinkGenerated.TimeToGenerate", test_delta, 1);
+}
+
+// Tests that link generation failure latency logs to the right histogram.
+TEST_F(SharedHighlightingMetricsTest, LinkGeneratedErrorLatency) {
+  base::TimeDelta test_delta = base::TimeDelta::FromMilliseconds(2000);
+
+  LogGenerateErrorLatency(test_delta);
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "SharedHighlights.LinkGenerated.Error.TimeToGenerate", test_delta, 1);
 }
 
 }  // namespace

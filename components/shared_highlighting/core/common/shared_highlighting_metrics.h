@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SHARED_HIGHLIGHTING_CORE_COMMON_SHARED_HIGHLIGHTING_METRICS_H_
 #define COMPONENTS_SHARED_HIGHLIGHTING_CORE_COMMON_SHARED_HIGHLIGHTING_METRICS_H_
 
+#include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
@@ -34,7 +35,10 @@ enum class LinkGenerationError {
   // Selection happened on iframe.
   kIFrame = 10,
 
-  kMaxValue = kIFrame
+  // Timed-out waiting for a link to be generated.
+  kTimeout = 11,
+
+  kMaxValue = kTimeout
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -81,6 +85,12 @@ void LogGenerateErrorTabCrash();
 // Records when link generation was not completed because selection happened on
 // iframe.
 void LogGenerateErrorIFrame();
+
+// Records the latency for successfully generating a link.
+void LogGenerateSuccessLatency(base::TimeDelta latency);
+
+// Records the latency for failing to generate a link.
+void LogGenerateErrorLatency(base::TimeDelta latency);
 
 // Records a UKM event for opening a link with text fragments. |source_id|
 // refers to the navigation action's ID, |referrer| will be used to record the
