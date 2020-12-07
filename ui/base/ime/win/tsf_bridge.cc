@@ -12,6 +12,7 @@
 #include "base/stl_util.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread_local_storage.h"
+#include "base/trace_event/trace_event.h"
 #include "base/win/scoped_variant.h"
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/base/ime/text_input_client.h"
@@ -614,6 +615,7 @@ TSFBridge::~TSFBridge() {}
 
 // static
 HRESULT TSFBridge::Initialize() {
+  TRACE_EVENT0("ime", "TSFBridge::Initialize");
   if (!base::CurrentUIThread::IsSet()) {
     return E_FAIL;
   }
@@ -662,6 +664,7 @@ void TSFBridge::ReplaceThreadLocalTSFBridge(TSFBridge* new_instance) {
 
 // static
 void TSFBridge::Shutdown() {
+  TRACE_EVENT0("ime", "TSFBridge::Shutdown");
   if (!base::CurrentUIThread::IsSet()) {
   }
   ReplaceThreadLocalTSFBridge(nullptr);

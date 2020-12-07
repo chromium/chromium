@@ -88,6 +88,7 @@
   X("headless")                                                          \
   X("hwoverlays")                                                        \
   X("identity")                                                          \
+  X("ime")                                                               \
   X("IndexedDB")                                                         \
   X("input")                                                             \
   X("io")                                                                \

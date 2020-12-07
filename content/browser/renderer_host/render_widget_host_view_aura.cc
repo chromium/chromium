@@ -689,6 +689,7 @@ gfx::Size RenderWidgetHostViewAura::GetVisibleViewportSize() {
 }
 
 void RenderWidgetHostViewAura::SetInsets(const gfx::Insets& insets) {
+  TRACE_EVENT0("vk", "RenderWidgetHostViewAura::SetInsets");
   if (insets != insets_) {
     insets_ = insets;
     window_->AllocateLocalSurfaceId();
@@ -1229,8 +1230,11 @@ gfx::Rect RenderWidgetHostViewAura::GetCaretBounds() const {
 
   const TextInputManager::SelectionRegion* region =
       text_input_manager_->GetSelectionRegion();
-  return ConvertRectToScreen(
+  gfx::Rect caret_rect = ConvertRectToScreen(
       gfx::RectBetweenSelectionBounds(region->anchor, region->focus));
+  TRACE_EVENT1("ime", "RenderWidgetHostViewAura::GetCaretBounds", "caret_rect",
+               caret_rect.ToString());
+  return caret_rect;
 }
 
 bool RenderWidgetHostViewAura::GetCompositionCharacterBounds(
@@ -1247,6 +1251,8 @@ bool RenderWidgetHostViewAura::GetCompositionCharacterBounds(
   if (index >= composition_range_info->character_bounds.size())
     return false;
   *rect = ConvertRectToScreen(composition_range_info->character_bounds[index]);
+  TRACE_EVENT1("ime", "RenderWidgetHostViewAura::GetCompositionCharacterBounds",
+               "comp_char_rect", rect->ToString());
   return true;
 }
 
@@ -1521,14 +1527,20 @@ void RenderWidgetHostViewAura::GetActiveTextInputControlLayoutBounds(
     const ui::mojom::TextInputState* state =
         text_input_manager_->GetTextInputState();
     if (state) {
-      if (state->edit_context_control_bounds)
+      if (state->edit_context_control_bounds) {
         *control_bounds =
             ConvertRectToScreen(state->edit_context_control_bounds.value());
+        TRACE_EVENT1(
+            "ime",
+            "RenderWidgetHostViewAura::GetActiveTextInputControlLayoutBounds",
+            "control_bounds_rect", control_bounds->value().ToString());
+      }
       // Selection bounds are currently populated only for EditContext.
       // For editable elements we use GetCompositionCharacterBounds.
-      if (state->edit_context_selection_bounds)
+      if (state->edit_context_selection_bounds) {
         *selection_bounds =
             ConvertRectToScreen(state->edit_context_selection_bounds.value());
+      }
     }
   }
 }
