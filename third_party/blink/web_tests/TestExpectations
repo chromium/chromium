@@ -5889,3 +5889,6 @@ crbug.com/1155771 [ Linux ] external/wpt/dom/events/AddEventListenerOptions-sign
 
 # DevTools roll
 crbug.com/1144171 http/tests/devtools/report-API-errors.js [ Skip ]
+
+# Sheriff 2020-12-07
+crbug.com/1156175 external/wpt/requestidlecallback/callback-iframe.html [ Pass Timeout ]
