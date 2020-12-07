@@ -41,6 +41,8 @@
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink-forward.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
+#include "services/network/public/mojom/url_loader.mojom-blink.h"
+#include "services/network/public/mojom/web_bundle_handle.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
@@ -78,6 +80,21 @@ class PLATFORM_EXPORT ResourceRequestHead {
     RedirectInfo() = delete;
     RedirectInfo(const KURL& original_url, const KURL& previous_url)
         : original_url(original_url), previous_url(previous_url) {}
+  };
+
+  struct PLATFORM_EXPORT WebBundleTokenParams {
+    WebBundleTokenParams() = delete;
+    WebBundleTokenParams(const WebBundleTokenParams& other);
+    WebBundleTokenParams& operator=(const WebBundleTokenParams& other);
+
+    WebBundleTokenParams(
+        const base::UnguessableToken& token,
+        mojo::PendingRemote<network::mojom::WebBundleHandle> handle);
+
+    mojo::PendingRemote<network::mojom::WebBundleHandle> CloneHandle() const;
+
+    base::UnguessableToken token;
+    mojo::PendingRemote<network::mojom::WebBundleHandle> handle;
   };
 
   ResourceRequestHead();
@@ -486,6 +503,16 @@ class PLATFORM_EXPORT ResourceRequestHead {
     return allowHTTP1ForStreamingUpload_;
   }
 
+  const base::Optional<ResourceRequestHead::WebBundleTokenParams>&
+  GetWebBundleTokenParams() const {
+    return web_bundle_token_params_;
+  }
+
+  void SetWebBundleTokenParams(
+      ResourceRequestHead::WebBundleTokenParams params) {
+    web_bundle_token_params_ = params;
+  }
+
  private:
   const CacheControlHeader& GetCacheControlHeader() const;
 
@@ -581,6 +608,11 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // prefetch responses. The browser process uses this token to ensure the
   // request is cached correctly.
   base::Optional<base::UnguessableToken> recursive_prefetch_token_;
+
+  // This is used when fetching either a WebBundle or a subresrouce in the
+  // WebBundle. The network process uses this token to associate the request to
+  // the bundle.
+  base::Optional<WebBundleTokenParams> web_bundle_token_params_;
 };
 
 class PLATFORM_EXPORT ResourceRequestBody {

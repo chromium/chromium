@@ -548,6 +548,13 @@ network::OptionalTrustTokenParams WebURLRequest::TrustTokenParams() const {
   return ConvertTrustTokenParams(resource_request_->TrustTokenParams());
 }
 
+base::Optional<base::UnguessableToken> WebURLRequest::WebBundleToken() const {
+  if (resource_request_->GetWebBundleTokenParams()) {
+    return resource_request_->GetWebBundleTokenParams()->token;
+  }
+  return base::nullopt;
+}
+
 WebURLRequest::WebURLRequest(ResourceRequest& r) : resource_request_(&r) {}
 
 }  // namespace blink

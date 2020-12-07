@@ -47,6 +47,8 @@ const char* RequestDestinationToString(
       return "track";
     case network::mojom::RequestDestination::kVideo:
       return "video";
+    case network::mojom::RequestDestination::kWebBundle:
+      return "webbundle";
     case network::mojom::RequestDestination::kWorker:
       return "worker";
     case network::mojom::RequestDestination::kXslt:

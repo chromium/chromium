@@ -93,6 +93,7 @@ WebRequestResourceType ToWebRequestResourceType(
     case network::mojom::RequestDestination::kAudioWorklet:
     case network::mojom::RequestDestination::kManifest:
     case network::mojom::RequestDestination::kPaintWorklet:
+    case network::mojom::RequestDestination::kWebBundle:
       return WebRequestResourceType::OTHER;
   }
   NOTREACHED();

@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/url_request_mojom_traits.h"
 
+#include "base/optional.h"
 #include "base/test/gtest_util.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -101,6 +102,10 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
       mojom::TrustTokenSignRequestData::kInclude;
   original.trust_token_params->additional_signed_headers.push_back(
       "some_header");
+  original.web_bundle_token_params =
+      base::make_optional(ResourceRequest::WebBundleTokenParams(
+          base::UnguessableToken::Create(),
+          mojo::PendingRemote<network::mojom::WebBundleHandle>()));
 
   network::ResourceRequest copied;
   EXPECT_TRUE(

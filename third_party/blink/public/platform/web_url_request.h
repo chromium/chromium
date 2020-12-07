@@ -318,6 +318,9 @@ class WebURLRequest {
   BLINK_PLATFORM_EXPORT network::OptionalTrustTokenParams TrustTokenParams()
       const;
 
+  BLINK_PLATFORM_EXPORT base::Optional<base::UnguessableToken> WebBundleToken()
+      const;
+
 #if INSIDE_BLINK
   BLINK_PLATFORM_EXPORT ResourceRequest& ToMutableResourceRequest();
   BLINK_PLATFORM_EXPORT const ResourceRequest& ToResourceRequest() const;

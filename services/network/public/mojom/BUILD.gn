@@ -585,6 +585,10 @@ mojom("mojom") {
           cpp = "::network::ResourceRequest::TrustedParams"
         },
         {
+          mojom = "network.mojom.WebBundleTokenParams"
+          cpp = "::network::ResourceRequest::WebBundleTokenParams"
+        },
+        {
           mojom = "network.mojom.URLRequest"
           cpp = "::network::ResourceRequest"
         },

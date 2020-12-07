@@ -20,6 +20,7 @@ import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
+import "services/network/public/mojom/web_bundle_handle.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -95,6 +96,17 @@ struct TrustedUrlRequestParams {
   // URLLoaderFactoryParams passed to the factory. Otherwise, the value from
   // the factory params is used unconditionally.
   ClientSecurityState? client_security_state;
+};
+
+// Options that may only be set on URLRequests which are related to WebBundle.
+struct WebBundleTokenParams {
+  // Unique token to identify a WebBundle.
+  mojo_base.mojom.UnguessableToken token;
+  // Handle for the WebBundle-related communication between the network process
+  // and the renderer. This is also used as a 'keep-alive' handle. We clean up
+  // the WebBundle data in the network process when the renderer-side endpoint
+  // is deleted.
+  pending_remote<WebBundleHandle>? web_bundle_handle;
 };
 
 // Typemapped to network::ResourceRequest.
@@ -402,6 +414,10 @@ struct URLRequest {
   // and the request has set the trustToken Fetch parameter, denoting that it
   // wishes to execute a Trust Tokens protocol operation.
   TrustTokenParams? trust_token_params;
+
+  // Set for WebBundle related requests. See the comment of WebBundleTokenParams
+  // for details.
+  WebBundleTokenParams? web_bundle_token_params;
 };
 
 // URLRequestBody represents body (i.e. upload data) of a HTTP request.

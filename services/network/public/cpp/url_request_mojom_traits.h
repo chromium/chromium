@@ -30,6 +30,7 @@
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
+#include "services/network/public/mojom/web_bundle_handle.mojom-shared.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace mojo {
@@ -83,6 +84,27 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
 
   static bool Read(network::mojom::TrustedUrlRequestParamsDataView data,
                    network::ResourceRequest::TrustedParams* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+    StructTraits<network::mojom::WebBundleTokenParamsDataView,
+                 network::ResourceRequest::WebBundleTokenParams> {
+  static const base::UnguessableToken& token(
+      const network::ResourceRequest::WebBundleTokenParams& params) {
+    return params.token;
+  }
+  static mojo::PendingRemote<network::mojom::WebBundleHandle> web_bundle_handle(
+      const network::ResourceRequest::WebBundleTokenParams& params) {
+    if (!params.handle)
+      return mojo::NullRemote();
+    return std::move(
+        const_cast<network::ResourceRequest::WebBundleTokenParams&>(params)
+            .handle);
+  }
+
+  static bool Read(network::mojom::WebBundleTokenParamsDataView data,
+                   network::ResourceRequest::WebBundleTokenParams* out);
 };
 
 template <>
@@ -263,6 +285,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static const network::mojom::TrustTokenParamsPtr& trust_token_params(
       const network::ResourceRequest& request) {
     return request.trust_token_params.as_ptr();
+  }
+  static const base::Optional<network::ResourceRequest::WebBundleTokenParams>&
+  web_bundle_token_params(const network::ResourceRequest& request) {
+    return request.web_bundle_token_params;
   }
 
   static bool Read(network::mojom::URLRequestDataView data,

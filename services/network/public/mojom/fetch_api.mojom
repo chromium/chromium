@@ -47,6 +47,14 @@ enum RequestDestination {
   kStyle,
   kTrack,
   kVideo,
+  // kWebBundle represents a request for a WebBundle. A <link> element whose
+  // rel is "webbundle" uses this destination.
+  //
+  // e.g. <link rel=webbundle href="example.com/foo.wbn" resources="...">
+  //
+  // Fetch specifiction does not define this destination yet.
+  // Tracking issue: https://github.com/whatwg/fetch/issues/1120
+  kWebBundle,
   kWorker,
   kXslt,
 };
