@@ -301,7 +301,7 @@ class PaintPreviewCompositorBeginCompositeTest
   GURL url_{"https://www.chromium.org"};
 
  private:
-  PaintPreviewCompositorImpl compositor_{mojo::NullReceiver(),
+  PaintPreviewCompositorImpl compositor_{mojo::NullReceiver(), nullptr,
                                          base::DoNothing()};
 };
 
@@ -574,7 +574,7 @@ TEST(PaintPreviewCompositorTest, TestComposite) {
   base::test::TaskEnvironment task_environment;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  PaintPreviewCompositorImpl compositor(mojo::NullReceiver(),
+  PaintPreviewCompositorImpl compositor(mojo::NullReceiver(), nullptr,
                                         base::BindOnce([]() {}));
   GURL url("https://www.chromium.org");
   const base::UnguessableToken kRootFrameID = base::UnguessableToken::Create();
@@ -620,7 +620,7 @@ TEST(PaintPreviewCompositorTest, TestComposite) {
 
 TEST(PaintPreviewCompositorTest, TestCompositeWithMemoryBuffer) {
   base::test::TaskEnvironment task_environment;
-  PaintPreviewCompositorImpl compositor(mojo::NullReceiver(),
+  PaintPreviewCompositorImpl compositor(mojo::NullReceiver(), nullptr,
                                         base::BindOnce([]() {}));
   GURL url("https://www.chromium.org");
   const base::UnguessableToken kRootFrameID = base::UnguessableToken::Create();
@@ -694,7 +694,7 @@ TEST(PaintPreviewCompositorTest, TestCompositeMainFrameNoDependencies) {
   base::test::TaskEnvironment task_environment;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  PaintPreviewCompositorImpl compositor(mojo::NullReceiver(),
+  PaintPreviewCompositorImpl compositor(mojo::NullReceiver(), nullptr,
                                         base::BindOnce([]() {}));
   GURL url("https://www.chromium.org");
   const base::UnguessableToken kRootFrameID = base::UnguessableToken::Create();
@@ -738,7 +738,7 @@ TEST(PaintPreviewCompositorTest, TestCompositeMainFrameOneDependency) {
   base::test::TaskEnvironment task_environment;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  PaintPreviewCompositorImpl compositor(mojo::NullReceiver(),
+  PaintPreviewCompositorImpl compositor(mojo::NullReceiver(), nullptr,
                                         base::BindOnce([]() {}));
   GURL url("https://www.chromium.org");
   const base::UnguessableToken kRootFrameID = base::UnguessableToken::Create();
@@ -796,7 +796,7 @@ TEST(PaintPreviewCompositorTest, TestCompositeMainFrameOneDependencyScrolled) {
   base::test::TaskEnvironment task_environment;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  PaintPreviewCompositorImpl compositor(mojo::NullReceiver(),
+  PaintPreviewCompositorImpl compositor(mojo::NullReceiver(), nullptr,
                                         base::BindOnce([]() {}));
   GURL url("https://www.chromium.org");
   const base::UnguessableToken kRootFrameID = base::UnguessableToken::Create();
@@ -856,7 +856,7 @@ TEST(PaintPreviewCompositorTest,
   base::test::TaskEnvironment task_environment;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  PaintPreviewCompositorImpl compositor(mojo::NullReceiver(),
+  PaintPreviewCompositorImpl compositor(mojo::NullReceiver(), nullptr,
                                         base::BindOnce([]() {}));
   GURL url("https://www.chromium.org");
   const base::UnguessableToken kRootFrameID = base::UnguessableToken::Create();
