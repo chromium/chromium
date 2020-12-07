@@ -6,9 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_RW_BUFFER_H_
 
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/skia/include/core/SkRefCnt.h"
-
-class SkStreamAsset;
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace blink {
 
@@ -44,15 +42,13 @@ class PLATFORM_EXPORT RWBuffer {
    */
   void Append(const void* buffer, size_t length, size_t reserve = 0);
 
-  sk_sp<ROBuffer> MakeROBufferSnapshot() const;
+  scoped_refptr<ROBuffer> MakeROBufferSnapshot() const;
 
   // This should only be called from the same thread that we are creating the
   // RWBuffer and the snapshots on.
   // If true is returned, it is guaranteed that |this| has unique ownership of
   // its underlying buffer.
   bool HasNoSnapshots() const;
-
-  std::unique_ptr<SkStreamAsset> MakeStreamSnapshot() const;
 
   void Validate() const;
 
@@ -67,7 +63,7 @@ class PLATFORM_EXPORT RWBuffer {
  * the caller must instantiate a local iterator, as the memory is stored in 1 or
  * more contiguous blocks.
  */
-class PLATFORM_EXPORT ROBuffer : public SkRefCnt {
+class PLATFORM_EXPORT ROBuffer : public WTF::ThreadSafeRefCounted<ROBuffer> {
  public:
   /**
    * Return the logical length of the data owned/shared by this buffer. It may
@@ -78,7 +74,7 @@ class PLATFORM_EXPORT ROBuffer : public SkRefCnt {
   class PLATFORM_EXPORT Iter {
    public:
     explicit Iter(const ROBuffer*);
-    explicit Iter(const sk_sp<ROBuffer>&);
+    explicit Iter(const scoped_refptr<ROBuffer>&);
 
     void Reset(const ROBuffer*);
 
@@ -107,10 +103,11 @@ class PLATFORM_EXPORT ROBuffer : public SkRefCnt {
   };
 
  private:
+  friend class WTF::ThreadSafeRefCounted<ROBuffer>;
   ROBuffer(const RWBuffer::BufferHead* head,
            size_t available,
            const RWBuffer::BufferBlock* tail);
-  ~ROBuffer() override;
+  ~ROBuffer();
 
   const RWBuffer::BufferHead* head_;
   const size_t available_;

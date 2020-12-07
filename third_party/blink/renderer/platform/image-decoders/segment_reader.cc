@@ -103,14 +103,14 @@ sk_sp<SkData> DataSegmentReader::GetAsSkData() const {
 
 class ROBufferSegmentReader final : public SegmentReader {
  public:
-  explicit ROBufferSegmentReader(sk_sp<ROBuffer>);
+  explicit ROBufferSegmentReader(scoped_refptr<ROBuffer>);
 
   size_t size() const override;
   size_t GetSomeData(const char*& data, size_t position) const override;
   sk_sp<SkData> GetAsSkData() const override;
 
  private:
-  sk_sp<ROBuffer> ro_buffer_;
+  scoped_refptr<ROBuffer> ro_buffer_;
   mutable Mutex read_mutex_;
   // Position of the first char in the current block of iter_.
   mutable size_t position_of_block_ GUARDED_BY(read_mutex_);
@@ -119,7 +119,7 @@ class ROBufferSegmentReader final : public SegmentReader {
   DISALLOW_COPY_AND_ASSIGN(ROBufferSegmentReader);
 };
 
-ROBufferSegmentReader::ROBufferSegmentReader(sk_sp<ROBuffer> buffer)
+ROBufferSegmentReader::ROBufferSegmentReader(scoped_refptr<ROBuffer> buffer)
     : ro_buffer_(std::move(buffer)),
       position_of_block_(0),
       iter_(ro_buffer_.get()) {}
@@ -165,7 +165,7 @@ size_t ROBufferSegmentReader::GetSomeData(const char*& data,
 }
 
 static void UnrefROBuffer(const void* ptr, void* context) {
-  static_cast<ROBuffer*>(context)->unref();
+  static_cast<ROBuffer*>(context)->Release();
 }
 
 sk_sp<SkData> ROBufferSegmentReader::GetAsSkData() const {
@@ -179,7 +179,7 @@ sk_sp<SkData> ROBufferSegmentReader::GetAsSkData() const {
 
   if (!multiple_blocks) {
     // Contiguous data. No need to copy.
-    ro_buffer_->ref();
+    ro_buffer_->AddRef();
     return SkData::MakeWithProc(iter.data(), iter.size(), &UnrefROBuffer,
                                 ro_buffer_.get());
   }
@@ -207,7 +207,7 @@ scoped_refptr<SegmentReader> SegmentReader::CreateFromSkData(
 }
 
 scoped_refptr<SegmentReader> SegmentReader::CreateFromROBuffer(
-    sk_sp<ROBuffer> buffer) {
+    scoped_refptr<ROBuffer> buffer) {
   return base::AdoptRef(new ROBufferSegmentReader(std::move(buffer)));
 }
 

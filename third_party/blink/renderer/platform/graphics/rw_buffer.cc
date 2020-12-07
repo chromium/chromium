@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/platform/graphics/rw_buffer.h"
 
+#include "base/atomic_ref_count.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "third_party/skia/include/core/SkStream.h"
-#include "third_party/skia/include/private/SkMalloc.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
 #include <algorithm>
 #include <atomic>
@@ -39,7 +39,9 @@ struct RWBuffer::BufferBlock {
 
   static RWBuffer::BufferBlock* Alloc(size_t length) {
     size_t capacity = LengthToCapacity(length);
-    void* buffer = sk_malloc_throw(sizeof(RWBuffer::BufferBlock) + capacity);
+    void* buffer =
+        WTF::Partitions::BufferMalloc(sizeof(RWBuffer::BufferBlock) + capacity,
+                                      "blink::RWBuffer::BufferBlock");
     return new (buffer) RWBuffer::BufferBlock(capacity);
   }
 
@@ -71,7 +73,7 @@ struct RWBuffer::BufferBlock {
 };
 
 struct RWBuffer::BufferHead {
-  mutable std::atomic<int32_t> ref_count_;
+  mutable base::AtomicRefCount ref_count_;
   RWBuffer::BufferBlock block_;
 
   explicit BufferHead(size_t capacity) : ref_count_(1), block_(capacity) {}
@@ -84,27 +86,27 @@ struct RWBuffer::BufferHead {
   static RWBuffer::BufferHead* Alloc(size_t length) {
     size_t capacity = LengthToCapacity(length);
     size_t size = sizeof(RWBuffer::BufferHead) + capacity;
-    void* buffer = sk_malloc_throw(size);
+    void* buffer =
+        WTF::Partitions::BufferMalloc(size, "blink::RWBuffer::BufferHead");
     return new (buffer) RWBuffer::BufferHead(capacity);
   }
 
   void ref() const {
-    auto old_ref_count = ref_count_.fetch_add(+1, std::memory_order_relaxed);
+    auto old_ref_count = ref_count_.Increment();
     DCHECK_GT(old_ref_count, 0);
   }
 
   void unref() const {
     // A release here acts in place of all releases we "should" have been doing
     // in ref().
-    int32_t oldRefCnt = ref_count_.fetch_add(-1, std::memory_order_acq_rel);
-    DCHECK(oldRefCnt);
-    if (1 == oldRefCnt) {
+    if (!ref_count_.Decrement()) {
       // Like unique(), the acquire is only needed on success.
       RWBuffer::BufferBlock* block = block_.next_;
-      sk_free(reinterpret_cast<void*>(const_cast<RWBuffer::BufferHead*>(this)));
+      WTF::Partitions::BufferFree(
+          reinterpret_cast<void*>(const_cast<RWBuffer::BufferHead*>(this)));
       while (block) {
         RWBuffer::BufferBlock* next = block->next_;
-        sk_free(block);
+        WTF::Partitions::BufferFree(block);
         block = next;
       }
     }
@@ -113,7 +115,7 @@ struct RWBuffer::BufferHead {
   void Validate(size_t minUsed,
                 const RWBuffer::BufferBlock* tail = nullptr) const {
 #if DCHECK_IS_ON()
-    DCHECK_GT(ref_count_.load(std::memory_order_relaxed), 0);
+    DCHECK(!ref_count_.IsZero());
     size_t totalUsed = 0;
     const RWBuffer::BufferBlock* block = &block_;
     const RWBuffer::BufferBlock* lastBlock = block;
@@ -159,7 +161,7 @@ ROBuffer::Iter::Iter(const ROBuffer* buffer) {
   Reset(buffer);
 }
 
-ROBuffer::Iter::Iter(const sk_sp<ROBuffer>& buffer) {
+ROBuffer::Iter::Iter(const scoped_refptr<ROBuffer>& buffer) {
   Reset(buffer.get());
 }
 
@@ -239,8 +241,7 @@ void RWBuffer::Append(const void* src, size_t length, size_t reserve) {
   length -= written;
 
   if (length) {
-    RWBuffer::BufferBlock* block =
-        RWBuffer::BufferBlock::Alloc(length + reserve);
+    auto* block = RWBuffer::BufferBlock::Alloc(length + reserve);
     tail_->next_ = block;
     tail_ = block;
     written = tail_->Append(src, length);
@@ -249,8 +250,8 @@ void RWBuffer::Append(const void* src, size_t length, size_t reserve) {
   Validate();
 }
 
-sk_sp<ROBuffer> RWBuffer::MakeROBufferSnapshot() const {
-  return sk_sp<ROBuffer>(new ROBuffer(head_, total_used_, tail_));
+scoped_refptr<ROBuffer> RWBuffer::MakeROBufferSnapshot() const {
+  return AdoptRef(new ROBuffer(head_, total_used_, tail_));
 }
 
 bool RWBuffer::HasNoSnapshots() const {
@@ -260,10 +261,7 @@ bool RWBuffer::HasNoSnapshots() const {
     return true;
   }
 
-  // For this to be useful, it should only return true when the other threads
-  // can no longer touch the buffer; this means that the "acquire" ordering is
-  // required, since the count is decreased with "release" ordering.
-  return head_->ref_count_.load(std::memory_order_acquire) == 1;
+  return head_->ref_count_.IsOne();
 }
 
 void RWBuffer::Validate() const {
@@ -275,125 +273,6 @@ void RWBuffer::Validate() const {
     DCHECK_EQ(0u, total_used_);
   }
 #endif
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-class ROBufferStreamAsset : public SkStreamAsset {
-  void Validate() const {
-    DCHECK(global_offset_ <= buffer_->size());
-    DCHECK(local_offset_ <= iter_.size());
-    DCHECK(local_offset_ <= global_offset_);
-  }
-
-#if DCHECK_IS_ON()
-  class AutoValidate {
-   public:
-    explicit AutoValidate(ROBufferStreamAsset* stream) : stream_(stream) {
-      stream->Validate();
-    }
-    ~AutoValidate() { stream_->Validate(); }
-
-   private:
-    ROBufferStreamAsset* stream_;
-  };
-#else
-  class AutoValidate {
-   public:
-    explicit AutoValidate(ROBufferStreamAsset*) {}
-  };
-#endif
-
- public:
-  explicit ROBufferStreamAsset(sk_sp<ROBuffer> buffer)
-      : buffer_(std::move(buffer)), iter_(buffer_) {
-    global_offset_ = local_offset_ = 0;
-  }
-
-  size_t getLength() const override { return buffer_->size(); }
-
-  bool rewind() override {
-    AutoValidate av(this);
-    iter_.Reset(buffer_.get());
-    global_offset_ = local_offset_ = 0;
-    return true;
-  }
-
-  size_t read(void* dst, size_t request) override {
-    AutoValidate av(this);
-    size_t bytesRead = 0;
-    for (;;) {
-      size_t size = iter_.size();
-      DCHECK(local_offset_ <= size);
-      size_t avail = std::min(size - local_offset_, request - bytesRead);
-      if (dst) {
-        memcpy(dst, static_cast<const char*>(iter_.data()) + local_offset_,
-               avail);
-        dst = static_cast<char*>(dst) + avail;
-      }
-      bytesRead += avail;
-      local_offset_ += avail;
-      DCHECK(bytesRead <= request);
-      if (bytesRead == request) {
-        break;
-      }
-      // If we get here, we've exhausted the current iter
-      DCHECK(local_offset_ == size);
-      local_offset_ = 0;
-      if (!iter_.Next()) {
-        break;  // ran out of data
-      }
-    }
-    global_offset_ += bytesRead;
-    DCHECK(global_offset_ <= buffer_->size());
-    return bytesRead;
-  }
-
-  bool isAtEnd() const override { return buffer_->size() == global_offset_; }
-
-  size_t getPosition() const override { return global_offset_; }
-
-  bool seek(size_t position) override {
-    AutoValidate av(this);
-    if (position < global_offset_) {
-      rewind();
-    }
-    (void)skip(position - global_offset_);
-    return true;
-  }
-
-  // Since this is overriding a member function we don't control, we can't
-  // change this type. So, disable the warning here instead.
-  bool move(long offset) override {  // NOLINT
-    AutoValidate av(this);
-    offset += global_offset_;
-    if (offset <= 0) {
-      rewind();
-    } else {
-      (void)seek(SkToSizeT(offset));
-    }
-    return true;
-  }
-
- private:
-  SkStreamAsset* onDuplicate() const override {
-    return new ROBufferStreamAsset(buffer_);
-  }
-
-  SkStreamAsset* onFork() const override {
-    auto clone = duplicate();
-    clone->seek(getPosition());
-    return clone.release();
-  }
-
-  sk_sp<ROBuffer> buffer_;
-  ROBuffer::Iter iter_;
-  size_t local_offset_;
-  size_t global_offset_;
-};
-
-std::unique_ptr<SkStreamAsset> RWBuffer::MakeStreamSnapshot() const {
-  return std::make_unique<ROBufferStreamAsset>(MakeROBufferSnapshot());
 }
 
 }  // namespace blink

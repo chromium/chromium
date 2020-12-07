@@ -190,7 +190,7 @@ sk_sp<PaintImageGenerator> DeferredImageDecoder::CreateGenerator() {
   DCHECK_GT(decoded_size.width(), 0);
   DCHECK_GT(decoded_size.height(), 0);
 
-  sk_sp<ROBuffer> ro_buffer(rw_buffer_->MakeROBufferSnapshot());
+  scoped_refptr<ROBuffer> ro_buffer(rw_buffer_->MakeROBufferSnapshot());
   scoped_refptr<SegmentReader> segment_reader =
       SegmentReader::CreateFromROBuffer(std::move(ro_buffer));
 
@@ -251,7 +251,7 @@ sk_sp<PaintImageGenerator> DeferredImageDecoder::CreateGenerator() {
 scoped_refptr<SharedBuffer> DeferredImageDecoder::Data() {
   if (!rw_buffer_)
     return nullptr;
-  sk_sp<ROBuffer> ro_buffer(rw_buffer_->MakeROBufferSnapshot());
+  scoped_refptr<ROBuffer> ro_buffer(rw_buffer_->MakeROBufferSnapshot());
   scoped_refptr<SharedBuffer> shared_buffer = SharedBuffer::Create();
   ROBuffer::Iter it(ro_buffer.get());
   do {

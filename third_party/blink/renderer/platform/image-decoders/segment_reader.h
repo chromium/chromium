@@ -41,7 +41,8 @@ class PLATFORM_EXPORT SegmentReader
 
   // These versions use thread-safe input, so they are always thread-safe.
   static scoped_refptr<SegmentReader> CreateFromSkData(sk_sp<SkData>);
-  static scoped_refptr<SegmentReader> CreateFromROBuffer(sk_sp<ROBuffer>);
+  static scoped_refptr<SegmentReader> CreateFromROBuffer(
+      scoped_refptr<ROBuffer>);
 
   SegmentReader() = default;
   virtual ~SegmentReader() = default;
