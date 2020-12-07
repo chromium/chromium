@@ -30,6 +30,10 @@ if (include_js_tests) {
       "tab_search/tab_search_interactive_ui_tests.js",
     ]
 
+    if (!is_chromeos_ash) {
+      sources += [ "signin/local_profile_customization_interactive_ui_test.js" ]
+    }
+
     gen_include_files = [
       "polymer_browser_test_base.js",
       "polymer_interactive_ui_test.js",

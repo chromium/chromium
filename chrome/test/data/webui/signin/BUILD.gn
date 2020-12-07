@@ -15,13 +15,27 @@ js_type_check("closure_compile") {
                   ]
   deps = [
     ":dice_web_signin_intercept_test",
-    ":profile_creation_flow_test",
+    ":local_profile_customization_test",
     ":profile_customization_test",
     ":profile_picker_app_test",
+    ":profile_type_choice_test",
     ":test_dice_web_signin_intercept_browser_proxy",
     ":test_manage_profiles_browser_proxy",
     ":test_profile_customization_browser_proxy",
   ]
+}
+
+js_library("local_profile_customization_test") {
+  deps = [
+    ":test_manage_profiles_browser_proxy",
+    "..:chai_assert",
+    "..:test_util.m",
+    "//chrome/browser/resources/signin/profile_picker:lazy_load",
+    "//chrome/browser/resources/signin/profile_picker:profile_picker",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("dice_web_signin_intercept_test") {
@@ -35,7 +49,7 @@ js_library("dice_web_signin_intercept_test") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
-js_library("profile_creation_flow_test") {
+js_library("profile_type_choice_test") {
   deps = [
     "..:chai_assert",
     "..:test_util.m",

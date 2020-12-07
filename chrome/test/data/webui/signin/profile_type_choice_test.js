@@ -7,13 +7,13 @@ import 'chrome://profile-picker/lazy_load.js';
 import {assertTrue} from '../chai_assert.js';
 import {isChildVisible} from '../test_util.m.js';
 
-suite('ProfileCreationFlowTest', function() {
+suite('ProfileTypeChoiceTest', function() {
   /** @type {!ProfileTypeChoiceElement} */
   let choice;
 
   setup(function() {
     document.body.innerHTML = '';
-    choice = /** @type {!ProfileTypeChoiceElement} */(
+    choice = /** @type {!ProfileTypeChoiceElement} */ (
         document.createElement('profile-type-choice'));
     document.body.append(choice);
   });

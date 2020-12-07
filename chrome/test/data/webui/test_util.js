@@ -44,6 +44,28 @@ cr.define('test_util', function() {
   }
 
   /**
+   * Observes an HTML element and fires a promise when the check function is
+   * satisfied.
+   * @param {!HTMLElement} target
+   * @param {Function} check
+   * @return {!Promise}
+   */
+  /* #export */ function whenCheck(target, check) {
+    return check() ?
+        Promise.resolve() :
+        new Promise(resolve => new MutationObserver((list, observer) => {
+                                 if (check()) {
+                                   observer.disconnect();
+                                   resolve();
+                                 }
+                               }).observe(target, {
+          attributes: true,
+          childList: true,
+          subtree: true
+        }));
+  }
+
+  /**
    * Converts an event occurrence to a promise.
    * @param {string} eventType
    * @param {!Element|!EventTarget|!Window} target

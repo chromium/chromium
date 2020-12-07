@@ -85,10 +85,10 @@ TEST_F('DiceWebSigninInterceptTest', 'Bubble', function() {
  * This has to be declared as a variable for TEST_F to find it correctly.
  */
 // eslint-disable-next-line no-var
-var ProfileCreationFlowTest = class extends SigninBrowserTest {
+var ProfileTypeChoiceTest = class extends SigninBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://profile-picker/test_loader.html?module=signin/profile_creation_flow_test.js';
+    return 'chrome://profile-picker/test_loader.html?module=signin/profile_type_choice_test.js';
   }
 
   /** @override */
@@ -102,7 +102,34 @@ var ProfileCreationFlowTest = class extends SigninBrowserTest {
   }
 };
 
-TEST_F('ProfileCreationFlowTest', 'Buttons', function() {
+TEST_F('ProfileTypeChoiceTest', 'Buttons', function() {
+  mocha.run();
+});
+
+
+/**
+ * Test fixture for
+ * chrome/browser/resources/signin/profile_picker/profile_creation_flow/local_profile_customization.html.
+ * This has to be declared as a variable for TEST_F to find it correctly.
+ */
+// eslint-disable-next-line no-var
+var LocalProfileCustomizationTest = class extends SigninBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://profile-picker/test_loader.html?module=signin/local_profile_customization_test.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'features::kProfilesUIRevamp',
+      ]
+    };
+  }
+};
+
+TEST_F('LocalProfileCustomizationTest', 'All', function() {
   mocha.run();
 });
 
