@@ -229,6 +229,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
     return false;
 #endif
   }
+  bool use_swangle() const;
 
   const viz::RendererType renderer_type_;
 
