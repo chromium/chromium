@@ -625,8 +625,8 @@ NTPUserDataLogger::NTPUserDataLogger(content::WebContents* contents)
     : content::WebContentsObserver(contents),
       has_emitted_(false),
       should_record_doodle_load_time_(true),
-      during_startup_(!AfterStartupTaskUtils::IsBrowserStartupComplete()) {
-}
+      modules_visible_(false),
+      during_startup_(!AfterStartupTaskUtils::IsBrowserStartupComplete()) {}
 
 // content::WebContentsObserver override
 void NTPUserDataLogger::NavigationEntryCommitted(
