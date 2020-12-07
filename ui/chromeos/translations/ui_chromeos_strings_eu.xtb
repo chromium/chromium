@@ -31,7 +31,7 @@
 <translation id="1243314992276662751">Kargatu</translation>
 <translation id="1249250836236328755">Generoa</translation>
 <translation id="1251468808511160368">Ingelesa (AEB), Programmer Dvorak teklatuarekin</translation>
-<translation id="1276362640455948667">Portugaldarra, AEBko nazioarteko teklatuarekin</translation>
+<translation id="1276362640455948667">Portugaldarra, nazioarteko teklatu estatubatuarrarekin</translation>
 <translation id="1293556467332435079">Fitxategiak</translation>
 <translation id="1297922636971898492">Une honetan, Google Drive ez dago erabilgarri. Erabilgarri dagoenean, automatikoki hasiko da berriro kargatzen.</translation>
 <translation id="1307931752636661898">Ezin dira ikusi Linux fitxategiak</translation>
@@ -114,7 +114,7 @@
 <translation id="2230062665678605299">Ezin  izan da sortu "<ph name="FOLDER_NAME" />" fitxategia. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2258078827108167865">Khmertarra</translation>
 <translation id="2275059641601412272">Mugitu da.</translation>
-<translation id="2287742181953707290">Portugaldarra, AEBko nazioarteko teklatuarekin (ordenagailurako)</translation>
+<translation id="2287742181953707290">Portugaldarra, nazioarteko teklatu estatubatuarrarekin (ordenagailurako)</translation>
 <translation id="2288278176040912387">Disko-jogailua</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> fitxategi irekitzen.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> fitxategia irekitzen.</translation>
@@ -594,7 +594,7 @@
 <translation id="7551643184018910560">Ainguratu apalean</translation>
 <translation id="7553492409867692754">Eman <ph name="FOLDER_NAME" /> karpetako fitxategiak atzitzeko baimena Linux-eko aplikazioei</translation>
 <translation id="7576032389798113292">6x4</translation>
-<translation id="7585326627181105002">Ingelesa (AEB), ordenagailuetarako nazioarteko teklatuarekin</translation>
+<translation id="7585326627181105002">Ingelesa (AEB), nazioarteko teklatuarekin (ordenagailurako)</translation>
 <translation id="7589661784326793847">Itxaron segundotxo batez</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> fitxategia konexiorik gabe erabiltzeko deskargatzen</translation>
 <translation id="7603724359189955920">Saretak</translation>
@@ -656,7 +656,7 @@
 <translation id="8079530767338315840">Errepikatu</translation>
 <translation id="8106045200081704138">Nirekin partekatutakoak</translation>
 <translation id="8116072619078571545">Ura izotzarekin</translation>
-<translation id="8130367958112291342">Txekiarra, qwerty teklatuarekin</translation>
+<translation id="8130367958112291342">Txekiarra, QWERTY teklatuarekin</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" partekatu dute zurekin. Ezin duzu ezabatu ez delako zurea.</translation>
 <translation id="8151638057146502721">Konfiguratu</translation>
 <translation id="8153607920959057464">Ezin izan da bistaratu fitxategia.</translation>
@@ -710,12 +710,12 @@
 <translation id="8714406895390098252">Bizikleta</translation>
 <translation id="8719721339511222681">Hautatu da <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Kroaziarra</translation>
-<translation id="8770002329960263418">Nederlandarra (Herbehereak), AEBko nazioarteko teklatuarekin (ordenagailurako)</translation>
+<translation id="8770002329960263418">Nederlandarra (Herbehereak), nazioarteko teklatu estatubatuarrarekin (ordenagailurako)</translation>
 <translation id="8775404590947523323">Aldaketak automatikoki gordetzen dira.<ph name="BREAKS" />Jatorrizko irudiaren kopia bat gordetzeko, kendu marka "Gainidatzi jatorrizkoa" aukerari</translation>
 <translation id="8808686172382650546">Katua</translation>
 <translation id="8810671769985673465">Ezin izan da konprimitu; elementua bazegoen lehendik ere: “<ph name="FILE_NAME" />”</translation>
 <translation id="8834164572807951958">Elementu hauen kopietarako sarbidea izango dute "<ph name="DESTINATION_NAME" />" unitateko kideek.</translation>
-<translation id="8846896937446866962">Hungariarra, qwerty teklatuarekin</translation>
+<translation id="8846896937446866962">Hungariarra, QWERTY teklatuarekin</translation>
 <translation id="8860454412039442620">Excel-eko kalkulu-orria</translation>
 <translation id="8900820606136623064">Hungariarra</translation>
 <translation id="8919081441417203123">Daniarra</translation>

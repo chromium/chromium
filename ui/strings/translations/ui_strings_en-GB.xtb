@@ -146,7 +146,7 @@
 <translation id="5528053674512161860">Page load failed because the developer UI module (dev_ui) is not installed</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> system</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5613020302032141669">Left Arrow</translation>
+<translation id="5613020302032141669">Left arrow</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> requests your attention.</translation>
 <translation id="5675363643668471212">Shelf item</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}other{# mins}}</translation>
@@ -186,7 +186,7 @@
 <translation id="6578407462441924264">Unnamed</translation>
 <translation id="6612467943526193239">To exit calibration press Esc.</translation>
 <translation id="6620110761915583480">Save File</translation>
-<translation id="6699343763173986273">Media Next Track</translation>
+<translation id="6699343763173986273">Media next track</translation>
 <translation id="6710213216561001401">Previous</translation>
 <translation id="6786750046913594791">Close folder</translation>
 <translation id="6808150112686056157">Media Stop</translation>
