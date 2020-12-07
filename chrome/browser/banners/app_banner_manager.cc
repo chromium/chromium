@@ -89,7 +89,8 @@ class ConsoleStatusReporter : public banners::AppBannerManager::StatusReporter {
 
   // Logs an error message corresponding to |code| to the devtools console.
   void ReportStatus(InstallableStatusCode code) override {
-    LogErrorToConsole(web_contents_, code);
+    LogToConsole(web_contents_, code,
+                 blink::mojom::ConsoleMessageLevel::kError);
   }
 
   WebappInstallSource GetInstallSource(content::WebContents* web_contents,

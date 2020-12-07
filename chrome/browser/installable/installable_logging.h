@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+
 namespace content {
 struct InstallabilityError;
 class WebContents;
@@ -58,6 +60,7 @@ enum InstallableStatusCode {
   PREFER_RELATED_APPLICATIONS_SUPPORTED_ONLY_BETA_STABLE = 37,
   MANIFEST_URL_CHANGED = 38,
   MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED = 39,
+  WARN_NOT_OFFLINE_CAPABLE = 40,
   MAX_ERROR_CODE,
 };
 
@@ -68,7 +71,8 @@ content::InstallabilityError GetInstallabilityError(InstallableStatusCode code);
 
 // Logs a message associated with |code| to the devtools console attached to
 // |web_contents|. Does nothing if |web_contents| is nullptr.
-void LogErrorToConsole(content::WebContents* web_contents,
-                       InstallableStatusCode code);
+void LogToConsole(content::WebContents* web_contents,
+                  InstallableStatusCode code,
+                  blink::mojom::ConsoleMessageLevel level);
 
 #endif  // CHROME_BROWSER_INSTALLABLE_INSTALLABLE_LOGGING_H_

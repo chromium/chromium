@@ -769,8 +769,15 @@ void InstallableManager::OnDidCheckOfflineCapability(
   InstallableMetrics::RecordCheckServiceWorkerStatus(
       InstallableMetrics::ConvertFromOfflineCapability(capability));
 
-  if (!enforce_offline_capability)
+  if (!enforce_offline_capability) {
+    if (capability == content::OfflineCapability::kUnsupported) {
+      LogToConsole(web_contents(), WARN_NOT_OFFLINE_CAPABLE,
+                   blink::mojom::ConsoleMessageLevel::kWarning);
+    }
+    // No enforcement means that we are just recording metrics and logging a
+    // warning.
     return;
+  }
 
   switch (capability) {
     case content::OfflineCapability::kSupported:

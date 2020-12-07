@@ -65,6 +65,9 @@ static const char kManifestLocationChanged[] =
 static const char kManifestDisplayOverrideNotSupportedMessage[] =
     "Manifest contains 'display_override' field, and the first supported "
     "display mode must be one of 'standalone', 'fullscreen', or 'minimal-ui'";
+static const char kWarnNotOfflineCapable[] =
+    "Page does not work offline. The page will not be regarded as installable "
+    "after M93, stable release August 2021.";
 
 static const char kNotFromSecureOriginId[] = "not-from-secure-origin";
 static const char kNoManifestId[] = "no-manifest";
@@ -98,6 +101,7 @@ static const char kPreferRelatedApplicationsSupportedOnlyBetaStableId[] =
 static const char kManifestLocationChangedId[] = "manifest-location-changed";
 static const char kManifestDisplayOverrideNotSupportedId[] =
     "manifest-display-override-not-supported";
+static const char kWarnNotOfflineCapableId[] = "warn-not-offline-capable";
 
 const std::string& GetMessagePrefix() {
   static base::NoDestructor<std::string> message_prefix(
@@ -201,6 +205,9 @@ std::string GetErrorMessage(InstallableStatusCode code) {
       break;
     case MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED:
       message = kManifestDisplayOverrideNotSupportedMessage;
+      break;
+    case WARN_NOT_OFFLINE_CAPABLE:
+      message = kWarnNotOfflineCapable;
       break;
   }
 
@@ -307,14 +314,18 @@ content::InstallabilityError GetInstallabilityError(
     case MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED:
       error_id = kManifestDisplayOverrideNotSupportedId;
       break;
+    case WARN_NOT_OFFLINE_CAPABLE:
+      error_id = kWarnNotOfflineCapableId;
+      break;
   }
   error.error_id = error_id;
   error.installability_error_arguments = error_arguments;
   return error;
 }
 
-void LogErrorToConsole(content::WebContents* web_contents,
-                       InstallableStatusCode code) {
+void LogToConsole(content::WebContents* web_contents,
+                  InstallableStatusCode code,
+                  blink::mojom::ConsoleMessageLevel level) {
   if (!web_contents)
     return;
 
@@ -324,5 +335,5 @@ void LogErrorToConsole(content::WebContents* web_contents,
     return;
 
   web_contents->GetMainFrame()->AddMessageToConsole(
-      blink::mojom::ConsoleMessageLevel::kError, GetMessagePrefix() + message);
+      level, GetMessagePrefix() + message);
 }
