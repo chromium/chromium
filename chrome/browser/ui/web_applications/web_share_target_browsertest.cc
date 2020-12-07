@@ -1,0 +1,181 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include <string>
+#include <vector>
+
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/threading/thread_restrictions.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/apps/app_service/intent_util.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/chromeos/file_manager/path_util.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/display/types/display_constants.h"
+#include "url/gurl.h"
+
+namespace {
+
+apps::AppServiceProxy* GetAppServiceProxy(Profile* profile) {
+  DCHECK(
+      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
+  return apps::AppServiceProxyFactory::GetForProfile(profile);
+}
+
+base::FilePath PrepareWebShareDirectory(Profile* profile) {
+  constexpr base::FilePath::CharType kWebShareDirname[] =
+      FILE_PATH_LITERAL(".WebShare");
+  const base::FilePath directory =
+      file_manager::util::GetMyFilesFolderForProfile(profile).Append(
+          kWebShareDirname);
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::File::Error result = base::File::FILE_OK;
+  EXPECT_TRUE(base::CreateDirectoryAndGetError(directory, &result));
+  return directory;
+}
+
+void RemoveWebShareDirectory(const base::FilePath& directory) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_TRUE(base::DeletePathRecursively(directory));
+}
+
+base::FilePath StoreSharedFile(const base::FilePath& directory,
+                               const base::StringPiece& name,
+                               const base::StringPiece& content) {
+  const base::FilePath path = directory.Append(name);
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::File file(path,
+                  base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  EXPECT_EQ(file.WriteAtCurrentPos(content.begin(), content.size()),
+            static_cast<int>(content.size()));
+  return path;
+}
+
+}  // namespace
+
+namespace web_app {
+
+class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
+ public:
+  GURL app_url() const {
+    return embedded_test_server()->GetURL("/web_share_target/charts.html");
+  }
+  GURL share_target_url() const {
+    return embedded_test_server()->GetURL("/web_share_target/share.html");
+  }
+
+  content::WebContents* LaunchAppWithIntent(const AppId& app_id,
+                                            apps::mojom::IntentPtr&& intent) {
+    apps::AppLaunchParams params = apps::CreateAppLaunchParamsForIntent(
+        app_id,
+        /*event_flags=*/0, apps::mojom::AppLaunchSource::kSourceAppLauncher,
+        display::kDefaultDisplayId,
+        apps::mojom::LaunchContainer::kLaunchContainerWindow,
+        std::move(intent));
+
+    ui_test_utils::UrlLoadObserver url_observer(
+        share_target_url(), content::NotificationService::AllSources());
+    content::WebContents* const web_contents =
+        GetAppServiceProxy(profile())
+            ->BrowserAppLauncher()
+            ->LaunchAppWithParams(std::move(params));
+    DCHECK(web_contents);
+    url_observer.Wait();
+    return web_contents;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareText) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url());
+  const base::FilePath directory = PrepareWebShareDirectory(profile());
+
+  apps::mojom::IntentPtr intent;
+  {
+    const base::FilePath first_csv =
+        StoreSharedFile(directory, "first.csv", "1,2,3,4,5");
+    const base::FilePath second_csv =
+        StoreSharedFile(directory, "second.csv", "6,7,8,9,0");
+
+    std::vector<base::FilePath> file_paths({first_csv, second_csv});
+    std::vector<std::string> content_types(2, "text/csv");
+    intent = apps_util::CreateShareIntentFromFiles(
+        profile(), std::move(file_paths), std::move(content_types));
+  }
+
+  const std::string script = "document.getElementById('records').textContent";
+  content::WebContents* const web_contents =
+      LaunchAppWithIntent(app_id, std::move(intent));
+  const content::EvalJsResult result = content::EvalJs(web_contents, script);
+  EXPECT_EQ("1,2,3,4,5 6,7,8,9,0", result);
+
+  RemoveWebShareDirectory(directory);
+}
+
+IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareImage) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url());
+  const base::FilePath directory = PrepareWebShareDirectory(profile());
+
+  apps::mojom::IntentPtr intent;
+  {
+    const base::FilePath first_svg =
+        StoreSharedFile(directory, "first.svg", "picture");
+
+    std::vector<base::FilePath> file_paths({first_svg});
+    std::vector<std::string> content_types(1, "image/svg+xml");
+    intent = apps_util::CreateShareIntentFromFiles(
+        profile(), std::move(file_paths), std::move(content_types));
+  }
+
+  const std::string script = "document.getElementById('graphs').textContent";
+  content::WebContents* const web_contents =
+      LaunchAppWithIntent(app_id, std::move(intent));
+  const content::EvalJsResult result = content::EvalJs(web_contents, script);
+  EXPECT_EQ("picture", result);
+
+  RemoveWebShareDirectory(directory);
+}
+
+IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareAudio) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url());
+  const base::FilePath directory = PrepareWebShareDirectory(profile());
+
+  apps::mojom::IntentPtr intent;
+  {
+    const base::FilePath first_weba =
+        StoreSharedFile(directory, "first.weba", "a");
+    const base::FilePath second_weba =
+        StoreSharedFile(directory, "second.weba", "b");
+    const base::FilePath third_weba =
+        StoreSharedFile(directory, "third.weba", "c");
+
+    std::vector<base::FilePath> file_paths(
+        {first_weba, second_weba, third_weba});
+    std::vector<std::string> content_types(3, "audio/webm");
+    intent = apps_util::CreateShareIntentFromFiles(
+        profile(), std::move(file_paths), std::move(content_types));
+  }
+
+  const std::string script = "document.getElementById('notes').textContent";
+  content::WebContents* const web_contents =
+      LaunchAppWithIntent(app_id, std::move(intent));
+  const content::EvalJsResult result = content::EvalJs(web_contents, script);
+  EXPECT_EQ("a b c", result);
+
+  RemoveWebShareDirectory(directory);
+}
+
+}  // namespace web_app

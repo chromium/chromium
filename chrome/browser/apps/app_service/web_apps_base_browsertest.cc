@@ -186,7 +186,8 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, PopulateIntentFilters) {
   CheckUrlScopeFilter(target[0], app_url.GetWithoutFilename(),
                       /*different_url=*/GURL("file:///"));
 
-  const std::vector<std::string> content_types({"text/csv", "image/svg+xml"});
+  const std::vector<std::string> content_types(
+      {"text/*", "image/svg+xml", "*/*"});
   CheckShareFileFilter(
       target[1], content_types,
       /*different_content_type=*/"application/vnd.android.package-archive");

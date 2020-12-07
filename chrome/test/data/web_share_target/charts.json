@@ -23,11 +23,15 @@
       "files": [
         {
           "name": "records",
-          "accept": ["text/csv", ".csv"]
+          "accept": ["text/*", ".csv"]
         },
         {
           "name": "graphs",
           "accept": "image/svg+xml"
+        },
+        {
+          "name": "notes",
+          "accept": "*/*"
         }
       ]
     }

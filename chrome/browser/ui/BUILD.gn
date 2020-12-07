@@ -4365,6 +4365,7 @@ static_library("ui") {
       "//chrome/browser/apps/platform_apps",  # TODO(loyso): Remove this dep.
       "//chrome/browser/apps/platform_apps/api",
       "//chrome/browser/extensions",
+      "//chrome/browser/web_share_target",
       "//chrome/common/extensions/api",
       "//components/drive",
       "//components/guest_view/browser",
