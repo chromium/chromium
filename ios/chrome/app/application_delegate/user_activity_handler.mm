@@ -94,24 +94,15 @@ std::vector<GURL> createGURLVectorFromIntentURLs(NSArray<NSURL*>* intentURLs) {
   NSURL* webpageURL = userActivity.webpageURL;
 
   if ([userActivity.activityType
-          isEqualToString:handoff::kChromeHandoffActivityType]) {
+          isEqualToString:handoff::kChromeHandoffActivityType] ||
+      [userActivity.activityType
+          isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     // App was launched by iOS as a result of Handoff.
     NSString* originString = base::mac::ObjCCast<NSString>(
         userActivity.userInfo[handoff::kOriginKey]);
     handoff::Origin origin = handoff::OriginFromString(originString);
     UMA_HISTOGRAM_ENUMERATION("IOS.Handoff.Origin", origin,
                               handoff::ORIGIN_COUNT);
-  } else if ([userActivity.activityType
-                 isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-    // App was launched as the result of a Universal Link navigation.
-    GURL gurl = net::GURLWithNSURL(webpageURL);
-    AppStartupParameters* startupParams =
-        [[AppStartupParameters alloc] initWithUniversalLink:gurl];
-    [connectionInformation setStartupParameters:startupParams];
-    base::RecordAction(base::UserMetricsAction("IOSLaunchedByUniversalLink"));
-
-    if (startupParams)
-      webpageURL = net::NSURLWithGURL([startupParams externalURL]);
   } else if (spotlight::IsSpotlightAvailable() &&
              [userActivity.activityType
                  isEqualToString:CSSearchableItemActionType]) {

@@ -59,15 +59,6 @@
   return self;
 }
 
-// TODO(crbug.com/1021752): Remove this stub since |universalLink| is unused.
-- (instancetype)initWithUniversalLink:(const GURL&)universalLink {
-  // If a new tab with |_externalURL| needs to be opened after the App
-  // was launched as the result of a Universal Link navigation, the only
-  // supported possibility at this time is the New Tab Page.
-  self = [self initWithExternalURL:GURL(kChromeUINewTabURL)
-                       completeURL:GURL(kChromeUINewTabURL)];
-  return self;
-}
 
 - (NSString*)description {
   NSMutableString* description =
