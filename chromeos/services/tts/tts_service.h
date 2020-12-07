@@ -47,6 +47,7 @@ class TtsService : public mojom::TtsService,
       base::OnceCallback<void(::mojo::PendingReceiver<mojom::TtsEventObserver>)>
           callback);
   void AddAudioBuffer(AudioBuffer buf);
+  void AddExplicitTimepoint(int char_index, base::TimeDelta delay);
   void Stop();
   void SetVolume(float volume);
   void Pause();
@@ -64,7 +65,6 @@ class TtsService : public mojom::TtsService,
     return pending_tts_stream_factory_receivers_;
   }
 
- private:
   // mojom::TtsService:
   void BindTtsStreamFactory(
       mojo::PendingReceiver<mojom::TtsStreamFactory> receiver,
@@ -82,6 +82,7 @@ class TtsService : public mojom::TtsService,
              media::AudioBus* dest) override;
   void OnRenderError() override;
 
+ private:
   // Handles stopping tts.
   void StopLocked(bool clear_buffers = true)
       EXCLUSIVE_LOCKS_REQUIRED(state_lock_);
@@ -114,6 +115,16 @@ class TtsService : public mojom::TtsService,
 
   // The queue of audio buffers to be played by the audio thread.
   std::deque<AudioBuffer> buffers_ GUARDED_BY(state_lock_);
+
+  // An explicit list of increasing time delta sorted timepoints to be fired
+  // while rendering audio at the specified |delay| from start of audio
+  // playback. An AudioBuffer may contain an implicit tiepoint for callers who
+  // specify a character index along with the audio buffer.
+  std::deque<std::pair<int, base::TimeDelta>> timepoints_
+      GUARDED_BY(state_lock_);
+
+  // The time at which playback of the current utterance started.
+  base::Time start_playback_time_;
 };
 
 }  // namespace tts
