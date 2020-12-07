@@ -374,8 +374,8 @@
       =1 {Update device within 1 second}
       other {Update device within # seconds}}
   </message>
-  <message name="IDS_RELAUNCH_REQUIRED_BODY" desc="The body text of a dialog that tells users the device must be restarted.">
-    <ph name="organization_name">$1<ex>google.com</ex></ph> requires you to update this device before the deadline.
+  <message name="IDS_RELAUNCH_REQUIRED_BODY" desc="The body text of a dialog that tells users the device must be restarted. MANAGER can be a domain or an email address.">
+    <ph name="MANAGER">$1<ex>google.com</ex></ph> requires you to update this <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> before the deadline.
   </message>
 
   <message name="IDS_RELAUNCH_RECOMMENDED_TITLE" desc="The title of a dialog that tells users that a device restart is recommended for an update.">
@@ -384,11 +384,11 @@
   <message name="IDS_RELAUNCH_RECOMMENDED_OVERDUE_TITLE" desc="The title of a dialog that tells users that a device restart had been recommended for an update.">
     Update overdue
   </message>
-  <message name="IDS_RELAUNCH_RECOMMENDED_BODY" desc="The body text of a dialog that tells users the device must be restarted.">
-    <ph name="organization_name">$1<ex>google.com</ex></ph> recommends that you update this device.
+  <message name="IDS_RELAUNCH_RECOMMENDED_BODY" desc="The body text of a dialog that tells users the device must be restarted. MANAGER can be a domain or an email address.">
+    <ph name="MANAGER">$1<ex>google.com</ex></ph> recommends that you update this <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>.
   </message>
-  <message name="IDS_RELAUNCH_RECOMMENDED_OVERDUE_BODY" desc="The body text of a dialog that tells users the device must be restarted right now.">
-    <ph name="organization_name">$1<ex>google.com</ex></ph> requires you to update this device immediately.
+  <message name="IDS_RELAUNCH_RECOMMENDED_OVERDUE_BODY" desc="The body text of a dialog that tells users the device must be restarted right now. MANAGER can be a domain or an email address.">
+    <ph name="MANAGER">$1<ex>google.com</ex></ph> requires you to update this <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> immediately.
   </message>
 
   <!-- Chrome OS Strings -->

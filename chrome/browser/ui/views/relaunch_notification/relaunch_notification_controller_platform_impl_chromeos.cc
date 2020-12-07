@@ -17,6 +17,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 RelaunchNotificationControllerPlatformImpl::
     RelaunchNotificationControllerPlatformImpl() = default;
@@ -86,16 +87,16 @@ void RelaunchNotificationControllerPlatformImpl::
     SystemTrayClient::Get()->SetUpdateNotificationState(
         ash::NotificationStyle::kAdminRecommended,
         l10n_util::GetStringUTF16(IDS_RELAUNCH_RECOMMENDED_OVERDUE_TITLE),
-        l10n_util::GetStringFUTF16(
-            IDS_RELAUNCH_RECOMMENDED_OVERDUE_BODY,
-            base::UTF8ToUTF16(enterprise_display_domain)));
+        l10n_util::GetStringFUTF16(IDS_RELAUNCH_RECOMMENDED_OVERDUE_BODY,
+                                   base::UTF8ToUTF16(enterprise_display_domain),
+                                   ui::GetChromeOSDeviceName()));
   } else {
     SystemTrayClient::Get()->SetUpdateNotificationState(
         ash::NotificationStyle::kAdminRecommended,
         l10n_util::GetStringUTF16(IDS_RELAUNCH_RECOMMENDED_TITLE),
-        l10n_util::GetStringFUTF16(
-            IDS_RELAUNCH_RECOMMENDED_BODY,
-            base::UTF8ToUTF16(enterprise_display_domain)));
+        l10n_util::GetStringFUTF16(IDS_RELAUNCH_RECOMMENDED_BODY,
+                                   base::UTF8ToUTF16(enterprise_display_domain),
+                                   ui::GetChromeOSDeviceName()));
   }
 }
 
@@ -115,7 +116,8 @@ void RelaunchNotificationControllerPlatformImpl::
         relaunch_required_timer_->GetWindowTitle(),
         l10n_util::GetStringFUTF16(
             IDS_RELAUNCH_REQUIRED_BODY,
-            base::UTF8ToUTF16(connector->GetEnterpriseDomainManager())));
+            base::UTF8ToUTF16(connector->GetEnterpriseDomainManager()),
+            ui::GetChromeOSDeviceName()));
   }
 }
 
