@@ -33,6 +33,7 @@
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  [self.contentSuggestionsViewController willMoveToParentViewController:self];
   [self addChildViewController:self.contentSuggestionsViewController];
   [self.view addSubview:self.contentSuggestionsViewController.view];
   [self.contentSuggestionsViewController didMoveToParentViewController:self];

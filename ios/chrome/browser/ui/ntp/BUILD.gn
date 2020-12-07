@@ -51,6 +51,8 @@ source_set("util") {
 source_set("ntp_internal") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "discover_feed_view_controller.h",
+    "discover_feed_view_controller.mm",
     "incognito_view.h",
     "incognito_view.mm",
     "incognito_view_controller.h",
