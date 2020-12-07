@@ -1,0 +1,37 @@
+<style include="cr-icons">
+  :host {
+    align-items: center;
+    display: flex;
+    height: 22px;
+    margin: 16px;
+  }
+
+  #title {
+    color: var(--cr-primary-text-color);
+    font-size: 15px;
+  }
+
+  #headerSpacer {
+    flex-grow: 1;
+  }
+
+  #infoButton {
+    --cr-icon-image: url(./icons/info.svg);
+  }
+
+  #dismissButton {
+    --cr-icon-button-margin-start: 4px;
+  }
+</style>
+<span id="title"><slot></slot></span>
+<div id="headerSpacer"></div>
+<template is="dom-if" if="[[showInfoButton]]">
+  <cr-icon-button id="infoButton" title="$i18n{moduleInfoButtonTitle}"
+      on-click="onInfoButtonClick_">
+  </cr-icon-button>
+</template>
+<template is="dom-if" if="[[showDismissButton]]">
+  <cr-icon-button id="dismissButton" title="$i18n{moduleDismissButtonTitle}"
+      class="icon-clear" on-click="onDismissButtonClick_">
+  </cr-icon-button>
+</template>

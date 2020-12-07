@@ -3,9 +3,6 @@
 // found in the LICENSE file.
 
 /**
- * @returns {Promise<?{
- *    element: !HTMLElement,
- *    title: string,
- *   }>}
+ * @returns {Promise<?HTMLElement>}
  */
 window.loadKaleidoscopeModule = () => {};

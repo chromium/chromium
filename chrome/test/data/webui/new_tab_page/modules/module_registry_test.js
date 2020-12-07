@@ -12,10 +12,7 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
     const bazModule = document.createElement('div');
     const bazModuleResolver = new PromiseResolver();
     ModuleRegistry.getInstance().registerModules([
-      new ModuleDescriptor('foo', 100, () => Promise.resolve({
-        element: fooModule,
-        title: 'Foo Title',
-      })),
+      new ModuleDescriptor('foo', 100, () => Promise.resolve(fooModule)),
       new ModuleDescriptor('bar', 200, () => null),
       new ModuleDescriptor('baz', 300, () => bazModuleResolver.promise),
     ]);
@@ -23,21 +20,16 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
     // Act.
     const modulesPromise = ModuleRegistry.getInstance().initializeModules();
     // Delayed promise resolution to test async module instantiation.
-    bazModuleResolver.resolve({
-      element: bazModule,
-      title: 'Baz Title',
-    });
+    bazModuleResolver.resolve(bazModule);
     const modules = await modulesPromise;
 
     // Assert.
     assertEquals(2, modules.length);
     assertEquals('foo', modules[0].id);
     assertEquals(100, modules[0].heightPx);
-    assertEquals('Foo Title', modules[0].title);
     assertDeepEquals(fooModule, modules[0].element);
     assertEquals('baz', modules[1].id);
     assertEquals(300, modules[1].heightPx);
-    assertEquals('Baz Title', modules[1].title);
     assertDeepEquals(bazModule, modules[1].element);
   });
 });

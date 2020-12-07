@@ -1,6 +1,17 @@
 <style>
+  :host {
+    width: 100%;
+  }
+
   cr-grid {
     --cr-grid-gap: 8px;
+  }
+
+  #moduleContent {
+    align-items: center;
+    display: flex;
+    height: 260px;
+    justify-content: center;
   }
 
   .tile-item {
@@ -13,11 +24,14 @@
     border-radius: 8px;
   }
 </style>
-<cr-grid id="tiles" columns="3">
-  <template id="tileList" is="dom-repeat" items="[[tiles]]">
-    <div class="tile-item" title="[[item.label]]">
-      <img is="ntp-img" auto-src="[[item.imageUrl]]"></img>
-      <span>[[item.value]]</span>
-    </div>
-  </template>
-</cr-grid>
+<ntp-module-header module-id="[[id]]">[[title]]</ntp-module-header>
+<div id="moduleContent">
+  <cr-grid id="tiles" columns="3">
+    <template id="tileList" is="dom-repeat" items="[[tiles]]">
+      <div class="tile-item" title="[[item.label]]">
+        <img is="ntp-img" auto-src="[[item.imageUrl]]"></img>
+        <span>[[item.value]]</span>
+      </div>
+    </template>
+  </cr-grid>
+</div>

@@ -13,7 +13,7 @@ import {ModuleDescriptor} from '../module_descriptor.js';
 /** @type {!ModuleDescriptor} */
 export const kaleidoscopeDescriptor = new ModuleDescriptor(
     /*id=*/ 'kaleidoscope',
-    /*heightPx=*/ 330,
+    /*heightPx=*/ 384,
     async () => {
       return loadKaleidoscopeModule();
     },

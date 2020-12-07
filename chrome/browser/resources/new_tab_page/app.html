@@ -349,7 +349,7 @@
 <dom-if if="[[lazyRender_]]" restamp>
   <template>
     <cr-toast id="dismissModuleToast" duration="10000">
-      <div id="dismissModuleToastMessage">[[dismissModuleToastMessage_]]</div>
+      <div id="dismissModuleToastMessage">[[dismissedModuleData_.message]]</div>
       <cr-button id="undoDismissModuleButton"
           aria-label="$i18n{undoDescription}"
           on-click="onUndoDismissModuleButtonClick_">
