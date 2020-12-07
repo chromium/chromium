@@ -937,7 +937,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.InteractiveWindowResize.TimeToPresent" units="ms"
-    expires_after="2021-02-14">
+    expires_after="2021-12-10">
   <owner>oshima@chromium.org</owner>
   <owner>mukai@chromium.org</owner>
   <summary>
@@ -948,7 +948,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.InteractiveWindowResize.TimeToPresent.MaxLatency"
-    units="ms" expires_after="2020-12-10">
+    units="ms" expires_after="2021-12-10">
   <owner>oshima@chromium.org</owner>
   <owner>mukai@chromium.org</owner>
   <summary>
