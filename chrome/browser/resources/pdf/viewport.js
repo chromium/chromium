@@ -1070,33 +1070,18 @@ export class Viewport {
    * @param {!KeyboardEvent} e
    * @private
    */
-  pageUpHandler_(e) {
-    // Go to the previous page if we are fit-to-page or fit-to-height.
+  pageUpDownSpaceHandler_(e) {
+    const direction =
+        e.key === 'PageUp' || (e.key === ' ' && e.shiftKey) ? -1 : 1;
+    // Go to the previous/next page if we are fit-to-page or fit-to-height.
     if (this.isPagedMode_()) {
-      this.goToPreviousPage();
+      direction === 1 ? this.goToNextPage() : this.goToPreviousPage();
       // Since we do the movement of the page.
       e.preventDefault();
     } else if (
         /** @type {!{fromScriptingAPI: (boolean|undefined)}} */ (e)
             .fromScriptingAPI) {
-      this.position.y -= this.size.height;
-    }
-  }
-
-  /**
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  pageDownHandler_(e) {
-    // Go to the next page if we are fit-to-page or fit-to-height.
-    if (this.isPagedMode_()) {
-      this.goToNextPage();
-      // Since we do the movement of the page.
-      e.preventDefault();
-    } else if (
-        /** @type {!{fromScriptingAPI: (boolean|undefined)}} */ (e)
-            .fromScriptingAPI) {
-      this.position.y += this.size.height;
+      this.position.y += direction * this.size.height;
     }
   }
 
@@ -1178,18 +1163,10 @@ export class Viewport {
    */
   handleDirectionalKeyEvent(e, formFieldFocused) {
     switch (e.key) {
-      case '':
-        if (e.shiftKey) {
-          this.pageUpHandler_(e);
-        } else {
-          this.pageDownHandler_(e);
-        }
-        return true;
+      case ' ':
       case 'PageUp':
-        this.pageUpHandler_(e);
-        return true;
       case 'PageDown':
-        this.pageDownHandler_(e);
+        this.pageUpDownSpaceHandler_(e);
         return true;
       case 'ArrowLeft':
         this.arrowLeftHandler_(e, formFieldFocused);

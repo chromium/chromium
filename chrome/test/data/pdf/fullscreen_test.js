@@ -69,10 +69,11 @@ const tests = [
 
     chrome.test.succeed();
   },
-  async function testArrowKeysUpdatePage() {
+  async function testKeysUpdatePage() {
     await ensureFullscreen();
     chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
 
+    // Test arrow keys.
     pressAndReleaseKeyOn(viewer, 0, '', 'ArrowDown');
     chrome.test.assertEq(1, viewer.viewport.getMostVisiblePage());
 
@@ -83,6 +84,20 @@ const tests = [
     chrome.test.assertEq(1, viewer.viewport.getMostVisiblePage());
 
     pressAndReleaseKeyOn(viewer, 0, '', 'ArrowLeft');
+    chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
+
+    // Test Space key.
+    pressAndReleaseKeyOn(viewer, 0, '', ' ');
+    chrome.test.assertEq(1, viewer.viewport.getMostVisiblePage());
+
+    pressAndReleaseKeyOn(viewer, 0, 'shift', ' ');
+    chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
+
+    // Test PageUp/PageDown keys.
+    pressAndReleaseKeyOn(viewer, 0, '', 'PageDown');
+    chrome.test.assertEq(1, viewer.viewport.getMostVisiblePage());
+
+    pressAndReleaseKeyOn(viewer, 0, '', 'PageUp');
     chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
 
     chrome.test.succeed();
