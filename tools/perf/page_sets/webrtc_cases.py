@@ -8,11 +8,13 @@ from telemetry import story
 
 class WebrtcPage(press_story.PressStory):
 
-  def __init__(self, url, page_set, name, tags):
+  def __init__(self, url, page_set, name, tags, extra_browser_args=None):
     assert url.startswith('file://webrtc_cases/')
     self.URL = url
     self.NAME = name
-    super(WebrtcPage, self).__init__(page_set, tags=tags)
+    super(WebrtcPage, self).__init__(page_set,
+                                     tags=tags,
+                                     extra_browser_args=extra_browser_args)
 
 
 class GetUserMedia(WebrtcPage):
@@ -126,6 +128,61 @@ class PausePlayPeerConnections(WebrtcPage):
     action_runner.Wait(20)
 
 
+class InsertableStreamsVideoProcessing(WebrtcPage):
+  """Why: processes/transforms video in various ways."""
+
+  def __init__(self, page_set, source, transform, sink, tags):
+    super(InsertableStreamsVideoProcessing, self).__init__(
+        url='file://webrtc_cases/video-processing.html',
+        name=('insertable_streams_video_processing_%s_%s_%s' %
+              (source, transform, sink)),
+        page_set=page_set,
+        tags=tags,
+        extra_browser_args=(
+            '--enable-blink-features=WebCodecs,MediaStreamInsertableStreams'))
+    self.source = source
+    self.transform = transform
+    self.sink = sink
+    self.supported = None
+
+  def RunNavigateSteps(self, action_runner):
+    self.supported = action_runner.EvaluateJavaScript(
+        "typeof MediaStreamTrackProcessor !== 'undefined' &&"
+        "typeof MediaStreamTrackGenerator !== 'undefined'")
+    if self.supported:
+      super(InsertableStreamsVideoProcessing,
+            self).RunNavigateSteps(action_runner)
+
+  def ExecuteTest(self, action_runner):
+    self.AddMeasurement(
+        'supported', 'count', 1 if self.supported else 0,
+        'Boolean flag indicating if this benchmark is supported by the browser.'
+    )
+    if not self.supported:
+      return
+    with action_runner.CreateInteraction('Start_Pipeline', repeatable=True):
+      action_runner.WaitForElement('select[id="sourceSelector"]:enabled')
+      action_runner.ExecuteJavaScript(
+          'document.getElementById("sourceSelector").value="%s";' % self.source)
+      action_runner.WaitForElement('select[id="transformSelector"]:enabled')
+      action_runner.ExecuteJavaScript(
+          'document.getElementById("transformSelector").value="%s";' %
+          self.transform)
+      action_runner.WaitForElement('select[id="sinkSelector"]:enabled')
+      action_runner.ExecuteJavaScript(
+          'document.getElementById("sinkSelector").value="%s";' % self.sink)
+      action_runner.ExecuteJavaScript(
+          'document.getElementById("sourceSelector").dispatchEvent('
+          '  new InputEvent("input", {}));')
+      action_runner.WaitForElement('.sinkVideo')
+      action_runner.Wait(10)
+    self.AddJavaScriptMeasurement(
+        'sink_decoded_frames',
+        'count',
+        'document.querySelector(".sinkVideo").webkitDecodedFrameCount',
+        description='Number of frames received at the sink video.')
+
+
 class WebrtcPageSet(story.StorySet):
   def __init__(self):
     super(WebrtcPageSet, self).__init__(
@@ -139,3 +196,39 @@ class WebrtcPageSet(story.StorySet):
     self.AddStory(VideoCodecConstraints(self, 'H264', tags=['videoConstraints']))
     self.AddStory(VideoCodecConstraints(self, 'VP8', tags=['videoConstraints']))
     self.AddStory(VideoCodecConstraints(self, 'VP9', tags=['videoConstraints']))
+    self.AddStory(
+        InsertableStreamsVideoProcessing(self,
+                                         'camera',
+                                         'webgl',
+                                         'video',
+                                         tags=['insertableStreams']))
+    self.AddStory(
+        InsertableStreamsVideoProcessing(self,
+                                         'video',
+                                         'webgl',
+                                         'video',
+                                         tags=['insertableStreams']))
+    self.AddStory(
+        InsertableStreamsVideoProcessing(self,
+                                         'pc',
+                                         'webgl',
+                                         'video',
+                                         tags=['insertableStreams']))
+    self.AddStory(
+        InsertableStreamsVideoProcessing(self,
+                                         'camera',
+                                         'canvas2d',
+                                         'video',
+                                         tags=['insertableStreams']))
+    self.AddStory(
+        InsertableStreamsVideoProcessing(self,
+                                         'camera',
+                                         'drop',
+                                         'video',
+                                         tags=['insertableStreams']))
+    self.AddStory(
+        InsertableStreamsVideoProcessing(self,
+                                         'camera',
+                                         'webgl',
+                                         'pc',
+                                         tags=['insertableStreams']))

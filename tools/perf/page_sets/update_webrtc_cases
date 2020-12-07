@@ -31,8 +31,9 @@ TEST_PAGES_LOCATION_BY_REPO = {
         'dirs': [
             'src/content/datachannel/datatransfer',
             'src/content/getusermedia/resolution',
+            'src/content/insertable-streams/video-processing',
         ],
-        'revision': 'a4ca7fbc92825b4993d9a7fa1844206e0c718454',
+        'revision': 'bcccf04dcbbb1c1061c76712b0f501e117d8a1bd',
     },
 }
 
@@ -68,16 +69,23 @@ class TemporaryDirectory(object):
       self._closed = True
 
 
-def CopyJSFile(origin, destination):
-  contents = []
-  with open(origin) as input_file:
-    contents = input_file.readlines()
+def ConcatJSDir(origin, destination):
+  dest_contents = [JS_COPYRIGHT_NOTICE]
 
-  contents = contents[COPYRIGHT_NOTICE_LENGTH:]
-  contents = [JS_COPYRIGHT_NOTICE] + contents
+  for filename in sorted(os.listdir(origin)):
+    if filename.endswith('.js'):
+      with open(os.path.join(origin, filename)) as input_file:
+       src_contents = input_file.readlines()
+       dest_contents += src_contents[COPYRIGHT_NOTICE_LENGTH:]
+
+
+  # Replace references to chrome.webm with road_trip_640_480.mp4, which has
+  # already been uploaded to cloud storage.
+  dest_contents = [re.sub('(../)+video/chrome.webm', 'road_trip_640_480.mp4', x)
+                   for x in dest_contents]
 
   with open(destination, 'w') as output_file:
-    output_file.writelines(contents)
+    output_file.writelines(dest_contents)
 
 
 def CopyHTMLFile(test_name, origin, destination):
@@ -108,10 +116,11 @@ def main():
           '  * Adds a copyright notice on top of the HTML and JS files.\n'
           '  * Deletes the <meta> tags.\n'
           '  * Discards the CSS files and corresponding link tags.\n'
-          '  * Discards the JS files and corresponding script tags except for '
-          'main.js.\n'
-          '  * Renames the index.html and main.js files for each test to '
-          'testname.html and testname.js.'))
+          '  * Renames the index.html to testname.html.\n'
+          '  * Concatenates the js files to testname.js, removing relative '
+          'paths to video resources to allow WPR recording.\n'
+          '  * Removes all script tags and adds a single script tag for '
+          'testname.js.'))
 
   parser.add_argument('-d', '--destination', default=DEFAULT_DESTINATION_DIR,
                       type=str, help='Where to save the WebRTC test pages.')
@@ -136,8 +145,8 @@ def main():
         test_dir = os.path.join(repo_dir, test_dir)
         test_name = os.path.basename(test_dir)
 
-        CopyJSFile(os.path.join(test_dir, 'js', 'main.js'),
-                   os.path.join(args.destination, test_name + '.js'))
+        ConcatJSDir(os.path.join(test_dir, 'js'),
+                    os.path.join(args.destination, test_name + '.js'))
         CopyHTMLFile(test_name, os.path.join(test_dir, 'index.html'),
                      os.path.join(args.destination, test_name + '.html'))
 
