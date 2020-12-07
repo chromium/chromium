@@ -220,6 +220,7 @@ View::~View() {
 
   {
     internal::ScopedChildrenLock lock(this);
+    auto child_count = children_.size();
     for (auto* child : children_) {
       line_number_trace[(next_line_entry++) % kNumEntries] = __LINE__;
       child->parent_ = nullptr;
@@ -238,6 +239,7 @@ View::~View() {
         if (child)
           vtable = reinterpret_cast<void**>(child)[0];
         delete child;
+        CHECK_EQ(child_count, children_.size());
       }
       line_number_trace[(next_line_entry++) % kNumEntries] = __LINE__;
     }
