@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "extensions/browser/extension_registry.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
+#include "ui/base/ime/chromeos/ime_keymap.h"
 
 namespace input_ime = extensions::api::input_ime;
 namespace KeyEventHandled = extensions::api::input_ime::KeyEventHandled;
@@ -419,7 +420,9 @@ ExtensionFunction::ResponseAction InputImeSendKeyEventsFunction::Run() {
     event.type = input_ime::ToString(key_event.type);
     event.key = key_event.key;
     event.code = key_event.code;
-    event.key_code = key_event.key_code.get() ? *(key_event.key_code) : 0;
+    event.key_code = key_event.key_code.get()
+                         ? *(key_event.key_code)
+                         : ui::DomKeycodeToKeyboardCode(key_event.code);
     event.alt_key = key_event.alt_key ? *(key_event.alt_key) : false;
     event.altgr_key = key_event.altgr_key ? *(key_event.altgr_key) : false;
     event.ctrl_key = key_event.ctrl_key ? *(key_event.ctrl_key) : false;

@@ -423,8 +423,7 @@ bool InputMethodEngineBase::SendKeyEvents(
   }
 
   for (const auto& event : events) {
-    ui::KeyEvent ui_event = ConvertKeyboardEventToUIKeyEvent(event);
-    if (!SendKeyEvent(&ui_event, event.code, error))
+    if (!SendKeyEvent(ConvertKeyboardEventToUIKeyEvent(event), error))
       return false;
   }
   return true;

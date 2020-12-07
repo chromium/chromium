@@ -310,8 +310,7 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
   void DeleteSurroundingTextToInputContext(int offset, size_t number_of_chars);
 
   // Sends the key event to the window tree host.
-  virtual bool SendKeyEvent(ui::KeyEvent* ui_event,
-                            const std::string& code,
+  virtual bool SendKeyEvent(const ui::KeyEvent& ui_event,
                             std::string* error) = 0;
 
   // Used to verify that a key event is valid before precessing it in the

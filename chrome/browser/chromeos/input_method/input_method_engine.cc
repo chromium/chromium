@@ -513,12 +513,9 @@ void InputMethodEngine::CommitTextToInputContext(int context_id,
   }
 }
 
-bool InputMethodEngine::SendKeyEvent(ui::KeyEvent* event,
-                                     const std::string& code,
+bool InputMethodEngine::SendKeyEvent(const ui::KeyEvent& event,
                                      std::string* error) {
-  DCHECK(event);
-  if (event->key_code() == ui::VKEY_UNKNOWN)
-    event->set_key_code(ui::DomKeycodeToKeyboardCode(code));
+  ui::KeyEvent event_copy = event;
 
   // Marks the simulated key event is from the Virtual Keyboard.
   ui::Event::Properties properties;
@@ -526,12 +523,12 @@ bool InputMethodEngine::SendKeyEvent(ui::KeyEvent* event,
       std::vector<uint8_t>(ui::kPropertyFromVKSize);
   properties[ui::kPropertyFromVK][ui::kPropertyFromVKIsMirroringIndex] =
       (uint8_t)is_mirroring_;
-  event->SetProperties(properties);
+  event_copy.SetProperties(properties);
 
   ui::IMEInputContextHandlerInterface* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (input_context) {
-    input_context->SendKeyEvent(event);
+    input_context->SendKeyEvent(&event_copy);
     return true;
   }
 

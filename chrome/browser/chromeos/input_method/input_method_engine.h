@@ -205,9 +205,7 @@ class InputMethodEngine : public InputMethodEngineBase,
   void CommitTextToInputContext(int context_id,
                                 const std::string& text) override;
 
-  bool SendKeyEvent(ui::KeyEvent* event,
-                    const std::string& code,
-                    std::string* error) override;
+  bool SendKeyEvent(const ui::KeyEvent& event, std::string* error) override;
 
   // Enables overriding input view page to Virtual Keyboard window.
   void EnableInputView();
