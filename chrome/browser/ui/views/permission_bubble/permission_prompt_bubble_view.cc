@@ -39,6 +39,8 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/widget/widget.h"
 
 PermissionPromptBubbleView::PermissionPromptBubbleView(
@@ -60,41 +62,65 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
   SetDefaultButton(ui::DIALOG_BUTTON_NONE);
 
   if (ShouldShowAllowThisTimeButton()) {
+    // Host every button in the extra_view to have full control over the width
+    // of the dialog.
+    SetButtons(ui::DIALOG_BUTTON_NONE);
+
+    views::LayoutProvider* const layout_provider = views::LayoutProvider::Get();
+    const int button_spacing = layout_provider->GetDistanceMetric(
+        views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
+    auto buttons_container = std::make_unique<views::View>();
+    buttons_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+        button_spacing));
+
+    auto allow_once_button = std::make_unique<views::MdTextButton>(
+        base::BindRepeating(
+            &PermissionPromptBubbleView::AcceptPermissionThisTime,
+            base::Unretained(this)),
+        l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_ONCE));
+
+    auto allow_always_button = std::make_unique<views::MdTextButton>(
+        base::BindRepeating(&PermissionPromptBubbleView::AcceptPermission,
+                            base::Unretained(this)),
+        l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_ALWAYS));
+
+    auto block_button = std::make_unique<views::MdTextButton>(
+        base::BindRepeating(&PermissionPromptBubbleView::DenyPermission,
+                            base::Unretained(this)),
+        l10n_util::GetStringUTF16(IDS_PERMISSION_DENY));
+
     if (permissions::feature_params::kOkButtonBehavesAsAllowAlways.Get()) {
-      SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                     l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_ALWAYS));
-      SetAcceptCallback(
-          base::BindOnce(&PermissionPromptBubbleView::AcceptPermission,
-                         base::Unretained(this)));
-
-      SetExtraView(std::make_unique<views::MdTextButton>(
-          base::BindRepeating(
-              &PermissionPromptBubbleView::AcceptPermissionThisTime,
-              base::Unretained(this)),
-          l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_ONCE)));
+      buttons_container->AddChildView(std::move(allow_once_button));
+      if (views::PlatformStyle::kIsOkButtonLeading) {
+        buttons_container->AddChildView(std::move(allow_always_button));
+        buttons_container->AddChildView(std::move(block_button));
+      } else {
+        buttons_container->AddChildView(std::move(block_button));
+        buttons_container->AddChildView(std::move(allow_always_button));
+      }
     } else {
-      SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                     l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_ONCE));
-      SetAcceptCallback(
-          base::BindOnce(&PermissionPromptBubbleView::AcceptPermissionThisTime,
-                         base::Unretained(this)));
-
-      SetExtraView(std::make_unique<views::MdTextButton>(
-          base::BindRepeating(&PermissionPromptBubbleView::AcceptPermission,
-                              base::Unretained(this)),
-          l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_ALWAYS)));
+      buttons_container->AddChildView(std::move(allow_always_button));
+      if (views::PlatformStyle::kIsOkButtonLeading) {
+        buttons_container->AddChildView(std::move(allow_once_button));
+        buttons_container->AddChildView(std::move(block_button));
+      } else {
+        buttons_container->AddChildView(std::move(block_button));
+        buttons_container->AddChildView(std::move(allow_once_button));
+      }
     }
+    SetExtraView(std::move(buttons_container));
   } else {
     SetButtonLabel(ui::DIALOG_BUTTON_OK,
                    l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
     SetAcceptCallback(base::BindOnce(
         &PermissionPromptBubbleView::AcceptPermission, base::Unretained(this)));
-  }
 
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                 l10n_util::GetStringUTF16(IDS_PERMISSION_DENY));
-  SetCancelCallback(base::BindOnce(&PermissionPromptBubbleView::DenyPermission,
-                                   base::Unretained(this)));
+    SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+                   l10n_util::GetStringUTF16(IDS_PERMISSION_DENY));
+    SetCancelCallback(base::BindOnce(
+        &PermissionPromptBubbleView::DenyPermission, base::Unretained(this)));
+  }
 
   // If bubble hanging off the padlock icon, with no chip showing, it shouldn't
   // close on deactivate and it should stick until user makes a decision.
