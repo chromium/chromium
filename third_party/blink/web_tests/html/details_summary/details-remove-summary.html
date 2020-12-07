@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<script>
+function clickOn(element, x, y) {
+  const rect = element.getBoundingClientRect();
+  return new Promise((resolve, reject) => {
+    chrome.gpuBenchmarking.pointerActionSequence([
+        {source: 'mouse',
+         actions: [
+             {name: 'pointerMove', x: rect.x + x, y: rect.y + y},
+             {name: 'pointerDown', x: rect.x + x, y: rect.y + y, button: 0},
+             {name: 'pointerUp', button: 0}]
+        }], resolve);
+  });
+}
+
+const $ = document.querySelector.bind(document);
+
+async function runTests() {
+  $('#dt1').removeChild($('#dt1 > summary'));
+
+  $('#dt1c').removeChild($('#dt1c > summary'));
+  await clickOn($('#dt1c'), 2, 2);
+
+  $('#dt2').removeChild($('#dt2 > summary'));
+
+  $('#dt2c').removeChild($('#dt2c > summary'));
+  await clickOn($('#dt2c'), 2, 2);
+
+  $('#dt3').removeChild($('#dt3 > summary:last-of-type'));
+
+  $('#dt3c').removeChild($('#dt3c > summary:last-of-type'));
+  await clickOn($('#dt3c'), 2, 2);
+
+  $('#dt4').removeChild($('#dt4 > summary'));
+
+  $('#dt4c').removeChild($('#dt4c > summary'));
+  await clickOn($('#dt4c'), 2, 2);
+
+  $('#dt5').removeChild($('#dt5 > summary'));
+
+  $('#dt5c').removeChild($('#dt5c > summary'));
+  await clickOn($('#dt5c'), 2, 2);
+
+  $('#dt6').removeChild($('#dt6 > summary:last-of-type'));
+
+  $('#dt6c').removeChild($('#dt6c > summary:last-of-type'));
+  await clickOn($('#dt6c'), 2, 2);
+
+  testRunner.notifyDone();
+}
+
+testRunner.waitUntilDone();
+
+</script>
+<body onload="runTests()">
+<details id="dt1"><summary>summary</summary></details>
+<details id="dt1c"><summary>summary</summary></details>
+<details id="dt2"><summary>summary 1</summary><summary>summary 2</summary></details>
+<details id="dt2c"><summary>summary 1</summary><summary>summary 2</summary></details>
+<details id="dt3"><summary>summary 1</summary><summary>summary 2</summary></details>
+<details id="dt3c"><summary>summary 1</summary><summary>summary 2</summary></details>
+<details id="dt4" open><summary>summary</summary></details>
+<details id="dt4c" open><summary>summary</summary></details>
+<details id="dt5" open><summary>summary 1</summary><summary>summary 2</summary></details>
+<details id="dt5c" open><summary>summary 1</summary><summary>summary 2</summary></details>
+<details id="dt6" open><summary>summary 1</summary><summary>summary 2</summary></details>
+<details id="dt6c" open><summary>summary 1</summary><summary>summary 2</summary></details>
+</body>
