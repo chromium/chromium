@@ -2444,7 +2444,7 @@ TEST_F(HostResolverManagerTest, IncludeCanonicalName) {
   EXPECT_THAT(response.request()->GetAddressResults().value().endpoints(),
               testing::ElementsAre(CreateExpected("192.168.1.42", 80)));
   EXPECT_EQ("canon.name",
-            response.request()->GetAddressResults().value().canonical_name());
+            response.request()->GetAddressResults().value().GetCanonicalName());
 
   EXPECT_THAT(response_no_flag.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
 }
@@ -4003,6 +4003,17 @@ class HostResolverManagerDnsTest : public HostResolverManagerTest {
         MockDnsClientRule::Result(BuildTestDnsAddressResponseWithCname(
             prefix, result_ip, std::move(cannonname))),
         delay);
+  }
+
+  static void AddDnsRule(MockDnsClientRuleList* rules,
+
+                         const std::string& prefix,
+                         uint16_t qtype,
+                         DnsResponse dns_test_response,
+                         bool delay) {
+    rules->emplace_back(prefix, qtype, false /* secure */,
+                        MockDnsClientRule::Result(std::move(dns_test_response)),
+                        delay);
   }
 
   static void AddSecureDnsRule(MockDnsClientRuleList* rules,
@@ -6785,7 +6796,7 @@ TEST_F(HostResolverManagerDnsTest, NoCanonicalName) {
 
   // HostResolver may still give name, but if so, it must be correct.
   std::string result_name =
-      response.request()->GetAddressResults().value().canonical_name();
+      response.request()->GetAddressResults().value().GetCanonicalName();
   EXPECT_TRUE(result_name.empty() || result_name == "canonical");
 }
 
@@ -6808,7 +6819,7 @@ TEST_F(HostResolverManagerDnsTest, CanonicalName) {
       params, resolve_context_.get(), resolve_context_->host_cache()));
   ASSERT_THAT(response.result_error(), IsOk());
 
-  EXPECT_EQ(response.request()->GetAddressResults().value().canonical_name(),
+  EXPECT_EQ(response.request()->GetAddressResults().value().GetCanonicalName(),
             "canonical");
 }
 
@@ -6833,7 +6844,7 @@ TEST_F(HostResolverManagerDnsTest, CanonicalName_PreferV6) {
   base::RunLoop().RunUntilIdle();
   dns_client_->CompleteDelayedTransactions();
   ASSERT_THAT(response.result_error(), IsOk());
-  EXPECT_EQ(response.request()->GetAddressResults().value().canonical_name(),
+  EXPECT_EQ(response.request()->GetAddressResults().value().GetCanonicalName(),
             "correct");
 }
 
@@ -6853,7 +6864,7 @@ TEST_F(HostResolverManagerDnsTest, CanonicalName_V4Only) {
       HostPortPair("alias", 80), NetworkIsolationKey(), NetLogWithSource(),
       params, resolve_context_.get(), resolve_context_->host_cache()));
   ASSERT_THAT(response.result_error(), IsOk());
-  EXPECT_EQ(response.request()->GetAddressResults().value().canonical_name(),
+  EXPECT_EQ(response.request()->GetAddressResults().value().GetCanonicalName(),
             "correct");
 }
 
@@ -6877,8 +6888,52 @@ TEST_F(HostResolverManagerDnsTest, CanonicalNameForcesProc) {
       params, resolve_context_.get(), resolve_context_->host_cache()));
   ASSERT_THAT(response.result_error(), IsOk());
 
-  EXPECT_EQ(response.request()->GetAddressResults().value().canonical_name(),
+  EXPECT_EQ(response.request()->GetAddressResults().value().GetCanonicalName(),
             "canonical");
+}
+
+TEST_F(HostResolverManagerDnsTest, DnsAliases) {
+  MockDnsClientRuleList rules;
+
+  DnsResponse expected_A_response = BuildTestDnsResponse(
+      "first.test", dns_protocol::kTypeA,
+      {BuildTestAddressRecord("fourth.test", IPAddress::IPv4Localhost()),
+
+       BuildTestCnameRecord("third.test", "fourth.test"),
+       BuildTestCnameRecord("second.test", "third.test"),
+       BuildTestCnameRecord("first.test", "second.test")});
+
+  AddDnsRule(&rules, "first.test", dns_protocol::kTypeA,
+             std::move(expected_A_response), false /* delay */);
+
+  DnsResponse expected_AAAA_response = BuildTestDnsResponse(
+      "first.test", dns_protocol::kTypeAAAA,
+      {BuildTestAddressRecord("fourth.test", IPAddress::IPv6Localhost()),
+       BuildTestCnameRecord("third.test", "fourth.test"),
+       BuildTestCnameRecord("second.test", "third.test"),
+       BuildTestCnameRecord("first.test", "second.test")});
+
+  AddDnsRule(&rules, "first.test", dns_protocol::kTypeAAAA,
+             std::move(expected_AAAA_response), false /* delay */);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  set_allow_fallback_to_proctask(false);
+  HostResolver::ResolveHostParameters params;
+  params.include_canonical_name = true;
+  params.source = HostResolverSource::DNS;
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("first.test", 80), NetworkIsolationKey(), NetLogWithSource(),
+      params, resolve_context_.get(), resolve_context_->host_cache()));
+
+  ASSERT_THAT(response.result_error(), IsOk());
+  ASSERT_TRUE(response.request()->GetAddressResults());
+  EXPECT_EQ(response.request()->GetAddressResults().value().GetCanonicalName(),
+            "fourth.test");
+  EXPECT_THAT(response.request()->GetAddressResults().value().dns_aliases(),
+              testing::ElementsAre("fourth.test", "third.test", "second.test",
+                                   "first.test"));
 }
 
 TEST_F(HostResolverManagerDnsTest, SortsAndDeduplicatesAddresses) {

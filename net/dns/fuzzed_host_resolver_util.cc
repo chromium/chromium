@@ -200,7 +200,8 @@ class FuzzedHostResolverProc : public HostResolverProc {
 
     if (host_resolver_flags & HOST_RESOLVER_CANONNAME) {
       // Don't bother to fuzz this - almost nothing cares.
-      result.set_canonical_name("foo.com");
+      std::vector<std::string> aliases({"foo.com"});
+      result.SetDnsAliases(std::move(aliases));
     }
 
     *addrlist = result;

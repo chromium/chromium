@@ -500,8 +500,9 @@ void AdbClientSocket::Connect(net::CompletionOnceCallback callback) {
   // on IPv4. So just try IPv4 first, then fall back to IPv6.
   net::IPAddressList list = {net::IPAddress::IPv4Localhost(),
                              net::IPAddress::IPv6Localhost()};
-  net::AddressList ip_list = net::AddressList::CreateFromIPAddressList(
-      list, "localhost");
+  std::vector<std::string> aliases({"localhost"});
+  net::AddressList ip_list =
+      net::AddressList::CreateFromIPAddressList(list, std::move(aliases));
   net::AddressList address_list = net::AddressList::CopyWithPort(
       ip_list, port_);
 

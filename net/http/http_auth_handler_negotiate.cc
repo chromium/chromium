@@ -360,7 +360,7 @@ int HttpAuthHandlerNegotiate::DoResolveCanonicalNameComplete(int rv) {
     if (rv == OK) {
       DCHECK(resolve_host_request_->GetAddressResults());
       const std::string& canonical_name =
-          resolve_host_request_->GetAddressResults().value().canonical_name();
+          resolve_host_request_->GetAddressResults().value().GetCanonicalName();
       if (!canonical_name.empty())
         server = canonical_name;
     } else {

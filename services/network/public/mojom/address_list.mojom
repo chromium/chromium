@@ -9,5 +9,8 @@ import "services/network/public/mojom/ip_endpoint.mojom";
 // Mirror of net::AddressList.
 struct AddressList {
   array<IPEndPoint> addresses;
-  string canonical_name;
+  // The first entry of `dns_aliases`, if it exists, is the canonical name.
+  // The alias chain is preserved in reverse order, from canonical name (i.e.
+  // address record name) through to query name.
+  array<string> dns_aliases;
 };

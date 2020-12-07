@@ -16,10 +16,10 @@ bool StructTraits<network::mojom::AddressListDataView, net::AddressList>::Read(
   if (!data.ReadAddresses(&out->endpoints()))
     return false;
 
-  std::string canonical_name;
-  if (!data.ReadCanonicalName(&canonical_name))
+  std::vector<std::string> dns_aliases;
+  if (!data.ReadDnsAliases(&dns_aliases))
     return false;
-  out->set_canonical_name(canonical_name);
+  out->SetDnsAliases(std::move(dns_aliases));
 
   return true;
 }

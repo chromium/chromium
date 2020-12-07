@@ -249,6 +249,10 @@ class NET_EXPORT HostCache {
     // non-empty and therefore OK.
     void MergeAddressesFrom(const HostCache::Entry& source);
 
+    // Merges DNS aliases from |source| into the stored list of DNS aliases and
+    // deduplicates.
+    void MergeDnsAliasesFrom(const HostCache::Entry& source);
+
     base::Value GetAsValue(bool include_staleness) const;
 
     // The resolve results for this entry.

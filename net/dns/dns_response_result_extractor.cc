@@ -7,6 +7,7 @@
 #include <limits.h>
 #include <stdint.h>
 
+#include <iterator>
 #include <map>
 #include <memory>
 #include <string>
@@ -133,15 +134,21 @@ std::vector<HostPortPair> SortServiceTargets(
 ExtractionError ValidateNamesAndAliases(
     base::StringPiece query_name,
     const AliasMap& aliases,
-    const std::vector<std::unique_ptr<const RecordParsed>>& results) {
+    const std::vector<std::unique_ptr<const RecordParsed>>& results,
+    std::vector<std::string>* out_ordered_aliases) {
+  DCHECK(out_ordered_aliases);
+
   // Validate that all aliases form a single non-looping chain, starting from
   // `query_name`.
   size_t aliases_in_chain = 0;
   base::StringPiece final_chain_name = query_name;
+  std::vector<std::string> reordered_aliases;
+  reordered_aliases.push_back(std::string(query_name));
   auto alias = aliases.find(std::string(query_name));
   while (alias != aliases.end() && aliases_in_chain <= aliases.size()) {
     aliases_in_chain++;
     final_chain_name = alias->second;
+    reordered_aliases.emplace_back(alias->second);
     alias = aliases.find(alias->second);
   }
 
@@ -156,6 +163,16 @@ ExtractionError ValidateNamesAndAliases(
     }
   }
 
+  // Reverse the ordered aliases so that `final_chain_name` is first and
+  // `query_name` is last.
+  using iter_t = std::vector<std::string>::reverse_iterator;
+  std::vector<std::string> reversed_aliases;
+  reversed_aliases.insert(
+      reversed_aliases.end(),
+      std::move_iterator<iter_t>(reordered_aliases.rbegin()),
+      std::move_iterator<iter_t>(reordered_aliases.rend()));
+  *out_ordered_aliases = reversed_aliases;
+
   return ExtractionError::kOk;
 }
 
@@ -163,7 +180,8 @@ ExtractionError ExtractResponseRecords(
     const DnsResponse& response,
     uint16_t result_qtype,
     std::vector<std::unique_ptr<const RecordParsed>>* out_records,
-    base::Optional<base::TimeDelta>* out_response_ttl) {
+    base::Optional<base::TimeDelta>* out_response_ttl,
+    std::vector<std::string>* out_aliases) {
   DCHECK(out_records);
   DCHECK(out_response_ttl);
 
@@ -210,8 +228,9 @@ ExtractionError ExtractResponseRecords(
     }
   }
 
-  ExtractionError name_and_alias_validation_error =
-      ValidateNamesAndAliases(response.GetDottedName(), aliases, records);
+  std::vector<std::string> out_ordered_aliases;
+  ExtractionError name_and_alias_validation_error = ValidateNamesAndAliases(
+      response.GetDottedName(), aliases, records, &out_ordered_aliases);
   if (name_and_alias_validation_error != ExtractionError::kOk)
     return name_and_alias_validation_error;
 
@@ -249,6 +268,8 @@ ExtractionError ExtractResponseRecords(
 
   *out_records = std::move(records);
   *out_response_ttl = response_ttl;
+  if (out_aliases)
+    *out_aliases = std::move(out_ordered_aliases);
 
   return ExtractionError::kOk;
 }
@@ -262,8 +283,9 @@ ExtractionError ExtractAddressResults(const DnsResponse& response,
 
   std::vector<std::unique_ptr<const RecordParsed>> records;
   base::Optional<base::TimeDelta> response_ttl;
-  ExtractionError extraction_error =
-      ExtractResponseRecords(response, address_qtype, &records, &response_ttl);
+  std::vector<std::string> aliases;
+  ExtractionError extraction_error = ExtractResponseRecords(
+      response, address_qtype, &records, &response_ttl, &aliases);
 
   if (extraction_error != ExtractionError::kOk) {
     *out_results = HostCache::Entry(ERR_DNS_MALFORMED_RESPONSE,
@@ -272,13 +294,14 @@ ExtractionError ExtractAddressResults(const DnsResponse& response,
   }
 
   AddressList addresses;
+  std::string canonical_name;
   for (const auto& record : records) {
     if (addresses.empty())
-      addresses.set_canonical_name(record->name());
+      canonical_name = record->name();
 
     // Expect that ExtractResponseRecords validates that all results correctly
     // have the same name.
-    DCHECK_EQ(addresses.canonical_name(), record->name());
+    DCHECK_EQ(canonical_name, record->name());
 
     IPAddress address;
     if (address_qtype == dns_protocol::kTypeA) {
@@ -294,6 +317,17 @@ ExtractionError ExtractAddressResults(const DnsResponse& response,
     addresses.push_back(IPEndPoint(address, 0 /* port */));
   }
 
+  // If addresses were found, then a canonical name exists. Verify that the
+  // canonical name is the first entry in the alias vector to be stored in
+  // `addresses.dns_aliases_`. The alias chain order should have been preserved
+  // from canonical name (i.e. record name) through to query name.
+  if (!addresses.empty()) {
+    DCHECK(!aliases.empty());
+    DCHECK(aliases.front() == canonical_name);
+    DCHECK(aliases.back() == response.GetDottedName());
+    addresses.SetDnsAliases(std::move(aliases));
+  }
+
   *out_results = HostCache::Entry(
       addresses.empty() ? ERR_NAME_NOT_RESOLVED : OK, std::move(addresses),
       HostCache::Entry::SOURCE_DNS, response_ttl);
@@ -306,8 +340,9 @@ ExtractionError ExtractTxtResults(const DnsResponse& response,
 
   std::vector<std::unique_ptr<const RecordParsed>> records;
   base::Optional<base::TimeDelta> response_ttl;
-  ExtractionError extraction_error = ExtractResponseRecords(
-      response, dns_protocol::kTypeTXT, &records, &response_ttl);
+  ExtractionError extraction_error =
+      ExtractResponseRecords(response, dns_protocol::kTypeTXT, &records,
+                             &response_ttl, nullptr /* out_aliases */);
 
   if (extraction_error != ExtractionError::kOk) {
     *out_results = HostCache::Entry(ERR_DNS_MALFORMED_RESPONSE,
@@ -334,8 +369,9 @@ ExtractionError ExtractPointerResults(const DnsResponse& response,
 
   std::vector<std::unique_ptr<const RecordParsed>> records;
   base::Optional<base::TimeDelta> response_ttl;
-  ExtractionError extraction_error = ExtractResponseRecords(
-      response, dns_protocol::kTypePTR, &records, &response_ttl);
+  ExtractionError extraction_error =
+      ExtractResponseRecords(response, dns_protocol::kTypePTR, &records,
+                             &response_ttl, nullptr /* out_aliases */);
 
   if (extraction_error != ExtractionError::kOk) {
     *out_results = HostCache::Entry(ERR_DNS_MALFORMED_RESPONSE,
@@ -365,8 +401,9 @@ ExtractionError ExtractServiceResults(const DnsResponse& response,
 
   std::vector<std::unique_ptr<const RecordParsed>> records;
   base::Optional<base::TimeDelta> response_ttl;
-  ExtractionError extraction_error = ExtractResponseRecords(
-      response, dns_protocol::kTypeSRV, &records, &response_ttl);
+  ExtractionError extraction_error =
+      ExtractResponseRecords(response, dns_protocol::kTypeSRV, &records,
+                             &response_ttl, nullptr /* out_aliases */);
 
   if (extraction_error != ExtractionError::kOk) {
     *out_results = HostCache::Entry(ERR_DNS_MALFORMED_RESPONSE,
@@ -399,9 +436,9 @@ ExtractionError ExtractIntegrityResults(const DnsResponse& response,
 
   base::Optional<base::TimeDelta> response_ttl;
   std::vector<std::unique_ptr<const RecordParsed>> records;
-  ExtractionError extraction_error =
-      ExtractResponseRecords(response, dns_protocol::kExperimentalTypeIntegrity,
-                             &records, &response_ttl);
+  ExtractionError extraction_error = ExtractResponseRecords(
+      response, dns_protocol::kExperimentalTypeIntegrity, &records,
+      &response_ttl, nullptr /* out_aliases */);
 
   // If the response couldn't be parsed, assume no INTEGRITY records, and
   // pretend success. This is a temporary hack to keep errors with INTEGRITY
@@ -447,8 +484,9 @@ ExtractionError ExtractHttpsResults(const DnsResponse& response,
 
   base::Optional<base::TimeDelta> response_ttl;
   std::vector<std::unique_ptr<const RecordParsed>> records;
-  ExtractionError extraction_error = ExtractResponseRecords(
-      response, dns_protocol::kTypeHttps, &records, &response_ttl);
+  ExtractionError extraction_error =
+      ExtractResponseRecords(response, dns_protocol::kTypeHttps, &records,
+                             &response_ttl, nullptr /* out_aliases */);
 
   // If the response couldn't be parsed, assume no HTTPS records, and pretend
   // success. This is a temporary hack to keep errors with HTTPS (which is

@@ -680,7 +680,7 @@ TEST_F(HostResolverTest, IncludeCanonicalName) {
   EXPECT_THAT(response_client.result_addresses().value().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint("123.0.12.24", 80)));
   EXPECT_EQ("canonicalexample.com",
-            response_client.result_addresses().value().canonical_name());
+            response_client.result_addresses().value().GetCanonicalName());
 }
 
 TEST_F(HostResolverTest, LoopbackOnly) {

@@ -109,8 +109,9 @@ TEST_F(NetworkQualitySocketWatcherTest, NotificationsThrottled) {
   IPAddress ip_address;
   ASSERT_TRUE(ip_address.AssignFromIPLiteral("157.0.0.1"));
   ip_list.push_back(ip_address);
+  std::vector<std::string> aliases({"canonical.example.com"});
   AddressList address_list =
-      AddressList::CreateFromIPAddressList(ip_list, "canonical.example.com");
+      AddressList::CreateFromIPAddressList(ip_list, std::move(aliases));
 
   SocketWatcher socket_watcher(
       SocketPerformanceWatcherFactory::PROTOCOL_TCP, address_list,
@@ -153,8 +154,9 @@ TEST_F(NetworkQualitySocketWatcherTest, QuicFirstNotificationDropped) {
   IPAddress ip_address;
   ASSERT_TRUE(ip_address.AssignFromIPLiteral("157.0.0.1"));
   ip_list.push_back(ip_address);
+  std::vector<std::string> aliases({"canonical.example.com"});
   AddressList address_list =
-      AddressList::CreateFromIPAddressList(ip_list, "canonical.example.com");
+      AddressList::CreateFromIPAddressList(ip_list, std::move(aliases));
 
   SocketWatcher socket_watcher(
       SocketPerformanceWatcherFactory::PROTOCOL_QUIC, address_list,
@@ -214,8 +216,9 @@ TEST_F(NetworkQualitySocketWatcherTest, MAYBE_PrivateAddressRTTNotNotified) {
     IPAddress ip_address;
     ASSERT_TRUE(ip_address.AssignFromIPLiteral(test.ip_address));
     ip_list.push_back(ip_address);
+    std::vector<std::string> aliases({"canonical.example.com"});
     AddressList address_list =
-        AddressList::CreateFromIPAddressList(ip_list, "canonical.example.com");
+        AddressList::CreateFromIPAddressList(ip_list, std::move(aliases));
 
     SocketWatcher socket_watcher(
         SocketPerformanceWatcherFactory::PROTOCOL_TCP, address_list,
@@ -253,8 +256,9 @@ TEST_F(NetworkQualitySocketWatcherTest, RemoteHostIPHashComputedCorrectly) {
     IPAddress ip_address;
     ASSERT_TRUE(ip_address.AssignFromIPLiteral(test.ip_address));
     ip_list.push_back(ip_address);
+    std::vector<std::string> aliases({"canonical.example.com"});
     AddressList address_list =
-        AddressList::CreateFromIPAddressList(ip_list, "canonical.example.com");
+        AddressList::CreateFromIPAddressList(ip_list, std::move(aliases));
 
     SocketWatcher socket_watcher(
         SocketPerformanceWatcherFactory::PROTOCOL_TCP, address_list,

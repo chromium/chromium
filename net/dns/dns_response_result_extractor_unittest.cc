@@ -42,7 +42,9 @@ TEST(DnsResponseResultExtractorTest, ExtractsSingleARecord) {
   ASSERT_TRUE(results.addresses());
   EXPECT_THAT(results.addresses().value().endpoints(),
               testing::ElementsAre(expected_endpoint));
-  EXPECT_EQ(results.addresses().value().canonical_name(), kName);
+  EXPECT_EQ(results.addresses().value().GetCanonicalName(), kName);
+  EXPECT_THAT(results.addresses().value().dns_aliases(),
+              testing::ElementsAre(kName));
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsSingleAAAARecord) {
@@ -63,7 +65,9 @@ TEST(DnsResponseResultExtractorTest, ExtractsSingleAAAARecord) {
   ASSERT_TRUE(results.addresses());
   EXPECT_THAT(results.addresses().value().endpoints(),
               testing::ElementsAre(expected_endpoint));
-  EXPECT_EQ(results.addresses().value().canonical_name(), kName);
+  EXPECT_EQ(results.addresses().value().GetCanonicalName(), kName);
+  EXPECT_THAT(results.addresses().value().dns_aliases(),
+              testing::ElementsAre(kName));
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsSingleARecordWithCname) {
@@ -83,7 +87,9 @@ TEST(DnsResponseResultExtractorTest, ExtractsSingleARecordWithCname) {
   ASSERT_TRUE(results.addresses());
   EXPECT_THAT(results.addresses().value().endpoints(),
               testing::ElementsAre(expected_endpoint));
-  EXPECT_EQ(results.addresses().value().canonical_name(), kCanonicalName);
+  EXPECT_EQ(results.addresses().value().GetCanonicalName(), kCanonicalName);
+  EXPECT_THAT(results.addresses().value().dns_aliases(),
+              testing::ElementsAre(kCanonicalName, "address.test"));
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsARecordsWithCname) {
@@ -112,7 +118,9 @@ TEST(DnsResponseResultExtractorTest, ExtractsARecordsWithCname) {
                   IPEndPoint(IPAddress(74, 125, 226, 180), 0 /* port */),
                   IPEndPoint(IPAddress(74, 125, 226, 176), 0 /* port */),
                   IPEndPoint(IPAddress(74, 125, 226, 177), 0 /* port */)));
-  EXPECT_EQ(results.addresses().value().canonical_name(), "alias.test");
+  EXPECT_EQ(results.addresses().value().GetCanonicalName(), "alias.test");
+  EXPECT_THAT(results.addresses().value().dns_aliases(),
+              testing::ElementsAre("alias.test", "addresses.test"));
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNxdomainAResponses) {
@@ -130,7 +138,8 @@ TEST(DnsResponseResultExtractorTest, ExtractsNxdomainAResponses) {
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   ASSERT_TRUE(results.addresses());
   EXPECT_TRUE(results.addresses().value().empty());
-  EXPECT_EQ(results.addresses().value().canonical_name(), "");
+  EXPECT_EQ(results.addresses().value().GetCanonicalName(), "");
+  EXPECT_TRUE(results.addresses().value().dns_aliases().empty());
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNodataAResponses) {
@@ -145,7 +154,8 @@ TEST(DnsResponseResultExtractorTest, ExtractsNodataAResponses) {
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   ASSERT_TRUE(results.addresses());
   EXPECT_TRUE(results.addresses().value().empty());
-  EXPECT_EQ(results.addresses().value().canonical_name(), "");
+  EXPECT_EQ(results.addresses().value().GetCanonicalName(), "");
+  EXPECT_TRUE(results.addresses().value().dns_aliases().empty());
 }
 
 TEST(DnsResponseResultExtractorTest, RejectsMalformedARecord) {
@@ -187,7 +197,8 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeRecordsInAResponse) {
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   ASSERT_TRUE(results.addresses());
   EXPECT_TRUE(results.addresses().value().empty());
-  EXPECT_EQ(results.addresses().value().canonical_name(), "");
+  EXPECT_EQ(results.addresses().value().GetCanonicalName(), "");
+  EXPECT_TRUE(results.addresses().value().dns_aliases().empty());
 }
 
 TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeRecordsMixedWithARecords) {
@@ -209,7 +220,9 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeRecordsMixedWithARecords) {
   IPEndPoint expected_endpoint(kExpected, 0 /* port */);
   EXPECT_THAT(results.addresses().value().endpoints(),
               testing::ElementsAre(expected_endpoint));
-  EXPECT_EQ(results.addresses().value().canonical_name(), kName);
+  EXPECT_EQ(results.addresses().value().GetCanonicalName(), kName);
+  EXPECT_THAT(results.addresses().value().dns_aliases(),
+              testing::ElementsAre(kName));
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsMinATtl) {
@@ -723,6 +736,32 @@ TEST(DnsResponseResultExtractorTest, HandlesInOrderCnameChain) {
               testing::Optional(testing::UnorderedElementsAre("foo", "bar")));
 }
 
+TEST(DnsResponseResultExtractorTest, HandlesInOrderCnameChainTypeA) {
+  const IPAddress kExpected(192, 168, 0, 1);
+  IPEndPoint expected_endpoint(kExpected, 0 /* port */);
+
+  DnsResponse response =
+      BuildTestDnsResponse("first.test", dns_protocol::kTypeA,
+                           {BuildTestCnameRecord("first.test", "second.test"),
+                            BuildTestCnameRecord("second.test", "third.test"),
+                            BuildTestCnameRecord("third.test", "fourth.test"),
+                            BuildTestAddressRecord("fourth.test", kExpected)});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::A, &results),
+            DnsResponseResultExtractor::ExtractionError::kOk);
+
+  EXPECT_THAT(results.error(), test::IsOk());
+  ASSERT_TRUE(results.addresses());
+  EXPECT_THAT(results.addresses().value().endpoints(),
+              testing::ElementsAre(expected_endpoint));
+
+  EXPECT_THAT(results.addresses().value().dns_aliases(),
+              testing::ElementsAre("fourth.test", "third.test", "second.test",
+                                   "first.test"));
+}
+
 TEST(DnsResponseResultExtractorTest, HandlesReverseOrderCnameChain) {
   DnsResponse response =
       BuildTestDnsResponse("first.test", dns_protocol::kTypeTXT,
@@ -741,6 +780,32 @@ TEST(DnsResponseResultExtractorTest, HandlesReverseOrderCnameChain) {
               testing::Optional(testing::ElementsAre("foo")));
 }
 
+TEST(DnsResponseResultExtractorTest, HandlesReverseOrderCnameChainTypeA) {
+  const IPAddress kExpected(192, 168, 0, 1);
+  IPEndPoint expected_endpoint(kExpected, 0 /* port */);
+
+  DnsResponse response =
+      BuildTestDnsResponse("first.test", dns_protocol::kTypeA,
+                           {BuildTestAddressRecord("fourth.test", kExpected),
+                            BuildTestCnameRecord("third.test", "fourth.test"),
+                            BuildTestCnameRecord("second.test", "third.test"),
+                            BuildTestCnameRecord("first.test", "second.test")});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::A, &results),
+            DnsResponseResultExtractor::ExtractionError::kOk);
+
+  EXPECT_THAT(results.error(), test::IsOk());
+  ASSERT_TRUE(results.addresses());
+  EXPECT_THAT(results.addresses().value().endpoints(),
+              testing::ElementsAre(expected_endpoint));
+
+  EXPECT_THAT(results.addresses().value().dns_aliases(),
+              testing::ElementsAre("fourth.test", "third.test", "second.test",
+                                   "first.test"));
+}
+
 TEST(DnsResponseResultExtractorTest, HandlesArbitraryOrderCnameChain) {
   DnsResponse response =
       BuildTestDnsResponse("first.test", dns_protocol::kTypeTXT,
@@ -757,6 +822,34 @@ TEST(DnsResponseResultExtractorTest, HandlesArbitraryOrderCnameChain) {
   EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(results.text_records(),
               testing::Optional(testing::ElementsAre("foo")));
+}
+
+TEST(DnsResponseResultExtractorTest, HandlesArbitraryOrderCnameChainTypeA) {
+  const IPAddress kExpected(192, 168, 0, 1);
+  IPEndPoint expected_endpoint(kExpected, 0 /* port */);
+
+  // Alias names are chosen so that the chain order is not in alphabetical
+  // order.
+  DnsResponse response = BuildTestDnsResponse(
+      "first.test", dns_protocol::kTypeA,
+      {BuildTestCnameRecord("qsecond.test", "athird.test"),
+       BuildTestAddressRecord("zfourth.test", kExpected),
+       BuildTestCnameRecord("athird.test", "zfourth.test"),
+       BuildTestCnameRecord("first.test", "qsecond.test")});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::A, &results),
+            DnsResponseResultExtractor::ExtractionError::kOk);
+
+  EXPECT_THAT(results.error(), test::IsOk());
+  ASSERT_TRUE(results.addresses());
+  EXPECT_THAT(results.addresses().value().endpoints(),
+              testing::ElementsAre(expected_endpoint));
+
+  EXPECT_THAT(results.addresses().value().dns_aliases(),
+              testing::ElementsAre("zfourth.test", "athird.test",
+                                   "qsecond.test", "first.test"));
 }
 
 TEST(DnsResponseResultExtractorTest, IgnoresNonResultTypesMixedWithCnameChain) {
@@ -780,6 +873,35 @@ TEST(DnsResponseResultExtractorTest, IgnoresNonResultTypesMixedWithCnameChain) {
   EXPECT_FALSE(results.addresses());
 }
 
+TEST(DnsResponseResultExtractorTest,
+     IgnoresNonResultTypesMixedWithCnameChainTypeA) {
+  const IPAddress kExpected(192, 168, 0, 1);
+  IPEndPoint expected_endpoint(kExpected, 0 /* port */);
+
+  DnsResponse response =
+      BuildTestDnsResponse("first.test", dns_protocol::kTypeA,
+                           {BuildTestCnameRecord("second.test", "third.test"),
+                            BuildTestTextRecord("fourth.test", {"foo"}),
+                            BuildTestCnameRecord("third.test", "fourth.test"),
+                            BuildTestCnameRecord("first.test", "second.test"),
+                            BuildTestAddressRecord("fourth.test", kExpected)});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::A, &results),
+            DnsResponseResultExtractor::ExtractionError::kOk);
+
+  EXPECT_THAT(results.error(), test::IsOk());
+  EXPECT_FALSE(results.text_records());
+  ASSERT_TRUE(results.addresses());
+  EXPECT_THAT(results.addresses().value().endpoints(),
+              testing::ElementsAre(expected_endpoint));
+
+  EXPECT_THAT(results.addresses().value().dns_aliases(),
+              testing::ElementsAre("fourth.test", "third.test", "second.test",
+                                   "first.test"));
+}
+
 TEST(DnsResponseResultExtractorTest, HandlesCnameChainWithoutResult) {
   DnsResponse response =
       BuildTestDnsResponse("first.test", dns_protocol::kTypeTXT,
@@ -794,6 +916,23 @@ TEST(DnsResponseResultExtractorTest, HandlesCnameChainWithoutResult) {
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_THAT(results.text_records(), testing::Optional(testing::IsEmpty()));
+}
+
+TEST(DnsResponseResultExtractorTest, HandlesCnameChainWithoutResultTypeA) {
+  DnsResponse response =
+      BuildTestDnsResponse("first.test", dns_protocol::kTypeA,
+                           {BuildTestCnameRecord("second.test", "third.test"),
+                            BuildTestCnameRecord("third.test", "fourth.test"),
+                            BuildTestCnameRecord("first.test", "second.test")});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::A, &results),
+            DnsResponseResultExtractor::ExtractionError::kOk);
+
+  EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
+  ASSERT_TRUE(results.addresses());
+  EXPECT_TRUE(results.addresses().value().dns_aliases().empty());
 }
 
 TEST(DnsResponseResultExtractorTest, RejectsCnameChainWithLoop) {

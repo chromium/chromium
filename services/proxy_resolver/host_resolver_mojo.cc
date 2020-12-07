@@ -97,7 +97,7 @@ class HostResolverMojo::RequestImpl : public ProxyHostResolver::Request,
       base::TimeDelta ttl =
           error == net::OK ? kCacheEntryTTL : kNegativeCacheEntryTTL;
       net::HostCache::Entry entry(
-          error, net::AddressList::CreateFromIPAddressList(result, ""),
+          error, net::AddressList::CreateFromIPAddressList(result, {}),
           net::HostCache::Entry::SOURCE_UNKNOWN, ttl);
       host_cache_->Set(
           CacheKeyForRequest(hostname_, network_isolation_key_, operation_),

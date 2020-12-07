@@ -22,8 +22,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return obj.endpoints();
   }
 
-  static const std::string& canonical_name(const net::AddressList& obj) {
-    return obj.canonical_name();
+  static const std::vector<std::string>& dns_aliases(
+      const net::AddressList& obj) {
+    return obj.dns_aliases();
   }
 
   static bool Read(network::mojom::AddressListDataView data,

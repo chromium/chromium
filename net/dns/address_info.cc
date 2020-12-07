@@ -150,8 +150,10 @@ bool AddressInfo::IsAllLocalhostOfOneFamily() const {
 AddressList AddressInfo::CreateAddressList() const {
   AddressList list;
   auto canonical_name = GetCanonicalName();
-  if (canonical_name)
-    list.set_canonical_name(*canonical_name);
+  if (canonical_name) {
+    std::vector<std::string> aliases({*canonical_name});
+    list.SetDnsAliases(std::move(aliases));
+  }
   for (auto&& ai : *this) {
     IPEndPoint ipe;
     // NOTE: Ignoring non-INET* families.

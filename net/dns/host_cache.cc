@@ -5,11 +5,15 @@
 #include "net/dns/host_cache.h"
 
 #include <algorithm>
+#include <string>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
@@ -162,12 +166,11 @@ HostCache::Entry HostCache::Entry::MergeEntries(Entry front, Entry back) {
   MergeLists(&front.hostnames_, back.hostnames());
   MergeLists(&front.experimental_results_, back.experimental_results());
 
-  // Use canonical name from |back| iff empty in |front|.
-  if (front.addresses() && front.addresses().value().canonical_name().empty() &&
-      back.addresses()) {
-    front.addresses_.value().set_canonical_name(
-        back.addresses().value().canonical_name());
-  }
+  // The DNS aliases include the canonical name(s), if any, each as the
+  // first entry in the field, which is an optional vector. If |front| has
+  // a canonical name, it will be used. Otherwise, if |back| has a
+  // canonical name, it will be in the first slot in the merged alias field.
+  front.MergeDnsAliasesFrom(back);
 
   // Only expected to merge entries from same source.
   DCHECK_EQ(front.source(), back.source());
@@ -195,8 +198,7 @@ HostCache::Entry HostCache::Entry::CopyWithDefaultPort(uint16_t port) const {
       std::any_of(addresses().value().begin(), addresses().value().end(),
                   [](const IPEndPoint& e) { return e.port() == 0; })) {
     AddressList addresses_with_port;
-    addresses_with_port.set_canonical_name(
-        addresses().value().canonical_name());
+    addresses_with_port.SetDnsAliases(addresses()->dns_aliases());
     for (const IPEndPoint& endpoint : addresses().value()) {
       if (endpoint.port() == 0)
         addresses_with_port.push_back(IPEndPoint(endpoint.address(), port));
@@ -302,6 +304,50 @@ void HostCache::Entry::MergeAddressesFrom(const HostCache::Entry& source) {
                      return lhs.GetFamily() == ADDRESS_FAMILY_IPV6 &&
                             rhs.GetFamily() == ADDRESS_FAMILY_IPV4;
                    });
+}
+
+void HostCache::Entry::MergeDnsAliasesFrom(const HostCache::Entry& source) {
+  // No aliases to merge if source has no AddressList.
+  if (!source.addresses())
+    return;
+
+  // We expect this to be true because the address merging should have already
+  // created the AddressList if the source had one but the target didn't.
+  DCHECK(addresses());
+
+  // Nothing to merge.
+  if (source.addresses()->dns_aliases().empty())
+    return;
+
+  // No aliases pre-existing in target, so simply set target's aliases to
+  // source's. This takes care of the case where target does not have a usable
+  // canonical name, but source does.
+  if (addresses()->dns_aliases().empty()) {
+    addresses_->SetDnsAliases(source.addresses()->dns_aliases());
+    return;
+  }
+
+  DCHECK(addresses()->dns_aliases() != std::vector<std::string>({""}));
+  DCHECK(source.addresses()->dns_aliases() != std::vector<std::string>({""}));
+
+  // We need to check for possible blanks and duplicates in the source's
+  // aliases.
+  std::unordered_set<std::string> aliases_seen;
+  std::vector<std::string> deduplicated_source_aliases;
+
+  aliases_seen.insert(addresses()->dns_aliases().begin(),
+                      addresses()->dns_aliases().end());
+
+  for (const auto& alias : source.addresses()->dns_aliases()) {
+    if (alias != "" && aliases_seen.find(alias) == aliases_seen.end()) {
+      aliases_seen.insert(alias);
+      deduplicated_source_aliases.push_back(alias);
+    }
+  }
+
+  // The first entry of target's aliases must remain in place,
+  // as it's the canonical name, so we append source's aliases to the back.
+  addresses_->AppendDnsAliases(std::move(deduplicated_source_aliases));
 }
 
 base::Value HostCache::Entry::GetAsValue(bool include_staleness) const {

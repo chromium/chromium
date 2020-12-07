@@ -189,7 +189,7 @@ void PepperHostResolverMessageFilter::OnLookupFinished(
   if (net_result != net::OK) {
     SendResolveError(NetErrorToPepperError(net_result), context);
   } else {
-    const std::string& canonical_name = addresses.value().canonical_name();
+    const std::string& canonical_name = addresses.value().GetCanonicalName();
     NetAddressList net_address_list;
     CreateNetAddressListFromAddressList(addresses.value(), &net_address_list);
     if (net_address_list.empty())

@@ -293,8 +293,10 @@ TEST_F(TCPClientSocketTest, MAYBE_TestSocketPerformanceWatcher) {
       new TestSocketPerformanceWatcher());
   TestSocketPerformanceWatcher* watcher_ptr = watcher.get();
 
+  std::vector<std::string> aliases({"example.com"});
+
   TCPClientSocket socket(
-      AddressList::CreateFromIPAddressList(ip_list, "example.com"),
+      AddressList::CreateFromIPAddressList(ip_list, std::move(aliases)),
       std::move(watcher), nullptr, nullptr, NetLogSource());
 
   EXPECT_THAT(socket.Bind(IPEndPoint(IPAddress::IPv4Localhost(), 0)), IsOk());

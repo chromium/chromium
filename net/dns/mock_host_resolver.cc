@@ -51,7 +51,8 @@ int ParseAddressList(const std::string& host_list,
                      const std::string& canonical_name,
                      AddressList* addrlist) {
   *addrlist = AddressList();
-  addrlist->set_canonical_name(canonical_name);
+  std::vector<std::string> aliases({canonical_name});
+  addrlist->SetDnsAliases(std::move(aliases));
   for (const base::StringPiece& address : base::SplitStringPiece(
            host_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
     IPAddress ip_address;
@@ -933,7 +934,8 @@ int RuleBasedHostResolverProc::Resolve(const std::string& host,
               addrlist->push_back(address);
             }
           }
-          addrlist->set_canonical_name(raw_addr_list.canonical_name());
+          std::vector<std::string> aliases({raw_addr_list.GetCanonicalName()});
+          addrlist->SetDnsAliases(std::move(aliases));
 
           if (result == OK && addrlist->empty())
             return ERR_NAME_NOT_RESOLVED;
