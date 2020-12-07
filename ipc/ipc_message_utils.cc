@@ -409,6 +409,23 @@ void ParamTraits<base::string16>::Log(const param_type& p, std::string* l) {
   l->append(base::UTF16ToUTF8(p));
 }
 
+#if defined(OS_WIN) && defined(BASE_STRING16_IS_STD_U16STRING)
+bool ParamTraits<std::wstring>::Read(const base::Pickle* m,
+                                     base::PickleIterator* iter,
+                                     param_type* r) {
+  base::StringPiece16 piece16;
+  if (!iter->ReadStringPiece16(&piece16))
+    return false;
+
+  *r = base::AsWString(piece16);
+  return true;
+}
+
+void ParamTraits<std::wstring>::Log(const param_type& p, std::string* l) {
+  l->append(base::WideToUTF8(p));
+}
+#endif
+
 void ParamTraits<std::vector<char>>::Write(base::Pickle* m,
                                            const param_type& p) {
   if (p.empty()) {

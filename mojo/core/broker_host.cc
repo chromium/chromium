@@ -91,9 +91,9 @@ bool BrokerHost::SendChannel(PlatformHandle handle) {
 
 #if defined(OS_WIN)
 
-void BrokerHost::SendNamedChannel(const base::StringPiece16& pipe_name) {
+void BrokerHost::SendNamedChannel(base::WStringPiece pipe_name) {
   InitData* data;
-  base::char16* name_data;
+  wchar_t* name_data;
   Channel::MessagePtr message = CreateBrokerMessage(
       BrokerMessageType::INIT, 0, sizeof(*name_data) * pipe_name.length(),
       &data, reinterpret_cast<void**>(&name_data));

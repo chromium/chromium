@@ -37,7 +37,7 @@ class BrokerHost : public Channel::Delegate,
 
 #if defined(OS_WIN)
   // Sends a named channel to the client. Like above, but for named pipes.
-  void SendNamedChannel(const base::StringPiece16& pipe_name);
+  void SendNamedChannel(base::WStringPiece pipe_name);
 #endif
 
  private:

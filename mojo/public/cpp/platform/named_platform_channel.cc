@@ -29,7 +29,7 @@ NamedPlatformChannel& NamedPlatformChannel::operator=(
 NamedPlatformChannel::ServerName NamedPlatformChannel::ServerNameFromUTF8(
     base::StringPiece name) {
 #if defined(OS_WIN)
-  return base::UTF8ToUTF16(name);
+  return base::UTF8ToWide(name);
 #else
   return name.as_string();
 #endif

@@ -5,6 +5,8 @@
 #ifndef MOJO_PUBLIC_CPP_PLATFORM_NAMED_PLATFORM_CHANNEL_H_
 #define MOJO_PUBLIC_CPP_PLATFORM_NAMED_PLATFORM_CHANNEL_H_
 
+#include <string>
+
 #include "base/command_line.h"
 #include "base/component_export.h"
 #include "base/macros.h"
@@ -13,9 +15,7 @@
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 
-#if defined(OS_WIN)
-#include "base/strings/string16.h"
-#elif defined(OS_POSIX)
+#if defined(OS_POSIX)
 #include "base/files/file_path.h"
 #endif
 
@@ -35,7 +35,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
   static const char kNamedHandleSwitch[];
 
 #if defined(OS_WIN)
-  using ServerName = base::string16;
+  using ServerName = std::wstring;
 #else
   using ServerName = std::string;
 #endif
@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
     // If non-empty, a security descriptor to use when creating the pipe. If
     // empty, a default security descriptor will be used. See
     // |kDefaultSecurityDescriptor|.
-    base::string16 security_descriptor;
+    std::wstring security_descriptor;
 
     // If |true|, only a server endpoint will be allowed with the given name and
     // only one client will be able to connect. Otherwise many

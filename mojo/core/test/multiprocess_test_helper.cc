@@ -132,7 +132,7 @@ ScopedMessagePipeHandle MultiprocessTestHelper::StartChildWithExtraSwitch(
           temp_dir.AppendASCII(base::NumberToString(base::RandUint64()))
               .value();
 #elif defined(OS_WIN)
-      server_name = base::NumberToString16(base::RandUint64());
+      server_name = base::NumberToWString(base::RandUint64());
 #else
 #error "Platform not yet supported."
 #endif

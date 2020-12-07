@@ -56,9 +56,9 @@ namespace {
 #if defined(OS_WIN)
 void CreateChannel(PlatformHandle* local_endpoint,
                    PlatformHandle* remote_endpoint) {
-  base::string16 pipe_name = base::UTF8ToUTF16(base::StringPrintf(
-      "\\\\.\\pipe\\mojo.%lu.%lu.%I64u", ::GetCurrentProcessId(),
-      ::GetCurrentThreadId(), base::RandUint64()));
+  std::wstring pipe_name = base::StringPrintf(
+      L"\\\\.\\pipe\\mojo.%lu.%lu.%I64u", ::GetCurrentProcessId(),
+      ::GetCurrentThreadId(), base::RandUint64());
   DWORD kOpenMode =
       PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED | FILE_FLAG_FIRST_PIPE_INSTANCE;
   const DWORD kPipeMode = PIPE_TYPE_BYTE | PIPE_READMODE_BYTE;
