@@ -340,14 +340,13 @@ public class ManualFillingTestHelper {
      * controller. The controller will only refresh this cache on page load.
      * @param usernames {@link String}s to be used as display text for username chips.
      * @param passwords {@link String}s to be used as display text for password chips.
-     * @param originBlacklisted boolean indicating whether password saving is disabled for the
+     * @param originDenylisted boolean indicating whether password saving is disabled for the
      *                          origin.
      */
-    public void cacheCredentials(
-            String[] usernames, String[] passwords, boolean originBlacklisted) {
+    public void cacheCredentials(String[] usernames, String[] passwords, boolean originDenylisted) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ManualFillingComponentBridge.cachePasswordSheetData(
-                    mActivityTestRule.getWebContents(), usernames, passwords, originBlacklisted);
+                    mActivityTestRule.getWebContents(), usernames, passwords, originDenylisted);
         });
     }
 

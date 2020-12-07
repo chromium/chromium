@@ -190,9 +190,9 @@ class ManualFillingComponentBridge {
 
     @VisibleForTesting
     public static void cachePasswordSheetData(WebContents webContents, String[] userNames,
-            String[] passwords, boolean originBlacklisted) {
+            String[] passwords, boolean originDenylisted) {
         ManualFillingComponentBridgeJni.get().cachePasswordSheetDataForTesting(
-                webContents, userNames, passwords, originBlacklisted);
+                webContents, userNames, passwords, originDenylisted);
     }
 
     @VisibleForTesting
@@ -237,7 +237,7 @@ class ManualFillingComponentBridge {
         void onViewDestroyed(
                 long nativeManualFillingViewAndroid, ManualFillingComponentBridge caller);
         void cachePasswordSheetDataForTesting(WebContents webContents, String[] userNames,
-                String[] passwords, boolean originBlacklisted);
+                String[] passwords, boolean originDenylisted);
         void notifyFocusedFieldTypeForTesting(WebContents webContents, int focusedFieldType);
         void signalAutoGenerationStatusForTesting(WebContents webContents, boolean available);
         void disableServerPredictionsForTesting();
