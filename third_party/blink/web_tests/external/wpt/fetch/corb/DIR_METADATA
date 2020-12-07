@@ -1,0 +1,7 @@
+monorail {
+  component: "Internals>Sandbox>SiteIsolation"
+}
+team_email: "site-isolation-dev@chromium.org"
+wpt {
+  notify: YES
+}

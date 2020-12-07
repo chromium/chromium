@@ -1,0 +1,7 @@
+monorail {
+  component: "Blink>FeaturePolicy"
+}
+team_email: "feature-control@chromium.org"
+wpt {
+  notify: YES
+}
