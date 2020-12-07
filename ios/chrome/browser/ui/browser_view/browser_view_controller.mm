@@ -2903,6 +2903,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // view is taken, the snapshot will be a blank view. However, if the view's
   // parent is hidden but the view itself is not, the snapshot will not be a
   // blank view.
+  [self.tabStripSnapshot removeFromSuperview];
   self.tabStripSnapshot = [self.tabStripView screenshotForAnimation];
   self.tabStripSnapshot.translatesAutoresizingMaskIntoConstraints = NO;
   self.tabStripSnapshot.transform =
@@ -2923,12 +2924,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     // When the Fullscreen Provider is used, the web content extends up to the
     // top of the BVC view. It has a visible background and blocks the thumb
     // strip. Thus, when the view revealing process starts, the web content
-    // frame must be moved down. To prevent the actual web content from jumping,
-    // the content offset must be moved up by a corresponding amount.
+    // frame must be moved down and the content inset is decreased. To prevent
+    // the actual web content from jumping, the content offset must be moved up
+    // by a corresponding amount.
     if (self.currentWebState && ![self isNTPActiveForCurrentWebState] &&
-        ios::GetChromeBrowserProvider()
-            ->GetFullscreenProvider()
-            ->IsInitialized()) {
+        fullscreen::features::ShouldUseSmoothScrolling()) {
       CGFloat toolbarHeight = [self expandedTopToolbarHeight];
       CGRect webStateViewFrame = UIEdgeInsetsInsetRect(
           [self viewForWebState:self.currentWebState].frame,
@@ -2940,6 +2940,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       CGPoint scrollOffset = scrollProxy.contentOffset;
       scrollOffset.y += toolbarHeight;
       scrollProxy.contentOffset = scrollOffset;
+
+      // TODO(crbug.com/1155536): Inform FullscreenController about these
+      // changes and allow it to calculate the correct overall contentInset.
+      UIEdgeInsets contentInset = scrollProxy.contentInset;
+      contentInset.top -= toolbarHeight;
+      scrollProxy.contentInset = contentInset;
     }
   }
 }
@@ -3000,6 +3006,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
       CRWWebViewScrollViewProxy* scrollProxy =
           self.currentWebState->GetWebViewProxy().scrollViewProxy;
+      UIEdgeInsets contentInset = scrollProxy.contentInset;
+      contentInset.top += toolbarHeight;
+      scrollProxy.contentInset = contentInset;
+
       CGPoint scrollOffset = scrollProxy.contentOffset;
       scrollOffset.y -= toolbarHeight;
       scrollProxy.contentOffset = scrollOffset;

@@ -148,6 +148,7 @@
 - (void)setIncognitoBrowser:(Browser*)incognitoBrowser {
   DCHECK(self.incognitoTabsMediator);
   self.incognitoTabsMediator.browser = incognitoBrowser;
+  self.thumbStripCoordinator.incognitoBrowser = incognitoBrowser;
 }
 
 - (void)stopChildCoordinatorsWithCompletion:(ProceduralBlock)completion {
@@ -400,6 +401,8 @@
     self.thumbStripCoordinator = [[ThumbStripCoordinator alloc]
         initWithBaseViewController:baseViewController
                            browser:self.browser];
+    self.thumbStripCoordinator.regularBrowser = _regularBrowser;
+    self.thumbStripCoordinator.incognitoBrowser = _incognitoBrowser;
     [self.thumbStripCoordinator start];
     self.thumbStripCoordinator.panHandler.layoutSwitcherProvider =
         baseViewController;

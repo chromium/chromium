@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 
+#include "base/logging.h"
 #import "base/notreached.h"
 #include "base/numerics/ranges.h"
 #import "ios/chrome/browser/ui/gestures/layout_switcher.h"
+#import "ios/chrome/browser/ui/gestures/pan_handler_scroll_view.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -366,27 +368,86 @@ const CGFloat kAnimationDuration = 0.25f;
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
+  PanHandlerScrollView* view =
+      [[PanHandlerScrollView alloc] initWithScrollView:scrollView];
+  [self panHandlerScrollViewWillBeginDragging:view];
+}
+
+- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  PanHandlerScrollView* view =
+      [[PanHandlerScrollView alloc] initWithScrollView:scrollView];
+  [self panHandlerScrollViewDidScroll:view];
+}
+
+- (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
+                     withVelocity:(CGPoint)velocity
+              targetContentOffset:(inout CGPoint*)targetContentOffset {
+  PanHandlerScrollView* view =
+      [[PanHandlerScrollView alloc] initWithScrollView:scrollView];
+  [self panHandlerScrollViewWillEndDragging:view
+                               withVelocity:velocity
+                        targetContentOffset:targetContentOffset];
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
+                  willDecelerate:(BOOL)decelerate {
+  // No-op.
+}
+
+#pragma mark - CRWWebViewScrollViewProxyObserver
+
+- (void)webViewScrollViewWillBeginDragging:
+    (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+  PanHandlerScrollView* view = [[PanHandlerScrollView alloc]
+      initWithWebViewScrollViewProxy:webViewScrollViewProxy];
+  [self panHandlerScrollViewWillBeginDragging:view];
+}
+
+- (void)webViewScrollViewDidScroll:
+    (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+  PanHandlerScrollView* view = [[PanHandlerScrollView alloc]
+      initWithWebViewScrollViewProxy:webViewScrollViewProxy];
+  [self panHandlerScrollViewDidScroll:view];
+}
+
+- (void)webViewScrollViewWillEndDragging:
+            (CRWWebViewScrollViewProxy*)webViewScrollViewProxy
+                            withVelocity:(CGPoint)velocity
+                     targetContentOffset:(inout CGPoint*)targetContentOffset {
+  PanHandlerScrollView* view = [[PanHandlerScrollView alloc]
+      initWithWebViewScrollViewProxy:webViewScrollViewProxy];
+  [self panHandlerScrollViewWillEndDragging:view
+                               withVelocity:velocity
+                        targetContentOffset:targetContentOffset];
+}
+
+#pragma mark - UIScrollViewDelegate + CRWWebViewScrollViewProxyObserver
+
+- (void)panHandlerScrollViewWillBeginDragging:
+    (PanHandlerScrollView*)scrollView {
   switch (self.currentState) {
-    case ViewRevealState::Hidden:
+    case ViewRevealState::Hidden: {
       // The transition out of hidden state can only start if the scroll view
       // starts dragging from the top.
-      if (!self.animator.isRunning && scrollView.contentOffset.y != 0) {
+      CGFloat contentOffsetY =
+          scrollView.contentOffset.y + scrollView.contentInset.top;
+      if (contentOffsetY != 0) {
         return;
       }
       break;
+    }
     case ViewRevealState::Peeked:
       break;
     case ViewRevealState::Revealed:
       // The scroll views should be covered in Revealed state, so should not
       // be able to be scrolled.
       NOTREACHED();
-      break;
   }
   [self panGestureBegan];
   self.lastScrollOffset = scrollView.contentOffset;
 }
 
-- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+- (void)panHandlerScrollViewDidScroll:(PanHandlerScrollView*)scrollView {
   // These delegate methods are approximating the pan gesture handling from
   // above, so only change things if the user is actively scrolling.
   if (!scrollView.isDragging) {
@@ -404,15 +465,16 @@ const CGFloat kAnimationDuration = 0.25f;
   if (self.animator.fractionComplete > 0 &&
       self.animator.fractionComplete < 1) {
     CGPoint currentScrollOffset = scrollView.contentOffset;
-    currentScrollOffset.y = std::max(self.lastScrollOffset.y, 0.0);
+    currentScrollOffset.y = self.lastScrollOffset.y;
     scrollView.contentOffset = currentScrollOffset;
   }
   self.lastScrollOffset = scrollView.contentOffset;
 }
 
-- (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
-                     withVelocity:(CGPoint)velocity
-              targetContentOffset:(inout CGPoint*)targetContentOffset {
+- (void)panHandlerScrollViewWillEndDragging:(PanHandlerScrollView*)scrollView
+                               withVelocity:(CGPoint)velocity
+                        targetContentOffset:
+                            (inout CGPoint*)targetContentOffset {
   if (self.currentState == ViewRevealState::Hidden &&
       self.animator.state != UIViewAnimatingStateActive) {
     return;
@@ -427,11 +489,6 @@ const CGFloat kAnimationDuration = 0.25f;
   }
 
   [self panGestureEndedWithTranslation:translationY velocity:velocityY];
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
-                  willDecelerate:(BOOL)decelerate {
-  // No-op.
 }
 
 @end

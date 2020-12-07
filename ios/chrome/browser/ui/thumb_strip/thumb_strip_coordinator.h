@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
-@class ThumbStripCoordinator;
 @class ViewRevealingVerticalPanHandler;
 
 // Coordinator for the thumb strip, which is a 1-row horizontal display of tab
@@ -18,6 +17,13 @@
 
 // The thumb strip's pan gesture handler.
 @property(nonatomic, strong) ViewRevealingVerticalPanHandler* panHandler;
+
+// The regular browser used to observe scroll events to show/hide the thumb
+// strip.
+@property(nonatomic, assign) Browser* regularBrowser;
+// The incognito browser used to observe scroll events to show/hide the thumb
+// strip.
+@property(nonatomic, assign) Browser* incognitoBrowser;
 
 @end
 

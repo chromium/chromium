@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/ui/gestures/layout_switcher_provider.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 
 // Responsible for handling vertical pan gestures to reveal/hide a view behind
 // another.
@@ -21,7 +22,8 @@
 // TODO(crbug.com/1123512): Add support for going straight from a Hidden state
 // to a revealed state (and vice-versa) if the gesture's translation and
 // velocity are enough to trigger such transition.
-@interface ViewRevealingVerticalPanHandler : NSObject <UIScrollViewDelegate>
+@interface ViewRevealingVerticalPanHandler
+    : NSObject <CRWWebViewScrollViewProxyObserver, UIScrollViewDelegate>
 
 // |peekedHeight| is the height of the view when peeked (partially revealed).
 // |revealedCoverHeight| is the height of the cover view that remains visible
