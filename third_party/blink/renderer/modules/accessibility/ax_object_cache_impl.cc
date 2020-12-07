@@ -1210,11 +1210,8 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
 
   // Force computation of aria-owns, so that original parents that already
   // computed their children get the aria-owned children removed.
-  if (element->FastHasAttribute(html_names::kAriaOwnsAttr) ||
-      element->HasExplicitlySetAttrAssociatedElements(
-          html_names::kAriaOwnsAttr)) {
+  if (AXObject::HasARIAOwns(element))
     HandleAttributeChangedWithCleanLayout(html_names::kAriaOwnsAttr, element);
-  }
 
   MaybeNewRelationTarget(node, Get(node));
 
