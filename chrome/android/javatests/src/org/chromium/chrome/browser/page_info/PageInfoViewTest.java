@@ -35,7 +35,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
@@ -92,7 +91,7 @@ public class PageInfoViewTest {
 
     @Rule
     public RenderTestRule mRenderTestRule =
-            RenderTestRule.Builder.withPublicCorpus().setRevision(3).build();
+            RenderTestRule.Builder.withPublicCorpus().setRevision(4).build();
 
     private boolean mIsSystemLocationSettingEnabled = true;
 
@@ -108,6 +107,10 @@ public class PageInfoViewTest {
 
     private void loadUrlAndOpenPageInfo(String url) {
         mActivityTestRule.loadUrl(url);
+        openPageInfo();
+    }
+
+    private void openPageInfo() {
         onViewWaiting(allOf(withId(R.id.location_bar_status_icon), isDisplayed())).perform(click());
     }
 
@@ -235,7 +238,6 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/1133770")
     @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowOnExpiredCertificateWebsite() throws IOException {
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -419,7 +421,7 @@ public class PageInfoViewTest {
         createCookies();
         expectHasCookies(true);
         // Go to cookies subpage.
-        onView(withId(R.id.location_bar_status_icon)).perform(click());
+        openPageInfo();
         onView(withId(R.id.page_info_cookies_row)).perform(click());
         // Check that cookies usage is displayed.
         onViewWaiting(allOf(withText(containsString("stored data")), isDisplayed()));
@@ -446,7 +448,7 @@ public class PageInfoViewTest {
         addSomePermissions(url);
         expectHasPermissions(url, true);
         // Go to permissions subpage.
-        onView(withId(R.id.location_bar_status_icon)).perform(click());
+        openPageInfo();
         onView(withId(R.id.page_info_permissions_row)).perform(click());
         // Clear permissions in page info.
         onView(withText("Reset permissions")).perform(click());
