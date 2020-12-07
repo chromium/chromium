@@ -169,10 +169,6 @@ class BLINK_COMMON_EXPORT FeaturePolicy {
       const ParsedFeaturePolicy& container_policy,
       const url::Origin& origin);
 
-  static std::unique_ptr<FeaturePolicy> CreateWithOpenerPolicy(
-      const FeaturePolicyFeatureState& inherited_policies,
-      const url::Origin& origin);
-
   static std::unique_ptr<FeaturePolicy> CopyStateFrom(const FeaturePolicy*);
 
   bool IsFeatureEnabled(mojom::FeaturePolicyFeature feature) const;
@@ -198,9 +194,6 @@ class BLINK_COMMON_EXPORT FeaturePolicy {
 
   // Returns the list of features which can be controlled by Feature Policy.
   const FeaturePolicyFeatureList& GetFeatureList() const;
-
-  static mojom::FeaturePolicyFeature FeatureForSandboxFlag(
-      network::mojom::WebSandboxFlags flag);
 
  private:
   friend class FeaturePolicyTest;

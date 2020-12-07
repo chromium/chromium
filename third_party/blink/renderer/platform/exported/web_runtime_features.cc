@@ -191,10 +191,6 @@ void WebRuntimeFeatures::EnableDecodeLossyWebPImagesToYUV(bool enable) {
   RuntimeEnabledFeatures::SetDecodeLossyWebPImagesToYUVEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableFeaturePolicyForSandbox(bool enable) {
-  RuntimeEnabledFeatures::SetFeaturePolicyForSandboxEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableFileSystem(bool enable) {
   RuntimeEnabledFeatures::SetFileSystemEnabled(enable);
 }

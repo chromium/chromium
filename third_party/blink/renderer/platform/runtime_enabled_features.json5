@@ -852,10 +852,6 @@
       status: "stable",
     },
     {
-      name: "FeaturePolicyForSandbox",
-      status: "experimental",
-    },
-    {
       name: "FeaturePolicyReporting",
       implied_by: ["ExperimentalProductivityFeatures"],
       origin_trial_feature_name: "FeaturePolicyReporting",

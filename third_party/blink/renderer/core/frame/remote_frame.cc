@@ -393,16 +393,9 @@ void RemoteFrame::DidChangeVisibleToHitTesting() {
       IsIgnoredForHitTest());
 }
 
-void RemoteFrame::SetReplicatedFeaturePolicyHeaderAndOpenerPolicies(
-    const ParsedFeaturePolicy& parsed_header,
-    const FeaturePolicyFeatureState& opener_feature_state) {
+void RemoteFrame::SetReplicatedFeaturePolicyHeader(
+    const ParsedFeaturePolicy& parsed_header) {
   feature_policy_header_ = parsed_header;
-  if (RuntimeEnabledFeatures::FeaturePolicyForSandboxEnabled()) {
-    DCHECK(opener_feature_state.empty() || IsMainFrame());
-    if (OpenerFeatureState().empty()) {
-      SetOpenerFeatureState(opener_feature_state);
-    }
-  }
   ApplyReplicatedFeaturePolicyHeader();
 }
 
@@ -678,8 +671,7 @@ void RemoteFrame::DidSetFramePolicyHeaders(
   ParsedFeaturePolicy parsed_feature_policy_copy(parsed_feature_policy.size());
   for (size_t i = 0; i < parsed_feature_policy.size(); ++i)
     parsed_feature_policy_copy[i] = parsed_feature_policy[i];
-  SetReplicatedFeaturePolicyHeaderAndOpenerPolicies(
-      parsed_feature_policy_copy, FeaturePolicyFeatureState());
+  SetReplicatedFeaturePolicyHeader(parsed_feature_policy_copy);
 }
 
 // Update the proxy's FrameOwner with new sandbox flags and container policy
@@ -836,10 +828,8 @@ void RemoteFrame::ApplyReplicatedFeaturePolicyHeader() {
   ParsedFeaturePolicy container_policy;
   if (Owner())
     container_policy = Owner()->GetFramePolicy().container_policy;
-  const FeaturePolicyFeatureState& opener_feature_state = OpenerFeatureState();
   security_context_.InitializeFeaturePolicy(
-      feature_policy_header_, container_policy, parent_feature_policy,
-      opener_feature_state.empty() ? nullptr : &opener_feature_state);
+      feature_policy_header_, container_policy, parent_feature_policy);
 }
 
 void RemoteFrame::BindToReceiver(

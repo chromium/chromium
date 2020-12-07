@@ -104,10 +104,6 @@ struct CONTENT_EXPORT FrameReplicationState {
   // frame.
   blink::FramePolicy frame_policy;
 
-  // The state of feature policies in the opener browsing context. This field is
-  // only relevant for a root FrameTreeNode.
-  blink::FeaturePolicyFeatureState opener_feature_state;
-
   // Accumulated CSP headers - gathered from http headers, <meta> elements,
   // parent frames (in case of about:blank frames).
   std::vector<network::mojom::ContentSecurityPolicyHeader>

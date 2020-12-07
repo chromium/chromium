@@ -293,7 +293,6 @@ class TestWebViewClient : public WebViewClient {
                       const WebString& name,
                       WebNavigationPolicy,
                       network::mojom::blink::WebSandboxFlags,
-                      const FeaturePolicyFeatureState&,
                       const SessionStorageNamespaceId&,
                       bool& consumed_user_gesture) override;
 

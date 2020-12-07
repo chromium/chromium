@@ -344,7 +344,6 @@ WebView* RenderViewImpl::CreateView(
     const WebString& frame_name,
     WebNavigationPolicy policy,
     network::mojom::WebSandboxFlags sandbox_flags,
-    const blink::FeaturePolicyFeatureState& opener_feature_state,
     const blink::SessionStorageNamespaceId& session_storage_namespace_id,
     bool& consumed_user_gesture) {
   consumed_user_gesture = false;
@@ -451,8 +450,6 @@ WebView* RenderViewImpl::CreateView(
       << "Session storage namespace must be populated.";
   view_params->replicated_frame_state.frame_policy.sandbox_flags =
       sandbox_flags;
-  view_params->replicated_frame_state.opener_feature_state =
-      opener_feature_state;
   view_params->replicated_frame_state.name = frame_name_utf8;
   view_params->devtools_main_frame_token = reply->devtools_main_frame_token;
   view_params->hidden = is_background_tab;

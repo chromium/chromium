@@ -1786,11 +1786,10 @@ WebLocalFrame* WebLocalFrame::CreateMainFrame(
     std::unique_ptr<blink::WebPolicyContainer> policy_container,
     WebFrame* opener,
     const WebString& name,
-    network::mojom::blink::WebSandboxFlags sandbox_flags,
-    const FeaturePolicyFeatureState& opener_feature_state) {
+    network::mojom::blink::WebSandboxFlags sandbox_flags) {
   return WebLocalFrameImpl::CreateMainFrame(
       web_view, client, interface_registry, frame_token, opener, name,
-      sandbox_flags, std::move(policy_container), opener_feature_state);
+      sandbox_flags, std::move(policy_container));
 }
 
 WebLocalFrame* WebLocalFrame::CreateProvisional(
@@ -1813,8 +1812,7 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateMainFrame(
     WebFrame* opener,
     const WebString& name,
     network::mojom::blink::WebSandboxFlags sandbox_flags,
-    std::unique_ptr<blink::WebPolicyContainer> policy_container,
-    const FeaturePolicyFeatureState& opener_feature_state) {
+    std::unique_ptr<blink::WebPolicyContainer> policy_container) {
   auto* frame = MakeGarbageCollected<WebLocalFrameImpl>(
       base::PassKey<WebLocalFrameImpl>(),
       mojom::blink::TreeScopeType::kDocument, client, interface_registry,
@@ -1824,7 +1822,7 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateMainFrame(
   frame->InitializeCoreFrame(
       page, nullptr, nullptr, nullptr, FrameInsertType::kInsertInConstructor,
       name, opener ? &ToCoreFrame(*opener)->window_agent_factory() : nullptr,
-      opener, std::move(policy_container), sandbox_flags, opener_feature_state);
+      opener, std::move(policy_container), sandbox_flags);
   return frame;
 }
 
@@ -1852,9 +1850,6 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateProvisional(
     // to inherit sandbox flags when a sandboxed frame does a window.open()
     // which triggers a cross-process navigation.
     sandbox_flags = frame_policy.sandbox_flags;
-    // If there is an opener (even disowned), the opener policies must be
-    // inherited the same way as sandbox flag.
-    feature_state = previous_frame->OpenerFeatureState();
   }
   // Note: this *always* temporarily sets a frame owner, even for main frames!
   // When a core Frame is created with no owner, it attempts to set itself as
@@ -1875,7 +1870,7 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateProvisional(
           ? nullptr
           : &ToCoreFrame(*previous_web_frame)->window_agent_factory(),
       previous_web_frame->Opener(), /* policy_container */ nullptr,
-      sandbox_flags, feature_state);
+      sandbox_flags);
 
   LocalFrame* new_frame = web_frame->GetFrame();
   previous_frame->SetProvisionalFrame(new_frame);
@@ -1963,13 +1958,12 @@ void WebLocalFrameImpl::InitializeCoreFrame(
     WindowAgentFactory* window_agent_factory,
     WebFrame* opener,
     std::unique_ptr<blink::WebPolicyContainer> policy_container,
-    network::mojom::blink::WebSandboxFlags sandbox_flags,
-    const FeaturePolicyFeatureState& opener_feature_state) {
+    network::mojom::blink::WebSandboxFlags sandbox_flags) {
   InitializeCoreFrameInternal(page, owner, parent, previous_sibling,
                               insert_type, name, window_agent_factory, opener,
                               PolicyContainer::CreateFromWebPolicyContainer(
                                   std::move(policy_container)),
-                              sandbox_flags, opener_feature_state);
+                              sandbox_flags);
 }
 
 void WebLocalFrameImpl::InitializeCoreFrameInternal(
@@ -1982,8 +1976,7 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
     WindowAgentFactory* window_agent_factory,
     WebFrame* opener,
     std::unique_ptr<PolicyContainer> policy_container,
-    network::mojom::blink::WebSandboxFlags sandbox_flags,
-    const FeaturePolicyFeatureState& opener_feature_state) {
+    network::mojom::blink::WebSandboxFlags sandbox_flags) {
   Frame* parent_frame = parent ? ToCoreFrame(*parent) : nullptr;
   Frame* previous_sibling_frame =
       previous_sibling ? ToCoreFrame(*previous_sibling) : nullptr;
@@ -1992,8 +1985,6 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
       previous_sibling_frame, insert_type, GetFrameToken(),
       window_agent_factory, interface_registry_, std::move(policy_container)));
   frame_->Tree().SetName(name);
-  if (RuntimeEnabledFeatures::FeaturePolicyForSandboxEnabled())
-    frame_->SetOpenerFeatureState(opener_feature_state);
   frame_->Loader().ForceSandboxFlags(sandbox_flags);
   Frame* opener_frame = opener ? ToCoreFrame(*opener) : nullptr;
 
@@ -2453,17 +2444,6 @@ bool WebLocalFrameImpl::IsAllowedToDownload() const {
   if (!GetFrame())
     return true;
 
-  if (RuntimeEnabledFeatures::FeaturePolicyForSandboxEnabled()) {
-    // Downloads could be disabled if the parent frame's FeaturePolicy does not
-    // allow downloads.
-    if (GetFrame()->Tree().Parent() &&
-        !GetFrame()->Tree().Parent()->GetSecurityContext()->IsFeatureEnabled(
-            mojom::blink::FeaturePolicyFeature::kDownloads)) {
-      return false;
-    }
-    return !GetFrame()->Owner() ||
-           GetFrame()->Owner()->GetFramePolicy().allowed_to_download;
-  }
   return (GetFrame()->Loader().PendingEffectiveSandboxFlags() &
           network::mojom::blink::WebSandboxFlags::kDownloads) ==
          network::mojom::blink::WebSandboxFlags::kNone;

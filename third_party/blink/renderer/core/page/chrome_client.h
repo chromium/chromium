@@ -216,7 +216,6 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                      const AtomicString& frame_name,
                      const WebWindowFeatures&,
                      network::mojom::blink::WebSandboxFlags,
-                     const FeaturePolicyFeatureState&,
                      const SessionStorageNamespaceId&,
                      bool& consumed_user_gesture);
 
@@ -551,7 +550,6 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                                      const AtomicString& frame_name,
                                      const WebWindowFeatures&,
                                      network::mojom::blink::WebSandboxFlags,
-                                     const FeaturePolicyFeatureState&,
                                      const SessionStorageNamespaceId&,
                                      bool& consumed_user_gesture) = 0;
 

@@ -3777,7 +3777,6 @@ class ViewCreatingWebViewClient : public frame_test_helpers::TestWebViewClient {
                       const WebString& name,
                       WebNavigationPolicy,
                       network::mojom::blink::WebSandboxFlags,
-                      const FeaturePolicyFeatureState&,
                       const SessionStorageNamespaceId&,
                       bool& consumed_user_gesture) override {
     return web_view_helper_.InitializeWithOpener(opener);
@@ -3862,7 +3861,6 @@ class ViewReusingWebViewClient : public frame_test_helpers::TestWebViewClient {
                       const WebString& name,
                       WebNavigationPolicy,
                       network::mojom::blink::WebSandboxFlags,
-                      const FeaturePolicyFeatureState&,
                       const SessionStorageNamespaceId&,
                       bool& consumed_user_gesture) override {
     return web_view_;

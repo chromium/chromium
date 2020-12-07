@@ -70,7 +70,6 @@ class WebViewClient {
       const WebString& name,
       WebNavigationPolicy policy,
       network::mojom::WebSandboxFlags,
-      const FeaturePolicyFeatureState&,
       const SessionStorageNamespaceId& session_storage_namespace_id,
       bool& consumed_user_gesture) {
     return nullptr;

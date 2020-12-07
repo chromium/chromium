@@ -89,7 +89,6 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
                              const AtomicString& name,
                              const WebWindowFeatures&,
                              network::mojom::blink::WebSandboxFlags,
-                             const FeaturePolicyFeatureState&,
                              const SessionStorageNamespaceId&,
                              bool& consumed_user_gesture) override;
   void Show(const base::UnguessableToken& opener_frame_token,

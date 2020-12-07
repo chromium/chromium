@@ -4789,8 +4789,6 @@ crbug.com/927769 fast/webgl/OffscreenCanvas-webgl-preserveDrawingBuffer.html [ S
 # Flaky test.
 crbug.com/1084378 external/wpt/webvtt/rendering/cues-with-video/processing-model/dom_override_remove_cue_while_paused.html [ Pass Failure ]
 
-# Flay probably due to outstanding work for FeaturePolicyForSandbox.
-
 # Sheriff 2019-02-12
 crbug.com/1072768 media/video-played-ranges-1.html [ Failure Timeout Pass ]
 

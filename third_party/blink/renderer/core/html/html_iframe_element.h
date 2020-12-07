@@ -61,11 +61,6 @@ class CORE_EXPORT HTMLIFrameElement final
     return mojom::blink::FrameOwnerElementType::kIframe;
   }
 
-  network::mojom::blink::WebSandboxFlags
-  sandbox_flags_converted_to_feature_policies() const {
-    return sandbox_flags_converted_to_feature_policies_;
-  }
-
  private:
   void SetCollapsed(bool) override;
 
@@ -107,12 +102,6 @@ class CORE_EXPORT HTMLIFrameElement final
   bool collapsed_by_client_;
   Member<HTMLIFrameElementSandbox> sandbox_;
   Member<DOMFeaturePolicy> policy_;
-  // This represents a subset of sandbox flags set through 'sandbox' attribute
-  // that will be converted to feature policies as part of the container
-  // policies.
-  network::mojom::blink::WebSandboxFlags
-      sandbox_flags_converted_to_feature_policies_ =
-          network::mojom::blink::WebSandboxFlags::kNone;
 
   network::mojom::ReferrerPolicy referrer_policy_;
 };

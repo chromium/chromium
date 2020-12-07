@@ -139,12 +139,6 @@ void SecurityContext::SetContentSecurityPolicy(
 
 bool SecurityContext::IsSandboxed(
     network::mojom::blink::WebSandboxFlags mask) const {
-  if (RuntimeEnabledFeatures::FeaturePolicyForSandboxEnabled()) {
-    mojom::blink::FeaturePolicyFeature feature =
-        FeaturePolicy::FeatureForSandboxFlag(mask);
-    if (feature != mojom::blink::FeaturePolicyFeature::kNotFound)
-      return !feature_policy_->IsFeatureEnabled(feature);
-  }
   return (sandbox_flags_ & mask) !=
          network::mojom::blink::WebSandboxFlags::kNone;
 }

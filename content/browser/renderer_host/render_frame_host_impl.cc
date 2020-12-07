@@ -1639,12 +1639,6 @@ void RenderFrameHostImpl::MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
 }
 
 bool RenderFrameHostImpl::IsSandboxed(network::mojom::WebSandboxFlags flags) {
-  if (base::FeatureList::IsEnabled(features::kFeaturePolicyForSandbox)) {
-    blink::mojom::FeaturePolicyFeature feature =
-        blink::FeaturePolicy::FeatureForSandboxFlag(flags);
-    if (feature != blink::mojom::FeaturePolicyFeature::kNotFound)
-      return !IsFeatureEnabled(feature);
-  }
   return static_cast<int>(active_sandbox_flags_) & static_cast<int>(flags);
 }
 
@@ -7577,14 +7571,6 @@ void RenderFrameHostImpl::CreateWebUsbService(
 
 void RenderFrameHostImpl::ResetFeaturePolicy() {
   RenderFrameHostImpl* parent_frame_host = GetParent();
-  if (!parent_frame_host && !frame_tree_node_->current_replication_state()
-                                 .opener_feature_state.empty()) {
-    DCHECK(base::FeatureList::IsEnabled(features::kFeaturePolicyForSandbox));
-    feature_policy_ = blink::FeaturePolicy::CreateWithOpenerPolicy(
-        frame_tree_node_->current_replication_state().opener_feature_state,
-        last_committed_origin_);
-    return;
-  }
   const blink::FeaturePolicy* parent_policy =
       parent_frame_host ? parent_frame_host->feature_policy() : nullptr;
   blink::ParsedFeaturePolicy container_policy =

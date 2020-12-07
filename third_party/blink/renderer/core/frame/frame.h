@@ -253,25 +253,6 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
     return navigation_rate_limiter_;
   }
 
-  // Called to get the opener's FeatureState if any. This works with disowned
-  // openers, i.e., even if WebFrame::Opener() is nullptr, there could be a
-  // non-empty feature state which is taken from the the original opener of the
-  // frame. This is similar to how sandbox flags are propagated to the opened
-  // new browsing contexts.
-  const FeaturePolicyFeatureState& OpenerFeatureState() const {
-    return opener_feature_state_;
-  }
-
-  // Sets the opener's FeatureState for the main frame. Once a non-empty
-  // |opener_feature_state| is set, it can no longer be modified (due to the
-  // fact that the original opener which passed down the FeatureState cannot be
-  // modified either).
-  void SetOpenerFeatureState(const FeaturePolicyFeatureState& state) {
-    DCHECK(state.empty() || IsMainFrame());
-    DCHECK(opener_feature_state_.empty());
-    opener_feature_state_ = state;
-  }
-
   const DocumentPolicyFeatureState& GetRequiredDocumentPolicy() const {
     return required_document_policy_;
   }
@@ -445,10 +426,6 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   Member<LocalFrame> provisional_frame_;
 
   NavigationRateLimiter navigation_rate_limiter_;
-
-  // Feature policy state inherited from an opener. It is always empty for child
-  // frames.
-  FeaturePolicyFeatureState opener_feature_state_;
 
   // The required document policy for any subframes of this frame.
   // Note: current frame's document policy might not conform to

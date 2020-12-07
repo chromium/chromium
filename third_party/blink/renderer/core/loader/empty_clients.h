@@ -139,7 +139,6 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
                              const AtomicString&,
                              const WebWindowFeatures&,
                              network::mojom::blink::WebSandboxFlags,
-                             const FeaturePolicyFeatureState&,
                              const SessionStorageNamespaceId&,
                              bool& consumed_user_gesture) override {
     return nullptr;

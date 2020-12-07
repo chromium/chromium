@@ -290,12 +290,10 @@ void WebRemoteFrameImpl::SetReplicatedName(const WebString& name,
   GetFrame()->SetReplicatedName(name, unique_name);
 }
 
-void WebRemoteFrameImpl::SetReplicatedFeaturePolicyHeaderAndOpenerPolicies(
-    const ParsedFeaturePolicy& parsed_header,
-    const FeaturePolicyFeatureState& opener_feature_state) {
+void WebRemoteFrameImpl::SetReplicatedFeaturePolicyHeader(
+    const ParsedFeaturePolicy& parsed_header) {
   DCHECK(GetFrame());
-  GetFrame()->SetReplicatedFeaturePolicyHeaderAndOpenerPolicies(
-      parsed_header, opener_feature_state);
+  GetFrame()->SetReplicatedFeaturePolicyHeader(parsed_header);
 }
 
 void WebRemoteFrameImpl::AddReplicatedContentSecurityPolicyHeader(

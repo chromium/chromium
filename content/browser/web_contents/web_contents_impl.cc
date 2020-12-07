@@ -1011,25 +1011,12 @@ std::unique_ptr<WebContentsImpl> WebContentsImpl::CreateWithOpener(
   if (opener) {
     network::mojom::WebSandboxFlags opener_flags =
         opener_rfh->active_sandbox_flags();
-    const network::mojom::WebSandboxFlags inherit_flag =
-        network::mojom::WebSandboxFlags::kPropagatesToAuxiliaryBrowsingContexts;
-    bool sandbox_propagates_to_auxilary_context =
-        (opener_flags & inherit_flag) == inherit_flag;
-    if (sandbox_propagates_to_auxilary_context)
+    if (opener_rfh->IsSandboxed(network::mojom::WebSandboxFlags::
+                                    kPropagatesToAuxiliaryBrowsingContexts)) {
       new_root->SetPendingFramePolicy({opener_flags,
                                        {} /* container_policy */,
                                        {} /* required_document_policy */});
-    if (opener_flags == network::mojom::WebSandboxFlags::kNone ||
-        sandbox_propagates_to_auxilary_context) {
-      // TODO(ekaramad, iclelland): Do not propagate feature policies from non-
-      // sandboxed disowned openers (rel=noopener).
-      // If the current page is not sandboxed, or if the sandbox is to propagate
-      // to the popups then opener's feature policy will apply to the new popup
-      // as well.
-      new_root->SetOpenerFeaturePolicyState(
-          opener_rfh->feature_policy()->GetFeatureState());
     }
-
     new_root->SetInitialPopupURL(params.initial_popup_url);
     new_root->SetPopupCreatorOrigin(opener_rfh->GetLastCommittedOrigin());
   }

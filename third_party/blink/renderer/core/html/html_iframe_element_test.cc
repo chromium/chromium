@@ -17,8 +17,6 @@
 
 namespace blink {
 
-constexpr size_t expected_number_of_sandbox_features = 9;
-
 class HTMLIFrameElementTest : public testing::Test {
  public:
   scoped_refptr<const SecurityOrigin> GetOriginForFeaturePolicy(
@@ -190,83 +188,6 @@ TEST_F(HTMLIFrameElementTest, AllowAttributeContainerPolicy) {
   EXPECT_EQ(1UL, container_policy2[1].allowed_origins.size());
   EXPECT_EQ("http://example.net",
             container_policy2[1].allowed_origins.begin()->Serialize());
-}
-
-// Sandboxing an iframe should result in a container policy with an item for
-// each sandbox feature
-TEST_F(HTMLIFrameElementTest, SandboxAttributeContainerPolicy) {
-  ASSERT_TRUE(RuntimeEnabledFeatures::FeaturePolicyForSandboxEnabled());
-
-  frame_element_->setAttribute(html_names::kSandboxAttr, "");
-  frame_element_->UpdateContainerPolicyForTests();
-
-  const ParsedFeaturePolicy& container_policy =
-      frame_element_->GetFramePolicy().container_policy;
-
-  EXPECT_EQ(expected_number_of_sandbox_features, container_policy.size());
-}
-
-// Test that the allow attribute on a sandboxed frame results in a container
-// policy which is restricted to a unique origin.
-TEST_F(HTMLIFrameElementTest, CrossOriginSandboxAttributeContainerPolicy) {
-  ASSERT_TRUE(RuntimeEnabledFeatures::FeaturePolicyForSandboxEnabled());
-
-  frame_element_->setAttribute(html_names::kSrcAttr, "http://example.net/");
-  frame_element_->setAttribute(html_names::kAllowAttr, "fullscreen");
-  frame_element_->setAttribute(html_names::kSandboxAttr, "");
-  frame_element_->UpdateContainerPolicyForTests();
-
-  const ParsedFeaturePolicy& container_policy =
-      frame_element_->GetFramePolicy().container_policy;
-
-  EXPECT_EQ(expected_number_of_sandbox_features + 1, container_policy.size());
-  const auto& container_policy_item =
-      std::find_if(container_policy.begin(), container_policy.end(),
-                   [](const auto& declaration) {
-                     return declaration.feature ==
-                            mojom::blink::FeaturePolicyFeature::kFullscreen;
-                   });
-  EXPECT_NE(container_policy_item, container_policy.end())
-      << "Fullscreen feature not found in container policy";
-
-  const ParsedFeaturePolicyDeclaration item = *container_policy_item;
-  EXPECT_EQ(mojom::blink::FeaturePolicyFeature::kFullscreen, item.feature);
-  EXPECT_FALSE(item.matches_all_origins);
-  EXPECT_TRUE(item.matches_opaque_src);
-  EXPECT_EQ(0UL, item.allowed_origins.size());
-}
-
-// Test that the allow attribute on a sandboxed frame with the allow-same-origin
-// flag results in a container policy which is restricted to the origin of the
-// containing document.
-TEST_F(HTMLIFrameElementTest, SameOriginSandboxAttributeContainerPolicy) {
-  ASSERT_TRUE(RuntimeEnabledFeatures::FeaturePolicyForSandboxEnabled());
-
-  frame_element_->setAttribute(html_names::kSrcAttr, "http://example.net/");
-  frame_element_->setAttribute(html_names::kAllowAttr, "fullscreen");
-  frame_element_->setAttribute(html_names::kSandboxAttr, "allow-same-origin");
-  frame_element_->UpdateContainerPolicyForTests();
-
-  const ParsedFeaturePolicy& container_policy =
-      frame_element_->GetFramePolicy().container_policy;
-
-  EXPECT_EQ(expected_number_of_sandbox_features + 1, container_policy.size());
-  const auto& container_policy_item =
-      std::find_if(container_policy.begin(), container_policy.end(),
-                   [](const auto& declaration) {
-                     return declaration.feature ==
-                            mojom::blink::FeaturePolicyFeature::kFullscreen;
-                   });
-  EXPECT_NE(container_policy_item, container_policy.end())
-      << "Fullscreen feature not found in container policy";
-
-  const ParsedFeaturePolicyDeclaration item = *container_policy_item;
-  EXPECT_EQ(mojom::blink::FeaturePolicyFeature::kFullscreen, item.feature);
-  EXPECT_FALSE(item.matches_all_origins);
-  EXPECT_FALSE(item.matches_opaque_src);
-  EXPECT_EQ(1UL, item.allowed_origins.size());
-  EXPECT_FALSE(item.allowed_origins.begin()->opaque());
-  EXPECT_EQ("http://example.net", item.allowed_origins.begin()->Serialize());
 }
 
 // Test the ConstructContainerPolicy method when no attributes are set on the

@@ -774,14 +774,6 @@ void FrameTreeNode::PruneChildFrameNavigationEntries(
   }
 }
 
-void FrameTreeNode::SetOpenerFeaturePolicyState(
-    const blink::FeaturePolicyFeatureState& feature_state) {
-  DCHECK(IsMainFrame());
-  if (base::FeatureList::IsEnabled(features::kFeaturePolicyForSandbox)) {
-    replication_state_.opener_feature_state = feature_state;
-  }
-}
-
 void FrameTreeNode::SetAdFrameType(blink::mojom::AdFrameType ad_frame_type) {
   DCHECK_NE(ad_frame_type, blink::mojom::AdFrameType::kNonAd);
   if (replication_state_.ad_frame_type == blink::mojom::AdFrameType::kNonAd) {

@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/core/fetch/trust_token_issuance_authorization.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
-#include "third_party/blink/renderer/core/frame/sandbox_flags.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/trust_token_attribute_parsing.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -154,8 +153,6 @@ void HTMLIFrameElement::ParseAttribute(
       FrameOwnerPropertiesChanged();
   } else if (name == html_names::kSandboxAttr) {
     sandbox_->DidUpdateAttributeValue(params.old_value, value);
-    bool feature_policy_for_sandbox =
-        RuntimeEnabledFeatures::FeaturePolicyForSandboxEnabled();
 
     network::mojom::blink::WebSandboxFlags current_flags =
         network::mojom::blink::WebSandboxFlags::kNone;
@@ -181,26 +178,7 @@ void HTMLIFrameElement::ParseAttribute(
     SetAllowedToDownload(
         (current_flags & network::mojom::blink::WebSandboxFlags::kDownloads) ==
         network::mojom::blink::WebSandboxFlags::kNone);
-    // With FeaturePolicyForSandbox, sandbox flags are represented as part of
-    // the container policies. However, not all sandbox flags are yet converted
-    // and for now the residue will stay around in the stored flags.
-    // (see https://crbug.com/812381).
-    network::mojom::blink::WebSandboxFlags sandbox_to_set = current_flags;
-    sandbox_flags_converted_to_feature_policies_ =
-        network::mojom::blink::WebSandboxFlags::kNone;
-    if (feature_policy_for_sandbox &&
-        current_flags != network::mojom::blink::WebSandboxFlags::kNone) {
-      // Residue sandbox which will not be mapped to feature policies.
-      sandbox_to_set =
-          GetSandboxFlagsNotImplementedAsFeaturePolicy(current_flags);
-      // The part of sandbox which will be mapped to feature policies.
-      sandbox_flags_converted_to_feature_policies_ =
-          current_flags & ~sandbox_to_set;
-    }
-    SetSandboxFlags(sandbox_to_set);
-    if (RuntimeEnabledFeatures::FeaturePolicyForSandboxEnabled())
-      UpdateContainerPolicy();
-
+    SetSandboxFlags(current_flags);
     UseCounter::Count(GetDocument(), WebFeature::kSandboxViaIFrame);
   } else if (name == html_names::kReferrerpolicyAttr) {
     referrer_policy_ = network::mojom::ReferrerPolicy::kDefault;
@@ -352,32 +330,8 @@ ParsedFeaturePolicy HTMLIFrameElement::ConstructContainerPolicy() const {
   ParsedFeaturePolicy container_policy = FeaturePolicyParser::ParseAttribute(
       allow_, self_origin, src_origin, logger, GetExecutionContext());
 
-  // Next, process sandbox flags. These all only take effect if a corresponding
-  // policy does *not* exist in the allow attribute's value.
-  if (RuntimeEnabledFeatures::FeaturePolicyForSandboxEnabled()) {
-    // If the frame is sandboxed at all, then warn if feature policy attributes
-    // will override the sandbox attributes.
-    if ((sandbox_flags_converted_to_feature_policies_ &
-         network::mojom::blink::WebSandboxFlags::kNavigation) !=
-        network::mojom::blink::WebSandboxFlags::kNone) {
-      for (const auto& pair : SandboxFlagsWithFeaturePolicies()) {
-        if ((sandbox_flags_converted_to_feature_policies_ & pair.first) !=
-                network::mojom::blink::WebSandboxFlags::kNone &&
-            IsFeatureDeclared(pair.second, container_policy)) {
-          logger.Warn(String::Format(
-              "Allow and Sandbox attributes both mention '%s'. Allow will take "
-              "precedence.",
-              GetNameForFeature(pair.second).Utf8().c_str()));
-        }
-      }
-    }
-    ApplySandboxFlagsToParsedFeaturePolicy(
-        sandbox_flags_converted_to_feature_policies_, container_policy);
-  }
-
-  // Finally, process the allow* attribuets. Like sandbox attributes, they only
-  // take effect if the corresponding feature is not present in the allow
-  // attribute's value.
+  // Process the allow* attributes. These only take effect if the corresponding
+  // feature is not present in the allow attribute's value.
 
   // If allowfullscreen attribute is present and no fullscreen policy is set,
   // enable the feature for all origins.

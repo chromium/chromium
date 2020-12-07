@@ -152,12 +152,6 @@
       feature_default: "EnableForAll",
     },
     {
-      name: "Downloads",
-      feature_policy_name: "downloads",
-      feature_default: "EnableForAll",
-      depends_on: ["FeaturePolicyForSandbox"],
-    },
-    {
       name: "EncryptedMedia",
       feature_policy_name: "encrypted-media",
     },
@@ -178,12 +172,6 @@
       feature_policy_name: "focus-without-user-activation",
       feature_default: "EnableForAll",
       depends_on: ["BlockingFocusWithoutUserActivation"],
-    },
-    {
-      name: "FormSubmission",
-      feature_policy_name: "forms",
-      feature_default: "EnableForAll",
-      depends_on: ["FeaturePolicyForSandbox"],
     },
     {
       name: "Fullscreen",
@@ -230,21 +218,9 @@
       feature_policy_name: "midi",
     },
     {
-      name: "Modals",
-      feature_policy_name: "modals",
-      feature_default: "EnableForAll",
-      depends_on: ["FeaturePolicyForSandbox"],
-    },
-    {
       name: "OTPCredentials",
       feature_policy_name: "otp-credentials",
       depends_on: ["WebOTPAssertionFeaturePolicy"],
-    },
-    {
-      name: "OrientationLock",
-      feature_policy_name: "orientation-lock",
-      feature_default: "EnableForAll",
-      depends_on: ["FeaturePolicyForSandbox"],
     },
     {
       name: "Payment",
@@ -258,24 +234,6 @@
       depends_on: ["PictureInPictureAPI"],
     },
     {
-      name: "PointerLock",
-      feature_policy_name: "pointer-lock",
-      feature_default: "EnableForAll",
-      depends_on: ["FeaturePolicyForSandbox"],
-    },
-    {
-      name: "Popups",
-      feature_policy_name: "popups",
-      feature_default: "EnableForAll",
-      depends_on: ["FeaturePolicyForSandbox"],
-    },
-    {
-      name: "Presentation",
-      feature_policy_name: "presentation",
-      feature_default: "EnableForAll",
-      depends_on: ["FeaturePolicyForSandbox"],
-    },
-    {
       name: "PublicKeyCredentialsGet",
       feature_policy_name: "publickey-credentials-get",
       depends_on: ["WebAuthenticationGetAssertionFeaturePolicy"],
@@ -284,12 +242,6 @@
       name: "ScreenWakeLock",
       feature_policy_name: "screen-wake-lock",
       depends_on: ["WakeLock"],
-    },
-    {
-      name: "Script",
-      feature_policy_name: "scripts",
-      feature_default: "EnableForAll",
-      depends_on: ["FeaturePolicyForSandbox"],
     },
     {
       name: "Serial",
@@ -306,12 +258,6 @@
       name: "SyncXHR",
       feature_default: "EnableForAll",
       feature_policy_name: "sync-xhr",
-    },
-    {
-      name: "TopNavigation",
-      feature_policy_name: "top-navigation",
-      feature_default: "EnableForAll",
-      depends_on: ["FeaturePolicyForSandbox"],
     },
     {
       name: "TrustTokenRedemption",

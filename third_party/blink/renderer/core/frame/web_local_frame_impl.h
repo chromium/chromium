@@ -351,9 +351,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       WebFrame* opener,
       std::unique_ptr<blink::WebPolicyContainer> policy_container,
       network::mojom::blink::WebSandboxFlags sandbox_flags =
-          network::mojom::blink::WebSandboxFlags::kNone,
-      const FeaturePolicyFeatureState& opener_feature_state =
-          FeaturePolicyFeatureState());
+          network::mojom::blink::WebSandboxFlags::kNone);
   LocalFrame* GetFrame() const { return frame_.Get(); }
 
   void WillBeDetached();
@@ -368,8 +366,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       WebFrame* opener,
       const WebString& name,
       network::mojom::blink::WebSandboxFlags,
-      std::unique_ptr<blink::WebPolicyContainer>,
-      const FeaturePolicyFeatureState&);
+      std::unique_ptr<blink::WebPolicyContainer>);
   static WebLocalFrameImpl* CreateProvisional(
       WebLocalFrameClient*,
       InterfaceRegistry*,
@@ -526,9 +523,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       WebFrame* opener,
       std::unique_ptr<PolicyContainer> policy_container,
       network::mojom::blink::WebSandboxFlags sandbox_flags =
-          network::mojom::blink::WebSandboxFlags::kNone,
-      const FeaturePolicyFeatureState& opener_feature_state =
-          FeaturePolicyFeatureState());
+          network::mojom::blink::WebSandboxFlags::kNone);
 
   WebLocalFrameClient* client_;
 

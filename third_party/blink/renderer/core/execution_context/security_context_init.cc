@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
-#include "third_party/blink/renderer/core/frame/sandbox_flags.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/imports/html_imports_controller.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -193,25 +192,14 @@ void SecurityContextInit::ApplyFeaturePolicy(
         message.content));
   }
 
-  // DocumentLoader applied the sandbox flags before calling this function, so
-  // they are accessible here.
-  auto sandbox_flags = execution_context_->GetSandboxFlags();
-  if (sandbox_flags != network::mojom::blink::WebSandboxFlags::kNone &&
-      RuntimeEnabledFeatures::FeaturePolicyForSandboxEnabled()) {
-    // The sandbox flags might have come from CSP header or the browser; in
-    // such cases the sandbox is not part of the container policy. They are
-    // added to the header policy (which specifically makes sense in the case
-    // of CSP sandbox).
-    ApplySandboxFlagsToParsedFeaturePolicy(sandbox_flags,
-                                           feature_policy_header_);
-  }
-
   ParsedFeaturePolicy container_policy;
   if (frame && frame->Owner())
     container_policy = frame_policy.container_policy;
 
-  // TODO(icelland): This is problematic querying sandbox flags before
-  // feature policy is initialized.
+  // DocumentLoader applied the sandbox flags before calling this function, so
+  // they are accessible here.
+  auto sandbox_flags = execution_context_->GetSandboxFlags();
+
   if (RuntimeEnabledFeatures::BlockingFocusWithoutUserActivationEnabled() &&
       frame && frame->Tree().Parent() &&
       (sandbox_flags & network::mojom::blink::WebSandboxFlags::kNavigation) !=
@@ -223,26 +211,14 @@ void SecurityContextInit::ApplyFeaturePolicy(
         container_policy);
   }
 
-  // Feature policy should either come from a parent in the case of an
-  // embedded child frame, or from an opener if any when a new window is
-  // created by an opener. A main frame without an opener would not have a
-  // parent policy nor an opener feature state.
-  // For a main frame, get inherited feature policy from the opener if any.
   std::unique_ptr<FeaturePolicy> feature_policy;
-  if (!frame->IsMainFrame() || frame->OpenerFeatureState().empty() ||
-      !RuntimeEnabledFeatures::FeaturePolicyForSandboxEnabled()) {
-    auto* parent_feature_policy =
-        frame->Tree().Parent()
-            ? frame->Tree().Parent()->GetSecurityContext()->GetFeaturePolicy()
-            : nullptr;
-    feature_policy = FeaturePolicy::CreateFromParentPolicy(
-        parent_feature_policy, container_policy,
-        execution_context_->GetSecurityOrigin()->ToUrlOrigin());
-  } else {
-    feature_policy = FeaturePolicy::CreateWithOpenerPolicy(
-        frame->OpenerFeatureState(),
-        execution_context_->GetSecurityOrigin()->ToUrlOrigin());
-  }
+  auto* parent_feature_policy =
+      frame->Tree().Parent()
+          ? frame->Tree().Parent()->GetSecurityContext()->GetFeaturePolicy()
+          : nullptr;
+  feature_policy = FeaturePolicy::CreateFromParentPolicy(
+      parent_feature_policy, container_policy,
+      execution_context_->GetSecurityOrigin()->ToUrlOrigin());
   feature_policy->SetHeaderPolicy(feature_policy_header_);
   execution_context_->GetSecurityContext().SetFeaturePolicy(
       std::move(feature_policy));

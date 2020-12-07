@@ -239,11 +239,6 @@ const base::Feature kExtraSafelistedRequestHeadersForOutOfBlinkCors{
 const base::Feature kFeaturePolicyForClientHints{
     "FeaturePolicyForClientHints", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// When enabled Feature Policy propagation is similar to sandbox flags and,
-// sandbox flags are implemented on top of Feature Policy.
-const base::Feature kFeaturePolicyForSandbox{"FeaturePolicyForSandbox",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls whether or not First Scroll Latency will be measured and reported.
 // First Scroll Latency (tracking bug: crbug.com/922980) measures, for the
 // first scroll of a navigation, the latency between the user's input and the

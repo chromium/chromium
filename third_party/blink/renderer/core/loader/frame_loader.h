@@ -154,9 +154,7 @@ class CORE_EXPORT FrameLoader final {
   }
 
   // Includes the collection of forced, inherited, and FrameOwner's sandbox
-  // flags. Note: with FeaturePolicyForSandbox the frame owner's sandbox flags
-  // only includes the flags which are *not* implemented as feature policies
-  // already present in the FrameOwner's ContainerPolicy.
+  // flags.
   network::mojom::blink::WebSandboxFlags PendingEffectiveSandboxFlags() const;
 
   // Modifying itself is done based on |fetch_client_settings_object|.

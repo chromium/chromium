@@ -254,7 +254,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableCacheInlineScriptCode, features::kCacheInlineScriptCode},
     {wf::EnableExperimentalProductivityFeatures,
      features::kExperimentalProductivityFeatures},
-    {wf::EnableFeaturePolicyForSandbox, features::kFeaturePolicyForSandbox},
     {wf::EnableAccessibilityExposeDisplayNone,
      features::kEnableAccessibilityExposeDisplayNone},
     {wf::EnableAccessibilityExposeHTMLElement,

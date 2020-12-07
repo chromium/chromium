@@ -279,19 +279,11 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
     return nullptr;
   }
 
-  bool propagate_sandbox =
-      opener_window.IsSandboxed(network::mojom::blink::WebSandboxFlags::
-                                    kPropagatesToAuxiliaryBrowsingContexts);
   network::mojom::blink::WebSandboxFlags sandbox_flags =
-      propagate_sandbox ? opener_window.GetSandboxFlags()
-                        : network::mojom::blink::WebSandboxFlags::kNone;
-  bool not_sandboxed = opener_window.GetSandboxFlags() ==
-                       network::mojom::blink::WebSandboxFlags::kNone;
-  FeaturePolicyFeatureState opener_feature_state =
-      (not_sandboxed || propagate_sandbox) ? opener_window.GetSecurityContext()
-                                                 .GetFeaturePolicy()
-                                                 ->GetFeatureState()
-                                           : FeaturePolicyFeatureState();
+      opener_window.IsSandboxed(network::mojom::blink::WebSandboxFlags::
+                                    kPropagatesToAuxiliaryBrowsingContexts)
+          ? opener_window.GetSandboxFlags()
+          : network::mojom::blink::WebSandboxFlags::kNone;
 
   SessionStorageNamespaceId new_namespace_id =
       AllocateSessionStorageNamespaceId();
@@ -306,7 +298,7 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
   bool consumed_user_gesture = false;
   Page* page = old_page->GetChromeClient().CreateWindow(
       &opener_frame, request, frame_name, features, sandbox_flags,
-      opener_feature_state, new_namespace_id, consumed_user_gesture);
+      new_namespace_id, consumed_user_gesture);
   if (!page)
     return nullptr;
 
