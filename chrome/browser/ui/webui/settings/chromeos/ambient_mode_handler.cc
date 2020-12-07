@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
+#include "ash/public/cpp/ambient/ambient_metrics.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "base/barrier_closure.h"
@@ -221,6 +222,11 @@ void AmbientModeHandler::HandleSetSelectedAlbums(const base::ListValue* args) {
         settings_->topic_source = ash::AmbientModeTopicSource::kArtGallery;
       else
         settings_->topic_source = ash::AmbientModeTopicSource::kGooglePhotos;
+
+      ash::ambient::RecordAmbientModeTotalNumberOfAlbums(
+          personal_albums_.albums.size());
+      ash::ambient::RecordAmbientModeSelectedNumberOfAlbums(
+          settings_->selected_album_ids.size());
       break;
     case ash::AmbientModeTopicSource::kArtGallery:
       // For Art gallery, we set the corresponding setting to be enabled or not

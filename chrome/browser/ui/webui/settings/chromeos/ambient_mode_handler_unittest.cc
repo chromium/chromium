@@ -9,6 +9,7 @@
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/public/cpp/test/test_image_downloader.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,6 +53,10 @@ class AmbientModeHandlerTest : public testing::Test {
 
   content::TestWebUI* web_ui() { return web_ui_.get(); }
 
+  const base::HistogramTester& histogram_tester() const {
+    return histogram_tester_;
+  }
+
   void SetTopicSource(ash::AmbientModeTopicSource topic_source) {
     if (!handler_->settings_)
       handler_->settings_ = ash::AmbientSettings();
@@ -68,6 +73,10 @@ class AmbientModeHandlerTest : public testing::Test {
     base::ListValue args;
     args.Append(static_cast<int>(topic_source));
     handler_->HandleRequestAlbums(&args);
+  }
+
+  void HandleSetSelectedAlbums(const base::ListValue* args) {
+    handler_->HandleSetSelectedAlbums(args);
   }
 
   void FetchSettings() {
@@ -213,6 +222,7 @@ class AmbientModeHandlerTest : public testing::Test {
       fake_backend_controller_;
   std::unique_ptr<ash::TestImageDownloader> image_downloader_;
   std::unique_ptr<TestAmbientModeHandler> handler_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(AmbientModeHandlerTest, TestSendTemperatureUnitAndTopicSource) {
@@ -698,6 +708,31 @@ TEST_F(AmbientModeHandlerTest, TestSendSettingsWithCachedSettings) {
   FastForwardBy(GetUpdateSettingsDelay() * 1.5);
   ReplyUpdateSettings(/*success=*/false);
   VerifySettingsSent(topic_source_art_gallery, "celsius");
+}
+
+TEST_F(AmbientModeHandlerTest, TestAlbumNumbersAreRecorded) {
+  RequestSettings();
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+
+  base::ListValue args;
+  base::DictionaryValue dictionary;
+  ash::AmbientModeTopicSource topic_source =
+      ash::AmbientModeTopicSource::kGooglePhotos;
+  dictionary.SetKey("topicSource", base::Value(static_cast<int>(topic_source)));
+
+  base::Value albums(base::Value::Type::LIST);
+  base::Value album(base::Value::Type::DICTIONARY);
+  album.SetKey("albumId", base::Value("0"));
+  albums.Append(std::move(album));
+  dictionary.SetKey("albums", std::move(albums));
+
+  args.Append(std::move(dictionary));
+  HandleSetSelectedAlbums(&args);
+
+  histogram_tester().ExpectTotalCount("Ash.AmbientMode.TotalNumberOfAlbums",
+                                      /*count=*/1);
+  histogram_tester().ExpectTotalCount("Ash.AmbientMode.SelectedNumberOfAlbums",
+                                      /*count=*/1);
 }
 
 }  // namespace settings
