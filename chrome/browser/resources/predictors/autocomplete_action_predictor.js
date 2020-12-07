@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
 /**
  * @typedef {{
  *   enabled: boolean,
@@ -20,7 +23,7 @@ let AutocompleteActionPredictorDb;
  * Requests the database from the backend.
  */
 function requestAutocompleteActionPredictorDb() {
-  cr.sendWithPromise('requestAutocompleteActionPredictorDb')
+  sendWithPromise('requestAutocompleteActionPredictorDb')
       .then(updateAutocompleteActionPredictorDb);
 }
 

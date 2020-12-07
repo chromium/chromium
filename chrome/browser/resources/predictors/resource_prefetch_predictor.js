@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
 /**
  * @typedef {{
  *   enabled: boolean,
@@ -31,7 +34,7 @@ let OriginData;
  * Requests the database from the backend.
  */
 function requestResourcePrefetchPredictorDb() {
-  cr.sendWithPromise('requestResourcePrefetchPredictorDb')
+  sendWithPromise('requestResourcePrefetchPredictorDb')
       .then(updateResourcePrefetchPredictorDb);
 }
 
