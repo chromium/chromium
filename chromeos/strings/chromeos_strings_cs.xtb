@@ -22,6 +22,7 @@
 <translation id="1499900233129743732">Tohoto uživatele spravuje doména <ph name="MANAGER" />, která také může vzdáleně spravovat nastavení a sledovat jeho aktivitu.</translation>
 <translation id="150962533380566081">Neplatný kód PUK.</translation>
 <translation id="1510238584712386396">Spouštěč</translation>
+<translation id="1621067168122174824">Spustit test nabití</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (počet vláken: <ph name="THREAD_COUNT" />)</translation>
 <translation id="1641857168437328880">Podavač dokumentů (jednostranných)</translation>
 <translation id="1644574205037202324">Historie</translation>
@@ -29,6 +30,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Přítomnost resolveru DNS</translation>
 <translation id="1743558184855585519">Až baterie dosáhne tohoto limitu, bude považována za vybitou</translation>
+<translation id="1792647875738159689">Rušení skenování</translation>
 <translation id="1905710495812624430">Byl překročen maximální povolený počet pokusů.</translation>
 <translation id="1930797645656624981">Služba metod zadávání systému Chrome OS</translation>
 <translation id="1947737735496445907">Vytištěno</translation>
@@ -53,6 +55,7 @@
 <translation id="3008341117444806826">OBNOVIT</translation>
 <translation id="3009958530611748826">Vyberte cílovou složku</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3069085583900247081">Test se nezdařil</translation>
 <translation id="3083667275341675831">Diagnostika připojení</translation>
 <translation id="3091839911843451378">Tisk selhal – zastaveno</translation>
 <translation id="3102119246920354026">Mezipaměť</translation>
@@ -62,6 +65,7 @@
 <translation id="3246869037381808805">Tiskové úlohy starší než 1 den budou odstraněny</translation>
 <translation id="3268178239013324452">Tisk selhal – jsou otevřená dvířka</translation>
 <translation id="3310640316857623290">DNS má latenci výrazně nad prahovou hodnotou</translation>
+<translation id="3328783797891415197">Běží test</translation>
 <translation id="3369013195428705271">Opravdu chcete vymazat celou historii tisku? Probíhající tiskové úlohy vymazány nebudou.</translation>
 <translation id="3456078764689556234">Vytisknuta stránka <ph name="PRINTED_PAGES" /> z <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Tisk</translation>
@@ -81,6 +85,7 @@
 <translation id="4034824040120875894">Tiskárna</translation>
 <translation id="4131410914670010031">Černobíle</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
+<translation id="4170700058716978431">NEZDAŘILO SE</translation>
 <translation id="4227825898293920515">Platnost hesla vyprší za <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nemáte žádné probíhající tiskové úlohy</translation>
 <translation id="4297501883039923494">Zastaveno – neznámá chyba</translation>
@@ -105,17 +110,20 @@
 <translation id="4773299976671772492">Zastaveno</translation>
 <translation id="4808449224298348341">Byla zrušena tisková úloha <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">Vyberte složku v aplikaci Soubory…</translation>
+<translation id="4848429997038228357">PROBÍHÁ</translation>
 <translation id="4890353053343094602">Ihned si zvolte nové</translation>
 <translation id="4917889632206600977">Zastaveno – došel papír</translation>
 <translation id="4921665434385737356">Nabito na <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Spustit</translation>
+<translation id="500920857929044050">Zastavit test</translation>
 <translation id="5154917547274118687">Paměť</translation>
 <translation id="5168185087976003268">Opotřebení baterie</translation>
 <translation id="520299634122159966">Nejsou k dispozici žádné skenery</translation>
 <translation id="5212543919916444558">Na obrazovce nevidím nic, s čím vám můžu pomoct.
 Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5222676887888702881">Odhlásit se</translation>
+<translation id="5264277876637023664">Spustit test procesoru</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Znovu spustit sledy činností</translation>
 <translation id="5317780077021120954">Uložit</translation>
@@ -128,17 +136,22 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="54609108002486618">Spravovaný</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Další informace v centru nápovědy</translation>
+<translation id="5635169860413004179">Zobrazit přehled</translation>
 <translation id="5719918614880940190">Tento údaj měří využití procesoru a jedná se o agregaci všech jader</translation>
+<translation id="5797428682393400134">ÚSPĚCH</translation>
 <translation id="5832805196449965646">Přidat uživatele</translation>
 <translation id="5895138241574237353">Restartovat</translation>
+<translation id="5931523347251946569">Soubor nebyl nalezen</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, verze <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="6048107060512778456">Tisk selhal – zasekl se papír</translation>
 <translation id="6050189528197190982">Stupně šedé</translation>
 <translation id="6058625436358447366">Chcete-li akci dokončit, zadejte své staré a nové heslo</translation>
 <translation id="6061772781719867950">Neúspěšné požadavky HTTP</translation>
+<translation id="6104112872696127344">Skenování bylo zrušeno</translation>
 <translation id="6106186594183574873">Chcete-li akci dokončit, zadejte své staré heslo</translation>
 <translation id="6108689792487843350">Brána není dostupná</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" /> GHz / <ph name="MAX" /> GHz</translation>
 <translation id="6146993107019042706">Chcete-li akci dokončit, zadejte své nové heslo</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Další informace</translation>
@@ -149,6 +162,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="649050271426829538">Zastaveno – zasekl se papír</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Neznámý bezpečnostní protokol Wi-Fi</translation>
+<translation id="6532051501443766164">Skrýt přehled</translation>
 <translation id="65587193855025101">Předlohové sklo</translation>
 <translation id="6564646048574748301">Tisk selhal – tiskárna není dostupná</translation>
 <translation id="6618744767048954150">Probíhá</translation>
@@ -156,6 +170,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6643016212128521049">Vymazat</translation>
 <translation id="6704062477274546131">Překlad DNS</translation>
 <translation id="6747215703636344499">Zastaveno – výstupní zásobník je plný</translation>
+<translation id="6756731097889387912">Skenování se nepodařilo zrušit</translation>
 <translation id="6766275201586212568">Neúspěšné překlady DNS</translation>
 <translation id="6768237774506518020">Vysoká míra selhání překladu DNS</translation>
 <translation id="6839141349259399400">Nemůžete se připojit ke skenerům?</translation>
@@ -171,6 +186,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7648838807254605802">Vysoká latence HTTPS</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7690294790491645610">Potvrďte nové heslo</translation>
+<translation id="7732651821766520760">Test <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Stav</translation>
 <translation id="7855434858642800953">Naskenovaný soubor byl uložen</translation>
 <translation id="7928373994957558460">Zobrazit umístění souboru</translation>
@@ -198,6 +214,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Výchozí</translation>
 <translation id="8845001906332463065">Nápověda</translation>
+<translation id="8881098542468797602">Test byl úspěšný</translation>
 <translation id="8910721771319628100">Výchozí síť má latenci nad prahovou hodnotou</translation>
 <translation id="8919837981463578619">Tisk selhal – chybí zásobník</translation>
 <translation id="8928727111548978589">Tisk selhal – došel papír</translation>
@@ -207,4 +224,6 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="910415269708673980">Obnovte lístek pro <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenování stránky <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Odemknout</translation>
+<translation id="9149391708638971077">Spustit test paměti</translation>
+<translation id="982713511914535780">Spustit test vybíjení</translation>
 </translationbundle>

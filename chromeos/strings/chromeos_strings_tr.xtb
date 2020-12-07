@@ -22,6 +22,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" />, bu kullanıcıyı yönetir ve hem ayarları uzaktan yönetebilir hem de kullanıcı etkinliğini izleyebilir.</translation>
 <translation id="150962533380566081">Geçersiz PUK.</translation>
 <translation id="1510238584712386396">Başlatıcı</translation>
+<translation id="1621067168122174824">Şarj testini çalıştır</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ileti dizisi)</translation>
 <translation id="1641857168437328880">Doküman Besleyici (Tek taraflı)</translation>
 <translation id="1644574205037202324">Geçmiş</translation>
@@ -29,6 +30,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Çözümleyici Varlığı</translation>
 <translation id="1743558184855585519">Pil, şarj döngüsü sınırına ulaştığında ömrünü tamamladığı kabul edilir</translation>
+<translation id="1792647875738159689">Tarama iptal ediliyor</translation>
 <translation id="1905710495812624430">İzin verilen maksimum deneme sayısı aşıldı.</translation>
 <translation id="1930797645656624981">Chrome OS Giriş Yöntemi Hizmeti</translation>
 <translation id="1947737735496445907">Yazdırıldı</translation>
@@ -53,6 +55,7 @@
 <translation id="3008341117444806826">YENİLE</translation>
 <translation id="3009958530611748826">Kaydedilecek bir klasör seçin</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3069085583900247081">Test başarısız oldu</translation>
 <translation id="3083667275341675831">Bağlantı Teşhisi</translation>
 <translation id="3091839911843451378">İşlem başarısız - Durdu</translation>
 <translation id="3102119246920354026">Önbellek</translation>
@@ -62,6 +65,7 @@
 <translation id="3246869037381808805">1 günden daha eski yazdırma işleri kaldırılır</translation>
 <translation id="3268178239013324452">İşlem başarısız - Kapak açık</translation>
 <translation id="3310640316857623290">DNS gecikmesi, izin verilen eşiğin çok üzerinde</translation>
+<translation id="3328783797891415197">Test çalışıyor</translation>
 <translation id="3369013195428705271">Tüm yazdırma geçmişini temizlemek istediğinizden emin misiniz? Devam eden yazdırma işleriniz silinmez.</translation>
 <translation id="3456078764689556234">Yazdırılan sayfa: <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Yazdırma</translation>
@@ -81,6 +85,7 @@
 <translation id="4034824040120875894">Yazıcı</translation>
 <translation id="4131410914670010031">Siyah beyaz</translation>
 <translation id="4145784616224233563">HTTP Güvenlik Duvarı</translation>
+<translation id="4170700058716978431">BAŞARISIZ</translation>
 <translation id="4227825898293920515">Şifrenin süresi <ph name="TIME" /> içinde doluyor</translation>
 <translation id="4238516577297848345">Devam eden bir yazdırma işi yok</translation>
 <translation id="4297501883039923494">Durduruldu - Bilinmeyen hata</translation>
@@ -105,17 +110,20 @@
 <translation id="4773299976671772492">Durduruldu</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> yazdırma işi iptal edildi</translation>
 <translation id="4832079907277790330">Dosyalar uygulamasında klasör seç...</translation>
+<translation id="4848429997038228357">ÇALIŞIYOR</translation>
 <translation id="4890353053343094602">Hemen yeni bir tane seçin</translation>
 <translation id="4917889632206600977">Durduruldu - Kağıt bitti</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> saniyede <ph name="RATE" /> şarj oldu</translation>
 <translation id="4932733599132424254">Tarih</translation>
 <translation id="4985509611418653372">Çalıştır</translation>
+<translation id="500920857929044050">Testi durdur</translation>
 <translation id="5154917547274118687">Bellek</translation>
 <translation id="5168185087976003268">Pil gücü</translation>
 <translation id="520299634122159966">Kullanılabilir tarayıcı yok</translation>
 <translation id="5212543919916444558">Ekranınızda size yardımcı olabileceğim bir şey bulamıyorum.
 Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5222676887888702881">Çıkış</translation>
+<translation id="5264277876637023664">CPU testini çalıştır</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Rutinleri Tekrar Çalıştır</translation>
 <translation id="5317780077021120954">Kaydet</translation>
@@ -128,17 +136,22 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="54609108002486618">Yönetilen</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Yardım Merkezi'nden daha fazla bilgi edinebilirsiniz</translation>
+<translation id="5635169860413004179">Raporu Göster</translation>
 <translation id="5719918614880940190">Bu, tüm çekirdeklerin toplamı olup CPU kullanımını ölçer</translation>
+<translation id="5797428682393400134">BAŞARILI</translation>
 <translation id="5832805196449965646">Kişi Ekle</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
+<translation id="5931523347251946569">Dosya bulunamadı</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, sürüm <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="6048107060512778456">İşlem başarısız - Kağıt sıkışması</translation>
 <translation id="6050189528197190982">Gri Tonlama</translation>
 <translation id="6058625436358447366">Bitirmek için eski ve yeni şifrenizi girin</translation>
 <translation id="6061772781719867950">Başarısız HTTP istekleri</translation>
+<translation id="6104112872696127344">Tarama iptal edildi</translation>
 <translation id="6106186594183574873">Bitirmek için eski şifrenizi girin</translation>
 <translation id="6108689792487843350">Ağ geçidine ulaşılamıyor</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" /> GHz / <ph name="MAX" /> GHz</translation>
 <translation id="6146993107019042706">Bitirmek için yeni şifrenizi girin</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Daha fazla bilgi</translation>
@@ -149,6 +162,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="649050271426829538">Durduruldu - Kağıt sıkışması</translation>
 <translation id="6517239166834772319">Keşfet</translation>
 <translation id="6527081081771465939">Bilinmeyen kablosuz ağ güvenlik protokolü</translation>
+<translation id="6532051501443766164">Raporu gizle</translation>
 <translation id="65587193855025101">Düz Yataklı</translation>
 <translation id="6564646048574748301">İşlem başarısız - Yazıcıya ulaşılamıyor</translation>
 <translation id="6618744767048954150">Çalışıyor</translation>
@@ -156,6 +170,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6643016212128521049">Temizle</translation>
 <translation id="6704062477274546131">DNS Çözümlemesi</translation>
 <translation id="6747215703636344499">Durduruldu - Çıkış tepsisi dolu</translation>
+<translation id="6756731097889387912">Tarama iptal edilemedi</translation>
 <translation id="6766275201586212568">Başarısız DNS çözümlemeleri</translation>
 <translation id="6768237774506518020">DNS çözümleme hata oranı yüksek</translation>
 <translation id="6839141349259399400">Tarayıcılara bağlanamıyor musunuz?</translation>
@@ -171,6 +186,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7648838807254605802">Yüksek HTTPS gecikmesi</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7690294790491645610">Yeni şifreyi doğrula</translation>
+<translation id="7732651821766520760"><ph name="TEST_NAME" /> Test</translation>
 <translation id="7805768142964895445">Durum</translation>
 <translation id="7855434858642800953">Taranan dosya kaydedildi</translation>
 <translation id="7928373994957558460">Dosya konumunu göster</translation>
@@ -198,6 +214,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Varsayılan</translation>
 <translation id="8845001906332463065">Yardım alın</translation>
+<translation id="8881098542468797602">Test başarılı oldu</translation>
 <translation id="8910721771319628100">Varsayılan ağ, gecikme eşiğini aştı</translation>
 <translation id="8919837981463578619">İşlem başarısız - Tepsi yok</translation>
 <translation id="8928727111548978589">İşlem başarısız - Kağıt yok</translation>
@@ -207,4 +224,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> için bileti yenileyin</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. sayfa taranıyor</translation>
 <translation id="9111102763498581341">Kilidi Aç</translation>
+<translation id="9149391708638971077">Bellek testini çalıştır</translation>
+<translation id="982713511914535780">Deşarj testini çalıştır</translation>
 </translationbundle>

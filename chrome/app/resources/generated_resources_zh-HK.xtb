@@ -57,6 +57,7 @@
 <translation id="1056775291175587022">沒有網絡</translation>
 <translation id="1056898198331236512">警告</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{請輸入新 PIN。PIN 必須包含至少一個字元，可以使用字母、數字和其他字元。}other{請輸入新 PIN。PIN 必須包含至少 # 個字元，可以使用字母、數字和其他字元。}}</translation>
 <translation id="1059944192885972544">搵到 <ph name="NUM" /> 個同「<ph name="SEARCH_TEXT" />」相關嘅分頁</translation>
 <translation id="1060292118287751956">決定螢幕更新的頻率</translation>
 <translation id="1061904396131502319">快到休息時間了</translation>
@@ -636,9 +637,11 @@
 <translation id="1688935057616748272">請輸入一個字母</translation>
 <translation id="168991973552362966">新增附近的打印機</translation>
 <translation id="1689945336726856614">複製網址(&amp;U)</translation>
+<translation id="1690248886740053041">無法連線至流動網絡。如需技術支援，請聯絡您的流動網絡供應商。</translation>
 <translation id="1692115862433274081">使用其他帳戶</translation>
 <translation id="1692118695553449118">同步處理已開啟</translation>
 <translation id="1692210323591458290">深紫色</translation>
+<translation id="169279809881363536">找不到任何資料夾。如要設定新網絡，請使用裝置相機掃瞄 QR 碼，或輸入流動網絡供應商提供的啟動碼。</translation>
 <translation id="1697150536837697295">藝術</translation>
 <translation id="1697686431566694143">編輯檔案</translation>
 <translation id="1698122934742150150">只限目前的無痕模式工作階段</translation>
@@ -1574,6 +1577,7 @@
 <translation id="2770465223704140727">從清單中移除</translation>
 <translation id="2770690685823456775">將您的密碼匯出至其他資料夾</translation>
 <translation id="2770929488047004208">顯示器解像度</translation>
+<translation id="2770954829020464827">分享螢幕畫面時會隱藏詳細資料</translation>
 <translation id="2771268254788431918">已啟用流動數據</translation>
 <translation id="2771816809568414714">芝士</translation>
 <translation id="2772936498786524345">忍者</translation>
@@ -1942,6 +1946,7 @@
 <translation id="3201422919974259695">可用的 USB 裝置將會在這裡顯示。</translation>
 <translation id="3202131003361292969">路徑</translation>
 <translation id="3202173864863109533">此分頁的音效已設為靜音。</translation>
+<translation id="3202218848974251205">私隱沙箱</translation>
 <translation id="3208321278970793882">應用程式</translation>
 <translation id="3208584281581115441">立即檢查</translation>
 <translation id="3208703785962634733">尚未確認的</translation>
@@ -2141,7 +2146,6 @@
 <translation id="3441653493275994384">螢幕</translation>
 <translation id="3441663102605358937">請再次登入 <ph name="ACCOUNT" /> 以驗證此帳戶</translation>
 <translation id="3445047461171030979">「Google 助理」快速解答</translation>
-<translation id="3445770710327978113">如要迅速返回此處，請安裝此應用程式</translation>
 <translation id="3445925074670675829">USB-C 裝置</translation>
 <translation id="3446274660183028131">請啟動 Parallels Desktop 以安裝 Windows。</translation>
 <translation id="344630545793878684">讀取您在部分網站上的資料</translation>
@@ -2162,6 +2166,7 @@
 <translation id="3459697287128633276">如要使用您的帳戶存取「Google Play 商店」，請透過身分管理供應商驗證您的身分。</translation>
 <translation id="3462311546193741693">您會登出大多數網站，但會保持登入 Google 帳戶，以便清除已同步的資料。</translation>
 <translation id="3462413494201477527">取消帳戶建立？</translation>
+<translation id="3464145797867108663">新增工作設定檔</translation>
 <translation id="346431825526753">這是一個兒童帳戶 (由 <ph name="CUSTODIAN_EMAIL" /> 管理)。</translation>
 <translation id="3468298837301810372">標籤</translation>
 <translation id="3468999815377931311">Android 手機</translation>
@@ -2283,6 +2288,7 @@
 <translation id="360180734785106144">即時提供可用的新功能</translation>
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3603622770190368340">取得網絡憑證</translation>
+<translation id="3604193429970465812">次要帳戶</translation>
 <translation id="3604713164406837697">變更桌布</translation>
 <translation id="3605780360466892872">小員工</translation>
 <translation id="3608576286259426129">使用者圖片預覽</translation>
@@ -2607,6 +2613,7 @@
 
   是否要開啟「<ph name="CONTROL_PANEL_APPLET_NAME" />」？</translation>
 <translation id="394183848452296464">無法建立捷徑</translation>
+<translation id="3943494825379372497">要還原應用程式和網頁嗎？</translation>
 <translation id="3943582379552582368">返回(&amp;B)</translation>
 <translation id="3943857333388298514">貼上</translation>
 <translation id="3948116654032448504">透過 <ph name="SEARCH_ENGINE" /> 搜尋圖片(&amp;S)</translation>
@@ -2622,7 +2629,6 @@
 <translation id="3955163004258753966">開始升級時發生錯誤</translation>
 <translation id="3955193568934677022">允許網站播放受保護的內容 (建議)</translation>
 <translation id="3955896417885489542">在設定完成後查看 Google Play 選項</translation>
-<translation id="3956702100721821638">無法連線至 Google Play</translation>
 <translation id="3957079323242030166">備份資料不會計算入「雲端硬碟」的儲存空間配額。</translation>
 <translation id="3957844511978444971">輕按 [接受]，即表示您確認選擇這些 Google 服務設定。</translation>
 <translation id="3958088479270651626">匯入書籤和設定</translation>
@@ -2692,6 +2698,7 @@
 <translation id="4046013316139505482">這些擴充程式無需查看或變更此網站的資料。</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
 <translation id="4047726037116394521">前往主畫面</translation>
+<translation id="4049783682480068824">{COUNT,plural, =1{無法連接 # 個聯絡人。如要與他們使用「咫尺共享」，請將他們的 Google 帳戶電郵地址加入您的通訊錄。}other{無法連接 # 個聯絡人。如要與他們使用「咫尺共享」，請將其 Google 帳戶電郵地址加入您的通訊錄。}}</translation>
 <translation id="4050225813016893843">驗證方法</translation>
 <translation id="4052120076834320548">最小</translation>
 <translation id="4056908315660577142">您已達到家長為「<ph name="APP_NAME" />」Chrome 應用程式設定的使用時間限制。明天可以使用 <ph name="TIME_LIMIT" />。</translation>
@@ -3338,6 +3345,7 @@
 <translation id="4863769717153320198">解像度：<ph name="WIDTH" /> x <ph name="HEIGHT" /> (預設)</translation>
 <translation id="4864369630010738180">正在登入…</translation>
 <translation id="4864805589453749318">請選取要授予新增學校帳戶權限的家長。</translation>
+<translation id="4866265760644917470">設定檔已成功新增。</translation>
 <translation id="486635084936119914">下載特定類型的檔案後自動開啟</translation>
 <translation id="48704129375571883">新增其他功能</translation>
 <translation id="4870758487381879312">輸入管理員提供的密碼，即可取得設定資料</translation>
@@ -3621,6 +3629,7 @@
 <translation id="5206787458656075734">{COUNT,plural, =1{已成功變更被盜用的密碼。您還有 # 個被盜用的密碼。Chrome 建議您立即檢查此密碼。}other{已成功變更被盜用的密碼。您還有 # 個被盜用的密碼。Chrome 建議您立即檢查這些密碼。}}</translation>
 <translation id="5207949376430453814">突顯文字插入符號</translation>
 <translation id="5209320130288484488">找不到裝置</translation>
+<translation id="5209572028385096813">此使用者由 Family Link 管理</translation>
 <translation id="5210365745912300556">關閉分頁</translation>
 <translation id="5213481667492808996">「<ph name="NAME" />」的數據服務現可使用</translation>
 <translation id="5213891612754844763">顯示 Proxy 設定</translation>
@@ -3706,6 +3715,7 @@
 <translation id="5302048478445481009">語言</translation>
 <translation id="5302932258331363306">顯示替代項目</translation>
 <translation id="5304276686222516262">無法下載通訊錄。請檢查網絡連線，或&lt;a href="#" id="tryAgainLink"&gt;再試一次&lt;/a&gt;。</translation>
+<translation id="5305145881844743843">此帳戶是由 <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> 管理</translation>
 <translation id="5305688511332277257">未安裝任何憑證</translation>
 <translation id="5307030433605830021">不支援的來源</translation>
 <translation id="5308380583665731573">連線</translation>
@@ -4087,6 +4097,7 @@
 <translation id="5740820643029013514">使用靜態訊息功能 (建議)</translation>
 <translation id="574104302965107104">螢幕鏡像</translation>
 <translation id="574209121243317957">音調</translation>
+<translation id="5742505912938664543">在這裡新增次要帳戶後，您便可透過該帳戶瀏覽網絡、下載應用程式，以及查看 Gmail 和其他 Google 服務。</translation>
 <translation id="5746169159649715125">另存為 PDF</translation>
 <translation id="5747552184818312860">到期日</translation>
 <translation id="5747785204778348146">開發人員版 - 不穩定</translation>
@@ -4427,6 +4438,7 @@
 <translation id="6129953537138746214">空格</translation>
 <translation id="6130692320435119637">新增 Wi-Fi</translation>
 <translation id="6136114942382973861">閂下載內容列</translation>
+<translation id="6136287496450963112">您的安全密鑰並未受 PIN 保護。請先建立 PIN 以管理指紋。</translation>
 <translation id="6137767437444130246">使用者憑證</translation>
 <translation id="6138680304137685902">使用 SHA-384 的 X9.62 ECDSA 簽名</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />，沒有網絡</translation>
@@ -4607,6 +4619,7 @@
 <translation id="6331566915566907158">協助改善 Chrome 作業系統的功能和效能</translation>
 <translation id="6331818708794917058">網站可要求連接 MIDI 裝置</translation>
 <translation id="6333064448949140209">檔案將傳送至 Google 執行偵錯</translation>
+<translation id="6334444530352320327">您的應用程式和作業系統設定將在所有透過此帳戶登入的 Chromebook 上同步。<ph name="LINK_BEGIN" />同步設定<ph name="LINK_END" /></translation>
 <translation id="6338981933082930623">所有網站都可向您顯示任何廣告</translation>
 <translation id="6339668969738228384">為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的個人檔案</translation>
 <translation id="6340017061976355871">無法連接伺服器。請檢查您的網絡連線，然後再試一次。如果問題持續，請重新啟動 Chromebook。</translation>
@@ -4908,6 +4921,7 @@
 <translation id="6709133671862442373">新聞內容</translation>
 <translation id="6709357832553498500">使用「<ph name="EXTENSIONNAME" />」連線</translation>
 <translation id="6710213216561001401">上一個</translation>
+<translation id="6713233729292711163">新增工作設定檔</translation>
 <translation id="6715803357256707211">安裝 Linux 應用程式時發生錯誤。按一下通知即可瞭解詳情。</translation>
 <translation id="671619610707606484">此操作會清除網站儲存的資料，共 <ph name="TOTAL_USAGE" /></translation>
 <translation id="671928215901716392">鎖定螢幕</translation>
@@ -5276,6 +5290,7 @@
 <translation id="7121362699166175603">清除記錄和網址列中的自動完成資料。您的 Google 帳戶在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的瀏覽記錄。</translation>
 <translation id="7121438501124788993">開發人員模式</translation>
 <translation id="7121728544325372695">智能破折號</translation>
+<translation id="7122353087820324370">應用程式和作業系統設定未同步至次要帳戶。</translation>
 <translation id="7123030151043029868">已允許自動下載多個檔案</translation>
 <translation id="7123360114020465152">已不再支援</translation>
 <translation id="7125148293026877011">刪除 Crostini</translation>
@@ -5591,6 +5606,7 @@
 <translation id="750509436279396091">開啟下載檔案資料夾</translation>
 <translation id="7506093026325926984">密碼將會儲存在此裝置上</translation>
 <translation id="7506130076368211615">設定新網絡</translation>
+<translation id="7506242536428928412">如要使用新的安全密鑰，請設定新 PIN</translation>
 <translation id="7506541170099744506">您的 <ph name="DEVICE_TYPE" /> 已成功註冊企業管理服務。</translation>
 <translation id="7507207699631365376">查看此供應商的<ph name="BEGIN_LINK" />私隱權政策<ph name="END_LINK" /></translation>
 <translation id="7507930499305566459">狀態回應程式憑證</translation>
@@ -5754,6 +5770,7 @@
 <translation id="7691077781194517083">無法重設此安全密鑰。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="7691698019618282776">Crostini 升級</translation>
 <translation id="7696063401938172191">在您的 <ph name="PHONE_NAME" /> 上：</translation>
+<translation id="7697166915480294040">分享螢幕畫面時會隱藏詳細資料</translation>
 <translation id="7697598343108519171">使用相機掃瞄 QR 碼</translation>
 <translation id="7699968112832915395">無法新增帳戶</translation>
 <translation id="7701040980221191251">沒有</translation>
@@ -6210,6 +6227,8 @@
 <translation id="8184472985242519288">平均</translation>
 <translation id="8186609076106987817">伺服器無法找到這個檔案。</translation>
 <translation id="8188389033983459049">檢查您的裝置設定並開啟藍牙以繼續</translation>
+<translation id="8189306097519446565">學校帳戶</translation>
+<translation id="8189750580333936930">私隱沙箱</translation>
 <translation id="8190193592390505034">正在連線至 <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">管理您的應用程式、擴充功能和主題</translation>
 <translation id="8195027750202970175">磁碟大小</translation>
@@ -6901,6 +6920,7 @@
 <translation id="8986362086234534611">清除</translation>
 <translation id="8986494364107987395">自動將使用統計資料和當機報告傳送給 Google</translation>
 <translation id="8987927404178983737">月</translation>
+<translation id="8989823300731803443">繼續使用上次開啟的應用程式和網頁。</translation>
 <translation id="8990209962746788689">無法建立二維條碼</translation>
 <translation id="8991520179165052608">網站可以使用您的麥克風</translation>
 <translation id="8992117551007229513">{COUNT,plural, =1{1 個項目}other{# 個項目}}</translation>
@@ -7130,7 +7150,6 @@
 <translation id="952992212772159698">未啟用</translation>
 <translation id="956500788634395331">保護您免受可能有害的擴充程式影響</translation>
 <translation id="957960681186851048">此網站曾嘗試自動下載多個檔案</translation>
-<translation id="9580706199804957">無法連線至 Google 服務</translation>
 <translation id="958329785990007682">禁止 JavaScript</translation>
 <translation id="960719561871045870">流動網絡供應商代碼</translation>
 <translation id="960987915827980018">還有約 1 個小時</translation>

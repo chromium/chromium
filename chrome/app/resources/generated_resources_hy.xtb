@@ -873,6 +873,7 @@
 <translation id="1954813140452229842">Ընդհանուր միացման սխալ կա։ Ստուգեք ձեր տվյալներն ու նորից փորձեք:</translation>
 <translation id="1956050014111002555">Ֆայլը պարունակում է մի քանի վկայագիր, նրանցից ոչ մեկը չի ներմուծվել`</translation>
 <translation id="1956390763342388273">Դուք պատրաստվում եք վերբեռնել «<ph name="FOLDER_PATH" />» պանակի բոլոր ֆայլերը։ Մի՛ արեք դա, եթե կայքը վստահելի չեք համարում։</translation>
+<translation id="1960158217849594135">Պահե՞լ օգտանունը ձեր Google հաշվում</translation>
 <translation id="196040970347962278">Նախ միացեք համացանցին</translation>
 <translation id="1962233722219655970">Այս էջն օգտագործում է Native Client հավելված, որը ձեր համակարգիչը չի աջակցում:</translation>
 <translation id="1963227389609234879">Հեռացնել բոլորը</translation>
@@ -2149,7 +2150,6 @@
 <translation id="3441653493275994384">Էկրան</translation>
 <translation id="3441663102605358937">Այս հաշիվը հաստատելու համար նորից մուտք գործեք <ph name="ACCOUNT" /></translation>
 <translation id="3445047461171030979">Google Օգնականի արագ պատասխաններ</translation>
-<translation id="3445770710327978113">Այս էջն արագ բացելու համար տեղադրեք այս հավելվածը</translation>
 <translation id="3445925074670675829">USB-C սարք</translation>
 <translation id="3446274660183028131">Windows-ը տեղադրելու համար գործարկեք Parallels Desktop-ը։</translation>
 <translation id="344630545793878684">Կարդալ ձեր տվյալները մի շարք կայքերում</translation>
@@ -2344,6 +2344,7 @@
 <translation id="3653999333232393305">Շարունակել թույլ տալ <ph name="HOST" />-ին օգտագործել ձեր խոսափողը</translation>
 <translation id="3654045516529121250">Կարդալ մատչելիության կարգավորումները</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Այն մեկ ֆայլի մշտական ​​հասանելիություն ունի:}one{Այն # ֆայլի մշտական ​​հասանելիություն ունի:}other{Այն # ֆայլի մշտական ​​հասանելիություն ունի:}}</translation>
+<translation id="3658871634334445293">TrackPoint-ի արագացում</translation>
 <translation id="3660234220361471169">Անվստահելի</translation>
 <translation id="3664511988987167893">Ընդլայնման պատկերակ</translation>
 <translation id="3665589677786828986">Ձեր կարգավորումներից մի քանիսը փոփոխվել են կողմնակի ծրագրով: Chrome-ը վերականգնել է կանխադրված արժեքները:</translation>
@@ -2633,7 +2634,6 @@
 <translation id="3955163004258753966">Չհաջողվեց թարմացումը սկսել</translation>
 <translation id="3955193568934677022">Թույլ տալ կայքերին նվագարկել պաշտպանված բովանդակությունը (խորհուրդ է տրվում)</translation>
 <translation id="3955896417885489542">Ստուգեք Google Play-ի ընտրանքները հետևյալ կարգավորումից հետո</translation>
-<translation id="3956702100721821638">Google Play-ն անհասանելի է</translation>
 <translation id="3957079323242030166">Պահուստավորված տվյալները Drive-ում տարածք չեն զբաղեցնի։</translation>
 <translation id="3957844511978444971">Հպեք «Ընդունում եմ», որպեսզի հաստատեք Google-ի ծառայությունների ձեր կարգավորումները։</translation>
 <translation id="3958088479270651626">Էջանիշների և կարգավորումների ներմուծում</translation>
@@ -2772,6 +2772,7 @@
 <translation id="412730574613779332">Գերհերոս</translation>
 <translation id="4130199216115862831">Սարքի մատյան</translation>
 <translation id="4130207949184424187">Այս ընդլայնումը փոխել է Omnibox-ում որոնման ժամանակ ցուցադրվող էջը:</translation>
+<translation id="4130344535649650885">Պահե՞լ գաղտնաբառը ձեր Google հաշվում</translation>
 <translation id="4130750466177569591">Համաձայն եմ</translation>
 <translation id="413121957363593859">Բաղադրիչներ</translation>
 <translation id="4131410914670010031">Սև ու սպիտակ</translation>
@@ -3291,6 +3292,7 @@
 <translation id="4788092183367008521">Ստուգեք կապը և նորից փորձեք:</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> լուսանկար</translation>
 <translation id="4791037424585594169">(UDP)</translation>
+<translation id="4792290259143007505">Միացնել TrackPoint-ի արագացումը</translation>
 <translation id="4792711294155034829">&amp;Հաղորդել խնդրի մասին…</translation>
 <translation id="4794810983896241342">Թարմացումները կառավարվում են<ph name="BEGIN_LINK" />ձեր ադմինիստրատորի<ph name="END_LINK" /> կողմից</translation>
 <translation id="479536056609751218">Վեբէջ, միայն HTML</translation>
@@ -4048,6 +4050,7 @@
 <translation id="5677928146339483299">Արգելափակված է</translation>
 <translation id="5678550637669481956">Կարդալու և գրելու թույլտվություն է տրվել <ph name="VOLUME_NAME" />-ին:</translation>
 <translation id="5678955352098267522">Կարդալ ձեր տվյալները <ph name="WEBSITE_1" /> կայքում</translation>
+<translation id="5680050361008726776">Հեռացնե՞լ «<ph name="ESIM_PROFILE_NAME" />» պրոֆիլը</translation>
 <translation id="5684181005476681636">Wi-Fi-ի մանրամասներ</translation>
 <translation id="5684661240348539843">Ակտիվների նույնացուցիչ</translation>
 <translation id="5687326903064479980">Ժամային գոտի</translation>
@@ -5259,6 +5262,7 @@
 <translation id="7077829361966535409">Պրոքսի-սերվերի ընթացիկ կարգավորումների միջոցով մուտքի էջի բեռնումը չհաջողվեց: <ph name="GAIA_RELOAD_LINK_START" />Փորձեք նորից մուտք գործել<ph name="GAIA_RELOAD_LINK_END" /> կամ օգտագործեք <ph name="PROXY_SETTINGS_LINK_START" />պրոքսի-սերվերի այլ կարգավորումներ<ph name="PROXY_SETTINGS_LINK_END" />:</translation>
 <translation id="7078120482318506217">Բոլոր ցանցերը</translation>
 <translation id="7078386829626602215">Սարքեր չեն հայտնաբերվել <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
+<translation id="7079716540084905538">Ավելացրեք <ph name="USER_NAME" />-ի երկրորդ Google հաշիվը</translation>
 <translation id="708060913198414444">Պատճենել ձայնանյութի հասցեն</translation>
 <translation id="7081952801286122383">Դուք ինկոգնիտո ռեժիմում եք</translation>
 <translation id="708278670402572152">Անջատվեք ցանցից՝ որոնումը միացնելու համար</translation>
@@ -5626,6 +5630,7 @@
 <translation id="7520766081042531487">Ինկոգնիտո պորտալ՝ <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7522255036471229694">Ասեք «Ok Google»</translation>
+<translation id="7523585675576642403">Վերանվանեք պրոֆիլը</translation>
 <translation id="7525067979554623046">Ստեղծել</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{Եվս 1}one{Եվս {NUM_DOWNLOADS}}other{Եվս {NUM_DOWNLOADS}}}</translation>
 <translation id="7526989658317409655">Տեղապահ</translation>
@@ -7157,7 +7162,6 @@
 <translation id="952992212772159698">Ակտիվացված չէ</translation>
 <translation id="956500788634395331">Դուք պաշտպանված եք վտանգավոր ընդլայնումներից</translation>
 <translation id="957960681186851048">Այս կայքը փորձում էր ավտոմատ մի քանի ֆայլ ներբեռնել</translation>
-<translation id="9580706199804957">Չհաջողվեց միանալ Google-ի ծառայություններին</translation>
 <translation id="958329785990007682">Արգելափակել JavaScript բովանդակությունը</translation>
 <translation id="960719561871045870">Օպերատորի կոդը</translation>
 <translation id="960987915827980018">Մնացել է մոտ 1 ժամ</translation>

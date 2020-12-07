@@ -2146,7 +2146,6 @@
 <translation id="3441653493275994384">Екран</translation>
 <translation id="3441663102605358937">Поново се пријавите на <ph name="ACCOUNT" /> да бисте верификовали овај налог</translation>
 <translation id="3445047461171030979">Брзи одговори Google помоћника</translation>
-<translation id="3445770710327978113">Да бисте се овде брзо враћали, инсталирајте ову апликацију</translation>
 <translation id="3445925074670675829">Уређај са USB прикључком типа C</translation>
 <translation id="3446274660183028131">Покрените Parallels Desktop да бисте инсталирали Windows.</translation>
 <translation id="344630545793878684">Читање ваших података на више веб-сајтова</translation>
@@ -2630,7 +2629,6 @@
 <translation id="3955163004258753966">Грешка при покретању надоградње</translation>
 <translation id="3955193568934677022">Дозволи сајтовима да пуштају заштићени садржај (препоручено)</translation>
 <translation id="3955896417885489542">Прегледајте Google Play опције после подешавања</translation>
-<translation id="3956702100721821638">Google Play није доступан</translation>
 <translation id="3957079323242030166">Резервне копије података не улазе у квоту простора на диску.</translation>
 <translation id="3957844511978444971">Додирните „Прихвати“ да бисте потврдили избор подешавања ових Google услуга.</translation>
 <translation id="3958088479270651626">Увезите обележиваче и подешавања</translation>
@@ -7156,7 +7154,6 @@
 <translation id="952992212772159698">Није активирано</translation>
 <translation id="956500788634395331">Штитимо вас од потенцијално штетних додатака</translation>
 <translation id="957960681186851048">Овај сајт је покушао да аутоматски преузме више датотека</translation>
-<translation id="9580706199804957">Повезивање са Google услугама није успело</translation>
 <translation id="958329785990007682">Блокирај JavaScript</translation>
 <translation id="960719561871045870">Кôд мобилног оператера</translation>
 <translation id="960987915827980018">Остало је око сат времена</translation>

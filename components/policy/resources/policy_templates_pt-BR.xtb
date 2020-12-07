@@ -161,9 +161,6 @@
       Essa política não se aplica a usuários de quiosque.
 
       Cuidado: Wipe e MinimalMigrate removem dados locais.</translation>
-<translation id="1247850578871017740">Se a política for definida com um valor válido, o <ph name="PRODUCT_NAME" /> não usará versões SSL/TLS anteriores à versão especificada. Valores não reconhecidos serão ignorados.
-
-      Se esta política não for definida, o <ph name="PRODUCT_NAME" /> exibirá uma mensagem de erro para TLS 1.0 e TLS 1.1, mas o usuário poderá ignorá-la.</translation>
 <translation id="1252536192437793850">Permitir que os sites peçam ao usuário para conceder acesso a uma porta serial</translation>
 <translation id="125655429495551011">Se a política for definida como uma string, a string será aplicada como nome do host do dispositivo durante a solicitação de DHCP. A string pode ter as variáveis <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" /> e <ph name="LOCATION_PLACEHOLDER" />, que serão substituídas por valores no dispositivo antes de serem usadas como nome do host. A substituição resultante precisa ser um nome de host válido, conforme o RFC 1035, seção 3.1.
 
@@ -320,11 +317,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 
           Se você definir esta política, o usuário não poderá mudá-la ou substituí-la.</translation>
 <translation id="1502843533062797703">Ativar bloqueio de injeção de software de terceiros</translation>
-<translation id="1503863096120373385">Define as configurações do ciclo de vida dos dados de navegação do <ph name="PRODUCT_NAME" />.
-      Esta política controla a duração dos dados de navegação selecionados. Ela não terá efeito se a sincronização estiver ativada.
-      Os tipos de dados disponíveis são: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> e <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
-      O Chrome removerá regularmente dados de tipos selecionados com mais de <ph name="TIME_TO_LIVE_IN_HOURS" />. Como essa exclusão acontece apenas em intervalos específicos, alguns dados podem ser mantidos por mais tempo, mas nunca mais de duas vezes o esperado (<ph name="TIME_TO_LIVE_IN_HOURS" />).
-      </translation>
 <translation id="1509692106376861764">Esta política teve o uso suspenso a partir da versão 29 do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1512974677514081818">Fornece configurações para impressoras empresariais vinculadas a dispositivos.
 
@@ -989,6 +981,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se esta política não for definida, o recurso "Clique para ligar" ficará ativado por padrão.</translation>
 <translation id="2482676533225429905">Mensagens nativas</translation>
 <translation id="2483146640187052324">Prever ações da rede em qualquer conexão de rede</translation>
+<translation id="2496180316473517155">Histórico de navegação</translation>
 <translation id="2498238926436517902">Sempre ocultar automaticamente a estante</translation>
 <translation id="250022556568924228">A definição desta política significa que o <ph name="PRODUCT_OS_NAME" /> faz o download dos Termos de Serviço e os apresenta aos usuários ao início de cada sessão de uma conta local do dispositivo. Os usuários só poderão fazer login na sessão após aceitarem os Termos de Serviço.
 
@@ -1139,6 +1132,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2702023190395322609">Ativar recomendações de mídia</translation>
 <translation id="2706708761587205154">Permitir impressão apenas com PIN</translation>
 <translation id="2707873794476722903">O "Navegação segura" está ativo no modo padrão.</translation>
+<translation id="2709516037105925701">Preenchimento automático</translation>
 <translation id="2714359695399346815">Se a política for definida como "Ativada" ou deixada sem definição, o uso de servidores STUN será permitido, isso faz com que clientes remotos possam descobrir e se conectar a esta máquina, mesmo quando separados por um firewall.
 
       Se a política for definida como "Desativada" e as conexões de saída UDP forem filtradas pelo firewall, a máquina permitirá apenas conexões de máquinas clientes na rede local.</translation>

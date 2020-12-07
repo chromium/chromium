@@ -22,6 +22,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> valdo šį naudotoją ir gali nuotoliniu būdu valdyti nustatymus bei stebėti naudotojo veiklą.</translation>
 <translation id="150962533380566081">Netinkamas PUK.</translation>
 <translation id="1510238584712386396">Paleidimo priemonė</translation>
+<translation id="1621067168122174824">Vykdyti įkrovimo bandymą</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (gijų: <ph name="THREAD_COUNT" />)</translation>
 <translation id="1641857168437328880">Dokumentų tiektuvas (vienpusis)</translation>
 <translation id="1644574205037202324">Istorija</translation>
@@ -29,6 +30,7 @@
 <translation id="1703835215927279855">Laiškas</translation>
 <translation id="1706391837335750954">DNS pavadinimų vertimo programos aptikimas</translation>
 <translation id="1743558184855585519">Akumuliatorius laikomas išeikvotu, kai pasiekia apribojimą</translation>
+<translation id="1792647875738159689">Atšaukiamas nuskaitymas</translation>
 <translation id="1905710495812624430">Viršytas didžiausias bandymų skaičius.</translation>
 <translation id="1930797645656624981">„Chrome“ OS įvesties metodo paslauga</translation>
 <translation id="1947737735496445907">Atspausdinta</translation>
@@ -53,6 +55,7 @@
 <translation id="3008341117444806826">ATNAUJINTI</translation>
 <translation id="3009958530611748826">Pasirinkite aplanką, kuriame pageidaujate išsaugoti</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3069085583900247081">Bandymas nepavyko</translation>
 <translation id="3083667275341675831">Ryšio diagnostika</translation>
 <translation id="3091839911843451378">Nepavyko – sustabdyta</translation>
 <translation id="3102119246920354026">Talpykla</translation>
@@ -62,6 +65,7 @@
 <translation id="3246869037381808805">Senesnės nei 1 dienos spausdinimo užduotys bus pašalintos</translation>
 <translation id="3268178239013324452">Nepavyko – atidarytos durelės</translation>
 <translation id="3310640316857623290">DNS delsa gerokai viršija leistiną slenksčio vertę</translation>
+<translation id="3328783797891415197">Vykdomas bandymas</translation>
 <translation id="3369013195428705271">Ar tikrai norite išvalyti visą spausdinimo istoriją? Vykdomos spausdinimo užduotys nebus išvalytos.</translation>
 <translation id="3456078764689556234">Atspausdinta <ph name="PRINTED_PAGES" /> iš <ph name="TOTAL_PAGES" /> psl.</translation>
 <translation id="3459509316159669723">Spausdinimas</translation>
@@ -81,6 +85,7 @@
 <translation id="4034824040120875894">Spausdintuvas</translation>
 <translation id="4131410914670010031">Nespalvotai</translation>
 <translation id="4145784616224233563">HTTP užkarda</translation>
+<translation id="4170700058716978431">NESĖKMINGAS</translation>
 <translation id="4227825898293920515">Slaptažodžio galiojimas baigsis už <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nėra vykstančių spausdinimo užduočių</translation>
 <translation id="4297501883039923494">Sustabdyta – nežinoma klaida</translation>
@@ -105,17 +110,20 @@
 <translation id="4773299976671772492">Sustabdyta</translation>
 <translation id="4808449224298348341">Spausdinimo užduotis atšaukta: <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">Pasirinkite aplanką Failų programoje...</translation>
+<translation id="4848429997038228357">VYKDOMA</translation>
 <translation id="4890353053343094602">Nedelsdami pasirinkite naują</translation>
 <translation id="4917889632206600977">Sustabdyta – baigėsi popierius</translation>
 <translation id="4921665434385737356">Įkrauta: <ph name="RATE" /> per <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Vykdyti</translation>
+<translation id="500920857929044050">Stabdyti bandymą</translation>
 <translation id="5154917547274118687">Atmintis</translation>
 <translation id="5168185087976003268">Akumuliatoriaus būsena</translation>
 <translation id="520299634122159966">Nėra pasiekiamų skaitytuvų</translation>
 <translation id="5212543919916444558">Ekrane nieko nerasta, dėl ko galėtume jums padėti.
 Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5222676887888702881">Atsijungti</translation>
+<translation id="5264277876637023664">Vykdyti centrinio procesoriaus bandymą</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, „<ph name="PRINTER_NAME" />“, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Iš naujo vykdyti veiksmų sekas</translation>
 <translation id="5317780077021120954">Išsaugoti</translation>
@@ -128,17 +136,22 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="54609108002486618">Valdoma</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Sužinokite daugiau pagalbos centre</translation>
+<translation id="5635169860413004179">Žr. ataskaitą</translation>
 <translation id="5719918614880940190">Tai įvertina centrinio procesoriaus naudojimą ir nurodo apibendrintus visų branduolių duomenis</translation>
+<translation id="5797428682393400134">SĖKMINGAS</translation>
 <translation id="5832805196449965646">Pridėti asmenį</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
+<translation id="5931523347251946569">Failas nerastas</translation>
 <translation id="5982592372228113572">(„<ph name="BOARD_NAME" />“, <ph name="MILESTONE_VERSION" /> versija)</translation>
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="6048107060512778456">Nepavyko – įstrigęs popierius</translation>
 <translation id="6050189528197190982">Pilkumo tonas</translation>
 <translation id="6058625436358447366">Norėdami užbaigti įveskite seną ir naują slaptažodžius</translation>
 <translation id="6061772781719867950">Nepavykusios HTTP užklausos</translation>
+<translation id="6104112872696127344">Nuskaitymas atšauktas</translation>
 <translation id="6106186594183574873">Norėdami užbaigti įveskite seną slaptažodį</translation>
 <translation id="6108689792487843350">Tinklų sietuvas nepasiekiamas</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" /> GHz / <ph name="MAX" /> GHz</translation>
 <translation id="6146993107019042706">Norėdami užbaigti įveskite naują slaptažodį</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Sužinokite daugiau</translation>
@@ -149,6 +162,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="649050271426829538">Sustabdyta – įstrigęs popierius</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Nežinomas „Wi-Fi“ saugos protokolas</translation>
+<translation id="6532051501443766164">Slėpti ataskaitą</translation>
 <translation id="65587193855025101">Plokščiasis</translation>
 <translation id="6564646048574748301">Nepavyko – spausdintuvas nepasiekiamas</translation>
 <translation id="6618744767048954150">Vykdoma</translation>
@@ -156,6 +170,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6643016212128521049">Išvalyti</translation>
 <translation id="6704062477274546131">DNS pavadinimų vertimas</translation>
 <translation id="6747215703636344499">Sustabdyta – išvestis pilna</translation>
+<translation id="6756731097889387912">Nepavyko atšaukti nuskaitymo</translation>
 <translation id="6766275201586212568">Nepavykę DNS nustatymo veiksmai</translation>
 <translation id="6768237774506518020">Aukštas DNS nustatymo trikčių rodiklis</translation>
 <translation id="6839141349259399400">Nepavyko prisijungti prie skaitytuvų?</translation>
@@ -171,6 +186,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7648838807254605802">Didelė HTTPS delsa</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7690294790491645610">Patvirtinkite naują slaptažodį</translation>
+<translation id="7732651821766520760">Bandymas „<ph name="TEST_NAME" />“</translation>
 <translation id="7805768142964895445">Būsena</translation>
 <translation id="7855434858642800953">Nuskaitytas failas išsaugotas!</translation>
 <translation id="7928373994957558460">Rodyti failo vietą</translation>
@@ -198,6 +214,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Numatytasis</translation>
 <translation id="8845001906332463065">Gauti pagalbos</translation>
+<translation id="8881098542468797602">Bandymas sėkmingas</translation>
 <translation id="8910721771319628100">Numatytojo tinklo delsa viršija slenksčio vertę</translation>
 <translation id="8919837981463578619">Nepavyko – nėra dėklo</translation>
 <translation id="8928727111548978589">Nepavyko – baigėsi popierius</translation>
@@ -207,4 +224,6 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="910415269708673980">Atnaujinkite <ph name="PRINCIPAL_NAME" /> bilietą</translation>
 <translation id="9106415115617144481">Nuskaitomas <ph name="PAGE_NUMBER" /> psl.</translation>
 <translation id="9111102763498581341">Atrakinti</translation>
+<translation id="9149391708638971077">Vykdyti atminties bandymą</translation>
+<translation id="982713511914535780">Vykdyti iškrovimo bandymą</translation>
 </translationbundle>

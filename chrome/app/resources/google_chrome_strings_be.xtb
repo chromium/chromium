@@ -56,6 +56,7 @@
 <translation id="2309047409763057870">Гэта другасны ўсталяваны экзэмпляр Google Chrome – яго нельга зрабіць стандартным браўзерам.</translation>
 <translation id="2348335408836342058">Chrome запытвае дазвол на доступ да вашай камеры і мікрафона для гэтага сайта</translation>
 <translation id="234869673307233423">Браўзеру Chrome не ўдаецца праверыць паролі. Паўтарыце спробу пазней.</translation>
+<translation id="235650106824528204">Любыя даныя Chrome, створаныя пры выкарыстанні гэтага профілю (напрыклад, закладкі, гісторыя, паролі і іншыя налады), могуць быць выдалены адміністратарам працоўнага профілю. <ph name="LEARN_MORE" /></translation>
 <translation id="2429317896000329049">Браўзеру Google Chrome не ўдалося сінхранізаваць даныя: для вашага дамена сінхранізацыя недаступная.</translation>
 <translation id="2467438592969358367">Google Chrome запытвае дазвол на экспартаванне вашых пароляў. Каб дазволіць гэта, увядзіце пароль Windows.</translation>
 <translation id="2485422356828889247">Выдаліць</translation>
@@ -177,12 +178,14 @@
 <translation id="573759479754913123">Пра Chrome OS</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Не ўдалося запусціць Chrome. Паўтарыце спробу.</translation>
+<translation id="5851757216820085940">Калі ў вас некалькі Уліковых запісаў Google, вы можаце дадаць іх на сваю прыладу <ph name="DEVICE_TYPE" />. Імі можна будзе карыстацца ў Краме Play і браўзеры Chrome, а таксама ў такіх сэрвісах, як Gmail, Дыск і YouTube. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome спрабуе змяніць паролі.</translation>
 <translation id="5895138241574237353">Перазапусціць</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Уваход у сетку</translation>
 <translation id="5940385492829620908">Тут знаходзяцца вашы вэб-старонкі, закладкі і іншыя даныя браўзера Chrome.</translation>
 <translation id="5941830788786076944">Зрабіць Google Chrome стандартным браўзерам</translation>
 <translation id="6070348360322141662">Для дадатковай бяспекі Google Chrome будзе шыфраваць вашы даныя</translation>
+<translation id="608006075545470555">Дадаванне працоўнага профілю ў гэты браўзер</translation>
 <translation id="6113794647360055231">Chrome стаў яшчэ лепшым</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome (бэта-версія)</translation>
@@ -194,10 +197,12 @@
 <translation id="6368958679917195344">Chrome OS працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" />: Google Chrome для распрацоўшчыкаў</translation>
 <translation id="6566149418543181476">Google Chrome абнаўляецца (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6568793831116033768">Сістэма Chrome OS</translation>
 <translation id="6650333065969705433">Каб прайграваць абароненае мультымедыйнае змесціва пры дапамозе праграмы Rosetta, трэба перазапусціць Chrome.</translation>
 <translation id="6676384891291319759">Доступ у інтэрнэт</translation>
 <translation id="6679975945624592337">Дазволіць браўзеру Google Chrome працаваць у фонавым рэжыме</translation>
 <translation id="6750954913813541382">Для выпраўлення арфаграфічных памылак Chrome адпраўляе ў Google тэкст, які вы набіраеце ў браўзеры</translation>
+<translation id="6755885556185485672">Аперацыйная сістэма Chrome OS завяршыла працу некарэктна.</translation>
 <translation id="677276454032249905">Усё роўна выйсці з Chrome?</translation>
 <translation id="683440813066116847">Уваходнае правіла для Google Chrome Canary, якое дазваляе трафік mDNS.</translation>
 <translation id="6885412569789873916">Праграмы бэта-версіі Chrome</translation>
@@ -256,6 +261,7 @@
 <translation id="8498858610309223613">Толькі што было прыменена спецыяльнае абнаўленне бяспекі для Google Chrome. Перазапусціце браўзер, і вашы ўкладкі будуць адноўлены.</translation>
 <translation id="8521348052903287641">Уваходнае правіла версіі Google Chrome для распрацоўшчыкаў, якое дазваляе трафік mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8550334526674375523">Гэты працоўны профіль і ваш асабісты профіль з'яўляюцца поўнасцю асобнымі профілямі.</translation>
 <translation id="8556340503434111824">Даступная новая версія Google Chrome. Яшчэ хутчэйшая.</translation>
 <translation id="861359755029082151">Дзякуючы праграме Rosetta браўзер Chrome зможа прайграваць абароненае мультымедыйнае змесціва на гэтай старонцы.</translation>
 <translation id="8614913330719544658">Google Chrome не адказвае. Перазапусціць?</translation>
@@ -274,6 +280,7 @@
 <translation id="8907709077090383765">Каб прайграваць у браўзеры Chome абароненае мультымедыйнае змесціва, трэба ўсталяваць праграму Rosetta. Зрабіць гэта зараз?</translation>
 <translation id="8914504000324227558">Перазапусціць Chrome</translation>
 <translation id="8922193594870374009">Каб адпраўляць нумары з <ph name="ORIGIN" /> на свой тэлефон Android, увайдзіце ў Chrome на абедзвюх прыладах.</translation>
+<translation id="8986207147630327271">Вы дадаяце працоўны профіль у гэты браўзер і даяце адміністратару кантроль толькі над працоўным профілем.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ёсць абнаўленне Chrome}=1{Ёсць абнаўленне Chrome}one{Абнаўленне Chrome выйшла ўжо # дзень таму}few{Абнаўленне Chrome выйшла # дні таму}many{Абнаўленне Chrome выйшла # дзён таму}other{Абнаўленне Chrome выйшла # дня таму}}</translation>
 <translation id="9026991721384951619">Сінхранізаваць даныя ў сістэме Chrome OS не ўдалося: даныя ўліковага запісу для ўваходу састарэлі.</translation>
 <translation id="9067395829937117663">Для браўзера Google Chrome патрабуецца Windows 7 або навейшая версія.</translation>

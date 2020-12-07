@@ -2144,7 +2144,6 @@
 <translation id="3441653493275994384">Екран</translation>
 <translation id="3441663102605358937">Влезте в <ph name="ACCOUNT" /> отново, за да потвърдите този профил</translation>
 <translation id="3445047461171030979">Кратки отговори на Google Асистент</translation>
-<translation id="3445770710327978113">За да можете да се връщате тук бързо, инсталирайте това приложение</translation>
 <translation id="3445925074670675829">USB-C устройство</translation>
 <translation id="3446274660183028131">Моля, стартирайте Parallels Desktop, за да инсталирате Windows.</translation>
 <translation id="344630545793878684">Четене на данните ви от редица уебсайтове</translation>
@@ -2630,7 +2629,6 @@
 <translation id="3955163004258753966">Грешка при стартирането на надстройването</translation>
 <translation id="3955193568934677022">Разрешаване на сайтовете да възпроизвеждат защитено съдържание (препоръчително)</translation>
 <translation id="3955896417885489542">Преглед на опциите за Google Play след настройването</translation>
-<translation id="3956702100721821638">Не можа да се установи връзка с Google Play</translation>
 <translation id="3957079323242030166">Данните в резервното копие не се отчитат в квотата на хранилището ви в Диск.</translation>
 <translation id="3957844511978444971">Докоснете „Приемам“, за да потвърдите избора си на съответните настройки за услугите на Google.</translation>
 <translation id="3958088479270651626">Импортиране на отметки и настройки</translation>
@@ -7154,7 +7152,6 @@
 <translation id="952992212772159698">Не е активиран</translation>
 <translation id="956500788634395331">Защитени сте от потенциално опасни разширения</translation>
 <translation id="957960681186851048">Този сайт опита да изтегли автоматично няколко файла</translation>
-<translation id="9580706199804957">Не можа да се установи връзка с услугите на Google</translation>
 <translation id="958329785990007682">Блокиране на JavaScript</translation>
 <translation id="960719561871045870">Код на оператора</translation>
 <translation id="960987915827980018">Остава около 1 час</translation>

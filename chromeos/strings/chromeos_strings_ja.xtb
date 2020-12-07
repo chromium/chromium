@@ -22,6 +22,7 @@
 <translation id="1499900233129743732">このユーザーは <ph name="MANAGER" /> によって管理されています。設定の管理とユーザー アクティビティの監視がリモートで行われることがあります。</translation>
 <translation id="150962533380566081">無効な PUK です。</translation>
 <translation id="1510238584712386396">ランチャー</translation>
+<translation id="1621067168122174824">充電テストを実行</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" />（スレッド数 <ph name="THREAD_COUNT" />）</translation>
 <translation id="1641857168437328880">ドキュメント フィーダー（片面）</translation>
 <translation id="1644574205037202324">履歴</translation>
@@ -29,6 +30,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Resolver の存在</translation>
 <translation id="1743558184855585519">バッテリーの制限値に達すると消費したものと見なされます</translation>
+<translation id="1792647875738159689">スキャンをキャンセルしています</translation>
 <translation id="1905710495812624430">最大試行回数を超えました。</translation>
 <translation id="1930797645656624981">Chrome OS の入力方法サービス</translation>
 <translation id="1947737735496445907">印刷完了</translation>
@@ -53,6 +55,7 @@
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">保存先のフォルダを選択</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3069085583900247081">テストに失敗しました</translation>
 <translation id="3083667275341675831">接続診断</translation>
 <translation id="3091839911843451378">失敗 - 停止中です</translation>
 <translation id="3102119246920354026">キャッシュ</translation>
@@ -62,6 +65,7 @@
 <translation id="3246869037381808805">昨日より前の印刷ジョブは削除されます</translation>
 <translation id="3268178239013324452">失敗 - 扉が開いています</translation>
 <translation id="3310640316857623290">DNS の応答時間が許容値を大幅に超えています</translation>
+<translation id="3328783797891415197">テスト実行中</translation>
 <translation id="3369013195428705271">印刷履歴をすべて削除してもよろしいですか？実行中の印刷ジョブは削除されません。</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /> ページを印刷しました。</translation>
 <translation id="3459509316159669723">印刷</translation>
@@ -81,6 +85,7 @@
 <translation id="4034824040120875894">プリンタ</translation>
 <translation id="4131410914670010031">白黒</translation>
 <translation id="4145784616224233563">HTTP ファイアウォール</translation>
+<translation id="4170700058716978431">失敗</translation>
 <translation id="4227825898293920515">パスワードの有効期限はあと <ph name="TIME" />です</translation>
 <translation id="4238516577297848345">実行中の印刷ジョブはありません</translation>
 <translation id="4297501883039923494">停止 - 不明なエラー</translation>
@@ -105,17 +110,20 @@
 <translation id="4773299976671772492">停止しました</translation>
 <translation id="4808449224298348341">キャンセルされた印刷ジョブ <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">ファイルアプリ内のフォルダを選択...</translation>
+<translation id="4848429997038228357">実行中</translation>
 <translation id="4890353053343094602">新しいパスワードを今すぐ選択してください</translation>
 <translation id="4917889632206600977">停止 - 用紙切れ</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒で <ph name="RATE" /> 充電しました。</translation>
 <translation id="4932733599132424254">日付</translation>
 <translation id="4985509611418653372">実行</translation>
+<translation id="500920857929044050">テストを停止</translation>
 <translation id="5154917547274118687">メモリ</translation>
 <translation id="5168185087976003268">電池の状態</translation>
 <translation id="520299634122159966">使用できるスキャナはありません</translation>
 <translation id="5212543919916444558">画面からはサポートできる内容が見つかりませんでした。
 マイクをタップして質問してみてください。</translation>
 <translation id="5222676887888702881">ログアウト</translation>
+<translation id="5264277876637023664">CPU テストを実行</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />、<ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">ルーティンを再実行</translation>
 <translation id="5317780077021120954">保存</translation>
@@ -128,17 +136,22 @@
 <translation id="54609108002486618">管理対象</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">ヘルプセンターで詳細を確認</translation>
+<translation id="5635169860413004179">レポートを表示</translation>
 <translation id="5719918614880940190">コア CPU 全体の使用状況を測定します</translation>
+<translation id="5797428682393400134">完了</translation>
 <translation id="5832805196449965646">ユーザーを追加</translation>
 <translation id="5895138241574237353">再起動</translation>
+<translation id="5931523347251946569">ファイルが見つかりません</translation>
 <translation id="5982592372228113572">（<ph name="BOARD_NAME" />、バージョン <ph name="MILESTONE_VERSION" />）</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6048107060512778456">失敗 - 紙詰まりです</translation>
 <translation id="6050189528197190982">グレースケール</translation>
 <translation id="6058625436358447366">終了するには、古いパスワードと新しいパスワードを入力してください</translation>
 <translation id="6061772781719867950">HTTP リクエストが失敗しました</translation>
+<translation id="6104112872696127344">スキャンをキャンセルしました</translation>
 <translation id="6106186594183574873">終了するには、古いパスワードを入力してください</translation>
 <translation id="6108689792487843350">ゲートウェイにアクセスできません</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" /> GHz / <ph name="MAX" /> GHz</translation>
 <translation id="6146993107019042706">終了するには、新しいパスワードを入力してください</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">詳細</translation>
@@ -149,6 +162,7 @@
 <translation id="649050271426829538">停止 - 紙詰まり</translation>
 <translation id="6517239166834772319">使い方・ヒント</translation>
 <translation id="6527081081771465939">Wi-Fi のセキュリティ プロトコルが不明です</translation>
+<translation id="6532051501443766164">レポートを非表示</translation>
 <translation id="65587193855025101">フラットベッド</translation>
 <translation id="6564646048574748301">失敗 - プリンタにアクセスできません</translation>
 <translation id="6618744767048954150">実行中</translation>
@@ -156,6 +170,7 @@
 <translation id="6643016212128521049">削除</translation>
 <translation id="6704062477274546131">DNS の解決</translation>
 <translation id="6747215703636344499">停止 - 排紙トレイがいっぱいです</translation>
+<translation id="6756731097889387912">スキャンをキャンセルできませんでした</translation>
 <translation id="6766275201586212568">DNS 解決に失敗しました</translation>
 <translation id="6768237774506518020">DNS 解決の失敗率が高くなっています</translation>
 <translation id="6839141349259399400">スキャナに接続できない場合</translation>
@@ -171,6 +186,7 @@
 <translation id="7648838807254605802">HTTPS レイテンシが高くなっています</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7690294790491645610">新しいパスワードの確認入力</translation>
+<translation id="7732651821766520760"><ph name="TEST_NAME" /> テスト</translation>
 <translation id="7805768142964895445">ステータス</translation>
 <translation id="7855434858642800953">スキャンしたファイルを保存しました。</translation>
 <translation id="7928373994957558460">ファイルの場所を表示</translation>
@@ -198,6 +214,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">既定</translation>
 <translation id="8845001906332463065">ヘルプ</translation>
+<translation id="8881098542468797602">テストが完了しました</translation>
 <translation id="8910721771319628100">デフォルトのネットワークの応答時間がしきい値を超えています</translation>
 <translation id="8919837981463578619">失敗 - トレイがありません</translation>
 <translation id="8928727111548978589">失敗 - 用紙がありません</translation>
@@ -207,4 +224,6 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> のチケットを更新してください</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> ページ目をスキャンしています</translation>
 <translation id="9111102763498581341">ロック解除</translation>
+<translation id="9149391708638971077">メモリテストを実行</translation>
+<translation id="982713511914535780">放電テストを実行</translation>
 </translationbundle>

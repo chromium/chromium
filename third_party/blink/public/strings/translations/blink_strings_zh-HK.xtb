@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">請輸入「<ph name="ATSIGN" />」後面的部分。「<ph name="INVALIDADDRESS" />」並不完整。</translation>
 <translation id="5334352251556557839">無法播放媒體。</translation>
 <translation id="537648784377940524">最小日期 (<ph name="MIN_DATE_OR_TIME" />) 必須早於最大日期 (<ph name="MAX_DATE_OR_TIME" />)。</translation>
+<translation id="5378437566635403538">展開咗，開咗對話框。</translation>
 <translation id="5406322316791861025">圖表</translation>
 <translation id="5425179576310518467">目前嘅日期</translation>
 <translation id="5453733299334684579">樹狀目錄項目</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">更多選項</translation>
 <translation id="576709008726043716">簡介</translation>
 <translation id="57838592816432529">静音</translation>
+<translation id="5787939484346677755">展開咗，有自動完成選項。</translation>
 <translation id="5860033963881614850">關閉</translation>
 <translation id="588258955323874662">全螢幕</translation>
 <translation id="5888666972993069672">現正投放至<ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">清單方塊</translation>
 <translation id="6150588977291308318">參考書目</translation>
 <translation id="6164829606128959761">計量器</translation>
+<translation id="6165053282446038410">展開咗，有 <ph name="COUNT" /> 個自動完成選項。</translation>
 <translation id="6166809985690652833">後記</translation>
 <translation id="6209276755895393898">圖片內容似好似係：<ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">目前嘅網頁</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">頁首</translation>
 <translation id="6941933287844615239">下載媒體</translation>
 <translation id="6981594929165378967">插入</translation>
+<translation id="698788488269350478">展開咗。</translation>
 <translation id="6989848892321993519">請將這段文字加長至 <ph name="MIN_CHARACTERS" /> 個字元以上 (目前已有 1 個字元)。</translation>
 <translation id="7034405885550056553">建議</translation>
 <translation id="709897737746224366">請配對要求的格式。</translation>
 <translation id="7102274145889307184">目前位置</translation>
 <translation id="7118469954320184356">冇任何說明。</translation>
 <translation id="7139483182332611405">前言</translation>
+<translation id="7198226213493847604">選單彈出式按鈕</translation>
 <translation id="7214187073215825913">內容資料</translation>
 <translation id="7238347055216017155">強調</translation>
 <translation id="7263440858009898357">請選取一個清單中的項目。</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">章節</translation>
 <translation id="8845239796550121995">現正投放到您的電視上</translation>
 <translation id="8851136666856101339">主要元素</translation>
+<translation id="8861621546968757188">對話框彈出式按鈕</translation>
 <translation id="8875657656876809964">影片播放錯誤</translation>
 <translation id="8889402386540077796">色調</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

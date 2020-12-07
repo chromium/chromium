@@ -185,6 +185,7 @@
 <translation id="2949781154072577687">«<ph name="DRIVE_NAME" />» կրիչը ձևաչափվում է…</translation>
 <translation id="2951236788251446349">Մեդուզա</translation>
 <translation id="2984337792991268709">Այսօր <ph name="TODAY_DAYTIME" />-ին</translation>
+<translation id="2994320653639462337"><ph name="COUNT" /> տարր վերականգնվում է…</translation>
 <translation id="2994669386200004489">Չհաջողվեց պահուստավորել <ph name="FILE_NAME" /> ֆայլը</translation>
 <translation id="299638574917407533">ֆրանսերեն (Կանադա)</translation>
 <translation id="3003633581067744647">Միացնել մանրապատկերի դիտակերպը</translation>
@@ -305,6 +306,7 @@
 <translation id="4364327530094270451">Սեխ</translation>
 <translation id="4372884569765913867">1 x 1</translation>
 <translation id="4394214039309501350">Արտաքին հղում</translation>
+<translation id="4418686080762064601">Ստեղծեք դյուրանցում ձեր ֆայլերի համար</translation>
 <translation id="4425149324548788773">Իմ դրայվը</translation>
 <translation id="4470564870223067757">Հանգուլ 2 Set</translation>
 <translation id="4477002475007461989">ռումիներեն</translation>
@@ -385,6 +387,7 @@
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> տարր տեղափոխվում է «<ph name="FOLDER_NAME" />» պանակ</translation>
 <translation id="509429900233858213">Սխալ առաջացավ:</translation>
 <translation id="5098629044894065541">Եբրայական</translation>
+<translation id="5109254780565519649">Սխալ առաջացավ։ Հնարավոր է՝ որոշ տարրեր չեն վերականգնվել։</translation>
 <translation id="5110329002213341433">անգլերեն (Կանադա)</translation>
 <translation id="5123433949759960244">Բասկետբոլ</translation>
 <translation id="5129662217315786329">Լեհական</translation>
@@ -615,6 +618,7 @@
 <translation id="7547811415869834682">Հոլանդական</translation>
 <translation id="7551643184018910560">Ամրացնել դարակին</translation>
 <translation id="7553492409867692754">Հասանելի դարձրեք «<ph name="FOLDER_NAME" />» պանակի ֆայլերը Լինուքսին</translation>
+<translation id="7575645593344061397">«<ph name="FILENAME" />» ֆայլը վերականգնվում է…</translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Մեկ վայրկյան</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> ֆայլը ներբեռնվում է</translation>
@@ -712,6 +716,7 @@
 <translation id="8395901698320285466">Չափեր</translation>
 <translation id="8437209419043462667">ԱՄՆ</translation>
 <translation id="8456681095658380701">Սխալ անուն</translation>
+<translation id="8461467696380332069">Ֆայլերը դարակում արագ բացելու համար մկնիկի աջ կոճակով սեղմեք ֆայլի վրա և ընտրեք «Ամրացնել դարակին»։</translation>
 <translation id="8463494891489624050">վիետնամերեն (VIQR ստեղնաշար)</translation>
 <translation id="8466234950814670489">Tar արխիվ</translation>
 <translation id="8475647382427415476">Google Drive-ը չկարողացավ համաժամացնել «<ph name="FILENAME" />» ֆայլը: Ավելի ուշ այն նորից կփորձի:</translation>

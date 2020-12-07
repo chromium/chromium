@@ -52,6 +52,7 @@
 <translation id="2309047409763057870">Це додаткове встановлення Google Chrome. Його не можна зробити вашим веб-переглядачем за умовчанням.</translation>
 <translation id="2348335408836342058">Chrome потрібен дозвіл на використання камери й мікрофона, щоб надати цьому сайту доступ до них</translation>
 <translation id="234869673307233423">Chrome не може перевірити паролі. Повторіть спробу пізніше.</translation>
+<translation id="235650106824528204">Дані Chrome, створені під час використання цього профілю (наприклад, закладки, історія, паролі й інші налаштування), може видалити адміністратор робочого профілю. <ph name="LEARN_MORE" /></translation>
 <translation id="2429317896000329049">Google Chrome не вдалося синхронізувати ваші дані, оскільки синхронізація для вашого домену недоступна.</translation>
 <translation id="2467438592969358367">Google Chrome хоче експортувати ваші паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="2485422356828889247">Видалити</translation>
@@ -169,12 +170,14 @@
 <translation id="573759479754913123">Про ОС Chrome</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Не вдалося запустити Chrome. Повторіть спробу.</translation>
+<translation id="5851757216820085940">Якщо у вас кілька облікових записів Google, їх можна додати на <ph name="DEVICE_TYPE" />. Облікові записи будуть доступні у веб-переглядачі Chrome, Google Play і таких сервісах, як Gmail, Диск та YouTube.<ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome намагається змінити паролі.</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Вхід у мережу</translation>
 <translation id="5940385492829620908">Тут містяться ваші веб-сторінки, закладки та інші дані Chrome.</translation>
 <translation id="5941830788786076944">Зробити Google Chrome переглядачем за промовчанням</translation>
 <translation id="6070348360322141662">Щоб підвищити безпеку, Google Chrome шифруватиме ваші дані</translation>
+<translation id="608006075545470555">Додати робочий профіль у цей веб-переглядач</translation>
 <translation id="6113794647360055231">Chrome став ще кращим</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Бета-версія Google Chrome</translation>
@@ -186,10 +189,12 @@
 <translation id="6368958679917195344">ОС Chrome стала можливою завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Версія Google Chrome для розробників</translation>
 <translation id="6566149418543181476">Google Chrome оновлюється (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6568793831116033768">ОС Chrome</translation>
 <translation id="6650333065969705433">Щоб відтворювати захищений медіаконтент за допомогою додатка Rosetta, потрібно перезапустити Chrome.</translation>
 <translation id="6676384891291319759">Доступ до Інтернету</translation>
 <translation id="6679975945624592337">Дозволити Google Chrome працювати у фоновому режимі</translation>
 <translation id="6750954913813541382">Щоб виправляти орфографічні помилки, Chrome надсилає в Google текст, який ви вводите у веб-переглядачі</translation>
+<translation id="6755885556185485672">ОС Chrome завершила роботу неналежним чином.</translation>
 <translation id="677276454032249905">Усе одно вийти з Chrome?</translation>
 <translation id="683440813066116847">Вхідне правило для Google Chrome Canary дозволяє трафік mDNS.</translation>
 <translation id="6885412569789873916">Бета-версія додатків Chrome</translation>
@@ -248,6 +253,7 @@
 <translation id="8498858610309223613">Щойно було застосовано спеціальне оновлення для захисту Google Chrome. Перезапустіть веб-переглядач, і ваші вкладки буде відновлено.</translation>
 <translation id="8521348052903287641">Вхідне правило для Google Chrome для розробників дозволяє трафік mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8550334526674375523">Цей робочий профіль не пов'язаний із вашим особистим профілем.</translation>
 <translation id="8556340503434111824">Доступна нова версія Google Chrome – швидша, ніж будь-коли.</translation>
 <translation id="861359755029082151">Завдяки додатку Rosetta у веб-переглядачі Chrome можна відтворювати захищений медіаконтент на цій сторінці.</translation>
 <translation id="8614913330719544658">Google Chrome не відповідає. Перезапустити зараз?</translation>
@@ -266,6 +272,7 @@
 <translation id="8907709077090383765">Щоб відтворювати в Chrome захищений медіаконтент, потрібно встановити сервіс Rosetta. Зробити це зараз?</translation>
 <translation id="8914504000324227558">Перезапустити Chrome</translation>
 <translation id="8922193594870374009">Щоб надіслати номер із сайту <ph name="ORIGIN" /> на телефон Android, увійдіть у Chrome на обох пристроях.</translation>
+<translation id="8986207147630327271">Ви додаєте робочий профіль у цей веб-переглядач і дозволяєте адміністратору керувати лише ним.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Доступне оновлення Chrome}=1{Доступне оновлення Chrome}one{Оновлення Chrome доступне вже # день}few{Оновлення Chrome доступне вже # дні}many{Оновлення Chrome доступне вже # днів}other{Оновлення Chrome доступне вже # дня}}</translation>
 <translation id="9026991721384951619">ОС Chrome не вдалося синхронізувати ваші дані, оскільки дані для входу в обліковий запис застаріли.</translation>
 <translation id="9067395829937117663">Для роботи Google Chrome потрібно мати ОС Windows 7 або новішої версії.</translation>

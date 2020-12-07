@@ -56,6 +56,7 @@
 <translation id="2309047409763057870">ഇത് Google Chrome-ന്റെ ദ്വിതീയ ഇൻസ്‌റ്റലേഷനായതിനാൽ, നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസറാക്കാൻ കഴിയില്ല.</translation>
 <translation id="2348335408836342058">ഈ സൈറ്റിനായി, Chrome-ന് നിങ്ങളുടെ ക്യാമറയും മൈക്രോഫോണും ആക്‌സസ് ചെയ്യാനുള്ള അനുമതി ആവശ്യമാണ്</translation>
 <translation id="234869673307233423">Chrome-ന് നിങ്ങളുടെ പാസ്‌വേഡുകൾ പരിശോധിക്കാനാവുന്നില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
+<translation id="235650106824528204">ഈ പ്രൊഫൈലിന്റെ ഉപയോഗത്തിനിടയിൽ ഉണ്ടായ ഏത് Chrome ഡാറ്റയും (ബുക്ക്‌മാർക്കുകൾ, ചരിത്രം, പാസ്‌വേഡുകൾ, മറ്റ് ക്രമീകരണം എന്നിവ സൃഷ്ടിക്കൽ പോലുള്ളവ) ഔദ്യോഗിക പ്രൊഫൈൽ അഡ്മിന് നീക്കം ചെയ്യാനാകും. <ph name="LEARN_MORE" /></translation>
 <translation id="2429317896000329049">നിങ്ങളുടെ ഡൊമെയ്‌‌നിനായി സമന്വയം ലഭ്യമല്ലാത്തതിനാൽ Google Chrome-ന് നിങ്ങളുടെ ഡാറ്റ സമന്വയിപ്പിക്കാനായില്ല.</translation>
 <translation id="2467438592969358367">നിങ്ങളുടെ പാസ്‌വേഡുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യാൻ Google Chrome ആഗ്രഹിക്കുന്നു. ഇത് അനുവദിക്കാൻ നിങ്ങളുടെ Windows പാസ്‌വേഡ് നൽകുക.</translation>
 <translation id="2485422356828889247">അണ്‍‌ഇന്‍‌സ്റ്റാള്‍‌ ചെയ്യുക</translation>
@@ -177,12 +178,14 @@
 <translation id="573759479754913123">Chrome OS-നെക്കുറിച്ച്</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome ലോഞ്ച് ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
+<translation id="5851757216820085940">നിങ്ങൾക്ക് ഒന്നിലധികം Google അക്കൗണ്ടുകൾ ഉണ്ടെങ്കിൽ, അവ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിലേക്ക് ചേർക്കാൻ കഴിയും. നിങ്ങളുടെ അക്കൗണ്ടുകൾ Chrome ബ്രൗസറിലും Play സ്റ്റോറിലും Gmail, Drive, YouTube പോലുള്ള സേവനങ്ങളിലും ലഭ്യമാകും.<ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">പാസ്‌വേഡുകൾ Google Chrome എഡിറ്റ് ചെയ്യാൻ ശ്രമിക്കുന്നു.</translation>
 <translation id="5895138241574237353">പുനരാരംഭിക്കുക</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - നെറ്റ്‌വർക്ക് സൈൻ ഇൻ</translation>
 <translation id="5940385492829620908">നിങ്ങളുടെ വെബും ബുക്ക്മാർക്കുകളും മറ്റ് Chrome ഫയലും ഇവിടെ തത്സമയമാണ്.</translation>
 <translation id="5941830788786076944">Google Chrome-നെ ഡിഫോൾട്ട് ബ്രൗസർ ആക്കുക</translation>
 <translation id="6070348360322141662">കൂടുതൽ സുരക്ഷ ലഭ്യമാക്കാൻ, Google Chrome നിങ്ങളുടെ ഡാറ്റ എന്‍‌ക്രിപ്‌റ്റ് ചെയ്യും</translation>
+<translation id="608006075545470555">ഈ ബ്രൗസറിലേക്ക് ഔദ്യോഗിക പ്രൊഫൈൽ ചേർക്കുക</translation>
 <translation id="6113794647360055231">Chrome കൂടുതൽ മികച്ചതായി</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome ബീറ്റ</translation>
@@ -194,10 +197,12 @@
 <translation id="6368958679917195344">അനുബന്ധ <ph name="BEGIN_LINK_CROS_OSS" />ഓപ്പണ്‍ ഉറവിട സോഫ്റ്റ്‍‌വെയർ<ph name="END_LINK_CROS_OSS" /> ഉപയോഗിച്ചാണ് Chrome OS നിര്‍മ്മിച്ചിരിക്കുന്നത്.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome അപ്‌ഡേറ്റുചെയ്യുന്നു, (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6568793831116033768">Chrome OS സിസ്‌റ്റം</translation>
 <translation id="6650333065969705433">പരിരക്ഷിത മീഡിയ പ്ലേ ചെയ്യുന്നതിന് Rosetta ഉപയോഗിക്കാൻ Chrome റീസ്‌റ്റാർട്ട് ചെയ്‌തിരിക്കണം.</translation>
 <translation id="6676384891291319759">ഇന്റര്‍‌നെറ്റ് ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="6679975945624592337">പശ്ചാത്തലത്തില്‍ Google Chrome പ്രവര്‍ത്തിക്കാന്‍ അനുവദിക്കുക</translation>
 <translation id="6750954913813541382">അക്ഷരത്തെറ്റുകൾ പരിഹരിക്കാൻ നിങ്ങൾ ബ്രൗസറിൽ ടൈപ്പ് ചെയ്യുന്ന ടെക്‌സ്‌റ്റ് Chrome Google ലേക്ക് അയയ്ക്കുന്നു</translation>
+<translation id="6755885556185485672">Chrome OS ശരിയായി ഷട്ട്‌ഡൗൺ ചെയ്‌തിട്ടില്ല.</translation>
 <translation id="677276454032249905">എന്തായാലും Chrome-ൽ നിന്ന് പുറത്തുകടക്കണോ?</translation>
 <translation id="683440813066116847">mDNS ട്രാഫിക് അനുവദിക്കാൻ Google Chrome കാനറിയ്‌ക്കുള്ള ഇൻബൗണ്ട് റൂൾ.</translation>
 <translation id="6885412569789873916">Chrome ബീറ്റ ആപ്പുകൾ</translation>
@@ -256,6 +261,7 @@
 <translation id="8498858610309223613">Google Chrome-നുള്ള ഒരു പ്രത്യേക സുരക്ഷാ അപ്ഡേറ്റ് പ്രയോഗിച്ചിരിക്കുന്നു. ഇപ്പോൾ റീസ്‌റ്റാർട്ട് ചെയ്യുക, ഞങ്ങൾ നിങ്ങളുടെ ടാബുകൾ പുനഃസ്ഥാപിക്കും.</translation>
 <translation id="8521348052903287641">mDNS ട്രാഫിക് അനുവദിക്കുന്നതിന് Google Chrome Dev-ന് വേണ്ടിയുള്ള ഇൻബൗണ്ട് റൂൾ.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8550334526674375523">ഈ ഔദ്യോഗിക പ്രൊഫൈൽ നിങ്ങളുടെ വ്യക്തിപരമായ പ്രൊഫൈലിൽ നിന്ന് തികച്ചും വ്യത്യസ്തമാണ്.</translation>
 <translation id="8556340503434111824">Google Chrome-ന്റെ പുതിയ പതിപ്പ് ലഭ്യമാണ്, അത് മുമ്പത്തേക്കാൾ വേഗതയേറിയതാണ്.</translation>
 <translation id="861359755029082151">Rosetta, ഈ പേജിൽ പരിരക്ഷിത മീഡിയ പ്ലേ ചെയ്യാൻ Chrome-നെ പ്രവർത്തനക്ഷമമാക്കുന്നു.</translation>
 <translation id="8614913330719544658">Google Chrome പ്രതികരിക്കുന്നില്ല. ഇപ്പോള്‍ വീണ്ടും സമാരംഭിക്കണോ?</translation>
@@ -274,6 +280,7 @@
 <translation id="8907709077090383765">പരിരക്ഷിത മീഡിയ പ്ലേ ചെയ്യുന്നതിന് Chrome പ്രവർത്തനക്ഷമമാക്കാൻ Rosetta ഇൻസ്‌റ്റാൾ ചെയ്യേണ്ടതുണ്ട്. ഇപ്പോൾ ഇൻസ്‌റ്റാൾ ചെയ്യണോ?</translation>
 <translation id="8914504000324227558">Chrome വീണ്ടും സമാരംഭിക്കുക</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> എന്നതിൽ നിന്ന് നിങ്ങളുടെ Android ഫോണിലേക്ക് ഒരു നമ്പർ അയയ്‌ക്കാൻ, രണ്ട് ഉപകരണങ്ങളിൽ നിന്നും Chrome-ൽ സൈൻ ഇൻ ചെയ്യുക.</translation>
+<translation id="8986207147630327271">നിങ്ങൾ ഈ ബ്രൗസറിലേക്ക് ഒരു ഔദ്യോഗിക പ്രൊഫൈൽ ചേർക്കുകയും നിങ്ങളുടെ അഡ്മിന് ഔദ്യോഗിക പ്രൊഫൈലിലേക്ക് മാത്രം നിയന്ത്രണം നൽകുകയും ചെയ്യുന്നു.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome-നൊരു അപ്‌ഡേറ്റ് ലഭ്യമാണ്}=1{Chrome-നൊരു അപ്‌ഡേറ്റ് ലഭ്യമാണ്}other{# ദിവസമായി Chrome-നൊരു അപ്‌ഡേറ്റ് ലഭ്യമാണ്}}</translation>
 <translation id="9026991721384951619">നിങ്ങളുടെ അക്കൗണ്ടിന്റെ സൈൻ ഇൻ വിശദാംശങ്ങൾ കാലഹരണപ്പെട്ടതിനാൽ Chrome OS-ന് നിങ്ങളുടെ ഡാറ്റ സമന്വയിപ്പിക്കാനായില്ല.</translation>
 <translation id="9067395829937117663">Google Chrome-ന് Windows 7 അല്ലെങ്കിൽ അതിനുശേഷമുള്ള പതിപ്പ് ആവശ്യമാണ്.</translation>

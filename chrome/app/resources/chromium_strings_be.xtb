@@ -42,6 +42,7 @@
 <translation id="2535480412977113886">Сінхранізаваць даныя ў сістэме Chromium OS не ўдалося: даныя ўліковага запісу для ўваходу састарэлі.</translation>
 <translation id="2560420686485554789">Для спампоўвання файлаў браўзеру Chrome патрабуецца доступ да сховішча</translation>
 <translation id="2572494885440352020">Памочнік Chromium</translation>
+<translation id="2583187216237139145">Любыя даныя Chromium, створаныя пры выкарыстанні гэтага профілю (напрыклад, закладкі, гісторыя, паролі і іншыя налады), могуць быць выдалены адміністратарам працоўнага профілю. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Каб прымяніць абнаўленне, трэба перазапусціць Chromium OS.</translation>
 <translation id="2615699638672665509">Гэты камп'ютар неўзабаве не будзе атрымліваць абнаўленні Chromium, бо гэтае апаратнае забеспячэнне больш не падтрымліваецца.</translation>
 <translation id="2648074677641340862">Падчас усталявання адбылася памылка аперацыйнай сістэмы. Спампуйце Chromium зноў.</translation>
@@ -143,6 +144,7 @@
 <translation id="6055895534982063517">Даступная новая версія Chromium. Яшчэ хутчэйшая.</translation>
 <translation id="6063093106622310249">&amp;Адкрыць у Chromium</translation>
 <translation id="6072279588547424923">Пашырэнне <ph name="EXTENSION_NAME" /> дададзена да Chromium</translation>
+<translation id="608006075545470555">Дадаванне працоўнага профілю ў гэты браўзер</translation>
 <translation id="608189560609172163">Chromium не змог сінхранізаваць даныя з-за памылкі ўваходу.</translation>
 <translation id="6096348254544841612">Наладжвайце Chromium і кіруйце ім. Ёсць абнаўленне.</translation>
 <translation id="6120345080069858279">Chromium захавае гэты пароль у вашым Уліковым запісе Google. Вам не трэба запамінаць яго.</translation>
@@ -163,6 +165,7 @@
 <translation id="6403826409255603130">Chromium – гэта вэб-браўзер, які апрацоўвае вэб-старонкі і запускае праграмы з неймавернай хуткасцю: хуткі, стабільны і просты ў выкарыстанні. Павышаная бяспека прагляду вэб-старонак забяспечваецца ўбудаванай у Chromium аховай ад шкодных праграм і фішынгу.</translation>
 <translation id="6434250628340475518">Сістэма Chromium OS</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Перазапуск Chromium адбудзецца праз 1 секунду}one{Перазапуск Chromium адбудзецца праз # секунду}few{Перазапуск Chromium адбудзецца праз # секунды}many{Перазапуск Chromium адбудзецца праз # секунд}other{Перазапуск Chromium адбудзецца праз # секунды}}</translation>
+<translation id="6464340581899189425">Калі ў вас некалькі Уліковых запісаў Google, вы можаце дадаць іх на сваю прыладу <ph name="DEVICE_TYPE" />. Імі можна будзе карыстацца ў Краме Play і браўзеры Chromium, а таксама ў такіх сэрвісах, як Gmail, Дыск і YouTube. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Таксама вызначае, якая старонка паказваецца пра запуску Chromium.</translation>
 <translation id="6510925080656968729">Выдаліць Chromium</translation>
 <translation id="6570579332384693436">Для выпраўлення арфаграфічных памылак Chromium адпраўляе ў Google тэкст, які вы набіраеце ў тэкставых палях</translation>
@@ -222,6 +225,7 @@
 <translation id="7857220146454061152">Каб атрымліваць наступныя абнаўленні Chromium, вам патрэбна версія OS X 10.11 ці пазнейшая. На гэтым камп'ютары выкарыстоўваецца OS X 10.10.</translation>
 <translation id="7867198900892795913">Браўзеру Chromium не ўдалося абнавіцца да апошняй версіі, таму ў ім няма новых функцый і выпраўленняў сістэмы бяспекі.</translation>
 <translation id="7898472181347242998">Каб даведацца, ці абноўлена прылада, адкрыйце <ph name="LINK_BEGIN" />Налады Chromium OS<ph name="LINK_END" /></translation>
+<translation id="7907774600618164274">Аперацыйная сістэма Chromium OS завяршыла працу некарэктна.</translation>
 <translation id="7937630085815544518">Вы ўваходзілі ва ўліковы запіс Chromium як <ph name="USER_EMAIL_ADDRESS" />. Для паўторнага ўваходу выкарыстоўвайце той жа самы ўліковы запіс.</translation>
 <translation id="7975919845073681630">Гэта другасны ўсталяваны экзэмпляр Chromium – яго нельга зрабіць стандартным браўзерам.</translation>
 <translation id="7979877361127045932">Схаваць у меню Chromium</translation>
@@ -236,6 +240,7 @@
 <translation id="8417404458978023919">{0,plural, =1{Перазапусціце Chromium на працягу дня}one{Перазапусціце Chromium на працягу # дня}few{Перазапусціце Chromium на працягу # дзён}many{Перазапусціце Chromium на працягу # дзён}other{Перазапусціце Chromium на працягу # дня}}</translation>
 <translation id="8453117565092476964">Архіў усталёўшчыка пашкоджаны або мае няправільны фармат. Спампуйце Chromium зноў.</translation>
 <translation id="8493179195440786826">Chromium састарэў</translation>
+<translation id="8550334526674375523">Гэты працоўны профіль і ваш асабісты профіль з'яўляюцца поўнасцю асобнымі профілямі.</translation>
 <translation id="8558383651099478961">Вашы бацькі выключылі "Дазволы для сайтаў, праграм і пашырэнняў" для Chromium. Дадаванне гэтага элемента (<ph name="EXTENSION_TYPE_PARAMETER" />) забаронена.</translation>
 <translation id="8568283329061645092">Chromium зможа праверыць паролі толькі пасля таго, як вы ўвойдзеце ва Уліковы запіс Google</translation>
 <translation id="8586442755830160949">Аўтарскія правы: стваральнікі Chromium, <ph name="YEAR" />. Усе правы абароненыя.</translation>
@@ -252,6 +257,7 @@
 <translation id="8907580949721785412">Chromium спрабуе паказаць паролі. Каб дазволіць гэта, увядзіце пароль Windows.</translation>
 <translation id="8941642502866065432">Не ўдаецца абнавіць Chromium</translation>
 <translation id="8974095189086268230">Chromium OS працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="8986207147630327271">Вы дадаяце працоўны профіль у гэты браўзер і даяце адміністратару кантроль толькі над працоўным профілем.</translation>
 <translation id="9019929317751753759">Каб павысіць бяспечнасць Chromium, мы выключылі прыведзенае ніжэй пашырэнне. <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не змяшчае звестак пра гэта пашырэнне, а значыць, яно магло быць дададзена без вашага ведама.</translation>
 <translation id="9089354809943900324">Chromium састарэў</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium будзе перазапушчаны праз гадзіну}one{Chromium будзе перазапушчаны праз # гадзіну}few{Chromium будзе перазапушчаны праз # гадзіны}many{Chromium будзе перазапушчаны праз # гадзін}other{Chromium будзе перазапушчаны праз # гадзіны}}</translation>
@@ -259,6 +265,7 @@
 <translation id="911206726377975832">Выдаліць таксама гісторыю праглядаў?</translation>
 <translation id="9158494823179993217">Ваш сістэмны адміністратар наладзіў Chromium, каб адкрыць альтэрнатыўны браўзер для доступу да <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="9214764063801632699">Сістэма Chromium OS</translation>
 <translation id="93478295209880648">Браўзер Chromium больш не падтрымліваецца на Windows XP і Windows Vista, таму можа працаваць няправільна</translation>
 <translation id="95514773681268843"><ph name="DOMAIN" /> патрабуе ад вас прачытаць і прыняць наступныя Умовы выкарыстання, перш чым пачаць карыстацца прыладай. Гэтыя ўмовы не пашыраюць, не змяняюць і не абмяжоўваюць Умовы выкарыстання Chromium OS.</translation>
 <translation id="965162752251293939">Хто выкарыстоўвае Chromium?</translation>

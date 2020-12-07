@@ -76,7 +76,7 @@
 <translation id="1650222530560417226">Tap the 'Start Logging' button to collect future JavaScript console logs and errors from all tabs. Logs will be collected (and stored only in memory) until this page is closed or 'Stop Logging' is tapped.</translation>
 <translation id="1657011748321897393">Sharing failed because you are not connected to the network.</translation>
 <translation id="1657641691196698092">Blocked cookies</translation>
-<translation id="165877110639533037">No Open Tabs</translation>
+<translation id="165877110639533037">No open tabs</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> to <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="168715261339224929">To get your bookmarks on all your devices, turn on sync.</translation>
 <translation id="1687475363370981210">Mark All Read</translation>
@@ -88,8 +88,8 @@
 <translation id="1746815479209538200">To browse the web, add a new tab.</translation>
 <translation id="1752547299766512813">Save Passwords</translation>
 <translation id="1753905327828125965">Most Visited</translation>
-<translation id="1803264062614276815">Cardholder Name</translation>
-<translation id="1809939268435598390">Delete Folder</translation>
+<translation id="1803264062614276815">Cardholder name</translation>
+<translation id="1809939268435598390">Delete folder</translation>
 <translation id="1813414402673211292">Clear Browsing Data</translation>
 <translation id="1820259098641718022">Added to Reading List</translation>
 <translation id="1870148520156231997">Reveal password</translation>
@@ -212,7 +212,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="3240426699337459095">Link copied</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> of <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3268451620468152448">Open Tabs</translation>
+<translation id="3268451620468152448">Open tabs</translation>
 <translation id="3272527697863656322">Cancel</translation>
 <translation id="3277021493514034324">Site address copied</translation>
 <translation id="3285962946108803577">Share page…</translation>
@@ -238,7 +238,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="3482959374254649722">Syncing your tabs...</translation>
 <translation id="3484946776651937681">Open in downloads</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /> about suggested content</translation>
-<translation id="3494788280727468875">Confirm Clear Browsing Data</translation>
+<translation id="3494788280727468875">Confirm clear browsing data</translation>
 <translation id="35083190962747987">Open ${url}</translation>
 <translation id="3519193562722059437">Open a tab to browse the web.</translation>
 <translation id="3523473570015918798">By signing out, your bookmarks, history, passwords and other Chrome data will no longer be synced to your Google Account.</translation>
@@ -435,6 +435,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5782227691023083829">Translating...</translation>
 <translation id="5803566855766646066">Are you sure that you want to discard this new card?</translation>
 <translation id="5816228676161003208">This lets you search faster using your voice.</translation>
+<translation id="5819208479324046259">Managed by <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Search Engine</translation>
 <translation id="5854790677617711513">Older than 30 days</translation>
 <translation id="5857090052475505287">New Folder</translation>
@@ -656,7 +657,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8007420562015504427">Incognito Search</translation>
 <translation id="802154636333426148">Download failed</translation>
 <translation id="8023878949384262191">Expands the section.</translation>
-<translation id="8027581147000338959">Open in New Window</translation>
+<translation id="8027581147000338959">Open in new window</translation>
 <translation id="804427445359061970">You'll find your tabs from other devices here</translation>
 <translation id="8059533439631660104">Collapses the section.</translation>
 <translation id="8065292699993359127">Open URLs in Chrome in Incognito</translation>
@@ -675,7 +676,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8281781826761538115">Default - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8299417921174340354">To use passwords, you must first set a passcode on your device.</translation>
-<translation id="8319076807703933069">New Search</translation>
+<translation id="8319076807703933069">New search</translation>
 <translation id="8323906514956095947">Touch and hold for more tab options</translation>
 <translation id="8328777765163860529">Close All</translation>
 <translation id="8386068868580335421">Reset</translation>

@@ -170,9 +170,6 @@
       Il criterio non si applica agli utenti kiosk.
 
       Avviso: Wipe e MinimalMigrate comportano la rimozione dei dati locali.</translation>
-<translation id="1247850578871017740">Se il criterio viene impostato su un valore valido, <ph name="PRODUCT_NAME" /> non utilizza versioni SSL/TLS precedenti alla versione specificata. I valori non riconosciuti vengono ignorati.
-
-      Se il criterio non viene impostato, <ph name="PRODUCT_NAME" /> mostra un errore per TLS 1.0 e TLS 1.1, ma l'utente può ignorarlo.</translation>
 <translation id="1252536192437793850">Consenti ai siti di chiedere all'utente di concedere l'accesso a una porta seriale</translation>
 <translation id="125655429495551011">Se il criterio viene impostato su una stringa, questa viene applicata come nome host del dispositivo durante la richiesta DHCP. La stringa può comportare la sostituzione delle variabili <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" /> e<ph name="LOCATION_PLACEHOLDER" /> con i valori sul dispositivo prima che venga utilizzata come nome host. La conseguente sostituzione deve essere un nome host valido (come da RFC 1035, sezione 3.1).
 
@@ -335,11 +332,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 
           Se imposti questo criterio, gli utenti non potranno modificarlo o eseguirne l'override.</translation>
 <translation id="1502843533062797703">Attiva blocco inserimento da software di terze parti</translation>
-<translation id="1503863096120373385">Consente di configurare le impostazioni del periodo di validità dei dati di navigazione per <ph name="PRODUCT_NAME" />.
-      Questo criterio consente di controllare il periodo di validità dei dati di navigazione selezionati. Questo criterio non viene applicato se la sincronizzazione è attiva.
-      I tipi di dati disponibili sono i seguenti: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> e <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
-      Chrome rimuove regolarmente i dati dei tipi selezionati che sono antecedenti al periodo indicato (<ph name="TIME_TO_LIVE_IN_HOURS" />). Poiché l'eliminazione avviene solo in determinati intervalli di tempo, alcuni dati potrebbero durare più a lungo, ma mai oltre il doppio del periodo previsto (<ph name="TIME_TO_LIVE_IN_HOURS" />).
-      </translation>
 <translation id="1509692106376861764">Questa norma non è più supportata a partire dalla versione 29 di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1512974677514081818">Consente di specificare le configurazioni delle stampanti aziendali associate ai dispositivi.
 
@@ -1005,6 +997,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Se questo criterio non viene impostato, la funzionalità Click-to-call sarà attiva per impostazione predefinita.</translation>
 <translation id="2482676533225429905">Messaggi nativi</translation>
 <translation id="2483146640187052324">Prevedi le azioni di rete su qualsiasi connessione di rete</translation>
+<translation id="2496180316473517155">Cronologia di navigazione</translation>
 <translation id="2498238926436517902">Nascondi sempre automaticamente lo shelf</translation>
 <translation id="250022556568924228">Se il criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> scarica i Termini di servizio e li presenta agli utenti a ogni avvio di sessione con un account locale del dispositivo. Gli utenti possono accedere alla sessione dopo aver accettato i Termini di servizio.
 
@@ -1155,6 +1148,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2702023190395322609">Attiva consigli di contenuti multimediali</translation>
 <translation id="2706708761587205154">Consenti la stampa solo con PIN</translation>
 <translation id="2707873794476722903">Navigazione sicura è attiva in modalità standard.</translation>
+<translation id="2709516037105925701">Compilazione automatica</translation>
 <translation id="2714359695399346815">Se il criterio viene impostato su Attivato o se non viene configurato, viene consentito l'utilizzo di server STUN, permettendo ai client remoti di rilevare e collegarsi a questo computer anche se sono separati da un firewall.
 
       Se il criterio viene impostato su Disattivato e le connessioni UDP in uscita vengono filtrate dal firewall, il computer consente soltanto connessioni da computer client all'interno della rete locale.</translation>

@@ -165,9 +165,6 @@
       Esta política no se aplicará a los usuarios de kioscos.
 
       Advertencia: "Wipe" y "MinimalMigrate" eliminarán los datos locales.</translation>
-<translation id="1247850578871017740">Si configuras la política en un valor válido, <ph name="PRODUCT_NAME" /> no usará versiones de SSL/TLS anteriores a las especificadas. Se ignorarán los valores que no se reconozcan.
-
-      Si no configuras esta política, <ph name="PRODUCT_NAME" /> mostrará un mensaje de error para TLS 1.0 y TLS 1.1, pero el usuario podrá omitirlo.</translation>
 <translation id="1252536192437793850">Permite que los sitios soliciten al usuario acceso a un puerto en serie</translation>
 <translation id="125655429495551011">Si estableces la política como una string, se aplicará la string como el nombre del host del dispositivo durante la solicitud de DHCP. Antes de usar la string como el nombre del host, se pueden reemplazar las variables <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" />, <ph name="LOCATION_PLACEHOLDER" /> de la string con valores del dispositivo. Esta sustitución generará un nombre de host válido (según RFC 1035, sección 3.1).
 
@@ -334,11 +331,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
           Si la estableces, los usuarios no podrán cambiarla ni anularla.</translation>
 <translation id="1502843533062797703">Habilitar el bloqueo de inserción de software de terceros</translation>
-<translation id="1503863096120373385">Establece la configuración de la duración de los datos de navegación para <ph name="PRODUCT_NAME" />.
-      Esta política controla la cantidad de tiempo que se almacenarán los datos de navegación seleccionados. Esta política no tendrá efecto si se habilita la sincronización.
-      Los tipos de datos disponibles son <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> y <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
-      Periódicamente, Chrome quitará datos con una antigüedad mayor a <ph name="TIME_TO_LIVE_IN_HOURS" /> de los tipos seleccionados. Como esta acción se realiza a intervalos determinados, es posible que algunos datos se conserven un poco más de tiempo, pero nunca más del doble que el período de <ph name="TIME_TO_LIVE_IN_HOURS" /> esperado.
-      </translation>
 <translation id="1509692106376861764">Esta política se eliminó a partir de la versión 29 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1512974677514081818">Proporciona configuraciones para las impresoras empresariales vinculadas a dispositivos.
 
@@ -1002,6 +994,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si no la estableces, se habilitará la función Llamar con un clic de forma predeterminada.</translation>
 <translation id="2482676533225429905">Mensajería nativa</translation>
 <translation id="2483146640187052324">Predecir acciones de la red en cualquier conexión de red</translation>
+<translation id="2496180316473517155">Historial de navegación</translation>
 <translation id="2498238926436517902">Siempre ocultar automáticamente los archivos</translation>
 <translation id="250022556568924228">Si estableces la política, <ph name="PRODUCT_OS_NAME" /> descargará las Condiciones del Servicio y las presentará a los usuarios cada vez que se inicie la sesión local del dispositivo. Los usuarios solo podrán acceder a la sesión cuando acepten las Condiciones del Servicio.
 
@@ -1150,6 +1143,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="2702023190395322609">Habilitar las recomendaciones de contenido multimedia</translation>
 <translation id="2706708761587205154">Permite la impresión solo con PIN</translation>
 <translation id="2707873794476722903">Se activó la Navegación segura en el modo estándar.</translation>
+<translation id="2709516037105925701">Autocompletar</translation>
 <translation id="2714359695399346815">Si habilitas la política o no la estableces, se permitirá el uso de servidores STUN, lo que posibilitará que los clientes remotos descubran este equipo y se conecten con él aunque haya un firewall.
 
       Si no habilitas esta política y el firewall filtra las conexiones UDP en establecimiento, solo los clientes con equipos en la red local podrán conectarse con este equipo.</translation>

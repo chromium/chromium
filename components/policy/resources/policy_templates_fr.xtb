@@ -165,9 +165,6 @@
       Cette règle ne s'applique pas aux utilisateurs de kiosque.
 
       Avertissement : Les valeurs "Wipe" et "MinimalMigrate" entraînent la suppression des données locales.</translation>
-<translation id="1247850578871017740">Si cette règle est définie sur une valeur valide, <ph name="PRODUCT_NAME" /> n'utilise pas de versions SSL/TLS antérieures à la version spécifiée. Les valeurs non reconnues sont ignorées.
-
-      Si cette règle n'est pas configurée, un message d'erreur concernant TLS 1.0 et TLS 1.1 s'affiche dans <ph name="PRODUCT_NAME" />. Toutefois, l'utilisateur peut contourner le processus.</translation>
 <translation id="1252536192437793850">Autoriser les sites à demander à l'utilisateur d'accorder l'accès à un port série</translation>
 <translation id="125655429495551011">Si cette règle est définie sur une chaîne, celle-ci correspond au nom d'hôte de l'appareil lors de la requête DHCP. La chaîne peut contenir les variables <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" /> et <ph name="LOCATION_PLACEHOLDER" /> qui devront être remplacées par les valeurs sur l'appareil avant qu'elle ne soit utilisée comme nom d'hôte. Le résultat de ce remplacement doit former un nom d'hôte valide conformément à la norme RFC 1035, section 3.1.
 
@@ -334,11 +331,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 
           Si vous configurez cette règle, les utilisateurs ne peuvent ni la modifier, ni l'ignorer.</translation>
 <translation id="1502843533062797703">Activer le blocage de l'injection de logiciels tiers</translation>
-<translation id="1503863096120373385">Permet de configurer les paramètres de durée de conservation des données de navigation dans <ph name="PRODUCT_NAME" />.
-      Avec cette règle, vous pouvez contrôler combien de temps les données de navigation sélectionnées sont conservées. Elle n'a aucune incidence si la synchronisation est activée.
-      Les types de données disponibles sont les suivants : <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> et <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
-      Chrome supprimera régulièrement les données des types sélectionnés qui datent de plus de <ph name="TIME_TO_LIVE_IN_HOURS" />. Cette suppression n'intervenant qu'à certains intervalles, des données peuvent être conservées un peu plus longtemps, mais jamais plus du double des <ph name="TIME_TO_LIVE_IN_HOURS" /> prévues.
-      </translation>
 <translation id="1509692106376861764">Cette règle a été supprimée à partir de la version 29 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1512974677514081818">Fournit les configurations des imprimantes d'entreprise associées à des appareils.
 
@@ -1008,6 +1000,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si vous ne définissez pas cette règle, la fonctionnalité Click to Call est activée par défaut.</translation>
 <translation id="2482676533225429905">Messagerie native</translation>
 <translation id="2483146640187052324">Prédire les actions réseau lors d'une connexion au réseau</translation>
+<translation id="2496180316473517155">Historique de navigation</translation>
 <translation id="2498238926436517902">Toujours masquer automatiquement l'étagère</translation>
 <translation id="250022556568924228">Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> télécharge les conditions d'utilisation et les présente aux utilisateurs dès qu'une session d'un compte local de l'appareil s'ouvre. Les utilisateurs ne peuvent se connecter à cette session qu'après avoir accepté lesdites conditions d'utilisation.
 
@@ -1153,6 +1146,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2702023190395322609">Activer les recommandations de contenus multimédias</translation>
 <translation id="2706708761587205154">Autoriser l'impression avec code uniquement</translation>
 <translation id="2707873794476722903">La navigation sécurisée est active et en mode de protection standard.</translation>
+<translation id="2709516037105925701">Saisie automatique</translation>
 <translation id="2714359695399346815">Si cette règle est activée ou qu'elle n'est pas configurée, elle permet d'utiliser des serveurs STUN. Les clients distants peuvent ainsi détecter cet ordinateur et s'y connecter même s'ils sont séparés par un pare-feu.
 
       Si cette règle est désactivée lorsque les connexions UDP sortantes sont filtrées par le pare-feu, l'ordinateur ne permet que la connexion d'ordinateurs clients au sein du réseau local.</translation>

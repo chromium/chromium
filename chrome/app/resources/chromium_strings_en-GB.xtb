@@ -29,6 +29,8 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1966382378801805537">Chromium cannot determine or set the default browser</translation>
 <translation id="2008474315282236005">This will delete 1 item from this device. To retrieve your data later, sign in to Chromium as <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">To check if your other passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK" />sign in to Chromium<ph name="END_LINK" />.</translation>
+<translation id="2179192076895113433">You can manage this and other Google Accounts that you've added for <ph name="USER_NAME" /> from one place in <ph name="LINK_BEGIN" />Settings<ph name="LINK_END" />.
+          Permissions that you have granted to websites in the Chromium browser and apps from Google Play may apply to all accounts.</translation>
 <translation id="2185166961232948079">Chromium – Network sign-in – <ph name="PAGE_TITLE" /></translation>
 <translation id="2225696941839557119">Chromium OS could not sync your passwords.</translation>
 <translation id="2241627712206172106">If you share a computer, friends and family can browse separately and set up Chromium just the way they want.</translation>

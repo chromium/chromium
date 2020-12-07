@@ -61,6 +61,7 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="405887016757208221">The remote computer has failed to initialise the session. If problem persists please try to configure the host again.</translation>
 <translation id="4060747889721220580">Download file</translation>
 <translation id="4126409073460786861">After setup is complete, refresh this page, then you'll be able to access the computer by choosing your device and entering the PIN</translation>
+<translation id="4139423942711457311">Copyright 2020 Google LLC. All rights reserved.</translation>
 <translation id="4145029455188493639">Signed in as <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="4155497795971509630">Some required components are missing. Please make sure that you have installed the latest version of the software and try again.</translation>
 <translation id="4176825807642096119">Access code</translation>

@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">Podaj część przed znakiem „<ph name="ATSIGN" />”. Adres „<ph name="INVALIDADDRESS" />” jest niepełny.</translation>
 <translation id="5334352251556557839">Nie można odtworzyć multimediów.</translation>
 <translation id="537648784377940524">Data minimalna (<ph name="MIN_DATE_OR_TIME" />) musi przypadać przed datą maksymalną (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">rozwinięto, otwarto okno.</translation>
 <translation id="5406322316791861025">figura</translation>
 <translation id="5425179576310518467">bieżąca data</translation>
 <translation id="5453733299334684579">element drzewa</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">więcej opcji</translation>
 <translation id="576709008726043716">wprowadzenie</translation>
 <translation id="57838592816432529">Wycisz</translation>
+<translation id="5787939484346677755">rozwinięto, dostępne są opcje autouzupełniania.</translation>
 <translation id="5860033963881614850">Wyłączone</translation>
 <translation id="588258955323874662">Pełny ekran</translation>
 <translation id="5888666972993069672">Przesyłam na urządzenie <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">pole listy</translation>
 <translation id="6150588977291308318">bibliografia</translation>
 <translation id="6164829606128959761">miernik</translation>
+<translation id="6165053282446038410">rozwinięto, liczba dostępnych opcji autouzupełniania: <ph name="COUNT" />.</translation>
 <translation id="6166809985690652833">posłowie</translation>
 <translation id="6209276755895393898">Wygląda jak: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">bieżąca strona</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">nagłówek</translation>
 <translation id="6941933287844615239">pobierz multimedia</translation>
 <translation id="6981594929165378967">wstawienie</translation>
+<translation id="698788488269350478">rozwinięto.</translation>
 <translation id="6989848892321993519">Wydłuż ten tekst co najmniej do <ph name="MIN_CHARACTERS" /> znaków (teraz używasz jednego znaku).</translation>
 <translation id="7034405885550056553">sugestia</translation>
 <translation id="709897737746224366">Podaj wartość w wymaganym formacie.</translation>
 <translation id="7102274145889307184">bieżąca lokalizacja</translation>
 <translation id="7118469954320184356">Brak opisu.</translation>
 <translation id="7139483182332611405">wstęp</translation>
+<translation id="7198226213493847604">wyskakujący przycisk otwierający menu</translation>
 <translation id="7214187073215825913">informacje o treści</translation>
 <translation id="7238347055216017155">wyróżnienie</translation>
 <translation id="7263440858009898357">Wybierz element z listy.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">rozdział</translation>
 <translation id="8845239796550121995">Przesyłam na telewizor</translation>
 <translation id="8851136666856101339">główny</translation>
+<translation id="8861621546968757188">wyskakujący przycisk okna</translation>
 <translation id="8875657656876809964">Błąd odtwarzania filmu</translation>
 <translation id="8889402386540077796">Odcień</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>

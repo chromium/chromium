@@ -122,6 +122,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2050339315714019657">Pionowo</translation>
 <translation id="2067602449040652523">Jasność klawiatury</translation>
 <translation id="2078034614700056995">Aby przełączyć się na następne biurko, przesuń 4 palcami w prawo</translation>
+<translation id="2079504693865562705">Ukryj aplikacje na półce</translation>
 <translation id="2083190527011054446">Dobranoc <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Brak połączenia z siecią</translation>
 <translation id="2126242104232412123">Nowe biurko</translation>
@@ -238,6 +239,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3226991577105957773">i jeszcze <ph name="COUNT" /></translation>
 <translation id="3236488194889173876">Brak dostępnych sieci komórkowych</translation>
 <translation id="3249513730522716925">Okno <ph name="WINDOW_TITLE" /> zostało przeniesione z biurka <ph name="ACTIVE_DESK" /> na biurko <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, siła sygnału <ph name="SIGNAL_STRENGTH" /> procent.</translation>
 <translation id="3255483164551725916">Co potrafisz?</translation>
 <translation id="3269597722229482060">Kliknij prawym</translation>
 <translation id="3289674678944039601">Ładowanie z zasilacza.</translation>
@@ -369,6 +371,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4389184120735010762">Naciśnięto skrót klawiszowy lupy zadokowanej. Czy chcesz ją włączyć?</translation>
 <translation id="4412944820643904175">Funkcja <ph name="FEATURE_NAME" /> jest wyłączona.</translation>
 <translation id="4421231901400348175">Udostępnianie sterowania ekranem użytkownikowi <ph name="HELPER_NAME" /> przy użyciu pomocy zdalnej.</translation>
+<translation id="4427613789487709312">Domyślna (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Głośność</translation>
 <translation id="4450893287417543264">Nie pokazuj ponownie</translation>
 <translation id="445864333228800152">Dobry wieczór,</translation>
@@ -449,6 +452,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5078796286268621944">Błędny kod PIN</translation>
 <translation id="5083553833479578423">Poznaj więcej funkcji Asystenta.</translation>
 <translation id="5136175204352732067">Podłączono inną klawiaturę</translation>
+<translation id="5155897006997040331">Szybkość czytania</translation>
 <translation id="5168181903108465623">Dostępne są urządzenia przesyłające</translation>
 <translation id="5170568018924773124">Pokaż w folderze</translation>
 <translation id="5176318573511391780">Nagraj fragment ekranu</translation>
@@ -514,6 +518,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5777841717266010279">Zakończyć udostępnianie ekranu?</translation>
 <translation id="5790085346892983794">Udało się</translation>
 <translation id="5820394555380036790">System operacyjny Chromium</translation>
+<translation id="5825969630400862129">Ustawienia połączonych urządzeń</translation>
 <translation id="5837036133683224804">Zatrzymaj usługę <ph name="ROUTE_TITLE" /> na urządzeniu <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Wyłączone</translation>
 <translation id="5876666360658629066">Wpisz kod rodzica</translation>
@@ -712,6 +717,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 powiadomienie}few{# powiadomienia}many{# powiadomień}other{# powiadomienia}}</translation>
 <translation id="7724603315864178912">Wytnij</translation>
+<translation id="7745560842763881396">Pokaż aplikacje na półce</translation>
 <translation id="7749443890790263709">Osiągnięto maksymalną liczbę biurek.</translation>
 <translation id="776344839111254542">Kliknij, by wyświetlić szczegóły aktualizacji</translation>
 <translation id="7780159184141939021">Obróć ekran</translation>

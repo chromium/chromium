@@ -22,6 +22,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> керує цим користувачем і може віддалено змінювати налаштування та відстежувати його дії.</translation>
 <translation id="150962533380566081">Недійсний PUK-код.</translation>
 <translation id="1510238584712386396">Панель запуску</translation>
+<translation id="1621067168122174824">Почати перевірку заряджання</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (потоків: <ph name="THREAD_COUNT" />)</translation>
 <translation id="1641857168437328880">Пристрій автоподачі документів (односторонній)</translation>
 <translation id="1644574205037202324">Історія</translation>
@@ -29,6 +30,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Є резолвер DNS</translation>
 <translation id="1743558184855585519">Після максимальної кількості циклів акумулятор вважається відпрацьованим</translation>
+<translation id="1792647875738159689">Скасування сканування</translation>
 <translation id="1905710495812624430">Перевищено максимальну кількість дозволених спроб.</translation>
 <translation id="1930797645656624981">Сервіс методів введення в ОС Chrome</translation>
 <translation id="1947737735496445907">Надруковано</translation>
@@ -53,6 +55,7 @@
 <translation id="3008341117444806826">ОНОВИТИ</translation>
 <translation id="3009958530611748826">Виберіть, у якій папці зберегти</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> мА</translation>
+<translation id="3069085583900247081">Не вдалося виконати перевірку</translation>
 <translation id="3083667275341675831">Діагностика з'єднання</translation>
 <translation id="3091839911843451378">Не надруковано – друк зупинено</translation>
 <translation id="3102119246920354026">Кеш</translation>
@@ -62,6 +65,7 @@
 <translation id="3246869037381808805">Завдання друку, старіші за 1 день, буде вилучено</translation>
 <translation id="3268178239013324452">Не надруковано – відкрито кришку принтера</translation>
 <translation id="3310640316857623290">Затримка DNS значно довша, ніж дозволено</translation>
+<translation id="3328783797891415197">Триває перевірка</translation>
 <translation id="3369013195428705271">Видалити всю історію друку? Поточні завдання друку збережуться.</translation>
 <translation id="3456078764689556234">Надруковано сторінку <ph name="PRINTED_PAGES" /> з <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Друк</translation>
@@ -81,6 +85,7 @@
 <translation id="4034824040120875894">Принтер</translation>
 <translation id="4131410914670010031">Чорно-білий</translation>
 <translation id="4145784616224233563">Брандмауер HTTP</translation>
+<translation id="4170700058716978431">НЕ ВДАЛОСЯ ВИКОНАТИ</translation>
 <translation id="4227825898293920515">Термін дії пароля закінчиться через <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Немає активних завдань друку</translation>
 <translation id="4297501883039923494">Зупинено – невідома помилка</translation>
@@ -105,17 +110,20 @@
 <translation id="4773299976671772492">Зупинено</translation>
 <translation id="4808449224298348341">Завдання друку "<ph name="DOCUMENT_TITLE" />" скасовано</translation>
 <translation id="4832079907277790330">Вибрати папку в додатку "Файли"…</translation>
+<translation id="4848429997038228357">ТРИВАЄ</translation>
 <translation id="4890353053343094602">Негайно виберіть новий</translation>
 <translation id="4917889632206600977">Зупинено – закінчився папір</translation>
 <translation id="4921665434385737356">Акумулятор зарядився на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4985509611418653372">Виконати</translation>
+<translation id="500920857929044050">Зупинити перевірку</translation>
 <translation id="5154917547274118687">Пам’ять</translation>
 <translation id="5168185087976003268">Стан акумулятора</translation>
 <translation id="520299634122159966">Немає доступних сканерів</translation>
 <translation id="5212543919916444558">На екрані не знайдено елементів, проблеми з якими я можу вирішити.
 Торкніться значка мікрофона, щоб поставити запитання.</translation>
 <translation id="5222676887888702881">Вийти</translation>
+<translation id="5264277876637023664">Виконати перевірку ЦП</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Повторити програми</translation>
 <translation id="5317780077021120954">Зберегти</translation>
@@ -128,17 +136,22 @@
 <translation id="54609108002486618">Керований</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Докладніше в довідковому центрі</translation>
+<translation id="5635169860413004179">Переглянути звіт</translation>
 <translation id="5719918614880940190">Показник використання ЦП, зведений для всіх ядер</translation>
+<translation id="5797428682393400134">ЗАВЕРШЕНО</translation>
 <translation id="5832805196449965646">Додати користувача</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
+<translation id="5931523347251946569">Файл не знайдено</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, версія <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Закрити</translation>
 <translation id="6048107060512778456">Не надруковано – зам'яло папір</translation>
 <translation id="6050189528197190982">Відтінки сірого</translation>
 <translation id="6058625436358447366">Щоб завершити, введіть старий і новий паролі</translation>
 <translation id="6061772781719867950">невдалі запити HTTPS</translation>
+<translation id="6104112872696127344">Сканування скасовано</translation>
 <translation id="6106186594183574873">Щоб завершити, введіть старий пароль</translation>
 <translation id="6108689792487843350">шлюз недоступний</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" /> ГГц / <ph name="MAX" /> ГГц</translation>
 <translation id="6146993107019042706">Щоб завершити, введіть новий пароль</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Докладніше</translation>
@@ -149,6 +162,7 @@
 <translation id="649050271426829538">Зупинено – зам'яло папір</translation>
 <translation id="6517239166834772319">Можливості</translation>
 <translation id="6527081081771465939">Невідомий протокол безпеки Wi-Fi</translation>
+<translation id="6532051501443766164">Сховати звіт</translation>
 <translation id="65587193855025101">Планшетний сканер</translation>
 <translation id="6564646048574748301">Не надруковано – принтер недоступний</translation>
 <translation id="6618744767048954150">Виконується</translation>
@@ -156,6 +170,7 @@
 <translation id="6643016212128521049">Очистити</translation>
 <translation id="6704062477274546131">Розпізнавання DNS</translation>
 <translation id="6747215703636344499">Зупинено – вихідний лоток заповнений</translation>
+<translation id="6756731097889387912">Не вдалося скасувати сканування</translation>
 <translation id="6766275201586212568">невдалі перетворення DNS</translation>
 <translation id="6768237774506518020">велика частка збоїв під час перетворення DNS</translation>
 <translation id="6839141349259399400">Не вдається підключитися до сканерів?</translation>
@@ -171,6 +186,7 @@
 <translation id="7648838807254605802">велика затримка HTTPS</translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7690294790491645610">Підтвердьте новий пароль</translation>
+<translation id="7732651821766520760">Перевірка "<ph name="TEST_NAME" />"</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7855434858642800953">Відсканований файл збережено.</translation>
 <translation id="7928373994957558460">Показати, де збережено файл</translation>
@@ -198,6 +214,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">За умовчанням</translation>
 <translation id="8845001906332463065">Отримати довідку</translation>
+<translation id="8881098542468797602">Перевірку завершено</translation>
 <translation id="8910721771319628100">Затримка мережі за умовчанням задовга</translation>
 <translation id="8919837981463578619">Не надруковано – немає лотка</translation>
 <translation id="8928727111548978589">Не надруковано – закінчився папір</translation>
@@ -207,4 +224,6 @@
 <translation id="910415269708673980">Оновити квиток для користувача <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканування сторінки <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Розблокувати</translation>
+<translation id="9149391708638971077">Виконати перевірку пам'яті</translation>
+<translation id="982713511914535780">Виконати перевірку розряджання</translation>
 </translationbundle>

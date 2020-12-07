@@ -122,6 +122,7 @@
 <translation id="2050339315714019657">Кніжная</translation>
 <translation id="2067602449040652523">Яркасць клавіятуры</translation>
 <translation id="2078034614700056995">Правядзіце па сэнсарнай панэлі чатырма пальцамі ўправа, каб перайсці на наступны працоўны стол</translation>
+<translation id="2079504693865562705">Не паказваць праграмы на паліцы</translation>
 <translation id="2083190527011054446">Добрай ночы, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Няма падключэння да сеткі</translation>
 <translation id="2126242104232412123">Новы стол</translation>
@@ -238,6 +239,7 @@
 <translation id="3226991577105957773">+ яшчэ <ph name="COUNT" /></translation>
 <translation id="3236488194889173876">Няма даступных мабільных сетак</translation>
 <translation id="3249513730522716925">Акно "<ph name="WINDOW_TITLE" />" было перанесена са Стала <ph name="ACTIVE_DESK" /> на Стол <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%.</translation>
 <translation id="3255483164551725916">Што ты ўмееш?</translation>
 <translation id="3269597722229482060">Націснуць правай кнопкай мышы</translation>
 <translation id="3289674678944039601">Ідзе зарадка праз адаптар</translation>
@@ -369,6 +371,7 @@
 <translation id="4389184120735010762">Вы націснулі спалучэнне клавіш для прыстыкаванай лупы. Уключыць яе?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" />: выключана.</translation>
 <translation id="4421231901400348175">Абагульванне кантролю над экранам з карыстальнікам <ph name="HELPER_NAME" /> праз Аддаленую дапамогу.</translation>
+<translation id="4427613789487709312">Стандартная (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Гучнасць</translation>
 <translation id="4450893287417543264">Больш не паказваць</translation>
 <translation id="445864333228800152">Добры вечар,</translation>
@@ -449,6 +452,7 @@
 <translation id="5078796286268621944">Няправільны PIN-код</translation>
 <translation id="5083553833479578423">Адкрыйце больш функцый Памочніка.</translation>
 <translation id="5136175204352732067">Падключана іншая клавіятура</translation>
+<translation id="5155897006997040331">Хуткасць чытання</translation>
 <translation id="5168181903108465623">Ёсць даступныя прылады для трансляцыі</translation>
 <translation id="5170568018924773124">Паказаць у папцы</translation>
 <translation id="5176318573511391780">Запіс часткі экрана</translation>
@@ -514,6 +518,7 @@
 <translation id="5777841717266010279">Спыніць абагульванне экрана?</translation>
 <translation id="5790085346892983794">Выканана</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
+<translation id="5825969630400862129">Налады падключаных прылад</translation>
 <translation id="5837036133683224804">Спыніць трансляцыю <ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Выключана</translation>
 <translation id="5876666360658629066">Увядзіце бацькоўскі код</translation>
@@ -712,6 +717,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 апавяшчэнне}one{# апавяшчэнне}few{# апавяшчэнні}many{# апавяшчэнняў}other{# апавяшчэння}}</translation>
 <translation id="7724603315864178912">Выразаць</translation>
+<translation id="7745560842763881396">Паказаць праграмы на паліцы</translation>
 <translation id="7749443890790263709">Дасягнута максімальная колькасць сталоў.</translation>
 <translation id="776344839111254542">Каб паглядзець звесткі пра абнаўленне, націсніце тут</translation>
 <translation id="7780159184141939021">Паварот экрана</translation>

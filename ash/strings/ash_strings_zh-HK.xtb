@@ -122,6 +122,7 @@
 <translation id="2050339315714019657">直向</translation>
 <translation id="2067602449040652523">鍵盤亮度</translation>
 <translation id="2078034614700056995">請用四隻手指向右滑動以切換至下一個桌面</translation>
+<translation id="2079504693865562705">在檔案櫃中隱藏應用程式</translation>
 <translation id="2083190527011054446"><ph name="GIVEN_NAME" />，晚安：</translation>
 <translation id="209965399369889474">未連接網絡</translation>
 <translation id="2126242104232412123">新增虛擬桌面</translation>
@@ -238,6 +239,7 @@
 <translation id="3226991577105957773">還有 <ph name="COUNT" /> 項</translation>
 <translation id="3236488194889173876">沒有可用的流動網絡</translation>
 <translation id="3249513730522716925">「<ph name="WINDOW_TITLE" />」視窗已從桌面 <ph name="ACTIVE_DESK" /> 移至桌面 <ph name="TARGET_DESK" /></translation>
+<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />，訊號強度為 <ph name="SIGNAL_STRENGTH" />%。</translation>
 <translation id="3255483164551725916">你可以做咩嘢？</translation>
 <translation id="3269597722229482060">按滑鼠右鍵</translation>
 <translation id="3289674678944039601">正在透過電源適配器充電</translation>
@@ -369,6 +371,7 @@
 <translation id="4389184120735010762">您已按下固定放大鏡的鍵盤快速鍵。確定要旋轉螢幕嗎？</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" />功能已關閉。</translation>
 <translation id="4421231901400348175">透過「遠端協助」與 <ph name="HELPER_NAME" /> 共用螢幕控制權。</translation>
+<translation id="4427613789487709312">預設值 (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="4450893287417543264">不要再顯示</translation>
 <translation id="445864333228800152">晚安，</translation>
@@ -449,6 +452,7 @@
 <translation id="5078796286268621944">PIN 不正確</translation>
 <translation id="5083553833479578423">啟用更多「Google 助理」功能。</translation>
 <translation id="5136175204352732067">已連接不同的鍵盤</translation>
+<translation id="5155897006997040331">朗讀速度</translation>
 <translation id="5168181903108465623">有可用投放裝置</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5176318573511391780">錄影部分螢幕</translation>
@@ -514,6 +518,7 @@
 <translation id="5777841717266010279">停止共用畫面？</translation>
 <translation id="5790085346892983794">成功</translation>
 <translation id="5820394555380036790">Chromium 作業系統</translation>
+<translation id="5825969630400862129">已連接裝置設定</translation>
 <translation id="5837036133683224804">停止喺<ph name="RECEIVER_NAME" />投放 <ph name="ROUTE_TITLE" /></translation>
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5876666360658629066">輸入家長存取碼</translation>
@@ -712,6 +717,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 則通知}other{# 則通知}}</translation>
 <translation id="7724603315864178912">剪下</translation>
+<translation id="7745560842763881396">在檔案櫃中顯示應用程式</translation>
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
 <translation id="776344839111254542">按一下即可查看更新詳情</translation>
 <translation id="7780159184141939021">旋轉螢幕</translation>

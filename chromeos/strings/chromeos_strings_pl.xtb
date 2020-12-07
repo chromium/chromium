@@ -22,6 +22,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> zarządza tym użytkownikiem i może zdalnie monitorować jego aktywność oraz zarządzać ustawieniami.</translation>
 <translation id="150962533380566081">Nieprawidłowy PUK.</translation>
 <translation id="1510238584712386396">Menu z aplikacjami</translation>
+<translation id="1621067168122174824">Przeprowadź test ładowania</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" />-wątkowy)</translation>
 <translation id="1641857168437328880">Podajnik dokumentów (jednostronny)</translation>
 <translation id="1644574205037202324">Historia</translation>
@@ -29,6 +30,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Resolver DNS – obecność</translation>
 <translation id="1743558184855585519">Kiedy bateria osiągnie limit, uważana jest za zużytą</translation>
+<translation id="1792647875738159689">Anuluję skanowanie</translation>
 <translation id="1905710495812624430">Przekroczono maksymalną liczbę prób.</translation>
 <translation id="1930797645656624981">Usługa Metoda wprowadzania Chrome OS</translation>
 <translation id="1947737735496445907">Wydrukowano</translation>
@@ -53,6 +55,7 @@
 <translation id="3008341117444806826">ODŚWIEŻ</translation>
 <translation id="3009958530611748826">Wybierz folder zapisu</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3069085583900247081">Niepowodzenie testu</translation>
 <translation id="3083667275341675831">Diagnostyka problemów z łącznością</translation>
 <translation id="3091839911843451378">Niepowodzenie – drukarka została zatrzymana</translation>
 <translation id="3102119246920354026">Pamięć podręczna</translation>
@@ -62,6 +65,7 @@
 <translation id="3246869037381808805">Zadania drukowania starsze niż 1 dzień zostaną usunięte</translation>
 <translation id="3268178239013324452">Niepowodzenie – otwarte drzwiczki drukarki</translation>
 <translation id="3310640316857623290">Opóźnienie DNS znacznie przekracza dopuszczalny próg</translation>
+<translation id="3328783797891415197">Test w toku</translation>
 <translation id="3369013195428705271">Czy na pewno chcesz usunąć całą historię drukowania? Bieżące zadania drukowania nie zostaną usunięte.</translation>
 <translation id="3456078764689556234">Wydrukowano stronę <ph name="PRINTED_PAGES" /> z <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Drukowanie</translation>
@@ -81,6 +85,7 @@
 <translation id="4034824040120875894">Drukarka</translation>
 <translation id="4131410914670010031">Czarno-biały</translation>
 <translation id="4145784616224233563">Zapora sieciowa HTTP</translation>
+<translation id="4170700058716978431">NEGATYWNY</translation>
 <translation id="4227825898293920515">Hasło wygasa za <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Brak zadań drukowania w toku</translation>
 <translation id="4297501883039923494">Zatrzymano – nieznany błąd</translation>
@@ -105,17 +110,20 @@
 <translation id="4773299976671772492">Zatrzymano</translation>
 <translation id="4808449224298348341">Zadanie drukowania <ph name="DOCUMENT_TITLE" /> zostało anulowane</translation>
 <translation id="4832079907277790330">Wybierz Folder w aplikacji Pliki...</translation>
+<translation id="4848429997038228357">W TOKU</translation>
 <translation id="4890353053343094602">Jak najszybciej wybierz nowe.</translation>
 <translation id="4917889632206600977">Zatrzymano – brak papieru</translation>
 <translation id="4921665434385737356">Naładowano <ph name="RATE" /> w ciągu <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Uruchom</translation>
+<translation id="500920857929044050">Zatrzymaj test</translation>
 <translation id="5154917547274118687">Pamięć</translation>
 <translation id="5168185087976003268">Kondycja baterii</translation>
 <translation id="520299634122159966">Brak dostępnych skanerów</translation>
 <translation id="5212543919916444558">Na Twoim ekranie nie ma nic, w czym mogę pomóc.
 Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5222676887888702881">Wyloguj się</translation>
+<translation id="5264277876637023664">Przeprowadź test procesora</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Uruchom ponownie testy</translation>
 <translation id="5317780077021120954">Zapisz</translation>
@@ -128,17 +136,22 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="54609108002486618">Zarządzany</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Dowiedz się więcej w Centrum pomocy</translation>
+<translation id="5635169860413004179">Wyświetl raport</translation>
 <translation id="5719918614880940190">To narzędzie mierzy obciążenie procesora (wszystkich rdzeni)</translation>
+<translation id="5797428682393400134">POZYTYWNY</translation>
 <translation id="5832805196449965646">Dodaj osobę</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
+<translation id="5931523347251946569">Nie znaleziono pliku</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, wersja <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6048107060512778456">Niepowodzenie – zacięcie papieru</translation>
 <translation id="6050189528197190982">Skala odcieni szarości</translation>
 <translation id="6058625436358447366">Aby zakończyć, wpisz stare i nowe hasło</translation>
 <translation id="6061772781719867950">nieudane żądania HTTPS</translation>
+<translation id="6104112872696127344">Skanowanie zostało anulowane</translation>
 <translation id="6106186594183574873">Aby zakończyć, wpisz stare hasło</translation>
 <translation id="6108689792487843350">Brama jest nieosiągalna</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" /> GHz / <ph name="MAX" /> GHz</translation>
 <translation id="6146993107019042706">Aby zakończyć, wpisz nowe hasło</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
@@ -149,6 +162,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="649050271426829538">Zatrzymano – zacięcie papieru</translation>
 <translation id="6517239166834772319">Odkrywaj</translation>
 <translation id="6527081081771465939">Nieznany protokół zabezpieczeń Wi-Fi</translation>
+<translation id="6532051501443766164">Ukryj raport</translation>
 <translation id="65587193855025101">Szyba</translation>
 <translation id="6564646048574748301">Niepowodzenie – drukarka jest nieosiągalna</translation>
 <translation id="6618744767048954150">W toku</translation>
@@ -156,6 +170,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6643016212128521049">Wyczyść</translation>
 <translation id="6704062477274546131">Rozwiązywanie nazw DNS</translation>
 <translation id="6747215703636344499">Zatrzymano – odbiornik papieru jest pełny</translation>
+<translation id="6756731097889387912">Nie udało się anulować skanowania</translation>
 <translation id="6766275201586212568">błędy rozpoznawania nazw DNS</translation>
 <translation id="6768237774506518020">dużo błędów rozpoznania nazwy DNS</translation>
 <translation id="6839141349259399400">Nie możesz połączyć się ze skanerami?</translation>
@@ -171,6 +186,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7648838807254605802">duże opóźnienie HTTPS</translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7690294790491645610">Potwierdź nowe hasło</translation>
+<translation id="7732651821766520760">Test: <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Stan</translation>
 <translation id="7855434858642800953">Zeskanowany plik został zapisany.</translation>
 <translation id="7928373994957558460">Pokaż lokalizację pliku</translation>
@@ -198,6 +214,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Domyślny</translation>
 <translation id="8845001906332463065">Uzyskaj pomoc</translation>
+<translation id="8881098542468797602">Test zakończył się powodzeniem</translation>
 <translation id="8910721771319628100">Sieć domyślna przekroczyła próg opóźnienia</translation>
 <translation id="8919837981463578619">Niepowodzenie – nie znaleziono tacy</translation>
 <translation id="8928727111548978589">Niepowodzenie – brak papieru</translation>
@@ -207,4 +224,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="910415269708673980">Odśwież bilet przypisany do konta <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Skanowanie strony <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Odblokuj</translation>
+<translation id="9149391708638971077">Przeprowadź test pamięci</translation>
+<translation id="982713511914535780">Przeprowadź test rozładowywania</translation>
 </translationbundle>

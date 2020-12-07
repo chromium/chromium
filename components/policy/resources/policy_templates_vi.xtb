@@ -165,9 +165,6 @@
       Chính sách này không áp dụng cho người dùng kiosk.
 
       Cảnh báo: Tùy chọn Wipe và MinimalMigrate sẽ xóa dữ liệu trên máy.</translation>
-<translation id="1247850578871017740">Nếu bạn đặt chính sách này thành một giá trị hợp lệ, <ph name="PRODUCT_NAME" /> sẽ không sử dụng phiên bản SSL/TLS thấp hơn phiên bản được chỉ định. Những giá trị không nhận dạng được sẽ bị bỏ qua.
-
-      Nếu bạn không đặt chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ hiển thị lỗi đối với TLS 1.0 và TLS 1.1, nhưng người dùng có thể bỏ qua lỗi này.</translation>
 <translation id="1252536192437793850">Cho phép trang web yêu cầu người dùng cấp quyền truy cập vào một cổng nối tiếp</translation>
 <translation id="125655429495551011">Nếu bạn đặt chính sách này thành một chuỗi, thì chuỗi đó sẽ được dùng làm tên máy chủ thiết bị trong yêu cầu DHCP. Chuỗi này có thể chứa các biến <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" />, <ph name="LOCATION_PLACEHOLDER" /> sẽ được thay thế bằng các giá trị trên thiết bị trước khi dùng làm tên máy chủ. Giá trị thay thế thu được sẽ là tên máy chủ hợp lệ (theo RFC 1035, mục 3.1).
 
@@ -334,11 +331,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 
           Nếu bạn đặt chính sách này, thì người dùng không thể thay đổi hay ghi đè chính sách.</translation>
 <translation id="1502843533062797703">Cho phép chặn phần mềm bên thứ ba thêm mã thực thi</translation>
-<translation id="1503863096120373385">Thiết lập chế độ cài đặt thời gian lưu giữ dữ liệu duyệt web của <ph name="PRODUCT_NAME" />.
-      Chính sách này kiểm soát khoảng thời gian lưu giữ dữ liệu duyệt web đã chọn. Chính sách này sẽ không có hiệu lực nếu bạn bật tính năng Đồng bộ hóa.
-      Dữ liệu duyệt web gồm có các loại sau đây: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> và <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
-      Chrome sẽ thường xuyên xóa dữ liệu thuộc những loại đã chọn có khoảng thời gian lưu giữ quá <ph name="TIME_TO_LIVE_IN_HOURS" />. Vì hoạt động xóa này chỉ diễn ra định kỳ, nên một số dữ liệu có thể tồn tại lâu hơn một chút nhưng không quá 2 lần khoảng thời gian lưu giữ dự kiến là <ph name="TIME_TO_LIVE_IN_HOURS" />.
-      </translation>
 <translation id="1509692106376861764">Chính sách này đã chấm dứt kể từ phiên bản <ph name="PRODUCT_NAME" /> 29.</translation>
 <translation id="1512974677514081818">Cung cấp cấu hình máy in dành cho doanh nghiệp được kết nối với các thiết bị.
 
@@ -1006,6 +998,7 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
       Nếu bạn không đặt chính sách này, thì tính năng Nhấp để gọi sẽ bật theo mặc định.</translation>
 <translation id="2482676533225429905">Nhắn tin gốc</translation>
 <translation id="2483146640187052324">Dự đoán tác vụ mạng trên kết nối mạng bất kỳ</translation>
+<translation id="2496180316473517155">Lịch sử duyệt web</translation>
 <translation id="2498238926436517902">Luôn tự động ẩn giá</translation>
 <translation id="250022556568924228">Nếu bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ tải Điều khoản dịch vụ xuống và hiển thị với người dùng ở bất cứ thời điểm nào phiên truy cập tài khoản trên thiết bị bắt đầu. Người dùng chỉ có thể đăng nhập vào phiên đó sau khi chấp nhận Điều khoản dịch vụ.
 
@@ -1156,6 +1149,7 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
 <translation id="2702023190395322609">Bật tính năng đề xuất nội dung nghe nhìn</translation>
 <translation id="2706708761587205154">Chỉ cho phép in khi có mã PIN</translation>
 <translation id="2707873794476722903">Tính năng Duyệt web an toàn đang hoạt động ở chế độ chuẩn.</translation>
+<translation id="2709516037105925701">Tự động điền</translation>
 <translation id="2714359695399346815">Việc đặt thành Bật hoặc không đặt chính sách này sẽ cho phép việc sử dụng các máy chủ STUN. Qua đó, máy khách từ xa có thể phát hiện và kết nối với máy này, ngay cả khi bị phân cách bằng tường lửa.
 
       Nếu bạn đặt chính sách này thành Tắt khi các kết nối UDP đi bị lọc qua tường lửa, thì máy chỉ cho phép các kết nối từ máy khách trong mạng cục bộ.</translation>

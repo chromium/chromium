@@ -22,6 +22,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> اس صارف کا نظم کرتا ہے اور دور سے ترتیبات کا نظم اور صارف کی سرگرمی کو مانیٹر کر سکتا ہے۔</translation>
 <translation id="150962533380566081">‏غلط PUK۔</translation>
 <translation id="1510238584712386396">لانچر</translation>
+<translation id="1621067168122174824">چارج ٹیسٹ چلائیں</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> تھریڈز)</translation>
 <translation id="1641857168437328880">دستاویز فیڈر (یک طرفہ)</translation>
 <translation id="1644574205037202324">سرگزشت</translation>
@@ -29,6 +30,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">‏DNS ریزولور دستیاب ہے</translation>
 <translation id="1743558184855585519">بیٹری کو حد تک پہنچ جانے کے بعد استعمال کردہ مانا جاتا ہے</translation>
+<translation id="1792647875738159689">اسکین کا عمل منسوخ کیا جا رہا ہے</translation>
 <translation id="1905710495812624430">زیادہ سے زیادہ مجاز کوششوں سے تجاوز کرگیا۔</translation>
 <translation id="1930797645656624981">‏Chrome OS اندراج کے طریقہ کی سروس</translation>
 <translation id="1947737735496445907">پرنٹ ہو گیا</translation>
@@ -53,6 +55,7 @@
 <translation id="3008341117444806826">ریفریش کریں</translation>
 <translation id="3009958530611748826">محفوظ کرنے کے لئے فولڈر منتخب کریں</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
+<translation id="3069085583900247081">ٹیسٹ ناکام ہو گیا</translation>
 <translation id="3083667275341675831">کنیکٹویٹی ڈائيگناسٹکس</translation>
 <translation id="3091839911843451378">ناکام ہو گیا - رک گیا</translation>
 <translation id="3102119246920354026">کیش</translation>
@@ -62,6 +65,7 @@
 <translation id="3246869037381808805">1 دن سے پرانی پرنٹ جابز کو ہٹا دیا جائے گا</translation>
 <translation id="3268178239013324452">ناکام ہو گیا - دروازہ کھلا ہے</translation>
 <translation id="3310640316857623290">‏DNS تاخیر قابل اجازت حد سے نمایاں طور پر زیادہ ہے</translation>
+<translation id="3328783797891415197">ٹیسٹ جاری ہے</translation>
 <translation id="3369013195428705271">کیا آپ واقعی پرنٹ کی تمام سرگزشت کو صاف کرنا چاہتے ہیں؟ آپ کی جاری پرنٹ جابز کو صاف نہیں کیا جائے گا۔</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> میں سے <ph name="PRINTED_PAGES" /> پرنٹ کئے ہوئے صفحات۔</translation>
 <translation id="3459509316159669723">پرنٹ کیا جا رہا ہے</translation>
@@ -81,6 +85,7 @@
 <translation id="4034824040120875894">پرنٹر</translation>
 <translation id="4131410914670010031">سیاہ اور سفید</translation>
 <translation id="4145784616224233563">‏HTTP فائروال</translation>
+<translation id="4170700058716978431">ناکام</translation>
 <translation id="4227825898293920515">پاس ورڈ کی میعاد <ph name="TIME" /> میں ختم ہونے والی ہے</translation>
 <translation id="4238516577297848345">کوئی پرنٹ جاب پیشرفت میں نہیں</translation>
 <translation id="4297501883039923494">رک گیا - نامعلوم خرابی</translation>
@@ -105,16 +110,19 @@
 <translation id="4773299976671772492">روک دیا گیا</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> پرنٹ جاب منسوخ کر دی گئی</translation>
 <translation id="4832079907277790330">فائلز ایپ میں فولڈر منتخب کریں...</translation>
+<translation id="4848429997038228357">جاری ہے</translation>
 <translation id="4890353053343094602">فوری طور پر نیا پاس ورڈ منتخب کریں</translation>
 <translation id="4917889632206600977">رک گیا - کاغذ ختم ہو گیا</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> سیکنڈ میں <ph name="RATE" /> چارج کیا گیا۔</translation>
 <translation id="4932733599132424254">تاریخ</translation>
 <translation id="4985509611418653372">چلائیں</translation>
+<translation id="500920857929044050">ٹیسٹ روکیں</translation>
 <translation id="5154917547274118687">میموری</translation>
 <translation id="5168185087976003268">بیٹری کی صحت</translation>
 <translation id="520299634122159966">کوئی اسکینرز دستیاب نہیں ہے</translation>
 <translation id="5212543919916444558">مجھے آپ کی اسکرین پر ایسا کچھ نہیں ملا جس سے متعلق میں آپ کی مدد کر سکوں۔ مجھ سے کچھ بھی پوچھنے کے لیے مائیک کو تھپتھپانے کی کوشش کریں۔</translation>
 <translation id="5222676887888702881">سائن آؤٹ</translation>
+<translation id="5264277876637023664">‏CPU ٹیسٹ چلائیں</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">روٹینز کو دوبارہ چلائیں</translation>
 <translation id="5317780077021120954">محفوظ کریں</translation>
@@ -127,17 +135,22 @@
 <translation id="54609108002486618">نظم کردہ</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">مرکز امداد میں مزید جانیں</translation>
+<translation id="5635169860413004179">رپورٹ دیکھیں</translation>
 <translation id="5719918614880940190">‏اس سے CPU استعمال کی پیمائش ہوتی ہے اور یہ سبھی کورز کا مجموعہ ہے</translation>
+<translation id="5797428682393400134">کامیاب</translation>
 <translation id="5832805196449965646">شخص کو شامل کریں</translation>
 <translation id="5895138241574237353">دوبارہ شروع کریں</translation>
+<translation id="5931523347251946569">فائل نہیں ملی</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />، ورژن <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">بند کریں</translation>
 <translation id="6048107060512778456">ناکام ہو گیا - پیپر جام</translation>
 <translation id="6050189528197190982">گرے اسکیل</translation>
 <translation id="6058625436358447366">مکمل کرنے کے لئے اپنے پرانے اور نئے پاس ورڈز درج کریں</translation>
 <translation id="6061772781719867950">‏ناکام HTTP درخواستیں</translation>
+<translation id="6104112872696127344">اسکین کا عمل منسوخ کر دیا گیا</translation>
 <translation id="6106186594183574873">مکمل کرنے کے لئے اپنا پرانا پاس ورڈ درج کریں</translation>
 <translation id="6108689792487843350">گیٹ وے ناقابل رسائی ہے</translation>
+<translation id="6114428539405324828">‎<ph name="CURRENT" />GHz / <ph name="MAX" />GHz</translation>
 <translation id="6146993107019042706">مکمل کرنے کے لئے اپنا نیا پاس ورڈ درج کریں</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">مزید جانیں</translation>
@@ -148,6 +161,7 @@
 <translation id="649050271426829538">رک گیا - پیپر جام</translation>
 <translation id="6517239166834772319">دریافت</translation>
 <translation id="6527081081771465939">‏نامعلوم WiFi سیکیورٹی پروٹوکول</translation>
+<translation id="6532051501443766164">رپورٹ چھپائیں</translation>
 <translation id="65587193855025101">فلیٹ بیڈ</translation>
 <translation id="6564646048574748301">ناکام ہو گیا - پرنٹر ناقابل رسائی ہے</translation>
 <translation id="6618744767048954150">جاری ہے</translation>
@@ -155,6 +169,7 @@
 <translation id="6643016212128521049">صاف کریں</translation>
 <translation id="6704062477274546131">‏DNS ریزولیوشن</translation>
 <translation id="6747215703636344499">رک گیا - آؤٹ پٹ بھر گیا ہے</translation>
+<translation id="6756731097889387912">اسکین کا عمل منسوخ نہیں کیا جا سکا</translation>
 <translation id="6766275201586212568">‏ناکام DNS ریزولیوشنز</translation>
 <translation id="6768237774506518020">‏DNS ریزولیوشن ناکام ہونے کی زیادہ شرح</translation>
 <translation id="6839141349259399400">اسکینرز کے ساتھ منسلک نہیں کیا جا سکتا؟</translation>
@@ -170,6 +185,7 @@
 <translation id="7648838807254605802">‏زیادہ HTTPS تاخیر</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7690294790491645610">نئے پاس ورڈ کی توثیق کریں</translation>
+<translation id="7732651821766520760"><ph name="TEST_NAME" /> ٹیسٹ</translation>
 <translation id="7805768142964895445">صورتحال</translation>
 <translation id="7855434858642800953">اسکین کردہ فائل محفوظ ہو گئی!</translation>
 <translation id="7928373994957558460">فائل کا مقام دکھائیں</translation>
@@ -197,12 +213,16 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ڈیفالٹ</translation>
 <translation id="8845001906332463065">مدد حاصل کریں</translation>
+<translation id="8881098542468797602">ٹیسٹ کامیاب ہو گیا</translation>
 <translation id="8910721771319628100">تاخیر کی حد کے اوپر ڈیفالٹ نیٹ ورک</translation>
 <translation id="8919837981463578619">ناکام ہو گیا - ٹرے موجود نہیں ہے</translation>
 <translation id="8928727111548978589">ناکام ہو گیا - کاغذ ختم ہو گیا</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> کوششیں باقی ہیں</translation>
+<translation id="8970109610781093811">دوبارہ چلائيں</translation>
 <translation id="9088306295921699330">حالیہ استعمال</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> کے لیے ٹکٹ ریفریش کریں</translation>
 <translation id="9106415115617144481">اسکین شدہ صفحہ <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">غیر مقفل کریں</translation>
+<translation id="9149391708638971077">میموری ٹیسٹ چلائیں</translation>
+<translation id="982713511914535780">ڈسچارج ٹیسٹ چلائیں</translation>
 </translationbundle>

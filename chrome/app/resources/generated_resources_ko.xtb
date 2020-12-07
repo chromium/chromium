@@ -57,6 +57,7 @@
 <translation id="1056775291175587022">네트워크 없음</translation>
 <translation id="1056898198331236512">경고</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{새 PIN을 입력하세요. PIN은 1자 이상이어야 하며 글자, 숫자, 기타 문자를 포함할 수 있습니다.}other{새 PIN을 입력하세요. PIN은 #자 이상이어야 하며 글자, 숫자, 기타 문자를 포함할 수 있습니다.}}</translation>
 <translation id="1059944192885972544">'<ph name="SEARCH_TEXT" />' 검색결과로 탭 <ph name="NUM" />개 찾음</translation>
 <translation id="1060292118287751956">화면 업데이트 빈도 결정</translation>
 <translation id="1061904396131502319">곧 휴식 시간입니다</translation>
@@ -636,9 +637,11 @@
 <translation id="1688935057616748272">문자를 입력하세요</translation>
 <translation id="168991973552362966">근처 프린터 추가</translation>
 <translation id="1689945336726856614">&amp;URL 복사</translation>
+<translation id="1690248886740053041">모바일 네트워크에 연결할 수 없습니다. 기술 지원이 필요하면 이동통신사에 문의하세요.</translation>
 <translation id="1692115862433274081">다른 계정 사용</translation>
 <translation id="1692118695553449118">동기화 사용 중</translation>
 <translation id="1692210323591458290">진한 보라색</translation>
+<translation id="169279809881363536">발견된 프로필이 없습니다. 새 네트워크를 설정하려면 기기 카메라로 QR 코드를 스캔하거나 이동통신사에서 제공한 활성화 코드를 입력하세요.</translation>
 <translation id="1697150536837697295">예술</translation>
 <translation id="1697686431566694143">파일 수정</translation>
 <translation id="1698122934742150150">현재 시크릿 세션에만</translation>
@@ -1575,6 +1578,7 @@
 <translation id="2770465223704140727">목록에서 삭제</translation>
 <translation id="2770690685823456775">비밀번호를 다른 폴더로 내보냅니다.</translation>
 <translation id="2770929488047004208">모니터 해상도</translation>
+<translation id="2770954829020464827">화면을 공유하는 동안에는 세부정보가 표시되지 않습니다.</translation>
 <translation id="2771268254788431918">모바일 데이터 활성화됨</translation>
 <translation id="2771816809568414714">치즈</translation>
 <translation id="2772936498786524345">닌자</translation>
@@ -1943,6 +1947,7 @@
 <translation id="3201422919974259695">사용 가능한 USB 기기가 여기에 표시됩니다.</translation>
 <translation id="3202131003361292969">경로</translation>
 <translation id="3202173864863109533">이 탭의 오디오가 음소거됩니다.</translation>
+<translation id="3202218848974251205">개인정보 보호 샌드박스</translation>
 <translation id="3208321278970793882">앱</translation>
 <translation id="3208584281581115441">지금 확인</translation>
 <translation id="3208703785962634733">미확인</translation>
@@ -2142,7 +2147,6 @@
 <translation id="3441653493275994384">화면</translation>
 <translation id="3441663102605358937">계정을 인증하려면 <ph name="ACCOUNT" />에 다시 로그인하세요.</translation>
 <translation id="3445047461171030979">Google 어시스턴트 빠른 답변</translation>
-<translation id="3445770710327978113">신속하게 여기를 방문하려면 앱을 설치하세요.</translation>
 <translation id="3445925074670675829">USB-C 기기</translation>
 <translation id="3446274660183028131">Windows를 설치하려면 Parallels Desktop을 실행하세요.</translation>
 <translation id="344630545793878684">다수의 웹사이트에서 데이터 읽기</translation>
@@ -2163,6 +2167,7 @@
 <translation id="3459697287128633276">내 계정으로 Google Play 스토어에 액세스하려면 ID 공급업체를 통해 인증해 주세요.</translation>
 <translation id="3462311546193741693">대부분의 사이트에서 로그아웃됩니다. 동기화된 데이터를 삭제할 수 있도록 Google 계정에서는 로그아웃되지 않습니다.</translation>
 <translation id="3462413494201477527">계정 설정을 취소하시겠습니까?</translation>
+<translation id="3464145797867108663">직장 프로필 추가</translation>
 <translation id="346431825526753"><ph name="CUSTODIAN_EMAIL" />님이 관리하는 어린이용 계정입니다.</translation>
 <translation id="3468298837301810372">라벨</translation>
 <translation id="3468999815377931311">Android 휴대전화</translation>
@@ -2284,6 +2289,7 @@
 <translation id="360180734785106144">새로운 기능이 출시되면 즉시 제공합니다.</translation>
 <translation id="3602290021589620013">미리보기</translation>
 <translation id="3603622770190368340">네트워크 인증서 받기</translation>
+<translation id="3604193429970465812">보조 계정</translation>
 <translation id="3604713164406837697">배경화면 변경</translation>
 <translation id="3605780360466892872">와이셔츠</translation>
 <translation id="3608576286259426129">사용자 이미지 미리보기</translation>
@@ -2608,6 +2614,7 @@
 
   <ph name="CONTROL_PANEL_APPLET_NAME" />을(를) 시작하시겠습니까?</translation>
 <translation id="394183848452296464">바로가기를 만들 수 없음</translation>
+<translation id="3943494825379372497">앱과 페이지를 복원하시겠습니까?</translation>
 <translation id="3943582379552582368">뒤로(&amp;B)</translation>
 <translation id="3943857333388298514">붙여넣기</translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" />에서 이미지 검색(&amp;S)</translation>
@@ -2623,7 +2630,6 @@
 <translation id="3955163004258753966">업그레이드 시작 중 오류 발생</translation>
 <translation id="3955193568934677022">사이트에서 보호된 콘텐츠를 재생하도록 허용(권장)</translation>
 <translation id="3955896417885489542">설정 후 Google Play 옵션 검토</translation>
-<translation id="3956702100721821638">Google Play에 접속할 수 없음</translation>
 <translation id="3957079323242030166">백업 데이터는 드라이브 스토리지 저장용량에 포함되지 않습니다.</translation>
 <translation id="3957844511978444971">선택한 Google 서비스 설정을 승인하려면 '동의'를 탭하세요.</translation>
 <translation id="3958088479270651626">북마크 및 설정 가져오기</translation>
@@ -2693,6 +2699,7 @@
 <translation id="4046013316139505482">이 사이트의 정보를 확인하고 변경할 필요가 없는 확장 프로그램입니다.</translation>
 <translation id="4046123991198612571">다음 트랙</translation>
 <translation id="4047726037116394521">홈으로 이동</translation>
+<translation id="4049783682480068824">{COUNT,plural, =1{연락처 #개를 사용할 수 없습니다. 연락처와 Nearby Share를 사용하려면 상대방의 Google 계정과 연결된 이메일 주소를 연락처에 추가하세요.}other{연락처 #개를 사용할 수 없습니다. 연락처와 Nearby Share를 사용하려면 상대방의 Google 계정과 연결된 이메일 주소를 연락처에 추가하세요.}}</translation>
 <translation id="4050225813016893843">인증 방법</translation>
 <translation id="4052120076834320548">작게</translation>
 <translation id="4056908315660577142">부모님이 설정한 <ph name="APP_NAME" /> Chrome 앱 사용 제한 시간에 도달했습니다. 내일 <ph name="TIME_LIMIT" /> 동안 다시 사용할 수 있습니다.</translation>
@@ -3337,6 +3344,7 @@
 <translation id="4863769717153320198"><ph name="WIDTH" />x<ph name="HEIGHT" />(권장)처럼 보입니다.</translation>
 <translation id="4864369630010738180">로그인 중...</translation>
 <translation id="4864805589453749318">학교 계정을 추가할 수 있도록 권한을 부여할 부모님을 선택하세요.</translation>
+<translation id="4866265760644917470">프로필이 추가되었습니다.</translation>
 <translation id="486635084936119914">다운로드 후에 특정 파일 형식을 자동으로 열기</translation>
 <translation id="48704129375571883">추가 기능 추가</translation>
 <translation id="4870758487381879312">구성 정보를 가져오려면 관리자가 제공한 비밀번호를 입력하세요.</translation>
@@ -3620,6 +3628,7 @@
 <translation id="5206787458656075734">{COUNT,plural, =1{유출된 비밀번호를 변경했습니다. 유출된 비밀번호가 #개 더 있습니다. 지금 바로 이 비밀번호를 확인해 보시기 바랍니다.}other{유출된 비밀번호를 변경했습니다. 유출된 비밀번호가 #개 더 있습니다. 지금 바로 이 비밀번호를 확인해 보시기 바랍니다.}}</translation>
 <translation id="5207949376430453814">텍스트 캐럿 강조표시</translation>
 <translation id="5209320130288484488">기기를 찾을 수 없음</translation>
+<translation id="5209572028385096813">Family Link에서 관리되는 사용자입니다.</translation>
 <translation id="5210365745912300556">탭 닫기</translation>
 <translation id="5213481667492808996">'<ph name="NAME" />' 데이터 서비스를 사용할 수 있습니다.</translation>
 <translation id="5213891612754844763">프록시 설정 표시</translation>
@@ -3705,6 +3714,7 @@
 <translation id="5302048478445481009">언어</translation>
 <translation id="5302932258331363306">텍스트 대치</translation>
 <translation id="5304276686222516262">연락처 목록을 다운로드할 수 없습니다. 네트워크 연결을 확인하거나 &lt;a href="#" id="tryAgainLink"&gt;다시 시도하세요&lt;/a&gt;.</translation>
+<translation id="5305145881844743843"><ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" />에서 관리하는 계정</translation>
 <translation id="5305688511332277257">설치된 인증서 없음</translation>
 <translation id="5307030433605830021">지원되지 않는 소스</translation>
 <translation id="5308380583665731573">연결</translation>
@@ -4086,6 +4096,7 @@
 <translation id="5740820643029013514">눈에 띄지 않는 메시지 사용(권장)</translation>
 <translation id="574104302965107104">화면 미러링</translation>
 <translation id="574209121243317957">높낮이</translation>
+<translation id="5742505912938664543">여기에 보조 계정을 추가할 경우 이 계정으로 웹을 둘러보고 앱을 다운로드하거나 Gmail을 확인하고 기타 Google 서비스를 사용할 수 있습니다.</translation>
 <translation id="5746169159649715125">PDF로 저장</translation>
 <translation id="5747552184818312860">만료</translation>
 <translation id="5747785204778348146">개발자 - 불안정</translation>
@@ -4426,6 +4437,7 @@
 <translation id="6129953537138746214">Space</translation>
 <translation id="6130692320435119637">Wi-Fi 추가</translation>
 <translation id="6136114942382973861">다운로드바 닫기</translation>
+<translation id="6136287496450963112">보안 키가 PIN으로 보호되어 있지 않습니다. 지문을 관리하려면 먼저 PIN을 만드세요.</translation>
 <translation id="6137767437444130246">사용자 인증서</translation>
 <translation id="6138680304137685902">SHA-384를 포함한 X9.62 ECDSA 서명</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, 네트워크 없음</translation>
@@ -4606,6 +4618,7 @@
 <translation id="6331566915566907158">Chrome OS의 기능 및 성능 개선에 참여</translation>
 <translation id="6331818708794917058">사이트에서 MIDI 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="6333064448949140209">디버깅을 위해 파일이 Google로 전송됩니다.</translation>
+<translation id="6334444530352320327">앱과 OS 설정은 이 계정으로 로그인한 Chromebook과 동기화됩니다.<ph name="LINK_BEGIN" />동기화 설정<ph name="LINK_END" /></translation>
 <translation id="6338981933082930623">모든 사이트에서 광고를 표시할 수 있음</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" />의 새 프로필을 만드세요.</translation>
 <translation id="6340017061976355871">서버에 연결할 수 없습니다. 네트워크 연결을 확인하고 다시 시도해 주세요. 문제가 지속되면 Chromebook을 다시 시작하세요.</translation>
@@ -4907,6 +4920,7 @@
 <translation id="6709133671862442373">뉴스</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" />을(를) 사용하여 연결</translation>
 <translation id="6710213216561001401">이전</translation>
+<translation id="6713233729292711163">직장 프로필 추가</translation>
 <translation id="6715803357256707211">Linux 애플리케이션을 설치하는 중에 오류가 발생했습니다. 알림을 클릭하면 자세한 정보를 확인할 수 있습니다.</translation>
 <translation id="671619610707606484">사이트에서 저장한 <ph name="TOTAL_USAGE" />의 데이터가 삭제됩니다.</translation>
 <translation id="671928215901716392">화면 잠금</translation>
@@ -5275,6 +5289,7 @@
 <translation id="7121362699166175603">검색주소창에 저장된 방문 기록과 자동 완성 내역을 지웁니다. Google 계정의 내 활동(<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />)에는 인터넷 사용 기록이 다른 형식으로 남아 있을 수도 있습니다.</translation>
 <translation id="7121438501124788993">개발자 모드</translation>
 <translation id="7121728544325372695">스마트 대시</translation>
+<translation id="7122353087820324370">앱과 OS 설정은 보조 계정에 동기화되지 않습니다.</translation>
 <translation id="7123030151043029868">여러 파일 자동 다운로드가 허용됨</translation>
 <translation id="7123360114020465152">프린터가 더 이상 지원되지 않습니다.</translation>
 <translation id="7125148293026877011">Crostini 삭제</translation>
@@ -5590,6 +5605,7 @@
 <translation id="750509436279396091">다운로드 폴더 열기</translation>
 <translation id="7506093026325926984">이 비밀번호가 기기에 저장됩니다</translation>
 <translation id="7506130076368211615">신규 네트워크 설정</translation>
+<translation id="7506242536428928412">새 보안 키를 사용하려면 새 PIN을 설정하세요.</translation>
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" />이(가) 기업 관리에 등록되었습니다.</translation>
 <translation id="7507207699631365376">제공업체의 <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" /> 보기</translation>
 <translation id="7507930499305566459">상태 응답자 인증서</translation>
@@ -5753,6 +5769,7 @@
 <translation id="7691077781194517083">보안 키를 재설정할 수 없습니다. <ph name="ERROR_CODE" /> 오류입니다.</translation>
 <translation id="7691698019618282776">Crostini 업그레이드</translation>
 <translation id="7696063401938172191">'<ph name="PHONE_NAME" />'에서 다음과 같이 설정하세요.</translation>
+<translation id="7697166915480294040">화면을 공유하는 동안에는 세부정보가 표시되지 않습니다.</translation>
 <translation id="7697598343108519171">카메라를 사용하여 QR 코드 스캔</translation>
 <translation id="7699968112832915395">계정을 추가할 수 없음</translation>
 <translation id="7701040980221191251">없음</translation>
@@ -6210,6 +6227,8 @@
 <translation id="8184472985242519288">균일</translation>
 <translation id="8186609076106987817">서버에서 파일을 찾을 수 없습니다.</translation>
 <translation id="8188389033983459049">계속하려면 기기 설정을 확인하고 사용 설정하세요.</translation>
+<translation id="8189306097519446565">학교 계정</translation>
+<translation id="8189750580333936930">개인정보 보호 샌드박스</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" />에 연결 중</translation>
 <translation id="8191230140820435481">앱, 확장 프로그램 및 테마 관리</translation>
 <translation id="8195027750202970175">디스크에서 차지하는 용량</translation>
@@ -6901,6 +6920,7 @@
 <translation id="8986362086234534611">저장 안함</translation>
 <translation id="8986494364107987395">사용 통계 및 비정상 종료 보고서를 Google에 자동으로 전송합니다.</translation>
 <translation id="8987927404178983737">월</translation>
+<translation id="8989823300731803443">이전에 중단한 부분부터 계속하세요.</translation>
 <translation id="8990209962746788689">QR 코드를 만들 수 없음</translation>
 <translation id="8991520179165052608">사이트에서 마이크를 사용할 수 있습니다.</translation>
 <translation id="8992117551007229513">{COUNT,plural, =1{항목 1개}other{항목 #개}}</translation>
@@ -7130,7 +7150,6 @@
 <translation id="952992212772159698">활성화되지 않음</translation>
 <translation id="956500788634395331">잠재적으로 위험한 확장 프로그램으로부터 사용자를 보호합니다.</translation>
 <translation id="957960681186851048">이 사이트에서 여러 파일을 자동으로 다운로드하려고 함</translation>
-<translation id="9580706199804957">Google 서비스에 연결할 수 없음</translation>
 <translation id="958329785990007682">자바스크립트 차단</translation>
 <translation id="960719561871045870">운영자 코드</translation>
 <translation id="960987915827980018">약 1시간 남음</translation>

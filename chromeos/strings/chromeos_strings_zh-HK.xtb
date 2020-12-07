@@ -22,6 +22,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> 管理此使用者，並可能會遠端管理設定並監察使用者活動。</translation>
 <translation id="150962533380566081">PUK 無效。</translation>
 <translation id="1510238584712386396">啟動器</translation>
+<translation id="1621067168122174824">執行充電測試</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> 個執行緒)</translation>
 <translation id="1641857168437328880">文件送紙器 (單面)</translation>
 <translation id="1644574205037202324">記錄</translation>
@@ -29,6 +30,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS 解析器存在</translation>
 <translation id="1743558184855585519">當電池到達上限時，即表示已耗盡電力</translation>
+<translation id="1792647875738159689">取消掃瞄中</translation>
 <translation id="1905710495812624430">允許的嘗試次數超過上限。</translation>
 <translation id="1930797645656624981">Chrome 作業系統輸入方法服務</translation>
 <translation id="1947737735496445907">已列印</translation>
@@ -53,6 +55,7 @@
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">選取儲存的資料夾</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
+<translation id="3069085583900247081">未通過測試</translation>
 <translation id="3083667275341675831">連接性診斷</translation>
 <translation id="3091839911843451378">失敗 - 已停止</translation>
 <translation id="3102119246920354026">快取</translation>
@@ -62,6 +65,7 @@
 <translation id="3246869037381808805">超過 1 天前的列印工作將被移除</translation>
 <translation id="3268178239013324452">失敗 - 機蓋未關</translation>
 <translation id="3310640316857623290">DNS 延遲時間大幅超過允許的門檻</translation>
+<translation id="3328783797891415197">測試執行中</translation>
 <translation id="3369013195428705271">您確定要清除所有列印記錄嗎？系統不會清除進行中的列印工作。</translation>
 <translation id="3456078764689556234">印咗 <ph name="PRINTED_PAGES" /> 頁，總共有 <ph name="TOTAL_PAGES" /> 頁。</translation>
 <translation id="3459509316159669723">列印</translation>
@@ -81,6 +85,7 @@
 <translation id="4034824040120875894">打印機</translation>
 <translation id="4131410914670010031">黑白</translation>
 <translation id="4145784616224233563">HTTP 防火牆</translation>
+<translation id="4170700058716978431">失敗</translation>
 <translation id="4227825898293920515">密碼在 <ph name="TIME" />後到期</translation>
 <translation id="4238516577297848345">沒有進行中的列印工作</translation>
 <translation id="4297501883039923494">已停止 - 不明錯誤</translation>
@@ -105,17 +110,20 @@
 <translation id="4773299976671772492">已停止</translation>
 <translation id="4808449224298348341">取消咗列印工作 <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">在「檔案」應用程式中選取資料夾...</translation>
+<translation id="4848429997038228357">執行中</translation>
 <translation id="4890353053343094602">立即選擇新密碼</translation>
 <translation id="4917889632206600977">已停止 - 紙張已用完</translation>
 <translation id="4921665434385737356">已在 <ph name="NUM_SECONDS" /> 秒內充電 <ph name="RATE" />。</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="4985509611418653372">執行</translation>
+<translation id="500920857929044050">停止測試</translation>
 <translation id="5154917547274118687">記憶體</translation>
 <translation id="5168185087976003268">電池狀態</translation>
 <translation id="520299634122159966">沒有可用的掃瞄器</translation>
 <translation id="5212543919916444558">系統在您的畫面上找不到任何可提供協助的內容。
 請嘗試輕按麥克風並發問。</translation>
 <translation id="5222676887888702881">登出</translation>
+<translation id="5264277876637023664">執行 CPU 測試</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，<ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">重新執行日常安排</translation>
 <translation id="5317780077021120954">儲存</translation>
@@ -128,17 +136,22 @@
 <translation id="54609108002486618">受管理</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />：<ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">詳情請瀏覽說明中心</translation>
+<translation id="5635169860413004179">查看報告</translation>
 <translation id="5719918614880940190">此數據測量 CPU 使用情況，並且為所有核心的彙整資料</translation>
+<translation id="5797428682393400134">成功</translation>
 <translation id="5832805196449965646">新增使用者</translation>
 <translation id="5895138241574237353">重新啟動</translation>
+<translation id="5931523347251946569">找不到檔案</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6048107060512778456">失敗 - 卡紙</translation>
 <translation id="6050189528197190982">灰階</translation>
 <translation id="6058625436358447366">如要完成變更，請輸入您的舊密碼和新密碼</translation>
 <translation id="6061772781719867950">HTTP 要求失敗</translation>
+<translation id="6104112872696127344">掃瞄已取消</translation>
 <translation id="6106186594183574873">如要完成變更，請輸入您的舊密碼</translation>
 <translation id="6108689792487843350">無法連接閘道</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" /> GHz/<ph name="MAX" /> GHz</translation>
 <translation id="6146993107019042706">如要完成變更，請輸入您的新密碼</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
@@ -149,6 +162,7 @@
 <translation id="649050271426829538">已停止 - 卡紙</translation>
 <translation id="6517239166834772319">探索</translation>
 <translation id="6527081081771465939">未知的 Wi-Fi 安全通訊協定</translation>
+<translation id="6532051501443766164">隱藏報告</translation>
 <translation id="65587193855025101">平台式</translation>
 <translation id="6564646048574748301">失敗 - 無法連接打印機</translation>
 <translation id="6618744767048954150">正在執行</translation>
@@ -156,6 +170,7 @@
 <translation id="6643016212128521049">清除</translation>
 <translation id="6704062477274546131">DNS 解析</translation>
 <translation id="6747215703636344499">已停止 - 輸出紙匣已滿</translation>
+<translation id="6756731097889387912">無法取消掃瞄</translation>
 <translation id="6766275201586212568">DNS 解析失敗</translation>
 <translation id="6768237774506518020">DNS 解析失敗率高</translation>
 <translation id="6839141349259399400">無法連接至掃瞄器嗎？</translation>
@@ -171,6 +186,7 @@
 <translation id="7648838807254605802">HTTPS 延遲時間長</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7690294790491645610">確認新密碼</translation>
+<translation id="7732651821766520760"><ph name="TEST_NAME" />測試</translation>
 <translation id="7805768142964895445">狀態</translation>
 <translation id="7855434858642800953">已儲存掃瞄的檔案！</translation>
 <translation id="7928373994957558460">顯示檔案位置</translation>
@@ -198,6 +214,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">預設</translation>
 <translation id="8845001906332463065">取得說明</translation>
+<translation id="8881098542468797602">已通過測試</translation>
 <translation id="8910721771319628100">預設網絡超過延遲門檻</translation>
 <translation id="8919837981463578619">失敗 - 沒有紙匣</translation>
 <translation id="8928727111548978589">失敗 - 紙張已用完</translation>
@@ -207,4 +224,6 @@
 <translation id="910415269708673980">更新 <ph name="PRINCIPAL_NAME" /> 的票證</translation>
 <translation id="9106415115617144481">正在掃瞄第 <ph name="PAGE_NUMBER" /> 頁</translation>
 <translation id="9111102763498581341">解鎖</translation>
+<translation id="9149391708638971077">執行記憶體測試</translation>
+<translation id="982713511914535780">執行放電測試</translation>
 </translationbundle>

@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Printed</translation>
 <translation id="1979103255016296513">Password change overdue</translation>
 <translation id="1980044825731880088">CPU speed</translation>
+<translation id="2008685064673031089">Prime search</translation>
 <translation id="2080070583977670716">More settings</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Cancel print job</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Passed</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> attempts left</translation>
 <translation id="2391082728065870591">Send feedback report</translation>
+<translation id="2446553403094072641">Floating point accuracy</translation>
 <translation id="2461822463642141190">Current</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Scan</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Shut down</translation>
+<translation id="2878387241690264070">Discharged <ph name="RATE" /> in <ph name="NUM_SECONDS" /> seconds.</translation>
 <translation id="3008341117444806826">REFRESH</translation>
 <translation id="3009958530611748826">Select a folder to save to</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Select folder in the Files app…</translation>
 <translation id="4848429997038228357">RUNNING</translation>
 <translation id="4890353053343094602">Choose a new one immediately</translation>
+<translation id="4891842000192098784">Stress</translation>
 <translation id="4917889632206600977">Stopped – out of paper</translation>
 <translation id="4921665434385737356">Charged <ph name="RATE" /> in <ph name="NUM_SECONDS" /> seconds.</translation>
 <translation id="4932733599132424254">Date</translation>
+<translation id="498186245079027698">Check the scanner and try again. Make sure that there is enough local space to save scanned files.</translation>
 <translation id="4985509611418653372">Run</translation>
 <translation id="500920857929044050">Stop test</translation>
 <translation id="5154917547274118687">Memory</translation>
@@ -138,6 +143,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5551702563755460533">Find out more in the Help Centre</translation>
 <translation id="5635169860413004179">See report</translation>
 <translation id="5719918614880940190">This measures the CPU usage, and is an aggregation of all cores</translation>
+<translation id="5781694279199921985">Save session log</translation>
 <translation id="5797428682393400134">SUCCESS</translation>
 <translation id="5832805196449965646">Add Person</translation>
 <translation id="5895138241574237353">Restart</translation>
@@ -174,6 +180,8 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6766275201586212568">Failed DNS resolutions</translation>
 <translation id="6768237774506518020">High DNS resolution failure rate</translation>
 <translation id="6839141349259399400">Can't connect to scanners?</translation>
+<translation id="6853312040151791195">Discharging rate</translation>
+<translation id="6898743098396957679">Couldn't complete scanning</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> manages this device and has access to all user activity, including web pages visited, passwords and email.</translation>
 <translation id="714876143603641390">LAN connectivity</translation>
 <translation id="7162487448488904999">Gallery</translation>
@@ -186,12 +194,15 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7648838807254605802">High HTTPS latency</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7690294790491645610">Confirm new password</translation>
+<translation id="773153675489693198">Cycle count</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> test</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7855434858642800953">Scanned file saved!</translation>
 <translation id="7928373994957558460">Show file location</translation>
 <translation id="7936303884198020182">No name servers found</translation>
+<translation id="7960831585769876809">Temperature</translation>
 <translation id="8041089156583427627">Send Feedback</translation>
+<translation id="8075838845814659848">Remaining charge</translation>
 <translation id="808894953321890993">Change password</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">Place your document on the scanner and select <ph name="SPAN_BEGIN" />Scan<ph name="SPAN_END" /> to get started</translation>
@@ -219,6 +230,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8919837981463578619">Failed – Tray missing</translation>
 <translation id="8928727111548978589">Failed – Out of paper</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> attempts left</translation>
+<translation id="8968751544471797276">Charging rate</translation>
 <translation id="8970109610781093811">Run again</translation>
 <translation id="9088306295921699330">Current usage</translation>
 <translation id="910415269708673980">Refresh ticket for <ph name="PRINCIPAL_NAME" /></translation>

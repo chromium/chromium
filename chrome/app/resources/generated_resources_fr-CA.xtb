@@ -2150,7 +2150,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3441653493275994384">Écran</translation>
 <translation id="3441663102605358937">Connectez-vous à <ph name="ACCOUNT" /> de nouveau pour vérifier ce compte</translation>
 <translation id="3445047461171030979">Réponses rapides de l'Assistant Google</translation>
-<translation id="3445770710327978113">Pour revenir ici rapidement, installez cette application</translation>
 <translation id="3445925074670675829">Appareil USB-C</translation>
 <translation id="3446274660183028131">Veuillez lancer Parallels Desktop pour installer Windows.</translation>
 <translation id="344630545793878684">Lire vos données sur un nombre défini de sites Web</translation>
@@ -2634,7 +2633,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3955163004258753966">Une erreur s'est produite lors du démarrage de la mise à niveau</translation>
 <translation id="3955193568934677022">Autoriser les sites à lire le contenu protégé (recommandé)</translation>
 <translation id="3955896417885489542">Examiner les options de Google Play après la configuration</translation>
-<translation id="3956702100721821638">Impossible d'accéder à Google Play</translation>
 <translation id="3957079323242030166">Les données des sauvegardes ne comptent pas dans votre quota de stockage Google Disque.</translation>
 <translation id="3957844511978444971">Touchez « Accepter » pour confirmer votre sélection des paramètres de ces services Google.</translation>
 <translation id="3958088479270651626">Importation des favoris et des paramètres</translation>
@@ -7157,7 +7155,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="952992212772159698">Désactivé</translation>
 <translation id="956500788634395331">Vous êtes protégé contre les extensions potentiellement nuisibles</translation>
 <translation id="957960681186851048">Ce site a tenté de télécharger plusieurs fichiers automatiquement</translation>
-<translation id="9580706199804957">Impossible de se connecter aux services Google</translation>
 <translation id="958329785990007682">Bloquer JavaScript</translation>
 <translation id="960719561871045870">Code de l'opérateur</translation>
 <translation id="960987915827980018">Il reste environ 1 heure</translation>

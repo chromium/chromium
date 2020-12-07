@@ -2146,7 +2146,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3441653493275994384">Ekran</translation>
 <translation id="3441663102605358937">Ponovo se prijavite na <ph name="ACCOUNT" /> da biste verifikovali ovaj nalog</translation>
 <translation id="3445047461171030979">Brzi odgovori Google pomoćnika</translation>
-<translation id="3445770710327978113">Da biste se ovde brzo vraćali, instalirajte ovu aplikaciju</translation>
 <translation id="3445925074670675829">Uređaj sa USB priključkom tipa C</translation>
 <translation id="3446274660183028131">Pokrenite Parallels Desktop da biste instalirali Windows.</translation>
 <translation id="344630545793878684">Čitanje vaših podataka na više veb-sajtova</translation>
@@ -2630,7 +2629,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3955163004258753966">Greška pri pokretanju nadogradnje</translation>
 <translation id="3955193568934677022">Dozvoli sajtovima da puštaju zaštićeni sadržaj (preporučeno)</translation>
 <translation id="3955896417885489542">Pregledajte Google Play opcije posle podešavanja</translation>
-<translation id="3956702100721821638">Google Play nije dostupan</translation>
 <translation id="3957079323242030166">Rezervne kopije podataka ne ulaze u kvotu prostora na disku.</translation>
 <translation id="3957844511978444971">Dodirnite „Prihvati“ da biste potvrdili izbor podešavanja ovih Google usluga.</translation>
 <translation id="3958088479270651626">Uvezite obeleživače i podešavanja</translation>
@@ -7156,7 +7154,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="952992212772159698">Nije aktivirano</translation>
 <translation id="956500788634395331">Štitimo vas od potencijalno štetnih dodataka</translation>
 <translation id="957960681186851048">Ovaj sajt je pokušao da automatski preuzme više datoteka</translation>
-<translation id="9580706199804957">Povezivanje sa Google uslugama nije uspelo</translation>
 <translation id="958329785990007682">Blokiraj JavaScript</translation>
 <translation id="960719561871045870">Kôd mobilnog operatera</translation>
 <translation id="960987915827980018">Ostalo je oko sat vremena</translation>

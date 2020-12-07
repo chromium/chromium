@@ -168,6 +168,8 @@ Some features may be unavailable. Please specify a different profile directory o
 Google Chrome is unable to recover your settings.</translation>
 <translation id="556024056938947818">Google Chrome is trying to show passwords.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5655746611259367388">You can manage this and other Google Accounts that you've added for <ph name="USER_NAME" /> from one place in <ph name="LINK_BEGIN" />Settings<ph name="LINK_END" />.
+          Permissions that you have granted to websites in the Chrome Browser and apps from Google Play may apply to all accounts.</translation>
 <translation id="5657226924540934362">If a setting doesn't show on this page, look in your <ph name="LINK_BEGIN" />
       Chrome OS settings<ph name="LINK_END" /></translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> may be dangerous, so Chrome has blocked it.</translation>

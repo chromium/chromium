@@ -152,6 +152,7 @@
 <translation id="5334352251556557839">تعذّر تشغيل الوسائط</translation>
 <translation id="537648784377940524">يجب أن يكون الحد الأدنى للتاريخ (<ph name="MIN_DATE_OR_TIME" />
 ) قبل الحد الأقصى للتاريخ (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">موسّع، تم فتح مربع الحوار.</translation>
 <translation id="5406322316791861025">شكل</translation>
 <translation id="5425179576310518467">التاريخ الحالي</translation>
 <translation id="5453733299334684579">عنصر متفرع</translation>
@@ -168,6 +169,7 @@
 <translation id="5677946354068040947">خيارات إضافية</translation>
 <translation id="576709008726043716">مقدمة</translation>
 <translation id="57838592816432529">كتم الصوت</translation>
+<translation id="5787939484346677755">موسّع، خيارات إكمال تلقائي متوفّرة.</translation>
 <translation id="5860033963881614850">غير مفعّل</translation>
 <translation id="588258955323874662">ملء الشاشة</translation>
 <translation id="5888666972993069672">يتم الإرسال الآن إلى <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -181,6 +183,7 @@
 <translation id="6023896073578205740">مربع القائمة</translation>
 <translation id="6150588977291308318">قائمة مراجع</translation>
 <translation id="6164829606128959761">متر</translation>
+<translation id="6165053282446038410">موسّع، <ph name="COUNT" /> خيار إكمال تلقائي متوفّر.</translation>
 <translation id="6166809985690652833">كلمة ختامية</translation>
 <translation id="6209276755895393898">يبدو أن: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">الصفحة الحالية</translation>
@@ -215,12 +218,14 @@
 <translation id="693476918119313863">عنوان</translation>
 <translation id="6941933287844615239">تنزيل وسائط</translation>
 <translation id="6981594929165378967">إدراج</translation>
+<translation id="698788488269350478">موسّع</translation>
 <translation id="6989848892321993519">يُرجى إطالة هذا النص إلى <ph name="MIN_CHARACTERS" /> من الحروف أو أكثر (أنت الآن تستخدم حرفًا واحدًا).</translation>
 <translation id="7034405885550056553">اقتراح</translation>
 <translation id="709897737746224366">يُرجى مطابقة التنسيق المطلوب.</translation>
 <translation id="7102274145889307184">الموقع الجغرافي الحالي</translation>
 <translation id="7118469954320184356">لا يتوفر أي وصف.</translation>
 <translation id="7139483182332611405">تمهيد</translation>
+<translation id="7198226213493847604">زر قائمة منبثقة</translation>
 <translation id="7214187073215825913">معلومات المحتوى</translation>
 <translation id="7238347055216017155">التوكيد</translation>
 <translation id="7263440858009898357">يُرجى اختيار عنصر من القائمة.</translation>
@@ -288,6 +293,7 @@
 <translation id="8808573423886751634">فصل</translation>
 <translation id="8845239796550121995">يتم الآن الإرسال إلى جهاز التلفزيون</translation>
 <translation id="8851136666856101339">main</translation>
+<translation id="8861621546968757188">زر مربع حوار منبثق</translation>
 <translation id="8875657656876809964">خطأ في تشغيل الفيديو.</translation>
 <translation id="8889402386540077796">تدرج اللون</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> كيلوبايت</translation>

@@ -171,6 +171,7 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="2157851137955077194">To share something from your phone to another device, turn on sync in Chrome settings on both devices</translation>
 <translation id="2158408438301413340">Chrome couldn’t check all passwords</translation>
 <translation id="2169830938017475061">Now</translation>
+<translation id="2172688499998841696">Image descriptions are off</translation>
 <translation id="2175927920773552910">QR code</translation>
 <translation id="218608176142494674">Sharing</translation>
 <translation id="2195339740518523951">Get Chrome’s strongest security</translation>
@@ -208,6 +209,7 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 Touch and hold any word to search. To refine your search, select more or fewer words. To edit your search, open the panel, tap the icon to open in a new tab, and make your changes in the search box.</translation>
 <translation id="2459390580524506445">Enhanced voice search</translation>
 <translation id="246532703174860178">Share</translation>
+<translation id="247737702124049222">Image descriptions are on</translation>
 <translation id="2478076885740497414">Install app</translation>
 <translation id="2479148705183875116">Go to Settings</translation>
 <translation id="2482878487686419369">Notifications</translation>
@@ -313,6 +315,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3232754137068452469">Web App</translation>
 <translation id="3236059992281584593">1 min left</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3250563604907490871">Image descriptions will resume when you connect to Wi-Fi</translation>
 <translation id="3254409185687681395">Bookmark this page</translation>
 <translation id="3259831549858767975">Make everything on the page smaller</translation>
 <translation id="3264124641674805320">How to download content for later</translation>
@@ -678,7 +681,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5817918615728894473">Pair</translation>
 <translation id="583281660410589416">Unknown</translation>
 <translation id="5833984609253377421">Share link</translation>
-<translation id="5836192821815272682">Downloading Chrome Update…</translation>
+<translation id="5836192821815272682">Downloading Chrome update…</translation>
 <translation id="5853623416121554550">paused</translation>
 <translation id="5854512288214985237">No statistics or crash reports are sent to Google</translation>
 <translation id="5854790677617711513">Older than 30 days</translation>
@@ -897,6 +900,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="7274013316676448362">Blocked site</translation>
 <translation id="7286572596625053347">Change <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Rename unavailable</translation>
+<translation id="7291910923717764901">Image descriptions added for this page</translation>
 <translation id="7293171162284876153">To start sync, turn on 'Sync your Chrome data'.</translation>
 <translation id="7293429513719260019">Select language</translation>
 <translation id="729975465115245577">Your device doesn’t have an app to store the passwords file.</translation>

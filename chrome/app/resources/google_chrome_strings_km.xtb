@@ -56,6 +56,7 @@
 <translation id="2309047409763057870">នេះគឺជាការដំឡើេង Google Chrome បន្ទាប់បន្សំ ហើយវាមិនអាចធ្វើជាកម្មវិធីរុករកលំនាំដើមរបស់អ្នកបានទេ។</translation>
 <translation id="2348335408836342058">Chrome ត្រូវការ​ការអនុញ្ញាត​ដើម្បី​ចូលប្រើ​កាមេរ៉ា និង​មីក្រូហ្វូន​របស់អ្នក​សម្រាប់​ទំព័រនេះ</translation>
 <translation id="234869673307233423">Chrome មិន​អាចពិនិត្យ​ពាក្យសម្ងាត់របស់អ្នកបានទេ។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។</translation>
+<translation id="235650106824528204">អ្នកគ្រប់គ្រងកម្រងព័ត៌មានការងារអាចលុបទិន្នន័យ Chrome ទាំងឡាយ ដែលបង្កើតអំឡុងពេលប្រើកម្រងព័ត៌មាននេះ (ដូចជាការបង្កើតចំណាំ ប្រវត្តិ ពាក្យសម្ងាត់ និងការកំណត់ផ្សេងទៀត)។ <ph name="LEARN_MORE" /></translation>
 <translation id="2429317896000329049">Google Chrome មិនអាចធ្វើសមកម្មទិន្នន័យរបស់អ្នកទេ ពីព្រោះ សមកម្ម មិនមានសម្រាប់ដែនរបស់អ្នកទេ។</translation>
 <translation id="2467438592969358367">Google Chrome ចង់​នាំចេញពាក្យ​សម្ងាត់​របស់អ្នក​។ សូមវាយ​បញ្ចូលពាក្យ​សម្ងាត់ Windows របស់អ្នក​ដើម្បីអនុញ្ញាត​ការនាំចេញ​នេះ។</translation>
 <translation id="2485422356828889247">លុបការតំឡើង</translation>
@@ -177,12 +178,14 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="573759479754913123">អំពី Chrome OS</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">មិន​អាច​ចាប់ផ្ដើម Chrome បានទេ។ សូមព្យាយាម​ម្ដង​ទៀត។</translation>
+<translation id="5851757216820085940">ប្រសិនបើអ្នកមានគណនី Google ច្រើន អ្នកអាចបញ្ចូលគណនីទាំងនោះទៅក្នុង <ph name="DEVICE_TYPE" /> របស់អ្នក។ គណនីរបស់អ្នកនឹងអាចប្រើបាននៅក្នុងកម្មវិធីរុករកតាមអ៊ីនធឺណិត Chrome និង Play Store ព្រមទាំងសេវាកម្មផ្សេងៗដូចជា Gmail, ថាស និង YouTube ជាដើម។<ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome កំពុង​ព្យាយាម​កែ​ពាក្យសម្ងាត់​។</translation>
 <translation id="5895138241574237353">ចាប់ផ្តើមឡើងវិញ</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ការចូល​បណ្ដាញ</translation>
 <translation id="5940385492829620908">គេហទំព័រ ចំណាំ និងរបស់ផ្សេងទៀតរបស់ Chrome របស់អ្នកនៅទីនេះ។</translation>
 <translation id="5941830788786076944">ដាក់ Google Chrome ជាកម្មវិធីរុករកលំនាំដើម</translation>
 <translation id="6070348360322141662">ដើម្បី​ទទួលបាន​សុវត្ថិភាព​បន្ថែម Google Chrome នឹង​អ៊ិនគ្រីប​ទិន្នន័យ​របស់​អ្នក</translation>
+<translation id="608006075545470555">បញ្ចូលកម្រងព័ត៌មានការងារទៅក្នុងកម្មវិធីរុករកតាមអ៊ីនធឺណិតនេះ</translation>
 <translation id="6113794647360055231">Chrome កាន់តែប្រសើរជាងមុន</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
@@ -194,10 +197,12 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="6368958679917195344">Chrome OS អាចបង្កើតឡើងដោយ <ph name="BEGIN_LINK_CROS_OSS" />កម្មវិធីប្រភពបើកចំហរ<ph name="END_LINK_CROS_OSS" /> បន្ថែម។</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">កំពុងអាប់ដេត Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6568793831116033768">ប្រព័ន្ធ Chrome OS</translation>
 <translation id="6650333065969705433">ដើម្បីប្រើ Rosetta ឱ្យចាក់មេឌៀ​ដែលមាន​ការការពារ អ្នកត្រូវតែ​ចាប់ផ្ដើម Chrome ឡើងវិញ។</translation>
 <translation id="6676384891291319759">ចូលប្រើអ៊ីនធឺណិត</translation>
 <translation id="6679975945624592337">អនុញ្ញាត​ឱ្យ Google Chrome ដំណើរការ​នៅ​ផ្ទៃខាងក្រោយ</translation>
 <translation id="6750954913813541382">Chrome ផ្ញើអក្សរដែលអ្នក​វាយបញ្ចូលនៅក្នុង​កម្មវិធីរុករកតាមអ៊ីនធឺណិតទៅ Google ដើម្បីកែ​កំហុសអក្ខរាវិរុទ្ធ</translation>
+<translation id="6755885556185485672">Chrome OS មិនបានបិទត្រឹមត្រូវទេ។</translation>
 <translation id="677276454032249905">នៅ​តែ​ចង់​ចាក​ចេញពី Chrome ឬ?</translation>
 <translation id="683440813066116847">វិន័យត្រលប់ចូលសម្រាប់  Google Chrome Canary ដើម្បីអនុញ្ញាតចរាចរណ៍ mDNS។</translation>
 <translation id="6885412569789873916">កម្មវិធី Chrome បេតា</translation>
@@ -256,6 +261,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="8498858610309223613">ការធ្វើបច្ចុប្បន្នភាព​ផ្នែកសុវត្ថិភាព​ពិសេសសម្រាប់ Google Chrome ទើបតែ​ត្រូវបានអនុវត្ត។ សូមចាប់ផ្ដើម​ឡើងវិញឥឡូវនេះ នោះយើងនឹង​ស្ដារផ្ទាំង​របស់អ្នក។</translation>
 <translation id="8521348052903287641">ក្បួនត្រលប់ចូលសម្រាប់ Google Chrome Dev ដែលត្រូវអនុញ្ញាតលើការធ្វើចរាចររបស់ mDNS ។</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8550334526674375523">កម្រងព័ត៌មានការងារនេះគឺដាច់ដោយឡែកពីកម្រង​ព័ត៌មាន​ផ្ទាល់​ខ្លួនរបស់អ្នកទាំងស្រុង។</translation>
 <translation id="8556340503434111824">មានកំណែ Google Chrome ថ្មី ហើយវាលឿនជាងពេលណាទាំងអស់។</translation>
 <translation id="861359755029082151">Rosetta អនុញ្ញាតឱ្យ Chrome ចាក់​មេឌៀដែលមាន​ការការពារ​នៅលើ​ទំព័រនេះ។</translation>
 <translation id="8614913330719544658">Google Chrome មិនឆ្លើយតប។ បើកដំណើរការឡើងវិញឥឡូវនេះ?</translation>
@@ -274,6 +280,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="8907709077090383765">ដើម្បីអនុញ្ញាតឱ្យ Chrome ចាក់​មេឌៀដែលមាន​ការការពារ អ្នកត្រូវ​ដំឡើង Rosetta។ តើអ្នកចង់ដំឡើង​វាឥឡូវនេះ​ដែរទេ?</translation>
 <translation id="8914504000324227558">ដំណើរការ Chrome ឡើងវិញ</translation>
 <translation id="8922193594870374009">ដើម្បីផ្ញើ​លេខទូរសព្ទពី <ph name="ORIGIN" /> ទៅទូរសព្ទ Android របស់អ្នក សូមចូល Chrome នៅលើឧបករណ៍​ទាំងពីរ។</translation>
+<translation id="8986207147630327271">អ្នកកំពុងបញ្ចូលកម្រងព័ត៌មានការងារទៅក្នុងកម្មវិធីរុករកតាមអ៊ីនធឺណិតនេះ និងផ្ដល់លទ្ធភាពឱ្យអ្នកគ្រប់គ្រងរបស់អ្នកគ្រប់គ្រងតែកម្រងព័ត៌មានការងារប៉ុណ្ណោះ។</translation>
 <translation id="8999208279178790196">{0,plural, =0{មាន​កំណែថ្មី​របស់ Chrome ហើយ}=1{មាន​កំណែថ្មី​របស់ Chrome ហើយ}other{មាន​កំណែថ្មី​របស់ Chrome រយៈពេល # ថ្ងៃហើយ}}</translation>
 <translation id="9026991721384951619">Chrome OS មិនអាចធ្វើសមកម្មទិន្នន័យរបស់អ្នកទេ ពីព្រោះព័ត៌មានលំអិតគណនីចូលរបស់អ្នកហួសសម័យហើយ។</translation>
 <translation id="9067395829937117663">Google Chrome តម្រូវឲ្យមានប្រព័ន្ធប្រតិបត្តិការ Windows 7 ឬខ្ពស់ជាងនេះ។</translation>

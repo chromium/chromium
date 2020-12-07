@@ -165,9 +165,6 @@
       Dit beleid is niet van toepassing op kiosk-gebruikers.
 
       Waarschuwing: Met Wipe en MinimalMigrate worden lokale gegevens verwijderd.</translation>
-<translation id="1247850578871017740">Als je het beleid instelt op een geldige waarde, gebruikt <ph name="PRODUCT_NAME" /> geen SSL/TLS-versies lager dan de opgegeven versie. Niet-herkende waarden worden genegeerd.
-
-      Als dit beleid niet is ingesteld, geeft <ph name="PRODUCT_NAME" /> een fout weer voor TLS 1.0 en TLS 1.1. De gebruiker kan deze fout wel omzeilen.</translation>
 <translation id="1252536192437793850">Sites toestaan om gebruikers toestemming te vragen voor toegang tot een seriële poort</translation>
 <translation id="125655429495551011">Als je het beleid instelt op een tekenreeks, wordt de tekenreeks tijdens het DHCP-verzoek gebruikt als hostnaam van het apparaat. De tekenreeks kan de variabelen <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" /> en <ph name="LOCATION_PLACEHOLDER" /> bevatten, die worden vervangen door waarden op het apparaat voordat de tekenreeks als hostnaam wordt gebruikt. De waarden moeten worden vervangen door een geldige hostnaam volgens RFC 1035, gedeelte 3.1.
 
@@ -324,11 +321,6 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
 
           Als je dit beleid instelt, kunnen gebruikers dit niet wijzigen of overschrijven.</translation>
 <translation id="1502843533062797703">Blokkering van injectie van software van derden inschakelen</translation>
-<translation id="1503863096120373385">Hiermee configureer je de instellingen voor de levensduur van browsergegevens voor <ph name="PRODUCT_NAME" />.
-      Dit beleid beheert de levensduur van geselecteerde browsergegevens. Dit beleid is niet van kracht als synchronisatie is ingeschakeld.
-      De beschikbare gegevenstypen zijn <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> en <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
-      Chrome verwijdert regelmatig gegevens van geselecteerde typen die ouder zijn dan <ph name="TIME_TO_LIVE_IN_HOURS" />. Aangezien deze verwijdering alleen met bepaalde intervallen plaatsvindt, kan de levensduur van bepaalde gegevens iets langer zijn, maar nooit langer dan twee keer de verwachte <ph name="TIME_TO_LIVE_IN_HOURS" />.
-      </translation>
 <translation id="1509692106376861764">Dit beleid wordt niet meer gebruikt sinds <ph name="PRODUCT_NAME" /> versie 29.</translation>
 <translation id="1512974677514081818">Biedt configuraties voor bedrijfsprinters die aan apparaten zijn gekoppeld.
 
@@ -984,6 +976,7 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
       Als je dit beleid niet instelt, is de functie 'Klik om te bellen' standaard ingeschakeld.</translation>
 <translation id="2482676533225429905">Systeemeigen berichten</translation>
 <translation id="2483146640187052324">Netwerkacties voorspellen voor elke netwerkverbinding</translation>
+<translation id="2496180316473517155">Browsegeschiedenis</translation>
 <translation id="2498238926436517902">Archief altijd automatisch verbergen</translation>
 <translation id="250022556568924228">Als je het beleid instelt, downloadt <ph name="PRODUCT_OS_NAME" /> de servicevoorwaarden en geeft deze aan gebruikers weer als er een lokale accountsessie op het apparaat wordt gestart. Gebruikers kunnen alleen inloggen bij de sessie nadat ze de servicevoorwaarden hebben geaccepteerd.
 
@@ -1129,6 +1122,7 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
 <translation id="2702023190395322609">Media-aanbevelingen inschakelen</translation>
 <translation id="2706708761587205154">Afdrukken alleen toestaan met pincode</translation>
 <translation id="2707873794476722903">Safe Browsing is actief in de standaardmodus.</translation>
+<translation id="2709516037105925701">Automatisch invullen</translation>
 <translation id="2714359695399346815">Als je dit beleid inschakelt of niet instelt, kun je STUN-servers gebruiken, zodat externe clients dit apparaat kunnen zien en er verbinding mee kunnen maken, zelfs door een firewall.
 
       Als je het beleid uitschakelt terwijl uitgaande UDP-verbindingen worden gefilterd door de firewall, staat dit apparaat alleen verbindingen toe met clientapparaten binnen het lokale netwerk.</translation>

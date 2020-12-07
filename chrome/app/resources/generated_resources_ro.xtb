@@ -2148,7 +2148,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3441653493275994384">Ecran</translation>
 <translation id="3441663102605358937">Conectează-te din nou la <ph name="ACCOUNT" /> pentru a confirma contul</translation>
 <translation id="3445047461171030979">Răspunsuri rapide de la Asistentul Google</translation>
-<translation id="3445770710327978113">Ca să revii rapid aici, instalează această aplicație</translation>
 <translation id="3445925074670675829">Dispozitiv USB-C</translation>
 <translation id="3446274660183028131">Lansează Parallels Desktop pentru a instala Windows.</translation>
 <translation id="344630545793878684">Citește datele de pe un număr de site-uri</translation>
@@ -2632,7 +2631,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3955163004258753966">Eroare la începerea upgrade-ului</translation>
 <translation id="3955193568934677022">Permite site-urilor să redea conținutul protejat (recomandat)</translation>
 <translation id="3955896417885489542">Examinează opțiunile Google Play după configurare</translation>
-<translation id="3956702100721821638">Google Play nu a putut fi accesat</translation>
 <translation id="3957079323242030166">Datele cărora li s-a făcut backup nu sunt luate în considerare la calcularea cotei de stocare Drive.</translation>
 <translation id="3957844511978444971">Atinge „Acceptă” ca să confirmi selectarea acestor setări pentru serviciile Google.</translation>
 <translation id="3958088479270651626">Importați marcaje și setări</translation>
@@ -7156,7 +7154,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="952992212772159698">Neactivat</translation>
 <translation id="956500788634395331">Beneficiezi de protecție împotriva extensiilor potențial dăunătoare</translation>
 <translation id="957960681186851048">Acest site a încercat să descarce automat mai multe fișiere</translation>
-<translation id="9580706199804957">Nu s-a putut conecta la serviciile Google</translation>
 <translation id="958329785990007682">Blochează JavaScript</translation>
 <translation id="960719561871045870">Cod operator</translation>
 <translation id="960987915827980018">A mai rămas aproape 1 oră</translation>

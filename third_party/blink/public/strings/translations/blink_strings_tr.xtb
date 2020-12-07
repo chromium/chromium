@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">Lütfen başına "<ph name="ATSIGN" />" ekleyin. "<ph name="INVALIDADDRESS" />" adresi eksik.</translation>
 <translation id="5334352251556557839">Medya oynatılamıyor.</translation>
 <translation id="537648784377940524">Minimum tarih (<ph name="MIN_DATE_OR_TIME" />), Maksimum tarihten (<ph name="MAX_DATE_OR_TIME" />) önce gelmelidir.</translation>
+<translation id="5378437566635403538">genişletildi, iletişim kutusu açıldı.</translation>
 <translation id="5406322316791861025">figür</translation>
 <translation id="5425179576310518467">şu anki tarih</translation>
 <translation id="5453733299334684579">ağaç öğesi</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">diğer seçenekler</translation>
 <translation id="576709008726043716">giriş</translation>
 <translation id="57838592816432529">Sesi kapat</translation>
+<translation id="5787939484346677755">genişletildi, otomatik tamamlama seçenekleri mevcut.</translation>
 <translation id="5860033963881614850">Kapalı</translation>
 <translation id="588258955323874662">Tam ekran</translation>
 <translation id="5888666972993069672">Şimdi <ph name="DEVICE_FRIENDLY_NAME" /> adlı cihaza yayınlanıyor</translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">liste kutusu</translation>
 <translation id="6150588977291308318">kaynakça</translation>
 <translation id="6164829606128959761">ölçüm aracı</translation>
+<translation id="6165053282446038410">genişletildi, <ph name="COUNT" /> otomatik tamamlama seçeneği mevcut.</translation>
 <translation id="6166809985690652833">sonsöz</translation>
 <translation id="6209276755895393898">Resimdeki şu olabilir: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">geçerli sayfa</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">üst bilgi</translation>
 <translation id="6941933287844615239">medyayı indir</translation>
 <translation id="6981594929165378967">ekleme</translation>
+<translation id="698788488269350478">genişletildi.</translation>
 <translation id="6989848892321993519">Lütfen bu metni <ph name="MIN_CHARACTERS" /> karakter veya daha fazla olacak şekilde uzatın (şu anda 1 karakter kullanıyorsunuz).</translation>
 <translation id="7034405885550056553">öneri</translation>
 <translation id="709897737746224366">Lütfen istenen biçimi eşleştirin.</translation>
 <translation id="7102274145889307184">geçerli konum</translation>
 <translation id="7118469954320184356">Açıklama yok.</translation>
 <translation id="7139483182332611405">önsöz</translation>
+<translation id="7198226213493847604">menü pop-up düğmesi</translation>
 <translation id="7214187073215825913">içerik bilgisi</translation>
 <translation id="7238347055216017155">vurgu</translation>
 <translation id="7263440858009898357">Lütfen listeden bir öğe seçin.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">bölüm</translation>
 <translation id="8845239796550121995">Şimdi TV'nize yayınlanıyor</translation>
 <translation id="8851136666856101339">main</translation>
+<translation id="8861621546968757188">iletişim kutusu pop-up düğmesi</translation>
 <translation id="8875657656876809964">Video oynatma hatası</translation>
 <translation id="8889402386540077796">Ton</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

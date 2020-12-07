@@ -540,7 +540,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="158849752021629804">Need home network</translation>
 <translation id="1588870296199743671">Open Link With...</translation>
-<translation id="1589055389569595240">Show Spelling and Grammar</translation>
+<translation id="1589055389569595240">Show spelling and grammar</translation>
 <translation id="1591679663873027990">Give Parallels Desktop permission to access USB devices. Parallels Desktop won't remember a USB device after it's removed.</translation>
 <translation id="1593594475886691512">Formatting...</translation>
 <translation id="159359590073980872">Image Cache</translation>
@@ -871,9 +871,10 @@
 <translation id="1954813140452229842">Error mounting share. Please check your credentials and try again.</translation>
 <translation id="1956050014111002555">The file contained multiple certificates, none of which were imported:</translation>
 <translation id="1956390763342388273">This will upload all files from '<ph name="FOLDER_PATH" />'. Only do this if you trust the site.</translation>
+<translation id="1960158217849594135">Save username to your Google Account?</translation>
 <translation id="196040970347962278">Establish an Internet connection first</translation>
 <translation id="1962233722219655970">This page uses a Native Client app that doesn't work on your computer.</translation>
-<translation id="1963227389609234879">Remove All</translation>
+<translation id="1963227389609234879">Remove all</translation>
 <translation id="1963976881984600709">Standard protection</translation>
 <translation id="196425401113508486">Highlight the cursor when moving</translation>
 <translation id="1965624977906726414">Has no special permissions.</translation>
@@ -1003,7 +1004,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2124930039827422115">{1,plural, =1{Rated <ph name="AVERAGE_RATING" /> by one user.}other{Rated <ph name="AVERAGE_RATING" /> by # users.}}</translation>
 <translation id="2126167708562367080">Sync is disabled by your administrator.</translation>
 <translation id="2127372758936585790">Low-power charger</translation>
-<translation id="212862741129535676">Frequency State Occupancy Percentage</translation>
+<translation id="212862741129535676">Frequency state occupancy percentage</translation>
 <translation id="212876957201860463">Preparing to set up your mobile device…</translation>
 <translation id="2129825002735785149">Update plug-in</translation>
 <translation id="2131077480075264">Unable to install "<ph name="APP_NAME" />" because it is not allowed by "<ph name="IMPORT_NAME" />"</translation>
@@ -1990,7 +1991,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3266179261140759675">Block closed sites from sending and receiving data</translation>
 <translation id="3266274118485960573">Safety check is running.</translation>
 <translation id="3267726687589094446">Continue allowing automatic downloads of multiple files</translation>
-<translation id="3268451620468152448">Open Tabs</translation>
+<translation id="3268451620468152448">Open tabs</translation>
 <translation id="3269069891205016797">Your information will be removed from the device when you sign out.</translation>
 <translation id="3269093882174072735">Load image</translation>
 <translation id="3269612321104318480">Light teal and white</translation>
@@ -2147,7 +2148,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3441653493275994384">Screen</translation>
 <translation id="3441663102605358937">Sign in to <ph name="ACCOUNT" /> again to verify this account</translation>
 <translation id="3445047461171030979">Google Assistant quick answers</translation>
-<translation id="3445770710327978113">To get back to here quickly, install this app</translation>
 <translation id="3445925074670675829">USB-C device</translation>
 <translation id="3446274660183028131">Please launch Parallels Desktop to install Windows.</translation>
 <translation id="344630545793878684">Read your data on a number of websites</translation>
@@ -2241,7 +2241,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3550593477037018652">Disconnect mobile network</translation>
 <translation id="3550915441744863158">Chrome updates automatically so you always have the freshest version</translation>
 <translation id="3551320343578183772">Close Tab</translation>
-<translation id="3552780134252864554">Cleared on Exit</translation>
+<translation id="3552780134252864554">Cleared on exit</translation>
 <translation id="3555812735919707620">Remove extension</translation>
 <translation id="3556000484321257665">Your search engine was changed to <ph name="URL" />.</translation>
 <translation id="3556433843310711081">Your manager can unblock it for you</translation>
@@ -2342,6 +2342,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3653999333232393305">Continue allowing <ph name="HOST" /> to access your microphone</translation>
 <translation id="3654045516529121250">Read your accessibility settings</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{It has permanent access to one file.}other{It has permanent access to # files.}}</translation>
+<translation id="3658871634334445293">TrackPoint acceleration</translation>
 <translation id="3660234220361471169">Untrusted</translation>
 <translation id="3664511988987167893">Extension Icon</translation>
 <translation id="3665589677786828986">Chrome detected that some of your settings were corrupted by another program and reset them to their original defaults.</translation>
@@ -2631,7 +2632,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3955163004258753966">Error starting upgrade</translation>
 <translation id="3955193568934677022">Allow sites to play protected content (recommended)</translation>
 <translation id="3955896417885489542">Review Google Play options following setup</translation>
-<translation id="3956702100721821638">Couldn't reach Google Play</translation>
 <translation id="3957079323242030166">Backup data will not count towards your Drive storage quota.</translation>
 <translation id="3957844511978444971">Tap 'Accept' to confirm your selection of these Google services settings.</translation>
 <translation id="3958088479270651626">Import bookmarks and settings</translation>
@@ -2770,6 +2770,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="412730574613779332">Speedy</translation>
 <translation id="4130199216115862831">Device Log</translation>
 <translation id="4130207949184424187">This extension has changed the page that is shown when you search from the Omnibox.</translation>
+<translation id="4130344535649650885">Save password to your Google Account?</translation>
 <translation id="4130750466177569591">I agree</translation>
 <translation id="413121957363593859">Components</translation>
 <translation id="4131410914670010031">Black and white</translation>
@@ -3289,6 +3290,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4788092183367008521">Please check your network connection and try again.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> photo</translation>
 <translation id="4791037424585594169">(UDP)</translation>
+<translation id="4792290259143007505">Enable TrackPoint acceleration</translation>
 <translation id="4792711294155034829">&amp;Report an Issue...</translation>
 <translation id="4794810983896241342">Updates are managed by <ph name="BEGIN_LINK" />your administrator<ph name="END_LINK" /></translation>
 <translation id="479536056609751218">Web Page, HTML Only</translation>
@@ -4044,6 +4046,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5677928146339483299">Blocked</translation>
 <translation id="5678550637669481956">Read and write access to <ph name="VOLUME_NAME" /> has been granted.</translation>
 <translation id="5678955352098267522">Read your data on <ph name="WEBSITE_1" /></translation>
+<translation id="5680050361008726776">Remove '<ph name="ESIM_PROFILE_NAME" />'?</translation>
 <translation id="5684181005476681636">Wi-Fi details</translation>
 <translation id="5684661240348539843">Asset Identifier</translation>
 <translation id="5687326903064479980">Time Zone</translation>
@@ -5045,7 +5048,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6848388270925200958">At the moment, you have some cards that can only be used on this device</translation>
 <translation id="6850286078059909152">Text colour</translation>
 <translation id="6851181413209322061">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. If additional Web &amp; App Activity is turned on for your child, this data may be saved to their Google Account.</translation>
-<translation id="6851497530878285708">App Enabled</translation>
+<translation id="6851497530878285708">App enabled</translation>
 <translation id="6853388645642883916">Updater sleeping</translation>
 <translation id="68541483639528434">Close other tabs</translation>
 <translation id="6855892664589459354">Crostini backup and restore</translation>
@@ -5255,6 +5258,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7077829361966535409">The sign-in page failed to load using the current proxy settings. Please <ph name="GAIA_RELOAD_LINK_START" />try to sign in again<ph name="GAIA_RELOAD_LINK_END" /> or use different <ph name="PROXY_SETTINGS_LINK_START" />proxy settings<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">All networks</translation>
 <translation id="7078386829626602215">No device detected <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="7079716540084905538">Add a secondary Google Account for <ph name="USER_NAME" /></translation>
 <translation id="708060913198414444">C&amp;opy audio address</translation>
 <translation id="7081952801286122383">You're incognito</translation>
 <translation id="708278670402572152">Disconnect to enable scanning</translation>
@@ -5622,6 +5626,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7520766081042531487">Incognito portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7522255036471229694">Say 'Ok Google'</translation>
+<translation id="7523585675576642403">Rename profile</translation>
 <translation id="7525067979554623046">Create</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{1 more}other{{NUM_DOWNLOADS} more}}</translation>
 <translation id="7526989658317409655">Placeholder</translation>
@@ -7154,7 +7159,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="952992212772159698">Not activated</translation>
 <translation id="956500788634395331">You're protected from potentially harmful extensions</translation>
 <translation id="957960681186851048">This site attempted to download multiple files automatically</translation>
-<translation id="9580706199804957">Couldn’t connect with Google services</translation>
 <translation id="958329785990007682">Block Javascript</translation>
 <translation id="960719561871045870">Operator code</translation>
 <translation id="960987915827980018">About 1 hour left</translation>

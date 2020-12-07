@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">Введіть частину електронної адреси до знака "<ph name="ATSIGN" />". Електронна адреса "<ph name="INVALIDADDRESS" />" неповна.</translation>
 <translation id="5334352251556557839">Не вдалося відтворити медіавміст.</translation>
 <translation id="537648784377940524">Мінімальна дата (<ph name="MIN_DATE_OR_TIME" />) має передувати максимальній (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">розгорнуто, вікно відкрито.</translation>
 <translation id="5406322316791861025">фігура</translation>
 <translation id="5425179576310518467">поточна дата</translation>
 <translation id="5453733299334684579">елемент дерева</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">більше опцій</translation>
 <translation id="576709008726043716">вступ</translation>
 <translation id="57838592816432529">Вимкнути звук</translation>
+<translation id="5787939484346677755">розгорнуто, доступні опції автозавершення.</translation>
 <translation id="5860033963881614850">Вимк.</translation>
 <translation id="588258955323874662">Повноекранний режим</translation>
 <translation id="5888666972993069672">Транслюється на пристрій <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">вікно списку</translation>
 <translation id="6150588977291308318">бібліографія</translation>
 <translation id="6164829606128959761">вимірювач</translation>
+<translation id="6165053282446038410">розгорнуто, доступні опції автозавершення: <ph name="COUNT" />.</translation>
 <translation id="6166809985690652833">післямова</translation>
 <translation id="6209276755895393898">Схоже, на цьому зображенні <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">поточна сторінка</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">заголовок</translation>
 <translation id="6941933287844615239">завантажити медіафайл</translation>
 <translation id="6981594929165378967">вставлення</translation>
+<translation id="698788488269350478">розгорнуто.</translation>
 <translation id="6989848892321993519">У тексті має бути не менше стількох символів: <ph name="MIN_CHARACTERS" />. Наразі ви ввели 1 символ.</translation>
 <translation id="7034405885550056553">пропозиція</translation>
 <translation id="709897737746224366">Виберіть потрібний формат.</translation>
 <translation id="7102274145889307184">поточне місцезнаходження</translation>
 <translation id="7118469954320184356">Немає опису.</translation>
 <translation id="7139483182332611405">передмова</translation>
+<translation id="7198226213493847604">кнопка відкриття меню</translation>
 <translation id="7214187073215825913">інформація про контент</translation>
 <translation id="7238347055216017155">виділення</translation>
 <translation id="7263440858009898357">Виберіть елемент зі списку.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">розділ</translation>
 <translation id="8845239796550121995">Транслюється на телевізор</translation>
 <translation id="8851136666856101339">головний</translation>
+<translation id="8861621546968757188">кнопка відкриття вікна</translation>
 <translation id="8875657656876809964">Помилка відтворення відео</translation>
 <translation id="8889402386540077796">Тон</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> КБ</translation>

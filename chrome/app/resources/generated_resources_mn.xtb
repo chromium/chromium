@@ -2142,7 +2142,6 @@
 <translation id="3441653493275994384">Дэлгэц</translation>
 <translation id="3441663102605358937">Энэ бүртгэлийг баталгаажуулахын тулд <ph name="ACCOUNT" />-д нэвтэрнэ үү</translation>
 <translation id="3445047461171030979">Google Туслахын шуурхай хариултууд</translation>
-<translation id="3445770710327978113">Ийшээ шуурхай буцаж очихын тулд энэ аппыг суулгана уу</translation>
 <translation id="3445925074670675829">USB-C төхөөрөмж</translation>
 <translation id="3446274660183028131">Windows-г суулгахын тулд Parallels Desktop-г эхлүүлнэ үү.</translation>
 <translation id="344630545793878684">Олон тооны веб хуудсууд дээр байгаа өөрийнхөө мэдээллийг уншина уу</translation>
@@ -2625,7 +2624,6 @@
 <translation id="3955163004258753966">Дэвшүүлэлтийг эхлүүлэхэд алдаа гарлаа</translation>
 <translation id="3955193568934677022">Сайтад хамгаалсан агуулгыг тоглохыг зөвшөөрөх (санал болгосон)</translation>
 <translation id="3955896417885489542">Тохируулгын дараа Google Play-н сонголтыг үнэлэх</translation>
-<translation id="3956702100721821638">Google Play-д холбогдож чадсангүй</translation>
 <translation id="3957079323242030166">Нөөцлөлтийн өгөгдөл нь таны Драйв сангийн багтаамжид нөлөөлөхгүй.</translation>
 <translation id="3957844511978444971">Google-н эдгээр үйлчилгээний тохиргооны сонголтоо баталгаажуулахын тулд “Зөвшөөрөх” гэснийг товшино уу.</translation>
 <translation id="3958088479270651626">Хайлтын жагсаалтууд болон тохиргоонуудыг импортолж авах</translation>
@@ -7141,7 +7139,6 @@
 <translation id="952992212772159698">Идэвхжээгүй байна</translation>
 <translation id="956500788634395331">Таныг аюултай байж болзошгүй өргөтгөлөөс хамгаалж байна</translation>
 <translation id="957960681186851048">Энэ сайт автоматаар олон файл татахаар оролдсон</translation>
-<translation id="9580706199804957">Google-н үйлчилгээнд холбогдож чадсангүй</translation>
 <translation id="958329785990007682">JavaScript-г блоклоно</translation>
 <translation id="960719561871045870">Операторын код</translation>
 <translation id="960987915827980018">Ойролцоогоор 1 цаг үлдсэн байна</translation>

@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">অনুগ্ৰহ কৰি '<ph name="ATSIGN" />'ৰ পূর্বৰ অংশ দিয়ক। '<ph name="INVALIDADDRESS" />' অসম্পূর্ণ হৈছে।</translation>
 <translation id="5334352251556557839">মিডিয়া প্লে' কৰিব পৰা নগ'ল।</translation>
 <translation id="537648784377940524">সৰ্বনিম্ন তাৰিখ (<ph name="MIN_DATE_OR_TIME" />) সৰ্বোচ্চ তাৰিখ (<ph name="MAX_DATE_OR_TIME" />)তকৈ আগতে হ’বই লাগিব।</translation>
+<translation id="5378437566635403538">বিস্তাৰ কৰা হ’ল, ডায়লগ খোলা হৈছে।</translation>
 <translation id="5406322316791861025">আকাৰ</translation>
 <translation id="5425179576310518467">বৰ্তমানৰ তাৰিখ</translation>
 <translation id="5453733299334684579">ট্ৰীত থকা বস্তু</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">অধিক বিকল্প</translation>
 <translation id="576709008726043716">পৰিচয়</translation>
 <translation id="57838592816432529">মিউট কৰক</translation>
+<translation id="5787939484346677755">বিস্তাৰ কৰা হ’ল, স্বয়ংক্ৰিয়ভাৱে সম্পূৰ্ণ কৰা বিকল্প উপলব্ধ।</translation>
 <translation id="5860033963881614850">অফ আছে</translation>
 <translation id="588258955323874662">পূৰ্ণস্ক্ৰীণ</translation>
 <translation id="5888666972993069672">এতিয়া <ph name="DEVICE_FRIENDLY_NAME" />ত কাষ্ট কৰি থকা হৈছে</translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">সূচী বাকচ</translation>
 <translation id="6150588977291308318">গ্ৰন্থপঞ্জী</translation>
 <translation id="6164829606128959761">মিটাৰ</translation>
+<translation id="6165053282446038410">বিস্তাৰ কৰা হ’ল, <ph name="COUNT" /> স্বয়ংক্ৰিয়ভাৱে সম্পূৰ্ণ কৰা বিকল্প উপলব্ধ।</translation>
 <translation id="6166809985690652833">উত্তৰকথন</translation>
 <translation id="6209276755895393898">এনেকুৱা যেন লাগিছে: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">বৰ্তমানৰ পৃষ্ঠা</translation>
@@ -213,12 +216,14 @@
 <translation id="693476918119313863">হে’ডাৰ</translation>
 <translation id="6941933287844615239">মিডিয়া ডাউনল'ড কৰক</translation>
 <translation id="6981594929165378967">অন্তর্ভুক্তিকৰণ</translation>
+<translation id="698788488269350478">বিস্তাৰ কৰা হ’ল।</translation>
 <translation id="6989848892321993519">অনুগ্ৰহ কৰি এই পাঠটো <ph name="MIN_CHARACTERS" /> বৰ্ণলৈ বৃদ্ধি কৰক (আপুনি বৰ্তমান ১টা বৰ্ণ ব্যৱহাৰ কৰিছে)।</translation>
 <translation id="7034405885550056553">পৰামৰ্শ</translation>
 <translation id="709897737746224366">অনুগ্ৰহ কৰি অনুৰোধ কৰা ফর্মেটটো মিলাওক।</translation>
 <translation id="7102274145889307184">বৰ্তমানৰ অৱস্থান</translation>
 <translation id="7118469954320184356">কোনো বিৱৰণ উপলব্ধ নহয়।</translation>
 <translation id="7139483182332611405">পাতনি</translation>
+<translation id="7198226213493847604">মেনু পপ আপ বুটাম</translation>
 <translation id="7214187073215825913">সমলৰ তথ্য</translation>
 <translation id="7238347055216017155">বিশেষ জোৰ</translation>
 <translation id="7263440858009898357">অনুগ্ৰহ কৰি সূচীৰ কোনো বস্তু বাছনি কৰক।</translation>
@@ -286,6 +291,7 @@
 <translation id="8808573423886751634">অধ্যায়</translation>
 <translation id="8845239796550121995">বর্তমান আপোনাৰ TVত কাষ্টিং কৰি আছে</translation>
 <translation id="8851136666856101339">মুখ্য</translation>
+<translation id="8861621546968757188">ডায়লগ পপ আপ বুটাম</translation>
 <translation id="8875657656876809964">ভিডিঅ’ প্লে‘বেক আসোঁৱাহ</translation>
 <translation id="8889402386540077796">হুই</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

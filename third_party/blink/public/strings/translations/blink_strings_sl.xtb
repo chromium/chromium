@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">Vnesite nekaj in nato <ph name="ATSIGN" />. Naslov »<ph name="INVALIDADDRESS" />« je nepopoln.</translation>
 <translation id="5334352251556557839">Predstavnosti ni mogoče predvajati.</translation>
 <translation id="537648784377940524">Najzgodnejši datum (<ph name="MIN_DATE_OR_TIME" />) mora biti pred najpoznejšim datumom (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">razširjen, pogovorno okno odprto.</translation>
 <translation id="5406322316791861025">številka</translation>
 <translation id="5425179576310518467">trenutni datum</translation>
 <translation id="5453733299334684579">element drevesa</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">več možnosti</translation>
 <translation id="576709008726043716">uvod</translation>
 <translation id="57838592816432529">Izklopi zvok</translation>
+<translation id="5787939484346677755">razširjen, na voljo so možnosti samodokončanja.</translation>
 <translation id="5860033963881614850">Izklopljeno</translation>
 <translation id="588258955323874662">Celozaslonsko</translation>
 <translation id="5888666972993069672">Predvajanje v napravi <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">polje s seznamom</translation>
 <translation id="6150588977291308318">bibliografija</translation>
 <translation id="6164829606128959761">merilnik</translation>
+<translation id="6165053282446038410">razširjen, na voljo je toliko možnosti samodokončanja: <ph name="COUNT" />.</translation>
 <translation id="6166809985690652833">spremna beseda</translation>
 <translation id="6209276755895393898">Videti je kot: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">trenutna stran</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">glava</translation>
 <translation id="6941933287844615239">prenos predstavnosti</translation>
 <translation id="6981594929165378967">vstavljanje</translation>
+<translation id="698788488269350478">razširjen.</translation>
 <translation id="6989848892321993519">Podaljšajte to besedilo na toliko znakov ali več: <ph name="MIN_CHARACTERS" /> (trenutno uporabljate en znak).</translation>
 <translation id="7034405885550056553">predlog</translation>
 <translation id="709897737746224366">Poskrbite za ujemanje z zahtevano obliko.</translation>
 <translation id="7102274145889307184">trenutna lokacija</translation>
 <translation id="7118469954320184356">Ni opisa.</translation>
 <translation id="7139483182332611405">predgovor</translation>
+<translation id="7198226213493847604">pojavni gumb menija</translation>
 <translation id="7214187073215825913">podatki o vsebini</translation>
 <translation id="7238347055216017155">poudarek</translation>
 <translation id="7263440858009898357">Izberite element s seznama.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">poglavje</translation>
 <translation id="8845239796550121995">Predvajanje na televizorju</translation>
 <translation id="8851136666856101339">glavn</translation>
+<translation id="8861621546968757188">pojavni gumb za pogovorno okno</translation>
 <translation id="8875657656876809964">Napaka pri predvajanju videoposnetka</translation>
 <translation id="8889402386540077796">Odtenek</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
