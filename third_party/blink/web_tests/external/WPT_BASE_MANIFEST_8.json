@@ -179942,7 +179942,7 @@
      []
     ],
     "README.md": [
-     "959bab67d65d04c302cc372ce03e908c876e038e",
+     "fc7c2a230ea55e481a4d6869a9636889409d9818",
      []
     ],
     "build-css-testsuites.sh": [
@@ -199220,7 +199220,7 @@
        []
       ],
       "column-widths-expected.txt": [
-       "79fcbabb4c279d0fdb015d73e95542cf111e03d9",
+       "b44c757e9bcd46a435d11c41483b60fd1ddc3002",
        []
       ],
       "support": {
@@ -232802,10 +232802,6 @@
       "60c415f18633e2bf36d2b2e052ca8ab18493debb",
       []
      ],
-     "resolving.https-expected.txt": [
-      "cdab62db6e169eb62318b8d35c4fd8fb68a66c71",
-      []
-     ],
      "resources": {
       "data-base-url.json": [
        "81fcf087425c70eefa7d3c3465be59684fb1a521",
@@ -255427,6 +255423,10 @@
     ]
    },
    "webmessaging": {
+    "DIR_METADATA": [
+     "d83a533338ff449a0f33999a3da0af21d66a18f4",
+     []
+    ],
     "META.yml": [
      "95d5071171b5a20cc14a414c97c9eae2f525f43f",
      []
@@ -255436,7 +255436,7 @@
      []
     ],
     "OWNERS": [
-     "9f8c4a0f1f083d91fd866f103ab146cbef8bb149",
+     "1b10b3436d923b017c68c642cc7a95a5dc331193",
      []
     ],
     "README.md": [
@@ -255545,12 +255545,16 @@
     ]
    },
    "webrtc": {
+    "DIR_METADATA": [
+     "d9367eacac10dc9d10f681cea242ac8303374e04",
+     []
+    ],
     "META.yml": [
      "eed4ac834313773528e5665d80505cb4b951a1c9",
      []
     ],
     "OWNERS": [
-     "082fd71fff8db12a5261256034196899b876410b",
+     "e6ed2ffc906bb65b2656aaa4c26667d5454a98ca",
      []
     ],
     "README.md": [
@@ -255947,12 +255951,12 @@
      "326368358efeaed3fb51ac2d8595b56b93743aef",
      []
     ],
-    "META.yml": [
-     "14e23e03a854f4d83caa345d45c5b43f1a68bee3",
+    "DIR_METADATA": [
+     "60fd6e9478ce335431f3f4b1791f3cbdd905b812",
      []
     ],
-    "OWNERS": [
-     "09bdfc47235fcb66b6542574f3deaeb630ddf869",
+    "META.yml": [
+     "14e23e03a854f4d83caa345d45c5b43f1a68bee3",
      []
     ],
     "README.md": [
@@ -256223,12 +256227,16 @@
     ]
    },
    "webstorage": {
+    "DIR_METADATA": [
+     "f2b243d60e7018a6a5cdefa6b13b61c6b2cfc62a",
+     []
+    ],
     "META.yml": [
      "020075c3f2401ca4b8da73116a84582d46e265c0",
      []
     ],
     "OWNERS": [
-     "5f5f8d3217e2ee4e99d6413b62fdc541ecfeef99",
+     "087586107f86d394c1d144322ca8be78fe5ecdaa",
      []
     ],
     "README.md": [
@@ -256349,12 +256357,16 @@
     }
    },
    "webusb": {
+    "DIR_METADATA": [
+     "d8d7bf94433b6b7eb5de303b61da3ccb8d07cc22",
+     []
+    ],
     "META.yml": [
      "546094855e50f17ef6d92f4bec412af644f155ad",
      []
     ],
     "OWNERS": [
-     "8dc3166e8c922b91d88520858792c9b63d08111b",
+     "acf1a9ed5530a468ec9cd36e973be49a9ed47f10",
      []
     ],
     "README.md": [
@@ -256413,12 +256425,16 @@
     ]
    },
    "webvtt": {
+    "DIR_METADATA": [
+     "cbab05cb6b7a23a03fa8129f0b82005d1f414912",
+     []
+    ],
     "META.yml": [
      "949f312d7acc3444b3c116a55d1175dd12be33ca",
      []
     ],
     "OWNERS": [
-     "7be00e4ae7fb31e3cf3c1b61ea9386d3a9698680",
+     "7e9f03ee201185ccf2862e103dbdd316822f0eb0",
      []
     ],
     "README.md": [
@@ -258399,12 +258415,16 @@
     }
    },
    "webxr": {
+    "DIR_METADATA": [
+     "4d83ec231da8ac40b41bf76b06d1eebcfabaa2fa",
+     []
+    ],
     "META.yml": [
      "520afec2000721d04aae9ed89bca49297fa31d4b",
      []
     ],
     "OWNERS": [
-     "cb7f47252d5746f61f1c9df2d981d47ef35940c5",
+     "95884464ed9f1f9016ef219e58c200c3d193cd8c",
      []
     ],
     "dom-overlay": {
@@ -258465,12 +258485,12 @@
     ]
    },
    "workers": {
-    "META.yml": [
-     "a7297d3844728b8bb2f7c82a2c4f32d65040a919",
+    "DIR_METADATA": [
+     "1201c657c66c2be674ccc86efcfc2b60f69da7c8",
      []
     ],
-    "OWNERS": [
-     "51dd60fea8510b6c27acaa22bfee6924191fd3e2",
+    "META.yml": [
+     "a7297d3844728b8bb2f7c82a2c4f32d65040a919",
      []
     ],
     "README.md": [
@@ -259673,12 +259693,12 @@
     }
    },
    "worklets": {
-    "META.yml": [
-     "5c92c43c538bba5cc8e9ac14bd5bff1716c5ae4d",
+    "DIR_METADATA": [
+     "1201c657c66c2be674ccc86efcfc2b60f69da7c8",
      []
     ],
-    "OWNERS": [
-     "51dd60fea8510b6c27acaa22bfee6924191fd3e2",
+    "META.yml": [
+     "5c92c43c538bba5cc8e9ac14bd5bff1716c5ae4d",
      []
     ],
     "README.md": [
@@ -259853,12 +259873,16 @@
     []
    ],
    "x-frame-options": {
+    "DIR_METADATA": [
+     "b0803f15b31aaabcf754db9be495c18fcfc0d586",
+     []
+    ],
     "META.yml": [
      "21ef0699364f406f337cfda70d974bacc4b5a934",
      []
     ],
     "OWNERS": [
-     "243f594fd111921c2ed11265c4367ae0e4f526a7",
+     "3f8456354bd08a3cb87e767ca0eb508603f45f1b",
      []
     ],
     "README.md": [
@@ -259885,12 +259909,12 @@
     }
    },
    "xhr": {
-    "META.yml": [
-     "c343ceac4375531d92d2ef1ec88de5c7a3897bbe",
+    "DIR_METADATA": [
+     "89a667c20874991a44ac19bdb09052614c8eb7b8",
      []
     ],
-    "OWNERS": [
-     "d9e80484a4ef2e0bb4a655968c24b06e97e180ac",
+    "META.yml": [
+     "c343ceac4375531d92d2ef1ec88de5c7a3897bbe",
      []
     ],
     "README.md": [
@@ -299971,7 +299995,7 @@
        ]
       ],
       "column-widths.html": [
-       "52cb5b6fb0502cd63e2404168cfd413d86d60b6e",
+       "b151c2263bb625c0ec4bd2e2159b7bf15602fc63",
        [
         null,
         {}
@@ -413905,7 +413929,7 @@
       ]
      ],
      "general.any.js": [
-      "8ae6af70efd6c9ba08b8affdfafb7b74307072e1",
+      "bbcae335b11cb51dbf3e6581ee692d459ff1c826",
       [
        null,
        {
