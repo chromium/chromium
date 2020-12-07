@@ -397,7 +397,7 @@ void PermissionRequestManager::AcceptThisTime() {
        requests_iter++) {
     PermissionGrantedIncludingDuplicates(*requests_iter, /*is_one_time=*/true);
   }
-  FinalizeCurrentRequests(PermissionAction::GRANTED);
+  FinalizeCurrentRequests(PermissionAction::GRANTED_ONCE);
 }
 
 void PermissionRequestManager::Deny() {
@@ -608,7 +608,6 @@ void PermissionRequestManager::ResetViewStateForCurrentRequest() {
 void PermissionRequestManager::FinalizeCurrentRequests(
     PermissionAction permission_action) {
   DCHECK(IsRequestInProgress());
-
   PermissionUmaUtil::PermissionPromptResolved(
       requests_, web_contents(), permission_action,
       DetermineCurrentRequestUIDispositionForUMA(),

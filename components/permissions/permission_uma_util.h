@@ -155,6 +155,9 @@ class PermissionUmaUtil {
   static const char kPermissionsPromptAccepted[];
   static const char kPermissionsPromptAcceptedGesture[];
   static const char kPermissionsPromptAcceptedNoGesture[];
+  static const char kPermissionsPromptAcceptedOnce[];
+  static const char kPermissionsPromptAcceptedOnceGesture[];
+  static const char kPermissionsPromptAcceptedOnceNoGesture[];
   static const char kPermissionsPromptDenied[];
   static const char kPermissionsPromptDeniedGesture[];
   static const char kPermissionsPromptDeniedNoGesture[];
@@ -270,7 +273,8 @@ class PermissionUmaUtil {
 
   static void RecordPromptDecided(
       const std::vector<PermissionRequest*>& requests,
-      bool accepted);
+      bool accepted,
+      bool is_one_time);
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(PermissionUmaUtil);
 };

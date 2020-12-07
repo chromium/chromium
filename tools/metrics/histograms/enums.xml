@@ -58132,6 +58132,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="DISMISSED"/>
   <int value="3" label="IGNORED"/>
   <int value="4" label="REVOKED"/>
+  <int value="5" label="GRANTED_ONCE"/>
 </enum>
 
 <enum name="PermissionAutoRevocationHistory">
