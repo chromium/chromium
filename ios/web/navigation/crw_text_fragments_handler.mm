@@ -15,6 +15,7 @@
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/web_state/ui/crw_web_view_handler_delegate.h"
 #import "ios/web/web_state/web_state_impl.h"
+#import "services/metrics/public/cpp/ukm_source_id.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -38,6 +39,14 @@ const double kMaxSelectorCount = 200.0;
 
 // Returns the WebStateImpl from self.delegate.
 @property(nonatomic, readonly, assign) web::WebStateImpl* webStateImpl;
+
+// Cached value of the source ID representing the last navigation to have text
+// fragments.
+@property(nonatomic, assign) ukm::SourceId latestSourceId;
+
+// Cached value of the latest referrer's URL to have triggered a navigation
+// with text fragments.
+@property(nonatomic, assign) GURL latestReferrerURL;
 
 @end
 
@@ -80,9 +89,13 @@ const double kMaxSelectorCount = 200.0;
     return;
   }
 
+  // Log metrics and cache Referrer for UKM logging.
   shared_highlighting::LogTextFragmentSelectorCount(
       parsedFragments.GetList().size());
   shared_highlighting::LogTextFragmentLinkOpenSource(referrer.url);
+  self.latestSourceId = ukm::ConvertToSourceId(
+      context->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
+  self.latestReferrerURL = referrer.url;
 
   std::string fragmentParam;
   base::JSONWriter::Write(parsedFragments, &fragmentParam);
@@ -158,6 +171,10 @@ const double kMaxSelectorCount = 200.0;
   shared_highlighting::LogTextFragmentMatchRate(successCount, fragmentCount);
   shared_highlighting::LogTextFragmentAmbiguousMatch(
       /*ambiguous_match=*/successCount != fragmentCount);
+
+  shared_highlighting::LogLinkOpenedUkmEvent(
+      self.latestSourceId, self.latestReferrerURL,
+      /*success=*/successCount == fragmentCount);
 }
 
 @end

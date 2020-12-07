@@ -15,6 +15,7 @@ include_rules = [
 
   # For tests.
   "+components/crash/core/common/objc_zombie.h",
+  "+components/ukm/test_ukm_recorder.h",
   "+ios/testing",
 
   # TODO(crbug.com/1101077): Disallow direct import of eg2 headers.

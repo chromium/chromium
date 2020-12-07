@@ -37,6 +37,7 @@ source_set("navigation") {
     "//ios/web/web_state/ui:web_view_handler",
     "//ios/web/web_view:util",
     "//net",
+    "//services/metrics/public/cpp:metrics_cpp",
     "//ui/base",
     "//url",
   ]

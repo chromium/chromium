@@ -7,6 +7,8 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
+#import "components/ukm/test_ukm_recorder.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -14,6 +16,7 @@
 #import "ios/web/public/test/web_test.h"
 #import "ios/web/web_state/ui/crw_web_view_handler_delegate.h"
 #import "ios/web/web_state/web_state_impl.h"
+#import "services/metrics/public/cpp/ukm_builders.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -26,6 +29,7 @@
 using web::Referrer;
 using ::testing::_;
 using ::testing::ReturnRefOfCopy;
+using shared_highlighting::TextFragmentLinkOpenSource;
 
 namespace {
 
@@ -41,6 +45,9 @@ const char kTwoFragmentsURL[] =
 
 const char kSearchEngineURL[] = "https://google.com";
 const char kNonSearchEngineURL[] = "https://notasearchengine.com";
+
+const char kSuccessUkmMetric[] = "Success";
+const char kSourceUkmMetric[] = "Source";
 
 }  // namespace
 
@@ -128,6 +135,25 @@ class CRWTextFragmentsHandlerTest : public web::WebTest {
 
     [handler processTextFragmentsWithContext:&context_
                                     referrer:GetSearchEngineReferrer()];
+  }
+
+  void ValidateLinkOpenedUkm(const ukm::TestAutoSetUkmRecorder& recorder,
+                             bool success,
+                             TextFragmentLinkOpenSource source) {
+    auto entries = recorder.GetEntriesByName(
+        ukm::builders::SharedHighlights_LinkOpened::kEntryName);
+    ASSERT_EQ(1u, entries.size());
+    const ukm::mojom::UkmEntry* entry = entries[0];
+    EXPECT_NE(ukm::kInvalidSourceId, entry->source_id);
+    recorder.ExpectEntryMetric(entry, kSuccessUkmMetric, success);
+    recorder.ExpectEntryMetric(entry, kSourceUkmMetric,
+                               static_cast<int64_t>(source));
+  }
+
+  void ValidateNoLinkOpenedUkm(const ukm::TestAutoSetUkmRecorder& recorder) {
+    auto entries = recorder.GetEntriesByName(
+        ukm::builders::SharedHighlights_LinkOpened::kEntryName);
+    EXPECT_EQ(0u, entries.size());
   }
 
   web::FakeNavigationContext context_;
@@ -283,6 +309,7 @@ TEST_F(CRWTextFragmentsHandlerTest, NoMetricsRecordedIfNoFragmentPresent) {
 TEST_F(CRWTextFragmentsHandlerTest,
        NoMetricsRecordedIfNoFragmentPresentWithFragmentId) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   // Set a URL without text fragments, but with an id fragment.
   SetLastURL(GURL("https://www.chromium.org/#FragmentID"));
@@ -303,6 +330,7 @@ TEST_F(CRWTextFragmentsHandlerTest,
 // from a search engine.
 TEST_F(CRWTextFragmentsHandlerTest, LinkSourceMetricSearchEngine) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   SetLastURL(GURL(kValidFragmentsURL));
 
   CRWTextFragmentsHandler* handler = CreateDefaultHandler();
@@ -318,6 +346,7 @@ TEST_F(CRWTextFragmentsHandlerTest, LinkSourceMetricSearchEngine) {
 // come from a search engine.
 TEST_F(CRWTextFragmentsHandlerTest, LinkSourceMetricNonSearchEngine) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   SetLastURL(GURL(kValidFragmentsURL));
 
   CRWTextFragmentsHandler* handler = CreateDefaultHandler();
@@ -375,6 +404,7 @@ TEST_F(CRWTextFragmentsHandlerTest,
   // 100% rate case.
   {
     base::HistogramTester histogram_tester;
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
 
     base::DictionaryValue js_response = base::DictionaryValue();
     js_response.SetKey("command", base::Value("textFragments.response"));
@@ -387,11 +417,15 @@ TEST_F(CRWTextFragmentsHandlerTest,
     histogram_tester.ExpectUniqueSample("TextFragmentAnchor.AmbiguousMatch", 0,
                                         1);
     histogram_tester.ExpectUniqueSample("TextFragmentAnchor.MatchRate", 100, 1);
+
+    ValidateLinkOpenedUkm(ukm_recorder, /*success=*/true,
+                          TextFragmentLinkOpenSource::kSearchEngine);
   }
 
   // 50% rate case.
   {
     base::HistogramTester histogram_tester;
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
 
     base::DictionaryValue js_response = base::DictionaryValue();
     js_response.SetKey("command", base::Value("textFragments.response"));
@@ -404,11 +438,15 @@ TEST_F(CRWTextFragmentsHandlerTest,
     histogram_tester.ExpectUniqueSample("TextFragmentAnchor.AmbiguousMatch", 1,
                                         1);
     histogram_tester.ExpectUniqueSample("TextFragmentAnchor.MatchRate", 50, 1);
+
+    ValidateLinkOpenedUkm(ukm_recorder, /*success=*/false,
+                          TextFragmentLinkOpenSource::kSearchEngine);
   }
 
   // 0% rate case.
   {
     base::HistogramTester histogram_tester;
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
 
     base::DictionaryValue js_response = base::DictionaryValue();
     js_response.SetKey("command", base::Value("textFragments.response"));
@@ -421,11 +459,15 @@ TEST_F(CRWTextFragmentsHandlerTest,
     histogram_tester.ExpectUniqueSample("TextFragmentAnchor.AmbiguousMatch", 1,
                                         1);
     histogram_tester.ExpectUniqueSample("TextFragmentAnchor.MatchRate", 0, 1);
+
+    ValidateLinkOpenedUkm(ukm_recorder, /*success=*/false,
+                          TextFragmentLinkOpenSource::kSearchEngine);
   }
 
   // Invalid values case - negative numbers.
   {
     base::HistogramTester histogram_tester;
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
 
     base::DictionaryValue js_response = base::DictionaryValue();
     js_response.SetKey("command", base::Value("textFragments.response"));
@@ -437,11 +479,14 @@ TEST_F(CRWTextFragmentsHandlerTest,
 
     histogram_tester.ExpectTotalCount("TextFragmentAnchor.AmbiguousMatch", 0);
     histogram_tester.ExpectTotalCount("TextFragmentAnchor.MatchRate", 0);
+
+    ValidateNoLinkOpenedUkm(ukm_recorder);
   }
 
   // Invalid values case - not numbers.
   {
     base::HistogramTester histogram_tester;
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
 
     base::DictionaryValue js_response = base::DictionaryValue();
     js_response.SetKey("command", base::Value("textFragments.response"));
@@ -453,5 +498,7 @@ TEST_F(CRWTextFragmentsHandlerTest,
 
     histogram_tester.ExpectTotalCount("TextFragmentAnchor.AmbiguousMatch", 0);
     histogram_tester.ExpectTotalCount("TextFragmentAnchor.MatchRate", 0);
+
+    ValidateNoLinkOpenedUkm(ukm_recorder);
   }
 }
