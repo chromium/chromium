@@ -77,9 +77,8 @@ public class BookmarkBottomSheetTest {
         mBottomSheetController = mActivityTestRule.getActivity()
                                          .getRootUiCoordinatorForTesting()
                                          .getBottomSheetController();
-        mBottomSheetCoordinator =
-                new BookmarkBottomSheetCoordinator(mActivityTestRule.getActivity(),
-                        mBottomSheetController, mBookmarkModel, this::onBottomSheetClicked);
+        mBottomSheetCoordinator = new BookmarkBottomSheetCoordinator(
+                mActivityTestRule.getActivity(), mBottomSheetController, mBookmarkModel);
         waitForBookmarkModelLoaded();
     }
 
@@ -93,7 +92,8 @@ public class BookmarkBottomSheetTest {
     }
 
     private void showBottomSheet() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mBottomSheetCoordinator.show(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mBottomSheetCoordinator.show(this::onBottomSheetClicked); });
 
         CriteriaHelper.pollUiThread(
                 () -> mBottomSheetController.getSheetState() == SheetState.FULL);

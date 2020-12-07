@@ -14,6 +14,9 @@
           android:id="@+id/sheet_title"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:layout_marginTop="10dp"
+          android:layout_marginBottom="5dp"
+          android:layout_marginStart="15dp"
           android:text="@string/bookmarks_bottom_sheet_title"
           android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 

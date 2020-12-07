@@ -39,9 +39,9 @@ import java.util.List;
 public class BookmarkBottomSheetCoordinator {
     private final BottomSheetController mBottomSheetController;
     private final Context mContext;
-    private final Callback<BookmarkItem> mCallback;
+    private final BookmarkModel mBookmarkModel;
+    private Callback<BookmarkItem> mCallback;
     private BookmarkBottomSheetContent mBottomSheetContent;
-    private BookmarkModel mBookmarkModel;
 
     /**
      * Constructs the bookmark bottom sheet.
@@ -49,22 +49,22 @@ public class BookmarkBottomSheetCoordinator {
      * @param bottomSheetController The controller to perform operations on the bottom sheet.
      * @param bookmarkModel Bookmark model that loads data from the backend, must have been
      *         initialized.
-     * @param callback Invoked when the user clicked on a certain bookmark item.
      */
     public BookmarkBottomSheetCoordinator(Context context,
             @NonNull BottomSheetController bottomSheetController,
-            @NonNull BookmarkModel bookmarkModel, @NonNull Callback<BookmarkItem> callback) {
+            @NonNull BookmarkModel bookmarkModel) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mBookmarkModel = bookmarkModel;
-        mCallback = callback;
     }
 
     /**
      * Shows the bookmark bottom sheet.
+     * @param callback Invoked when the user clicked on a certain bookmark item.
      */
-    public void show() {
+    public void show(@NonNull Callback<BookmarkItem> callback) {
         assert mBookmarkModel.isBookmarkModelLoaded();
+        mCallback = callback;
 
         // Load bookmark model data into recycler view.
         View contentView = LayoutInflater.from(mContext).inflate(
