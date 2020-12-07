@@ -137,9 +137,6 @@ class AccountConsistencyService : public KeyedService,
       const net::CookieAccessResultList& cookie_list,
       const net::CookieAccessResultList& excluded_cookies);
 
-  // Records whether Gaia cookies were present on navigation in UMA histogram.
-  static void LogIOSGaiaCookiesPresentOnNavigation(bool is_present);
-
   // Clears all pending cookie requests and cached domains.
   void ResetInternalState();
 

@@ -59,9 +59,10 @@ const char* kYoutubeDomain = "youtube.com";
 // Google domain where the CHROME_CONNECTED cookie is set/removed.
 const char* kCountryGoogleDomain = "google.de";
 
-// Name of the histogram to record whether the GAIA cookie is present.
-const char* kGAIACookiePresentHistogram =
-    "Signin.IOSGaiaCookiePresentOnNavigation";
+// Name of the histogram to record the state of the GAIA cookie for the
+// navigation.
+const char* kGAIACookieOnNavigationHistogram =
+    "Signin.IOSGaiaCookieStateOnSignedInNavigation";
 
 // Returns a cookie domain that applies for all origins on |host_domain|.
 std::string GetCookieDomain(const std::string& host_domain) {
@@ -718,17 +719,17 @@ TEST_F(AccountConsistencyServiceTest, GAIACookieStatusLoggedProperly) {
     cookie_updated = true;
   });
 
-  histogram_tester.ExpectTotalCount(kGAIACookiePresentHistogram, 0);
+  histogram_tester.ExpectTotalCount(kGAIACookieOnNavigationHistogram, 0);
 
   SimulateUpdateGaiaCookie(std::move(callback));
   base::RunLoop().RunUntilIdle();
-  histogram_tester.ExpectTotalCount(kGAIACookiePresentHistogram, 0);
+  histogram_tester.ExpectTotalCount(kGAIACookieOnNavigationHistogram, 0);
   ASSERT_FALSE(cookie_updated);
 
   SignIn();
   SimulateUpdateGaiaCookie(std::move(callback));
   base::RunLoop().RunUntilIdle();
-  histogram_tester.ExpectTotalCount(kGAIACookiePresentHistogram, 1);
+  histogram_tester.ExpectTotalCount(kGAIACookieOnNavigationHistogram, 1);
   ASSERT_FALSE(cookie_updated);
 }
 
@@ -740,14 +741,14 @@ TEST_F(AccountConsistencyServiceTest, GAIACookieRestoreCallbackFinished) {
       signin::kRestoreGaiaCookiesIfDeleted);
 
   base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount(kGAIACookiePresentHistogram, 0);
+  histogram_tester.ExpectTotalCount(kGAIACookieOnNavigationHistogram, 0);
 
   __block bool cookie_updated = false;
   SimulateUpdateGaiaCookie(base::BindOnce(^{
     cookie_updated = true;
   }));
   base::RunLoop().RunUntilIdle();
-  histogram_tester.ExpectTotalCount(kGAIACookiePresentHistogram, 0);
+  histogram_tester.ExpectTotalCount(kGAIACookieOnNavigationHistogram, 0);
   ASSERT_FALSE(cookie_updated);
 
   SignIn();
@@ -755,7 +756,7 @@ TEST_F(AccountConsistencyServiceTest, GAIACookieRestoreCallbackFinished) {
     cookie_updated = true;
   }));
   base::RunLoop().RunUntilIdle();
-  histogram_tester.ExpectTotalCount(kGAIACookiePresentHistogram, 1);
+  histogram_tester.ExpectTotalCount(kGAIACookieOnNavigationHistogram, 1);
   ASSERT_TRUE(cookie_updated);
 }
 

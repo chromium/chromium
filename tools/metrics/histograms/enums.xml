@@ -32421,6 +32421,12 @@ Called by update_feature_policy_enum.py.-->
   </int>
 </enum>
 
+<enum name="GaiaCookieStateOnSignedInNavigation">
+  <int value="0" label="Gaia cookie is present"/>
+  <int value="1" label="Gaia cookie is missing from Google-associated domain"/>
+  <int value="2" label="Gaia cookie is missing from Add Session"/>
+</enum>
+
 <enum name="GaiaPasswordChangedScreenUserAction">
   <summary>Actions which happen on the screen.</summary>
   <int value="0" label="Resync user data"/>
