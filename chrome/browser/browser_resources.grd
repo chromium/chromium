@@ -536,6 +536,11 @@
         <include name="IDR_MACHINE_LEARNING_INTERNALS_TIME_MOJO_JS" file="${root_gen_dir}\mojo/public/mojom/base/time.mojom-lite.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_MACHINE_LEARNING_INTERNALS_UTILS_JS" file="resources\chromeos\machine_learning\machine_learning_internals_utils.js" type="BINDATA" />
       </if>
+      <if expr="chromeos">
+        <include name="IDR_EMOJI_PICKER_HTML" file="resources\chromeos\emoji_picker\emoji_picker.html" type="BINDATA" />
+        <include name="IDR_EMOJI_PICKER_CSS" file="resources\chromeos\emoji_picker\emoji_picker.css" type="BINDATA" />
+        <include name="IDR_EMOJI_PICKER_JS" file="resources\chromeos\emoji_picker\emoji_picker.js" type="BINDATA" />
+      </if>
     </includes>
   </release>
 </grit>

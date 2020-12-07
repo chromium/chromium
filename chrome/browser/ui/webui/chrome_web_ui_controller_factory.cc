@@ -186,6 +186,7 @@
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_ui.h"
 #include "chrome/browser/ui/webui/chromeos/cryptohome_ui.h"
 #include "chrome/browser/ui/webui/chromeos/drive_internals_ui.h"
+#include "chrome/browser/ui/webui/chromeos/emoji/emoji_picker.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
@@ -802,6 +803,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     if (url.host_piece() == chrome::kChromeUIArcPowerControlHost) {
       return &NewWebUI<chromeos::ArcPowerControlUI>;
     }
+  }
+  if (url.host_piece() == chrome::kChromeUIEmojiPickerHost) {
+    return &NewWebUI<chromeos::EmojiPicker>;
   }
 
 #if !defined(OFFICIAL_BUILD)

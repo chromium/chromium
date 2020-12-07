@@ -182,6 +182,8 @@ extern const base::Feature kImeMojoDecoder;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kImeOptionsInSettings;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kImeSystemEmojiPicker;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kVirtualKeyboardFloatingDefault;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kInstantTethering;

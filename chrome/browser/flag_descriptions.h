@@ -2542,6 +2542,9 @@ extern const char kImeMozcProtoDescription[];
 extern const char kImeServiceDecoderName[];
 extern const char kImeServiceDecoderDescription[];
 
+extern const char kImeSystemEmojiPickerName[];
+extern const char kImeSystemEmojiPickerDescription[];
+
 extern const char kIntentHandlingSharingName[];
 extern const char kIntentHandlingSharingDescription[];
 
