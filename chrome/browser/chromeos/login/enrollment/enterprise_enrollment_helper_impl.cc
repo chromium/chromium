@@ -286,6 +286,19 @@ void EnterpriseEnrollmentHelperImpl::DoEnroll(
 
 void EnterpriseEnrollmentHelperImpl::GetDeviceAttributeUpdatePermission() {
   DCHECK(auth_data_);
+  if (!auth_data_->has_oauth_token()) {
+    // Checking whether the device attributes can be updated requires knowning
+    // which user is performing enterprise enrollment, because the permission is
+    // tied to a user.
+    // For enterprise enrollment authorized by attestation or an enrollment
+    // token, the current user is unknown.
+    // A possible follow-up (tracked in https://crbug.com/942013) will be to
+    // allow the first affiliated user that signs in and has the permission to
+    // edit device attributes.
+    OnDeviceAttributeUpdatePermission(/*granted=*/false);
+    return;
+  }
+
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   // Don't update device attributes for Active Directory management.

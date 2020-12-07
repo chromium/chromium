@@ -608,6 +608,10 @@ IN_PROC_BROWSER_TEST_F(AutoEnrollmentLocalPolicyServer, DeviceDisabled) {
 
 // Attestation enrollment.
 IN_PROC_BROWSER_TEST_F(AutoEnrollmentLocalPolicyServer, Attestation) {
+  // Even though the server would allow device attributes update, Chrome OS will
+  // not attempt that for attestation enrollment.
+  policy_server_.SetUpdateDeviceAttributesPermission(true);
+
   AllowlistSimpleChallengeSigningKey();
   policy_server_.SetFakeAttestationFlow();
   EXPECT_TRUE(policy_server_.SetDeviceStateRetrievalResponse(

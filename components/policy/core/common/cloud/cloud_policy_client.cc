@@ -720,9 +720,10 @@ void CloudPolicyClient::GetDeviceAttributeUpdatePermission(
     CloudPolicyClient::StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_registered());
-  // This condition is wrong in case of Attestation enrollment
-  // (https://crbug.com/942013).
-  // DCHECK(auth->has_oauth_token() || auth->has_enrollment_token());
+  // This request only works with an OAuth token identifying a user, because
+  // DMServer will resolve that user and check if they have permissions to
+  // update the device's attributes.
+  DCHECK(auth->has_oauth_token());
 
   const bool has_oauth_token = auth->has_oauth_token();
   const std::string oauth_token =
