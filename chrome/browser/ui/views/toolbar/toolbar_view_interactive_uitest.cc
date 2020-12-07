@@ -359,10 +359,9 @@ class GuestToolbarViewWithExtensionsToolbarMenuTest
  public:
   GuestToolbarViewWithExtensionsToolbarMenuTest() : is_ephemeral_(GetParam()) {
     // Update for platforms which don't support ephemeral Guest profiles.
-    if (is_ephemeral_) {
-      is_ephemeral_ =
-          TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-              scoped_feature_list_, is_ephemeral_);
+    if (!TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
+            scoped_feature_list_, is_ephemeral_)) {
+      is_ephemeral_ = false;
     }
   }
 
