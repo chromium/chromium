@@ -115,12 +115,8 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
     if (exception_state.HadException())
       return nullptr;
 
-    if (RuntimeEnabledFeatures::MediaCapturePanTiltEnabled()) {
-      return CreateVideoCapturePermissionDescriptor(
-          camera_device_permission->panTiltZoom());
-    }
-
-    return CreateVideoCapturePermissionDescriptor(false /* pan_tilt_zoom */);
+    return CreateVideoCapturePermissionDescriptor(
+        camera_device_permission->panTiltZoom());
   }
   if (name == "microphone")
     return CreatePermissionDescriptor(PermissionName::AUDIO_CAPTURE);

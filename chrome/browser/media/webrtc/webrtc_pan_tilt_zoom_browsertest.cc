@@ -39,11 +39,6 @@ class WebRtcPanTiltZoomPermissionBrowserTest
     : public WebRtcTestBase,
       public testing::WithParamInterface<PermissionTestConfig> {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "MediaCapturePanTilt");
-  }
-
   void SetUpInProcessBrowserTestFixture() override {
     DetectErrorsInJavaScript();
   }
@@ -415,9 +410,8 @@ class WebRtcPanTiltZoomPermissionRequestBrowserTest
           bool /* IsPanTiltZoomSupported() */> {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures,
-        "MediaCapturePanTilt,PermissionsRequestRevoke");
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "PermissionsRequestRevoke");
   }
 
   bool IsPanTiltZoomSupported() const { return GetParam(); }
@@ -472,9 +466,8 @@ INSTANTIATE_TEST_SUITE_P(RequestPanTiltZoomPermission,
 class WebRtcPanTiltZoomCameraDevicesBrowserTest : public WebRtcTestBase {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures,
-        "MediaCapturePanTilt,PermissionsRequestRevoke");
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "PermissionsRequestRevoke");
   }
 
   void SetVideoCaptureDevice(bool pan_supported,

@@ -1181,10 +1181,6 @@
       name: "MediaCaptureDepthVideoKind",
       status: "experimental",
     },
-    {
-      name: "MediaCapturePanTilt",
-      status: "stable",
-    },
     // Set to reflect the MediaCastOverlayButton feature.
     {
       name: "MediaCastOverlayButton",

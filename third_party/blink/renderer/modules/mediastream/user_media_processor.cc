@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/video_capture/local_video_capturer_source.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -812,9 +811,6 @@ void UserMediaProcessor::SetupVideoInput() {
 // static
 bool UserMediaProcessor::IsPanTiltZoomPermissionRequested(
     const MediaConstraints& constraints) {
-  if (!RuntimeEnabledFeatures::MediaCapturePanTiltEnabled())
-    return false;
-
   if (constraints.Basic().pan.IsPresent() ||
       constraints.Basic().tilt.IsPresent() ||
       constraints.Basic().zoom.IsPresent()) {

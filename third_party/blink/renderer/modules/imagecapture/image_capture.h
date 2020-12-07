@@ -84,7 +84,6 @@ class MODULES_EXPORT ImageCapture final
   void GetMediaTrackSettings(MediaTrackSettings*) const;
 
   bool HasPanTiltZoomPermissionGranted() const;
-  bool HasZoomPermissionGranted() const;
 
   // Called by MediaStreamTrack::clone() to get a clone with same capabilities,
   // settings, and constraints.

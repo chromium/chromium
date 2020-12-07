@@ -48,8 +48,8 @@ dictionary MediaTrackConstraintSet {
     ConstrainDouble    saturation;
     ConstrainDouble    sharpness;
     ConstrainDouble    focusDistance;
-    [RuntimeEnabled=MediaCapturePanTilt] (boolean or ConstrainDouble) pan;
-    [RuntimeEnabled=MediaCapturePanTilt] (boolean or ConstrainDouble) tilt;
+    (boolean or ConstrainDouble) pan;
+    (boolean or ConstrainDouble) tilt;
     (boolean or ConstrainDouble) zoom;
     ConstrainBoolean   torch;
     // The "mandatory" and "_optional" members are retained for conformance

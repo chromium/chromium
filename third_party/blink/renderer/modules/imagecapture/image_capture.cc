@@ -406,9 +406,8 @@ void ImageCapture::GetMediaTrackCapabilities(
       capabilities->setPan(capabilities_->pan());
     if (capabilities_->hasTilt())
       capabilities->setTilt(capabilities_->tilt());
-  }
-  if (capabilities_->hasZoom() && HasZoomPermissionGranted()) {
-    capabilities->setZoom(capabilities_->zoom());
+    if (capabilities_->hasZoom())
+      capabilities->setZoom(capabilities_->zoom());
   }
 
   if (capabilities_->hasTorch())
@@ -486,7 +485,7 @@ void ImageCapture::SetMediaTrackConstraints(
       (constraints->hasTilt() &&
        !(capabilities_->hasTilt() && HasPanTiltZoomPermissionGranted())) ||
       (constraints->hasZoom() &&
-       !(capabilities_->hasZoom() && HasZoomPermissionGranted())) ||
+       !(capabilities_->hasZoom() && HasPanTiltZoomPermissionGranted())) ||
       (constraints->hasTorch() && !capabilities_->hasTorch())) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotSupportedError, "Unsupported constraint(s)"));
@@ -885,9 +884,8 @@ void ImageCapture::GetMediaTrackSettings(MediaTrackSettings* settings) const {
       settings->setPan(settings_->pan());
     if (settings_->hasTilt())
       settings->setTilt(settings_->tilt());
-  }
-  if (settings_->hasZoom() && HasZoomPermissionGranted()) {
-    settings->setZoom(settings_->zoom());
+    if (settings_->hasZoom())
+      settings->setZoom(settings_->zoom());
   }
 
   if (settings_->hasTorch())
@@ -951,13 +949,6 @@ void ImageCapture::OnPermissionStatusChange(
 }
 
 bool ImageCapture::HasPanTiltZoomPermissionGranted() const {
-  if (!RuntimeEnabledFeatures::MediaCapturePanTiltEnabled())
-    return false;
-
-  return pan_tilt_zoom_permission_ == mojom::blink::PermissionStatus::GRANTED;
-}
-
-bool ImageCapture::HasZoomPermissionGranted() const {
   return pan_tilt_zoom_permission_ == mojom::blink::PermissionStatus::GRANTED;
 }
 
@@ -1177,8 +1168,6 @@ void ImageCapture::UpdateMediaTrackCapabilities(
       capabilities_->setTilt(ToMediaSettingsRange(*photo_state->tilt));
       settings_->setTilt(photo_state->tilt->current);
     }
-  }
-  if (HasZoomPermissionGranted()) {
     if (photo_state->zoom->max != photo_state->zoom->min) {
       capabilities_->setZoom(ToMediaSettingsRange(*photo_state->zoom));
       settings_->setZoom(photo_state->zoom->current);

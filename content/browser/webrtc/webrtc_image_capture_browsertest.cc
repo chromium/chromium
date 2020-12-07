@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "content/browser/webrtc/webrtc_webcam_browsertest.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -100,10 +99,6 @@ class WebRtcImageCaptureBrowserTestBase
 
     ASSERT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
         switches::kUseFakeDeviceForMediaStream));
-
-    // Enable Pan/Tilt for testing.
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "MediaCapturePanTilt");
   }
 
   void SetUp() override {

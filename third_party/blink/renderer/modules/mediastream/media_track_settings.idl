@@ -43,8 +43,8 @@ dictionary MediaTrackSettings {
     double            saturation;
     double            sharpness;
     double            focusDistance;
-    [RuntimeEnabled=MediaCapturePanTilt] double            pan;
-    [RuntimeEnabled=MediaCapturePanTilt] double            tilt;
+    double            pan;
+    double            tilt;
     double            zoom;
     boolean           torch;
 

@@ -155,10 +155,9 @@ bool MediaDevicesPermissionChecker::HasPanTiltZoomPermissionGrantedOnUIThread(
     int render_frame_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 #if defined(OS_ANDROID)
-  // The PTZ permission is automatically granted on Android, regardless of the
-  // MediaCapturePanTilt Blink feature state. This way, zoom is not initially
-  // empty in ImageCapture. It is safe to do so because pan and tilt are not
-  // supported on Android.
+  // The PTZ permission is automatically granted on Android. This way, zoom is
+  // not initially empty in ImageCapture. It is safe to do so because pan and
+  // tilt are not supported on Android.
   return true;
 #else
   RenderFrameHostImpl* frame_host =
