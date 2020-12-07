@@ -128,7 +128,7 @@ void ReadableStreamGenericReader::GenericInitialize(
   reader->owner_readable_stream_ = stream;
 
   // 2. Set stream.[[reader]] to reader.
-  stream->reader_ = static_cast<ReadableStreamDefaultReader*>(reader);
+  stream->reader_ = reader;
 
   switch (stream->state_) {
     // 3. If stream.[[state]] is "readable",
