@@ -176,9 +176,6 @@ specific_include_rules = {
   "ExploreSitesIPH\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "ExploreSitesPage\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
   "ExternalNavigationDelegateImpl\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],

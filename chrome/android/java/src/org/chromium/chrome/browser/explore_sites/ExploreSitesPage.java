@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.explore_sites;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -21,7 +22,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegateImpl;
@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
@@ -169,7 +170,8 @@ public class ExploreSitesPage extends BasicNativePage {
     /**
      * Create a new instance of the explore sites page.
      */
-    public ExploreSitesPage(ChromeActivity activity, NativePageHost host, Tab tab) {
+    public ExploreSitesPage(
+            Activity activity, NativePageHost host, Tab tab, TabModelSelector tabModelSelector) {
         super(host);
 
         mHost = host;
@@ -232,7 +234,7 @@ public class ExploreSitesPage extends BasicNativePage {
                         context.getResources().getDimensionPixelSize(textSizeDimensionResource));
 
         NativePageNavigationDelegateImpl navDelegate = new NativePageNavigationDelegateImpl(
-                activity, mProfile, host, activity.getTabModelSelector(), mTab);
+                activity, mProfile, host, tabModelSelector, mTab);
 
         // ExploreSitePage is recreated upon reparenting. Safe to use |activity|.
         Runnable closeContextMenuCallback = activity::closeContextMenu;

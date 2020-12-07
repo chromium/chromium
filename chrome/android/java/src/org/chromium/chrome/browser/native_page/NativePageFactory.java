@@ -103,7 +103,8 @@ public class NativePageFactory {
         }
 
         protected NativePage buildExploreSitesPage(Tab tab) {
-            return new ExploreSitesPage(mActivity, new TabShim(tab, mActivity), tab);
+            return new ExploreSitesPage(
+                    mActivity, new TabShim(tab, mActivity), tab, mActivity.getTabModelSelector());
         }
 
         protected NativePage buildHistoryPage(Tab tab) {
