@@ -31,7 +31,8 @@ enum PageAccessibilityDisposition {
   // Enforces permission update (Decommit will set to PageInaccessible;
   // Recommit will set to whatever was requested, other than PageInaccessible).
   PageUpdatePermissions,
-  // Will not update permissions, if the platform supports that (POSIX only).
+  // Will not update permissions, if the platform supports that (POSIX & Fuchsia
+  // only).
   PageKeepPermissionsIfPossible,
 };
 
@@ -105,8 +106,8 @@ BASE_EXPORT void SetSystemPagesAccess(
 //
 // |accessibility_disposition| allows to specify whether the pages should be
 // made inaccessible (PageUpdatePermissions), or left as is
-// (PageKeepPermissionsIfPossible, POSIX only). The latter should only be used
-// as an optimization if you really know what you're doing.
+// (PageKeepPermissionsIfPossible, POSIX & Fuchsia only). The latter should only
+// be used as an optimization if you really know what you're doing.
 // TODO(bartekn): Ideally, all callers should use PageUpdatePermissions,
 // for better security, but that may lead to a perf regression. Tracked at
 // http://crbug.com/766882.
@@ -122,7 +123,7 @@ BASE_EXPORT void SetSystemPagesAccess(
 //
 // Note: "Committed memory" is a Windows Memory Subsystem concept that ensures
 // processes will not fault when touching a committed memory region. There is
-// no analogue in the POSIX memory API where virtual memory pages are
+// no analogue in the POSIX & Fuchsia memory API where virtual memory pages are
 // best-effort allocated resources on the first touch. If PageUpdatePermissions
 // disposition is used, this API behaves in a platform-agnostic way by
 // simulating the Windows "decommit" state by both discarding the region
@@ -142,8 +143,8 @@ BASE_EXPORT void DecommitSystemPages(
 //
 // |accessibility_disposition| allows to specify whether the page permissions
 // should be set to |page_accessibility| (PageUpdatePermissions), or left as is
-// (PageKeepPermissionsIfPossible, POSIX only). The latter can only be used if
-// the pages were previously accessible and decommitted with
+// (PageKeepPermissionsIfPossible, POSIX & Fuchsia only). The latter can only be
+// used if the pages were previously accessible and decommitted with
 // PageKeepPermissionsIfPossible. It is ok, however, to recommit with
 // PageUpdatePermissions even if pages were decommitted with
 // PageKeepPermissionsIfPossible (merely losing an optimization).

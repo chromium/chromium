@@ -268,11 +268,9 @@ void RecommitSystemPagesInternal(
     size_t length,
     PageAccessibilityConfiguration accessibility,
     PageAccessibilityDisposition accessibility_disposition) {
-  // On POSIX systems, the caller need simply read the memory to recommit it.
-  // This has the correct behavior because the API requires the permissions to
-  // be the same as before decommitting and all configurations can read.
-  // However, if decommit changed the permissions, recommit has to change them
-  // back.
+  // On POSIX systems, the caller needs to simply read the memory to recommit
+  // it. However, if decommit changed the permissions, recommit has to change
+  // them back.
   if (accessibility_disposition == PageUpdatePermissions) {
     SetSystemPagesAccess(address, length, accessibility);
   }

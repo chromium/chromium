@@ -184,10 +184,9 @@ void DecommitSystemPagesInternal(
     void* address,
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
-  // TODO(bartekn): Ignoring accessibility_disposition preserves the behavior
-  // the API had since its conception, but consider similar optimization to
-  // POSIX.
-  SetSystemPagesAccessInternal(address, length, PageInaccessible);
+  if (accessibility_disposition == PageUpdatePermissions) {
+    SetSystemPagesAccess(address, length, PageInaccessible);
+  }
 
   // TODO(https://crbug.com/1022062): Review whether this implementation is
   // still appropriate once DiscardSystemPagesInternal() migrates to a "lazy"
@@ -200,10 +199,12 @@ void RecommitSystemPagesInternal(
     size_t length,
     PageAccessibilityConfiguration accessibility,
     PageAccessibilityDisposition accessibility_disposition) {
-  // TODO(bartekn): Ignoring accessibility_disposition preserves the behavior
-  // the API had since its conception, but consider similar optimization to
-  // POSIX.
-  SetSystemPagesAccessInternal(address, length, accessibility);
+  // On Fuchsia systems, the caller needs to simply read the memory to recommit
+  // it. However, if decommit changed the permissions, recommit has to change
+  // them back.
+  if (accessibility_disposition == PageUpdatePermissions) {
+    SetSystemPagesAccess(address, length, accessibility);
+  }
 }
 
 }  // namespace base
