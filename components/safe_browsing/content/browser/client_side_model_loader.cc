@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/client_side_model_loader.h"
+#include "components/safe_browsing/content/browser/client_side_model_loader.h"
 
 #include <memory>
 
@@ -68,8 +68,7 @@ const char ModelLoader::kClientModelNamePattern[] =
 const char ModelLoader::kClientModelFinchExperiment[] =
     "ClientSideDetectionModelOnAndroid";
 #endif
-const char ModelLoader::kClientModelFinchParam[] =
-    "ModelNum";
+const char ModelLoader::kClientModelFinchParam[] = "ModelNum";
 const char kUmaModelDownloadResponseMetricName[] =
     "SBClientPhishing.ClientModelDownloadResponseOrErrorCode";
 

@@ -461,7 +461,10 @@ test("components_unittests") {
   }
 
   if (safe_browsing_mode == 1) {
-    deps += [ "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests" ]
+    deps += [
+      "//components/safe_browsing/content/browser:client_side_model_loader_unittest",
+      "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests",
+    ]
   }
 
   if (use_dbus) {

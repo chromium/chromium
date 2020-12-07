@@ -5,8 +5,8 @@
 // Helper class loads models for client-side phishing detection
 // from the the SafeBrowsing backends.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_MODEL_LOADER_H_
-#define CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_MODEL_LOADER_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CLIENT_SIDE_MODEL_LOADER_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CLIENT_SIDE_MODEL_LOADER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -79,7 +79,9 @@ class ModelLoader {
   virtual void CancelFetcher();
 
   // Only used in tests.
-  void SetModelStrForTesting(const std::string& model_str) { model_str_ = model_str; }
+  void SetModelStrForTesting(const std::string& model_str) {
+    model_str_ = model_str;
+  }
 
   const std::string& model_str() const { return model_str_; }
   const std::string& name() const { return name_; }
@@ -165,4 +167,4 @@ class ModelLoader {
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_MODEL_LOADER_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CLIENT_SIDE_MODEL_LOADER_H_

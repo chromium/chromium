@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/client_side_model_loader.h"
+#include "components/safe_browsing/content/browser/client_side_model_loader.h"
 
 #include <stdint.h>
 
@@ -34,10 +34,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::StrictMock;
-using ::testing::_;
 
 namespace safe_browsing {
 namespace {
@@ -353,8 +353,10 @@ TEST_F(ModelLoaderTest, RescheduleFetchTest) {
 
   // Non-zero max_age from header.
   max_age = base::TimeDelta::FromMinutes(42);
-  EXPECT_CALL(loader, ScheduleFetch((max_age + base::TimeDelta::FromMinutes(1))
-                                        .InMilliseconds()));
+  EXPECT_CALL(
+      loader,
+      ScheduleFetch(
+          (max_age + base::TimeDelta::FromMinutes(1)).InMilliseconds()));
   loader.ModelLoader::EndFetch(ModelLoader::MODEL_NOT_CHANGED, max_age);
   Mock::VerifyAndClearExpectations(&loader);
 
