@@ -32,6 +32,8 @@ public class PageInfoCookiesPreference extends PreferenceFragmentCompat {
     private ChromeImageViewPreference mCookieInUse;
     private Runnable mOnClearCallback;
     private Dialog mConfirmationDialog;
+    private boolean mDeleteDisabled;
+    private boolean mDataUsed;
 
     /**  Parameters to configure the cookie controls view. */
     public static class PageInfoCookiesViewParams {
@@ -75,22 +77,23 @@ public class PageInfoCookiesPreference extends PreferenceFragmentCompat {
 
         mCookieInUse.setIcon(
                 SettingsUtils.getTintedIcon(getContext(), R.drawable.permission_cookie));
-        if (!params.disableCookieDeletion) {
-            mCookieInUse.setImageView(
-                    R.drawable.ic_delete_white_24dp, R.string.page_info_cookies_clear, null);
-            mCookieInUse.setImageColor(R.color.default_icon_color_blue);
-            // Disabling enables passthrough of clicks to the main preference.
-            mCookieInUse.setImageViewEnabled(false);
-            mCookieInUse.setOnPreferenceClickListener(preference -> {
-                showClearCookiesConfirmation();
-                return true;
-            });
-        }
+        mCookieInUse.setImageView(
+                R.drawable.ic_delete_white_24dp, R.string.page_info_cookies_clear, null);
+        // Disabling enables passthrough of clicks to the main preference.
+        mCookieInUse.setImageViewEnabled(false);
+        mDeleteDisabled = params.disableCookieDeletion;
+        mCookieInUse.setOnPreferenceClickListener(preference -> {
+            showClearCookiesConfirmation();
+            return true;
+        });
+        updateCookieDeleteButton();
 
         mOnClearCallback = params.onClearCallback;
     }
 
     private void showClearCookiesConfirmation() {
+        if (mDeleteDisabled || !mDataUsed) return;
+
         mConfirmationDialog =
                 new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
                         .setTitle(R.string.page_info_cookies_clear)
@@ -121,6 +124,9 @@ public class PageInfoCookiesPreference extends PreferenceFragmentCompat {
                                    : null);
         mCookieInUse.setTitle(getContext().getResources().getQuantityString(
                 R.plurals.page_info_cookies_in_use, allowedCookies, allowedCookies));
+
+        mDataUsed |= allowedCookies != 0;
+        updateCookieDeleteButton();
     }
 
     public void setStorageUsage(long storageUsage) {
@@ -129,5 +135,14 @@ public class PageInfoCookiesPreference extends PreferenceFragmentCompat {
                         getContext().getString(R.string.origin_settings_storage_usage_brief),
                         Formatter.formatShortFileSize(getContext(), storageUsage))
                                  : null);
+
+        mDataUsed |= storageUsage != 0;
+        updateCookieDeleteButton();
+    }
+
+    private void updateCookieDeleteButton() {
+        mCookieInUse.setImageColor(!mDeleteDisabled && mDataUsed
+                        ? R.color.default_icon_color_blue
+                        : R.color.default_icon_color_disabled);
     }
 }

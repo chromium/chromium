@@ -13,6 +13,8 @@
     <color name="default_icon_color_secondary_light">@color/white_alpha_70</color>
     <color name="default_icon_color_blue_light">@color/modern_blue_300</color>
     <color name="default_icon_color_blue_dark">@color/modern_blue_600</color>
+    <color name="default_icon_color_disabled_dark">@color/modern_grey_800_alpha_38</color>
+    <color name="default_icon_color_disabled_light">@color/white_alpha_38</color>
 
     <!-- Common text colors -->
     <color name="default_text_color_dark">@color/modern_grey_900</color>

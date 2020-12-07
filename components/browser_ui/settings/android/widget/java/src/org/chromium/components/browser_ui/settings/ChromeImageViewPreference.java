@@ -49,6 +49,8 @@ public class ChromeImageViewPreference extends Preference {
     private int mContentDescriptionRes;
     // Whether the ImageView should be enabled.
     private boolean mImageViewEnabled = true;
+    // The ImageView Button.
+    private ImageView mButton;
 
     /**
      * Constructor for use in Java.
@@ -80,23 +82,13 @@ public class ChromeImageViewPreference extends Preference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        ImageView button = (ImageView) holder.findViewById(R.id.image_view_widget);
-        View view = holder.itemView;
+        mButton = (ImageView) holder.findViewById(R.id.image_view_widget);
+        mButton.setBackgroundColor(Color.TRANSPARENT);
+        mButton.setVisibility(View.VISIBLE);
 
-        if (mImageRes != 0) {
-            Drawable buttonImg = SettingsUtils.getTintedIcon(getContext(), mImageRes, mColorRes);
-            button.setImageDrawable(buttonImg);
-            button.setBackgroundColor(Color.TRANSPARENT);
-            button.setVisibility(View.VISIBLE);
-            button.setEnabled(mImageViewEnabled);
-            if (mImageViewEnabled) button.setOnClickListener(mListener);
-
-            if (mContentDescriptionRes != 0) {
-                button.setContentDescription(view.getResources().getString(mContentDescriptionRes));
-            }
-        }
-
-        ManagedPreferencesUtils.onBindViewToImageViewPreference(mManagedPrefDelegate, this, view);
+        configureImageView();
+        ManagedPreferencesUtils.onBindViewToImageViewPreference(
+                mManagedPrefDelegate, this, holder.itemView);
     }
 
     @Override
@@ -114,6 +106,7 @@ public class ChromeImageViewPreference extends Preference {
         mImageRes = imageRes;
         mContentDescriptionRes = contentDescriptionRes;
         mListener = listener;
+        configureImageView();
         notifyChanged();
     }
 
@@ -122,14 +115,20 @@ public class ChromeImageViewPreference extends Preference {
      * @param colorRes
      */
     public void setImageColor(@ColorRes int colorRes) {
+        if (mColorRes == colorRes) return;
+
         mColorRes = colorRes;
+        configureImageView();
     }
 
     /**
      * Enables/Disables the ImageView, allowing for clicks to pass through (when disabled).
      */
     public void setImageViewEnabled(boolean enabled) {
+        if (mImageViewEnabled == enabled) return;
+
         mImageViewEnabled = enabled;
+        configureImageView();
     }
 
     /**
@@ -141,5 +140,19 @@ public class ChromeImageViewPreference extends Preference {
 
         return mManagedPrefDelegate.isPreferenceControlledByPolicy(this)
                 || mManagedPrefDelegate.isPreferenceControlledByCustodian(this);
+    }
+
+    private void configureImageView() {
+        if (mImageRes == 0 || mButton == null) return;
+
+        Drawable buttonImg = SettingsUtils.getTintedIcon(getContext(), mImageRes, mColorRes);
+        mButton.setImageDrawable(buttonImg);
+        mButton.setEnabled(mImageViewEnabled);
+
+        if (mImageViewEnabled) mButton.setOnClickListener(mListener);
+
+        if (mContentDescriptionRes != 0) {
+            mButton.setContentDescription(mButton.getResources().getString(mContentDescriptionRes));
+        }
     }
 }
