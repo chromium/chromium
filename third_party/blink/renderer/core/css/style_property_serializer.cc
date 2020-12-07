@@ -331,7 +331,6 @@ static bool AllowInitialInShorthand(CSSPropertyID property_id) {
     case CSSPropertyID::kOutline:
     case CSSPropertyID::kColumnRule:
     case CSSPropertyID::kColumns:
-    case CSSPropertyID::kFlex:
     case CSSPropertyID::kFlexFlow:
     case CSSPropertyID::kGridColumn:
     case CSSPropertyID::kGridRow:
