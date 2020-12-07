@@ -1256,7 +1256,7 @@ LayoutUnit AlignmentOffset(LayoutUnit container_size,
     case AxisEdge::kStart:
       return margin_start;
     case AxisEdge::kCenter:
-      return (container_size - size - margin_start - margin_end) / 2;
+      return (container_size - size + margin_start - margin_end) / 2;
     case AxisEdge::kEnd:
       return container_size - margin_end - size;
     case AxisEdge::kBaseline:
