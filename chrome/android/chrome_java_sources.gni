@@ -1249,7 +1249,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/signin/ConfirmSyncDataStateMachine.java",
   "java/src/org/chromium/chrome/browser/signin/ConfirmSyncDataStateMachineDelegate.java",
   "java/src/org/chromium/chrome/browser/signin/GoogleActivityController.java",
-  "java/src/org/chromium/chrome/browser/signin/IdentityServicesProvider.java",
   "java/src/org/chromium/chrome/browser/signin/PersonalizedSigninPromoView.java",
   "java/src/org/chromium/chrome/browser/signin/ProfileDataCache.java",
   "java/src/org/chromium/chrome/browser/signin/SignOutDialogFragment.java",
