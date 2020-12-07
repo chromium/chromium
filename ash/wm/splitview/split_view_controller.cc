@@ -1163,8 +1163,10 @@ void SplitViewController::OnOverviewButtonTrayLongPressed(
 
 void SplitViewController::OnWindowDragStarted(aura::Window* dragged_window) {
   DCHECK(dragged_window);
-  if (IsWindowInSplitView(dragged_window))
-    OnSnappedWindowDetached(dragged_window, /*window_drag=*/true);
+  if (IsWindowInSplitView(dragged_window)) {
+    OnSnappedWindowDetached(dragged_window,
+                            WindowDetachedReason::kWindowDragged);
+  }
 
   // OnSnappedWindowDetached() may end split view mode.
   if (split_view_divider_)
@@ -1251,7 +1253,7 @@ void SplitViewController::OnWindowDestroyed(aura::Window* window) {
   auto iter = snapping_window_transformed_bounds_map_.find(window);
   if (iter != snapping_window_transformed_bounds_map_.end())
     snapping_window_transformed_bounds_map_.erase(iter);
-  OnSnappedWindowDetached(window, /*window_drag=*/false);
+  OnSnappedWindowDetached(window, WindowDetachedReason::kWindowDestroyed);
 }
 
 void SplitViewController::OnResizeLoopStarted(aura::Window* window) {
@@ -1318,7 +1320,8 @@ void SplitViewController::OnPostWindowStateTypeChange(
     EndSplitView();
     Shell::Get()->overview_controller()->EndOverview();
   } else if (window_state->IsMinimized()) {
-    OnSnappedWindowDetached(window_state->window(), /*window_drag=*/false);
+    OnSnappedWindowDetached(window_state->window(),
+                            WindowDetachedReason::kWindowMinimized);
 
     if (!InSplitViewMode()) {
       // We have different behaviors for a minimized window: in tablet splitview
@@ -1820,20 +1823,37 @@ void SplitViewController::OnWindowSnapped(aura::Window* window) {
 }
 
 void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
-                                                  bool window_drag) {
-  StopObserving(GetPositionOfSnappedWindow(window));
+                                                  WindowDetachedReason reason) {
+  const bool is_window_destroyed =
+      reason == WindowDetachedReason::kWindowDestroyed;
+  // Detach it from splitview first if the window is to be destroyed to prevent
+  // unnecessary bounds/state update to it when ending splitview resizing. For
+  // the window that is not going to be destroyed, we still need its bounds and
+  // state to be updated to match the updated divider position before detaching
+  // it from splitview.
+  if (is_window_destroyed)
+    StopObserving(GetPositionOfSnappedWindow(window));
 
-  // Resizing (or the divider snap animation) may continue, but |window| will no
-  // longer have anything to do with it.
-  if (is_resizing_ || IsDividerAnimating())
-    FinishWindowResizing(window);
+  // Stop resizing if one of the snapped window is detached from split
+  // view.
+  const bool is_divider_animating = IsDividerAnimating();
+  if (is_resizing_ || is_divider_animating) {
+    is_resizing_ = false;
+    if (is_divider_animating)
+      StopAndShoveAnimatedDivider();
+    EndResizeImpl();
+  }
+
+  if (!is_window_destroyed)
+    StopObserving(GetPositionOfSnappedWindow(window));
 
   if (!left_window_ && !right_window_) {
     // If there is no snapped window at this moment, ends split view mode. Note
     // this will update overview window grid bounds if the overview mode is
     // active at the moment.
-    EndSplitView(window_drag ? EndReason::kWindowDragStarted
-                             : EndReason::kNormal);
+    EndSplitView(reason == WindowDetachedReason::kWindowDragged
+                     ? EndReason::kWindowDragStarted
+                     : EndReason::kNormal);
   } else {
     DCHECK_EQ(split_view_type_, SplitViewType::kTabletType);
     // If there is still one snapped window after minimizing/closing one snapped
@@ -1841,8 +1861,9 @@ void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
     default_snap_position_ = left_window_ ? LEFT : RIGHT;
     UpdateStateAndNotifyObservers();
     Shell::Get()->overview_controller()->StartOverview(
-        window_drag ? OverviewEnterExitType::kImmediateEnter
-                    : OverviewEnterExitType::kNormal);
+        reason == WindowDetachedReason::kWindowDragged
+            ? OverviewEnterExitType::kImmediateEnter
+            : OverviewEnterExitType::kNormal);
   }
 }
 

@@ -2115,11 +2115,11 @@ TEST_P(SplitViewControllerTest,
   WMEvent minimize_event(WM_EVENT_MINIMIZE);
   WindowState::Get(window1.get())->OnWMEvent(&minimize_event);
 
-  // Drag is ended just for the left window.
+  // Drag is ended as the window is detached from splitview.
   EXPECT_FALSE(window_state_delegate1->drag_in_progress());
-  EXPECT_TRUE(window_state_delegate2->drag_in_progress());
+  EXPECT_FALSE(window_state_delegate2->drag_in_progress());
   EXPECT_EQ(nullptr, w1_state->drag_details());
-  EXPECT_NE(nullptr, w2_state->drag_details());
+  EXPECT_EQ(nullptr, w2_state->drag_details());
 }
 
 // Test that when a snapped window's resizablity property change from resizable
@@ -2808,6 +2808,26 @@ TEST_P(SplitViewControllerTest, DoNotObserveTransientIfNotInSplitview) {
   split_view_controller()->SnapWindow(window2.get(),
                                       SplitViewController::RIGHT);
   EXPECT_FALSE(bubble_transient->HasObserver(split_view_divider()));
+}
+
+// Test that if a snapped window is destroyed during resizing, we should end
+// resizing.
+TEST_P(SplitViewControllerTest, WindowDestroyedDuringResize) {
+  const gfx::Rect bounds(0, 0, 400, 400);
+  std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
+  std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
+
+  split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
+  split_view_controller()->SnapWindow(window2.get(),
+                                      SplitViewController::RIGHT);
+
+  gfx::Rect divider_bounds =
+      split_view_divider()->GetDividerBoundsInScreen(false);
+  split_view_controller()->StartResize(divider_bounds.CenterPoint());
+  split_view_controller()->Resize(gfx::Point(100, 100));
+
+  window1.reset();
+  EXPECT_FALSE(split_view_controller()->is_resizing());
 }
 
 // Test the tab-dragging related functionalities in tablet mode. Tab(s) can be

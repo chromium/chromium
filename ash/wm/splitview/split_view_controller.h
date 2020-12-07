@@ -282,6 +282,13 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   class DividerSnapAnimation;
   class AutoSnapController;
 
+  // Reason that a snapped window is detached from the splitview.
+  enum class WindowDetachedReason {
+    kWindowMinimized,
+    kWindowDestroyed,
+    kWindowDragged,
+  };
+
   // These functions return |left_window_| and |right_window_|, swapped in
   // nonprimary screen orientations. Note that they may return null.
   aura::Window* GetPhysicalLeftOrTopWindow();
@@ -346,11 +353,12 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // If there are two snapped windows, closing/minimizing/tab-dragging one of
   // them will open overview window grid on the closed/minimized/tab-dragged
   // window side of the screen. If there is only one snapped windows, closing/
-  // minimizing/tab-dragging the sanpped window will end split view mode and
+  // minimizing/tab-dragging the snapped window will end split view mode and
   // adjust the overview window grid bounds if the overview mode is active at
-  // that moment. |window_drag| is true if the window was detached as a result
-  // of dragging.
-  void OnSnappedWindowDetached(aura::Window* window, bool window_drag);
+  // that moment. |reason| specifies the reason that the snapped window is
+  // detached from splitview.
+  void OnSnappedWindowDetached(aura::Window* window,
+                               WindowDetachedReason reason);
 
   // Returns the closest position ratio based on |distance| and |length|.
   float FindClosestPositionRatio(float distance, float length);
