@@ -1893,21 +1893,23 @@ void ReadableStream::FulfillReadIntoRequest(ScriptState* script_state,
                                             DOMArrayBufferView* chunk,
                                             bool done) {
   // https://streams.spec.whatwg.org/#readable-stream-fulfill-read-into-request
-  // 1. Let reader be stream.[[reader]].
+  // 1. Assert: ! ReadableStreamHasBYOBReader(stream) is true.
+  DCHECK(HasBYOBReader(stream));
+  // 2. Let reader be stream.[[reader]].
   ReadableStreamGenericReader* reader = stream->reader_;
   ReadableStreamBYOBReader* byob_reader = To<ReadableStreamBYOBReader>(reader);
-  // 2. Assert: reader.[[readIntoRequests]] is not empty.
+  // 3. Assert: reader.[[readIntoRequests]] is not empty.
   DCHECK(!byob_reader->read_into_requests_.IsEmpty());
-  // 3. Let readIntoRequest be reader.[[readIntoRequests]][0].
+  // 4. Let readIntoRequest be reader.[[readIntoRequests]][0].
   ReadableStreamBYOBReader::ReadIntoRequest* read_into_request =
       byob_reader->read_into_requests_[0];
-  // 4. Remove readIntoRequest from reader.[[readIntoRequests]].
+  // 5. Remove readIntoRequest from reader.[[readIntoRequests]].
   byob_reader->read_into_requests_.pop_front();
-  // 5. If done is true, perform readIntoRequest’s close steps, given chunk.
+  // 6. If done is true, perform readIntoRequest’s close steps, given chunk.
   if (done) {
     read_into_request->CloseSteps(script_state, chunk);
   } else {
-    // 6. Otherwise, perform readIntoRequest’s chunk steps, given chunk.
+    // 7. Otherwise, perform readIntoRequest’s chunk steps, given chunk.
     read_into_request->ChunkSteps(script_state, chunk);
   }
 }
@@ -1917,20 +1919,23 @@ void ReadableStream::FulfillReadRequest(ScriptState* script_state,
                                         v8::Local<v8::Value> chunk,
                                         bool done) {
   // https://streams.spec.whatwg.org/#readable-stream-fulfill-read-request
-  // 1. Let reader be stream.[[reader]].
+  // 1. Assert: ! ReadableStreamHasDefaultReader(stream) is true.
+  DCHECK(HasDefaultReader(stream));
+
+  // 2. Let reader be stream.[[reader]].
   ReadableStreamGenericReader* reader = stream->reader_;
   ReadableStreamDefaultReader* default_reader =
       To<ReadableStreamDefaultReader>(reader);
 
-  // 2. Let readRequest be the first element of reader.[[readRequests]].
+  // 3. Let readRequest be the first element of reader.[[readRequests]].
   StreamPromiseResolver* read_request = default_reader->read_requests_.front();
 
-  // 3. Remove readIntoRequest from reader.[[readIntoRequests]], shifting all
+  // 4. Remove readIntoRequest from reader.[[readIntoRequests]], shifting all
   //    other elements downward (so that the second becomes the first, and so
   //    on).
   default_reader->read_requests_.pop_front();
 
-  // 4. Resolve readIntoRequest.[[promise]] with !
+  // 5. Resolve readIntoRequest.[[promise]] with !
   //    ReadableStreamCreateReadResult(chunk, done, reader.[[forAuthorCode]]).
   read_request->Resolve(script_state, ReadableStream::CreateReadResult(
                                           script_state, chunk, done,
@@ -1939,14 +1944,18 @@ void ReadableStream::FulfillReadRequest(ScriptState* script_state,
 
 int ReadableStream::GetNumReadIntoRequests(const ReadableStream* stream) {
   // https://streams.spec.whatwg.org/#readable-stream-get-num-read-into-requests
-  // 1. Return stream.[[reader]].[[readIntoRequests]]'s size.
+  // 1. Assert: ! ReadableStreamHasBYOBReader(stream) is true.
+  DCHECK(HasBYOBReader(stream));
+  // 2. Return stream.[[reader]].[[readIntoRequests]]'s size.
   ReadableStreamGenericReader* reader = stream->reader_;
   return To<ReadableStreamBYOBReader>(reader)->read_into_requests_.size();
 }
 
 int ReadableStream::GetNumReadRequests(const ReadableStream* stream) {
   // https://streams.spec.whatwg.org/#readable-stream-get-num-read-requests
-  // 1. Return the number of elements in stream.[[reader]].[[readRequests]].
+  // 1. Assert: ! ReadableStreamHasDefaultReader(stream) is true.
+  DCHECK(HasDefaultReader(stream));
+  // 2. Return the number of elements in stream.[[reader]].[[readRequests]].
   ReadableStreamGenericReader* reader = stream->reader_;
   return To<ReadableStreamDefaultReader>(reader)->read_requests_.size();
 }
