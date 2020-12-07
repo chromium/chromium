@@ -972,7 +972,6 @@ enum WebFeature {
   kPointerEventSetCapture = 1431,
   kPointerEventDispatch = 1432,
   kMIDIMessageEventReceivedTime = 1433,
-  kSummaryElementWithDisplayBlockAuthorRule = 1434,
   kV8MediaStream_Active_AttributeGetter = 1435,
   kBeforeInstallPromptEvent = 1436,
   kBeforeInstallPromptEventUserChoice = 1437,
@@ -2662,7 +2661,6 @@ enum WebFeature {
   kContentVisibilityHiddenMatchable = 3334,
   kInlineOverflowAutoWithInlineEndPadding = 3335,
   kInlineOverflowScrollWithInlineEndPadding = 3336,
-  kCSSSelectorPseudoWebKitDetailsMarker = 3337,
   kSerialPortGetInfo = 3338,
   // The above items are available in M85 branch.
 

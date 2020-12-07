@@ -1910,6 +1910,9 @@
       status: "test"
     },
     {
+      name: "SummaryListItem",
+    },
+    {
       name: "SurfaceEmbeddingFeatures",
       status: "stable",
     },

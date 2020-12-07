@@ -3385,55 +3385,6 @@ TEST_F(StyleCascadeTest, MaxSubstitutionTokens) {
             cascade.ComputedValue("--above-limit-reference-fallback"));
 }
 
-TEST_F(StyleCascadeTest, UseCountSummary) {
-  const auto feature = WebFeature::kSummaryElementWithDisplayBlockAuthorRule;
-
-  Element* summary = GetDocument().CreateRawElement(html_names::kSummaryTag);
-  GetDocument().body()->AppendChild(summary);
-
-  {
-    ASSERT_FALSE(GetDocument().IsUseCounted(feature));
-
-    TestCascade cascade(GetDocument(), summary);
-    cascade.Apply();
-    EXPECT_FALSE(GetDocument().IsUseCounted(feature));
-  }
-  {
-    ASSERT_FALSE(GetDocument().IsUseCounted(feature));
-
-    TestCascade cascade(GetDocument(), summary);
-    cascade.Add("color:green");
-    cascade.Apply();
-    EXPECT_FALSE(GetDocument().IsUseCounted(feature));
-  }
-  {
-    ASSERT_FALSE(GetDocument().IsUseCounted(feature));
-
-    TestCascade cascade(GetDocument(), summary);
-    cascade.Add("display:block", CascadeOrigin::kUserAgent);
-    cascade.Apply();
-    EXPECT_FALSE(GetDocument().IsUseCounted(feature));
-  }
-  {
-    ASSERT_FALSE(GetDocument().IsUseCounted(feature));
-
-    TestCascade cascade(GetDocument(), summary);
-    cascade.Add("display:block", CascadeOrigin::kUser);
-    cascade.Apply();
-    EXPECT_TRUE(GetDocument().IsUseCounted(feature));
-    GetDocument().ClearUseCounterForTesting(feature);
-  }
-  {
-    ASSERT_FALSE(GetDocument().IsUseCounted(feature));
-
-    TestCascade cascade(GetDocument(), summary);
-    cascade.Add("display:block", CascadeOrigin::kAuthor);
-    cascade.Apply();
-    EXPECT_TRUE(GetDocument().IsUseCounted(feature));
-    GetDocument().ClearUseCounterForTesting(feature);
-  }
-}
-
 TEST_F(StyleCascadeTest, GetCascadedValues) {
   TestCascade cascade(GetDocument());
   cascade.Add("top:1px", CascadeOrigin::kUserAgent);

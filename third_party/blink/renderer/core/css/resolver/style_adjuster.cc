@@ -393,7 +393,8 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
     return;
   }
 
-  if (IsA<HTMLSummaryElement>(element)) {
+  if (IsA<HTMLSummaryElement>(element) &&
+      !RuntimeEnabledFeatures::SummaryListItemEnabled()) {
     // <summary> should be a list item by default, but currently it's a block
     // and the disclosure symbol is not a ::marker (bug 590014). If an author
     // specifies 'display: list-item', the <summary> would seem to have two

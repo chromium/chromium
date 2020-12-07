@@ -579,6 +579,16 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
               ReplacedWillBeRemoved("RTP data channels",
                                     "standard SCTP data channels", kM90,
                                     "6485681910054912")};
+
+    case WebFeature::kCSSSelectorWebkitDetailsMarker:
+      if (!RuntimeEnabledFeatures::SummaryListItemEnabled())
+        return {"NotDeprecated", kUnknown, ""};
+      return {"CSSSeelctorWebKitDetailsMarker", kM89,
+              ReplacedBy("::-webkit-details-marker pseudo element selector",
+                         "::marker") +
+                  " See https://chromestatus.com/feature/6730096436051968 for "
+                  "more details."};
+
     // Features that aren't deprecated don't have a deprecation message.
     default:
       return {"NotDeprecated", kUnknown, ""};

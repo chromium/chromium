@@ -28107,7 +28107,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1431" label="PointerEventSetCapture"/>
   <int value="1432" label="PointerEventDispatch"/>
   <int value="1433" label="MIDIMessageEventReceivedTime"/>
-  <int value="1434" label="SummaryElementWithDisplayBlockAuthorRule"/>
+  <int value="1434" label="OBSOLETE_SummaryElementWithDisplayBlockAuthorRule"/>
   <int value="1435" label="V8MediaStream_Active_AttributeGetter"/>
   <int value="1436" label="BeforeInstallPromptEvent"/>
   <int value="1437" label="BeforeInstallPromptEventUserChoice"/>
@@ -30110,7 +30110,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3334" label="ContentVisibilityHiddenMatchable"/>
   <int value="3335" label="InlineOverflowAutoWithInlineEndPadding"/>
   <int value="3336" label="InlineOverflowScrollWithInlineEndPadding"/>
-  <int value="3337" label="CSSSelectorPseudoWebKitDetailsMarker"/>
+  <int value="3337" label="OBSOLETE_CSSSelectorPseudoWebKitDetailsMarker"/>
   <int value="3338" label="SerialPortGetInfo"/>
   <int value="3339" label="FileSystemPickerMethod"/>
   <int value="3340" label="V8Window_ShowOpenFilePicker_Method"/>

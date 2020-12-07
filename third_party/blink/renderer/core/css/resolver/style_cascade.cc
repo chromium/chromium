@@ -286,8 +286,6 @@ void StyleCascade::AnalyzeMatchResult() {
       map_.Add(property.GetCSSPropertyName(), e.Priority());
     }
   }
-
-  MaybeUseCountSummaryDisplayBlock();
 }
 
 void StyleCascade::AnalyzeInterpolations() {
@@ -995,20 +993,6 @@ void StyleCascade::CountUse(WebFeature feature) {
 void StyleCascade::MaybeUseCountRevert(const CSSValue& value) {
   if (IsRevert(value))
     CountUse(WebFeature::kCSSKeywordRevert);
-}
-
-// TODO(crbug.com/590014): Remove this when display type of <summary> is fixed
-void StyleCascade::MaybeUseCountSummaryDisplayBlock() {
-  if (!state_.GetElement().HasTagName(html_names::kSummaryTag))
-    return;
-  CascadePriority priority = map_.At(CSSPropertyName(CSSPropertyID::kDisplay));
-  if (priority.GetOrigin() <= CascadeOrigin::kUserAgent)
-    return;
-  const CSSValue* value = ValueAt(match_result_, priority.GetPosition());
-  if (auto* identifier = DynamicTo<CSSIdentifierValue>(value)) {
-    if (identifier->GetValueID() == CSSValueID::kBlock)
-      CountUse(WebFeature::kSummaryElementWithDisplayBlockAuthorRule);
-  }
 }
 
 void StyleCascade::MaybeUseCountInvalidVariableUnset(

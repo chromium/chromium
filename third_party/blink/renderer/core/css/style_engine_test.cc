@@ -2916,29 +2916,6 @@ TEST_F(StyleEngineTest,
                                     GetCSSPropertyColor()));
 }
 
-TEST_F(StyleEngineTest, SummaryDisplayUseCount) {
-  // Should not be use-counted: wrong element type.
-  GetDocument().body()->setInnerHTML(
-      "<style>div { display: block; }</style><div></div>");
-  UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kSummaryElementWithDisplayBlockAuthorRule));
-
-  // Should not be use-counted: wrong display type:
-  GetDocument().body()->setInnerHTML(
-      "<style>summary { display: inline; }</style><summary></summary>");
-  UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kSummaryElementWithDisplayBlockAuthorRule));
-
-  // Should be use-counted:
-  GetDocument().body()->setInnerHTML(
-      "<style>summary { display: block; }</style><summary></summary>");
-  UpdateAllLifecyclePhases();
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kSummaryElementWithDisplayBlockAuthorRule));
-}
-
 TEST_F(StyleEngineTest, RevertUseCount) {
   GetDocument().body()->setInnerHTML(
       "<style>div { display: unset; }</style><div></div>");
