@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
@@ -248,7 +249,7 @@ public class HistoryNavigationCoordinator
                         ? createDelegate(mTab, mBackShouldCloseTab, mOnBackPressed,
                                 mShowHistoryManager, mHistoryMenu, mBottomSheetControllerSupplier)
                         : HistoryNavigationDelegate.DEFAULT;
-                initNavigationHandler(delegate);
+                initNavigationHandler(delegate, webContents);
             }
         }
         if (mTab != null) SwipeRefreshHandler.from(mTab).setNavigationCoordinator(this);
@@ -259,7 +260,8 @@ public class HistoryNavigationCoordinator
      * @param delegate {@link HistoryNavigationDelegate} providing info and a factory method.
      * @param webContents A new WebContents object.
      */
-    private void initNavigationHandler(HistoryNavigationDelegate delegate) {
+    private void initNavigationHandler(
+            HistoryNavigationDelegate delegate, WebContents webContents) {
         if (mNavigationHandler == null) {
             PropertyModel model =
                     new PropertyModel.Builder(GestureNavigationProperties.ALL_KEYS).build();
@@ -275,9 +277,11 @@ public class HistoryNavigationCoordinator
             mNavigationHandler.setDelegate(delegate);
             mDelegate = delegate;
 
+            Profile profile = webContents != null ? Profile.fromWebContents(webContents)
+                                                  : Profile.getLastUsedRegularProfile();
             mNavigationSheet = NavigationSheet.isEnabled()
                     ? NavigationSheet.create(mNavigationLayout, mNavigationLayout.getContext(),
-                            mDelegate.getBottomSheetController())
+                            mDelegate.getBottomSheetController(), profile)
                     : NavigationSheet.DUMMY;
             mNavigationSheet.setDelegate(mDelegate.createSheetDelegate());
         }

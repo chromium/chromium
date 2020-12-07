@@ -18,6 +18,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.gesturenav.NavigationSheetMediator.ItemProperties;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -116,13 +117,13 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
     /**
      * Construct a new NavigationSheet.
      */
-    NavigationSheetCoordinator(
-            View parent, Context context, Supplier<BottomSheetController> bottomSheetController) {
+    NavigationSheetCoordinator(View parent, Context context,
+            Supplier<BottomSheetController> bottomSheetController, Profile profile) {
         mParentView = parent;
         mBottomSheetController = bottomSheetController;
         mLayoutInflater = LayoutInflater.from(context);
         mToolbarView = mLayoutInflater.inflate(R.layout.navigation_sheet_toolbar, null);
-        mMediator = new NavigationSheetMediator(context, mModelList, (position, index) -> {
+        mMediator = new NavigationSheetMediator(context, mModelList, profile, (position, index) -> {
             mDelegate.navigateToIndex(index);
             close(false);
             if (mOpenedAsPopup) {

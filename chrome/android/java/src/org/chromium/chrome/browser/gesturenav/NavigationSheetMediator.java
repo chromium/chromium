@@ -45,6 +45,7 @@ class NavigationSheetMediator {
     private final Drawable mHistoryIcon;
     private final Drawable mDefaultIcon;
     private final String mNewTabText;
+    private final Profile mProfile;
 
     private NavigationHistory mHistory;
 
@@ -75,9 +76,11 @@ class NavigationSheetMediator {
         public static final PropertyKey[] ALL_KEYS = {ICON, LABEL, CLICK_LISTENER};
     }
 
-    NavigationSheetMediator(Context context, ModelList modelList, ClickListener listener) {
+    NavigationSheetMediator(
+            Context context, ModelList modelList, Profile profile, ClickListener listener) {
         mModelList = modelList;
         mClickListener = listener;
+        mProfile = profile;
         mFaviconHelper = new FaviconHelper();
         mIconGenerator = FaviconUtils.createCircularIconGenerator(context.getResources());
         mFaviconSize = context.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
@@ -109,11 +112,8 @@ class NavigationSheetMediator {
                 FaviconHelper.FaviconImageCallback imageCallback =
                         (bitmap, iconUrl) -> onFaviconAvailable(pageUrl, bitmap);
                 if (!pageUrl.equals(UrlConstants.HISTORY_URL)) {
-                    // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular
-                    // profile or incognito profile) instead of always using regular profile. It
-                    // works correctly now, but it is not safe.
-                    mFaviconHelper.getLocalFaviconImageForURL(Profile.getLastUsedRegularProfile(),
-                            pageUrl, mFaviconSize, imageCallback);
+                    mFaviconHelper.getLocalFaviconImageForURL(
+                            mProfile, pageUrl, mFaviconSize, imageCallback);
                     requestedUrls.add(pageUrl);
                 } else {
                     mModelList.get(i).model.set(ItemProperties.ICON, mHistoryIcon);

@@ -28,6 +28,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gesturenav.NavigationSheetMediator.ItemProperties;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
@@ -202,8 +203,9 @@ public class NavigationSheetTest {
     private NavigationSheet showPopup(NavigationController controller) throws ExecutionException {
         return TestThreadUtils.runOnUiThreadBlocking(() -> {
             Tab tab = mActivityTestRule.getActivity().getActivityTabProvider().get();
-            NavigationSheet navigationSheet = NavigationSheet.create(tab.getContentView(),
-                    mActivityTestRule.getActivity(), () -> mBottomSheetController);
+            NavigationSheet navigationSheet =
+                    NavigationSheet.create(tab.getContentView(), mActivityTestRule.getActivity(),
+                            () -> mBottomSheetController, Profile.getLastUsedRegularProfile());
             navigationSheet.setDelegate(new TestSheetDelegate(controller));
             navigationSheet.startAndExpand(false, false);
             return navigationSheet;
