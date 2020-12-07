@@ -322,9 +322,7 @@ Try tapping the mic to ask me anything.
         <ph name="ATTEMPTS_LEFT">$1<ex>3</ex></ph> attempts left
       </message>
       <message name="IDS_REQUEST_PIN_DIALOG_ERROR_ATTEMPTS" desc="The text displayed in the certificate provider PIN request dialog when the previous login attempt was unsuccessful but there are more attempts remaining. Includes the reason for the previous failure.">
-        {ATTEMPTS_LEFT, plural,
-          =1 {<ph name="ERROR_MESSAGE">{1}<ex>Invalid PIN.</ex></ph> {0} attempt left}
-          other {<ph name="ERROR_MESSAGE">{1}<ex>Invalid PIN.</ex></ph> {0} attempts left}}
+        <ph name="ERROR_MESSAGE">$1<ex>Invalid PIN.</ex></ph> <ph name="ATTEMPTS_LEFT">$2<ex>3</ex></ph> attempts left
       </message>
 
       <!-- Print Management App -->

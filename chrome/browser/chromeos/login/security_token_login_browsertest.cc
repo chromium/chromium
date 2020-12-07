@@ -67,8 +67,9 @@ constexpr char kPinDialogDefaultTitle[] = "Smart card PIN";
 constexpr char kPinDialogInvalidPinTitle[] = "Invalid PIN.";
 constexpr char kPinDialogInvalidPin2AttemptsTitle[] =
     "Invalid PIN. 2 attempts left";
+// TODO(crbug.com/1060695): Fix the incorrect plural in the message.
 constexpr char kPinDialogInvalidPin1AttemptTitle[] =
-    "Invalid PIN. 1 attempt left";
+    "Invalid PIN. 1 attempts left";
 constexpr char kPinDialogNoAttemptsLeftTitle[] =
     "Maximum allowed attempts exceeded.";
 
