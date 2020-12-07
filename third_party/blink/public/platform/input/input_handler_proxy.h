@@ -126,12 +126,6 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
     // isn't a consumer for them (and send only the scroll events).
     DROP_EVENT,
 
-    // The compositor did handle the scroll event (so it wouldn't forward the
-    // event to the main thread.) but it didn't consume the scroll so it should
-    // pass it to the next consumer (either overscrolling or bubbling the event
-    // to the next renderer).
-    DID_HANDLE_SHOULD_BUBBLE,
-
     // Used only in scroll unification; the compositor couldn't determine the
     // scroll node to handle the event and requires a second try with an
     // ElementId provided by a hit test in Blink.

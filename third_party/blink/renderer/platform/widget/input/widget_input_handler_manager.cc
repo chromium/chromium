@@ -81,8 +81,6 @@ mojom::blink::InputEventResultState InputEventDispositionToAck(
       return mojom::blink::InputEventResultState::kNoConsumerExists;
     case InputHandlerProxy::DID_HANDLE_NON_BLOCKING:
       return mojom::blink::InputEventResultState::kSetNonBlocking;
-    case InputHandlerProxy::DID_HANDLE_SHOULD_BUBBLE:
-      return mojom::blink::InputEventResultState::kConsumedShouldBubble;
     case InputHandlerProxy::REQUIRES_MAIN_THREAD_HIT_TEST:
     default:
       NOTREACHED();

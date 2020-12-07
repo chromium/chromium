@@ -500,9 +500,7 @@ void RenderWidgetHostViewChildFrame::GestureEventAck(
     DCHECK(!is_scroll_sequence_bubbling_);
     is_scroll_sequence_bubbling_ =
         ack_result == blink::mojom::InputEventResultState::kNotConsumed ||
-        ack_result == blink::mojom::InputEventResultState::kNoConsumerExists ||
-        ack_result ==
-            blink::mojom::InputEventResultState::kConsumedShouldBubble;
+        ack_result == blink::mojom::InputEventResultState::kNoConsumerExists;
   }
 
   if (is_scroll_sequence_bubbling_ &&

@@ -20,8 +20,6 @@ enum InputEventResultState {
   kConsumed,
   // Was not consumed.
   kNotConsumed,
-  // Was handled should bubble to parent.
-  kConsumedShouldBubble,
   // Could not be targeted.
   kNoConsumerExists,
   // Discarded.

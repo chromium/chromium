@@ -455,8 +455,8 @@ void InputHandlerProxy::DispatchSingleInputEvent(
     case WebGestureEvent::Type::kGestureScrollBegin:
     case WebGestureEvent::Type::kGesturePinchBegin:
       if (disposition == DID_HANDLE ||
-          disposition == DID_HANDLE_SHOULD_BUBBLE ||
-          disposition == REQUIRES_MAIN_THREAD_HIT_TEST) {
+          disposition == REQUIRES_MAIN_THREAD_HIT_TEST ||
+          (disposition == DROP_EVENT && handling_gesture_on_impl_thread_)) {
         // REQUIRES_MAIN_THREAD_HIT_TEST means the scroll will be handled by
         // the compositor but needs to block until a hit test is performed by
         // Blink. We need to set this to indicate we're in a scroll so that
@@ -465,6 +465,9 @@ void InputHandlerProxy::DispatchSingleInputEvent(
         // |handling_gesture_on_impl_thread_|. Ideally these two bits would be
         // merged. The queueing behavior is currently just determined by having
         // an active gesture device.
+        //
+        // DROP_EVENT and handling_gesture_on_impl_thread_ means that the
+        // gesture was handled but the scroll was not consumed.
         currently_active_gesture_device_ =
             static_cast<const WebGestureEvent&>(event).SourceDevice();
       }
@@ -978,13 +981,13 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
       handling_gesture_on_impl_thread_ = true;
       if (input_handler_->IsCurrentlyScrollingViewport())
         client_->DidStartScrollingViewport();
-
-      if (scroll_status.bubble)
-        result = DID_HANDLE_SHOULD_BUBBLE;
+      // if the viewport cannot scroll, the scroll cannot be consumed so we
+      // drop the event
+      if (scroll_status.viewport_cannot_scroll)
+        result = DROP_EVENT;
       else
         result = DID_HANDLE;
       break;
-    case ScrollThread::SCROLL_UNKNOWN:
     case ScrollThread::SCROLL_ON_MAIN_THREAD:
       TRACE_EVENT_INSTANT0("input", "Handle On Main", TRACE_EVENT_SCOPE_THREAD);
       result = DID_NOT_HANDLE;
@@ -993,6 +996,9 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
       TRACE_EVENT_INSTANT0("input", "Ignore Scroll", TRACE_EVENT_SCOPE_THREAD);
       scroll_sequence_ignored_ = true;
       result = DROP_EVENT;
+      break;
+    default:
+      NOTREACHED();
       break;
   }
 

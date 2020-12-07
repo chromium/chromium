@@ -748,8 +748,8 @@ TEST_F(InputRouterImplTest, TouchActionAutoWithAckStateConsumedShouldBubble) {
   base::Optional<cc::TouchAction> expected_touch_action;
   OnTouchEventAckWithAckState(
       blink::mojom::InputEventResultSource::kCompositorThread,
-      blink::mojom::InputEventResultState::kConsumedShouldBubble,
-      expected_touch_action, cc::TouchAction::kAuto);
+      blink::mojom::InputEventResultState::kNotConsumed, expected_touch_action,
+      cc::TouchAction::kAuto);
 }
 
 TEST_F(InputRouterImplTest, TouchActionAutoWithAckStateNoConsumerExists) {

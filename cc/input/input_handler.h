@@ -176,6 +176,8 @@ class CC_EXPORT InputHandler {
     SCROLL_ON_MAIN_THREAD = 0,
     SCROLL_ON_IMPL_THREAD,
     SCROLL_IGNORED,
+    // SCROLL_UNKOWN is not used anymore. However we'll keep this entry as per
+    // the comment above.
     SCROLL_UNKNOWN,
     LAST_SCROLL_STATUS = SCROLL_UNKNOWN
   };
@@ -195,9 +197,17 @@ class CC_EXPORT InputHandler {
           main_thread_scrolling_reasons(main_thread_scrolling_reasons),
           needs_main_thread_hit_test(needs_main_thread_hit_test) {}
     ScrollThread thread = ScrollThread::SCROLL_ON_IMPL_THREAD;
+    // TODO(crbug.com/1155663): Make sure to set main_thread_scrolling_reasons
+    // only when ScrollStatus.thread is set to
+    // InputHander::ScrollThread::SCROLL_ON_MAIN_THREAD
     uint32_t main_thread_scrolling_reasons =
         MainThreadScrollingReason::kNotScrollingOnMain;
-    bool bubble = false;
+    // TODO(crbug.com/1155758): This is a temporary workaround for GuestViews
+    // as they create viewport nodes and want to bubble scroll if the
+    // viewport cannot scroll in the given delta directions. There should be
+    // a parameter to ThreadInputHandler to specify whether unused delta is
+    // consumed by the viewport or bubbles to the parent.
+    bool viewport_cannot_scroll = false;
 
     // Used only in scroll unification. Tells the caller that the input handler
     // detected a case where it cannot reliably target a scroll node and needs
