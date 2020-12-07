@@ -32,16 +32,6 @@ bool TpmIsBeingOwned() {
   return result;
 }
 
-void GetTpmVersion(GetTpmVersionCallback callback) {
-  CryptohomeClient::Get()->TpmGetVersion(base::BindOnce(
-      [](GetTpmVersionCallback callback,
-         base::Optional<CryptohomeClient::TpmVersionInfo> tpm_version_info) {
-        std::move(callback).Run(
-            tpm_version_info.value_or(CryptohomeClient::TpmVersionInfo()));
-      },
-      std::move(callback)));
-}
-
 bool InstallAttributesGet(const std::string& name, std::string* value) {
   std::vector<uint8_t> buf;
   bool success = false;

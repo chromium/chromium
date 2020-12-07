@@ -28,12 +28,6 @@ COMPONENT_EXPORT(CRYPTOHOME_CLIENT) bool TpmIsOwned();
 // generating).
 COMPONENT_EXPORT(CRYPTOHOME_CLIENT) bool TpmIsBeingOwned();
 
-// Asynchronous. Provides the TPM version information in |callback|.
-using GetTpmVersionCallback = base::OnceCallback<void(
-    const CryptohomeClient::TpmVersionInfo& tpm_version_info)>;
-COMPONENT_EXPORT(CRYPTOHOME_CLIENT)
-void GetTpmVersion(GetTpmVersionCallback callback);
-
 // Blocking calls to CryptohomeClient methods.
 COMPONENT_EXPORT(CRYPTOHOME_CLIENT)
 bool InstallAttributesGet(const std::string& name, std::string* value);

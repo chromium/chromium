@@ -315,12 +315,6 @@ bool FakeCryptohomeClient::InstallAttributesIsFirstInstall(
   return true;
 }
 
-void FakeCryptohomeClient::TpmGetVersion(
-    DBusMethodCallback<TpmVersionInfo> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), TpmVersionInfo()));
-}
-
 void FakeCryptohomeClient::GetKeyDataEx(
     const cryptohome::AccountIdentifier& cryptohome_id,
     const cryptohome::AuthorizationRequest& auth,

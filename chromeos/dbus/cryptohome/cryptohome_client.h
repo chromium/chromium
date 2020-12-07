@@ -120,17 +120,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
     int slot = -1;
   };
 
-  // Holds TPM version info. Mirrors cryptohome::Tpm::TpmVersionInfo from CrOS
-  // side.
-  struct TpmVersionInfo {
-    uint32_t family = 0;
-    uint64_t spec_level = 0;
-    uint32_t manufacturer = 0;
-    uint32_t tpm_model = 0;
-    uint64_t firmware_version = 0;
-    std::string vendor_specific;
-  };
-
   // Creates and initializes the global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);
 
@@ -305,10 +294,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
   // Calls InstallAttributesIsFirstInstall method and returns true when the call
   // succeeds. This method blocks until the call returns.
   virtual bool InstallAttributesIsFirstInstall(bool* is_first_install) = 0;
-
-  // Asynchronously gets the underlying TPM version information and passes it to
-  // the given callback.
-  virtual void TpmGetVersion(DBusMethodCallback<TpmVersionInfo> callback) = 0;
 
   // Asynchronously calls the GetKeyDataEx method. |callback| will be invoked
   // with the reply protobuf.
