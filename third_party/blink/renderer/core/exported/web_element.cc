@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
-#include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/v0_custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/v0_custom_element_processing_stack.h"
@@ -192,11 +191,6 @@ gfx::Size WebElement::GetImageSize() {
   if (!image)
     return gfx::Size();
   return gfx::Size(image->width(), image->height());
-}
-
-void WebElement::RequestFullscreen() {
-  Element* element = Unwrap<Element>();
-  Fullscreen::RequestFullscreen(*element);
 }
 
 WebString WebElement::GetComputedValue(const WebString& property_name) {

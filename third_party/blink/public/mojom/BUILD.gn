@@ -109,6 +109,7 @@ mojom("mojom_platform") {
     "manifest/manifest.mojom",
     "manifest/manifest_manager.mojom",
     "manifest/manifest_observer.mojom",
+    "media/fullscreen_video_element.mojom",
     "media/renderer_audio_input_stream_factory.mojom",
     "media/renderer_audio_output_stream_factory.mojom",
     "mediastream/aec_dump.mojom",

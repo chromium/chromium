@@ -49,6 +49,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/media/fullscreen_video_element.mojom-blink.h"
 #include "third_party/blink/public/mojom/optimization_guide/optimization_guide.mojom-blink.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink-forward.h"
@@ -153,6 +154,7 @@ class CORE_EXPORT LocalFrame final
       public Supplementable<LocalFrame>,
       public mojom::blink::LocalFrame,
       public mojom::blink::LocalMainFrame,
+      public mojom::blink::FullscreenVideoElementHandler,
       public mojom::blink::HighPriorityLocalFrame {
  public:
   // Returns the LocalFrame instance for the given |frame_token|.
@@ -695,6 +697,9 @@ class CORE_EXPORT LocalFrame final
                                   cc::BrowserControlsState current,
                                   bool animate) override;
 
+  // mojom::FullscreenVideoElementHandler implementation:
+  void RequestFullscreenVideoElement() final;
+
   SystemClipboard* GetSystemClipboard();
   RawSystemClipboard* GetRawSystemClipboard();
 
@@ -798,7 +803,9 @@ class CORE_EXPORT LocalFrame final
       mojo::PendingAssociatedReceiver<mojom::blink::LocalMainFrame> receiver);
   void BindToHighPriorityReceiver(
       mojo::PendingReceiver<mojom::blink::HighPriorityLocalFrame> receiver);
-
+  void BindFullscreenVideoElementReceiver(
+      mojo::PendingAssociatedReceiver<
+          mojom::blink::FullscreenVideoElementHandler> receiver);
   void BindTextFragmentSelectorProducer(
       mojo::PendingReceiver<mojom::blink::TextFragmentSelectorProducer>
           receiver);
@@ -932,6 +939,11 @@ class CORE_EXPORT LocalFrame final
                    LocalFrame,
                    HeapMojoWrapperMode::kWithoutContextObserver>
       high_priority_frame_receiver_{this, nullptr};
+  // LocalFrame can be reused by multiple ExecutionContext.
+  HeapMojoAssociatedReceiver<mojom::blink::FullscreenVideoElementHandler,
+                             LocalFrame,
+                             HeapMojoWrapperMode::kWithoutContextObserver>
+      fullscreen_video_receiver_{this, nullptr};
 
   // Variable to control burst of download requests.
   int num_burst_download_requests_ = 0;

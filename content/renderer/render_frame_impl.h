@@ -40,7 +40,6 @@
 #include "content/common/render_accessibility.mojom.h"
 #include "content/common/renderer.mojom.h"
 #include "content/common/web_ui.mojom.h"
-#include "content/public/common/fullscreen_video_element.mojom.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/stop_find_action.h"
 #include "content/public/common/widget_type.h"
@@ -166,7 +165,6 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::mojom::AutoplayConfigurationClient,
       mojom::Frame,
       mojom::FrameNavigationControl,
-      mojom::FullscreenVideoElementHandler,
       mojom::FrameBindingsControl,
       mojom::MhtmlFileWriter,
       public blink::WebLocalFrameClient,
@@ -526,9 +524,6 @@ class CONTENT_EXPORT RenderFrameImpl
       JavaScriptExecuteRequestInIsolatedWorldCallback callback) override;
   void SwapIn() override;
 
-  // mojom::FullscreenVideoElementHandler implementation:
-  void RequestFullscreenVideoElement() override;
-
   // mojom::MhtmlFileWriter implementation:
   void SerializeAsMHTML(const mojom::SerializeAsMHTMLParamsPtr params,
                         SerializeAsMHTMLCallback callback) override;
@@ -708,11 +703,6 @@ class CONTENT_EXPORT RenderFrameImpl
   void SetUpSharedMemoryForSmoothness(
       base::ReadOnlySharedMemoryRegion shared_memory) override;
   blink::WebURL LastCommittedUrlForUKM() override;
-
-  // Binds to the fullscreen service in the browser.
-  void BindFullscreen(
-      mojo::PendingAssociatedReceiver<mojom::FullscreenVideoElementHandler>
-          receiver);
 
   // Binds to the MHTML file generation service in the browser.
   void BindMhtmlFileWriter(
@@ -1324,8 +1314,6 @@ class CONTENT_EXPORT RenderFrameImpl
       frame_bindings_control_receiver_{this};
   mojo::AssociatedReceiver<mojom::FrameNavigationControl>
       frame_navigation_control_receiver_{this};
-  mojo::AssociatedReceiver<mojom::FullscreenVideoElementHandler>
-      fullscreen_receiver_{this};
   mojo::AssociatedReceiver<mojom::MhtmlFileWriter> mhtml_file_writer_receiver_{
       this};
 

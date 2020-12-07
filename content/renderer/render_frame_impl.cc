@@ -2231,14 +2231,6 @@ void RenderFrameImpl::SetUpSharedMemoryForSmoothness(
   }
 }
 
-void RenderFrameImpl::BindFullscreen(
-    mojo::PendingAssociatedReceiver<mojom::FullscreenVideoElementHandler>
-        receiver) {
-  fullscreen_receiver_.Bind(
-      std::move(receiver),
-      GetTaskRunner(blink::TaskType::kInternalNavigationAssociated));
-}
-
 void RenderFrameImpl::BindAutoplayConfiguration(
     mojo::PendingAssociatedReceiver<blink::mojom::AutoplayConfigurationClient>
         receiver) {
@@ -2842,22 +2834,6 @@ blink::PreviewsState RenderFrameImpl::GetPreviewsState() {
 
 bool RenderFrameImpl::IsPasting() {
   return GetLocalRootWebFrameWidget()->IsPasting();
-}
-
-// blink::mojom::FullscreenVideoElementHandler implementation ------------------
-void RenderFrameImpl::RequestFullscreenVideoElement() {
-  WebElement video_element =
-      frame_->GetDocument().GetElementsByHTMLTagName("video").FirstItem();
-
-  if (!video_element.IsNull()) {
-    // This is always initiated from browser side (which should require the user
-    // interacting with ui) which suffices for a user gesture even though there
-    // will have been no input to the frame at this point.
-    frame_->NotifyUserActivation(
-        blink::mojom::UserActivationNotificationType::kInteraction);
-
-    video_element.RequestFullscreen();
-  }
 }
 
 // blink::mojom::AutoplayConfigurationClient implementation
@@ -6146,9 +6122,6 @@ void RenderFrameImpl::RegisterMojoInterfaces() {
 
   GetAssociatedInterfaceRegistry()->AddInterface(base::BindRepeating(
       &RenderFrameImpl::BindNavigationClient, weak_factory_.GetWeakPtr()));
-
-  GetAssociatedInterfaceRegistry()->AddInterface(base::BindRepeating(
-      &RenderFrameImpl::BindFullscreen, weak_factory_.GetWeakPtr()));
 
   GetAssociatedInterfaceRegistry()->AddInterface(base::BindRepeating(
       &RenderFrameImpl::BindMhtmlFileWriter, base::Unretained(this)));

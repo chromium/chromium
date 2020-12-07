@@ -323,7 +323,6 @@ mojom("interfaces") {
 
   sources = [
     "drop_data.mojom",
-    "fullscreen_video_element.mojom",
     "resource_usage_reporter.mojom",
     "was_activated_option.mojom",
     "webplugininfo.mojom",

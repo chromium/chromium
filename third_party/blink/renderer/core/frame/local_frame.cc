@@ -122,6 +122,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/fullscreen/scoped_allow_fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
@@ -401,6 +402,9 @@ void LocalFrame::Init(Frame* opener) {
       WTF::BindRepeating(&LocalFrame::BindToHighPriorityReceiver,
                          WrapWeakPersistent(this)),
       GetTaskRunner(blink::TaskType::kInternalHighPriorityLocalFrame));
+  GetInterfaceRegistry()->AddAssociatedInterface(
+      WTF::BindRepeating(&LocalFrame::BindFullscreenVideoElementReceiver,
+                         WrapWeakPersistent(this)));
 
   if (IsMainFrame()) {
     GetInterfaceRegistry()->AddInterface(
@@ -505,6 +509,7 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   visitor->Trace(main_frame_receiver_);
   visitor->Trace(high_priority_frame_receiver_);
+  visitor->Trace(fullscreen_video_receiver_);
   visitor->Trace(text_fragment_selector_generator_);
   visitor->Trace(saved_scroll_offsets_);
   visitor->Trace(background_color_paint_image_generator_);
@@ -2750,6 +2755,23 @@ void LocalFrame::UpdateBrowserControlsState(
                                                       animate);
 }
 
+void LocalFrame::RequestFullscreenVideoElement() {
+  // Find the first video element of the frame.
+  for (auto* child = GetDocument()->documentElement(); child;
+       child = Traversal<HTMLElement>::Next(*child)) {
+    if (IsA<HTMLVideoElement>(child)) {
+      // This is always initiated from browser side (which should require the
+      // user interacting with ui) which suffices for a user gesture even though
+      // there will have been no input to the frame at this point.
+      NotifyUserActivation(
+          mojom::blink::UserActivationNotificationType::kInteraction);
+
+      Fullscreen::RequestFullscreen(*child);
+      return;
+    }
+  }
+}
+
 HitTestResult LocalFrame::HitTestResultForVisualViewportPos(
     const IntPoint& pos_in_viewport) {
   IntPoint root_frame_point(
@@ -3378,6 +3400,18 @@ void LocalFrame::BindToHighPriorityReceiver(
       std::move(receiver),
       GetTaskRunner(blink::TaskType::kInternalHighPriorityLocalFrame));
   high_priority_frame_receiver_.SetFilter(
+      std::make_unique<ActiveURLMessageFilter>(this));
+}
+
+void LocalFrame::BindFullscreenVideoElementReceiver(
+    mojo::PendingAssociatedReceiver<mojom::blink::FullscreenVideoElementHandler>
+        receiver) {
+  if (IsDetached())
+    return;
+
+  fullscreen_video_receiver_.Bind(
+      std::move(receiver), GetTaskRunner(blink::TaskType::kInternalDefault));
+  fullscreen_video_receiver_.SetFilter(
       std::make_unique<ActiveURLMessageFilter>(this));
 }
 
