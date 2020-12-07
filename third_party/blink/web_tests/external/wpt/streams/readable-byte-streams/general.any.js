@@ -2056,6 +2056,11 @@ promise_test(() => {
 }, 'ReadableStream with byte source: default reader + autoAllocateChunkSize + byobRequest interaction');
 
 test(() => {
+  assert_throws_js(TypeError, () => new ReadableStream({ autoAllocateChunkSize: 0, type: 'bytes' }),
+      'controller cannot be setup with autoAllocateChunkSize = 0');
+}, 'ReadableStream with byte source: autoAllocateChunkSize cannot be 0');
+
+test(() => {
   const ReadableStreamBYOBReader = new ReadableStream({ type: 'bytes' }).getReader({ mode: 'byob' }).constructor;
   const stream = new ReadableStream({ type: 'bytes' });
   new ReadableStreamBYOBReader(stream);
