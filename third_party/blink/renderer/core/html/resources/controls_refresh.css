@@ -55,6 +55,7 @@ textarea:disabled {
 input:disabled,
 textarea:disabled {
   background-color: -internal-light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3));
+  color: -internal-light-dark(default, rgba(255, 255, 255, 0.6));
 }
 
 select:disabled {
