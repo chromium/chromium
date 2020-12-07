@@ -63,11 +63,23 @@ enum Thread {
 
   SERVICE_WORKER_THREAD = 15;
 
-  // Thread pool thread (in renderer process).
+  // DedicatedWorker thread in the renderer process.
+  DEDICATED_WORKER_THREAD = 18;
+
+  // Thread pool thread (can be in different Chrome processes).
   THREAD_POOL_THREAD = 16;
 
   // GPU memory thread (in renderer process).
   GPU_MEMORY_THREAD = 17;
+
+  // The thread for Chrome memory tracing (can be in different processes).
+  MEMORY_INFRA_THREAD = 19;
+
+  // Media thread (in renderer process).
+  MEDIA_THREAD = 20;
+
+  // WebRTC threads, e.g. WebRTC_Signaling,WebRTC_Network (in renderer process).
+  WEBRTC_THREAD = 21;
 
   // A Chrome thread not identified by any other enum. Defined for the benefit
   // of Chrome OS. Do not use for the Chrome sampling profiler; define a new
