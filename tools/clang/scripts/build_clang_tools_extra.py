@@ -50,7 +50,7 @@ def FetchLLVM(checkout_dir, revision):
   except subprocess.CalledProcessError:
     # Otherwise, try to update it.
     print('-- Attempting to update existing repo')
-    args = ['git', 'pull', '--rebase', 'origin', 'master']
+    args = ['git', 'pull', '--rebase', 'origin', 'main']
     subprocess.check_call(args, cwd=checkout_dir, shell=sys.platform == 'win32')
   if revision:
     args = ['git', 'checkout', revision]
