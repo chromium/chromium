@@ -14,9 +14,11 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.NonOverlappingStack;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 
 import java.util.ArrayList;
@@ -57,11 +59,26 @@ public class StackLayout extends StackLayoutBase {
     public void setTabModelSelector(TabModelSelector modelSelector, TabContentManager manager) {
         super.setTabModelSelector(modelSelector, manager);
         if (modelSelector.getTabModelFilterProvider().getCurrentTabModelFilter() == null) {
-            return;
+            // Registers an observer of the TabModel's creation if it hasn't been created yet. Once
+            // the TabModel is ready, we will call setTablists() immediately.
+            // See https://crbug.com/1142858.
+            TabModelSelectorObserver selectorObserver = new EmptyTabModelSelectorObserver() {
+                @Override
+                public void onChange() {
+                    mTabModelSelector.removeObserver(this);
+                    setTablists();
+                }
+            };
+            mTabModelSelector.addObserver(selectorObserver);
+        } else {
+            setTablists();
         }
+    }
+
+    private void setTablists() {
         ArrayList<TabList> tabLists = new ArrayList<TabList>();
-        tabLists.add(modelSelector.getTabModelFilterProvider().getTabModelFilter(false));
-        tabLists.add(modelSelector.getTabModelFilterProvider().getTabModelFilter(true));
+        tabLists.add(mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false));
+        tabLists.add(mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(true));
         setTabLists(tabLists);
     }
 
