@@ -14,7 +14,8 @@
 #include "ui/views/view.h"
 
 namespace ui {
-class ImplicitAnimationObserver;
+class CallbackLayerAnimationObserver;
+class LayerAnimationObserver;
 }  // namespace ui
 
 namespace ash {
@@ -79,11 +80,11 @@ class HoldingSpaceItemViewsContainer : public views::View,
 
   // Invoked to initiate animate in of the contents of this holding space item
   // views container. Any animations created must be associated with `observer`.
-  virtual void AnimateIn(ui::ImplicitAnimationObserver* observer) = 0;
+  virtual void AnimateIn(ui::LayerAnimationObserver* observer) = 0;
 
   // Invoked to initiate animate out of the contents of this holding space item
   // views container. Any animations created must be associated with `observer`.
-  virtual void AnimateOut(ui::ImplicitAnimationObserver* observer) = 0;
+  virtual void AnimateOut(ui::LayerAnimationObserver* observer) = 0;
 
   HoldingSpaceItemViewDelegate* delegate() { return delegate_; }
 
@@ -103,15 +104,12 @@ class HoldingSpaceItemViewsContainer : public views::View,
   void MaybeAnimateOut();
 
   // Invoked when an animate in/out of the contents of this holding space item
-  // views container has been completed. If `aborted` is true, the animation
-  // completed due to abort, otherwise the animation completed normally.
-  void OnAnimateInCompleted(bool aborted);
-  void OnAnimateOutCompleted(bool aborted);
+  // views container has been completed. These methods always return true to
+  // delete the observer which notified the event.
+  bool OnAnimateInCompleted(const ui::CallbackLayerAnimationObserver&);
+  bool OnAnimateOutCompleted(const ui::CallbackLayerAnimationObserver&);
 
   HoldingSpaceItemViewDelegate* const delegate_;
-
-  std::unique_ptr<ui::ImplicitAnimationObserver> animate_in_observer_;
-  std::unique_ptr<ui::ImplicitAnimationObserver> animate_out_observer_;
 
   // Bit flag representation of current `AnimationState`. Note that it is
   // briefly possible to be both `kAnimatingIn` and `kAnimatingOut` when one

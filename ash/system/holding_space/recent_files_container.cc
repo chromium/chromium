@@ -194,14 +194,23 @@ void RecentFilesContainer::RemoveAllHoldingSpaceItemViews() {
   downloads_container_->RemoveAllChildViews(true);
 }
 
-// TODO(dmblack): Implement.
-void RecentFilesContainer::AnimateIn(ui::ImplicitAnimationObserver* observer) {
-  NOTIMPLEMENTED();
+// TODO(dmblack): Handle grow/shrink of container.
+// TODO(dmblack): Animate the screen captures section separately from the
+// downloads section so that adding/removing an item from one section does not
+// impact the other.
+void RecentFilesContainer::AnimateIn(ui::LayerAnimationObserver* observer) {
+  for (auto& view_by_item_id : views_by_item_id_)
+    view_by_item_id.second->AnimateIn(observer);
 }
 
-// TODO(dmblack): Implement.
-void RecentFilesContainer::AnimateOut(ui::ImplicitAnimationObserver* observer) {
-  NOTIMPLEMENTED();
+// TODO(dmblack): Handle animate out of screen captures and downloads labels if
+// those sections are going away permanently.
+// TODO(dmblack): Animate the screen captures section separately from the
+// downloads section so that adding/removing an item from one section does not
+// impact the other.
+void RecentFilesContainer::AnimateOut(ui::LayerAnimationObserver* observer) {
+  for (auto& view_by_item_id : views_by_item_id_)
+    view_by_item_id.second->AnimateOut(observer);
 }
 
 void RecentFilesContainer::AddHoldingSpaceScreenCaptureView(

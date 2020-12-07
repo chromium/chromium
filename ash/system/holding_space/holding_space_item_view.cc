@@ -16,6 +16,10 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/class_property.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/compositor/layer_animation_element.h"
+#include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_animation_sequence.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -33,10 +37,35 @@ namespace ash {
 
 namespace {
 
+// Animation.
+constexpr base::TimeDelta kAnimationDuration =
+    base::TimeDelta::FromMilliseconds(167);
+constexpr SkScalar kAnimationTranslationY = 20;
+
 // A UI class property used to identify if a view is an instance of
 // `HoldingSpaceItemView`. Class name is not an adequate identifier as it may be
 // overridden by subclasses.
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsHoldingSpaceItemViewProperty, false)
+
+// Helpers ---------------------------------------------------------------------
+
+// Creates a `ui::LayerAnimationSequence` for the specified `element` observed
+// by the specified `observer`.
+std::unique_ptr<ui::LayerAnimationSequence> CreateObservedSequence(
+    std::unique_ptr<ui::LayerAnimationElement> element,
+    ui::LayerAnimationObserver* observer) {
+  auto sequence = std::make_unique<ui::LayerAnimationSequence>();
+  sequence->AddElement(std::move(element));
+  sequence->AddObserver(observer);
+  return sequence;
+}
+
+// Creates a `gfx:Transform` for the specified `x` and `y` offsets.
+gfx::Transform CreateTransformFromOffset(SkScalar x, SkScalar y) {
+  gfx::Transform transform;
+  transform.Translate(x, y);
+  return transform;
+}
 
 // CallbackPainter -------------------------------------------------------------
 
@@ -97,6 +126,15 @@ HoldingSpaceItemView::HoldingSpaceItemView(
   // Layer.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
+
+  // This view will be animated in. Set initial opacity and transform so that
+  // the next call to `AnimateIn()` will fade in and translate the view into
+  // place. Note that preemption strategy is also set to cause any calls to
+  // `AnimateIn()`/`AnimateOut()` to preempt any in-progress animation.
+  layer()->SetOpacity(0.f);
+  layer()->SetTransform(CreateTransformFromOffset(0, kAnimationTranslationY));
+  layer()->GetAnimator()->set_preemption_strategy(
+      ui::LayerAnimator::PreemptionStrategy::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 
   // Focus.
   SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -198,6 +236,16 @@ bool HoldingSpaceItemView::OnMousePressed(const ui::MouseEvent& event) {
 
 void HoldingSpaceItemView::OnMouseReleased(const ui::MouseEvent& event) {
   delegate_->OnHoldingSpaceItemViewMouseReleased(this, event);
+}
+
+void HoldingSpaceItemView::AnimateIn(ui::LayerAnimationObserver* observer) {
+  AnimateImmediatelyTo(/*opacity=*/1.f, gfx::Transform(), observer);
+}
+
+void HoldingSpaceItemView::AnimateOut(ui::LayerAnimationObserver* observer) {
+  AnimateImmediatelyTo(/*opacity=*/0.f,
+                       CreateTransformFromOffset(0, -kAnimationTranslationY),
+                       observer);
 }
 
 void HoldingSpaceItemView::StartDrag(const ui::LocatedEvent& event,
@@ -348,6 +396,28 @@ void HoldingSpaceItemView::UpdatePin() {
   pin_->SetToggled(!is_item_pinned);
   pin_->SetVisible(true);
   OnPinVisiblityChanged(true);
+}
+
+void HoldingSpaceItemView::AnimateImmediatelyTo(
+    float opacity,
+    const gfx::Transform& transform,
+    ui::LayerAnimationObserver* observer) {
+  // Opacity animation.
+  auto opacity_element = ui::LayerAnimationElement::CreateOpacityElement(
+      opacity, kAnimationDuration);
+  opacity_element->set_tween_type(gfx::Tween::Type::LINEAR);
+
+  // Transform animation.
+  auto transform_element = ui::LayerAnimationElement::CreateTransformElement(
+      transform, kAnimationDuration);
+  transform_element->set_tween_type(gfx::Tween::Type::EASE_OUT_3);
+
+  // Note that the `ui::LayerAnimator` takes ownership of any animation
+  // sequences so they need to be released.
+  layer()->GetAnimator()->StartTogether(
+      {CreateObservedSequence(std::move(opacity_element), observer).release(),
+       CreateObservedSequence(std::move(transform_element), observer)
+           .release()});
 }
 
 BEGIN_METADATA(HoldingSpaceItemView, views::InkDropHostView)

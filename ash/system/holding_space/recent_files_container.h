@@ -16,6 +16,7 @@ class Label;
 namespace ash {
 
 class HoldingSpaceItemChipsContainer;
+class HoldingSpaceItemView;
 
 // Container for the recent files (e.g. screen captures, downloads, etc).
 class RecentFilesContainer : public HoldingSpaceItemViewsContainer {
@@ -33,8 +34,8 @@ class RecentFilesContainer : public HoldingSpaceItemViewsContainer {
   bool WillAddHoldingSpaceItemView(const HoldingSpaceItem* item) override;
   void AddHoldingSpaceItemView(const HoldingSpaceItem* item) override;
   void RemoveAllHoldingSpaceItemViews() override;
-  void AnimateIn(ui::ImplicitAnimationObserver* observer) override;
-  void AnimateOut(ui::ImplicitAnimationObserver* observer) override;
+  void AnimateIn(ui::LayerAnimationObserver* observer) override;
+  void AnimateOut(ui::LayerAnimationObserver* observer) override;
 
  private:
   void AddHoldingSpaceScreenCaptureView(const HoldingSpaceItem* item);
@@ -50,7 +51,7 @@ class RecentFilesContainer : public HoldingSpaceItemViewsContainer {
   HoldingSpaceItemChipsContainer* downloads_container_ = nullptr;
   views::View* downloads_header_ = nullptr;
 
-  std::map<std::string, views::View*> views_by_item_id_;
+  std::map<std::string, HoldingSpaceItemView*> views_by_item_id_;
 };
 
 }  // namespace ash
