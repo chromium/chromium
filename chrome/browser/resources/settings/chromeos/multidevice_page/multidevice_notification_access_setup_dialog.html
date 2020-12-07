@@ -8,6 +8,7 @@
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="multidevice_browser_proxy.html">
+<link rel="import" href="../localized_link/localized_link.html">
 <link rel="import" href="../os_icons.html">
 <link rel="import" href="../../settings_shared_css.html">
 
@@ -85,16 +86,18 @@
       <div id="dialogBody" slot="body">
         <div id="illustration"></div>
         <div id="description">
-          <div hidden="[[isSetupAttemptInProgress_]]">
-            [[description_]]
-          </div>
+          <template is="dom-if" if="[[description_]]" restamp>
+            <settings-localized-link localized-string="[[description_]]">
+            </settings-localized-link>
+          </template>
           <div hidden="[[!shouldShowSetupInstructionsSeparately_]]">
             $i18n{multideviceNotificationAccessSetupInstructions}
           </div>
         </div>
       </div>
       <div id="buttonContainer" slot="button-container">
-        <template is="dom-if" if="[[!hasCompletedSetupSuccessfully_]]" restamp>
+        <template is="dom-if" if="[[shouldShowCancelButton_(setupState_)]]"
+            restamp>
           <cr-button id="cancelButton" class="cancel-button"
               on-click="onCancelClicked_">
             $i18n{cancel}
@@ -102,8 +105,14 @@
         </template>
         <template is="dom-if" if="[[hasCompletedSetupSuccessfully_]]" restamp>
           <cr-button id="doneButton" class="action-button"
-              on-click="onDoneButtonClicked_">
+              on-click="onDoneOrCloseButtonClicked_">
             $i18n{done}
+          </cr-button>
+        </template>
+        <template is="dom-if" if="[[isNotificationAccessProhibited_]]" restamp>
+          <cr-button id="closeButton" class="action-button"
+              on-click="onDoneOrCloseButtonClicked_">
+            $i18n{close}
           </cr-button>
         </template>
         <template is="dom-if" if="[[hasNotStartedSetupAttempt_]]" restamp>
@@ -112,7 +121,8 @@
             $i18n{multideviceNotificationAccessSetupGetStarted}
           </cr-button>
         </template>
-        <template is="dom-if" if="[[didSetupAttemptFail_]]" restamp>
+        <template is="dom-if" if="[[shouldShowTryAgainButton_(setupState_)]]"
+            restamp>
           <cr-button id="tryAgainButton" class="action-button"
               on-click="attemptNotificationSetup_">
             $i18n{multideviceNotificationAccessSetupTryAgain}

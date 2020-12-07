@@ -146,4 +146,27 @@ suite('Multidevice', () => {
 
     assertFalse(notificationAccessSetupDialog.$$('#dialog').open);
   });
+
+  test('Test notification access prohibited', async () => {
+    assertTrue(!!buttonContainer.querySelector('#cancelButton'));
+    assertTrue(!!buttonContainer.querySelector('#getStartedButton'));
+    assertFalse(!!buttonContainer.querySelector('#doneButton'));
+    assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
+    assertFalse(!!buttonContainer.querySelector('#closeButton'));
+    buttonContainer.querySelector('#getStartedButton').click();
+    assertEquals(browserProxy.getCallCount('attemptNotificationSetup'), 1);
+
+    simulateStatusChanged(
+        NotificationAccessSetupOperationStatus.NOTIFICATION_ACCESS_PROHIBITED);
+
+    assertFalse(!!buttonContainer.querySelector('#cancelButton'));
+    assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
+    assertFalse(!!buttonContainer.querySelector('#doneButton'));
+    assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
+    assertTrue(!!buttonContainer.querySelector('#closeButton'));
+
+    buttonContainer.querySelector('#closeButton').click();
+
+    assertFalse(notificationAccessSetupDialog.$$('#dialog').open);
+  });
 });
