@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -1037,6 +1038,8 @@ void WebContentsViewAura::StartDragging(
 
   auto data(std::make_unique<ui::OSExchangeData>(
       std::move(provider)));  // takes ownership of |provider|.
+  data->SetSource(std::make_unique<ui::DataTransferEndpoint>(
+      web_contents_->GetFocusedFrame()->GetLastCommittedOrigin()));
 
   if (!image.isNull())
     data->provider().SetDragImage(image, image_offset);

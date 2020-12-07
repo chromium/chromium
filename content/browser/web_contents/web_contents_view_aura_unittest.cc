@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -22,9 +23,11 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/test/window_test_api.h"
 #include "ui/aura/window.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -65,6 +68,32 @@ class RunCallbackOnActivation : public WebContentsDelegate {
   base::OnceClosure closure_;
 
   DISALLOW_COPY_AND_ASSIGN(RunCallbackOnActivation);
+};
+
+class TestDragDropClient : public aura::client::DragDropClient {
+ public:
+  // aura::client::DragDropClient:
+  int StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
+                       aura::Window* root_window,
+                       aura::Window* source_window,
+                       const gfx::Point& screen_location,
+                       int operation,
+                       ui::mojom::DragEventSource source) override {
+    drag_in_progress_ = true;
+    drag_drop_data_ = std::move(data);
+    return 1;
+  }
+  void DragCancel() override { drag_in_progress_ = false; }
+  bool IsDragDropInProgress() override { return drag_in_progress_; }
+  void AddObserver(aura::client::DragDropClientObserver* observer) override {}
+  void RemoveObserver(aura::client::DragDropClientObserver* observer) override {
+  }
+
+  ui::OSExchangeData* GetDragDropData() { return drag_drop_data_.get(); }
+
+ private:
+  bool drag_in_progress_ = false;
+  std::unique_ptr<ui::OSExchangeData> drag_drop_data_ = nullptr;
 };
 
 }  // namespace
@@ -561,5 +590,38 @@ TEST_F(WebContentsViewAuraTest, DragDropUrlData) {
   ASSERT_TRUE(drop_complete_data_->drop_data.filenames.empty());
 }
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+TEST_F(WebContentsViewAuraTest, StartDragging) {
+  const char kGmailUrl[] = "http://mail.google.com/";
+  NavigateAndCommit(GURL(kGmailUrl));
+  FocusWebContentsOnMainFrame();
+
+  TestDragDropClient drag_drop_client;
+  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+
+  WebContentsViewAura* view = GetView();
+  // This condition is needed to avoid calling WebContentsViewAura::EndDrag
+  // which will result NOTREACHED being called in
+  // `RenderWidgetHostViewBase::TransformPointToCoordSpaceForView`.
+  view->drag_in_progress_ = true;
+
+  DropData drop_data;
+  drop_data.text.emplace(base::UTF8ToUTF16("Hello World!"));
+  view->StartDragging(drop_data, blink::DragOperationsMask::kDragOperationNone,
+                      gfx::ImageSkia(), gfx::Vector2d(),
+                      blink::mojom::DragEventSourceInfo(),
+                      RenderWidgetHostImpl::From(rvh()->GetWidget()));
+
+  ui::OSExchangeData* exchange_data = drag_drop_client.GetDragDropData();
+  EXPECT_TRUE(exchange_data);
+  EXPECT_TRUE(exchange_data->GetSource());
+  EXPECT_TRUE(exchange_data->GetSource()->IsUrlType());
+  EXPECT_TRUE(exchange_data->GetSource()->origin()->IsSameOriginWith(
+      url::Origin::Create(GURL(kGmailUrl))));
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace content

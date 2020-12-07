@@ -18,6 +18,7 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "ui/aura/client/drag_drop_client.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/file_info/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -182,6 +183,9 @@ DragDropOperation::DragDropOperation(
     drag_drop_controller_->DragCancel();
 
   drag_drop_controller_->AddObserver(this);
+
+  data_exchange_delegate->SetExchangeDataSource(origin_->get()->window(),
+                                                os_exchange_data_.get());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   extended_drag_source_ = ExtendedDragSource::Get();

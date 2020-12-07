@@ -23,6 +23,10 @@ TestDataExchangeDelegate::TestDataExchangeDelegate() = default;
 
 TestDataExchangeDelegate::~TestDataExchangeDelegate() = default;
 
+void TestDataExchangeDelegate::SetExchangeDataSource(
+    aura::Window* target,
+    ui::OSExchangeData* os_exchange_data) {}
+
 std::vector<ui::FileInfo> TestDataExchangeDelegate::GetFilenames(
     aura::Window* source,
     const std::vector<uint8_t>& data) const {

@@ -29,7 +29,9 @@
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/file_info/file_info.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
 
@@ -353,6 +355,19 @@ TEST_F(ChromeDataExchangeDelegateTest, HasUrlsInPickle) {
   content::DropData::FileSystemFileInfo::WriteFileSystemFilesToPickle(
       {file_info}, &valid);
   EXPECT_EQ(true, data_exchange_delegate.HasUrlsInPickle(valid));
+}
+
+TEST_F(ChromeDataExchangeDelegateTest, SetExchangeDataSource) {
+  ChromeDataExchangeDelegate data_exchange_delegate;
+
+  ui::OSExchangeData os_exchange_data;
+
+  data_exchange_delegate.SetExchangeDataSource(arc_window_, &os_exchange_data);
+  EXPECT_EQ(ui::EndpointType::kArc, os_exchange_data.GetSource()->type());
+
+  data_exchange_delegate.SetExchangeDataSource(crostini_window_,
+                                               &os_exchange_data);
+  EXPECT_EQ(ui::EndpointType::kGuestOs, os_exchange_data.GetSource()->type());
 }
 
 }  // namespace chromeos
