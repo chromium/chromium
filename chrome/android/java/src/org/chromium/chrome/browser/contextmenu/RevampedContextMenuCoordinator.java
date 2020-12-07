@@ -68,6 +68,7 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
     private ContextMenuDialog mDialog;
     private Runnable mOnMenuClosed;
     private ContextMenuNativeDelegate mNativeDelegate;
+    private boolean mIsDismissed;
 
     /**
      * Constructor that also sets the content offset.
@@ -94,6 +95,11 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
     @Override
     public void dismiss() {
         dismissDialog();
+    }
+
+    @Override
+    public boolean isDismissed() {
+        return mIsDismissed;
     }
 
     // Shows the menu with chip.
@@ -277,6 +283,7 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
     }
 
     private void dismissDialog() {
+        mIsDismissed = true;
         if (mWebContentsObserver != null) {
             mWebContentsObserver.destroy();
         }
