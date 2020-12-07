@@ -481,18 +481,20 @@ void SharesheetBubbleView::ExpandButtonPressed() {
   show_expanded_view_ = !show_expanded_view_;
   ResizeBubble(kDefaultBubbleWidth, show_expanded_view_ ? kExpandedBubbleHeight
                                                         : kDefaultBubbleHeight);
-  if (show_expanded_view_) {
-    expand_button_->SetToExpandedState();
-    AnimateToExpandedState();
-  } else {
-    expand_button_->SetToDefaultState();
-  }
+
   // Scrollview has separators that overlaps with |expand_button_separator_|
   // to create a double line when both are visible, so when scrollview is
   // expanded we hide our separator.
   expand_button_separator_->SetVisible(!show_expanded_view_);
   expanded_view_->SetVisible(show_expanded_view_);
   expanded_view_separator_->SetVisible(show_expanded_view_);
+
+  if (show_expanded_view_) {
+    expand_button_->SetToExpandedState();
+    AnimateToExpandedState();
+  } else {
+    expand_button_->SetToDefaultState();
+  }
 }
 
 void SharesheetBubbleView::AnimateToExpandedState() {
