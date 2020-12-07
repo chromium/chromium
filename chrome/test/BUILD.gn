@@ -706,7 +706,6 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//base:base_java_test_support",
-      "//chrome/android:base_module_java",
       "//chrome/android:chrome_all_java",
       "//chrome/browser/tabmodel:java",
       "//components/crash/android:handler_java",

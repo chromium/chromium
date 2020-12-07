@@ -19,7 +19,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.PiiElider;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.MainDex;
-import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.crash.CrashKeys;
 
@@ -36,8 +35,7 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
  * This class is written in pure Java, so it can handle exception happens before native is loaded.
  */
 @MainDex
-@UsedByReflection("PureJavaExceptionHandler.java")
-public class PureJavaExceptionReporter implements PureJavaExceptionHandler.JavaExceptionReporter {
+public class PureJavaExceptionReporter {
     // report fields, please keep the name sync with MIME blocks in breakpad_linux.cc
     public static final String CHANNEL = "channel";
     public static final String VERSION = "ver";
@@ -70,9 +68,6 @@ public class PureJavaExceptionReporter implements PureJavaExceptionHandler.JavaE
     private final String mLocalId = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
     private final String mBoundary = "------------" + UUID.randomUUID() + RN;
 
-    @UsedByReflection("PureJavaExceptionHandler.java")
-    public PureJavaExceptionReporter() {}
-
     /**
      * Report and upload the device info and stack trace as if it was a crash. Runs synchronously
      * and results in I/O on the main thread.
@@ -84,8 +79,8 @@ public class PureJavaExceptionReporter implements PureJavaExceptionHandler.JavaE
         reporter.createAndUploadReport(javaException);
     }
 
-    @Override
-    public void createAndUploadReport(Throwable javaException) {
+    @VisibleForTesting
+    void createAndUploadReport(Throwable javaException) {
         // It is OK to do IO in main thread when we know there is a crash happens.
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             createReport(javaException);

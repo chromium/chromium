@@ -106,6 +106,11 @@ public class UmaUtils {
         return sForegroundStartTimeMs;
     }
 
+    @CalledByNative
+    private static void setUsageAndCrashReportingFromNative(boolean enabled) {
+        UmaSessionStats.changeMetricsReportingConsent(enabled);
+    }
+
     @NativeMethods
     interface Natives {
         boolean isClientInMetricsReportingSample();
