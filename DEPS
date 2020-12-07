@@ -103,11 +103,6 @@ vars = {
   # privately accessible.
   'checkout_telemetry_dependencies': False,
 
-  # Bots that don't consume render test goldens can skip downloading
-  # them.
-  # TODO(crbug.com/1103836): Remove after removing infra/ code.
-  'skip_render_test_goldens_download': False,
-
   # Bots that don't consume WPR archives can skip downloading
   # them.
   'skip_wpr_archives_download': False,
