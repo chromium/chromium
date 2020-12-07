@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 
 namespace blink {
 
@@ -38,14 +39,42 @@ constexpr bool IsHTTPWhitespace(UChar chr) {
   return chr == ' ' || chr == '\n' || chr == '\t' || chr == '\r';
 }
 
-bool AddExtension(const String& extension,
-                  Vector<String>& extensions,
-                  ExceptionState& exception_state) {
+bool IsValidSuffixCodePoint(UChar chr) {
+  return IsASCIIAlphanumeric(chr) || chr == '+' || chr == '.';
+}
+
+bool VerifyIsValidExtension(const String& extension,
+                            ExceptionState& exception_state) {
   if (!extension.StartsWith(".")) {
     exception_state.ThrowTypeError("Extension '" + extension +
                                    "' must start with '.'.");
     return false;
   }
+  if (!extension.IsAllSpecialCharacters<IsValidSuffixCodePoint>()) {
+    exception_state.ThrowTypeError("Extension '" + extension +
+                                   "' contains invalid characters.");
+    return false;
+  }
+  if (extension.EndsWith(".")) {
+    exception_state.ThrowTypeError("Extension '" + extension +
+                                   "' must not end with '.'.");
+    return false;
+  }
+  if (extension.length() > 16) {
+    exception_state.ThrowTypeError("Extension '" + extension +
+                                   "' cannot be longer than 16 characters.");
+    return false;
+  }
+
+  return true;
+}
+
+bool AddExtension(const String& extension,
+                  Vector<String>& extensions,
+                  ExceptionState& exception_state) {
+  if (!VerifyIsValidExtension(extension, exception_state))
+    return false;
+
   extensions.push_back(extension.Substring(1));
   return true;
 }

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/i18n/file_util_icu.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -47,6 +48,51 @@ void RecordFileSelectionResult(blink::mojom::ChooseFileSystemEntryType type,
       "NativeFileSystemAPI.FileChooserResult." + TypeToString(type), count);
 }
 
+// Similar to base::FilePath::FinalExtension, but operates with the
+// understanding that the StringType passed in is an extension, not a path.
+// Returns the last extension without a leading ".".
+base::FilePath::StringType GetLastExtension(
+    const base::FilePath::StringType& extension) {
+  auto last_separator = extension.rfind(base::FilePath::kExtensionSeparator);
+  return (last_separator != base::FilePath::StringType::npos)
+             ? extension.substr(last_separator + 1)
+             : extension;
+}
+
+// Returns whether the specified extension receives special handling by the
+// Windows shell.
+bool IsShellIntegratedExtension(const base::FilePath::StringType& extension) {
+  // TODO(https://crbug.com/1154757): Figure out some way to unify this with
+  // net::IsSafePortablePathComponent, with the result probably ending up in
+  // base/i18n/file_util_icu.h.
+  base::FilePath::StringType extension_lower = base::ToLowerASCII(extension);
+
+  // .lnk files may be used to execute arbitrary code (see
+  // https://nvd.nist.gov/vuln/detail/CVE-2010-2568). .local files are used by
+  // Windows to determine which DLLs to load for an application.
+  if ((extension_lower == FILE_PATH_LITERAL("local")) ||
+      (extension_lower == FILE_PATH_LITERAL("lnk")))
+    return true;
+
+  // Setting a file's extension to a CLSID may conceal its actual file type on
+  // some Windows versions (see https://nvd.nist.gov/vuln/detail/CVE-2004-0420).
+  if (!extension_lower.empty() &&
+      (extension_lower.front() == FILE_PATH_LITERAL('{')) &&
+      (extension_lower.back() == FILE_PATH_LITERAL('}')))
+    return true;
+  return false;
+}
+
+// Extension validation primarily takes place in the renderer. This checks for a
+// subset of invalid extensions in the event the renderer is compromised.
+bool IsInvalidExtension(base::FilePath::StringType& extension) {
+  std::string component8 = base::FilePath(extension).AsUTF8Unsafe();
+  auto extension16 = base::UTF8ToUTF16(component8.c_str());
+
+  return !base::i18n::IsFilenameLegal(extension16) ||
+         IsShellIntegratedExtension(GetLastExtension(extension));
+}
+
 // Converts the accepted mime types and extensions from |option| into a list
 // of just extensions to be passed to the file dialog implementation.
 // The returned list will start with all the explicit website provided
@@ -67,7 +113,8 @@ bool GetFileTypesFromAcceptsOption(
 #else
     extension = extension_string;
 #endif
-    if (extension_set.insert(extension).second) {
+    if (extension_set.insert(extension).second &&
+        !IsInvalidExtension(extension)) {
       extensions->push_back(std::move(extension));
     }
   }
@@ -76,7 +123,8 @@ bool GetFileTypesFromAcceptsOption(
     base::FilePath::StringType preferred_extension;
     if (net::GetPreferredExtensionForMimeType(mime_type,
                                               &preferred_extension)) {
-      if (extension_set.insert(preferred_extension).second) {
+      if (extension_set.insert(preferred_extension).second &&
+          !IsInvalidExtension(preferred_extension)) {
         extensions->push_back(std::move(preferred_extension));
       }
     }
@@ -86,7 +134,8 @@ bool GetFileTypesFromAcceptsOption(
     if (inner.empty())
       continue;
     for (auto& extension : inner) {
-      if (extension_set.insert(extension).second) {
+      if (extension_set.insert(extension).second &&
+          !IsInvalidExtension(extension)) {
         extensions->push_back(std::move(extension));
       }
     }
