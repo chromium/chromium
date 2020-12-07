@@ -107,7 +107,8 @@ TEST(ExtensionTest, ExtensionManifestVersions) {
 
   const Manifest::Type kType = Manifest::TYPE_EXTENSION;
   EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(2), kType, 2));
-  EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(3), kType, 3,
+  EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(3), kType, 3));
+  EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(4), kType, 4,
                                         true /* expect warning */));
 
   // Manifest v1 is deprecated, and should not load.
@@ -156,8 +157,10 @@ TEST(ExtensionTest, PlatformAppManifestVersions) {
 
   const Manifest::Type kType = Manifest::TYPE_PLATFORM_APP;
   EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(2), kType, 2));
-  EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(3), kType, 3,
+  EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(3), kType, 3));
+  EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(4), kType, 4,
                                         true /* expect warning */));
+
   // Omitting the key defaults to v2 for platform apps.
   EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(base::nullopt), kType, 2));
 
@@ -194,7 +197,8 @@ TEST(ExtensionTest, HostedAppManifestVersions) {
 
   const Manifest::Type kType = Manifest::TYPE_HOSTED_APP;
   EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(2), kType, 2));
-  EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(3), kType, 3,
+  EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(3), kType, 3));
+  EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(4), kType, 4,
                                         true /* expect warning */));
 
   // Manifest v1 is deprecated, but should still load for hosted apps.
@@ -221,7 +225,8 @@ TEST(ExtensionTest, UserScriptManifestVersions) {
 
   const Manifest::Type kType = Manifest::TYPE_USER_SCRIPT;
   EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(2), kType, 2));
-  EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(3), kType, 3,
+  EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(3), kType, 3));
+  EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(4), kType, 4,
                                         true /* expect warning */));
 
   // Manifest v1 is deprecated, but should still load for user scripts.
