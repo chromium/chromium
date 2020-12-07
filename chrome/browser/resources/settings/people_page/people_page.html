@@ -118,15 +118,9 @@ shown on non-ChromeOS platforms -->
               hidden="[[!shouldShowGoogleAccount_]]"
               on-click="openGoogleAccount_" external></cr-link-row>
 
-          <div class="cr-row" id="edit-profile" on-click="onProfileTap_"
-              actionable>
-            <div class="flex cr-padded-text">
-              $i18n{profileNameAndPicture}
-            </div>
-            <cr-icon-button class="subpage-arrow" aria-label="$i18n{editPerson}"
-                aria-roledescription="$i18n{subpageArrowRoleDescription}">
-            </cr-icon-button>
-          </div>
+          <cr-link-row id="edit-profile"
+              label="$i18n{profileNameAndPicture}"
+              on-click="onProfileTap_" ></cr-link-row>
         </template>
 </if>
 
