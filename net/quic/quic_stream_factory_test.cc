@@ -7798,7 +7798,7 @@ void QuicStreamFactoryTestBase::TestMigrationOnMultipleWriteErrors(
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   // Set up the socket data used by the original network, which encounters a
-  // write erorr.
+  // write error.
   MockQuicData socket_data1(version_);
   socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   int packet_num = 1;

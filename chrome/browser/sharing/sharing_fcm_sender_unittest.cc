@@ -116,9 +116,9 @@ class FakeSharingMessageBridge : public SharingMessageBridge {
       std::unique_ptr<sync_pb::SharingMessageSpecifics> specifics,
       CommitFinishedCallback on_commit_callback) override {
     specifics_ = std::move(*specifics);
-    sync_pb::SharingMessageCommitError commit_erorr;
-    commit_erorr.set_error_code(error_code_);
-    std::move(on_commit_callback).Run(commit_erorr);
+    sync_pb::SharingMessageCommitError commit_error;
+    commit_error.set_error_code(error_code_);
+    std::move(on_commit_callback).Run(commit_error);
   }
 
   // SharingMessageBridge:
@@ -506,7 +506,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(kWebPushResultTestData));
 
 struct CommitErrorCodeTestData {
-  const sync_pb::SharingMessageCommitError::ErrorCode commit_erorr_code;
+  const sync_pb::SharingMessageCommitError::ErrorCode commit_error_code;
   const SharingSendMessageResult expected_result;
 } kCommitErrorCodeTestData[] = {
     {sync_pb::SharingMessageCommitError::NONE,
@@ -541,7 +541,7 @@ class SharingFCMSenderCommitErrorCodeTest
 TEST_P(SharingFCMSenderCommitErrorCodeTest, ErrorCodeTest) {
   test_sync_service_.SetActiveDataTypes({syncer::SHARING_MESSAGE});
 
-  fake_sharing_message_bridge_.set_error_code(GetParam().commit_erorr_code);
+  fake_sharing_message_bridge_.set_error_code(GetParam().commit_error_code);
 
   chrome_browser_sharing::FCMChannelConfiguration fcm_channel;
   fcm_channel.set_sender_id_fcm_token(kSenderIdFcmToken);

@@ -7229,7 +7229,7 @@ TEST_F(ExtensionServiceTest, BubbleAlertDoesNotHideAnotherAlertFromMenu) {
   // Bring the bubble alert error again by clicking its menu item.
   global_error->ExecuteMenuItem(nullptr);
 
-  // Install another webstore extension that will trigger an erorr of type
+  // Install another webstore extension that will trigger an error of type
   // BUBBLE_ALERT.
   // Make sure that this bubble alert does not replace the current bubble alert.
   {

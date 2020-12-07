@@ -245,7 +245,7 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   // |cast_sink|: Cast sink created from mDNS service description or DIAL sink.
   // |backoff_entry|: backoff entry holds failure count and calculates back-off
   // for next retry.
-  // |error_state|: erorr encountered when opending cast channel.
+  // |error_state|: error encountered when opending cast channel.
   void OnChannelErrorMayRetry(MediaSinkInternal cast_sink,
                               std::unique_ptr<net::BackoffEntry> backoff_entry,
                               cast_channel::ChannelError error_state,

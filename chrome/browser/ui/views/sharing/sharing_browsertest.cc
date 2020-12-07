@@ -48,9 +48,9 @@ void FakeSharingMessageBridge::SendSharingMessage(
     std::unique_ptr<sync_pb::SharingMessageSpecifics> specifics,
     CommitFinishedCallback on_commit_callback) {
   specifics_ = std::move(*specifics);
-  sync_pb::SharingMessageCommitError commit_erorr;
-  commit_erorr.set_error_code(sync_pb::SharingMessageCommitError::NONE);
-  std::move(on_commit_callback).Run(commit_erorr);
+  sync_pb::SharingMessageCommitError commit_error;
+  commit_error.set_error_code(sync_pb::SharingMessageCommitError::NONE);
+  std::move(on_commit_callback).Run(commit_error);
 }
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
