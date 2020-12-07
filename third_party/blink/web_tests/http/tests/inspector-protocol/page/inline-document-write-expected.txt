@@ -1,0 +1,4 @@
+Tests that inline document.write() does not send Page.documentOpened event
+Frame navigated to http://devtools.test:8000/inspector-protocol/page/resources/inline-document-write.html
+Frame stopped loading
+
