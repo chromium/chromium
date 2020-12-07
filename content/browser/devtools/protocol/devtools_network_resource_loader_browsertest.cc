@@ -75,7 +75,8 @@ class DevtoolsNetworkResourceLoaderTest : public ContentBrowserTest {
         frame, frame->GetLastCommittedOrigin(),
         mojo::Clone(frame->last_committed_client_security_state()),
         /**coep_reporter=*/mojo::NullRemote(), frame->GetProcess(),
-        network::mojom::TrustTokenRedemptionPolicy::kForbid);
+        network::mojom::TrustTokenRedemptionPolicy::kForbid,
+        "DevtoolsNetworkResourceLoaderTest");
     // Let DevTools fetch resources without CORS and CORB. Source maps are valid
     // JSON and would otherwise require a CORS fetch + correct response headers.
     // See BUG(chromium:1076435) for more context.

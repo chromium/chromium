@@ -247,7 +247,8 @@ ServiceWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
       net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
                                  origin, origin,
                                  net::SiteForCookies::FromOrigin(origin)),
-      /*coep_reporter=*/mojo::NullRemote());
+      /*coep_reporter=*/mojo::NullRemote(),
+      /*debug_tag=*/"SWDTAH::CreateNetworkFactoryParamsForDevTools");
   return {url::Origin::Create(GetURL()), net::SiteForCookies::FromUrl(GetURL()),
           std::move(factory)};
 }

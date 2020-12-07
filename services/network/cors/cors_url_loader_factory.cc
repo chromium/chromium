@@ -189,6 +189,7 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
       ignore_isolated_world_origin_(params->ignore_isolated_world_origin),
       trust_token_redemption_policy_(params->trust_token_redemption_policy),
       isolation_info_(params->isolation_info),
+      debug_tag_(params->debug_tag),
       origin_access_list_(origin_access_list) {
   DCHECK(context_);
   DCHECK(origin_access_list_);
@@ -432,6 +433,8 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
         url::debug::ScopedOriginCrashKey initiator_lock_crash_key(
             debug::GetRequestInitiatorOriginLockCrashKey(),
             base::OptionalOrNullptr(request_initiator_origin_lock_));
+        base::debug::ScopedCrashKeyString debug_tag_crash_key(
+            debug::GetFactoryDebugTagCrashKey(), debug_tag_);
         mojo::ReportBadMessage(
             "CorsURLLoaderFactory: lock VS initiator mismatch");
         return false;

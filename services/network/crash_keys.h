@@ -16,6 +16,7 @@ struct ResourceRequest;
 namespace debug {
 
 base::debug::CrashKeyString* GetRequestInitiatorOriginLockCrashKey();
+base::debug::CrashKeyString* GetFactoryDebugTagCrashKey();
 
 class ScopedRequestCrashKeys {
  public:

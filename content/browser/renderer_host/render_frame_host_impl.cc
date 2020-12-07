@@ -1599,7 +1599,8 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactory(
   NavigationRequest* navigation_request = nullptr;
 
   return CreateNetworkServiceDefaultFactoryAndObserve(
-      CreateURLLoaderFactoryParamsForMainWorld(navigation_request),
+      CreateURLLoaderFactoryParamsForMainWorld(
+          navigation_request, "RFHI::CreateNetworkServiceDefaultFactory"),
       ukm::SourceIdObj::FromInt64(GetPageUkmSourceId()),
       std::move(default_factory_receiver));
 }
@@ -3988,7 +3989,8 @@ void RenderFrameHostImpl::UpdateSubresourceLoaderFactories() {
   if (recreate_default_url_loader_factory_after_network_service_crash_) {
     bypass_redirect_checks = CreateNetworkServiceDefaultFactoryAndObserve(
         CreateURLLoaderFactoryParamsForMainWorld(
-            latest_nav_request_still_committing),
+            latest_nav_request_still_committing,
+            "RFHI::UpdateSubresourceLoaderFactories"),
         ukm::SourceIdObj::FromInt64(
             latest_nav_request_still_committing
                 ? latest_nav_request_still_committing->GetNextPageUkmSourceId()
@@ -6351,7 +6353,8 @@ void RenderFrameHostImpl::CommitNavigation(
       // appropriate NetworkContext.
       bool bypass_redirect_checks =
           CreateNetworkServiceDefaultFactoryAndObserve(
-              CreateURLLoaderFactoryParamsForMainWorld(navigation_request),
+              CreateURLLoaderFactoryParamsForMainWorld(
+                  navigation_request, "RFHI::CommitNavigation"),
               next_page_ukm_source_id,
               pending_default_factory.InitWithNewPipeAndPassReceiver());
       subresource_loader_factories->set_bypass_redirect_checks(
@@ -6633,7 +6636,8 @@ void RenderFrameHostImpl::FailedNavigation(
       subresource_loader_factories;
   mojo::PendingRemote<network::mojom::URLLoaderFactory> default_factory_remote;
   bool bypass_redirect_checks = CreateNetworkServiceDefaultFactoryAndObserve(
-      CreateURLLoaderFactoryParamsForMainWorld(navigation_request),
+      CreateURLLoaderFactoryParamsForMainWorld(navigation_request,
+                                               "RFHI::FailedNavigation"),
       ukm::kInvalidSourceIdObj,
       default_factory_remote.InitWithNewPipeAndPassReceiver());
   subresource_loader_factories =
@@ -7293,7 +7297,8 @@ void RenderFrameHostImpl::
 
 network::mojom::URLLoaderFactoryParamsPtr
 RenderFrameHostImpl::CreateURLLoaderFactoryParamsForMainWorld(
-    NavigationRequest* navigation_request) {
+    NavigationRequest* navigation_request,
+    base::StringPiece debug_tag) {
   url::Origin main_world_origin;
   network::mojom::ClientSecurityStatePtr client_security_state;
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
@@ -7307,7 +7312,7 @@ RenderFrameHostImpl::CreateURLLoaderFactoryParamsForMainWorld(
   return URLLoaderFactoryParamsHelper::CreateForFrame(
       this, main_world_origin, std::move(client_security_state),
       std::move(coep_reporter_remote), GetProcess(),
-      trust_token_redemption_policy);
+      trust_token_redemption_policy, debug_tag);
 }
 
 bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryAndObserve(
@@ -7329,6 +7334,7 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryAndObserve(
     network::mojom::URLLoaderFactoryParamsPtr monitoring_factory_params =
         network::mojom::URLLoaderFactoryParams::New();
     monitoring_factory_params->process_id = GetProcess()->GetID();
+    monitoring_factory_params->debug_tag = "RFHI - monitoring_factory_params";
 
     // This factory should never be used to issue actual requests (i.e. it
     // should only be used to monitor for Network Service crashes).  Below is an

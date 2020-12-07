@@ -318,7 +318,8 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
           net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
                                      origin, origin,
                                      net::SiteForCookies::FromOrigin(origin)),
-          /*coep_reporter=*/mojo::NullRemote());
+          /*coep_reporter=*/mojo::NullRemote(),
+          /*debug_tag=*/"SharedWorkerHost::CreateNetworkFactoryForSubresource");
   return factory_params;
 }
 
