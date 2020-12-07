@@ -214,10 +214,6 @@ ChromeLauncherController::ChromeLauncherController(Profile* profile,
 
   DCHECK(model_);
 
-  if (chrome::SettingsWindowManager::UseDeprecatedSettingsWindow(profile)) {
-    settings_window_observer_ = std::make_unique<SettingsWindowObserver>();
-  }
-
   if (!profile) {
     // If no profile was passed, we take the currently active profile and use it
     // as the owner of the current desktop.
@@ -227,6 +223,10 @@ ChromeLauncherController::ChromeLauncherController(Profile* profile,
     profile = ProfileManager::GetActiveUserProfile();
     if (!profile->IsGuestSession() && !profile->IsSystemProfile())
       profile = profile->GetOriginalProfile();
+  }
+
+  if (chrome::SettingsWindowManager::UseDeprecatedSettingsWindow(profile)) {
+    settings_window_observer_ = std::make_unique<SettingsWindowObserver>();
   }
 
   // All profile relevant settings get bound to the current profile.
