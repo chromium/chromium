@@ -30522,6 +30522,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3740" label="CrossOriginStrictNosniffWouldBlock"/>
   <int value="3741" label="CSSSelectorPseudoDir"/>
   <int value="3742" label="CrossOriginSubframeWithoutEmbeddingControl"/>
+  <int value="3743" label="ReadableStreamWithByteSource"/>
+  <int value="3744" label="ReadableStreamBYOBReader"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

@@ -1246,6 +1246,10 @@ void ReadableStream::getReader(
   // https://streams.spec.whatwg.org/#rs-get-reader
   if (options->hasMode()) {
     DCHECK_EQ(options->mode(), "byob");
+
+    UseCounter::Count(ExecutionContext::From(script_state),
+                      WebFeature::kReadableStreamBYOBReader);
+
     return_value.SetReadableStreamBYOBReader(
         AcquireBYOBReader(script_state, this, exception_state));
   } else {
@@ -1415,6 +1419,10 @@ void ReadableStream::InitInternal(ScriptState* script_state,
         exception_state.ThrowRangeError("bytes type is not yet implemented");
         return;
       }
+
+      UseCounter::Count(ExecutionContext::From(script_state),
+                        WebFeature::kReadableStreamWithByteSource);
+
       UnderlyingSource* underlying_source_dict = UnderlyingSource::Create();
       V8UnderlyingSource::ToImpl(script_state->GetIsolate(),
                                  raw_underlying_source.V8Value(),
