@@ -271,58 +271,16 @@ if (is_chromeos_device) {
       # crbug.com/1115622
       "ui.ChromeLoginGAIA",
 
-      # crbug.com/1097630
-      "security.OpenFDs",
-
-      # crbug.com/1051059
-      "security.SELinuxProcessesARC",
-
-      # crbug.com/1062289
-      "security.NetworkListenersARC",
-      "security.NetworkListenersNonARC",
-
-      # crbug.com/1056163
-      "hwsec.LoginGuest",
-
-      # crbug.com/1059426
-      "ui.ChromeCrashNotLoggedInDirect.breakpad",
-      "ui.ChromeCrashLoggedInDirect.breakpad",
-
-      # crbug.com/1073084
-      "crostini.CopyPaste.wayland_to_x11_stretch_amd64_stable",
-      "crostini.CopyPaste.wayland_to_x11_stretch_arm_stable",
-      "crostini.CopyPaste.wayland_to_x11_buster_amd64_stable",
-      "crostini.CopyPaste.wayland_to_x11_buster_arm_stable",
-
-      # crbug.com/1114654
-      "crostini.Restart.stretch_amd64_stable",
-      "crostini.Restart.stretch_arm_stable",
-      "crostini.Restart.buster_amd64_stable",
-      "crostini.Restart.buster_arm_stable",
-
-      # crbug.com/1098810
-      "security.SELinuxFilesSystem",
-
       # crbug.com/1099695
       "platform.Drivefs",
-
-      # crbug.com/1114752
-      "arc.ContainerMount",
 
       # crbug.com/1131496
       "apps.LaunchHelpApp.clamshell_oobe_stable",
       "apps.LaunchHelpApp.tablet_oobe_stable",
 
-      # crbug.com/1131304
-      "printer.PinPrintLexmark.no_pin",
-      "printer.PinPrintLexmark.pin",
-
       # crbug.com/1148036
       "ui.ExistingUserLogin",
       "ui.SigninProfileExtension",
-
-      # crbug.com/1148401
-      "debugd.Printer",
 
       # crbug.com/1154794
       "policy.DefaultGeolocationSetting",
