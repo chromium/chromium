@@ -1642,6 +1642,31 @@ public class BookmarkTest {
         waitForEditActivity().finish();
     }
 
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    public void testShowBookmarkManagerReadingListPage() {
+        BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mBookmarkModel.loadEmptyPartnerBookmarkShimForTesting());
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+
+        if (mActivityTestRule.getActivity().isTablet()) {
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                BookmarkUtils.showBookmarkManager(
+                        null, new BookmarkId(0, BookmarkType.READING_LIST));
+            });
+        } else {
+            mBookmarkActivity = ApplicationTestUtils.waitForActivityWithClass(
+                    BookmarkActivity.class, Stage.CREATED, () -> {
+                        BookmarkUtils.showBookmarkManager(
+                                null, new BookmarkId(0, BookmarkType.READING_LIST));
+                    });
+        }
+
+        onView(withText("Reading list")).check(matches(isDisplayed()));
+    }
+
     /**
      * Adds a bookmark in the scenario where we have partner bookmarks.
      *

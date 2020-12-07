@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -248,25 +249,56 @@ public class BookmarkUtils {
      * @param activity An activity to start the manager with.
      */
     public static void showBookmarkManager(Activity activity) {
-        ThreadUtils.assertOnUiThread();
-        String url = getFirstUrlToLoad(activity);
+        showBookmarkManager(activity, null);
+    }
 
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) {
-            openUrl(activity, url, activity.getComponentName());
-        } else {
-            Intent intent = new Intent(activity, BookmarkActivity.class);
-            intent.setData(Uri.parse(url));
+    /**
+     * Shows bookmark main UI.
+     * @param activity An activity to start the manager with. If null, the bookmark manager will be
+     *         started as a new task.
+     * @param folderId The bookmark folder to open. If null, the bookmark manager will open the most
+     *         recent folder.
+     */
+    public static void showBookmarkManager(
+            @Nullable Activity activity, @Nullable BookmarkId folderId) {
+        ThreadUtils.assertOnUiThread();
+        Context context = activity == null ? ContextUtils.getApplicationContext() : activity;
+        String url = getFirstUrlToLoad(context, folderId);
+
+        // Tablet.
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+            openUrl(context, url, activity == null ? null : activity.getComponentName());
+            return;
+        }
+
+        // Phone.
+        Intent intent = new Intent(context, BookmarkActivity.class);
+        intent.setData(Uri.parse(url));
+        if (activity != null) {
+            // Start from an existing activity.
             intent.putExtra(IntentHandler.EXTRA_PARENT_COMPONENT, activity.getComponentName());
             activity.startActivity(intent);
+        } else {
+            // Start a new task.
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            IntentHandler.startActivityForTrustedIntent(intent);
         }
     }
 
     /**
-     * The initial url the bookmark manager shows depends some experiments we run.
+     * @return the bookmark folder URL to open.
      */
-    private static String getFirstUrlToLoad(Context context) {
-        String lastUsedUrl = getLastUsedUrl(context);
-        return TextUtils.isEmpty(lastUsedUrl) ? UrlConstants.BOOKMARKS_URL : lastUsedUrl;
+    private static String getFirstUrlToLoad(Context context, @Nullable BookmarkId folderId) {
+        String url;
+        if (folderId == null) {
+            // Load most recently visited bookmark folder.
+            url = getLastUsedUrl(context);
+        } else {
+            // Load a specific folder.
+            url = BookmarkUIState.createFolderUrl(folderId).toString();
+        }
+
+        return TextUtils.isEmpty(url) ? UrlConstants.BOOKMARKS_URL : url;
     }
 
     /**
@@ -337,7 +369,8 @@ public class BookmarkUtils {
                 "Bookmarks.OpenBookmarkType", bookmarkId.getType(), BookmarkType.LAST + 1);
 
         BookmarkItem bookmarkItem = model.getBookmarkById(bookmarkId);
-        if (bookmarkItem.getId().getType() == BookmarkType.READING_LIST) {
+        if (bookmarkItem.getId().getType() == BookmarkType.READING_LIST
+                && !bookmarkItem.isFolder()) {
             model.setReadStatusForReadingList(bookmarkItem.getUrl(), true);
         }
         openUrl(context, bookmarkItem.getUrl(), openBookmarkComponentName);
