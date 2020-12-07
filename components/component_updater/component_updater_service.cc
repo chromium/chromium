@@ -320,9 +320,6 @@ bool CrxUpdateService::CheckForUpdates(
     UpdateScheduler::OnFinishedCallback on_finished) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  // TODO(xiaochu): remove this log after https://crbug.com/851151 is fixed.
-  VLOG(1) << "CheckForUpdates: automatic updatecheck for components.";
-
   UMA_HISTOGRAM_ENUMERATION("ComponentUpdater.Calls", UPDATE_TYPE_AUTOMATIC,
                             UPDATE_TYPE_COUNT);
 
