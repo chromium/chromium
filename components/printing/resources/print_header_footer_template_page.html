@@ -108,13 +108,15 @@ function setupHeaderFooterTemplate(options) {
   for (const cssClass of ['date', 'title', 'url', 'pageNumber', 'totalPages']) {
     for (const element of document.querySelectorAll(`.${cssClass}`)) {
       element.textContent = options[cssClass];
-      if (options.isRtl)
-        element.dir = 'rtl';
-
-      if (elementIntersects(element, topMargin, bottomMargin, leftMargin,
-                            rightMargin)) {
-        element.style.visibility = 'hidden';
-      }
+    }
+  }
+  for (const element of document.querySelectorAll(`.text`)) {
+    if (options.isRtl) {
+      element.dir = 'rtl';
+    }
+    if (elementIntersects(element, topMargin, bottomMargin, leftMargin,
+                          rightMargin)) {
+      element.style.visibility = 'hidden';
     }
   }
 }
