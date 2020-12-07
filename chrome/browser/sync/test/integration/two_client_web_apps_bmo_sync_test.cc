@@ -524,7 +524,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, AppSortingFixCollisions) {
             GetAppSorting(GetProfile(0))->GetAppLaunchOrdinal(app_id2));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, UninstallSynced) {
+// Flaky on Linux TSan (crbug.com/1108172).
+#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && defined(THREAD_SANITIZER)
+#define MAYBE_UninstallSynced DISABLED_UninstallSynced
+#else
+#define MAYBE_UninstallSynced UninstallSynced
+#endif
+IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, MAYBE_UninstallSynced) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
   ASSERT_TRUE(embedded_test_server()->Start());
