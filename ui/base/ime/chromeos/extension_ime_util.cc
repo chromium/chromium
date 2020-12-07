@@ -159,13 +159,6 @@ bool IsArcIME(const std::string& input_method_id) {
          input_method_id.size() > kArcIMEPrefixLength + kExtensionIdLength;
 }
 
-bool IsMemberOfExtension(const std::string& input_method_id,
-                         const std::string& extension_id) {
-  return base::StartsWith(input_method_id,
-                          kExtensionIMEPrefix + extension_id,
-                          base::CompareCase::SENSITIVE);
-}
-
 bool IsKeyboardLayoutExtension(const std::string& input_method_id) {
   if (IsComponentExtensionIME(input_method_id))
     return base::StartsWith(GetComponentIDByInputMethodID(input_method_id),
