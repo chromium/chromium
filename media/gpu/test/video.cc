@@ -598,8 +598,10 @@ void Video::OnFrameDecoded(const gfx::Size& resolution,
         VideoFrame::Rows(plane, frame->format(), resolution.height());
     const int row_bytes =
         VideoFrame::RowBytes(plane, frame->format(), resolution.width());
-    const size_t plane_size =
-        VideoFrame::PlaneSize(frame->format(), plane, resolution).GetArea();
+    // VideoFrame::PlaneSize() cannot be used because it computes the plane size
+    // with resolutions aligned by two while our test code works with a succinct
+    // buffer size.
+    const int plane_size = row_bytes * rows;
     const size_t current_pos = data->size();
     // TODO(dstaessens): Avoid resizing.
     data->resize(data->size() + plane_size);
