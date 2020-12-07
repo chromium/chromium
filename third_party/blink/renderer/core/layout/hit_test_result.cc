@@ -186,8 +186,10 @@ PositionWithAffinity HitTestResult::GetPosition() const {
   // relayout?
   if (box_fragment_ &&
       RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled() &&
-      !box_fragment_->IsLayoutObjectDestroyedOrMoved())
-    return box_fragment_->PostLayout()->PositionForPoint(LocalPoint());
+      !box_fragment_->IsLayoutObjectDestroyedOrMoved()) {
+    if (const NGPhysicalBoxFragment* fragment = box_fragment_->PostLayout())
+      return fragment->PositionForPoint(LocalPoint());
+  }
   return layout_object->PositionForPoint(LocalPoint());
 }
 
