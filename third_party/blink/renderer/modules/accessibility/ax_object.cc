@@ -1911,7 +1911,7 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   // Allow the browser side ax tree to access "aria-hidden" nodes.
   // This is useful for APIs that return the node referenced by
   // aria-labeledby and aria-describedby.
-  if (GetLayoutObject() && AriaHiddenRoot())
+  if (GetLayoutObject() && IsInertOrAriaHidden() && AriaHiddenRoot())
     return true;
 
   // Preserve SVG grouping elements.
