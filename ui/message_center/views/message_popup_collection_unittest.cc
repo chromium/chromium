@@ -437,14 +437,7 @@ TEST_F(MessagePopupCollectionTest, UpdateContents) {
   EXPECT_TRUE(GetPopup(id)->updated());
 }
 
-// Failiing on MacOS 10.10. https://crbug.com/1047503
-#if defined(OS_APPLE)
-#define MAYBE_UpdateContentsCausesPopupClose \
-  DISABLED_UpdateContentsCausesPopupClose
-#else
-#define MAYBE_UpdateContentsCausesPopupClose UpdateContentsCausesPopupClose
-#endif
-TEST_F(MessagePopupCollectionTest, MAYBE_UpdateContentsCausesPopupClose) {
+TEST_F(MessagePopupCollectionTest, UpdateContentsCausesPopupClose) {
   std::string id = AddNotification();
   AnimateToEnd();
   RunPendingMessages();
