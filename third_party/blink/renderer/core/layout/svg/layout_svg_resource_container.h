@@ -78,7 +78,7 @@ class LayoutSVGResourceContainer : public LayoutSVGHiddenContainer {
   static void MarkForLayoutAndParentResourceInvalidation(
       LayoutObject&,
       bool needs_layout = true);
-  static void StyleDidChange(LayoutObject&, StyleDifference);
+  static void StyleChanged(LayoutObject&, StyleDifference);
 
   void ClearInvalidationMask() {
     NOT_DESTROYED();

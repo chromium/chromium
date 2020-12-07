@@ -377,7 +377,7 @@ void LayoutSVGRoot::StyleDidChange(StyleDifference diff,
     return;
   if (diff.HasDifference()) {
     SVGResourcesCache::UpdateResources(*this);
-    LayoutSVGResourceContainer::StyleDidChange(*this, diff);
+    LayoutSVGResourceContainer::StyleChanged(*this, diff);
   }
 }
 

@@ -242,8 +242,8 @@ static inline bool IsLayoutObjectOfResourceContainer(
   return false;
 }
 
-void LayoutSVGResourceContainer::StyleDidChange(LayoutObject& object,
-                                                StyleDifference diff) {
+void LayoutSVGResourceContainer::StyleChanged(LayoutObject& object,
+                                              StyleDifference diff) {
   // If this LayoutObject is the child of a resource container and
   // it requires repainting because of changes to CSS properties
   // such as 'visibility', upgrade to invalidate layout.

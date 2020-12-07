@@ -143,7 +143,7 @@ void LayoutSVGBlock::StyleDidChange(StyleDifference diff,
     SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
   if (diff.HasDifference()) {
     SVGResourcesCache::UpdateResources(*this);
-    LayoutSVGResourceContainer::StyleDidChange(*this, diff);
+    LayoutSVGResourceContainer::StyleChanged(*this, diff);
   }
 }
 
