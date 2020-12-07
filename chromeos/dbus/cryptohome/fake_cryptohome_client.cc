@@ -44,9 +44,6 @@ FakeCryptohomeClient* g_instance = nullptr;
 
 }  // namespace
 
-// static
-constexpr char FakeCryptohomeClient::kStubTpmPassword[] = "Stub-TPM-password";
-
 FakeCryptohomeClient::FakeCryptohomeClient() {
   DCHECK(!g_instance);
   g_instance = this;
@@ -183,13 +180,6 @@ void FakeCryptohomeClient::TpmIsEnabled(DBusMethodCallback<bool> callback) {
 bool FakeCryptohomeClient::CallTpmIsEnabledAndBlock(bool* enabled) {
   *enabled = tpm_is_enabled_;
   return true;
-}
-
-void FakeCryptohomeClient::TpmGetPassword(
-    DBusMethodCallback<std::string> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), std::string(kStubTpmPassword)));
 }
 
 void FakeCryptohomeClient::TpmIsOwned(DBusMethodCallback<bool> callback) {

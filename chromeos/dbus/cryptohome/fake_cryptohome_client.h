@@ -37,9 +37,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
   // Checks that a FakeCryptohome instance was initialized and returns it.
   static FakeCryptohomeClient* Get();
 
-  // Expose stub password for tests.
-  static const char kStubTpmPassword[];
-
   // CryptohomeClient overrides
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -76,7 +73,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
   void TpmIsReady(DBusMethodCallback<bool> callback) override;
   void TpmIsEnabled(DBusMethodCallback<bool> callback) override;
   bool CallTpmIsEnabledAndBlock(bool* enabled) override;
-  void TpmGetPassword(DBusMethodCallback<std::string> callback) override;
   void TpmIsOwned(DBusMethodCallback<bool> callback) override;
   bool CallTpmIsOwnedAndBlock(bool* owned) override;
   void TpmIsBeingOwned(DBusMethodCallback<bool> callback) override;

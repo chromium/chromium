@@ -234,9 +234,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
   // TODO(hashimoto): Remove this method. crbug.com/141006
   virtual bool CallTpmIsEnabledAndBlock(bool* enabled) = 0;
 
-  // Calls TpmGetPassword method.
-  virtual void TpmGetPassword(DBusMethodCallback<std::string> callback) = 0;
-
   // Calls TpmIsOwned method.
   virtual void TpmIsOwned(DBusMethodCallback<bool> callback) = 0;
 
