@@ -99,6 +99,8 @@ class DriveIntegrationService : public KeyedService,
       std::unique_ptr<drivefs::DriveFsBootstrapListener>()>;
   using GetQuickAccessItemsCallback =
       base::OnceCallback<void(drive::FileError, std::vector<QuickAccessItem>)>;
+  using SearchDriveByFileNameCallback =
+      base::OnceCallback<void(drive::FileError, std::vector<base::FilePath>)>;
 
   // test_mount_point_name, test_cache_root and
   // test_drivefs_mojo_listener_factory are used by tests to inject customized
@@ -161,6 +163,13 @@ class DriveIntegrationService : public KeyedService,
 
   void GetQuickAccessItems(int max_number,
                            GetQuickAccessItemsCallback callback);
+
+  void SearchDriveByFileName(
+      std::string query,
+      int max_results,
+      drivefs::mojom::QueryParameters::SortField sort_field,
+      drivefs::mojom::QueryParameters::SortDirection sort_direction,
+      SearchDriveByFileNameCallback callback) const;
 
   // Returns the metadata for Drive file at |local_path|.
   void GetMetadata(const base::FilePath& local_path,
@@ -277,6 +286,11 @@ class DriveIntegrationService : public KeyedService,
 
   void OnGetQuickAccessItems(
       GetQuickAccessItemsCallback callback,
+      drive::FileError error,
+      base::Optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
+
+  void OnSearchDriveByFileName(
+      SearchDriveByFileNameCallback callback,
       drive::FileError error,
       base::Optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
 

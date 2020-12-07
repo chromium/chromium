@@ -119,6 +119,37 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
   EXPECT_FALSE(integration_service->is_enabled());
 }
 
+IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
+                       SearchDriveByFileNameTest) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  drive::DriveIntegrationService* drive_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(
+          browser()->profile());
+
+  base::FilePath mount_path = drive_service->GetMountPointPath();
+  ASSERT_TRUE(base::WriteFile(mount_path.Append("bar"), ""));
+  ASSERT_TRUE(base::WriteFile(mount_path.Append("baz"), ""));
+  auto base_time = base::Time::Now() - base::TimeDelta::FromSeconds(10);
+  auto earlier_time = base_time - base::TimeDelta::FromSeconds(10);
+  ASSERT_TRUE(base::TouchFile(mount_path.Append("bar"), base_time, base_time));
+  ASSERT_TRUE(
+      base::TouchFile(mount_path.Append("baz"), earlier_time, earlier_time));
+
+  base::RunLoop run_loop;
+  auto quit_closure = run_loop.QuitClosure();
+  drive_service->SearchDriveByFileName(
+      "ba", 10, drivefs::mojom::QueryParameters::SortField::kLastViewedByMe,
+      drivefs::mojom::QueryParameters::SortDirection::kAscending,
+      base::BindLambdaForTesting(
+          [=](FileError error, std::vector<base::FilePath> paths) {
+            EXPECT_EQ(2, paths.size());
+            EXPECT_EQ("baz", paths[0].BaseName().value());
+            EXPECT_EQ("bar", paths[1].BaseName().value());
+            quit_closure.Run();
+          }));
+  run_loop.Run();
+}
+
 class DriveIntegrationServiceWithGaiaDisabledBrowserTest
     : public DriveIntegrationServiceBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {

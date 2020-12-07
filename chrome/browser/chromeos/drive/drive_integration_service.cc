@@ -1082,6 +1082,52 @@ void DriveIntegrationService::OnGetQuickAccessItems(
   std::move(callback).Run(error, std::move(result));
 }
 
+void DriveIntegrationService::SearchDriveByFileName(
+    std::string query,
+    int max_results,
+    drivefs::mojom::QueryParameters::SortField sort_field,
+    drivefs::mojom::QueryParameters::SortDirection sort_direction,
+    SearchDriveByFileNameCallback callback) const {
+  if (!GetDriveFsHost()) {
+    std::move(callback).Run(drive::FileError::FILE_ERROR_SERVICE_UNAVAILABLE,
+                            {});
+    return;
+  }
+
+  auto drive_query = drivefs::mojom::QueryParameters::New();
+  drive_query->title = query;
+  drive_query->page_size = max_results;
+  drive_query->sort_field = sort_field;
+  drive_query->sort_direction = sort_direction;
+
+  auto on_response =
+      base::BindOnce(&DriveIntegrationService::OnSearchDriveByFileName,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+
+  GetDriveFsHost()->PerformSearch(
+      std::move(drive_query),
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          std::move(on_response), drive::FileError::FILE_ERROR_ABORT,
+          base::Optional<std::vector<drivefs::mojom::QueryItemPtr>>()));
+}
+
+void DriveIntegrationService::OnSearchDriveByFileName(
+    SearchDriveByFileNameCallback callback,
+    drive::FileError error,
+    base::Optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
+  if (error != drive::FILE_ERROR_OK || !items.has_value()) {
+    std::move(callback).Run(error, {});
+    return;
+  }
+
+  std::vector<base::FilePath> result;
+  result.reserve(items->size());
+  for (const auto& item : *items) {
+    result.emplace_back(item->path);
+  }
+  std::move(callback).Run(error, std::move(result));
+}
+
 void DriveIntegrationService::GetMetadata(
     const base::FilePath& local_path,
     drivefs::mojom::DriveFs::GetMetadataCallback callback) {
