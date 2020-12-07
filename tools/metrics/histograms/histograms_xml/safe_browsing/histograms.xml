@@ -1495,6 +1495,10 @@ failing to fetch the updates which puts users' security at risk. -->
 
 <histogram name="SafeBrowsingBinaryUploadRequest.AdvancedProtectionScanVerdict"
     enum="SafeBrowsingMalwareDeepScanningVerdict" expires_after="2021-01-14">
+  <obsolete>
+    Marked obsolete 12-2020. Replaced by
+    SBClientDownload.MalwareDeepScanResult.AdvancedProtectionPrompt.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1540,6 +1544,9 @@ failing to fetch the updates which puts users' security at risk. -->
 
 <histogram name="SafeBrowsingBinaryUploadRequest.MalwareScanVerdict"
     enum="SafeBrowsingMalwareDeepScanningVerdict" expires_after="2021-01-14">
+  <obsolete>
+    Removed 12-2020. Replaced by SafeBrowsingBinaryUploadRequest.MalwareResult.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
