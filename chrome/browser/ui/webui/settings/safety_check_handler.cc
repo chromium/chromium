@@ -35,6 +35,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/strings/grit/ui_strings.h"
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "base/win/registry.h"
@@ -672,7 +673,7 @@ base::string16 SafetyCheckHandler::GetStringForPasswords(
       } else {
         // Both compromised and weak passwords.
         return l10n_util::GetStringFUTF16(
-            IDS_SETTINGS_SAFETY_CHECK_STRING_TUPLE_WITH_COMMA,
+            IDS_CONCAT_TWO_STRINGS_WITH_COMMA,
             l10n_util::GetPluralStringFUTF16(
                 IDS_SETTINGS_SAFETY_CHECK_COMPROMISED_PASSWORDS,
                 compromised.value()),
@@ -727,16 +728,14 @@ base::string16 SafetyCheckHandler::GetStringForExtensions(
           IDS_SETTINGS_SAFETY_CHECK_EXTENSIONS_BLOCKLISTED_ON_USER,
           reenabled_user.value());
     case ExtensionsStatus::kBlocklistedReenabledSomeByUser:
-      // TODO(crbug/1060625): Make string concatenation with a period
-      // internationalized (see go/i18n-concatenation).
-      return l10n_util::GetPluralStringFUTF16(
-                 IDS_SETTINGS_SAFETY_CHECK_EXTENSIONS_BLOCKLISTED_ON_USER,
-                 reenabled_user.value()) +
-             base::ASCIIToUTF16(". ") +
-             l10n_util::GetPluralStringFUTF16(
-                 IDS_SETTINGS_SAFETY_CHECK_EXTENSIONS_BLOCKLISTED_ON_ADMIN,
-                 reenabled_admin.value()) +
-             base::ASCIIToUTF16(".");
+      return l10n_util::GetStringFUTF16(
+          IDS_CONCAT_TWO_STRINGS_WITH_PERIODS,
+          l10n_util::GetPluralStringFUTF16(
+              IDS_SETTINGS_SAFETY_CHECK_EXTENSIONS_BLOCKLISTED_ON_USER,
+              reenabled_user.value()),
+          l10n_util::GetPluralStringFUTF16(
+              IDS_SETTINGS_SAFETY_CHECK_EXTENSIONS_BLOCKLISTED_ON_ADMIN,
+              reenabled_admin.value()));
     case ExtensionsStatus::kBlocklistedReenabledAllByAdmin:
       return l10n_util::GetPluralStringFUTF16(
           IDS_SETTINGS_SAFETY_CHECK_EXTENSIONS_BLOCKLISTED_ON_ADMIN,

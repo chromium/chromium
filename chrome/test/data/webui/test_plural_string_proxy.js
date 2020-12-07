@@ -27,4 +27,22 @@ export class TestPluralStringProxy extends TestBrowserProxy {
     this.methodCalled('getPluralString', {messageName, itemCount});
     return Promise.resolve(this.text);
   }
+
+  /** @override */
+  getPluralStringTupleWithComma(
+      messageName1, itemCount1, messageName2, itemCount2) {
+    this.methodCalled(
+        'getPluralStringTupleWithComma',
+        {messageName1, itemCount1, messageName2, itemCount2});
+    return Promise.resolve(this.text);
+  }
+
+  /** @override */
+  getPluralStringTupleWithPeriods(
+      messageName1, itemCount1, messageName2, itemCount2) {
+    this.methodCalled(
+        'getPluralStringTupleWithPeriods',
+        {messageName1, itemCount1, messageName2, itemCount2});
+    return Promise.resolve(this.text);
+  }
 }

@@ -22,6 +22,24 @@ class PluralStringHandler : public content::WebUIMessageHandler {
  private:
   void HandleGetPluralString(const base::ListValue* args);
 
+  // Constructs two pluralized strings from the received arguments for the two
+  // strings, and then concatenates those with comma and whitespace in between.
+  void HandleGetPluralStringTupleWithComma(const base::ListValue* args);
+
+  // Constructs two pluralized strings from the received arguments for the two
+  // strings, and then concatenates those with period and whitespace in between,
+  // and a period afterwards.
+  void HandleGetPluralStringTupleWithPeriods(const base::ListValue* args);
+
+  // Constructs two pluralized strings from the received arguments for the two
+  // strings, and then concatenates those using the concatenation template
+  // specified. This method should only be called from within the
+  // |HandleGetPluralStringTuple*| methods above.
+  void GetPluralStringTuple(const base::ListValue* args, int string_tuple_id);
+
+  base::string16 GetPluralizedStringForMessageName(std::string message_name,
+                                                   int count);
+
   std::map<std::string, int> name_to_id_;
 
   DISALLOW_COPY_AND_ASSIGN(PluralStringHandler);

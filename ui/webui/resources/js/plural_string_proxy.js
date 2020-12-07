@@ -20,6 +20,32 @@ export class PluralStringProxy {
    *     string for |messageName| with |itemCount| items.
    */
   getPluralString(messageName, itemCount) {}
+
+  /**
+   * Fetches both plural strings, concatenated to one string with a comma.
+   * @param {!string} messageName1 The name of the first message.
+   * @param {!number} itemCount1 The number of items in the first message.
+   * @param {!string} messageName2 The name of the second message.
+   * @param {!number} itemCount2 The number of items in the second message.
+   * @return {!Promise<string>} Promise resolved with the appropriate plural
+   *     strings for both messages, concatenated with a comma+whitespace in
+   *     between them.
+   */
+  getPluralStringTupleWithComma(
+      messageName1, itemCount1, messageName2, itemCount2) {}
+
+  /**
+   * Fetches both plural strings, concatenated to one string with periods.
+   * @param {!string} messageName1 The name of the first message.
+   * @param {!number} itemCount1 The number of items in the first message.
+   * @param {!string} messageName2 The name of the second message.
+   * @param {!number} itemCount2 The number of items in the second message.
+   * @return {!Promise<string>} Promise resolved with the appropriate plural
+   *     strings for both messages, concatenated with a period+whitespace after
+   *     the first message, and a period after the second message.
+   */
+  getPluralStringTupleWithPeriods(
+      messageName1, itemCount1, messageName2, itemCount2) {}
 }
 
 /** @implements {PluralStringProxy} */
@@ -27,6 +53,22 @@ export class PluralStringProxyImpl {
   /** @override */
   getPluralString(messageName, itemCount) {
     return sendWithPromise('getPluralString', messageName, itemCount);
+  }
+
+  /** @override */
+  getPluralStringTupleWithComma(
+      messageName1, itemCount1, messageName2, itemCount2) {
+    return sendWithPromise(
+        'getPluralStringTupleWithComma', messageName1, itemCount1, messageName2,
+        itemCount2);
+  }
+
+  /** @override */
+  getPluralStringTupleWithPeriods(
+      messageName1, itemCount1, messageName2, itemCount2) {
+    return sendWithPromise(
+        'getPluralStringTupleWithPeriods', messageName1, itemCount1,
+        messageName2, itemCount2);
   }
 }
 

@@ -1253,9 +1253,6 @@
   <message name="IDS_SETTINGS_SAFETY_CHECK_WEAK_PASSWORDS" desc="This shows the amount of weak passwords that the Chrome password check found.">
     {NUM_WEAK, plural, =0 {} =1 {1 weak password} other {{NUM_WEAK} weak passwords}}
   </message>
-  <message name="IDS_SETTINGS_SAFETY_CHECK_STRING_TUPLE_WITH_COMMA" desc="This string lists two elements, via concatenating them with a comma in the English language.">
-    <ph name="TYPE_1">$1<ex>2 compromised passwords</ex></ph>, <ph name="TYPE_2">$2<ex>7 weak passwords</ex></ph>
-  </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_PASSWORDS_BUTTON_ARIA_LABEL" desc="Accessibility text for the button that allows users to review their passwords.">
     Review passwords
   </message>
