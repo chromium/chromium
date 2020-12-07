@@ -23,11 +23,14 @@ const int kCMarkerPaddingPx = 7;
 // Recommended UA margin for list markers.
 const int kCUAMarkerMarginEm = 1;
 
+// 'closure-*' have 0.4em margin for compatibility with
+// ::-webkit-details-marker.
+const float kClosureMarkerMarginEm = 0.4f;
+
 namespace {
 
-LayoutUnit DisclosureSymbolSize(const FontMetrics& font_metrics) {
-  LayoutUnit font_height(font_metrics.Height());
-  return font_height * 2 / 3;
+LayoutUnit DisclosureSymbolSize(const ComputedStyle& style) {
+  return LayoutUnit(style.SpecifiedFontSize() * 0.66);
 }
 
 }  // namespace
@@ -293,7 +296,7 @@ LayoutUnit ListMarker::WidthOfSymbol(const ComputedStyle& style) {
   const auto type = style.ListStyleType();
   if (type == EListStyleType::kDisclosureOpen ||
       type == EListStyleType::kDisclosureClosed) {
-    return 1 + DisclosureSymbolSize(font_data->GetFontMetrics()) + 1;
+    return DisclosureSymbolSize(style);
   }
   return LayoutUnit((font_data->GetFontMetrics().Ascent() * 2 / 3 + 1) / 2 + 2);
 }
@@ -305,8 +308,14 @@ std::pair<LayoutUnit, LayoutUnit> ListMarker::InlineMarginsForInside(
     return {};
   if (list_item_style.GeneratesMarkerImage())
     return {LayoutUnit(), LayoutUnit(kCMarkerPaddingPx)};
-  switch (GetListStyleCategory(list_item_style.ListStyleType())) {
+  auto type = list_item_style.ListStyleType();
+  switch (GetListStyleCategory(type)) {
     case ListStyleCategory::kSymbol:
+      if (type == EListStyleType::kDisclosureOpen ||
+          type == EListStyleType::kDisclosureClosed) {
+        return {LayoutUnit(), LayoutUnit(kClosureMarkerMarginEm *
+                                         marker_style.SpecifiedFontSize())};
+      }
       return {LayoutUnit(-1),
               LayoutUnit(kCUAMarkerMarginEm * marker_style.ComputedFontSize())};
     default:
@@ -339,7 +348,7 @@ std::pair<LayoutUnit, LayoutUnit> ListMarker::InlineMarginsForOutside(
         const FontMetrics& font_metrics = font_data->GetFontMetrics();
         LayoutUnit offset = (type == EListStyleType::kDisclosureOpen ||
                              type == EListStyleType::kDisclosureClosed)
-                                ? DisclosureSymbolSize(font_metrics)
+                                ? DisclosureSymbolSize(marker_style)
                                 : LayoutUnit(font_metrics.Ascent() * 2 / 3);
         margin_start = -offset - kCMarkerPaddingPx - 1;
         margin_end = offset + kCMarkerPaddingPx + 1 - marker_inline_size;
@@ -364,14 +373,14 @@ LayoutRect ListMarker::RelativeSymbolMarkerRect(const ComputedStyle& style,
   // TODO(wkorman): Review and clean up/document the calculations below.
   // http://crbug.com/543193
   const FontMetrics& font_metrics = font_data->GetFontMetrics();
+  const int ascent = font_metrics.Ascent();
   const auto type = style.ListStyleType();
   if (type == EListStyleType::kDisclosureOpen ||
       type == EListStyleType::kDisclosureClosed) {
-    LayoutUnit marker_size = DisclosureSymbolSize(font_metrics);
-    relative_rect =
-        LayoutRect(LayoutUnit(1), marker_size / 4, marker_size, marker_size);
+    LayoutUnit marker_size = DisclosureSymbolSize(style);
+    relative_rect = LayoutRect(LayoutUnit(), ascent - marker_size, marker_size,
+                               marker_size);
   } else {
-    int ascent = font_metrics.Ascent();
     int bullet_width = (ascent * 2 / 3 + 1) / 2;
     relative_rect = LayoutRect(1, 3 * (ascent - ascent * 2 / 3) / 2,
                                bullet_width, bullet_width);

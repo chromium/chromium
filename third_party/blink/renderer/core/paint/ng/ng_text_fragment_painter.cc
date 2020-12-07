@@ -504,9 +504,8 @@ void NGTextFragmentPainter<Cursor>::PaintSymbol(
   PhysicalRect marker_rect(
       ListMarker::RelativeSymbolMarkerRect(style, box_size.width));
   marker_rect.Move(paint_offset);
-  IntRect rect = PixelSnappedIntRect(marker_rect);
-
-  ListMarkerPainter::PaintSymbol(paint_info, layout_object, style, rect);
+  ListMarkerPainter::PaintSymbol(paint_info, layout_object, style,
+                                 marker_rect.ToLayoutRect());
 }
 
 // This is copied from InlineTextBoxPainter::PaintSelection() but lacks of

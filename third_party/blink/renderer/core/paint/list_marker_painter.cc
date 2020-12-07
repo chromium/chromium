@@ -25,7 +25,7 @@ namespace blink {
 void ListMarkerPainter::PaintSymbol(const PaintInfo& paint_info,
                                     const LayoutObject* object,
                                     const ComputedStyle& style,
-                                    const IntRect& marker) {
+                                    const LayoutRect& marker) {
   DCHECK(object);
   GraphicsContext& context = paint_info.context;
   ScopedDarkModeElementRoleOverride list_symbol(
@@ -39,15 +39,16 @@ void ListMarkerPainter::PaintSymbol(const PaintInfo& paint_info,
   context.SetStrokeColor(color);
   context.SetStrokeStyle(kSolidStroke);
   context.SetStrokeThickness(1.0f);
+  IntRect snapped_rect = PixelSnappedIntRect(marker);
   switch (style.ListStyleType()) {
     case EListStyleType::kDisc:
-      context.FillEllipse(FloatRect(marker));
+      context.FillEllipse(FloatRect(snapped_rect));
       break;
     case EListStyleType::kCircle:
-      context.StrokeEllipse(FloatRect(marker));
+      context.StrokeEllipse(FloatRect(snapped_rect));
       break;
     case EListStyleType::kSquare:
-      context.FillRect(marker);
+      context.FillRect(snapped_rect);
       break;
     case EListStyleType::kDisclosureOpen:
     case EListStyleType::kDisclosureClosed: {
@@ -113,7 +114,7 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
 
   if (style_category == ListMarker::ListStyleCategory::kSymbol) {
     PaintSymbol(paint_info, &layout_list_marker_,
-                layout_list_marker_.StyleRef(), PixelSnappedIntRect(marker));
+                layout_list_marker_.StyleRef(), marker);
     return;
   }
 
