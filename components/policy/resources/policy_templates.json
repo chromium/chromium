@@ -2303,7 +2303,7 @@
 
     {
       'name': 'PrintingEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://printing/OWNERS', 'thestig@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
@@ -2320,16 +2320,14 @@
       'id': 12,
       'caption': '''Enable printing''',
       'tags': [],
-      'desc': '''Enables printing in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and prevents users from changing this setting.
+      'desc': '''Setting the policy to Enabled or leaving it unset lets users print in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>, and users can't change this setting.
 
-      If this setting is enabled or not configured, users can print.
-
-      If this setting is disabled, users cannot print from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. Printing is disabled in the wrench menu, extensions, JavaScript applications, etc. It is still possible to print from plugins that bypass <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> while printing. For example, certain Flash applications have the print option in their context menu, which is not covered by this policy.''',
+      Setting the policy to Disabled means users can't print from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. Printing is off in the wrench menu, extensions, and JavaScript applications. It's only possible to print from plugins that bypass <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> while printing.''',
       'arc_support': 'This policy has no effect on Android apps.',
     },
     {
       'name': 'CloudPrintProxyEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://printing/OWNERS', 'rbpotter@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:17-'],
@@ -2341,11 +2339,9 @@
       'id': 13,
       'caption': '''Enable <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> proxy''',
       'tags': [],
-      'desc': '''Enables <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to act as a proxy between <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> and legacy printers connected to the machine.
+      'desc': '''Setting the policy to Enabled or leaving it unset lets <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> act as a proxy between <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>and legacy printers connected to the machine. Using their Google Account, users may turn on the cloud print proxy by authentication.
 
-      If this setting is enabled or not configured, users can enable the cloud print proxy by authentication with their Google account.
-
-      If this setting is disabled, users cannot enable the proxy, and the machine will not be allowed to share it's printers with <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>.''',
+      Setting the policy to Disabled means users can't turn on the proxy, and the machine can't share its printers with <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>.''',
     },
     {
       'name': 'PrintingAllowedColorModes',
@@ -2386,7 +2382,7 @@
       'id': 474,
       'caption': '''Restrict printing color mode''',
       'tags': [],
-      'desc': '''Sets printing to color only, monochrome only or no color mode restriction. Unset policy is treated as no restriction.''',
+      'desc': '''Setting the policy sets printing to color only, monochrome only, or no color mode restriction. Leaving the policy unset results in no restriction.''',
     },
     {
       'name': 'PrintingAllowedDuplexModes',
@@ -2427,7 +2423,9 @@
       'id': 475,
       'caption': '''Restrict printing duplex mode''',
       'tags': [],
-      'desc': '''Restricts printing duplex mode. Unset policy and empty set are treated as no restriction.''',
+      'desc': '''Setting the policy restricts printing duplex mode.
+
+      Leaving the policy unset or empty results in no restriction.''',
     },
     {
       'name': 'PrintingAllowedPinModes',
@@ -2544,7 +2542,7 @@
       'id': 477,
       'caption': '''Default printing color mode''',
       'tags': [],
-      'desc': '''Overrides default printing color mode. If the mode is unavailable this policy is ignored.''',
+      'desc': '''Setting the policy overrides the default printing color mode. If the mode is unavailable, this policy is ignored.''',
     },
     {
       'name': 'PrintingDuplexDefault',
@@ -2585,7 +2583,7 @@
       'id': 478,
       'caption': '''Default printing duplex mode''',
       'tags': [],
-      'desc': '''Overrides default printing duplex mode. If the mode is unavailable this policy is ignored.''',
+      'desc': '''Setting the policy overrides the default printing duplex mode. If the mode is unavailable, this policy is ignored.''',
     },
     {
       'name': 'PrintingPinDefault',
@@ -8513,7 +8511,7 @@
     },
     {
       'name': 'CloudPrintSubmitEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://printing/OWNERS', 'weili@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:17-'],
@@ -8525,13 +8523,11 @@
       'id': 109,
       'caption': '''Enable submission of documents to <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>''',
       'tags': [],
-      'desc': '''Enables <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to submit documents to <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> for printing.  NOTE: This only affects <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> support in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.  It does not prevent users from submitting print jobs on web sites.
+      'desc': '''Setting the policy to Enabled or leaving it unset lets users print to <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> from the <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> print dialog. <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> can submit documents to <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> for printing. This doesn't prevent users from submitting print jobs on websites.
 
-      If this setting is enabled or not configured, users can print to <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> from the <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> print dialog.
+      Setting the policy to Disabled means users can't print to <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> from the <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> print dialog.
 
-      If this setting is disabled, users cannot print to <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> from the <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> print dialog.
-
-      In order to keep <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> destinations discoverable, this policy must be set to true and <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD">cloud</ph> must not be included in the <ph name="POLICY_PRINTERTYPEDENYLIST">PrinterTypeDenyList</ph> policy.''',
+      In order to keep <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> destinations discoverable, this policy must be set to Enabled and <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD">cloud</ph> must not be included in the <ph name="PRINTER_TYPE_DENY_LIST_POLICY_NAME">PrinterTypeDenyList</ph> policy.''',
     },
     {
       'name': 'EnterpriseWebStoreURL',
@@ -8569,7 +8565,7 @@
     },
     {
       'name': 'DisablePrintPreview',
-      'owners': ['file://printing/OWNERS'],
+      'owners': ['file://printing/OWNERS', 'rbpotter@chomium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:18-'],
@@ -8581,11 +8577,9 @@
       'id': 117,
       'caption': '''Disable Print Preview''',
       'tags': [],
-      'desc': '''Show the system print dialog instead of print preview.
+      'desc': '''Setting the policy to Enabled has <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> open the system print dialog instead of the built-in print preview when users request a printout.
 
-      When this setting is enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will open the system print dialog instead of the built-in print preview when a user requests a page to be printed.
-
-      If this policy is not set or is set to false, print commands trigger the print preview screen.''',
+      Setting the policy to Disabled or leaving it unset has print commands trigger the print preview screen.''',
     },
     {
       'name': 'PrintHeaderFooter',
@@ -8602,17 +8596,13 @@
       'id': 480,
       'caption': '''Print Headers and Footers''',
       'tags': [],
-      'desc': '''Force 'headers and footers' to be on or off in the printing dialog.
+      'desc': '''Setting the policy to Enabled turns headers and footers on in print preview. Setting the policy to Disabled turns them off in print preview.
 
-      If the policy is unset, the user can decide whether to print headers and footers.
-
-      If the policy is set to false, 'Headers and footers' is not selected in the print preview dialog, and the user cannot change it.
-
-      If the policy is set to true, 'Headers and footers' is selected in the print preview dialog, and the user cannot change it.''',
+      If you set the policy, users can't change it. If unset, users decides whether headers and footers appear.''',
     },
     {
       'name': 'DefaultPrinterSelection',
-      'owners': ['file://printing/OWNERS'],
+      'owners': ['file://printing/OWNERS', 'thestig@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'validation_schema': {
@@ -8642,17 +8632,13 @@
       'id': 308,
       'caption': '''Default printer selection rules''',
       'tags': [],
-      'desc': '''Overrides <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> default printer selection rules.
+      'desc': '''Setting the policy sets the rules for selecting the default printer in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>, overriding the default rules. Printer selection occurs the first time users try to print, when <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> seeks a printer matching the specified attributes. In case of a less than perfect match, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> can be set to select any matching printer, depending on the order printers are discovered.
 
-      This policy determines the rules for selecting the default printer in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> which happens the first time the print function is used with a profile.
-
-      When this policy is set, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will attempt to find a printer matching all of the specified attributes, and select it as default printer. The first printer found matching the policy is selected, in case of non-unique match any matching printer can be selected, depending on the order printers are discovered.
-
-      If this policy is not set or matching printer is not found within the timeout, the printer defaults to built-in PDF printer or no printer selected, when PDF printer is not available.
+      Leaving the policy unset or set to attributes for which there's no match means the built-in PDF printer is the default. If there's no PDF printer, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> defaults to none.
 
       Printers connected to <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> are considered <ph name="PRINTER_TYPE_CLOUD">"cloud"</ph>, the rest of the printers are classified as <ph name="PRINTER_TYPE_LOCAL">"local"</ph>.
-      Omitting a field means all values match, for example, not specifying connectivity will cause Print Preview to initiate the discovery of all kinds of printers, local and cloud.
-      Regular expression patterns must follow the JavaScript RegExp syntax and matches are case sensistive.''',
+
+      Note: Omitting a field means all values match. For example, not specifying connectivity causes Print Preview to start discovery of all kinds of printers, <ph name="PRINTER_TYPE_LOCAL">"local"</ph> and <ph name="PRINTER_TYPE_CLOUD">"cloud"</ph>. Regular expression patterns must follow the JavaScript RegExp syntax, and matches are case sensistive.''',
       'arc_support': 'This policy has no effect on Android apps.',
     },
     {
@@ -15398,7 +15384,7 @@
     },
     {
       'name': 'NativePrinters',
-      'owners': ['file://chromeos/printing/OWNERS'],
+      'owners': ['file://chromeos/printing/OWNERS', 'skau@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -15456,27 +15442,29 @@
       'id': 350,
       'caption': '''Native Printing''',
       'tags': [],
-      'desc': '''Configures a list of printers.
+      'desc': '''Setting the policy lets administrators set up a list of printers for their users. Printer selection occurs the first time users try to print.
 
-      This policy allows administrators to provide printer configurations for
-      their users.
+      Using the policy:
 
-      <ph name="PRINTER_DISPLAY_NAME">display_name</ph> and <ph name="PRINTER_DESCRIPTION">description</ph> are free-form strings that can be customized for ease of printer selection. <ph name="PRINTER_MANUFACTURER">manufacturer</ph> and <ph name="PRINTER_MODEL">model</ph> serve to ease printer identification by end users. They represent the manufacturer and model of the printer. <ph name="PRINTER_URI">uri</ph> should be an address reachable from a client computer including the <ph name="URI_SCHEME">scheme</ph>, <ph name="URI_PORT">port</ph>, and <ph name="URI_QUEUE">queue</ph>. <ph name="PRINTER_UUID">uuid</ph> is optional. If provided, it is used to help deduplicate <ph name="ZEROCONF_DISCOVERY">zeroconf</ph> printers.
+      * Customize free-form <ph name="PRINTER_DISPLAY_NAME">display_name</ph> and <ph name="PRINTER_DESCRIPTION">description</ph> for ease of printer selection.
 
-      Either <ph name="PRINTER_EFFECTIVE_MODEL">effective_model</ph> should contain the name of the printer or <ph name="PRINTER_AUTOCONF">autoconf</ph> should be set to true. The printers with both or without any properties will be ignored.
+      * Help users identify printers using <ph name="PRINTER_MANUFACTURER">manufacturer</ph> and <ph name="PRINTER_MODEL">model</ph>.
 
-      Printer setup is completed upon the first use of a printer.  PPDs are not downloaded until the printer is used.  After that time, frequently used PPDs are cached.
+      * <ph name="PRINTER_URI">uri</ph> should be an address reachable from a client computer, including the <ph name="URI_SCHEME">scheme</ph>, <ph name="URI_PORT">port</ph>, and <ph name="URI_QUEUE">queue</ph>.
 
-      This policy has no effect on whether users can configure printers on individual devices.  It is intended to be supplementary to the configuration of printers by individual users.
+      * Optionally provide <ph name="PRINTER_UUID">uuid</ph> to help deduplicate <ph name="ZEROCONF_DISCOVERY">zeroconf</ph> printers.
 
-      For Active Directory managed devices this policy supports expansion of <ph name="MACHINE_NAME_VARIABLE">${MACHINE_NAME[,pos[,count]]}</ph> to the Active Directory machine name or a substring of it. For example, if the machine name is <ph name="MACHINE_NAME_EXAMPLE">CHROMEBOOK</ph>, then <ph name="MACHINE_NAME_VARIABLE_EXAMPLE">${MACHINE_NAME,6,4}</ph> would be replaced by the 4 characters starting after the 6th position, i.e. <ph name="MACHINE_NAME_PART_EXAMPLE">BOOK</ph>. Note that the position is zero-based.
+      * Either use the model name for <ph name="PRINTER_EFFECTIVE_MODEL">effective_model</ph> or set <ph name="PRINTER_AUTOCONF">autoconf</ph> to True. Printers with both or no properties get ignored.
 
-      This policy is deprecated, please use <ph name="PRINTERS_POLICY_NAME">Printers</ph> instead.
-      ''',
+      PPDs are downloaded after the printer is used, and frequently used PPDs are cached. This policy doesn't affect whether users can configure printers on individual devices.
+
+      Note: For <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> managed devices, this policy supports expansion of <ph name="MACHINE_NAME_VARIABLE">${MACHINE_NAME[,pos[,count]]}</ph> to the <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> machine name or a substring of it. For example, if the machine name is <ph name="MACHINE_NAME_EXAMPLE">CHROMEBOOK</ph>, then <ph name="MACHINE_NAME_VARIABLE_EXAMPLE">${MACHINE_NAME,6,4}</ph> gets replaced by the 4 characters starting after the 6th position, in other words, <ph name="MACHINE_NAME_PART_EXAMPLE">BOOK</ph>. The position is zero-based.
+
+      This policy is deprecated, please use <ph name="PRINTERS_POLICY_NAME">Printers</ph> instead.''',
     },
     {
       'name': 'Printers',
-      'owners': ['file://chromeos/printing/OWNERS'],
+      'owners': ['file://chromeos/printing/OWNERS', 'skau@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -15533,25 +15521,27 @@
       'id': 769,
       'caption': '''Configures a list of printers''',
       'tags': [],
-      'desc': '''Configures a list of printers.
+      'desc': '''Setting the policy lets administrators set up a list of printers for their users. Printer selection occurs the first time users try to print.
 
-      This policy allows administrators to provide printer configurations for
-      their users.
+      Using the policy:
 
-      <ph name="PRINTER_DISPLAY_NAME">display_name</ph> and <ph name="PRINTER_DESCRIPTION">description</ph> are free-form strings that can be customized for ease of printer selection. <ph name="PRINTER_MANUFACTURER">manufacturer</ph> and <ph name="PRINTER_MODEL">model</ph> serve to ease printer identification by end users. They represent the manufacturer and model of the printer. <ph name="PRINTER_URI">uri</ph> should be an address reachable from a client computer including the <ph name="URI_SCHEME">scheme</ph>, <ph name="URI_PORT">port</ph>, and <ph name="URI_QUEUE">queue</ph>. <ph name="PRINTER_UUID">uuid</ph> is optional. If provided, it is used to help deduplicate <ph name="ZEROCONF_DISCOVERY">zeroconf</ph> printers.
+      * Customize free-form <ph name="PRINTER_DISPLAY_NAME">display_name</ph> and <ph name="PRINTER_DESCRIPTION">description</ph> for ease of printer selection.
 
-      Either <ph name="PRINTER_EFFECTIVE_MODEL">effective_model</ph> should contain the name of the printer or <ph name="PRINTER_AUTOCONF">autoconf</ph> should be set to true. The printers with both or without any properties will be ignored.
+      * Help users identify printers using <ph name="PRINTER_MANUFACTURER">manufacturer</ph> and <ph name="PRINTER_MODEL">model</ph>.
 
-      Printer setup is completed upon the first use of a printer.  PPDs are not downloaded until the printer is used.  After that time, frequently used PPDs are cached.
+      * <ph name="PRINTER_URI">uri</ph> should be an address reachable from a client computer, including the <ph name="URI_SCHEME">scheme</ph>, <ph name="URI_PORT">port</ph>, and <ph name="URI_QUEUE">queue</ph>.
 
-      This policy has no effect on whether users can configure printers on individual devices.  It is intended to be supplementary to the configuration of printers by individual users.
+      * Optionally provide <ph name="PRINTER_UUID">uuid</ph> to help deduplicate <ph name="ZEROCONF_DISCOVERY">zeroconf</ph> printers.
 
-      For Active Directory managed devices this policy supports expansion of <ph name="MACHINE_NAME_VARIABLE">${MACHINE_NAME[,pos[,count]]}</ph> to the Active Directory machine name or a substring of it. For example, if the machine name is <ph name="MACHINE_NAME_EXAMPLE">CHROMEBOOK</ph>, then <ph name="MACHINE_NAME_VARIABLE_EXAMPLE">${MACHINE_NAME,6,4}</ph> would be replaced by the 4 characters starting after the 6th position, i.e. <ph name="MACHINE_NAME_PART_EXAMPLE">BOOK</ph>. Note that the position is zero-based.
-      ''',
+      * Either use the model name for <ph name="PRINTER_EFFECTIVE_MODEL">effective_model</ph> or set <ph name="PRINTER_AUTOCONF">autoconf</ph> to True. Printers with both or no properties get ignored.
+
+      PPDs are downloaded after the printer is used, and frequently used PPDs are cached. This policy doesn't affect whether users can configure printers on individual devices.
+
+      Note: For <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> managed devices, this policy supports expansion of <ph name="MACHINE_NAME_VARIABLE">${MACHINE_NAME[,pos[,count]]}</ph> to the <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> machine name or a substring of it. For example, if the machine name is <ph name="MACHINE_NAME_EXAMPLE">CHROMEBOOK</ph>, then <ph name="MACHINE_NAME_VARIABLE_EXAMPLE">${MACHINE_NAME,6,4}</ph> gets replaced by the 4 characters starting after the 6th position, in other words, <ph name="MACHINE_NAME_PART_EXAMPLE">BOOK</ph>. The position is zero-based.''',
     },
     {
       'name': 'NativePrintersBulkConfiguration',
-      'owners': ['file://chromeos/printing/OWNERS'],
+      'owners': ['file://chromeos/printing/OWNERS', 'luum@chromium.org'],
       'id': 382,
       'type': 'external',
       'schema': {
@@ -15574,25 +15564,17 @@
       'max_size': 5242880,
       'caption': '''Enterprise printer configuration file''',
       'tags': [],
-      'desc': '''Provides configurations for enterprise printers.
+      'desc': '''Setting this policy configure enterprise printers. Its format matches the <ph name="NATIVE_PRINTERS_POLICY_NAME">NativePrinters</ph> dictionary, with an additional required <ph name="ID_FIELD">"id"</ph> or <ph name="GUID_FIELD">"guid"</ph> field for each printer for allow listing or deny listing. The file size can't exceed 5MB and is in JSON format. A file with about 21,000 printers encodes as a 5MB file. The cryptographic hash helps verify download integrity. The file is downloaded, cached, and redownloaded when the URL or the hash changes. <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> downloads the file for printer configurations and makes printers available along with <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME">NativePrintersBulkAccessMode</ph>, <ph name="BULK_PRINTERS_WHITELIST">NativePrintersBulkWhitelist</ph>, and <ph name="BULK_PRINTERS_BLACKLIST">NativePrintersBulkBlacklist</ph>.
 
-      This policy allows you to provide printer configurations to <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices.  The format is the same as the NativePrinters dictionary, with an additional required "id" or "guid" field per printer for whitelisting or blacklisting.
+      This policy has no effect on whether users can configure printers on individual devices. It is intended to be supplementary to the configuration of printers by individual users.
 
-      The size of the file must not exceed 5MB and must be encoded in JSON.  It is estimated that a file containing approximately 21,000 printers will encode as a 5MB file.  The cryptographic hash is used to verify the integrity of the download.
-
-      The file is downloaded and cached. It will be re-downloaded whenever the URL or the hash changes.
-
-      If this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will download the file for printer configurations and make printers available in accordance with <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME">NativePrintersBulkAccessMode</ph>, <ph name="BULK_PRINTERS_WHITELIST">NativePrintersBulkWhitelist</ph>, and <ph name="BULK_PRINTERS_BLACKLIST">NativePrintersBulkBlacklist</ph>.
-
-      If you set this policy, users cannot change or override it.
-
-      This policy has no effect on whether users can configure printers on individual devices.  It is intended to be supplementary to the configuration of printers by individual users.
+      If you set the policy, users can't change it.
 
       This policy is deprecated, please use <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME">PrintersBulkConfiguration</ph> instead.''',
     },
     {
       'name': 'PrintersBulkConfiguration',
-      'owners': ['file://chromeos/printing/OWNERS'],
+      'owners': ['file://chromeos/printing/OWNERS', 'luum@chromium.org'],
       'id': 770,
       'type': 'external',
       'schema': {
@@ -15614,23 +15596,15 @@
       'max_size': 5242880,
       'caption': '''Enterprise printer configuration file''',
       'tags': [],
-      'desc': '''Provides configurations for enterprise printers.
+      'desc': '''Setting this policy configure enterprise printers. Its format matches the <ph name="PRINTERS_POLICY_NAME">Printers</ph> dictionary, with an additional required <ph name="ID_FIELD">"id"</ph> or <ph name="GUID_FIELD">"guid"</ph> field for each printer for allow listing or deny listing. The file size can't exceed 5MB and is in JSON format. A file with about 21,000 printers encodes as a 5MB file. The cryptographic hash helps verify download integrity. The file is downloaded, cached, and redownloaded when the URL or the hash changes. <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> downloads the file for printer configurations and makes printers available along with <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME">PrintersBulkAccessMode</ph>, <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME">PrintersBulkAllowlist</ph>, and <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME">PrintersBulkBlocklist</ph>.
 
-      This policy allows you to provide printer configurations to <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices. The format is the same as the <ph name="PRINTERS_POLICY_NAME">Printers</ph> dictionary, with an additional required "id" or "guid" field per printer for allowing or blocking.
+      This policy has no effect on whether users can configure printers on individual devices. It is intended to be supplementary to the configuration of printers by individual users.
 
-      The size of the file must not exceed 5MB and must be encoded in JSON. It is estimated that a file containing approximately 21,000 printers will encode as a 5MB file. The cryptographic hash is used to verify the integrity of the download.
-
-      The file is downloaded and cached. It will be re-downloaded whenever the URL or the hash changes.
-
-      If this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will download the file for printer configurations and make printers available in accordance with <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME">PrintersBulkAccessMode</ph>, <ph name="PRINTERS_BULK_ALLOWLIST">PrintersBulkAllowlist</ph>, and <ph name="PRINTERS_BULK_BLOCKLIST">PrintersBulkBlocklist</ph>.
-
-      If you set this policy, users cannot change or override it.
-
-      This policy has no effect on whether users can configure printers on individual devices. It is intended to be supplementary to the configuration of printers by individual users.''',
+      If you set the policy, users can't change it.''',
     },
     {
       'name': 'NativePrintersBulkAccessMode',
-      'owners': ['file://chromeos/printing/OWNERS'],
+      'owners': ['file://chromeos/printing/OWNERS', 'zentaro@chromium.org'],
       'id': 383,
       'supported_on': ['chrome_os:65-'],
       'type': 'int-enum',
@@ -15664,18 +15638,21 @@
       'example_value': 1,
       'caption': '''Printer configuration access policy.''',
       'tags': [],
-      'desc': '''Controls which printers from the <ph name="BULK_PRINTERS_POLICY_NAME">NativePrintersBulkConfiguration</ph> are available to users.
+      'desc': '''Setting the policy designates which access policy applies to bulk printer configuration, controlling which printers from <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME">NativePrintersBulkConfiguration</ph> are available for users.
 
-      Designates which access policy is used for bulk printer configuration. If <ph name="PRINTERS_ALLOW_ALL">AllowAll</ph> is selected, all printers are shown. If <ph name="PRINTERS_BLACKLIST">BlacklistRestriction</ph> is selected, <ph name="BULK_PRINTERS_BLACKLIST">NativePrintersBulkBlacklist</ph> is used to restrict access to the specified printers.  If <ph name="PRINTERS_WHITELIST">WhitelistPrintersOnly</ph> is selected, <ph name="BULK_PRINTERS_WHITELIST">NativePrintersBulkWhitelist</ph> designates only those printers which are selectable.
+      * If <ph name="PRINTERS_BLACKLIST">BlacklistRestriction</ph> (value 0) is selected, <ph name="BULK_PRINTERS_BLACKLIST">NativePrintersBulkBlacklist</ph> restricts access to the specified printers
 
-      If this policy is not set, <ph name="PRINTERS_ALLOW_ALL">AllowAll</ph> is assumed.
+      * If <ph name="PRINTERS_WHITELIST">WhitelistPrintersOnly</ph> is selected, <ph name="BULK_PRINTERS_WHITELIST">NativePrintersBulkWhitelist</ph> (value 1) designates only those printers which are selectable
 
-      This policy is deprecated, please use <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME">PrintersBulkAccessMode</ph> instead.
-      ''',
+      * <ph name="PRINTERS_ALLOW_ALL">AllowAll</ph> (Value 2) displays all printers
+
+      Leaving the policy unset puts <ph name="PRINTERS_ALLOW_ALL">AllowAll</ph> in use.
+
+      This policy is deprecated, please use <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME">PrintersBulkAccessMode</ph> instead.''',
     },
     {
       'name': 'PrintersBulkAccessMode',
-      'owners': ['file://chromeos/printing/OWNERS'],
+      'owners': ['file://chromeos/printing/OWNERS', 'zentaro@chromium.org'],
       'id': 772,
       'supported_on': ['chrome_os:86-'],
       'type': 'int-enum',
@@ -15708,16 +15685,19 @@
       'example_value': 1,
       'caption': '''Printer configuration access policy.''',
       'tags': [],
-      'desc': '''Controls which printers from the <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME">PrintersBulkConfiguration</ph> are available to users.
+      'desc': '''Setting the policy designates which access policy applies to bulk printer configuration, controlling which printers from <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME">PrintersBulkConfiguration</ph> are available for users.
 
-      Designates which access policy is used for bulk printer configuration. If <ph name="PRINTERS_ALLOW_ALL">AllowAll</ph> is selected, all printers are shown. If <ph name="PRINTERS_BLOCKLIST">BlocklistRestriction</ph> is selected, <ph name="PRINTERS_BULK_BLOCKLIST">PrintersBulkBlocklist</ph> is used to restrict access to the specified printers.  If <ph name="PRINTERS_ALLOWLIST">AllowlistPrintersOnly</ph> is selected, <ph name="PRINTERS_BULK_ALLOWLIST">PrintersBulkAllowlist</ph> designates only those printers which are selectable.
+      * <ph name="PRINTERS_BLOCKLIST">BlocklistRestriction</ph> (value 0) uses <ph name="PRINTERS_BULK_BLOCKLIST">PrintersBulkBlocklist</ph> to restrict access to the specified printers
 
-      If this policy is not set, <ph name="PRINTERS_ALLOW_ALL">AllowAll</ph> is assumed.
-      ''',
+      * <ph name="PRINTERS_ALLOWLIST">AllowlistPrintersOnly</ph> (value 1) uses <ph name="PRINTERS_BULK_ALLOWLIST">PrintersBulkAllowlist</ph> to designate only those printers which are selectable
+
+      * <ph name="PRINTERS_ALLOW_ALL">AllowAll</ph> (value 2) displays all printers
+
+      Leaving the policy unset puts <ph name="PRINTERS_ALLOW_ALL">AllowAll</ph> in use.''',
     },
     {
       'name': 'NativePrintersBulkBlacklist',
-      'owners': ['file://chromeos/printing/OWNERS'],
+      'owners': ['file://chromeos/printing/OWNERS', 'thestig@chromium.org'],
       'supported_on': ['chrome_os:65-'],
       'id': 384,
       'type': 'list',
@@ -15733,18 +15713,13 @@
       'example_value':  ["id1", "id2", "id3"],
       'caption': '''Disabled enterprise printers''',
       'tags': [],
-      'desc': '''Specifies the printers which a user cannot use.
+      'desc': '''If <ph name="PRINTERS_BLACKLIST">BlacklistRestriction</ph> is chosen for <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME">NativePrintersBulkAccessMode</ph>, then setting <ph name="NATIVE_PRINTERS_BULK_BLACKLIST_POLICY_NAME">NativePrintersBulkBlacklist</ph> specifies which printers users can't use. All printers are provided to the user, except for the IDs listed in this policy. The IDs must correspond to the <ph name="ID_FIELD">"id"</ph> or <ph name="GUID_FIELD">"guid"</ph> fields in the file specified in <ph name="BULK_PRINTERS_POLICY_NAME">NativePrintersBulkConfiguration</ph>.
 
-      This policy is only used if <ph name="PRINTERS_BLACKLIST">BlacklistRestriction</ph> is chosen for <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME">NativePrintersBulkAccessMode</ph>.
-
-      If this policy is used, all printers are provided to the user except for the ids listed in this policy. The ids must correspond to the "id" or "guid" fields in the file specified in <ph name="BULK_PRINTERS_POLICY_NAME">NativePrintersBulkConfiguration</ph>.
-
-      This policy is deprecated, please use <ph name="PRINTERS_BULK_BLOCKLIST">PrintersBulkBlocklist</ph> instead.
-      ''',
+      This policy is deprecated, please use <ph name="PRINTERS_BULK_BLOCKLIST">PrintersBulkBlocklist</ph> instead.''',
     },
     {
       'name': 'PrintersBulkBlocklist',
-      'owners': ['file://chromeos/printing/OWNERS'],
+      'owners': ['file://chromeos/printing/OWNERS', 'thestig@chromium.org'],
       'supported_on': ['chrome_os:86-'],
       'id': 779,
       'type': 'list',
@@ -15759,16 +15734,11 @@
       'example_value':  ["id1", "id2", "id3"],
       'caption': '''Disabled enterprise printers''',
       'tags': [],
-      'desc': '''Specifies the printers which a user cannot use.
-
-      This policy is only used if <ph name="PRINTERS_BLOCKLIST">BlocklistRestriction</ph> is chosen for <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME">PrintersBulkAccessMode</ph>.
-
-      If this policy is used, all printers are provided to the user except for the ids listed in this policy. The ids must correspond to the "id" or "guid" fields in the file specified in <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME">PrintersBulkConfiguration</ph>.
-      ''',
+      'desc': '''If <ph name="PRINTERS_BLOCKLIST">BlocklistRestriction</ph> is chosen for <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME">PrintersBulkAccessMode</ph>, then setting <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME">PrintersBulkBlocklist</ph> specifies which printers users can't use. All printers are provided to the user, except for the IDs listed in this policy. The IDs must correspond to the <ph name="ID_FIELD">"id"</ph> or <ph name="GUID_FIELD">"guid"</ph> fields in the file specified in <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME">PrintersBulkConfiguration</ph>.''',
     },
     {
       'name': 'NativePrintersBulkWhitelist',
-      'owners': ['file://chromeos/printing/OWNERS'],
+      'owners': ['file://chromeos/printing/OWNERS', 'thestig@chromium.org'],
       'supported_on': ['chrome_os:65-'],
       'id': 385,
       'type': 'list',
@@ -15784,18 +15754,13 @@
       'example_value':  ["id1", "id2", "id3"],
       'caption': '''Enabled enterprise printers''',
       'tags': [],
-      'desc': '''Specifies the printers which a user can use.
+      'desc': '''If <ph name="PRINTERS_WHITELIST">WhitelistPrintersOnly</ph> is chosen for <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME">NativePrintersBulkAccessMode</ph>, then setting <ph name="NATIVE_PRINTERS_BULK_WHITELIST_POLICY_NAME">NativePrintersBulkWhitelist</ph> specifies which printers users can use. Only the printers with IDs matching the values in this policy are available to the user. The IDs must correspond to the <ph name="ID_FIELD">"id"</ph> or <ph name="GUID_FIELD">"guid"</ph> fields in the file specified in <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME">NativePrintersBulkConfiguration</ph>.
 
-      This policy is only used if <ph name="PRINTERS_WHITELIST">WhitelistPrintersOnly</ph> is chosen for <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME">NativePrintersBulkAccessMode</ph>.
-
-      If this policy is used, only the printers with ids matching the values in this policy are available to the user. The ids must correspond to the "id" or "guid" fields in the file specified in <ph name="BULK_PRINTERS_POLICY_NAME">NativePrintersBulkConfiguration</ph>.
-
-      This policy is deprecated, please use <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME">PrintersBulkAllowlist</ph> instead.
-      ''',
+      This policy is deprecated, please use <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME">PrintersBulkAllowlist</ph> instead.''',
     },
     {
       'name': 'PrintersBulkAllowlist',
-      'owners': ['file://chromeos/printing/OWNERS'],
+      'owners': ['file://chromeos/printing/OWNERS', 'thestig@chromium.org'],
       'supported_on': ['chrome_os:86-'],
       'id': 780,
       'type': 'list',
@@ -15810,12 +15775,7 @@
       'example_value':  ["id1", "id2", "id3"],
       'caption': '''Enabled enterprise printers''',
       'tags': [],
-      'desc': '''Specifies the printers which a user can use.
-
-      This policy is only used if <ph name="PRINTERS_ALLOWLIST">AllowlistPrintersOnly</ph> is chosen for <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME">PrintersBulkAccessMode</ph>.
-
-      If this policy is used, only the printers with ids matching the values in this policy are available to the user. The ids must correspond to the "id" or "guid" fields in the file specified in <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME">PrintersBulkConfiguration</ph>.
-      ''',
+      'desc': '''If <ph name="PRINTERS_ALLOWLIST">AllowlistPrintersOnly</ph> is chosen for <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME">PrintersBulkAccessMode</ph>, then setting <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME">PRINTERS_BULK_ALLOWLIST</ph> specifies which printers users can use. Only the printers with IDs matching the values in this policy are available to the user. The IDs must correspond to the <ph name="ID_FIELD">"id"</ph> or <ph name="GUID_FIELD">"guid"</ph> fields in the file specified in <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME">PrintersBulkConfiguration</ph>.''',
     },
     {
       'name': 'DeviceNativePrinters',
@@ -15843,24 +15803,17 @@
       'max_size': 5242880,
       'caption': '''Enterprise printer configuration file for devices''',
       'tags': [],
-      'desc': '''Provides configurations for enterprise printers bound to devices.
+      'desc': '''Setting the policy provides configurations for enterprise printers bound to devices. Its format matches the <ph name="NATIVE_PRINTERS_POLICY_NAME">NativePrinters</ph> dictionary, with an additional required "id" or "guid" field for each printer for allow listing or deny listing. The file size can't exceed 5MB and is in JSON format. A file with about 21,000 printers encodes as a 5MB file. The cryptographic hash helps verify download integrity. The file is downloaded, cached, and redownloaded when the URL or the hash changes. <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> downloads the file for printer configurations and makes printers available along with <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME">DevicePrintersAccessMode</ph>, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME">DevicePrintersAllowlist</ph>, and <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME">DevicePrintersBlocklist</ph>.
 
-      This policy allows you to provide printer configurations to <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices.  The format is the same as the NativePrinters dictionary, with an additional required "id" or "guid" field per printer for whitelisting or blacklisting.
+      This policy:
 
-      The size of the file must not exceed 5MB and must be encoded in JSON.  It is estimated that a file containing approximately 21,000 printers will encode as a 5MB file.  The cryptographic hash is used to verify the integrity of the download.
+      * doesn't affect whether users can configure printers on individual devices
 
-      The file is downloaded and cached. It will be re-downloaded whenever the URL or the hash changes.
+      * supplements <ph name="BULK_PRINTERS_POLICY_NAME">NativePrintersBulkConfiguration</ph> and individual users' printer setups
 
-      If this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will download the file for printer configurations and make printers available in accordance with <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME">DevicePrintersAccessMode</ph>, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME">DevicePrintersAllowlist</ph>, and <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME">DevicePrintersBlocklist</ph>.
+      If unset, there are no device printers, and the other <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN">DeviceNativePrinter*</ph> policies are ignored.
 
-      This policy has no effect on whether users can configure printers on individual devices.  It is intended to be supplementary to the configuration of printers by individual users.
-
-      This policy is additive to the <ph name="BULK_PRINTERS_POLICY_NAME">NativePrintersBulkConfiguration</ph>.
-
-      If this policy is unset, there will be no device printers and the other <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN">DeviceNativePrinter*</ph> policies will be ignored.
-
-      This policy is deprecated, please use <ph name="DEVICE_PRINTERS_POLICY_NAME">DevicePrinters</ph> instead.
-      ''',
+      This policy is deprecated, please use <ph name="DEVICE_PRINTERS_POLICY_NAME">DevicePrinters</ph> instead.''',
     },
     {
       'name': 'DeviceNativePrintersAccessMode',
@@ -15898,14 +15851,17 @@
       'example_value': 1,
       'caption': '''Device printers configuration access policy.''',
       'tags': [],
-      'desc': '''Controls which printers from the <ph name="DEVICE_PRINTERS_POLICY_NAME">DevicePrinters</ph> are available to users.
+      'desc': '''Setting the policy designates which access policy applies to bulk printer configuration, controlling which printers from <ph name="DEVICE_PRINTERS_POLICY_NAME">DevicePrinters</ph> are available for users.
 
-      Designates which access policy is used for bulk printer configuration. If <ph name="PRINTERS_ALLOW_ALL">AllowAll</ph> is selected, all printers are shown. If <ph name="PRINTERS_BLACKLIST">BlacklistRestriction</ph> is selected, <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME">DevicePrintersBlocklist</ph> is used to restrict access to the specified printers.  If <ph name="PRINTERS_WHITELIST">WhitelistPrintersOnly</ph> is selected, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLCY_NAME">DevicePrintersAllowlist</ph> designates only those printers which are selectable.
+      * <ph name="PRINTERS_BLACKLIST">BlacklistRestriction</ph> (value 0), <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME">DevicePrintersBlocklist</ph> can restrict access to the specified printers
 
-      If this policy is not set, <ph name="PRINTERS_ALLOW_ALL">AllowAll</ph> is assumed.
+      * If set to <ph name="PRINTERS_WHITELIST">WhitelistPrintersOnly</ph> (value 1), <ph name="DEVICE_PRINTERS_ALLOWLIST_POLCY_NAME">DevicePrintersAllowlist</ph> designates only those printers which are selectable
 
-      This policy is deprecated, please use <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME">DevicePrintersAccessMode</ph> instead.
-      ''',
+      * <ph name="PRINTERS_ALLOW_ALL">AllowAll</ph> (value 2), all printers are shown.
+
+      Leaving the policy unset applies <ph name="PRINTERS_ALLOW_ALL">AllowAll</ph>.
+
+      This policy is deprecated, please use <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME">DevicePrintersAccessMode</ph> instead.''',
     },
     {
       'name': 'DeviceNativePrintersBlacklist',
@@ -15925,14 +15881,9 @@
       'example_value':  ["id1", "id2", "id3"],
       'caption': '''Disabled enterprise device printers''',
       'tags': [],
-      'desc': '''Specifies the printers which a user cannot use.
+      'desc': '''If <ph name="PRINTERS_BLACKLIST">BlacklistRestriction</ph> is chosen for <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME">DevicePrintersAccessMode</ph>, then setting <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME">DeviceNativePrintersBlacklist</ph> specifies which printers users can't use. All printers are provided to users, except for the IDs listed in this policy. The IDs must correspond to the <ph name="ID_FIELD">"id"</ph> or <ph name="GUID_FIELD">"guid"</ph> fields in the file specified in <ph name="DEVICE_PRINTERS_POLICY_NAME">DevicePrinters</ph>.
 
-      This policy is only used if <ph name="PRINTERS_BLACKLIST">BlacklistRestriction</ph> is chosen for <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME">DevicePrintersAccessMode</ph>.
-
-      If this policy is used, all printers are provided to the user except for the ids listed in this policy. The ids must correspond to the "id" or "guid" fields in the file specified in <ph name="DEVICE_PRINTERS_POLICY_NAME">DevicePrinters</ph>.
-
-      This policy is deprecated, please use <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME">DevicePrintersBlocklist</ph> instead.
-      ''',
+      This policy is deprecated, please use <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME">DevicePrintersBlocklist</ph> instead.''',
     },
     {
       'name': 'DeviceNativePrintersWhitelist',
@@ -15953,14 +15904,9 @@
       'example_value':  ["id1", "id2", "id3"],
       'caption': '''Enabled enterprise device printers''',
       'tags': [],
-      'desc': '''Specifies the printers which a user can use.
+      'desc': '''If <ph name="PRINTERS_WHITELIST">WhitelistPrintersOnly</ph> is chosen for <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME">DevicePrintersAccessMode</ph>, then setting <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME">DeviceNativePrintersWhitelist</ph> specifies which printers users can use. Only the printers with IDs matching the values in this policy are available to users. The IDs must correspond to the <ph name="ID_FIELD">"id"</ph> or <ph name="GUID_FIELD">"guid"</ph> fields in the file specified in <ph name="DEVICE_PRINTERS_POLICY_NAME">DevicePrinters</ph>.
 
-      This policy is only used if <ph name="PRINTERS_WHITELIST">WhitelistPrintersOnly</ph> is chosen for <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME">DevicePrintersAccessMode</ph>
-
-      If this policy is used, only the printers with ids matching the values in this policy are available to the user. The ids must correspond to the "id" or "guid" fields in the file specified in <ph name="DEVICE_PRINTERS_POLICY_NAME">DevicePrinters</ph>.
-
-      This policy is deprecated, please use <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME">DevicePrintersAllowlist</ph> instead.
-      ''',
+      This policy is deprecated, please use <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME">DevicePrintersAllowlist</ph>instead.''',
     },
     {
       'name': 'DevicePrinters',
@@ -15987,22 +15933,15 @@
       'max_size': 5242880,
       'caption': '''Enterprise printer configuration file for devices''',
       'tags': [],
-      'desc': '''Provides configurations for enterprise printers bound to devices.
+      'desc': '''Setting the policy provides configurations for enterprise printers bound to devices. Its format matches the <ph name="PRINTERS_POLICY_NAME">Printers</ph> dictionary, with an additional required "id" or "guid" field for each printer for allow listing or deny listing. The file size can't exceed 5MB and is in JSON format. A file with about 21,000 printers encodes as a 5MB file. The cryptographic hash helps verify download integrity. The file is downloaded, cached, and redownloaded when the URL or the hash changes. <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> downloads the file for printer configurations and makes printers available along with <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME">DevicePrintersAccessMode</ph>, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME">DevicePrintersAllowlist</ph>, and <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME">DevicePrintersBlocklist</ph>.
 
-      This policy allows you to provide printer configurations to <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices.  The format is the same as the NativePrinters dictionary, with an additional required "id" or "guid" field per printer for whitelisting or blacklisting.
+      This policy:
 
-      The size of the file must not exceed 5MB and must be encoded in JSON.  It is estimated that a file containing approximately 21,000 printers will encode as a 5MB file.  The cryptographic hash is used to verify the integrity of the download.
+      * doesn't affect whether users can configure printers on individual devices
 
-      The file is downloaded and cached. It will be re-downloaded whenever the URL or the hash changes.
+      * supplements <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME">PrintersBulkConfiguration</ph> and individual users' printer setups
 
-      If this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will download the file for printer configurations and make printers available in accordance with <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME">DevicePrintersAccessMode</ph>, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME">DevicePrintersAllowlist</ph>, and <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME">DevicePrintersBlocklist</ph>.
-
-      This policy has no effect on whether users can configure printers on individual devices.  It is intended to be supplementary to the configuration of printers by individual users.
-
-      This policy is additive to the <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME">PrintersBulkConfiguration</ph>.
-
-      If this policy is unset, there will be no device printers and the other <ph name="DEVICE_PRINTERS_POLICY_PATTERN">DevicePrinter*</ph> policies will be ignored.
-      ''',
+      If unset, there are no device printers, and the other <ph name="DEVICE_PRINTERS_POLICY_PATTERN">DevicePrinter*</ph> policies are ignored.''',
     },
     {
       'name': 'DevicePrintersAccessMode',
@@ -16039,12 +15978,15 @@
       'example_value': 1,
       'caption': '''Device printers configuration access policy.''',
       'tags': [],
-      'desc': '''Controls which printers from the <ph name="DEVICE_PRINTERS_POLICY_NAME">DevicePrinters</ph> are available to users.
+      'desc': '''Setting the policy designates which access policy applies to bulk printer configuration, controlling which printers from <ph name="DEVICE_PRINTERS_POLICY_NAME">DevicePrinters</ph> are available for users.
 
-      Designates which access policy is used for bulk printer configuration. If <ph name="PRINTERS_ALLOW_ALL">AllowAll</ph> is selected, all printers are shown. If <ph name="PRINTERS_BLOCKLIST">BlocklistRestriction</ph> is selected, <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME">DevicePrintersBlocklist</ph> is used to restrict access to the specified printers.  If <ph name="PRINTERS_ALLOWLIST">AllowlistPrintersOnly</ph> is selected, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME">DevicePrintersAllowlist</ph> designates only those printers which are selectable.
+      * <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_BLOCKLISTRESTRICTIONS">BlocklistRestriction</ph> (value 0), <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME">DevicePrintersBlocklist</ph> can restrict access to the specified printers
 
-      If this policy is not set, <ph name="PRINTERS_ALLOW_ALL">AllowAll</ph> is assumed.
-      ''',
+      * <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_ALLOWLISTPRINTERSONLY">AllowlistPrintersOnly</ph> (value 1), <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME">DevicePrintersAllowlist</ph> designates only those printers which are selectable
+
+      * <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_ALLOWALL">AllowAll</ph> (value 2), all printers are allowed.
+
+      Leaving the policy unset applies <ph name="PRINTERS_ALLOW_ALL">AllowAll</ph>.''',
     },
     {
       'name': 'DevicePrintersBlocklist',
@@ -16063,12 +16005,7 @@
       'example_value':  ["id1", "id2", "id3"],
       'caption': '''Disabled enterprise device printers''',
       'tags': [],
-      'desc': '''Specifies the printers which a user cannot use.
-
-      This policy is only used if <ph name="PRINTERS_BLOCKLIST">BlocklistRestriction</ph> is chosen for <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME">DevicePrintersAccessMode</ph>.
-
-      If this policy is used, all printers are provided to the user except for the ids listed in this policy. The ids must correspond to the "id" or "guid" fields in the file specified in <ph name="DEVICE_PRINTERS_POLICY_NAME">DevicePrinters</ph>.
-      ''',
+      'desc': '''If <ph name="PRINTERS_BLOCKLIST">BlocklistRestriction</ph> is chosen for <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME">DevicePrintersAccessMode</ph>, then setting <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME">DevicePrintersBlocklist</ph> specifies which printers users can't use. All printers are provided to users, except for the IDs listed in this policy. The IDs must correspond to the <ph name="ID_FIELD">"id"</ph> or <ph name="GUID_FIELD">"guid"</ph> fields in the file specified in <ph name="DEVICE_PRINTERS_POLICY_NAME">DevicePrinters</ph>.''',
     },
     {
       'name': 'DevicePrintersAllowlist',
@@ -16088,12 +16025,7 @@
       'example_value':  ["id1", "id2", "id3"],
       'caption': '''Enabled enterprise device printers''',
       'tags': [],
-      'desc': '''Specifies the printers which a user can use.
-
-      This policy is only used if <ph name="PRINTERS_ALLOWLIST">AllowlistPrintersOnly</ph> is chosen for <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME">DevicePrintersAccessMode</ph>
-
-      If this policy is used, only the printers with ids matching the values in this policy are available to the user. The ids must correspond to the "id" or "guid" fields in the file specified in <ph name="DEVICE_PRINTERS_POLICY_NAME">DevicePrinters</ph>.
-      ''',
+      'desc': '''If <ph name="PRINTERS_ALLOWLIST">AllowlistPrintersOnly</ph> is chosen for <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME">DevicePrintersAccessMode</ph>, then setting <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME">DevicePrintersAllowlist</ph> specifies which printers users can use. Only the printers with IDs matching the values in this policy are available to users. The IDs must correspond to the <ph name="ID_FIELD">"id"</ph> or <ph name="GUID_FIELD">"guid"</ph> fields in the file specified in <ph name="DEVICE_PRINTERS_POLICY_NAME">DevicePrinters</ph>''',
     },
     {
       'name': 'TPMFirmwareUpdateSettings',
@@ -16798,7 +16730,7 @@
     },
     {
       'name': 'PrintPreviewUseSystemDefaultPrinter',
-      'owners': ['file://printing/OWNERS'],
+      'owners': ['file://printing/OWNERS', 'thestig@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
@@ -16824,11 +16756,9 @@
       'id': 373,
       'caption': '''Use System Default Printer as Default''',
       'tags': [],
-      'desc': '''Causes <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to use the system default printer as the default choice in Print Preview instead of the most recently used printer.
+      'desc': '''Setting the policy to Enabled means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> uses the OS default printer as the default destination for print preview.
 
-      If you disable this setting or do not set a value, Print Preview will use the most recently used printer as the default destination choice.
-
-      If you enable this setting, Print Preview will use the OS system default printer as the default destination choice.''',
+      Setting the policy to Disabled or leaving it unset means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> uses the most recently used printer as the default destination for print preview.''',
     },
     {
       'name': 'DeviceEcryptfsMigrationStrategy',
