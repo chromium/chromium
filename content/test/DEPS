@@ -27,7 +27,6 @@ include_rules = [
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+services/network/test",
-  "+services/network/trust_tokens/test",
   "+services/network/mock_mojo_dhcp_wpad_url_client.h",
   "+services/network/url_request_context_builder_mojo.h",
   "+services/proxy_resolver",

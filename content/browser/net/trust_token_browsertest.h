@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_TEST_TRUST_TOKEN_BROWSERTEST_H_
-#define CONTENT_TEST_TRUST_TOKEN_BROWSERTEST_H_
+#ifndef CONTENT_BROWSER_NET_TRUST_TOKEN_BROWSERTEST_H_
+#define CONTENT_BROWSER_NET_TRUST_TOKEN_BROWSERTEST_H_
 
 #include "base/test/scoped_feature_list.h"
 #include "content/public/test/content_browser_test.h"
@@ -61,4 +61,4 @@ class TrustTokenBrowsertest : virtual public ContentBrowserTest {
 
 }  // namespace content
 
-#endif  // CONTENT_TEST_TRUST_TOKEN_BROWSERTEST_H_
+#endif  // CONTENT_BROWSER_NET_TRUST_TOKEN_BROWSERTEST_H_

@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "content/browser/devtools/protocol/network.h"
+#include "content/browser/net/trust_token_browsertest.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/browser_test.h"
@@ -11,7 +12,6 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
-#include "content/test/trust_token_browsertest.h"
 
 namespace content {
 

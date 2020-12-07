@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/test/trust_token_browsertest.h"
+#include "content/browser/net/trust_token_browsertest.h"
 
 #include <memory>
 #include <string>
