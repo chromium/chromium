@@ -39,6 +39,16 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     <script src='../js/webxr-polyfill.js'></script>
 
     <script src='../js/webxr-button.js'></script>
+    <style>
+      #text-info {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: large;
+        color: red;
+      }
+    </style>
   </head>
   <body>
     <header>
@@ -51,6 +61,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         </p>
       </details>
     </header>
+    <div id="text-overlay">
+      <div id="text-info"></div>
+    </div>
     <script id="vertexShader" type="x-shader/x-vertex">
       precision mediump float;
 
@@ -84,6 +97,18 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       let vertexShaderSource = null;
       let fragmentShaderSource = null;
 
+      const textOverlayElement = document.querySelector("#text-overlay");
+      if(!textOverlayElement) {
+        console.error("#text-overlay element not found!");
+        throw new Error("#text-overlay element not found!");
+      }
+
+      const textInfoElement = document.querySelector("#text-info");
+      if(!textInfoElement) {
+        console.error("#text-info element not found!");
+        throw new Error("#text-info element not found!");
+      }
+
       function initXR() {
         xrButton = new XRDeviceButton({
           onRequestSession: onRequestSession,
@@ -100,7 +125,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         // Requests an immersive session with environment integration.
 
         let options = {
-          requiredFeatures: ['depth-sensing'],
+          requiredFeatures: ['depth-sensing', 'dom-overlay'],
+          domOverlay: { root: textOverlayElement },
         };
 
         navigator.xr.requestSession('immersive-ar', options).then((session) => {
@@ -157,6 +183,17 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
       }
 
+      // Creates new GL buffer and uploads contents of |vertices| to it:
+      function uploadVertexData(vertices) {
+        const result = gl.createBuffer();
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, result);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+        return result;
+      }
+
       function initializeGL() {
         shaderProgram = initShaderProgram(vertexShaderSource, fragmentShaderSource);
 
@@ -172,8 +209,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             },
         };
 
-        vertexBuffer = gl.createBuffer();
-
         // clip space coordinates + texture space coordinates
         const vertices_data = [
           -1, -1,    0, 0,  // bottom left
@@ -182,9 +217,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
            1,  1,    1, 1,  // top right
         ];
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices_data), gl.STATIC_DRAW);
-        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+        vertexBuffer = uploadVertexData(vertices_data);
 
         depthTexture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, depthTexture);
@@ -247,23 +280,29 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
         const pose = frame.getViewerPose(xrRefSpace);
 
-        if(pose) {
+        if (pose) {
           gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
 
           // Clear the framebuffer
           gl.clearColor(0, 0, 0, 0);
           gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-          for(const view of pose.views) {
+          for (const view of pose.views) {
             const viewport = baseLayer.getViewport(view);
             gl.viewport(viewport.x, viewport.y,
                         viewport.width, viewport.height);
 
             const depthData = frame.getDepthInformation(view);
-            if(depthData){
+            if (depthData) {
+              textInfoElement.innerHTML = "";
+
               renderDepthInformationGPU(depthData, view, viewport);
+            } else {
+              textInfoElement.innerHTML = "Depth data unavailable in the current frame!";
             }
           }
+        } else {
+          textInfoElement.innerHTML = "Pose unavailable in the current frame!";
         }
       }
 
