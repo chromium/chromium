@@ -184,12 +184,19 @@ void AccelerometerFileReader::InitializeInternal() {
   DCHECK(base::SequencedTaskRunnerHandle::IsSet());
   DCHECK_EQ(State::INITIALIZING, initialization_state_);
 
+  // Log the warning/error messages only in the first initialization to prevent
+  // spamming during the retries of initialization.
+  static bool first_initialization_ = true;
+
   // Check for accelerometer symlink which will be created by the udev rules
   // file on detecting the device.
   if (base::IsDirectoryEmpty(base::FilePath(kAccelerometerDevicePath))) {
     if (base::SysInfo::IsRunningOnChromeOS()) {
-      LOG(WARNING) << "Accelerometer device directory is empty at "
-                   << kAccelerometerDevicePath;
+      if (first_initialization_) {
+        LOG(WARNING) << "Accelerometer device directory is empty at "
+                     << kAccelerometerDevicePath;
+      }
+      first_initialization_ = false;
       TryScheduleInitializeInternal();
     } else {
       initialization_state_ = State::FAILED;
@@ -236,7 +243,9 @@ void AccelerometerFileReader::InitializeInternal() {
   }
   if (configuration_.trigger_now.empty()) {
     if (base::SysInfo::IsRunningOnChromeOS()) {
-      LOG(ERROR) << "Accelerometer trigger not found";
+      if (first_initialization_)
+        LOG(ERROR) << "Accelerometer trigger not found";
+      first_initialization_ = false;
       TryScheduleInitializeInternal();
     } else {
       initialization_state_ = State::FAILED;
