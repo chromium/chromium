@@ -19,6 +19,10 @@ class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }
 
+namespace net {
+class HttpRequestHeaders;
+}
+
 // Base class for all classes that implement a flow to call OAuth2 enabled APIs,
 // given an access token to the service.  This class abstracts the basic steps
 // and exposes template methods for sub-classes to implement for API specific
@@ -39,12 +43,18 @@ class OAuth2ApiCallFlow {
 
   // Methods to help create the API request.
   virtual GURL CreateApiCallUrl() = 0;
+  virtual net::HttpRequestHeaders CreateApiCallHeaders();
   virtual std::string CreateApiCallBody() = 0;
   virtual std::string CreateApiCallBodyContentType();
 
   // Returns the request type (e.g. GET, POST) for the |body| that will be sent
   // with the request.
   virtual std::string GetRequestTypeForBody(const std::string& body);
+
+  // Called when the API call ends to check whether it succeeded, and decide
+  // which of the following 2 process functions to call. Should be overriden by
+  // subclasses if the expected success response code is not 200 or 204.
+  virtual bool IsExpectedSuccessCode(int code) const;
 
   // Sub-classes can expose an appropriate observer interface by implementing
   // these template methods.

@@ -54,6 +54,7 @@ class MockApiCallFlow : public OAuth2ApiCallFlow {
 
   MOCK_METHOD0(CreateApiCallUrl, GURL());
   MOCK_METHOD0(CreateApiCallBody, std::string());
+  MOCK_METHOD0(CreateApiCallHeaders, net::HttpRequestHeaders());
   MOCK_METHOD2(ProcessApiCallSuccess,
                void(const network::mojom::URLResponseHead* head,
                     std::unique_ptr<std::string> body));
@@ -92,11 +93,13 @@ class OAuth2ApiCallFlowTest : public testing::Test {
         network::URLLoaderCompletionStatus(error));
   }
 
+ protected:
   void SetupApiCall(bool succeeds, net::HttpStatusCode status) {
     std::string body(CreateBody());
     GURL url(CreateApiUrl());
     EXPECT_CALL(flow_, CreateApiCallBody()).WillOnce(Return(body));
     EXPECT_CALL(flow_, CreateApiCallUrl()).WillOnce(Return(url));
+    EXPECT_CALL(flow_, CreateApiCallHeaders());
 
     AddFetchResult(url, succeeds, status, std::string());
   }
@@ -148,5 +151,41 @@ TEST_F(OAuth2ApiCallFlowTest, ExpectedHTTPHeaders) {
   EXPECT_TRUE(
       pending[0].request.headers.GetHeader("Authorization", &auth_header));
   EXPECT_EQ("Bearer access_token", auth_header);
+  EXPECT_EQ(body, network::GetUploadData(pending[0].request));
+}
+
+net::HttpRequestHeaders CreateHeaders() {
+  net::HttpRequestHeaders headers;
+  headers.SetHeader("Test-Header-Field", "test content");
+  return headers;
+}
+
+TEST_F(OAuth2ApiCallFlowTest, ExpectedMultipleHTTPHeaders) {
+  std::string body = CreateBody();
+  GURL url(CreateApiUrl());
+  SetupApiCall(true, net::HTTP_OK);
+
+  // Overwrite EXPECT_CALL default return so that we get multiple headers.
+  ON_CALL(flow_, CreateApiCallHeaders).WillByDefault(Return(CreateHeaders()));
+
+  // ... never mind the HTTP response part of the setup --- don't want
+  // TestURLLoaderFactory replying to it just yet as it would prevent examining
+  // the request headers.
+  test_url_loader_factory_.ClearResponses();
+
+  flow_.Start(shared_factory_, kAccessToken);
+  const std::vector<network::TestURLLoaderFactory::PendingRequest>& pending =
+      *test_url_loader_factory_.pending_requests();
+  ASSERT_EQ(1u, pending.size());
+  EXPECT_EQ(url, pending[0].request.url);
+
+  const auto& headers = pending[0].request.headers;
+  std::string auth_header;
+  EXPECT_TRUE(headers.GetHeader("Authorization", &auth_header));
+  EXPECT_EQ("Bearer access_token", auth_header);
+  std::string test_header_content;
+  EXPECT_TRUE(headers.GetHeader("Test-Header-Field", &test_header_content));
+  EXPECT_EQ("test content", test_header_content);
+
   EXPECT_EQ(body, network::GetUploadData(pending[0].request));
 }
