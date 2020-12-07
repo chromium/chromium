@@ -168,7 +168,7 @@ bool AccountConsistencyModeManager::ShouldBuildServiceForProfile(
   // causes crashes if the AccountConsistencyModeManager is instantiated. See
   // https://crbug.com/940026
   return profile->IsRegularProfile() && !profile->IsGuestSession() &&
-         !profile->IsEphemeralGuestProfile() && !profile->IsSystemProfile();
+         !profile->IsSystemProfile();
 }
 
 AccountConsistencyMethod

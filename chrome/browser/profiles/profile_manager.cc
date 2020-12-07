@@ -1898,7 +1898,8 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
 
 void ProfileManager::SetNonPersonalProfilePrefs(Profile* profile) {
   PrefService* prefs = profile->GetPrefs();
-  prefs->SetBoolean(prefs::kSigninAllowed, false);
+  if (!profile->IsEphemeralGuestProfile())
+    prefs->SetBoolean(prefs::kSigninAllowed, false);
   prefs->SetBoolean(bookmarks::prefs::kEditBookmarksEnabled, false);
   prefs->SetBoolean(bookmarks::prefs::kShowBookmarkBar, false);
   prefs->ClearPref(DefaultSearchManager::kDefaultSearchProviderDataPrefName);
