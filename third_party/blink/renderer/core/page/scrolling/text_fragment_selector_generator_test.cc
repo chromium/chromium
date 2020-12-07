@@ -872,6 +872,76 @@ TEST_F(TextFragmentSelectorGeneratorTest, EndIsStartofNextBlock) {
   VerifySelector(start, end, "First%20paragraph,-Second");
 }
 
+// Check the case when parent of selection start is a sibling of a node where
+// selection ends.
+//   :root
+//  /      \
+// div      p
+//  |       |
+//  p      "]Second"
+//  |
+// "[First..."
+// Where [] indicate selection. In this case, when the selection is adjusted, we
+// want to ensure it correctly traverses the tree back to the previous text node
+// and not to the <div>(sibling of second <p>).
+//
+// crbug.com/1154308 - checks the use of Previous instead of
+// PreviousSkippingChildren in TextFragmentSelectorGenerator::AdjustSelection
+TEST_F(TextFragmentSelectorGeneratorTest, PrevNodeIsSiblingsChild) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+
+  // HTML is intentionally not formatted. Adding new lines and itendation
+  // creates empty text nodes which changes the dom tree.
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+  <div><p id='start'>First paragraph</p></div><p id='end'>Second paragraph</p>
+  )HTML");
+  GetDocument().UpdateStyleAndLayoutTree();
+  Node* first_paragraph = GetDocument().getElementById("start")->firstChild();
+  Node* second_paragraph = GetDocument().getElementById("end");
+  const auto& start = Position(first_paragraph, 0);
+  const auto& end = Position(second_paragraph, 0);
+  ASSERT_EQ("First paragraph\n\n", PlainText(EphemeralRange(start, end)));
+
+  VerifySelector(start, end, "First%20paragraph,-Second");
+}
+
+// Check the case when parent of selection start is a sibling of a node where
+// selection ends.
+//    :root
+//  /    |     \
+// div  div     p
+//  |    |       \
+//  p   "test"   "]Second"
+//  |
+//"[First..."
+//
+// Where [] indicate selection. In this case, when the selection is adjusted, we
+// want to ensure it correctly traverses the tree back to the previous text by
+// correctly skipping the invisible div but not skipping the second <p>.
+//
+// crbug.com/1154308 - checks the use of Previous instead of
+// PreviousSkippingChildren in FindBuffer::BackwardVisibleTextNode
+TEST_F(TextFragmentSelectorGeneratorTest, PrevPrevNodeIsSiblingsChild) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  // HTML is intentionally not formatted. Adding new lines and itendation
+  // creates empty text nodes which changes the dom tree.
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+  <div><p id='start'>First paragraph</p></div><div style='display:none'>test</div><p id='end'>Second paragraph</p>
+  )HTML");
+  GetDocument().UpdateStyleAndLayoutTree();
+  Node* first_paragraph = GetDocument().getElementById("start")->firstChild();
+  Node* second_paragraph = GetDocument().getElementById("end");
+  const auto& start = Position(first_paragraph, 0);
+  const auto& end = Position(second_paragraph, 0);
+  ASSERT_EQ("First paragraph\n\n", PlainText(EphemeralRange(start, end)));
+
+  VerifySelector(start, end, "First%20paragraph,-Second");
+}
+
 // Checks that for short selection that have nested block element range selector
 // is used.
 TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_SameNode_Interrupted) {
