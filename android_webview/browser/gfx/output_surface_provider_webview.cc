@@ -13,6 +13,7 @@
 #include "android_webview/browser/gfx/skia_output_surface_dependency_webview.h"
 #include "android_webview/browser/gfx/task_queue_web_view.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "components/viz/common/features.h"
@@ -20,6 +21,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/single_task_sequence.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/init/gl_factory.h"
@@ -62,6 +64,10 @@ OutputSurfaceProviderWebview::OutputSurfaceProviderWebview(
   LOG_IF(FATAL, enable_vulkan_ && !renderer_settings_.use_skia_renderer)
       << "--webview-enable-vulkan only works with skia renderer "
          "(--enable-features=UseSkiaRenderer).";
+
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  debug_settings_.tint_composited_content =
+      command_line->HasSwitch(switches::kTintCompositedContent);
 
   InitializeContext();
 }
