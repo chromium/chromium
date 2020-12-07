@@ -7732,6 +7732,15 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
   }
 }
 
+#if defined(OS_CHROMEOS)
+// Quite flaky: https://crbug.com/1156218
+#define MAYBE_StorageModificationAfterPagehideHistogram \
+  DISABLED_StorageModificationAfterPagehideHistogram
+#else
+#define MAYBE_StorageModificationAfterPagehideHistogram \
+  StorageModificationAfterPagehideHistogram
+#endif
+
 IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
                        StorageModificationAfterPagehideHistogram) {
   ASSERT_TRUE(embedded_test_server()->Start());
