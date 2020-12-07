@@ -362,34 +362,45 @@
     converter: {
     },
 
-    // Options used for properties that depend on writing-mode and/or
-    // text-direction (e.g. css-logical).
-    direction_aware_options: {
-      // The name of the mapping function used to convert from a logical
-      // property to a physical property. Corresponds to a function in
-      // CSSDirectionAwareResolver. E.g. a value of "baz" corresponds to
-      // CSSDirectionAwareResolver::ResolveBaz(...).
-      resolver: {
-        valid_type: "str",
-        valid_values: ["inline-start", "inline-end", "block-start", "block-end",
-                       "inline", "block"],
-      },
-      // The name of the physical property group to pass to the resolver.
-      // The group represents the physical part of the "logical property group"
-      // described by css-logical [1].
+    // - logical_property_group: used for properties that depend on writing-mode
+    // and/or text-direction (e.g. css-logical), and for their physical counterparts.
+    // Represents the "logical property group" described by css-logical
+    // (https://drafts.csswg.org/css-logical/#logical-property-group).
+    logical_property_group: {
+      // A name identifying the logical property group. All logical and physical
+      // properties in the same group should have the same name.
       //
-      // In terms of code generation, each value corresponds to a function in
-      // CSSDirectionAwareResolver. E.g. a value of "foo-bar" would correspond
-      // to CSSDirectionAwareResolver::FooBarGroup().
-      //
-      // [1] https://drafts.csswg.org/css-logical/#logical-property-group
-      physical_group: {
+      // In terms of code generation, each value corresponds to 2 functions in
+      // CSSDirectionAwareResolver. E.g. a value of "foo-bar" would correspond to:
+      // - CSSDirectionAwareResolver::LogicalFooBarMapping(), containing the
+      //   properties of the group with a flow-relative mapping logic.
+      // - CSSDirectionAwareResolver::PhysicalFooBarMapping(), containing the
+      //   properties of the group with a physical mapping logic.
+      name: {
         valid_type: "str",
         valid_values: ["border", "border-color", "border-style", "border-width",
                        "inset", "margin", "max-size",
                        "min-size", "overflow", "padding", "scroll-margin",
                        "scroll-padding", "size", "visited-border-color"],
-      }
+      },
+      // The name of the mapping function used to convert between equivalent
+      // logical and physical properties within the same group. Corresponds to
+      // a function in CSSDirectionAwareResolver. E.g. a value of "baz"
+      // corresponds to CSSDirectionAwareResolver::ResolveBaz(...).
+      //
+      // Also identifies the mapping logic of the group
+      // (https://drafts.csswg.org/css-logical-1/#mapping-logic)
+      resolver: {
+        valid_type: "str",
+        valid_values: [
+          // Mapping logic: flow-relative (logical)
+          "block", "inline",
+          "block-start", "block-end", "inline-start", "inline-end",
+          // Mapping logic: physical
+          "vertical", "horizontal",
+          "top", "bottom", "left", "right",
+        ],
+      },
     },
 
     // - surrogate_for: "other-property"
@@ -405,7 +416,7 @@
     //  * inline-size (surrogate for width, or height)
     //  * All css-logical propeties in general
     //
-    // Note that for properties that use direction_aware_options,
+    // Note that for properties that use logical_property_group,
     // 'surrogate_for' should not be set, as the mapping is determined at
     // run-time (depending og e.g. 'direction').
     surrogate_for: {
@@ -1317,6 +1328,10 @@
       valid_for_first_letter: true,
       is_border: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "border-color",
+        resolver: "bottom",
+      },
     },
     {
       name: "border-bottom-left-radius",
@@ -1363,6 +1378,10 @@
       valid_for_first_letter: true,
       is_border: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "border-style",
+        resolver: "bottom",
+      },
     },
     {
       name: "border-bottom-width",
@@ -1380,6 +1399,10 @@
       valid_for_first_letter: true,
       is_border: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "border-width",
+        resolver: "bottom",
+      },
     },
     {
       name: "border-collapse",
@@ -1467,6 +1490,10 @@
       valid_for_first_letter: true,
       is_border: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "border-color",
+        resolver: "left",
+      },
     },
     {
       name: "border-left-style",
@@ -1483,6 +1510,10 @@
       valid_for_first_letter: true,
       is_border: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "border-style",
+        resolver: "left",
+      },
     },
     {
       name: "border-left-width",
@@ -1500,6 +1531,10 @@
       valid_for_first_letter: true,
       is_border: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "border-width",
+        resolver: "left",
+      },
     },
     {
       name: "border-right-color",
@@ -1518,6 +1553,10 @@
       valid_for_first_letter: true,
       is_border: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "border-color",
+        resolver: "right",
+      },
     },
     {
       name: "border-right-style",
@@ -1534,6 +1573,10 @@
       valid_for_first_letter: true,
       is_border: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "border-style",
+        resolver: "right",
+      },
     },
     {
       name: "border-right-width",
@@ -1551,6 +1594,10 @@
       valid_for_first_letter: true,
       is_border: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "border-width",
+        resolver: "right",
+      },
     },
     {
       name: "border-top-color",
@@ -1569,6 +1616,10 @@
       valid_for_first_letter: true,
       is_border: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "border-color",
+        resolver: "top",
+      },
     },
     {
       name: "border-top-left-radius",
@@ -1615,6 +1666,10 @@
       valid_for_first_letter: true,
       is_border: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "border-style",
+        resolver: "top",
+      },
     },
     {
       name: "border-top-width",
@@ -1632,6 +1687,10 @@
       valid_for_first_letter: true,
       is_border: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "border-width",
+        resolver: "top",
+      },
     },
     {
       name: "bottom",
@@ -1645,6 +1704,10 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthOrAuto",
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "inset",
+        resolver: "bottom",
+      },
     },
     {
       name: "box-shadow",
@@ -2243,6 +2306,10 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthSizing",
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "size",
+        resolver: "vertical",
+      },
     },
     {
       name: "hyphens",
@@ -2335,6 +2402,10 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthOrAuto",
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "inset",
+        resolver: "left",
+      },
     },
     {
       name: "letter-spacing",
@@ -2455,6 +2526,10 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "margin",
+        resolver: "bottom",
+      },
     },
     {
       name: "margin-left",
@@ -2470,6 +2545,10 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "margin",
+        resolver: "left",
+      },
     },
     {
       name: "margin-right",
@@ -2485,6 +2564,10 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "margin",
+        resolver: "right",
+      },
     },
     {
       name: "margin-top",
@@ -2500,6 +2583,10 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "margin",
+        resolver: "top",
+      },
     },
     {
       name: "marker-end",
@@ -2577,6 +2664,10 @@
       keywords: ["none"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "max-size",
+        resolver: "vertical",
+      },
     },
     {
       name: "max-width",
@@ -2590,6 +2681,10 @@
       keywords: ["none"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "max-size",
+        resolver: "horizontal",
+      },
     },
     {
       name: "min-height",
@@ -2602,6 +2697,10 @@
       converter: "ConvertLengthSizing",
       typedom_types: ["Length", "Percentage"],
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "min-size",
+        resolver: "vertical",
+      },
     },
     {
       name: "min-width",
@@ -2614,6 +2713,10 @@
       converter: "ConvertLengthSizing",
       typedom_types: ["Length", "Percentage"],
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "min-size",
+        resolver: "horizontal",
+      },
     },
     {
       name: "mix-blend-mode",
@@ -2849,17 +2952,17 @@
     },
     {
       name: "overflow-inline",
-      direction_aware_options: {
+      logical_property_group: {
+        name: "overflow",
         resolver: "inline",
-        physical_group: "overflow",
       },
       runtime_flag: "CSSLogicalOverflow",
     },
     {
       name: "overflow-block",
-      direction_aware_options: {
+      logical_property_group: {
+        name: "overflow",
         resolver: "block",
-        physical_group: "overflow",
       },
       runtime_flag: "CSSLogicalOverflow",
     },
@@ -2884,6 +2987,10 @@
       typedom_types: ["Keyword"],
       default_value: "visible",
       type_name: "EOverflow",
+      logical_property_group: {
+        name: "overflow",
+        resolver: "horizontal",
+      },
     },
     {
       name: "overflow-y",
@@ -2895,19 +3002,23 @@
       typedom_types: ["Keyword"],
       default_value: "visible",
       type_name: "EOverflow",
+      logical_property_group: {
+        name: "overflow",
+        resolver: "vertical",
+      },
     },
     {
       name: "overscroll-behavior-inline",
-      direction_aware_options: {
+      logical_property_group: {
+        name: "overscroll-behavior",
         resolver: "inline",
-        physical_group: "overscroll-behavior",
       },
     },
     {
       name: "overscroll-behavior-block",
-      direction_aware_options: {
+      logical_property_group: {
+        name: "overscroll-behavior",
         resolver: "block",
-        physical_group: "overscroll-behavior",
       },
     },
     {
@@ -2917,7 +3028,11 @@
       keywords: ["auto", "contain", "none"],
       default_value: "auto",
       type_name: "EOverscrollBehavior",
-      typedom_types: ["Keyword"]
+      typedom_types: ["Keyword"],
+      logical_property_group: {
+        name: "overscroll-behavior",
+        resolver: "horizontal",
+      },
     },
     {
       name: "overscroll-behavior-y",
@@ -2926,7 +3041,11 @@
       keywords: ["auto", "contain", "none"],
       default_value: "auto",
       type_name: "EOverscrollBehavior",
-      typedom_types: ["Keyword"]
+      typedom_types: ["Keyword"],
+      logical_property_group: {
+        name: "overscroll-behavior",
+        resolver: "vertical",
+      },
     },
     {
       name: "padding-bottom",
@@ -2941,6 +3060,10 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "padding",
+        resolver: "bottom",
+      },
     },
     {
       name: "padding-left",
@@ -2955,6 +3078,10 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "padding",
+        resolver: "left",
+      },
     },
     {
       name: "padding-right",
@@ -2969,6 +3096,10 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "padding",
+        resolver: "right",
+      },
     },
     {
       name: "padding-top",
@@ -2983,6 +3114,10 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "padding",
+        resolver: "top",
+      },
     },
     {
       name: "page",
@@ -3112,6 +3247,10 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthOrAuto",
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "inset",
+        resolver: "right",
+      },
     },
     {
       name: "r",
@@ -3180,9 +3319,9 @@
     {
       name: "scroll-margin-block-end",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "scroll-margin",
         resolver: "block-end",
-        physical_group: "scroll-margin",
       },
       typedom_types: ["Keyword", "Length"]
     },
@@ -3201,9 +3340,9 @@
     {
       name: "scroll-margin-block-start",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "scroll-margin",
         resolver: "block-start",
-        physical_group: "scroll-margin",
       },
       typedom_types: ["Keyword", "Length"]
     },
@@ -3215,23 +3354,27 @@
       default_value: "0.0f",
       type_name: "float",
       converter: "ConvertComputedLength<float>",
-      typedom_types: ["Keyword", "Length"]
+      typedom_types: ["Keyword", "Length"],
+      logical_property_group: {
+        name: "scroll-margin",
+        resolver: "bottom",
+      },
     },
     {
       name: "scroll-margin-inline-end",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "scroll-margin",
         resolver: "inline-end",
-        physical_group: "scroll-margin",
       },
       typedom_types: ["Keyword", "Length"]
     },
     {
       name: "scroll-margin-inline-start",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "scroll-margin",
         resolver: "inline-start",
-        physical_group: "scroll-margin",
       },
       typedom_types: ["Keyword", "Length"]
     },
@@ -3243,7 +3386,11 @@
       default_value: "0.0f",
       type_name: "float",
       converter: "ConvertComputedLength<float>",
-      typedom_types: ["Keyword", "Length"]
+      typedom_types: ["Keyword", "Length"],
+      logical_property_group: {
+        name: "scroll-margin",
+        resolver: "left",
+      },
     },
     {
       name: "scroll-margin-right",
@@ -3253,7 +3400,11 @@
       default_value: "0.0f",
       type_name: "float",
       converter: "ConvertComputedLength<float>",
-      typedom_types: ["Keyword", "Length"]
+      typedom_types: ["Keyword", "Length"],
+      logical_property_group: {
+        name: "scroll-margin",
+        resolver: "right",
+      },
     },
     {
       name: "scroll-margin-top",
@@ -3263,7 +3414,11 @@
       default_value: "0.0f",
       type_name: "float",
       converter: "ConvertComputedLength<float>",
-      typedom_types: ["Keyword", "Length"]
+      typedom_types: ["Keyword", "Length"],
+      logical_property_group: {
+        name: "scroll-margin",
+        resolver: "top",
+      },
     },
     {
       name: "scroll-padding-block-end",
@@ -3273,9 +3428,9 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       type_name: "Length",
       converter: "ConvertLengthOrAuto",
-      direction_aware_options: {
+      logical_property_group: {
+        name: "scroll-padding",
         resolver: "block-end",
-        physical_group: "scroll-padding",
       },
     },
     {
@@ -3286,9 +3441,9 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       type_name: "Length",
       converter: "ConvertLengthOrAuto",
-      direction_aware_options: {
+      logical_property_group: {
+        name: "scroll-padding",
         resolver: "block-start",
-        physical_group: "scroll-padding",
       },
     },
     {
@@ -3300,6 +3455,10 @@
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthOrAuto",
+      logical_property_group: {
+        name: "scroll-padding",
+        resolver: "bottom",
+      },
     },
     {
       name: "scroll-padding-inline-end",
@@ -3309,9 +3468,9 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       type_name: "Length",
       converter: "ConvertLengthOrAuto",
-      direction_aware_options: {
+      logical_property_group: {
+        name: "scroll-padding",
         resolver: "inline-end",
-        physical_group: "scroll-padding",
       },
     },
     {
@@ -3322,9 +3481,9 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       type_name: "Length",
       converter: "ConvertLengthOrAuto",
-      direction_aware_options: {
+      logical_property_group: {
+        name: "scroll-padding",
         resolver: "inline-start",
-        physical_group: "scroll-padding",
       },
     },
     {
@@ -3336,6 +3495,10 @@
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthOrAuto",
+      logical_property_group: {
+        name: "scroll-padding",
+        resolver: "left",
+      },
     },
     {
       name: "scroll-padding-right",
@@ -3346,6 +3509,10 @@
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthOrAuto",
+      logical_property_group: {
+        name: "scroll-padding",
+        resolver: "right",
+      },
     },
     {
       name: "scroll-padding-top",
@@ -3356,6 +3523,10 @@
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthOrAuto",
+      logical_property_group: {
+        name: "scroll-padding",
+        resolver: "top",
+      },
     },
     {
       name: "scroll-snap-align",
@@ -3825,6 +3996,10 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthOrAuto",
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "inset",
+        resolver: "top",
+      },
     },
     {
       name: "touch-action",
@@ -4624,6 +4799,10 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthSizing",
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "size",
+        resolver: "horizontal",
+      },
     },
     {
       name: "will-change",
@@ -4675,9 +4854,9 @@
       name: "inline-size",
       property_methods: ["ParseSingleValue"],
       layout_dependent: true,
-      direction_aware_options: {
+      logical_property_group: {
+        name: "size",
         resolver: "inline",
-        physical_group: "size",
       },
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length", "Percentage"],
@@ -4686,9 +4865,9 @@
       name: "block-size",
       property_methods: ["ParseSingleValue"],
       layout_dependent: true,
-      direction_aware_options: {
+      logical_property_group: {
+        name: "size",
         resolver: "block",
-        physical_group: "size",
       },
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length", "Percentage"],
@@ -4696,27 +4875,27 @@
     {
       name: "min-inline-size",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "min-size",
         resolver: "inline",
-        physical_group: "min-size",
       },
       typedom_types: ["Length", "Percentage"],
     },
     {
       name: "min-block-size",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "min-size",
         resolver: "block",
-        physical_group: "min-size",
       },
       typedom_types: ["Length", "Percentage"],
     },
     {
       name: "max-inline-size",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "max-size",
         resolver: "inline",
-        physical_group: "max-size",
       },
       keywords: ["none"],
       typedom_types: ["Keyword", "Length", "Percentage"],
@@ -4724,9 +4903,9 @@
     {
       name: "max-block-size",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "max-size",
         resolver: "block",
-        physical_group: "max-size",
       },
       keywords: ["none"],
       typedom_types: ["Keyword", "Length", "Percentage"],
@@ -4735,9 +4914,9 @@
       name: "margin-inline-start",
       layout_dependent: true,
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "margin",
         resolver: "inline-start",
-        physical_group: "margin",
       },
       typedom_types: ["Length", "Percentage"],
       keywords: ["auto"],
@@ -4747,9 +4926,9 @@
       name: "margin-inline-end",
       layout_dependent: true,
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "margin",
         resolver: "inline-end",
-        physical_group: "margin",
       },
       typedom_types: ["Length", "Percentage"],
       keywords: ["auto"],
@@ -4759,9 +4938,9 @@
       name: "margin-block-start",
       layout_dependent: true,
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "margin",
         resolver: "block-start",
-        physical_group: "margin",
       },
       typedom_types: ["Length", "Percentage"],
       keywords: ["auto"],
@@ -4771,9 +4950,9 @@
       name: "margin-block-end",
       layout_dependent: true,
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "margin",
         resolver: "block-end",
-        physical_group: "margin",
       },
       typedom_types: ["Length", "Percentage"],
       keywords: ["auto"],
@@ -4783,9 +4962,9 @@
       name: "padding-inline-start",
       layout_dependent: true,
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "padding",
         resolver: "inline-start",
-        physical_group: "padding",
       },
       typedom_types: ["Length", "Percentage"]
     },
@@ -4793,9 +4972,9 @@
       name: "padding-inline-end",
       layout_dependent: true,
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "padding",
         resolver: "inline-end",
-        physical_group: "padding",
       },
       typedom_types: ["Length", "Percentage"]
     },
@@ -4803,9 +4982,9 @@
       name: "padding-block-start",
       layout_dependent: true,
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "padding",
         resolver: "block-start",
-        physical_group: "padding",
       },
       typedom_types: ["Length", "Percentage"]
     },
@@ -4813,149 +4992,149 @@
       name: "padding-block-end",
       layout_dependent: true,
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "padding",
         resolver: "block-end",
-        physical_group: "padding",
       },
       typedom_types: ["Length", "Percentage"]
     },
     {
       name: "border-inline-start-width",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "border-width",
         resolver: "inline-start",
-        physical_group: "border-width",
       },
       valid_for_first_letter: true,
     },
     {
       name: "border-inline-start-style",
-      direction_aware_options: {
+      logical_property_group: {
+        name: "border-style",
         resolver: "inline-start",
-        physical_group: "border-style",
       },
       valid_for_first_letter: true,
     },
     {
       name: "border-inline-start-color",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "border-color",
         resolver: "inline-start",
-        physical_group: "border-color",
       },
       valid_for_first_letter: true,
     },
     {
       name: "border-inline-end-width",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "border-width",
         resolver: "inline-end",
-        physical_group: "border-width",
       },
       valid_for_first_letter: true,
     },
     {
       name: "border-inline-end-style",
-      direction_aware_options: {
+      logical_property_group: {
+        name: "border-style",
         resolver: "inline-end",
-        physical_group: "border-style",
       },
       valid_for_first_letter: true,
     },
     {
       name: "border-inline-end-color",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "border-color",
         resolver: "inline-end",
-        physical_group: "border-color",
       },
       valid_for_first_letter: true,
     },
     {
       name: "border-block-start-width",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "border-width",
         resolver: "block-start",
-        physical_group: "border-width",
       },
       valid_for_first_letter: true,
     },
     {
       name: "border-block-start-style",
-      direction_aware_options: {
+      logical_property_group: {
+        name: "border-style",
         resolver: "block-start",
-        physical_group: "border-style",
       },
       valid_for_first_letter: true,
     },
     {
       name: "border-block-start-color",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "border-color",
         resolver: "block-start",
-        physical_group: "border-color",
       },
       valid_for_first_letter: true,
     },
     {
       name: "border-block-end-width",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "border-width",
         resolver: "block-end",
-        physical_group: "border-width",
       },
       valid_for_first_letter: true,
     },
     {
       name: "border-block-end-style",
-      direction_aware_options: {
+      logical_property_group: {
+        name: "border-style",
         resolver: "block-end",
-        physical_group: "border-style",
       },
       valid_for_first_letter: true,
     },
     {
       name: "border-block-end-color",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "border-color",
         resolver: "block-end",
-        physical_group: "border-color",
       },
       valid_for_first_letter: true,
     },
     {
       name: "inset-inline-start",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "inset",
         resolver: "inline-start",
-        physical_group: "inset",
       },
       typedom_types: ["Length", "Percentage"]
     },
     {
       name: "inset-inline-end",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "inset",
         resolver: "inline-end",
-        physical_group: "inset",
       },
       typedom_types: ["Length", "Percentage"]
     },
     {
       name: "inset-block-start",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "inset",
         resolver: "block-start",
-        physical_group: "inset",
       },
       typedom_types: ["Length", "Percentage"]
     },
     {
       name: "inset-block-end",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "inset",
         resolver: "block-end",
-        physical_group: "inset",
       },
       typedom_types: ["Length", "Percentage"]
     },
@@ -5327,9 +5506,9 @@
         "border-block-end-color"
       ],
       property_methods: ["ParseShorthand"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "border",
         resolver: "block-end",
-        physical_group: "border",
       },
     },
     {
@@ -5339,9 +5518,9 @@
         "border-block-start-color"
       ],
       property_methods: ["ParseShorthand"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "border",
         resolver: "block-start",
-        physical_group: "border",
       },
     },
     {
@@ -5360,6 +5539,10 @@
         "border-bottom-width", "border-bottom-style", "border-bottom-color"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      logical_property_group: {
+        name: "border",
+        resolver: "bottom",
+      },
     },
     {
       name: "border-color",
@@ -5397,9 +5580,9 @@
         "border-inline-end-color"
       ],
       property_methods: ["ParseShorthand"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "border",
         resolver: "inline-end",
-        physical_group: "border",
       },
     },
     {
@@ -5409,9 +5592,9 @@
         "border-inline-start-color"
       ],
       property_methods: ["ParseShorthand"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "border",
         resolver: "inline-start",
-        physical_group: "border",
       },
     },
     {
@@ -5430,6 +5613,10 @@
         "border-left-width", "border-left-style", "border-left-color"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      logical_property_group: {
+        name: "border",
+        resolver: "left",
+      },
     },
     {
       name: "border-radius",
@@ -5445,6 +5632,10 @@
         "border-right-width", "border-right-style", "border-right-color"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      logical_property_group: {
+        name: "border",
+        resolver: "right",
+      },
     },
     {
       name: "border-spacing",
@@ -5466,6 +5657,10 @@
       name: "border-top",
       longhands: ["border-top-width", "border-top-style", "border-top-color"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      logical_property_group: {
+        name: "border",
+        resolver: "top",
+      },
     },
     {
       name: "border-width",
@@ -5881,6 +6076,10 @@
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
       valid_for_first_letter: true,
+      logical_property_group: {
+        name: "visited-border-color",
+        resolver: "left",
+      },
     },
     {
       name: "-internal-visited-border-right-color",
@@ -5895,6 +6094,10 @@
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
       valid_for_first_letter: true,
+      logical_property_group: {
+        name: "visited-border-color",
+        resolver: "right",
+      },
     },
     {
       name: "-internal-visited-border-top-color",
@@ -5909,6 +6112,10 @@
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
       valid_for_first_letter: true,
+      logical_property_group: {
+        name: "visited-border-color",
+        resolver: "top",
+      },
     },
     {
       name: "-internal-visited-border-bottom-color",
@@ -5923,14 +6130,18 @@
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
       valid_for_first_letter: true,
+      logical_property_group: {
+        name: "visited-border-color",
+        resolver: "bottom",
+      },
     },
     {
       name: "-internal-visited-border-inline-start-color",
       visited_property_for: "border-inline-start-color",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "visited-border-color",
         resolver: "inline-start",
-        physical_group: "visited-border-color",
       },
       valid_for_first_letter: true,
     },
@@ -5938,9 +6149,9 @@
       name: "-internal-visited-border-inline-end-color",
       visited_property_for: "border-inline-end-color",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "visited-border-color",
         resolver: "inline-end",
-        physical_group: "visited-border-color",
       },
       valid_for_first_letter: true,
     },
@@ -5948,9 +6159,9 @@
       name: "-internal-visited-border-block-start-color",
       visited_property_for: "border-block-start-color",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "visited-border-color",
         resolver: "block-start",
-        physical_group: "visited-border-color",
       },
       valid_for_first_letter: true,
     },
@@ -5958,9 +6169,9 @@
       name: "-internal-visited-border-block-end-color",
       visited_property_for: "border-block-end-color",
       property_methods: ["ParseSingleValue"],
-      direction_aware_options: {
+      logical_property_group: {
+        name: "visited-border-color",
         resolver: "block-end",
-        physical_group: "visited-border-color",
       },
       valid_for_first_letter: true,
     },

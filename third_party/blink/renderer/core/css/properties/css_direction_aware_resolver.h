@@ -11,65 +11,130 @@
 
 namespace blink {
 
+enum class CSSPropertyID;
 class CSSProperty;
 class StylePropertyShorthand;
 
 class CSSDirectionAwareResolver {
   STATIC_ONLY(CSSDirectionAwareResolver);
 
- public:
-  // A group of physical properties that's used by the 'Resolve*' functions
-  // to convert a direction-aware property into a physical property.
+ private:
   template <size_t size>
-  class PhysicalGroup {
+  class Group {
    public:
-    PhysicalGroup(const StylePropertyShorthand&);
-    PhysicalGroup(const CSSProperty* (&properties)[size]);
+    explicit Group(const StylePropertyShorthand&);
+    explicit Group(const CSSProperty* (&properties)[size]);
     const CSSProperty& GetProperty(size_t index) const;
+    bool Contains(CSSPropertyID) const;
 
    private:
     const CSSProperty** properties_;
   };
 
-  static PhysicalGroup<4> BorderGroup();
-  static PhysicalGroup<4> BorderColorGroup();
-  static PhysicalGroup<4> BorderStyleGroup();
-  static PhysicalGroup<4> BorderWidthGroup();
-  static PhysicalGroup<4> InsetGroup();
-  static PhysicalGroup<4> MarginGroup();
-  static PhysicalGroup<2> MaxSizeGroup();
-  static PhysicalGroup<2> MinSizeGroup();
-  static PhysicalGroup<2> OverflowGroup();
-  static PhysicalGroup<2> OverscrollBehaviorGroup();
-  static PhysicalGroup<4> PaddingGroup();
-  static PhysicalGroup<4> ScrollMarginGroup();
-  static PhysicalGroup<4> ScrollPaddingGroup();
-  static PhysicalGroup<2> SizeGroup();
-  static PhysicalGroup<4> VisitedBorderColorGroup();
+ public:
+  // A group of logical properties that's used by the 'Resolve*' functions
+  // to convert a physical property into a direction-aware property.
+  // It represents the properties in a logical property group [1] with
+  // a flow-relative mapping logic [2].
+  // [1]: https://drafts.csswg.org/css-logical/#logical-property-group
+  // [2]: https://drafts.csswg.org/css-logical/#mapping-logic
+  template <size_t size>
+  class LogicalMapping : public Group<size> {
+    using Group<size>::Group;
+  };
 
-  // These resolvers expect a PhysicalGroup with box sides, in the following
+  // A group of physical properties that's used by the 'Resolve*' functions
+  // to convert a direction-aware property into a physical property.
+  // It represents the properties in a logical property group [1] with
+  // a physical mapping logic [2].
+  // [1]: https://drafts.csswg.org/css-logical/#logical-property-group
+  // [2]: https://drafts.csswg.org/css-logical/#mapping-logic
+  template <size_t size>
+  class PhysicalMapping : public Group<size> {
+    using Group<size>::Group;
+  };
+
+  static LogicalMapping<4> LogicalBorderMapping();
+  static LogicalMapping<4> LogicalBorderColorMapping();
+  static LogicalMapping<4> LogicalBorderStyleMapping();
+  static LogicalMapping<4> LogicalBorderWidthMapping();
+  static LogicalMapping<4> LogicalInsetMapping();
+  static LogicalMapping<4> LogicalMarginMapping();
+  static LogicalMapping<2> LogicalMaxSizeMapping();
+  static LogicalMapping<2> LogicalMinSizeMapping();
+  static LogicalMapping<2> LogicalOverflowMapping();
+  static LogicalMapping<2> LogicalOverscrollBehaviorMapping();
+  static LogicalMapping<4> LogicalPaddingMapping();
+  static LogicalMapping<4> LogicalScrollMarginMapping();
+  static LogicalMapping<4> LogicalScrollPaddingMapping();
+  static LogicalMapping<2> LogicalSizeMapping();
+  static LogicalMapping<4> LogicalVisitedBorderColorMapping();
+
+  static PhysicalMapping<4> PhysicalBorderMapping();
+  static PhysicalMapping<4> PhysicalBorderColorMapping();
+  static PhysicalMapping<4> PhysicalBorderStyleMapping();
+  static PhysicalMapping<4> PhysicalBorderWidthMapping();
+  static PhysicalMapping<4> PhysicalInsetMapping();
+  static PhysicalMapping<4> PhysicalMarginMapping();
+  static PhysicalMapping<2> PhysicalMaxSizeMapping();
+  static PhysicalMapping<2> PhysicalMinSizeMapping();
+  static PhysicalMapping<2> PhysicalOverflowMapping();
+  static PhysicalMapping<2> PhysicalOverscrollBehaviorMapping();
+  static PhysicalMapping<4> PhysicalPaddingMapping();
+  static PhysicalMapping<4> PhysicalScrollMarginMapping();
+  static PhysicalMapping<4> PhysicalScrollPaddingMapping();
+  static PhysicalMapping<2> PhysicalSizeMapping();
+  static PhysicalMapping<4> PhysicalVisitedBorderColorMapping();
+
+  // These resolvers expect a PhysicalMapping with box sides, in the following
   // order: top, right, bottom, left.
   static const CSSProperty& ResolveInlineStart(TextDirection,
                                                WritingMode,
-                                               const PhysicalGroup<4>&);
+                                               const PhysicalMapping<4>&);
   static const CSSProperty& ResolveInlineEnd(TextDirection,
                                              WritingMode,
-                                             const PhysicalGroup<4>&);
+                                             const PhysicalMapping<4>&);
   static const CSSProperty& ResolveBlockStart(TextDirection,
                                               WritingMode,
-                                              const PhysicalGroup<4>&);
+                                              const PhysicalMapping<4>&);
   static const CSSProperty& ResolveBlockEnd(TextDirection,
                                             WritingMode,
-                                            const PhysicalGroup<4>&);
+                                            const PhysicalMapping<4>&);
 
-  // These resolvers expect a PhysicalGroup with dimensions, in the following
+  // These resolvers expect a LogicalMapping with box sides, in the following
+  // order: block-start, block-end, inline-start, inline-end.
+  // TODO(layout-dev): Implement them, if needed.
+  static const CSSProperty& ResolveTop(TextDirection,
+                                       WritingMode,
+                                       const LogicalMapping<4>&);
+  static const CSSProperty& ResolveBottom(TextDirection,
+                                          WritingMode,
+                                          const LogicalMapping<4>&);
+  static const CSSProperty& ResolveLeft(TextDirection,
+                                        WritingMode,
+                                        const LogicalMapping<4>&);
+  static const CSSProperty& ResolveRight(TextDirection,
+                                         WritingMode,
+                                         const LogicalMapping<4>&);
+
+  // These resolvers expect a PhysicalMapping with dimensions, in the following
   // order: horizontal, vertical.
   static const CSSProperty& ResolveInline(TextDirection,
                                           WritingMode,
-                                          const PhysicalGroup<2>&);
+                                          const PhysicalMapping<2>&);
   static const CSSProperty& ResolveBlock(TextDirection,
                                          WritingMode,
-                                         const PhysicalGroup<2>&);
+                                         const PhysicalMapping<2>&);
+
+  // These resolvers expect a LogicalMapping with dimensions, in the following
+  // order: block, inline.
+  // TODO(layout-dev): Implement them, if needed.
+  static const CSSProperty& ResolveHorizontal(TextDirection,
+                                              WritingMode,
+                                              const LogicalMapping<2>&);
+  static const CSSProperty& ResolveVertical(TextDirection,
+                                            WritingMode,
+                                            const LogicalMapping<2>&);
 };
 
 }  // namespace blink

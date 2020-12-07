@@ -320,15 +320,27 @@ class CSSProperties(object):
         set_if_none(property_, 'custom_compare', False)
         set_if_none(property_, 'mutable', False)
 
-        if property_['direction_aware_options']:
-            if not property_['style_builder_template']:
+        if property_['logical_property_group']:
+            group = property_['logical_property_group']
+            assert 'name' in group, 'name option is required'
+            assert 'resolver' in group, 'resolver option is required'
+            logicals = {
+                'block', 'inline', 'block-start', 'block-end', 'inline-start',
+                'inline-end'
+            }
+            physicals = {
+                'vertical', 'horizontal', 'top', 'bottom', 'left', 'right'
+            }
+            if group['resolver'] in logicals:
+                group['is_logical'] = True
+            elif group['resolver'] in physicals:
+                group['is_logical'] = False
+            else:
+                assert 0, 'invalid resolver option'
+            group['name'] = NameStyleConverter(group['name'])
+            group['resolver_name'] = NameStyleConverter(group['resolver'])
+            if not property_['style_builder_template'] and group['is_logical']:
                 property_['style_builder_template'] = 'direction_aware'
-            options = property_['direction_aware_options']
-            assert 'resolver' in options, 'resolver option is required'
-            assert 'physical_group' in options, 'physical_group option is required'
-            options['resolver_name'] = NameStyleConverter(options['resolver'])
-            options['physical_group_name'] = NameStyleConverter(
-                options['physical_group'])
 
     @property
     def default_parameters(self):

@@ -8,6 +8,7 @@
 #include <memory>
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/core/css/properties/css_direction_aware_resolver.h"
 #include "third_party/blink/renderer/core/css/properties/css_unresolved_property.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -62,6 +63,9 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     return flags_ & kComputedValueComparable;
   }
   bool TakesTreeScopedValue() const { return flags_ & kTreeScopedValue; }
+  bool IsInLogicalPropertyGroup() const {
+    return flags_ & kInLogicalPropertyGroup;
+  }
 
   bool IsRepeated() const { return repetition_separator_ != '\0'; }
   char RepetitionSeparator() const { return repetition_separator_; }
@@ -99,6 +103,10 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   virtual const CSSProperty& ResolveDirectionAwareProperty(TextDirection,
                                                            WritingMode) const {
     return *this;
+  }
+  virtual bool IsInSameLogicalPropertyGroupWithDifferentMappingLogic(
+      CSSPropertyID) const {
+    return false;
   }
   virtual const CSSProperty* GetVisitedProperty() const { return nullptr; }
   virtual const CSSProperty* GetUnvisitedProperty() const { return nullptr; }
@@ -151,6 +159,8 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     kTreeScopedValue = 1 << 18,
     // https://drafts.csswg.org/css-pseudo-4/#highlight-styling
     kValidForHighlight = 1 << 19,
+    // https://drafts.csswg.org/css-logical/#logical-property-group
+    kInLogicalPropertyGroup = 1 << 20,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,

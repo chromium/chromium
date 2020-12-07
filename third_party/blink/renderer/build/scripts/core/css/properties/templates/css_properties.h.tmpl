@@ -29,7 +29,8 @@ namespace {{namespace}} {
 {% for property in properties %}
 {% set class_name = property.name.to_upper_camel_case() %}
 {% set is_alias = property.alias_for %}
-{% set is_surrogate = property.surrogate_for or property.direction_aware_options %}
+{% set is_surrogate = property.surrogate_for or
+    (property.logical_property_group and property.logical_property_group.is_logical) %}
 {% set property_id = 'CSSPropertyID::' + property.enum_key %}
 {% set separator = '\'' + (property.separator or '\\0') + '\'' %}
 {% set flags = [
@@ -51,6 +52,7 @@ namespace {{namespace}} {
   (property.computed_value_comparable and 'kComputedValueComparable' or ''),
   (property.tree_scoped_value and 'kTreeScopedValue' or ''),
   (property.valid_for_highlight and 'kValidForHighlight' or ''),
+  (property.logical_property_group and 'kInLogicalPropertyGroup' or ''),
 ] | reject('==', '') | join(' | ') %}
 {% set ctor_args = (not is_alias and [property_id, flags, separator] or []) %}
 // {{property.name}}
@@ -80,7 +82,7 @@ class {{class_name}} final : public {{property.superclass}} {
   {% if property.unvisited_property %}
   const CSSProperty* GetUnvisitedProperty() const override;
   {% endif %}
-  {% if property.surrogate_for or property.direction_aware_options %}
+  {% if is_surrogate %}
   const CSSProperty* SurrogateFor(TextDirection, blink::WritingMode) const override;
   {% endif %}
   {% for property_method in property.property_methods %}
@@ -89,7 +91,9 @@ class {{class_name}} final : public {{property.superclass}} {
   {% if property.computed_value_comparable %}
   bool ComputedValuesEqual(const ComputedStyle& a, const ComputedStyle& b) const override;
   {% endif %}
-  {% if property.direction_aware_options %}
+  {% if property.logical_property_group %}
+  bool IsInSameLogicalPropertyGroupWithDifferentMappingLogic(CSSPropertyID) const override;
+    {% if property.logical_property_group.is_logical %}
   const CSSProperty& ResolveDirectionAwareProperty(TextDirection, blink::WritingMode) const override;
   const CSSValue* CSSValueFromComputedStyleInternal(
       const ComputedStyle&,
@@ -101,6 +105,7 @@ class {{class_name}} final : public {{property.superclass}} {
     NOTREACHED();
     return nullptr;
   }
+    {% endif %}
   {% endif %}
   {% if property.style_builder_declare %}
   void ApplyInitial(StyleResolverState&) const override;

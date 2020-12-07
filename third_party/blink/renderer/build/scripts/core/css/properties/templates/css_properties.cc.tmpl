@@ -101,10 +101,11 @@ bool {{class_name}}::ComputedValuesEqual(const ComputedStyle& a, const ComputedS
     {% endif %}
 }
   {% endif %}
-  {% if property.direction_aware_options %}
-    {% set options = property.direction_aware_options %}
-    {% set resolver_name = options.resolver_name.to_upper_camel_case() %}
-    {% set physical_group_name = options.physical_group_name.to_upper_camel_case() %}
+  {% if property.logical_property_group %}
+    {% set group = property.logical_property_group %}
+    {% set group_name = group.name.to_upper_camel_case() %}
+    {% set resolver_name = group.resolver_name.to_upper_camel_case() %}
+    {% if group.is_logical %}
 const CSSProperty* {{class_name}}::SurrogateFor(TextDirection direction,
     blink::WritingMode writing_mode) const {
   return &ResolveDirectionAwareProperty(direction, writing_mode);
@@ -114,8 +115,19 @@ const CSSProperty& {{class_name}}::ResolveDirectionAwareProperty(
     TextDirection direction,
     blink::WritingMode writing_mode) const {
   return CSSDirectionAwareResolver::Resolve{{resolver_name}}(direction, writing_mode,
-      CSSDirectionAwareResolver::{{physical_group_name}}Group());
+      CSSDirectionAwareResolver::Physical{{group_name}}Mapping());
 }
+
+bool {{class_name}}::IsInSameLogicalPropertyGroupWithDifferentMappingLogic(
+    CSSPropertyID id) const {
+  return CSSDirectionAwareResolver::Physical{{group_name}}Mapping().Contains(id);
+}
+    {% else %}
+bool {{class_name}}::IsInSameLogicalPropertyGroupWithDifferentMappingLogic(
+    CSSPropertyID id) const {
+  return CSSDirectionAwareResolver::Logical{{group_name}}Mapping().Contains(id);
+}
+    {% endif %}
   {% endif %}
 
 {{style_builder_functions(property)}}
