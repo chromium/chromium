@@ -520,22 +520,6 @@ const char kBatteryChargeCustomStopCharging[] =
 // Ignored unless powerd is configured to honor charging-related prefs.
 const char kUsbPowerShareEnabled[] = "ash.power.usb_power_share_enabled";
 
-// An integer pref that specifies how many times the Assistant privacy info has
-// been shown in Launcher. This value will increment by one every time when
-// Launcher changes state from Peeking to Half or FullscreenSearch up to a
-// predefined threshold, e.g. six times. If the info has been shown for more
-// than the threshold, do not show the privacy info any more.
-const char kAssistantPrivacyInfoShownInLauncher[] =
-    "ash.launcher.assistant_privacy_info_shown";
-
-// A boolean pref that indicates whether the Assistant privacy info may be
-// displayed to user. A false value indicates that the info can be displayed if
-// the value of |kAssistantPrivacyInfoShownInLauncher| is smaller than the
-// predefined threshold. A true value implies that the user has dismissed the
-// info view, and do not show the privacy info any more.
-const char kAssistantPrivacyInfoDismissedInLauncher[] =
-    "ash.launcher.assistant_privacy_info_dismissed";
-
 // An integer pref that specifies how many times the Suggested Content privacy
 // info has been shown in Launcher. This value will increment by one every time
 // when Launcher changes state from Peeking to Half or FullscreenSearch up to a

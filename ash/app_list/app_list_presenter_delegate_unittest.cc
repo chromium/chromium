@@ -468,9 +468,8 @@ TEST_F(AppListPresenterDelegateTest, ClickSearchBoxInTabletMode) {
 TEST_F(AppListPresenterDelegateTest, RemoveSuggestionShowsConfirmDialog) {
   ShowZeroStateSearchInHalfState();
 
-  // Mark the privacy notices as dismissed so that they do not interfere with
-  // the layout.
-  Shell::Get()->app_list_controller()->MarkAssistantPrivacyInfoDismissed();
+  // Mark the suggested content info as dismissed so that it does not interfere
+  // with the layout.
   Shell::Get()->app_list_controller()->MarkSuggestedContentInfoDismissed();
   GetAppListView()
       ->app_list_main_view()

@@ -13,7 +13,6 @@ class PrivacyContainerViewTest;
 }
 
 class AppListViewDelegate;
-class AssistantPrivacyInfoView;
 class SearchResult;
 class SuggestedContentInfoView;
 
@@ -35,7 +34,6 @@ class APP_LIST_EXPORT PrivacyContainerView : public SearchResultContainerView {
   int DoUpdate() override;
 
   // Owned by views hierarchy.
-  AssistantPrivacyInfoView* assistant_privacy_info_view_ = nullptr;
   SuggestedContentInfoView* suggested_content_info_view_ = nullptr;
 
   // A skeleton result that contains an id.

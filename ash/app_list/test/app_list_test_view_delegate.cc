@@ -88,11 +88,6 @@ void AppListTestViewDelegate::SetIsTabletModeEnabled(bool is_tablet_mode) {
   is_tablet_mode_ = is_tablet_mode;
 }
 
-void AppListTestViewDelegate::SetShouldShowAssistantPrivacyInfo(
-    bool should_show) {
-  should_show_assistant_privacy_info_ = should_show;
-}
-
 void AppListTestViewDelegate::SetShouldShowSuggestedContentInfo(
     bool should_show) {
   should_show_suggested_content_info_ = should_show;
@@ -177,18 +172,10 @@ void AppListTestViewDelegate::NotifySearchResultsForLogging(
     const ash::SearchResultIdWithPositionIndices& results,
     int position_index) {}
 
-void AppListTestViewDelegate::MaybeIncreasePrivacyInfoShownCounts() {}
+void AppListTestViewDelegate::MaybeIncreaseSuggestedContentInfoShownCount() {}
 
 bool AppListTestViewDelegate::IsAssistantAllowedAndEnabled() const {
   return false;
-}
-
-bool AppListTestViewDelegate::ShouldShowAssistantPrivacyInfo() const {
-  return should_show_assistant_privacy_info_;
-}
-
-void AppListTestViewDelegate::MarkAssistantPrivacyInfoDismissed() {
-  should_show_assistant_privacy_info_ = false;
 }
 
 bool AppListTestViewDelegate::ShouldShowSuggestedContentInfo() const {

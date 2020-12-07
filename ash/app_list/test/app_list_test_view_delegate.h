@@ -54,8 +54,7 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   // Set whether tablet mode is enabled.
   void SetIsTabletModeEnabled(bool is_tablet_mode);
 
-  // Set whether the privacy notices should be shown.
-  void SetShouldShowAssistantPrivacyInfo(bool should_show);
+  // Set whether the suggested content info should be shown.
   void SetShouldShowSuggestedContentInfo(bool should_show);
 
   // AppListViewDelegate overrides:
@@ -102,10 +101,8 @@ class AppListTestViewDelegate : public AppListViewDelegate,
       const base::string16& raw_query,
       const ash::SearchResultIdWithPositionIndices& results,
       int position_index) override;
-  void MaybeIncreasePrivacyInfoShownCounts() override;
+  void MaybeIncreaseSuggestedContentInfoShownCount() override;
   bool IsAssistantAllowedAndEnabled() const override;
-  bool ShouldShowAssistantPrivacyInfo() const override;
-  void MarkAssistantPrivacyInfoDismissed() override;
   bool ShouldShowSuggestedContentInfo() const override;
   void MarkSuggestedContentInfoDismissed() override;
   void OnStateTransitionAnimationCompleted(
@@ -141,7 +138,6 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   int next_profile_app_count_ = 0;
   int show_wallpaper_context_menu_count_ = 0;
   bool is_tablet_mode_ = false;
-  bool should_show_assistant_privacy_info_ = false;
   bool should_show_suggested_content_info_ = false;
   std::map<size_t, int> open_search_result_counts_;
   std::unique_ptr<AppListTestModel> model_;

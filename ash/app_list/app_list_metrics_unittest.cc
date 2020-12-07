@@ -146,7 +146,6 @@ class AppListAppLaunchedMetricTest : public AshTestBase {
                                       ->GetView()
                                       ->app_list_main_view()
                                       ->contents_view();
-    Shell::Get()->app_list_controller()->MarkAssistantPrivacyInfoDismissed();
     Shell::Get()->app_list_controller()->MarkSuggestedContentInfoDismissed();
     contents_view->privacy_container_view()->Update();
 

@@ -208,10 +208,8 @@ class ASH_EXPORT AppListControllerImpl
       const base::string16& raw_query,
       const SearchResultIdWithPositionIndices& results,
       int position_index) override;
-  void MaybeIncreasePrivacyInfoShownCounts() override;
+  void MaybeIncreaseSuggestedContentInfoShownCount() override;
   bool IsAssistantAllowedAndEnabled() const override;
-  bool ShouldShowAssistantPrivacyInfo() const override;
-  void MarkAssistantPrivacyInfoDismissed() override;
   bool ShouldShowSuggestedContentInfo() const override;
   void MarkSuggestedContentInfoDismissed() override;
   void OnStateTransitionAnimationCompleted(AppListViewState state) override;

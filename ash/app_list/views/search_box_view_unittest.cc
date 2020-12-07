@@ -630,9 +630,9 @@ TEST_F(SearchBoxViewTest, NewSearchQueryActionRecordedWhenUserType) {
   EXPECT_EQ(2, user_action_tester.GetActionCount("AppList_SearchQueryStarted"));
 }
 
-TEST_F(SearchBoxViewTest, NavigatePrivacyNotice) {
-  // Create a new contents view that contains a privacy notice.
-  view_delegate()->SetShouldShowAssistantPrivacyInfo(true);
+TEST_F(SearchBoxViewTest, NavigateSuggestedContentInfo) {
+  // Create a new contents view that contains a suggested content info.
+  view_delegate()->SetShouldShowSuggestedContentInfo(true);
   auto* contents_view = widget()->GetContentsView()->AddChildView(
       std::make_unique<KeyPressCounterView>(app_list_view()));
   contents_view->Init(view_delegate()->GetModel());
@@ -684,9 +684,9 @@ TEST_F(SearchBoxViewTest, NavigatePrivacyNotice) {
   EXPECT_FALSE(selection);
 }
 
-TEST_F(SearchBoxViewTest, KeyboardEventClosesPrivacyNotice) {
-  // Create a new contents view that contains a privacy notice.
-  view_delegate()->SetShouldShowAssistantPrivacyInfo(true);
+TEST_F(SearchBoxViewTest, KeyboardEventClosesSuggestedContentInfo) {
+  // Create a new contents view that contains a suggested content info.
+  view_delegate()->SetShouldShowSuggestedContentInfo(true);
   auto* contents_view = widget()->GetContentsView()->AddChildView(
       std::make_unique<KeyPressCounterView>(app_list_view()));
   contents_view->Init(view_delegate()->GetModel());
@@ -707,16 +707,16 @@ TEST_F(SearchBoxViewTest, KeyboardEventClosesPrivacyNotice) {
                 ->selected_result(),
             privacy_container_view->GetResultViewAt(0));
 
-  // Navigate to the close button and press enter. The privacy info should no
-  // longer be shown.
+  // Navigate to the close button and press enter. The suggested content info
+  // should no longer be shown.
   KeyPress(ui::VKEY_TAB);
   KeyPress(ui::VKEY_RETURN);
-  EXPECT_FALSE(view_delegate()->ShouldShowAssistantPrivacyInfo());
+  EXPECT_FALSE(view_delegate()->ShouldShowSuggestedContentInfo());
 }
 
-TEST_F(SearchBoxViewTest, PrivacyViewActionNotOverriddenByNewResults) {
+TEST_F(SearchBoxViewTest, SuggestedContentActionNotOverriddenByNewResults) {
   // Create a new contents view that contains a privacy notice.
-  view_delegate()->SetShouldShowAssistantPrivacyInfo(true);
+  view_delegate()->SetShouldShowSuggestedContentInfo(true);
   auto* contents_view = widget()->GetContentsView()->AddChildView(
       std::make_unique<KeyPressCounterView>(app_list_view()));
   contents_view->Init(view_delegate()->GetModel());
@@ -756,9 +756,9 @@ TEST_F(SearchBoxViewTest, PrivacyViewActionNotOverriddenByNewResults) {
   EXPECT_EQ(selection->result()->title(), base::ASCIIToUTF16("test"));
 }
 
-TEST_F(SearchBoxViewTest, PrivacySelectionDoesNotChangeSearchBoxText) {
-  // Create a new contents view that contains a privacy notice.
-  view_delegate()->SetShouldShowAssistantPrivacyInfo(true);
+TEST_F(SearchBoxViewTest, SuggestedContentSelectionDoesNotChangeSearchBoxText) {
+  // Create a new contents view that contains a suggested content info.
+  view_delegate()->SetShouldShowSuggestedContentInfo(true);
   auto* contents_view = widget()->GetContentsView()->AddChildView(
       std::make_unique<KeyPressCounterView>(app_list_view()));
   contents_view->Init(view_delegate()->GetModel());

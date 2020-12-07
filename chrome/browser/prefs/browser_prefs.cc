@@ -504,6 +504,15 @@ const char kSettingsLaunchedPasswordChecks[] =
 // Deprecated 11/2020
 const char kDRMSalt[] = "settings.privacy.drm_salt";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 12/2020
+const char kAssistantPrivacyInfoShownInLauncher[] =
+    "ash.launcher.assistant_privacy_info_shown";
+
+const char kAssistantPrivacyInfoDismissedInLauncher[] =
+    "ash.launcher.assistant_privacy_info_dismissed";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -591,6 +600,12 @@ void RegisterProfilePrefsForMigration(
 
   registry->RegisterIntegerPref(kSettingsLaunchedPasswordChecks, 0);
   registry->RegisterStringPref(kDRMSalt, "");
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterIntegerPref(kAssistantPrivacyInfoShownInLauncher, 0);
+  registry->RegisterBooleanPref(kAssistantPrivacyInfoDismissedInLauncher,
+                                false);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -1226,6 +1241,10 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Added 11/2020.
   profile_prefs->ClearPref(kSupervisedUserAllowlists);
+
+  // Added 12/2020
+  profile_prefs->ClearPref(kAssistantPrivacyInfoShownInLauncher);
+  profile_prefs->ClearPref(kAssistantPrivacyInfoDismissedInLauncher);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

@@ -100,24 +100,6 @@ TabletModeAnimationTransition CalculateAnimationTransitionForMetrics(
   }
 }
 
-int GetAssistantPrivacyInfoShownCount() {
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  return prefs->GetInteger(prefs::kAssistantPrivacyInfoShownInLauncher);
-}
-
-void SetAssistantPrivacyInfoShownCount(int count) {
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  prefs->SetInteger(prefs::kAssistantPrivacyInfoShownInLauncher, count);
-}
-
-void SetAssistantPrivacyInfoDismissed() {
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  prefs->SetBoolean(prefs::kAssistantPrivacyInfoDismissedInLauncher, true);
-}
-
 int GetSuggestedContentInfoShownCount() {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
@@ -224,10 +206,6 @@ AppListControllerImpl::~AppListControllerImpl() {
 
 // static
 void AppListControllerImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(prefs::kAssistantPrivacyInfoShownInLauncher, 0);
-  registry->RegisterBooleanPref(
-      prefs::kAssistantPrivacyInfoDismissedInLauncher, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterIntegerPref(
       prefs::kSuggestedContentInfoShownInLauncher, 0,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
@@ -1294,11 +1272,8 @@ void AppListControllerImpl::NotifySearchResultsForLogging(
   }
 }
 
-void AppListControllerImpl::MaybeIncreasePrivacyInfoShownCounts() {
-  if (ShouldShowAssistantPrivacyInfo()) {
-    const int count = GetAssistantPrivacyInfoShownCount();
-    SetAssistantPrivacyInfoShownCount(count + 1);
-  } else if (ShouldShowSuggestedContentInfo()) {
+void AppListControllerImpl::MaybeIncreaseSuggestedContentInfoShownCount() {
+  if (ShouldShowSuggestedContentInfo()) {
     const int count = GetSuggestedContentInfoShownCount();
     SetSuggestedContentInfoShownCount(count + 1);
   }
@@ -1314,16 +1289,6 @@ bool AppListControllerImpl::IsAssistantAllowedAndEnabled() const {
              chromeos::assistant::AssistantAllowedState::ALLOWED &&
          state->assistant_status() !=
              chromeos::assistant::AssistantStatus::NOT_READY;
-}
-
-bool AppListControllerImpl::ShouldShowAssistantPrivacyInfo() const {
-  // TODO(b/174506130) completely remove Assistant privacy info in followup.
-  return false;
-}
-
-void AppListControllerImpl::MarkAssistantPrivacyInfoDismissed() {
-  // User dismissed the privacy info view. Will not show the view again.
-  SetAssistantPrivacyInfoDismissed();
 }
 
 bool AppListControllerImpl::ShouldShowSuggestedContentInfo() const {
