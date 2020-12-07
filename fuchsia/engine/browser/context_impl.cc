@@ -51,15 +51,6 @@ bool ContextImpl::IsJavaScriptInjectionAllowed() {
   return allow_javascript_injection_;
 }
 
-fidl::InterfaceHandle<fuchsia::web::Frame>
-ContextImpl::CreateFrameForPopupWebContents(
-    std::unique_ptr<content::WebContents> web_contents) {
-  fidl::InterfaceHandle<fuchsia::web::Frame> frame_handle;
-  frames_.insert(std::make_unique<FrameImpl>(std::move(web_contents), this,
-                                             frame_handle.NewRequest()));
-  return frame_handle;
-}
-
 void ContextImpl::CreateFrame(
     fidl::InterfaceRequest<fuchsia::web::Frame> frame) {
   CreateFrameWithParams(fuchsia::web::CreateFrameParams(), std::move(frame));
@@ -68,10 +59,32 @@ void ContextImpl::CreateFrame(
 void ContextImpl::CreateFrameWithParams(
     fuchsia::web::CreateFrameParams params,
     fidl::InterfaceRequest<fuchsia::web::Frame> frame) {
+  // FrameImpl clones the params used to create it when creating popup Frames.
+  // Ensure the params can be cloned to avoid problems when handling popups.
+  // TODO(fxbug.dev/65750): Consider removing this restriction if clients
+  // become responsible for providing parameters for [each] popup.
+  fuchsia::web::CreateFrameParams cloned_params;
+  zx_status_t status = params.Clone(&cloned_params);
+  if (status != ZX_OK) {
+    ZX_LOG(ERROR, status) << "CreateFrameParams Clone() failed";
+    frame.Close(ZX_ERR_INVALID_ARGS);
+    return;
+  }
+
   // Create a WebContents to host the new Frame.
   content::WebContents::CreateParams create_params(browser_context_, nullptr);
   create_params.initially_hidden = true;
   auto web_contents = content::WebContents::Create(create_params);
+
+  CreateFrameForWebContents(std::move(web_contents), std::move(params),
+                            std::move(frame));
+}
+
+void ContextImpl::CreateFrameForWebContents(
+    std::unique_ptr<content::WebContents> web_contents,
+    fuchsia::web::CreateFrameParams params,
+    fidl::InterfaceRequest<fuchsia::web::Frame> frame_request) {
+  DCHECK(frame_request.is_valid());
 
   blink::web_pref::WebPreferences web_preferences =
       web_contents->GetOrCreateWebPreferences();
@@ -101,13 +114,14 @@ void ContextImpl::CreateFrameWithParams(
       params.has_enable_remote_debugging() && params.enable_remote_debugging();
   if (!devtools_controller_->OnFrameCreated(web_contents.get(),
                                             user_debugging_requested)) {
-    frame.Close(ZX_ERR_INVALID_ARGS);
+    frame_request.Close(ZX_ERR_INVALID_ARGS);
     return;
   }
 
   // Wrap the WebContents into a FrameImpl owned by |this|.
-  auto frame_impl = std::make_unique<FrameImpl>(std::move(web_contents), this,
-                                                std::move(frame));
+  auto frame_impl =
+      std::make_unique<FrameImpl>(std::move(web_contents), this,
+                                  std::move(params), std::move(frame_request));
   frames_.insert(std::move(frame_impl));
 }
 

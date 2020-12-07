@@ -5,6 +5,7 @@
 #include "fuchsia/engine/browser/navigation_controller_impl.h"
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"

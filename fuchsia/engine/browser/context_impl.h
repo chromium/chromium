@@ -41,15 +41,22 @@ class WEB_ENGINE_EXPORT ContextImpl : public fuchsia::web::Context {
   // Tears down the Context, destroying any active Frames in the process.
   ~ContextImpl() final;
 
+  ContextImpl(const ContextImpl&) = delete;
+  ContextImpl& operator=(const ContextImpl&) = delete;
+
   // Removes and destroys the specified |frame|.
   void DestroyFrame(FrameImpl* frame);
 
   // Returns |true| if JS injection was enabled for this Context.
   bool IsJavaScriptInjectionAllowed();
 
-  // Registers a Frame originating from web content (i.e. a popup).
-  fidl::InterfaceHandle<fuchsia::web::Frame> CreateFrameForPopupWebContents(
-      std::unique_ptr<content::WebContents> web_contents);
+  // Creates a Frame with |params| for the |web_contents| and binds it to
+  // |frame_request|. The Frame will self-delete when |frame_request|
+  // disconnects.
+  void CreateFrameForWebContents(
+      std::unique_ptr<content::WebContents> web_contents,
+      fuchsia::web::CreateFrameParams params,
+      fidl::InterfaceRequest<fuchsia::web::Frame> frame_request);
 
   // Returns the DevTools controller for this Context.
   WebEngineDevToolsController* devtools_controller() const {
@@ -94,8 +101,6 @@ class WEB_ENGINE_EXPORT ContextImpl : public fuchsia::web::Context {
   // Tracks all active FrameImpl instances, so that we can request their
   // destruction when this ContextImpl is destroyed.
   std::set<std::unique_ptr<FrameImpl>, base::UniquePtrComparator> frames_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextImpl);
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_CONTEXT_IMPL_H_

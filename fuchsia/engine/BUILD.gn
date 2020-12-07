@@ -311,6 +311,8 @@ test("web_engine_browsertests") {
     "browser/fake_semantic_tree.h",
     "browser/fake_semantics_manager.cc",
     "browser/fake_semantics_manager.h",
+    "browser/frame_impl_browser_test_base.cc",
+    "browser/frame_impl_browser_test_base.h",
     "browser/frame_impl_browsertest.cc",
     "browser/headless_browsertest.cc",
     "browser/media_browsertest.cc",

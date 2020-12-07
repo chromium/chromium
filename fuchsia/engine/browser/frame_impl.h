@@ -58,8 +58,11 @@ class FrameImpl : public fuchsia::web::Frame,
   static FrameImpl* FromRenderFrameHost(
       content::RenderFrameHost* render_frame_host);
 
+  // |params_for_popups| is saved and applied to popups created by content
+  // running in this Frame.
   FrameImpl(std::unique_ptr<content::WebContents> web_contents,
             ContextImpl* context,
+            fuchsia::web::CreateFrameParams params_for_popups,
             fidl::InterfaceRequest<fuchsia::web::Frame> frame_request);
   ~FrameImpl() override;
 
@@ -254,6 +257,9 @@ class FrameImpl : public fuchsia::web::Frame,
 
   const std::unique_ptr<content::WebContents> web_contents_;
   ContextImpl* const context_;
+
+  // Parameters applied to popups created by content running in this Frame.
+  const fuchsia::web::CreateFrameParams params_for_popups_;
 
   std::unique_ptr<FrameWindowTreeHost> window_tree_host_;
 

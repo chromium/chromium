@@ -7,9 +7,10 @@
 #include <lib/sys/cpp/component_context.h>
 #include <lib/ui/scenic/cpp/view_token_pair.h>
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/containers/span.h"
-#include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -29,9 +30,8 @@
 #include "fuchsia/base/url_request_rewrite_test_util.h"
 #include "fuchsia/engine/browser/fake_semantics_manager.h"
 #include "fuchsia/engine/browser/frame_impl.h"
+#include "fuchsia/engine/browser/frame_impl_browser_test_base.h"
 #include "fuchsia/engine/switches.h"
-#include "fuchsia/engine/test/test_data.h"
-#include "fuchsia/engine/test/web_engine_browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -65,7 +65,7 @@ const char kPage3Path[] = "/websql.html";
 const char kPage4Path[] = "/image.html";
 const char kPage4ImgPath[] = "/img.png";
 const char kDynamicTitlePath[] = "/dynamic_title.html";
-const char kPopupPath[] = "/popup_parent.html";
+const char kPopupParentPath[] = "/popup_parent.html";
 const char kPopupRedirectPath[] = "/popup_child.html";
 const char kPopupMultiplePath[] = "/popup_multiple.html";
 const char kVisibilityPath[] = "/visibility.html";
@@ -75,6 +75,11 @@ const char kPage3Title[] = "websql not available";
 const char kDataUrl[] =
     "data:text/html;base64,PGI+SGVsbG8sIHdvcmxkLi4uPC9iPg==";
 const int64_t kOnLoadScriptId = 0;
+const char kChildQueryParamName[] = "child_url";
+const char kPopupChildFile[] = "popup_child.html";
+const char kAutoplayFileAndQuery[] = "play_vp8.html?autoplay=1";
+const char kAutoPlayBlockedTitle[] = "blocked";
+const char kAutoPlaySuccessTitle[] = "playing";
 
 MATCHER_P(NavigationHandleUrlEquals,
           url,
@@ -106,19 +111,22 @@ std::string StringFromMemBufferOrDie(const fuchsia::mem::Buffer& buffer) {
 
 // Defines a suite of tests that exercise Frame-level functionality, such as
 // navigation commands and page events.
-class FrameImplTest : public cr_fuchsia::WebEngineBrowserTest {
+class FrameImplTest : public FrameImplTestBase {
  public:
-  FrameImplTest() {
-    set_test_server_root(base::FilePath(cr_fuchsia::kTestServerRoot));
-  }
-
+  FrameImplTest() = default;
   ~FrameImplTest() = default;
+
+  FrameImplTest(const FrameImplTest&) = delete;
+  FrameImplTest& operator=(const FrameImplTest&) = delete;
 
   MOCK_METHOD1(OnServeHttpRequest,
                void(const net::test_server::HttpRequest& request));
 
  protected:
   // Creates a Frame with |navigation_listener_| attached.
+  // TODO(crbug.com/1155378): Remove |navigation_listener_| and use the parent's
+  // implementation of this method after updating all tests to use the
+  // appropriate base.
   fuchsia::web::FramePtr CreateFrame() {
     return WebEngineBrowserTest::CreateFrame(&navigation_listener_);
   }
@@ -127,8 +135,6 @@ class FrameImplTest : public cr_fuchsia::WebEngineBrowserTest {
   FakeSemanticsManager fake_semantics_manager_;
 
   cr_fuchsia::TestNavigationListener navigation_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameImplTest);
 };
 
 std::string GetDocumentVisibilityState(fuchsia::web::Frame* frame) {
@@ -2319,6 +2325,8 @@ class TestPopupListener : public fuchsia::web::PopupFrameCreationListener {
  public:
   TestPopupListener() = default;
   ~TestPopupListener() override = default;
+  TestPopupListener(const TestPopupListener&) = delete;
+  TestPopupListener& operator=(const TestPopupListener&) = delete;
 
   void GetAndAckNextPopup(fuchsia::web::FramePtr* frame,
                           fuchsia::web::PopupFrameCreationInfo* creation_info) {
@@ -2354,64 +2362,151 @@ class TestPopupListener : public fuchsia::web::PopupFrameCreationListener {
   OnPopupFrameCreatedCallback popup_ack_callback_;
 };
 
-IN_PROC_BROWSER_TEST_F(FrameImplTest, PopupWindow) {
-  net::test_server::EmbeddedTestServerHandle test_server_handle;
-  ASSERT_TRUE(test_server_handle =
-                  embedded_test_server()->StartAndReturnHandle());
-  GURL popup_url(embedded_test_server()->GetURL(kPopupPath));
+// TODO(crbug.com/1155378): Move these tests to their own file in a follow-up
+// CL.
+class FrameImplPopupTest : public FrameImplTestBaseWithServer {
+ public:
+  FrameImplPopupTest()
+      : popup_listener_binding_(&popup_listener_),
+        popup_nav_listener_binding_(&popup_nav_listener_) {}
+
+  ~FrameImplPopupTest() override = default;
+  FrameImplPopupTest(const FrameImplPopupTest&) = delete;
+  FrameImplPopupTest& operator=(const FrameImplPopupTest&) = delete;
+
+ protected:
+  // Builds a URL for the kPopupParentPath page to pop up a Frame with
+  // |child_file_and_query|. |child_file_and_query| may optionally include a
+  // query string.
+  GURL GetParentPageTestServerUrl(const char* child) const;
+
+  // Loads a page that autoplays video in a popup, populates the popup_*
+  // members, and returns its URL.
+  GURL LoadAutoPlayingPageInPopup(
+      fuchsia::web::CreateFrameParams parent_frame_params);
+
+  fuchsia::web::FramePtr popup_frame_;
+
+  TestPopupListener popup_listener_;
+  fidl::Binding<fuchsia::web::PopupFrameCreationListener>
+      popup_listener_binding_;
+
+  cr_fuchsia::TestNavigationListener popup_nav_listener_;
+  fidl::Binding<fuchsia::web::NavigationEventListener>
+      popup_nav_listener_binding_;
+};
+
+GURL FrameImplPopupTest::GetParentPageTestServerUrl(const char* child) const {
+  const std::string url = base::StringPrintf("%s?%s=%s", kPopupParentPath,
+                                             kChildQueryParamName, child);
+
+  return embedded_test_server()->GetURL(url);
+}
+
+GURL FrameImplPopupTest::LoadAutoPlayingPageInPopup(
+    fuchsia::web::CreateFrameParams parent_frame_params) {
+  GURL popup_parent_url = GetParentPageTestServerUrl(kAutoplayFileAndQuery);
+  GURL popup_child_url = embedded_test_server()->GetURL(
+      base::StringPrintf("/%s", kAutoplayFileAndQuery));
+
+  fuchsia::web::FramePtr parent_frame =
+      WebEngineBrowserTest::CreateFrameWithParams(
+          &navigation_listener_, std::move(parent_frame_params));
+
+  parent_frame->SetPopupFrameCreationListener(
+      popup_listener_binding_.NewBinding());
+
+  fuchsia::web::NavigationControllerPtr controller;
+  parent_frame->GetNavigationController(controller.NewRequest());
+  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(controller.get(), {},
+                                                   popup_parent_url.spec()));
+
+  fuchsia::web::PopupFrameCreationInfo popup_info;
+  popup_listener_.GetAndAckNextPopup(&popup_frame_, &popup_info);
+  EXPECT_EQ(popup_info.initial_url(), popup_child_url);
+
+  popup_frame_->SetNavigationEventListener(
+      popup_nav_listener_binding_.NewBinding());
+
+  return popup_child_url;
+}
+
+IN_PROC_BROWSER_TEST_F(FrameImplPopupTest, PopupWindowRedirect) {
+  GURL popup_parent_url = GetParentPageTestServerUrl(kPopupChildFile);
   GURL popup_child_url(embedded_test_server()->GetURL(kPopupRedirectPath));
   GURL title1_url(embedded_test_server()->GetURL(kPage1Path));
   fuchsia::web::FramePtr frame = CreateFrame();
 
-  TestPopupListener popup_listener;
-  fidl::Binding<fuchsia::web::PopupFrameCreationListener>
-      popup_listener_binding(&popup_listener);
-  frame->SetPopupFrameCreationListener(popup_listener_binding.NewBinding());
+  frame->SetPopupFrameCreationListener(popup_listener_binding_.NewBinding());
 
   fuchsia::web::NavigationControllerPtr controller;
   frame->GetNavigationController(controller.NewRequest());
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(controller.get(), {},
-                                                   popup_url.spec()));
+                                                   popup_parent_url.spec()));
 
   // Verify the popup's initial URL, "popup_child.html".
-  fuchsia::web::FramePtr popup_frame;
   fuchsia::web::PopupFrameCreationInfo popup_info;
-  popup_listener.GetAndAckNextPopup(&popup_frame, &popup_info);
+  popup_listener_.GetAndAckNextPopup(&popup_frame_, &popup_info);
   EXPECT_EQ(popup_info.initial_url(), popup_child_url);
 
   // Verify that the popup eventually redirects to "title1.html".
-  cr_fuchsia::TestNavigationListener popup_nav_listener;
-  fidl::Binding<fuchsia::web::NavigationEventListener>
-      popup_nav_listener_binding(&popup_nav_listener);
-  popup_frame->SetNavigationEventListener(
-      popup_nav_listener_binding.NewBinding());
-  popup_nav_listener.RunUntilUrlAndTitleEquals(title1_url, kPage1Title);
+  popup_frame_->SetNavigationEventListener(
+      popup_nav_listener_binding_.NewBinding());
+  popup_nav_listener_.RunUntilUrlAndTitleEquals(title1_url, kPage1Title);
 }
 
-IN_PROC_BROWSER_TEST_F(FrameImplTest, MultiplePopups) {
-  net::test_server::EmbeddedTestServerHandle test_server_handle;
-  ASSERT_TRUE(test_server_handle =
-                  embedded_test_server()->StartAndReturnHandle());
-  GURL popup_url(embedded_test_server()->GetURL(kPopupMultiplePath));
+IN_PROC_BROWSER_TEST_F(FrameImplPopupTest, MultiplePopups) {
+  GURL popup_parent_url(embedded_test_server()->GetURL(kPopupMultiplePath));
   GURL title1_url(embedded_test_server()->GetURL(kPage1Path));
   GURL title2_url(embedded_test_server()->GetURL(kPage2Path));
   fuchsia::web::FramePtr frame = CreateFrame();
 
-  TestPopupListener popup_listener;
-  fidl::Binding<fuchsia::web::PopupFrameCreationListener>
-      popup_listener_binding(&popup_listener);
-  frame->SetPopupFrameCreationListener(popup_listener_binding.NewBinding());
+  frame->SetPopupFrameCreationListener(popup_listener_binding_.NewBinding());
 
   fuchsia::web::NavigationControllerPtr controller;
   frame->GetNavigationController(controller.NewRequest());
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(controller.get(), {},
-                                                   popup_url.spec()));
+                                                   popup_parent_url.spec()));
 
-  fuchsia::web::FramePtr popup_frame;
   fuchsia::web::PopupFrameCreationInfo popup_info;
-  popup_listener.GetAndAckNextPopup(&popup_frame, &popup_info);
+  popup_listener_.GetAndAckNextPopup(&popup_frame_, &popup_info);
   EXPECT_EQ(popup_info.initial_url(), title1_url);
 
-  popup_listener.GetAndAckNextPopup(&popup_frame, &popup_info);
+  popup_listener_.GetAndAckNextPopup(&popup_frame_, &popup_info);
   EXPECT_EQ(popup_info.initial_url(), title2_url);
+}
+
+// Verifies that the child popup Frame has the same default CreateFrameParams as
+// the parent Frame by verifying that autoplay is blocked in the child. This
+// mostly verifies that AutoPlaySucceedsis actually modifies behavior.
+IN_PROC_BROWSER_TEST_F(FrameImplPopupTest,
+                       PopupFrameHasSameCreateFrameParams_AutoplayBlocked) {
+  // The default autoplay_policy is REQUIRE_USER_ACTIVATION.
+  fuchsia::web::CreateFrameParams parent_frame_params;
+
+  // Load the page and wait for the popup Frame to be created.
+  GURL popup_child_url =
+      LoadAutoPlayingPageInPopup(std::move(parent_frame_params));
+
+  // Verify that the child does not autoplay media.
+  popup_nav_listener_.RunUntilUrlAndTitleEquals(popup_child_url,
+                                                kAutoPlayBlockedTitle);
+}
+
+// Verifies that the child popup Frame has the same CreateFrameParams as the
+// parent Frame by allowing autoplay in the parent's params and verifying that
+// autoplay succeeds in the child.
+IN_PROC_BROWSER_TEST_F(FrameImplPopupTest,
+                       PopupFrameHasSameCreateFrameParams_AutoplaySucceeds) {
+  // Set autoplay to always be allowed in the parent frame.
+  fuchsia::web::CreateFrameParams parent_frame_params;
+  parent_frame_params.set_autoplay_policy(fuchsia::web::AutoplayPolicy::ALLOW);
+
+  // Load the page and wait for the popup Frame to be created.
+  GURL popup_child_url =
+      LoadAutoPlayingPageInPopup(std::move(parent_frame_params));
+
+  // Verify that the child autoplays media.
+  popup_nav_listener_.RunUntilUrlAndTitleEquals(popup_child_url,
+                                                kAutoPlaySuccessTitle);
 }
