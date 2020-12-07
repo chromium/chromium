@@ -20,7 +20,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/fuchsia/startup_context.h"
-#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "fuchsia/runners/cast/cast_component.h"
 #include "fuchsia/runners/cast/pending_cast_component.h"
@@ -112,6 +111,13 @@ class CastRunner : public fuchsia::sys::Runner,
       fidl::InterfaceRequest<fuchsia::sys::ComponentController>
           controller_request);
 
+  // Moves all data persisted by the main Context to a staging directory,
+  // which will be deleted the next time the Runner starts up.
+  // Requests to launch new components in the main Context will be rejected
+  // until this Runner instance is shutdown.
+  // Returns true on success and false in case of I/O error.
+  bool DeletePersistentData();
+
   // True if this Runner uses Context(s) with the HEADLESS feature set.
   const bool is_headless_;
 
@@ -158,6 +164,11 @@ class CastRunner : public fuchsia::sys::Runner,
 
   // True if Contexts should be created without VULKAN set.
   bool disable_vulkan_for_test_ = false;
+
+  // True if cast runner entered data reset mode. Prevents new components
+  // in the main context from being launched. This is set to true once data
+  // reset starts and does not switch back to false upon completion.
+  bool data_reset_in_progress_ = false;
 };
 
 #endif  // FUCHSIA_RUNNERS_CAST_CAST_RUNNER_H_

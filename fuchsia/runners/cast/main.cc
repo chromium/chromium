@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
   sys::OutgoingDirectory* const outgoing_directory =
       base::ComponentContextForProcess()->outgoing().get();
 
-  // Publish the fuchsia.web.Runner implementation for Cast applications.
+  // Publish the fuchsia.sys.Runner implementation for Cast applications.
   const bool enable_headless =
       command_line->HasSwitch(kForceHeadlessForTestsSwitch) ||
       GetConfigBool(kHeadlessConfigKey);
