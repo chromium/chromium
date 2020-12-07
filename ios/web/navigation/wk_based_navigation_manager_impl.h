@@ -122,7 +122,6 @@ class WKBasedNavigationManagerImpl : public NavigationManagerImpl {
   NavigationItem* GetItemAtIndex(size_t index) const override;
   int GetIndexOfItem(const NavigationItem* item) const override;
   int GetPendingItemIndex() const override;
-  bool RemoveItemAtIndex(int index) override;
   bool CanGoBack() const override;
   bool CanGoForward() const override;
   bool CanGoToOffset(int offset) const override;
@@ -130,8 +129,6 @@ class WKBasedNavigationManagerImpl : public NavigationManagerImpl {
   void GoForward() override;
   NavigationItemList GetBackwardItems() const override;
   NavigationItemList GetForwardItems() const override;
-  void CopyStateFromAndPrune(const NavigationManager* source) override;
-  bool CanPruneAllButLastCommittedItem() const override;
   void Restore(int last_committed_item_index,
                std::vector<std::unique_ptr<NavigationItem>> items) override;
   void LoadURLWithParams(const NavigationManager::WebLoadParams&) override;

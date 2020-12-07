@@ -564,11 +564,6 @@ int WKBasedNavigationManagerImpl::GetPendingItemIndex() const {
   return pending_item_index_;
 }
 
-bool WKBasedNavigationManagerImpl::RemoveItemAtIndex(int index) {
-  DLOG(WARNING) << "Not yet implemented.";
-  return true;
-}
-
 bool WKBasedNavigationManagerImpl::CanGoBack() const {
   return CanGoToOffset(-1);
 }
@@ -630,16 +625,6 @@ NavigationItemList WKBasedNavigationManagerImpl::GetForwardItems() const {
     items.push_back(GetItemAtIndex(index));
   }
   return items;
-}
-
-void WKBasedNavigationManagerImpl::CopyStateFromAndPrune(
-    const NavigationManager* source) {
-  DLOG(WARNING) << "Not yet implemented.";
-}
-
-bool WKBasedNavigationManagerImpl::CanPruneAllButLastCommittedItem() const {
-  DLOG(WARNING) << "Not yet implemented.";
-  return true;
 }
 
 void WKBasedNavigationManagerImpl::

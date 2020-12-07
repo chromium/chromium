@@ -113,16 +113,6 @@ void TestNavigationManager::SetPendingItemIndex(int index) {
   pending_item_index_ = index;
 }
 
-bool TestNavigationManager::RemoveItemAtIndex(int index) {
-  if (index < 0 || index >= GetItemCount())
-    return false;
-  DCHECK(items_index_ != index);
-  items_.erase(items_.begin() + index);
-  if (items_index_ > index)
-    --items_index_;
-  return true;
-}
-
 bool TestNavigationManager::CanGoBack() const {
   return items_index_ > 0;
 }
@@ -179,16 +169,6 @@ bool TestNavigationManager::IsRestoreSessionInProgress() const {
 void TestNavigationManager::AddRestoreCompletionCallback(
     base::OnceClosure callback) {
   NOTREACHED();
-}
-
-void TestNavigationManager::CopyStateFromAndPrune(
-    const NavigationManager* source) {
-  NOTREACHED();
-}
-
-bool TestNavigationManager::CanPruneAllButLastCommittedItem() const {
-  NOTREACHED();
-  return false;
 }
 
 // Adds a new navigation item of |transition| type at the end of this

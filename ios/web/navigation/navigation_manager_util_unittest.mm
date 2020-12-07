@@ -69,17 +69,6 @@ TEST_F(NavigationManagerUtilTest, GetCommittedItemWithUniqueID) {
   EXPECT_EQ(item, GetItemWithUniqueID(manager_.get(), context.get()));
   EXPECT_EQ(0, GetCommittedItemIndexWithUniqueID(manager_.get(), unique_id));
 
-  // Commit another navigation so that the current item is updated.  This allows
-  // for removing the item with |unique_id|.
-  manager_->AddPendingItem(GURL("http://test.org"), Referrer(),
-                           ui::PAGE_TRANSITION_TYPED,
-                           web::NavigationInitiationType::BROWSER_INITIATED);
-  manager_->CommitPendingItem();
-  manager_->RemoveItemAtIndex(0);
-  EXPECT_FALSE(GetCommittedItemWithUniqueID(manager_.get(), unique_id));
-  EXPECT_FALSE(GetItemWithUniqueID(manager_.get(), context.get()));
-  EXPECT_EQ(-1, GetCommittedItemIndexWithUniqueID(manager_.get(), unique_id));
-
   // Add transient item.
   manager_->AddTransientItem(GURL("http://chromium.org"));
   item = manager_->GetTransientItem();

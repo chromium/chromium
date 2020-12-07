@@ -140,12 +140,6 @@ class NavigationManager {
   // TODO(crbug.com/533848): Update to return size_t.
   virtual int GetPendingItemIndex() const = 0;
 
-  // Removes the item at the specified |index|.  If the index is the last
-  // committed index or the pending item, this does nothing and returns false.
-  // Otherwise this call discards any transient or pending entries.
-  // TODO(crbug.com/533848): Update to use size_t.
-  virtual bool RemoveItemAtIndex(int index) = 0;
-
   // Navigation relative to the current item.
   virtual bool CanGoBack() const = 0;
   virtual bool CanGoForward() const = 0;
@@ -191,26 +185,6 @@ class NavigationManager {
   // TODO(crbug.com/904502): This API is only needed for clearing cookies.
   // Remove after //ios/web exposes a proper cookie clearing API.
   virtual void AddRestoreCompletionCallback(base::OnceClosure callback) = 0;
-
-  // Removes all items from this except the last committed item, and inserts
-  // copies of all items from |source| at the beginning of the session history.
-  //
-  // For example:
-  // source: A B *C* D
-  // this:   E F *G*
-  // result: A B C *G*
-  //
-  // If there is a pending item after *G* in |this|, it is also preserved.
-  // This ignores any pending or transient entries in |source|.  This will be a
-  // no-op if called while CanPruneAllButLastCommittedItem() is false.
-  virtual void CopyStateFromAndPrune(const NavigationManager* source) = 0;
-
-  // Whether the NavigationManager can prune all but the last committed item.
-  // This is true when all the following conditions are met:
-  // - There is a last committed NavigationItem.
-  // - There is no pending history navigation.
-  // - There is no transient NavigationItem.
-  virtual bool CanPruneAllButLastCommittedItem() const = 0;
 };
 
 }  // namespace web

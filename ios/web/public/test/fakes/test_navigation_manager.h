@@ -35,7 +35,6 @@ class TestNavigationManager : public NavigationManager {
   int GetIndexOfItem(const NavigationItem* item) const override;
   int GetPendingItemIndex() const override;
   int GetLastCommittedItemIndex() const override;
-  bool RemoveItemAtIndex(int index) override;
   bool CanGoBack() const override;
   bool CanGoForward() const override;
   bool CanGoToOffset(int offset) const override;
@@ -50,8 +49,6 @@ class TestNavigationManager : public NavigationManager {
                std::vector<std::unique_ptr<NavigationItem>> items) override;
   bool IsRestoreSessionInProgress() const override;
   void AddRestoreCompletionCallback(base::OnceClosure callback) override;
-  void CopyStateFromAndPrune(const NavigationManager* source) override;
-  bool CanPruneAllButLastCommittedItem() const override;
 
   // Setters for test data.
   // Sets a value for last committed item that will be returned by
