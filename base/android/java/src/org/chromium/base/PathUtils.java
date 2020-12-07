@@ -206,7 +206,7 @@ public abstract class PathUtils {
     public static @NonNull String getDownloadsDirectory() {
         // TODO(crbug.com/508615): Move calls to getDownloadsDirectory() to background thread.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            if (BuildInfo.isAtLeastQ()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 // https://developer.android.com/preview/privacy/scoped-storage
                 // In Q+, Android has begun sandboxing external storage. Chrome may not have
                 // permission to write to Environment.getExternalStoragePublicDirectory(). Instead
