@@ -1006,6 +1006,7 @@ virtual/layout_ng_block_frag/external/wpt/css/css-break/tall-line-in-short-fragm
 virtual/layout_ng_block_frag/external/wpt/css/css-break/tall-line-in-short-fragmentainer-002.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-break/trailing-child-margin-000.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-break/trailing-child-margin-002.html [ Pass ]
+virtual/layout_ng_block_frag/external/wpt/css/css-contain/contain-size-monolithic-002.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/balance-break-avoidance-001.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/balance-orphans-widows-000.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/baseline-001.html [ Pass ]
