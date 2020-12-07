@@ -9562,6 +9562,16 @@ void RenderFrameHostImpl::
                         has_original_url
                             ? GetSiteInstance()->original_url().IsAboutSrcdoc()
                             : false);
+
+  // These DCHECKs ensure that tests will fail if we got here, as
+  // DumpWithoutCrashing won't fail tests.
+  // TODO(rakina): Add DCHECK for url_is_unreachable.
+  DCHECK_EQ(request->commit_params().intended_as_new_entry,
+            params.intended_as_new_entry);
+  DCHECK_EQ(request->common_params().method, params.method);
+  DCHECK_EQ(browser_post_id, params.post_id);
+  DCHECK_EQ(browser_is_overriding_user_agent, params.is_overriding_user_agent);
+  DCHECK(base_url_expectations_match);
   base::debug::DumpWithoutCrashing();
 }
 

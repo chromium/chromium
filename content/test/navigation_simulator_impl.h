@@ -131,12 +131,6 @@ class NavigationSimulatorImpl : public NavigationSimulator,
     should_replace_current_entry_ = should_replace_current_entry;
   }
 
-  // Manually force the value of intended_as_new_entry flag in DidCommit*Params
-  // to |intended_as_new_entry|.
-  void set_intended_as_new_entry(bool intended_as_new_entry) {
-    intended_as_new_entry_ = intended_as_new_entry;
-  }
-
   void set_http_connection_info(net::HttpResponseInfo::ConnectionInfo info) {
     http_connection_info_ = info;
   }
@@ -166,8 +160,6 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   void set_impression(const Impression& impression) {
     impression_ = impression;
   }
-
-  void SetIsPostWithId(int64_t post_id);
 
  private:
   NavigationSimulatorImpl(const GURL& original_url,
@@ -315,7 +307,6 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   bool history_list_was_cleared_ = false;
   bool should_replace_current_entry_ = false;
   base::Optional<bool> did_create_new_entry_;
-  base::Optional<bool> intended_as_new_entry_;
   bool was_aborted_ = false;
 
   // These are used to sanity check the content/public/ API calls emitted as

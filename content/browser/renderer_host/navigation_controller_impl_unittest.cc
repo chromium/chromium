@@ -710,37 +710,6 @@ TEST_F(NavigationControllerTest, LoadURL_SamePage) {
   EXPECT_GE(controller.GetVisibleEntry()->GetTimestamp(), timestamp);
 }
 
-// Load the same page twice, once as a GET and once as a POST.
-// We should update the post state on the NavigationEntry.
-TEST_F(NavigationControllerTest, LoadURL_SamePage_DifferentMethod) {
-  NavigationControllerImpl& controller = controller_impl();
-
-  const GURL url1("http://foo1");
-
-  auto navigation1 =
-      NavigationSimulatorImpl::CreateBrowserInitiated(url1, contents());
-  navigation1->SetIsPostWithId(123);
-  navigation1->Commit();
-
-  // The post data should be visible.
-  NavigationEntry* entry = controller.GetVisibleEntry();
-  ASSERT_TRUE(entry);
-  EXPECT_TRUE(entry->GetHasPostData());
-  EXPECT_EQ(entry->GetPostID(), 123);
-
-  auto navigation2 =
-      NavigationSimulatorImpl::CreateBrowserInitiated(url1, contents());
-  navigation2->set_did_create_new_entry(false);
-  navigation2->Commit();
-
-  // We should not have produced a new session history entry.
-  ASSERT_EQ(controller.GetVisibleEntry(), entry);
-
-  // The post data should have been cleared due to the GET.
-  EXPECT_FALSE(entry->GetHasPostData());
-  EXPECT_EQ(entry->GetPostID(), -1);
-}
-
 // Tests loading a URL but discarding it before the load commits.
 TEST_F(NavigationControllerTest, LoadURL_Discarded) {
   NavigationControllerImpl& controller = controller_impl();
@@ -1875,7 +1844,6 @@ TEST_F(NavigationControllerTest,
 
   // ... and now the renderer sends a commit for the first navigation.
   LoadCommittedDetailsObserver observer(contents());
-  navigation1->set_intended_as_new_entry(true);
   navigation1->Commit();
   EXPECT_EQ(NAVIGATION_TYPE_EXISTING_PAGE, observer.navigation_type());
 }

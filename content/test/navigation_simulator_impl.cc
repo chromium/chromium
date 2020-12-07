@@ -353,11 +353,6 @@ NavigationSimulatorImpl::NavigationSimulatorImpl(
 
 NavigationSimulatorImpl::~NavigationSimulatorImpl() {}
 
-void NavigationSimulatorImpl::SetIsPostWithId(int64_t post_id) {
-  post_id_ = post_id;
-  SetMethod("POST");
-}
-
 void NavigationSimulatorImpl::InitializeFromStartedRequest(
     NavigationRequest* request) {
   CHECK(request);
@@ -1311,8 +1306,9 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
                                  : base::UnguessableToken::Create();
   params->post_id = post_id_;
 
-  if (intended_as_new_entry_.has_value())
-    params->intended_as_new_entry = intended_as_new_entry_.value();
+  params->intended_as_new_entry =
+      request_ ? request_->commit_params().intended_as_new_entry : false;
+  params->method = request_ ? request_->common_params().method : "GET";
 
   if (failed_navigation) {
     // Note: Error pages must commit in a unique origin. So it is left unset.
@@ -1320,7 +1316,6 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
   } else {
     params->origin = origin_.value_or(url::Origin::Create(navigation_url_));
     params->redirects.push_back(navigation_url_);
-    params->method = request_ ? request_->common_params().method : "GET";
     params->http_status_code = 200;
     params->should_update_history = true;
   }
