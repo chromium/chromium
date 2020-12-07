@@ -6,12 +6,19 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
   uses_js_modules = true
+  closure_flags = default_closure_args + mojom_js_args + [
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/reset_password",
+                            root_build_dir),
+                    "js_module_root=" + rebase_path(".", root_build_dir),
+                  ]
+
   deps = [ ":reset_password" ]
 }
 
 js_library("reset_password") {
   deps = [
-    "//chrome/browser/ui/webui/reset_password:mojo_bindings_js_library_for_compile",
+    "//chrome/browser/ui/webui/reset_password:mojo_bindings_webui_js",
     "//ui/webui/resources/js:util.m",
   ]
 }
