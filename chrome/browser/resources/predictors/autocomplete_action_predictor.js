@@ -3,18 +3,33 @@
 // found in the LICENSE file.
 
 /**
+ * @typedef {{
+ *   enabled: boolean,
+ *   db: !Array<!{
+ *     user_text: string,
+ *     url: string,
+ *     hit_count: number,
+ *     miss_count: number,
+ *     confidence: number,
+ *   }>
+ * }}
+ */
+let AutocompleteActionPredictorDb;
+
+/**
  * Requests the database from the backend.
  */
 function requestAutocompleteActionPredictorDb() {
-  chrome.send('requestAutocompleteActionPredictorDb');
+  cr.sendWithPromise('requestAutocompleteActionPredictorDb')
+      .then(updateAutocompleteActionPredictorDb);
 }
 
 /**
  * Callback from backend with the database contents. Sets up some globals and
  * calls to create the UI.
- * @param {Object} database Information about AutocompleteActionPredictor
- *     including the database as a flattened list, a boolean indicating if the
- *     system is enabled and the current hit weight.
+ * @param {!AutocompleteActionPredictorDb} database Information about
+ *     AutocompleteActionPredictor including the database as a flattened list,
+ *     a boolean indicating if the system is enabled and the current hit weight.
  */
 function updateAutocompleteActionPredictorDb(database) {
   console.debug('Updating Table NAP DB');
@@ -30,13 +45,13 @@ function updateAutocompleteActionPredictorDb(database) {
 
 /**
  * Updates the table from the database.
- * @param {Object} database Information about AutocompleteActionPredictor
- *     including the database as a flattened list, a boolean indicating if the
- *     system is enabled and the current hit weight.
+ * @param {!AutocompleteActionPredictorDb} database Information about
+ *     AutocompleteActionPredictor including the database as a flattened list,
+ *     a boolean indicating if the system is enabled and the current hit weight.
  */
 function updateAutocompleteActionPredictorDbView(database) {
   const databaseSection = $('databaseTableBody');
-  const showEnabled = database.enabled && database.db;
+  const showEnabled = database.enabled && !!database.db;
 
   $('autocompleteActionPredictorEnabledMode').hidden = !showEnabled;
   $('autocompleteActionPredictorDisabledMode').hidden = showEnabled;

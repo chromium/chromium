@@ -355,6 +355,7 @@ js_library("tabs") {
     ":focus_outline_manager",
     "..:ui",
     "../..:cr",
+    "../..:util",
   ]
 }
 
