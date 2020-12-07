@@ -21,6 +21,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/url_constants.h"
+#include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 
 namespace content {
@@ -76,8 +77,6 @@ ContentWebUIControllerFactory::CreateWebUIControllerForURL(WebUI* web_ui,
     return std::make_unique<HistogramsInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIIndexedDBInternalsHost)
     return std::make_unique<IndexedDBInternalsUI>(web_ui);
-  if (url.host_piece() == kChromeUIMediaInternalsHost)
-    return std::make_unique<MediaInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIServiceWorkerInternalsHost)
     return std::make_unique<ServiceWorkerInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUINetworkErrorsListingHost)
@@ -94,6 +93,11 @@ ContentWebUIControllerFactory::CreateWebUIControllerForURL(WebUI* web_ui,
     return std::make_unique<ConversionInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIUkmHost)
     return std::make_unique<UkmInternalsUI>(web_ui);
+  if (url.host_piece() == kChromeUIMediaInternalsHost) {
+    if (base::FeatureList::IsEnabled(media::kEnableMediaInternals))
+      return std::make_unique<MediaInternalsUI>(web_ui);
+    return nullptr;
+  }
   return nullptr;
 }
 

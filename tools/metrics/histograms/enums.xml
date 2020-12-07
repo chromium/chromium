@@ -41795,6 +41795,7 @@ from previous Chrome versions.
       label="AutofillUseImprovedLabelDisambiguation:enabled"/>
   <int value="-2129940395" label="WebAssemblySimd:disabled"/>
   <int value="-2128705444" label="AssistantAppSupport:enabled"/>
+  <int value="-2127319228" label="enable-media-internals:disabled"/>
   <int value="-2126697213" label="EnablePalmSuppression:disabled"/>
   <int value="-2124839789"
       label="OmniboxUIExperimentHideSteadyStateUrlSchemeAndSubdomains:enabled"/>
@@ -45543,6 +45544,7 @@ from previous Chrome versions.
   <int value="1427905064" label="CreditCardAutofillTouchBar:enabled"/>
   <int value="1428004502" label="PaymentRequestOptionalTotal:enabled"/>
   <int value="1428221397" label="QueryTilesInNTP:enabled"/>
+  <int value="1429923065" label="enable-media-internals:enabled"/>
   <int value="1431050645" label="PayWithGoogleV1:disabled"/>
   <int value="1431934725" label="OmniboxAutocompleteTitles:disabled"/>
   <int value="1434515920" label="ReaderModeInCCT:enabled"/>

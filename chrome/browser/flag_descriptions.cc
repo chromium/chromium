@@ -22,6 +22,10 @@ const char kAcceleratedVideoEncodeName[] = "Hardware-accelerated video encode";
 const char kAcceleratedVideoEncodeDescription[] =
     "Hardware-accelerated video encode where available.";
 
+const char kEnableMediaInternalsName[] = "Media-internals page";
+const char kEnableMediaInternalsDescription[] =
+    "Enables the chrome://media-internals debug page.";
+
 #if BUILDFLAG(ENABLE_PLUGINS)
 const char kAccessiblePDFFormName[] = "Accessible PDF Forms";
 const char kAccessiblePDFFormDescription[] =

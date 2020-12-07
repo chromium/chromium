@@ -2952,6 +2952,13 @@ const FeatureEntry kFeatureEntries[] = {
         kOsMac | kOsWin | kOsCrOS | kOsAndroid,
         SINGLE_DISABLE_VALUE_TYPE(switches::kDisableAcceleratedVideoEncode),
     },
+    {
+        "enable-media-internals",
+        flag_descriptions::kEnableMediaInternalsName,
+        flag_descriptions::kEnableMediaInternalsDescription,
+        kOsAll,
+        FEATURE_VALUE_TYPE(media::kEnableMediaInternals),
+    },
 #if defined(OS_CHROMEOS)
     {
         "zero-copy-video-capture",

@@ -218,6 +218,10 @@ const base::Feature kFFmpegDecodeOpaqueVP8{"FFmpegDecodeOpaqueVP8",
 const base::Feature kOverlayFullscreenVideo{"overlay-fullscreen-video",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
+// TODO(crbug.com/1146594): Flip this to disabled in M92.
+const base::Feature kEnableMediaInternals{"enable-media-internals",
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enable Picture-in-Picture.
 const base::Feature kPictureInPicture {
   "PictureInPicture",

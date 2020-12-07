@@ -1869,6 +1869,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "enable-media-internals",
+    "owners": [ "tmathmeyer", "videostack-eng@google.com" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "enable-media-session-notifications",
     "owners": [ "beccahughes", "media-dev" ],
     "expiry_milestone": 82

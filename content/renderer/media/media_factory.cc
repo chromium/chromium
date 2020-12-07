@@ -398,9 +398,10 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
           "enable_instant_source_buffer_gc", false);
 
   std::vector<std::unique_ptr<BatchingMediaLog::EventHandler>> handlers;
-  handlers.push_back(std::make_unique<RenderMediaEventHandler>());
   handlers.push_back(
       std::make_unique<InspectorMediaEventHandler>(inspector_context));
+  if (base::FeatureList::IsEnabled(media::kEnableMediaInternals))
+    handlers.push_back(std::make_unique<RenderMediaEventHandler>());
 
   // This must be created for every new WebMediaPlayer, each instance generates
   // a new player id which is used to collate logs on the browser side.
@@ -690,9 +691,10 @@ blink::WebMediaPlayer* MediaFactory::CreateWebMediaPlayerForMediaStream(
       video_frame_compositor_task_runner;
 
   std::vector<std::unique_ptr<BatchingMediaLog::EventHandler>> handlers;
-  handlers.push_back(std::make_unique<RenderMediaEventHandler>());
   handlers.push_back(
       std::make_unique<InspectorMediaEventHandler>(inspector_context));
+  if (base::FeatureList::IsEnabled(media::kEnableMediaInternals))
+    handlers.push_back(std::make_unique<RenderMediaEventHandler>());
 
   // This must be created for every new WebMediaPlayer, each instance generates
   // a new player id which is used to collate logs on the browser side.
