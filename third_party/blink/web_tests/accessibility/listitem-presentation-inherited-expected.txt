@@ -31,12 +31,21 @@ AXRole: AXGenericContainer
                 AXRole: AXInlineTextBox "Item 3"
     AXRole: AXPresentational
         AXRole: AXListItem
+            AXRole: AXListMarker "• "
+                AXRole: AXStaticText "• "
+                    AXRole: AXInlineTextBox "• "
             AXRole: AXStaticText "Plain Text 1"
                 AXRole: AXInlineTextBox "Plain Text 1"
         AXRole: AXListItem
+            AXRole: AXListMarker "• "
+                AXRole: AXStaticText "• "
+                    AXRole: AXInlineTextBox "• "
             AXRole: AXStaticText "Plain Text 2"
                 AXRole: AXInlineTextBox "Plain Text 2"
         AXRole: AXListItem
+            AXRole: AXListMarker "• "
+                AXRole: AXStaticText "• "
+                    AXRole: AXInlineTextBox "• "
             AXRole: AXStaticText "Plain Text 3"
                 AXRole: AXInlineTextBox "Plain Text 3"
 

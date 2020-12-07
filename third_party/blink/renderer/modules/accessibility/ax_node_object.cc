@@ -3218,8 +3218,6 @@ void AXNodeObject::AddNodeChildren() {
     return;
   for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
        child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
-    if (child->IsMarkerPseudoElement() && AccessibilityIsIgnored())
-      continue;
     AXObject* child_obj = AXObjectCache().GetOrCreate(child);
 
     if (RuntimeEnabledFeatures::AccessibilityExposeIgnoredNodesEnabled() &&

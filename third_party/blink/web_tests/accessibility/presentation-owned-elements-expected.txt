@@ -32,9 +32,15 @@ AXRole: AXGenericContainer
             AXRole: AXInlineTextBox "These lists have a static text role because they have a presentation role."
     AXRole: AXPresentational
         AXRole: AXListItem
+            AXRole: AXListMarker "• "
+                AXRole: AXStaticText "• "
+                    AXRole: AXInlineTextBox "• "
             AXRole: AXStaticText "Presentation Item 1"
                 AXRole: AXInlineTextBox "Presentation Item 1"
         AXRole: AXListItem
+            AXRole: AXListMarker "• "
+                AXRole: AXStaticText "• "
+                    AXRole: AXInlineTextBox "• "
             AXRole: AXStaticText "Presentation Item 2"
                 AXRole: AXInlineTextBox "Presentation Item 2"
     AXRole: AXGenericContainer
@@ -48,6 +54,9 @@ AXRole: AXGenericContainer
             AXRole: AXStaticText "Explicit Item 1"
                 AXRole: AXInlineTextBox "Explicit Item 1"
         AXRole: AXListItem
+            AXRole: AXListMarker "• "
+                AXRole: AXStaticText "• "
+                    AXRole: AXInlineTextBox "• "
             AXRole: AXStaticText "Implicit Item 2"
                 AXRole: AXInlineTextBox "Implicit Item 2"
     AXRole: AXGenericContainer
