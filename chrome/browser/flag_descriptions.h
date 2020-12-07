@@ -405,6 +405,9 @@ extern const char kDesktopPWAsMigrationUserDisplayModeCleanUpDescription[];
 extern const char kDesktopPWAsAppIconShortcutsMenuName[];
 extern const char kDesktopPWAsAppIconShortcutsMenuDescription[];
 
+extern const char kDesktopPWAsElidedExtensionsMenuName[];
+extern const char kDesktopPWAsElidedExtensionsMenuDescription[];
+
 extern const char kDesktopPWAsTabStripName[];
 extern const char kDesktopPWAsTabStripDescription[];
 

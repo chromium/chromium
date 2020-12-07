@@ -243,6 +243,11 @@ const base::Feature kDesktopPWAsAppIconShortcutsMenu{
 const base::Feature kDesktopPWAsCacheDuringDefaultInstall{
     "DesktopPWAsCacheDuringDefaultInstall", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Moves the Extensions "puzzle piece" icon from the title bar into the app menu
+// for web app windows.
+const base::Feature kDesktopPWAsElidedExtensionsMenu{
+    "DesktopPWAsElidedExtensionsMenu", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables local PWA installs to update their app manifest data if the site
 // changes its manifest.
 const base::Feature kDesktopPWAsLocalUpdating{"DesktopPWAsLocalUpdating",

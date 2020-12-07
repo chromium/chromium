@@ -1496,6 +1496,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "enable-desktop-pwas-elided-extensions-menu",
+    "owners": [ "alancutter@chromium.org", "desktop-pwas-team@google.com" ],
+    "expiry_milestone": 91
+  },
+  {
     "name": "enable-desktop-pwas-local-updating",
     "owners": [ "desktop-pwas-team@google.com" ],
     "expiry_milestone": 88
