@@ -220,7 +220,6 @@ crbug.com/997202 external/wpt/css/css-backgrounds/background-attachment-local/at
 crbug.com/997202 external/wpt/css/css-backgrounds/background-attachment-local/attachment-local-clipping-image-5.html [ Failure ]
 crbug.com/997202 external/wpt/css/css-backgrounds/border-radius-clip-001.html [ Failure ]
 crbug.com/997202 external/wpt/css/css-backgrounds/border-radius-clip-002.htm [ Failure ]
-crbug.com/997202 external/wpt/css/css-transforms/perspective-transforms-equivalence.html [ Failure ]
 
 crbug.com/807395 fast/multicol/mixed-opacity-test.html [ Failure ]
 
@@ -370,23 +369,7 @@ crbug.com/1086473 external/wpt/css/css-images/image-resolution/* [ Skip ]
 # Fail due to lack of fuzzy matching on Linux, Win and Mac platforms for WPT. The pixels in the pre-rotated reference
 # images do not exactly match the exif rotated images, probably due to jpeg decoding/encoding issues. Maybe
 # adjusting the image size to a multiple of 8 would fix this (so all jpeg blocks are solid color).
-crbug.com/997202 external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-with-src-rect.tentative.html [ Failure ]
-crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-default.html [ Failure ]
-crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-from-image-composited-dynamic1.html [ Failure ]
-crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-from-image-composited.html [ Failure ]
-crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-from-image-content-images.html [ Failure ]
-crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-from-image-dynamic1.html [ Failure ]
-crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-from-image-embedded-content.html [ Failure ]
-crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-from-image.html [ Failure ]
-crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-none-image-document.html [ Failure ]
-crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-from-image-composited-dynamic2.html [ Failure ]
-crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-from-image-dynamic2.html [ Failure ]
-crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-none-content-images.html [ Failure ]
-crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-none.html [ Failure ]
-crbug.com/997202 external/wpt/css/css-images/image-orientation/svg-image-orientation.html [ Failure ]
-crbug.com/997202 external/wpt/css/css-images/image-orientation/svg-image-orientation-none.html [ Failure ]
 crbug.com/997202 external/wpt/css/css-images/image-orientation/svg-image-orientation-aspect-ratio.html [ Failure ]
-crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-background-position.html [ Failure ]
 crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-background-properties.html [ Failure ]
 crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-background-properties-border-radius.html [ Failure ]
 crbug.com/997202 external/wpt/density-size-correction/density-corrected-image-svg-aspect-ratio.html [ Failure ]
@@ -397,9 +380,7 @@ crbug.com/997202 external/wpt/css/css-backgrounds/border-image-slice-007.htm [ F
 crbug.com/997202 external/wpt/css/css-backgrounds/border-image-slice-005.htm [ Failure ]
 
 # Ref results are wrong on the background and list case, not sure on border result
-crbug.com/1076121 external/wpt/css/css-images/image-orientation/image-orientation-list-style-image.html [ Failure ]
 crbug.com/1076121 external/wpt/css/css-images/image-orientation/image-orientation-border-image.html [ Failure ]
-crbug.com/1076121 external/wpt/css/css-images/image-orientation/image-orientation-background-image.html [ Failure ]
 
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-png.html [ Failure ]
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-svg.html [ Failure ]
