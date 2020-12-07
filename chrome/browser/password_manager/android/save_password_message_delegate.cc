@@ -43,7 +43,9 @@ void SavePasswordMessageDelegate::DisplaySavePasswordPrompt(
 }
 
 void SavePasswordMessageDelegate::DismissSavePasswordPrompt() {
-  messages::MessageDispatcherBridge::DismissMessage(*message_, web_contents_);
+  if (message_ != nullptr) {
+    messages::MessageDispatcherBridge::DismissMessage(*message_, web_contents_);
+  }
 }
 
 void SavePasswordMessageDelegate::CreateMessage(

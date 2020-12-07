@@ -600,11 +600,10 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
           password_manager::features::kPasswordChange)) {
     was_leak_dialog_shown_ = true;
   }
-  if (messages::IsPasswordMessagesUiEnabled()) {
-    save_password_message_delegate_.DismissSavePasswordPrompt();
-  } else {
-    HideSavePasswordInfobar(web_contents());
-  }
+
+  save_password_message_delegate_.DismissSavePasswordPrompt();
+  HideSavePasswordInfobar(web_contents());
+
   (new CredentialLeakControllerAndroid(
        leak_type, saved_sites, origin, username,
        web_contents()->GetTopLevelNativeWindow()))
