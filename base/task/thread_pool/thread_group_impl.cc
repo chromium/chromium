@@ -585,6 +585,9 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
 
   DCHECK(ContainsWorker(outer_->workers_, worker));
 
+  if (!CanGetWorkLockRequired(&executor, worker))
+    return nullptr;
+
   // Use this opportunity, before assigning work to this worker, to create/wake
   // additional workers if needed (doing this here allows us to reduce
   // potentially expensive create/wake directly on PostTask()).
@@ -594,9 +597,6 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
     outer_->EnsureEnoughWorkersLockRequired(&executor);
     executor.FlushWorkerCreation(&outer_->lock_);
   }
-
-  if (!CanGetWorkLockRequired(&executor, worker))
-    return nullptr;
 
   RegisteredTaskSource task_source;
   TaskPriority priority;
@@ -893,8 +893,7 @@ bool ThreadGroupImpl::WorkerThreadDelegateImpl::CanGetWorkLockRequired(
   // max tasks increases). This ensures that if we have excess workers in the
   // thread group, they get a chance to no longer be excess before being cleaned
   // up.
-  if (outer_->GetNumAwakeWorkersLockRequired() >
-      outer_->GetDesiredNumAwakeWorkersLockRequired()) {
+  if (outer_->GetNumAwakeWorkersLockRequired() > outer_->max_tasks_) {
     OnWorkerBecomesIdleLockRequired(worker);
     return false;
   }
