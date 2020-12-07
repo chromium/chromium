@@ -93,7 +93,7 @@ Polymer({
     shouldShowSetupInstructionsSeparately_: {
       type: Boolean,
       computed: 'computeShouldShowSetupInstructionsSeparately_(' +
-          'hasNotStartedSetupAttempt_, isSetupAttemptInProgress_)',
+          'setupState_)',
       reflectToAttribute: true,
     },
   },
@@ -180,7 +180,10 @@ Polymer({
    * @private
    */
   computeShouldShowSetupInstructionsSeparately_() {
-    return this.isSetupAttemptInProgress_ || this.hasNotStartedSetupAttempt_;
+    return this.setupState_ === null ||
+        this.setupState_ ===
+        NotificationAccessSetupOperationStatus.CONNECTION_REQUESTED ||
+        this.setupState_ === NotificationAccessSetupOperationStatus.CONNECTING;
   },
 
   /** @private */
@@ -214,8 +217,10 @@ Polymer({
     switch (this.setupState_) {
       case Status.CONNECTION_REQUESTED:
       case Status.CONNECTING:
-      case Status.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE:
         return this.i18n('multideviceNotificationAccessSetupConnectingTitle');
+      case Status.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE:
+        return this.i18n(
+            'multideviceNotificationAccessSetupAwaitingResponseTitle');
       case Status.COMPLETED_SUCCESSFULLY:
         return this.i18n('multideviceNotificationAccessSetupCompletedTitle');
       case Status.TIMED_OUT_CONNECTING:
@@ -254,11 +259,13 @@ Polymer({
       case Status.NOTIFICATION_ACCESS_PROHIBITED:
         return this.i18nAdvanced(
             'multideviceNotificationAccessSetupAccessProhibitedSummary');
+      case Status.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE:
+        return this.i18n(
+            'multideviceNotificationAccessSetupAwaitingResponseSummary');
 
       // Only setup instructions will be shown.
       case Status.CONNECTION_REQUESTED:
       case Status.CONNECTING:
-      case Status.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE:
       default:
         return '';
     }
