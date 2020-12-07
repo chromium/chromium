@@ -417,11 +417,26 @@ bool MutableCSSPropertyValueSet::SetProperty(const CSSPropertyValue& property,
                                              CSSPropertyValue* slot) {
   CSSPropertyValue* to_replace =
       slot ? slot : FindCSSPropertyWithName(property.Name());
-  if (to_replace && *to_replace == property)
-    return false;
   if (to_replace) {
-    *to_replace = property;
-    return true;
+    const CSSProperty& prop = CSSProperty::Get(property.Id());
+    if (prop.IsInLogicalPropertyGroup()) {
+      DCHECK(property_vector_.Contains(*to_replace));
+      int to_replace_index = to_replace - property_vector_.begin();
+      for (int n = property_vector_.size() - 1; n > to_replace_index; --n) {
+        if (prop.IsInSameLogicalPropertyGroupWithDifferentMappingLogic(
+                PropertyAt(n).Id())) {
+          RemovePropertyAtIndex(to_replace_index, nullptr);
+          to_replace = nullptr;
+          break;
+        }
+      }
+    }
+    if (to_replace) {
+      if (*to_replace == property)
+        return false;
+      *to_replace = property;
+      return true;
+    }
   }
   property_vector_.push_back(property);
   return true;
