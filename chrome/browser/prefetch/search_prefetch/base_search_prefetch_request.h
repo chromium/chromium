@@ -49,10 +49,8 @@ class BaseSearchPrefetchRequest {
       delete;
 
   // Starts the network request to prefetch |prefetch_url_|. Sets various fields
-  // on a resource request and calls |StartPrefetchRequestInternal()|. Returns
-  // |false| if the request is not started (i.e., it would be deferred by
-  // throttles).
-  bool StartPrefetchRequest(Profile* profile);
+  // on a resource request and calls |StartPrefetchRequestInternal()|.
+  void StartPrefetchRequest(Profile* profile);
 
   // Marks a prefetch as canceled and stops any ongoing fetch.
   void CancelPrefetch();

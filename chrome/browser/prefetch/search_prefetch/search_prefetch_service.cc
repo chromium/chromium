@@ -127,9 +127,6 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
   }
 
   DCHECK(prefetch_request);
-  if (!prefetch_request->StartPrefetchRequest(profile_)) {
-    return false;
-  }
 
   prefetches_.emplace(search_terms, std::move(prefetch_request));
   prefetches_[search_terms]->StartPrefetchRequest(profile_);

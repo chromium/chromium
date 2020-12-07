@@ -4,80 +4,18 @@
 
 #include "chrome/browser/prefetch/search_prefetch/base_search_prefetch_request.h"
 
-#include <vector>
-
-#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/public/browser/client_hints.h"
 #include "content/public/browser/frame_accept_header.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/url_loader_throttles.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
 #include "net/base/load_flags.h"
-#include "net/cookies/site_for_cookies.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
-#include "third_party/blink/public/common/loader/url_loader_throttle.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
-#include "url/origin.h"
-
-namespace {
-
-// A custom URLLoaderThrottle delegate that is very sensitive. Anything that
-// would delay or cancel the request is treated the same, which would prevent
-// the prefetch request.
-class CheckForCancelledOrPausedDelegate
-    : public blink::URLLoaderThrottle::Delegate {
- public:
-  CheckForCancelledOrPausedDelegate() = default;
-  ~CheckForCancelledOrPausedDelegate() override = default;
-
-  CheckForCancelledOrPausedDelegate(const CheckForCancelledOrPausedDelegate&) =
-      delete;
-  CheckForCancelledOrPausedDelegate& operator=(
-      const CheckForCancelledOrPausedDelegate&) = delete;
-
-  // URLLoaderThrottle::Delegate:
-  void CancelWithError(int error_code,
-                       base::StringPiece custom_reason) override {
-    cancelled_or_paused_ = true;
-  }
-
-  void Resume() override {}
-
-  void PauseReadingBodyFromNet() override { cancelled_or_paused_ = true; }
-
-  void RestartWithFlags(int additional_load_flags) override {
-    cancelled_or_paused_ = true;
-  }
-
-  void RestartWithURLResetAndFlags(int additional_load_flags) override {
-    cancelled_or_paused_ = true;
-  }
-
-  void RestartWithURLResetAndFlagsNow(int additional_load_flags) override {
-    cancelled_or_paused_ = true;
-  }
-
-  void RestartWithModifiedHeadersNow(
-      const net::HttpRequestHeaders& modified_headers) override {
-    cancelled_or_paused_ = true;
-  }
-
-  bool cancelled_or_paused() const { return cancelled_or_paused_; }
-
- private:
-  bool cancelled_or_paused_ = false;
-};
-
-}  // namespace
 
 BaseSearchPrefetchRequest::BaseSearchPrefetchRequest(
     const GURL& prefetch_url,
@@ -87,7 +25,7 @@ BaseSearchPrefetchRequest::BaseSearchPrefetchRequest(
 
 BaseSearchPrefetchRequest::~BaseSearchPrefetchRequest() = default;
 
-bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
+void BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   net::NetworkTrafficAnnotationTag network_traffic_annotation =
       net::DefineNetworkTrafficAnnotation("search_prefetch_service", R"(
         semantics {
@@ -123,8 +61,6 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
           }
         })");
 
-  url::Origin prefetch_origin = url::Origin::Create(prefetch_url_);
-
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->load_flags |= net::LOAD_PREFETCH;
   resource_request->url = prefetch_url_;
@@ -134,26 +70,8 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   resource_request->report_raw_headers = true;
   resource_request->credentials_mode =
       network::mojom::CredentialsMode::kInclude;
-  resource_request->method = "GET";
-  resource_request->mode = network::mojom::RequestMode::kNavigate;
-  resource_request->site_for_cookies =
-      net::SiteForCookies::FromUrl(prefetch_url_);
-  resource_request->destination = network::mojom::RequestDestination::kDocument;
-  resource_request->resource_type =
-      static_cast<int>(blink::mojom::ResourceType::kMainFrame);
-  resource_request->trusted_params = network::ResourceRequest::TrustedParams();
-  // We don't handle redirects, so |kOther| makes sense here.
-  resource_request->trusted_params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RequestType::kOther, prefetch_origin, prefetch_origin,
-      resource_request->site_for_cookies);
-  resource_request->referrer_policy = net::ReferrerPolicy::NO_REFERRER;
-
-  // Tack an 'Upgrade-Insecure-Requests' header to outgoing navigational
-  // requests, as described in
-  // https://w3c.github.io/webappsec/specs/upgrade/#feature-detect
-  resource_request->headers.SetHeader("Upgrade-Insecure-Requests", "1");
-  resource_request->headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
-                                      GetUserAgent());
+  variations::AppendVariationsHeaderUnknownSignedIn(
+      prefetch_url_, variations::InIncognito::kNo, resource_request.get());
   resource_request->headers.SetHeader(content::kCorsExemptPurposeHeaderName,
                                       "prefetch");
   resource_request->headers.SetHeader(
@@ -168,37 +86,13 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
       profile->GetClientHintsControllerDelegate(),
       /*is_ua_override_on=*/false, js_enabled);
 
-  // Before sending out the request, allow throttles to modify the request (not
-  // the URL). The rest of the URL Loader throttle calls are captured in the
-  // navigation stack. Headers can be added by throttles at this point, which we
-  // want to capture.
-  auto wc_getter =
-      base::BindRepeating([]() -> content::WebContents* { return nullptr; });
-  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
-      content::CreateContentBrowserURLLoaderThrottles(
-          *resource_request, profile, std::move(wc_getter),
-          /*navigation_ui_data=*/nullptr,
-          content::RenderFrameHost::kNoFrameTreeNodeId);
-
-  bool should_defer = false;
-  for (auto& throttle : throttles) {
-    CheckForCancelledOrPausedDelegate cancel_or_pause_delegate;
-    throttle->set_delegate(&cancel_or_pause_delegate);
-    throttle->WillStartRequest(resource_request.get(), &should_defer);
-    // Make sure throttles are deleted before |cancel_or_pause_delegate| in case
-    // they call into the delegate in the destructor.
-    throttle.reset();
-    if (should_defer || resource_request->url != prefetch_url_ ||
-        cancel_or_pause_delegate.cancelled_or_paused()) {
-      return false;
-    }
-  }
+  // TODO(ryansturm): Find other headers that may need to be set.
+  // https://crbug.com/1138648
 
   current_status_ = SearchPrefetchStatus::kInFlight;
 
   StartPrefetchRequestInternal(profile, std::move(resource_request),
                                network_traffic_annotation);
-  return true;
 }
 
 void BaseSearchPrefetchRequest::CancelPrefetch() {
