@@ -147,7 +147,7 @@ android_library("weblayer_java_private_test_support") {
   testonly = true
   sources = [
     "src/org/chromium/weblayer/test/BrowserControlsHelper.java",
-    "src/org/chromium/weblayer/test/SiteSettingsActivityTestRule.java",
+    "src/org/chromium/weblayer/test/SettingsActivityTestRule.java",
   ]
   deps = [
     ":weblayer_java_test_support",

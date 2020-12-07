@@ -4,7 +4,7 @@
      found in the LICENSE file. -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.WebLayer.SiteSettings" parent="Theme.BrowserUI">
+    <style name="Theme.WebLayer.Settings" parent="Theme.BrowserUI">
         <item name="preferenceTheme">@style/PreferenceTheme</item>
         <item name="alertDialogTheme">@style/Theme.Chromium.AlertDialog</item>
 

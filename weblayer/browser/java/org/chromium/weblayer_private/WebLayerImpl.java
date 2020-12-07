@@ -72,6 +72,7 @@ import org.chromium.weblayer_private.interfaces.IMediaRouteDialogFragment;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.IRemoteFragmentClient;
+import org.chromium.weblayer_private.interfaces.ISettingsFragment;
 import org.chromium.weblayer_private.interfaces.ISiteSettingsFragment;
 import org.chromium.weblayer_private.interfaces.IWebLayer;
 import org.chromium.weblayer_private.interfaces.IWebLayerClient;
@@ -83,6 +84,7 @@ import org.chromium.weblayer_private.media.MediaSessionManager;
 import org.chromium.weblayer_private.media.MediaStreamManager;
 import org.chromium.weblayer_private.metrics.MetricsServiceClient;
 import org.chromium.weblayer_private.metrics.UmaUtils;
+import org.chromium.weblayer_private.settings.SettingsFragmentImpl;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -331,13 +333,21 @@ public final class WebLayerImpl extends IWebLayer.Stub {
     }
 
     @Override
+    public ISettingsFragment createSettingsFragmentImpl(
+            IRemoteFragmentClient remoteFragmentClient, IObjectWrapper fragmentArgs) {
+        StrictModeWorkaround.apply();
+        Bundle unwrappedArgs = ObjectWrapper.unwrap(fragmentArgs, Bundle.class);
+        return new SettingsFragmentImpl(mProfileManager, remoteFragmentClient, unwrappedArgs)
+                .asISettingsFragment();
+    }
+
+    @Override
     public ISiteSettingsFragment createSiteSettingsFragmentImpl(
             IRemoteFragmentClient remoteFragmentClient, IObjectWrapper fragmentArgs) {
         StrictModeWorkaround.apply();
         Bundle unwrappedArgs = ObjectWrapper.unwrap(fragmentArgs, Bundle.class);
-        SiteSettingsFragmentImpl fragment =
-                new SiteSettingsFragmentImpl(mProfileManager, remoteFragmentClient, unwrappedArgs);
-        return fragment.asISiteSettingsFragment();
+        return new SettingsFragmentImpl(mProfileManager, remoteFragmentClient, unwrappedArgs)
+                .asISiteSettingsFragment();
     }
 
     @Override

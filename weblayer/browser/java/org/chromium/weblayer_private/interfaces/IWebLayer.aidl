@@ -13,6 +13,7 @@ import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.IRemoteFragmentClient;
 import org.chromium.weblayer_private.interfaces.IMediaRouteDialogFragment;
+import org.chromium.weblayer_private.interfaces.ISettingsFragment;
 import org.chromium.weblayer_private.interfaces.ISiteSettingsFragment;
 import org.chromium.weblayer_private.interfaces.IWebLayerClient;
 
@@ -109,6 +110,17 @@ interface IWebLayer {
   // Added in Version 88.
   void onRemoteMediaServiceStarted(in IObjectWrapper sessionService, in Intent intent) = 22;
   void onRemoteMediaServiceDestroyed(int id) = 23;
+
+  // Creates the WebLayer counterpart to a SettingsFragment - a SettingsFragmentImpl
+  //
+  // @param fragmentClient Representative of the Fragment on the client side through which
+  // WebLayer can call methods on Fragment.
+  // @param fragmentArgs Bundle of arguments with which the Fragment was created on the client side
+  // (see Fragment#setArguments).
+  // Added in Version 89.
+  ISettingsFragment createSettingsFragmentImpl(
+      in IRemoteFragmentClient remoteFragmentClient,
+      in IObjectWrapper fragmentArgs) = 25;
 
   // WARNING: when choosing next value make sure you look back for the max, as
   // merges may mean the last function does not have the max value.

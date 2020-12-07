@@ -56,8 +56,13 @@
                 android:resource="@xml/weblayer_file_paths" />
         </provider>
 
+        <activity android:name="org.chromium.weblayer.SettingsActivity"
+            android:theme="@style/Theme.WebLayer.Settings"
+            android:exported="false">
+        </activity>
+
         <activity android:name="org.chromium.weblayer.SiteSettingsActivity"
-            android:theme="@style/Theme.WebLayer.SiteSettings"
+            android:theme="@style/Theme.WebLayer.Settings"
             android:exported="false">
         </activity>
 

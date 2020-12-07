@@ -30,7 +30,8 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
-import org.chromium.weblayer_private.interfaces.SiteSettingsIntentHelper;
+import org.chromium.weblayer_private.interfaces.SettingsIntentHelper;
+import org.chromium.weblayer_private.settings.WebLayerSiteSettingsClient;
 
 /**
  * WebLayer's customization of PageInfoControllerDelegate.
@@ -65,7 +66,7 @@ public class PageInfoControllerDelegateImpl extends PageInfoControllerDelegate {
      */
     @Override
     public void showSiteSettings(String url) {
-        Intent intent = SiteSettingsIntentHelper.createIntentForSingleWebsite(
+        Intent intent = SettingsIntentHelper.createIntentForSiteSettingsSingleWebsite(
                 mContext, mProfile.getName(), mProfile.isIncognito(), url);
 
         // Disabling StrictMode to avoid violations (https://crbug.com/819410).
@@ -77,7 +78,7 @@ public class PageInfoControllerDelegateImpl extends PageInfoControllerDelegate {
         String category = SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.COOKIES);
         String title = mContext.getResources().getString(
                 ContentSettingsResources.getTitle(ContentSettingsType.COOKIES));
-        Intent intent = SiteSettingsIntentHelper.createIntentForSingleCategory(
+        Intent intent = SettingsIntentHelper.createIntentForSiteSettingsSingleCategory(
                 mContext, mProfile.getName(), mProfile.isIncognito(), category, title);
         launchIntent(intent);
     }

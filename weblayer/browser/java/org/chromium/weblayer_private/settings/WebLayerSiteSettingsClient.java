@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.weblayer_private;
+package org.chromium.weblayer_private.settings;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -21,6 +21,7 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.page_info.PageInfoFeatureList;
+import org.chromium.weblayer_private.WebLayerImpl;
 
 import java.util.Collections;
 import java.util.Set;

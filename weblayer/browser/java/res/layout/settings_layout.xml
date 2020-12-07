@@ -10,7 +10,7 @@
   <FrameLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:id="@+id/site_settings_container">
+      android:id="@+id/settings_container">
   </FrameLayout>
   <include layout="@layout/settings_action_bar_shadow" />
 </RelativeLayout>

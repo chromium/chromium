@@ -4,9 +4,9 @@
 
 package org.chromium.weblayer_private.interfaces;
 
-/** Keys for the Bundle of arguments with which SiteSettingsFragments are created. */
-public interface SiteSettingsFragmentArgs {
-    String ACTIVITY_CLASS_NAME = "org.chromium.weblayer.SiteSettingsActivity";
+/** Keys for the Bundle of arguments with which SettingsFragments are created. */
+public interface SettingsFragmentArgs {
+    String ACTIVITY_CLASS_NAME = "org.chromium.weblayer.SettingsActivity";
 
     // Argument names
     String PROFILE_NAME = "profile_name";
