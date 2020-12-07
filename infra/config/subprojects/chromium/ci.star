@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/branches.star", "branches")
-load("//lib/builders.star", "builder_name", "cpu", "goma", "os", "xcode")
+load("//lib/builders.star", "cpu", "goma", "os", "xcode")
 load("//lib/ci.star", "ci")
 load("//console-header.star", "HEADER")
 load("//project.star", "settings")
@@ -542,7 +542,7 @@ ci.android_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("Android arm64 Builder (dbg)")],
+    triggered_by = ["ci/Android arm64 Builder (dbg)"],
 )
 
 ci.android_builder(
@@ -554,7 +554,7 @@ ci.android_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("Android arm64 Builder (dbg)")],
+    triggered_by = ["ci/Android arm64 Builder (dbg)"],
 )
 
 ci.android_builder(
@@ -566,7 +566,7 @@ ci.android_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("Android arm64 Builder (dbg)")],
+    triggered_by = ["ci/Android arm64 Builder (dbg)"],
 )
 
 ci.android_builder(
@@ -578,7 +578,7 @@ ci.android_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("Android arm64 Builder (dbg)")],
+    triggered_by = ["ci/Android arm64 Builder (dbg)"],
 )
 
 ci.android_builder(
@@ -701,7 +701,7 @@ ci.android_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("Android arm64 Builder (dbg)")],
+    triggered_by = ["ci/Android arm64 Builder (dbg)"],
 )
 
 ci.android_builder(
@@ -725,7 +725,7 @@ ci.android_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("Android arm64 Builder (dbg)")],
+    triggered_by = ["ci/Android arm64 Builder (dbg)"],
 )
 
 ci.android_builder(
@@ -737,7 +737,7 @@ ci.android_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("Android arm64 Builder (dbg)")],
+    triggered_by = ["ci/Android arm64 Builder (dbg)"],
 )
 
 ci.android_builder(
@@ -835,7 +835,7 @@ ci.android_builder(
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
     notifies = ["cronet"],
-    triggered_by = [builder_name("android-cronet-arm-rel")],
+    triggered_by = ["ci/android-cronet-arm-rel"],
 )
 
 ci.android_builder(
@@ -848,7 +848,7 @@ ci.android_builder(
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
     notifies = ["cronet"],
-    triggered_by = [builder_name("android-cronet-arm-rel")],
+    triggered_by = ["ci/android-cronet-arm-rel"],
 )
 
 # Runs on a specific machine with an attached phone
@@ -963,7 +963,7 @@ ci.android_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("Android arm64 Builder (dbg)")],
+    triggered_by = ["ci/Android arm64 Builder (dbg)"],
 )
 
 ci.android_builder(
@@ -1748,7 +1748,7 @@ ci.dawn_thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("Dawn Linux x64 DEPS Builder")],
+    triggered_by = ["ci/Dawn Linux x64 DEPS Builder"],
 )
 
 ci.dawn_thin_tester(
@@ -1760,7 +1760,7 @@ ci.dawn_thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("Dawn Linux x64 DEPS Builder")],
+    triggered_by = ["ci/Dawn Linux x64 DEPS Builder"],
 )
 
 ci.dawn_thin_tester(
@@ -1811,7 +1811,7 @@ ci.dawn_thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("Dawn Mac x64 DEPS Builder")],
+    triggered_by = ["ci/Dawn Mac x64 DEPS Builder"],
 )
 
 ci.dawn_thin_tester(
@@ -1823,7 +1823,7 @@ ci.dawn_thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("Dawn Mac x64 DEPS Builder")],
+    triggered_by = ["ci/Dawn Mac x64 DEPS Builder"],
 )
 
 ci.dawn_thin_tester(
@@ -1882,7 +1882,7 @@ ci.dawn_thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("Dawn Win10 x64 DEPS Builder")],
+    triggered_by = ["ci/Dawn Win10 x64 DEPS Builder"],
 )
 
 ci.dawn_thin_tester(
@@ -1894,7 +1894,7 @@ ci.dawn_thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("Dawn Win10 x64 DEPS Builder")],
+    triggered_by = ["ci/Dawn Win10 x64 DEPS Builder"],
 )
 
 ci.dawn_thin_tester(
@@ -1945,7 +1945,7 @@ ci.dawn_thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("Dawn Win10 x86 DEPS Builder")],
+    triggered_by = ["ci/Dawn Win10 x86 DEPS Builder"],
 )
 
 ci.dawn_thin_tester(
@@ -1957,7 +1957,7 @@ ci.dawn_thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("Dawn Win10 x86 DEPS Builder")],
+    triggered_by = ["ci/Dawn Win10 x86 DEPS Builder"],
 )
 
 ci.dawn_thin_tester(
@@ -3387,7 +3387,7 @@ ci.gpu_thin_tester(
         category = "Linux",
     ),
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("GPU Linux Builder")],
+    triggered_by = ["ci/GPU Linux Builder"],
 )
 
 ci.gpu_thin_tester(
@@ -3407,7 +3407,7 @@ ci.gpu_thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("GPU Mac Builder")],
+    triggered_by = ["ci/GPU Mac Builder"],
 )
 
 ci.gpu_thin_tester(
@@ -3427,7 +3427,7 @@ ci.gpu_thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("GPU Mac Builder")],
+    triggered_by = ["ci/GPU Mac Builder"],
 )
 
 ci.gpu_thin_tester(
@@ -3447,7 +3447,7 @@ ci.gpu_thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("GPU Win x64 Builder")],
+    triggered_by = ["ci/GPU Win x64 Builder"],
 )
 
 ci.gpu_fyi_linux_builder(
@@ -4308,7 +4308,7 @@ ci.linux_builder(
     cq_mirrors_console_view = "mirrors",
     goma_backend = None,
     main_console_view = "main",
-    triggered_by = [builder_name("Linux Builder")],
+    triggered_by = ["ci/Linux Builder"],
 )
 
 ci.linux_builder(
@@ -4320,7 +4320,7 @@ ci.linux_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    triggered_by = [builder_name("Linux Builder (dbg)")],
+    triggered_by = ["ci/Linux Builder (dbg)"],
 )
 
 ci.linux_builder(
@@ -4419,7 +4419,7 @@ ci.linux_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("linux-ozone-rel")],
+    triggered_by = ["ci/linux-ozone-rel"],
 )
 
 ci.linux_builder(
@@ -4432,7 +4432,7 @@ ci.linux_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("linux-ozone-rel")],
+    triggered_by = ["ci/linux-ozone-rel"],
 )
 
 ci.linux_builder(
@@ -4445,7 +4445,7 @@ ci.linux_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    triggered_by = [builder_name("linux-ozone-rel")],
+    triggered_by = ["ci/linux-ozone-rel"],
 )
 
 ci.linux_builder(
@@ -4458,7 +4458,7 @@ ci.linux_builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
-    triggered_by = [builder_name("linux-ozone-rel")],
+    triggered_by = ["ci/linux-ozone-rel"],
     tree_closing = False,
 )
 
@@ -4472,7 +4472,7 @@ ci.linux_builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
-    triggered_by = [builder_name("linux-ozone-rel")],
+    triggered_by = ["ci/linux-ozone-rel"],
     tree_closing = False,
 )
 
@@ -4486,7 +4486,7 @@ ci.linux_builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
-    triggered_by = [builder_name("linux-ozone-rel")],
+    triggered_by = ["ci/linux-ozone-rel"],
     tree_closing = False,
 )
 
@@ -4555,7 +4555,7 @@ ci.thin_tester(
         short_name = "a64",
     ),
     tree_closing = False,
-    triggered_by = [builder_name("mac-arm64-rel")],
+    triggered_by = ["ci/mac-arm64-rel"],
 )
 
 ci.thin_tester(
@@ -4568,7 +4568,7 @@ ci.thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    triggered_by = [builder_name("Mac Builder")],
+    triggered_by = ["ci/Mac Builder"],
 )
 
 ci.thin_tester(
@@ -4581,7 +4581,7 @@ ci.thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    triggered_by = [builder_name("Mac Builder")],
+    triggered_by = ["ci/Mac Builder"],
 )
 
 ci.thin_tester(
@@ -4594,7 +4594,7 @@ ci.thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    triggered_by = [builder_name("Mac Builder")],
+    triggered_by = ["ci/Mac Builder"],
 )
 
 ci.thin_tester(
@@ -4607,7 +4607,7 @@ ci.thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    triggered_by = [builder_name("Mac Builder")],
+    triggered_by = ["ci/Mac Builder"],
 )
 
 ci.thin_tester(
@@ -4620,7 +4620,7 @@ ci.thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    triggered_by = [builder_name("Mac Builder")],
+    triggered_by = ["ci/Mac Builder"],
 )
 
 ci.thin_tester(
@@ -4633,7 +4633,7 @@ ci.thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    triggered_by = [builder_name("Mac Builder (dbg)")],
+    triggered_by = ["ci/Mac Builder (dbg)"],
 )
 
 ci.mac_ios_builder(
@@ -4717,7 +4717,7 @@ ci.memory_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    triggered_by = [builder_name("Linux ASan LSan Builder")],
+    triggered_by = ["ci/Linux ASan LSan Builder"],
 )
 
 ci.memory_builder(
@@ -4729,7 +4729,7 @@ ci.memory_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    triggered_by = [builder_name("Linux ASan LSan Builder")],
+    triggered_by = ["ci/Linux ASan LSan Builder"],
 )
 
 ci.memory_builder(
@@ -4842,7 +4842,7 @@ ci.memory_builder(
         short_name = "tst",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = [builder_name("Linux TSan Builder")],
+    triggered_by = ["ci/Linux TSan Builder"],
     main_console_view = "main",
 )
 
@@ -5157,7 +5157,7 @@ ci.win_builder(
     cq_mirrors_console_view = "mirrors",
     os = os.WINDOWS_7,
     main_console_view = "main",
-    triggered_by = [builder_name("Win Builder (dbg)")],
+    triggered_by = ["ci/Win Builder (dbg)"],
 )
 
 ci.win_builder(
@@ -5170,7 +5170,7 @@ ci.win_builder(
     cq_mirrors_console_view = "mirrors",
     os = os.WINDOWS_7,
     main_console_view = "main",
-    triggered_by = [builder_name("Win x64 Builder")],
+    triggered_by = ["ci/Win x64 Builder"],
 )
 
 ci.win_builder(
@@ -5208,7 +5208,7 @@ ci.win_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    triggered_by = [builder_name("Win x64 Builder")],
+    triggered_by = ["ci/Win x64 Builder"],
 )
 
 ci.win_builder(

@@ -575,15 +575,8 @@ def builder(
         **kwargs
     )
 
-def builder_name(builder, bucket = args.DEFAULT):
-    bucket = defaults.get_value("bucket", bucket)
-    if bucket == args.COMPUTE:
-        fail("Either a default for bucket must be set or bucket must be passed in")
-    return "{}/{}".format(bucket, builder)
-
 builders = struct(
     builder = builder,
-    builder_name = builder_name,
     cpu = cpu,
     defaults = defaults,
     goma = goma,
