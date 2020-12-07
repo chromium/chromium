@@ -80,6 +80,8 @@ void RegisterNearbySharedStrings(content::WebUIDataSource* data_source) {
       {"nearbyShareFeatureName", IDS_NEARBY_SHARE_FEATURE_NAME},
       {"nearbyShareOnboardingPageDeviceName",
        IDS_NEARBY_ONBOARDING_PAGE_DEVICE_NAME},
+      {"nearbyShareOnboardingPageDeviceNameHelp",
+       IDS_NEARBY_ONBOARDING_PAGE_DEVICE_NAME_HELP},
       {"nearbyShareOnboardingPageSubtitle",
        IDS_NEARBY_ONBOARDING_PAGE_SUBTITLE},
       {"nearbyShareOnboardingPageTitle", IDS_NEARBY_ONBOARDING_PAGE_TITLE},

@@ -85,6 +85,9 @@
   <message name="IDS_NEARBY_ONBOARDING_PAGE_DEVICE_NAME" desc="Label of the text input field to set the name of a users device which is shown to other devices for the Nearby Share feature.">
     Device name
   </message>
+  <message name="IDS_NEARBY_ONBOARDING_PAGE_DEVICE_NAME_HELP" desc="Text that accompanies the device name input field to give some context about what the device name is and how it will be used.">
+    How your device appears to others
+  </message>
   <message name="IDS_NEARBY_ONBOARDING_PAGE_SUBTITLE" desc="Subtitle of the Nearby Share onboarding page that sets up the local device for the feature which provides a way for nearby devices to share files, text, and urls.">
     Share files with people around you
   </message>

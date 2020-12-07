@@ -13,21 +13,28 @@
     <style include="cr-icons cr-shared-style"></style>
     <style>
       #center-content {
+        align-items: center;
         box-sizing: border-box;
         display: flex;
         flex-grow: 1;
-        justify-content: center;
+        justify-content: space-between;
+        margin: 0 24px;
         overflow: hidden;
       }
 
       #splash-image-column {
         height: 200px;
-        margin: 10px;
+        margin: 8px;
         width: 200px;
       }
 
       #device-name-column {
-        margin: 10px;
+        display: flex;
+        flex-direction: column;
+        margin: 8px;
+        position: relative;
+        top: -12px;
+        width: calc(50% - 16px);
       }
 
       #link-row {
@@ -35,8 +42,13 @@
         border-radius: 5px;
       }
 
-      #deviceName {
-        margin-top: 60px;
+      #deviceNameHelp {
+        bottom: 8px;
+        color: var(--google-grey-600);
+        font-size: 10px;
+        line-height: 10px;
+        margin-inline-start: 8px;
+        position: absolute;
       }
 
       #device-name-group {
@@ -60,8 +72,15 @@
           <cr-input label="$i18n{nearbyShareOnboardingPageDeviceName}"
               id="deviceName" value="[[settings.deviceName]]"
               on-input="onDeviceNameInput_" error-message="[[errorMessage]]"
-              invalid="[[hasErrorMessage_(errorMessage)]]">
+              invalid="[[hasErrorMessage_(errorMessage)]]"
+              aria-label="$i18n{nearbyShareOnboardingPageDeviceName}
+                  $i18n{nearbyShareOnboardingPageDeviceNameHelp}">
           </cr-input>
+          <!-- TODO(crbug.com/1155756) move this help text into cr-input -->
+          <div id="deviceNameHelp" hidden="[[hasErrorMessage_(errorMessage)]]"
+            aria-hidden="true">
+            $i18n{nearbyShareOnboardingPageDeviceNameHelp}
+          </div>
         </div>
       </div>
     </nearby-page-template>
