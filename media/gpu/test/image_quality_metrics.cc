@@ -5,6 +5,7 @@
 #include <math.h>
 #include <utility>
 
+#include "base/logging.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/gpu/test/video_frame_helpers.h"
@@ -36,11 +37,9 @@ double ComputeSimilarity(const VideoFrame* frame1,
                          SimilarityMetrics mode) {
   ASSERT_TRUE_OR_RETURN(frame1->IsMappable() && frame2->IsMappable(),
                         std::numeric_limits<std::size_t>::max());
-  // TODO(crbug.com/1044509): Remove these assumptions.
-  ASSERT_TRUE_OR_RETURN(frame1->visible_rect() == frame2->visible_rect(),
-                        std::numeric_limits<std::size_t>::max());
-  ASSERT_TRUE_OR_RETURN(frame1->visible_rect().origin() == gfx::Point(0, 0),
-                        std::numeric_limits<std::size_t>::max());
+  ASSERT_TRUE_OR_RETURN(
+      frame1->visible_rect().size() == frame2->visible_rect().size(),
+      std::numeric_limits<std::size_t>::max());
   // These are used, only if frames are converted to I420, for keeping converted
   // frames alive until the end of function.
   scoped_refptr<VideoFrame> converted_frame1;
@@ -67,9 +66,10 @@ double ComputeSimilarity(const VideoFrame* frame1,
   ASSERT_TRUE_OR_RETURN(metric_func, std::numeric_limits<double>::max());
 
   return metric_func(
-      frame1->data(0), frame1->stride(0), frame1->data(1), frame1->stride(1),
-      frame1->data(2), frame1->stride(2), frame2->data(0), frame2->stride(0),
-      frame2->data(1), frame2->stride(1), frame2->data(2), frame2->stride(2),
+      frame1->visible_data(0), frame1->stride(0), frame1->visible_data(1),
+      frame1->stride(1), frame1->visible_data(2), frame1->stride(2),
+      frame2->visible_data(0), frame2->stride(0), frame2->visible_data(1),
+      frame2->stride(1), frame2->visible_data(2), frame2->stride(2),
       frame1->visible_rect().width(), frame1->visible_rect().height());
 }
 }  // namespace
@@ -77,24 +77,22 @@ double ComputeSimilarity(const VideoFrame* frame1,
 size_t CompareFramesWithErrorDiff(const VideoFrame& frame1,
                                   const VideoFrame& frame2,
                                   uint8_t tolerance) {
-  ASSERT_TRUE_OR_RETURN(frame1.format() == frame2.format(),
-                        std::numeric_limits<std::size_t>::max());
-  // TODO(crbug.com/1044509): Remove these assumption.
-  ASSERT_TRUE_OR_RETURN(frame1.visible_rect() == frame2.visible_rect(),
-                        std::numeric_limits<std::size_t>::max());
-  ASSERT_TRUE_OR_RETURN(frame1.visible_rect().origin() == gfx::Point(0, 0),
-                        std::numeric_limits<std::size_t>::max());
   ASSERT_TRUE_OR_RETURN(frame1.IsMappable() && frame2.IsMappable(),
                         std::numeric_limits<std::size_t>::max());
+  ASSERT_TRUE_OR_RETURN(frame1.format() == frame2.format(),
+                        std::numeric_limits<std::size_t>::max());
+  ASSERT_TRUE_OR_RETURN(
+      frame1.visible_rect().size() == frame2.visible_rect().size(),
+      std::numeric_limits<std::size_t>::max());
   size_t diff_cnt = 0;
 
   const VideoPixelFormat format = frame1.format();
   const size_t num_planes = VideoFrame::NumPlanes(format);
   const gfx::Size& visible_size = frame1.visible_rect().size();
   for (size_t i = 0; i < num_planes; ++i) {
-    const uint8_t* data1 = frame1.data(i);
+    const uint8_t* data1 = frame1.visible_data(i);
     const int stride1 = frame1.stride(i);
-    const uint8_t* data2 = frame2.data(i);
+    const uint8_t* data2 = frame2.visible_data(i);
     const int stride2 = frame2.stride(i);
     const size_t rows = VideoFrame::Rows(i, format, visible_size.height());
     const int row_bytes = VideoFrame::RowBytes(i, format, visible_size.width());

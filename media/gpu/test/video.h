@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_types.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -36,6 +37,11 @@ class Video {
 
   // Create a new Video instance by copying and converting |data_| to NV12.
   std::unique_ptr<Video> ConvertToNV12() const;
+  // Create a new Video instance by copying the content to |visible_rect_| area
+  // and expanding the resolution to |resolution_|. This is only supported for
+  // raw videos in the NV12 format.
+  std::unique_ptr<Video> Expand(const gfx::Size& resolution,
+                                const gfx::Rect& visible_rect) const;
 
   // Load the video file from disk. |max_frames| is the maximum number of
   // frames to be read from disk.
@@ -68,6 +74,8 @@ class Video {
   uint32_t NumFragments() const;
   // Get the video resolution.
   gfx::Size Resolution() const;
+  // Get the video visible rectangle.
+  gfx::Rect VisibleRect() const;
   // Get the video duration.
   base::TimeDelta GetDuration() const;
 
@@ -145,6 +153,7 @@ class Video {
   uint32_t num_frames_ = 0;
   uint32_t num_fragments_ = 0;
   gfx::Size resolution_;
+  gfx::Rect visible_rect_;
 
   DISALLOW_COPY_AND_ASSIGN(Video);
 };

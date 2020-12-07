@@ -269,10 +269,9 @@ bool ConvertVideoFrame(const VideoFrame* src_frame, VideoFrame* dst_frame) {
 
 scoped_refptr<VideoFrame> ConvertVideoFrame(const VideoFrame* src_frame,
                                             VideoPixelFormat dst_pixel_format) {
-  gfx::Rect visible_rect = src_frame->visible_rect();
   auto dst_frame = VideoFrame::CreateFrame(
-      dst_pixel_format, visible_rect.size(), visible_rect, visible_rect.size(),
-      base::TimeDelta());
+      dst_pixel_format, src_frame->coded_size(), src_frame->visible_rect(),
+      src_frame->natural_size(), src_frame->timestamp());
   if (!dst_frame) {
     LOG(ERROR) << "Failed to convert video frame to " << dst_frame->format();
     return nullptr;

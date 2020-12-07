@@ -476,6 +476,72 @@ TEST_F(VideoEncoderTest, DISABLED_FlushAtEndOfStream_NV12DmabufScaling) {
   EXPECT_EQ(encoder->GetFrameReleasedCount(), nv12_video->NumFrames());
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
 }
+
+// TODO(hiroh): Enable this test after the test dashboard becomes more green.
+// Encode VideoFrames with cropping the rectangle (0, 60, size).
+// Cropping is required in VideoEncodeAccelerator when zero-copy video
+// capture is enabled. One example is when 640x360 capture recording is
+// requested, a camera cannot produce the resolution and instead produce 640x480
+// frames with visible_rect=0, 60, 640x360.
+TEST_F(VideoEncoderTest,
+       DISABLED_FlushAtEndOfStream_NV12DmabufCroppingTopAndBottom) {
+  constexpr int kGrowHeight = 120;
+  const gfx::Size original_resolution = g_env->Video()->Resolution();
+  const gfx::Rect expanded_visible_rect(0, kGrowHeight / 2,
+                                        original_resolution.width(),
+                                        original_resolution.height());
+  const gfx::Size expanded_resolution(
+      original_resolution.width(), original_resolution.height() + kGrowHeight);
+  auto nv12_video = g_env->Video()->ConvertToNV12();
+  ASSERT_TRUE(nv12_video);
+  auto nv12_expanded_video =
+      nv12_video->Expand(expanded_resolution, expanded_visible_rect);
+  ASSERT_TRUE(nv12_expanded_video);
+  nv12_video.reset();
+  VideoEncoderClientConfig config(nv12_expanded_video.get(), g_env->Profile(),
+                                  g_env->NumTemporalLayers(), g_env->Bitrate());
+  config.output_resolution = original_resolution;
+  config.input_storage_type =
+      VideoEncodeAccelerator::Config::StorageType::kDmabuf;
+
+  auto encoder = CreateVideoEncoder(nv12_expanded_video.get(), config);
+  encoder->Encode();
+  EXPECT_TRUE(encoder->WaitForFlushDone());
+  EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
+  EXPECT_EQ(encoder->GetFrameReleasedCount(), nv12_expanded_video->NumFrames());
+  EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
+}
+
+// TODO(hiroh): Enable this test after the test dashboard becomes more green.
+// Encode VideoFrames with cropping the rectangle (60, 0, size).
+TEST_F(VideoEncoderTest,
+       DISABLED_FlushAtEndOfStream_NV12DmabufCroppingRightAndLeft) {
+  constexpr int kGrowWidth = 120;
+  const gfx::Size original_resolution = g_env->Video()->Resolution();
+  const gfx::Rect expanded_visible_rect(kGrowWidth / 2, 0,
+                                        original_resolution.width(),
+                                        original_resolution.height());
+  const gfx::Size expanded_resolution(original_resolution.width() + kGrowWidth,
+                                      original_resolution.height());
+  auto nv12_video = g_env->Video()->ConvertToNV12();
+  ASSERT_TRUE(nv12_video);
+  auto nv12_expanded_video =
+      nv12_video->Expand(expanded_resolution, expanded_visible_rect);
+  ASSERT_TRUE(nv12_expanded_video);
+  nv12_video.reset();
+  VideoEncoderClientConfig config(nv12_expanded_video.get(), g_env->Profile(),
+                                  g_env->NumTemporalLayers(), g_env->Bitrate());
+  config.output_resolution = original_resolution;
+  config.input_storage_type =
+      VideoEncodeAccelerator::Config::StorageType::kDmabuf;
+
+  auto encoder = CreateVideoEncoder(nv12_expanded_video.get(), config);
+  encoder->Encode();
+  EXPECT_TRUE(encoder->WaitForFlushDone());
+  EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
+  EXPECT_EQ(encoder->GetFrameReleasedCount(), nv12_expanded_video->NumFrames());
+  EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
+}
 }  // namespace test
 }  // namespace media
 

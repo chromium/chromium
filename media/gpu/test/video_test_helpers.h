@@ -203,8 +203,9 @@ class AlignedDataHelper {
       const std::vector<uint8_t>& stream,
       uint32_t num_frames,
       VideoPixelFormat pixel_format,
-      const gfx::Size& coded_size,
-      const gfx::Rect& visible_area,
+      const gfx::Size& src_coded_size,
+      const gfx::Size& dst_coded_size,
+      const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
       VideoFrame::StorageType storage_type,
       gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory);
@@ -234,12 +235,14 @@ class AlignedDataHelper {
   // kPlatformBufferAlignment.
   void InitializeAlignedMemoryFrames(const std::vector<uint8_t>& stream,
                                      const VideoPixelFormat pixel_format,
-                                     const gfx::Size& coded_size);
+                                     const gfx::Size& src_coded_size,
+                                     const gfx::Size& dst_coded_size);
   // Create GpuMemoryBuffer VideoFrame whose alignments is determined by
   // a GpuMemoryBuffer allocation backend (e.g. minigbm).
   void InitializeGpuMemoryBufferFrames(const std::vector<uint8_t>& stream,
                                        const VideoPixelFormat pixel_format,
-                                       const gfx::Size& coded_size);
+                                       const gfx::Size& src_coded_size,
+                                       const gfx::Size& dst_coded_size);
 
   // The index of VideoFrame to be read next.
   uint32_t frame_index_ = 0;
@@ -251,7 +254,7 @@ class AlignedDataHelper {
 
   // The layout of VideoFrames returned by GetNextFrame().
   base::Optional<VideoFrameLayout> layout_;
-  const gfx::Rect visible_area_;
+  const gfx::Rect visible_rect_;
   const gfx::Size natural_size_;
 
   // The frame data returned by GetNextFrame().

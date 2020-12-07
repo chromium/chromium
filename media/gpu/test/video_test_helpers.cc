@@ -373,22 +373,25 @@ AlignedDataHelper::AlignedDataHelper(
     const std::vector<uint8_t>& stream,
     uint32_t num_frames,
     VideoPixelFormat pixel_format,
-    const gfx::Size& coded_size,
-    const gfx::Rect& visible_area,
+    const gfx::Size& src_coded_size,
+    const gfx::Size& dst_coded_size,
+    const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     VideoFrame::StorageType storage_type,
     gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory)
     : num_frames_(num_frames),
       storage_type_(storage_type),
       gpu_memory_buffer_factory_(gpu_memory_buffer_factory),
-      visible_area_(visible_area),
+      visible_rect_(visible_rect),
       natural_size_(natural_size) {
   if (storage_type_ == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     LOG_ASSERT(gpu_memory_buffer_factory_ != nullptr);
-    InitializeGpuMemoryBufferFrames(stream, pixel_format, coded_size);
+    InitializeGpuMemoryBufferFrames(stream, pixel_format, src_coded_size,
+                                    dst_coded_size);
   } else {
     LOG_ASSERT(storage_type == VideoFrame::STORAGE_MOJO_SHARED_BUFFER);
-    InitializeAlignedMemoryFrames(stream, pixel_format, coded_size);
+    InitializeAlignedMemoryFrames(stream, pixel_format, src_coded_size,
+                                  dst_coded_size);
   }
   LOG_ASSERT(video_frame_data_.size() == num_frames_)
       << "Failed to initialize VideoFrames";
@@ -439,7 +442,7 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
 
     gpu::MailboxHolder dummy_mailbox[media::VideoFrame::kMaxPlanes];
     return media::VideoFrame::WrapExternalGpuMemoryBuffer(
-        visible_area_, natural_size_, std::move(gpu_memory_buffer),
+        visible_rect_, natural_size_, std::move(gpu_memory_buffer),
         dummy_mailbox, base::DoNothing() /* mailbox_holder_release_cb_ */,
         base::TimeTicks::Now().since_origin());
   } else {
@@ -460,7 +463,7 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
     const size_t video_frame_size =
         layout_->planes().back().offset + layout_->planes().back().size;
     return MojoSharedBufferVideoFrame::Create(
-        layout_->format(), layout_->coded_size(), visible_area_, natural_size_,
+        layout_->format(), layout_->coded_size(), visible_rect_, natural_size_,
         std::move(dup_handle), video_frame_size, offsets, strides,
         base::TimeTicks::Now().since_origin());
   }
@@ -469,7 +472,8 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
 void AlignedDataHelper::InitializeAlignedMemoryFrames(
     const std::vector<uint8_t>& stream,
     const VideoPixelFormat pixel_format,
-    const gfx::Size& coded_size) {
+    const gfx::Size& src_coded_size,
+    const gfx::Size& dst_coded_size) {
   ASSERT_NE(pixel_format, PIXEL_FORMAT_UNKNOWN);
 
   // Calculate padding in bytes to be added after each plane required to keep
@@ -480,7 +484,7 @@ void AlignedDataHelper::InitializeAlignedMemoryFrames(
   // the VEA; each row of |src_strides| bytes in the original file needs to be
   // copied into a row of |strides_| bytes in the aligned file.
   size_t video_frame_size;
-  layout_ = GetAlignedVideoFrameLayout(pixel_format, coded_size,
+  layout_ = GetAlignedVideoFrameLayout(pixel_format, dst_coded_size,
                                        kPlatformBufferAlignment, nullptr,
                                        &video_frame_size);
   LOG_ASSERT(video_frame_size > 0UL);
@@ -488,7 +492,7 @@ void AlignedDataHelper::InitializeAlignedMemoryFrames(
   std::vector<size_t> src_plane_rows;
   size_t src_video_frame_size = 0;
   auto src_layout = GetAlignedVideoFrameLayout(
-      pixel_format, visible_area_.size(), 1u /* alignment */, &src_plane_rows,
+      pixel_format, src_coded_size, 1u /* alignment */, &src_plane_rows,
       &src_video_frame_size);
   LOG_ASSERT(stream.size() % src_video_frame_size == 0U)
       << "Stream byte size is not a product of calculated frame byte size";
@@ -520,17 +524,18 @@ void AlignedDataHelper::InitializeAlignedMemoryFrames(
 void AlignedDataHelper::InitializeGpuMemoryBufferFrames(
     const std::vector<uint8_t>& stream,
     const VideoPixelFormat pixel_format,
-    const gfx::Size& coded_size) {
+    const gfx::Size& src_coded_size,
+    const gfx::Size& dst_coded_size) {
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   layout_ = GetPlatformVideoFrameLayout(
-      gpu_memory_buffer_factory_, pixel_format, visible_area_.size(),
+      gpu_memory_buffer_factory_, pixel_format, dst_coded_size,
       gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE);
   ASSERT_TRUE(layout_) << "Failed getting platform VideoFrameLayout";
 
   std::vector<size_t> src_plane_rows;
   size_t src_video_frame_size = 0;
   auto src_layout = GetAlignedVideoFrameLayout(
-      pixel_format, visible_area_.size(), 1u /* alignment */, &src_plane_rows,
+      pixel_format, src_coded_size, 1u /* alignment */, &src_plane_rows,
       &src_video_frame_size);
   LOG_ASSERT(stream.size() % src_video_frame_size == 0U)
       << "Stream byte size is not a product of calculated frame byte size";
@@ -539,7 +544,7 @@ void AlignedDataHelper::InitializeGpuMemoryBufferFrames(
   const uint8_t* src_frame_ptr = &stream[0];
   for (size_t i = 0; i < num_frames_; i++) {
     auto memory_frame =
-        VideoFrame::CreateFrame(pixel_format, coded_size, visible_area_,
+        VideoFrame::CreateFrame(pixel_format, dst_coded_size, visible_rect_,
                                 natural_size_, base::TimeDelta());
     LOG_ASSERT(!!memory_frame) << "Failed creating VideoFrame";
     for (size_t i = 0; i < num_planes; i++) {
@@ -652,7 +657,7 @@ scoped_refptr<const VideoFrame> RawDataHelper::GetFrame(size_t index) {
   // changes made in crrev.com/c/2050895.
   scoped_refptr<const VideoFrame> video_frame =
       VideoFrame::WrapExternalYuvDataWithLayout(
-          *layout_, gfx::Rect(video_->Resolution()), video_->Resolution(),
+          *layout_, video_->VisibleRect(), video_->VisibleRect().size(),
           frame_data[0], frame_data[1], frame_data[2],
           base::TimeTicks::Now().since_origin());
   return video_frame;

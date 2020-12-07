@@ -31,6 +31,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv/convert.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
+#include "third_party/libyuv/include/libyuv/scale.h"
 
 namespace media {
 namespace test {
@@ -48,6 +49,79 @@ Video::Video(const base::FilePath& file_path,
 
 Video::~Video() = default;
 
+std::unique_ptr<Video> Video::Expand(const gfx::Size& resolution,
+                                     const gfx::Rect& visible_rect) const {
+  LOG_ASSERT(IsLoaded()) << "The source video is not loaded";
+  LOG_ASSERT(pixel_format_ == VideoPixelFormat::PIXEL_FORMAT_NV12)
+      << "The pixel format of source video is not NV12";
+  LOG_ASSERT(visible_rect.size() == resolution_)
+      << "The resolution is different from the copied-into area of visible "
+      << "rectangle";
+  LOG_ASSERT(gfx::Rect(resolution).Contains(visible_rect))
+      << "The resolution doesn't contain visible rectangle";
+  LOG_ASSERT(visible_rect.x() % 2 == 0 && visible_rect.y() % 2 == 0)
+      << "An odd origin point is not supported";
+  auto new_video = std::make_unique<Video>(file_path_, metadata_file_path_);
+  new_video->frame_checksums_ = frame_checksums_;
+  new_video->thumbnail_checksums_ = thumbnail_checksums_;
+  new_video->profile_ = profile_;
+  new_video->codec_ = codec_;
+  new_video->frame_rate_ = frame_rate_;
+  new_video->num_frames_ = num_frames_;
+  new_video->num_fragments_ = num_fragments_;
+  new_video->resolution_ = resolution;
+  new_video->visible_rect_ = visible_rect;
+  new_video->pixel_format_ = pixel_format_;
+
+  const auto src_layout =
+      CreateVideoFrameLayout(PIXEL_FORMAT_NV12, resolution_, 1u /* alignment*/);
+  const auto dst_layout =
+      CreateVideoFrameLayout(PIXEL_FORMAT_NV12, resolution, 1u /* alignment*/);
+  const size_t src_frame_size =
+      src_layout->planes().back().offset + src_layout->planes().back().size;
+  const size_t dst_frame_size =
+      dst_layout->planes().back().offset + dst_layout->planes().back().size;
+  LOG_ASSERT(src_frame_size * num_frames_ == data_.size())
+      << "Unexpected data size";
+  std::vector<uint8_t> new_data(dst_frame_size * num_frames_);
+  auto compute_dst_visible_data_offset = [&dst_layout,
+                                          &visible_rect](size_t plane) {
+    const size_t stride = dst_layout->planes()[plane].stride;
+    const size_t bytes_per_pixel =
+        VideoFrame::BytesPerElement(dst_layout->format(), plane);
+    gfx::Point origin = visible_rect.origin();
+    LOG_ASSERT(dst_layout->format() == VideoPixelFormat::PIXEL_FORMAT_NV12)
+        << "The pixel format of destination video is not NV12";
+    if (plane == 1)
+      origin.SetPoint(origin.x() / 2, origin.y() / 2);
+    return stride * origin.y() + bytes_per_pixel * origin.x();
+  };
+  const size_t dst_y_visible_offset = compute_dst_visible_data_offset(0);
+  const size_t dst_uv_visible_offset = compute_dst_visible_data_offset(1);
+  for (size_t i = 0; i < num_frames_; i++) {
+    const uint8_t* src_plane = data_.data() + (i * src_frame_size);
+    uint8_t* const dst_plane = new_data.data() + (i * dst_frame_size);
+    uint8_t* const dst_y_plane_visible_data =
+        dst_plane + dst_layout->planes()[0].offset + dst_y_visible_offset;
+    uint8_t* const dst_uv_plane_visible_data =
+        dst_plane + dst_layout->planes()[1].offset + dst_uv_visible_offset;
+    // Copy the source buffer to the visible area of the destination buffer.
+    // libyuv::NV12Scale copies the source to the destination as-is when their
+    // resolutions are the same.
+    libyuv::NV12Scale(src_plane + src_layout->planes()[0].offset,
+                      src_layout->planes()[0].stride,
+                      src_plane + src_layout->planes()[1].offset,
+                      src_layout->planes()[1].stride, resolution_.width(),
+                      resolution_.height(), dst_y_plane_visible_data,
+                      dst_layout->planes()[0].stride, dst_uv_plane_visible_data,
+                      dst_layout->planes()[1].stride, visible_rect_.width(),
+                      visible_rect_.height(),
+                      libyuv::FilterMode::kFilterBilinear);
+  }
+  new_video->data_ = std::move(new_data);
+  return new_video;
+}
+
 std::unique_ptr<Video> Video::ConvertToNV12() const {
   LOG_ASSERT(IsLoaded()) << "The source video is not loaded";
   LOG_ASSERT(pixel_format_ == VideoPixelFormat::PIXEL_FORMAT_I420)
@@ -61,6 +135,7 @@ std::unique_ptr<Video> Video::ConvertToNV12() const {
   new_video->num_frames_ = num_frames_;
   new_video->num_fragments_ = num_fragments_;
   new_video->resolution_ = resolution_;
+  new_video->visible_rect_ = visible_rect_;
   new_video->pixel_format_ = PIXEL_FORMAT_NV12;
 
   // Convert I420 To NV12.
@@ -239,6 +314,10 @@ gfx::Size Video::Resolution() const {
   return resolution_;
 }
 
+gfx::Rect Video::VisibleRect() const {
+  return visible_rect_;
+}
+
 base::TimeDelta Video::GetDuration() const {
   return base::TimeDelta::FromSecondsD(static_cast<double>(num_frames_) /
                                        static_cast<double>(frame_rate_));
@@ -381,6 +460,9 @@ bool Video::LoadMetadata() {
   }
   resolution_ = gfx::Size(static_cast<uint32_t>(width->GetInt()),
                           static_cast<uint32_t>(height->GetInt()));
+  // The default visible rectangle is (0, 0, |resolution_|). Expand() needs to
+  // be called to change the visible rectangle.
+  visible_rect_ = gfx::Rect(resolution_);
 
   // Find optional frame checksums. These are only required when using the frame
   // validator.

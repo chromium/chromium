@@ -276,13 +276,13 @@ void VideoEncoderClient::RequireBitstreamBuffers(
     coded_size = video_->Resolution();
   }
 
-  // TODO(crbug.com/1045825): Add support for videos with a visible rectangle
-  // not starting at (0,0).
   // Follow the behavior of the chrome capture stack; |natural_size| is the
   // dimension to be encoded.
   aligned_data_helper_ = std::make_unique<AlignedDataHelper>(
-      video_->Data(), video_->NumFrames(), video_->PixelFormat(), coded_size,
-      /*visible_rect=*/gfx::Rect(video_->Resolution()),
+      video_->Data(), video_->NumFrames(), video_->PixelFormat(),
+      /*src_coded_size=*/video_->Resolution(),
+      /*dst_coded_size=*/coded_size,
+      /*visible_rect=*/video_->VisibleRect(),
       /*natural_size=*/encoder_client_config_.output_resolution,
       encoder_client_config_.input_storage_type ==
               VideoEncodeAccelerator::Config::StorageType::kDmabuf
