@@ -275,8 +275,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryInitialSetupWithTransientError) {
 }
 
 // Verify that ProfileSyncService fetches a new token when an old token expires.
-// Disabled due to flakiness: https://crbug.com/860200
-IN_PROC_BROWSER_TEST_F(SyncAuthTest, DISABLED_TokenExpiry) {
+IN_PROC_BROWSER_TEST_F(SyncAuthTest, TokenExpiry) {
   // Initial sync succeeds with a short lived OAuth2 Token.
   ASSERT_TRUE(SetupClients());
   GetFakeServer()->ClearHttpError();
