@@ -413,8 +413,7 @@ TabDragController::~TabDragController() {
   if (g_tab_drag_controller == this)
     g_tab_drag_controller = nullptr;
 
-  if (widget_observation_.IsObserving())
-    widget_observation_.RemoveObservation();
+  widget_observation_.Reset();
 
   if (is_dragging_window())
     GetAttachedBrowserWidget()->EndMoveLoop();
@@ -690,8 +689,7 @@ void TabDragController::OnWidgetBoundsChanged(views::Widget* widget,
 }
 
 void TabDragController::OnWidgetDestroyed(views::Widget* widget) {
-  DCHECK(widget_observation_.IsObservingSource(widget));
-  widget_observation_.RemoveObservation();
+  widget_observation_.Reset();
 }
 
 void TabDragController::OnSourceTabStripEmpty() {
@@ -883,8 +881,7 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
     // results in a move). That'll cause all sorts of problems.  Reset the
     // observer so we don't get notified and process the event.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (widget_observation_.IsObservingSource(move_loop_widget_))
-      widget_observation_.RemoveObservation();
+    widget_observation_.Reset();
     move_loop_widget_ = nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     views::Widget* browser_widget = GetAttachedBrowserWidget();
