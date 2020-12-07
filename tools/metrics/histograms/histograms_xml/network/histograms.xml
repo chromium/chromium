@@ -1325,6 +1325,38 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.Wifi.LinkMonitorsDetectionTimeDiff.ArpBetter"
+    units="ms" expires_after="M91">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Chrome OS metric that tracks the number of milliseconds between the
+    detection times for the same failure of NeighborLinkMonitor and
+    shill::LinkMonitor. Recorded after either of the link monitor detects an
+    error. The larger this value is, the better shill::LinkMonitor performs than
+    NeighborLinkMonitor. 0 means shill::LinkMonitor is no better than
+    NeighborLinkMonitor. If shill::LinkMonitor detects a failure but
+    NeighborLinkMonitor does not, the maximum value of a timeout will be
+    emitted.
+  </summary>
+</histogram>
+
+<histogram
+    name="Network.Shill.Wifi.LinkMonitorsDetectionTimeDiff.NeighborBetter"
+    units="ms" expires_after="M91">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Chrome OS metric that tracks the number of milliseconds between the
+    detection times for the same failure of patchpanel::NeighborLinkMonitor and
+    shill::LinkMonitor. Recorded after either of the link monitor detects an
+    error. The larger this value is, the better NeighborLinkMonitor performs
+    than shill::LinkMonitor. 0 means NeighborLinkMonitor is no better than
+    shill::LinkMonitor. If NeighborLinkMonitor detects a failure but
+    shill::LinkMonitor does not, the maxmium value of a timeout will be emitted.
+  </summary>
+</histogram>
+
 <histogram name="Network.Shill.Wifi.LinkMonitorSecondsToFailure"
     units="seconds" expires_after="2021-12-01">
   <owner>briannorris@chromium.org</owner>
