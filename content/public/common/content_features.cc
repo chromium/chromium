@@ -835,7 +835,7 @@ const base::Feature kWebGLImageChromium{"WebGLImageChromium",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable browser mediation API for federated identity interactions.
-const base::Feature kWebID{"kWebID", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kWebID{"WebID", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable experimental policy-controlled features and LAPIs
 const base::Feature kExperimentalProductivityFeatures{
@@ -843,7 +843,7 @@ const base::Feature kExperimentalProductivityFeatures{
 
 // When this feature is enabled, the Web OTP API will use the User Consent
 // API to retrieve SMSes from the Android device.
-const base::Feature kWebOtpBackend{"kWebOtpBackend",
+const base::Feature kWebOtpBackend{"WebOtpBackend",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // The JavaScript API for payments on the web.
