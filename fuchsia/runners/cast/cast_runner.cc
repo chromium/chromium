@@ -122,11 +122,14 @@ void DeleteStagedForDeletionDirectoryIfExists() {
 // Populates |params| with web data settings. Web data persistence is only
 // enabled if a soft quota is explicitly specified via config-data.
 void SetDataParamsForMainContext(fuchsia::web::CreateContextParams* params) {
-  // Set web and CDM data quotas based on the CastRunner configuration.
+  // Set the web data quota based on the CastRunner configuration.
   const base::Optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
+  if (!config)
+    return;
+
   constexpr char kDataQuotaBytesSwitch[] = "data-quota-bytes";
   const base::Optional<int> data_quota_bytes =
-      config && config->FindIntPath(kDataQuotaBytesSwitch);
+      config->FindIntPath(kDataQuotaBytesSwitch);
   if (!data_quota_bytes)
     return;
 
@@ -146,11 +149,13 @@ void SetDataParamsForMainContext(fuchsia::web::CreateContextParams* params) {
 // CDM data persistence is always enabled, with an optional soft quota.
 void SetCdmParamsForMainContext(fuchsia::web::CreateContextParams* params) {
   const base::Optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
-  constexpr char kCdmDataQuotaBytesSwitch[] = "cdm-data-quota-bytes";
-  const base::Optional<int> cdm_data_quota_bytes =
-      config && config->FindIntPath(kCdmDataQuotaBytesSwitch);
-  if (cdm_data_quota_bytes)
-    params->set_cdm_data_quota_bytes(*cdm_data_quota_bytes);
+  if (config) {
+    constexpr char kCdmDataQuotaBytesSwitch[] = "cdm-data-quota-bytes";
+    const base::Optional<int> cdm_data_quota_bytes =
+        config->FindIntPath(kCdmDataQuotaBytesSwitch);
+    if (cdm_data_quota_bytes)
+      params->set_cdm_data_quota_bytes(*cdm_data_quota_bytes);
+  }
 
   // TODO(b/154204041): Consider using isolated-persistent-storage for CDM data.
   // Create an isolated-cache-storage sub-directory for CDM data.
