@@ -144,11 +144,42 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
       model->SetCurrentStep(
           AuthenticatorRequestDialogModel::Step::kStorageFull);
     } else if (name == "account_select") {
+      // These strings attempt to exercise the encoding of direction and
+      // language from https://github.com/w3c/webauthn/pull/1530.
+
+      // lang_and_dir_encoded contains a string with right-to-left and ar-SA
+      // tags. It's the UTF-8 encoding of the code points {0xE0001, 0xE0061,
+      // 0xE0072, 0xE002D, 0xE0053, 0xE0041, 0x200F, 0xFEA2, 0xFE92, 0xFBFF,
+      // 0xFE91, 0x20, 0xFE8E, 0xFEDF, 0xFEAE, 0xFEA4, 0xFEE3, 0xFE8E, 0xFEE7}.
+      const std::string lang_and_dir_encoded =
+          "\xf3\xa0\x80\x81\xf3\xa0\x81\xa1\xf3\xa0\x81\xb2\xf3\xa0\x80\xad\xf3"
+          "\xa0\x81\x93\xf3\xa0\x81\x81\xe2\x80\x8f\xef\xba\xa2\xef\xba\x92\xef"
+          "\xaf\xbf\xef\xba\x91\x20\xef\xba\x8e\xef\xbb\x9f\xef\xba\xae\xef\xba"
+          "\xa4\xef\xbb\xa3\xef\xba\x8e\xef\xbb\xa7";
+      // lang_jp_encoded specifies a kanji with language jp. This is the middle
+      // glyph from the example given in
+      // https://www.w3.org/TR/string-meta/#capturing-the-text-processing-language.
+      // It's the UTF-8 encoding of the code points {0xE0001, 0xE006a, 0xE0070,
+      // 0x76f4}.
+      const std::string lang_jp_encoded =
+          "\xf3\xa0\x80\x81\xf3\xa0\x81\xaa\xf3\xa0\x81\xb0\xe7\x9b\xb4";
+      // lang_zh_hant_encoded specifies the same code point as
+      // |lang_jp_encoded|, but with the language set to zh-Hant. According to
+      // the W3C document referenced above, this should display differently.
+      // It's the UTF-8 encoding of the code points {0xE0001, 0xe007a, 0xe0068,
+      // 0xe002d, 0xe0048, 0xe0061, 0xe006e, 0xe0074}.
+      const std::string lang_zh_hant_encoded =
+          "\xf3\xa0\x80\x81\xf3\xa0\x81\xba\xf3\xa0\x81\xa8\xf3\xa0\x80\xad\xf3"
+          "\xa0\x81\x88\xf3\xa0\x81\xa1\xf3\xa0\x81\xae\xf3\xa0\x81\xb4";
+
       const std::vector<std::pair<std::string, std::string>> infos = {
           {"foo@example.com", "Test User 1"},
           {"", "Test User 2"},
           {"", ""},
           {"bat@example.com", "Test User 4"},
+          {"encoded@example.com", lang_and_dir_encoded},
+          {"encoded2@example.com", lang_jp_encoded},
+          {"encoded3@example.com", lang_zh_hant_encoded},
           {"verylong@"
            "reallylongreallylongreallylongreallylongreallylongreallylong.com",
            "Very Long String Very Long String Very Long String Very Long "
