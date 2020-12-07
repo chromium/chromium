@@ -527,7 +527,7 @@ DocumentProvider::DocumentProvider(AutocompleteProviderClient* client,
           static_cast<size_t>(base::GetFieldTrialParamByFeatureAsInt(
               omnibox::kDocumentProvider,
               "DocumentProviderMaxQueryLength",
-              -1))),
+              200))),
       min_query_show_length_(
           static_cast<size_t>(base::GetFieldTrialParamByFeatureAsInt(
               omnibox::kDocumentProvider,
@@ -561,7 +561,7 @@ DocumentProvider::DocumentProvider(AutocompleteProviderClient* client,
         "DebounceDocumentProviderFromLastRun", true);
     int delay_ms = base::GetFieldTrialParamByFeatureAsInt(
         omnibox::kDebounceDocumentProvider, "DebounceDocumentProviderDelayMs",
-        100);
+        300);
     debouncer_ = std::make_unique<AutocompleteProviderDebouncer>(from_last_run,
                                                                  delay_ms);
   } else
@@ -705,7 +705,7 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
   // two scores will be used.
   // If both are false, the server score will be used.
   bool use_client_score = base::GetFieldTrialParamByFeatureAsBool(
-      omnibox::kDocumentProvider, "DocumentUseClientScore", false);
+      omnibox::kDocumentProvider, "DocumentUseClientScore", true);
   bool use_server_score = base::GetFieldTrialParamByFeatureAsBool(
       omnibox::kDocumentProvider, "DocumentUseServerScore", true);
 
@@ -799,7 +799,7 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
 
       // Decrement scores if necessary to ensure suggestion order is preserved.
       // Don't decrement client scores which don't necessarily rank suggestions
-      // the same as the server.
+      // the same order as the server.
       if (!use_client_score && score >= previous_score)
         score = std::max(previous_score - 1, 0);
       previous_score = score;
