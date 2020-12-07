@@ -842,11 +842,9 @@ TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationWithNestedSpanners) {
   EXPECT_EQ(expectation, dump);
 }
 
-// Tests that column spanners are used as the containing block for abspos
-// elements nested inside of a spanner.
-// TODO(almaher): Abspos elements nested in a spanner are never getting laid
-// out.
-TEST_F(NGOutOfFlowLayoutPartTest, DISABLED_AbsposInSpanner) {
+// Tests that abspos elements bubble up to their containing block when nested
+// inside of a spanner.
+TEST_F(NGOutOfFlowLayoutPartTest, AbsposInSpanner) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -854,17 +852,22 @@ TEST_F(NGOutOfFlowLayoutPartTest, DISABLED_AbsposInSpanner) {
           column-count:2; column-fill:auto; column-gap:16px; height:40px;
         }
         .rel {
-          position: relative; width:30px;
+          position: relative;
         }
         .abs {
-          position:absolute; width:5px; height:50px;
+          position:absolute; width:5px; height:50px; top:5px;
         }
       </style>
       <div id="container">
-        <div id="multicol">
-          <div class="rel">
-            <div style="column-span:all;">
-              <div class="abs"></div>
+        <div class="rel" style="width:50px;">
+          <div id="multicol">
+            <div class="rel" style="width:30px;">
+              <div style="width:10px; height:30px;"></div>
+              <div>
+                <div style="column-span:all;">
+                  <div class="abs"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -874,13 +877,71 @@ TEST_F(NGOutOfFlowLayoutPartTest, DISABLED_AbsposInSpanner) {
 
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x40
-    offset:0,0 size:1000x40
-      offset:0,0 size:492x1
-        offset:0,0 size:30x0
-      offset:0,0 size:1000x0
-        offset:0,0 size:5x50
-      offset:0,0 size:492x40
-        offset:0,0 size:30x0
+    offset:0,0 size:50x40
+      offset:0,0 size:50x40
+        offset:0,0 size:17x15
+          offset:0,0 size:30x15
+            offset:0,0 size:10x15
+        offset:33,0 size:17x15
+          offset:0,0 size:30x15
+            offset:0,0 size:10x15
+            offset:0,15 size:30x0
+        offset:0,15 size:50x0
+        offset:0,15 size:17x25
+          offset:0,0 size:30x0
+            offset:0,0 size:30x0
+      offset:0,5 size:5x50
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
+// Tests that abspos elements bubble up to their containing block when nested
+// inside of a spanner and get the correct static position.
+TEST_F(NGOutOfFlowLayoutPartTest, AbsposInSpannerStaticPos) {
+  SetBodyInnerHTML(
+      R"HTML(
+      <style>
+        #multicol {
+          column-count:2; column-fill:auto; column-gap:16px; height:40px;
+        }
+        .rel {
+          position: relative;
+        }
+        .abs {
+          position:absolute; width:5px; height:50px;
+        }
+      </style>
+      <div id="container">
+        <div class="rel" style="width:50px;">
+          <div id="multicol">
+            <div class="rel" style="width:30px;">
+              <div style="width:10px; height:30px;"></div>
+              <div style="column-span:all; margin-top:5px;">
+                <div style="width:20px; height:5px;"></div>
+                <div class="abs"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      )HTML");
+  String dump = DumpFragmentTree(GetElementById("container"));
+
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:1000x40
+    offset:0,0 size:50x40
+      offset:0,0 size:50x40
+        offset:0,0 size:17x15
+          offset:0,0 size:30x15
+            offset:0,0 size:10x15
+        offset:33,0 size:17x15
+          offset:0,0 size:30x15
+            offset:0,0 size:10x15
+        offset:0,20 size:50x5
+          offset:0,0 size:20x5
+        offset:0,25 size:17x15
+          offset:0,0 size:30x0
+      offset:0,25 size:5x50
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }

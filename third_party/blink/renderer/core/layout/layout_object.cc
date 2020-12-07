@@ -162,6 +162,18 @@ LayoutObject* FindAncestorByPredicate(const LayoutObject* descendant,
           skip_info->Update(*legend_parent);
         object = legend_parent;
       }
+    } else if (UNLIKELY(object->IsColumnSpanAll())) {
+      // The containing block chain goes directly from the column spanner to the
+      // multi-column container.
+      const auto* multicol_container =
+          object->SpannerPlaceholder()->MultiColumnBlockFlow();
+      if (multicol_container->IsLayoutNGObject()) {
+        while (object->Parent() != multicol_container) {
+          object = object->Parent();
+          if (skip_info)
+            skip_info->Update(*object);
+        }
+      }
     }
   }
   return nullptr;
