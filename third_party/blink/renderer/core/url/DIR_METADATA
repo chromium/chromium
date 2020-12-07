@@ -1,0 +1,5 @@
+monorail {
+  component: "Blink>Network"
+}
+
+team_email: "blink-network-dev@chromium.org"
