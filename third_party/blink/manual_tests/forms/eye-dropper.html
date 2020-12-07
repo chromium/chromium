@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>EyeDropper test</title>
+<style>
+#canvas {
+  background-color: #ff0000;
+  position: absolute;
+  left: 250px;
+  height: 300px;
+  width: 300px;
+}
+#action {
+  font-weight: bold;
+}
+#action.hidden {
+  visibility: hidden;
+}
+#logger {
+  position: absolute;
+  top: 400px;
+}
+#reset {
+  position: absolute;
+  top: 40px;
+  visibility: hidden;
+}
+#reset.visible {
+  visibility: visible;
+}
+.passed {
+  color: green;
+  font-size: x-large;
+}
+.failed {
+  color: red;
+  font-size: x-large;
+}
+</style>
+</head>
+<body>
+  This tests the eye dropper in the color picker feature.<br><br><br>
+  <div id="action">TODO: Open the color picker.</div>
+  <div id="canvas"></div>
+  <input type="color" id="color">
+  <ol id="logger"></ol>
+  <button id="reset">Reset test!</button>
+
+  <script>
+    function log(str) {
+      let entry = document.createElement("li");
+      entry.innerText = str;
+      logger.appendChild(entry);
+      return entry;
+    }
+
+    document.getElementById("color").addEventListener("click", function() {
+      action.innerHTML = "TODO: Open the eye dropper and click on the red canvas";
+      log("color picker opened");
+    })
+
+    document.getElementById("color").addEventListener("input", function(e) {
+      let entry = log("color updated to " + e.target.value + " expected: #ff0000");
+      let span = document.createElement("span");
+      if (e.target.value == "#ff0000") {
+        span.innerText = "PASS ";
+        span.classList.add("passed");
+      } else {
+        span.innerText = "FAIL ";
+        span.classList.add("failed");
+      }
+      entry.prepend(span);
+      e.target.disabled = true;
+      setTimeout(function() {
+        // hack to close the color picker without user action.
+        e.target.type="text";
+        e.target.type="color";
+      }, 500);
+      reset.classList.add("visible");
+      action.classList.add("hidden");
+    })
+
+    document.getElementById("reset").addEventListener("click", function() {
+      action.innerHTML = "TODO: Open the color picker.";
+      action.classList.remove("hidden");
+      reset.classList.remove("visible");
+      color.value = "#000000";
+      color.disabled = false;
+      logger.innerHTML = "";
+    })
+  </script>
+</body>
+</html>

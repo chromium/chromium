@@ -479,19 +479,7 @@ class ColorPicker extends HTMLElement {
     const newColor = event.detail.color;
     if (!this.selectedColor.equals(newColor)) {
       this.selectedColor = newColor;
-
-      // There may not be an exact match for newColor in the HueSlider or
-      // ColorWell, in which case we will display the closest match. When this
-      // happens though, we want the manually chosen values to remain the
-      // selected values (as they were explicitly specified by the user).
-      // Therefore, we need to prevent them from getting overwritten when
-      // onVisualColorChange_ runs. We do this by setting the
-      // processingManualColorChange_ flag here and checking for it inside
-      // onVisualColorChange_. If the flag is set, the manual color values
-      // will not be updated with the color shown in the visual color picker.
-      this.processingManualColorChange_ = true;
-      this.visualColorPicker_.color = newColor;
-      this.processingManualColorChange_ = false;
+      this.updateVisualColorPicker(newColor);
 
       const selectedValue = newColor.asHex();
       window.pagePopupController.setValue(selectedValue);
@@ -519,6 +507,25 @@ class ColorPicker extends HTMLElement {
       }
     }
   };
+
+  /**
+   * @param {!Color} newColor
+   */
+  updateVisualColorPicker(newColor) {
+    // There may not be an exact match for newColor in the HueSlider or
+    // ColorWell, in which case we will display the closest match. When this
+    // happens though, we want the manually chosen values to remain the
+    // selected values (as they were explicitly specified by the user).
+    // Therefore, we need to prevent them from getting overwritten when
+    // onVisualColorChange_ runs. We do this by setting the
+    // processingManualColorChange_ flag here and checking for it inside
+    // onVisualColorChange_. If the flag is set, the manual color values
+    // will not be updated with the color shown in the visual color picker.
+    this.processingManualColorChange_ = true;
+    this.visualColorPicker_.color = newColor;
+    this.processingManualColorChange_ = false;
+  }
+
 
   /**
    * @param {!Event} event
@@ -597,7 +604,7 @@ class ColorPicker extends HTMLElement {
       const selectedValue = new Color(window.updateData.color);
       this.selectedColor = selectedValue;
       this.manualColorPicker_.color = selectedValue;
-      this.visualColorPicker_.color = selectedValue;
+      this.updateVisualColorPicker(selectedValue);
 
       const hexValue = selectedValue.asHex();
       window.pagePopupController.setValue(hexValue);
