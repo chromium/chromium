@@ -16,7 +16,7 @@ class MultiDeviceSetupScreen;
 // WebUI representation.
 class MultiDeviceSetupScreenView {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"multidevice-setup"};
+  constexpr static StaticOobeScreenId kScreenId{"multidevice-setup-screen"};
 
   virtual ~MultiDeviceSetupScreenView() = default;
 

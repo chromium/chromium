@@ -5,17 +5,22 @@
 /**
  * @fileoverview MultiDevice setup screen for login/OOBE.
  */
-login.createScreen('MultiDeviceSetupScreen', 'multidevice-setup', function() {
-  return {
-    get defaultControl() {
-      return $('multidevice-setup-impl');
-    },
 
-    /**
-     * This is called after resources are updated.
-     */
-    updateLocalizedContent() {
-      $('multidevice-setup-impl').updateLocalizedContent();
-    },
-  };
+Polymer({
+  is: 'multidevice-setup-element',
+
+  behaviors: [OobeI18nBehavior, LoginScreenBehavior],
+
+  ready() {
+    this.initializeLoginScreen('MultiDeviceSetupScreen', {});
+  },
+
+
+  get defaultControl() {
+    return this.$.impl;
+  },
+
+  updateLocalizedContent() {
+    this.$.impl.updateLocalizedContent();
+  },
 });

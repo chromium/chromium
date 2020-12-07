@@ -11966,7 +11966,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Image" label=""/>
   <suffix name="Kiosk-enable" label=""/>
   <suffix name="Marketing-opt-in" label=""/>
-  <suffix name="Multidevice-setup" label=""/>
+  <suffix name="Multidevice-setup" label="">
+    <obsolete>
+      Renamed to Multidevice-setup-screen in M89.
+    </obsolete>
+  </suffix>
+  <suffix name="Multidevice-setup-screen" label=""/>
   <suffix name="Network" label=""/>
   <suffix name="Network-selection" label=""/>
   <suffix name="Packaged-license" label=""/>
@@ -12019,7 +12024,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Hid-detection.StartDemo" label=""/>
   <suffix name="Kiosk-enable.Next" label=""/>
   <suffix name="Marketing-opt-in.Next" label=""/>
-  <suffix name="Multidevice-setup.Next" label=""/>
+  <suffix name="Multidevice-setup-screen.Next" label=""/>
+  <suffix name="Multidevice-setup.Next" label="">
+    <obsolete>
+      Renamed to Multidevice-setup-screen.Next in M89.
+    </obsolete>
+  </suffix>
   <suffix name="Network-selection.Back" label=""/>
   <suffix name="Network-selection.Connected" label=""/>
   <suffix name="Network-selection.OfflineDemoSetup" label=""/>

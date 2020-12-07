@@ -24,7 +24,6 @@
 
 // <include src="screen_error_message.js">
 // <include src="screen_discover.js">
-// <include src="screen_multidevice_setup.js">
 
 // <include src="../../gaia_auth_host/authenticator.js">
 
@@ -52,7 +51,6 @@ HTMLImports.whenReady(() => {
         login.AutolaunchScreen.register();
         login.ErrorMessageScreen.register();
         login.DiscoverScreen.register();
-        login.MultiDeviceSetupScreen.register();
 
         cr.ui.Bubble.decorate($('bubble-persistent'));
         $('bubble-persistent').persistent = true;

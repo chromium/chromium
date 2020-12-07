@@ -1,10 +1,12 @@
 <!-- Copyright 2018 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
+<link rel="import" href="chrome://resources/html/polymer.html">
 <link rel="import" href="chrome://oobe/custom_elements.html">
-<link rel="stylesheet" href="chrome://resources/css/overlay.css">
 
-<div class="step right hidden" id="multidevice-setup" hidden>
-  <multidevice-setup-first-run id="multidevice-setup-impl">
-  </multidevice-setup-first-run>
-</div>
+<dom-module id="multidevice-setup-element">
+  <template>
+    <multidevice-setup-first-run id="impl">
+    </multidevice-setup-first-run>
+  </template>
+</dom-module>
