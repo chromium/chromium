@@ -37,7 +37,6 @@
 <translation id="2364498172489649528">Comprovació superada</translation>
 <translation id="2375079107209812402">Intents restants: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Envia un informe de suggeriments</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intent.}other{<ph name="ERROR_MESSAGE" /> Queden {0} intents.}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> (<ph name="SOURCE_LANGUAGE_NAME" />)</translation>
 <translation id="2517472476991765520">Escaneja</translation>
 <translation id="2805756323405976993">Aplicacions</translation>
@@ -176,6 +175,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8910721771319628100">La xarxa predeterminada supera el llindar de latència</translation>
 <translation id="8919837981463578619">Error: no es troba la safata</translation>
 <translation id="8928727111548978589">Error: no hi ha paper</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Intents restants: <ph name="ATTEMPTS_LEFT" />.</translation>
 <translation id="910415269708673980">Actualitza el tiquet de: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">S'està cercant la pàgina <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloqueja</translation>

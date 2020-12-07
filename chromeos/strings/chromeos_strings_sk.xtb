@@ -37,7 +37,6 @@
 <translation id="2364498172489649528">Úspešné</translation>
 <translation id="2375079107209812402">Zostávajúce pokusy: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Odoslať správu so spätnou väzbou</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Zostáva {0} pokus.}few{<ph name="ERROR_MESSAGE" /> Zostávajú {0} pokusy.}many{<ph name="ERROR_MESSAGE" /> {0} attempts left}other{<ph name="ERROR_MESSAGE" /> Zostáva {0} pokusov.}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Vyhľadať</translation>
 <translation id="2805756323405976993">Aplikácie</translation>
@@ -176,6 +175,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8910721771319628100">Predvolená sieť prekračuje prah latencie</translation>
 <translation id="8919837981463578619">Nepodarilo sa – chýba zásobník</translation>
 <translation id="8928727111548978589">Nepodarilo sa – minul sa papier</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" />. Počet zostávajúcich pokusov: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="910415269708673980">Obnoviť tiket pre <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenuje sa <ph name="PAGE_NUMBER" />. strana</translation>
 <translation id="9111102763498581341">Odomknúť</translation>

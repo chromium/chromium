@@ -37,7 +37,6 @@
 <translation id="2364498172489649528">V pořádku</translation>
 <translation id="2375079107209812402">Zbývající pokusy: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Odeslat zpětnou vazbu</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokus}few{<ph name="ERROR_MESSAGE" /> Zbývají {0} pokusy}many{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokusu}other{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokusů}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Vyhledat</translation>
 <translation id="2805756323405976993">Aplikace</translation>
@@ -176,6 +175,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8910721771319628100">Výchozí síť má latenci nad prahovou hodnotou</translation>
 <translation id="8919837981463578619">Tisk selhal – chybí zásobník</translation>
 <translation id="8928727111548978589">Tisk selhal – došel papír</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Zbývající pokusy: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="910415269708673980">Obnovte lístek pro <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenování stránky <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Odemknout</translation>

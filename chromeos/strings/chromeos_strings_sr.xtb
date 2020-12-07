@@ -37,7 +37,6 @@
 <translation id="2364498172489649528">Прошло</translation>
 <translation id="2375079107209812402">Преостали покушаји: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Пошаљи извештај са повратним информацијама</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Преостаје {0} покушај}one{<ph name="ERROR_MESSAGE" /> Преостаје {0} покушај}few{<ph name="ERROR_MESSAGE" /> Преостају {0} покушаја}other{<ph name="ERROR_MESSAGE" /> Преостаје {0} покушаја}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Скенирај</translation>
 <translation id="2805756323405976993">Апликације</translation>
@@ -176,6 +175,7 @@
 <translation id="8910721771319628100">Подразумевана мрежа премашује граничну вредност за кашњење</translation>
 <translation id="8919837981463578619">Није успело – недостаје фиока</translation>
 <translation id="8928727111548978589">Није успело – нема више папира</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Преостали покушаји: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="910415269708673980">Освежите тикет за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Скенира се <ph name="PAGE_NUMBER" />. страница</translation>
 <translation id="9111102763498581341">Откључај</translation>

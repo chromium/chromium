@@ -37,7 +37,6 @@
 <translation id="2364498172489649528">Завершено</translation>
 <translation id="2375079107209812402">Осталось попыток: <ph name="ATTEMPTS_LEFT" />.</translation>
 <translation id="2391082728065870591">Отправить отзыв с отчетом</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Осталась {0} попытка.}one{<ph name="ERROR_MESSAGE" /> Осталась {0} попытка.}few{<ph name="ERROR_MESSAGE" /> Осталось {0} попытки.}many{<ph name="ERROR_MESSAGE" /> Осталось {0} попыток.}other{<ph name="ERROR_MESSAGE" /> Осталось {0} попытки.}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Искать</translation>
 <translation id="2805756323405976993">Сервисы</translation>
@@ -176,6 +175,7 @@
 <translation id="8910721771319628100">В сети, используемой по умолчанию, превышено пороговое значение задержки.</translation>
 <translation id="8919837981463578619">Сбой: нет лотка для бумаги</translation>
 <translation id="8928727111548978589">Сбой: закончилась бумага</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Осталось попыток: <ph name="ATTEMPTS_LEFT" />.</translation>
 <translation id="910415269708673980">Обновите билет для аккаунта <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Сканирование страницы <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Разблокировать</translation>

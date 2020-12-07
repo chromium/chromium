@@ -37,7 +37,6 @@
 <translation id="2364498172489649528">Nakapasa</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> (na) pagsubok ang natitira</translation>
 <translation id="2391082728065870591">Magpadala ng Ulat ng Feedback</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} pagsubok na lang ang natitira}one{<ph name="ERROR_MESSAGE" /> {0} pagsubok na lang ang natitira}other{<ph name="ERROR_MESSAGE" /> {0} na pagsubok na lang ang natitira}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">I-scan</translation>
 <translation id="2805756323405976993">Mga App</translation>
@@ -176,6 +175,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8910721771319628100">Mas mataas sa limitasyon ng latency ang default na network</translation>
 <translation id="8919837981463578619">Hindi na-print - Walang tray</translation>
 <translation id="8928727111548978589">Hindi na-print - Wala nang papel</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> (na) pagsubok ang natitira</translation>
 <translation id="910415269708673980">I-refresh ang ticket para sa <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Sina-scan ang pahina <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">I-unlock</translation>

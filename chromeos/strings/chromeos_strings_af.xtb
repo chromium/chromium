@@ -37,7 +37,6 @@
 <translation id="2364498172489649528">Geslaag</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> pogings oor</translation>
 <translation id="2391082728065870591">Stuur terugvoerverslag</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} poging oor}other{<ph name="ERROR_MESSAGE" /> {0} pogings oor}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Skandeer</translation>
 <translation id="2805756323405976993">Programme</translation>
@@ -176,6 +175,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8910721771319628100">Versteknetwerk is bo traagheiddrempel</translation>
 <translation id="8919837981463578619">Misluk – Laai ontbreek</translation>
 <translation id="8928727111548978589">Misluk – Papier is op</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> pogings oor</translation>
 <translation id="910415269708673980">Herlaai kaartjie vir <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skandeer tans bladsy <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Ontsluit</translation>

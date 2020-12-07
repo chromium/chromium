@@ -37,7 +37,6 @@
 <translation id="2364498172489649528">Сынақтан өтті</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> мүмкіндік қалды</translation>
 <translation id="2391082728065870591">Пікірлер есебін жіберу</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} әрекет қалды.}other{<ph name="ERROR_MESSAGE" /> {0} әрекет қалды.}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Іздеу</translation>
 <translation id="2805756323405976993">Қолданбалар</translation>
@@ -175,6 +174,7 @@
 <translation id="8910721771319628100">Әдепкі желі кідірісі шекті мәннен асады.</translation>
 <translation id="8919837981463578619">Сәтсіз: науа жоқ</translation>
 <translation id="8928727111548978589">Сәтсіз: қағаз бітіп қалды</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" />. Қалған әрекеттер саны: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> үшін билетті жаңарту</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-бет сканерленуде</translation>
 <translation id="9111102763498581341">Құлпын ашу</translation>

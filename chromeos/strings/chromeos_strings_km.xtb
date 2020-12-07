@@ -37,7 +37,6 @@
 <translation id="2364498172489649528">ជាប់</translation>
 <translation id="2375079107209812402">អាច​ព្យាយាម​បាន <ph name="ATTEMPTS_LEFT" /> ដង​ទៀត</translation>
 <translation id="2391082728065870591">ផ្ញើ​របាយការណ៍អំពីមតិកែលម្អ</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> អាចព្យាយាមបាន {0} ដងទៀត}other{<ph name="ERROR_MESSAGE" /> អាចព្យាយាមបាន {0} ដងទៀត}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">ស្កេន</translation>
 <translation id="2805756323405976993">កម្មវិធី</translation>
@@ -175,6 +174,7 @@
 <translation id="8910721771319628100">កម្រិត​ពន្យាររបស់បណ្ដាញលំនាំដើមខ្ពស់ពេក</translation>
 <translation id="8919837981463578619">មិនបានសម្រេច - ​​បាត់ថាសដាក់ក្រដាស</translation>
 <translation id="8928727111548978589">មិនបានសម្រេច - ​​អស់ក្រដាស</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> អាច​ព្យាយាម​បាន <ph name="ATTEMPTS_LEFT" /> ដងទៀត</translation>
 <translation id="910415269708673980">ផ្ទុកសំបុត្រ​ឡើងវិញសម្រាប់ <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">កំពុង​ស្កេន​ទំព័រ <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">ដោះសោរ</translation>

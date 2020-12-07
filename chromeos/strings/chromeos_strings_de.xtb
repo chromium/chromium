@@ -37,7 +37,6 @@
 <translation id="2364498172489649528">Bestanden</translation>
 <translation id="2375079107209812402">Noch <ph name="ATTEMPTS_LEFT" /> Versuche</translation>
 <translation id="2391082728065870591">Feedbackbericht senden</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Noch {0} Versuch}other{<ph name="ERROR_MESSAGE" /> Noch {0} Versuche}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Suchen</translation>
 <translation id="2805756323405976993">Apps</translation>
@@ -176,6 +175,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8910721771319628100">Das Standardnetzwerk hat den Latenzgrenzwert überschritten</translation>
 <translation id="8919837981463578619">Fehlgeschlagen – Fach fehlt</translation>
 <translation id="8928727111548978589">Fehlgeschlagen – Kein Papier</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> verbleibende Versuche</translation>
 <translation id="910415269708673980">Aktualisieren Sie das Ticket für <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Seite <ph name="PAGE_NUMBER" /> wird gescannt</translation>
 <translation id="9111102763498581341">Entsperren</translation>

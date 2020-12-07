@@ -37,7 +37,6 @@
 <translation id="2364498172489649528">सुरक्षा जाँचमा पास भयो</translation>
 <translation id="2375079107209812402">अब <ph name="ATTEMPTS_LEFT" /> पटक प्रयास गर्न मिल्छ</translation>
 <translation id="2391082728065870591">फिडब्याक रिपोर्ट पठाउनुहोस्</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> अब {0} पटक प्रयास गर्न मिल्छ}other{<ph name="ERROR_MESSAGE" /> अब {0} पटक प्रयास गर्न मिल्छ}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
 <translation id="2805756323405976993">एप्स</translation>
@@ -175,6 +174,7 @@
 <translation id="8910721771319628100">पूर्वनिर्धारित नेटवर्कको विलम्बता समयसीमाभन्दा बढी छ</translation>
 <translation id="8919837981463578619">प्रिन्ट गर्न सकिएन - ट्रे छैन</translation>
 <translation id="8928727111548978589">प्रिन्ट गर्न सकिएन - कागज सकियो</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> अब <ph name="ATTEMPTS_LEFT" /> पटक प्रयास गर्न मिल्छ</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> को टिकट पुन: ताजा गर्नुहोस्</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> स्क्यान गरिँदै छ</translation>
 <translation id="9111102763498581341">अनलक गर्नुहोस्</translation>

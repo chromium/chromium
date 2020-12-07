@@ -37,7 +37,6 @@
 <translation id="2364498172489649528">通过</translation>
 <translation id="2375079107209812402">剩余尝试次数：<ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">发送反馈报告</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />剩余尝试次数：{0}}other{<ph name="ERROR_MESSAGE" />剩余尝试次数：{0}}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">扫描</translation>
 <translation id="2805756323405976993">应用</translation>
@@ -176,6 +175,7 @@
 <translation id="8910721771319628100">默认网络的延迟时间超出了阈值</translation>
 <translation id="8919837981463578619">失败 - 缺少送纸盘</translation>
 <translation id="8928727111548978589">失败 - 纸张已用完</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" />剩余尝试次数：<ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="910415269708673980">刷新 <ph name="PRINCIPAL_NAME" /> 的票据</translation>
 <translation id="9106415115617144481">正在扫描第 <ph name="PAGE_NUMBER" /> 页</translation>
 <translation id="9111102763498581341">解锁</translation>

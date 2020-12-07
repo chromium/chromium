@@ -37,7 +37,6 @@
 <translation id="2364498172489649528">Preverjanje je uspelo</translation>
 <translation id="2375079107209812402">Na voljo imate še toliko poskusov: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Pošiljanje poročila s povratnimi informacijami</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Še {0} poskus}one{<ph name="ERROR_MESSAGE" /> Še {0} poskus}two{<ph name="ERROR_MESSAGE" /> Še {0} poskusa}few{<ph name="ERROR_MESSAGE" /> Še {0} poskusi}other{<ph name="ERROR_MESSAGE" /> Še {0} poskusov}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Išči</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
@@ -176,6 +175,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8910721771319628100">Privzeto omrežje je nad pragom zakasnitve</translation>
 <translation id="8919837981463578619">Napaka – ni pladnja</translation>
 <translation id="8928727111548978589">Napaka – zmanjkalo je papirja</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Število preostalih poskusov: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="910415269708673980">Osvežite kartonček za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Optično branje <ph name="PAGE_NUMBER" />. strani</translation>
 <translation id="9111102763498581341">Odkleni</translation>

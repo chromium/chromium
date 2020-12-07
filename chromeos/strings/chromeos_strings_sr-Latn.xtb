@@ -37,7 +37,6 @@
 <translation id="2364498172489649528">Prošlo</translation>
 <translation id="2375079107209812402">Preostali pokušaji: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Pošalji izveštaj sa povratnim informacijama</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaj}one{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaj}few{<ph name="ERROR_MESSAGE" /> Preostaju {0} pokušaja}other{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaja}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Skeniraj</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
@@ -176,6 +175,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8910721771319628100">Podrazumevana mreža premašuje graničnu vrednost za kašnjenje</translation>
 <translation id="8919837981463578619">Nije uspelo – nedostaje fioka</translation>
 <translation id="8928727111548978589">Nije uspelo – nema više papira</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Preostali pokušaji: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="910415269708673980">Osvežite tiket za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenira se <ph name="PAGE_NUMBER" />. stranica</translation>
 <translation id="9111102763498581341">Otključaj</translation>

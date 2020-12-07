@@ -37,7 +37,6 @@
 <translation id="2364498172489649528">සමත් විය</translation>
 <translation id="2375079107209812402">උත්සාහයන් <ph name="ATTEMPTS_LEFT" />ක් ඉතුරුයි</translation>
 <translation id="2391082728065870591">ප්‍රතිපෝෂණ වාර්තාව යවන්න</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{උත්සාහයන් <ph name="ERROR_MESSAGE" /> {0}ක් ඉතිරිය}one{උත්සාහයන් <ph name="ERROR_MESSAGE" /> {0}ක් ඉතිරිය}other{උත්සාහයන් <ph name="ERROR_MESSAGE" /> {0}ක් ඉතිරිය}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">ස්කෑන් කරන්න</translation>
 <translation id="2805756323405976993">යෙදුම්</translation>
@@ -176,6 +175,7 @@
 <translation id="8910721771319628100">පමාවේ මායිමට ඉහළ පෙරනිමි ජාලය</translation>
 <translation id="8919837981463578619">අසාර්ථක විය - තැටිය මගහැරී ඇත</translation>
 <translation id="8928727111548978589">අසාර්ථක විය - කඩදාසි නැත</translation>
+<translation id="89415009803968170">උත්සාහ <ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" />ක් ඉතුරුයි</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> සඳහා ප්‍රවේශපත්‍රය නැවුම් කරන්න</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> පිටුව ස්කෑන් කරමින්</translation>
 <translation id="9111102763498581341">අගුලු හරන්න</translation>

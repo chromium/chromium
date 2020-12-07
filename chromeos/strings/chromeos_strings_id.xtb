@@ -37,7 +37,6 @@
 <translation id="2364498172489649528">Lulus</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> upaya tersisa</translation>
 <translation id="2391082728065870591">Kirim Laporan Masukan</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} percobaan lagi}other{<ph name="ERROR_MESSAGE" /> {0} percobaan lagi}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Pindai</translation>
 <translation id="2805756323405976993">Apl</translation>
@@ -176,6 +175,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8910721771319628100">Jaringan default melebihi ambang batas latensi</translation>
 <translation id="8919837981463578619">Gagal - Tidak ada baki</translation>
 <translation id="8928727111548978589">Gagal - Kertas habis</translation>
+<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> upaya tersisa</translation>
 <translation id="910415269708673980">Perbarui tiket untuk <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Memindai halaman <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Buka kunci</translation>
