@@ -56,9 +56,6 @@
 # results: [ Failure RetryOnFailure Skip ]
 # END TAG HEADER
 
-# Seems to be flaky on the new AMD R7 240 drivers.
-crbug.com/653538 [ win amd-0x6613 ] Pixel_GpuRasterization_BlueBox [ RetryOnFailure ]
-
 # Software compositing is not supported on Android/ChromeOS/Fuchsia: we skip the
 # tests that disable GPU compositing (--disable-gpu-compositing).
 [ android ] Pixel_OffscreenCanvasUnaccelerated2D [ Skip ]
@@ -112,7 +109,6 @@ crbug.com/1115673 [ fuchsia ] Pixel_WebGLCopyImage [ Skip ]
 crbug.com/1115673 [ fuchsia ] Pixel_CanvasLowLatencyWebGLDrawImage [ Skip ]
 crbug.com/1115673 [ fuchsia ] Pixel_CanvasLowLatencyWebGLRoundedCorners [ Skip ]
 crbug.com/1115673 [ fuchsia ] Pixel_CanvasLowLatencyWebGLOccluded [ Skip ]
-crbug.com/1136742 [ fuchsia ] Pixel_WebGLTransparentGreenTriangle_NoAlpha_ImplicitClear [ RetryOnFailure ]
 
 # Tests running with SwiftShader are skipped on platforms where SwiftShader
 # isn't supported.
@@ -146,23 +142,7 @@ crbug.com/805739 [ android ] Pixel_CanvasLowLatency2D [ Skip ]
 
 crbug.com/521588 [ android ] Pixel_ScissorTestWithPreserveDrawingBuffer [ Failure ]
 
-# TODO(vmiura) check / generate reference images for Android devices
-crbug.com/624256 [ mac ] Pixel_SolidColorBackground [ Failure ]
-
 crbug.com/624256 [ android ] Pixel_SolidColorBackground [ Failure ]
-
-crbug.com/690277 [ mac intel-0xd26 debug ] Pixel_CSSFilterEffects [ Failure ]
-
-# Became flaky on 10.13.6. When it flakes, it flakes 3 times, so
-# mark failing, unfortunately.
-crbug.com/872423 [ highsierra amd ] Pixel_CSSFilterEffects [ Failure ]
-
-# TODO(kbr): flakily timing out on this configuration.
-crbug.com/648369 [ linux debug intel ] * [ RetryOnFailure ]
-
-# Flaky for unknown reasons only on macOS. Not planning to investigate
-# further.
-crbug.com/660461 [ mac ] Pixel_ScissorTestWithPreserveDrawingBuffer [ RetryOnFailure ]
 
 # Failing on Nexus 5; haven't investigated why yet.
 crbug.com/773293 [ android android-nexus-5 ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ Skip ]
@@ -170,20 +150,8 @@ crbug.com/773293 [ android android-nexus-5 ] Pixel_WebGL2_ClearBufferfv_Result_D
 
 crbug.com/774809 [ mac intel ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 
-crbug.com/857578 [ highsierra intel-0xa2e ] Pixel_OffscreenCanvasTransferBeforeStyleResize [ RetryOnFailure ]
-
 # Failing on NVIDIA Shield TV; not sure why yet.
 crbug.com/791733 [ android nvidia ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
-
-# Failing on retina Macs
-crbug.com/744658 [ mac amd-0x6821 ] Pixel_Canvas2DRedBox_NoGpuProcess [ Failure ]
-crbug.com/744658 [ mac amd-0x6821 ] Pixel_CSS3DBlueBox_NoGpuProcess [ Failure ]
-
-# TODO(fserb): temporarily suppress this test.
-crbug.com/840394 [ linux skia-renderer-disabled ] Pixel_OffscreenCanvas2DResizeOnWorker [ RetryOnFailure ]
-crbug.com/840394 [ linux skia-renderer-gl ] Pixel_OffscreenCanvas2DResizeOnWorker [ RetryOnFailure ]
-crbug.com/840394 [ linux skia-renderer-vulkan ] Pixel_OffscreenCanvas2DResizeOnWorker [ RetryOnFailure ]
-crbug.com/840394 [ mac ] Pixel_OffscreenCanvas2DResizeOnWorker [ RetryOnFailure ]
 
 # TODO(kbr): temporary suppression for new test.
 crbug.com/575305 [ linux ] Pixel_WebGLSadCanvas [ Skip ]
@@ -192,11 +160,7 @@ crbug.com/872423 [ mac ] Pixel_WebGLSadCanvas [ Skip ]
 crbug.com/575305 [ android ] Pixel_WebGLSadCanvas [ Skip ]
 crbug.com/575305 [ fuchsia ] Pixel_WebGLSadCanvas [ Skip ]
 
-crbug.com/868596 [ android android-chromium android-nexus-9 ] Pixel_CanvasLowLatencyWebGL [ Failure ]
-crbug.com/868596 [ android android-chromium android-shield-android-tv ] Pixel_CanvasLowLatencyWebGL [ Failure ]
-
 crbug.com/868596 [ android android-chromium android-nexus-9 ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Failure ]
-crbug.com/868596 [ android android-chromium android-shield-android-tv ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Failure ]
 
 # float16 is not yet supported for accelerated canvases
 crbug.com/948141 Pixel_CanvasDisplaySRGBAccelerated2D [ Skip ]
@@ -208,7 +172,6 @@ crbug.com/1029389 [ android android-nexus-5 ] Pixel_PrecisionRoundedCorner [ Ski
 
 # Flakes on Nexus 5X.
 crbug.com/883500 [ android-chromium android-nexus-5x ] Pixel_BackgroundImage [ RetryOnFailure ]
-crbug.com/1068620 [ android android-chromium android-nexus-5x ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]
 crbug.com/1065514 [ android android-chromium android-nexus-5x ] Pixel_WebGLReadPixelsTabSwitch [ RetryOnFailure ]
 crbug.com/1121476 [ android android-chromium android-nexus-5x ] Pixel_Canvas2DTabSwitch [ RetryOnFailure ]
 
@@ -260,12 +223,8 @@ crbug.com/976861 [ linux intel-0x5912 skia-renderer-vulkan ] Pixel_OffscreenCanv
 
 # Producing incorrect image on Win10 Intel HD 630 and UHD 630 w/ 26.20.100.6912
 # or later drivers.
-crbug.com/997313 [ win intel-0x5912 skia-renderer-disabled ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
 crbug.com/997313 [ win intel-0x5912 skia-renderer-gl ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
-crbug.com/997313 [ win intel-0x5912 skia-renderer-vulkan ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
-crbug.com/997313 [ win intel-0x3e92 skia-renderer-disabled ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
 crbug.com/997313 [ win intel-0x3e92 skia-renderer-gl ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
-crbug.com/997313 [ win intel-0x3e92 skia-renderer-vulkan ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
 
 # Flakes on Nexus 9 or NVIDIA Shield TV
 crbug.com/1019462 [ android android-nexus-9 skia-renderer-disabled ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ RetryOnFailure ]
@@ -276,12 +235,7 @@ crbug.com/1019462 [ android android-nexus-9 skia-renderer-disabled ] Pixel_Video
 crbug.com/1019462 [ android android-nexus-9 skia-renderer-disabled ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
 crbug.com/1019462 [ android android-nexus-9 skia-renderer-disabled ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ RetryOnFailure ]
 crbug.com/1019462 [ android android-shield-android-tv skia-renderer-disabled ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ RetryOnFailure ]
-crbug.com/1019462 [ android android-shield-android-tv skia-renderer-disabled ] Pixel_Video_MP4_FourColors_Rot_180 [ RetryOnFailure ]
-crbug.com/1019462 [ android android-shield-android-tv skia-renderer-disabled ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
 crbug.com/1019462 [ android android-shield-android-tv skia-renderer-disabled ] Pixel_Video_MP4_FourColors_Rot_90 [ RetryOnFailure ]
-crbug.com/1019462 [ android android-shield-android-tv skia-renderer-disabled ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
-crbug.com/1019462 [ android android-shield-android-tv skia-renderer-disabled ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
-crbug.com/1019462 [ android android-shield-android-tv skia-renderer-disabled ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ RetryOnFailure ]
 
 # Skip dual gpu switching tests on Mac Nvidia because this
 # configuration has been forced to use only the low-power GPU due to
@@ -292,16 +246,8 @@ crbug.com/1047573 [ mac nvidia ] Pixel_WebGLHighToLowPower [ Skip ]
 crbug.com/1048892 [ mac nvidia ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Skip ]
 crbug.com/1048892 [ mac nvidia ] Pixel_OffscreenCanvasIBRCWebGLHighPerfWorker [ Skip ]
 
-# Flakes on Linux, Mac and Windows
+# Flakes on Linux
 crbug.com/1028975 [ linux ] Pixel_PrecisionRoundedCorner [ RetryOnFailure ]
-crbug.com/1028975 [ mac ] Pixel_PrecisionRoundedCorner [ RetryOnFailure ]
-crbug.com/1028975 [ win ] Pixel_PrecisionRoundedCorner [ RetryOnFailure ]
-crbug.com/1069339 [ mac intel-0xd26 ] Pixel_OffscreenCanvasIBRCWebGLHighPerfWorker [ RetryOnFailure ]
-
-# VP9 appears to not recover correctly after GPU process crashes on Windows.
-crbug.com/1033982 [ win nvidia skia-renderer-disabled ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
-crbug.com/1033982 [ win nvidia skia-renderer-gl ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
-crbug.com/1033982 [ win nvidia skia-renderer-vulkan ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
 
 # HDR rendering with PQ color space appears to be broken on Windows RS2.
 # TODO(sunnyps): Revert this temporary suppression after ensuring pixel tests
@@ -414,9 +360,6 @@ crbug.com/1021566 [ skia-renderer-dawn ] Pixel_WebGLGreenTriangle_NoAA_NoAlpha [
 # DirectComposition tests are not expected to work properly on Windows 7.
 crbug.com/1086758 [ win7 ] Pixel_DirectComposition* [ Skip ]
 
-# 3D box is shaded incorrectly using SkiaRenderer Dawn on Windows.
-crbug.com/1082769 [ win skia-renderer-dawn ] Pixel_CSS3DBlueBox [ Failure ]
-
 # Flakes on gpu-fyi-try-chromeos-kevin and Fuchsia x64, produces notably different image.
 crbug.com/1086687 [ chromeos chromeos-board-kevin ] Pixel_PrecisionRoundedCorner [ Skip ]
 crbug.com/1136875 [ fuchsia ] Pixel_PrecisionRoundedCorner [ Skip ]
@@ -426,9 +369,6 @@ crbug.com/1097752 [ android android-nexus-5 ] Pixel_CanvasLowLatencyWebGLAlphaFa
 
 # Produces blank images on gpu-fyi-try-chromeos-kevin, gpu-fyi-try-chromeos-amd64-generic.
 crbug.com/1086690 [ chromeos ] Pixel_WebGLSadCanvas [ Skip ]
-
-# Likely produces a Dawn validation errors that makes rendering skipped.
-crbug.com/1097735 [ skia-renderer-dawn ] Pixel_PaintWorkletTransform [ Failure ]
 
 # Cannot use file in Chromium checkout for fake video capture device on Android
 # or ChromeOS.
