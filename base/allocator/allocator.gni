@@ -16,17 +16,10 @@ if ((is_linux || is_chromeos || is_android || is_apple ||
   _default_use_allocator_shim = false
 }
 
-if (_default_use_allocator_shim && is_win) {
+if (_default_use_allocator_shim) {
   _default_allocator = "partition"
-} else if (is_android || is_apple || is_asan || is_lsan || is_tsan || is_msan ||
-           is_win || is_fuchsia ||
-           ((is_linux || is_chromeos) && target_cpu == "arm64") ||
-           (is_cast_audio_only && target_cpu == "arm")) {
-  # Temporarily disable tcmalloc on arm64 linux to get rid of compilation
-  # errors.
-  _default_allocator = "none"
 } else {
-  _default_allocator = "tcmalloc"
+  _default_allocator = "none"
 }
 
 declare_args() {
