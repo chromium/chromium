@@ -54,6 +54,7 @@ class AutocorrectManager {
   std::string last_corrected_word_;
   bool window_visible = false;
   bool button_highlighted = false;
+  base::TimeTicks autocorrect_time_;
 };
 
 }  // namespace chromeos

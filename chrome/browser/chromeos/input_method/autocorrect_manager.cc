@@ -69,6 +69,7 @@ void AutocorrectManager::MarkAutocorrectRange(const std::string& corrected_word,
   if (context_id_ != -1) {
     engine_->SetAutocorrectRange(base::UTF8ToUTF16(corrected_word), start_index,
                                  start_index + corrected_word.length());
+    autocorrect_time_ = base::TimeTicks::Now();
     LogAssistiveAutocorrectAction(AutocorrectActions::kUnderlined);
   }
 }
@@ -185,6 +186,8 @@ void AutocorrectManager::UndoAutocorrect() {
           .c_str(),
       &error);
   LogAssistiveAutocorrectAction(AutocorrectActions::kReverted);
+  base::UmaHistogramMediumTimes("InputMethod.Assistive.Autocorrect.Delay",
+                                (base::TimeTicks::Now() - autocorrect_time_));
 }
 
 }  // namespace chromeos
