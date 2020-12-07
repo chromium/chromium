@@ -4,5 +4,3 @@
 set noparent
 
 file://third_party/OWNERS
-
-# OS: Android
