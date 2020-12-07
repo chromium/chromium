@@ -2003,7 +2003,8 @@ void StyleEngine::RecalcStyle(StyleRecalcChange change) {
     ancestor->ClearChildNeedsStyleRecalc();
   }
   style_recalc_root_.Clear();
-  PropagateWritingModeAndDirectionToHTMLRoot();
+  if (!parent || IsA<HTMLBodyElement>(*root_element))
+    PropagateWritingModeAndDirectionToHTMLRoot();
 }
 
 void StyleEngine::ClearEnsuredDescendantStyles(Element& root) {
