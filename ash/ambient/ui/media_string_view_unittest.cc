@@ -48,7 +48,7 @@ TEST_F(MediaStringViewTest, ShowMediaTitleAndArtist) {
 
   SimulateMediaMetadataChanged(metadata);
 
-  const base::string16 expected_text = base::UTF8ToUTF16("title \u00B7 artist");
+  const base::string16 expected_text = base::UTF8ToUTF16("title \u2022 artist");
   EXPECT_EQ(GetMediaStringViewTextLabel()->GetText(), expected_text);
 }
 
