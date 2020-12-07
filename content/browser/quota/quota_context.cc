@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
+#include "content/browser/quota/quota_change_dispatcher.h"
 #include "content/browser/quota/quota_manager_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -30,10 +31,14 @@ QuotaContext::QuotaContext(
     storage::GetQuotaSettingsFunc get_settings_function)
     : base::RefCountedDeleteOnSequence<QuotaContext>(GetIOThreadTaskRunner({})),
       io_thread_(GetIOThreadTaskRunner({})),
+      quota_change_dispatcher_(
+          base::MakeRefCounted<QuotaChangeDispatcher>(io_thread_)),
       quota_manager_(base::MakeRefCounted<storage::QuotaManager>(
           is_incognito,
           profile_path,
           io_thread_,
+          base::BindRepeating(&QuotaChangeDispatcher::MaybeDispatchEvents,
+                              quota_change_dispatcher_),
           std::move(special_storage_policy),
           std::move(get_settings_function))),
       permission_context_(
@@ -62,10 +67,6 @@ void QuotaContext::BindQuotaManagerHostOnIOThread(
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::QuotaManagerHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  if (!quota_change_dispatcher_) {
-    quota_change_dispatcher_ = base::MakeRefCounted<QuotaChangeDispatcher>();
-  }
 
   // The quota manager currently runs on the I/O thread.
   auto host = std::make_unique<QuotaManagerHost>(

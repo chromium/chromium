@@ -7,11 +7,13 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,7 +57,8 @@ class QuotaChangeDispatcherTest : public testing::Test {
   ~QuotaChangeDispatcherTest() override = default;
 
   void SetUp() override {
-    quota_change_dispatcher_ = base::MakeRefCounted<QuotaChangeDispatcher>();
+    quota_change_dispatcher_ = base::MakeRefCounted<QuotaChangeDispatcher>(
+        task_environment_.GetMainThreadTaskRunner());
   }
 
   std::map<url::Origin, QuotaChangeDispatcher::DelayedOriginListener>*
@@ -157,13 +160,16 @@ TEST_F(QuotaChangeDispatcherTest, DispatchEvents) {
                         base::Unretained(this)));
   listener.SetQuotaChangeCallback(barrier);
 
-  quota_change_dispatcher_->DispatchEvents();
+  quota_change_dispatcher_->MaybeDispatchEvents();
   WaitForChange();
 
   EXPECT_EQ(1, listener.quota_change_call_count());
 }
 
 TEST_F(QuotaChangeDispatcherTest, DispatchEvents_Multiple) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->AppendSwitchASCII(switches::kQuotaChangeEventInterval, "0");
+
   const url::Origin& url_foo_ = url::Origin::Create(GURL("http://foo.com/"));
 
   mojo::PendingRemote<blink::mojom::QuotaChangeListener> mojo_listener_1;
@@ -190,7 +196,7 @@ TEST_F(QuotaChangeDispatcherTest, DispatchEvents_Multiple) {
   listener_1.SetQuotaChangeCallback(barrier);
   listener_2.SetQuotaChangeCallback(barrier);
 
-  quota_change_dispatcher_->DispatchEvents();
+  quota_change_dispatcher_->MaybeDispatchEvents();
   WaitForChange();
 
   EXPECT_EQ(1, listener_1.quota_change_call_count());
@@ -202,7 +208,7 @@ TEST_F(QuotaChangeDispatcherTest, DispatchEvents_Multiple) {
   listener_1.SetQuotaChangeCallback(barrier);
   listener_2.SetQuotaChangeCallback(barrier);
 
-  quota_change_dispatcher_->DispatchEvents();
+  quota_change_dispatcher_->MaybeDispatchEvents();
   WaitForChange();
 
   EXPECT_EQ(2, listener_1.quota_change_call_count());
@@ -210,6 +216,9 @@ TEST_F(QuotaChangeDispatcherTest, DispatchEvents_Multiple) {
 }
 
 TEST_F(QuotaChangeDispatcherTest, RemoveThenDispatch) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->AppendSwitchASCII(switches::kQuotaChangeEventInterval, "0");
+
   const url::Origin& url_foo_ = url::Origin::Create(GURL("http://foo.com/"));
   const url::Origin& url_bar_ = url::Origin::Create(GURL("http://bar.com/"));
   mojo::PendingRemote<blink::mojom::QuotaChangeListener> mojo_listener_1;
@@ -236,7 +245,7 @@ TEST_F(QuotaChangeDispatcherTest, RemoveThenDispatch) {
   listener_1.SetQuotaChangeCallback(barrier);
   listener_2.SetQuotaChangeCallback(barrier);
 
-  quota_change_dispatcher_->DispatchEvents();
+  quota_change_dispatcher_->MaybeDispatchEvents();
   WaitForChange();
 
   EXPECT_EQ(1, listener_1.quota_change_call_count());
@@ -249,7 +258,7 @@ TEST_F(QuotaChangeDispatcherTest, RemoveThenDispatch) {
                         base::Unretained(this)));
   listener_1.SetQuotaChangeCallback(barrier);
 
-  quota_change_dispatcher_->DispatchEvents();
+  quota_change_dispatcher_->MaybeDispatchEvents();
   WaitForChange();
 
   EXPECT_EQ(2, listener_1.quota_change_call_count());

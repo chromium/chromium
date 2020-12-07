@@ -8,15 +8,23 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/command_line.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/browser/quota/quota_manager_host.h"
+#include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace {
+
+// The minimum delay between successive storage pressure events.
+constexpr base::TimeDelta kDefaultQuotaChangeIntervalSeconds =
+    base::TimeDelta::FromSeconds(60);
 
 base::TimeDelta GetRandomDelay() {
   int64_t delay_micros = static_cast<int64_t>(
@@ -33,15 +41,26 @@ QuotaChangeDispatcher::DelayedOriginListener::DelayedOriginListener()
 QuotaChangeDispatcher::DelayedOriginListener::~DelayedOriginListener() =
     default;
 
-QuotaChangeDispatcher::QuotaChangeDispatcher() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+QuotaChangeDispatcher::QuotaChangeDispatcher(
+    scoped_refptr<base::SequencedTaskRunner> io_thread)
+    : base::RefCountedDeleteOnSequence<QuotaChangeDispatcher>(
+          std::move(io_thread)) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
+
 QuotaChangeDispatcher::~QuotaChangeDispatcher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void QuotaChangeDispatcher::DispatchEvents() {
+void QuotaChangeDispatcher::MaybeDispatchEvents() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!last_event_dispatched_at_.is_null() &&
+      (base::TimeTicks::Now() - last_event_dispatched_at_) <
+          GetQuotaChangeEventInterval()) {
+    return;
+  }
+  last_event_dispatched_at_ = base::TimeTicks::Now();
 
   for (auto& kvp : listeners_by_origin_) {
     const url::Origin& origin = kvp.first;
@@ -96,6 +115,25 @@ void QuotaChangeDispatcher::OnRemoteDisconnect(const url::Origin& origin,
   if (listeners_by_origin_[origin].listeners.empty()) {
     listeners_by_origin_.erase(origin);
   }
+}
+
+const base::TimeDelta QuotaChangeDispatcher::GetQuotaChangeEventInterval() {
+  if (!is_quota_change_interval_cached_) {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(switches::kQuotaChangeEventInterval)) {
+      const std::string string_value = command_line->GetSwitchValueASCII(
+          switches::kQuotaChangeEventInterval);
+
+      int int_value;
+      if (base::StringToInt(string_value, &int_value) && int_value >= 0) {
+        return base::TimeDelta::FromSeconds(int_value);
+      }
+    } else {
+      quota_change_event_interval_ = kDefaultQuotaChangeIntervalSeconds;
+    }
+    is_quota_change_interval_cached_ = true;
+  }
+  return quota_change_event_interval_;
 }
 
 }  // namespace content

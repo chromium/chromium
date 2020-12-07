@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -50,6 +51,7 @@ class ImportantSitesUsageCounterTest : public testing::Test {
     quota_manager_ = base::MakeRefCounted<QuotaManager>(
         /*is_incognito=*/false, temp_dir_.GetPath(),
         content::GetIOThreadTaskRunner({}).get(),
+        /*quota_change_callback=*/base::DoNothing(),
         /*special_storage_policy=*/nullptr, storage::GetQuotaSettingsFunc());
     return quota_manager_.get();
   }

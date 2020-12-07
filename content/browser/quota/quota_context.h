@@ -82,13 +82,13 @@ class QuotaContext : public base::RefCountedDeleteOnSequence<QuotaContext> {
   // QuotaManager runs on the IO thread, so mojo receivers must be bound there.
   const scoped_refptr<base::SingleThreadTaskRunner> io_thread_;
 
+  // Owning reference for the QuotaChangeDispatcher.
+  scoped_refptr<QuotaChangeDispatcher> quota_change_dispatcher_;
+
   // Owning reference for the QuotaManager.
   //
   // This is not const because of OverrideQuotaManagerForTesting().
   scoped_refptr<storage::QuotaManager> quota_manager_;
-
-  // Owning reference for the QuotaChangeDispatcher.
-  scoped_refptr<QuotaChangeDispatcher> quota_change_dispatcher_;
 
   // Owning reference for the QuotaPermissionContext.
   const scoped_refptr<QuotaPermissionContext> permission_context_;

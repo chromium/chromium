@@ -236,7 +236,7 @@ void StorageManager::PermissionRequestComplete(ScriptPromiseResolver* resolver,
 }
 
 void StorageManager::StartObserving() {
-  if (change_listener_receiver_.is_bound())
+  if (change_listener_receiver_.is_bound() || !quota_host_.is_bound())
     return;
 
   ExecutionContext* execution_context = GetExecutionContext();

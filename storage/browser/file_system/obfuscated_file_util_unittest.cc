@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -174,7 +175,8 @@ class ObfuscatedFileUtilTest : public testing::Test,
 
     quota_manager_ = base::MakeRefCounted<QuotaManager>(
         is_incognito(), data_dir_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get().get(), storage_policy_.get(),
+        base::ThreadTaskRunnerHandle::Get().get(),
+        /*quota_change_callback=*/base::DoNothing(), storage_policy_.get(),
         GetQuotaSettingsFunc());
     QuotaSettings settings;
     settings.per_host_quota = 25 * 1024 * 1024;

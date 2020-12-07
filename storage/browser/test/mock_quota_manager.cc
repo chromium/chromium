@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
@@ -46,6 +47,7 @@ MockQuotaManager::MockQuotaManager(
     : QuotaManager(is_incognito,
                    profile_path,
                    std::move(io_thread),
+                   /*quota_change_callback=*/base::DoNothing(),
                    std::move(special_storage_policy),
                    GetQuotaSettingsFunc()) {}
 

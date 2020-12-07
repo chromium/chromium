@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -58,6 +59,7 @@ const int64_t kAvailableSpaceForApp = 13377331U;
 const int64_t kMustRemainAvailableForSystem = kAvailableSpaceForApp / 2;
 const int64_t kDefaultPoolSize = 1000;
 const int64_t kDefaultPerHostQuota = 200;
+const int64_t kGigabytes = QuotaManager::kMBytes * 1024;
 
 // Returns a deterministic value for the amount of available disk space.
 int64_t GetAvailableDiskSpaceForTest() {
@@ -105,6 +107,7 @@ class QuotaManagerTest : public testing::Test {
     quota_manager_ = base::MakeRefCounted<QuotaManager>(
         is_incognito, data_dir_.GetPath(),
         base::ThreadTaskRunnerHandle::Get().get(),
+        /*quota_change_callback=*/base::DoNothing(),
         mock_special_storage_policy_.get(), GetQuotaSettingsFunc());
     SetQuotaSettings(kDefaultPoolSize, kDefaultPerHostQuota,
                      is_incognito ? INT64_C(0) : kMustRemainAvailableForSystem);
@@ -177,6 +180,13 @@ class QuotaManagerTest : public testing::Test {
     settings.must_remain_available = must_remain_available;
     settings.refresh_interval = base::TimeDelta::Max();
     quota_manager_->SetQuotaSettings(settings);
+  }
+
+  using GetVolumeInfoFn =
+      std::tuple<int64_t, int64_t> (*)(const base::FilePath&);
+
+  void SetGetVolumeInfoFn(GetVolumeInfoFn fn) {
+    quota_manager_->SetGetVolumeInfoFnForTesting(fn);
   }
 
   void GetPersistentHostQuota(const std::string& host) {
@@ -451,6 +461,10 @@ class QuotaManagerTest : public testing::Test {
 
   std::unique_ptr<QuotaOverrideHandle> GetQuotaOverrideHandle() {
     return quota_manager_->proxy()->GetQuotaOverrideHandle();
+  }
+
+  void SetQuotaChangeCallback(base::RepeatingClosure cb) {
+    quota_manager_->SetQuotaChangeCallbackForTesting(std::move(cb));
   }
 
   QuotaStatusCode status() const { return quota_status_; }
@@ -2796,6 +2810,59 @@ TEST_F(QuotaManagerTest, WithdrawQuotaOverride) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(kDefaultPerHostQuota, quota());
+}
+
+TEST_F(QuotaManagerTest, QuotaChangeEvent_LargePartitionPressure) {
+  scoped_feature_list_.InitAndEnableFeature(features::kStoragePressureEvent);
+  bool quota_change_dispatched = false;
+
+  SetQuotaChangeCallback(
+      base::BindLambdaForTesting([&] { quota_change_dispatched = true; }));
+  SetGetVolumeInfoFn([](const base::FilePath&) -> std::tuple<int64_t, int64_t> {
+    int64_t total = kGigabytes * 100;
+    int64_t available = kGigabytes * 2;
+    return std::make_tuple(total, available);
+  });
+  GetStorageCapacity();
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(quota_change_dispatched);
+
+  SetGetVolumeInfoFn([](const base::FilePath&) -> std::tuple<int64_t, int64_t> {
+    int64_t total = kGigabytes * 100;
+    int64_t available = QuotaManager::kMBytes * 512;
+    return std::make_tuple(total, available);
+  });
+  GetStorageCapacity();
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(quota_change_dispatched);
+}
+
+TEST_F(QuotaManagerTest, QuotaChangeEvent_SmallPartitionPressure) {
+  scoped_feature_list_.InitAndEnableFeature(features::kStoragePressureEvent);
+  bool quota_change_dispatched = false;
+
+  SetQuotaChangeCallback(
+      base::BindLambdaForTesting([&] { quota_change_dispatched = true; }));
+  SetGetVolumeInfoFn([](const base::FilePath&) -> std::tuple<int64_t, int64_t> {
+    int64_t total = kGigabytes * 10;
+    int64_t available = total * 2;
+    return std::make_tuple(total, available);
+  });
+  GetStorageCapacity();
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(quota_change_dispatched);
+
+  SetGetVolumeInfoFn([](const base::FilePath&) -> std::tuple<int64_t, int64_t> {
+    // DetermineStoragePressure flow will trigger the storage pressure flow
+    // when available disk space is below 5% (+/- 0.25%) of total disk space.
+    // Available is 2% here to guarantee that it falls below the threshold.
+    int64_t total = kGigabytes * 10;
+    int64_t available = total * 0.02;
+    return std::make_tuple(total, available);
+  });
+  GetStorageCapacity();
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(quota_change_dispatched);
 }
 
 }  // namespace storage

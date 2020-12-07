@@ -631,6 +631,11 @@ const char kProxyServer[] = "proxy-server";
 // Defaults to disabled.
 const char kPullToRefresh[] = "pull-to-refresh";
 
+// Specifies the minimum amount of time, in seconds, that must pass before
+// consecutive quota change events can be fired. Set the value to '0' to disable
+// the debounce mechanimsm.
+const char kQuotaChangeEventInterval[] = "quota-change-event-interval";
+
 // Register Pepper plugins (see pepper_plugin_list.cc for its format).
 const char kRegisterPepperPlugins[]         = "register-pepper-plugins";
 

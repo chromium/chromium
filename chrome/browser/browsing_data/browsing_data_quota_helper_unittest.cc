@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
@@ -39,6 +40,7 @@ class BrowsingDataQuotaHelperTest : public testing::Test {
     quota_manager_ = base::MakeRefCounted<storage::QuotaManager>(
         /*is_incognito=*/false, temp_dir_.GetPath(),
         content::GetIOThreadTaskRunner({}).get(),
+        /*quota_change_callback=*/base::DoNothing(),
         /*special_storage_policy=*/nullptr, storage::GetQuotaSettingsFunc());
     helper_ = base::WrapRefCounted(
         new BrowsingDataQuotaHelperImpl(quota_manager_.get()));
