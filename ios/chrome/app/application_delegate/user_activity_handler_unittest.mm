@@ -371,8 +371,7 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityForeground) {
   EXPECT_TRUE(result);
 }
 
-// Tests that a new tab is created when application is started via Universal
-// Link.
+// Tests that a new tab is created when application is started via handoff.
 TEST_F(UserActivityHandlerTest, ContinueUserActivityBrowsingWeb) {
   NSUserActivity* userActivity = [[NSUserActivity alloc]
       initWithActivityType:NSUserActivityTypeBrowsingWeb];
@@ -398,14 +397,12 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityBrowsingWeb) {
                browserState:GetInterfaceProvider()
                                 .currentInterface.browserState];
 
-  GURL newTabURL(kChromeUINewTabURL);
-  EXPECT_EQ(newTabURL, tabOpener.urlLoadParams.web_params.url);
+  const GURL gurl = net::GURLWithNSURL(nsurl);
+  EXPECT_EQ(gurl, tabOpener.urlLoadParams.web_params.url);
+  EXPECT_TRUE(tabOpener.urlLoadParams.web_params.virtual_url.is_empty());
   // AppStartupParameters default to opening pages in non-Incognito mode.
   EXPECT_EQ(ApplicationModeForTabOpening::NORMAL, [tabOpener applicationMode]);
   EXPECT_TRUE(result);
-  // Verifies that a new tab is being requested.
-  EXPECT_EQ(newTabURL,
-            [[connectionInformationMock startupParameters] externalURL]);
 }
 
 // Tests that continueUserActivity sets startupParameters accordingly to the

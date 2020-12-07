@@ -66,8 +66,6 @@ class GURL;
                         completeURL:(const GURL&)completeURL
     NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithUniversalLink:(const GURL&)universalLink;
-
 - (instancetype)initWithURLs:(const std::vector<GURL>&)URLs;
 
 @end
