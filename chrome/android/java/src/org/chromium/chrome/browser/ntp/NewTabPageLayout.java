@@ -37,6 +37,8 @@ import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
+import org.chromium.chrome.browser.ntp.LogoBridge.Logo;
+import org.chromium.chrome.browser.ntp.LogoBridge.LogoObserver;
 import org.chromium.chrome.browser.ntp.NewTabPage.OnSearchBoxScrollListener;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -116,6 +118,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
 
     private boolean mSearchProviderHasLogo = true;
     private boolean mSearchProviderIsGoogle;
+    private boolean mShowingNonStandardLogo;
 
     private boolean mInitialized;
 
@@ -495,33 +498,27 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
 
         mSearchProviderLogoView.showSearchProviderInitialView();
 
-        mLogoDelegate.getSearchProviderLogo((logo, fromCache) -> {
-            if (logo == null) {
-                if (mSearchProviderIsGoogle) {
-                    // We received a null logo and the provider is Google; this means there's no
-                    // doodle.
-                    ProbabilisticCryptidRenderer renderer =
-                            ProbabilisticCryptidRenderer.getInstance();
-                    renderer.getCryptidForLogo(Profile.getLastUsedRegularProfile(),
-                            mCallbackController.makeCancelable((drawable) -> {
-                                if (drawable == null || mCryptidHolder != null) {
-                                    return;
-                                }
-                                ViewStub stub = findViewById(R.id.logo_holder)
-                                                        .findViewById(R.id.cryptid_holder);
-                                ImageView view = (ImageView) stub.inflate();
-                                view.setImageDrawable(drawable);
-                                mCryptidHolder = view;
-                                renderer.recordRenderEvent();
-                            }));
+        mLogoDelegate.getSearchProviderLogo(new LogoObserver() {
+            @Override
+            public void onLogoAvailable(Logo logo, boolean fromCache) {
+                if (logo == null && fromCache) {
+                    // There is no cached logo. Wait until we know whether there's a fresh
+                    // one before making any further decisions.
+                    return;
                 }
 
-                if (fromCache) return;
+                mSearchProviderLogoView.setDelegate(mLogoDelegate);
+                mSearchProviderLogoView.updateLogo(logo);
+                mSnapshotTileGridChanged = true;
+
+                mShowingNonStandardLogo = logo != null;
+                maybeKickOffCryptidRendering();
             }
 
-            mSearchProviderLogoView.setDelegate(mLogoDelegate);
-            mSearchProviderLogoView.updateLogo(logo);
-            mSnapshotTileGridChanged = true;
+            @Override
+            public void onCachedLogoRevalidated() {
+                maybeKickOffCryptidRendering();
+            }
         });
     }
 
@@ -829,6 +826,27 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
 
     private boolean hasLoadCompleted() {
         return mHasShownView && mTilesLoaded;
+    }
+
+    private void maybeKickOffCryptidRendering() {
+        if (!mSearchProviderIsGoogle || mShowingNonStandardLogo) {
+            // Cryptid rendering is disabled when the logo is not the standard Google logo.
+            return;
+        }
+
+        ProbabilisticCryptidRenderer renderer = ProbabilisticCryptidRenderer.getInstance();
+        renderer.getCryptidForLogo(Profile.getLastUsedRegularProfile(),
+                mCallbackController.makeCancelable((drawable) -> {
+                    if (drawable == null || mCryptidHolder != null) {
+                        return;
+                    }
+                    ViewStub stub =
+                            findViewById(R.id.logo_holder).findViewById(R.id.cryptid_holder);
+                    ImageView view = (ImageView) stub.inflate();
+                    view.setImageDrawable(drawable);
+                    mCryptidHolder = view;
+                    renderer.recordRenderEvent();
+                }));
     }
 
     // TileGroup.Observer interface.
