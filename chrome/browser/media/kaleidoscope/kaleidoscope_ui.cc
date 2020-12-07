@@ -290,6 +290,19 @@ content::WebUIDataSource* KaleidoscopeUI::CreateWebUIDataSource() {
   html_source->AddResourcePath("content.js", IDR_KALEIDOSCOPE_CONTENT_JS);
   html_source->AddResourcePath("shared.css", IDR_KALEIDOSCOPE_SHARED_CSS);
 
+  // Google Sans.
+  html_source->AddResourcePath("resources/fonts/fonts.css",
+                               IDR_GOOGLE_SANS_CSS);
+  html_source->AddResourcePath("resources/fonts/GoogleSans-Bold.woff2",
+                               IDR_GOOGLE_SANS_BOLD);
+  html_source->AddResourcePath("resources/fonts/GoogleSans-Medium.woff2",
+                               IDR_GOOGLE_SANS_MEDIUM);
+  html_source->AddResourcePath("resources/fonts/GoogleSans-Regular.woff2",
+                               IDR_GOOGLE_SANS_REGULAR);
+  html_source->AddResourcePath(
+      "resources/fonts/GoogleSansDisplay-Regular.woff2",
+      IDR_GOOGLE_SANS_DISPLAY_REGULAR);
+
   html_source->SetDefaultResource(IDR_KALEIDOSCOPE_HTML);
 #endif  // BUILDFLAG(ENABLE_KALEIDOSCOPE)
 
