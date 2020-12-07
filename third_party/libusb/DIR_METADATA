@@ -1,0 +1,4 @@
+monorail: {
+  component: "IO>USB"
+}
+team_email: "device-dev@chromium.org"

@@ -1,0 +1,4 @@
+monorail: {
+  component: "Blink>WebFonts"
+}
+team_email: "loading-dev@chromium.org"

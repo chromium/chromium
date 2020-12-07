@@ -1,5 +1,2 @@
 file://chrome/browser/usb/OWNERS
 thestig@chromium.org
-
-# COMPONENT: IO>USB
-# TEAM: device-dev@chromium.org
