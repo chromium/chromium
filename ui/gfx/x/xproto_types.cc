@@ -7,7 +7,6 @@
 #include <xcb/xcbext.h>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/trace_event/trace_event.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto_internal.h"
 
@@ -81,79 +80,49 @@ void WriteBuffer::AppendCurrentBuffer() {
 
 FutureBase::FutureBase(Connection* connection,
                        base::Optional<unsigned int> sequence,
-                       const char* request_name)
+                       const char* request_name,
+                       bool generates_reply)
     : connection_(connection),
-      sequence_(sequence),
-      request_name_(request_name) {}
-
-// If a user-defined response-handler is not installed before this object goes
-// out of scope, a default response handler will be installed.  The default
-// handler throws away the reply and prints the error if there is one.
-FutureBase::~FutureBase() {
-  if (!sequence_)
+      sequence_valid_(sequence.has_value()),
+      sequence_(sequence_valid_ ? sequence.value() : 0) {
+  if (!sequence_valid_)
     return;
+  // Install a default response-handler that throws away the reply and prints
+  // the error if there is one.  This handler may be overridden by clients.
+  connection_->AddRequest(
+      sequence_,
+      base::BindOnce(
+          [](Connection* connection, const char* request_name,
+             Connection::ErrorHandler error_handler, RawReply raw_reply,
+             RawError raw_error) {
+            if (!raw_error)
+              return;
 
-  OnResponseImpl(base::BindOnce(
-      [](Connection* connection, const char* request_name,
-         Connection::ErrorHandler error_handler, RawReply raw_reply,
-         RawError raw_error) {
-        if (!raw_error)
-          return;
-
-        auto error = connection->ParseError(raw_error);
-        error_handler.Run(error.get(), request_name);
-      },
-      connection_, request_name_, connection_->error_handler_));
+            auto error = connection->ParseError(raw_error);
+            error_handler.Run(error.get(), request_name);
+          },
+          connection_, request_name, connection_->error_handler_),
+      request_name, generates_reply);
 }
 
-FutureBase::FutureBase(FutureBase&& future)
-    : connection_(future.connection_),
-      sequence_(future.sequence_),
-      request_name_(future.request_name_) {
-  future.Reset();
-}
-
-FutureBase& FutureBase::operator=(FutureBase&& future) {
-  connection_ = future.connection_;
-  sequence_ = future.sequence_;
-  request_name_ = future.request_name_;
-  future.Reset();
-  return *this;
-}
-
-void FutureBase::SyncImpl(RawError* raw_error, RawReply* raw_reply) {
-  if (!sequence_)
+void FutureBase::Wait() {
+  if (!sequence_valid_)
     return;
-  xcb_generic_error_t* error = nullptr;
-  void* reply = nullptr;
-  if (!xcb_poll_for_reply(connection_->XcbConnection(), *sequence_, &reply,
-                          &error)) {
-    TRACE_EVENT1("ui", "xcb_wait_for_reply", "request", request_name_);
-    reply =
-        xcb_wait_for_reply(connection_->XcbConnection(), *sequence_, &error);
-  }
-  if (reply)
-    *raw_reply = base::MakeRefCounted<MallocedRefCountedMemory>(reply);
-  if (error)
-    *raw_error = base::MakeRefCounted<MallocedRefCountedMemory>(error);
-  sequence_ = base::nullopt;
+  connection_->WaitForResponse(sequence_);
+  connection_->ProcessResponse(sequence_);
 }
 
-void FutureBase::SyncImpl(RawError* raw_error) {
-  if (!sequence_)
+void FutureBase::SyncImpl(RawError* raw_reply, RawReply* raw_error) {
+  if (!sequence_valid_)
     return;
-  if (xcb_generic_error_t* error =
-          xcb_request_check(connection_->XcbConnection(), {*sequence_})) {
-    *raw_error = base::MakeRefCounted<MallocedRefCountedMemory>(error);
-  }
-  sequence_ = base::nullopt;
+  connection_->WaitForResponse(sequence_);
+  connection_->TakeResponse(sequence_, raw_reply, raw_error);
 }
 
 void FutureBase::OnResponseImpl(ResponseCallback callback) {
-  if (!sequence_)
+  if (!sequence_valid_)
     return;
-  connection_->AddRequest(*sequence_, std::move(callback));
-  sequence_ = base::nullopt;
+  connection_->UpdateRequestHandler(sequence_, std::move(callback));
 }
 
 // static
@@ -162,12 +131,6 @@ std::unique_ptr<Error> FutureBase::ParseErrorImpl(x11::Connection* connection,
   if (!raw_error)
     return nullptr;
   return connection->ParseError(raw_error);
-}
-
-void FutureBase::Reset() {
-  connection_ = nullptr;
-  sequence_ = base::nullopt;
-  request_name_ = nullptr;
 }
 
 }  // namespace x11

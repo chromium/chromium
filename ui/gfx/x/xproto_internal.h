@@ -134,7 +134,7 @@ inline void Align(ReadBuffer* buf, size_t align) {
 
 base::Optional<unsigned int> SendRequestImpl(x11::Connection* connection,
                                              WriteBuffer* buf,
-                                             bool is_void,
+                                             bool generates_reply,
                                              bool reply_has_fds);
 
 template <typename Reply>
@@ -142,7 +142,7 @@ Future<Reply> SendRequest(x11::Connection* connection,
                           WriteBuffer* buf,
                           bool reply_has_fds,
                           const char* request_name) {
-  auto sequence = SendRequestImpl(connection, buf, std::is_void<Reply>::value,
+  auto sequence = SendRequestImpl(connection, buf, !std::is_void<Reply>::value,
                                   reply_has_fds);
   return {sequence ? connection : nullptr, sequence,
           sequence ? request_name : nullptr};

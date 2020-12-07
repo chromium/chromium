@@ -9,6 +9,9 @@
 #include <queue>
 
 #include "base/component_export.h"
+#include "base/containers/circular_deque.h"
+#include "base/containers/flat_map.h"
+#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/x/event.h"
@@ -119,8 +122,6 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   // If |synchronous| is true, this makes all requests Sync().
   void SynchronizeForTest(bool synchronous);
 
-  bool synchronous() const { return synchronous_; }
-
   // Read all responses from the socket without blocking.
   void ReadResponses();
 
@@ -165,13 +166,29 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
  private:
   friend class FutureBase;
 
+  // xcb returns unsigned int when making requests.  This may be updated to
+  // uint16_t if/when we stop using xcb for socket IO.
+  using SequenceType = unsigned int;
+
   struct Request {
-    Request(unsigned int sequence, FutureBase::ResponseCallback callback);
+    Request(FutureBase::ResponseCallback callback,
+            const char* request_name_for_tracing,
+            bool generates_reply);
     Request(Request&& other);
     ~Request();
 
-    const unsigned int sequence;
+    // If |callback| is nullptr, then this request has already been processed
+    // out-of-order.
     FutureBase::ResponseCallback callback;
+
+    const char* const request_name_for_tracing;
+
+    const bool generates_reply;
+
+    // Indicates if |reply| and |error| are available.  A separate
+    // |have_response| flag is necessary to distinguish the case where a request
+    // hasn't finished yet from the case where a request finished but didn't
+    // generate a reply or error.
     bool have_response = false;
     FutureBase::RawReply reply;
     FutureBase::RawError error;
@@ -179,7 +196,36 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   void InitRootDepthAndVisual();
 
-  void AddRequest(unsigned int sequence, FutureBase::ResponseCallback callback);
+  // Creates a new Request and adds it to the end of the queue.
+  // |request_name_for_tracing| must be valid until the response is dispatched;
+  // currently the string values are only stored in .rodata, so this constraint
+  // is satisfied.
+  void AddRequest(SequenceType sequence,
+                  FutureBase::ResponseCallback callback,
+                  const char* request_name_for_tracing,
+                  bool generates_reply);
+
+  // Update an existing Request with a new handler.  |sequence| must correspond
+  // to a request in the queue that has not already been processed out-of-order.
+  void UpdateRequestHandler(SequenceType sequence,
+                            FutureBase::ResponseCallback callback);
+
+  // Block until the reply or error for request |sequence| is received.
+  void WaitForResponse(SequenceType sequence);
+
+  // Call the response handler for request |sequence| now (out-of-order).  The
+  // response must already have been obtained from a call to WaitForResponse().
+  void ProcessResponse(SequenceType sequence);
+
+  // Clear the response handler for request |sequence| and take the response.
+  // The response must already have been obtained using WaitForResponse().
+  void TakeResponse(SequenceType sequence,
+                    FutureBase::RawReply* reply,
+                    FutureBase::RawError* error);
+
+  bool NeedsExtraRequestForCheck(SequenceType sequence) const;
+
+  Request* GetRequestForSequence(SequenceType sequence);
 
   bool HasNextResponse();
 
@@ -209,13 +255,20 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   Depth* default_root_depth_ = nullptr;
   VisualType* default_root_visual_ = nullptr;
 
-  std::unordered_map<VisualId, VisualInfo> default_screen_visuals_;
+  base::flat_map<VisualId, VisualInfo> default_screen_visuals_;
 
   std::unique_ptr<KeyboardState> keyboard_state_;
 
   std::list<Event> events_;
 
-  std::queue<Request> requests_;
+  base::circular_deque<Request> requests_;
+  // The sequence ID of requests_.front(), or if |requests_| is empty, then the
+  // ID of the next request that will go in the queue.  This starts at 1 because
+  // the 0'th request is handled internally by XCB when opening the connection.
+  SequenceType first_request_id_ = 1;
+  // If any request in |requests_| will generate a reply, this is the ID of the
+  // latest one, otherwise this is base::nullopt.
+  base::Optional<SequenceType> last_non_void_request_id_;
 
   using ErrorParser =
       std::unique_ptr<Error> (*)(FutureBase::RawError error_bytes);

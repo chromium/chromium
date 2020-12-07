@@ -142,20 +142,18 @@ class COMPONENT_EXPORT(X11) FutureBase {
   using ResponseCallback =
       base::OnceCallback<void(RawReply reply, RawError error)>;
 
-  FutureBase(const FutureBase&) = delete;
-  FutureBase& operator=(const FutureBase&) = delete;
+  // Block until this request is handled by the server.  Unlike Sync(), this
+  // method doesn't return the response.  Rather, it calls the response handler
+  // installed for this request out-of-order.
+  void Wait();
 
  protected:
   FutureBase(Connection* connection,
              base::Optional<unsigned int> sequence,
-             const char* request_name);
-  ~FutureBase();
+             const char* request_name,
+             bool generates_reply);
 
-  FutureBase(FutureBase&& future);
-  FutureBase& operator=(FutureBase&& future);
-
-  void SyncImpl(RawError* raw_error, RawReply* raw_reply);
-  void SyncImpl(RawError* raw_error);
+  void SyncImpl(RawReply* raw_reply, RawError* raw_error);
 
   void OnResponseImpl(ResponseCallback callback);
 
@@ -165,11 +163,9 @@ class COMPONENT_EXPORT(X11) FutureBase {
                                                RawError raw_error);
 
  private:
-  void Reset();
-
   Connection* connection_ = nullptr;
-  base::Optional<unsigned int> sequence_;
-  const char* request_name_ = nullptr;
+  bool sequence_valid_ = false;
+  unsigned int sequence_ = 0;
 };
 
 // An x11::Future wraps an asynchronous response from the X11 server.  The
@@ -180,13 +176,13 @@ class Future : public FutureBase {
  public:
   using Callback = base::OnceCallback<void(Response<Reply> response)>;
 
-  Future() : FutureBase(nullptr, base::nullopt, nullptr) {}
+  Future() : FutureBase(nullptr, base::nullopt, nullptr, false) {}
 
   // Blocks until we receive the response from the server. Returns the response.
   Response<Reply> Sync() {
-    RawError raw_error;
     RawReply raw_reply;
-    SyncImpl(&raw_error, &raw_reply);
+    RawError raw_error;
+    SyncImpl(&raw_reply, &raw_error);
 
     std::unique_ptr<Reply> reply;
     if (raw_reply) {
@@ -229,15 +225,20 @@ class Future : public FutureBase {
   Future(Connection* connection,
          base::Optional<unsigned int> sequence,
          const char* request_name)
-      : FutureBase(connection, sequence, request_name) {}
+      : FutureBase(connection,
+                   sequence,
+                   request_name,
+                   !std::is_void<Reply>::value) {}
 };
 
 // Sync() specialization for requests that don't generate replies.  The returned
 // response will only contain an error if there was one.
 template <>
 inline Response<void> Future<void>::Sync() {
+  RawReply raw_reply;
   RawError raw_error;
-  SyncImpl(&raw_error);
+  SyncImpl(&raw_reply, &raw_error);
+  DCHECK(!raw_reply);
   return Response<void>{ParseErrorImpl(connection(), raw_error)};
 }
 

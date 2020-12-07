@@ -61,11 +61,11 @@ UnretainedRefCountedMemory::~UnretainedRefCountedMemory() = default;
 
 base::Optional<unsigned int> SendRequestImpl(x11::Connection* connection,
                                              WriteBuffer* buf,
-                                             bool is_void,
+                                             bool generates_reply,
                                              bool reply_has_fds) {
   xcb_protocol_request_t xpr{
       .ext = nullptr,
-      .isvoid = is_void,
+      .isvoid = !generates_reply,
   };
 
   struct RequestHeader {
@@ -125,8 +125,6 @@ base::Optional<unsigned int> SendRequestImpl(x11::Connection* connection,
 
   if (xcb_connection_has_error(conn))
     return base::nullopt;
-  if (connection->synchronous())
-    connection->Sync();
   return sequence;
 }
 
