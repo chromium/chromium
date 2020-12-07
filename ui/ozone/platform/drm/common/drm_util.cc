@@ -554,6 +554,8 @@ int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {
       return DRM_FORMAT_NV12;
     case gfx::BufferFormat::YVU_420:
       return DRM_FORMAT_YVU420;
+    case gfx::BufferFormat::P010:
+      return DRM_FORMAT_P010;
     default:
       NOTREACHED();
       return 0;
