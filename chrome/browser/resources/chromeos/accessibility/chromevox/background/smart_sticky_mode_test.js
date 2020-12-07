@@ -11,7 +11,7 @@ GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
 ChromeVoxSmartStickyModeTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   setUp() {
-    window.doCmd = this.doCmd;
+    super.setUp();
     this.ssm_ = new SmartStickyMode();
     // Deregister from actual range changes.
     ChromeVoxState.removeObserver(this.ssm_);

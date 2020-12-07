@@ -12,11 +12,6 @@ GEN_INCLUDE(['../testing/mock_feedback.js', '../testing/fake_objects.js']);
  */
 ChromeVoxSettingsPagesTest = class extends ChromeVoxNextE2ETest {
   /** @override */
-  setUp() {
-    window.doCmd = this.doCmd;
-  }
-
-  /** @override */
   testGenCppIncludes() {
     super.testGenCppIncludes();
     GEN(`

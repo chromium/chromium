@@ -35,6 +35,14 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
     }
   }
 
+  /** @override */
+  setUp() {
+    window.EventType = chrome.automation.EventType;
+    window.RoleType = chrome.automation.RoleType;
+    window.TreeChangeType = chrome.automation.TreeChangeType;
+    window.doCmd = this.doCmd;
+  }
+
   /** @return {!MockFeedback} */
   createMockFeedback() {
     const mockFeedback =

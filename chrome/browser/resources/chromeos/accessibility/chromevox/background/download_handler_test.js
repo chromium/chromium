@@ -34,6 +34,7 @@ ChromeVoxDownloadTest = class extends ChromeVoxNextE2ETest {
 
   /** @override */
   setUp() {
+    super.setUp();
     window.simulateEvent = this.simulateEvent.bind(this);
   }
 

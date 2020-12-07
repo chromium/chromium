@@ -11,6 +11,7 @@ GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
 ChromeVoxBackgroundKeyboardHandlerTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   setUp() {
+    super.setUp();
     window.keyboardHandler = new BackgroundKeyboardHandler();
   }
 };

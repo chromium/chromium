@@ -99,8 +99,8 @@ function checkOutput_(expectedText, expectedSpans, actualText, actualSpans) {
 ChromeVoxOutputE2ETest = class extends ChromeVoxNextE2ETest {
   /** @override */
   setUp() {
+    super.setUp();
     window.Dir = AutomationUtil.Dir;
-    window.RoleType = chrome.automation.RoleType;
     this.forceContextualLastOutput();
   }
 };

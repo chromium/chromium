@@ -13,9 +13,7 @@ GEN_INCLUDE(['../testing/fake_objects.js']);
 ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   setUp() {
-    window.EventType = chrome.automation.EventType;
-    window.RoleType = chrome.automation.RoleType;
-    window.doCmd = this.doCmd;
+    super.setUp();
     window.doGesture = this.doGesture;
     window.simulateHitTestResult = this.simulateHitTestResult;
     window.press = this.press;

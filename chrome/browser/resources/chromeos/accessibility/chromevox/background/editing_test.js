@@ -13,7 +13,6 @@ GEN_INCLUDE([
 ChromeVoxEditingTest = class extends ChromeVoxNextE2ETest {
   constructor() {
     super();
-    window.RoleType = chrome.automation.RoleType;
   }
 
   press(keyCode, modifiers) {

@@ -13,7 +13,6 @@ GEN_INCLUDE([
 ChromeVoxRecoveryStrategyTest = class extends ChromeVoxNextE2ETest {
   constructor() {
     super();
-    window.RoleType = chrome.automation.RoleType;
   }
 };
 

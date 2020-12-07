@@ -16,11 +16,6 @@ ChromeVoxNodeIdentifierTest = class extends ChromeVoxNextE2ETest {
     return ChromeVoxState.instance.getCurrentRange().start.node;
   }
 
-  /** @override */
-  setUp() {
-    window.RoleType = chrome.automation.RoleType;
-  }
-
   get basicButtonDoc() {
     return `
       <p>Start here</p>

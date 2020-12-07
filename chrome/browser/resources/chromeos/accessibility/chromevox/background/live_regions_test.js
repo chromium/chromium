@@ -11,12 +11,6 @@ GEN_INCLUDE([
  * Test fixture for Live Regions.
  */
 ChromeVoxLiveRegionsTest = class extends ChromeVoxNextE2ETest {
-  /** @override */
-  setUp() {
-    window.RoleType = chrome.automation.RoleType;
-    window.TreeChangeType = chrome.automation.TreeChangeType;
-  }
-
   /**
    * Simulates work done when users interact using keyboard, braille, or
    * touch.

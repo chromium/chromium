@@ -23,6 +23,7 @@ ChromeVoxCursorsTest = class extends ChromeVoxNextE2ETest {
 
   /** @override */
   setUp() {
+    super.setUp();
     // Various aliases.
     window.BACKWARD = constants.Dir.BACKWARD;
     window.FORWARD = constants.Dir.FORWARD;
@@ -32,7 +33,6 @@ ChromeVoxCursorsTest = class extends ChromeVoxNextE2ETest {
     window.NODE = cursors.Unit.NODE;
     window.BOUND = cursors.Movement.BOUND;
     window.DIRECTIONAL = cursors.Movement.DIRECTIONAL;
-    window.RoleType = chrome.automation.RoleType;
   }
 
   /**

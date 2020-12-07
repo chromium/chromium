@@ -49,12 +49,6 @@ ChromeVoxAnnotationTest = class extends ChromeVoxNextE2ETest {
     return ChromeVoxState.instance.getCurrentRange().start.node;
   }
 
-  /** @override */
-  setUp() {
-    window.doCmd = this.doCmd;
-    window.RoleType = chrome.automation.RoleType;
-  }
-
   // Test documents //
   get basicButtonDoc() {
     return `

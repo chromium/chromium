@@ -10,13 +10,6 @@ GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
  */
 ChromeVoxPortalsTest = class extends ChromeVoxNextE2ETest {
   /** @override */
-  setUp() {
-    window.EventType = chrome.automation.EventType;
-    window.RoleType = chrome.automation.RoleType;
-    window.doCmd = this.doCmd;
-  }
-
-  /** @override */
   testGenCppIncludes() {
     super.testGenCppIncludes();
     GEN(`#include "third_party/blink/public/common/features.h"`);

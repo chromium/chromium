@@ -9,11 +9,6 @@ GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
  * Base class for Panel tests.
  */
 ChromeVoxPanelTestBase = class extends ChromeVoxNextE2ETest {
-  /** @override */
-  setUp() {
-    window.doCmd = this.doCmd;
-  }
-
   getPanelWindow() {
     let panelWindow = null;
     while (!panelWindow) {
