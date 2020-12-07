@@ -21,6 +21,12 @@
 #include "crypto/sha2.h"
 #include "media/base/media_switches.h"
 
+#if defined(OS_WIN)
+#include <aclapi.h>
+#include <windows.h>
+#include "sandbox/win/src/sid.h"
+#endif
+
 using content::BrowserThread;
 
 namespace component_updater {
@@ -66,10 +72,42 @@ void SODAComponentInstallerPolicy::UpdateSODAComponentOnDemand() {
       }));
 }
 
-bool SODAComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
-    const base::FilePath& install_dir) const {
-  return base::PathExists(install_dir.Append(speech::kSodaBinaryRelativePath));
+update_client::CrxInstaller::Result
+SODAComponentInstallerPolicy::SetComponentDirectoryPermission(
+    const base::FilePath& install_dir) {
+#if defined(OS_WIN)
+  sandbox::Sid users_sid = sandbox::Sid(WinBuiltinUsersSid);
+
+  // Initialize an EXPLICIT_ACCESS structure for an ACE.
+  EXPLICIT_ACCESS explicit_access[1] = {};
+  explicit_access[0].grfAccessPermissions = GENERIC_READ | GENERIC_EXECUTE;
+  explicit_access[0].grfAccessMode = GRANT_ACCESS;
+  explicit_access[0].grfInheritance = SUB_CONTAINERS_AND_OBJECTS_INHERIT;
+  explicit_access[0].Trustee.TrusteeForm = TRUSTEE_IS_SID;
+  explicit_access[0].Trustee.TrusteeType = TRUSTEE_IS_WELL_KNOWN_GROUP;
+  explicit_access[0].Trustee.ptstrName =
+      reinterpret_cast<LPTSTR>(users_sid.GetPSID());
+
+  PACL acl = nullptr;
+  if (::SetEntriesInAcl(base::size(explicit_access), explicit_access, nullptr,
+                        &acl) != ERROR_SUCCESS) {
+    return update_client::CrxInstaller::Result(
+        update_client::InstallError::SET_PERMISSIONS_FAILED);
+  }
+
+  // Change the security attributes.
+  LPWSTR file_name = const_cast<LPWSTR>(install_dir.value().c_str());
+  bool success = ::SetNamedSecurityInfo(file_name, SE_FILE_OBJECT,
+                                        DACL_SECURITY_INFORMATION, nullptr,
+                                        nullptr, acl, nullptr) == ERROR_SUCCESS;
+  ::LocalFree(acl);
+  if (!success) {
+    return update_client::CrxInstaller::Result(
+        update_client::InstallError::SET_PERMISSIONS_FAILED);
+  }
+#endif
+
+  return update_client::CrxInstaller::Result(update_client::InstallError::NONE);
 }
 
 bool SODAComponentInstallerPolicy::SupportsGroupPolicyEnabledComponentUpdates()
@@ -85,10 +123,17 @@ update_client::CrxInstaller::Result
 SODAComponentInstallerPolicy::OnCustomInstall(
     const base::DictionaryValue& manifest,
     const base::FilePath& install_dir) {
-  return update_client::CrxInstaller::Result(0);  // Nothing custom here.
+  return SODAComponentInstallerPolicy::SetComponentDirectoryPermission(
+      install_dir);
 }
 
 void SODAComponentInstallerPolicy::OnCustomUninstall() {}
+
+bool SODAComponentInstallerPolicy::VerifyInstallation(
+    const base::DictionaryValue& manifest,
+    const base::FilePath& install_dir) const {
+  return base::PathExists(install_dir.Append(speech::kSodaBinaryRelativePath));
+}
 
 void SODAComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
