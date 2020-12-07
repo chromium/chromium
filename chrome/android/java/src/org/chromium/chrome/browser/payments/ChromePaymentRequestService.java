@@ -557,7 +557,6 @@ public class ChromePaymentRequestService
         }
 
         mPaymentUiService.close();
-        SettingsAutofillAndPaymentsObserver.getInstance().unregisterObserver(mPaymentUiService);
 
         if (mPaymentHandlerHost != null) {
             mPaymentHandlerHost.destroy();
@@ -620,8 +619,6 @@ public class ChromePaymentRequestService
             RecordHistogram.recordSparseHistogram(
                     "PaymentRequest.MissingPaymentFields", missingFields);
         }
-
-        SettingsAutofillAndPaymentsObserver.getInstance().registerObserver(mPaymentUiService);
     }
 
     // Implements BrowserPaymentRequest:

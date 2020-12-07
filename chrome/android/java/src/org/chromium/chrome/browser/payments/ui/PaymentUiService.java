@@ -382,6 +382,8 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
                 Section.PAYMENT_METHOD, apps.size(), !apps.isEmpty() && apps.get(0).isComplete());
 
         updateAppModifiedTotals();
+
+        SettingsAutofillAndPaymentsObserver.getInstance().registerObserver(this);
     }
 
     /** Set the AutofillPaymentAppCreator. */
@@ -1690,6 +1692,8 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
             }
             mPaymentMethodsSection = null;
         }
+
+        SettingsAutofillAndPaymentsObserver.getInstance().unregisterObserver(this);
 
         removeLeavingTabObservers();
         destroyCurrencyFormatters();

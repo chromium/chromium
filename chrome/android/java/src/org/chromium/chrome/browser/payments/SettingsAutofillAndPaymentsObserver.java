@@ -34,7 +34,7 @@ public class SettingsAutofillAndPaymentsObserver {
         void onAddressDeleted(String guid);
 
         /**
-         * Called when user updates or addes a credit card.
+         * Called when user updates or adds a credit card.
          *
          * @param card The updated or added card.
          */
