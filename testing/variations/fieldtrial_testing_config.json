@@ -4847,6 +4847,7 @@
                 {
                     "name": "AndroidExperiments",
                     "params": {
+                        "OmniboxLocalZeroSuggestAgeThreshold": "7",
                         "OmniboxMaxURLMatches": "7",
                         "OmniboxMaxZeroSuggestMatches": "15",
                         "UIMaxAutocompleteMatches": "8",
@@ -4855,6 +4856,8 @@
                     "enable_features": [
                         "OmniboxAdaptiveSuggestionsCount",
                         "OmniboxCompactSuggestions",
+                        "OmniboxLocalZeroSuggestAgeThreshold",
+                        "OmniboxLocalZeroSuggestFrecencyRanking",
                         "OmniboxMaxURLMatches",
                         "OmniboxMaxZeroSuggestMatches",
                         "OmniboxOnFocusSuggestionsContextualWebOnContent",
