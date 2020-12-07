@@ -119,6 +119,21 @@
     line-height: 20px;
     margin-inline-end: var(--nearby-page-space-large-inline);
   }
+
+  nearby-device {
+    animation: 200ms cubic-bezier(0.4, 0, 0.2, 1) slide-up;
+    animation: 200ms linear fade-in;
+  }
+
+  @keyframes fade-in {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  @keyframes slide-up {
+    0% { transform: translateY(2px); }
+    100% { transform: translateY(0); }
+  }
 </style>
 
 <nearby-page-template title="$i18n{nearbyShareDiscoveryPageTitle}"
