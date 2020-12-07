@@ -1,17 +1,17 @@
 AXWebArea
-++AXHeading AXTitle='Level 2' AXValue=2
+++AXHeading AXDisclosureLevel=1 AXTitle='Level 2' AXValue=2
 ++++AXStaticText AXValue='Level 2'
-++AXHeading AXTitle='Level 9' AXValue=9
+++AXHeading AXDisclosureLevel=8 AXTitle='Level 9' AXValue=9
 ++++AXStaticText AXValue='Level 9'
-++AXHeading AXTitle='Level 1' AXValue=1
+++AXHeading AXDisclosureLevel=0 AXTitle='Level 1' AXValue=1
 ++++AXStaticText AXValue='Level 1'
-++AXHeading AXTitle='Level 3' AXValue=3
+++AXHeading AXDisclosureLevel=2 AXTitle='Level 3' AXValue=3
 ++++AXStaticText AXValue='Level 3'
-++AXHeading AXTitle='Level 3' AXValue=3
+++AXHeading AXDisclosureLevel=2 AXTitle='Level 3' AXValue=3
 ++++AXStaticText AXValue='Level 3'
-++AXHeading AXTitle='Level 4' AXValue=4
+++AXHeading AXDisclosureLevel=3 AXTitle='Level 4' AXValue=4
 ++++AXStaticText AXValue='Level 4'
-++AXHeading AXTitle='Level 5' AXValue=5
+++AXHeading AXDisclosureLevel=4 AXTitle='Level 5' AXValue=5
 ++++AXStaticText AXValue='Level 5'
 ++AXOutline
 ++++AXRow AXSubrole=AXOutlineRow AXDisclosing=1 AXDisclosureLevel=0 AXIndex=0 AXTitle='Tree item at level 1'

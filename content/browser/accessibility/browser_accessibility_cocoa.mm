@@ -1272,7 +1272,8 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   if (![self instanceActive])
     return nil;
   ax::mojom::Role role = [self internalRole];
-  if (role == ax::mojom::Role::kRow || role == ax::mojom::Role::kTreeItem) {
+  if (role == ax::mojom::Role::kRow || role == ax::mojom::Role::kTreeItem ||
+      role == ax::mojom::Role::kHeading) {
     int level =
         _owner->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
     // Mac disclosureLevel is 0-based, but web levels are 1-based.
@@ -3475,6 +3476,10 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     } else {
       [ret addObject:NSAccessibilityIndexAttribute];
     }
+  } else if ([self internalRole] == ax::mojom::Role::kHeading) {
+    // Heading level is exposed in both AXDisclosureLevel and AXValue.
+    // Safari also exposes the level in both.
+    [ret addObject:NSAccessibilityDisclosureLevelAttribute];
   } else if ([role isEqualToString:NSAccessibilityListRole]) {
     [ret addObjectsFromArray:@[
       NSAccessibilitySelectedChildrenAttribute,
