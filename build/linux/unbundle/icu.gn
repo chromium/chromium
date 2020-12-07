@@ -175,6 +175,7 @@ shim_headers("icuuc_shim") {
     "unicode/icudataver.h",
     "unicode/icuplug.h",
     "unicode/idna.h",
+    "unicode/localematcher.h",
     "unicode/localpointer.h",
     "unicode/locdspnm.h",
     "unicode/locid.h",
