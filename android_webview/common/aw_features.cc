@@ -26,7 +26,7 @@ const base::Feature kWebViewCpuAffinityRestrictToLittleCores{
 
 // Enable display cutout support for Android P and above.
 const base::Feature kWebViewDisplayCutout{"WebViewDisplayCutout",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, passive mixed content (Audio/Video/Image subresources loaded
 // over HTTP on HTTPS sites) will be autoupgraded to HTTPS, and the load will be
