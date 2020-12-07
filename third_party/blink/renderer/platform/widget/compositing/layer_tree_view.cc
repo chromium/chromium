@@ -206,26 +206,11 @@ void LayerTreeView::ApplyViewportChanges(
   delegate_->ApplyViewportChanges(args);
 }
 
-void LayerTreeView::RecordManipulationTypeCounts(cc::ManipulationInfo info) {
+void LayerTreeView::UpdateCompositorScrollState(
+    const cc::CompositorCommitData& commit_data) {
   if (!delegate_)
     return;
-  delegate_->RecordManipulationTypeCounts(info);
-}
-
-void LayerTreeView::SendOverscrollEventFromImplSide(
-    const gfx::Vector2dF& overscroll_delta,
-    cc::ElementId scroll_latched_element_id) {
-  if (!delegate_)
-    return;
-  delegate_->SendOverscrollEventFromImplSide(overscroll_delta,
-                                             scroll_latched_element_id);
-}
-
-void LayerTreeView::SendScrollEndEventFromImplSide(
-    cc::ElementId scroll_latched_element_id) {
-  if (!delegate_)
-    return;
-  delegate_->SendScrollEndEventFromImplSide(scroll_latched_element_id);
+  delegate_->UpdateCompositorScrollState(commit_data);
 }
 
 void LayerTreeView::RequestNewLayerTreeFrameSink() {

@@ -39,6 +39,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "cc/trees/compositor_commit_data.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/swap_promise.h"
 #include "cc/trees/ukm_manager.h"
@@ -1210,6 +1211,9 @@ void WebFrameWidgetImpl::SendOverscrollEventFromImplSide(
 
 void WebFrameWidgetImpl::SendScrollEndEventFromImplSide(
     cc::ElementId scroll_latched_element_id) {
+  if (WebDevToolsAgentImpl* devtools = LocalRootImpl()->DevToolsAgentImpl())
+    devtools->PageScrollEnded();
+
   if (!RuntimeEnabledFeatures::OverscrollCustomizationEnabled())
     return;
 
@@ -1217,6 +1221,31 @@ void WebFrameWidgetImpl::SendScrollEndEventFromImplSide(
       scroll_latched_element_id);
   if (target_node)
     target_node->GetDocument().EnqueueScrollEndEventForNode(target_node);
+}
+
+void WebFrameWidgetImpl::UpdateCompositorScrollState(
+    const cc::CompositorCommitData& commit_data) {
+  if (commit_data.manipulation_info != cc::kManipulationInfoNone) {
+    if (WebDevToolsAgentImpl* devtools = LocalRootImpl()->DevToolsAgentImpl())
+      devtools->PageScrollStarted();
+  }
+
+  RecordManipulationTypeCounts(commit_data.manipulation_info);
+
+  if (commit_data.scroll_latched_element_id == cc::ElementId())
+    return;
+
+  if (!commit_data.overscroll_delta.IsZero()) {
+    SendOverscrollEventFromImplSide(commit_data.overscroll_delta,
+                                    commit_data.scroll_latched_element_id);
+  }
+
+  // TODO(bokan): If a scroll ended and a new one began in the same Blink frame
+  // (e.g. during a long running main thread task), this will erroneously
+  // dispatch the scroll end to the latter (still-scrolling) element.
+  // https://crbug.com/1116780.
+  if (commit_data.scroll_gesture_did_end)
+    SendScrollEndEventFromImplSide(commit_data.scroll_latched_element_id);
 }
 
 WebInputMethodController*
@@ -2117,6 +2146,7 @@ void WebFrameWidgetImpl::RecordManipulationTypeCounts(
   // Manipulation counts are only recorded for the main frame.
   if (!ForMainFrame())
     return;
+
   if ((info & cc::kManipulationInfoWheel) == cc::kManipulationInfoWheel) {
     UseCounter::Count(LocalRootImpl()->GetDocument(),
                       WebFeature::kScrollByWheel);

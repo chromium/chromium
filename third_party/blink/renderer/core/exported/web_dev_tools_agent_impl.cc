@@ -480,6 +480,16 @@ void WebDevToolsAgentImpl::DispatchBufferedTouchEvents() {
     it.value->DispatchBufferedTouchEvents();
 }
 
+void WebDevToolsAgentImpl::PageScrollStarted() {
+  for (auto& it : overlay_agents_)
+    it.value->PageScrollStarted();
+}
+
+void WebDevToolsAgentImpl::PageScrollEnded() {
+  for (auto& it : overlay_agents_)
+    it.value->PageScrollEnded();
+}
+
 WebInputEventResult WebDevToolsAgentImpl::HandleInputEvent(
     const WebInputEvent& event) {
   for (auto& it : overlay_agents_) {

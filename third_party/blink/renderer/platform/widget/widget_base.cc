@@ -460,20 +460,9 @@ void WidgetBase::ApplyViewportChanges(
   client_->ApplyViewportChanges(args);
 }
 
-void WidgetBase::RecordManipulationTypeCounts(cc::ManipulationInfo info) {
-  client_->RecordManipulationTypeCounts(info);
-}
-
-void WidgetBase::SendOverscrollEventFromImplSide(
-    const gfx::Vector2dF& overscroll_delta,
-    cc::ElementId scroll_latched_element_id) {
-  client_->SendOverscrollEventFromImplSide(overscroll_delta,
-                                           scroll_latched_element_id);
-}
-
-void WidgetBase::SendScrollEndEventFromImplSide(
-    cc::ElementId scroll_latched_element_id) {
-  client_->SendScrollEndEventFromImplSide(scroll_latched_element_id);
+void WidgetBase::UpdateCompositorScrollState(
+    const cc::CompositorCommitData& commit_data) {
+  client_->UpdateCompositorScrollState(commit_data);
 }
 
 void WidgetBase::OnDeferMainFrameUpdatesChanged(bool defer) {

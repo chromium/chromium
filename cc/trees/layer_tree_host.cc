@@ -918,29 +918,6 @@ void LayerTreeHost::ApplyViewportChanges(
   SetNeedsUpdateLayers();
 }
 
-void LayerTreeHost::RecordManipulationTypeCounts(
-    const CompositorCommitData& commit_data) {
-  client_->RecordManipulationTypeCounts(commit_data.manipulation_info);
-}
-
-void LayerTreeHost::SendOverscrollAndScrollEndEventsFromImplSide(
-    const CompositorCommitData& commit_data) {
-  if (commit_data.scroll_latched_element_id == ElementId())
-    return;
-
-  if (!commit_data.overscroll_delta.IsZero()) {
-    client_->SendOverscrollEventFromImplSide(
-        commit_data.overscroll_delta, commit_data.scroll_latched_element_id);
-  }
-  // TODO(bokan): If a scroll ended and a new one began in the same Blink frame
-  // (e.g. during a long running main thread task), this will erroneously
-  // dispatch the scroll end to the latter (still-scrolling) element.
-  // https://crbug.com/1116780.
-  if (commit_data.scroll_gesture_did_end)
-    client_->SendScrollEndEventFromImplSide(
-        commit_data.scroll_latched_element_id);
-}
-
 void LayerTreeHost::UpdateScrollOffsetFromImpl(
     const ElementId& id,
     const gfx::ScrollOffset& delta,
@@ -1016,14 +993,12 @@ void LayerTreeHost::ApplyCompositorChanges(CompositorCommitData* commit_data) {
     }
   }
 
-  SendOverscrollAndScrollEndEventsFromImplSide(*commit_data);
+  client_->UpdateCompositorScrollState(*commit_data);
 
   // This needs to happen after scroll deltas have been sent to prevent top
   // controls from clamping the layout viewport both on the compositor and
   // on the main thread.
   ApplyViewportChanges(*commit_data);
-
-  RecordManipulationTypeCounts(*commit_data);
 }
 
 void LayerTreeHost::ApplyMutatorEvents(std::unique_ptr<MutatorEvents> events) {

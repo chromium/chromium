@@ -95,13 +95,8 @@ class WidgetBaseClient {
   // thread.
   virtual void ApplyViewportChanges(const cc::ApplyViewportChangesArgs& args) {}
 
-  virtual void RecordManipulationTypeCounts(cc::ManipulationInfo info) {}
-
-  virtual void SendOverscrollEventFromImplSide(
-      const gfx::Vector2dF& overscroll_delta,
-      cc::ElementId scroll_latched_element_id) {}
-  virtual void SendScrollEndEventFromImplSide(
-      cc::ElementId scroll_latched_element_id) {}
+  virtual void UpdateCompositorScrollState(
+      const cc::CompositorCommitData& commit_data) {}
 
   virtual void DidBeginMainFrame() {}
   virtual void DidCommitAndDrawCompositorFrame() {}

@@ -778,9 +778,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   enum { kNumFramesToConsiderBeforeRemovingSlowPathFlag = 60 };
 
   void ApplyViewportChanges(const CompositorCommitData& commit_data);
-  void RecordManipulationTypeCounts(const CompositorCommitData& commit_data);
-  void SendOverscrollAndScrollEndEventsFromImplSide(
-      const CompositorCommitData& commit_data);
   void ApplyPageScaleDeltaFromImplSide(float page_scale_delta);
   void InitializeProxy(std::unique_ptr<Proxy> proxy);
 

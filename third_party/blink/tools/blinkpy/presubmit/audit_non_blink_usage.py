@@ -328,6 +328,8 @@ _CONFIG = [
             'cc::kManipulationInfoPrecisionTouchPad',
             'cc::kManipulationInfoTouch',
             'cc::kManipulationInfoWheel',
+            'cc::kManipulationInfoScrollbar',
+            'cc::kManipulationInfoNone',
             'cc::kPixelsPerLineStep',
             'cc::kMinFractionToStepWhenPaging',
             'cc::kPercentDeltaForDirectionalScroll',
@@ -657,9 +659,17 @@ _CONFIG = [
         'paths':
         ['third_party/blink/renderer/core/frame/web_frame_widget_impl.cc'],
         'allowed': [
+            'cc::CompositorCommitData',
             'cc::InputHandlerScrollResult',
             'cc::SwapPromise',
             'viz::CompositorFrameMetadata',
+        ],
+    },
+    {
+        'paths':
+        ['third_party/blink/renderer/core/frame/web_frame_widget_impl.h'],
+        'allowed': [
+            'cc::CompositorCommitData',
         ],
     },
     {

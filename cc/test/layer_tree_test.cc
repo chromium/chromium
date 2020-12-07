@@ -435,14 +435,8 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) override {}
 
-  void RecordManipulationTypeCounts(ManipulationInfo info) override {}
-
-  void SendOverscrollEventFromImplSide(
-      const gfx::Vector2dF& overscroll_delta,
-      ElementId scroll_latched_element_id) override {}
-
-  void SendScrollEndEventFromImplSide(
-      ElementId scroll_latched_element_id) override {}
+  void UpdateCompositorScrollState(
+      const CompositorCommitData& commit_data) override {}
 
   void RequestNewLayerTreeFrameSink() override {
     test_hooks_->RequestNewLayerTreeFrameSink();

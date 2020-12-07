@@ -35,6 +35,7 @@ specific_include_rules = {
   ],
   "web_frame_widget_impl\.cc": [
     "+cc/trees/swap_promise.h",
+    "+cc/trees/compositor_commit_data.h",
   ],
   "web_frame_widget_impl\.h": [
     "+services/viz/public/mojom/hit_test/input_target_client.mojom-blink.h",

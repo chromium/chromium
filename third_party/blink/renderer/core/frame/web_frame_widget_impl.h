@@ -278,11 +278,8 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   // WebFrameWidget overrides.
   WebLocalFrame* LocalRoot() const override;
-  void SendOverscrollEventFromImplSide(
-      const gfx::Vector2dF& overscroll_delta,
-      cc::ElementId scroll_latched_element_id) override;
-  void SendScrollEndEventFromImplSide(
-      cc::ElementId scroll_latched_element_id) override;
+  void UpdateCompositorScrollState(
+      const cc::CompositorCommitData& commit_data) override;
   WebInputMethodController* GetActiveWebInputMethodController() const override;
   WebLocalFrameImpl* FocusedWebLocalFrameInWidget() const override;
   bool ScrollFocusedEditableElementIntoView() override;
@@ -584,7 +581,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   void BeginCommitCompositorFrame() override;
   void EndCommitCompositorFrame(base::TimeTicks commit_start_time) override;
   void ApplyViewportChanges(const cc::ApplyViewportChangesArgs& args) override;
-  void RecordManipulationTypeCounts(cc::ManipulationInfo info) override;
   void RecordDispatchRafAlignedInputTime(
       base::TimeTicks raf_aligned_input_start_time) override;
   void SetSuppressFrameRequestsWorkaroundFor704763Only(bool) override;
@@ -745,6 +741,12 @@ class CORE_EXPORT WebFrameWidgetImpl
       const base::RepeatingCallback<void(RemoteFrame*)>& callback);
 
   void SetWindowRectSynchronously(const gfx::Rect& new_window_rect);
+
+  void SendOverscrollEventFromImplSide(const gfx::Vector2dF& overscroll_delta,
+                                       cc::ElementId scroll_latched_element_id);
+  void SendScrollEndEventFromImplSide(cc::ElementId scroll_latched_element_id);
+
+  void RecordManipulationTypeCounts(cc::ManipulationInfo info);
 
   // Finds the parameters required for scrolling the focused editable |element|
   // into view. |out_rect_to_scroll| is used for recursive scrolling of the

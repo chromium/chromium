@@ -34,12 +34,8 @@ class StubLayerTreeHostClient : public LayerTreeHostClient {
   void BeginMainFrameNotExpectedUntil(base::TimeTicks time) override {}
   void UpdateLayerTreeHost() override {}
   void ApplyViewportChanges(const ApplyViewportChangesArgs&) override {}
-  void RecordManipulationTypeCounts(ManipulationInfo info) override {}
-  void SendOverscrollEventFromImplSide(
-      const gfx::Vector2dF& overscroll_delta,
-      ElementId scroll_latched_element_id) override {}
-  void SendScrollEndEventFromImplSide(
-      ElementId scroll_latched_element_id) override {}
+  void UpdateCompositorScrollState(
+      const CompositorCommitData& commit_data) override {}
   void RequestNewLayerTreeFrameSink() override {}
   void DidInitializeLayerTreeFrameSink() override {}
   void DidFailToInitializeLayerTreeFrameSink() override {}

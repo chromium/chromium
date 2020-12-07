@@ -951,11 +951,14 @@ void ThreadedInputHandler::ProcessCommitDeltas(
     commit_data->manipulation_info |= kManipulationInfoPrecisionTouchPad;
   if (has_pinch_zoomed_)
     commit_data->manipulation_info |= kManipulationInfoPinchZoom;
+  if (has_scrolled_by_scrollbar_)
+    commit_data->manipulation_info |= kManipulationInfoScrollbar;
 
   has_scrolled_by_wheel_ = false;
   has_scrolled_by_touch_ = false;
   has_scrolled_by_precisiontouchpad_ = false;
   has_pinch_zoomed_ = false;
+  has_scrolled_by_scrollbar_ = false;
 
   commit_data->scroll_gesture_did_end = scroll_gesture_did_end_;
   scroll_gesture_did_end_ = false;
@@ -2093,6 +2096,8 @@ void ThreadedInputHandler::UpdateScrollSourceInfo(
     has_scrolled_by_wheel_ = true;
   } else if (type == ui::ScrollInputType::kTouchscreen) {
     has_scrolled_by_touch_ = true;
+  } else if (type == ui::ScrollInputType::kScrollbar) {
+    has_scrolled_by_scrollbar_ = true;
   }
 }
 

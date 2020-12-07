@@ -434,6 +434,7 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
   bool has_scrolled_by_wheel_ = false;
   bool has_scrolled_by_touch_ = false;
   bool has_scrolled_by_precisiontouchpad_ = false;
+  bool has_scrolled_by_scrollbar_ = false;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

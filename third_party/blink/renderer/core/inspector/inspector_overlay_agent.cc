@@ -919,6 +919,16 @@ void InspectorOverlayAgent::DispatchBufferedTouchEvents() {
   OverlayMainFrame()->GetEventHandler().DispatchBufferedTouchEvents();
 }
 
+void InspectorOverlayAgent::PageScrollStarted() {
+  // The new scroll can start without the previous ending.
+  is_page_scrolling_ = true;
+}
+
+void InspectorOverlayAgent::PageScrollEnded() {
+  DCHECK(is_page_scrolling_);
+  is_page_scrolling_ = false;
+}
+
 WebInputEventResult InspectorOverlayAgent::HandleInputEvent(
     const WebInputEvent& input_event) {
   if (!enabled_.Get())
@@ -1046,9 +1056,13 @@ void InspectorOverlayAgent::PaintOverlayPage() {
   float scale = WindowToViewportScale();
 
   if (inspect_tool_) {
-    inspect_tool_->Draw(scale);
-    if (persistent_tool_ && inspect_tool_->SupportsPersistentOverlays())
+    // Skip drawing persistent_tool_ on page scroll.
+    if (!(inspect_tool_ == persistent_tool_ && is_page_scrolling_))
+      inspect_tool_->Draw(scale);
+    if (persistent_tool_ && inspect_tool_->SupportsPersistentOverlays() &&
+        !is_page_scrolling_) {
       persistent_tool_->Draw(scale);
+    }
   }
 
   if (hinge_)
