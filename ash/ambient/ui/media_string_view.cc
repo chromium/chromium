@@ -99,7 +99,7 @@ class FadeoutLayerDelegate : public ui::LayerDelegate {
 };
 
 // Typography.
-constexpr char kMiddleDotSeparator[] = " \u00B7 ";
+constexpr char kMiddleDotSeparator[] = " \u2022 ";
 
 constexpr int kMusicNoteIconSizeDip = 20;
 
