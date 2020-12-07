@@ -128,10 +128,6 @@ const char* MediaStringView::GetClassName() const {
   return "MediaStringView";
 }
 
-void MediaStringView::VisibilityChanged(View* starting_from, bool is_visible) {
-  media_text_->layer()->GetAnimator()->StopAnimating();
-}
-
 void MediaStringView::OnViewBoundsChanged(views::View* observed_view) {
   UpdateMaskLayer();
 }

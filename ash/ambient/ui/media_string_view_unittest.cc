@@ -226,7 +226,7 @@ TEST_F(MediaStringViewTest, ShouldStartAndStopAnimationWhenTextChanges) {
       GetMediaStringViewTextLabel()->layer()->GetAnimator()->is_animating());
 }
 
-TEST_F(MediaStringViewTest, PauseMediaWillStopAnimationWithLongText) {
+TEST_F(MediaStringViewTest, PauseMediaWillNotStopAnimationWithLongText) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
@@ -253,7 +253,7 @@ TEST_F(MediaStringViewTest, PauseMediaWillStopAnimationWithLongText) {
   SimulateMediaPlaybackStateChanged(
       media_session::mojom::MediaPlaybackState::kPaused);
   EXPECT_FALSE(GetMediaStringView()->GetVisible());
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       GetMediaStringViewTextLabel()->layer()->GetAnimator()->is_animating());
 }
 
