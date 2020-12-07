@@ -158,8 +158,8 @@ ThumbnailCache::ThumbnailCache(size_t default_cache_size,
       ui_resource_provider_(nullptr) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   memory_pressure_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE,
-      base::Bind(&ThumbnailCache::OnMemoryPressure, base::Unretained(this)));
+      FROM_HERE, base::BindRepeating(&ThumbnailCache::OnMemoryPressure,
+                                     base::Unretained(this)));
 }
 
 ThumbnailCache::~ThumbnailCache() {
@@ -406,12 +406,12 @@ void ThumbnailCache::WriteThumbnailIfNecessary(
 
   write_tasks_count_++;
 
-  base::Callback<void()> post_write_task =
-      base::Bind(&ThumbnailCache::PostWriteTask, weak_factory_.GetWeakPtr());
+  base::OnceClosure post_write_task = base::BindOnce(
+      &ThumbnailCache::PostWriteTask, weak_factory_.GetWeakPtr());
   file_sequenced_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&ThumbnailCache::WriteTask, tab_id, compressed_data, scale,
-                     content_size, post_write_task));
+                     content_size, std::move(post_write_task)));
 }
 
 void ThumbnailCache::WriteJpegThumbnailIfNecessary(
@@ -426,24 +426,25 @@ void ThumbnailCache::WriteJpegThumbnailIfNecessary(
 
   write_tasks_count_++;
 
-  base::Callback<void()> post_write_task =
-      base::Bind(&ThumbnailCache::PostWriteTask, weak_factory_.GetWeakPtr());
+  base::OnceClosure post_write_task = base::BindOnce(
+      &ThumbnailCache::PostWriteTask, weak_factory_.GetWeakPtr());
   file_sequenced_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ThumbnailCache::WriteJpegTask, tab_id,
-                                std::move(compressed_data), post_write_task));
+      FROM_HERE,
+      base::BindOnce(&ThumbnailCache::WriteJpegTask, tab_id,
+                     std::move(compressed_data), std::move(post_write_task)));
 }
 
 void ThumbnailCache::SaveAsJpeg(TabId tab_id, const SkBitmap& bitmap) {
-  base::Callback<void(std::vector<uint8_t>)> post_jpeg_compression_task =
-      base::Bind(&ThumbnailCache::WriteJpegThumbnailIfNecessary,
-                 weak_factory_.GetWeakPtr(), tab_id);
+  base::OnceCallback<void(std::vector<uint8_t>)> post_jpeg_compression_task =
+      base::BindOnce(&ThumbnailCache::WriteJpegThumbnailIfNecessary,
+                     weak_factory_.GetWeakPtr(), tab_id);
 
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&ThumbnailCache::JpegProcessingTask, jpeg_aspect_ratio_,
-                     bitmap, post_jpeg_compression_task));
+                     bitmap, std::move(post_jpeg_compression_task)));
 }
 
 void ThumbnailCache::CompressThumbnailIfNecessary(TabId tab_id,
@@ -457,10 +458,10 @@ void ThumbnailCache::CompressThumbnailIfNecessary(TabId tab_id,
 
   compression_tasks_count_++;
 
-  base::Callback<void(sk_sp<SkPixelRef>, const gfx::Size&)>
+  base::OnceCallback<void(sk_sp<SkPixelRef>, const gfx::Size&)>
       post_compression_task =
-          base::Bind(&ThumbnailCache::PostCompressionTask,
-                     weak_factory_.GetWeakPtr(), tab_id, time_stamp, scale);
+          base::BindOnce(&ThumbnailCache::PostCompressionTask,
+                         weak_factory_.GetWeakPtr(), tab_id, time_stamp, scale);
 
   gfx::Size raw_data_size(bitmap.width(), bitmap.height());
   gfx::Size encoded_size = GetEncodedSize(
@@ -471,7 +472,7 @@ void ThumbnailCache::CompressThumbnailIfNecessary(TabId tab_id,
       {base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&ThumbnailCache::CompressionTask, bitmap, encoded_size,
-                     post_compression_task));
+                     std::move(post_compression_task)));
 
   if (save_jpeg_thumbnails_) {
     SaveAsJpeg(tab_id, bitmap);
@@ -625,7 +626,7 @@ void ThumbnailCache::WriteTask(TabId tab_id,
                                sk_sp<SkPixelRef> compressed_data,
                                float scale,
                                const gfx::Size& content_size,
-                               const base::Callback<void()>& post_write_task) {
+                               base::OnceClosure post_write_task) {
   DCHECK(compressed_data);
 
   base::FilePath file_path = GetFilePath(tab_id);
@@ -640,13 +641,13 @@ void ThumbnailCache::WriteTask(TabId tab_id,
   if (!success)
     base::DeleteFile(file_path);
 
-  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, post_write_task);
+  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                               std::move(post_write_task));
 }
 
-void ThumbnailCache::WriteJpegTask(
-    TabId tab_id,
-    std::vector<uint8_t> compressed_data,
-    const base::Callback<void()>& post_write_task) {
+void ThumbnailCache::WriteJpegTask(TabId tab_id,
+                                   std::vector<uint8_t> compressed_data,
+                                   base::OnceClosure post_write_task) {
   DCHECK(!compressed_data.empty());
 
   base::FilePath file_path = GetJpegFilePath(tab_id);
@@ -665,7 +666,8 @@ void ThumbnailCache::WriteJpegTask(
   if (!success)
     base::DeleteFile(file_path);
 
-  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, post_write_task);
+  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                               std::move(post_write_task));
 }
 
 void ThumbnailCache::PostWriteTask() {
@@ -677,7 +679,7 @@ void ThumbnailCache::PostWriteTask() {
 void ThumbnailCache::CompressionTask(
     SkBitmap raw_data,
     gfx::Size encoded_size,
-    const base::Callback<void(sk_sp<SkPixelRef>, const gfx::Size&)>&
+    base::OnceCallback<void(sk_sp<SkPixelRef>, const gfx::Size&)>
         post_compression_task) {
   sk_sp<SkPixelRef> compressed_data;
   gfx::Size content_size;
@@ -710,14 +712,14 @@ void ThumbnailCache::CompressionTask(
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(post_compression_task,
+      FROM_HERE, base::BindOnce(std::move(post_compression_task),
                                 std::move(compressed_data), content_size));
 }
 
 void ThumbnailCache::JpegProcessingTask(
     double jpeg_aspect_ratio,
     SkBitmap bitmap,
-    const base::Callback<void(std::vector<uint8_t>)>& post_processing_task) {
+    base::OnceCallback<void(std::vector<uint8_t>)> post_processing_task) {
   // In portrait mode, we want to show thumbnails in squares.
   // Therefore, the thumbnail saved in portrait mode needs to be cropped to
   // a square, or it would be vertically center-aligned, and the top would
@@ -741,7 +743,8 @@ void ThumbnailCache::JpegProcessingTask(
   DCHECK(result);
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(post_processing_task, std::move(data)));
+      FROM_HERE,
+      base::BindOnce(std::move(post_processing_task), std::move(data)));
 }
 
 void ThumbnailCache::PostCompressionTask(TabId tab_id,
