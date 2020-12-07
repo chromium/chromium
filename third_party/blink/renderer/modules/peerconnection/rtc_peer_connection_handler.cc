@@ -344,8 +344,11 @@ class StatsResponse : public webrtc::StatsObserver {
    public:
     class MemberIterator : public RTCLegacyStatsMemberIterator {
      public:
-      MemberIterator(const StatsReport::Values::const_iterator& it,
-                     const StatsReport::Values::const_iterator& end)
+      MemberIterator(
+          const std::vector<StatsReport::Values::value_type>::const_iterator&
+              it,
+          const std::vector<StatsReport::Values::value_type>::const_iterator&
+              end)
           : it_(it), end_(end) {}
 
       // RTCLegacyStatsMemberIterator
@@ -378,8 +381,8 @@ class StatsResponse : public webrtc::StatsObserver {
       }
 
      private:
-      StatsReport::Values::const_iterator it_;
-      StatsReport::Values::const_iterator end_;
+      std::vector<StatsReport::Values::value_type>::const_iterator it_;
+      std::vector<StatsReport::Values::value_type>::const_iterator end_;
     };
 
     explicit Report(const StatsReport* report)
@@ -387,7 +390,7 @@ class StatsResponse : public webrtc::StatsObserver {
           type_(report->type()),
           type_name_(report->TypeToString()),
           timestamp_(report->timestamp()),
-          values_(report->values()) {}
+          values_(report->values().begin(), report->values().end()) {}
 
     ~Report() override {
       // Since the values vector holds pointers to const objects that are bound
@@ -411,7 +414,7 @@ class StatsResponse : public webrtc::StatsObserver {
     const StatsReport::StatsType type_;
     const std::string type_name_;
     const double timestamp_;
-    const StatsReport::Values values_;
+    const std::vector<StatsReport::Values::value_type> values_;
   };
 
   static void DeleteReports(std::vector<Report*>* reports) {
