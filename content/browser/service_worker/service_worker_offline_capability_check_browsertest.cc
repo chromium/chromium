@@ -12,6 +12,7 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
 #include "content/browser/service_worker/service_worker_version.h"
@@ -646,8 +647,15 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerOfflineCapabilityCheckBrowserTest,
 
 // Sites with a service worker are identified as supporting offline capability
 // only when it returns a valid response in the offline mode.
+#if defined(OS_WIN)
+// Flaky on Win7: https://crbug.com/1156081
+#define MAYBE_CheckOfflineCapability DISABLED_CheckOfflineCapability
+#else
+#define MAYBE_CheckOfflineCapability CheckOfflineCapability
+#endif
+
 IN_PROC_BROWSER_TEST_F(ServiceWorkerOfflineCapabilityCheckBrowserTest,
-                       CheckOfflineCapability) {
+                       MAYBE_CheckOfflineCapability) {
   EXPECT_TRUE(NavigateToURL(shell(),
                             embedded_test_server()->GetURL(
                                 "/service_worker/create_service_worker.html")));
