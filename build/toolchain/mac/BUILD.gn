@@ -263,16 +263,26 @@ template("mac_toolchain") {
     }
 
     tool("alink") {
-      script =
-          rebase_path("//build/toolchain/mac/filter_libtool.py", root_build_dir)
-
       rspfile = "{{output}}.rsp"
       rspfile_content = "{{inputs}}"
 
-      # Specify explicit path for libtool.
-      libtool = mac_bin_path + "libtool"
-      command = "rm -f {{output}} && TOOL_VERSION=${tool_versions.filter_libtool} python $script $libtool -static -D {{arflags}} -o {{output}} \"@$rspfile\""
-      description = "LIBTOOL-STATIC {{output}}"
+      if (!use_lld) {
+        script = rebase_path("//build/toolchain/mac/filter_libtool.py",
+                             root_build_dir)
+
+        # Specify explicit path for libtool.
+        libtool = mac_bin_path + "libtool"
+        command = "rm -f {{output}} && TOOL_VERSION=${tool_versions.filter_libtool} python $script $libtool -static -D {{arflags}} -o {{output}} \"@$rspfile\""
+        description = "LIBTOOL-STATIC {{output}}"
+      } else {
+        ar = "${prefix}llvm-ar"
+        command = "\"$ar\" {{arflags}} -r -c -s -D {{output}} \"@$rspfile\""
+
+        # Remove the output file first so that ar doesn't try to modify the
+        # existing file.
+        command = "rm -f {{output}} && $command"
+        description = "AR {{output}}"
+      }
       outputs = [ "{{output_dir}}/{{target_output_name}}{{output_extension}}" ]
       default_output_dir = "{{target_out_dir}}"
       default_output_extension = ".a"

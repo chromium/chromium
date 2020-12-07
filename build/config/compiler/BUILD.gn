@@ -274,7 +274,7 @@ config("compiler") {
   }
 
   # In general, Windows is totally different, but all the other builds share
-  # some common GCC configuration.
+  # some common compiler and linker configuration.
   if (!is_win) {
     # Common POSIX compiler flags setup.
     # --------------------------------
@@ -303,6 +303,14 @@ config("compiler") {
       }
     }
 
+    if (use_lld) {
+      if (is_apple) {
+        ldflags += [ "-fuse-ld=lld.darwinnew" ]
+      } else {
+        ldflags += [ "-fuse-ld=lld" ]
+      }
+    }
+
     # Linker warnings.
     if (fatal_linker_warnings && !is_apple && current_os != "aix") {
       ldflags += [ "-Wl,--fatal-warnings" ]
@@ -310,7 +318,6 @@ config("compiler") {
     if (fatal_linker_warnings && is_apple) {
       ldflags += [ "-Wl,-fatal_warnings" ]
     }
-  } else {
   }
 
   if (is_clang && is_debug) {
@@ -411,7 +418,6 @@ config("compiler") {
   # Linux-specific compiler flags setup.
   # ------------------------------------
   if ((is_posix || is_fuchsia) && use_lld) {
-    ldflags += [ "-fuse-ld=lld" ]
     if (current_cpu == "arm64") {
       # Reduce the page size from 65536 in order to reduce binary size slightly
       # by shrinking the alignment gap between segments. This also causes all
@@ -447,7 +453,7 @@ config("compiler") {
     #}
   }
 
-  if (use_icf) {
+  if (use_icf && !is_apple) {
     ldflags += [ "-Wl,--icf=all" ]
   }
 
@@ -1765,10 +1771,9 @@ config("export_dynamic") {
 # 2. Remove the thin_archive config, so that the .a file actually contains all
 #    .o files, instead of just references to .o files in the build directoy
 config("thin_archive") {
-  # Mac and iOS use the mac-specific "libtool" command, not ar, which doesn't
-  # have a "thin archive" mode (it does accept -T, but it means truncating
-  # archive names to 16 characters, which is not what we want).
-  if ((is_posix && !is_nacl && !is_apple) || is_fuchsia) {
+  # The macOS and iOS default linker ld64 does not support reading thin
+  # archives.
+  if ((is_posix && !is_nacl && (!is_apple || use_lld)) || is_fuchsia) {
     arflags = [ "-T" ]
   } else if (is_win && use_lld) {
     arflags = [ "/llvmlibthin" ]
