@@ -2227,7 +2227,7 @@ const char kStoragePressureEventDescription[] =
 
 const char kSuggestedContentToggleName[] = "Enable Suggested Content toggle";
 const char kSuggestedContentToggleDescription[] =
-    "Enables a settings UI toggle that controls Suggested Content status. Also"
+    "Enables a settings UI toggle that controls Suggested Content status. Also "
     "enables a corresponding notice in the Launcher about Suggested Content.";
 
 const char kSuggestionsWithSubStringMatchName[] =
