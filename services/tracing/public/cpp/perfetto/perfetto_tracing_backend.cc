@@ -511,6 +511,12 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
     NOTREACHED();
   }
 
+  void SaveTraceForBugreport(SaveTraceForBugreportCallback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    // Not implemented yet.
+    NOTREACHED();
+  }
+
   // tracing::mojom::TracingSessionClient implementation:
   void OnTracingEnabled() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
