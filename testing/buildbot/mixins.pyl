@@ -447,8 +447,8 @@
     # Similar to stable, but with a newer Mesa version.
     'swarming': {
       'dimensions': {
-        'gpu': '8086:5912-19.0.2',
-        'os': 'Ubuntu-19.04',
+        'gpu': '8086:5912-20.0.8',
+        'os': 'Ubuntu-18.04.5',
         'pool': 'chromium.tests.gpu',
       },
     },
@@ -465,8 +465,8 @@
   'linux_intel_uhd_630_stable': {
     'swarming': {
       'dimensions': {
-        'gpu': '8086:3e92-19.0.8|8086:3e92-20.0.8',
-        'os': 'Ubuntu-19.04|Ubuntu-18.04.5',
+        'gpu': '8086:3e92-20.0.8',
+        'os': 'Ubuntu-18.04.5',
         'pool': 'chromium.tests.gpu',
       },
       # Same long expiration as win10_intel_uhd_630_stable due to capacity.
