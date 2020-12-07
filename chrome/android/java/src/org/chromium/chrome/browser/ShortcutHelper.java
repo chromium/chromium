@@ -87,8 +87,6 @@ public class ShortcutHelper {
 
     private static final String TAG = "ShortcutHelper";
 
-    private static ShortcutManager sShortcutManager;
-
     // Holds splash images for web apps that are currently being installed. After installation is
     // complete, the image associated with the web app will be moved to the appropriate {@link
     // WebappDataStorage}.
@@ -223,7 +221,9 @@ public class ShortcutHelper {
                                             .setIntent(shortcutIntent)
                                             .build();
         try {
-            sShortcutManager.requestPinShortcut(shortcutInfo, null);
+            ShortcutManager shortcutManager =
+                    ContextUtils.getApplicationContext().getSystemService(ShortcutManager.class);
+            shortcutManager.requestPinShortcut(shortcutInfo, null);
         } catch (IllegalStateException e) {
             Log.d(TAG,
                     "Could not create pinned shortcut: device is locked, or "
