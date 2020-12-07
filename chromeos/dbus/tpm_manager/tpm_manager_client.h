@@ -56,6 +56,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) TpmManagerClient {
     // Gets a mutable reply that is returned when `GetVersionInfo()` is called.
     virtual ::tpm_manager::GetVersionInfoReply*
     mutable_version_info_reply() = 0;
+    // Gets a mutable reply that is returned when `GetDictionaryAttackInfo()` is
+    // called.
+    virtual ::tpm_manager::GetDictionaryAttackInfoReply*
+    mutable_dictionary_attack_info_reply() = 0;
     // Gets the count of `ClearStoredOwnerPassword()` being called.
     virtual int clear_stored_owner_password_count() const = 0;
     // Emits ownership taken signal.

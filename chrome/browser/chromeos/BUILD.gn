@@ -2395,6 +2395,8 @@ source_set("chromeos") {
     "policy/status_collector/status_collector.h",
     "policy/status_collector/status_collector_state.cc",
     "policy/status_collector/status_collector_state.h",
+    "policy/status_collector/tpm_status_combiner.cc",
+    "policy/status_collector/tpm_status_combiner.h",
     "policy/status_uploader.cc",
     "policy/status_uploader.h",
     "policy/system_features_disable_list_policy_handler.cc",

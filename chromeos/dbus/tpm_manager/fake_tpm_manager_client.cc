@@ -56,7 +56,7 @@ void FakeTpmManagerClient::GetVersionInfo(
 void FakeTpmManagerClient::GetDictionaryAttackInfo(
     const ::tpm_manager::GetDictionaryAttackInfoRequest& request,
     GetDictionaryAttackInfoCallback callback) {
-  NOTIMPLEMENTED();
+  PostProtoResponse(std::move(callback), dictionary_attack_info_reply_);
 }
 
 void FakeTpmManagerClient::TakeOwnership(
@@ -98,6 +98,11 @@ void FakeTpmManagerClient::set_non_nonsensitive_status_dbus_error_count(
 ::tpm_manager::GetVersionInfoReply*
 FakeTpmManagerClient::mutable_version_info_reply() {
   return &version_info_reply_;
+}
+
+::tpm_manager::GetDictionaryAttackInfoReply*
+FakeTpmManagerClient::mutable_dictionary_attack_info_reply() {
+  return &dictionary_attack_info_reply_;
 }
 
 int FakeTpmManagerClient::clear_stored_owner_password_count() const {

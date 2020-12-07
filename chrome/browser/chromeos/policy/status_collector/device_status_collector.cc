@@ -55,6 +55,7 @@
 #include "chrome/browser/chromeos/policy/status_collector/enterprise_activity_storage.h"
 #include "chrome/browser/chromeos/policy/status_collector/interval_map.h"
 #include "chrome/browser/chromeos/policy/status_collector/status_collector_state.h"
+#include "chrome/browser/chromeos/policy/status_collector/tpm_status_combiner.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/crash_upload_list/crash_upload_list.h"
@@ -64,6 +65,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/audio/cras_audio_handler.h"
+#include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/cryptohome/tpm_util.h"
@@ -435,57 +437,23 @@ bool ReadAndroidStatus(
   return true;
 }
 
-// Converts the given GetTpmStatusReply to TpmStatusInfo.
-policy::TpmStatusInfo GetTpmStatusReplyToTpmStatusInfo(
-    const base::Optional<cryptohome::BaseReply>& reply) {
-  policy::TpmStatusInfo tpm_status_info;
-
-  if (!reply.has_value()) {
-    LOG(ERROR) << "GetTpmStatus call failed with empty reply.";
-    return tpm_status_info;
-  }
-  if (reply->has_error() &&
-      reply->error() != cryptohome::CRYPTOHOME_ERROR_NOT_SET) {
-    LOG(ERROR) << "GetTpmStatus failed with error: " << reply->error();
-    return tpm_status_info;
-  }
-  if (!reply->HasExtension(cryptohome::GetTpmStatusReply::reply)) {
-    LOG(ERROR)
-        << "GetTpmStatus failed with no GetTpmStatusReply extension in reply.";
-    return tpm_status_info;
-  }
-
-  auto reply_proto = reply->GetExtension(cryptohome::GetTpmStatusReply::reply);
-
-  tpm_status_info.enabled = reply_proto.enabled();
-  tpm_status_info.owned = reply_proto.owned();
-  tpm_status_info.initialized = reply_proto.initialized();
-  tpm_status_info.attestation_prepared = reply_proto.attestation_prepared();
-  tpm_status_info.attestation_enrolled = reply_proto.attestation_enrolled();
-  tpm_status_info.dictionary_attack_counter =
-      reply_proto.dictionary_attack_counter();
-  tpm_status_info.dictionary_attack_threshold =
-      reply_proto.dictionary_attack_threshold();
-  tpm_status_info.dictionary_attack_lockout_in_effect =
-      reply_proto.dictionary_attack_lockout_in_effect();
-  tpm_status_info.dictionary_attack_lockout_seconds_remaining =
-      reply_proto.dictionary_attack_lockout_seconds_remaining();
-  tpm_status_info.boot_lockbox_finalized = reply_proto.boot_lockbox_finalized();
-
-  return tpm_status_info;
-}
-
 void ReadTpmStatus(policy::DeviceStatusCollector::TpmStatusReceiver callback) {
   // D-Bus calls are allowed only on the UI thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  chromeos::CryptohomeClient::Get()->GetTpmStatus(
-      cryptohome::GetTpmStatusRequest(),
-      base::BindOnce(
-          [](policy::DeviceStatusCollector::TpmStatusReceiver callback,
-             base::Optional<cryptohome::BaseReply> reply) {
-            std::move(callback).Run(GetTpmStatusReplyToTpmStatusInfo(reply));
-          },
-          std::move(callback)));
+  auto tpm_status_combiner =
+      base::MakeRefCounted<::policy::TpmStatusCombiner>(std::move(callback));
+  chromeos::TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
+      ::tpm_manager::GetTpmNonsensitiveStatusRequest(),
+      base::BindOnce(&::policy::TpmStatusCombiner::OnGetTpmStatus,
+                     tpm_status_combiner));
+  chromeos::AttestationClient::Get()->GetStatus(
+      ::attestation::GetStatusRequest(),
+      base::BindOnce(&::policy::TpmStatusCombiner::OnGetEnrollmentStatus,
+                     tpm_status_combiner));
+  chromeos::TpmManagerClient::Get()->GetDictionaryAttackInfo(
+      ::tpm_manager::GetDictionaryAttackInfoRequest(),
+      base::BindOnce(&::policy::TpmStatusCombiner::OnGetDictionaryAttackInfo,
+                     tpm_status_combiner));
 }
 
 base::Version GetPlatformVersion() {

@@ -50,6 +50,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) FakeTpmManagerClient
   mutable_nonsensitive_status_reply() override;
   void set_non_nonsensitive_status_dbus_error_count(int count) override;
   ::tpm_manager::GetVersionInfoReply* mutable_version_info_reply() override;
+  ::tpm_manager::GetDictionaryAttackInfoReply*
+  mutable_dictionary_attack_info_reply() override;
   int clear_stored_owner_password_count() const override;
   void EmitOwnershipTakenSignal() override;
 
@@ -57,6 +59,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) FakeTpmManagerClient
   ::tpm_manager::GetTpmNonsensitiveStatusReply nonsensitive_status_reply_;
   int nonsensitive_status_dbus_error_count_ = 0;
   ::tpm_manager::GetVersionInfoReply version_info_reply_;
+  ::tpm_manager::GetDictionaryAttackInfoReply dictionary_attack_info_reply_;
   int clear_stored_owner_password_count_ = 0;
 
   // The observer list of ownership taken signal.
