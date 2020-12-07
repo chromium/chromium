@@ -171,7 +171,6 @@ class FuchsiaCdmManager::KeySystemClient {
     base::Optional<DataStoreId> data_store_id = GetDataStoreIdForPath(
         std::move(storage_path), std::move(create_fetcher_callback));
     if (!data_store_id) {
-      DLOG(ERROR) << "Unable to create DataStore for path: " << storage_path;
       request.Close(ZX_ERR_NO_RESOURCES);
       return;
     }
@@ -292,11 +291,12 @@ void FuchsiaCdmManager::CreateAndProvision(
 
   base::FilePath storage_path = GetStoragePath(key_system, origin);
 
+  auto task = base::BindOnce(&CreateStorageDirectory, storage_path);
   storage_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&CreateStorageDirectory, storage_path),
+      FROM_HERE, std::move(task),
       base::BindOnce(&FuchsiaCdmManager::CreateCdm, weak_factory_.GetWeakPtr(),
                      key_system, std::move(create_fetcher_cb),
-                     std::move(request), storage_path));
+                     std::move(request), std::move(storage_path)));
 }
 
 void FuchsiaCdmManager::set_on_key_system_disconnect_for_test_callback(
