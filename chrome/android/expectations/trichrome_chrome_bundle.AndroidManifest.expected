@@ -812,6 +812,7 @@
         android:authorities="$PACKAGE.FileProvider"
         android:exported="false"
         android:grantUriPermissions="true"
+        android:initOrder="10000"
         android:name="org.chromium.chrome.browser.util.ChromeFileProvider">
       <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths"/>
     </provider>  # DIFF-ANCHOR: 6e306896

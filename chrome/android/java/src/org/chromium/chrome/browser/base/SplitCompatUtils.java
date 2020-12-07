@@ -18,7 +18,7 @@ import org.chromium.base.annotations.IdentifierNameString;
 
 /** Utils for compatibility with isolated splits. */
 public class SplitCompatUtils {
-    private static final String CHROME_SPLIT_NAME = "chrome";
+    public static final String CHROME_SPLIT_NAME = "chrome";
     private static final ArraySet<ClassLoader> sInflationClassLoaders = new ArraySet<>();
 
     private SplitCompatUtils() {}

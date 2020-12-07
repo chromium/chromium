@@ -44,10 +44,5 @@ static void JNI_UmaUtils_RecordMetricsReportingDefaultOptIn(
                           : metrics::EnableMetricsDefault::OPT_OUT);
 }
 
-void SetUsageAndCrashReporting(bool enabled) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_UmaUtils_setUsageAndCrashReportingFromNative(env, enabled);
-}
-
 }  // namespace android
 }  // namespace chrome
