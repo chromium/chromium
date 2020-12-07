@@ -161,7 +161,11 @@ const base::Feature
 // See also https://crbug.com/920634
 const base::Feature kRequestInitiatorSiteLockEnfocement = {
     "RequestInitiatorSiteLockEnfocement",
+#if defined(OS_ANDROID)
+    base::FEATURE_DISABLED_BY_DEFAULT};
+#else
     base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
 
 // When the CertVerifierService is enabled, certificate verification will not be
 // performed in the network service, but will instead be brokered to a separate
