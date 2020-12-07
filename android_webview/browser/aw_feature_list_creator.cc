@@ -15,6 +15,7 @@
 #include "android_webview/browser/aw_metrics_service_client_delegate.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/variations/variations_seed_loader.h"
+#include "android_webview/common/aw_switches.h"
 #include "android_webview/proto/aw_variations_seed.pb.h"
 #include "base/base_switches.h"
 #include "base/bind.h"
@@ -42,6 +43,7 @@
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
+#include "net/base/features.h"
 #include "net/nqe/pref_names.h"
 #include "services/preferences/tracked/segregated_pref_store.h"
 
@@ -95,6 +97,24 @@ base::FilePath GetPrefStorePath() {
   base::PathService::Get(base::DIR_ANDROID_APP_DATA, &path);
   path = path.Append(FILE_PATH_LITERAL("pref_store"));
   return path;
+}
+
+// Adds WebView-specific switch-dependent feature overrides on top of the ones
+// from the content layer.
+std::vector<base::FeatureList::FeatureOverrideInfo>
+GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
+  std::vector<base::FeatureList::FeatureOverrideInfo> feature_overrides =
+      content::GetSwitchDependentFeatureOverrides(command_line);
+
+  // TODO(chlily): This can be removed when Schemeful Same-Site is enabled by
+  // default.
+  if (command_line.HasSwitch(switches::kWebViewEnableModernCookieSameSite)) {
+    feature_overrides.push_back(
+        std::make_pair(net::features::kSchemefulSameSite,
+                       base::FeatureList::OVERRIDE_ENABLE_FEATURE));
+  }
+
+  return feature_overrides;
 }
 
 }  // namespace
@@ -212,7 +232,7 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   variations_field_trial_creator_->SetupFieldTrials(
       cc::switches::kEnableGpuBenchmarking, switches::kEnableFeatures,
       switches::kDisableFeatures, std::vector<std::string>(),
-      content::GetSwitchDependentFeatureOverrides(
+      GetSwitchDependentFeatureOverrides(
           *base::CommandLine::ForCurrentProcess()),
       /*low_entropy_provider=*/nullptr, std::make_unique<base::FeatureList>(),
       aw_field_trials_.get(), &ignored_safe_seed_manager,

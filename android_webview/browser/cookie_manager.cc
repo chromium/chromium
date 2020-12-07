@@ -13,12 +13,14 @@
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_cookie_access_policy.h"
 #include "android_webview/browser_jni_headers/AwCookieManager_jni.h"
+#include "android_webview/common/aw_switches.h"
 #include "base/android/build_info.h"
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/path_utils.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/containers/circular_deque.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
@@ -348,11 +350,14 @@ net::CookieStore* CookieManager::GetCookieStore() {
     }
 
     cookie_store_ = content::CreateCookieStore(cookie_config, nullptr);
-    // Use a CookieAccessDelegate that always returns Legacy mode, for
-    // compatibility reasons.
+    auto cookie_access_delegate_type =
+        base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kWebViewEnableModernCookieSameSite)
+            ? network::mojom::CookieAccessDelegateType::ALWAYS_NONLEGACY
+            : network::mojom::CookieAccessDelegateType::ALWAYS_LEGACY;
     cookie_store_->SetCookieAccessDelegate(
         std::make_unique<network::CookieAccessDelegateImpl>(
-            network::mojom::CookieAccessDelegateType::ALWAYS_LEGACY,
+            cookie_access_delegate_type,
             nullptr /* preloaded_first_party_sets */));
   }
 

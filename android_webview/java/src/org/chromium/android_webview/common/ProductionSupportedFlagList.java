@@ -68,6 +68,10 @@ public final class ProductionSupportedFlagList {
             Flag.commandLine(GpuSwitches.IGNORE_GPU_BLOCKLIST,
                     "Overrides the built-in software rendering list and enables "
                             + "GPU acceleration on unsupported device configurations."),
+            Flag.commandLine(AwSwitches.WEBVIEW_ENABLE_MODERN_COOKIE_SAME_SITE,
+                    "Enables modern SameSite cookie behavior: 1) SameSite=Lax by default "
+                            + "(cookies without a SameSite attribute are treated as SameSite=Lax); "
+                            + "2) Schemeful Same-Site (site boundaries include the URL scheme)."),
             Flag.baseFeature(GpuFeatures.ENABLE_SHARED_IMAGE_FOR_WEBVIEW,
                     "Enables shared images for WebView."),
             Flag.baseFeature(GpuFeatures.WEBVIEW_VULKAN,

@@ -17,6 +17,7 @@ extern const char kFinchSeedExpirationAge[];
 extern const char kFinchSeedIgnorePendingDownload[];
 extern const char kFinchSeedMinDownloadPeriod[];
 extern const char kFinchSeedMinUpdatePeriod[];
+extern const char kWebViewEnableModernCookieSameSite[];
 
 }  // namespace switches
 

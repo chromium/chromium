@@ -22,9 +22,11 @@
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_allowlist_manager.h"
 #include "android_webview/browser_jni_headers/AwBrowserContext_jni.h"
 #include "android_webview/common/aw_features.h"
+#include "android_webview/common/aw_switches.h"
 #include "android_webview/common/crash_reporter/crash_keys.h"
 #include "base/base_paths_posix.h"
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -484,9 +486,11 @@ void AwBrowserContext::ConfigureNetworkContextParams(
       network::mojom::CookieManagerParams::New();
   context_params->cookie_manager_params->allow_file_scheme_cookies =
       GetCookieManager()->GetAllowFileSchemeCookies();
-  // Set all cookies to Legacy on Android WebView, for compatibility reasons.
   context_params->cookie_manager_params->cookie_access_delegate_type =
-      network::mojom::CookieAccessDelegateType::ALWAYS_LEGACY;
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebViewEnableModernCookieSameSite)
+          ? network::mojom::CookieAccessDelegateType::ALWAYS_NONLEGACY
+          : network::mojom::CookieAccessDelegateType::ALWAYS_LEGACY;
 
   context_params->initial_ssl_config = network::mojom::SSLConfig::New();
   // Allow SHA-1 to be used for locally-installed trust anchors, as WebView

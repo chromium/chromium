@@ -30,9 +30,15 @@ bool CookieAccessDelegateImpl::ShouldTreatUrlAsTrustworthy(
 
 net::CookieAccessSemantics CookieAccessDelegateImpl::GetAccessSemantics(
     const net::CanonicalCookie& cookie) const {
-  if (type_ == mojom::CookieAccessDelegateType::ALWAYS_LEGACY)
-    return net::CookieAccessSemantics::LEGACY;
-  return cookie_settings_->GetCookieAccessSemanticsForDomain(cookie.Domain());
+  switch (type_) {
+    case mojom::CookieAccessDelegateType::ALWAYS_LEGACY:
+      return net::CookieAccessSemantics::LEGACY;
+    case mojom::CookieAccessDelegateType::ALWAYS_NONLEGACY:
+      return net::CookieAccessSemantics::NONLEGACY;
+    case mojom::CookieAccessDelegateType::USE_CONTENT_SETTINGS:
+      return cookie_settings_->GetCookieAccessSemanticsForDomain(
+          cookie.Domain());
+  }
 }
 
 bool CookieAccessDelegateImpl::ShouldIgnoreSameSiteRestrictions(

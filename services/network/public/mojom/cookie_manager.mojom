@@ -52,6 +52,8 @@ enum CookieAccessDelegateType {
   USE_CONTENT_SETTINGS,
   // Always returns Legacy access semantics.
   ALWAYS_LEGACY,
+  // Always returns Non-Legacy access semantics.
+  ALWAYS_NONLEGACY,
 };
 
 enum CookiePriority {
