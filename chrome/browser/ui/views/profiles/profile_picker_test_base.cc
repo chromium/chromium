@@ -19,31 +19,33 @@
 
 namespace {
 
-// Waits until a web view is added as a child view of the given view.
-class WebViewAddedWaiter : public views::ViewObserver {
+// Waits until a view's visibility has the expected value.
+class ViewVisibilityChangedWaiter : public views::ViewObserver {
  public:
-  WebViewAddedWaiter(
-      views::View* top_view,
-      base::RepeatingCallback<views::WebView*()> current_web_view_getter)
-      : current_web_view_getter_(current_web_view_getter) {
-    observation_.Observe(top_view);
-  }
-  ~WebViewAddedWaiter() override = default;
+  ViewVisibilityChangedWaiter(views::View* view, bool expect_toolbar_visible)
+      : view_(view), expect_toolbar_visible_(expect_toolbar_visible) {}
+  ~ViewVisibilityChangedWaiter() override = default;
 
-  void Wait() { run_loop_.Run(); }
+  void Wait() {
+    if (view_->GetVisible() == expect_toolbar_visible_)
+      return;
+    observation_.Observe(view_);
+    run_loop_.Run();
+  }
 
  private:
   // ViewObserver:
-  void OnChildViewAdded(views::View* observed_view,
-                        views::View* child) override {
-    if (child == current_web_view_getter_.Run()) {
-      ASSERT_TRUE(child);
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view) override {
+    if (observed_view == starting_view &&
+        starting_view->GetVisible() == expect_toolbar_visible_) {
       run_loop_.Quit();
     }
   }
 
   base::RunLoop run_loop_;
-  base::RepeatingCallback<views::WebView*()> current_web_view_getter_;
+  views::View* const view_;
+  bool expect_toolbar_visible_;
   base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
 };
 
@@ -100,13 +102,16 @@ views::WebView* ProfilePickerTestBase::web_view() {
   return ProfilePicker::GetWebViewForTesting();
 }
 
-void ProfilePickerTestBase::WaitForNewWebView() {
-  ASSERT_TRUE(view());
-  WebViewAddedWaiter(view(),
-                     base::BindRepeating(&ProfilePickerTestBase::web_view,
-                                         base::Unretained(this)))
+void ProfilePickerTestBase::WaitForLayoutWithToolbar() {
+  ViewVisibilityChangedWaiter(ProfilePicker::GetToolbarForTesting(),
+                              /*expect_toolbar_visible=*/true)
       .Wait();
-  EXPECT_TRUE(web_view());
+}
+
+void ProfilePickerTestBase::WaitForLayoutWithoutToolbar() {
+  ViewVisibilityChangedWaiter(ProfilePicker::GetToolbarForTesting(),
+                              /*expect_toolbar_visible=*/false)
+      .Wait();
 }
 
 void ProfilePickerTestBase::WaitForFirstPaint(content::WebContents* contents,

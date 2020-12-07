@@ -111,7 +111,7 @@ class ProfilePickerInteractiveUiTest : public ProfilePickerTestBase {
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, CloseWithKeyboard) {
   // Open a new picker.
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
-  WaitForNewWebView();
+  WaitForLayoutWithoutToolbar();
   WaitForFirstPaint(web_contents(), GURL("chrome://profile-picker"));
   EXPECT_TRUE(ProfilePicker::IsOpen());
   SendCloseWindowKeyboardCommand();
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, CloseWithKeyboard) {
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, ExitWithKeyboard) {
   // Open a new picker.
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
-  WaitForNewWebView();
+  WaitForLayoutWithoutToolbar();
   WaitForFirstPaint(web_contents(), GURL("chrome://profile-picker"));
   EXPECT_TRUE(ProfilePicker::IsOpen());
 
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, ExitWithKeyboard) {
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, FullscreenWithKeyboard) {
   // Open a new picker.
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
-  WaitForNewWebView();
+  WaitForLayoutWithoutToolbar();
   WaitForFirstPaint(web_contents(), GURL("chrome://profile-picker"));
   EXPECT_TRUE(ProfilePicker::IsOpen());
 
@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, FullscreenWithKeyboard) {
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
                        CloseSigninWithKeyboard) {
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
-  WaitForNewWebView();
+  WaitForLayoutWithoutToolbar();
 
   // Simulate a click on the signin button.
   base::MockCallback<base::OnceClosure> switch_failure_callback;
@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
   ProfilePicker::SwitchToSignIn(SK_ColorRED, switch_failure_callback.Get());
 
   // Switch to the signin webview.
-  WaitForNewWebView();
+  WaitForLayoutWithToolbar();
   WaitForFirstPaint(web_contents(),
                     GaiaUrls::GetInstance()->signin_chrome_sync_dice());
 

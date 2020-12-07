@@ -75,6 +75,9 @@ class ProfilePicker {
   // Returns the web view (embedded in the picker) for testing.
   static views::WebView* GetWebViewForTesting();
 
+  // Returns the simple toolbar (embedded in the picker) for testing.
+  static views::View* GetToolbarForTesting();
+
   // Overrides the timeout delay for waiting for extended account info.
   static void SetExtendedAccountInfoTimeoutForTesting(base::TimeDelta timeout);
 

@@ -34,8 +34,10 @@ class ProfilePickerTestBase : public InProcessBrowserTest {
   // Returns the internal web view for the profile picker.
   views::WebView* web_view();
 
-  // Waits until a new internal web view has been added to the main picker view.
-  void WaitForNewWebView();
+  // Waits until a relayout of the main view has been performed. This implies
+  // the appropriate web_contents() is attached to the layout.
+  void WaitForLayoutWithToolbar();
+  void WaitForLayoutWithoutToolbar();
 
   // Waits until the web contents does the first non-empty paint for `url`.
   void WaitForFirstPaint(content::WebContents* contents, const GURL& url);

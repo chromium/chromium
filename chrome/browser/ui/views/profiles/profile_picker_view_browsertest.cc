@@ -244,7 +244,7 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, ShowChoice) {
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
-  WaitForNewWebView();
+  WaitForLayoutWithoutToolbar();
   EXPECT_TRUE(ProfilePicker::IsOpen());
   WaitForFirstPaint(web_contents(),
                     GURL("chrome://profile-picker/new-profile"));
@@ -255,22 +255,22 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
 
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
-  WaitForNewWebView();
+  WaitForLayoutWithoutToolbar();
 
   // Simulate a click on the signin button.
   base::MockCallback<base::OnceClosure> switch_failure_callback;
   EXPECT_CALL(switch_failure_callback, Run()).Times(0);
   ProfilePicker::SwitchToSignIn(kProfileColor, switch_failure_callback.Get());
 
-  // The DICE navigation happens in a new web view (for the profile being
+  // The DICE navigation happens in a new web contents (for the profile being
   // created), wait for it.
-  WaitForNewWebView();
+  WaitForLayoutWithToolbar();
   WaitForFirstPaint(web_contents(),
                     GaiaUrls::GetInstance()->signin_chrome_sync_dice());
 
   // Add an account - simulate a successful Gaia sign-in.
   Profile* profile_being_created =
-      static_cast<Profile*>(web_view()->GetBrowserContext());
+      static_cast<Profile*>(web_contents()->GetBrowserContext());
   syncer::SyncService* sync_service =
       ProfileSyncServiceFactory::GetForProfile(profile_being_created);
   signin::IdentityManager* identity_manager =
@@ -317,22 +317,22 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
 
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
-  WaitForNewWebView();
+  WaitForLayoutWithoutToolbar();
 
   // Simulate a click on the signin button.
   base::MockCallback<base::OnceClosure> switch_failure_callback;
   EXPECT_CALL(switch_failure_callback, Run()).Times(0);
   ProfilePicker::SwitchToSignIn(kProfileColor, switch_failure_callback.Get());
 
-  // The DICE navigation happens in a new web view (for the profile being
+  // The DICE navigation happens in a new web contents (for the profile being
   // created), wait for it.
-  WaitForNewWebView();
+  WaitForLayoutWithToolbar();
   WaitForFirstPaint(web_contents(),
                     GaiaUrls::GetInstance()->signin_chrome_sync_dice());
 
   // Disable sync by setting the device as managed in prefs.
   Profile* profile_being_created =
-      static_cast<Profile*>(web_view()->GetBrowserContext());
+      static_cast<Profile*>(web_contents()->GetBrowserContext());
   syncer::SyncPrefs prefs(profile_being_created->GetPrefs());
   prefs.SetManagedForTest(true);
   syncer::SyncService* sync_service =
@@ -381,22 +381,22 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
 
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
-  WaitForNewWebView();
+  WaitForLayoutWithoutToolbar();
 
   // Simulate a click on the signin button.
   base::MockCallback<base::OnceClosure> switch_failure_callback;
   EXPECT_CALL(switch_failure_callback, Run()).Times(0);
   ProfilePicker::SwitchToSignIn(kProfileColor, switch_failure_callback.Get());
 
-  // The DICE navigation happens in a new web view (for the profile being
+  // The DICE navigation happens in a new web contents (for the profile being
   // created), wait for it.
-  WaitForNewWebView();
+  WaitForLayoutWithToolbar();
   WaitForFirstPaint(web_contents(),
                     GaiaUrls::GetInstance()->signin_chrome_sync_dice());
 
   // Add an account - simulate a successful Gaia sign-in.
   Profile* profile_being_created =
-      static_cast<Profile*>(web_view()->GetBrowserContext());
+      static_cast<Profile*>(web_contents()->GetBrowserContext());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_being_created);
   CoreAccountInfo core_account_info =
@@ -442,16 +442,16 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
 
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
-  WaitForNewWebView();
+  WaitForLayoutWithoutToolbar();
 
   // Simulate a click on the signin button.
   base::MockCallback<base::OnceClosure> switch_failure_callback;
   EXPECT_CALL(switch_failure_callback, Run()).Times(0);
   ProfilePicker::SwitchToSignIn(kProfileColor, switch_failure_callback.Get());
 
-  // The DICE navigation happens in a new web view (for the profile being
+  // The DICE navigation happens in a new web contents (for the profile being
   // created), wait for it.
-  WaitForNewWebView();
+  WaitForLayoutWithToolbar();
   WaitForFirstPaint(web_contents(),
                     GaiaUrls::GetInstance()->signin_chrome_sync_dice());
 
@@ -502,22 +502,22 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                            /*is_consented_primary_account=*/true);
 
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
-  WaitForNewWebView();
+  WaitForLayoutWithoutToolbar();
 
   // Simulate a click on the signin button.
   base::MockCallback<base::OnceClosure> switch_failure_callback;
   EXPECT_CALL(switch_failure_callback, Run()).Times(0);
   ProfilePicker::SwitchToSignIn(kProfileColor, switch_failure_callback.Get());
 
-  // The DICE navigation happens in a new web view (for the profile being
+  // The DICE navigation happens in a new web contents (for the profile being
   // created), wait for it.
-  WaitForNewWebView();
+  WaitForLayoutWithToolbar();
   WaitForFirstPaint(web_contents(),
                     GaiaUrls::GetInstance()->signin_chrome_sync_dice());
 
   // Add an account - simulate a successful Gaia sign-in.
   Profile* profile_being_created =
-      static_cast<Profile*>(web_view()->GetBrowserContext());
+      static_cast<Profile*>(web_contents()->GetBrowserContext());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_being_created);
   CoreAccountInfo core_account_info =
@@ -552,21 +552,21 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
 
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
-  WaitForNewWebView();
+  WaitForLayoutWithoutToolbar();
 
   // Simulate a click on the signin button.
   base::MockCallback<base::OnceClosure> switch_failure_callback;
   EXPECT_CALL(switch_failure_callback, Run()).Times(0);
   ProfilePicker::SwitchToSignIn(kProfileColor, switch_failure_callback.Get());
 
-  // The DICE navigation happens in a new web view (for the profile being
+  // The DICE navigation happens in a new web contents (for the profile being
   // created), wait for it.
-  WaitForNewWebView();
+  WaitForLayoutWithToolbar();
   WaitForFirstPaint(web_contents(),
                     GaiaUrls::GetInstance()->signin_chrome_sync_dice());
 
   Profile* profile_being_created =
-      static_cast<Profile*>(web_view()->GetBrowserContext());
+      static_cast<Profile*>(web_contents()->GetBrowserContext());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_being_created);
 
@@ -628,22 +628,22 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
 
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
-  WaitForNewWebView();
+  WaitForLayoutWithoutToolbar();
 
   // Simulate a click on the signin button.
   base::MockCallback<base::OnceClosure> switch_failure_callback;
   EXPECT_CALL(switch_failure_callback, Run()).Times(0);
   ProfilePicker::SwitchToSignIn(kProfileColor, switch_failure_callback.Get());
 
-  // The DICE navigation happens in a new web view (for the profile being
+  // The DICE navigation happens in a new web contents (for the profile being
   // created), wait for it.
-  WaitForNewWebView();
+  WaitForLayoutWithToolbar();
   WaitForFirstPaint(web_contents(),
                     GaiaUrls::GetInstance()->signin_chrome_sync_dice());
 
   // Add an account - simulate a successful Gaia sign-in.
   Profile* profile_being_created =
-      static_cast<Profile*>(web_view()->GetBrowserContext());
+      static_cast<Profile*>(web_contents()->GetBrowserContext());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_being_created);
   // Consumer-looking gmail address avoids code that forces the sync service to
@@ -699,22 +699,22 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
 
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
-  WaitForNewWebView();
+  WaitForLayoutWithoutToolbar();
 
   // Simulate a click on the signin button.
   base::MockCallback<base::OnceClosure> switch_failure_callback;
   EXPECT_CALL(switch_failure_callback, Run()).Times(0);
   ProfilePicker::SwitchToSignIn(kProfileColor, switch_failure_callback.Get());
 
-  // The DICE navigation happens in a new web view (for the profile being
+  // The DICE navigation happens in a new web contents (for the profile being
   // created), wait for it.
-  WaitForNewWebView();
+  WaitForLayoutWithToolbar();
   WaitForFirstPaint(web_contents(),
                     GaiaUrls::GetInstance()->signin_chrome_sync_dice());
 
   // Add an account - simulate a successful Gaia sign-in.
   Profile* profile_being_created =
-      static_cast<Profile*>(web_view()->GetBrowserContext());
+      static_cast<Profile*>(web_contents()->GetBrowserContext());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_being_created);
   // Consumer-looking gmail address avoids code that forces the sync service to

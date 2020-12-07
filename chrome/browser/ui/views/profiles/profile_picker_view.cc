@@ -42,10 +42,13 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "url/url_constants.h"
 
@@ -140,6 +143,13 @@ views::View* ProfilePicker::GetViewForTesting() {
 }
 
 // static
+views::View* ProfilePicker::GetToolbarForTesting() {
+  if (!g_profile_picker_view)
+    return nullptr;
+  return g_profile_picker_view->toolbar_;
+}
+
+// static
 void ProfilePicker::SetExtendedAccountInfoTimeoutForTesting(
     base::TimeDelta timeout) {
   if (g_profile_picker_view) {
@@ -176,6 +186,10 @@ void ProfilePickerView::Display(ProfilePicker::EntryPoint entry_point) {
 
   if (state_ == kNotStarted) {
     state_ = kInitializing;
+    // Build the layout synchronously before creating the system profile to
+    // simplify tests.
+    BuildLayout();
+
     g_browser_process->profile_manager()->CreateProfileAsync(
         ProfileManager::GetSystemProfilePath(),
         base::BindRepeating(&ProfilePickerView::OnSystemProfileCreated,
@@ -214,11 +228,12 @@ void ProfilePickerView::OnSystemProfileCreated(
 void ProfilePickerView::Init(ProfilePicker::EntryPoint entry_point,
                              Profile* system_profile) {
   DCHECK_EQ(state_, kInitializing);
-  CreateWebView(system_profile);
-  DCHECK(web_view_);
+  system_profile_contents_ = content::WebContents::Create(
+      content::WebContents::CreateParams(system_profile));
+  system_profile_contents_->SetDelegate(this);
   // To record metrics using javascript, extensions are needed.
   extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      web_view_->GetWebContents());
+      system_profile_contents_.get());
 
   CreateDialogWidget(this, nullptr, nullptr);
 
@@ -230,9 +245,9 @@ void ProfilePickerView::Init(ProfilePicker::EntryPoint entry_point,
       views::HWNDForWidget(GetWidget()));
 #endif
 
-  web_view_->LoadInitialURL(CreateURLForEntryPoint(entry_point));
+  ShowScreen(system_profile_contents_.get(),
+             CreateURLForEntryPoint(entry_point), /*show_toolbar=*/false);
   GetWidget()->Show();
-  web_view_->RequestFocus();
   state_ = kReady;
 
   if (entry_point == ProfilePicker::EntryPoint::kOnStartup) {
@@ -314,22 +329,27 @@ void ProfilePickerView::OnProfileForSigninCreated(
   // make sure the flow does not create multiple profiles simultaneously.
   signed_in_profile_being_created_ = profile;
 
-  // Rebuild the view.
-  // TODO(crbug.com/1126913): Add the simple toolbar with the back button.
-  RemoveAllChildViews(true);
-  CreateWebView(profile);
-  web_view_->LoadInitialURL(GaiaUrls::GetInstance()->signin_chrome_sync_dice());
-  web_view_->RequestFocus();
+  // TODO(crbug.com/1126913): Build the simple toolbar with the back button.
+
+  new_profile_contents_ = content::WebContents::Create(
+      content::WebContents::CreateParams(signed_in_profile_being_created_));
+  new_profile_contents_->SetDelegate(this);
+  ShowScreen(new_profile_contents_.get(),
+             GaiaUrls::GetInstance()->signin_chrome_sync_dice(),
+             /*show_toolbar=*/true);
 }
 
 void ProfilePickerView::SwitchToSyncConfirmation() {
-  // TODO(crbug.com/1126913): Remove the simple toolbar with the back button
-  // (once it is added for the GAIA part).
-  web_view_->LoadInitialURL(GURL(chrome::kChromeUISyncConfirmationURL));
-  web_view_->RequestFocus();
+  // The sync confirmation screen cannot render in the system profile web
+  // contents and thus `new_profile_contents_` is used for this. As there is no
+  // back button on the confirmation screen, the performance of going back to
+  // the signin screen is no concern any more.
+  ShowScreen(new_profile_contents_.get(),
+             GURL(chrome::kChromeUISyncConfirmationURL),
+             /*show_toolbar=*/false);
 
   SyncConfirmationUI* sync_confirmation_ui = static_cast<SyncConfirmationUI*>(
-      web_view_->GetWebContents()->GetWebUI()->GetController());
+      new_profile_contents_->GetWebUI()->GetController());
   sync_confirmation_ui->InitializeMessageHandlerWithProfile(
       signed_in_profile_being_created_);
 }
@@ -433,6 +453,42 @@ void ProfilePickerView::AddNewContents(
   Navigate(&params);
 }
 
+void ProfilePickerView::BuildLayout() {
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
+      .SetDefault(
+          views::kFlexBehaviorKey,
+          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                                   views::MaximumFlexSizeRule::kUnbounded));
+
+  auto toolbar = std::make_unique<views::View>();
+  toolbar->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kPreferred));
+  toolbar_ = AddChildView(std::move(toolbar));
+
+  auto web_view = std::make_unique<views::WebView>();
+  web_view->set_allow_accelerators(true);
+  web_view_ = AddChildView(std::move(web_view));
+}
+
+void ProfilePickerView::ShowScreen(content::WebContents* contents,
+                                   const GURL& url,
+                                   bool show_toolbar) {
+  contents->GetController().LoadURL(url, content::Referrer(),
+                                    ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                    std::string());
+  web_view_->SetWebContents(contents);
+  web_view_->RequestFocus();
+
+  // Change visibility of the toolbar after swapping wc in `web_view_` to make
+  // it easier for tests to detect changing of the screen.
+  toolbar_->SetVisible(show_toolbar);
+}
+
 void ProfilePickerView::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
   DCHECK(!account_info.IsEmpty());
@@ -445,7 +501,8 @@ void ProfilePickerView::OnRefreshTokenUpdatedForAccount(
   // any glitches of the redirect page getting displayed. This is needed because
   // in some cases (such as managed signed-in), there are further delays before
   // any follow-up UI is shown.
-  web_view_->LoadInitialURL(GURL(url::kAboutBlankURL));
+  ShowScreen(new_profile_contents_.get(), GURL(url::kAboutBlankURL),
+             /*show_toolbar=*/true);
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
@@ -602,15 +659,4 @@ void ProfilePickerView::ConfigureAccelerators() {
     }
   }
 #endif  // OS_MAC
-}
-
-void ProfilePickerView::CreateWebView(Profile* profile) {
-  auto web_view = std::make_unique<views::WebView>(profile);
-  web_view->GetWebContents()->SetDelegate(this);
-  web_view->set_allow_accelerators(true);
-  // Set the member before adding to the hieararchy to make it easier for tests
-  // to detect that a new WebView has been created.
-  web_view_ = web_view.get();
-  AddChildView(std::move(web_view));
-  SetLayoutManager(std::make_unique<views::FillLayout>());
 }

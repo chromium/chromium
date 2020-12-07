@@ -21,6 +21,7 @@ class Browser;
 namespace content {
 struct ContextMenuParams;
 class RenderFrameHost;
+class WebContents;
 }  // namespace content
 
 // Dialog widget that contains the Desktop Profile picker webui.
@@ -94,6 +95,14 @@ class ProfilePickerView : public views::DialogDelegateView,
       const CoreAccountInfo& account_info) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& account_info) override;
 
+  // Builds the views hieararchy.
+  void BuildLayout();
+
+  // Shows a screen with `url` in `contents` and potentially `show_toolbar`.
+  void ShowScreen(content::WebContents* contents,
+                  const GURL& url,
+                  bool show_toolbar);
+
   // Helper functions to deal with the lack of extended account info.
   void SetExtendedAccountInfoTimeoutForTesting(base::TimeDelta timeout);
   void OnExtendedAccountInfoTimeout(const std::string& email);
@@ -113,9 +122,6 @@ class ProfilePickerView : public views::DialogDelegateView,
   // on Windows).
   void ConfigureAccelerators();
 
-  // Creates and configures the internal web view, and adds it as a child view.
-  void CreateWebView(Profile* profile);
-
   ScopedKeepAlive keep_alive_;
   State state_ = State::kNotStarted;
 
@@ -125,12 +131,20 @@ class ProfilePickerView : public views::DialogDelegateView,
   // Handler for unhandled key events from renderer.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
-  // The current WebView object, owned by the view hierarchy.
+  // Views, owned by the view hierarchy.
+  views::View* toolbar_ = nullptr;
   views::WebView* web_view_ = nullptr;
+
+  // The web contents backed by the system profile. This is used for displaying
+  // the WebUI pages.
+  std::unique_ptr<content::WebContents> system_profile_contents_;
 
   // Assigned a value at the beginning of a signed-in profile creation flow,
   // until the end of the flow (i.e. for the rest of the lifetime of this view).
   Profile* signed_in_profile_being_created_ = nullptr;
+  // The web contents backed by `signed_in_profile_being_created_`, with the
+  // same lifetime. This is used for displaying the sign-in flow.
+  std::unique_ptr<content::WebContents> new_profile_contents_;
 
   base::string16 name_for_signed_in_profile_;
   base::OnceClosure on_profile_name_available_;
