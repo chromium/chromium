@@ -142,7 +142,7 @@ void DrmThread::CreateBuffer(gfx::AcceleratedWidget widget,
   std::vector<uint64_t> modifiers;
   if (window && window->GetController() && !(flags & GBM_BO_USE_LINEAR) &&
       !(client_flags & GbmPixmap::kFlagNoModifiers)) {
-    modifiers = window->GetController()->GetFormatModifiers(fourcc_format);
+    modifiers = window->GetController()->GetSupportedModifiers(fourcc_format);
   }
 
   CreateBufferWithGbmFlags(drm, fourcc_format, size, framebuffer_size, flags,
