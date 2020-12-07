@@ -4,11 +4,11 @@
 
 #include "chrome/browser/password_manager/android/save_password_message_delegate.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
-#include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -63,18 +63,25 @@ void SavePasswordMessageDelegate::CreateMessage(
       base::BindOnce(&SavePasswordMessageDelegate::HandleDismissCallback,
                      base::Unretained(this)));
 
-  PasswordTitleType type =
-      form_to_save_->GetPendingCredentials().federation_origin.opaque()
-          ? PasswordTitleType::SAVE_PASSWORD
-          : PasswordTitleType::SAVE_ACCOUNT;
+  const password_manager::PasswordForm& pending_credentials =
+      form_to_save_->GetPendingCredentials();
 
-  message_->SetTitle(GetSavePasswordDialogTitleText(
-      web_contents_->GetVisibleURL(),
-      url::Origin::Create(form_to_save_->GetURL()), type));
-  if (type == PasswordTitleType::SAVE_PASSWORD && is_saving_google_account) {
-    message_->SetDescription(
-        l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD_FOOTER));
+  int title_message_id = 0;
+  if (!pending_credentials.federation_origin.opaque()) {
+    title_message_id = is_saving_google_account ? IDS_SAVE_ACCOUNT_TO_GOOGLE
+                                                : IDS_SAVE_ACCOUNT;
+  } else {
+    title_message_id = is_saving_google_account ? IDS_SAVE_PASSWORD_TO_GOOGLE
+                                                : IDS_SAVE_PASSWORD;
   }
+
+  message_->SetTitle(l10n_util::GetStringUTF16(title_message_id));
+
+  base::string16 description = pending_credentials.username_value;
+  description.append(base::ASCIIToUTF16(" "))
+      .append(pending_credentials.password_value.size(), L'•');
+  message_->SetDescription(description);
+
   message_->SetPrimaryButtonText(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_SAVE_BUTTON));
   message_->SetIconResourceId(
