@@ -123,7 +123,8 @@ BOOL WaitForHistoryToDisappear() {
 
 // Tests the metrics are reported correctly.
 - (void)testNTPMetrics {
-  self.testServer->RegisterRequestHandler(base::Bind(&StandardResponse));
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL pageURL = self.testServer->GetURL(kPageURL);
   [ChromeEarlGrey closeAllTabs];

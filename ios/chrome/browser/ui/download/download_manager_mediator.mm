@@ -127,9 +127,10 @@ void DownloadManagerMediator::UpdateConsumer() {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
         {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::Bind(base::PathExists, download_path_),
-        base::Bind(&DownloadManagerMediator::MoveToUserDocumentsIfFileExists,
-                   weak_ptr_factory_.GetWeakPtr(), download_path_));
+        base::BindOnce(base::PathExists, download_path_),
+        base::BindOnce(
+            &DownloadManagerMediator::MoveToUserDocumentsIfFileExists,
+            weak_ptr_factory_.GetWeakPtr(), download_path_));
   }
 
   if (state == kDownloadManagerStateSucceeded && !IsGoogleDriveAppInstalled()) {
