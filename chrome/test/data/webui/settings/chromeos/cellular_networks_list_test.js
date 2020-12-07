@@ -50,18 +50,34 @@ suite('CellularNetworkList', function() {
   }
 
   test('Tether plus cellular', async () => {
+    const eSimNetwork1 = OncMojo.getDefaultNetworkState(
+        mojom.NetworkType.kCellular, 'cellular_esim1');
+    const eSimNetwork2 = OncMojo.getDefaultNetworkState(
+        mojom.NetworkType.kCellular, 'cellular_esim2');
     setNetworksForTest(mojom.NetworkType.kCellular, [
       OncMojo.getDefaultNetworkState(mojom.NetworkType.kCellular, 'cellular1'),
       OncMojo.getDefaultNetworkState(mojom.NetworkType.kCellular, 'cellular2'),
+      eSimNetwork1,
+      eSimNetwork2,
       OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1'),
       OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether2'),
     ]);
-    Polymer.dom.flush();
+
+    const eSimManagedProperties1 = OncMojo.getDefaultManagedProperties(
+        mojom.NetworkType.kCellular, eSimNetwork1.guid, eSimNetwork1.name);
+    const eSimManagedProperties2 = OncMojo.getDefaultManagedProperties(
+        mojom.NetworkType.kCellular, eSimNetwork2.guid, eSimNetwork2.name);
+    eSimManagedProperties1.typeProperties.cellular.eid =
+        '11111111111111111111111111111111';
+    eSimManagedProperties2.typeProperties.cellular.eid =
+        '22222222222222222222222222222222';
+    mojoApi_.setManagedPropertiesForTest(eSimManagedProperties1);
+    mojoApi_.setManagedPropertiesForTest(eSimManagedProperties2);
 
     await flushAsync();
 
-    assertEquals(2, cellularNetworkList.pSimNetworks_.length);
-    assertEquals(2, cellularNetworkList.tetherNetworks_.length);
+    const eSimNetworkList = cellularNetworkList.$$('#esimNetworkList');
+    assertTrue(!!eSimNetworkList);
 
     const pSimNetworkList = cellularNetworkList.$$('#psimNetworkList');
     assertTrue(!!pSimNetworkList);
@@ -69,6 +85,7 @@ suite('CellularNetworkList', function() {
     const tetherNetworkList = cellularNetworkList.$$('#tetherNetworkList');
     assertTrue(!!tetherNetworkList);
 
+    assertEquals(2, eSimNetworkList.networks.length);
     assertEquals(2, pSimNetworkList.networks.length);
     assertEquals(2, tetherNetworkList.networks.length);
   });
@@ -109,6 +126,7 @@ suite('CellularNetworkList', function() {
             pSimCellularEvent.detail.pageName,
             cellularSetup.CellularSetupPageName.PSIM_FLOW_UI);
       });
+
   test('Show EID and QR code popup', async () => {
     let eidPopup = cellularNetworkList.$$('.eid-popup');
     assertFalse(!!eidPopup);

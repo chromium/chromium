@@ -24,7 +24,7 @@ Polymer({
       value() {
         return [];
       },
-      observer: 'networksListChange_',
+      observer: 'onNetworksListChanged_',
     },
 
     /**
@@ -85,33 +85,50 @@ Polymer({
     'close-eid-popup': 'toggleEidPopup_',
   },
 
+  /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
+  networkConfig_: null,
+
+  /** @override */
+  created() {
+    this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
+                              .getMojoServiceRemote();
+  },
+
   /**
    * @private
    */
-  networksListChange_() {
+  async onNetworksListChanged_() {
     const mojom = chromeos.networkConfig.mojom;
 
     const pSimNetworks = [];
     const eSimNetworks = [];
     const tetherNetworks = [];
 
-
     for (const network of this.networks) {
-      if (network.eid) {
-        eSimNetworks.push(network);
-        continue;
-      }
       if (network.type === mojom.NetworkType.kTether) {
         tetherNetworks.push(network);
         continue;
       }
-      pSimNetworks.push(network);
+
+      const managedPropertiesResponse =
+          await this.networkConfig_.getManagedProperties(network.guid);
+      if (!managedPropertiesResponse || !managedPropertiesResponse.result) {
+        console.error(
+            'Unable to get managed properties for network. guid=',
+            network.guid);
+        continue;
+      }
+
+      if (managedPropertiesResponse.result.typeProperties.cellular.eid) {
+        eSimNetworks.push(network);
+      } else {
+        pSimNetworks.push(network);
+      }
     }
     this.eSimNetworks_ = eSimNetworks;
     this.pSimNetworks_ = pSimNetworks;
     this.tetherNetworks_ = tetherNetworks;
   },
-
 
   /**
    * @param {!Array<!OncMojo.NetworkStateProperties>} list
