@@ -110,8 +110,8 @@ class PermissionRequestManager
   bool ShouldCurrentRequestUseQuietUI() const;
 
   // If |ShouldCurrentRequestUseQuietUI| return true, this will provide a reason
-  // as to why the quiet UI needs to be used.
-  QuietUiReason ReasonForUsingQuietUi() const;
+  // as to why the quiet UI needs to be used. Returns `base::nullopt` otherwise.
+  base::Optional<QuietUiReason> ReasonForUsingQuietUi() const;
 
   bool IsRequestInProgress() const;
 

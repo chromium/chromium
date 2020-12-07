@@ -558,8 +558,9 @@ void PermissionRequestManager::ShowBubble() {
   if (!current_request_already_displayed_) {
     PermissionUmaUtil::PermissionPromptShown(requests_);
 
-    if (ShouldCurrentRequestUseQuietUI()) {
-      switch (ReasonForUsingQuietUi()) {
+    auto quiet_ui_reason = ReasonForUsingQuietUi();
+    if (quiet_ui_reason) {
+      switch (*quiet_ui_reason) {
         case QuietUiReason::kEnabledInPrefs:
         case QuietUiReason::kTriggeredByCrowdDeny:
         case QuietUiReason::kPredictedVeryUnlikelyGrant:
@@ -752,17 +753,17 @@ void PermissionRequestManager::RemoveObserver(Observer* observer) {
 }
 
 bool PermissionRequestManager::ShouldCurrentRequestUseQuietUI() const {
-  if (!IsRequestInProgress())
-    return false;
-
   // ContentSettingImageModel might call into this method if the user switches
   // between tabs while the |notification_permission_ui_selectors_| are pending.
-  return current_request_ui_to_use_ &&
-         current_request_ui_to_use_->quiet_ui_reason;
+  return ReasonForUsingQuietUi() != base::nullopt;
 }
 
-PermissionRequestManager::QuietUiReason
+base::Optional<PermissionRequestManager::QuietUiReason>
 PermissionRequestManager::ReasonForUsingQuietUi() const {
+  if (!IsRequestInProgress() || !current_request_ui_to_use_ ||
+      !current_request_ui_to_use_->quiet_ui_reason)
+    return base::nullopt;
+
   return *(current_request_ui_to_use_->quiet_ui_reason);
 }
 
@@ -840,11 +841,10 @@ PermissionRequestManager::DetermineCurrentRequestUIDispositionForUMA() {
 
 PermissionPromptDispositionReason
 PermissionRequestManager::DetermineCurrentRequestUIDispositionReasonForUMA() {
-  if (!ShouldCurrentRequestUseQuietUI()) {
+  auto quiet_ui_reason = ReasonForUsingQuietUi();
+  if (!quiet_ui_reason)
     return PermissionPromptDispositionReason::DEFAULT_FALLBACK;
-  }
-
-  switch (ReasonForUsingQuietUi()) {
+  switch (*quiet_ui_reason) {
     case QuietUiReason::kEnabledInPrefs:
       return PermissionPromptDispositionReason::USER_PREFERENCE_IN_SETTINGS;
     case QuietUiReason::kTriggeredByCrowdDeny:

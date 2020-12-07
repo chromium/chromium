@@ -1498,9 +1498,10 @@ ContentSettingNotificationsBubbleModel::ContentSettingNotificationsBubbleModel(
   // the correct PermissionRequestManager state. Fix that.
   permissions::PermissionRequestManager* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
-  if (!manager->ShouldCurrentRequestUseQuietUI())
+  auto quiet_ui_reason = manager->ReasonForUsingQuietUi();
+  if (!quiet_ui_reason)
     return;
-  switch (manager->ReasonForUsingQuietUi()) {
+  switch (*quiet_ui_reason) {
     case QuietUiReason::kEnabledInPrefs:
     case QuietUiReason::kPredictedVeryUnlikelyGrant:
       set_message(l10n_util::GetStringUTF16(
@@ -1563,8 +1564,9 @@ void ContentSettingNotificationsBubbleModel::OnDoneButtonClicked() {
   permissions::PermissionRequestManager* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents());
 
-  DCHECK(manager->ShouldCurrentRequestUseQuietUI());
-  switch (manager->ReasonForUsingQuietUi()) {
+  auto quiet_ui_reason = manager->ReasonForUsingQuietUi();
+  DCHECK(quiet_ui_reason);
+  switch (*quiet_ui_reason) {
     case QuietUiReason::kEnabledInPrefs:
     case QuietUiReason::kTriggeredByCrowdDeny:
     case QuietUiReason::kPredictedVeryUnlikelyGrant:
@@ -1585,7 +1587,10 @@ void ContentSettingNotificationsBubbleModel::OnCancelButtonClicked() {
   permissions::PermissionRequestManager* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents());
 
-  switch (manager->ReasonForUsingQuietUi()) {
+  auto quiet_ui_reason = manager->ReasonForUsingQuietUi();
+  if (!quiet_ui_reason)
+    return;
+  switch (*quiet_ui_reason) {
     case QuietUiReason::kEnabledInPrefs:
     case QuietUiReason::kTriggeredByCrowdDeny:
     case QuietUiReason::kPredictedVeryUnlikelyGrant:

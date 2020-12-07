@@ -3,13 +3,17 @@
 // found in the LICENSE file.
 
 #include "components/permissions/notification_permission_ui_selector.h"
+#include "base/optional.h"
 
 namespace permissions {
 
 // static
 bool NotificationPermissionUiSelector::ShouldSuppressAnimation(
-    QuietUiReason reason) {
-  switch (reason) {
+    base::Optional<QuietUiReason> reason) {
+  if (!reason)
+    return true;
+
+  switch (*reason) {
     case QuietUiReason::kEnabledInPrefs:
     case QuietUiReason::kPredictedVeryUnlikelyGrant:
       return false;
