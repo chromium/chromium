@@ -1693,7 +1693,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
 // Test that scrolling a nested out-of-process iframe bubbles unused scroll
 // delta to a parent frame.
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollBubblingFromOOPIFTest) {
+// Flaky on all platforms: https://crbug.com/1148741
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       DISABLED_ScrollBubblingFromOOPIFTest) {
   ScrollBubblingProxyObserver scroll_bubbling_proxy_observer;
 
   ui::GestureConfiguration::GetInstance()->set_scroll_debounce_interval_in_ms(
