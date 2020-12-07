@@ -1,0 +1,7 @@
+monorail {
+  component: "Blink>PerformanceAPIs>NavigationTiming"
+}
+team_email: "loading-dev@chromium.org"
+wpt {
+  notify: YES
+}
