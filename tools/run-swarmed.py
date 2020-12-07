@@ -110,7 +110,7 @@ def _Spawn(args):
     if os.path.isfile(filter_file):
       runner_args.append('--test-launcher-filter-file=../../' + filter_file)
 
-  trigger_args.extend(['--relative-cwd', args.out_dir, '--raw-cmd', '--'])
+  trigger_args.extend(['--relative-cwd', args.out_dir, '--'])
   trigger_args.extend(swarming_command)
   trigger_args.extend(runner_args)
 
