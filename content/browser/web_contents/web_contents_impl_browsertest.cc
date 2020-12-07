@@ -3522,7 +3522,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_EQ(main_frame, web_contents->current_fullscreen_frame_);
 }
 
-IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, PropagateFullscreenOptions) {
+// Disabled due to flakiness: https://crbug.com/1154612.
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       DISABLED_PropagateFullscreenOptions) {
   ASSERT_TRUE(embedded_test_server()->Start());
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
