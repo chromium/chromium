@@ -100,6 +100,9 @@ cr.define('settings', function() {
       showStartup_: Boolean,
 
       /** @private */
+      showKerberosSection_: Boolean,
+
+      /** @private */
       lastSearchQuery_: {
         type: String,
         value: '',
@@ -177,6 +180,12 @@ cr.define('settings', function() {
       this.showToolbar_ = !loadTimeData.getBoolean('isKioskModeActive');
       this.showReset_ = loadTimeData.getBoolean('allowPowerwash');
       this.showStartup_ = loadTimeData.getBoolean('showStartup');
+
+      this.showKerberosSection_ =
+          loadTimeData.valueExists('isKerberosEnabled') &&
+          loadTimeData.getBoolean('isKerberosEnabled') &&
+          loadTimeData.valueExists('isKerberosSettingsSectionEnabled') &&
+          loadTimeData.getBoolean('isKerberosSettingsSectionEnabled');
 
       this.addEventListener('show-container', () => {
         this.$.container.style.visibility = 'visible';

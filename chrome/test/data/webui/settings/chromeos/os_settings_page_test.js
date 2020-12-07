@@ -18,6 +18,9 @@ suite('OSSettingsPage', function() {
     settingsPage = settingsMain.$$('os-settings-page');
     assertTrue(!!settingsPage);
 
+    // Simulate Kerberos settings section enabled.
+    settingsPage.showKerberosSection = true;
+
     const idleRender =
         settingsMain.$$('os-settings-page').$$('settings-idle-load');
     assert(!!idleRender);
@@ -66,7 +69,7 @@ suite('OSSettingsPage', function() {
 
   test('Basic sections', function() {
     const sectionNames = [
-      'internet', 'bluetooth', 'multidevice', 'osPeople', 'device',
+      'internet', 'bluetooth', 'multidevice', 'osPeople', 'kerberos', 'device',
       'personalization', 'osSearch', 'apps'
     ];
 
@@ -114,8 +117,9 @@ suite('OSSettingsPage', function() {
     }
 
     const visibleSections = [
-      'internet', 'bluetooth', 'device', 'osSearch', 'apps', 'osPrivacy',
-      'osLanguages', 'files', 'osReset', 'dateTime', 'osAccessibility'
+      'internet', 'bluetooth', 'kerberos', 'device', 'osSearch', 'apps',
+      'osPrivacy', 'osLanguages', 'files', 'osReset', 'dateTime',
+      'osAccessibility'
     ];
     for (const name of visibleSections) {
       const section = settingsPage.shadowRoot.querySelector(

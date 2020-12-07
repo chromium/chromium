@@ -22,6 +22,7 @@
 <link rel="import" href="../../router.html">
 <link rel="import" href="../device_page/device_page.html">
 <link rel="import" href="../internet_page/internet_page.html">
+<link rel="import" href="../kerberos_page/kerberos_page.html">
 <link rel="import" href="../multidevice_page/multidevice_page.html">
 <link rel="import" href="../on_startup_page/on_startup_page.html">
 
@@ -159,6 +160,12 @@
             <os-settings-people-page prefs="{{prefs}}"
                 page-visibility="[[pageVisibility]]">
             </os-settings-people-page>
+          </settings-section>
+        </template>
+        <template is="dom-if" if="[[showKerberosSection]]" restamp>
+          <settings-section page-title="$i18n{kerberosPageTitle}"
+              section="kerberos">
+            <settings-kerberos-page></settings-kerberos-page>
           </settings-section>
         </template>
         <settings-section page-title="$i18n{devicePageTitle}"

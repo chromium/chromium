@@ -87,6 +87,8 @@ Polymer({
 
     showStartup: Boolean,
 
+    showKerberosSection: Boolean,
+
     havePlayStoreApp: Boolean,
   },
 

@@ -35,6 +35,8 @@ Polymer({
 
     showStartup: Boolean,
 
+    showKerberosSection: Boolean,
+
     allowCrostini_: Boolean,
 
     havePlayStoreApp: Boolean,

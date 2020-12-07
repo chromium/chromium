@@ -119,6 +119,21 @@ cr.define('settings', function() {
           Subpage.kKerberosAccounts);
     }
 
+    const isKerberosEnabled = loadTimeData.valueExists('isKerberosEnabled') &&
+        loadTimeData.getBoolean('isKerberosEnabled');
+    const isKerberosSettingsSectionEnabled =
+        loadTimeData.valueExists('isKerberosSettingsSectionEnabled') &&
+        loadTimeData.getBoolean('isKerberosSettingsSectionEnabled');
+
+    // Kerberos section.
+    if (isKerberosEnabled && isKerberosSettingsSectionEnabled) {
+      r.KERBEROS = createSection(
+          r.BASIC, mojom.KERBEROS_SECTION_PATH, Section.kKerberos);
+      r.KERBEROS_ACCOUNTS_V2 = createSubpage(
+          r.KERBEROS, mojom.KERBEROS_ACCOUNTS_V2_SUBPAGE_PATH,
+          Subpage.kKerberosAccountsV2);
+    }
+
     // Device section.
     r.DEVICE =
         createSection(r.BASIC, mojom.DEVICE_SECTION_PATH, Section.kDevice);

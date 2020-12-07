@@ -34,6 +34,7 @@ Polymer({
 
     showReset: Boolean,
 
+    showKerberosSection: Boolean,
   },
 
   /** @param {!settings.Route} newRoute */

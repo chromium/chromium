@@ -1088,11 +1088,29 @@ var OSSettingsCellularSetupDialogTest =
   }
 };
 
-TEST_F(
-    'OSSettingsCellularSetupDialogTest', 'CellularSetupDialog',
-    () => {
-      mocha.run();
-    });
+TEST_F('OSSettingsCellularSetupDialogTest', 'CellularSetupDialog', () => {
+  mocha.run();
+});
+
+// Tests for the Kerberos section.
+// eslint-disable-next-line no-var
+var OSSettingsKerberosPageTest = class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload + 'chromeos/kerberos_page/kerberos_page.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      'kerberos_page_test.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsKerberosPageTest', 'AllJsTests', () => {
+  mocha.run();
+});
 
 // Test fixture for the main settings page.
 // eslint-disable-next-line no-var

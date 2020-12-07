@@ -57,6 +57,7 @@ js_modulizer("modulize") {
     "internet_known_networks_page_tests.js",
     "internet_page_tests.js",
     "internet_subpage_tests.js",
+    "kerberos_page_test.js",
     "localized_link_test.js",
     "multidevice_feature_item_tests.js",
     "multidevice_feature_toggle_tests.js",

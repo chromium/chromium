@@ -1,0 +1,53 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+import("../os_settings.gni")
+
+js_type_check("closure_compile") {
+  deps = [ ":kerberos_page" ]
+}
+
+js_library("kerberos_page") {
+  deps = [
+    "..:os_route",
+    "../..:router",
+    "../../settings_page:settings_animated_pages",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/js:web_ui_listener_behavior",
+  ]
+}
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [ ":kerberos_page.m" ]
+}
+
+js_library("kerberos_page.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/kerberos_page/kerberos_page.m.js" ]
+  deps = [
+    "..:os_route.m",
+    "../..:router.m",
+    "../../settings_page:settings_animated_pages.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
+  extra_deps = [ ":kerberos_page_module" ]
+}
+
+group("polymer3_elements") {
+  public_deps = [ ":kerberos_page_module" ]
+}
+
+polymer_modulizer("kerberos_page") {
+  js_file = "kerberos_page.js"
+  html_file = "kerberos_page.html"
+  html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports = os_settings_auto_imports
+}

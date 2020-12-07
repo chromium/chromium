@@ -146,6 +146,7 @@ TEST_F(
  ['InternetKnownNetworksPage', 'internet_known_networks_page_tests.m.js'],
  ['InternetSubpage', 'internet_subpage_tests.m.js'],
  ['InternetPage', 'internet_page_tests.m.js'],
+ ['KerberosPage', 'kerberos_page_test.m.js'],
  ['LocalizedLink', 'localized_link_test.m.js'],
  ['MultideviceFeatureItem', 'multidevice_feature_item_tests.m.js'],
  ['MultideviceFeatureToggle', 'multidevice_feature_toggle_tests.m.js'],

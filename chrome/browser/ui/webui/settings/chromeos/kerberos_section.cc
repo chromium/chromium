@@ -53,8 +53,8 @@ KerberosSection::~KerberosSection() {
 }
 
 void KerberosSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  // TODO(fsandrade): add Kerberos section title to corresponding UI element,
-  // when it's created.
+  html_source->AddLocalizedString("kerberosPageTitle",
+                                  IDS_OS_SETTINGS_KERBEROS);
 
   KerberosAccountsHandler::AddLoadTimeKerberosStrings(
       html_source, kerberos_credentials_manager_);
