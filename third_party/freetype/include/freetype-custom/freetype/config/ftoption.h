@@ -447,7 +447,7 @@ FT_BEGIN_HEADER
    *
    *   This option needs a C99 compiler.
    */
-/* #define FT_LOGGING */
+/* #define FT_DEBUG_LOGGING */
 
 
   /**************************************************************************
