@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">檔案</translation>
 <translation id="1297922636971898492">「Google 雲端硬碟」目前無法提供服務。一旦「Google 雲端硬碟」恢復正常，上載操作將會自動重新啟動。</translation>
 <translation id="1307931752636661898">無法查看 Linux 檔案</translation>
-<translation id="1338950911836659113">刪除中…</translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1351692861129622852">正在匯入 <ph name="FILE_COUNT" /> 份文件…</translation>
 <translation id="1358735829858566124">檔案或目錄無法使用。</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">列印</translation>
 <translation id="1435838927755162558">與 Parallels Desktop 共用資料夾</translation>
 <translation id="1439494416798956626">已移至「<ph name="FOLDER_NAME" />」。</translation>
-<translation id="1464724975715666883">發生 1 個錯誤。</translation>
 <translation id="1467432559032391204">向左</translation>
 <translation id="1471718551822868769">斯洛伐克文</translation>
 <translation id="1474339897586437869">尚未上載 <ph name="FILENAME" />。「Google 雲端硬碟」沒有足夠空間。</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">愛沙尼亞文</translation>
 <translation id="3466147780910026086">正在掃描媒體裝置…</translation>
 <translation id="3468522857997926824">已備份 <ph name="FILE_COUNT" /> 張相片至「<ph name="BEGIN_LINK" />Google 雲端硬碟<ph name="END_LINK" />」</translation>
-<translation id="3470502288861289375">複製中…</translation>
 <translation id="3473378059788601120">已複製到「<ph name="FOLDER_NAME" />」。</translation>
 <translation id="3475447146579922140">Google 試算表</translation>
 <translation id="3486821258960016770">蒙古文</translation>
-<translation id="3495304270784461826">發生 <ph name="COUNT" /> 個錯誤。</translation>
 <translation id="3522708245912499433">葡萄牙文</translation>
 <translation id="3524311639100184459">注意：系統可能會自動刪除這些暫存檔案，以釋放磁碟空間。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">資料夾</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">立陶宛文</translation>
 <translation id="3603385196401704894">加拿大法語</translation>
 <translation id="3606220979431771195">土耳其文 F 型</translation>
-<translation id="3609785682760573515">同步處理中…</translation>
 <translation id="3616113530831147358">音效檔案</translation>
 <translation id="3619115746895587757">泡沫咖啡</translation>
 <translation id="3620292326130836921">已全部備份！</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">密碼</translation>
 <translation id="6673674183150363784">法文 (法國)，BÉPO 鍵盤</translation>
 <translation id="6710213216561001401">上一個</translation>
-<translation id="6718273304615422081">壓縮中…</translation>
 <translation id="6751256176799620176">已選取 1 個資料夾</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6795884519221689054">熊貓</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">檔案清單改咗做縮圖檢視模式。</translation>
 <translation id="8601932370724196034">Crostini 圖像檔案</translation>
 <translation id="8609695766746872526">冰島文</translation>
-<translation id="8669949407341943408">正在移動…</translation>
 <translation id="8698464937041809063">Google 繪圖</translation>
 <translation id="8712637175834984815">我知道了</translation>
 <translation id="8713112442029511308">馬爾他文</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Linux 檔案</translation>
 <translation id="9035012421917565900">這些項目無法移回「<ph name="DESTINATION_NAME" />」，因此無法復原此操作。</translation>
 <translation id="9038620279323455325">名稱為「<ph name="FILE_NAME" />」的檔案已經存在，請選擇其他名稱。</translation>
-<translation id="9064939804718829769">轉移中…</translation>
 <translation id="9065203028668620118">編輯</translation>
 <translation id="908378762078012445">俄文 (注音 AATSEEL 鍵盤)</translation>
 <translation id="9099674669267916096">頁數</translation>

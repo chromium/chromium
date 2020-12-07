@@ -4694,7 +4694,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="642469772702851743">To napravo (serijska številka: <ph name="SERIAL_NUMBER" />) je zaklenil lastnik.</translation>
 <translation id="6425556984042222041">Hitrost pretvorbe besedila v govor</translation>
 <translation id="6426200009596957090">Odpri nastavitve ChromeVoxa</translation>
-<translation id="642654727595919401">Domena <ph name="DOMAIN" /> zahteva, da varnostno kopirate podatke in vrnete to napravo <ph name="DEVICE_TYPE" /> v enem tednu. <ph name="LINK_BEGIN" />Prikaz podrobnosti<ph name="LINK_END" /></translation>
 <translation id="642729974267661262">Ni dovoljeno predvajanje zvoka</translation>
 <translation id="6428982734197629783">Obdelava slike</translation>
 <translation id="6429384232893414837">Napaka glede posodobitve</translation>
@@ -5570,7 +5569,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7457384018036134905">Upravljanje jezikov v nastavitvah sistema Chrome OS</translation>
 <translation id="7458168200501453431">Uporablja isto preverjanje črkovanja, kot se uporablja v Iskanju Google. Besedilo, ki ga vnesete v brskalniku, je poslano Googlu.</translation>
 <translation id="7460045493116006516">Trenutna tema, ki ste jo namestili</translation>
-<translation id="7461729991508684543">{NUM_DAYS,plural, =1{Domena <ph name="DOMAIN" /> zahteva, da varnostno kopirate podatke in vrnete to napravo <ph name="DEVICE_TYPE" /> še danes.<ph name="LINK_BEGIN" />Prikaz podrobnosti<ph name="LINK_END" />}one{Domena <ph name="DOMAIN" /> zahteva, da varnostno kopirate podatke in vrnete to napravo <ph name="DEVICE_TYPE" /> v {NUM_DAYS} dnevu.<ph name="LINK_BEGIN" />Prikaz podrobnosti<ph name="LINK_END" />}two{Domena <ph name="DOMAIN" /> zahteva, da varnostno kopirate podatke in vrnete to napravo <ph name="DEVICE_TYPE" /> v {NUM_DAYS} dnevih.<ph name="LINK_BEGIN" />Prikaz podrobnosti<ph name="LINK_END" />}few{Domena <ph name="DOMAIN" /> zahteva, da varnostno kopirate podatke in vrnete to napravo <ph name="DEVICE_TYPE" /> v {NUM_DAYS} dnevih.<ph name="LINK_BEGIN" />Prikaz podrobnosti<ph name="LINK_END" />}other{Domena <ph name="DOMAIN" /> zahteva, da varnostno kopirate podatke in vrnete to napravo <ph name="DEVICE_TYPE" /> v {NUM_DAYS} dnevih.<ph name="LINK_BEGIN" />Prikaz podrobnosti<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">Pripni</translation>
 <translation id="746216226901520237">Naslednjič bo telefon odklenil napravo <ph name="DEVICE_TYPE" />. Funkcijo Smart Lock lahko izklopite v nastavitvah.</translation>
 <translation id="7463006580194749499">Dodaj osebo</translation>
@@ -6262,7 +6260,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8226619461731305576">Čakalna vrsta</translation>
 <translation id="8226628635270268143">Izberite priljubljene fotografije in albume</translation>
 <translation id="8227119283605456246">Prilaganje datoteke</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">Želite shraniti geslo za <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Pomagajte našim tehnikom odpraviti to težavo. Opišite, kaj se je zgodilo, tik preden se je prikazalo sporočilo o napaki profila:</translation>
 <translation id="8236917170563564587">Deli ta zavihek</translation>

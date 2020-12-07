@@ -83,6 +83,11 @@
 <translation id="1099282607296956954">Ativar o Isolamento de todos os sites</translation>
 <translation id="1117535567637097036">Os gerenciadores de protocolo definidos por esta política não são usados na manipulação de intents do Android.</translation>
 <translation id="1118093128235245168">Permitir que os sites peçam ao usuário para conceder acesso a um dispositivo USB conectado</translation>
+<translation id="1133814529606590009">Se a política for definida como "Ativada", a coleta de dados anônimos inseridos no URL, que envia os URLs das páginas acessadas pelo usuário ao Google para melhorar a pesquisa e navegação, ficará sempre ativa.
+
+      Se a política for definida como "Desativada", não haverá coleta de dados anônimos inseridos no URL.
+
+      Se você definir a política, os usuários não poderão mudá-la. Se não for definida, a coleta de dados anônimos inseridos no URL será feita, mas os usuários poderão mudar isso.</translation>
 <translation id="1138294736309071213">Esta política é ativa somente no modo de varejo. Determina o tempo antes do protetor de tela ser mostrado na tela de login para os dispositivos no modo de varejo. O valor da política deve ser especificado em milésimos de segundos.</translation>
 <translation id="1144540226829648811">Especifica o canal de liberação ao qual este dispositivo precisa ser vinculado.
 
@@ -175,6 +180,13 @@
       Se esta política for deixada sem definição, o Google Sync estará disponível e os usuários poderão escolher usá-lo ou não.
 
       Para desativar o Google Sync completamente, é recomendado desativar os serviços do Google Sync no Google Admin Console.</translation>
+<translation id="128059397544257017">Quando a política for definida como "Ativada", se a <ph name="CHROME_CLEANUP_NAME" /> detectar softwares indesejados, ela poderá enviar o registro da varredura ao Google, de acordo com a política definida por <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. A <ph name="CHROME_CLEANUP_NAME" /> perguntará aos usuários se desejam realizar a varredura. Os resultados serão enviados ao Google.
+
+      Quando a política for definida como "Desativada", se a <ph name="CHROME_CLEANUP_NAME" /> detectar software indesejado, os resultados não serão enviados ao Google, independente do valor de <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. A <ph name="CHROME_CLEANUP_NAME" /> perguntará aos usuários se desejam realizar a varredura. Os resultados não serão enviados ao Google.
+
+      Se a política não for definida, a <ph name="CHROME_CLEANUP_NAME" /> poderá enviar os resultados da varredura de software indesejado ao Google de acordo com a política definida por <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. A <ph name="CHROME_CLEANUP_NAME" /> perguntará aos usuários se querem fazer a varredura e compartilhar os resultados com o Google para ajudar na detecção de software indesejado no futuro. Esses resultados contêm metadados de arquivos, extensões instaladas automaticamente e chaves de registro, conforme descrito no Whitepaper de Privacidade do Chrome.
+
+      No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1290634681382861275">Controla diversas configurações, inclusive USB, Bluetooth, atualização de políticas, modo de desenvolvedor, entre outras.</translation>
 <translation id="1291880496936992484">Atenção: o RC4 será completamente removido de <ph name="PRODUCT_NAME" /> após a versão 52 (por volta de setembro de 2016), e esta política parará de funcionar.
 
@@ -703,6 +715,9 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Se a política não for definida ou se ela for definida como uma lista vazia, nenhum modo de desbloqueio rápido estará disponível nos dispositivos gerenciados.
 
       Esta política está obsoleta. Use a <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" />.</translation>
+<translation id="2033784678146670379">Se a política for definida como "Ativada", os usuários poderão usar o hardware de dispositivos <ph name="PRODUCT_OS_NAME" /> para fazer o atestado remoto da identidade para a Privacy CA usando a <ph name="CHALLENGE_USER_KEY_FUNCTION" /> com a <ph name="ENTERPRISE_PLATFORM_KEYS_API" />.
+
+      Se a política for definida como "Desativada" ou não for definida, as chamadas para a API falharão com um código de erro.</translation>
 <translation id="2036522553891755455">Se a política for definida como "Ativada", a detecção de compartilhamento de arquivos de rede do <ph name="PRODUCT_NAME" /> usará o <ph name="NETBIOS_PROTOCOL" /> para detectar compartilhamentos na rede. Se a política for definida como "Desativada", a detecção de compartilhamentos não usará esse protocolo.
 
       Se a política não for definida, o comportamento ficará desativado por padrão para usuários gerenciados e ativado para outros usuários.</translation>
@@ -732,6 +747,9 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="2082205219176343977">Configurar a versão mínima permitida do Chrome para o dispositivo.</translation>
 <translation id="208566302163036794">Bloquear recursos desativados</translation>
 <translation id="208623333578980446">Permitir wake locks de tela para gerenciamento de energia</translation>
+<translation id="2090939118981888335">Se a política for definida como "Ativada", o proxy de compressão de dados será permitido. Se a política for definida como "Desativada", o proxy não será permitido.
+
+      Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, os usuários poderão escolher como usar o recurso.</translation>
 <translation id="209586405398070749">Canal Stable</translation>
 <translation id="2098658257603918882">Ativar relato de uso e dados relacionados a falhas</translation>
 <translation id="2104418465060359056">Fornecer informações sobre extensões e plug-ins</translation>
@@ -1144,6 +1162,9 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se a política for definida como "Desativada" ou não for definida, essas recomendações não serão exibidas.
 
       Se a política for definida, os usuários não poderão mudá-la.</translation>
+<translation id="2724313944474873275">Se a política for definida como "Ativada" ou deixada sem definição, dispositivos <ph name="PRODUCT_OS_NAME" /> poderão usar atestados remotos (acesso verificado) para receber um certificado emitido pela CA do <ph name="PRODUCT_OS_NAME" />, que declara que o dispositivo está qualificado para reproduzir conteúdo protegido. Esse processo envolve o envio de informações de endosso de hardware para a CA do <ph name="PRODUCT_OS_NAME" /> que identificam de forma exclusiva o dispositivo.
+
+      Se a política for definida como "Desativada", o dispositivo não usará o atestado remoto para proteção de conteúdo e não poderá reproduzir conteúdo protegido.</translation>
 <translation id="2725855586003209701">Se a política for definida como "Ativada" ou não for definida, os dispositivos registrados informarão a lista de usuários que fizeram login recentemente.
 
       Se a política for definida como "Desativada", os dispositivos registrados não informarão a lista de usuários.</translation>
@@ -2112,6 +2133,13 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
 <translation id="4089849819635523136">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> especificará a palavra-chave ou o atalho utilizados na barra de endereço para acionar a pesquisa desse provedor.
 
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> não for definida, nenhuma palavra-chave ativará o provedor de pesquisa.</translation>
+<translation id="409035987613226003">Se a política for definida como "Ativada", os relatórios de uso anônimo e dados de falha do Chrome serão enviados ao Google. Os usuários não poderão mudar isso. Se a política for definida como "Desativada", as informações não serão enviadas ao Google.
+
+      Se você definir a política, os usuários não poderão mudá-la. Se não for definida, os usuários poderão escolher o comportamento durante a instalação ou a primeira execução.
+
+      Esta política está disponível apenas em instâncias do Windows associadas a um domínio do <ph name="MS_AD_NAME" /> ou instâncias do Windows 10 Pro ou Enterprise registradas no gerenciamento de dispositivos e instâncias do macOS gerenciadas via MDM ou associadas a um domínio via MCX.
+
+      Para o Chrome OS, consulte DeviceMetricsReportingEnabled.</translation>
 <translation id="4097556069183835428">Se a política for definida como "Nenhuma", a lupa será desativada.
 
       Se você definir a política, os usuários não poderão mudá-la. Se a política não for definida, a lupa será inicialmente desativada, mas os usuários poderão ativá-la quando quiserem.</translation>
@@ -2475,6 +2503,9 @@ Esta política afeta apenas os usuários que autenticam usando SAML.</translatio
 <translation id="4725528134735324213">Ativar o Android Backup Service</translation>
 <translation id="4725801978265372736">Exigir correspondência entre o nome do usuário local e o proprietário do host de acesso remoto</translation>
 <translation id="4733471537137819387">Políticas relacionadas à autenticação integrada de HTTP.</translation>
+<translation id="4735099388031364207">Se a política for definida como "Ativada", o atestado remoto do dispositivo será permitido. Um certificado será gerado automaticamente e enviado ao Servidor de gerenciamento de dispositivos.
+
+      Se a política for definida como "Desativada" ou deixada sem definição, nenhum certificado será gerado e as chamadas para <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> falharão.</translation>
 <translation id="4742973303930120836">Restringir modo de impressão de gráficos de segundo plano</translation>
 <translation id="4752880493649142945">Certificado de cliente para conexão a RemoteAccessHostTokenValidationUrl</translation>
 <translation id="4757053978738874325">Ativar o recurso de acessibilidade de áudio mono.
@@ -2561,6 +2592,11 @@ Esta política afeta apenas os usuários que autenticam usando SAML.</translatio
 <translation id="489803897780524242">Parâmetro que controla o posicionamento do termo de pesquisa para o provedor de pesquisa padrão</translation>
 <translation id="4899708173828500852">Ativar Navegação segura</translation>
 <translation id="4906194810004762807">Taxa de atualização da Política de dispositivos</translation>
+<translation id="49093841899738146">Se a política for definida como "Ativada", o <ph name="PRODUCT_NAME" /> poderá coletar logs de eventos WebRTC em Serviços do Google (por exemplo, no Hangouts Meet) e fazer upload deles para o Google. Esses registros contêm informações de diagnóstico que são úteis para depurar problemas com chamadas de áudio ou videochamadas no <ph name="PRODUCT_NAME" />, como o horário e o tamanho de pacotes RTP, feedback sobre congestionamento na rede e metadados sobre o tempo e a qualidade de frames de áudio e vídeo. Esses registros não têm conteúdo de áudio ou vídeo da chamada. Por meio de um código de sessão, o Google pode associar esses registros a outros coletados pelo próprio serviço do Google. Isso é feito para facilitar a depuração.
+
+      Se a política for definida como "Desativada", não haverá coleta ou envio dos registros.
+
+      Se a política não for definida em versões até a M76, o <ph name="PRODUCT_NAME" /> terá como padrão não coletar esses registros nem fazer upload deles. A partir da versão M77, o <ph name="PRODUCT_NAME" /> terá como padrão coletar os registros e fazer upload deles da maioria dos perfis afetados por políticas de empresas no nível de usuário baseadas em nuvem. A partir da versão M77 até a M80, o <ph name="PRODUCT_NAME" /> também pode coletar esses registros e fazer upload deles por padrão a partir de perfis afetados pelo gerenciamento local do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4910101362791876581">Especifica quais impressoras o usuário pode usar.
 
       Esta política só será usada se <ph name="PRINTERS_WHITELIST" /> for escolhida para <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />
@@ -2572,6 +2608,9 @@ Esta política afeta apenas os usuários que autenticam usando SAML.</translatio
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4919122295221518724">Ativar tratamento mais rigoroso para conteúdo misto</translation>
 <translation id="4923806312383904642">Permitir que o WebDriver modifique políticas incompatíveis</translation>
+<translation id="4927214690104703256">Definir a política especifica as extensões com permissão para usar as funções <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> para atestado remoto. As extensões precisam estar nesta lista para usar a API.
+
+      Se uma extensão não estiver na lista ou se a lista não for definida, a chamada para a API falhará com um código de erro.</translation>
 <translation id="4927797103413916381">Se <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> não estiver definida como "Desativada", definir <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> como "Ativada" ou deixá-la sem definição impedirá sites com experiências ofensivas de serem abertos em novas janelas ou guias.
 
        Se <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> ou <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> forem definidas como "Desativadas", sites com experiências ofensivas poderão ser abertos em novas janelas ou guias.</translation>
@@ -2681,6 +2720,13 @@ Esta política afeta apenas os usuários que autenticam usando SAML.</translatio
 <translation id="5090209345759901501">Estender a configuração de conteúdo em Flash a todos os conteúdos</translation>
 <translation id="5090791951240382356">Permitir a mescla de políticas de dicionário de diferentes fontes</translation>
 <translation id="5091315650312105069">Permitir autenticação <ph name="BASIC_AUTH" /> para conexões HTTP</translation>
+<translation id="5103112931744164177">Esta política controla qual pilha de software é usada para se comunicar com o servidor DNS: o cliente DNS do sistema operacional ou o cliente DNS integrado do <ph name="PRODUCT_NAME" />. Esta política não afeta qual servidor DNS será usado. Se, por exemplo, o sistema operacional estiver configurado para usar um servidor DNS empresarial, o mesmo servidor será usado pelo cliente DNS integrado. Ela também não controla como o DNS sobre HTTPS é usado. O <ph name="PRODUCT_NAME" /> sempre usará o resolvedor integrado para solicitações DNS sobre HTTPS. Consulte a política <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> para ver informações sobre como controlar o DNS sobre HTTPS.
+
+      Se a política for definida como "Ativada", o cliente DNS integrado será usado, se disponível.
+
+      Se a política for definida como "Desativada", o cliente DNS integrado será usado apenas quando o DNS sobre HTTPS estiver em uso.
+
+      Se esta política não for definida, o cliente de DNS integrado será ativado por padrão no <ph name="MAC_OS_NAME" />, no <ph name="ANDROID_NAME" /> (quando não houver um DNS particular ou uma VPN ativos) e no <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5105313908130842249">Intervalo de bloqueio da tela no funcionamento com energia da bateria</translation>
 <translation id="5108031557082757679">Impressoras empresariais desativadas</translation>
 <translation id="5109383437323376357">Determinar a disponibilidade de variações</translation>
@@ -3552,6 +3598,11 @@ Esta política afeta apenas os usuários que autenticam usando SAML.</translatio
 
       Se esta política não for definida ou a lista estiver vazia, será possível acessar todos os esquemas no <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6338982178236723271">Enviar informações do sistema</translation>
+<translation id="6347363725343851058">Se a política for definida como "Ativada", o modo de segundo plano será ativado. No modo de segundo plano, um processo do <ph name="PRODUCT_NAME" /> será iniciado ao fazer login no SO e continuará em execução quando a última janela do navegador for fechada. Isso permite que apps em segundo plano e a sessão de navegação continuem ativos, incluindo os cookies da sessão. O processo em segundo plano exibirá um ícone na bandeja do sistema, onde poderá ser fechado.
+
+      Se a política for definida como "Desativada", o modo de segundo plano será desativado.
+
+      Se a política for definida, os usuários não poderão mudá-la nas configurações do navegador. Se não for definida, o modo de segundo plano ficará desativado, mas os usuários poderão ativá-lo.</translation>
 <translation id="6353890097388312479">Se a política for definida como "Todos (0)" ou não for definida, os usuários poderão editar as configurações de confiança para todos os certificados de CA, remover certificados importados e importar outros usando o Gerenciador de certificados. Se a política for definida como "Somente usuário (1)", os usuários poderão gerenciar os certificados importados, mas não poderão mudar as configurações de confiança dos certificados integrados. Se ela for definida como "Nenhum (2)", os usuários poderão ver os certificados de CA, mas não gerenciá-los.</translation>
 <translation id="6362856770865555544">Se a política for definida como "Ativada" ou não for definida, a otimização da descoberta automática de proxies da Web (WPAD, na sigla em inglês) será ativada no <ph name="PRODUCT_NAME" />.
 
@@ -3877,6 +3928,9 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="6815483833848348029">Definir a política como "Ativada" ou deixá-la sem definição faz com que o <ph name="PRODUCT_OS_NAME" /> mostre uma solicitação de configuração da rede quando um dispositivo ficar off-line, se uma conta local do dispositivo estiver definida para login automático sem atraso.
 
       A desativação da política faz com que uma mensagem de erro seja exibida.</translation>
+<translation id="6819838337315703072">Se a compatibilidade com apps <ph name="LINUX_OS_NAME" /> estiver ativada, definir a política como "Ativada" enviará informações sobre o uso dos apps <ph name="LINUX_OS_NAME" /> ao servidor.
+
+      Se a política for definida como "Desativada" ou deixada sem definição, as informações de uso não serão enviadas.</translation>
 <translation id="6821268164692776674">Destinos do <ph name="CLOUD_PRINT_NAME" /> e "Salvar no Google Drive"</translation>
 <translation id="6823711520976094072">Definir como menos de 1 MB ou deixar sem definição significa que o <ph name="PRODUCT_OS_NAME" /> usará o tamanho padrão de 256 MB no cache de apps e extensões para instalações feitas por vários usuários em um mesmo dispositivo, evitando a necessidade de um novo download para cada usuário.</translation>
 <translation id="682408981080798691">Se a política for definida como "Ativada" ou não for definida, a integridade do código renderizador será ativada.
@@ -3916,6 +3970,9 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       Esta política está obsoleta. Use a <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="684856667300805181">Esta política foi removida no <ph name="PRODUCT_NAME" /> 68 e substituída por <ph name="ARC_GLS_POLICY_NAME" />.</translation>
+<translation id="6848721032946289937">Se a política for definida como "Ativada" ou deixada sem definição, a aceleração de hardware será ativada, se disponível.
+
+      Se a política for definida como "Desativada", a aceleração de hardware será desativada.</translation>
 <translation id="6851199885688265233">Ativar o recurso de acessibilidade que destaca o cursor</translation>
 <translation id="6851315055469993882">Ativa o cache de autenticação de HTTP com escopo global</translation>
 <translation id="6854767649023671426">Se a política for definida como ativada ou não for definida, o usuário receberá uma solicitação para autorizar a captura de vídeo, exceto para URLs configurados na lista VideoCaptureAllowedUrls.
@@ -4061,6 +4118,9 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="7027785306666625591">Configura o gerenciamento de energia no <ph name="PRODUCT_OS_NAME" />.
 
       Essas políticas permitem configurar a forma como o <ph name="PRODUCT_OS_NAME" /> se comporta quando o usuário permanece inativo por um período de tempo específico.</translation>
+<translation id="7027923238554618852">Se a política for definida, o <ph name="PRODUCT_OS_NAME" /> será instruído a usar a configuração do programador de tarefas identificada pelo nome especificado. A política pode ser definida como <ph name="CONSERVATIVE_VALUE" /> ou <ph name="PERFORMANCE_VALUE" />, o que define o gerenciador de tarefas para máxima estabilidade ou desempenho, respectivamente.
+
+      Se ela não for definida, os usuários poderão escolher como usá-la.</translation>
 <translation id="7030205756530739128">Se <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> for definida como <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, a definição de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> personalizará quando o carregamento da bateria será iniciado, com base na porcentagem de carga da bateria. O valor precisa estar pelo menos 5% abaixo de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Se a política não for definida, o modo padrão de carregamento da bateria será aplicado.</translation>
@@ -4189,6 +4249,11 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="718126088895133062">Esta política especifica o código de licenciamento do usuário do <ph name="PLUGIN_VM_NAME" /> para este dispositivo.</translation>
 <translation id="7185078796915954712">TLS 1.3</translation>
 <translation id="7185630966939835143">Usar um serviço da Web do Google para ajudar a solucionar erros de ortografia</translation>
+<translation id="718850220532931090">Esta política está obsoleta. Use a <ph name="ATTESTATION_EXTENSION_ALLOWLIST_POLICY_NAME" />.
+
+      Definir a política especifica as extensões com permissão para usar a função <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> de <ph name="CHALLENGE_USER_KEY_FUNCTION" /> para atestado remoto. As extensões precisam estar nesta lista para usar a API.
+
+      Se uma extensão não estiver na lista ou se a lista não for definida, a chamada para a API falhará com um código de erro.</translation>
 <translation id="718956142899066210">Tipos de conexão permitidos para atualizações</translation>
 <translation id="7190286937411178540">Ativar o recurso de acessibilidade que destaca o objeto em foco por meio do teclado</translation>
 <translation id="7193489339723768342">Se a política for definida, você especificará a lista de URLs cujos padrões devem corresponder à origem de segurança do URL solicitante. Quando houver correspondência de padrão, o acesso a dispositivos de captura de áudio será permitido sem o envio de uma solicitação ao usuário.
@@ -4981,6 +5046,9 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8357681633047935212">Limitar a duração de uma sessão de usuário</translation>
 <translation id="8357989008292691856">Lista de permissões de login de usuário</translation>
 <translation id="8359734107661430198">Ativar a API ExampleDeprecatedFeature até 02/09/2008</translation>
+<translation id="8367069206652407172">Se a política for definida como "Desativada", os usuários não poderão finalizar processos no gerenciador de tarefas.
+
+      Se a política for definida como "Ativada" ou deixada sem definição, os usuários poderão encerrar processos no gerenciador de tarefas.</translation>
 <translation id="8367209241899435947">Ativa o recurso "Varredura do Chrome" no Windows</translation>
 <translation id="8367473200119029349">Relatórios de nuvem</translation>
 <translation id="8369602308428138533">Intervalo de desligamento da tela no funcionamento com alimentação CA</translation>

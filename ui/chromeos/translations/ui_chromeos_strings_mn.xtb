@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Файлууд</translation>
 <translation id="1297922636971898492">Google Drive одоогоор боломжгүй байна. Google Drive ажиллаж эхлэхэд байршуулалт автоматиар эхэлнэ.</translation>
 <translation id="1307931752636661898">Linux-н файлуудыг харах боломжгүй байна</translation>
-<translation id="1338950911836659113">Устгаж байна...</translation>
 <translation id="1346748346194534595">Баруун</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> файл импорт хийж байна...</translation>
 <translation id="1358735829858566124">Файл болон хадгалалтын сан нь ашиглах боломжгүй байна.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Хэвлэх</translation>
 <translation id="1435838927755162558">Фолдерыг Parallels Desktop-тай хуваалцах</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> руу зөөсөн.</translation>
-<translation id="1464724975715666883">1 алдаа.</translation>
 <translation id="1467432559032391204">Зүүн</translation>
 <translation id="1471718551822868769">Словак</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />"-г байршуулаагүй. Tаны Google Drive-д хангалттай багтаамж алга.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Эстон</translation>
 <translation id="3466147780910026086">Таны төхөөрөмжийг уншиж байна...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> зургийг <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> дээр хадгалсан байна</translation>
-<translation id="3470502288861289375">Хуулж байна ...</translation>
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> руу хуулсан.</translation>
 <translation id="3475447146579922140">Google-ийн хүснэгт</translation>
 <translation id="3486821258960016770">Монгол</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> алдаа.</translation>
 <translation id="3522708245912499433">Португал</translation>
 <translation id="3524311639100184459">Анхааруулга: Эдгээр файл нь түр зуурын файлууд бөгөөд дискийн зайг чөлөөлөхийн тулд автоматаар устгаж болно.  <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Хавтас</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">Литви</translation>
 <translation id="3603385196401704894">Канадын франц хэл</translation>
 <translation id="3606220979431771195">Турк хэлний-F</translation>
-<translation id="3609785682760573515">Sync хийж байна ...</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3620292326130836921">Бүгдийг хадгалсан болно!</translation>
@@ -530,7 +525,6 @@
 <translation id="6657585470893396449">Нууц үг</translation>
 <translation id="6673674183150363784">Bépo гартай франц (Франц)</translation>
 <translation id="6710213216561001401">Өмнөх</translation>
-<translation id="6718273304615422081">Зип болгож байна...</translation>
 <translation id="6751256176799620176">1 фолдер сонгосон</translation>
 <translation id="6790428901817661496">Тоглуулах</translation>
 <translation id="6795884519221689054">Хулсны баавгай</translation>
@@ -730,7 +724,6 @@
 <translation id="8600173386174225982">Файлын жагсаалтыг өнгөц зургаар харах горимд шилжүүлэв.</translation>
 <translation id="8601932370724196034">Crostini зургийн файл</translation>
 <translation id="8609695766746872526">Исланд</translation>
-<translation id="8669949407341943408">Зөөж байна...</translation>
 <translation id="8698464937041809063">Google-ийн зураг</translation>
 <translation id="8712637175834984815">Ойлголоо</translation>
 <translation id="8713112442029511308">Мальта</translation>
@@ -753,7 +746,6 @@
 <translation id="9034924485347205037">Linux-н файл</translation>
 <translation id="9035012421917565900">Зүйлийг буцааж '<ph name="DESTINATION_NAME" />' руу зөөх боломжгүй тул та энэ үйлдлийг буцаах боломжгүй.</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" нэртэй файл аль хэдийн байна. Өөр нэр сонгоно уу.</translation>
-<translation id="9064939804718829769">Шилжүүлж байна...</translation>
 <translation id="9065203028668620118">Засварлах</translation>
 <translation id="908378762078012445">AATSEEL авиа зүйн гартай орос</translation>
 <translation id="9099674669267916096">Хуудасны тоо</translation>

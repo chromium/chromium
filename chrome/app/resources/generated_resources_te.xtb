@@ -4689,7 +4689,6 @@
 <translation id="642469772702851743">ఈ (SN: <ph name="SERIAL_NUMBER" />) పరికరం యజమానిచే లాక్ చేయబడింది.</translation>
 <translation id="6425556984042222041">టెక్ట్స్-టు-స్పీచ్ రేట్</translation>
 <translation id="6426200009596957090">ChromeVox సెట్టింగ్‌లను తెరువు</translation>
-<translation id="642654727595919401"><ph name="DOMAIN" /> కోసం మీరు మీ డేటాను బ్యాకప్ చేసి, 1 వారం లోగా ఈ <ph name="DEVICE_TYPE" />ని రిటర్న్ చేయాలి.<ph name="LINK_BEGIN" />వివరాలను చూడండి<ph name="LINK_END" /></translation>
 <translation id="642729974267661262">శబ్దాన్ని ప్లే చేయడానికి అనుమతించబడలేదు</translation>
 <translation id="6428982734197629783">ఇమేజ్‌ను ప్రాసెస్ చేస్తోంది</translation>
 <translation id="6429384232893414837">అప్‌డేట్‌లో ఎర్రర్</translation>
@@ -5565,7 +5564,6 @@
 <translation id="7457384018036134905">Chrome OS సెట్టింగ్‌లలో భాషలను మేనేజ్ చేయండి</translation>
 <translation id="7458168200501453431">Google Searchలో ఉపయోగించే స్పెల్ చెకర్‌నే ఇక్కడ ఉపయోగిస్తుంది. మీరు బ్రౌజర్‌లో టైప్ చేసే టెక్స్ట్‌ను Googleకు పంపుతుంది.</translation>
 <translation id="7460045493116006516">మీరు ప్రస్తుతం ఇన్‌స్టాల్ చేసుకున్న థీమ్</translation>
-<translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> కోసం మీరు మీ డేటాను బ్యాకప్ చేసి, ఈ <ph name="DEVICE_TYPE" />ని ఈ రోజే రిటర్న్ చేయాల్సి ఉంటుంది.<ph name="LINK_BEGIN" />వివరాలను చూడండి<ph name="LINK_END" />}other{<ph name="DOMAIN" /> కోసం మీరు మీ డేటాను బ్యాకప్ చేసి, ఈ <ph name="DEVICE_TYPE" />ని {NUM_DAYS} రోజులలోపు రిటర్న్ చేయాల్సి ఉంటుంది.<ph name="LINK_BEGIN" />వివరాలను చూడండి<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">పిన్ చేయి</translation>
 <translation id="746216226901520237">తదుపరిసారి మీ ఫోన్ మీ <ph name="DEVICE_TYPE" />‌ను అన్‌లాక్ చేస్తుంది. మీరు సెట్టింగ్‌లలో Smart Lockను ఆఫ్ చేయవచ్చు.</translation>
 <translation id="7463006580194749499">వ్యక్తిని జోడించు</translation>
@@ -6253,7 +6251,6 @@
 <translation id="8226619461731305576">క్రమ వరుస</translation>
 <translation id="8226628635270268143">మీకు ఇష్టమైన ఫోటోలు, ఆల్బమ్‌లను ఎంచుకోండి</translation>
 <translation id="8227119283605456246">ఫైల్‌ను జోడించు</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> కోసం పాస్‌వర్డ్‌ని సేవ్ చేయాలా?</translation>
 <translation id="8234795456569844941">దయచేసి ఈ సమస్యను పరిష్కరించడంలో మా ఇంజినీర్‌లకు సహాయపడండి. ప్రొఫైల్ ఎర్రర్ సందేశం ఎదురయ్యే ముందు ఏమి జరిగిందో మాకు తెలియజేయండి:</translation>
 <translation id="8236917170563564587">బదులుగా, ఈ ట్యాబ్‌ను షేర్ చేయి</translation>

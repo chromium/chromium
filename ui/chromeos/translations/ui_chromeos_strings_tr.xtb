@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Dosyalar</translation>
 <translation id="1297922636971898492">Google Drive şu anda kullanılamıyor. Google Drive tekrar kullanılabilir olduğunda yükleme işlemi otomatik olarak yeniden başlayacak.</translation>
 <translation id="1307931752636661898">Linux dosyaları görüntülenemiyor</translation>
-<translation id="1338950911836659113">Siliniyor...</translation>
 <translation id="1346748346194534595">Sağa</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> dosya içe aktarılıyor...</translation>
 <translation id="1358735829858566124">Dosya veya dizin kullanılamıyor.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Yazdır</translation>
 <translation id="1435838927755162558">Parallels Desktop ile klasör paylaşın</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> klasörüne taşındı.</translation>
-<translation id="1464724975715666883">1 hata.</translation>
 <translation id="1467432559032391204">Sola</translation>
 <translation id="1471718551822868769">Slovakça</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" yüklenmedi. Google Drive'ınızda yeterli boş alan yok.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Estonca</translation>
 <translation id="3466147780910026086">Medya cihazınız taranıyor...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> fotoğraf <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />'a yedeklendi</translation>
-<translation id="3470502288861289375">Kopyalanıyor...</translation>
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> klasörüne kopyalandı.</translation>
 <translation id="3475447146579922140">Google e-tablosu</translation>
 <translation id="3486821258960016770">Moğolca</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> hata.</translation>
 <translation id="3522708245912499433">Portekizce</translation>
 <translation id="3524311639100184459">Dikkat: Bu dosyalar geçicidir ve disk alanından kazanmak için otomatik olarak silinebilir.  <ph name="BEGIN_LINK" />Daha Fazla Bilgi<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Klasör</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">Litvanca</translation>
 <translation id="3603385196401704894">Kanada Fransızcası</translation>
 <translation id="3606220979431771195">Türkçe-F</translation>
-<translation id="3609785682760573515">Senkronize ediliyor...</translation>
 <translation id="3616113530831147358">Ses</translation>
 <translation id="3619115746895587757">Kapuçino</translation>
 <translation id="3620292326130836921">Tümü yedeklendi!</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">Şifre</translation>
 <translation id="6673674183150363784">Fransızca (Fransa) Bépo klavye</translation>
 <translation id="6710213216561001401">Önceki</translation>
-<translation id="6718273304615422081">Sıkıştırılıyor...</translation>
 <translation id="6751256176799620176">1 klasör seçildi</translation>
 <translation id="6790428901817661496">Oynat</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">Dosya listesi, küçük resim görünümü olarak değiştirildi.</translation>
 <translation id="8601932370724196034">Crostini resim dosyası</translation>
 <translation id="8609695766746872526">İzlandaca</translation>
-<translation id="8669949407341943408">Taşınıyor...</translation>
 <translation id="8698464937041809063">Google çizimler</translation>
 <translation id="8712637175834984815">Anlaşıldı</translation>
 <translation id="8713112442029511308">Maltaca</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Linux dosyaları</translation>
 <translation id="9035012421917565900">Öğeler "<ph name="DESTINATION_NAME" />" hedefine geri taşınamaz. Bu nedenle bu işlemi geri alamazsınız.</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" adlı dosya zaten var. Lütfen farklı bir ad seçin.</translation>
-<translation id="9064939804718829769">Aktarılıyor...</translation>
 <translation id="9065203028668620118">Düzenle</translation>
 <translation id="908378762078012445">Fonetik AATSEEL klavye ile Rusça</translation>
 <translation id="9099674669267916096">Sayfa sayısı</translation>

@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Fail</translation>
 <translation id="1297922636971898492">Google Drive tidak tersedia pada masa ini. Memuat naik akan dimulakan semula secara automatik sebaik sahaja Google Drive kembali.</translation>
 <translation id="1307931752636661898">Tidak dapat melihat fail Linux</translation>
-<translation id="1338950911836659113">Memadamkan...</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1351692861129622852">Mengimport fail <ph name="FILE_COUNT" />...</translation>
 <translation id="1358735829858566124">Fail atau direktori tidak boleh digunakan.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Cetak</translation>
 <translation id="1435838927755162558">Kongsi folder dengan Parallels Desktop</translation>
 <translation id="1439494416798956626">Dialihkan ke <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">1 ralat.</translation>
 <translation id="1467432559032391204">Kiri</translation>
 <translation id="1471718551822868769">Slovak</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" tidak dimuat naik. Ruang kosong tidak mencukupi dalam Google Drive anda.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Estonia</translation>
 <translation id="3466147780910026086">Mengimbas peranti media anda...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> foto disandarkan pada <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Menyalin...</translation>
 <translation id="3473378059788601120">Disalin ke <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Hamparan Google</translation>
 <translation id="3486821258960016770">Mongolia</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> ralat.</translation>
 <translation id="3522708245912499433">Bahasa Portugis</translation>
 <translation id="3524311639100184459">Awas: Fail ini bersifat sementara dan mungkin dipadamkan secara automatik untuk mengosongkan ruang cakera.  <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">Bahasa Lithuania</translation>
 <translation id="3603385196401704894">Bahasa Perancis Kanada</translation>
 <translation id="3606220979431771195">Turki-F</translation>
-<translation id="3609785682760573515">Menyegerakkan...</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Kapucino</translation>
 <translation id="3620292326130836921">Semua disandarkan!</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">Kata laluan</translation>
 <translation id="6673674183150363784">Perancis (Perancis) dengan papan kekunci Bepo</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
-<translation id="6718273304615422081">Mengezip...</translation>
 <translation id="6751256176799620176">1 folder dipilih</translation>
 <translation id="6790428901817661496">Mainkan</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">Senarai fail telah berubah kepada paparan lakaran kecil.</translation>
 <translation id="8601932370724196034">Fail imej Crostini</translation>
 <translation id="8609695766746872526">Iceland</translation>
-<translation id="8669949407341943408">Bergerak...</translation>
 <translation id="8698464937041809063">Lukisan Google</translation>
 <translation id="8712637175834984815">Faham</translation>
 <translation id="8713112442029511308">Malta</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Fail Linux</translation>
 <translation id="9035012421917565900">Items tidak boleh dialihkan kembali ke '<ph name="DESTINATION_NAME" />', oleh itu, anda tidak akan dapat membuat asal tindakan ini.</translation>
 <translation id="9038620279323455325">Fail bernama "<ph name="FILE_NAME" />" sudah wujud. Sila pilih nama lain.</translation>
-<translation id="9064939804718829769">Memindahkan...</translation>
 <translation id="9065203028668620118">Edit</translation>
 <translation id="908378762078012445">Rusia dengan papan kekunci AATSEEL Fonetik</translation>
 <translation id="9099674669267916096">Kiraan halaman</translation>

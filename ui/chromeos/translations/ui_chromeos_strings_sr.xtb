@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Датотеке</translation>
 <translation id="1297922636971898492">Google диск тренутно није доступан. Отпремање ће се аутоматски поново покренути када Google диск постане доступан.</translation>
 <translation id="1307931752636661898">Приказ Linux датотека није успео</translation>
-<translation id="1338950911836659113">Брисање...</translation>
 <translation id="1346748346194534595">Удесно</translation>
 <translation id="1351692861129622852">Увозе се датотеке (<ph name="FILE_COUNT" />)...</translation>
 <translation id="1358735829858566124">Није могуће користити датотеку или директоријум.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Штампај</translation>
 <translation id="1435838927755162558">Делите директоријум са Parallels Desktop-ом</translation>
 <translation id="1439494416798956626">Премештено у: <ph name="FOLDER_NAME" /></translation>
-<translation id="1464724975715666883">1 грешка.</translation>
 <translation id="1467432559032391204">Улево</translation>
 <translation id="1471718551822868769">словачки</translation>
 <translation id="1474339897586437869">Датотека „<ph name="FILENAME" />“ није отпремљена. Није било довољно слободног места на Google диску.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">естонски</translation>
 <translation id="3466147780910026086">Медијски уређај се скенира...</translation>
 <translation id="3468522857997926824">Резервна копија слика (<ph name="FILE_COUNT" />) је направљена на <ph name="BEGIN_LINK" />Google диску<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Копирање...</translation>
 <translation id="3473378059788601120">Копирано је у: <ph name="FOLDER_NAME" /></translation>
 <translation id="3475447146579922140">Google табела</translation>
 <translation id="3486821258960016770">монголски</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> грешака.</translation>
 <translation id="3522708245912499433">португалски</translation>
 <translation id="3524311639100184459">Опрез: Ове датотеке су привремене и могу да се избришу аутоматски како би се ослободио простор на диску.  <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Директоријум</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">литвански</translation>
 <translation id="3603385196401704894">канадска француска</translation>
 <translation id="3606220979431771195">турска F</translation>
-<translation id="3609785682760573515">Синхронизовање...</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3620292326130836921">Направљене су резервне копије свих датотека!</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="6673674183150363784">француски (Француска) са Bépo тастатуром</translation>
 <translation id="6710213216561001401">Претходно</translation>
-<translation id="6718273304615422081">Прављење zip датотеке...</translation>
 <translation id="6751256176799620176">Изабран је 1 директоријум</translation>
 <translation id="6790428901817661496">Пусти</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">Листа датотека се променила у приказ сличица.</translation>
 <translation id="8601932370724196034">Crostini датотека слике</translation>
 <translation id="8609695766746872526">исландски</translation>
-<translation id="8669949407341943408">Премештање...</translation>
 <translation id="8698464937041809063">Google цртеж</translation>
 <translation id="8712637175834984815">Важи</translation>
 <translation id="8713112442029511308">малтешки</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Linux датотеке</translation>
 <translation id="9035012421917565900">Ставке не могу да се врате у „<ph name="DESTINATION_NAME" />“, па нећете моћи да опозовете ову радњу.</translation>
 <translation id="9038620279323455325">Датотека „<ph name="FILE_NAME" />“ већ постоји. Одаберите други назив.</translation>
-<translation id="9064939804718829769">Пренос...</translation>
 <translation id="9065203028668620118">Измени</translation>
 <translation id="908378762078012445">руски са фонетском тастатуром AATSEEL</translation>
 <translation id="9099674669267916096">Број страница</translation>

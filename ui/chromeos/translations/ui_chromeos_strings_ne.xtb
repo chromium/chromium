@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">फाइलहरू</translation>
 <translation id="1297922636971898492">Google ड्राइभ अहिले उपलब्ध छैन। Google ड्राइभ एकपटक फर्केपचि अपलोड स्वत: सुरुवात हुनेछ।</translation>
 <translation id="1307931752636661898">Linux का फाइलहरू हेर्न सकिएन</translation>
-<translation id="1338950911836659113">मेट्दै...</translation>
 <translation id="1346748346194534595">दायाँ</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> फाइलहरू आयात गर्दै...</translation>
 <translation id="1358735829858566124">फाइलवा डाइरेक्टरी प्रयोगयोग्य छैन।</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">प्रिन्ट गर्नुहोस्</translation>
 <translation id="1435838927755162558">Parallels Desktop सँग फोल्डर सेयर गर्नुहोस्</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" />मा सारियो।</translation>
-<translation id="1464724975715666883">1 त्रुटि।</translation>
 <translation id="1467432559032391204">बाँया</translation>
 <translation id="1471718551822868769">स्लोभाकियाली</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />"अपलोड गरिएको थिएन। तपाईँको Google ड्राइभमा पर्याप्त खाली ठाउँ छैन।</translation>
@@ -225,11 +223,9 @@
 <translation id="3455931012307786678">इस्टोनियन</translation>
 <translation id="3466147780910026086">तपाईँको मिडिया यन्त्र स्क्यान गरिँदै...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> तस्बिरहरू <ph name="BEGIN_LINK" />Google ड्राइभ<ph name="END_LINK" /> मा जगेडा गरियो</translation>
-<translation id="3470502288861289375">प्रतिलिपि बनाउँदै...</translation>
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> मा प्रतिलिपि गरियो।</translation>
 <translation id="3475447146579922140">Google स्प्रेडसिट</translation>
 <translation id="3486821258960016770">मङ्गोलियाली</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> त्रुटिहरू।</translation>
 <translation id="3522708245912499433">पोर्टुगिज</translation>
 <translation id="3524311639100184459">चेतावनी: यी फाइलहरू अस्थायी हुन् र भण्डारण स्थान खाली गर्नका निम्ति यी फाइल स्वतः मेटाइन सक्छन्।  <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">फोल्डर</translation>
@@ -239,7 +235,6 @@
 <translation id="357479282490346887">लिथुएनियन</translation>
 <translation id="3603385196401704894">क्यानाडाली फ्रान्सेली</translation>
 <translation id="3606220979431771195">टर्किस-एफ</translation>
-<translation id="3609785682760573515">समक्रमण हुँदै...</translation>
 <translation id="3616113530831147358">अडियो</translation>
 <translation id="3619115746895587757">कापाचिनो</translation>
 <translation id="3620292326130836921">सबै जगेडा गरियो!</translation>
@@ -531,7 +526,6 @@
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6673674183150363784">फ्रान्सेली (फ्रान्स) Bépo किबोर्ड</translation>
 <translation id="6710213216561001401">अघिल्लो</translation>
-<translation id="6718273304615422081">जिप गर्दै...</translation>
 <translation id="6751256176799620176">१ फोल्डरलाई चयन गरियो</translation>
 <translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
 <translation id="6795884519221689054">पान्डा</translation>
@@ -731,7 +725,6 @@
 <translation id="8600173386174225982">फाइलको सूचीको दृश्य परिवर्तन गरी थम्बनेल दृश्य बनाइयो।</translation>
 <translation id="8601932370724196034">Crostini छवि फाइल</translation>
 <translation id="8609695766746872526">आइसल्यान्डिक</translation>
-<translation id="8669949407341943408">सारिँदै छ...</translation>
 <translation id="8698464937041809063">Google ड्रइङ</translation>
 <translation id="8712637175834984815">भयो</translation>
 <translation id="8713112442029511308">माल्टिज</translation>
@@ -754,7 +747,6 @@
 <translation id="9034924485347205037">Linux का फाइलहरू</translation>
 <translation id="9035012421917565900">यी वस्तुहरूलाई फेरि '<ph name="DESTINATION_NAME" />' मा सार्न सकिँदैन, त्यसैले तपाईं यस कार्यलाई अन्डू गर्न सक्नुहुनेछैन।</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" नाम गरेको फाइल पहिलेदेखि नै अवस्थित छ। कृपया कुनै फरक नाम चयन गर्नुहोस्।</translation>
-<translation id="9064939804718829769">सरुवा गर्दै...</translation>
 <translation id="9065203028668620118">सम्पादन गर्नुहोस</translation>
 <translation id="908378762078012445">रसियाली फोनेटिक AATSEEL किबोर्ड</translation>
 <translation id="9099674669267916096">पृष्ठको गणना</translation>

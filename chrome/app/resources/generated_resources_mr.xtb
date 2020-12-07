@@ -4672,7 +4672,6 @@
 <translation id="642469772702851743">हे डिव्हाइस (SN: <ph name="SERIAL_NUMBER" />) मालकाने लॉक केले होते.</translation>
 <translation id="6425556984042222041">टेक्‍स्‍ट टू स्‍पीच रेट</translation>
 <translation id="6426200009596957090">ChromeVox सेटिंग्‍ज उघडा</translation>
-<translation id="642654727595919401"><ph name="DOMAIN" /> साठी तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि एका आठवड्याच्‍या आत हे <ph name="DEVICE_TYPE" /> परत करणे आवश्यक आहे. <ph name="LINK_BEGIN" />तपशील पाहा<ph name="LINK_END" /></translation>
 <translation id="642729974267661262">आवाज प्ले करण्याची अनुमती नाही</translation>
 <translation id="6428982734197629783">इमेजवर प्रक्रिया करत आहे</translation>
 <translation id="6429384232893414837">अपडेट एरर</translation>
@@ -5546,7 +5545,6 @@
 <translation id="7457384018036134905">Chrome OS सेटिंग्जमध्ये भाषा व्यवस्थापित करा</translation>
 <translation id="7458168200501453431">Google Search मध्ये वापरत असेलेले स्पेल चेकर वापरले जाते. तुम्ही ब्राउझरमध्ये टाइप करत असलेला मजकूर Google कडे पाठवला जातो.</translation>
 <translation id="7460045493116006516">तुम्ही इंस्टॉल केलेली सध्याची थीम</translation>
-<translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> साठी तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि हे <ph name="DEVICE_TYPE" /> आजच परत करणे आवश्यक आहे. <ph name="LINK_BEGIN" />तपशील पाहा<ph name="LINK_END" />}other{<ph name="DOMAIN" /> साठी तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि {NUM_DAYS} दिवसांच्‍या आत हे <ph name="DEVICE_TYPE" /> परत करणे आवश्यक आहे. <ph name="LINK_BEGIN" />तपशील पाहा<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">पिन</translation>
 <translation id="746216226901520237">पुढील वेळेस तुमचा फोन तुमचे <ph name="DEVICE_TYPE" /> अनलॉक करेल. तुम्ही सेटिंग्जमधून Smart Lock बंद करू शकता.</translation>
 <translation id="7463006580194749499">व्यक्ती जोडा</translation>
@@ -6232,7 +6230,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8226619461731305576">रांग</translation>
 <translation id="8226628635270268143">तुमचे आवडते फोटो आणि अल्बम निवडा</translation>
 <translation id="8227119283605456246">फाईल संलग्न करा</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> साठी पासवर्ड सेव्ह करायचा आहे का?</translation>
 <translation id="8234795456569844941">कृपया आमच्या इंजिनियरना ही समस्या सोडवण्यात मदत करा. तुम्हाला प्रोफाइल एरर मिळण्याआधी नेमके काय झाले ते आम्हाला सांगा:</translation>
 <translation id="8236917170563564587">त्याऐवजी हा टॅब शेअर करा</translation>

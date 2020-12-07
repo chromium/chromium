@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Fitxers</translation>
 <translation id="1297922636971898492">En aquest moment Google Drive no està disponible. La pujada es reiniciarà automàticament quan Google Drive torni a estar actiu.</translation>
 <translation id="1307931752636661898">No es poden mostrar fitxers de Linux</translation>
-<translation id="1338950911836659113">S'està suprimint...</translation>
 <translation id="1346748346194534595">Dreta</translation>
 <translation id="1351692861129622852">S'estan important <ph name="FILE_COUNT" /> fitxers...</translation>
 <translation id="1358735829858566124">El fitxer o directori no es pot fer servir.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Imprimeix</translation>
 <translation id="1435838927755162558">Comparteix la carpeta amb Parallels Desktop</translation>
 <translation id="1439494416798956626">S'ha mogut a <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">1 error.</translation>
 <translation id="1467432559032391204">Esquerra</translation>
 <translation id="1471718551822868769">Eslovac</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" no s'ha penjat. No hi ha prou espai lliure al vostre compte de Google Drive.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Estonià</translation>
 <translation id="3466147780910026086">S'està analitzant el dispositiu multimèdia...</translation>
 <translation id="3468522857997926824">S'ha creat una còpia de seguretat de <ph name="FILE_COUNT" /> fotos a <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">S'està copiant...</translation>
 <translation id="3473378059788601120">S'ha copiat a <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Full de càlcul de Google</translation>
 <translation id="3486821258960016770">Mongol</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> errors.</translation>
 <translation id="3522708245912499433">Portuguès</translation>
 <translation id="3524311639100184459">Compte: aquests fitxers són temporals i és possible que se suprimeixin automàticament per alliberar espai de disc.  <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Carpeta</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">Lituà</translation>
 <translation id="3603385196401704894">Francès canadenc</translation>
 <translation id="3606220979431771195">Turc-F</translation>
-<translation id="3609785682760573515">S'està sincronitzant...</translation>
 <translation id="3616113530831147358">Àudio</translation>
 <translation id="3619115746895587757">Caputxino</translation>
 <translation id="3620292326130836921">Tots els elements tenen una còpia de seguretat.</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">Contrasenya</translation>
 <translation id="6673674183150363784">Francès (França) amb teclat BÉPO</translation>
 <translation id="6710213216561001401">Anterior</translation>
-<translation id="6718273304615422081">S'està comprimint...</translation>
 <translation id="6751256176799620176">1 carpeta seleccionada</translation>
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">La llista de fitxers ha canviat a la visualització de miniatures.</translation>
 <translation id="8601932370724196034">Fitxer d'imatge de Crostini</translation>
 <translation id="8609695766746872526">Islandès</translation>
-<translation id="8669949407341943408">S'estan traslladant...</translation>
 <translation id="8698464937041809063">Dibuix de Google</translation>
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="8713112442029511308">Maltès</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Fitxers de Linux</translation>
 <translation id="9035012421917565900">Com que els elements no es poden retornar a <ph name="DESTINATION_NAME" />, aquesta acció no es pot desfer.</translation>
 <translation id="9038620279323455325">Ja hi ha un fitxer anomenat <ph name="FILE_NAME" />. Tria un altre nom.</translation>
-<translation id="9064939804718829769">S'està transferint...</translation>
 <translation id="9065203028668620118">Edita</translation>
 <translation id="908378762078012445">Rus amb teclat AATSEEL fonètic</translation>
 <translation id="9099674669267916096">Nombre de pàgines</translation>

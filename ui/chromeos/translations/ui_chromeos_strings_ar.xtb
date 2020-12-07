@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">ملفات</translation>
 <translation id="1297922636971898492">‏Google Drive غير متاح في الوقت الحالي. ستتم إعادة تشغيل التحميل تلقائيًا فور توفر Google Drive.</translation>
 <translation id="1307931752636661898">‏يتعذّر عرض ملفات نظام التشغيل Linux</translation>
-<translation id="1338950911836659113">جارٍ الحذف...</translation>
 <translation id="1346748346194534595">يمين</translation>
 <translation id="1351692861129622852">جار استيراد ملفات <ph name="FILE_COUNT" /> ...</translation>
 <translation id="1358735829858566124">الملف أو الدليل غير قابل للاستخدام.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="1435838927755162558">‏مشاركة المجلد مع نظام Parallels Desktop</translation>
 <translation id="1439494416798956626">تم النقل إلى <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">خطأ واحد.</translation>
 <translation id="1467432559032391204">اليسار</translation>
 <translation id="1471718551822868769">السلوفاكية</translation>
 <translation id="1474339897586437869">‏لم يتم تحميل "<ph name="FILENAME" />". حيث لا توجد لديك مساحة فارغة كافية في Google Drive.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">الإستونية</translation>
 <translation id="3466147780910026086">جارٍ فحص جهاز الوسائط...</translation>
 <translation id="3468522857997926824">‏تم نسخ <ph name="FILE_COUNT" /> من الصور احتياطيًا في <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">جارٍ النسخ...</translation>
 <translation id="3473378059788601120">تم النسخ إلى <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">‏جدول بيانات Google</translation>
 <translation id="3486821258960016770">المنغولية</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> من الأخطاء.</translation>
 <translation id="3522708245912499433">البرتغالية</translation>
 <translation id="3524311639100184459">تنبيه: هذه الملفات مؤقتة وقد يتم حذفها تلقائيًا لتوفير مساحة على القرص.  <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">المجلد</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">الليتوانية</translation>
 <translation id="3603385196401704894">الفرنسية الكندية</translation>
 <translation id="3606220979431771195">Turkish-F</translation>
-<translation id="3609785682760573515">جارٍ المزامنة...</translation>
 <translation id="3616113530831147358">المقاطع الصوتية</translation>
 <translation id="3619115746895587757">كابتشينو</translation>
 <translation id="3620292326130836921">تم نسخ جميع العناصر احتياطيًا</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">كلمة المرور</translation>
 <translation id="6673674183150363784">‏الفرنسية (فرنسا) باستخدام لوحة مفاتيح Bépo</translation>
 <translation id="6710213216561001401">السابق</translation>
-<translation id="6718273304615422081">جارٍ الضغط...</translation>
 <translation id="6751256176799620176">تم اختيار مجلد واحد</translation>
 <translation id="6790428901817661496">التشغيل</translation>
 <translation id="6795884519221689054">باندا</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">تم تغيير قائمة الملف إلى عرض الصور المصغرة.</translation>
 <translation id="8601932370724196034">‏ملف صورة Crostini</translation>
 <translation id="8609695766746872526">الآيسلندية</translation>
-<translation id="8669949407341943408">جارٍ النقل...</translation>
 <translation id="8698464937041809063">‏رسم Google</translation>
 <translation id="8712637175834984815">تم</translation>
 <translation id="8713112442029511308">المالطية</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">‏ملفات نظام التشغيل Linux</translation>
 <translation id="9035012421917565900">لا يمكن نقل العناصر مرة أخرى إلى '<ph name="DESTINATION_NAME" />'، لذلك لن تتمكن من التراجع عن هذا الإجراء.</translation>
 <translation id="9038620279323455325">الملف الذي يحمل الاسم "<ph name="FILE_NAME" />" موجود من قبل. يُرجى اختيار اسم مختلف.</translation>
-<translation id="9064939804718829769">جارٍ النقل...</translation>
 <translation id="9065203028668620118">تعديل</translation>
 <translation id="908378762078012445">‏الروسية باستخدام لوحة مفاتيح AATSEEL الصوتية</translation>
 <translation id="9099674669267916096">عدد الصفحات</translation>

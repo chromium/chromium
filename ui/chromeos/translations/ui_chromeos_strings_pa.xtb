@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">Google Drive ਹੁਣ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਅਪਲੋਡਿੰਗ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਮੁੜ-ਸ਼ੁਰੂ ਹੋਵੇਗਾ ਜਦੋਂ Google Drive ਵਾਪਸ ਆਉਂਦੀ ਹੋਵੇ।</translation>
 <translation id="1307931752636661898">Linux ਫ਼ਾਈਲਾਂ ਨੂੰ ਦੇਖਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ</translation>
-<translation id="1338950911836659113">ਮਿਟਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="1346748346194534595">ਸੱਜਾ</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> ਫਾਈਲਾਂ ਆਯਾਤ ਕਰ  ਰਿਹਾ ਹੈ...</translation>
 <translation id="1358735829858566124">ਫਾਈਲ ਜਾਂ ਡਾਇਰੈਕਟਰੀ ਵਰਤੋਂ ਯੋਗ ਨਹੀਂ ਹੈ।</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">ਪ੍ਰਿੰਟ ਕਰੋ</translation>
 <translation id="1435838927755162558">Parallels Desktop ਨਾਲ ਫੋਲਡਰ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> ਵਿੱਚ ਲਿਜਾਈ ਗਈ।</translation>
-<translation id="1464724975715666883">1 ਗੜਬੜ।</translation>
 <translation id="1467432559032391204">ਖੱਬੇ ਪਾਸੇ</translation>
 <translation id="1471718551822868769">ਸਲੋਵਾਕ</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" ਅਪਲੋਡ ਨਹੀਂ ਕੀਤੀ ਗਈ ਸੀ। ਤੁਹਾਡੀ Google Drive ਵਿੱਚ ਪੂਰਾ ਖਾਲੀ ਸਪੇਸ ਨਹੀਂ ਹੈ।</translation>
@@ -225,11 +223,9 @@
 <translation id="3455931012307786678">ਇਸਤੋਨੀਆਈ</translation>
 <translation id="3466147780910026086">ਤੁਹਾਡਾ ਮੀਡੀਆ ਡੀਵਾਈਸ ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> ਫ਼ੋਟੋਆਂ <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> ਵਿੱਚ ਬੈਕ ਅਪ ਕੀਤੀਆਂ ਗਈਆਂ</translation>
-<translation id="3470502288861289375">ਕਾਪੀ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> ਵਿੱਚ ਕਾਪੀ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="3475447146579922140">Google spreadsheet</translation>
 <translation id="3486821258960016770">ਮੰਗੋਲੀਆਈ</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> ਅਸ਼ੁੱਧੀਆਂ।</translation>
 <translation id="3522708245912499433">ਪੋਰਤੂਗੂਈਸ</translation>
 <translation id="3524311639100184459">ਸਾਵਧਾਨ: ਇਹ ਫ਼ਾਈਲਾਂ ਅਸਥਾਈ ਹਨ ਅਤੇ ਡਿਸਕ ਵਿੱਚ ਜਗ੍ਹਾ ਨੂੰ ਖਾਲੀ ਕਰਨ ਲਈ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਮਿਟਾਈਆਂ ਜਾ ਸਕਦੀਆਂ ਹਨ।  <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ਫੋਲਡਰ</translation>
@@ -239,7 +235,6 @@
 <translation id="357479282490346887">Lithuanian</translation>
 <translation id="3603385196401704894">ਕੈਨੇਡੀਅਨ ਫ੍ਰੈਂਚ</translation>
 <translation id="3606220979431771195">ਤੁਰਕੀ-F</translation>
-<translation id="3609785682760573515">ਸਿੰਕ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="3616113530831147358">ਆਡੀਓ</translation>
 <translation id="3619115746895587757">ਕੈਪੁਚੀਨੋ</translation>
 <translation id="3620292326130836921">ਸਾਰੇ ਬੈਕ ਅਪ ਕੀਤੇ ਗਏ!</translation>
@@ -531,7 +526,6 @@
 <translation id="6657585470893396449">ਪਾਸਵਰਡ</translation>
 <translation id="6673674183150363784">Bépo ਕੀ-ਬੋਰਡ ਨਾਲ ਫ਼ਰਾਂਸੀਸੀ (ਫ਼ਰਾਂਸ)</translation>
 <translation id="6710213216561001401">ਪਿਛਲਾ</translation>
-<translation id="6718273304615422081">ਜ਼ਿਪ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="6751256176799620176">1 ਫੋਲਡਰ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="6790428901817661496">ਪਲੇ ਕਰੋ</translation>
 <translation id="6795884519221689054">ਪਾਂਡਾ</translation>
@@ -731,7 +725,6 @@
 <translation id="8600173386174225982">ਫ਼ਾਈਲ ਸੂਚੀ, ਲਘੂ-ਚਿੱਤਰ ਦ੍ਰਿਸ਼ ਵਿੱਚ ਬਦਲ ਗਈ ਹੈ।</translation>
 <translation id="8601932370724196034">Crostini ਈਮੇਜ ਫ਼ਾਈਲ</translation>
 <translation id="8609695766746872526">ਆਈਸਲੈਂਡੀ</translation>
-<translation id="8669949407341943408">ਮੂਵ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="8698464937041809063">Google ਡਰਾਇੰਗ</translation>
 <translation id="8712637175834984815">ਸਮਝ ਲਿਆ</translation>
 <translation id="8713112442029511308">ਮਾਲਟਾਈ</translation>
@@ -754,7 +747,6 @@
 <translation id="9034924485347205037">Linux ਫ਼ਾਈਲਾਂ</translation>
 <translation id="9035012421917565900">ਆਈਟਮਾਂ ਨੂੰ '<ph name="DESTINATION_NAME" />' ਵਿੱਚ ਵਾਪਸ ਤਬਦੀਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ, ਇਸ ਕਰਕੇ ਤੁਸੀਂ ਇਸ ਕਾਰਵਾਈ ਨੂੰ ਅਣਕੀਤਾ ਕਰਨ ਦੇ ਯੋਗ ਨਹੀਂ ਹੋਵੋਗੇ।</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" ਨਾਮਕ ਫ਼ਾਈਲ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਕੋਈ ਵੱਖਰਾ ਨਾਮ ਚੁਣੋ।</translation>
-<translation id="9064939804718829769">ਟ੍ਰਾਂਸਫਰ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="9065203028668620118">ਸੰਪਾਦਿਤ ਕਰੋ</translation>
 <translation id="908378762078012445">ਧੁਨੀਆਤਮਿਕ AATSEEL ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਰੂਸੀ</translation>
 <translation id="9099674669267916096">ਪੰਨਾ ਗਿਣਤੀ</translation>

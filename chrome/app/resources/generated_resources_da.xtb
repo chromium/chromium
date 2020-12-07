@@ -4691,7 +4691,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="642469772702851743">Denne enhed (serienummer: <ph name="SERIAL_NUMBER" />) blev låst af ejeren.</translation>
 <translation id="6425556984042222041">Hastighed ved oplæsning</translation>
 <translation id="6426200009596957090">Åbn indstillinger for ChromeVox</translation>
-<translation id="642654727595919401"><ph name="DOMAIN" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> inden for 1 uge.<ph name="LINK_BEGIN" />Se oplysninger<ph name="LINK_END" /></translation>
 <translation id="642729974267661262">Har ikke tilladelse til at afspille lyd</translation>
 <translation id="6428982734197629783">Behandler billedet</translation>
 <translation id="6429384232893414837">Opdateringsfejl</translation>
@@ -5567,7 +5566,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7457384018036134905">Administrer sprog i indstillingerne for Chrome OS</translation>
 <translation id="7458168200501453431">Bruger samme stavekontrol som Google-søgning. Tekst, som du angiver i browseren, sendes til Google.</translation>
 <translation id="7460045493116006516">Det aktuelle tema, du har installeret</translation>
-<translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> i dag.<ph name="LINK_BEGIN" />Se oplysninger<ph name="LINK_END" />}one{<ph name="DOMAIN" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> inden for {NUM_DAYS} dag.<ph name="LINK_BEGIN" />Se oplysninger<ph name="LINK_END" />}other{<ph name="DOMAIN" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> inden for {NUM_DAYS} dage.<ph name="LINK_BEGIN" />Se oplysninger<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">Fastgør</translation>
 <translation id="746216226901520237">Næste gang låser din telefon din <ph name="DEVICE_TYPE" /> op. Du kan deaktivere Smart Lock i Indstillinger.</translation>
 <translation id="7463006580194749499">Tilføj person</translation>
@@ -6258,7 +6256,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8226619461731305576">Kø</translation>
 <translation id="8226628635270268143">Vælg dine foretrukne billeder og album</translation>
 <translation id="8227119283605456246">Vedhæft fil</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">Vil du gemme adgangskoden til <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Hjælp vores softwareudviklere med at løse dette problem. Fortæl os, hvad der skete, lige før du fik fejlmeddelelsen for profilen:</translation>
 <translation id="8236917170563564587">Del denne fane i stedet</translation>

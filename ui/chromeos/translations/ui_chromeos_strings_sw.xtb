@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Faili</translation>
 <translation id="1297922636971898492">Hifadhi ya Google haipatikani kwa sasa kupakia kutafungua upya kiotomatiki baada Hifadhi ya Google imerudi.</translation>
 <translation id="1307931752636661898">Imeshindwa kuona faili za Linux</translation>
-<translation id="1338950911836659113">Inafuta...</translation>
 <translation id="1346748346194534595">Kulia</translation>
 <translation id="1351692861129622852">Inaleta faili <ph name="FILE_COUNT" />...</translation>
 <translation id="1358735829858566124">Faili au saraka haitumiki.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Chapisha</translation>
 <translation id="1435838927755162558">Shiriki folda na Parallels Desktop</translation>
 <translation id="1439494416798956626">Imehamishiwa kwenye <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">Hitilafu 1.</translation>
 <translation id="1467432559032391204">Kushoto</translation>
 <translation id="1471718551822868769">Kislovakia</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" haikupakiwa. Hakuna nafasi ya kutosha katika Hifadhi yako ya Google.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Kiestonia</translation>
 <translation id="3466147780910026086">Inachaganua kifaa chako cha kuhifadhia data...</translation>
 <translation id="3468522857997926824">Picha <ph name="FILE_COUNT" /> zimehifadhiwa nakala rudufu kwenye <ph name="BEGIN_LINK" />Hifadhi ya Google<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Inanakili...</translation>
 <translation id="3473378059788601120">Imenakiliwa kwenye <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Lahajedwali ya Google</translation>
 <translation id="3486821258960016770">Kimongolia</translation>
-<translation id="3495304270784461826">Hitilafu <ph name="COUNT" />.</translation>
 <translation id="3522708245912499433">Kireno</translation>
 <translation id="3524311639100184459">Tahadhari: Faili hizi ni za muda na huenda zikafutwa kiotomatiki ili upate nafasi zaidi ya hifadhi kwenye diski.  <ph name="BEGIN_LINK" />Pata Maelezo Zaidi<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folda</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">Kilithuania</translation>
 <translation id="3603385196401704894">Kifaransa cha Kanada</translation>
 <translation id="3606220979431771195">Kituruki-F</translation>
-<translation id="3609785682760573515">Inasawazisha...</translation>
 <translation id="3616113530831147358">Sauti</translation>
 <translation id="3619115746895587757">Kapuchino</translation>
 <translation id="3620292326130836921">Zote zimehifadhiwa nakala!</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">Nenosiri</translation>
 <translation id="6673674183150363784">Kifaransa (Ufaransa) kwenye kibodi ya Bépo</translation>
 <translation id="6710213216561001401">Iliyopita</translation>
-<translation id="6718273304615422081">Inabanwa...</translation>
 <translation id="6751256176799620176">Folda 1 imechaguliwa</translation>
 <translation id="6790428901817661496">Cheza</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">Orodha ya faili imebadilishwa kuwa mwonekano wa kijipicha.</translation>
 <translation id="8601932370724196034">Picha ya faili ya Crostini</translation>
 <translation id="8609695766746872526">Kiaislandi</translation>
-<translation id="8669949407341943408">Inahamisha...</translation>
 <translation id="8698464937041809063">Mchoro wa Google</translation>
 <translation id="8712637175834984815">Nimeelewa</translation>
 <translation id="8713112442029511308">Kimalta</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Faili za Linux</translation>
 <translation id="9035012421917565900">Hutaweza kuvirudisha vipengee kwenye '<ph name="DESTINATION_NAME" />', hivyo hutaweza kutendua hatua hii.</translation>
 <translation id="9038620279323455325">Faili yenye jina la "<ph name="FILE_NAME" />" tayari ipo. Tafadhali chagua jina tofauti.</translation>
-<translation id="9064939804718829769">Inahamisha...</translation>
 <translation id="9065203028668620118">Badilisha</translation>
 <translation id="908378762078012445">Kirusi kwenye kibodi ya Fonetiki ya AATSEEL</translation>
 <translation id="9099674669267916096">Idadi ya kurasa</translation>

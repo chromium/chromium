@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Fájlok</translation>
 <translation id="1297922636971898492">A Google Drive jelenleg nem érhető el. A feltöltés automatikusan újrakezdődik, amint a Google Drive elérhetővé válik.</translation>
 <translation id="1307931752636661898">A Linux-fájlok megtekintése nem sikerült</translation>
-<translation id="1338950911836659113">Törlés…</translation>
 <translation id="1346748346194534595">Jobbra</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> fájl importálása folyamatban…</translation>
 <translation id="1358735829858566124">A fájl vagy könyvtár nem használható.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Nyomtatás</translation>
 <translation id="1435838927755162558">Mappa megosztása a Parallels Desktoppal</translation>
 <translation id="1439494416798956626">Áthelyezve ide: <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">1 hiba.</translation>
 <translation id="1467432559032391204">Balra</translation>
 <translation id="1471718551822868769">szlovák</translation>
 <translation id="1474339897586437869">A(z) „<ph name="FILENAME" />” feltöltése nem történt meg. Nincs elegendő szabad terület a Google Drive-on.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">észt</translation>
 <translation id="3466147780910026086">Adathordozó vizsgálata…</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> fotó biztonsági mentése végrehajtva a <ph name="BEGIN_LINK" />Google Drive-on<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Másolás...</translation>
 <translation id="3473378059788601120">Átmásolva ide: <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google-táblázat</translation>
 <translation id="3486821258960016770">mongol</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> hiba.</translation>
 <translation id="3522708245912499433">portugál</translation>
 <translation id="3524311639100184459">Figyelem: Ezek ideiglenes fájlok, és automatikusan törlésre kerülnek azért, hogy tárhely szabaduljon fel.  <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="3527085408025491307">Mappa</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">litván</translation>
 <translation id="3603385196401704894">kanadai francia</translation>
 <translation id="3606220979431771195">Török F</translation>
-<translation id="3609785682760573515">Szinkronizálás...</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620292326130836921">Mindenről készült biztonsági másolat!</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">Jelszó</translation>
 <translation id="6673674183150363784">francia (Franciaország), Bépo-billentyűzettel</translation>
 <translation id="6710213216561001401">Előző</translation>
-<translation id="6718273304615422081">Tömörítés...</translation>
 <translation id="6751256176799620176">1 mappa kiválasztva</translation>
 <translation id="6790428901817661496">Lejátszás</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">A fájllista nézete indexképnézetre változott.</translation>
 <translation id="8601932370724196034">Crostini-képfájl</translation>
 <translation id="8609695766746872526">izlandi</translation>
-<translation id="8669949407341943408">Áthelyezés…</translation>
 <translation id="8698464937041809063">Google-rajz</translation>
 <translation id="8712637175834984815">Sikerült</translation>
 <translation id="8713112442029511308">máltai</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Linux-fájlok</translation>
 <translation id="9035012421917565900">Az elemek nem helyezhetők vissza ide: „<ph name="DESTINATION_NAME" />”. Nem tudja visszavonni a műveletet.</translation>
 <translation id="9038620279323455325">Már van „<ph name="FILE_NAME" />” nevű fájl. Válasszon másik nevet.</translation>
-<translation id="9064939804718829769">Átvitel...</translation>
 <translation id="9065203028668620118">Szerkesztés</translation>
 <translation id="908378762078012445">orosz, fonetikus AATSEEL-billentyűzettel</translation>
 <translation id="9099674669267916096">Oldalak száma</translation>

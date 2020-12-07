@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">‏Google Drive در حال حاضر در دسترس نیست. به محض در دسترس قرار گرفتن Google Drive بارگذاری کردن به صورت خودکار دوباره شروع می‌شود.</translation>
 <translation id="1307931752636661898">‏نمی‌توان فایل‌های Linux را مشاهده کرد</translation>
-<translation id="1338950911836659113">در حال حذف...</translation>
 <translation id="1346748346194534595">راست</translation>
 <translation id="1351692861129622852">وارد کردن <ph name="FILE_COUNT" /> فایل...</translation>
 <translation id="1358735829858566124">فایل یا فهرست راهنما قابل استفاده نیست.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">چاپ</translation>
 <translation id="1435838927755162558">‏هم‌رسانی پوشه با Parallels Desktop</translation>
 <translation id="1439494416798956626">به <ph name="FOLDER_NAME" /> منتقل شد.</translation>
-<translation id="1464724975715666883">۱ خطا.</translation>
 <translation id="1467432559032391204">چپ</translation>
 <translation id="1471718551822868769">اسلوواکی</translation>
 <translation id="1474339897586437869">‏«<ph name="FILENAME" />» بارگذاری نشد. فضای کافی در Google Drive شما وجود ندارد.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">استونیایی</translation>
 <translation id="3466147780910026086">در حال اسکن دستگاه رسانه شما...</translation>
 <translation id="3468522857997926824">‏<ph name="FILE_COUNT" /> عکس در <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> پشتیبان گرفته شدند</translation>
-<translation id="3470502288861289375">در حال کپی کردن...</translation>
 <translation id="3473378059788601120">در <ph name="FOLDER_NAME" /> کپی شد.</translation>
 <translation id="3475447146579922140">‏صفحه‌گسترده Google</translation>
 <translation id="3486821258960016770">مغولی</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> خطا.</translation>
 <translation id="3522708245912499433">پرتغالی</translation>
 <translation id="3524311639100184459">احتیاط: این فایل‌ها موقتی هستند و ممکن است برای آزادسازی فضای دیسک به‌طور خودکار حذف شوند.  <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">پوشه</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">لیتوانیایی</translation>
 <translation id="3603385196401704894">فرانسوی کانادا</translation>
 <translation id="3606220979431771195">‏ترکی F</translation>
-<translation id="3609785682760573515">در حال همگام‌سازی...</translation>
 <translation id="3616113530831147358">صوتی</translation>
 <translation id="3619115746895587757">کاپوچینو</translation>
 <translation id="3620292326130836921">همه پشتیبان‌گیری شدند.</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">گذرواژه</translation>
 <translation id="6673674183150363784">‏فرانسوی (فرانسه) با صفحه‌کلید Bépo</translation>
 <translation id="6710213216561001401">قبلی</translation>
-<translation id="6718273304615422081">در حال فشرده سازی ...</translation>
 <translation id="6751256176799620176">۱ پوشه انتخاب شد</translation>
 <translation id="6790428901817661496">پخش</translation>
 <translation id="6795884519221689054">پاندا</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">فهرست فایل به نمای تصویر کوچک تغییر کرده است.</translation>
 <translation id="8601932370724196034">‏فایل تصویری Crostini</translation>
 <translation id="8609695766746872526">ایسلندی</translation>
-<translation id="8669949407341943408">در حال انتقال...</translation>
 <translation id="8698464937041809063">‏طراحی Google </translation>
 <translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8713112442029511308">مالتی</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">‏فایل‌های Linux</translation>
 <translation id="9035012421917565900">این موارد نمی‌توانند به «<ph name="DESTINATION_NAME" />» برگردانده شوند، بنابراین نمی‌توانید این اقدام را واگرد کنید.</translation>
 <translation id="9038620279323455325">فایلی با نام «<ph name="FILE_NAME" />» ازقبل وجود دارد. لطفاً نام دیگری انتخاب کنید.</translation>
-<translation id="9064939804718829769">در حال انتقال...</translation>
 <translation id="9065203028668620118">ویرایش</translation>
 <translation id="908378762078012445">‏روسی با صفحه‌کلید آوایی AATSEEL</translation>
 <translation id="9099674669267916096">تعداد صفحه</translation>

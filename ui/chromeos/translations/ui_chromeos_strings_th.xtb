@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">ไฟล์</translation>
 <translation id="1297922636971898492">Google ไดรฟ์ไม่พร้อมใช้งานในขณะนี้ การอัปโหลดจะเริ่มต้นอีกครั้งโดยอัตโนมัติเมื่อ Google ไดรฟ์ใช้งานได้</translation>
 <translation id="1307931752636661898">ดูไฟล์ Linux ไม่ได้</translation>
-<translation id="1338950911836659113">กำลังลบ...</translation>
 <translation id="1346748346194534595">ขวา</translation>
 <translation id="1351692861129622852">กำลังนำเข้า <ph name="FILE_COUNT" /> ไฟล์...</translation>
 <translation id="1358735829858566124">ไฟล์หรือไดเรกทอรีใช้งานไม่ได้</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">พิมพ์</translation>
 <translation id="1435838927755162558">แชร์โฟลเดอร์กับ Parallels Desktop</translation>
 <translation id="1439494416798956626">ย้ายไปที่ <ph name="FOLDER_NAME" /> แล้ว</translation>
-<translation id="1464724975715666883">ข้อผิดพลาด 1 รายการ</translation>
 <translation id="1467432559032391204">ซ้าย</translation>
 <translation id="1471718551822868769">สโลวัก</translation>
 <translation id="1474339897586437869">ไม่ได้อัปโหลด "<ph name="FILENAME" />" มีพื้นที่ว่างไม่เพียงพอใน Google ไดรฟ์ของคุณ</translation>
@@ -225,11 +223,9 @@
 <translation id="3455931012307786678">เอสโทเนีย</translation>
 <translation id="3466147780910026086">กำลังสแกนอุปกรณ์สื่อ...</translation>
 <translation id="3468522857997926824">สำรองรูปภาพ <ph name="FILE_COUNT" /> รูปไปยัง <ph name="BEGIN_LINK" />Google ไดรฟ์<ph name="END_LINK" />แล้ว</translation>
-<translation id="3470502288861289375">กำลังคัดลอก...</translation>
 <translation id="3473378059788601120">คัดลอกไปที่ <ph name="FOLDER_NAME" /> แล้ว</translation>
 <translation id="3475447146579922140">สเปรดชีตของ Google</translation>
 <translation id="3486821258960016770">มองโกเลีย</translation>
-<translation id="3495304270784461826">ข้อผิดพลาด <ph name="COUNT" /> รายการ</translation>
 <translation id="3522708245912499433">โปรตุเกส</translation>
 <translation id="3524311639100184459">ข้อควรระวัง: ไฟล์เหล่านี้ใช้ชั่วคราวและอาจถูกลบโดยอัตโนมัติเพื่อเพิ่มพื้นที่ว่างในดิสก์  <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">โฟลเดอร์</translation>
@@ -239,7 +235,6 @@
 <translation id="357479282490346887">ลิทัวเนีย</translation>
 <translation id="3603385196401704894">ฝรั่งเศสแบบแคนาดา</translation>
 <translation id="3606220979431771195">ภาษาตุรกี-F</translation>
-<translation id="3609785682760573515">กำลังซิงค์...</translation>
 <translation id="3616113530831147358">เสียง</translation>
 <translation id="3619115746895587757">คาปูชิโน</translation>
 <translation id="3620292326130836921">สำรองข้อมูลทั้งหมดแล้ว!</translation>
@@ -532,7 +527,6 @@
 <translation id="6657585470893396449">รหัสผ่าน</translation>
 <translation id="6673674183150363784">ฝรั่งเศส (ฝรั่งเศส) ด้วยแป้นพิมพ์แบบ Bépo</translation>
 <translation id="6710213216561001401">ก่อนหน้า</translation>
-<translation id="6718273304615422081">กำลังซิป...</translation>
 <translation id="6751256176799620176">เลือกไว้ 1 โฟลเดอร์</translation>
 <translation id="6790428901817661496">เล่น</translation>
 <translation id="6795884519221689054">แพนด้า</translation>
@@ -732,7 +726,6 @@
 <translation id="8600173386174225982">เปลี่ยนรายการไฟล์เป็นมุมมองภาพขนาดย่อแล้ว</translation>
 <translation id="8601932370724196034">ไฟล์ภาพ Crostini</translation>
 <translation id="8609695766746872526">ไอซ์แลนด์</translation>
-<translation id="8669949407341943408">กำลังย้าย...</translation>
 <translation id="8698464937041809063">ภาพวาดของ Google</translation>
 <translation id="8712637175834984815">สำเร็จ</translation>
 <translation id="8713112442029511308">มอลตา</translation>
@@ -755,7 +748,6 @@
 <translation id="9034924485347205037">ไฟล์ Linux</translation>
 <translation id="9035012421917565900">ไม่สามารถย้ายรายการกลับไปที่ "<ph name="DESTINATION_NAME" />" คุณจึงไม่สามารถเลิกทำการดำเนินการนี้</translation>
 <translation id="9038620279323455325">มีไฟล์ชื่อ "<ph name="FILE_NAME" />" อยู่แล้ว โปรดเลือกชื่ออื่น</translation>
-<translation id="9064939804718829769">กำลังโอน...</translation>
 <translation id="9065203028668620118">แก้ไข</translation>
 <translation id="908378762078012445">รัสเซียด้วยแป้นพิมพ์ AATSEEL (ตามการออกเสียง)</translation>
 <translation id="9099674669267916096">จำนวนหน้า</translation>

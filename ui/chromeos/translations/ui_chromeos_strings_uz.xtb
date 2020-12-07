@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Fayllar</translation>
 <translation id="1297922636971898492">Google Disk hozir ish faoliyatida emas. Xizmat ish faoliyatiga qaytishi bilan yuklash amali avtomatik davom ettiriladi.</translation>
 <translation id="1307931752636661898">Linux fayllari ochilmadi</translation>
-<translation id="1338950911836659113">O‘chirilmoqda...</translation>
 <translation id="1346748346194534595">O‘ngga</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> ta fayl import qilinmoqda...</translation>
 <translation id="1358735829858566124">Fayl yoki katalog foydalanish uchun yaroqsiz.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Chop etish</translation>
 <translation id="1435838927755162558">Jildni Parallels Desktopga ulashish</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> jildiga koʻchirildi</translation>
-<translation id="1464724975715666883">1 ta xato.</translation>
 <translation id="1467432559032391204">Chapga</translation>
 <translation id="1471718551822868769">Slovak</translation>
 <translation id="1474339897586437869"><ph name="FILENAME" /> faylini yuklab bo‘lmadi. Google Drive omborida yetarli bo‘sh joy yo‘q.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Eston</translation>
 <translation id="3466147780910026086">Media qurilmasi tekshirilmoqda...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> ta rasm <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> omboriga zaxiralandi</translation>
-<translation id="3470502288861289375">Nusxa olinmoqda...</translation>
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> jildiga nusxalandi.</translation>
 <translation id="3475447146579922140">Google elektron jadvali</translation>
 <translation id="3486821258960016770">Mongol</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> ta xatolik.</translation>
 <translation id="3522708245912499433">Portugal tili</translation>
 <translation id="3524311639100184459">Diqqat! Bu vaqtinchalik fayllar diskda joy boʻshatish uchun avtomatik oʻchirib yuborilishi mumkin.  <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Jild</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">Litvan tili</translation>
 <translation id="3603385196401704894">Fransuz (Kanada)</translation>
 <translation id="3606220979431771195">Turk-F klaviaturasi</translation>
-<translation id="3609785682760573515">Sinxronlanmoqda...</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Kappuchino</translation>
 <translation id="3620292326130836921">Ma’lumotlar saqlandi!</translation>
@@ -532,7 +527,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6673674183150363784">Fransuz (Fransiya) va Bépo klaviaturasi</translation>
 <translation id="6710213216561001401">Avvalgi</translation>
-<translation id="6718273304615422081">Arxivlanmoqda...</translation>
 <translation id="6751256176799620176">1 ta jild tanlandi</translation>
 <translation id="6790428901817661496">Ijro etish</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -732,7 +726,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8600173386174225982">Fayllar roʻyxati uchun saralash shakli eskizlarga almashdi.</translation>
 <translation id="8601932370724196034">Crostini tasvir fayli</translation>
 <translation id="8609695766746872526">Island</translation>
-<translation id="8669949407341943408">Ko‘chirilmoqda...</translation>
 <translation id="8698464937041809063">Google-chizmasi</translation>
 <translation id="8712637175834984815">Tushunarli</translation>
 <translation id="8713112442029511308">Malta</translation>
@@ -755,7 +748,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="9034924485347205037">Linux fayllari</translation>
 <translation id="9035012421917565900">Obyektlarni “<ph name="DESTINATION_NAME" />” umumiy diskiga qaytarib bo‘lmaydi, shuning uchun bu amalni bekor qila olmaysiz.</translation>
 <translation id="9038620279323455325">“<ph name="FILE_NAME" />” nomli fayl allaqachon mavjud. Boshqa nom tanlang.</translation>
-<translation id="9064939804718829769">Bajarilmoqda...</translation>
 <translation id="9065203028668620118">O‘zgartirish</translation>
 <translation id="908378762078012445">Rus (fonetik AATSEEL klaviaturasi)</translation>
 <translation id="9099674669267916096">Sahifalar soni</translation>

@@ -32,7 +32,6 @@
 <translation id="1293556467332435079">Αρχεία</translation>
 <translation id="1297922636971898492">Το Google Drive δεν είναι διαθέσιμο αυτήν τη στιγμή. Η μεταφόρτωση θα ξεκινήσει ξανά, όταν το Google Drive είναι και πάλι διαθέσιμο.</translation>
 <translation id="1307931752636661898">Δεν είναι δυνατή η προβολή αρχείων Linux</translation>
-<translation id="1338950911836659113">Γίνεται διαγραφή…</translation>
 <translation id="1346748346194534595">Δεξιά</translation>
 <translation id="1351692861129622852">Εισαγωγή <ph name="FILE_COUNT" /> αρχείων…</translation>
 <translation id="1358735829858566124">Το αρχείο ή ο κατάλογος δεν μπορούν να χρησιμοποιηθούν.</translation>
@@ -44,7 +43,6 @@
 <translation id="1430915738399379752">Εκτύπωση</translation>
 <translation id="1435838927755162558">Κοινή χρήση φακέλου με το Parallels Desktop</translation>
 <translation id="1439494416798956626">Μετακινήθηκε στον φάκελο "<ph name="FOLDER_NAME" />".</translation>
-<translation id="1464724975715666883">1 σφάλμα.</translation>
 <translation id="1467432559032391204">Αριστερά</translation>
 <translation id="1471718551822868769">Σλοβακικά</translation>
 <translation id="1474339897586437869">Το αρχείο "<ph name="FILENAME" />" δεν ανέβηκε. Δεν υπάρχει επαρκής ελεύθερος χώρος στο Google Drive σας.</translation>
@@ -232,11 +230,9 @@
 <translation id="3455931012307786678">Εσθονικά</translation>
 <translation id="3466147780910026086">Σάρωση της συσκευής μέσων σας…</translation>
 <translation id="3468522857997926824">Δημιουργήθηκαν αντίγραφα ασφαλείας για <ph name="FILE_COUNT" /> φωτογραφίες στο <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Αντιγραφή…</translation>
 <translation id="3473378059788601120">Αντιγράφηκε στον φάκελο <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Υπολογιστικό φύλλο Google</translation>
 <translation id="3486821258960016770">Μογγολικά</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> σφάλματα.</translation>
 <translation id="3522708245912499433">Πορτογαλικά</translation>
 <translation id="3524311639100184459">Προσοχή: Αυτά τα αρχεία είναι προσωρινά και ενδέχεται να διαγραφούν αυτόματα για να απελευθερωθεί χώρος στη μονάδα δίσκου.  <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Φάκελος</translation>
@@ -247,7 +243,6 @@
 </translation>
 <translation id="3603385196401704894">Γαλλικά Καναδά</translation>
 <translation id="3606220979431771195">Τουρκικά-F</translation>
-<translation id="3609785682760573515">Συγχρονισμός…</translation>
 <translation id="3616113530831147358">Ήχος</translation>
 <translation id="3619115746895587757">Καπουτσίνο</translation>
 <translation id="3620292326130836921">Δημιουργήθηκαν αντίγραφα ασφαλείας για όλα τα αρχεία!</translation>
@@ -546,7 +541,6 @@
 <translation id="6657585470893396449">Κωδικός πρόσβασης</translation>
 <translation id="6673674183150363784">Γαλλικά (Γαλλίας) με πληκτρολόγιο BÉPO</translation>
 <translation id="6710213216561001401">Προηγούμενο</translation>
-<translation id="6718273304615422081">Συμπίεση…</translation>
 <translation id="6751256176799620176">Επιλέχθηκε 1 φάκελος</translation>
 <translation id="6790428901817661496">Αναπαραγωγή</translation>
 <translation id="6795884519221689054">Πάντα</translation>
@@ -753,7 +747,6 @@
 <translation id="8600173386174225982">Η λίστα αρχείων έχει αλλάξει σε προβολή μικρογραφίας.</translation>
 <translation id="8601932370724196034">Αρχείο εικόνας Crostini</translation>
 <translation id="8609695766746872526">Ισλανδικά</translation>
-<translation id="8669949407341943408">Μετακίνηση…</translation>
 <translation id="8698464937041809063">Σχέδιο Google</translation>
 <translation id="8712637175834984815">Κατάλαβα!</translation>
 <translation id="8713112442029511308">Μαλτεζικά</translation>
@@ -779,7 +772,6 @@
 <translation id="9034924485347205037">Αρχεία Linux</translation>
 <translation id="9035012421917565900">Τα στοιχεία δεν είναι δυνατό να επιστρέψουν στο "<ph name="DESTINATION_NAME" />", επομένως δεν θα μπορείτε να αναιρέσετε αυτήν την ενέργεια.</translation>
 <translation id="9038620279323455325">Το αρχείο με το όνομα "<ph name="FILE_NAME" />" υπάρχει ήδη. Επιλέξτε ένα διαφορετικό όνομα.</translation>
-<translation id="9064939804718829769">Μεταφορά…</translation>
 <translation id="9065203028668620118">Επεξεργασία</translation>
 <translation id="908378762078012445">Ρωσικά με φωνητικό πληκτρολόγιο AATSEEL</translation>
 <translation id="9099674669267916096">Πλήθος σελίδων</translation>

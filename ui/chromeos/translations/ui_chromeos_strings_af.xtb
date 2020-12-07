@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Lêers</translation>
 <translation id="1297922636971898492">Google Drive is nie nou beskikbaar nie. Oplaai sal outomaties herbegin wanneer Google Drive terug is.</translation>
 <translation id="1307931752636661898">Kan nie Linux-lêers bekyk nie</translation>
-<translation id="1338950911836659113">Vee tans uit …</translation>
 <translation id="1346748346194534595">Regs</translation>
 <translation id="1351692861129622852">Voer tans <ph name="FILE_COUNT" /> lêers in …</translation>
 <translation id="1358735829858566124">Die lêer of gids is nie bruikbaar nie.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Druk uit</translation>
 <translation id="1435838927755162558">Deel vouer met Parallels Desktop</translation>
 <translation id="1439494416798956626">Geskuif na <ph name="FOLDER_NAME" /></translation>
-<translation id="1464724975715666883">1 fout.</translation>
 <translation id="1467432559032391204">Links</translation>
 <translation id="1471718551822868769">Slowaaks</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" is nie opgelaai nie. Daar is nie genoeg spasie in jou Google Drive nie.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Esties</translation>
 <translation id="3466147780910026086">Skandeer tans jou mediatoestel …</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> foto's is gerugsteun na <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Kopieer tans …</translation>
 <translation id="3473378059788601120">Gekopieer na <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google-sigblad</translation>
 <translation id="3486821258960016770">Mongools</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> foute.</translation>
 <translation id="3522708245912499433">Portugees</translation>
 <translation id="3524311639100184459">Wees versigtig: Hierdie lêers is tydelik en kan outomaties uitgevee word om skyfspasie beskikbaar te maak.  <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Vouer</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">Litaus</translation>
 <translation id="3603385196401704894">Kanadese Frans</translation>
 <translation id="3606220979431771195">Turkse F</translation>
-<translation id="3609785682760573515">Sinkroniseer tans …</translation>
 <translation id="3616113530831147358">Oudio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620292326130836921">Alles is gerugsteun!</translation>
@@ -532,7 +527,6 @@
 <translation id="6657585470893396449">Wagwoord</translation>
 <translation id="6673674183150363784">Frans (Frankryk) met Bépo-sleutelbord</translation>
 <translation id="6710213216561001401">Vorige</translation>
-<translation id="6718273304615422081">Kompakteer tans …</translation>
 <translation id="6751256176799620176">1 vouer is gekies</translation>
 <translation id="6790428901817661496">Speel</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -732,7 +726,6 @@
 <translation id="8600173386174225982">Lêerlys het na kleinkiekieaansig toe verander.</translation>
 <translation id="8601932370724196034">Crostini-prentlêer</translation>
 <translation id="8609695766746872526">Yslands</translation>
-<translation id="8669949407341943408">Skuif tans …</translation>
 <translation id="8698464937041809063">Google-tekening</translation>
 <translation id="8712637175834984815">Het dit</translation>
 <translation id="8713112442029511308">Maltees</translation>
@@ -755,7 +748,6 @@
 <translation id="9034924485347205037">Linux-lêers</translation>
 <translation id="9035012421917565900">Die items kan nie na "<ph name="DESTINATION_NAME" />" toe teruggeskuif word nie en daarom sal jy nie hierdie handeling kan ontdoen nie.</translation>
 <translation id="9038620279323455325">'n Lêer met die naam "<ph name="FILE_NAME" />" bestaan reeds. Kies asseblief 'n ander naam.</translation>
-<translation id="9064939804718829769">Dra tans oor …</translation>
 <translation id="9065203028668620118">Wysig</translation>
 <translation id="908378762078012445">Russies met fonetiese AATSEEL-sleutelbord</translation>
 <translation id="9099674669267916096">Aantal bladsye</translation>

@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">Google ડ્રાઇવ હાલમાં ઉપલબ્ધ નથી. Google ડ્રાઇવ પાછું આવી જાય તે પછી અપલોડિંગ ઑટોમૅટિક રીતે ફરીથી શરૂ થશે.</translation>
 <translation id="1307931752636661898">Linux ફાઇલો બતાવી શકાતી નથી</translation>
-<translation id="1338950911836659113">કાઢી રહ્યું છે ...</translation>
 <translation id="1346748346194534595">જમણે</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> ફાઇલો આયાત કરી રહ્યું છે...</translation>
 <translation id="1358735829858566124">ફાઇલ કે ડિરેક્ટરી ઉપયોગ યોગ્ય નથી.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">પ્રિન્ટ</translation>
 <translation id="1435838927755162558">Parallels ડેસ્કટૉપ સાથે ફોલ્ડર શેર કરો</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" />માં ખસેડ્યું.</translation>
-<translation id="1464724975715666883">1 ભૂલ.</translation>
 <translation id="1467432559032391204">ડાબું</translation>
 <translation id="1471718551822868769">સ્લોવાક</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" ને અપલોડ કરવામાં આવી ન હતી. તમારી Google ડ્રાઇવમાં પૂરતી ખાલી જગ્યા નથી.</translation>
@@ -225,11 +223,9 @@
 <translation id="3455931012307786678">એસ્ટોનિયન</translation>
 <translation id="3466147780910026086">તમારા મીડિયા ઉપકરણને સ્કેન કરી રહ્યું છે...</translation>
 <translation id="3468522857997926824"><ph name="BEGIN_LINK" />Google ડ્રાઇવ<ph name="END_LINK" /> પર <ph name="FILE_COUNT" /> ફોટાનો બેક અપ લેવાયો</translation>
-<translation id="3470502288861289375">કૉપિ કરી રહ્યું છે...</translation>
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" />માં કૉપિ કર્યા.</translation>
 <translation id="3475447146579922140">Google સ્પ્રેડશીટ</translation>
 <translation id="3486821258960016770">મૉંગોલિયન</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> ભૂલો.</translation>
 <translation id="3522708245912499433">પોર્ટુગીઝ</translation>
 <translation id="3524311639100184459">ચેતવણી: આ ફાઇલો અસ્થાયી છે અને બની શકે કે ડિસ્ક પર સ્પેસ ખાલી કરવા માટે તેમને ઑટોમૅટિક રીતે ડિલીટ કરવામાં આવે  <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ફોલ્ડર</translation>
@@ -239,7 +235,6 @@
 <translation id="357479282490346887">લિથુનિયન</translation>
 <translation id="3603385196401704894">કેનેડિયન ફ્રેંચ</translation>
 <translation id="3606220979431771195">ટર્કિશ-F</translation>
-<translation id="3609785682760573515">સમન્વય કરી રહ્યું છે...</translation>
 <translation id="3616113530831147358">ઑડિઓ</translation>
 <translation id="3619115746895587757">કૅપુચિનો</translation>
 <translation id="3620292326130836921">તમામનો બેક અપ લેવાયો!</translation>
@@ -532,7 +527,6 @@
 <translation id="6657585470893396449">પાસવર્ડ</translation>
 <translation id="6673674183150363784">ફ્રેન્ચ (ફ્રાન્સ), Bépo કીબોર્ડ સાથે</translation>
 <translation id="6710213216561001401">પાછલી</translation>
-<translation id="6718273304615422081">ઝિપ કરી રહ્યાં છે...</translation>
 <translation id="6751256176799620176">1 ફોલ્ડર પસંદ કર્યું</translation>
 <translation id="6790428901817661496">ચલાવો</translation>
 <translation id="6795884519221689054">પાંડા</translation>
@@ -730,7 +724,6 @@
 <translation id="8600173386174225982">ફાઇલ સૂચિને થંબનેલ દૃશ્યમાં બદલી છે.</translation>
 <translation id="8601932370724196034">Crostini છબી ફાઇલ</translation>
 <translation id="8609695766746872526">આઇસલેન્ડિક</translation>
-<translation id="8669949407341943408">ખસેડી રહ્યું છે...</translation>
 <translation id="8698464937041809063">Google રેખાંકન</translation>
 <translation id="8712637175834984815">સમજાઈ ગયું</translation>
 <translation id="8713112442029511308">માલ્ટીઝ</translation>
@@ -753,7 +746,6 @@
 <translation id="9034924485347205037">Linux ફાઇલો</translation>
 <translation id="9035012421917565900">આઇટમને પાછી '<ph name="DESTINATION_NAME" />'માં ખસેડી શકાતી નથી, તેથી તમે આ ક્રિયાનો છેલ્લો ફેરફાર રદ કરી શકશો નહીંં.</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" નામની ફાઇલ પહેલાંથી અસ્તિત્વમાં છે. કૃપા કરીને કોઈ અલગ નામ પસંદ કરો.</translation>
-<translation id="9064939804718829769">સ્થાનાંતરિત કરી રહ્યાં છે...</translation>
 <translation id="9065203028668620118">ફેરફાર કરો</translation>
 <translation id="908378762078012445">રશિયન, ફોનેટિક AATSEEL કીબોર્ડ સાથે</translation>
 <translation id="9099674669267916096">પેજની સંખ્યા</translation>

@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Файлы</translation>
 <translation id="1297922636971898492">Google Диск временно недоступен. Когда доступ будет восстановлен, загрузка автоматически возобновится.</translation>
 <translation id="1307931752636661898">Нет доступа к файлам Linux</translation>
-<translation id="1338950911836659113">Удаление…</translation>
 <translation id="1346748346194534595">Справа</translation>
 <translation id="1351692861129622852">Импорт файлов (<ph name="FILE_COUNT" />)...</translation>
 <translation id="1358735829858566124">Этот файл или каталог непригоден для использования.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Печать</translation>
 <translation id="1435838927755162558">Предоставление Parallels Desktop доступа к папке</translation>
 <translation id="1439494416798956626">Перемещено в папку "<ph name="FOLDER_NAME" />".</translation>
-<translation id="1464724975715666883">1 ошибка.</translation>
 <translation id="1467432559032391204">Слева</translation>
 <translation id="1471718551822868769">Словацкий</translation>
 <translation id="1474339897586437869">Не удалось загрузить <ph name="FILENAME" />. Не хватает пространства на Google Диске.</translation>
@@ -225,11 +223,9 @@
 <translation id="3455931012307786678">Эстонский</translation>
 <translation id="3466147780910026086">Сканирование устройства...</translation>
 <translation id="3468522857997926824">На <ph name="BEGIN_LINK" />Google Диске<ph name="END_LINK" /> сохранено <ph name="FILE_COUNT" /> фото</translation>
-<translation id="3470502288861289375">Копирование…</translation>
 <translation id="3473378059788601120">Скопировано в папку "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3475447146579922140">Электронная таблица Google</translation>
 <translation id="3486821258960016770">Монгольский</translation>
-<translation id="3495304270784461826">Ошибок: <ph name="COUNT" />.</translation>
 <translation id="3522708245912499433">Португальский</translation>
 <translation id="3524311639100184459">Внимание! Эти файлы – временные. Они могут быть автоматически удалены, чтобы освободить место на диске.  <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
@@ -239,7 +235,6 @@
 <translation id="357479282490346887">Литовский</translation>
 <translation id="3603385196401704894">Канадская (французская)</translation>
 <translation id="3606220979431771195">Турецкая раскладка</translation>
-<translation id="3609785682760573515">Cинхронизация…</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3620292326130836921">Данные сохранены!</translation>
@@ -532,7 +527,6 @@
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6673674183150363784">Французский (Франция), раскладка Bépo</translation>
 <translation id="6710213216561001401">Назад</translation>
-<translation id="6718273304615422081">Архивирование…</translation>
 <translation id="6751256176799620176">1 папка выбрана</translation>
 <translation id="6790428901817661496">Воспроизвести</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -732,7 +726,6 @@
 <translation id="8600173386174225982">Файлы отображаются в виде значков.</translation>
 <translation id="8601932370724196034">Графический файл Crostini</translation>
 <translation id="8609695766746872526">Исландский</translation>
-<translation id="8669949407341943408">Перемещение...</translation>
 <translation id="8698464937041809063">Рисунок Google</translation>
 <translation id="8712637175834984815">Готово</translation>
 <translation id="8713112442029511308">Мальтийский</translation>
@@ -755,7 +748,6 @@
 <translation id="9034924485347205037">Файлы Linux</translation>
 <translation id="9035012421917565900">Объекты нельзя переместить обратно на общий диск "<ph name="DESTINATION_NAME" />", поэтому вы не сможете отменить это действие.</translation>
 <translation id="9038620279323455325">Файл "<ph name="FILE_NAME" />" уже существует. Выберите другое название.</translation>
-<translation id="9064939804718829769">Обработка…</translation>
 <translation id="9065203028668620118">Изменить</translation>
 <translation id="908378762078012445">Русский, фонетическая раскладка AATSEEL</translation>
 <translation id="9099674669267916096">Количество страниц</translation>

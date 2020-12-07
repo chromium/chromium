@@ -4690,7 +4690,6 @@
 <translation id="642469772702851743">Αυτή η συσκευή (σειριακός αριθμός: <ph name="SERIAL_NUMBER" />) κλειδώθηκε από τον κάτοχο.</translation>
 <translation id="6425556984042222041">Ρυθμός μετατροπής κειμένου σε ομιλία</translation>
 <translation id="6426200009596957090">Άνοιγμα ρυθμίσεων ChromeVox</translation>
-<translation id="642654727595919401">Ο τομέας <ph name="DOMAIN" /> απαιτεί τη δημιουργία αντιγράφων ασφαλείας για τα δεδομένα σας και την επιστροφή αυτής της συσκευής (<ph name="DEVICE_TYPE" />) εντός 1 εβδομάδας.<ph name="LINK_BEGIN" />Δείτε λεπτομέρειες.<ph name="LINK_END" /></translation>
 <translation id="642729974267661262">Δεν επιτρέπεται να αναπαράγουν ήχο</translation>
 <translation id="6428982734197629783">Επεξεργασία εικόνας</translation>
 <translation id="6429384232893414837">Σφάλμα ενημέρωσης</translation>
@@ -5566,7 +5565,6 @@
 <translation id="7457384018036134905">Διαχείριση γλωσσών στις ρυθμίσεις του Chrome OS</translation>
 <translation id="7458168200501453431">Χρησιμοποιεί το ίδιο εργαλείο ορθογραφικού ελέγχου που χρησιμοποιείται στην Αναζήτηση Google. Το κείμενο που πληκτρολογείτε στο πρόγραμμα περιήγησης αποστέλλεται στην Google.</translation>
 <translation id="7460045493116006516">Τρέχον θέμα που έχετε εγκαταστήσει</translation>
-<translation id="7461729991508684543">{NUM_DAYS,plural, =1{Ο τομέας <ph name="DOMAIN" /> απαιτεί τη δημιουργία αντιγράφων ασφαλείας για τα δεδομένα σας και την επιστροφή αυτής της συσκευής (<ph name="DEVICE_TYPE" />) σήμερα.<ph name="LINK_BEGIN" />Δείτε λεπτομέρειες.<ph name="LINK_END" />}other{Ο τομέας <ph name="DOMAIN" /> απαιτεί τη δημιουργία αντιγράφων ασφαλείας για τα δεδομένα σας και την επιστροφή αυτής της συσκευής (<ph name="DEVICE_TYPE" />) εντός {NUM_DAYS} ημερών.<ph name="LINK_BEGIN" />Δείτε λεπτομέρειες.<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">Καρφίτσωμα</translation>
 <translation id="746216226901520237">Την επόμενη φορά, το τηλέφωνό σας θα ξεκλειδώσει τη συσκευή <ph name="DEVICE_TYPE" />. Μπορείτε να απενεργοποιήσετε το Smart Lock στις Ρυθμίσεις.</translation>
 <translation id="7463006580194749499">Προσθήκη χρήστη</translation>
@@ -6258,7 +6256,6 @@
 <translation id="8226619461731305576">Ουρά</translation>
 <translation id="8226628635270268143">Επιλέξτε τις αγαπημένες σας φωτογραφίες και λευκώματα.</translation>
 <translation id="8227119283605456246">Επισύναψη αρχείου</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">Αποθήκευση κωδικού πρόσβασης για <ph name="ORIGIN" />;</translation>
 <translation id="8234795456569844941">Βοηθήστε τους μηχανικούς μας να επιδιορθώσουν αυτό το πρόβλημα. Πείτε μας τι συνέβη ακριβώς πριν από τη λήψη του μηνύματος σφάλματος προφίλ:</translation>
 <translation id="8236917170563564587">Εναλλακτικά, μοιραστείτε αυτήν την καρτέλα</translation>

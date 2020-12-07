@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">فائلیں</translation>
 <translation id="1297922636971898492">‏Google Drive ابھی دستیاب نہیں ہے۔ Google Drive واپس آ جانے پر اپ لوڈنگ خود بخود دوبارہ شروع ہو جائے گی۔</translation>
 <translation id="1307931752636661898">‏Linux فائلز دیکھنے سے قاصر</translation>
-<translation id="1338950911836659113">حذف کیا جا رہا ہے…</translation>
 <translation id="1346748346194534595">دائیں</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> فائلوں کو درآمد کیا جا رہا ہے…</translation>
 <translation id="1358735829858566124">فائل یا ڈائریکٹری قابل استعمال نہیں ہے۔</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">پرنٹ کریں</translation>
 <translation id="1435838927755162558">‏Parallels ڈیسک ٹاپ کے ساتھ فولڈر کا اشتراک کریں</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> میں منتقل کر دیا گیا۔</translation>
-<translation id="1464724975715666883">1 خرابی۔</translation>
 <translation id="1467432559032391204">بائیں</translation>
 <translation id="1471718551822868769">سلاواکی</translation>
 <translation id="1474339897586437869">‏"<ph name="FILENAME" />" کو اپ لوڈ نہیں کیا گیا۔ آپ کے Google Drive میں کافی خالی جگہ نہیں ہے۔</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">اسٹونين</translation>
 <translation id="3466147780910026086">آپ کے میڈیا آلے کو سکین کیا جا رہا ہے…</translation>
 <translation id="3468522857997926824">‏<ph name="FILE_COUNT" /> تصاویر کا <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> میں بیک اپ لیا گیا</translation>
-<translation id="3470502288861289375">کاپی کیے جا رہے ہیں…</translation>
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> میں کاپی ہو گيا۔</translation>
 <translation id="3475447146579922140">‏Google اسپریڈ شیٹ</translation>
 <translation id="3486821258960016770">منگؤلی</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> خرابیاں۔</translation>
 <translation id="3522708245912499433">پُرتگالی</translation>
 <translation id="3524311639100184459">احتیاط: یہ فائلز عارضی ہیں اور ڈسک میں جگہ خالی کرنے کیلئے انہیں خودکار طور پر حذف کیا جا سکتا ہے۔  <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">فولڈر</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">لتھُواینین</translation>
 <translation id="3603385196401704894">کینیڈین فرانسیسی</translation>
 <translation id="3606220979431771195">‏ترکی F</translation>
-<translation id="3609785682760573515">مطابقت پذیری کی جا رہی ہے…</translation>
 <translation id="3616113530831147358">آڈیو</translation>
 <translation id="3619115746895587757">کیپو چینو</translation>
 <translation id="3620292326130836921">سبھی کا بیک اپ بنا لیا گیا!</translation>
@@ -532,7 +527,6 @@
 <translation id="6657585470893396449">پاس ورڈ</translation>
 <translation id="6673674183150363784">‏Bépo کی بورڈ کے ساتھ فراسنیسی (فرانس)</translation>
 <translation id="6710213216561001401">گزشتہ</translation>
-<translation id="6718273304615422081">زپ کیا جا رہا ہے…</translation>
 <translation id="6751256176799620176">1 فولڈر منتخب کیا گیا</translation>
 <translation id="6790428901817661496">چلائیں</translation>
 <translation id="6795884519221689054">پانڈا</translation>
@@ -732,7 +726,6 @@
 <translation id="8600173386174225982">فائل فہرست کو تھمب نیل منظر میں تبدیل کر دیا گیا ہے۔</translation>
 <translation id="8601932370724196034">‏Crostini تصویر فائل</translation>
 <translation id="8609695766746872526">آئس لینڈک</translation>
-<translation id="8669949407341943408">منتقل کی جا رہی ہیں…</translation>
 <translation id="8698464937041809063">‏Google ڈرائنگ</translation>
 <translation id="8712637175834984815">سمجھ آ گئی</translation>
 <translation id="8713112442029511308">مالٹیز</translation>
@@ -755,7 +748,6 @@
 <translation id="9034924485347205037">‏Linux فائلز</translation>
 <translation id="9035012421917565900">آئٹمز '<ph name="DESTINATION_NAME" />' میں واپس منتقل نہیں کیے جا سکتے، اسلئے آپ اس کارروائي کو کالعدم نہیں کر سکیں گے۔</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" نام کی فائل پہلے سے موجود ہے۔ براہ کرم ایک مختلف نام منتخب کریں۔</translation>
-<translation id="9064939804718829769">منتقلی ہو رہی ہے…</translation>
 <translation id="9065203028668620118">تبدیل کریں</translation>
 <translation id="908378762078012445">‏فونیٹک AATSEEL کی بورڈ کے ساتھ روسی</translation>
 <translation id="9099674669267916096">صفحات کی تعداد</translation>

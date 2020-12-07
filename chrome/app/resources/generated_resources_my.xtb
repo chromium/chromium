@@ -4688,7 +4688,6 @@
 <translation id="642469772702851743">ဤစက်ပစ္စည်း (SN- <ph name="SERIAL_NUMBER" />) ကို ပိုင်ရှင်က လော့ခ်ချထားသည်။</translation>
 <translation id="6425556984042222041">စာသားမှ စကားပြော မြန်နှုန်း</translation>
 <translation id="6426200009596957090">ChromeVox ဆက်တင်ကို ဖွင့်ရန်</translation>
-<translation id="642654727595919401"><ph name="DOMAIN" /> သည် သင့်ဒေတာများကို အရန်သိမ်းပြီး ဤ <ph name="DEVICE_TYPE" /> ကို ၁ ပတ်အတွင်း ပြန်ပို့ရန် လိုအပ်သည်။<ph name="LINK_BEGIN" />အသေးစိတ်များကြည့်ရန်<ph name="LINK_END" /></translation>
 <translation id="642729974267661262">အသံဖွင့်ရန် ခွင့်ပြုမထားပါ</translation>
 <translation id="6428982734197629783">ပုံကို စီမံဆောင်ရွက်နေသည်</translation>
 <translation id="6429384232893414837">အပ်ဒိတ်အမှားအယွင်း</translation>
@@ -5562,7 +5561,6 @@
 <translation id="7457384018036134905">Chrome OS ဆက်တင်များတွင် ဘာသာစကားများကို စီမံရန်</translation>
 <translation id="7458168200501453431">Google search တွင်အသုံးပြုသည့် စာလုံးပေါင်းစစ်စနစ် တစ်ခုတည်းကို အသုံးပြုသည်။ ဘရောင်ဇာတွင် သင်ရိုက်သည့် စာသားကို Google သို့ပို့ပါသည်။</translation>
 <translation id="7460045493116006516">သင်လက်ရှိထည့်သွင်းထားသည့် အပြင်အဆင်</translation>
-<translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> သည် သင့်ဒေတာကို အရန်သိမ်းပြီး ဤ <ph name="DEVICE_TYPE" /> ကို ယနေ့ပြန်ပို့ရန်လိုအပ်သည်။<ph name="LINK_BEGIN" />အသေးစိတ်များကြည့်ရန်<ph name="LINK_END" />}other{<ph name="DOMAIN" /> သည် သင့်ဒေတာကို အရန်သိမ်းပြီး ဤ <ph name="DEVICE_TYPE" /> ကို {NUM_DAYS} ရက်အတွင်း ပြန်ပို့ရန် လိုအပ်သည်။<ph name="LINK_BEGIN" />အသေးစိတ်များကြည့်ရန်<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">ပင်နံပါတ်</translation>
 <translation id="746216226901520237">နောက်တစ်ကြိမ်တွင် သင့်ဖုန်းက သင်၏ <ph name="DEVICE_TYPE" /> ကို လော့ခ်ဖွင့်ပါမည်။ Smart Lock ကို 'ဆက်တင်များ' ထဲတွင် ပိတ်နိုင်သည်။</translation>
 <translation id="7463006580194749499">လူကို ထည့်ပေးရန်</translation>
@@ -6253,7 +6251,6 @@
 <translation id="8226619461731305576">တန်းစီစာရင်း</translation>
 <translation id="8226628635270268143">သင့်အကြိုက်ဆုံး ဓာတ်ပုံနှင့် အယ်လ်ဘမ်များ ရွေးချယ်ရန်</translation>
 <translation id="8227119283605456246">ပူးတွဲဖိုင်</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />၊ <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> အတွက် စကားဝှက်ကို သိမ်းဆည်းလိုပါသလား။</translation>
 <translation id="8234795456569844941">ကျွန်ုပ်တို့၏ အင်ဂျင်နီယာများက ဤပြဿနာကို ဖြေရှင်းနိုင်ရန် ကူညီပေးပါ။ ပရိုဖိုင်မှားယွင်းကြောင်းမက်ဆေ့ဂျ်ကို မရရှိမီ ဖြစ်ပျက်ခဲ့ပုံကို ကျွန်ုပ်တို့အား ပြောပါ−</translation>
 <translation id="8236917170563564587">၎င်းအစား ဤတဘ်ကို မျှဝေရန်</translation>

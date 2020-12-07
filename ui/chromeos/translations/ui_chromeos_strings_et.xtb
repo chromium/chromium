@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Failid</translation>
 <translation id="1297922636971898492">Google Drive pole praegu saadaval. Kui Google Drive on tagasi, algab üleslaadimine automaatselt uuesti.</translation>
 <translation id="1307931752636661898">Linuxi faile ei saa vaadata</translation>
-<translation id="1338950911836659113">Kustutamine ...</translation>
 <translation id="1346748346194534595">Paremale</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> faili importimine ...</translation>
 <translation id="1358735829858566124">Fail või kataloog ei ole kasutatav.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Printimine</translation>
 <translation id="1435838927755162558">Kausta jagamine üksusega Parallels Desktop</translation>
 <translation id="1439494416798956626">Teisaldati kausta <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">1 viga.</translation>
 <translation id="1467432559032391204">Vasakule</translation>
 <translation id="1471718551822868769">slovaki</translation>
 <translation id="1474339897586437869">Faili „<ph name="FILENAME" />” ei laaditud üles. Teie Google Drive’is ei ole piisavalt vaba ruumi.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">eesti</translation>
 <translation id="3466147780910026086">Meediaseadme skannimine ...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> fotot on varundatud teenuses <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Kopeerimine ...</translation>
 <translation id="3473378059788601120">Kopeeritud kausta <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google'i arvutustabel</translation>
 <translation id="3486821258960016770">mongoli</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> viga.</translation>
 <translation id="3522708245912499433">Portugali keel</translation>
 <translation id="3524311639100184459">Hoiatus. Need on ajutised failid ja võidakse kettaruumi vabastamiseks automaatselt kustutada.  <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Kaust</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">leedu keel</translation>
 <translation id="3603385196401704894">Kanada prantsuse</translation>
 <translation id="3606220979431771195">Türgi F</translation>
-<translation id="3609785682760573515">Sünkroonimine ...</translation>
 <translation id="3616113530831147358">Heli</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620292326130836921">Kõik on varundatud.</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">Parool</translation>
 <translation id="6673674183150363784">prantsuse (Prantsusmaa), BÉPO-klaviatuuriga</translation>
 <translation id="6710213216561001401">Eelmine</translation>
-<translation id="6718273304615422081">Pakkimine ...</translation>
 <translation id="6751256176799620176">Valitud on üks kaust</translation>
 <translation id="6790428901817661496">Esita</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">Faililoendi jaoks aktiveeriti pisipildikuva.</translation>
 <translation id="8601932370724196034">Crostini pildifail</translation>
 <translation id="8609695766746872526">islandi</translation>
-<translation id="8669949407341943408">Teisaldamine ...</translation>
 <translation id="8698464937041809063">Google joonistus</translation>
 <translation id="8712637175834984815">Selge</translation>
 <translation id="8713112442029511308">malta</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Linuxi failid</translation>
 <translation id="9035012421917565900">Üksusi ei saa sihtkohta „<ph name="DESTINATION_NAME" />” tagasi teisaldada, seega ei saa te seda toimingut tagasi võtta.</translation>
 <translation id="9038620279323455325">Fail nimega „<ph name="FILE_NAME" />” on juba olemas? Valige muu nimi.</translation>
-<translation id="9064939804718829769">Üleandmine ...</translation>
 <translation id="9065203028668620118">Muuda</translation>
 <translation id="908378762078012445">vene, foneetilise AATSEEL-klaviatuuriga</translation>
 <translation id="9099674669267916096">Lehtede arv</translation>

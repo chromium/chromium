@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Файлдар</translation>
 <translation id="1297922636971898492">Google Drive учурда жеткиликтүү эмес. Google Drive кайтып келгенден кийин жүктөп берүү аракети автоматтык түрдө кайра аткарылат.</translation>
 <translation id="1307931752636661898">Linux Файлдарын көрүү мүмкүн болбой жатат</translation>
-<translation id="1338950911836659113">Жок кылынууда…</translation>
 <translation id="1346748346194534595">Оң</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> файл импорттолууда…</translation>
 <translation id="1358735829858566124">Файлды же каталогду колдонуу мүмкүн эмес.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Басып чыгаруу</translation>
 <translation id="1435838927755162558">Файлды Parallels Desktop менен бөлүшүү</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> папкасына жылдырылды.</translation>
-<translation id="1464724975715666883">1 ката.</translation>
 <translation id="1467432559032391204">Сол</translation>
 <translation id="1471718551822868769">Словакча</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" жүктөп берилбей калды. Google Drive’да бош орун жетишпейт.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Эстончо</translation>
 <translation id="3466147780910026086">Медиа түзмөгүңүз скандалууда…</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> сүрөттүн камдык көчүрмөсү <ph name="BEGIN_LINK" />Google Drive'га<ph name="END_LINK" /> сакталды</translation>
-<translation id="3470502288861289375">Көчүрүлүүдө…</translation>
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> папкасына көчүрүлдү.</translation>
 <translation id="3475447146579922140">Google электрондук жадыбал</translation>
 <translation id="3486821258960016770">Монголчо</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> ката.</translation>
 <translation id="3522708245912499433">Португалча</translation>
 <translation id="3524311639100184459">Эскертүү: Бул файлдар убактылуу жана дискте орун бошотуу үчүн автоматтык түрдө жок кылынышы мүмкүн.  <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Куржун</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">Литвача</translation>
 <translation id="3603385196401704894">Французча (Канада)</translation>
 <translation id="3606220979431771195">Түркчө-F</translation>
-<translation id="3609785682760573515">Шайкештештирилүүдө…</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3620292326130836921">Баарынын камдык көчүрмөсү сакталды!</translation>
@@ -532,7 +527,6 @@
 <translation id="6657585470893396449">Сырсөз</translation>
 <translation id="6673674183150363784">Французча (Франция) жана Bépo баскычтобу</translation>
 <translation id="6710213216561001401">Мурунку</translation>
-<translation id="6718273304615422081">Кысылууда…</translation>
 <translation id="6751256176799620176">1 куржун тандалды</translation>
 <translation id="6790428901817661496">Ойнотуу</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -732,7 +726,6 @@
 <translation id="8600173386174225982">Файлдардын тизмеси эскиз көрүнүшүнө которулду.</translation>
 <translation id="8601932370724196034">Crostini сүрөт файлы</translation>
 <translation id="8609695766746872526">Исландча</translation>
-<translation id="8669949407341943408">Жылдырылууда…</translation>
 <translation id="8698464937041809063">Google чийүү</translation>
 <translation id="8712637175834984815">Түшүндүм</translation>
 <translation id="8713112442029511308">Малтизче</translation>
@@ -755,7 +748,6 @@
 <translation id="9034924485347205037">Linux файлдары</translation>
 <translation id="9035012421917565900">Бул файлдарды кайра "<ph name="DESTINATION_NAME" />" дискине жылдырууга мүмкүн болбой калат, андыктан бул аракетти кайтара албай каласыз.</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" деген файл мурунтан эле бар. Файлды башкача атаңыз.</translation>
-<translation id="9064939804718829769">Өткөрүлүүдө…</translation>
 <translation id="9065203028668620118">Түзөтүү</translation>
 <translation id="908378762078012445">Орусча (AATSEEL фонетикалык баскычтобу)</translation>
 <translation id="9099674669267916096">Барактардын саны</translation>

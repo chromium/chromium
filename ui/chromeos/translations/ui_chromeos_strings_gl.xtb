@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Ficheiros</translation>
 <translation id="1297922636971898492">Google Drive non está dispoñible nestes momentos. A carga reiniciarase automaticamente cando volva estar dispoñible.</translation>
 <translation id="1307931752636661898">Non se puideron ver ficheiros de Linux</translation>
-<translation id="1338950911836659113">Eliminando...</translation>
 <translation id="1346748346194534595">Dereita</translation>
 <translation id="1351692861129622852">Importando <ph name="FILE_COUNT" /> ficheiros...</translation>
 <translation id="1358735829858566124">O ficheiro ou o directorio non se pode utilizar.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1435838927755162558">Compartir cartafol con Parallels Desktop</translation>
 <translation id="1439494416798956626">Moveuse a <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">1 erro.</translation>
 <translation id="1467432559032391204">Esquerda</translation>
 <translation id="1471718551822868769">Eslovaco</translation>
 <translation id="1474339897586437869">Non se cargou "<ph name="FILENAME" />". Non hai suficiente espazo libre en Google Drive.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Estoniano</translation>
 <translation id="3466147780910026086">Analizando o teu dispositivo multimedia...</translation>
 <translation id="3468522857997926824">Creouse unha copia de seguranza de <ph name="FILE_COUNT" /> fotos en <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Copiando...</translation>
 <translation id="3473378059788601120">Copiouse en <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Folla de cálculo de Google</translation>
 <translation id="3486821258960016770">Mongol</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> erros.</translation>
 <translation id="3522708245912499433">Portugués</translation>
 <translation id="3524311639100184459">Precaución: Estes ficheiros son temporais e pódense eliminar automaticamente para liberar espazo no disco.  <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Cartafol</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">Lituano</translation>
 <translation id="3603385196401704894">Francés canadense</translation>
 <translation id="3606220979431771195">Turco F</translation>
-<translation id="3609785682760573515">Sincronizando...</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Capuchino</translation>
 <translation id="3620292326130836921">Todos os ficheiros teñen unha copia de seguranza</translation>
@@ -532,7 +527,6 @@
 <translation id="6657585470893396449">Contrasinal</translation>
 <translation id="6673674183150363784">Francés (Francia) con teclado BÉPO</translation>
 <translation id="6710213216561001401">Anterior</translation>
-<translation id="6718273304615422081">Comprimindo...</translation>
 <translation id="6751256176799620176">Seleccionouse 1 cartafol</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -732,7 +726,6 @@
 <translation id="8600173386174225982">A lista de ficheiros cambiou á vista de miniatura.</translation>
 <translation id="8601932370724196034">Ficheiro de imaxe de Crostini</translation>
 <translation id="8609695766746872526">Islandés</translation>
-<translation id="8669949407341943408">Movendo...</translation>
 <translation id="8698464937041809063">Debuxo de Google</translation>
 <translation id="8712637175834984815">De acordo</translation>
 <translation id="8713112442029511308">Maltés</translation>
@@ -755,7 +748,6 @@
 <translation id="9034924485347205037">Ficheiros de Linux</translation>
 <translation id="9035012421917565900">Os elementos non se poden transferir de novo a "<ph name="DESTINATION_NAME" />", así que non poderás desfacer esta acción.</translation>
 <translation id="9038620279323455325">Xa existe un ficheiro denominado "<ph name="FILE_NAME" />". Escolle un nome diferente.</translation>
-<translation id="9064939804718829769">Transferindo...</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="908378762078012445">Ruso con teclado AATSEEL fonético</translation>
 <translation id="9099674669267916096">Número de páxinas</translation>

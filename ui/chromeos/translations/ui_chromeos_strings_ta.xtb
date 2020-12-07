@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">Google இயக்ககம் இப்போது கிடைக்கவில்லை. Google இயக்ககம் இணைப்பு கிடைத்தவுடன் பதிவேற்றம் தானாகவே மறுதொடக்கம் செய்யப்படும்.</translation>
 <translation id="1307931752636661898">Linux கோப்புகளைப் பார்க்க முடியவில்லை</translation>
-<translation id="1338950911836659113">நீக்குகிறது...</translation>
 <translation id="1346748346194534595">வலது</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> கோப்புகளைப் பதிவிறக்குகிறது...</translation>
 <translation id="1358735829858566124">கோப்பு அல்லது கோப்பகம் உபயோகிக்கக்கூடியதில்லை.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">அச்சிடுக</translation>
 <translation id="1435838927755162558">Parallels Desktop மூலம் கோப்புறையைப் பகிருங்கள்</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" />க்கு நகர்த்தப்பட்டது.</translation>
-<translation id="1464724975715666883">1 பிழை.</translation>
 <translation id="1467432559032391204">இடது</translation>
 <translation id="1471718551822868769">ஸ்லோவாக்</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" ஏற்றப்படவில்லை. உங்கள் Google இயக்ககத்தில் போதுமான காலியிடம் இல்லை.</translation>
@@ -225,11 +223,9 @@
 <translation id="3455931012307786678">எஸ்தோனியன்</translation>
 <translation id="3466147780910026086">உங்கள் மீடியா சாதனத்தை ஸ்கேன் செய்கிறது...</translation>
 <translation id="3468522857997926824"><ph name="BEGIN_LINK" />Google இயக்ககத்தில்<ph name="END_LINK" /> <ph name="FILE_COUNT" /> படங்கள் காப்புப் பிரதி எடுக்கப்பட்டன</translation>
-<translation id="3470502288861289375">நகலெடுக்கிறது...</translation>
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" />க்கு நகலெடுக்கப்பட்டது.</translation>
 <translation id="3475447146579922140">Google விரிதாள்</translation>
 <translation id="3486821258960016770">மங்கோலியன்</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> பிழைகள்.</translation>
 <translation id="3522708245912499433">போர்ச்சுகீஸ்</translation>
 <translation id="3524311639100184459">எச்சரிக்கை: இந்தக் கோப்புகள் தற்காலிகமானவை, டிஸ்க்கில் இடத்தைக் காலியாக்கும் வகையில் இவை தானாகவே நீக்கப்படலாம்.  <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">கோப்புறை</translation>
@@ -239,7 +235,6 @@
 <translation id="357479282490346887">லிதுவேனியன்</translation>
 <translation id="3603385196401704894">கனடியன் ஃபிரெஞ்சு</translation>
 <translation id="3606220979431771195">டர்கிஷ்-F</translation>
-<translation id="3609785682760573515">ஒத்திசைக்கிறது...</translation>
 <translation id="3616113530831147358">ஆடியோ</translation>
 <translation id="3619115746895587757">காப்பச்சினோ</translation>
 <translation id="3620292326130836921">எல்லாம் காப்புப் பிரதி எடுக்கப்பட்டன!</translation>
@@ -532,7 +527,6 @@
 <translation id="6657585470893396449">கடவுச்சொல்</translation>
 <translation id="6673674183150363784">ஃபிரெஞ்சு (ஃபிரான்ஸ்) - Bépo கீபோர்டு</translation>
 <translation id="6710213216561001401">முந்தையது</translation>
-<translation id="6718273304615422081">ஜிப் செய்கிறது...</translation>
 <translation id="6751256176799620176">1 கோப்புறை தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="6790428901817661496">இயக்கு</translation>
 <translation id="6795884519221689054">பாண்டா</translation>
@@ -732,7 +726,6 @@
 <translation id="8600173386174225982">கோப்புப் பட்டியல் சிறுபடக் காட்சிக்கு மாறியுள்ளது.</translation>
 <translation id="8601932370724196034">Crostini படக் கோப்பு</translation>
 <translation id="8609695766746872526">ஐஸ்லாண்டிக்</translation>
-<translation id="8669949407341943408">நகர்கிறது...</translation>
 <translation id="8698464937041809063">Google வரைதல்</translation>
 <translation id="8712637175834984815">புரிந்தது</translation>
 <translation id="8713112442029511308">மால்டீஸ்</translation>
@@ -755,7 +748,6 @@
 <translation id="9034924485347205037">Linux கோப்புகள்</translation>
 <translation id="9035012421917565900">கோப்புகளை '<ph name="DESTINATION_NAME" />'க்கு மீண்டும் நகர்த்த முடியாது என்பதால், இதைச் செயல்தவிர்க்க முடியாது.</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" என்ற பெயருள்ள கோப்பு ஏற்கனவே உள்ளது. வேறொரு பெயரைத் தேர்வுசெய்யவும்.</translation>
-<translation id="9064939804718829769">பரிமாற்றுகிறது...</translation>
 <translation id="9065203028668620118">திருத்து</translation>
 <translation id="908378762078012445">ரஷ்யன் - ஒலிப்புமுறை (AATSEEL) கீபோர்டு</translation>
 <translation id="9099674669267916096">பக்க எண்ணிக்கை</translation>

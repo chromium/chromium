@@ -4675,7 +4675,6 @@
 <translation id="642469772702851743">இந்தச் சாதனம் (SN: <ph name="SERIAL_NUMBER" />), உரிமையாளரால் பூட்டப்பட்டது.</translation>
 <translation id="6425556984042222041">’உரையிலிருந்து பேச்சு’ வேக விகிதம்</translation>
 <translation id="6426200009596957090">ChromeVox அமைப்புகளைத் திற</translation>
-<translation id="642654727595919401"><ph name="DOMAIN" /> டொமைனைப் பயன்படுத்த, உங்கள் தரவைக் காப்புப் பிரதி எடுத்துவிட்டு இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை 1 வாரத்திற்குள் திருப்பியளிக்க வேண்டும். <ph name="LINK_BEGIN" />விவரங்களைக் காட்டு<ph name="LINK_END" /></translation>
 <translation id="642729974267661262">ஒலியை இயக்க அனுமதி இல்லாத தளங்கள்</translation>
 <translation id="6428982734197629783">படத்தைச் செயல்படுத்துகிறது</translation>
 <translation id="6429384232893414837">புதுப்பிப்பதில் பிழை</translation>
@@ -5549,7 +5548,6 @@
 <translation id="7457384018036134905">Chrome OS அமைப்புகளில் மொழிகளை நிர்வகியுங்கள்</translation>
 <translation id="7458168200501453431">Google தேடலில் பயன்படுத்தப்படும் அதே பிழைத்திருத்தியைப் பயன்படுத்தும். உலாவியில் நீங்கள் உள்ளிடும் உரை Googleளுக்கு அனுப்பப்படும்.</translation>
 <translation id="7460045493116006516">தற்போது நிறுவியுள்ள தீம்</translation>
-<translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> டொமைனைப் பயன்படுத்த, உங்கள் தரவைக் காப்புப் பிரதி எடுத்துவிட்டு இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை இன்றே திருப்பியளிக்க வேண்டும். <ph name="LINK_BEGIN" />விவரங்களைக் காட்டு<ph name="LINK_END" />}other{<ph name="DOMAIN" /> டொமைனைப் பயன்படுத்த, உங்கள் தரவைக் காப்புப் பிரதி எடுத்துவிட்டு இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை {NUM_DAYS} நாட்களுக்குள் திருப்பியளிக்க வேண்டும். <ph name="LINK_BEGIN" />விவரங்களைக் காட்டு<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">நிலையாக வை</translation>
 <translation id="746216226901520237">அடுத்த முறை, உங்கள் ஃபோன் <ph name="DEVICE_TYPE" /> சாதனத்தைத் திறக்கும். அமைப்புகளில் Smart Lockகை முடக்கலாம்.</translation>
 <translation id="7463006580194749499">நபரைச் சேர்</translation>
@@ -6237,7 +6235,6 @@
 <translation id="8226619461731305576">வரிசை</translation>
 <translation id="8226628635270268143">உங்களுக்குப் பிடித்த படங்களையும் ஆல்பங்களையும் தேர்வுசெய்க</translation>
 <translation id="8227119283605456246">கோப்பை இணை</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" />க்கான கடவுச்சொல்லைச் சேமிக்கவா?</translation>
 <translation id="8234795456569844941">சுயவிவரப் பிழைச் செய்தியைப் பெறும் முன், என்ன நடந்தது என்பதை விவரிப்பதன் மூலம், இந்தச் சிக்கலைச் சரிசெய்ய, எங்கள் பொறியாளர்களுக்கு உதவவும்.</translation>
 <translation id="8236917170563564587">இந்தத் தாவலைப் பகிர்</translation>

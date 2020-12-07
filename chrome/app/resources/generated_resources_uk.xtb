@@ -4692,7 +4692,6 @@
 <translation id="642469772702851743">Власник заблокував цей пристрій (серійний номер <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="6425556984042222041">Швидкість синтезу мовлення</translation>
 <translation id="6426200009596957090">Відкрити налаштування ChromeVox</translation>
-<translation id="642654727595919401">Домен <ph name="DOMAIN" /> вимагає, щоб ви створили резервну копію своїх даних і повернули пристрій <ph name="DEVICE_TYPE" /> упродовж 1 тижня. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="642729974267661262">Заборонено відтворювати звуки</translation>
 <translation id="6428982734197629783">Обробка зображення</translation>
 <translation id="6429384232893414837">Помилка оновлення</translation>
@@ -5568,7 +5567,6 @@
 <translation id="7457384018036134905">Керувати мовами в налаштуваннях ОС Chrome</translation>
 <translation id="7458168200501453431">Використовує ту саму технологію перевірки правопису, що й Пошук Google. Текст, який ви вводите у веб-переглядачі, надсилається в Google.</translation>
 <translation id="7460045493116006516">Поточна встановлена тема</translation>
-<translation id="7461729991508684543">{NUM_DAYS,plural, =1{Домен <ph name="DOMAIN" /> вимагає, щоб ви створили резервну копію своїх даних і повернули пристрій <ph name="DEVICE_TYPE" /> сьогодні. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" />}one{Домен <ph name="DOMAIN" /> вимагає, щоб ви створили резервну копію своїх даних і повернули пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} дня. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" />}few{Домен <ph name="DOMAIN" /> вимагає, щоб ви створили резервну копію своїх даних і повернули пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} днів. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" />}many{Домен <ph name="DOMAIN" /> вимагає, щоб ви створили резервну копію своїх даних і повернули пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} днів. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" />}other{Домен <ph name="DOMAIN" /> вимагає, щоб ви створили резервну копію своїх даних і повернули пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} дня. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">Закріпити</translation>
 <translation id="746216226901520237">Наступного разу ви зможете розблокувати пристрій <ph name="DEVICE_TYPE" /> за допомогою свого телефона. Smart Lock можна вимкнути в налаштуваннях.</translation>
 <translation id="7463006580194749499">Додати користувача</translation>
@@ -6260,7 +6258,6 @@
 <translation id="8226619461731305576">Черга</translation>
 <translation id="8226628635270268143">Вибрати улюблені фотографії й альбоми</translation>
 <translation id="8227119283605456246">Вкласти файл</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">Зберегти пароль для <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Допоможіть нашим розробникам вирішити цю проблему. Опишіть, що сталося перед тим, як з’явилося повідомлення про помилку профілю.</translation>
 <translation id="8236917170563564587">Натомість поділитися цією вкладкою</translation>

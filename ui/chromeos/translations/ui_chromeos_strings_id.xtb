@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">File</translation>
 <translation id="1297922636971898492">Saat ini Google Drive tidak tersedia. Upload akan dimulai ulang secara otomatis setelah Google Drive aktif kembali.</translation>
 <translation id="1307931752636661898">Tidak dapat melihat file Linux</translation>
-<translation id="1338950911836659113">Menghapus...</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1351692861129622852">Mengimpor <ph name="FILE_COUNT" /> file...</translation>
 <translation id="1358735829858566124">File atau direktori tidak dapat digunakan.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Cetak</translation>
 <translation id="1435838927755162558">Bagikan folder ke Parallels Desktop</translation>
 <translation id="1439494416798956626">Dipindahkan ke <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">1 kesalahan.</translation>
 <translation id="1467432559032391204">Kiri</translation>
 <translation id="1471718551822868769">Slovakia</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" tidak diupload. Ruang di Google Drive Anda tidak cukup.</translation>
@@ -225,11 +223,9 @@
 <translation id="3455931012307786678">Estonia</translation>
 <translation id="3466147780910026086">Memindai perangkat media Anda...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> foto dicadangkan ke <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Menyalin...</translation>
 <translation id="3473378059788601120">Disalin ke <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Spreadsheet Google</translation>
 <translation id="3486821258960016770">Mongolia</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> kesalahan.</translation>
 <translation id="3522708245912499433">Portugis</translation>
 <translation id="3524311639100184459">Perhatian: File ini bersifat sementara dan dapat dihapus secara otomatis untuk mengosongkan ruang disk.  <ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
@@ -239,7 +235,6 @@
 <translation id="357479282490346887">Lithuania</translation>
 <translation id="3603385196401704894">Prancis Kanada</translation>
 <translation id="3606220979431771195">Turki-F</translation>
-<translation id="3609785682760573515">Menyinkronkan...</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620292326130836921">Semua dicadangkan!</translation>
@@ -532,7 +527,6 @@
 <translation id="6657585470893396449">Sandi</translation>
 <translation id="6673674183150363784">Prancis (Prancis) dengan keyboard Bépo</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
-<translation id="6718273304615422081">Membuat file zip...</translation>
 <translation id="6751256176799620176">1 folder dipilih</translation>
 <translation id="6790428901817661496">Putar</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -732,7 +726,6 @@
 <translation id="8600173386174225982">Daftar file telah diubah menjadi tampilan thumbnail.</translation>
 <translation id="8601932370724196034">File gambar Crostini</translation>
 <translation id="8609695766746872526">Islandia</translation>
-<translation id="8669949407341943408">Memindahkan...</translation>
 <translation id="8698464937041809063">Gambar Google</translation>
 <translation id="8712637175834984815">Mengerti</translation>
 <translation id="8713112442029511308">Malta</translation>
@@ -755,7 +748,6 @@
 <translation id="9034924485347205037">File Linux</translation>
 <translation id="9035012421917565900">Item tidak dapat dipindahkan kembali ke '<ph name="DESTINATION_NAME" />', jadi tindakan ini tidak dapat diurungkan.</translation>
 <translation id="9038620279323455325">File bernama "<ph name="FILE_NAME" />" sudah ada. Harap pilih nama lain.</translation>
-<translation id="9064939804718829769">Mentransfer...</translation>
 <translation id="9065203028668620118">Edit</translation>
 <translation id="908378762078012445">Rusia dengan keyboard AATSEEL Fonetik</translation>
 <translation id="9099674669267916096">Hitungan halaman</translation>

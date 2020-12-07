@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Skrár</translation>
 <translation id="1297922636971898492">Google Drive er ekki í boði núna. Flutningur verður sjálfkrafa hafinn að nýju þegar Google Drive verður aftur tiltækt.</translation>
 <translation id="1307931752636661898">Ekki er hægt að skoða Linux-skrár</translation>
-<translation id="1338950911836659113">Eyðir...</translation>
 <translation id="1346748346194534595">Réttsælis</translation>
 <translation id="1351692861129622852">Flytur inn <ph name="FILE_COUNT" /> skrár...</translation>
 <translation id="1358735829858566124">Skráin eða mappan er ónothæf.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Prenta</translation>
 <translation id="1435838927755162558">Deila möppu með Parallels Desktop</translation>
 <translation id="1439494416798956626">Fært í <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">1 villa.</translation>
 <translation id="1467432559032391204">Rangsælis</translation>
 <translation id="1471718551822868769">Slóvakíska</translation>
 <translation id="1474339897586437869">„<ph name="FILENAME" />“ var ekki hlaðið. Ekki er nægt pláss á Google Drive.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Eistneska</translation>
 <translation id="3466147780910026086">Skannar geymslumiðilinn þinn...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> myndir afritaðar á <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Afritar...</translation>
 <translation id="3473378059788601120">Afritað í <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google töflureiknir</translation>
 <translation id="3486821258960016770">Mongólska</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> villur.</translation>
 <translation id="3522708245912499433">Portúgalskt</translation>
 <translation id="3524311639100184459">Varúð: Þessar skrár eru til bráðabirgða og þeim kann að vera eytt sjálfkrafa til að losa um diskpláss.  <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Mappa</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">Litháískt</translation>
 <translation id="3603385196401704894">Kanadískt franskt</translation>
 <translation id="3606220979431771195">Tyrkneskt F</translation>
-<translation id="3609785682760573515">Samstillir...</translation>
 <translation id="3616113530831147358">Hljóð</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620292326130836921">Allt afritað!</translation>
@@ -532,7 +527,6 @@
 <translation id="6657585470893396449">Aðgangsorð</translation>
 <translation id="6673674183150363784">Franska (Frakkland) með Bépo-lyklaborði</translation>
 <translation id="6710213216561001401">Til baka</translation>
-<translation id="6718273304615422081">Þjappar...</translation>
 <translation id="6751256176799620176">Ein mappa valin</translation>
 <translation id="6790428901817661496">Spila</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -732,7 +726,6 @@
 <translation id="8600173386174225982">Skráalista var breytt í smámyndayfirlit.</translation>
 <translation id="8601932370724196034">Crostini-myndskrá</translation>
 <translation id="8609695766746872526">Íslenska</translation>
-<translation id="8669949407341943408">Flytur...</translation>
 <translation id="8698464937041809063">Google teikning</translation>
 <translation id="8712637175834984815">Ég skil</translation>
 <translation id="8713112442029511308">Maltneska</translation>
@@ -755,7 +748,6 @@
 <translation id="9034924485347205037">Linux-skrár</translation>
 <translation id="9035012421917565900">Ekki er hægt að færa atriðin aftur í „<ph name="DESTINATION_NAME" />“, þannig að þú verður ófær um að afturkalla þessa aðgerð.</translation>
 <translation id="9038620279323455325">Skrá með heitið „<ph name="FILE_NAME" />“ er þegar til staðar. Veldu annað heiti.</translation>
-<translation id="9064939804718829769">Flytur...</translation>
 <translation id="9065203028668620118">Breyta</translation>
 <translation id="908378762078012445">Rússneska með AATSEEL-hljóðritunarlyklaborði</translation>
 <translation id="9099674669267916096">Síðufjöldi</translation>

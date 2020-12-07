@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">文件</translation>
 <translation id="1297922636971898492">Google云端硬盘暂时无法使用。Google云端硬盘恢复正常后，系统将自动重新开始上传。</translation>
 <translation id="1307931752636661898">无法查看 Linux 文件</translation>
-<translation id="1338950911836659113">正在删除…</translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1351692861129622852">正在导入 <ph name="FILE_COUNT" /> 个文件…</translation>
 <translation id="1358735829858566124">该文件或目录无法使用。</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">打印</translation>
 <translation id="1435838927755162558">与 Parallels Desktop 共享文件夹</translation>
 <translation id="1439494416798956626">已移至“<ph name="FOLDER_NAME" />”。</translation>
-<translation id="1464724975715666883">1个错误。</translation>
 <translation id="1467432559032391204">向左</translation>
 <translation id="1471718551822868769">斯洛伐克语</translation>
 <translation id="1474339897586437869">未上传“<ph name="FILENAME" />”，因为您的 Google 云端硬盘没有足够的可用空间。</translation>
@@ -225,11 +223,9 @@
 <translation id="3455931012307786678">爱沙尼亚语</translation>
 <translation id="3466147780910026086">正在扫描您的媒体设备…</translation>
 <translation id="3468522857997926824">已将 <ph name="FILE_COUNT" /> 张照片备份到 <ph name="BEGIN_LINK" />Google 云端硬盘<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">正在复制…</translation>
 <translation id="3473378059788601120">已复制到“<ph name="FOLDER_NAME" />”。</translation>
 <translation id="3475447146579922140">Google 电子表格</translation>
 <translation id="3486821258960016770">蒙古语</translation>
-<translation id="3495304270784461826"><ph name="COUNT" />个错误。</translation>
 <translation id="3522708245912499433">葡萄牙语</translation>
 <translation id="3524311639100184459">警告：这些都是临时文件，可能会被系统自动删除以释放磁盘空间。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">文件夹</translation>
@@ -239,7 +235,6 @@
 <translation id="357479282490346887">立陶宛语</translation>
 <translation id="3603385196401704894">加拿大法语</translation>
 <translation id="3606220979431771195">土耳其语 F</translation>
-<translation id="3609785682760573515">正在同步…</translation>
 <translation id="3616113530831147358">音频</translation>
 <translation id="3619115746895587757">卡布奇诺</translation>
 <translation id="3620292326130836921">所有文件都已备份！</translation>
@@ -527,7 +522,6 @@
 <translation id="6657585470893396449">密码</translation>
 <translation id="6673674183150363784">法语（法国）Bépo 键盘</translation>
 <translation id="6710213216561001401">上一项</translation>
-<translation id="6718273304615422081">正在压缩…</translation>
 <translation id="6751256176799620176">已选择 1 个文件夹</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6795884519221689054">熊猫</translation>
@@ -727,7 +721,6 @@
 <translation id="8600173386174225982">文件列表已切换到缩略图视图。</translation>
 <translation id="8601932370724196034">Crostini 映像文件</translation>
 <translation id="8609695766746872526">冰岛语</translation>
-<translation id="8669949407341943408">正在移动…</translation>
 <translation id="8698464937041809063">Google 绘图</translation>
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8713112442029511308">马耳他语</translation>
@@ -750,7 +743,6 @@
 <translation id="9034924485347205037">Linux 文件</translation>
 <translation id="9035012421917565900">这些内容一旦移出“<ph name="DESTINATION_NAME" />”便无法移回，因此您将无法撤消这项操作。</translation>
 <translation id="9038620279323455325">已有名为“<ph name="FILE_NAME" />”的文件。请另选一个名称。</translation>
-<translation id="9064939804718829769">正在处理…</translation>
 <translation id="9065203028668620118">编辑</translation>
 <translation id="908378762078012445">俄语注音 AATSEEL 键盘</translation>
 <translation id="9099674669267916096">页数</translation>

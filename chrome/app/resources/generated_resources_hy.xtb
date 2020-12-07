@@ -4698,7 +4698,6 @@
 <translation id="642469772702851743">Այս սարքը (սերիական համար՝ <ph name="SERIAL_NUMBER" />) արգելափակվել է սեփականատիրոջ կողմից:</translation>
 <translation id="6425556984042222041">Տեքստի հնչեցման արագությունը</translation>
 <translation id="6426200009596957090">Բացել ChromeVox-ի կարգավորումները</translation>
-<translation id="642654727595919401">Տիրույթի (<ph name="DOMAIN" />) կանոնների համաձայն՝ դուք պետք է պահուստավորեք ձեր տվյալները և 1 շաբաթվա ընթացքում վերադարձնեք այս <ph name="DEVICE_TYPE" /> սարքը։<ph name="LINK_BEGIN" />Տեսնել մանրամասները<ph name="LINK_END" /></translation>
 <translation id="642729974267661262">Չի թույլատրվում նվագարկել ձայն</translation>
 <translation id="6428982734197629783">Պատկերը մշակվում է</translation>
 <translation id="6429384232893414837">Թարմացման սխալ</translation>
@@ -5575,7 +5574,6 @@
 <translation id="7457384018036134905">Կառավարել լեզուները Chrome OS-ի կարգավորումներում</translation>
 <translation id="7458168200501453431">Օգտագործում է ուղղագրության նույն ստուգիչը, որն օգտագործվում է Google Որոնման մեջ: Դիտարկիչում մուտքագրած ձեր տեքստերն ուղարկվում են Google-ին:</translation>
 <translation id="7460045493116006516">Ձեր տեղադրած ընթացիկ թեման</translation>
-<translation id="7461729991508684543">{NUM_DAYS,plural, =1{Տիրույթի (<ph name="DOMAIN" />) կանոնների համաձայն՝ դուք պետք է պահուստավորեք ձեր տվյալները և այսօր վերադարձնեք այս <ph name="DEVICE_TYPE" /> սարքը։<ph name="LINK_BEGIN" />Տեսնել մանրամասները<ph name="LINK_END" />}one{Տիրույթի (<ph name="DOMAIN" />) կանոնների համաձայն՝ դուք պետք է պահուստավորեք ձեր տվյալները և {NUM_DAYS} օրվա ընթացքում վերադարձնեք այս <ph name="DEVICE_TYPE" /> սարքը։<ph name="LINK_BEGIN" />Տեսնել մանրամասները<ph name="LINK_END" />}other{Տիրույթի (<ph name="DOMAIN" />) կանոնների համաձայն՝ դուք պետք է պահուստավորեք ձեր տվյալները և {NUM_DAYS} օրվա ընթացքում վերադարձնեք այս <ph name="DEVICE_TYPE" /> սարքը։<ph name="LINK_BEGIN" />Տեսնել մանրամասները<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">Ամրացնել</translation>
 <translation id="746216226901520237">Smart Lock-ը միացնելու համար մուտքագրեք ձեր գաղտնաբառը։ Դրանից հետո ձեր հեռախոսով կարող եք ապակողպել <ph name="DEVICE_TYPE" /> սարքը։ Smart Lock-ը կարող եք անջատել կարգավորումներում։</translation>
 <translation id="7463006580194749499">Ավելացնել անձ</translation>
@@ -6266,7 +6264,6 @@
 <translation id="8226619461731305576">Հերթականություն</translation>
 <translation id="8226628635270268143">Ընտրեք ձեր սիրած լուսանկարներն ու ալբոմները</translation>
 <translation id="8227119283605456246">Կցել ֆայլ</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">Պահե՞լ <ph name="ORIGIN" /> կայքի գաղտնաբառը</translation>
 <translation id="8234795456569844941">Օգնեք մեր ճարտարագետներին շտկել այս խնդիրը։ Նկարագրեք, թե ինչ տեղի ունեցավ նախքան պրոֆիլի սխալի մասին հաղորդագրություն ստանալը՝</translation>
 <translation id="8236917170563564587">Փոխարենը կիսվեք այս ներդիրով</translation>

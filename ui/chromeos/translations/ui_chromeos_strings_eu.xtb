@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Fitxategiak</translation>
 <translation id="1297922636971898492">Une honetan, Google Drive ez dago erabilgarri. Erabilgarri dagoenean, automatikoki hasiko da berriro kargatzen.</translation>
 <translation id="1307931752636661898">Ezin dira ikusi Linux fitxategiak</translation>
-<translation id="1338950911836659113">Ezabatzen…</translation>
 <translation id="1346748346194534595">Eskuinera</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> fitxategi inportatzen…</translation>
 <translation id="1358735829858566124">Ezin da fitxategia edo direktorioa erabili.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Inprimatu</translation>
 <translation id="1435838927755162558">Partekatu karpeta Parallels Desktop aplikazioarekin</translation>
 <translation id="1439494416798956626">Eraman da <ph name="FOLDER_NAME" /> karpetara.</translation>
-<translation id="1464724975715666883">1 errore.</translation>
 <translation id="1467432559032391204">Ezkerrera</translation>
 <translation id="1471718551822868769">Eslovakiarra</translation>
 <translation id="1474339897586437869">Ez da kargatu "<ph name="FILENAME" />". Ez dago leku nahikorik Google Drive-n.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Estoniarra</translation>
 <translation id="3466147780910026086">Multimedia-gailuan bilatzen…</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> argazkiren babeskopia egin da <ph name="BEGIN_LINK" />Google Drive-n<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Kopiatzen…</translation>
 <translation id="3473378059788601120">Kopiatu da <ph name="FOLDER_NAME" /> karpetan.</translation>
 <translation id="3475447146579922140">Google kalkulu-orria</translation>
 <translation id="3486821258960016770">Mongoliarra</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> errore.</translation>
 <translation id="3522708245912499433">Portugaldarra</translation>
 <translation id="3524311639100184459">Kontuz: fitxategi hauek aldi baterakoak dira eta agian automatikoki ezabatuko dira diskoan tokia egiteko.  <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Karpeta</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">Lituaniarra</translation>
 <translation id="3603385196401704894">Frantsesa (Kanada)</translation>
 <translation id="3606220979431771195">Turkierako F teklatua</translation>
-<translation id="3609785682760573515">Sinkronizatzen…</translation>
 <translation id="3616113530831147358">Audioa</translation>
 <translation id="3619115746895587757">Kaputxinoa</translation>
 <translation id="3620292326130836921">Fitxategi guztien babeskopia egin da!</translation>
@@ -532,7 +527,6 @@
 <translation id="6657585470893396449">Pasahitza</translation>
 <translation id="6673674183150363784">Frantsesa (Frantzia), Bépo teklatuarekin</translation>
 <translation id="6710213216561001401">Aurrekoa</translation>
-<translation id="6718273304615422081">Konprimatzen…</translation>
 <translation id="6751256176799620176">Karpeta bat hautatu da</translation>
 <translation id="6790428901817661496">Erreproduzitu</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -732,7 +726,6 @@
 <translation id="8600173386174225982">Irudi txikiko ikuspegira aldatu da fitxategi-zerrenda.</translation>
 <translation id="8601932370724196034">Crostini motako irudi-fitxategia</translation>
 <translation id="8609695766746872526">Islandiarra</translation>
-<translation id="8669949407341943408">Mugitzen…</translation>
 <translation id="8698464937041809063">Google-ko marrazkia</translation>
 <translation id="8712637175834984815">Ados</translation>
 <translation id="8713112442029511308">Maltarra</translation>
@@ -755,7 +748,6 @@
 <translation id="9034924485347205037">Linux fitxategiak</translation>
 <translation id="9035012421917565900">Ezin dira eraman berriro elementuak "<ph name="DESTINATION_NAME" />" unitatera; beraz, ezin izango duzu desegin ekintza.</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" izena duen fitxategia bazegoen lehendik ere. Aukeratu beste izen bat.</translation>
-<translation id="9064939804718829769">Transferitzen…</translation>
 <translation id="9065203028668620118">Editatu</translation>
 <translation id="908378762078012445">Errusiarra, AATSEEL teklatu fonetikoarekin</translation>
 <translation id="9099674669267916096">Orri kopurua</translation>

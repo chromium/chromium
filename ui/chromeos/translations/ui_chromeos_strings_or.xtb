@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">ଏହି କ୍ଷଣି Google ଡ୍ରାଇଭ୍ ଉପଲବ୍ଧ ନାହିଁ। ଥରେ Google ଡ୍ରାଇଭ୍ କାର୍ଯ୍ୟକ୍ଷମ ହୋଇଗଲେ, ଅପ୍‍‍ଲୋଡ୍ ସ୍ଵଚାଳିତ ଭାବେ ରିଷ୍ଟାର୍ଟ ହେବ।</translation>
 <translation id="1307931752636661898">Linux ଫାଇଲ୍‌ଗୁଡ଼ିକ ଦେଖିପାରୁନାହିଁ</translation>
-<translation id="1338950911836659113">ଡିଲିଟ୍ କରାଯାଉଛି…</translation>
 <translation id="1346748346194534595">ଡାହାଣ</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> ଟି ଫାଇଲ୍ ଇମ୍ପୋର୍ଟ କରାଯାଉଛି...</translation>
 <translation id="1358735829858566124">ଫାଇଲ୍ ବା ଡିରେକ୍ଟୋରୀ ବ୍ୟବହାର ଯୋଗ୍ୟ ନୁହେଁ।</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">ପ୍ରିଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="1435838927755162558">Parallels Desktop ସହ ଫୋଲ୍ଡର ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" />କୁ ନିଆଗଲା।</translation>
-<translation id="1464724975715666883">1ଟି ତ୍ରୁଟି।</translation>
 <translation id="1467432559032391204">ବାମ</translation>
 <translation id="1471718551822868769">ସ୍ଲୋଭାକ୍</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" ଅପ୍‌ଲୋଡ୍‍ କରାଯାଇନଥିଲା। ଆପଣଙ୍କର Google Driveରେ ଯଥେଷ୍ଟ ମୁକ୍ତ ସ୍ଥାନ ନାହିଁ।</translation>
@@ -225,11 +223,9 @@
 <translation id="3455931012307786678">ଇସ୍ତୋନିଆନ୍</translation>
 <translation id="3466147780910026086">ଆପଣଙ୍କର ମେଡିଆ ଡିଭାଇସ୍ ସ୍କାନ୍ ହେଉଛି...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" />ଟି ଫଟୋକୁ <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />ରେ ବ୍ୟାକ୍‌ଅପ୍‌ ନିଆଯାଇଛି</translation>
-<translation id="3470502288861289375">କପି କରାଯାଉଛି…</translation>
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" />କୁ କପି କରାଯାଇଛି।</translation>
 <translation id="3475447146579922140">Google ସ୍ପ୍ରେଡ୍‌ସିଟ୍</translation>
 <translation id="3486821258960016770">ମଙ୍ଗୋଲିଆନ୍</translation>
-<translation id="3495304270784461826"><ph name="COUNT" />ଟି ତ୍ରୁଟି।</translation>
 <translation id="3522708245912499433">ପର୍ତ୍ତୁଗୀଜ୍</translation>
 <translation id="3524311639100184459">ସାବଧାନ: ଏହି ଫାଇଲଗୁଡ଼ିକ ଅସ୍ଥାୟୀ ଅଟେ ଏବଂ ଡିସ୍କରେ ଜାଗା ଖାଲି କରିବା ପାଇଁ ଏଗୁଡ଼ିକ ସ୍ୱଚାଳିତ ଭାବେ ଡିଲିଟ୍ ହୋଇଯାଇପାରେ।  <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ଫୋଲ୍ଡର୍</translation>
@@ -239,7 +235,6 @@
 <translation id="357479282490346887">ଲିଥୁଆନିଆନ୍</translation>
 <translation id="3603385196401704894">କାନାଡିଆନ୍ ଫ୍ରେଞ୍ଚ୍</translation>
 <translation id="3606220979431771195">ତୁର୍କୀସ୍-F</translation>
-<translation id="3609785682760573515">ସିଙ୍କ୍‍ କରୁଛି…</translation>
 <translation id="3616113530831147358">ଅଡିଓ</translation>
 <translation id="3619115746895587757">କ୍ୟାପାଚିନୋ</translation>
 <translation id="3620292326130836921">ସମସ୍ତ ବ୍ୟାକ୍‍ଅପ୍‍ ନିଆଯାଇଛି!</translation>
@@ -526,7 +521,6 @@
 <translation id="6657585470893396449">ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="6673674183150363784">Bépo କୀବୋର୍ଡ ସହ ଫରାସୀ (ଫ୍ରାନ୍ସ)</translation>
 <translation id="6710213216561001401">ପୂର୍ବବର୍ତ୍ତୀ</translation>
-<translation id="6718273304615422081">ଜିପ୍ ହେଉଛି...</translation>
 <translation id="6751256176799620176">1ଟି ଫୋଲ୍ଡର୍ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="6790428901817661496">ଚଲାନ୍ତୁ</translation>
 <translation id="6795884519221689054">ପାଣ୍ଡା</translation>
@@ -726,7 +720,6 @@
 <translation id="8600173386174225982">ଫାଇଲ୍‌ ତାଲିକାକୁ ଥମ୍ବନେଲ୍ ଭ୍ୟୁରେ ପରିବର୍ତ୍ତନ କରାଯାଇଛି।</translation>
 <translation id="8601932370724196034">Crostini ଛବି ଫାଇଲ୍</translation>
 <translation id="8609695766746872526">ଆଇସଲାଣ୍ଡିକ୍</translation>
-<translation id="8669949407341943408">ଘୁଞ୍ଚୁଛି …</translation>
 <translation id="8698464937041809063">Google ଡ୍ରଇଂ</translation>
 <translation id="8712637175834984815">ବୁଝିଗଲି</translation>
 <translation id="8713112442029511308">ମାଲଟିଜ୍</translation>
@@ -749,7 +742,6 @@
 <translation id="9034924485347205037">Linux ଫାଇଲ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="9035012421917565900">ଆଇଟମ୍‌କୁ <ph name="DESTINATION_NAME" />'କୁ ଫେରାଇ ନିଆଯାଇପାରିଲା ନାହିଁ, ତେଣୁ ଏହି କାର୍ଯ୍ୟକୁ ଆପଣ ପୂର୍ବବତ୍‍ କରିପାରିବେ ନାହିଁ।</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" ଫାଇଲ୍ ନାମ ପୂର୍ବରୁ ବିଦ୍ୟମାନ ଅଛି। ଏକ ଭିନ୍ନ ନାମ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
-<translation id="9064939804718829769">ସ୍ଥାନାନ୍ତର ହେଉଛି…</translation>
 <translation id="9065203028668620118">ସମ୍ପାଦନ</translation>
 <translation id="908378762078012445">ଫୋନେଟିକ୍ AATSEEL କୀବୋର୍ଡ ସହ ଋଷୀୟ</translation>
 <translation id="9099674669267916096">ପୃଷ୍ଠା ସଂଖ୍ୟା</translation>

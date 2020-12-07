@@ -4682,7 +4682,6 @@
 <translation id="642469772702851743">Энэ төхөөрөмжийг (SN: <ph name="SERIAL_NUMBER" />) эзэмшигч нь түгжсэн байна.</translation>
 <translation id="6425556984042222041">Текстийг-яриа-болгох түвшин</translation>
 <translation id="6426200009596957090">ChromeVox-н тохиргоог нээх</translation>
-<translation id="642654727595919401"><ph name="DOMAIN" /> өгөгдлөө хуулбарлаж аваад, энэ <ph name="DEVICE_TYPE" />-г 1 долоо хоногийн дотор буцаахыг танаас шаардаж байна.<ph name="LINK_BEGIN" />Дэлгэрэнгүй мэдээллийг харах<ph name="LINK_END" /></translation>
 <translation id="642729974267661262">Дуу тоглуулахыг зөвшөөрөөгүй</translation>
 <translation id="6428982734197629783">Зургийг боловсруулж байна</translation>
 <translation id="6429384232893414837">Шинэчлэлтийн алдаа</translation>
@@ -5558,7 +5557,6 @@
 <translation id="7457384018036134905">Хэлнүүдийг Chrome үйлдлийн системийн тохиргоонд удирдах</translation>
 <translation id="7458168200501453431">Google хайлтад ашигладаг зөв бичгийн ижил алдаа шалгагчийг ашигладаг. Таны хөтчид бичсэн текстийг Google-д илгээдэг.</translation>
 <translation id="7460045493116006516">Таны суулгасан одоогийн загвар</translation>
-<translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> танаас өнөөдрийн дотор өгөгдлөө хуулбарлаж аваад, энэ <ph name="DEVICE_TYPE" />-г буцаахыг шаардаж байна.<ph name="LINK_BEGIN" />Дэлгэрэнгүй мэдээллийг харах<ph name="LINK_END" />}other{<ph name="DOMAIN" /> танаас {NUM_DAYS} хоногийн дотор өгөгдлөө хуулбарлаж аваад, энэ <ph name="DEVICE_TYPE" />-г буцаахыг шаардаж байна.<ph name="LINK_BEGIN" />Дэлгэрэнгүй мэдээллийг харах<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746216226901520237">Дараагийн удаа таны утас таны <ph name="DEVICE_TYPE" />-н түгжээг тайлна. Та Smart Lock-г Тохиргоонд унтрааж болно.</translation>
 <translation id="7463006580194749499">Хүн нэм</translation>
@@ -6246,7 +6244,6 @@
 <translation id="8226619461731305576">Дараалал</translation>
 <translation id="8226628635270268143">Дуртай зураг, цомгуудаа сонгоно уу</translation>
 <translation id="8227119283605456246">Файл хавсаргах</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">Нууц үгийг <ph name="ORIGIN" />-д хадгалах уу?</translation>
 <translation id="8234795456569844941">Манай инженерүүдэд энэ асуудлыг шийдэхэд тусална уу. Ta профайлын алдааны мессеж авахаас өмнө болсон зүйлийг тайлбарлана уу:</translation>
 <translation id="8236917170563564587">Оронд нь энэ табыг хуваалцах</translation>

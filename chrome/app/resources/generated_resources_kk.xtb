@@ -4685,7 +4685,6 @@
 <translation id="642469772702851743">Бұл құрылғыны (сериялық нөмірі: <ph name="SERIAL_NUMBER" />) иесі құлыптады.</translation>
 <translation id="6425556984042222041">Мәтінді дыбыстау жылдамдығы</translation>
 <translation id="6426200009596957090">ChromeVox параметрлерін ашу</translation>
-<translation id="642654727595919401"><ph name="DOMAIN" /> домені деректердің сақтық көшірмесін жасап, 1 аптаның ішінде осы <ph name="DEVICE_TYPE" /> құрылғысын қайтаруыңызды қажет етеді.<ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="642729974267661262">Дыбысты ойнатуға рұқсаты жоқтар</translation>
 <translation id="6428982734197629783">Кескін өңделуде</translation>
 <translation id="6429384232893414837">Жаңарту кезінде қате шықты</translation>
@@ -5561,7 +5560,6 @@
 <translation id="7457384018036134905">Chrome OS параметрлеріндегі тілдерді басқару</translation>
 <translation id="7458168200501453431">Google Search функциясында пайдаланылатын емлені тексеру құралын қолданады. Браузерде терілген мәтін Google-ға жіберіледі.</translation>
 <translation id="7460045493116006516">Орнатулы тұрған тақырып</translation>
-<translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> домені деректердің сақтық көшірмесін жасап, осы <ph name="DEVICE_TYPE" /> құрылғысын бүгін қайтаруыңызды қажет етеді. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" />}other{<ph name="DOMAIN" /> домені деректердің сақтық көшірмесін жасап, осы <ph name="DEVICE_TYPE" /> құрылғысын {NUM_DAYS} күн ішінде қайтаруыңызды қажет етеді. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">Бекіту</translation>
 <translation id="746216226901520237">Келесіде телефоныңыз <ph name="DEVICE_TYPE" /> құрылғыңыздың құлпын ашады. Smart Lock функциясын "Параметрлер" бөлімінен өшіруге болады.</translation>
 <translation id="7463006580194749499">Адам қосу</translation>
@@ -6252,7 +6250,6 @@
 <translation id="8226619461731305576">Кезек</translation>
 <translation id="8226628635270268143">Өзіңізге ұнайтын фотосуреттер мен альбомдарды таңдау</translation>
 <translation id="8227119283605456246">Файл тіркеу</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> құпия сөзі сақталсын ба?</translation>
 <translation id="8234795456569844941">Біздің инженерлерге осы мәселені шегуге көмектесіңіз. Профиль қатесі туралы хабарын алмастан бұрын не болғанын айтыңыз:</translation>
 <translation id="8236917170563564587">Орнына осы қойындыны бөлісу</translation>

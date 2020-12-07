@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Pliki</translation>
 <translation id="1297922636971898492">Dysk Google nie jest teraz dostępny. Gdy znów będzie można z niego korzystać, przesyłanie zostanie automatycznie wznowione.</translation>
 <translation id="1307931752636661898">Nie można wyświetlić plików Linuksa</translation>
-<translation id="1338950911836659113">Usuwam...</translation>
 <translation id="1346748346194534595">W prawo</translation>
 <translation id="1351692861129622852">Importuję <ph name="FILE_COUNT" /> pliki(ów)...</translation>
 <translation id="1358735829858566124">Plik lub katalog nie nadaje się do użycia.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Drukuj</translation>
 <translation id="1435838927755162558">Udostępnij folder aplikacji Parallels Desktop</translation>
 <translation id="1439494416798956626">Przeniesiono do: <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">1 błąd.</translation>
 <translation id="1467432559032391204">W lewo</translation>
 <translation id="1471718551822868769">Słowacki</translation>
 <translation id="1474339897586437869">Plik „<ph name="FILENAME" />” nie został przesłany. Za mało wolnego miejsca na Dysku Google.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Estoński</translation>
 <translation id="3466147780910026086">Skanuję nośnik danych...</translation>
 <translation id="3468522857997926824">Kopie zapasowe <ph name="FILE_COUNT" /> zdjęć zostały utworzone na <ph name="BEGIN_LINK" />Dysku Google<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Kopiuję...</translation>
 <translation id="3473378059788601120">Skopiowano do: <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Arkusz kalkulacyjny Google</translation>
 <translation id="3486821258960016770">Mongolski</translation>
-<translation id="3495304270784461826">Błędy: <ph name="COUNT" />.</translation>
 <translation id="3522708245912499433">Portugalski</translation>
 <translation id="3524311639100184459">Uwaga: te pliki mają charakter tymczasowy i mogą zostać automatycznie usunięte w celu zwolnienia miejsca na dysku.  <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">Litewski</translation>
 <translation id="3603385196401704894">kanadyjski francuski</translation>
 <translation id="3606220979431771195">Turecki (wersja F)</translation>
-<translation id="3609785682760573515">Synchronizuję...</translation>
 <translation id="3616113530831147358">Dźwięk</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620292326130836921">Wszystko ma już kopię zapasową.</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">Hasło</translation>
 <translation id="6673674183150363784">Francuski (Francja) z klawiaturą Bépo</translation>
 <translation id="6710213216561001401">Poprzedni</translation>
-<translation id="6718273304615422081">Pakuję...</translation>
 <translation id="6751256176799620176">Wybrano jeden folder</translation>
 <translation id="6790428901817661496">Odtwórz</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">Lista plików została przełączona na widok miniatur.</translation>
 <translation id="8601932370724196034">Plik graficzny Crostini</translation>
 <translation id="8609695766746872526">Islandzki</translation>
-<translation id="8669949407341943408">Przenoszę...</translation>
 <translation id="8698464937041809063">Rysunek Google</translation>
 <translation id="8712637175834984815">Rozumiem</translation>
 <translation id="8713112442029511308">Maltański</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Pliki Linuksa</translation>
 <translation id="9035012421917565900">Nie można przenieść elementów z powrotem do: „<ph name="DESTINATION_NAME" />”, więc tej czynności nie da się cofnąć.</translation>
 <translation id="9038620279323455325">Istnieje już plik o nazwie „<ph name="FILE_NAME" />”. Wybierz inną nazwę.</translation>
-<translation id="9064939804718829769">Przetwarzam...</translation>
 <translation id="9065203028668620118">Edytuj</translation>
 <translation id="908378762078012445">Rosyjski z klawiaturą fonetyczną AATSEEL</translation>
 <translation id="9099674669267916096">Liczba stron</translation>

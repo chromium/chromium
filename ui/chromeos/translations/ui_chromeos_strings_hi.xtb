@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">फ़ाइल</translation>
 <translation id="1297922636971898492">Google डिस्क इस समय उपलब्ध नहीं है. Google डिस्क के वापस आ जाने पर अपलोडिंग अपने आप फिर से प्रारंभ हो जाएगी.</translation>
 <translation id="1307931752636661898">Linux फ़ाइलें नहीं दिखाई जा सकीं</translation>
-<translation id="1338950911836659113">हटाए जा रहे हैं...</translation>
 <translation id="1346748346194534595">दाएं</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> फ़ाइलें आयात की जा रही हैं...</translation>
 <translation id="1358735829858566124">फा़इल या निर्देशिका उपयोग करने योग्य नहीं है.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">प्रिंट करें</translation>
 <translation id="1435838927755162558">Parallels Desktop के साथ फ़ोल्डर शेयर करें</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> में ले जाया गया.</translation>
-<translation id="1464724975715666883">1 गड़बड़ी.</translation>
 <translation id="1467432559032391204">बाएं</translation>
 <translation id="1471718551822868769">स्लोवाक</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" को अपलोड नहीं किया गया. आपकी Google डिस्क में काफ़ी जगह नहीं है.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">एस्टोनियान</translation>
 <translation id="3466147780910026086">आपका मीडिया डिवाइस स्‍कैन किया जा रहा है...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> फ़ोटो का <ph name="BEGIN_LINK" />Google डिस्‍क<ph name="END_LINK" /> में बैक अप लिया गया</translation>
-<translation id="3470502288861289375">कॉपी किया जा रहा है...</translation>
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> में कॉपी की गई.</translation>
 <translation id="3475447146579922140">Google spreadsheet</translation>
 <translation id="3486821258960016770">मंगोलियन</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> त्रुटियां.</translation>
 <translation id="3522708245912499433">पुर्तगाली</translation>
 <translation id="3524311639100184459">चेतावनी: ये फ़ाइलें अस्थायी हैं और डिस्क की जगह खाली करने के लिए अपने-आप मिटाई जा सकती हैं.  <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">फ़ोल्डर</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">लिथुआनियाई</translation>
 <translation id="3603385196401704894">कनाडाई फ़्रेंच</translation>
 <translation id="3606220979431771195">तुर्की-F</translation>
-<translation id="3609785682760573515">समन्वयित हो रहा है...</translation>
 <translation id="3616113530831147358">ऑडियो</translation>
 <translation id="3619115746895587757">कैपुचिनो</translation>
 <translation id="3620292326130836921">सभी का बैक अप लिया गया!</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6673674183150363784">बेपो कीबोर्ड के साथ फ़्रेंच (फ़्रांस)</translation>
 <translation id="6710213216561001401">पिछला</translation>
-<translation id="6718273304615422081">ज़िप किया जा रहा है...</translation>
 <translation id="6751256176799620176">1 फ़ोल्डर चयनित</translation>
 <translation id="6790428901817661496">चलाएं</translation>
 <translation id="6795884519221689054">पांडा</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">फ़ाइल की सूची अब थंबनेल की तरह दिखाई जा रही है.</translation>
 <translation id="8601932370724196034">Crostini इमेज फ़ाइल</translation>
 <translation id="8609695766746872526">आइसलैंडिक</translation>
-<translation id="8669949407341943408">चल रहे...</translation>
 <translation id="8698464937041809063">Google ड्रॉइंग</translation>
 <translation id="8712637175834984815">समझ लिया</translation>
 <translation id="8713112442029511308">माल्टीज़</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Linux की फ़ाइलें</translation>
 <translation id="9035012421917565900">ये आइटम '<ph name="DESTINATION_NAME" />' में वापस नहीं ले जाए जा सकते हैं, इसलिए आप इस कार्रवाई को पहले जैसा नहीं कर सकेंगे.</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" नाम की फ़ाइल पहले से मौजूद है. कृपया कोई दूसरा नाम चुनें.</translation>
-<translation id="9064939804718829769">स्थानांतरित किया जा रहा है...</translation>
 <translation id="9065203028668620118">बदलाव करें</translation>
 <translation id="908378762078012445">फ़ोनेटिक AATSEEL कीबोर्ड के साथ रशियन</translation>
 <translation id="9099674669267916096">पेज संख्या</translation>

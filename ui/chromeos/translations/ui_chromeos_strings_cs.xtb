@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Soubory</translation>
 <translation id="1297922636971898492">Disk Google aktuálně není k dispozici. Jakmile bude Disk Google opět dostupný, nahrávání se automaticky obnoví.</translation>
 <translation id="1307931752636661898">Soubory systému Linux nelze zobrazit</translation>
-<translation id="1338950911836659113">Mazání...</translation>
 <translation id="1346748346194534595">Doprava</translation>
 <translation id="1351692861129622852">Importování <ph name="FILE_COUNT" /> souborů...</translation>
 <translation id="1358735829858566124">Soubor nebo adresář nelze použít.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Tisk</translation>
 <translation id="1435838927755162558">Sdílení složky s nástrojem Parallels Desktop</translation>
 <translation id="1439494416798956626">Přesunuto do složky <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">1 chyba.</translation>
 <translation id="1467432559032391204">Doleva</translation>
 <translation id="1471718551822868769">slovenština</translation>
 <translation id="1474339897586437869">Soubor <ph name="FILENAME" /> nelze nahrát. Na Disku Google je nedostatek místa.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">estonština</translation>
 <translation id="3466147780910026086">Prohledávání mediálního zařízení...</translation>
 <translation id="3468522857997926824">Počet fotek, které byly zálohovány na <ph name="BEGIN_LINK" />Disk Google<ph name="END_LINK" />: <ph name="FILE_COUNT" /></translation>
-<translation id="3470502288861289375">Kopírování...</translation>
 <translation id="3473378059788601120">Zkopírováno do složky <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Tabulka Google</translation>
 <translation id="3486821258960016770">mongolština</translation>
-<translation id="3495304270784461826">Chyby: <ph name="COUNT" />.</translation>
 <translation id="3522708245912499433">portugalština</translation>
 <translation id="3524311639100184459">Upozornění: Tyto soubory jsou dočasné a mohou být automaticky smazány kvůli uvolnění místa na disku.  <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Složka</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">litevština</translation>
 <translation id="3603385196401704894">Kanadská francouzská klávesnice</translation>
 <translation id="3606220979431771195">Turecká klávesnice – F</translation>
-<translation id="3609785682760573515">Synchronizace...</translation>
 <translation id="3616113530831147358">Zvuk</translation>
 <translation id="3619115746895587757">Kapučíno</translation>
 <translation id="3620292326130836921">Vše je zálohováno</translation>
@@ -532,7 +527,6 @@
 <translation id="6657585470893396449">Heslo</translation>
 <translation id="6673674183150363784">francouzština (Francie) s klávesnicí Bépo</translation>
 <translation id="6710213216561001401">Předchozí</translation>
-<translation id="6718273304615422081">Komprimování...</translation>
 <translation id="6751256176799620176">Je vybrána 1 složka</translation>
 <translation id="6790428901817661496">Přehrát</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -732,7 +726,6 @@
 <translation id="8600173386174225982">Seznam souborů se změnil na zobrazení miniatur.</translation>
 <translation id="8601932370724196034">Soubor obrazu Crostini</translation>
 <translation id="8609695766746872526">islandština</translation>
-<translation id="8669949407341943408">Přesouvání...</translation>
 <translation id="8698464937041809063">Nákres Google</translation>
 <translation id="8712637175834984815">Hotovo</translation>
 <translation id="8713112442029511308">maltština</translation>
@@ -755,7 +748,6 @@
 <translation id="9034924485347205037">Soubory systému Linux</translation>
 <translation id="9035012421917565900">Položky nelze přesunout zpět do týmu <ph name="DESTINATION_NAME" />. Tuto akci proto nebude možné vrátit zpět.</translation>
 <translation id="9038620279323455325">Soubor s názvem „<ph name="FILE_NAME" />“ již existuje. Zvolte jiný název.</translation>
-<translation id="9064939804718829769">Probíhá přenos...</translation>
 <translation id="9065203028668620118">Upravit</translation>
 <translation id="908378762078012445">ruština s fonetickou klávesnicí AATSEEL</translation>
 <translation id="9099674669267916096">Počet stránek</translation>

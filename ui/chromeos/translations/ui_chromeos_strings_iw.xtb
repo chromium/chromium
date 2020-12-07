@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">קבצים</translation>
 <translation id="1297922636971898492">‏Google Drive אינו זמין כעת. ההעלאה תופעל מחדש באופן אוטומטי לאחר ש-Google Drive יחזור לפעול.</translation>
 <translation id="1307931752636661898">‏לא ניתן להציג קובצי Linux</translation>
-<translation id="1338950911836659113">המחיקה מתבצעת...</translation>
 <translation id="1346748346194534595">ימינה</translation>
 <translation id="1351692861129622852">מתבצע ייבוא של <ph name="FILE_COUNT" /> קבצים...</translation>
 <translation id="1358735829858566124">לא ניתן להשתמש בקובץ או בספרייה.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">הדפסה</translation>
 <translation id="1435838927755162558">‏שיתוף תיקייה באמצעות Parallels Desktop</translation>
 <translation id="1439494416798956626">הועבר אל <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">שגיאה אחת.</translation>
 <translation id="1467432559032391204">שמאלה</translation>
 <translation id="1471718551822868769">סלובקית</translation>
 <translation id="1474339897586437869">‏הקובץ "<ph name="FILENAME" />" לא הועלה. אין לך מספיק שטח פנוי ב-Google Drive.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">אסטונית</translation>
 <translation id="3466147780910026086">מתבצעת סריקה של מכשיר המדיה...</translation>
 <translation id="3468522857997926824">‏<ph name="FILE_COUNT" /> תמונות גובו ב-<ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">ההעתקה מתבצעת...</translation>
 <translation id="3473378059788601120">הועתק אל <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">‏גיליון אלקטרוני של Google</translation>
 <translation id="3486821258960016770">מונגולית</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> שגיאות.</translation>
 <translation id="3522708245912499433">פורטוגזית</translation>
 <translation id="3524311639100184459">זהירות: הקבצים האלה זמניים, וייתכן שהם יימחקו באופן אוטומטי כדי לפנות מקום בכונן.  <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">תיקייה</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">ליטאית</translation>
 <translation id="3603385196401704894">צרפתית קנדית</translation>
 <translation id="3606220979431771195">‏טורקית-F</translation>
-<translation id="3609785682760573515">הסנכרון מתבצע...</translation>
 <translation id="3616113530831147358">אודיו</translation>
 <translation id="3619115746895587757">קפוצ'ינו</translation>
 <translation id="3620292326130836921">הכול מגובה!</translation>
@@ -534,7 +529,6 @@
 <translation id="6657585470893396449">סיסמה</translation>
 <translation id="6673674183150363784">‏צרפתית (צרפת) עם מקלדת Bépo</translation>
 <translation id="6710213216561001401">הקודם</translation>
-<translation id="6718273304615422081">הדחיסה מתבצעת...</translation>
 <translation id="6751256176799620176">תיקייה אחת נבחרה</translation>
 <translation id="6790428901817661496">הפעלה</translation>
 <translation id="6795884519221689054">פנדה</translation>
@@ -734,7 +728,6 @@
 <translation id="8600173386174225982">רשימת הקבצים מוצגת עכשיו בתצוגת תמונות ממוזערות.</translation>
 <translation id="8601932370724196034">‏קובץ תמונה Crostini</translation>
 <translation id="8609695766746872526">איסלנדית</translation>
-<translation id="8669949407341943408">ההעברה מתבצעת...</translation>
 <translation id="8698464937041809063">‏איור של Google</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8713112442029511308">מלטזית</translation>
@@ -757,7 +750,6 @@
 <translation id="9034924485347205037">‏קובצי Linux</translation>
 <translation id="9035012421917565900">לא ניתן להחזיר את הפריטים אל '<ph name="DESTINATION_NAME" />', ולא ניתן לבטל את הפעולה.</translation>
 <translation id="9038620279323455325">הקובץ שנקרא "<ph name="FILE_NAME" />" כבר קיים. יש לבחור שם אחר.</translation>
-<translation id="9064939804718829769">ההעברה מתבצעת...</translation>
 <translation id="9065203028668620118">עריכה</translation>
 <translation id="908378762078012445">‏רוסית עם מקלדת פונטית AATSEEL</translation>
 <translation id="9099674669267916096">מספר עמודים</translation>

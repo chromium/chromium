@@ -4687,7 +4687,6 @@
 <translation id="642469772702851743">這部裝置 (序號：<ph name="SERIAL_NUMBER" />) 已被擁有者鎖定。</translation>
 <translation id="6425556984042222041">文字轉語音的速率</translation>
 <translation id="6426200009596957090">開啟 ChromeVox 設定</translation>
-<translation id="642654727595919401"><ph name="DOMAIN" /> 要求你備份自己的資料，並且在 1 週內退還這部「<ph name="DEVICE_TYPE" />」。<ph name="LINK_BEGIN" />查看詳情<ph name="LINK_END" /></translation>
 <translation id="642729974267661262">不得播放音效</translation>
 <translation id="6428982734197629783">正在處理圖片</translation>
 <translation id="6429384232893414837">更新錯誤</translation>
@@ -5563,7 +5562,6 @@
 <translation id="7457384018036134905">在 Chrome 作業系統設定中管理語言</translation>
 <translation id="7458168200501453431">系統會使用與 Google 搜尋相同的拼字檢查技術，將你在瀏覽器中輸入的文字傳送給 Google。</translation>
 <translation id="7460045493116006516">你目前安裝的主題</translation>
-<translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> 要求你備份自己的資料，並且在今天內退還這部「<ph name="DEVICE_TYPE" />」。<ph name="LINK_BEGIN" />查看詳情<ph name="LINK_END" />}other{<ph name="DOMAIN" /> 要求你備份自己的資料，並且在 {NUM_DAYS} 天內退還這部「<ph name="DEVICE_TYPE" />」。<ph name="LINK_BEGIN" />查看詳情<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="746216226901520237">下次手機會為你的 <ph name="DEVICE_TYPE" /> 解鎖。你可以在「設定」中停用 Smart Lock。</translation>
 <translation id="7463006580194749499">新增使用者</translation>
@@ -6254,7 +6252,6 @@
 <translation id="8226619461731305576">佇列</translation>
 <translation id="8226628635270268143">選擇你最喜愛的相片和相簿</translation>
 <translation id="8227119283605456246">附加檔案</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">要儲存 <ph name="ORIGIN" /> 的密碼嗎？</translation>
 <translation id="8234795456569844941">請告訴我們在你收到設定檔錯誤訊息前執行的動作，以協助工程師修正此問題：</translation>
 <translation id="8236917170563564587">改為分享這個分頁</translation>

@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Ficheiros</translation>
 <translation id="1297922636971898492">De momento, o Google Drive não está disponível. O carregamento será reiniciado automaticamente assim que o Google Drive voltar a estar disponível.</translation>
 <translation id="1307931752636661898">Não é possível ver os ficheiros Linux.</translation>
-<translation id="1338950911836659113">A eliminar...</translation>
 <translation id="1346748346194534595">Direita</translation>
 <translation id="1351692861129622852">A importar <ph name="FILE_COUNT" /> ficheiros...</translation>
 <translation id="1358735829858566124">O ficheiro ou o diretório não pode ser utilizado.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1435838927755162558">Partilhe a pasta com o Parallels Desktop</translation>
 <translation id="1439494416798956626">Movido para <ph name="FOLDER_NAME" /></translation>
-<translation id="1464724975715666883">1 erro.</translation>
 <translation id="1467432559032391204">Esquerda</translation>
 <translation id="1471718551822868769">Eslovaco</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" não foi carregado. Não existe espaço livre suficiente no seu Google Drive.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Estónio</translation>
 <translation id="3466147780910026086">A analisar o dispositivo multimédia...</translation>
 <translation id="3468522857997926824">Foi feita uma cópia de segurança de <ph name="FILE_COUNT" /> fotos no <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">A copiar...</translation>
 <translation id="3473378059788601120">Copiado para <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Folha de cálculo do Google</translation>
 <translation id="3486821258960016770">Mongol</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> erros.</translation>
 <translation id="3522708245912499433">Português</translation>
 <translation id="3524311639100184459">Cuidado: estes ficheiros são temporários e podem ser automaticamente eliminados para libertar espaço em disco.  <ph name="BEGIN_LINK" />Saber mais<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Pasta</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">Lituânia</translation>
 <translation id="3603385196401704894">Francês canadiano</translation>
 <translation id="3606220979431771195">Turco-F</translation>
-<translation id="3609785682760573515">A sincronizar…</translation>
 <translation id="3616113530831147358">Áudio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620292326130836921">Foi feita uma cópia de segurança de todos os ficheiros!</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">Palavra-passe</translation>
 <translation id="6673674183150363784">Francês (França) com teclado Bépo</translation>
 <translation id="6710213216561001401">Anterior</translation>
-<translation id="6718273304615422081">A comprimir...</translation>
 <translation id="6751256176799620176">1 pasta selecionada</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">A lista de ficheiros foi alterada para a vista de miniatura.</translation>
 <translation id="8601932370724196034">Ficheiro de imagem do Crostini</translation>
 <translation id="8609695766746872526">Islandês</translation>
-<translation id="8669949407341943408">A mover...</translation>
 <translation id="8698464937041809063">Desenho do Google</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="8713112442029511308">Maltês</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Ficheiros Linux</translation>
 <translation id="9035012421917565900">Não é possível mover os itens novamente para "<ph name="DESTINATION_NAME" />", pelo que não pode anular esta ação.</translation>
 <translation id="9038620279323455325">O ficheiro com o nome "<ph name="FILE_NAME" />" já existe. Escolha um nome diferente.</translation>
-<translation id="9064939804718829769">A transferir...</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="908378762078012445">Russo com teclado AATSEEL fonético</translation>
 <translation id="9099674669267916096">Contagem de páginas</translation>

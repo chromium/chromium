@@ -4675,7 +4675,6 @@
 <translation id="642469772702851743">Устройство (серийный номер <ph name="SERIAL_NUMBER" />) заблокировано владельцем.</translation>
 <translation id="6425556984042222041">Скорость озвучивания текста</translation>
 <translation id="6426200009596957090">Открыть настройки ChromeVox</translation>
-<translation id="642654727595919401">По правилам домена <ph name="DOMAIN" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение недели. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="642729974267661262">Запретить сайтам воспроизводить звук</translation>
 <translation id="6428982734197629783">Обработка изображения…</translation>
 <translation id="6429384232893414837">Ошибка обновления</translation>
@@ -5549,7 +5548,6 @@
 <translation id="7457384018036134905">Управление языковыми параметрами в настройках Chrome OS</translation>
 <translation id="7458168200501453431">Используется та же технология проверки правописания, что и в Google Поиске. Текст, который вы введете в браузере, будет отправлен в Google.</translation>
 <translation id="7460045493116006516">Тема, которая у вас установлена</translation>
-<translation id="7461729991508684543">{NUM_DAYS,plural, =1{По правилам домена <ph name="DOMAIN" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> сегодня. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}one{По правилам домена <ph name="DOMAIN" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дня. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}few{По правилам домена <ph name="DOMAIN" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дней. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}many{По правилам домена <ph name="DOMAIN" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дней. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}other{По правилам домена <ph name="DOMAIN" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дня. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">Закрепить</translation>
 <translation id="746216226901520237">После этого вы сможете разблокировать устройство <ph name="DEVICE_TYPE" /> с помощью телефона. Выключить Smart Lock можно в настройках.</translation>
 <translation id="7463006580194749499">Добавить пользователя</translation>
@@ -6236,7 +6234,6 @@
 <translation id="8226619461731305576">Очередь</translation>
 <translation id="8226628635270268143">Выберите любимые фото и альбомы</translation>
 <translation id="8227119283605456246">Прикрепить файл</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" /> и <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">Сохранить пароль для <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Чтобы нашим разработчикам было проще решить проблему, опишите, что произошло перед появлением сообщения об ошибке в профиле:</translation>
 <translation id="8236917170563564587">Поделиться текущей вкладкой</translation>

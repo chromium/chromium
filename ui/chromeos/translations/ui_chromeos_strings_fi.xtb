@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Tiedostot</translation>
 <translation id="1297922636971898492">Google Drive ei ole juuri nyt käytettävissä. Lähetys käynnistyy automaattisesti, kun Google Drive on taas käytettävissä.</translation>
 <translation id="1307931752636661898">Linux-tiedostoja ei voi näyttää</translation>
-<translation id="1338950911836659113">Poistetaan…</translation>
 <translation id="1346748346194534595">Oikealla</translation>
 <translation id="1351692861129622852">Tuodaan <ph name="FILE_COUNT" /> tiedostoa…</translation>
 <translation id="1358735829858566124">Tiedosto tai hakemisto ei ole käytettävissä.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Tulosta</translation>
 <translation id="1435838927755162558">Jaa kansio Parallels Desktopille</translation>
 <translation id="1439494416798956626">Siirretty kansioon <ph name="FOLDER_NAME" /></translation>
-<translation id="1464724975715666883">1 virhe.</translation>
 <translation id="1467432559032391204">Vasemmalla</translation>
 <translation id="1471718551822868769">slovakki</translation>
 <translation id="1474339897586437869">Tiedostoa <ph name="FILENAME" /> ei lähetetty. Google Drivessasi ei ole riittävästi vapaata tallennustilaa.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">viro</translation>
 <translation id="3466147780910026086">Tarkistetaan medialaitettasi…</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> kuvaa on varmuuskopioitu <ph name="BEGIN_LINK" />Google Driveen<ph name="END_LINK" />.</translation>
-<translation id="3470502288861289375">Kopioidaan…</translation>
 <translation id="3473378059788601120">Kopioitu kansioon <ph name="FOLDER_NAME" /></translation>
 <translation id="3475447146579922140">Google-laskentataulukko</translation>
 <translation id="3486821258960016770">mongoli</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> virhettä.</translation>
 <translation id="3522708245912499433">portugali</translation>
 <translation id="3524311639100184459">Varoitus: Nämä tiedostot ovat tilapäisiä ja ne voidaan poistaa automaattisesti levytilan vapauttamiseksi.  <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Kansio</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">liettua</translation>
 <translation id="3603385196401704894">ranska (Kanada)</translation>
 <translation id="3606220979431771195">Turkki (tyyppi F)</translation>
-<translation id="3609785682760573515">Synkronoidaan…</translation>
 <translation id="3616113530831147358">Ääni</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620292326130836921">Kaikki on varmuuskopioitu!</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">Salasana</translation>
 <translation id="6673674183150363784">ranska (Ranska), Bépo-näppäimistö</translation>
 <translation id="6710213216561001401">Edellinen</translation>
-<translation id="6718273304615422081">Pakataan…</translation>
 <translation id="6751256176799620176">1 kansio valittu</translation>
 <translation id="6790428901817661496">Toista</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">Tiedostot näkyvät nyt pikkukuvina.</translation>
 <translation id="8601932370724196034">Crostini-kuvatiedosto</translation>
 <translation id="8609695766746872526">islanti</translation>
-<translation id="8669949407341943408">Siirretään…</translation>
 <translation id="8698464937041809063">Google-piirros</translation>
 <translation id="8712637175834984815">Ymmärretty</translation>
 <translation id="8713112442029511308">malta</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Linux-tiedostot</translation>
 <translation id="9035012421917565900">Kohteita ei voi siirtää takaisin paikkaan <ph name="DESTINATION_NAME" />, joten tätä toimintoa ei voi kumota.</translation>
 <translation id="9038620279323455325">Tiedosto nimeltä <ph name="FILE_NAME" /> on jo olemassa. Valitse toinen nimi.</translation>
-<translation id="9064939804718829769">Siirretään…</translation>
 <translation id="9065203028668620118">Muokkaa</translation>
 <translation id="908378762078012445">venäjä, foneettinen AATSEEL-näppäimistö</translation>
 <translation id="9099674669267916096">Sivumäärä</translation>

@@ -4665,7 +4665,6 @@
 <translation id="642469772702851743">ଏହି ଡିଭାଇସ୍ (SN: <ph name="SERIAL_NUMBER" />) ମାଲିକଙ୍କ ଦ୍ଵାରା ଲକ୍ କରାଯାଇଥିଲା।</translation>
 <translation id="6425556984042222041">ଟେକ୍ସଟ୍-ଟୁ-ସ୍ପିଚ୍ ରେଟ୍</translation>
 <translation id="6426200009596957090">ChromeVox ସେଟିଂସ୍‌ ଖୋଲନ୍ତୁ</translation>
-<translation id="642654727595919401">ଆପଣ ଆପଣଙ୍କ ଡାଟାର ବ୍ୟାକଅପ୍ ନେଇ 1 ସପ୍ତାହ ଭିତରେ ଏହି <ph name="DEVICE_TYPE" />କୁ ଫେରସ୍ତ କରନ୍ତୁ ବୋଲି <ph name="DOMAIN" /> ଚାହେଁ।<ph name="LINK_BEGIN" />ବିବରଣୀ ଦେଖନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="642729974267661262">ସାଉଣ୍ଡ ଚଲାଇବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="6428982734197629783">ଛବି ପ୍ରକ୍ରିୟାକରଣ ହେଉଛି</translation>
 <translation id="6429384232893414837">ତ୍ରୁଟି ଅପ୍‍‍ଡେଟ୍ କରନ୍ତୁ</translation>
@@ -5541,7 +5540,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7457384018036134905">Chrome OS ସେଟିଂସରେ ଭାଷାଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="7458168200501453431">ଏହା Google ସନ୍ଧାନରେ ବ୍ୟବହୃତ ହୋଇଥିବା ସମାନ ବନାନ ଯାଞ୍ଚକାରୀ ବ୍ୟବହାର କରେ। ବ୍ରାଉଜର୍‌ରେ ଆପଣ ଟାଇପ୍ କରିଥିବା ଟେକ୍ସଟ୍ Googleକୁ ପଠାଯାଏ।</translation>
 <translation id="7460045493116006516">ଆପଣ ଇନ୍‌ଷ୍ଟଲ୍ କରିଥିବା ବର୍ତ୍ତମାନର ଥିମ୍</translation>
-<translation id="7461729991508684543">{NUM_DAYS,plural, =1{ଆପଣ ଆପଣଙ୍କ ଡାଟାର ବ୍ୟାକଅପ୍ ନେଇ ଏହି <ph name="DEVICE_TYPE" />କୁ ଆଜି ଫେରସ୍ତ କରନ୍ତୁ ବୋଲି <ph name="DOMAIN" /> ଚାହେଁ।<ph name="LINK_BEGIN" />ବିବରଣୀ ଦେଖନ୍ତୁ<ph name="LINK_END" />}other{ଆପଣ ଆପଣଙ୍କ ଡାଟାର ବ୍ୟାକଅପ୍ ନେଇ ଏହି <ph name="DEVICE_TYPE" />କୁ {NUM_DAYS}ଦିନ ଭିତରେ ଫେରସ୍ତ କରନ୍ତୁ ବୋଲି <ph name="DOMAIN" /> ଚାହେଁ।<ph name="LINK_BEGIN" />ବିବରଣୀ ଦେଖନ୍ତୁ<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">ପିନ୍‍</translation>
 <translation id="746216226901520237">ପରବର୍ତ୍ତୀ ସମୟରେ, ଆପଣଙ୍କର ଫୋନ୍‌ ଆପଣଙ୍କର <ph name="DEVICE_TYPE" />କୁ ଅନ୍‌ଲକ୍‌ କରିବ। ସେଟିଂସ୍‌ରେ ଆପଣ ସ୍ମାର୍ଟ ଲକ୍‌ ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="7463006580194749499">ଲୋକଙ୍କୁ ଯୋଗ କରନ୍ତୁ</translation>
@@ -6226,7 +6224,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8226619461731305576">ଧାଡ଼ି</translation>
 <translation id="8226628635270268143">ଆପଣଙ୍କ ପସନ୍ଦର ଫଟୋ ଏବଂ ଆଲବମଗୁଡ଼ିକ ବାଛନ୍ତୁ</translation>
 <translation id="8227119283605456246">ଫାଇଲ୍ ସଂଲଗ୍ନ କରନ୍ତୁ</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> ପାଇଁ ପାସ୍‌ୱାର୍ଡ ସେଭ୍ କରିବେ?</translation>
 <translation id="8234795456569844941">ଏହି ସମସ୍ୟାର ସମାଧାନ କରିବା ପାଇଁ ଦୟାକରି ଆମ ଇଞ୍ଜିନିୟର୍‌ମାନଙ୍କୁ ସାହାଯ୍ୟ କରନ୍ତୁ। ଆପଣ ପ୍ରୋଫାଇଲ୍ ତ୍ରୁଟି ମେସେଜ୍ ପାଇବାର ଠିକ୍ ପୂର୍ବରୁ କ’ଣ ଘଟିଥିଲା, ଆମକୁ କୁହନ୍ତୁ:</translation>
 <translation id="8236917170563564587">ଏହା ପରିବର୍ତ୍ତେ ଏହି ଟାବ୍ ସେୟାର୍ କରନ୍ତୁ</translation>

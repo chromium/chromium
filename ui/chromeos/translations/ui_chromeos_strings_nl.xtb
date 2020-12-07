@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Bestanden</translation>
 <translation id="1297922636971898492">Google Drive is momenteel niet beschikbaar. Het uploaden wordt automatisch gestart zodra Google Drive weer beschikbaar is.</translation>
 <translation id="1307931752636661898">Kan Linux-bestanden niet weergeven</translation>
-<translation id="1338950911836659113">Verwijderen...</translation>
 <translation id="1346748346194534595">Rechts</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> bestanden importeren...</translation>
 <translation id="1358735829858566124">Het bestand of de map is niet bruikbaar.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Afdrukken</translation>
 <translation id="1435838927755162558">Map delen met Parallels Desktop</translation>
 <translation id="1439494416798956626">Verplaatst naar <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">1 fout.</translation>
 <translation id="1467432559032391204">Links</translation>
 <translation id="1471718551822868769">Slowaaks</translation>
 <translation id="1474339897586437869">'<ph name="FILENAME" />' is niet geüpload. Er is onvoldoende ruimte beschikbaar in je Google Drive.</translation>
@@ -225,11 +223,9 @@
 <translation id="3455931012307786678">Estlands</translation>
 <translation id="3466147780910026086">Je media-apparaat scannen...</translation>
 <translation id="3468522857997926824">Er is een back-up van <ph name="FILE_COUNT" /> foto's gemaakt in <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Kopiëren...</translation>
 <translation id="3473378059788601120">Gekopieerd naar <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google-spreadsheet</translation>
 <translation id="3486821258960016770">Mongools</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> fouten.</translation>
 <translation id="3522708245912499433">Portugees</translation>
 <translation id="3524311639100184459">Let op: Deze bestanden zijn tijdelijk en kunnen automatisch worden verwijderd om schijfruimte vrij te maken.  <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Map</translation>
@@ -239,7 +235,6 @@
 <translation id="357479282490346887">Litouws</translation>
 <translation id="3603385196401704894">Canadees Frans</translation>
 <translation id="3606220979431771195">Turks-F</translation>
-<translation id="3609785682760573515">Synchroniseren...</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620292326130836921">Er is een back-up van alles gemaakt</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">Wachtwoord</translation>
 <translation id="6673674183150363784">Frans (Frankrijk) met Bépo-toetsenbord</translation>
 <translation id="6710213216561001401">Vorige</translation>
-<translation id="6718273304615422081">Inpakken...</translation>
 <translation id="6751256176799620176">1 map geselecteerd</translation>
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">Bestandslijst is gewijzigd naar miniatuurweergave.</translation>
 <translation id="8601932370724196034">Crostini-afbeeldingsbestand</translation>
 <translation id="8609695766746872526">IJslands</translation>
-<translation id="8669949407341943408">Verplaatsen…</translation>
 <translation id="8698464937041809063">Google-tekening</translation>
 <translation id="8712637175834984815">Begrepen</translation>
 <translation id="8713112442029511308">Maltees</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Linux-bestanden</translation>
 <translation id="9035012421917565900">De items kunnen niet worden teruggezet naar '<ph name="DESTINATION_NAME" />', dus je kunt deze actie niet ongedaan maken.</translation>
 <translation id="9038620279323455325">Er bestaat al een bestand met de naam '<ph name="FILE_NAME" />'. Kies een andere naam.</translation>
-<translation id="9064939804718829769">Overdragen...</translation>
 <translation id="9065203028668620118">Bewerken</translation>
 <translation id="908378762078012445">Russisch met fonetisch AATSEEL-toetsenbord</translation>
 <translation id="9099674669267916096">Aantal pagina's</translation>

@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Datoteke</translation>
 <translation id="1297922636971898492">Google disk trenutno nije dostupan. Otpremanje će se automatski ponovo pokrenuti kada Google disk postane dostupan.</translation>
 <translation id="1307931752636661898">Prikaz Linux datoteka nije uspeo</translation>
-<translation id="1338950911836659113">Brisanje...</translation>
 <translation id="1346748346194534595">Udesno</translation>
 <translation id="1351692861129622852">Uvoze se datoteke (<ph name="FILE_COUNT" />)...</translation>
 <translation id="1358735829858566124">Nije moguće koristiti datoteku ili direktorijum.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Štampaj</translation>
 <translation id="1435838927755162558">Delite direktorijum sa Parallels Desktop-om</translation>
 <translation id="1439494416798956626">Premešteno u: <ph name="FOLDER_NAME" /></translation>
-<translation id="1464724975715666883">1 greška.</translation>
 <translation id="1467432559032391204">Ulevo</translation>
 <translation id="1471718551822868769">slovački</translation>
 <translation id="1474339897586437869">Datoteka „<ph name="FILENAME" />“ nije otpremljena. Nije bilo dovoljno slobodnog mesta na Google disku.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">estonski</translation>
 <translation id="3466147780910026086">Medijski uređaj se skenira...</translation>
 <translation id="3468522857997926824">Rezervna kopija slika (<ph name="FILE_COUNT" />) je napravljena na <ph name="BEGIN_LINK" />Google disku<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Kopiranje...</translation>
 <translation id="3473378059788601120">Kopirano je u: <ph name="FOLDER_NAME" /></translation>
 <translation id="3475447146579922140">Google tabela</translation>
 <translation id="3486821258960016770">mongolski</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> grešaka.</translation>
 <translation id="3522708245912499433">portugalski</translation>
 <translation id="3524311639100184459">Oprez: Ove datoteke su privremene i mogu da se izbrišu automatski kako bi se oslobodio prostor na disku.  <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Direktorijum</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">litvanski</translation>
 <translation id="3603385196401704894">kanadska francuska</translation>
 <translation id="3606220979431771195">turska F</translation>
-<translation id="3609785682760573515">Sinhronizovanje...</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Kapučino</translation>
 <translation id="3620292326130836921">Napravljene su rezervne kopije svih datoteka!</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">Lozinka</translation>
 <translation id="6673674183150363784">francuski (Francuska) sa Bépo tastaturom</translation>
 <translation id="6710213216561001401">Prethodno</translation>
-<translation id="6718273304615422081">Pravljenje zip datoteke...</translation>
 <translation id="6751256176799620176">Izabran je 1 direktorijum</translation>
 <translation id="6790428901817661496">Pusti</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">Lista datoteka se promenila u prikaz sličica.</translation>
 <translation id="8601932370724196034">Crostini datoteka slike</translation>
 <translation id="8609695766746872526">islandski</translation>
-<translation id="8669949407341943408">Premeštanje...</translation>
 <translation id="8698464937041809063">Google crtež</translation>
 <translation id="8712637175834984815">Važi</translation>
 <translation id="8713112442029511308">malteški</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Linux datoteke</translation>
 <translation id="9035012421917565900">Stavke ne mogu da se vrate u „<ph name="DESTINATION_NAME" />“, pa nećete moći da opozovete ovu radnju.</translation>
 <translation id="9038620279323455325">Datoteka „<ph name="FILE_NAME" />“ već postoji. Odaberite drugi naziv.</translation>
-<translation id="9064939804718829769">Prenos...</translation>
 <translation id="9065203028668620118">Izmeni</translation>
 <translation id="908378762078012445">ruski sa fonetskom tastaturom AATSEEL</translation>
 <translation id="9099674669267916096">Broj stranica</translation>

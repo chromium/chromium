@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">파일</translation>
 <translation id="1297922636971898492">현재 Google 드라이브를 사용할 수 없습니다. Google 드라이브를 다시 사용할 수 있게 되면 자동으로 업로드가 다시 시작됩니다.</translation>
 <translation id="1307931752636661898">Linux 파일을 볼 수 없음</translation>
-<translation id="1338950911836659113">삭제 중...</translation>
 <translation id="1346748346194534595">오른쪽</translation>
 <translation id="1351692861129622852">파일 <ph name="FILE_COUNT" />개를 가져오는 중...</translation>
 <translation id="1358735829858566124">파일 또는 디렉터리를 사용할 수 없습니다.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1435838927755162558">Parallels Desktop과 폴더 공유</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> 폴더로 이동했습니다.</translation>
-<translation id="1464724975715666883">오류가 1개 있습니다.</translation>
 <translation id="1467432559032391204">왼쪽</translation>
 <translation id="1471718551822868769">슬로바키아어</translation>
 <translation id="1474339897586437869">'<ph name="FILENAME" />'이(가) 업로드되지 않았습니다. Google 드라이브에 충분한 여유 공간이 없습니다.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">에스토니아어</translation>
 <translation id="3466147780910026086">미디어 기기 스캔 중...</translation>
 <translation id="3468522857997926824">사진 <ph name="FILE_COUNT" />장을 <ph name="BEGIN_LINK" />Google 드라이브<ph name="END_LINK" />에 백업</translation>
-<translation id="3470502288861289375">복사 중...</translation>
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" />에 복사되었습니다.</translation>
 <translation id="3475447146579922140">Google 스프레드시트</translation>
 <translation id="3486821258960016770">몽골어</translation>
-<translation id="3495304270784461826">오류가 <ph name="COUNT" />개 있습니다.</translation>
 <translation id="3522708245912499433">포르투갈어</translation>
 <translation id="3524311639100184459">주의: 이 파일은 임시 파일이며 디스크 여유 공간을 확보하기 위해 자동으로 삭제될 수 있습니다.  <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">폴더</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">리투아니아어</translation>
 <translation id="3603385196401704894">프랑스어(캐나다)</translation>
 <translation id="3606220979431771195">터키어-F</translation>
-<translation id="3609785682760573515">동기화 중...</translation>
 <translation id="3616113530831147358">오디오</translation>
 <translation id="3619115746895587757">카푸치노</translation>
 <translation id="3620292326130836921">백업되지 않은 파일이 없습니다.</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">비밀번호</translation>
 <translation id="6673674183150363784">프랑스어(프랑스, 베포 키보드)</translation>
 <translation id="6710213216561001401">이전</translation>
-<translation id="6718273304615422081">압축 중...</translation>
 <translation id="6751256176799620176">폴더 1개 선택됨</translation>
 <translation id="6790428901817661496">재생</translation>
 <translation id="6795884519221689054">판다</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">파일 목록을 미리보기 이미지 뷰로 변경했습니다.</translation>
 <translation id="8601932370724196034">Crostini 이미지 파일</translation>
 <translation id="8609695766746872526">아이슬란드어</translation>
-<translation id="8669949407341943408">이동 중...</translation>
 <translation id="8698464937041809063">Google 드로잉</translation>
 <translation id="8712637175834984815">확인</translation>
 <translation id="8713112442029511308">몰타어</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Linux 파일</translation>
 <translation id="9035012421917565900">항목을 다시 '<ph name="DESTINATION_NAME" />'(으)로 이동할 수 없으므로 이 작업을 실행취소할 수 없습니다.</translation>
 <translation id="9038620279323455325">'<ph name="FILE_NAME" />' 파일이 이미 존재합니다. 다른 이름을 선택하세요.</translation>
-<translation id="9064939804718829769">이전 중...</translation>
 <translation id="9065203028668620118">수정</translation>
 <translation id="908378762078012445">러시아어(표음 AATSEEL 키보드)</translation>
 <translation id="9099674669267916096">페이지 수</translation>

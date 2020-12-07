@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">ဖိုင်များ</translation>
 <translation id="1297922636971898492">Google Drive ယခုမရသေးပါ။ Google Drive ပြန်လာသည်နှင့် တင်ခြင်း အလိုအလျောက် ပြန်စပါမည်။</translation>
 <translation id="1307931752636661898">Linux ဖိုင်များကို ကြည့်၍မရပါ</translation>
-<translation id="1338950911836659113">ဖျက်နေ...</translation>
 <translation id="1346748346194534595">ညာ</translation>
 <translation id="1351692861129622852">ဖိုင် <ph name="FILE_COUNT" /> ဖိုင် တင်သွင်းနေစဉ်...</translation>
 <translation id="1358735829858566124">ဖိုင်သို့မဟုတ် လမ်းကြောင်း အသုံးပြု၍ မရပါ။</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">ပရင့်</translation>
 <translation id="1435838927755162558">ဖိုင်တွဲကို Parallels Desktop အား မျှဝေခြင်း</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> ဖိုင်တွဲသို့ ရွှေ့ထားသည်။</translation>
-<translation id="1464724975715666883">မှားယွင်းမှု ၁ ခု</translation>
 <translation id="1467432559032391204">ဘယ်</translation>
 <translation id="1471718551822868769">ဆလိုဗက်</translation>
 <translation id="1474339897586437869">" <ph name="FILENAME" /> " ကို အပ်လုဒ် လုပ်မရခဲ့ပါ။ သင်၏ Google Drive ထဲတွင် နေရာ မလုံလောက်ပါ။</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">အက်စ်တိုနီးယား</translation>
 <translation id="3466147780910026086">သင့်မီဒီယာကို ဖတ်နေသည်...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> ဓါတ်ပုံများကို <ph name="BEGIN_LINK" /> Google Drive <ph name="END_LINK" /> သို့အရံသိမ်းဆည်းမည်</translation>
-<translation id="3470502288861289375">ကူးယူနေ...</translation>
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> သို့ မိတ္တူကူးထားသည်။</translation>
 <translation id="3475447146579922140">Google spreadsheet</translation>
 <translation id="3486821258960016770">မွန်ဂိုလီးယား</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> အမှားများ။</translation>
 <translation id="3522708245912499433">ပေါ်တူဂီ</translation>
 <translation id="3524311639100184459">သတိ- ဤဖိုင်များသည် ယာယီဖြစ်ပြီး ဒစ်ခ်နေရာလွတ်ပြုလုပ်ရန် အလိုအလျောက် ဖျက်နိုင်ပါသည်။  <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ဖိုင်တွဲ</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">လီသွေနီယံ</translation>
 <translation id="3603385196401704894">ကနေဒါမွေး ပြင်သစ်</translation>
 <translation id="3606220979431771195">Turkish-F</translation>
-<translation id="3609785682760573515">စင့်က် လုပ်နေ...</translation>
 <translation id="3616113530831147358">အသံ</translation>
 <translation id="3619115746895587757">ကာပူချီနို</translation>
 <translation id="3620292326130836921">အားလုံးအရံသိမ်းဆည်းပြီးပါပြီ!</translation>
@@ -532,7 +527,6 @@
 <translation id="6657585470893396449">စကားဝှက်</translation>
 <translation id="6673674183150363784">Bépo ကီးဘုတ်ဖြင့် ပြင်သစ် (ပြင်သစ်)</translation>
 <translation id="6710213216561001401">အရင်</translation>
-<translation id="6718273304615422081">ဇစ်ပိတ်နေ...</translation>
 <translation id="6751256176799620176">ဖိုင်တွဲ ၁ ခု ရွေးချယ်ထားသည်</translation>
 <translation id="6790428901817661496">ဖွင့်ရန်</translation>
 <translation id="6795884519221689054">ပန်ဒါဝက်ဝံ</translation>
@@ -732,7 +726,6 @@
 <translation id="8600173386174225982">ဖိုင်စာရင်းကို ပုံသေးမြင်ကွင်းအဖြစ် ပြောင်းထားသည်။</translation>
 <translation id="8601932370724196034">Crostini ပုံပါဝင်သော ဖိုင်</translation>
 <translation id="8609695766746872526">အိုက်စ်လန်</translation>
-<translation id="8669949407341943408">ရွှေ့ပေးနေ...</translation>
 <translation id="8698464937041809063">Google ရေးဆွဲခြင်း</translation>
 <translation id="8712637175834984815">ရပါပြီ!</translation>
 <translation id="8713112442029511308">မော်လတာ</translation>
@@ -755,7 +748,6 @@
 <translation id="9034924485347205037">Linux ဖိုင်များ</translation>
 <translation id="9035012421917565900">၎င်းတို့ကို '<ph name="DESTINATION_NAME" />' သို့ ပြန်ရွှေ့၍မရသည့်အတွက် ဤလုပ်ဆောင်ချက်ကို တစ်ဆင့်နောက်ပြန်၍ ရမည်မဟုတ်ပါ။</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" အမည်ဖြင့်ဖိုင် ရှိပြီးဖြစ်သည်။ အခြားအမည်ရွေးပါ။</translation>
-<translation id="9064939804718829769">လွှဲပြောင်းနေ...</translation>
 <translation id="9065203028668620118">ပြင်ဆင်ရန်</translation>
 <translation id="908378762078012445">အသံထွက် AATSEEL ကီးဘုတ်ဖြင့် ရုရှား</translation>
 <translation id="9099674669267916096">စာမျက်နှာအရေအတွက်</translation>

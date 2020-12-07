@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Fichiers</translation>
 <translation id="1297922636971898492">Google Disque n'est pas accessible pour le moment. Le téléversement reprendra lorsque Google Disque sera de nouveau fonctionnel.</translation>
 <translation id="1307931752636661898">Impossible d'afficher les fichiers Linux</translation>
-<translation id="1338950911836659113">Suppression en cours…</translation>
 <translation id="1346748346194534595">À droite</translation>
 <translation id="1351692861129622852">Importation de <ph name="FILE_COUNT" /> fichiers en cours...</translation>
 <translation id="1358735829858566124">Le fichier ou le répertoire n'est pas utilisable.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Imprimer</translation>
 <translation id="1435838927755162558">Partager le dossier avec Parallels Desktop</translation>
 <translation id="1439494416798956626">Déplacé dans le dossier <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">Une erreur.</translation>
 <translation id="1467432559032391204">À gauche</translation>
 <translation id="1471718551822868769">Slovaque</translation>
 <translation id="1474339897586437869">Le fichier « <ph name="FILENAME" /> » n'a pas été mis à jour. Il n'y a pas suffisamment d'espace libre au sein de votre Google Disque.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Estonien</translation>
 <translation id="3466147780910026086">Analyse de votre appareil de stockage multimédia en cours…</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> photos sauvegardées dans <ph name="BEGIN_LINK" />Google Disque<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Copie en cours…</translation>
 <translation id="3473378059788601120">Copié dans le dossier <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Feuilles de calcul Google</translation>
 <translation id="3486821258960016770">Mongol</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> erreurs.</translation>
 <translation id="3522708245912499433">Portugais</translation>
 <translation id="3524311639100184459">Attention : Ces fichiers sont temporaires et peuvent être automatiquement supprimés pour libérer de l'espace disque.  <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Dossier</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">Lituanien</translation>
 <translation id="3603385196401704894">Français canadien</translation>
 <translation id="3606220979431771195">Turc-F</translation>
-<translation id="3609785682760573515">Synchronisation en cours...</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620292326130836921">Tous les fichiers ont été sauvegardés!</translation>
@@ -534,7 +529,6 @@
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="6673674183150363784">Français (France) avec clavier BÉPO</translation>
 <translation id="6710213216561001401">Précédent</translation>
-<translation id="6718273304615422081">Compression au format .zip en cours...</translation>
 <translation id="6751256176799620176">1 dossier sélectionné</translation>
 <translation id="6790428901817661496">Jouer</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -734,7 +728,6 @@
 <translation id="8600173386174225982">La liste de fichiers utilise maintenant l'affichage en miniatures.</translation>
 <translation id="8601932370724196034">Fichier d'image Crostini</translation>
 <translation id="8609695766746872526">Islandais</translation>
-<translation id="8669949407341943408">Déplacement en cours…</translation>
 <translation id="8698464937041809063">Dessin Google</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8713112442029511308">Maltais</translation>
@@ -757,7 +750,6 @@
 <translation id="9034924485347205037">Fichiers Linux</translation>
 <translation id="9035012421917565900">Les éléments ne peuvent pas être remis dans « <ph name="DESTINATION_NAME" /> ». Cette action est donc irréversible.</translation>
 <translation id="9038620279323455325">Un fichier nommé « <ph name="FILE_NAME" /> » existe déjà. Veuillez choisir un autre nom.</translation>
-<translation id="9064939804718829769">Transfert en cours...</translation>
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="908378762078012445">Russe avec clavier phonétique AATSEEL</translation>
 <translation id="9099674669267916096">Nombre de pages</translation>

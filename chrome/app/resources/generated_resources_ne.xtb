@@ -4668,7 +4668,6 @@
 <translation id="642469772702851743">मालिकले यो यन्त्र (SN: <ph name="SERIAL_NUMBER" />) लक गर्नुभएको हो।</translation>
 <translation id="6425556984042222041">टेक्स्ट-टू-स्पिचको दर</translation>
 <translation id="6426200009596957090">ChromeVox सेटिङहरू खोल्नुहोस्</translation>
-<translation id="642654727595919401"><ph name="DOMAIN" /> का अनुसार तपाईंले एक हप्ताभित्र आफ्ना डेटा ब्याकअप गरी यो <ph name="DEVICE_TYPE" /> फिर्ता गर्नु पर्ने हुन्छ। <ph name="LINK_BEGIN" />विवरण हेर्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="642729974267661262">ध्वनि प्ले गर्न अनुमति नदिइएका साइटहरू</translation>
 <translation id="6428982734197629783">छवि प्रशोधन गर्दै</translation>
 <translation id="6429384232893414837">अद्यावधिकसम्बन्धी त्रुटि</translation>
@@ -5542,7 +5541,6 @@
 <translation id="7457384018036134905">Chrome OS का सेटिङमा गई भाषाहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="7458168200501453431">Google खोजमा प्रयोग हुने हिज्जे-जाँचकर्ता नै प्रयोग गर्छ। तपाईंले ब्राउजरमा टाइप गर्नुभएको पाठ Google लाई पठाइन्छ।</translation>
 <translation id="7460045493116006516">तपाईंले स्थापना गर्नुभएको हालको विषयवस्तु</translation>
-<translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> का अनुसार तपाईंले आजै आफ्ना डेटा ब्याकअप गरी यो <ph name="DEVICE_TYPE" /> फिर्ता गर्नु पर्ने हुन्छ। <ph name="LINK_BEGIN" />विवरण हेर्नुहोस्<ph name="LINK_END" />}other{<ph name="DOMAIN" /> का अनुसार तपाईंले {NUM_DAYS} दिनभित्र आफ्ना डेटा ब्याकअप गरी यो <ph name="DEVICE_TYPE" /> फिर्ता गर्नु पर्ने हुन्छ। <ph name="LINK_BEGIN" />विवरण हेर्नुहोस्<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">पिन</translation>
 <translation id="746216226901520237">अर्को पटकदेखि, तपाईंको फोनले तपाईंको <ph name="DEVICE_TYPE" /> अनलक गर्ने छ। तपाईं सेटिङहरूमा गई Smart Lock निष्क्रिय पार्न सक्नुहुन्छ।</translation>
 <translation id="7463006580194749499">व्यक्ति थप्नुहोस्</translation>
@@ -6229,7 +6227,6 @@
 <translation id="8226619461731305576">लाइन</translation>
 <translation id="8226628635270268143">आफूलाई मन पर्ने फोटो र एल्बमहरू छनौट गर्नुहोस्</translation>
 <translation id="8227119283605456246">फाइल समावेश गर्नुहोस्</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> को पासवर्ड सुरक्षित गर्ने हो?</translation>
 <translation id="8234795456569844941">कृपया यो समस्या समाधान गर्ने काममा हाम्रा इन्जिनियरहरूलाई मद्दत गर्नुहोस्। तपाईंले प्रोफाइल सम्बन्धी त्रुटिको यो सन्देश पाउनुभन्दा ठ्याक्कै अगाडि के भयो, हामीलाई बताउनुहोस्:</translation>
 <translation id="8236917170563564587">बरु यो ट्याब सेयर गर्नुहोस्</translation>

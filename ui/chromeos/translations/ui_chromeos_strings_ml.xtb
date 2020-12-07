@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">Google ഡ്രൈവ് ഇപ്പോൾ ലഭ്യമല്ല. ലഭ്യമായിക്കഴിഞ്ഞാൽ, അപ്‌ലോഡ് ചെയ്യുന്നത് സ്വമേധയാ പുനരാരംഭിക്കും.</translation>
 <translation id="1307931752636661898">Linux ഫയലുകൾ കാണാനാവുന്നില്ല</translation>
-<translation id="1338950911836659113">ഇല്ലാതാക്കുന്നു...</translation>
 <translation id="1346748346194534595">ശരി</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> ഫയലുകൾ ഇമ്പോർട്ടുചെയ്യുന്നു...</translation>
 <translation id="1358735829858566124">ഫയലോ ഡയറക്‌റ്ററിയോ ഉപയോഗക്ഷമമല്ല.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">അച്ചടിക്കുക</translation>
 <translation id="1435838927755162558">Parallels Desktop ഉപയോഗിച്ച് ഫോൾഡർ പങ്കിടുക</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> എന്നതിലേക്ക് നീക്കി.</translation>
-<translation id="1464724975715666883">ഒരു പിശക്.</translation>
 <translation id="1467432559032391204">ഇടത്</translation>
 <translation id="1471718551822868769">സ്ലോവാക്</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" അപ്‌ലോഡുചെയ്‌തില്ല. നിങ്ങളുടെ Google ഡ്രൈവിൽ മതിയായ ഇടമില്ല.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">എസ്തോണിയൻ</translation>
 <translation id="3466147780910026086">നിങ്ങളുടെ മീഡിയാ ഉപകരണം സ്‌‌കാൻ ചെയ്യുന്നു...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> ഫോട്ടോകൾ <ph name="BEGIN_LINK" />Google ഡ്രൈവിലേക്ക്<ph name="END_LINK" /> ബാക്കപ്പുചെയ്‌തു</translation>
-<translation id="3470502288861289375">പകർത്തുന്നു...</translation>
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> എന്നതിലേക്ക് പകർത്തി.</translation>
 <translation id="3475447146579922140">Google സ്‌പ്രെഡ്‌ഷീറ്റ്</translation>
 <translation id="3486821258960016770">മംഗോളിയൻ</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> പിശകുകൾ.</translation>
 <translation id="3522708245912499433">പോര്‍ച്ചുഗീസ്</translation>
 <translation id="3524311639100184459">മുന്നറിയിപ്പ്: ഇവ താൽക്കാലിക ഫയലുകളാണ് ഡിസ്ക്കിൽ ഇടമുണ്ടാക്കാൻ സ്വയമേവ ഇല്ലാതാക്കിയേക്കാം.  <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ഫോൾഡർ</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">ലിത്വാനിയന്‍</translation>
 <translation id="3603385196401704894">കനേഡിയന്‍ ഫ്രഞ്ച്</translation>
 <translation id="3606220979431771195">ടർക്കിഷ്-എഫ്</translation>
-<translation id="3609785682760573515">സമന്വയിപ്പിക്കുന്നു...</translation>
 <translation id="3616113530831147358">ഓഡിയോ</translation>
 <translation id="3619115746895587757">കാപ്പുചീനോ</translation>
 <translation id="3620292326130836921">എല്ലാം ബാക്കപ്പുചെയ്‌തു!</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">പാസ്‌വേഡ്</translation>
 <translation id="6673674183150363784">BÉPO കീബോർഡ് ഉള്ള ഫ്രഞ്ച് (ഫ്രാൻസ്)</translation>
 <translation id="6710213216561001401">മുമ്പത്തേത്</translation>
-<translation id="6718273304615422081">Zip ചെയ്യുന്നു...</translation>
 <translation id="6751256176799620176">ഒരു ഫോൾഡർ തിരഞ്ഞെടുത്തു</translation>
 <translation id="6790428901817661496">പ്ലേചെയ്യുക</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">ഫയൽ ലിസ്‌റ്റ് ലഘുചിത്ര കാഴ്‌ചയിലേക്ക് മാറ്റിയിട്ടുണ്ട്.</translation>
 <translation id="8601932370724196034">Crostini ചിത്ര ഫയൽ</translation>
 <translation id="8609695766746872526">ഐസ്‌ലാന്‍ഡിക്</translation>
-<translation id="8669949407341943408">നീക്കുന്നു...</translation>
 <translation id="8698464937041809063">Google ഡ്രോയിംഗ്</translation>
 <translation id="8712637175834984815">മനസ്സിലായി</translation>
 <translation id="8713112442029511308">മാള്‍ട്ടീസ്</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Linux ഫയലുകൾ</translation>
 <translation id="9035012421917565900">ഇനങ്ങൾ '<ph name="DESTINATION_NAME" />' എന്നതിലേക്ക് തിരികെ നീക്കാൻ കഴിയാത്തതിനാൽ, ഈ പ്രവൃത്തി നിങ്ങൾക്ക് പഴയപടിയാക്കാനാവില്ല.</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" എന്ന പേരുള്ള ഫയൽ മുമ്പേ നിലവിലുണ്ട്. മറ്റൊരു പേര് തിരഞ്ഞെടുക്കുക.</translation>
-<translation id="9064939804718829769">കൈമാറുന്നു...</translation>
 <translation id="9065203028668620118">എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="908378762078012445">ഫൊണറ്റിക് AATSEEL കീബോർഡ് ഉള്ള റഷ്യൻ</translation>
 <translation id="9099674669267916096">പേജിന്റെ എണ്ണം</translation>

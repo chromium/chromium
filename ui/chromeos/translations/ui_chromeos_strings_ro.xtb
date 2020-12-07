@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Fișiere</translation>
 <translation id="1297922636971898492">Google Drive nu este disponibil momentan. Încărcarea va reporni automat când Google Drive va putea fi accesat.</translation>
 <translation id="1307931752636661898">Fișierele Linux nu pot fi afișate</translation>
-<translation id="1338950911836659113">Se șterge…</translation>
 <translation id="1346748346194534595">Dreapta</translation>
 <translation id="1351692861129622852">Se importă <ph name="FILE_COUNT" /> fișiere...</translation>
 <translation id="1358735829858566124">Fișierul sau directorul nu este utilizabil.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Printează</translation>
 <translation id="1435838927755162558">Permite accesul Parallels Desktop la dosar</translation>
 <translation id="1439494416798956626">Mutat în <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">1 eroare.</translation>
 <translation id="1467432559032391204">Stânga</translation>
 <translation id="1471718551822868769">Slovacă</translation>
 <translation id="1474339897586437869">„<ph name="FILENAME" />” nu s-a încărcat. Nu există spațiu liber suficient în Google Drive.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Estoniană</translation>
 <translation id="3466147780910026086">Se scanează dispozitivul media...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> fotografii cu backup pe <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Se copiază...</translation>
 <translation id="3473378059788601120">S-a copiat în <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Foaie de calcul Google</translation>
 <translation id="3486821258960016770">Mongolă</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> erori.</translation>
 <translation id="3522708245912499433">Portugheză</translation>
 <translation id="3524311639100184459">Atenție: aceste fișiere sunt temporare și pot fi șterse automat pentru a elibera spațiu pe disc.  <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Dosar</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">Lituaniană</translation>
 <translation id="3603385196401704894">Franceză canadiană</translation>
 <translation id="3606220979431771195">Turcă-F</translation>
-<translation id="3609785682760573515">Se sincronizează...</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620292326130836921">S-a făcut backup pentru tot!</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">Parolă</translation>
 <translation id="6673674183150363784">Franceză (Franța) cu tastatură Bépo</translation>
 <translation id="6710213216561001401">Înapoi</translation>
-<translation id="6718273304615422081">Se arhivează...</translation>
 <translation id="6751256176799620176">Un dosar selectat</translation>
 <translation id="6790428901817661496">Redă</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">Lista de fișiere s-a modificat la vizualizare cu miniaturi.</translation>
 <translation id="8601932370724196034">Fișier imagine Crostini</translation>
 <translation id="8609695766746872526">Islandeză</translation>
-<translation id="8669949407341943408">Se mută...</translation>
 <translation id="8698464937041809063">Desen Google</translation>
 <translation id="8712637175834984815">Am înțeles</translation>
 <translation id="8713112442029511308">Malteză</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Fișiere Linux</translation>
 <translation id="9035012421917565900">Articolele nu pot fi mutate înapoi în „<ph name="DESTINATION_NAME" />”, prin urmare, nu vei putea să anulezi această acțiune.</translation>
 <translation id="9038620279323455325">Fișierul cu numele „<ph name="FILE_NAME" />” există deja. Alege un alt nume.</translation>
-<translation id="9064939804718829769">Se transferă...</translation>
 <translation id="9065203028668620118">Editează</translation>
 <translation id="908378762078012445">Tastatură rusă fonetică AATSEEL</translation>
 <translation id="9099674669267916096">Numărul de pagini</translation>

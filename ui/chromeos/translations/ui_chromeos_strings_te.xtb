@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">Google డిస్క్ ప్రస్తుతం అందుబాటులో లేదు. Google డిస్క్ అందుబాటులోకి వచ్చిన తర్వాత అప్‌లోడ్ ఆటోమేటిక్‌గా మళ్లీ ప్రారంభమవుతుంది.</translation>
 <translation id="1307931752636661898">Linux ఫైల్‌లను చూడటం సాధ్యపడలేదు</translation>
-<translation id="1338950911836659113">తొలగిస్తోంది...</translation>
 <translation id="1346748346194534595">కుడి</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> ఫైల్‌లను దిగుమతి చేస్తోంది...</translation>
 <translation id="1358735829858566124">ఈ ఫైల్ లేదా డైరెక్టరీ ఉపయోగించబడదు.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">ముద్రించు</translation>
 <translation id="1435838927755162558">Parallels Desktopతో ఫోల్డర్‌ను షేర్ చేయండి</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" />లోకి తరలించబడింది.</translation>
-<translation id="1464724975715666883">1 ఎర్రర్.</translation>
 <translation id="1467432559032391204">ఎడమ</translation>
 <translation id="1471718551822868769">స్లోవాక్</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" అప్‌లోడ్ కాలేదు. మీ Google డిస్క్‌లో తగినంత ఖాళీ స్థలం లేదు.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">ఎస్టోనియన్</translation>
 <translation id="3466147780910026086">మీ మీడియా పరికరాన్ని స్కాన్ చేస్తోంది...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> ఫోటోలు <ph name="BEGIN_LINK" />Google డిస్క్<ph name="END_LINK" />కి బ్యాకప్ చేయబడ్డాయి</translation>
-<translation id="3470502288861289375">కాపీ చేస్తోంది...</translation>
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" />లోకి కాపీ చేయబడింది.</translation>
 <translation id="3475447146579922140">Google స్ప్రెడ్‌షీట్</translation>
 <translation id="3486821258960016770">మంగోలియన్</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> లోపాలు.</translation>
 <translation id="3522708245912499433">పోర్చుగీస్</translation>
 <translation id="3524311639100184459">హెచ్చరిక: ఈ ఫైల్స్ తాత్కాలికమైనవి, డిస్క్ స్పేస్‌ను ఖాళీ చేయడం కోసం ఆటోమేటిక్‌గా ఇవి తొలగించబడవచ్చు.  <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ఫోల్డర్</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">లిథువేనియన్</translation>
 <translation id="3603385196401704894">కెనడియెన్ ఫ్రెంచ్</translation>
 <translation id="3606220979431771195">టర్కిష్-ఎఫ్</translation>
-<translation id="3609785682760573515">సమకాలీకరిస్తోంది...</translation>
 <translation id="3616113530831147358">ఆడియో</translation>
 <translation id="3619115746895587757">కాపుచినో</translation>
 <translation id="3620292326130836921">అన్నీ బ్యాకప్ చేయబడ్డాయి!</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">పాస్‌వర్డ్</translation>
 <translation id="6673674183150363784">Bépo కీబోర్డ్‌తో ఫ్రెంచ్ (ఫ్రాన్స్)</translation>
 <translation id="6710213216561001401">మునుపటి</translation>
-<translation id="6718273304615422081">జిప్ చేస్తోంది...</translation>
 <translation id="6751256176799620176">1 ఫోల్డర్ ఎంచుకోబడింది</translation>
 <translation id="6790428901817661496">ప్లే చేయి</translation>
 <translation id="6795884519221689054">పాండా</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">ఫైల్ జాబితా, "సూక్ష్మచిత్ర వీక్షణ"కు మార్చబడింది.</translation>
 <translation id="8601932370724196034">Crostini చిత్రం ఫైల్</translation>
 <translation id="8609695766746872526">ఐస్‌లాండిక్</translation>
-<translation id="8669949407341943408">తరలించబడుతున్నాయి...</translation>
 <translation id="8698464937041809063">Google డ్రాయింగ్</translation>
 <translation id="8712637175834984815">అర్థమైంది</translation>
 <translation id="8713112442029511308">మాల్టీస్</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Linux ఫైల్‌లు</translation>
 <translation id="9035012421917565900">ఈ అంశాలను '<ph name="DESTINATION_NAME" />'లోకి తిరిగి తరలించడం సాధ్యపడదు. కాబట్టి మీరు ఈ చర్యను రద్దు చేయలేరు.</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" పేరు గల ఫైల్ ఇప్పటికే ఉంది. దయచేసి వేరొక పేరును ఎంచుకోండి.</translation>
-<translation id="9064939804718829769">బదిలీ చేస్తోంది...</translation>
 <translation id="9065203028668620118">సవరించు</translation>
 <translation id="908378762078012445">ఫోనెటిక్ AATSEEL కీబోర్డ్‌తో రష్యన్</translation>
 <translation id="9099674669267916096">పేజీ గణన</translation>

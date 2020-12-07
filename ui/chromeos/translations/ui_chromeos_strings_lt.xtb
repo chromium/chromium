@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Failai</translation>
 <translation id="1297922636971898492">„Google“ diskas dabar nepasiekiamas. Įkėlimas bus iš naujo pradėtas automatiškai, kai „Google“ diskas bus vėl pasiekiamas.</translation>
 <translation id="1307931752636661898">Nepavyko peržiūrėti „Linux“ failų</translation>
-<translation id="1338950911836659113">Ištrinama...</translation>
 <translation id="1346748346194534595">Dešinė</translation>
 <translation id="1351692861129622852">Importuojami failai (<ph name="FILE_COUNT" />)...</translation>
 <translation id="1358735829858566124">Failas arba katalogas nenaudojamas.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Spausdinti</translation>
 <translation id="1435838927755162558">Bendrinkite aplanką su „Parallels Desktop“</translation>
 <translation id="1439494416798956626">Perkelta į aplanką „<ph name="FOLDER_NAME" />“.</translation>
-<translation id="1464724975715666883">1 klaida.</translation>
 <translation id="1467432559032391204">Kairė</translation>
 <translation id="1471718551822868769">Slovakų k.</translation>
 <translation id="1474339897586437869">Failas „<ph name="FILENAME" />“ neįkeltas. „Google“ diske nepakanka vietos.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Estų k.</translation>
 <translation id="3466147780910026086">Nuskaitomas medijos įrenginys...</translation>
 <translation id="3468522857997926824">Sukurta atsarginių nuotraukų kopijų <ph name="BEGIN_LINK" />„Google“ diske<ph name="END_LINK" />: <ph name="FILE_COUNT" /></translation>
-<translation id="3470502288861289375">Kopijuojama...</translation>
 <translation id="3473378059788601120">Nukopijuota į aplanką „<ph name="FOLDER_NAME" />“.</translation>
 <translation id="3475447146579922140">„Google“ skaičiuoklė</translation>
 <translation id="3486821258960016770">Mongolų k.</translation>
-<translation id="3495304270784461826">Klaidų: <ph name="COUNT" />.</translation>
 <translation id="3522708245912499433">Portugalų</translation>
 <translation id="3524311639100184459">Perspėjimas: šie failai yra laikini ir gali būti automatiškai ištrinti, kad būtų atlaisvinta vietos diske.  <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Aplankas</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">Lietuvių</translation>
 <translation id="3603385196401704894">Kanados prancūzų</translation>
 <translation id="3606220979431771195">Turkiška</translation>
-<translation id="3609785682760573515">Sinchronizuojama...</translation>
 <translation id="3616113530831147358">Garsas</translation>
 <translation id="3619115746895587757">Kapučino kava</translation>
 <translation id="3620292326130836921">Atsarginis kopijavimas baigtas!</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">Slaptažodis</translation>
 <translation id="6673674183150363784">Prancūzų k. (Prancūzija) su „Bépo“ klaviatūra</translation>
 <translation id="6710213216561001401">Ankstesnė</translation>
-<translation id="6718273304615422081">Glaudinama...</translation>
 <translation id="6751256176799620176">Pasirinktas 1 aplankas</translation>
 <translation id="6790428901817661496">Žaisti</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">Failų sąrašas pakeistas į miniatiūrų rodinį.</translation>
 <translation id="8601932370724196034">„Crostini“ vaizdo failas</translation>
 <translation id="8609695766746872526">Islandų k.</translation>
-<translation id="8669949407341943408">Perkeliama...</translation>
 <translation id="8698464937041809063">„Google“ piešinys</translation>
 <translation id="8712637175834984815">Supratau</translation>
 <translation id="8713112442029511308">Maltiečių k.</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">„Linux“ failai</translation>
 <translation id="9035012421917565900">Elementų negalima perkelti atgal į „<ph name="DESTINATION_NAME" />“, todėl negalėsite anuliuoti šio veiksmo.</translation>
 <translation id="9038620279323455325">Failas pavadinimu „<ph name="FILE_NAME" />“ jau yra. Pasirinkite kitą pavadinimą.</translation>
-<translation id="9064939804718829769">Perkeliama...</translation>
 <translation id="9065203028668620118">Redaguoti</translation>
 <translation id="908378762078012445">Rusų k. su fonetine AATSEEL klaviatūra</translation>
 <translation id="9099674669267916096">Puslapių skaičius</translation>

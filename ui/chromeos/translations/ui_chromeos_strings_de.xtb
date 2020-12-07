@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Dateien</translation>
 <translation id="1297922636971898492">Google Drive ist momentan nicht verfügbar. Das Hochladen Ihrer Dateien wird automatisch fortgesetzt, sobald Google Drive wieder verfügbar ist.</translation>
 <translation id="1307931752636661898">Linux-Dateien können nicht angezeigt werden</translation>
-<translation id="1338950911836659113">Wird gelöscht...</translation>
 <translation id="1346748346194534595">Rechts</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> Dateien werden importiert...</translation>
 <translation id="1358735829858566124">Die Datei oder das Verzeichnis kann nicht verwendet werden.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Drucken</translation>
 <translation id="1435838927755162558">Ordner für Parallels Desktop freigeben</translation>
 <translation id="1439494416798956626">Verschoben nach <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">1 Fehler</translation>
 <translation id="1467432559032391204">Links</translation>
 <translation id="1471718551822868769">Slowakisch</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" konnte nicht hochgeladen werden. In Ihrem Google Drive-Konto ist nicht genügend Speicherplatz frei.</translation>
@@ -225,11 +223,9 @@
 <translation id="3455931012307786678">Estnisch</translation>
 <translation id="3466147780910026086">Mediengerät wird durchsucht...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> Fotos auf <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> gesichert</translation>
-<translation id="3470502288861289375">Wird kopiert...</translation>
 <translation id="3473378059788601120">Kopiert nach <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google-Tabellendokument</translation>
 <translation id="3486821258960016770">Mongolisch</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> Fehler</translation>
 <translation id="3522708245912499433">Portugiesisch</translation>
 <translation id="3524311639100184459">Vorsicht: Dies sind temporäre Dateien, die möglicherweise automatisch gelöscht werden, um Speicherplatz freizugeben.  <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Ordner</translation>
@@ -239,7 +235,6 @@
 <translation id="357479282490346887">Litauisch</translation>
 <translation id="3603385196401704894">Kanadisches Französisch</translation>
 <translation id="3606220979431771195">Türkisch-F</translation>
-<translation id="3609785682760573515">Synchronisieren...</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620292326130836921">Alle Daten gesichert</translation>
@@ -532,7 +527,6 @@
 <translation id="6657585470893396449">Passwort</translation>
 <translation id="6673674183150363784">Französisch (Frankreich) mit Bépo-Tastatur</translation>
 <translation id="6710213216561001401">Zurück</translation>
-<translation id="6718273304615422081">Wird gezippt...</translation>
 <translation id="6751256176799620176">1 Ordner ausgewählt</translation>
 <translation id="6790428901817661496">Wiedergabe</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -732,7 +726,6 @@
 <translation id="8600173386174225982">Die Dateiliste wird jetzt in der Miniaturansicht angezeigt.</translation>
 <translation id="8601932370724196034">Crostini-Bilddatei</translation>
 <translation id="8609695766746872526">Isländisch</translation>
-<translation id="8669949407341943408">Verschieben...</translation>
 <translation id="8698464937041809063">Google-Zeichnung</translation>
 <translation id="8712637175834984815">Alles klar</translation>
 <translation id="8713112442029511308">Maltesisch</translation>
@@ -755,7 +748,6 @@
 <translation id="9034924485347205037">Linux-Dateien</translation>
 <translation id="9035012421917565900">Diese Elemente können nicht in "<ph name="DESTINATION_NAME" />" zurückverschoben werden. Diese Aktion lässt sich also nicht rückgängig machen.</translation>
 <translation id="9038620279323455325">Die Datei mit dem Namen "<ph name="FILE_NAME" />" existiert bereits. Wählen Sie einen anderen Namen aus.</translation>
-<translation id="9064939804718829769">Übertragung wird durchgeführt...</translation>
 <translation id="9065203028668620118">Bearbeiten</translation>
 <translation id="908378762078012445">Russisch mit phonetischer Tastatur (AATSEEL)</translation>
 <translation id="9099674669267916096">Seitenzahl</translation>

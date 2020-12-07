@@ -4692,7 +4692,6 @@
 <translation id="642469772702851743">Гэта прылада (серыйны нумар: <ph name="SERIAL_NUMBER" />) заблакіравана ўладальнікам.</translation>
 <translation id="6425556984042222041">Хуткасць сінтэзу маўлення</translation>
 <translation id="6426200009596957090">Адкрыць налады ChromeVox</translation>
-<translation id="642654727595919401">Вы выкарыстоўваеце дамен "<ph name="DOMAIN" />", які патрабуе ад вас стварыць рэзервовую копію сваіх даных і вярнуць прыладу <ph name="DEVICE_TYPE" /> на працягу 1 тыдня. <ph name="LINK_BEGIN" />Больш падрабязна<ph name="LINK_END" /></translation>
 <translation id="642729974267661262">Не дазволена прайграваць гук</translation>
 <translation id="6428982734197629783">Ідзе апрацоўка відарыса</translation>
 <translation id="6429384232893414837">Памылка абнаўлення</translation>
@@ -5568,7 +5567,6 @@
 <translation id="7457384018036134905">Кіраваць моўнымі параметрамі ў наладах Chrome OS</translation>
 <translation id="7458168200501453431">Выкарыстоўвае тую ж праверку правапісу, што ў Google Пошуку. Уведзены ў браўзер тэкст адпраўляецца ў Google.</translation>
 <translation id="7460045493116006516">Бягучая тэма, якую вы ўсталявалі</translation>
-<translation id="7461729991508684543">{NUM_DAYS,plural, =1{Вы выкарыстоўваеце дамен "<ph name="DOMAIN" />", які патрабуе ад вас стварыць рэзервовую копію сваіх даных і вярнуць прыладу <ph name="DEVICE_TYPE" /> сёння. <ph name="LINK_BEGIN" />Больш падрабязна<ph name="LINK_END" />}one{Вы выкарыстоўваеце дамен "<ph name="DOMAIN" />", які патрабуе ад вас стварыць рэзервовую копію сваіх даных і вярнуць прыладу <ph name="DEVICE_TYPE" /> на працягу {NUM_DAYS} дня. <ph name="LINK_BEGIN" />Больш падрабязна<ph name="LINK_END" />}few{Вы выкарыстоўваеце дамен "<ph name="DOMAIN" />", які патрабуе ад вас стварыць рэзервовую копію сваіх даных і вярнуць прыладу <ph name="DEVICE_TYPE" /> на працягу {NUM_DAYS} дзён. <ph name="LINK_BEGIN" />Больш падрабязна<ph name="LINK_END" />}many{Вы выкарыстоўваеце дамен "<ph name="DOMAIN" />", які патрабуе ад вас стварыць рэзервовую копію сваіх даных і вярнуць прыладу <ph name="DEVICE_TYPE" /> на працягу {NUM_DAYS} дзён. <ph name="LINK_BEGIN" />Больш падрабязна<ph name="LINK_END" />}other{Вы выкарыстоўваеце дамен "<ph name="DOMAIN" />", які патрабуе ад вас стварыць рэзервовую копію сваіх даных і вярнуць прыладу <ph name="DEVICE_TYPE" /> на працягу {NUM_DAYS} дня. <ph name="LINK_BEGIN" />Больш падрабязна<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">PIN-код</translation>
 <translation id="746216226901520237">Наступны раз прылада <ph name="DEVICE_TYPE" /> будзе разблакіравана з дапамогай вашага тэлефона. Вы можаце выключыць Smart Lock у Наладах.</translation>
 <translation id="7463006580194749499">Дадаць карыстальніка</translation>
@@ -6259,7 +6257,6 @@
 <translation id="8226619461731305576">Чарга</translation>
 <translation id="8226628635270268143">Выберыце любімыя фота і альбомы</translation>
 <translation id="8227119283605456246">Далучыць файл</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">Захаваць пароль для <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Дапамажыце нашым інжынерам вырашыць праблему. Апішыце, што адбывалася перад тым, як вы ўбачылі паведамленне пра памылку ў профілі:</translation>
 <translation id="8236917170563564587">Абагуліць гэту ўкладку</translation>

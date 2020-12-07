@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Filer</translation>
 <translation id="1297922636971898492">Google Drev er ikke tilgængeligt lige nu. Uploadet genstarter automatisk, når Google Drev er tilgængeligt igen.</translation>
 <translation id="1307931752636661898">Linux-filerne kan ikke vises</translation>
-<translation id="1338950911836659113">Sletter...</translation>
 <translation id="1346748346194534595">Højre</translation>
 <translation id="1351692861129622852">Importerer <ph name="FILE_COUNT" /> filer...</translation>
 <translation id="1358735829858566124">Filen eller mappen kan ikke bruges.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Udskriv</translation>
 <translation id="1435838927755162558">Del mappe med Parallels Desktop</translation>
 <translation id="1439494416798956626">Flyttet til <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">1 fejl.</translation>
 <translation id="1467432559032391204">Venstre</translation>
 <translation id="1471718551822868769">Slovakisk</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" blev ikke uploadet. Der er ikke plads nok i Google Drev.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Estisk</translation>
 <translation id="3466147780910026086">Din medieenhed scannes...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> billeder blev sikkerhedskopieret til <ph name="BEGIN_LINK" />Google Drev<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Kopierer...</translation>
 <translation id="3473378059788601120">Kopieret til <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google-regneark</translation>
 <translation id="3486821258960016770">Mongolsk</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> fejl.</translation>
 <translation id="3522708245912499433">Portugisisk</translation>
 <translation id="3524311639100184459">Advarsel! Disse filer er midlertidige og kan slettes automatisk for at frigøre diskplads.  <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Mappe</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">Litauisk</translation>
 <translation id="3603385196401704894">Fransk (Canada)</translation>
 <translation id="3606220979431771195">Tyrkisk F</translation>
-<translation id="3609785682760573515">Synkroniserer…</translation>
 <translation id="3616113530831147358">Lyd</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620292326130836921">Alt er sikkerhedskopieret.</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">Adgangskode</translation>
 <translation id="6673674183150363784">Fransk (Frankrig) Bépo-tastatur</translation>
 <translation id="6710213216561001401">Forrige</translation>
-<translation id="6718273304615422081">Komprimerer...</translation>
 <translation id="6751256176799620176">1 mappe er valgt</translation>
 <translation id="6790428901817661496">Afspil</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">Der blev skiftet til miniaturevisning for listen med filer.</translation>
 <translation id="8601932370724196034">Crostini-billedfil</translation>
 <translation id="8609695766746872526">Islandsk</translation>
-<translation id="8669949407341943408">Flytter…</translation>
 <translation id="8698464937041809063">Google-tegning</translation>
 <translation id="8712637175834984815">Forstået</translation>
 <translation id="8713112442029511308">Maltesisk</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Linux-filer</translation>
 <translation id="9035012421917565900">Elementerne kan ikke flyttes tilbage til "<ph name="DESTINATION_NAME" />", så du kan ikke fortryde denne handling.</translation>
 <translation id="9038620279323455325">Der findes allerede en fil med navnet "<ph name="FILE_NAME" />". Vælg et andet navn.</translation>
-<translation id="9064939804718829769">Overfører...</translation>
 <translation id="9065203028668620118">Rediger</translation>
 <translation id="908378762078012445">Russisk med fonetisk AATSEEL-tastatur</translation>
 <translation id="9099674669267916096">Sideantal</translation>

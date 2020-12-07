@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">এই মুহূর্তে Google ড্রাইভ উপলব্ধ নেই৷ একবার Google ড্রাইভ উপলব্ধ হলেই আপলোড করার কাজটি স্বয়ংক্রিয়ভাবে পুনরায় চালু হবে৷</translation>
 <translation id="1307931752636661898">Linux ফাইল দেখা যায়নি</translation>
-<translation id="1338950911836659113">মোছা হচ্ছে...</translation>
 <translation id="1346748346194534595">ডানে</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" />টি ফাইল ইমপোর্ট করা হচ্ছে...</translation>
 <translation id="1358735829858566124">ফাইল বা ডিরেক্টরি ব্যবহারযোগ্য নয়৷</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">প্রিন্ট</translation>
 <translation id="1435838927755162558">Parallels Desktop-এর সাথে ফোল্ডার শেয়ার করুন</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> এ সরানো হয়েছে।</translation>
-<translation id="1464724975715666883">১টি ত্রুটি৷</translation>
 <translation id="1467432559032391204">বামে</translation>
 <translation id="1471718551822868769">স্লোভাক</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" আপলোড করা হয়নি। আপনার Google ড্রাইভে পর্যাপ্ত ফাঁকা স্থান নেই।</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">এস্তোনিয়ান</translation>
 <translation id="3466147780910026086">আপনার মিডিয়া ডিভাইস স্ক্যান করা হচ্ছে...</translation>
 <translation id="3468522857997926824"><ph name="BEGIN_LINK" />Google ড্রাইভ<ph name="END_LINK" /> এ <ph name="FILE_COUNT" />টি ফটো ব্যাকআপ নেওয়া হয়েছে</translation>
-<translation id="3470502288861289375">অনুলিপি করা হচ্ছে...</translation>
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> ফোল্ডারে কপি করা হয়েছে।</translation>
 <translation id="3475447146579922140">Google স্প্রেডশীট</translation>
 <translation id="3486821258960016770">মঙ্গোলিয়ান</translation>
-<translation id="3495304270784461826"><ph name="COUNT" />টি ত্রুটি৷</translation>
 <translation id="3522708245912499433">পর্তুগিজ</translation>
 <translation id="3524311639100184459">সতর্কতা: এই ফাইলগুলি অস্থায়ী এবং ডিস্কের জায়গা খালি করতে হয়ত অটোমেটিক মুছে ফেলা হবে।  <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ফোল্ডার</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">লিথুয়ানিয়ান</translation>
 <translation id="3603385196401704894">কানাডীয় ফরাসি</translation>
 <translation id="3606220979431771195">তুর্কি-এফ</translation>
-<translation id="3609785682760573515">সিঙ্ক হচ্ছে...</translation>
 <translation id="3616113530831147358">অডিও</translation>
 <translation id="3619115746895587757">ক্যাপুচিনো</translation>
 <translation id="3620292326130836921">সব ব্যাকআপ নেওয়া হয়ে গেছে!</translation>
@@ -532,7 +527,6 @@
 <translation id="6657585470893396449">পাসওয়ার্ড</translation>
 <translation id="6673674183150363784">ফরাসি (ফ্রান্স) ভাষায় বেপো কীবোর্ড</translation>
 <translation id="6710213216561001401">আগের</translation>
-<translation id="6718273304615422081">জিপ করা হচ্ছে...</translation>
 <translation id="6751256176799620176">১টি ফোল্ডার নির্বাচন করা হয়েছে</translation>
 <translation id="6790428901817661496">চালু করুন</translation>
 <translation id="6795884519221689054">পান্ডা</translation>
@@ -732,7 +726,6 @@
 <translation id="8600173386174225982">থাম্বনেল ভিউতে ফাইলের তালিকা পরিবর্তিত হয়েছে।</translation>
 <translation id="8601932370724196034">Crostini ছবির ফাইল</translation>
 <translation id="8609695766746872526">আইসল্যান্ডিক</translation>
-<translation id="8669949407341943408">সরানো  হচ্ছে...</translation>
 <translation id="8698464937041809063">Google অঙ্কন</translation>
 <translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="8713112442029511308">মল্টিজ</translation>
@@ -755,7 +748,6 @@
 <translation id="9034924485347205037">Linux ফাইল</translation>
 <translation id="9035012421917565900">আইটেমগুলিকে '<ph name="DESTINATION_NAME" />'-এ ফিরিয়ে নেওয়া যাবে না, তাই আপনি এই কাজটি আর আগের অবস্থায় ফেরাতে পারবেন না।</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" নামের ফাইল আগে থেকেই আছে। অন্য একটি নাম লিখুন।</translation>
-<translation id="9064939804718829769">হস্তান্তর হচ্ছে...</translation>
 <translation id="9065203028668620118">সম্পাদনা</translation>
 <translation id="908378762078012445">রাশিয়ান ভাষায় ফোনেটিক আটসিল (AATSEEL) কীবোর্ড</translation>
 <translation id="9099674669267916096">পৃষ্ঠার সংখ্যা</translation>

@@ -4689,7 +4689,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="642469772702851743">Enheten (serienr: <ph name="SERIAL_NUMBER" />) har låsts av ägaren.</translation>
 <translation id="6425556984042222041">Hastighet för text till tal</translation>
 <translation id="6426200009596957090">Öppna ChromeVox-inställningarna</translation>
-<translation id="642654727595919401"><ph name="DOMAIN" /> kräver att du säkerhetskopierar din data och returnerar denna <ph name="DEVICE_TYPE" /> inom 1 vecka.<ph name="LINK_BEGIN" />Mer information<ph name="LINK_END" /></translation>
 <translation id="642729974267661262">Får inte spela upp ljud</translation>
 <translation id="6428982734197629783">Bilden bearbetas</translation>
 <translation id="6429384232893414837">Uppdateringsfel</translation>
@@ -5565,7 +5564,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7457384018036134905">Hantera språk i inställningarna för Chrome OS</translation>
 <translation id="7458168200501453431">Använder samma stavningskontroll som Google Sök. Text som du anger i webbläsaren skickas till Google.</translation>
 <translation id="7460045493116006516">Aktuellt tema som du har installerat</translation>
-<translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> kräver att du säkerhetskopierar din data och returnerar denna <ph name="DEVICE_TYPE" /> i dag.<ph name="LINK_BEGIN" />Mer information<ph name="LINK_END" />}other{<ph name="DOMAIN" /> kräver att du säkerhetskopierar din data och returnerar denna <ph name="DEVICE_TYPE" /> om {NUM_DAYS} dagar.<ph name="LINK_BEGIN" />Mer information<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">Fäst</translation>
 <translation id="746216226901520237">Nästa gång låser mobilen upp din <ph name="DEVICE_TYPE" />. Du kan inaktivera Smart Lock i inställningarna.</translation>
 <translation id="7463006580194749499">Lägg till person</translation>
@@ -6257,7 +6255,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8226619461731305576">Utskriftskö</translation>
 <translation id="8226628635270268143">Välj favoritfoton och favoritalbum</translation>
 <translation id="8227119283605456246">Bifoga fil</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">Vill du spara lösenordet för <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Hjälp våra programutvecklare att lösa problemet genom att berätta vad som hände precis innan profilmeddelandet visades:</translation>
 <translation id="8236917170563564587">Dela den här fliken i stället</translation>

@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">ფაილები</translation>
 <translation id="1297922636971898492">Google Drive ამჟამად მიუწვდომელია. ატვირთვა ავტომატურად განახლდება Google Drive-ის დაბრუნების შემდეგ.</translation>
 <translation id="1307931752636661898">Linux ფაილების ნახვა ვერ ხერხდება</translation>
-<translation id="1338950911836659113">წაშლა…</translation>
 <translation id="1346748346194534595">მარჯვნივ</translation>
 <translation id="1351692861129622852">მიმდინარეობს <ph name="FILE_COUNT" /> ფაილის იმპორტი…</translation>
 <translation id="1358735829858566124">ფაილი ან დირექტორია არ არის გამოყენებადი.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">ბეჭდვა</translation>
 <translation id="1435838927755162558">საქაღალდის გაზიარება Parallels Desktop-თან</translation>
 <translation id="1439494416798956626">გადატანილია „<ph name="FOLDER_NAME" />“-ში.</translation>
-<translation id="1464724975715666883">1 შეცდომა.</translation>
 <translation id="1467432559032391204">მარცხენა</translation>
 <translation id="1471718551822868769">სლოვაკური</translation>
 <translation id="1474339897586437869">„<ph name="FILENAME" />“ ვერ აიტვირთა. თქვენს Google Drive-ზე არ არის საკმარისი თავისუფალი მეხსიერება.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">ესტონური</translation>
 <translation id="3466147780910026086">მიმდინარეობს მედია მოწყობილობის სკანერება…</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> ფოტოს სარეზერვო ასლი შენახულია <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />-ში</translation>
-<translation id="3470502288861289375">კოპირება…</translation>
 <translation id="3473378059788601120">კოპირებულია „<ph name="FOLDER_NAME" />“-ში.</translation>
 <translation id="3475447146579922140">Google ის ელ.ცხრილი</translation>
 <translation id="3486821258960016770">მონღოლური</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> შეცდომა.</translation>
 <translation id="3522708245912499433">პორტუგალიური</translation>
 <translation id="3524311639100184459">გაფრთხილება: ეს ფაილები დროებითია და შეიძლება ავტომატურად წაიშალოს დისკზე ადგილის გასათავისუფლებლად.  <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">საქაღალდე</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">ლიტვური</translation>
 <translation id="3603385196401704894">კანადური ფრანგული</translation>
 <translation id="3606220979431771195">თურქული-F</translation>
-<translation id="3609785682760573515">სინქრონიზაცია…</translation>
 <translation id="3616113530831147358">აუდიო</translation>
 <translation id="3619115746895587757">კაპუჩინო</translation>
 <translation id="3620292326130836921">ყველაფერი გადატანილია სარეზერვო მეხსიერებაში!</translation>
@@ -532,7 +527,6 @@
 <translation id="6657585470893396449">პაროლი</translation>
 <translation id="6673674183150363784">ფრანგული (საფრანგეთი) Bépo კლავიატურით</translation>
 <translation id="6710213216561001401">წინა</translation>
-<translation id="6718273304615422081">დაარქივება…</translation>
 <translation id="6751256176799620176">არჩეულია 1 საქაღალდე</translation>
 <translation id="6790428901817661496">დაკვრა</translation>
 <translation id="6795884519221689054">პანდა</translation>
@@ -732,7 +726,6 @@
 <translation id="8600173386174225982">ფაილების სია ნაჩვენებია ესკიზების ხედში.</translation>
 <translation id="8601932370724196034">Crostini იმიჯის ფაილი</translation>
 <translation id="8609695766746872526">ისლანდიური</translation>
-<translation id="8669949407341943408">გადატანა...</translation>
 <translation id="8698464937041809063">Google ნახაზი</translation>
 <translation id="8712637175834984815">კარგი</translation>
 <translation id="8713112442029511308">მალტური</translation>
@@ -755,7 +748,6 @@
 <translation id="9034924485347205037">Linux ფაილები</translation>
 <translation id="9035012421917565900">ერთეულები „<ph name="DESTINATION_NAME" />“-ში ვეღარ დაბრუნდება, რაც ნიშნავს, რომ ამ მოქმედებას ვერ გააუქმებთ.</translation>
 <translation id="9038620279323455325">ფაილი სახელად „<ph name="FILE_NAME" />“ უკვე არსებობს. გთხოვთ, აირჩიოთ სხვა სახელი.</translation>
-<translation id="9064939804718829769">გადაცემა…</translation>
 <translation id="9065203028668620118">რედაქტირება</translation>
 <translation id="908378762078012445">რუსული ფონეტიკური AATSEEL კლავიატურით</translation>
 <translation id="9099674669267916096">გვერდების რაოდენობა</translation>

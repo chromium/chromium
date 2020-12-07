@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Файлдар</translation>
 <translation id="1297922636971898492">Google Drive қазір қолжетімді емес. Google Drive қосылғаннан кейін, жүктеп салу процесі автоматты түрде басталады.</translation>
 <translation id="1307931752636661898">Linux файлдарын көру мүмкін емес</translation>
-<translation id="1338950911836659113">Жойылуда…</translation>
 <translation id="1346748346194534595">Оңға</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> файл импортталуда…</translation>
 <translation id="1358735829858566124">Файл немесе каталог пайдаланылмайды.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Басып шығару</translation>
 <translation id="1435838927755162558">Қалтаны Parallels Desktop арқылы бөлісу</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> қалтасына ауыстырылды.</translation>
-<translation id="1464724975715666883">1 қате.</translation>
 <translation id="1467432559032391204">Сол жақ</translation>
 <translation id="1471718551822868769">Словак</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" жүктелген жоқ. Google Drive дискінде жеткілікті орын жоқ.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Эстон</translation>
 <translation id="3466147780910026086">Мультимедиа құрылғыңыз тексерілуде…</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> фотосуреттің сақтық көшірмесі <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> ішіне сақталды</translation>
-<translation id="3470502288861289375">Көшіруде…</translation>
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> қалтасына көшірілді.</translation>
 <translation id="3475447146579922140">Google электрондық кестесі</translation>
 <translation id="3486821258960016770">Моңғол</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> қате.</translation>
 <translation id="3522708245912499433">португал</translation>
 <translation id="3524311639100184459">Абайлаңыз: бұл файлдар уақытша және дискідегі орынды босату үшін автоматты түрде жойылуы мүмкін.  <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Қалта</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">литва</translation>
 <translation id="3603385196401704894">Француз (Канадалық)</translation>
 <translation id="3606220979431771195">Turkish-F</translation>
-<translation id="3609785682760573515">Синхрондау…</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3620292326130836921">Барлығының сақтық көшірмесі жасалған!</translation>
@@ -532,7 +527,6 @@
 <translation id="6657585470893396449">Құпия сөз</translation>
 <translation id="6673674183150363784">Француз (Франция, Bépo пернетақтасымен)</translation>
 <translation id="6710213216561001401">Алдыңғы</translation>
-<translation id="6718273304615422081">Қысылуда…</translation>
 <translation id="6751256176799620176">1 қалта таңдалды</translation>
 <translation id="6790428901817661496">Ойнату</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -732,7 +726,6 @@
 <translation id="8600173386174225982">Файлдар нобай ретінде көрсетілді.</translation>
 <translation id="8601932370724196034">Crostini кескін файлы</translation>
 <translation id="8609695766746872526">Исланд</translation>
-<translation id="8669949407341943408">Жылжытылуда…</translation>
 <translation id="8698464937041809063">Google суреті</translation>
 <translation id="8712637175834984815">Түсінікті</translation>
 <translation id="8713112442029511308">Мальта</translation>
@@ -755,7 +748,6 @@
 <translation id="9034924485347205037">Linux файлдары</translation>
 <translation id="9035012421917565900">Файлдар "<ph name="DESTINATION_NAME" />" қалтасына қайта көшірілмейді, сондықтан бұл қадамды кері қайтару мүмкін емес.</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" файлы бұрыннан бар. Басқа атау таңдаңыз.</translation>
-<translation id="9064939804718829769">Тасымалдануда…</translation>
 <translation id="9065203028668620118">Өзгерту</translation>
 <translation id="908378762078012445">Орыс (фонетикалық AATSEEL пернетақтасымен)</translation>
 <translation id="9099674669267916096">Бет саны</translation>

@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">ໄຟລ໌</translation>
 <translation id="1297922636971898492">ບໍ່ມີ Google Drive ຢູ່ໃນເວລານີ້. ການອັບໂຫຼດຈະເລີ່ມຕົ້ນໃໝ່ອັດຕະໂນມັດ ເມື່ອ Google Drive ກັບຄືນມາ.</translation>
 <translation id="1307931752636661898">ບໍ່ສາມາດເບິ່ງໄຟລ໌ Linux ໄດ້</translation>
-<translation id="1338950911836659113">ກໍາລັງລຶບ​...</translation>
 <translation id="1346748346194534595">ເບື້ອງຂວາ</translation>
 <translation id="1351692861129622852">ກຳ​ລັງ​ນຳ <ph name="FILE_COUNT" /> ໄຟ​ລ໌​ເຂົ້າ​ມາ...</translation>
 <translation id="1358735829858566124">ໄຟລ໌ ຫຼືບັນຊີລາຍຊື່ບໍ່ຄົງທີ່.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">ພິມ</translation>
 <translation id="1435838927755162558">ແບ່ງປັນໂຟນເດີກັບ Parallels Desktop</translation>
 <translation id="1439494416798956626">ຍ້າຍໄປໃສ່ <ph name="FOLDER_NAME" /> ແລ້ວ.</translation>
-<translation id="1464724975715666883">1 ຄວາມ​ຜິດ​ພາດ​.</translation>
 <translation id="1467432559032391204">ເບື້ອງຊ້າຍ</translation>
 <translation id="1471718551822868769">ພາສາສະໂລແວັກ</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" ບໍ່​ຖືກ​ອັບ​ໂຫຼດ. ພື້ນ​ທີ່​ຫວ່າງ​ບໍ່​ພຽງ​ພໍ​ຢູ່​ໃນ Google Drive ຂອງ​ທ່ານ.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">ພາສາເອສໂຕນຽນ</translation>
 <translation id="3466147780910026086">ກຳ​ລັງ​ສະ​ແກນອຸ​ປະ​ກອນ​ມີ​ເດຍ​ຂອງ​ທ່ານ...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> ຮູບຖືກສຳ​ຮອງ​​ໃສ່ <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> ແລ້ວ</translation>
-<translation id="3470502288861289375">ກໍາລັງກັອບປີ້...</translation>
 <translation id="3473378059788601120">ສຳເນົາໃສ່ <ph name="FOLDER_NAME" /> ແລ້ວ.</translation>
 <translation id="3475447146579922140">Google spreadsheet</translation>
 <translation id="3486821258960016770">ພາສາມອງໂກລຽນ</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> ຄວາມ​ຜິດ​ພາດ​.</translation>
 <translation id="3522708245912499433">ພາສາປັອກຕຸຍການ</translation>
 <translation id="3524311639100184459">ລະວັງ: ໄຟລ໌ເຫຼົ່ານີ້ເປັນໄຟລ໌ຊົ່ວຄາວ ແລະອາດຈະຖືກລຶບໄປໂດຍອັດຕະໂນມັດເພື່ອຂະຫຍາຍພື້ນທີ່ດິສ.  <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ໂຟລເດີ</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">ພາສາລິດທົວນີ</translation>
 <translation id="3603385196401704894">ພາສາຝຣັ່ງການາດາ</translation>
 <translation id="3606220979431771195">ພາ​ສາ​ຕວກ​ກີ-F</translation>
-<translation id="3609785682760573515">ກໍາລັງຊິງຄ໌...</translation>
 <translation id="3616113530831147358">ສຽງ</translation>
 <translation id="3619115746895587757">ຄາປູຊິໂນ</translation>
 <translation id="3620292326130836921">ສຳ​ຮອງ​ທັງ​ໝົດ​ແລ້ວ!</translation>
@@ -532,7 +527,6 @@
 <translation id="6657585470893396449">ລະຫັດຜ່ານ</translation>
 <translation id="6673674183150363784">ພາສາຝຣັ່ງ (ຝຣັ່ງ) ທີ່ໃຊ້ແປ້ນພິມ Bépo</translation>
 <translation id="6710213216561001401">ຜ່ານມາ</translation>
-<translation id="6718273304615422081">ກໍາລັງຊິບ...</translation>
 <translation id="6751256176799620176">ເລືອກ 1 ໂຟນເດີແລ້ວ</translation>
 <translation id="6790428901817661496">​ຫຼິ້ນ</translation>
 <translation id="6795884519221689054">ແພນດ້າ</translation>
@@ -732,7 +726,6 @@
 <translation id="8600173386174225982">ລາຍການໄຟລ໌ໄດ້ປ່ຽນເປັນມຸມມອງຮູບຫຍໍ້ແລ້ວ.</translation>
 <translation id="8601932370724196034">ໄຟລ໌ຮູບພາບ Crostini</translation>
 <translation id="8609695766746872526">ພາສາໄອແລນດິກ</translation>
-<translation id="8669949407341943408">ກໍາລັງຍ້າຍ...</translation>
 <translation id="8698464937041809063">ການແຕ້ມຮູບ Google</translation>
 <translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="8713112442029511308">ພາສາມັລທີສ</translation>
@@ -755,7 +748,6 @@
 <translation id="9034924485347205037">ໄຟລ໌ Linux</translation>
 <translation id="9035012421917565900">ບໍ່ສາມາດຍ້າຍລາຍການນີ້ກັບຄືນຫາ '<ph name="DESTINATION_NAME" />' ໄດ້, ສະນັ້ນ ທ່ານຈະບໍ່ສາມາດລົບລ້າງການກະທຳນີ້ໄດ້.</translation>
 <translation id="9038620279323455325">ມີໄຟລ໌ຊື່ "<ph name="FILE_NAME" />" ຢູ່ແລ້ວ. ກະລຸນາເລືອກຊື່ໄຟລ໌ອື່ນ.</translation>
-<translation id="9064939804718829769">ກໍາລັງໂອນ...</translation>
 <translation id="9065203028668620118">ແກ້ໄຂ</translation>
 <translation id="908378762078012445">ພາສາຣັດເຊຍທີ່ໃຊ້ແປ້ນພິມ AATSEEL ຕາມການອອກສຽງ</translation>
 <translation id="9099674669267916096">ຈຳນວນໜ້າ</translation>

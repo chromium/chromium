@@ -4687,7 +4687,6 @@
 <translation id="642469772702851743">ഉടമ ഈ ഉപകരണം (SN: <ph name="SERIAL_NUMBER" />) ലോക്ക് ചെയ്‌തിരിക്കുന്നു.</translation>
 <translation id="6425556984042222041">ടെക്‌സ്റ്റ് ടു സ്‌പീച്ച് റേറ്റ്</translation>
 <translation id="6426200009596957090">ChromeVox ക്രമീകരണം തുറക്കുക</translation>
-<translation id="642654727595919401">നിങ്ങളുടെ ഡാറ്റ ബാക്കപ്പ് ചെയ്‌ത് ഒരാഴ്‌ചയ്ക്കുള്ളിൽ ഈ <ph name="DEVICE_TYPE" /> തിരികെ നൽകാൻ <ph name="DOMAIN" /> നിങ്ങളോട് ആവശ്യപ്പെടുന്നു.<ph name="LINK_BEGIN" />വിശദാംശങ്ങൾ കാണുക<ph name="LINK_END" /></translation>
 <translation id="642729974267661262">ശബ്‌ദം പ്ലേ ചെയ്യാൻ അനുവാദമില്ല</translation>
 <translation id="6428982734197629783">ചിത്രം പ്രോസസ് ചെയ്യുന്നു</translation>
 <translation id="6429384232893414837">അപ്‌ഡേറ്റ് ചെയ്യുന്നതിൽ പിശക്</translation>
@@ -5563,7 +5562,6 @@
 <translation id="7457384018036134905">Chrome OS ക്രമീകരണത്തിൽ ഭാഷകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="7458168200501453431">Google തിരയലിൽ ഉപയോഗിക്കുന്ന അതേ സ്‌പെൽ ചെക്കർ ഉപയോഗിക്കുന്നു. നിങ്ങൾ ബ്രൗസറിൽ ടൈപ്പ് ചെയ്യുന്ന ടെക്‌സ്‌റ്റ് Google-ന് അയയ്ക്കുന്നു.</translation>
 <translation id="7460045493116006516">നിങ്ങൾ നിലവിൽ ഇൻസ്‌റ്റാൾ ചെയ്‌തിരിക്കുന്ന തീം</translation>
-<translation id="7461729991508684543">{NUM_DAYS,plural, =1{നിങ്ങളുടെ ഡാറ്റ ബാക്കപ്പ് ചെയ്‌ത് ഇന്ന് തന്നെ ഈ <ph name="DEVICE_TYPE" /> തിരികെ നൽകാൻ <ph name="DOMAIN" /> നിങ്ങളോട് ആവശ്യപ്പെടുന്നു.<ph name="LINK_BEGIN" />വിശദാംശങ്ങൾ കാണുക<ph name="LINK_END" />}other{നിങ്ങളുടെ ഡാറ്റ ബാക്കപ്പ് ചെയ്‌ത് {NUM_DAYS} ദിവസത്തിനുള്ളിൽ ഈ <ph name="DEVICE_TYPE" /> തിരികെ നൽകാൻ <ph name="DOMAIN" /> നിങ്ങളോട് ആവശ്യപ്പെടുന്നു.<ph name="LINK_BEGIN" />വിശദാംശങ്ങൾ കാണുക<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">പിൻ ചെയ്യുക</translation>
 <translation id="746216226901520237">അടുത്ത തവണ നിങ്ങളുടെ ഫോൺ <ph name="DEVICE_TYPE" /> അൺലോക്ക് ചെയ്യും. Smart Lock ക്രമീകരണത്തിൽ ഓഫാക്കാം.</translation>
 <translation id="7463006580194749499">വ്യക്തിയെ ചേർക്കുക</translation>
@@ -6255,7 +6253,6 @@
 <translation id="8226619461731305576">ക്യൂവിൽ</translation>
 <translation id="8226628635270268143">നിങ്ങളുടെ പ്രിയപ്പെട്ട ഫോട്ടോകളും ആൽബങ്ങളും തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8227119283605456246">ഫയൽ അറ്റാച്ചുചെയ്യുക</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> എന്നതിനായി പാസ്‌വേഡുകൾ സംരക്ഷിക്കണോ?</translation>
 <translation id="8234795456569844941">ഈ പ്രശ്‌നം പരിഹരിക്കുന്നതിന് ഞങ്ങളുടെ എഞ്ചിനീയർമാരെ സഹായിക്കുക. നിങ്ങൾക്ക് പ്രൊഫൈൽ ‌പിശക് സന്ദേശം ‌ലഭിക്കുന്നതിന് മുമ്പ് എന്താണ് ‌സംഭവിച്ചതെന്ന് ‌കൃത്യമായി ഞങ്ങളോട് പറയുക:</translation>
 <translation id="8236917170563564587">പകരം ഈ ടാബ് പങ്കിടുക</translation>

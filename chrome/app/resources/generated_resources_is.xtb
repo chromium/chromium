@@ -4689,7 +4689,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="642469772702851743">Eigandinn læsti þessu tæki (raðnúmer: <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="6425556984042222041">Hraði talgervils</translation>
 <translation id="6426200009596957090">Opna ChromeVox stillingar</translation>
-<translation id="642654727595919401"><ph name="DOMAIN" /> krefst þess að þú takir afrit af gögnunum þínum og skilir þessu <ph name="DEVICE_TYPE" /> tæki innan 1 viku.<ph name="LINK_BEGIN" />Sjá nánar<ph name="LINK_END" /></translation>
 <translation id="642729974267661262">Mega ekki spila hljóð</translation>
 <translation id="6428982734197629783">Vinnur úr mynd</translation>
 <translation id="6429384232893414837">Villa við uppfærslu</translation>
@@ -5565,7 +5564,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7457384018036134905">Stjórna tungumálum í stillingum Chrome OS</translation>
 <translation id="7458168200501453431">Notar sömu ritvilluleit og Google leitin. Textinn sem þú skrifar í vafranum er sendur til Google.</translation>
 <translation id="7460045493116006516">Núverandi þema sem þú settir upp</translation>
-<translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> krefst þess að þú takir afrit af gögnunum þínum og skilir þessu <ph name="DEVICE_TYPE" /> tæki í dag.<ph name="LINK_BEGIN" />Sjá nánar<ph name="LINK_END" />}one{<ph name="DOMAIN" /> krefst þess að þú takir afrit af gögnunum þínum og skilir þessu <ph name="DEVICE_TYPE" /> tæki innan {NUM_DAYS} dags.<ph name="LINK_BEGIN" />Sjá nánar<ph name="LINK_END" />}other{<ph name="DOMAIN" /> krefst þess að þú takir afrit af gögnunum þínum og skilir þessu <ph name="DEVICE_TYPE" /> tæki innan {NUM_DAYS} daga.<ph name="LINK_BEGIN" />Sjá nánar<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">Festa</translation>
 <translation id="746216226901520237">Næst tekur síminn þinn <ph name="DEVICE_TYPE" /> úr lás. Þú getur slökkt á Smart Lock í stillingunum.</translation>
 <translation id="7463006580194749499">Bæta notanda við</translation>
@@ -6256,7 +6254,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8226619461731305576">Setja í biðröð</translation>
 <translation id="8226628635270268143">Veldu uppáhaldsmyndir og -möppur</translation>
 <translation id="8227119283605456246">Hengja skrá við</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">Vista aðgangsorð fyrir <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Hjálpaðu verkfræðingum okkar að leysa vandamálið. Segðu okkur hvað gerðist rétt áður en þú fékkst þessi prófílvilluskilaboð.</translation>
 <translation id="8236917170563564587">Deila þessum flipa í staðinn</translation>

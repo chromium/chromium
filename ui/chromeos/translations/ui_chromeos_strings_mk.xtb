@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Датотеки</translation>
 <translation id="1297922636971898492">Google Диск не е достапен во моментов. Поставувањето автоматски ќе се рестартира штом ќе се активира Google Диск.</translation>
 <translation id="1307931752636661898">Не може да се прикажат датотеките на Linux</translation>
-<translation id="1338950911836659113">Се брише...</translation>
 <translation id="1346748346194534595">Надесно</translation>
 <translation id="1351692861129622852">Се увезуваат <ph name="FILE_COUNT" /> датотеки...</translation>
 <translation id="1358735829858566124">Датотеката или директориумот не може да се користат.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Печати</translation>
 <translation id="1435838927755162558">Споделете папка со Parallels Desktop</translation>
 <translation id="1439494416798956626">Преместена во <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">1 грешка.</translation>
 <translation id="1467432559032391204">Лево</translation>
 <translation id="1471718551822868769">словачки</translation>
 <translation id="1474339897586437869">„<ph name="FILENAME" />“ не е поставена. Нема доволно простор на Google Drive.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">естонски</translation>
 <translation id="3466147780910026086">Се скенира преносливиот уред...</translation>
 <translation id="3468522857997926824">Направивте резервна копија на <ph name="FILE_COUNT" /> фотографии на <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Се копира...</translation>
 <translation id="3473378059788601120">Копирана во <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google табела</translation>
 <translation id="3486821258960016770">монголски</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> грешки.</translation>
 <translation id="3522708245912499433">португалски</translation>
 <translation id="3524311639100184459">Внимание: датотекиве се привремени и може да се бришат автоматски за да се ослободи простор на дискот.  <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">литвански</translation>
 <translation id="3603385196401704894">канадско француска</translation>
 <translation id="3606220979431771195">Турска-F</translation>
-<translation id="3609785682760573515">Се синхронизира...</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3620292326130836921">Сѐ е ископирано!</translation>
@@ -532,7 +527,6 @@
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="6673674183150363784">француски (Франција) со тастатура Bépo</translation>
 <translation id="6710213216561001401">Претходно</translation>
-<translation id="6718273304615422081">Се пакува...</translation>
 <translation id="6751256176799620176">Избрана е 1 папка</translation>
 <translation id="6790428901817661496">Репродуцирај</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -732,7 +726,6 @@
 <translation id="8600173386174225982">Списокот со датотеки се смени во преглед на сликички.</translation>
 <translation id="8601932370724196034">Датотека со слика Crostini</translation>
 <translation id="8609695766746872526">исландски</translation>
-<translation id="8669949407341943408">Се преместува...</translation>
 <translation id="8698464937041809063">Google-цртеж</translation>
 <translation id="8712637175834984815">Сфатив</translation>
 <translation id="8713112442029511308">малтешки</translation>
@@ -755,7 +748,6 @@
 <translation id="9034924485347205037">Датотеки на Linux</translation>
 <translation id="9035012421917565900">Ставките не може да се преместат назад во „<ph name="DESTINATION_NAME" />“, па нема да може да го вратите дејствово.</translation>
 <translation id="9038620279323455325">Веќе постои датотека со име „<ph name="FILE_NAME" />“. Одберете друго име.</translation>
-<translation id="9064939804718829769">Се префрлува…</translation>
 <translation id="9065203028668620118">Измени</translation>
 <translation id="908378762078012445">руски со фонетска тастатура AATSEEL</translation>
 <translation id="9099674669267916096">Број на страници</translation>

@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Tệp</translation>
 <translation id="1297922636971898492">Google Drive hiện không khả dụng. Quá trình tải lên sẽ tự động khởi động lại khi Google Drive hoạt động trở lại.</translation>
 <translation id="1307931752636661898">Không thể xem tệp Linux</translation>
-<translation id="1338950911836659113">Đang xóa...</translation>
 <translation id="1346748346194534595">Phải</translation>
 <translation id="1351692861129622852">Đang nhập <ph name="FILE_COUNT" /> tệp...</translation>
 <translation id="1358735829858566124">Không thể sử dụng được tệp hoặc thư mục.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">In</translation>
 <translation id="1435838927755162558">Chia sẻ thư mục với ứng dụng Parallels Desktop</translation>
 <translation id="1439494416798956626">Đã di chuyển sang <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">1 lỗi.</translation>
 <translation id="1467432559032391204">Trái</translation>
 <translation id="1471718551822868769">Tiếng Slovak</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" không được tải lên. Không có đủ dung lượng trống trong Google Drive của bạn.</translation>
@@ -225,11 +223,9 @@
 <translation id="3455931012307786678">Tiếng Estonia</translation>
 <translation id="3466147780910026086">Đang quét thiết bị truyền thông của bạn...</translation>
 <translation id="3468522857997926824">Đã sao lưu <ph name="FILE_COUNT" /> ảnh vào <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Đang sao chép...</translation>
 <translation id="3473378059788601120">Đã sao chép vào <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Bảng tính Google</translation>
 <translation id="3486821258960016770">Tiếng Mông Cổ</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> lỗi.</translation>
 <translation id="3522708245912499433">Tiếng Bồ Đào Nha</translation>
 <translation id="3524311639100184459">Lưu ý: Các tệp này chỉ được lưu trữ tạm thời và có thể tự động bị xóa để giải phóng dung lượng ổ đĩa.  <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Thư mục</translation>
@@ -239,7 +235,6 @@
 <translation id="357479282490346887">Tiếng Lithuania</translation>
 <translation id="3603385196401704894">Tiếng Pháp ở Canada</translation>
 <translation id="3606220979431771195">Tiếng Thổ Nhĩ Kỳ-F</translation>
-<translation id="3609785682760573515">Đang đồng bộ hóa...</translation>
 <translation id="3616113530831147358">Âm thanh</translation>
 <translation id="3619115746895587757">Cà phê cappuccino</translation>
 <translation id="3620292326130836921">Đã sao lưu tất cả!</translation>
@@ -532,7 +527,6 @@
 <translation id="6657585470893396449">Mật khẩu</translation>
 <translation id="6673674183150363784">Tiếng Pháp (Pháp) bằng bàn phím Bépo</translation>
 <translation id="6710213216561001401">Trước</translation>
-<translation id="6718273304615422081">Đang nén...</translation>
 <translation id="6751256176799620176">Đã chọn 1 thư mục</translation>
 <translation id="6790428901817661496">Phát</translation>
 <translation id="6795884519221689054">Gấu trúc</translation>
@@ -732,7 +726,6 @@
 <translation id="8600173386174225982">Danh sách tệp đã thay đổi thành chế độ xem hình thu nhỏ.</translation>
 <translation id="8601932370724196034">Tệp hình ảnh Crostini</translation>
 <translation id="8609695766746872526">Tiếng Iceland</translation>
-<translation id="8669949407341943408">Đang di chuyển...</translation>
 <translation id="8698464937041809063">Bản vẽ Google</translation>
 <translation id="8712637175834984815">Bỏ qua</translation>
 <translation id="8713112442029511308">Tiếng Malta</translation>
@@ -755,7 +748,6 @@
 <translation id="9034924485347205037">Tệp Linux</translation>
 <translation id="9035012421917565900">Không thể chuyển lại các tệp này vào '<ph name="DESTINATION_NAME" />', do đó bạn sẽ không thể hoàn tác hành động này.</translation>
 <translation id="9038620279323455325">Tệp có tên "<ph name="FILE_NAME" />" đã tồn tại. Vui lòng chọn một tên khác.</translation>
-<translation id="9064939804718829769">Đang chuyển...</translation>
 <translation id="9065203028668620118">Chỉnh sửa</translation>
 <translation id="908378762078012445">Tiếng Nga bằng bàn phím phiên âm AATSEEL</translation>
 <translation id="9099674669267916096">Số lượng trang</translation>

@@ -4684,7 +4684,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="642469772702851743">Denne enheten (SN: <ph name="SERIAL_NUMBER" />) ble låst av eieren.</translation>
 <translation id="6425556984042222041">Hastighet for tekst til tale</translation>
 <translation id="6426200009596957090">Åpne innstillingene for ChromeVox</translation>
-<translation id="642654727595919401"><ph name="DOMAIN" /> krever at du sikkerhetskopierer dataene dine og leverer tilbake <ph name="DEVICE_TYPE" /> innen én uke.<ph name="LINK_BEGIN" />Se detaljer<ph name="LINK_END" /></translation>
 <translation id="642729974267661262">Nettsteder som ikke har lov til å spille av lyd</translation>
 <translation id="6428982734197629783">Behandler bildet</translation>
 <translation id="6429384232893414837">Oppdateringsfeil</translation>
@@ -5560,7 +5559,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7457384018036134905">Administrer språk i innstillingene for Chrome OS</translation>
 <translation id="7458168200501453431">Bruker samme stavekontroll som i Google Søk. Tekst du skriver inn i nettleseren, sendes til Google.</translation>
 <translation id="7460045493116006516">Tema som er installert akkurat nå</translation>
-<translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> krever at du sikkerhetskopierer dataene dine og leverer tilbake <ph name="DEVICE_TYPE" /> i dag.<ph name="LINK_BEGIN" />Se detaljer<ph name="LINK_END" />}other{<ph name="DOMAIN" /> krever at du sikkerhetskopierer dataene dine og leverer tilbake <ph name="DEVICE_TYPE" /> innen {NUM_DAYS} dager.<ph name="LINK_BEGIN" />Se detaljer<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">Fest</translation>
 <translation id="746216226901520237">Neste gang låser telefonen opp <ph name="DEVICE_TYPE" />-enheten din. Du kan slå av Smart Lock i innstillingene.</translation>
 <translation id="7463006580194749499">Legg til person</translation>
@@ -6252,7 +6250,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8226619461731305576">Kø</translation>
 <translation id="8226628635270268143">Velg favorittbildene og -albumene dine</translation>
 <translation id="8227119283605456246">Legg ved fil</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">Vil du lagre passord for <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Hjelp programutviklerne våre med å løse dette problemet. Fortell oss hva som skjedde rett før du fikk profilfeilmeldingen:</translation>
 <translation id="8236917170563564587">Del denne fanen i stedet</translation>

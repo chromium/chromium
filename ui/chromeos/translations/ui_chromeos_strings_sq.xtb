@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Skedarët</translation>
 <translation id="1297922636971898492">"Disku i Google" nuk ofrohet tani. Ngarkimi do të rifillojë automatikisht pasi të kthehet "Disku i Google".</translation>
 <translation id="1307931752636661898">Nuk mund të shihen skedarët e Linux</translation>
-<translation id="1338950911836659113">Po fshin...</translation>
 <translation id="1346748346194534595">Djathtas</translation>
 <translation id="1351692861129622852">Po importon <ph name="FILE_COUNT" /> skedarë...</translation>
 <translation id="1358735829858566124">Skedari ose direktoria nuk është i përdorshëm.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Printo</translation>
 <translation id="1435838927755162558">Ndaje dosjen me Parallels Desktop</translation>
 <translation id="1439494416798956626">Zhvendosur te <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">1 gabim.</translation>
 <translation id="1467432559032391204">Majtas</translation>
 <translation id="1471718551822868769">Sllovakisht</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" nuk u ngarkua. Nuk ka hapësirë të mjaftueshme në "Diskun e Google".</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Estonisht</translation>
 <translation id="3466147780910026086">Po skanon pajisjen e medias...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> fotografi u rezervuan te <ph name="BEGIN_LINK" />Disku i Google<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Po kopjon...</translation>
 <translation id="3473378059788601120">Kopjuar te <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Fletëllogaritësja e Google</translation>
 <translation id="3486821258960016770">Mongolisht</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> gabime.</translation>
 <translation id="3522708245912499433">Portugalisht</translation>
 <translation id="3524311639100184459">Kujdes! Këta skedarë janë të përkohshëm dhe mund të fshihen automatikisht për të liruar hapësirën në disk.  <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Dosje</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">Lituanisht</translation>
 <translation id="3603385196401704894">Frëngjishte kanadeze</translation>
 <translation id="3606220979431771195">Turke me F</translation>
-<translation id="3609785682760573515">Po sinkronizon...</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Kapuçino</translation>
 <translation id="3620292326130836921">Të gjitha u rezervuan!</translation>
@@ -532,7 +527,6 @@
 <translation id="6657585470893396449">Fjalëkalimi</translation>
 <translation id="6673674183150363784">Frëngjisht (Francë) me tastierë Bépo</translation>
 <translation id="6710213216561001401">Prapa</translation>
-<translation id="6718273304615422081">Po ngjesh...</translation>
 <translation id="6751256176799620176">U zgjodh 1 dosje</translation>
 <translation id="6790428901817661496">Luaj</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -732,7 +726,6 @@
 <translation id="8600173386174225982">Lista e skedarëve ka ndryshuar në pamjen e miniaturës.</translation>
 <translation id="8601932370724196034">Skedar imazhi Crostini</translation>
 <translation id="8609695766746872526">Islandisht</translation>
-<translation id="8669949407341943408">Po zhvendos...</translation>
 <translation id="8698464937041809063">Vizatimi Google</translation>
 <translation id="8712637175834984815">E kuptova</translation>
 <translation id="8713112442029511308">Maltisht</translation>
@@ -755,7 +748,6 @@
 <translation id="9034924485347205037">Skedarët e Linux</translation>
 <translation id="9035012421917565900">Artikujt nuk mund të zhvendosen sërish te "<ph name="DESTINATION_NAME" />", prandaj nuk do të jesh në gjendje ta zhbësh këtë veprim.</translation>
 <translation id="9038620279323455325">Skedari me emrin "<ph name="FILE_NAME" />" ekziston tashmë. Zgjidh një emër tjetër.</translation>
-<translation id="9064939804718829769">Po transferon...</translation>
 <translation id="9065203028668620118">Redakto</translation>
 <translation id="908378762078012445">Rusisht me tastierë fonetike AATSEEL</translation>
 <translation id="9099674669267916096">Numri i faqeve</translation>

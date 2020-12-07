@@ -4689,7 +4689,6 @@
 <translation id="642469772702851743">このデバイス（SN: <ph name="SERIAL_NUMBER" />）は所有者によってロックされています。</translation>
 <translation id="6425556984042222041">テキスト読み上げの速度</translation>
 <translation id="6426200009596957090">ChromeVox 設定を開く</translation>
-<translation id="642654727595919401"><ph name="DOMAIN" /> が、データをバックアップして、1 週間以内にこの <ph name="DEVICE_TYPE" />を返却するよう求めています。<ph name="LINK_BEGIN" />詳細を表示<ph name="LINK_END" /></translation>
 <translation id="642729974267661262">音声の再生を許可しないサイト</translation>
 <translation id="6428982734197629783">画像を処理しています</translation>
 <translation id="6429384232893414837">更新エラー</translation>
@@ -5565,7 +5564,6 @@
 <translation id="7457384018036134905">Chrome OS の設定で言語を管理する</translation>
 <translation id="7458168200501453431">Google 検索と同じスペルチェックを使用します。ブラウザに入力したテキストは Google に送信されます。</translation>
 <translation id="7460045493116006516">インストールした現在のテーマ</translation>
-<translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> が、データをバックアップして、今日中にこの <ph name="DEVICE_TYPE" />を返却するよう求めています。<ph name="LINK_BEGIN" />詳細を表示<ph name="LINK_END" />}other{<ph name="DOMAIN" /> が、データをバックアップして、{NUM_DAYS} 日以内にこの <ph name="DEVICE_TYPE" />を返却するよう求めています。<ph name="LINK_BEGIN" />詳細を表示<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="746216226901520237">次回から、スマートフォンで <ph name="DEVICE_TYPE" /> のロックを解除できます。Smart Lock を無効にするには [設定] をご利用ください。</translation>
 <translation id="7463006580194749499">ユーザーを追加</translation>
@@ -6257,7 +6255,6 @@
 <translation id="8226619461731305576">キュー</translation>
 <translation id="8226628635270268143">お気に入りの写真やアルバムを選択してください</translation>
 <translation id="8227119283605456246">添付ファイル</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> のパスワードを保存しますか？</translation>
 <translation id="8234795456569844941">問題解決の手がかりとして、具体的にどのような操作を行ったときにプロフィール エラーのメッセージが表示されたかをお知らせください。</translation>
 <translation id="8236917170563564587">代わりにこのタブを共有</translation>

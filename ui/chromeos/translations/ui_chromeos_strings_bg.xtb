@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Файлове</translation>
 <translation id="1297922636971898492">В момента няма достъп до Google Диск. Качването ще се рестартира автоматично, щом услугата отново е налице.</translation>
 <translation id="1307931752636661898">Файловете за Linux не могат да бъдат показани</translation>
-<translation id="1338950911836659113">Изтрива се...</translation>
 <translation id="1346748346194534595">Надясно</translation>
 <translation id="1351692861129622852">Импортират се <ph name="FILE_COUNT" /> файла...</translation>
 <translation id="1358735829858566124">Файлът или директорията не могат да се използват.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Печат</translation>
 <translation id="1435838927755162558">Споделяне на папката с Parallels Desktop</translation>
 <translation id="1439494416798956626">Преместено във: <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">1 грешка.</translation>
 <translation id="1467432559032391204">Наляво</translation>
 <translation id="1471718551822868769">Словашки</translation>
 <translation id="1474339897586437869">Файлът „<ph name="FILENAME" />“ не бе качен. Нямате достатъчно свободно място в Google Диск.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Естонски</translation>
 <translation id="3466147780910026086">Мултимедийното ви устройство се сканира...</translation>
 <translation id="3468522857997926824">На <ph name="FILE_COUNT" /> снимки бяха създадени резервни копия в <ph name="BEGIN_LINK" />Google Диск<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Копира се...</translation>
 <translation id="3473378059788601120">Копирано във: <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Електронна таблица в Google</translation>
 <translation id="3486821258960016770">Монголски</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> грешки.</translation>
 <translation id="3522708245912499433">португалски</translation>
 <translation id="3524311639100184459">Внимание: Тези файлове са временни и може да бъдат изтрити автоматично, за да се освободи място на диска.  <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">литовски</translation>
 <translation id="3603385196401704894">Канадска (френски) клавиатура</translation>
 <translation id="3606220979431771195">Турски (тип „F“)</translation>
-<translation id="3609785682760573515">Синхронизира се...</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3620292326130836921">На всичко бе създадено резервно копие!</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">Парола</translation>
 <translation id="6673674183150363784">Френски (Франция) с клавиатура BÉPO</translation>
 <translation id="6710213216561001401">Предишно</translation>
-<translation id="6718273304615422081">Компресира се...</translation>
 <translation id="6751256176799620176">Избрахте 1 папка</translation>
 <translation id="6790428901817661496">Пускане</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">Списъкът с файлове е превключен към изглед с миниизображения.</translation>
 <translation id="8601932370724196034">Файл с образ на Crostini</translation>
 <translation id="8609695766746872526">Исландски</translation>
-<translation id="8669949407341943408">Извършва се преместване...</translation>
 <translation id="8698464937041809063">Рисунка в Google</translation>
 <translation id="8712637175834984815">Разбрах</translation>
 <translation id="8713112442029511308">Малтийски</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Файлове за Linux</translation>
 <translation id="9035012421917565900">Елементите не могат да бъдат върнати в/ъв „<ph name="DESTINATION_NAME" />“, така че няма да можете да отмените това действие.</translation>
 <translation id="9038620279323455325">Файлът „<ph name="FILE_NAME" />“ вече съществува. Моля, изберете друго име.</translation>
-<translation id="9064939804718829769">Прехвърля се...</translation>
 <translation id="9065203028668620118">Редактиране</translation>
 <translation id="908378762078012445">Руски с фонетична клавиатура AATSEEL</translation>
 <translation id="9099674669267916096">Брой страници</translation>

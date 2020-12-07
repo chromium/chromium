@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Faili</translation>
 <translation id="1297922636971898492">Google disks pašlaik nav pieejams. Augšupielāde tiks automātiski atsākta, tiklīdz Google disks atkal būs pieejams.</translation>
 <translation id="1307931752636661898">Nevar skatīt Linux failus</translation>
-<translation id="1338950911836659113">Notiek dzēšana...</translation>
 <translation id="1346748346194534595">Pa labi</translation>
 <translation id="1351692861129622852">Notiek <ph name="FILE_COUNT" /> failu importēšana...</translation>
 <translation id="1358735829858566124">Fails vai katalogs nav izmantojams.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Drukāt</translation>
 <translation id="1435838927755162558">Mapes kopīgošana ar Parallels Desktop</translation>
 <translation id="1439494416798956626">Pārvietots uz mapi “<ph name="FOLDER_NAME" />”.</translation>
-<translation id="1464724975715666883">1 kļūda.</translation>
 <translation id="1467432559032391204">Pa kreisi</translation>
 <translation id="1471718551822868769">Slovāku</translation>
 <translation id="1474339897586437869">Fails “<ph name="FILENAME" />” netika augšupielādēts. Jūsu Google diskā nepietiek vietas.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Igauņu</translation>
 <translation id="3466147780910026086">Notiek multivides ierīces skenēšana...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> fotoattēli dublēti <ph name="BEGIN_LINK" />Google diskā<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Notiek kopēšana...</translation>
 <translation id="3473378059788601120">Nokopēts uz mapi <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google izklājlapa</translation>
 <translation id="3486821258960016770">Mongoļu</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> kļūdas.</translation>
 <translation id="3522708245912499433">Portugāļu valoda</translation>
 <translation id="3524311639100184459">Uzmanību! Šie ir pagaidu faili un var tikt automātiski izdzēsti, lai atbrīvotu vietu diskā.  <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="3527085408025491307">Mape</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">Lietuviešu valoda</translation>
 <translation id="3603385196401704894">Kanādas franču</translation>
 <translation id="3606220979431771195">Turku-F</translation>
-<translation id="3609785682760573515">Notiek sinhronizēšana...</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Kapučīno</translation>
 <translation id="3620292326130836921">Visi faili ir dublēti.</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">Parole</translation>
 <translation id="6673674183150363784">Franču (Francija), ar Bépo tastatūru</translation>
 <translation id="6710213216561001401">Iepriekšējais</translation>
-<translation id="6718273304615422081">Notiek tilpsaspiešana...</translation>
 <translation id="6751256176799620176">Atlasīta 1 mape</translation>
 <translation id="6790428901817661496">Atskaņot</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">Failu saraksts ir mainīts uz sīktēlu skatu.</translation>
 <translation id="8601932370724196034">Crostini attēla fails</translation>
 <translation id="8609695766746872526">Islandiešu</translation>
-<translation id="8669949407341943408">Notiek pārvietošana...</translation>
 <translation id="8698464937041809063">Google zīmējums</translation>
 <translation id="8712637175834984815">Sapratu!</translation>
 <translation id="8713112442029511308">Maltiešu</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Linux faili</translation>
 <translation id="9035012421917565900">Vienumus nevar pārvietot atpakaļ uz “<ph name="DESTINATION_NAME" />”, tādēļ nevarēsiet atsaukt šo darbību.</translation>
 <translation id="9038620279323455325">Fails ar nosaukumu “<ph name="FILE_NAME" />” jau pastāv. Lūdzu, izvēlieties citu nosaukumu.</translation>
-<translation id="9064939804718829769">Notiek pārsūtīšana...</translation>
 <translation id="9065203028668620118">Labot</translation>
 <translation id="908378762078012445">Krievu, ar fonētisko AATSEEL tastatūru</translation>
 <translation id="9099674669267916096">Lappušu skaits</translation>

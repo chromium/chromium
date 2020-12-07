@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">ファイル</translation>
 <translation id="1297922636971898492">Google ドライブは現在ご利用いただけません。Google ドライブが利用可能になったときに、自動的にアップロードを再開します。</translation>
 <translation id="1307931752636661898">[Linux ファイル] を表示できません</translation>
-<translation id="1338950911836659113">削除しています...</translation>
 <translation id="1346748346194534595">右</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> 件のファイルをインポートしています...</translation>
 <translation id="1358735829858566124">このファイルまたはディレクトリは使用できません。</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1435838927755162558">Parallels Desktop とのフォルダ共有</translation>
 <translation id="1439494416798956626">「<ph name="FOLDER_NAME" />」に移動しました。</translation>
-<translation id="1464724975715666883">1 件のエラーがあります。</translation>
 <translation id="1467432559032391204">左</translation>
 <translation id="1471718551822868769">スロバキア語</translation>
 <translation id="1474339897586437869">「<ph name="FILENAME" />」はアップロードされていません。Google ドライブに十分な空き容量がありません。</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">エストニア語</translation>
 <translation id="3466147780910026086">ご利用のメディア デバイスをスキャンしています...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> 枚の写真を <ph name="BEGIN_LINK" />Google ドライブ<ph name="END_LINK" />にバックアップしました</translation>
-<translation id="3470502288861289375">コピーしています...</translation>
 <translation id="3473378059788601120">「<ph name="FOLDER_NAME" />」にコピーしました。</translation>
 <translation id="3475447146579922140">Google スプレッドシート</translation>
 <translation id="3486821258960016770">モンゴル語</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> 件のエラーがあります。</translation>
 <translation id="3522708245912499433">ポルトガル語</translation>
 <translation id="3524311639100184459">注: これらのファイルは一時的なもので、ディスクの空き容量を増やすために自動的に削除されることがあります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">フォルダ</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">リトアニア語</translation>
 <translation id="3603385196401704894">フランス語（カナダ）</translation>
 <translation id="3606220979431771195">トルコ語-F</translation>
-<translation id="3609785682760573515">同期しています...</translation>
 <translation id="3616113530831147358">音声</translation>
 <translation id="3619115746895587757">カプチーノ</translation>
 <translation id="3620292326130836921">すべてバックアップ済みです。</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">パスワード</translation>
 <translation id="6673674183150363784">フランス語（フランス）（BÉPO）キーボード</translation>
 <translation id="6710213216561001401">前へ</translation>
-<translation id="6718273304615422081">圧縮しています...</translation>
 <translation id="6751256176799620176">1 個のフォルダを選択しました</translation>
 <translation id="6790428901817661496">再生</translation>
 <translation id="6795884519221689054">パンダ</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">ファイルの一覧がサムネイル表示に切り替わりました。</translation>
 <translation id="8601932370724196034">Crostini 画像ファイル</translation>
 <translation id="8609695766746872526">アイスランド語</translation>
-<translation id="8669949407341943408">移動しています...</translation>
 <translation id="8698464937041809063">Google 図形描画</translation>
 <translation id="8712637175834984815">閉じる</translation>
 <translation id="8713112442029511308">マルタ語</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Linux ファイル</translation>
 <translation id="9035012421917565900">この操作は元に戻せません（これらのアイテムを「<ph name="DESTINATION_NAME" />」に戻すことはできません）。</translation>
 <translation id="9038620279323455325">「<ph name="FILE_NAME" />」という名前のファイルはすでに存在します。別の名前を選択してください。</translation>
-<translation id="9064939804718829769">処理しています...</translation>
 <translation id="9065203028668620118">編集</translation>
 <translation id="908378762078012445">ロシア語（表音 AATSEEL）キーボード</translation>
 <translation id="9099674669267916096">ページ数</translation>

@@ -4689,7 +4689,6 @@
 <translation id="642469772702851743">इस डिवाइस (क्रमांक: <ph name="SERIAL_NUMBER" />) को मालिक ने लॉक कर दिया था.</translation>
 <translation id="6425556984042222041">लिखाई को बोली में बदलने की दर</translation>
 <translation id="6426200009596957090">ChromeVox सेटिंग खोलें</translation>
-<translation id="642654727595919401"><ph name="DOMAIN" /> के लिए ज़रूरी है कि आप अपने डेटा का बैक अप लें और एक हफ़्ते के अंदर इस <ph name="DEVICE_TYPE" /> को लौटा दें.<ph name="LINK_BEGIN" />जानकारी देखें<ph name="LINK_END" /></translation>
 <translation id="642729974267661262">आवाज़ चलाने की अनुमति नहीं है</translation>
 <translation id="6428982734197629783">इमेज प्रोसेस हो रही है</translation>
 <translation id="6429384232893414837">अपडेट में गड़बड़ी</translation>
@@ -5565,7 +5564,6 @@
 <translation id="7457384018036134905">Chrome OS सेटिंग में भाषाएं प्रबंधित करें</translation>
 <translation id="7458168200501453431">वर्तनी जांचने के लिए उसी सुविधा का इस्तेमाल करती है जिसका इस्तेमाल 'Google सर्च' में किया जाता है. आप ब्राउज़र में जो कुछ भी लिखते हैं उसे Google को भेजा जाता है.</translation>
 <translation id="7460045493116006516">आपकी इंस्टॉल की हुई मौजूदा थीम</translation>
-<translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> के लिए ज़रूरी है कि आप अपने डेटा का बैक अप लें और आज ही इस <ph name="DEVICE_TYPE" /> को लौटा दें.<ph name="LINK_BEGIN" />जानकारी देखें<ph name="LINK_END" />}one{<ph name="DOMAIN" /> के लिए ज़रूरी है कि आप अपने डेटा का बैक अप लें और इस <ph name="DEVICE_TYPE" /> को {NUM_DAYS} दिन के अंदर लौटा दें.<ph name="LINK_BEGIN" />जानकारी देखें<ph name="LINK_END" />}other{<ph name="DOMAIN" /> के लिए ज़रूरी है कि आप अपने डेटा का बैक अप लें और इस <ph name="DEVICE_TYPE" /> को {NUM_DAYS} दिनों के अंदर लौटा दें.<ph name="LINK_BEGIN" />जानकारी देखें<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">पिन करें</translation>
 <translation id="746216226901520237">अगली बार, आपका फ़ोन आपके <ph name="DEVICE_TYPE" /> को अनलॉक कर देगा. आप सेटिंग में जाकर Smart Lock को बंद कर सकते हैं</translation>
 <translation id="7463006580194749499">व्‍यक्ति जोड़ें</translation>
@@ -6256,7 +6254,6 @@
 <translation id="8226619461731305576">सूची</translation>
 <translation id="8226628635270268143">अपनी पसंदीदा फ़ोटो और एल्बम चुनें</translation>
 <translation id="8227119283605456246">फ़ाइल अटैच करें</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> के लिए पासवर्ड सेव करें?</translation>
 <translation id="8234795456569844941">कृपया इस समस्या को ठीक करने में हमारे इंजीनियरों की मदद करें. हमें बताएं कि प्रोफ़ाइल से जुड़ी गड़बड़ी का मैसेज मिलने से ठीक पहले क्या हुआ था:</translation>
 <translation id="8236917170563564587">उसके बजाय यह टैब शेयर करें</translation>

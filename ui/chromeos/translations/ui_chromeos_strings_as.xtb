@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">এই মুহূৰ্তত Google Drive উপলব্ধ নহয় Google Drive উপলব্ধ হোৱাৰ লগে লগে আপল‘ড পুনৰ আৰম্ভ হ‘ব।</translation>
 <translation id="1307931752636661898">Linux ফাইলসমূহ চাব পৰা নগ’ল</translation>
-<translation id="1338950911836659113">মচি থকা হৈছে…</translation>
 <translation id="1346748346194534595">সোঁ</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" />টা ফাইল আমদানি কৰি থকা হৈছে...</translation>
 <translation id="1358735829858566124">ফাইলটো বা ডাইৰেক্ট’ৰীটো ব্যৱহাৰযোগ্য নহয়।</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">প্ৰিণ্ট কৰক</translation>
 <translation id="1435838927755162558">Parallels Desktopৰ জৰিয়তে ফ’ল্ডাৰটো শ্বেয়াৰ কৰক</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" />লৈ স্থানান্তৰ কৰা হ’ল।</translation>
-<translation id="1464724975715666883">১টা আসোঁৱাহ।</translation>
 <translation id="1467432559032391204">বাওঁফালে</translation>
 <translation id="1471718551822868769">শ্ল’ভাক</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" আপল'ড কৰা হোৱা নাই। Google Driveত পর্যাপ্ত পৰিমাণৰ খালী ঠাই নাই।</translation>
@@ -225,11 +223,9 @@
 <translation id="3455931012307786678">ইষ্ট’নিয়া</translation>
 <translation id="3466147780910026086">আপোনাৰ মিডিয়া ডিভাইচ স্কেন কৰি থকা হৈছে...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> খন ফট’ <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />লৈ বেক আপ লোৱা হৈছে</translation>
-<translation id="3470502288861289375">প্ৰতিলিপি কৰি থকা হৈছে…</translation>
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" />লৈ প্ৰতিলিপি কৰা হ’ল।</translation>
 <translation id="3475447146579922140">Google স্প্ৰেডশ্বীট</translation>
 <translation id="3486821258960016770">মংগোলিয়ান</translation>
-<translation id="3495304270784461826"><ph name="COUNT" />টা আসোঁৱাহ।</translation>
 <translation id="3522708245912499433">পর্তুগীজ</translation>
 <translation id="3524311639100184459">সাৱধান: এই ফাইলসমূহ অস্থায়ী আৰু ডিস্কত খালী ঠাই উলিয়াবলৈ এইবোৰ স্বয়ংক্ৰিয়ভাৱে মচা যাব পাৰে।  <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ফ’ল্ডাৰ</translation>
@@ -239,7 +235,6 @@
 <translation id="357479282490346887">লিথুৱানিয়ান</translation>
 <translation id="3603385196401704894">কানাডিয়ান ফ্রেন্স</translation>
 <translation id="3606220979431771195">টুৰ্কিছ-F</translation>
-<translation id="3609785682760573515">ছিংক কৰি থকা হৈছে...</translation>
 <translation id="3616113530831147358">অডিঅ’</translation>
 <translation id="3619115746895587757">কেপ’চিনো</translation>
 <translation id="3620292326130836921">সকলো বেক আপ সম্পূর্ণ হৈ আছে!</translation>
@@ -529,7 +524,6 @@
 <translation id="6657585470893396449">পাছৱৰ্ড</translation>
 <translation id="6673674183150363784">Bépo কীব’ৰ্ডৰ সৈতে ফৰাচী (ফ্ৰান্স)</translation>
 <translation id="6710213216561001401">পূৰ্বৱৰ্তী</translation>
-<translation id="6718273304615422081">জিপ কৰি থকা হৈছে...</translation>
 <translation id="6751256176799620176">১টা ফ’ল্ডাৰ বাছনি কৰা হ’ল</translation>
 <translation id="6790428901817661496">প্লে’ কৰক</translation>
 <translation id="6795884519221689054">পাণ্ডা</translation>
@@ -727,7 +721,6 @@
 <translation id="8600173386174225982">ফাইলৰ সূচীখন থাম্বনেইল ভিউ ম'ডলৈ সলনি কৰা হৈছে।</translation>
 <translation id="8601932370724196034">Crostini প্ৰতিচ্ছবিৰ ফাইল</translation>
 <translation id="8609695766746872526">আইচলেণ্ডীয়</translation>
-<translation id="8669949407341943408">স্থানান্তৰ কৰি থকা হৈছে...</translation>
 <translation id="8698464937041809063">Google অংকন</translation>
 <translation id="8712637175834984815">বুজি পালোঁ</translation>
 <translation id="8713112442029511308">মল্টিজ</translation>
@@ -750,7 +743,6 @@
 <translation id="9034924485347205037">Linux ফাইল</translation>
 <translation id="9035012421917565900">বস্তুবোৰ ‘<ph name="DESTINATION_NAME" />’লৈ পুনৰ লৈ যাব নোৱাৰি, সেয়েহে আপুনি এই কাৰ্যটো আনডু কৰিব নোৱাৰিব।</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" নামৰ ফাইল ইতিমধ্যে আছেই। অনুগ্ৰহ কৰি অন্য কোনো নাম বাছনি কৰক।</translation>
-<translation id="9064939804718829769">স্থানান্তৰ কৰি থকা হৈছে…</translation>
 <translation id="9065203028668620118">সম্পাদনা কৰক</translation>
 <translation id="908378762078012445">ফ’নেটিক AATSEEL কীব’ৰ্ডৰ সৈতে ৰাছিয়ান</translation>
 <translation id="9099674669267916096">পৃষ্ঠাৰ সংখ্যা</translation>

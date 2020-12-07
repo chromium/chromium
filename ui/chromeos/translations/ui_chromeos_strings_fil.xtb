@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Mga File</translation>
 <translation id="1297922636971898492">Hindi available sa ngayon ang Google Drive. Awtomatikong magre-restart ang pag-a-upload sa sandaling bumalik na ang Google Drive.</translation>
 <translation id="1307931752636661898">Hindi matingnan ang mga Linux file</translation>
-<translation id="1338950911836659113">Nagtatanggal...</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1351692861129622852">Nag-i-import ng <ph name="FILE_COUNT" /> (na) file...</translation>
 <translation id="1358735829858566124">Hindi nagagamit ang file o ang direktoryo.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">I-print</translation>
 <translation id="1435838927755162558">Ibahagi ang folder sa Parallels Desktop</translation>
 <translation id="1439494416798956626">Inilipat sa <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">1 error.</translation>
 <translation id="1467432559032391204">Kaliwa</translation>
 <translation id="1471718551822868769">Slovak</translation>
 <translation id="1474339897586437869">Hindi na-upload ang "<ph name="FILENAME" />." Walang sapat na bakanteng espasyo sa iyong Google Drive.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Estonian</translation>
 <translation id="3466147780910026086">Sina-scan ang iyong media device...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> (na) larawan ang na-back up sa <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Kinokopya...</translation>
 <translation id="3473378059788601120">Kinopya sa <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Spreadsheet ng Google</translation>
 <translation id="3486821258960016770">Mongolian</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> (na) error.</translation>
 <translation id="3522708245912499433">Portuguese</translation>
 <translation id="3524311639100184459">Mag-ingat: Ang mga file na ito ay pansamantala lang at puwedeng awtomatikong ma-delete para magbakante ng espasyo sa disk.  <ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">Lithuanian</translation>
 <translation id="3603385196401704894">Canadian French</translation>
 <translation id="3606220979431771195">Turkish-F</translation>
-<translation id="3609785682760573515">Nagsi-sync...</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620292326130836921">Naka-back up na ang lahat!</translation>
@@ -533,7 +528,6 @@
 <translation id="6657585470893396449">Password</translation>
 <translation id="6673674183150363784">French (France) na may Bépo keyboard</translation>
 <translation id="6710213216561001401">Nauna</translation>
-<translation id="6718273304615422081">Nagzi-zip...</translation>
 <translation id="6751256176799620176">1 folder ang napili</translation>
 <translation id="6790428901817661496">I-play</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -733,7 +727,6 @@
 <translation id="8600173386174225982">Naging thumbnail view ang listahan ng file.</translation>
 <translation id="8601932370724196034">Crostini image file</translation>
 <translation id="8609695766746872526">Icelandic</translation>
-<translation id="8669949407341943408">Inililipat...</translation>
 <translation id="8698464937041809063">Drawing ng Google</translation>
 <translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="8713112442029511308">Maltese</translation>
@@ -756,7 +749,6 @@
 <translation id="9034924485347205037">Mga Linux file</translation>
 <translation id="9035012421917565900">Hindi na maibabalik ang mga item sa '<ph name="DESTINATION_NAME" />,' kaya hindi mo maa-undo ang pagkilos na ito.</translation>
 <translation id="9038620279323455325">Mayroon nang file na may pangalang "<ph name="FILE_NAME" />." Pumili ng ibang pangalan.</translation>
-<translation id="9064939804718829769">Naglilipat...</translation>
 <translation id="9065203028668620118">I-edit</translation>
 <translation id="908378762078012445">Russian na may Phonetic AATSEEL keyboard</translation>
 <translation id="9099674669267916096">Bilang ng page</translation>

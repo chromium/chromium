@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">Google Drive is not available right now. Uploading will automatically restart once Google Drive is back.</translation>
 <translation id="1307931752636661898">Unable to view Linux files</translation>
-<translation id="1338950911836659113">Deleting...</translation>
 <translation id="1346748346194534595">Right</translation>
 <translation id="1351692861129622852">Importing <ph name="FILE_COUNT" /> files...</translation>
 <translation id="1358735829858566124">The file or the directory is not usable.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Print</translation>
 <translation id="1435838927755162558">Share folder with Parallels Desktop</translation>
 <translation id="1439494416798956626">Moved to <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">1 error.</translation>
 <translation id="1467432559032391204">Left</translation>
 <translation id="1471718551822868769">Slovak</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" was not uploaded. There is not enough free space in your Google Drive.</translation>
@@ -227,11 +225,9 @@
 <translation id="3455931012307786678">Estonian</translation>
 <translation id="3466147780910026086">Scanning your media device...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> photos backed up to <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Copying...</translation>
 <translation id="3473378059788601120">Copied to <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google spreadsheet</translation>
 <translation id="3486821258960016770">Mongolian</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> errors.</translation>
 <translation id="3522708245912499433">Portuguese</translation>
 <translation id="3524311639100184459">Caution: These files are temporary and may be automatically deleted to free up disk space.  <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
@@ -241,7 +237,6 @@
 <translation id="357479282490346887">Lithuanian</translation>
 <translation id="3603385196401704894">Canadian French</translation>
 <translation id="3606220979431771195">Turkish-F</translation>
-<translation id="3609785682760573515">Syncing...</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620292326130836921">All backed up!</translation>
@@ -536,7 +531,6 @@
 <translation id="6657585470893396449">Password</translation>
 <translation id="6673674183150363784">French (France) with Bépo keyboard</translation>
 <translation id="6710213216561001401">Previous</translation>
-<translation id="6718273304615422081">Zipping...</translation>
 <translation id="6751256176799620176">1 folder selected</translation>
 <translation id="6790428901817661496">Play</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -738,7 +732,6 @@
 <translation id="8600173386174225982">File list has changed to thumbnail view.</translation>
 <translation id="8601932370724196034">Crostini image file</translation>
 <translation id="8609695766746872526">Icelandic</translation>
-<translation id="8669949407341943408">Moving...</translation>
 <translation id="8698464937041809063">Google drawing</translation>
 <translation id="8712637175834984815">Got it</translation>
 <translation id="8713112442029511308">Maltese</translation>
@@ -761,7 +754,6 @@
 <translation id="9034924485347205037">Linux files</translation>
 <translation id="9035012421917565900">The items cannot be moved back into '<ph name="DESTINATION_NAME" />', so you won't be able to undo this action.</translation>
 <translation id="9038620279323455325">The file named '<ph name="FILE_NAME" />' already exists. Please choose a different name.</translation>
-<translation id="9064939804718829769">Transferring...</translation>
 <translation id="9065203028668620118">Edit</translation>
 <translation id="908378762078012445">Russian with phonetic AATSEEL keyboard</translation>
 <translation id="9099674669267916096">Page count</translation>

@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Súbory</translation>
 <translation id="1297922636971898492">Služba Disk Google práve teraz nie je k dispozícii. Nahrávanie sa automaticky spustí znova, keď bude služba Disk Google opäť dostupná.</translation>
 <translation id="1307931752636661898">Súbory systému Linux sa nedajú zobraziť</translation>
-<translation id="1338950911836659113">Prebieha odstraňovanie...</translation>
 <translation id="1346748346194534595">Doprava</translation>
 <translation id="1351692861129622852">Importujú sa súbory (počet: <ph name="FILE_COUNT" />)...</translation>
 <translation id="1358735829858566124">Súbor alebo adresár nie je možné použiť.</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Tlačiť</translation>
 <translation id="1435838927755162558">Zdieľanie priečinka aplikáciou Parallels Desktop</translation>
 <translation id="1439494416798956626">Presunuté do priečinka: <ph name="FOLDER_NAME" />.</translation>
-<translation id="1464724975715666883">1 chyba.</translation>
 <translation id="1467432559032391204">Doľava</translation>
 <translation id="1471718551822868769">Slovenská klávesnica</translation>
 <translation id="1474339897586437869">Súbor <ph name="FILENAME" /> nebol nahraný. Na Disku Google nemáte dostatok voľného miesta.</translation>
@@ -226,11 +224,9 @@
 <translation id="3455931012307786678">Estónska klávesnica</translation>
 <translation id="3466147780910026086">Prehľadáva sa mediálne zariadenie...</translation>
 <translation id="3468522857997926824">Počet fotiek zálohovaných na <ph name="BEGIN_LINK" />Disk Google<ph name="END_LINK" />: <ph name="FILE_COUNT" /></translation>
-<translation id="3470502288861289375">Prebieha kopírovanie...</translation>
 <translation id="3473378059788601120">Skopírované do priečinka: <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Tabuľka Google</translation>
 <translation id="3486821258960016770">Mongolská klávesnica</translation>
-<translation id="3495304270784461826">Počet chýb: <ph name="COUNT" />.</translation>
 <translation id="3522708245912499433">Portugalčina</translation>
 <translation id="3524311639100184459">Upozornenie: Tieto súbory sú dočasné a môžu byť automaticky odstránené na uvoľnenie priestoru na disku.  <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Priečinok</translation>
@@ -240,7 +236,6 @@
 <translation id="357479282490346887">Litovčina</translation>
 <translation id="3603385196401704894">Kanadská francúzska klávesnica</translation>
 <translation id="3606220979431771195">Turecká (typ F)</translation>
-<translation id="3609785682760573515">Prebieha synchronizácia...</translation>
 <translation id="3616113530831147358">Zvuk</translation>
 <translation id="3619115746895587757">Kapučíno</translation>
 <translation id="3620292326130836921">Všetko je zálohované!</translation>
@@ -533,7 +528,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6657585470893396449">Heslo</translation>
 <translation id="6673674183150363784">Francúzska (Francúzsko) klávesnica Bépo</translation>
 <translation id="6710213216561001401">Späť</translation>
-<translation id="6718273304615422081">Prebieha komprimovanie...</translation>
 <translation id="6751256176799620176">1 vybratý súbor</translation>
 <translation id="6790428901817661496">Prehrať</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -733,7 +727,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8600173386174225982">Zoznam súborov sa zmenil na zobrazenie miniatúr.</translation>
 <translation id="8601932370724196034">Súbor obrázka Crostini</translation>
 <translation id="8609695766746872526">Islandská klávesnica</translation>
-<translation id="8669949407341943408">Presúva sa...</translation>
 <translation id="8698464937041809063">Nákres Google</translation>
 <translation id="8712637175834984815">Dobre</translation>
 <translation id="8713112442029511308">Maltská klávesnica</translation>
@@ -756,7 +749,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="9034924485347205037">Súbory systému Linux</translation>
 <translation id="9035012421917565900">Položky sa nedajú presunúť späť do cieľa <ph name="DESTINATION_NAME" />, takže túto akciu nebude možné vrátiť späť.</translation>
 <translation id="9038620279323455325">Súbor s názvom <ph name="FILE_NAME" /> už existuje. Vyberte iný názov.</translation>
-<translation id="9064939804718829769">Prevádza sa...</translation>
 <translation id="9065203028668620118">Upraviť</translation>
 <translation id="908378762078012445">Ruská fonetická klávesnica (AATSEEL)</translation>
 <translation id="9099674669267916096">Počet strán</translation>

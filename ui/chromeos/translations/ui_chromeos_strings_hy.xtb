@@ -31,7 +31,6 @@
 <translation id="1293556467332435079">Ֆայլեր</translation>
 <translation id="1297922636971898492">Այս պահին Google Drive-ը մատչելի չէ: Վերբեռնումը ավտոմատ կվերագործարկվի, երբ Google Drive-ը մատչելի լինի:</translation>
 <translation id="1307931752636661898">Չհաջողվեց ցուցադրել Լինուքսի ֆայլերը</translation>
-<translation id="1338950911836659113">Ջնջում…</translation>
 <translation id="1346748346194534595">Աջ</translation>
 <translation id="1351692861129622852">Ներմուծվում է <ph name="FILE_COUNT" /> ֆայլ...</translation>
 <translation id="1358735829858566124">Ֆայլը կամ գրացուցակը վնասված են:</translation>
@@ -43,7 +42,6 @@
 <translation id="1430915738399379752">Տպում</translation>
 <translation id="1435838927755162558">Կիսվեք պանակով Parallels Desktop-ի հետ</translation>
 <translation id="1439494416798956626">Տեղափոխվել է «<ph name="FOLDER_NAME" />» պանակ</translation>
-<translation id="1464724975715666883">1 սխալ:</translation>
 <translation id="1467432559032391204">Ձախ</translation>
 <translation id="1471718551822868769">սլովակերեն</translation>
 <translation id="1474339897586437869">«<ph name="FILENAME" />» ֆայլը չվերբեռնվեց: Ձեր Google Drive-ում բավարար չափով ազատ տարածություն չկա:</translation>
@@ -227,11 +225,9 @@
 <translation id="3455931012307786678">էստոներեն</translation>
 <translation id="3466147780910026086">Որոնում մեդիա սարքում…</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> լուսանկար կրկնօրինակվեց <ph name="BEGIN_LINK" />Google Drive-ում<ph name="END_LINK" /></translation>
-<translation id="3470502288861289375">Պատճենում…</translation>
 <translation id="3473378059788601120">Պատճենվեց «<ph name="FOLDER_NAME" />» պանակում</translation>
 <translation id="3475447146579922140">Google աղյուսակ</translation>
 <translation id="3486821258960016770">մոնղոլերեն</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> սխալ:</translation>
 <translation id="3522708245912499433">պորտուգալերեն</translation>
 <translation id="3524311639100184459">Ուշադրություն. այս ֆայլերը ժամանակավոր են և կարող են ավտոմատ ջնջվել՝ սկավառակի վրա տարածք ազատելու համար։  <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Պանակ</translation>
@@ -241,7 +237,6 @@
 <translation id="357479282490346887">Լիտվական</translation>
 <translation id="3603385196401704894">Կանադական (ֆրանսիական)</translation>
 <translation id="3606220979431771195">Թուրքական F</translation>
-<translation id="3609785682760573515">Համաժամացում…</translation>
 <translation id="3616113530831147358">Աուդիո</translation>
 <translation id="3619115746895587757">Կապուչինո</translation>
 <translation id="3620292326130836921">Բոլորը ֆայլերը կրկնօրինակվեցին:</translation>
@@ -535,7 +530,6 @@
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
 <translation id="6673674183150363784">ֆրանսերեն (Ֆրանսիա)՝ Bépo ստեղնաշարով</translation>
 <translation id="6710213216561001401">Նախորդը</translation>
-<translation id="6718273304615422081">Արխիվացում…</translation>
 <translation id="6751256176799620176">Ընտրված է 1 պանակ</translation>
 <translation id="6790428901817661496">Նվագարկել</translation>
 <translation id="6795884519221689054">Պանդա</translation>
@@ -737,7 +731,6 @@
 <translation id="8600173386174225982">Ֆայլերի ցանկն այժմ ցուցադրված է մանրապատկերների տեսքով:</translation>
 <translation id="8601932370724196034">Crostini գրաֆիկական ֆայլ</translation>
 <translation id="8609695766746872526">իսլանդերեն</translation>
-<translation id="8669949407341943408">Տեղափոխում...</translation>
 <translation id="8698464937041809063">Google գծագիր</translation>
 <translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="8713112442029511308">մալթայերեն</translation>
@@ -760,7 +753,6 @@
 <translation id="9034924485347205037">Լինուքսի ֆայլեր</translation>
 <translation id="9035012421917565900">Տարրերը հնարավոր չէ տեղափոխել «<ph name="DESTINATION_NAME" />», այդ պատճառով այս գործողությունը չեք կարող հետարկել։</translation>
 <translation id="9038620279323455325">«<ph name="FILE_NAME" />» անունով ֆայլ արդեն գոյություն ունի: Ընտրեք այլ անուն:</translation>
-<translation id="9064939804718829769">Փոխանցում…</translation>
 <translation id="9065203028668620118">Փոփոխել</translation>
 <translation id="908378762078012445">ռուսերեն (AATSEEL հնչյունային ստեղնաշար)</translation>
 <translation id="9099674669267916096">Էջերի քանակը</translation>
