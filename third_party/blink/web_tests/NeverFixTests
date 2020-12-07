@@ -2186,6 +2186,8 @@ external/wpt/native-file-system/showSaveFilePicker-manual.https.html [ Skip ]
 external/wpt/webusb/usbDevice_claimInterface-manual.https.html [ Skip ]
 wpt_internal/hid/hidDevice_collections-manual.https.html [ Skip ]
 external/wpt/serial/serialPort_loopback-manual.https.html [ Skip ]
+external/wpt/serial/serialPort_loopback_BreakError-manual.https.html [ Skip ]
+external/wpt/serial/serialPort_loopback_BufferOverrunError-manual.https.html [ Skip ]
 external/wpt/serial/serialPort_disconnect-manual.https.html [ Skip ]
 
 # CPU test is enough for this one as there are gradient issues on the GPU
