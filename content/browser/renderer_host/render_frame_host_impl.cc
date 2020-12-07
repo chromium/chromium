@@ -9437,11 +9437,26 @@ bool CalculateURLIsUnreachable(
   return net_error_code != net::OK || has_history_url_for_data_url;
 }
 
+bool ShouldVerify(const std::string& param) {
+#if DCHECK_IS_ON()
+  return true;
+#else
+  return GetFieldTrialParamByFeatureAsBool(features::kVerifyDidCommitParams,
+                                           param, false);
+#endif
+}
+
 void RenderFrameHostImpl::
     VerifyThatBrowserAndRendererCalculatedDidCommitParamsMatch(
         NavigationRequest* request,
         const mojom::DidCommitProvisionalLoadParams& params,
         bool is_same_document_navigation) {
+#if !DCHECK_IS_ON()
+  // Only check for the flag if DCHECK is not enabled, so that we will always
+  // verify the params for tests.
+  if (!base::FeatureList::IsEnabled(features::kVerifyDidCommitParams))
+    return;
+#endif
   // Check if these values from DidCommitProvisionalLoadParams sent by the
   // renderer can be calculated entirely in the browser side:
   // - intended_as_new_entry
@@ -9474,12 +9489,18 @@ void RenderFrameHostImpl::
       is_same_document_navigation ? is_overriding_user_agent_
                                   : (request->IsOverridingUserAgent() &&
                                      frame_tree_node_->IsMainFrame());
-  if (request->commit_params().intended_as_new_entry ==
-          params.intended_as_new_entry &&
-      request->common_params().method == params.method &&
-      browser_url_is_unreachable == params.url_is_unreachable &&
-      base_url_expectations_match && browser_post_id == params.post_id &&
-      browser_is_overriding_user_agent == params.is_overriding_user_agent) {
+
+  if ((!ShouldVerify("intended_as_new_entry") ||
+       request->commit_params().intended_as_new_entry ==
+           params.intended_as_new_entry) &&
+      (!ShouldVerify("method") ||
+       request->common_params().method == params.method) &&
+      (!ShouldVerify("url_is_unreachable") ||
+       browser_url_is_unreachable == params.url_is_unreachable) &&
+      (!ShouldVerify("base_url") || base_url_expectations_match) &&
+      (!ShouldVerify("post_id") || browser_post_id == params.post_id) &&
+      (!ShouldVerify("is_overriding_user_agent") ||
+       browser_is_overriding_user_agent == params.is_overriding_user_agent)) {
     return;
   }
 

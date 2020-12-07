@@ -725,6 +725,11 @@ const base::Feature kUserActivationSameOriginVisibility{
 const base::Feature kUserAgentClientHint{"UserAgentClientHint",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables comparing browser and renderer's DidCommitProvisionalLoadParams in
+// RenderFrameHostImpl::VerifyThatBrowserAndRendererCalculatedDidCommitParamsMatch.
+const base::Feature kVerifyDidCommitParams{"VerifyDidCommitParams",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether the <video>.getVideoPlaybackQuality() API is enabled.
 const base::Feature kVideoPlaybackQuality{"VideoPlaybackQuality",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
