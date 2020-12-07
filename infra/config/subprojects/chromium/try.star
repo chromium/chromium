@@ -53,7 +53,13 @@ luci.bucket(
                 "service-account-chromeperf",
                 "service-account-cq",
             ],
-            projects = branches.value(for_main = ["angle", "dawn", "skia", "v8"]),
+            projects = branches.value(for_main = [
+                "angle",
+                "dawn",
+                "skia",
+                "swiftshader",
+                "v8",
+            ]),
         ),
         acl.entry(
             roles = acl.BUILDBUCKET_OWNER,
