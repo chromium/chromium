@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -3802,6 +3803,49 @@ TEST_F(StyleEngineTest, UpdateStyleAndLayoutTreeForContainer) {
 
   // Three direct span.affected children, and the two display:none elements.
   EXPECT_EQ(5u, GetStyleEngine().StyleForElementCount() - start_count);
+}
+
+TEST_F(StyleEngineTest, MarkStyleDirtyFromContainerRecalc) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div id="container" style="contain:layout">
+      <input id="input" type="text" class="affected">
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  auto* container = GetDocument().getElementById("container");
+  auto* input = GetDocument().getElementById("input");
+  auto* affected = GetDocument().getElementsByClassName("affected");
+  ASSERT_TRUE(container);
+  ASSERT_TRUE(input);
+  auto* inner_editor = DynamicTo<HTMLInputElement>(input)->InnerEditorElement();
+  ASSERT_TRUE(inner_editor);
+  ASSERT_TRUE(affected);
+  SetDependsOnContainerQueries(*affected);
+
+  scoped_refptr<const ComputedStyle> old_inner_style =
+      inner_editor->GetComputedStyle();
+  EXPECT_TRUE(old_inner_style);
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(*container);
+
+  // Input elements mark their InnerEditorElement() style-dirty when they are
+  // recalculated. That means the UpdateStyleAndLayoutTreeForContainer() call
+  // above will involve marking ChildNeedsStyleRecalc all the way up to the
+  // documentElement. Check that we don't leave anything dirty.
+  EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
+  EXPECT_FALSE(GetDocument().documentElement()->ChildNeedsStyleRecalc());
+
+  // The input element is recalculated. The inner editor element isn't counted
+  // because we don't do normal style resolution to create the ComputedStyle for
+  // it, but check that we have a new ComputedStyle object for it.
+  EXPECT_EQ(1u, GetStyleEngine().StyleForElementCount() - start_count);
+
+  const ComputedStyle* new_inner_style = inner_editor->GetComputedStyle();
+  EXPECT_TRUE(new_inner_style);
+  EXPECT_NE(old_inner_style, new_inner_style);
 }
 
 }  // namespace blink
