@@ -79,7 +79,7 @@ void AddUpdateRequiredEolStrings(content::WebUIDataSource* html_source) {
       // deadline.
       int days_remaining = days.value() ? days.value() : 1;
       base::string16 domain_name =
-          base::UTF8ToUTF16(connector->GetEnterpriseDisplayDomain());
+          base::UTF8ToUTF16(connector->GetEnterpriseDomainManager());
       base::string16 link_url =
           base::UTF8ToUTF16(chrome::kChromeUIManagementURL);
       if (days_remaining == 7) {
@@ -92,7 +92,7 @@ void AddUpdateRequiredEolStrings(content::WebUIDataSource* html_source) {
                 l10n_util::GetStringUTF16(
                     IDS_SETTINGS_UPDATE_REQUIRED_EOL_BANNER_DAYS),
                 days_remaining,
-                base::UTF8ToUTF16(connector->GetEnterpriseDisplayDomain()),
+                base::UTF8ToUTF16(connector->GetEnterpriseDomainManager()),
                 ui::GetChromeOSDeviceName(),
                 base::UTF8ToUTF16(chrome::kChromeUIManagementURL));
       }
