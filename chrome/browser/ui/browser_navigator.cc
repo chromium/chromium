@@ -538,7 +538,10 @@ void Navigate(NavigateParams* params) {
     // preserve. Fallback to the behavior used for singletons: overwrite the
     // current tab if it's the NTP, otherwise open a new tab.
     params->disposition = WindowOpenDisposition::SINGLETON_TAB;
-    ShowSingletonTabOverwritingNTP(params->browser, std::move(*params));
+    // Copy to a local variable first to avoid std::move from clearing
+    // |params->browser|.
+    Browser* browser = params->browser;
+    ShowSingletonTabOverwritingNTP(browser, std::move(*params));
     return;
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
