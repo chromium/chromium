@@ -2289,6 +2289,9 @@ void ServiceWorkerVersion::OnNoWorkInBrowser() {
         context_->GetLiveRegistration(registration_id());
     if (registration)
       registration->OnNoWork(this);
+
+    for (auto& observer : observers_)
+      observer.OnNoWork(this);
   }
 }
 

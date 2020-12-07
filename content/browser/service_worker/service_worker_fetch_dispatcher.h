@@ -75,6 +75,8 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
   // the version is activated and running.
   void Run();
 
+  bool FetchCallbackIsNull() { return fetch_callback_.is_null(); }
+
  private:
   class ResponseCallback;
   class URLLoaderAssets;
@@ -101,10 +103,12 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
   // are settled. This function is called once the renderer signals that
   // happened. |fetch_callback_| can run before this, once respondWith() is
   // settled.
-  void OnFetchEventFinished(ServiceWorkerVersion* version,
-                            int event_finish_id,
-                            scoped_refptr<URLLoaderAssets> url_loader_assets,
-                            blink::mojom::ServiceWorkerEventStatus status);
+  static void OnFetchEventFinished(
+      base::WeakPtr<ServiceWorkerFetchDispatcher> fetch_dispatcher,
+      ServiceWorkerVersion* version,
+      int event_finish_id,
+      scoped_refptr<URLLoaderAssets> url_loader_assets,
+      blink::mojom::ServiceWorkerEventStatus status);
 
   ServiceWorkerMetrics::EventType GetEventType() const;
 
