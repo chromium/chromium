@@ -42,6 +42,9 @@
                   'chrome/browser/android/shortcut_.*|'\
                   'chrome/browser/android/webapps/',
     },
+    'agent_scheduling_group': {
+      'filepath': '.*agent_scheduling_group.*|.*agent_group_scheduler.*',
+    },
     'android_crash_reporting': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/crash/' \
                   '|chrome/browser/android/crash/' \
@@ -2098,6 +2101,7 @@
                           'hanxi+watch@chromium.org',
                           'pkotwicz+watch@chromium.org',
                           'webapks-watchlist@chromium.org'],
+    'agent_scheduling_group': ['blink-isolation-reviews@chromium.org'],
     'android_crash_reporting': ['asvitkine+watch@chromium.org',
                                 'wnwen+watch@chromium.org'],
     'android_crazy_linker': ['johnmaguire+watch@google.com'],
