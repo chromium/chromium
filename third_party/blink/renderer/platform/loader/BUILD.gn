@@ -118,8 +118,6 @@ blink_platform_sources("loader") {
     "fetch/unique_identifier.h",
     "fetch/url_loader/request_conversion.cc",
     "fetch/url_loader/request_conversion.h",
-    "fetch/url_loader/web_bundle_subresource_loader.cc",
-    "fetch/url_loader/web_bundle_subresource_loader.h",
     "fetch/url_loader/worker_main_script_loader.cc",
     "fetch/url_loader/worker_main_script_loader.h",
     "fetch/url_loader/worker_main_script_loader_client.h",
@@ -147,7 +145,6 @@ blink_platform_sources("loader") {
   deps = [
     ":make_platform_loader_generated_fetch_initiator_type_names",
     "//components/link_header_util",
-    "//components/web_package",
     "//net",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
@@ -193,7 +190,6 @@ source_set("unit_tests") {
     "fetch/response_body_loader_test.cc",
     "fetch/shared_buffer_bytes_consumer_test.cc",
     "fetch/source_keyed_cached_metadata_handler_test.cc",
-    "fetch/url_loader/web_bundle_subresource_loader_test.cc",
     "fetch/url_loader/worker_main_script_loader_unittest.cc",
     "ftp_directory_listing_test.cc",
     "link_header_test.cc",
@@ -205,7 +201,6 @@ source_set("unit_tests") {
 
   deps = [
     "//base/test:test_support",
-    "//components/web_package:test_support",
     "//mojo/public/cpp/test_support:test_utils",
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",

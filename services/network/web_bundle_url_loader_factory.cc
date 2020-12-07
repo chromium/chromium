@@ -6,6 +6,7 @@
 
 #include "components/web_package/web_bundle_parser.h"
 #include "components/web_package/web_bundle_utils.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
@@ -14,6 +15,8 @@
 namespace network {
 
 namespace {
+
+constexpr size_t kBlockedBodyAllocationSize = 1;
 
 class PipeDataSource : public mojo::DataPipeProducer::DataSource {
  public:
@@ -48,6 +51,76 @@ void DeleteProducerAndRunCallback(
     MojoResult result) {
   std::move(callback).Run(result);
 }
+
+// URLLoaderClient which wraps the real URLLoaderClient.
+class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
+ public:
+  WebBundleURLLoaderClient(
+      base::WeakPtr<WebBundleURLLoaderFactory> factory,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> wrapped)
+      : factory_(factory), wrapped_(std::move(wrapped)) {}
+
+ private:
+  // network::mojom::URLLoaderClient implementation:
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr response_head) override {
+    wrapped_->OnReceiveResponse(std::move(response_head));
+  }
+
+  void OnReceiveRedirect(
+      const net::RedirectInfo& redirect_info,
+      network::mojom::URLResponseHeadPtr response_head) override {
+    wrapped_->OnReceiveRedirect(redirect_info, std::move(response_head));
+  }
+
+  void OnUploadProgress(int64_t current_position,
+                        int64_t total_size,
+                        OnUploadProgressCallback ack_callback) override {
+    wrapped_->OnUploadProgress(current_position, total_size,
+                               std::move(ack_callback));
+  }
+
+  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override {
+    wrapped_->OnReceiveCachedMetadata(std::move(data));
+  }
+
+  void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
+    wrapped_->OnTransferSizeUpdated(transfer_size_diff);
+  }
+
+  void OnStartLoadingResponseBody(
+      mojo::ScopedDataPipeConsumerHandle body) override {
+    if (factory_)
+      factory_->SetBundleStream(std::move(body));
+
+    // Send empty body to the wrapped URLLoaderClient.
+    MojoCreateDataPipeOptions options;
+    options.struct_size = sizeof(MojoCreateDataPipeOptions);
+    options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+    options.element_num_bytes = 1;
+    options.capacity_num_bytes = kBlockedBodyAllocationSize;
+    mojo::ScopedDataPipeProducerHandle producer;
+    mojo::ScopedDataPipeConsumerHandle consumer;
+    MojoResult result = mojo::CreateDataPipe(&options, &producer, &consumer);
+    if (result != MOJO_RESULT_OK) {
+      wrapped_->OnComplete(
+          URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
+      completed_ = true;
+      return;
+    }
+    wrapped_->OnStartLoadingResponseBody(std::move(consumer));
+  }
+
+  void OnComplete(const network::URLLoaderCompletionStatus& status) override {
+    if (completed_)
+      return;
+    wrapped_->OnComplete(status);
+  }
+
+  base::WeakPtr<WebBundleURLLoaderFactory> factory_;
+  mojo::Remote<network::mojom::URLLoaderClient> wrapped_;
+  bool completed_ = false;
+};
 
 }  // namespace
 
@@ -270,6 +343,17 @@ void WebBundleURLLoaderFactory::SetBundleStream(
   parser_->ParseMetadata(
       base::BindOnce(&WebBundleURLLoaderFactory::OnMetadataParsed,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+mojo::PendingRemote<mojom::URLLoaderClient>
+WebBundleURLLoaderFactory::WrapURLLoaderClient(
+    mojo::PendingRemote<mojom::URLLoaderClient> wrapped) {
+  mojo::PendingRemote<mojom::URLLoaderClient> client;
+  auto client_impl = std::make_unique<WebBundleURLLoaderClient>(
+      weak_ptr_factory_.GetWeakPtr(), std::move(wrapped));
+  mojo::MakeSelfOwnedReceiver(std::move(client_impl),
+                              client.InitWithNewPipeAndPassReceiver());
+  return client;
 }
 
 void WebBundleURLLoaderFactory::CreateLoaderAndStart(

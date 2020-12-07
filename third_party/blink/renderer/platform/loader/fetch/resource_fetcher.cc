@@ -975,7 +975,34 @@ base::Optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
     resource_request.SetAllowStoredCredentials(false);
   }
 
+  if (resource_request.GetWebBundleTokenParams()) {
+    DCHECK_EQ(resource_request.GetRequestDestination(),
+              network::mojom::RequestDestination::kWebBundle);
+  } else {
+    AttachWebBundleTokenIfNeeded(resource_request);
+  }
+
   return base::nullopt;
+}
+
+bool ResourceFetcher::ShouldBeLoadedFromWebBundle(const KURL& url) const {
+  for (auto& bundle : subresource_web_bundles_) {
+    if (bundle->CanHandleRequest(url))
+      return true;
+  }
+  return false;
+}
+
+void ResourceFetcher::AttachWebBundleTokenIfNeeded(
+    ResourceRequest& resource_request) const {
+  for (auto& bundle : subresource_web_bundles_) {
+    if (!bundle->CanHandleRequest(resource_request.Url()))
+      continue;
+    resource_request.SetWebBundleTokenParams(
+        ResourceRequestHead::WebBundleTokenParams(bundle->WebBundleToken(),
+                                                  mojo::NullRemote()));
+    return;
+  }
 }
 
 Resource* ResourceFetcher::RequestResource(FetchParameters& params,
@@ -1248,19 +1275,6 @@ std::unique_ptr<WebURLLoader> ResourceFetcher::CreateURLLoader(
     const ResourceLoaderOptions& options) {
   DCHECK(!GetProperties().IsDetached());
   DCHECK(loader_factory_);
-  for (auto& bundle : subresource_web_bundles_) {
-    if (!bundle->CanHandleRequest(request.Url()))
-      continue;
-    ResourceLoaderOptions new_options(options);
-    new_options.url_loader_factory = base::MakeRefCounted<base::RefCountedData<
-        mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>>(
-        bundle->GetURLLoaderFactory());
-    // TODO(yoichio): CreateURLLoader take a ResourceRequestHead instead of
-    // ResourceRequest.
-    return loader_factory_->CreateURLLoader(ResourceRequest(request),
-                                            new_options, freezable_task_runner_,
-                                            unfreezable_task_runner_);
-  }
   return loader_factory_->CreateURLLoader(ResourceRequest(request), options,
                                           freezable_task_runner_,
                                           unfreezable_task_runner_);

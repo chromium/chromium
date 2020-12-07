@@ -305,6 +305,8 @@ class PLATFORM_EXPORT ResourceFetcher
 
   void AddSubresourceWebBundle(SubresourceWebBundle& subresource_web_bundle);
   void RemoveSubresourceWebBundle(SubresourceWebBundle& subresource_web_bundle);
+  void AttachWebBundleTokenIfNeeded(ResourceRequest&) const;
+  bool ShouldBeLoadedFromWebBundle(const KURL&) const;
 
   void EvictFromBackForwardCache();
 

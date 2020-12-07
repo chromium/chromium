@@ -28,6 +28,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory
   base::WeakPtr<WebBundleURLLoaderFactory> GetWeakPtr() const;
 
   void SetBundleStream(mojo::ScopedDataPipeConsumerHandle body);
+  mojo::PendingRemote<mojom::URLLoaderClient> WrapURLLoaderClient(
+      mojo::PendingRemote<mojom::URLLoaderClient> wrapped);
 
   // mojom::URLLoaderFactory implementation.
   void CreateLoaderAndStart(mojo::PendingReceiver<mojom::URLLoader> receiver,

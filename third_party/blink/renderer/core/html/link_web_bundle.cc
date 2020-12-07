@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/link_web_bundle.h"
 
+#include "base/unguessable_token.h"
+#include "services/network/public/mojom/web_bundle_handle.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -18,31 +20,22 @@
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_bundle_subresource_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
-// WebBundleLoader is responsible for loading a WebBundle resource.
 class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
-                        public ThreadableLoaderClient {
+                        public ThreadableLoaderClient,
+                        public network::mojom::WebBundleHandle {
  public:
   WebBundleLoader(LinkWebBundle& link_web_bundle,
                   Document& document,
                   const KURL& url)
       : link_web_bundle_(&link_web_bundle),
         url_(url),
-        security_origin_(SecurityOrigin::Create(url)) {
-    blink::CrossVariantMojoReceiver<
-        network::mojom::URLLoaderFactoryInterfaceBase>
-        receiver(loader_factory_.BindNewPipeAndPassReceiver());
-    document.GetFrame()
-        ->Client()
-        ->GetWebFrame()
-        ->Client()
-        ->MaybeProxyURLLoaderFactory(&receiver);
-    pending_factory_receiver_ = std::move(receiver);
-
+        security_origin_(SecurityOrigin::Create(url)),
+        web_bundle_token_(base::UnguessableToken::Create()) {
     ResourceRequest request(url);
     request.SetUseStreamOnResponse(true);
     // TODO(crbug.com/1082020): Revisit these once the fetch and process the
@@ -50,8 +43,19 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
     // [1]
     // https://html.spec.whatwg.org/multipage/semantics.html#fetch-and-process-the-linked-resource
     request.SetRequestContext(mojom::blink::RequestContextType::SUBRESOURCE);
+    // TODO(crbug.com/1149816): Set CORS mode respecting the crossorigin=
+    // attribute of the <link> element.
     request.SetMode(network::mojom::blink::RequestMode::kCors);
     request.SetCredentialsMode(network::mojom::blink::CredentialsMode::kOmit);
+    request.SetRequestDestination(
+        network::mojom::RequestDestination::kWebBundle);
+    request.SetPriority(ResourceLoadPriority::kHigh);
+
+    mojo::PendingRemote<network::mojom::WebBundleHandle> web_bundle_handle;
+    web_bundle_handles_.Add(this,
+                            web_bundle_handle.InitWithNewPipeAndPassReceiver());
+    request.SetWebBundleTokenParams(ResourceRequestHead::WebBundleTokenParams(
+        web_bundle_token_, std::move(web_bundle_handle)));
 
     ExecutionContext* execution_context = document.GetExecutionContext();
     ResourceLoaderOptions resource_loader_options(
@@ -70,68 +74,55 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
 
   bool HasLoaded() const { return !failed_; }
 
-  mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
-  GetURLLoaderFactory() {
-    mojo::PendingRemote<network::mojom::blink::URLLoaderFactory> factory_clone;
-    loader_factory_->Clone(factory_clone.InitWithNewPipeAndPassReceiver());
-    return factory_clone;
-  }
-
   // ThreadableLoaderClient
   void DidReceiveResponse(uint64_t, const ResourceResponse& response) override {
     if (!cors::IsOkStatus(response.HttpStatusCode()))
       failed_ = true;
-    // TODO(crbug.com/1082020): Check response headers, as spec'ed in
-    // https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#name-serving-constraints.
   }
 
   void DidStartLoadingResponseBody(BytesConsumer& consumer) override {
-    DCHECK(pending_factory_receiver_);
-    CreateWebBundleSubresourceLoaderFactory(
-        std::move(pending_factory_receiver_), consumer.DrainAsDataPipe(),
-        ConvertToBaseRepeatingCallback(
-            CrossThreadBindRepeating(&WebBundleLoader::OnWebBundleError,
-                                     WrapCrossThreadWeakPersistent(this))));
+    // Drain |consumer| so that DidFinishLoading is surely called later.
+    consumer.DrainAsDataPipe();
   }
 
   void DidFinishLoading(uint64_t) override { link_web_bundle_->NotifyLoaded(); }
   void DidFail(const ResourceError&) override { DidFailInternal(); }
   void DidFailRedirectCheck() override { DidFailInternal(); }
 
+  // network::mojom::WebBundleHandle
+  void Clone(mojo::PendingReceiver<network::mojom::WebBundleHandle> receiver)
+      override {
+    web_bundle_handles_.Add(this, std::move(receiver));
+  }
+  void OnWebBundleError(network::mojom::WebBundleErrorType type,
+                        const std::string& message) override {
+    link_web_bundle_->OnWebBundleError(url_.ElidedString() + ": " +
+                                       message.c_str());
+  }
+
   const KURL& url() const { return url_; }
   scoped_refptr<SecurityOrigin> GetSecurityOrigin() const {
     return security_origin_;
   }
+  const base::UnguessableToken& WebBundleToken() const {
+    return web_bundle_token_;
+  }
 
  private:
   void DidFailInternal() {
-    if (pending_factory_receiver_) {
-      // If we haven't create a WebBundleSubresourceLoaderFactory, create it
-      // with an empty bundle body so that requests to
-      // |pending_factory_receiver_| are processed (and fail).
-      CreateWebBundleSubresourceLoaderFactory(
-          std::move(pending_factory_receiver_),
-          mojo::ScopedDataPipeConsumerHandle(), base::DoNothing());
-    }
     failed_ = true;
     link_web_bundle_->NotifyLoaded();
   }
 
-  void OnWebBundleError(WebBundleErrorType type, const String& message) {
-    // TODO(crbug.com/1082020): Dispatch "error" event on metadata parse error.
-    // Simply setting |failed_| here does not work because DidFinishLoading()
-    // may already be called.
-    link_web_bundle_->OnWebBundleError(url_.ElidedString() + ": " + message);
-  }
-
   Member<LinkWebBundle> link_web_bundle_;
   Member<ThreadableLoader> loader_;
-  mojo::Remote<network::mojom::blink::URLLoaderFactory> loader_factory_;
-  mojo::PendingReceiver<network::mojom::blink::URLLoaderFactory>
-      pending_factory_receiver_;
   bool failed_ = false;
   KURL url_;
   scoped_refptr<SecurityOrigin> security_origin_;
+  base::UnguessableToken web_bundle_token_;
+  // we need ReceiverSet here because WebBundleHandle is cloned when
+  // ResourceRequest is copied.
+  mojo::ReceiverSet<network::mojom::WebBundleHandle> web_bundle_handles_;
 };
 
 LinkWebBundle::LinkWebBundle(HTMLLinkElement* owner) : LinkResource(owner) {
@@ -173,6 +164,23 @@ void LinkWebBundle::Process() {
     return;
 
   if (!bundle_loader_ || bundle_loader_->url() != owner_->Href()) {
+    if (resource_fetcher->ShouldBeLoadedFromWebBundle(owner_->Href())) {
+      // This can happen when a requested bundle is a nested bundle.
+      //
+      // clang-format off
+      // Example:
+      // <link rel="webbundle" href=".../nested-main.wbn" resources=".../nested-sub.wbn">
+      // <link rel="webbundle" href=".../nested-sub.wbn" resources="...">
+      // clang-format on
+      if (bundle_loader_) {
+        resource_fetcher->RemoveSubresourceWebBundle(*this);
+        bundle_loader_ = nullptr;
+      }
+      NotifyLoaded();
+      OnWebBundleError("A nested bundle is not supported: " +
+                       owner_->Href().ElidedString());
+      return;
+    }
     bundle_loader_ = MakeGarbageCollected<WebBundleLoader>(
         *this, owner_->GetDocument(), owner_->Href());
   }
@@ -199,6 +207,8 @@ void LinkWebBundle::OwnerRemoved() {
 }
 
 bool LinkWebBundle::CanHandleRequest(const KURL& url) const {
+  if (!url.IsValid())
+    return false;
   if (!owner_ || !owner_->ValidResourceUrls().Contains(url))
     return false;
   DCHECK(bundle_loader_);
@@ -220,15 +230,14 @@ bool LinkWebBundle::CanHandleRequest(const KURL& url) const {
   return true;
 }
 
-mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
-LinkWebBundle::GetURLLoaderFactory() {
-  DCHECK(bundle_loader_);
-  return bundle_loader_->GetURLLoaderFactory();
-}
-
 String LinkWebBundle::GetCacheIdentifier() const {
   DCHECK(bundle_loader_);
   return bundle_loader_->url().GetString();
+}
+
+const base::UnguessableToken& LinkWebBundle::WebBundleToken() const {
+  DCHECK(bundle_loader_);
+  return bundle_loader_->WebBundleToken();
 }
 
 // static

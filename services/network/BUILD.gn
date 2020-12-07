@@ -185,6 +185,8 @@ component("network_service") {
     "url_request_context_builder_mojo.h",
     "url_request_context_owner.cc",
     "url_request_context_owner.h",
+    "web_bundle_manager.cc",
+    "web_bundle_manager.h",
     "web_bundle_url_loader_factory.cc",
     "web_bundle_url_loader_factory.h",
   ]
@@ -351,6 +353,7 @@ source_set("tests") {
     "udp_socket_unittest.cc",
     "upload_progress_tracker_unittest.cc",
     "url_loader_unittest.cc",
+    "web_bundle_manager_unittest.cc",
     "web_bundle_url_loader_factory_unittest.cc",
   ]
 

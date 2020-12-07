@@ -58,6 +58,7 @@
 #include "services/network/public/mojom/websocket.mojom.h"
 #include "services/network/socket_factory.h"
 #include "services/network/url_request_context_owner.h"
+#include "services/network/web_bundle_manager.h"
 
 #if BUILDFLAG(IS_ASH)
 #include "crypto/scoped_nss_types.h"
@@ -513,6 +514,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     return trust_token_store_.get();
   }
 
+  WebBundleManager& GetWebBundleManager() { return web_bundle_manager_; }
+
 #if BUILDFLAG(IS_CT_SUPPORTED)
   void SetIsSCTAuditingEnabledForTesting(bool enabled) {
     is_sct_auditing_enabled_ = enabled;
@@ -750,6 +753,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // `http_auth_merged_preferences_` which would then be used to create
   // HttpAuthHandle via |NetworkContext::CreateHttpAuthHandlerFactory|.
   net::HttpAuthPreferences http_auth_merged_preferences_;
+
+  // Each network context holds its own WebBundleManager, which
+  // manages the lifetiem of a WebBundleURLLoaderFactory object.
+  WebBundleManager web_bundle_manager_;
 
   base::WeakPtrFactory<NetworkContext> weak_factory_{this};
 

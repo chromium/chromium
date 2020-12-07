@@ -38,7 +38,10 @@ await new Promise((resolve, reject) => {
     const script = document.createElement('script');
     script.src = 'http://127.0.0.1:8000/loading/wbn/resources/wbn/server/hello/notfound.js';
     script.onload = reject;
-    script.onerror = resolve;
+    script.onerror = () => {
+	// Wait for the console message to be logged.
+	setTimeout(resolve, 100);
+    }
     document.body.appendChild(script);
   });
 
