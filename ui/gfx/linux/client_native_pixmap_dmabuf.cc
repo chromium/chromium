@@ -94,16 +94,6 @@ ClientNativePixmapDmaBuf::PlaneInfo::~PlaneInfo() {
 bool ClientNativePixmapDmaBuf::IsConfigurationSupported(
     gfx::BufferFormat format,
     gfx::BufferUsage usage) {
-#if BUILDFLAG(IS_CHROMECAST)
-  switch (usage) {
-    case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE:
-      // TODO(spang): Fix b/121148905 and turn these back on.
-      return false;
-    default:
-      break;
-  }
-#endif
-
   bool disable_yuv_biplanar = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMECAST)
   // IsConfigurationSupported(SCANOUT_CPU_READ_WRITE) is used by the renderer
