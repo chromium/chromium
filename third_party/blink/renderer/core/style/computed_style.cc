@@ -2074,7 +2074,8 @@ void ComputedStyle::ApplyTextDecorations(
   bool is_simple_underline = decoration_lines == TextDecoration::kUnderline &&
                              decoration_style == ETextDecorationStyle::kSolid &&
                              TextDecorationColor().IsCurrentColor() &&
-                             TextUnderlineOffset().IsAuto();
+                             TextUnderlineOffset().IsAuto() &&
+                             GetTextDecorationThickness().IsAuto();
   if (is_simple_underline && !AppliedTextDecorationsInternal()) {
     SetHasSimpleUnderlineInternal(true);
     return;
