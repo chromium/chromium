@@ -183,6 +183,8 @@ mojo::PlatformHandle ScenicSurface::CreateView() {
 
 void ScenicSurface::UpdateViewHolderScene() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (overlays_.empty())
+    return;
 
   // |plane_z_order| for main surface is 0.
   int min_z_order = 0;
