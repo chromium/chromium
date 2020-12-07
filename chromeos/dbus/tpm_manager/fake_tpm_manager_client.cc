@@ -90,7 +90,7 @@ FakeTpmManagerClient::mutable_nonsensitive_status_reply() {
   return &nonsensitive_status_reply_;
 }
 
-void FakeTpmManagerClient::set_non_nonsensitive_status_dbus_erorr_count(
+void FakeTpmManagerClient::set_non_nonsensitive_status_dbus_error_count(
     int count) {
   nonsensitive_status_dbus_error_count_ = count;
 }

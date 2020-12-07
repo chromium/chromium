@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) FakeTpmManagerClient
   // TpmManagerClient::TestInterface:
   ::tpm_manager::GetTpmNonsensitiveStatusReply*
   mutable_nonsensitive_status_reply() override;
-  void set_non_nonsensitive_status_dbus_erorr_count(int count) override;
+  void set_non_nonsensitive_status_dbus_error_count(int count) override;
   ::tpm_manager::GetVersionInfoReply* mutable_version_info_reply() override;
   int clear_stored_owner_password_count() const override;
   void EmitOwnershipTakenSignal() override;

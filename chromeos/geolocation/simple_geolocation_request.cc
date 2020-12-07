@@ -71,7 +71,7 @@ constexpr char kAccuracyString[] = "accuracy";
 
 // Error object and its contents.
 constexpr char kErrorString[] = "error";
-// "errors" array in "erorr" object is ignored.
+// "errors" array in "error" object is ignored.
 constexpr char kCodeString[] = "code";
 constexpr char kMessageString[] = "message";
 

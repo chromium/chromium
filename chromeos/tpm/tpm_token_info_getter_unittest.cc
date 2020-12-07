@@ -321,7 +321,7 @@ TEST_F(SystemTPMTokenInfoGetterTest, TPMNotEnabledSystemSlotFallbackEnabled) {
 TEST_F(SystemTPMTokenInfoGetterTest, TpmEnabledCallFails) {
   chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
-      ->set_non_nonsensitive_status_dbus_erorr_count(1);
+      ->set_non_nonsensitive_status_dbus_error_count(1);
 
   bool completed = false;
   base::Optional<TpmTokenInfo> result;
@@ -398,7 +398,7 @@ TEST_F(SystemTPMTokenInfoGetterTest, GetTpmTokenInfoInitiallyFails) {
 TEST_F(SystemTPMTokenInfoGetterTest, RetryDelaysIncreaseExponentially) {
   chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
-      ->set_non_nonsensitive_status_dbus_erorr_count(2);
+      ->set_non_nonsensitive_status_dbus_error_count(2);
   cryptohome_client_->set_get_tpm_token_info_failure_count(1);
   cryptohome_client_->set_get_tpm_token_info_not_set_count(3);
 
@@ -427,7 +427,7 @@ TEST_F(SystemTPMTokenInfoGetterTest, RetryDelaysIncreaseExponentially) {
 TEST_F(SystemTPMTokenInfoGetterTest, RetryDelayBounded) {
   chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
-      ->set_non_nonsensitive_status_dbus_erorr_count(4);
+      ->set_non_nonsensitive_status_dbus_error_count(4);
   cryptohome_client_->set_get_tpm_token_info_failure_count(5);
   cryptohome_client_->set_get_tpm_token_info_not_set_count(6);
 
