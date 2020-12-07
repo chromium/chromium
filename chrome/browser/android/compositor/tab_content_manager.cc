@@ -343,10 +343,10 @@ void TabContentManager::GetEtc1TabThumbnail(
     const base::android::JavaParamRef<jobject>& j_callback) {
   thumbnail_cache_->DecompressThumbnailFromFile(
       tab_id,
-      base::BindRepeating(
-          &TabContentManager::SendThumbnailToJava, weak_factory_.GetWeakPtr(),
-          base::android::ScopedJavaGlobalRef<jobject>(j_callback),
-          /* need_downsampling */ true));
+      base::BindOnce(&TabContentManager::SendThumbnailToJava,
+                     weak_factory_.GetWeakPtr(),
+                     base::android::ScopedJavaGlobalRef<jobject>(j_callback),
+                     /* need_downsampling */ true));
 }
 
 void TabContentManager::OnUIResourcesWereEvicted() {

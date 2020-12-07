@@ -350,34 +350,34 @@ void ThumbnailCache::UpdateVisibleIds(const TabIdList& priority,
 }
 
 void ThumbnailCache::ForkToSaveAsJpeg(
-    const base::Callback<void(bool, const SkBitmap&)>& callback,
+    base::OnceCallback<void(bool, const SkBitmap&)> callback,
     int tab_id,
     bool result,
     const SkBitmap& bitmap) {
   if (result && !bitmap.isNull())
     SaveAsJpeg(tab_id, bitmap);
-  callback.Run(result, bitmap);
+  std::move(callback).Run(result, bitmap);
 }
 
 void ThumbnailCache::DecompressThumbnailFromFile(
     TabId tab_id,
-    const base::Callback<void(bool, const SkBitmap&)>&
-        post_decompress_callback) {
-  base::Callback<void(bool, const SkBitmap&)> transcoding_callback =
-      post_decompress_callback;
+    base::OnceCallback<void(bool, const SkBitmap&)> post_decompress_callback) {
+  base::OnceCallback<void(bool, const SkBitmap&)> transcoding_callback;
   if (save_jpeg_thumbnails_) {
-    transcoding_callback = base::Bind(&ThumbnailCache::ForkToSaveAsJpeg,
-                                      weak_factory_.GetWeakPtr(),
-                                      post_decompress_callback, tab_id);
+    transcoding_callback = base::BindOnce(
+        &ThumbnailCache::ForkToSaveAsJpeg, weak_factory_.GetWeakPtr(),
+        std::move(post_decompress_callback), tab_id);
+  } else {
+    transcoding_callback = std::move(post_decompress_callback);
   }
 
-  base::Callback<void(sk_sp<SkPixelRef>, float, const gfx::Size&)>
-      decompress_task =
-          base::Bind(&ThumbnailCache::DecompressionTask, transcoding_callback);
+  base::OnceCallback<void(sk_sp<SkPixelRef>, float, const gfx::Size&)>
+      decompress_task = base::BindOnce(&ThumbnailCache::DecompressionTask,
+                                       std::move(transcoding_callback));
 
   file_sequenced_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ThumbnailCache::ReadTask, true, tab_id, decompress_task));
+      FROM_HERE, base::BindOnce(&ThumbnailCache::ReadTask, true, tab_id,
+                                std::move(decompress_task)));
 }
 
 void ThumbnailCache::RemoveFromDisk(TabId tab_id) {
@@ -485,13 +485,13 @@ void ThumbnailCache::ReadNextThumbnail() {
   TabId tab_id = read_queue_.front();
   read_in_progress_ = true;
 
-  base::Callback<void(sk_sp<SkPixelRef>, float, const gfx::Size&)>
-      post_read_task = base::Bind(&ThumbnailCache::PostReadTask,
-                                  weak_factory_.GetWeakPtr(), tab_id);
+  base::OnceCallback<void(sk_sp<SkPixelRef>, float, const gfx::Size&)>
+      post_read_task = base::BindOnce(&ThumbnailCache::PostReadTask,
+                                      weak_factory_.GetWeakPtr(), tab_id);
 
   file_sequenced_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ThumbnailCache::ReadTask, false, tab_id, post_read_task));
+      FROM_HERE, base::BindOnce(&ThumbnailCache::ReadTask, false, tab_id,
+                                std::move(post_read_task)));
 }
 
 void ThumbnailCache::MakeSpaceForNewItemIfNecessary(TabId tab_id) {
@@ -869,7 +869,7 @@ bool ReadFromFile(base::File& file,
 void ThumbnailCache::ReadTask(
     bool decompress,
     TabId tab_id,
-    const base::Callback<void(sk_sp<SkPixelRef>, float, const gfx::Size&)>&
+    base::OnceCallback<void(sk_sp<SkPixelRef>, float, const gfx::Size&)>
         post_read_task) {
   gfx::Size content_size;
   float scale = 0.f;
@@ -894,12 +894,13 @@ void ThumbnailCache::ReadTask(
   if (decompress) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(post_read_task, std::move(compressed_data), scale,
-                       content_size));
+        base::BindOnce(std::move(post_read_task), std::move(compressed_data),
+                       scale, content_size));
   } else {
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(post_read_task, std::move(compressed_data),
-                                  scale, content_size));
+        FROM_HERE,
+        base::BindOnce(std::move(post_read_task), std::move(compressed_data),
+                       scale, content_size));
   }
 }
 
@@ -954,8 +955,7 @@ void ThumbnailCache::RemoveOnMatchedTimeStamp(TabId tab_id,
 }
 
 void ThumbnailCache::DecompressionTask(
-    const base::Callback<void(bool, const SkBitmap&)>&
-        post_decompression_callback,
+    base::OnceCallback<void(bool, const SkBitmap&)> post_decompression_callback,
     sk_sp<SkPixelRef> compressed_data,
     float scale,
     const gfx::Size& content_size) {
@@ -993,8 +993,8 @@ void ThumbnailCache::DecompressionTask(
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(post_decompression_callback, success, raw_data_small));
+      FROM_HERE, base::BindOnce(std::move(post_decompression_callback), success,
+                                raw_data_small));
 }
 
 ThumbnailCache::ThumbnailMetaData::ThumbnailMetaData(
