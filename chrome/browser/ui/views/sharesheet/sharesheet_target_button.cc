@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/ash_typography.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -27,9 +28,6 @@ constexpr int kButtonTextMaxWidth = 76;
 constexpr int kButtonLineHeight = 20;
 constexpr int kButtonMaxLines = 2;
 constexpr int kButtonPadding = 8;
-
-constexpr char kButtonLabelFont[] = "Roboto, Medium, 14px";
-constexpr char kButtonSecondaryLabelFont[] = "Roboto, Regular, 13px";
 
 constexpr SkColor kShareTargetTitleColor = gfx::kGoogleGrey700;
 constexpr SkColor kShareTargetSecondaryTitleColor = gfx::kGoogleGrey600;
@@ -82,18 +80,20 @@ SharesheetTargetButton::SharesheetTargetButton(
   label_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0, true));
 
-  auto* label =
-      label_view->AddChildView(std::make_unique<views::Label>(display_name));
-  label->SetFontList(gfx::FontList(kButtonLabelFont));
+  auto* label = label_view->AddChildView(std::make_unique<views::Label>(
+      display_name, ash::CONTEXT_SHARESHEET_BUBBLE_BODY,
+      ash::STYLE_SHARESHEET));
   label->SetEnabledColor(kShareTargetTitleColor);
   SetLabelProperties(label);
 
   base::string16 accessible_name = display_name;
   if (secondary_display_name != base::string16() &&
       secondary_display_name != display_name) {
-    auto* secondary_label = label_view->AddChildView(
-        std::make_unique<views::Label>(secondary_display_name));
-    secondary_label->SetFontList(gfx::FontList(kButtonSecondaryLabelFont));
+    auto* secondary_label =
+        label_view->AddChildView(std::make_unique<views::Label>(
+            secondary_display_name,
+            ash::CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY,
+            ash::STYLE_SHARESHEET));
     secondary_label->SetEnabledColor(kShareTargetSecondaryTitleColor);
     SetLabelProperties(secondary_label);
     accessible_name = base::StrCat(

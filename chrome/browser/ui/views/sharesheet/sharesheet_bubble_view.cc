@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/ash_typography.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
@@ -77,9 +78,6 @@ constexpr int kShortSpacing = 20;
 constexpr int kSpacing = 24;
 constexpr int kTitleLineHeight = 24;
 
-constexpr char kTitleFont[] = "GoogleSans, Medium, 16px";
-constexpr char kExpandViewTitleFont[] = "Roboto, Medium, 15px";
-
 constexpr SkColor kShareTitleColor = gfx::kGoogleGrey900;
 constexpr SkColor kShareTargetTitleColor = gfx::kGoogleGrey700;
 
@@ -135,8 +133,8 @@ void SharesheetBubbleView::ShowBubble(
 
   // Add Title label
   auto* title = main_view_->AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL)));
-  title->SetFontList(gfx::FontList(kTitleFont));
+      l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL),
+      ash::CONTEXT_SHARESHEET_BUBBLE_TITLE, ash::STYLE_SHARESHEET));
   title->SetLineHeight(kTitleLineHeight);
   title->SetEnabledColor(kShareTitleColor);
   title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -148,9 +146,11 @@ void SharesheetBubbleView::ShowBubble(
     image->SetImage(*ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
         IDR_SHARESHEET_EMPTY));
     image->SetProperty(views::kMarginsKey, gfx::Insets(0, 0, kSpacing, 0));
-    // TODO(crbug.com/1138037) Update label typography.
-    main_view_->AddChildView(std::make_unique<views::Label>(
-        l10n_util::GetStringUTF16(IDS_SHARESHEET_ZERO_STATE_LABEL)));
+    auto* zero_state_label =
+        main_view_->AddChildView(std::make_unique<views::Label>(
+            l10n_util::GetStringUTF16(IDS_SHARESHEET_ZERO_STATE_LABEL),
+            ash::CONTEXT_SHARESHEET_BUBBLE_BODY, ash::STYLE_SHARESHEET));
+    zero_state_label->SetLineHeight(kShortSpacing);
   } else {
     auto scroll_view = std::make_unique<views::ScrollView>();
     scroll_view->SetContents(MakeScrollableTargetView(std::move(targets)));
@@ -214,8 +214,8 @@ std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
                             kExpandViewTitleLabelHeight);
   auto* apps_list_label =
       expanded_layout->AddView(std::make_unique<views::Label>(
-          l10n_util::GetStringUTF16(IDS_SHARESHEET_APPS_LIST_LABEL)));
-  apps_list_label->SetFontList(gfx::FontList(kExpandViewTitleFont));
+          l10n_util::GetStringUTF16(IDS_SHARESHEET_APPS_LIST_LABEL),
+          ash::CONTEXT_SHARESHEET_BUBBLE_BODY, ash::STYLE_SHARESHEET));
   apps_list_label->SetLineHeight(kExpandViewTitleLabelHeight);
   apps_list_label->SetEnabledColor(kShareTargetTitleColor);
   apps_list_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);

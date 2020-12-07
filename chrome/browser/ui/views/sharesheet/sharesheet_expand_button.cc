@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/sharesheet/sharesheet_expand_button.h"
 
+#include "ash/public/cpp/ash_typography.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -22,7 +23,6 @@ constexpr int kLineHeight = 20;
 constexpr int kBetweenChildSpacing = 8;
 constexpr int kMarginSpacing = 24;
 
-constexpr char kLabelFont[] = "Roboto, Medium, 14px";
 constexpr SkColor kLabelColor = gfx::kGoogleBlue600;
 
 }  // namespace
@@ -36,8 +36,9 @@ SharesheetExpandButton::SharesheetExpandButton(PressedCallback callback)
 
   icon_ = AddChildView(std::make_unique<views::ImageView>());
 
-  label_ = AddChildView(std::make_unique<views::Label>());
-  label_->SetFontList(gfx::FontList(kLabelFont));
+  label_ = AddChildView(std::make_unique<views::Label>(
+      base::string16(), ash::CONTEXT_SHARESHEET_BUBBLE_BODY,
+      ash::STYLE_SHARESHEET));
   label_->SetLineHeight(kLineHeight);
   label_->SetEnabledColor(kLabelColor);
 

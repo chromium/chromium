@@ -26,6 +26,16 @@ enum AshTextContext {
   // A headline label that appears in a larger window.
   CONTEXT_HEADLINE_OVERSIZED,
 
+  // Title label in the Sharesheet bubble. Medium weight. Usually 16pt.
+  CONTEXT_SHARESHEET_BUBBLE_TITLE,
+
+  // Body text label in the Sharesheet bubble. Meidum weight. Usually 14pt.
+  CONTEXT_SHARESHEET_BUBBLE_BODY,
+
+  // Body text label in the Sharesheet bubble. Generally appears under body
+  // text. Usually 13pt.
+  CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY,
+
   ASH_TEXT_CONTEXT_END
 };
 
@@ -36,6 +46,9 @@ enum AshTextStyle {
   // string.
   STYLE_EMPHASIZED = ASH_TEXT_STYLE_START,
 
+  // Text styling specifically for the Chrome OS sharesheet.
+  STYLE_SHARESHEET,
+
   ASH_TEXT_STYLE_END
 };
 
@@ -44,7 +57,8 @@ enum AshTextStyle {
 void ASH_PUBLIC_EXPORT ApplyAshFontStyles(int context,
                                           int style,
                                           int* size_delta,
-                                          gfx::Font::Weight* font_weight);
+                                          gfx::Font::Weight* font_weight,
+                                          std::string* typeface);
 
 }  // namespace ash
 

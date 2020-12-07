@@ -41,7 +41,7 @@ const gfx::FontList& ChromeTypographyProvider::GetFont(int context,
   gfx::Font::Weight font_weight = gfx::Font::Weight::NORMAL;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::ApplyAshFontStyles(context, style, &size_delta, &font_weight);
+  ash::ApplyAshFontStyles(context, style, &size_delta, &font_weight, &typeface);
 #endif
 
   ApplyCommonFontStyles(context, style, &size_delta, &font_weight);
