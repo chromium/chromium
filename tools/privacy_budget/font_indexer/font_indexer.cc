@@ -84,7 +84,7 @@ const std::pair<blink::FontSelectionValue, std::string>
 const char kOutputHeader[] =
     "Family name\tPostScript name\tweight\twidth\tslope\ttypeface "
     "digest\tdefault family name lookup digest\tdefault PostScript name lookup "
-    "digest";
+    "digest\tPostScript name string digest";
 const char kOutputSeparator[] = "\t";
 
 FontIndexer::FontIndexer() : font_cache_(blink::FontCache::GetFontCache()) {}
@@ -269,6 +269,9 @@ void FontIndexer::PrintAllFontsWithName(WTF::AtomicString name) {
               default_postscript_name_lookup_digest =
                   builder.GetToken().ToUkmMetricValue();
             }
+            uint64_t postscript_name_string_digest =
+                blink::IdentifiabilityBenignStringToken(postscript_name)
+                    .ToUkmMetricValue();
 
             std::cout << name.Ascii() << kOutputSeparator
                       << postscript_name.Ascii() << kOutputSeparator
@@ -277,7 +280,9 @@ void FontIndexer::PrintAllFontsWithName(WTF::AtomicString name) {
                       << slope_pair.second << kOutputSeparator
                       << typeface_digest << kOutputSeparator
                       << default_family_name_lookup_digest << kOutputSeparator
-                      << default_postscript_name_lookup_digest << std::endl;
+                      << default_postscript_name_lookup_digest
+                      << kOutputSeparator << postscript_name_string_digest
+                      << std::endl;
           }
         }
       }
