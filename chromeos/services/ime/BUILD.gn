@@ -36,8 +36,6 @@ source_set("lib") {
   sources = [
     "decoder/decoder_engine.cc",
     "decoder/decoder_engine.h",
-    "decoder/downloader_impl.cc",
-    "decoder/downloader_impl.h",
     "decoder/proto_conversion.cc",
     "decoder/proto_conversion.h",
     "decoder/system_engine.cc",
