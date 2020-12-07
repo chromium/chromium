@@ -435,6 +435,23 @@ FT_BEGIN_HEADER
 
   /**************************************************************************
    *
+   * Logging
+   *
+   *   Compiling FreeType in debug or trace mode makes FreeType write error
+   *   and trace log messages to `stderr`.  Enabling this macro
+   *   automatically forces the `FT_DEBUG_LEVEL_ERROR` and
+   *   `FT_DEBUG_LEVEL_TRACE` macros and allows FreeType to write error and
+   *   trace log messages to a file instead of `stderr`.  For writing logs
+   *   to a file, FreeType uses an the external `dlg` library (the source
+   *   code is in `src/dlg`).
+   *
+   *   This option needs a C99 compiler.
+   */
+/* #define FT_LOGGING */
+
+
+  /**************************************************************************
+   *
    * Autofitter debugging
    *
    *   If `FT_DEBUG_AUTOFIT` is defined, FreeType provides some means to
