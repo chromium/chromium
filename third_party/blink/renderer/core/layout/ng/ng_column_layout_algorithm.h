@@ -100,6 +100,7 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
   LayoutUnit column_inline_progression_;
   LayoutUnit column_block_size_;
   LayoutUnit intrinsic_block_size_;
+  LayoutUnit tallest_unbreakable_block_size_;
   bool is_constrained_by_outer_fragmentation_context_ = false;
 
   // This will be set during (outer) block fragmentation once we've processed

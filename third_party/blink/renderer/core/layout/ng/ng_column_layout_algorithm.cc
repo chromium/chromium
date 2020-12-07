@@ -922,7 +922,7 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
   // First split into content runs at explicit (forced) breaks.
   ContentRuns content_runs;
   scoped_refptr<const NGBlockBreakToken> break_token = child_break_token;
-  LayoutUnit tallest_unbreakable_block_size;
+  tallest_unbreakable_block_size_ = LayoutUnit();
   do {
     NGBlockLayoutAlgorithm balancing_algorithm(
         {Node(), fragment_geometry, space, break_token.get()});
@@ -938,8 +938,8 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
         CalculateColumnContentBlockSize(fragment, space.GetWritingDirection());
     content_runs.emplace_back(column_block_size);
 
-    tallest_unbreakable_block_size = std::max(
-        tallest_unbreakable_block_size, result->TallestUnbreakableBlockSize());
+    tallest_unbreakable_block_size_ = std::max(
+        tallest_unbreakable_block_size_, result->TallestUnbreakableBlockSize());
 
     // Stop when we reach a spanner. That's where this row of columns will end.
     if (result->ColumnSpanner())
@@ -964,7 +964,7 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
     // initial balancing pass, so it also wants to know the largest unbreakable
     // block-size.
     container_builder_.PropagateTallestUnbreakableBlockSize(
-        tallest_unbreakable_block_size);
+        tallest_unbreakable_block_size_);
   }
 
   // We now have an estimated minimal block-size for the columns. Roughly
@@ -973,12 +973,10 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
   // though, since there will typically be unbreakable pieces of content, such
   // as replaced content, lines of text, and other things. We need to actually
   // lay out into columns to figure out if they are tall enough or not (and
-  // stretch and retry if not). Also honor {,min-,max-}{height,width} properties
-  // before returning.
-  LayoutUnit block_size = std::max(content_runs.TallestColumnBlockSize(),
-                                   tallest_unbreakable_block_size);
-
-  return ConstrainColumnBlockSize(block_size);
+  // stretch and retry if not). Also honor {,min-,max-}block-size properties
+  // before returning, and also try to not become shorter than the tallest piece
+  // of unbreakable content.
+  return ConstrainColumnBlockSize(content_runs.TallestColumnBlockSize());
 }
 
 LayoutUnit NGColumnLayoutAlgorithm::StretchColumnBlockSize(
@@ -993,14 +991,6 @@ LayoutUnit NGColumnLayoutAlgorithm::StretchColumnBlockSize(
 // container.
 LayoutUnit NGColumnLayoutAlgorithm::ConstrainColumnBlockSize(
     LayoutUnit size) const {
-  // The {,max-}{height,width} properties are specified on the multicol
-  // container, but here we're calculating the column block sizes inside the
-  // multicol container, which isn't exactly the same. We may shrink the column
-  // block size here, but we'll never stretch it, because the value passed is
-  // the perfect balanced block size. Making it taller would only disrupt the
-  // balanced output, for no reason. The only thing we need to worry about here
-  // is to not overflow the multicol container.
-
   if (is_constrained_by_outer_fragmentation_context_) {
     // Don't become too tall to fit in the outer fragmentation context.
     LayoutUnit available_outer_space =
@@ -1009,6 +999,17 @@ LayoutUnit NGColumnLayoutAlgorithm::ConstrainColumnBlockSize(
     size = std::min(size, available_outer_space);
   }
 
+  // But avoid becoming shorter than the tallest piece of unbreakable content.
+  size = std::max(size, tallest_unbreakable_block_size_);
+
+  // The {,min-,max-}block-size properties are specified on the multicol
+  // container, but here we're calculating the column block sizes inside the
+  // multicol container, which isn't exactly the same. We may shrink the column
+  // block size here, but we'll never stretch them, because the value passed is
+  // the perfect balanced block size. Making it taller would only disrupt the
+  // balanced output, for no reason. The only thing we need to worry about here
+  // is to not overflow the multicol container.
+  //
   // First of all we need to convert the size to a value that can be compared
   // against the resolved properties on the multicol container. That means that
   // we have to convert the value from content-box to border-box.
