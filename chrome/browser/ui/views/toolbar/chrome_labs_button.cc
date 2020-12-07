@@ -15,9 +15,7 @@ ChromeLabsButton::ChromeLabsButton()
 }
 
 void ChromeLabsButton::UpdateIcon() {
-  // TODO(elainechien): Replace kHorizontalMenuIcon with Chrome Labs icon when
-  // available.
-  UpdateIconsWithStandardColors(kHorizontalMenuIcon);
+  UpdateIconsWithStandardColors(kChromeLabsIcon);
 }
 
 const char* ChromeLabsButton::GetClassName() const {

@@ -31,6 +31,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "caret_up.icon",
     "cast_for_education.icon",
     "chevron_right.icon",
+    "chrome_labs.icon",
     "click_to_call_illustration.icon",
     "click_to_call_illustration_dark.icon",
     "close_all.icon",
