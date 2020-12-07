@@ -640,7 +640,7 @@
       // Support for ::target-text pseudo element as specified in
       // https://drafts.csswg.org/css-pseudo/#selectordef-target-text
       name: "CSSTargetTextPseudoElement",
-      status: "test",
+      status: "stable",
     },
     // Support for @property rules.
     {
