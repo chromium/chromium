@@ -121,14 +121,14 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   // The URL schemes that can be requested by this document.
   std::vector<std::string> requestable_schemes_;
 
-  // The WebUIMessageHandlers we own.
-  std::vector<std::unique_ptr<WebUIMessageHandler>> handlers_;
-
   // RenderFrameHost associated with |this|.
   RenderFrameHost* frame_host_;
 
   // Non-owning pointer to the WebContentsImpl this WebUI is associated with.
   WebContentsImpl* web_contents_;
+
+  // The WebUIMessageHandlers we own.
+  std::vector<std::unique_ptr<WebUIMessageHandler>> handlers_;
 
   // Notifies this WebUI about notifications in the main frame.
   std::unique_ptr<WebUIMainFrameObserver> web_contents_observer_;
