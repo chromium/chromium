@@ -2623,8 +2623,6 @@ static_library("ui") {
       "//chromeos/assistant:buildflags",
       "//chromeos/audio",
       "//chromeos/components/account_manager",
-      "//chromeos/components/bloom/public/cpp",
-      "//chromeos/components/bloom/public/cpp:bloom_controller_factory",
       "//chromeos/components/camera_app_ui",
       "//chromeos/components/connectivity_diagnostics",
       "//chromeos/components/connectivity_diagnostics:network_diagnostics_resource_provider",

@@ -96,7 +96,6 @@ class AssistantControllerImpl;
 class AutoclickController;
 class BackGestureEventHandler;
 class BacklightsForcedOffSetter;
-class BloomUiControllerImpl;
 class BluetoothNotificationController;
 class BluetoothPowerController;
 class BrightnessControlDelegate;
@@ -679,7 +678,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<AshDBusServices> ash_dbus_services_;
   std::unique_ptr<AssistantControllerImpl> assistant_controller_;
   std::unique_ptr<BacklightsForcedOffSetter> backlights_forced_off_setter_;
-  std::unique_ptr<BloomUiControllerImpl> bloom_ui_controller_;
   std::unique_ptr<BrightnessControlDelegate> brightness_control_delegate_;
   std::unique_ptr<CrosDisplayConfig> cros_display_config_;
   std::unique_ptr<DesksController> desks_controller_;

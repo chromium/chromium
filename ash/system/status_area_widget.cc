@@ -16,7 +16,6 @@
 #include "ash/shell.h"
 #include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/accessibility/select_to_speak_tray.h"
-#include "ash/system/bloom/bloom_tray.h"
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/media/media_tray.h"
@@ -108,11 +107,6 @@ void StatusAreaWidget::Initialize() {
 
   virtual_keyboard_tray_ = std::make_unique<VirtualKeyboardTray>(shelf_);
   AddTrayButton(virtual_keyboard_tray_.get());
-
-  if (chromeos::assistant::features::IsBloomEnabled()) {
-    bloom_tray_ = std::make_unique<BloomTray>(shelf_);
-    AddTrayButton(bloom_tray_.get());
-  }
 
   if (features::IsCaptureModeEnabled()) {
     stop_recording_button_tray_ =
@@ -332,7 +326,6 @@ void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
   bool show_overflow_button = false;
   int used_width = 0;
   for (TrayBackgroundView* tray : base::Reversed(tray_buttons_)) {
-
     // Skip non-enabled tray buttons.
     if (!tray->visible_preferred())
       continue;

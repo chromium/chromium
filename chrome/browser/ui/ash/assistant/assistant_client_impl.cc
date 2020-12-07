@@ -19,9 +19,6 @@
 #include "chrome/browser/ui/ash/assistant/assistant_web_view_factory_impl.h"
 #include "chrome/browser/ui/ash/assistant/conversation_starters_client_impl.h"
 #include "chrome/browser/ui/ash/assistant/device_actions_delegate_impl.h"
-#include "chromeos/components/bloom/public/cpp/bloom_controller.h"
-#include "chromeos/components/bloom/public/cpp/bloom_controller_factory.h"
-#include "chromeos/components/bloom/public/cpp/bloom_screenshot_delegate.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
@@ -88,12 +85,6 @@ void AssistantClientImpl::MaybeInit(Profile* profile) {
   if (chromeos::assistant::features::IsConversationStartersV2Enabled()) {
     conversation_starters_client_ =
         std::make_unique<ConversationStartersClientImpl>(profile_);
-  }
-
-  if (chromeos::assistant::features::IsBloomEnabled()) {
-    bloom_controller_ = chromeos::bloom::BloomControllerFactory::Create(
-        profile->GetURLLoaderFactory()->Clone(),
-        IdentityManagerFactory::GetForProfile(profile));
   }
 }
 
