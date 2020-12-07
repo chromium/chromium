@@ -465,7 +465,7 @@ void SyncFileSystemService::Initialize(
 
   local_service_->AddChangeObserver(local_syncer.get());
   local_service_->SetLocalChangeProcessorCallback(
-      base::Bind(&GetLocalChangeProcessorAdapter, AsWeakPtr()));
+      base::BindRepeating(&GetLocalChangeProcessorAdapter, AsWeakPtr()));
 
   remote_service_->AddServiceObserver(remote_syncer.get());
   remote_service_->AddFileStatusObserver(this);

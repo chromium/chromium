@@ -179,21 +179,21 @@ void LocalFileSyncService::SetLocalChangeProcessor(
 }
 
 void LocalFileSyncService::SetLocalChangeProcessorCallback(
-    const GetLocalChangeProcessorCallback& get_local_change_processor) {
-  get_local_change_processor_ = get_local_change_processor;
+    GetLocalChangeProcessorCallback get_local_change_processor) {
+  get_local_change_processor_ = std::move(get_local_change_processor);
 }
 
 void LocalFileSyncService::HasPendingLocalChanges(
     const FileSystemURL& url,
-    const HasPendingLocalChangeCallback& callback) {
+    HasPendingLocalChangeCallback callback) {
   if (!base::Contains(origin_to_contexts_, url.origin().GetURL())) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(callback, SYNC_FILE_ERROR_INVALID_URL, false));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  SYNC_FILE_ERROR_INVALID_URL, false));
     return;
   }
   sync_context_->HasPendingLocalChanges(
-      origin_to_contexts_[url.origin().GetURL()], url, callback);
+      origin_to_contexts_[url.origin().GetURL()], url, std::move(callback));
 }
 
 void LocalFileSyncService::PromoteDemotedChanges(

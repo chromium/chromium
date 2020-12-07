@@ -39,10 +39,10 @@ RootDeleteHelper::RootDeleteHelper(
     storage::FileSystemContext* file_system_context,
     LocalFileSyncStatus* sync_status,
     const storage::FileSystemURL& url,
-    const FileStatusCallback& callback)
+    FileStatusCallback callback)
     : file_system_context_(file_system_context),
       url_(url),
-      callback_(callback),
+      callback_(std::move(callback)),
       sync_status_(sync_status) {
   DCHECK(file_system_context_.get());
   DCHECK(url_.is_valid());
@@ -100,8 +100,7 @@ void RootDeleteHelper::DidResetFileChangeTracker() {
 void RootDeleteHelper::DidOpenFileSystem(const GURL& /* root */,
                                          const std::string& /* name */,
                                          base::File::Error error) {
-  FileStatusCallback callback = callback_;
-  callback.Run(error);
+  std::move(callback_).Run(error);
 }
 
 }  // namespace sync_file_system

@@ -51,7 +51,7 @@ class LocalFileSyncService
       public LocalOriginChangeObserver,
       public base::SupportsWeakPtr<LocalFileSyncService> {
  public:
-  typedef base::Callback<LocalChangeProcessor*(const GURL& origin)>
+  typedef base::RepeatingCallback<LocalChangeProcessor*(const GURL& origin)>
       GetLocalChangeProcessorCallback;
 
   class Observer {
@@ -69,8 +69,8 @@ class LocalFileSyncService
     DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
-  typedef base::Callback<void(SyncStatusCode status,
-                              bool has_pending_changes)>
+  typedef base::OnceCallback<void(SyncStatusCode status,
+                                  bool has_pending_changes)>
       HasPendingLocalChangeCallback;
 
   static std::unique_ptr<LocalFileSyncService> Create(Profile* profile);
@@ -118,12 +118,12 @@ class LocalFileSyncService
   // TODO(kinuko): Remove this method once we stop using multiple backends
   // (crbug.com/324215), or deprecate the other if we keep doing so.
   void SetLocalChangeProcessorCallback(
-      const GetLocalChangeProcessorCallback& get_local_change_processor);
+      GetLocalChangeProcessorCallback get_local_change_processor);
 
   // Returns true via |callback| if the given file |url| has local pending
   // changes.
   void HasPendingLocalChanges(const storage::FileSystemURL& url,
-                              const HasPendingLocalChangeCallback& callback);
+                              HasPendingLocalChangeCallback callback);
 
   void PromoteDemotedChanges(const base::Closure& callback);
 

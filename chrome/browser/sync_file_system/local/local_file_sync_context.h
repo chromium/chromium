@@ -65,13 +65,13 @@ class LocalFileSyncContext
     SYNC_SNAPSHOT,
   };
 
-  typedef base::Callback<void(SyncStatusCode status,
-                              const LocalFileSyncInfo& sync_file_info,
-                              storage::ScopedFile snapshot)>
+  typedef base::OnceCallback<void(SyncStatusCode status,
+                                  const LocalFileSyncInfo& sync_file_info,
+                                  storage::ScopedFile snapshot)>
       LocalFileSyncInfoCallback;
 
-  typedef base::Callback<void(SyncStatusCode status,
-                              bool has_pending_changes)>
+  typedef base::OnceCallback<void(SyncStatusCode status,
+                                  bool has_pending_changes)>
       HasPendingLocalChangeCallback;
 
   LocalFileSyncContext(const base::FilePath& base_path,
@@ -96,7 +96,7 @@ class LocalFileSyncContext
   // for the file.
   // This method must be called on UI thread.
   void GetFileForLocalSync(storage::FileSystemContext* file_system_context,
-                           const LocalFileSyncInfoCallback& callback);
+                           LocalFileSyncInfoCallback callback);
 
   // TODO(kinuko): Make this private.
   // Clears all pending local changes for |url|. |done_callback| is called
@@ -142,7 +142,7 @@ class LocalFileSyncContext
   void PrepareForSync(storage::FileSystemContext* file_system_context,
                       const storage::FileSystemURL& url,
                       SyncMode sync_mode,
-                      const LocalFileSyncInfoCallback& callback);
+                      LocalFileSyncInfoCallback callback);
 
   // Registers |url| to wait until sync is enabled for |url|.
   // |on_syncable_callback| is to be called when |url| becomes syncable
@@ -179,7 +179,7 @@ class LocalFileSyncContext
   // changes.
   void HasPendingLocalChanges(storage::FileSystemContext* file_system_context,
                               const storage::FileSystemURL& url,
-                              const HasPendingLocalChangeCallback& callback);
+                              HasPendingLocalChangeCallback callback);
 
   void PromoteDemotedChanges(const GURL& origin,
                              storage::FileSystemContext* file_system_context,
@@ -256,12 +256,12 @@ class LocalFileSyncContext
   std::unique_ptr<FileSystemURLQueue> GetNextURLsForSyncOnFileThread(
       storage::FileSystemContext* file_system_context);
   void TryPrepareForLocalSync(storage::FileSystemContext* file_system_context,
-                              const LocalFileSyncInfoCallback& callback,
+                              LocalFileSyncInfoCallback callback,
                               std::unique_ptr<FileSystemURLQueue> urls);
   void DidTryPrepareForLocalSync(
       storage::FileSystemContext* file_system_context,
       std::unique_ptr<FileSystemURLQueue> remaining_urls,
-      const LocalFileSyncInfoCallback& callback,
+      LocalFileSyncInfoCallback callback,
       SyncStatusCode status,
       const LocalFileSyncInfo& sync_file_info,
       storage::ScopedFile snapshot);
@@ -278,7 +278,7 @@ class LocalFileSyncContext
       SyncStatusCode status,
       const storage::FileSystemURL& url,
       SyncMode sync_mode,
-      const LocalFileSyncInfoCallback& callback);
+      LocalFileSyncInfoCallback callback);
 
   // Helper routine for sync/writing flag handling.
   //

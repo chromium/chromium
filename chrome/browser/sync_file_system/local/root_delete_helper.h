@@ -30,12 +30,12 @@ class LocalFileSyncStatus;
 // Expected to be called on and will callback on IO thread.
 class RootDeleteHelper {
  public:
-  typedef base::Callback<void(base::File::Error)> FileStatusCallback;
+  typedef base::OnceCallback<void(base::File::Error)> FileStatusCallback;
 
   RootDeleteHelper(storage::FileSystemContext* file_system_context,
                    LocalFileSyncStatus* sync_status,
                    const storage::FileSystemURL& url,
-                   const FileStatusCallback& callback);
+                   FileStatusCallback callback);
   ~RootDeleteHelper();
 
   void Run();
