@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import android.app.Activity;
+
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.externalauth.UserRecoverableErrorHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.services.AndroidChildAccountHelper;
@@ -114,7 +115,7 @@ public final class ForcedSigninProcessor {
      */
     // TODO(bauerb): Once external dependencies reliably use policy to force sign-in,
     // consider removing the child account.
-    public static void checkCanSignIn(final ChromeActivity activity) {
+    public static void checkCanSignIn(final Activity activity) {
         if (IdentityServicesProvider.get()
                         .getSigninManager(Profile.getLastUsedRegularProfile())
                         .isForceSigninEnabled()) {
