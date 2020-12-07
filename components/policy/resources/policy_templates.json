@@ -20350,10 +20350,9 @@
       'id': 532,
       'caption': '''Allows wilco diagnostics and telemetry controller''',
       'tags': [],
-      'desc': '''Allows an admin to control if telemetry and diagnostics data should be collected, processed and reported by wilco diagnostics and telemetry controller (DTC).
+      'desc': '''Setting the policy to Enabled when <ph name="WILCO_NAME">wilco</ph> diagnostics and telemetry controller (DTC) is available on the device turns collecting, processing, and reporting of telemetry and diagnostics data on.
 
-      If the policy is set to false or left unset, DTC is switched off and is not able to collect, process and report telemetry and diagnostics data from the device.
-      If wilco DTC is available on the given device and the policy is set to true, collecting, processing and reporting of telemetry and diagnostics data is switched on.''',
+      Setting the policy to Disabled or leaving it unset turns DTC off. It can't collect, process, or report telemetry and diagnostics data from the device.''',
     },
     {
       'name': 'AllowPopupsDuringPageUnload',
@@ -20404,13 +20403,9 @@
       'id': 535,
       'caption': '''Wilco DTC configuration''',
       'tags': [],
-      'desc': '''Provides a wilco DTC (diagnostics and telemetry controller) configuration.
+      'desc': '''Setting the policy configures the <ph name="WILCO_NAME">wilco</ph> diagnostics and telemetry controller (DTC), if available on the device. The setup size can't exceed 1MB (1,000,000 bytes) and must be in JSON format. The <ph name="WILCO_NAME">wilco</ph> DTC is responsible for handling it. The cryptographic hash verifies the integrity of the download. The configuration is downloaded and cached. It's redownloaded whenever the URL or the hash changes.
 
-      This policy allows to provide wilco DTC configuration that is allowed to be applied if wilco DTC is available on the given device and allowed by policy. The size of the configuration must not exceed 1MB (1000000 bytes) and must be encoded in JSON. The wilco DTC is responsible for handling it. The cryptographic hash is used to verify the integrity of the download.
-
-      The configuration is downloaded and cached. It will be re-downloaded whenever the URL or the hash changes.
-
-      If you set this policy, users cannot change or override it.''',
+      If you set this policy, users can't change it.''',
     },
     {
       'name': 'DevicePowerPeakShiftEnabled',
