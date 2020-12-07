@@ -2957,7 +2957,6 @@ crbug.com/626703 external/wpt/css/selectors/old-tests/css3-modsel-65.xml [ Skip 
 crbug.com/626703 external/wpt/css/selectors/old-tests/css3-modsel-18b.xml [ Skip ]
 crbug.com/626703 external/wpt/css/selectors/old-tests/css3-modsel-159.xml [ Skip ]
 crbug.com/626703 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/reload.window.html [ Timeout ]
-crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-containing-block.html [ Failure ]
 crbug.com/626703 external/wpt/quirks/text-decoration-doesnt-propagate-into-tables/quirks.html [ Failure ]
 crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-painting-order.html [ Failure ]
 crbug.com/626703 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/tasks.window.html [ Timeout ]
