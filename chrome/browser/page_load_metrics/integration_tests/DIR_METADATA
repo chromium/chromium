@@ -1,0 +1,4 @@
+monorail:  {
+  component:  "Speed>Metrics"
+}
+team_email:  "speed-metrics-dev@chromium.org"

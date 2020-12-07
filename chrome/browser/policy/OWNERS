@@ -12,5 +12,3 @@ per-file *browser_dm_token_storage*=zmin@chromium.org
 
 per-file chrome_browser_cloud_management*=rogerta@chromium.org
 per-file chrome_browser_cloud_management*=zmin@chromium.org
-
-# COMPONENT: Enterprise
