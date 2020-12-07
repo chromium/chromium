@@ -7685,11 +7685,9 @@
             ],
             "experiments": [
                 {
-                    "name": "VizForWebView",
+                    "name": "Enabled",
                     "enable_features": [
                         "EnableSharedImageForWebview",
-                        "UseSkiaForGLReadback",
-                        "UseSkiaRenderer",
                         "VizForWebView"
                     ]
                 }
