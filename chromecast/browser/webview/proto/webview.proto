@@ -35,12 +35,11 @@ message WebviewCreateResponse {
   AccessibilityTreeInfo accessibility_info = 1;
 }
 
-// These are a translation of ui::Event and children.
 message KeyInput {
-  int32 key_code = 1;
-  int32 dom_code = 2;
-  int32 dom_key = 3;
-  bool is_char = 4;
+  // A string value representing the key character or descriptive key name.
+  // Values of non-character keys follow the web standard key names:
+  // https://www.w3.org/TR/uievents-key/#key-attr-values
+  string key_string = 1;
 }
 
 message TouchInput {

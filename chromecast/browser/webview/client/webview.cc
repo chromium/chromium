@@ -17,8 +17,6 @@
 #include "chromecast/browser/webview/proto/webview.pb.h"
 #include "third_party/grpc/src/include/grpcpp/grpcpp.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "ui/events/keycodes/dom/keycode_converter.h"
-#include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace chromecast {
@@ -444,46 +442,24 @@ void WebviewClient::SendKeyRequest(const std::vector<std::string>& tokens) {
   int id;
   if (tokens.size() != 3 || !base::StringToInt(tokens[0], &id) ||
       tokens[2].empty()) {
-    LOG(ERROR) << "Usage: ID key [dom_code]";
+    LOG(ERROR) << "Usage: ID key [key_string]";
     return;
   }
 
   const auto& webview = webviews_[id];
 
-  ui::DomCode dom_code = ui::KeycodeConverter::CodeStringToDomCode(tokens[2]);
-  if (dom_code == ui::DomCode::NONE) {
-    LOG(ERROR) << "Unknown DomCode CodeString: " << tokens[2];
-    return;
-  }
-
-  ui::DomKey dom_key;
-  ui::KeyboardCode keyboard_code;
-  if (!ui::DomCodeToUsLayoutDomKey(dom_code, 0 /* flags */, &dom_key,
-                                   &keyboard_code)) {
-    LOG(ERROR) << "Could not convert DomCode to US Layout key: " << tokens[2];
-    return;
-  }
-
   SendKeyEvent(webview.get(), base::Time::Now().ToDeltaSinceWindowsEpoch(),
-               dom_key, dom_code, keyboard_code, true);
+               tokens[2], true);
   SendKeyEvent(webview.get(), base::Time::Now().ToDeltaSinceWindowsEpoch(),
-               dom_key, dom_code, keyboard_code, false);
+               tokens[2], false);
 }
 
 void WebviewClient::SendKeyEvent(const Webview* webview,
                                  const base::TimeDelta& time,
-                                 ui::DomKey dom_key,
-                                 ui::DomCode dom_code,
-                                 ui::KeyboardCode keyboard_code,
+                                 const std::string& key_string,
                                  bool down) {
   auto key_input = std::make_unique<KeyInput>();
-  key_input->set_key_code(keyboard_code);
-  key_input->set_dom_code(static_cast<int32_t>(dom_code));
-  key_input->set_dom_key(static_cast<int32_t>(dom_key));
-
-  // Hardcoded to true for our purposes, as IsCharacter doesn't seem to work
-  // here. Just means we can't test with modifier keys.
-  key_input->set_is_char(true);
+  key_input->set_key_string(key_string);
 
   auto key_event = std::make_unique<InputEvent>();
   key_event->set_event_type(down ? ui::EventType::ET_KEY_PRESSED

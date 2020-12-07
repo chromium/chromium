@@ -30,6 +30,9 @@
 #include "ui/base/ime/constants.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/events/keycodes/keyboard_code_conversion.h"
 
 namespace chromecast {
 
@@ -323,14 +326,19 @@ void WebContentController::ProcessInputEvent(const webview::InputEvent& ev) {
     case ui::ET_KEY_PRESSED:
     case ui::ET_KEY_RELEASED:
       if (ev.has_key()) {
-        ui::KeyEvent evt(
-            type, static_cast<ui::KeyboardCode>(ev.key().key_code()),
-            static_cast<ui::DomCode>(ev.key().dom_code()),
-            ev.flags() | ui::EF_IS_SYNTHESIZED, ui::DomKey(ev.key().dom_key()),
-            base::TimeTicks() +
-                base::TimeDelta::FromMicroseconds(ev.timestamp()),
-            ev.key().is_char());
-
+        ui::DomKey dom_key =
+            ui::KeycodeConverter::KeyStringToDomKey(ev.key().key_string());
+        bool is_char = dom_key.IsCharacter();
+        int32_t key_code = is_char ? dom_key.ToCharacter()
+                                   : NonPrintableDomKeyToKeyboardCode(dom_key);
+        ui::KeyboardCode keyboard_code =
+            static_cast<ui::KeyboardCode>(key_code);
+        ui::KeyEvent evt(type, keyboard_code,
+                         UsLayoutKeyboardCodeToDomCode(keyboard_code),
+                         ev.flags() | ui::EF_IS_SYNTHESIZED, dom_key,
+                         base::TimeTicks() +
+                             base::TimeDelta::FromMicroseconds(ev.timestamp()),
+                         is_char);
         // Marks the simulated key event is from a Virtual Keyboard.
         ui::Event::Properties properties;
         properties[ui::kPropertyFromVK] =
