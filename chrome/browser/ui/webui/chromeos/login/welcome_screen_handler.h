@@ -50,6 +50,9 @@ class WelcomeView {
   virtual void ShowDemoModeConfirmationDialog() = 0;
   virtual void ShowEditRequisitionDialog(const std::string& requisition) = 0;
   virtual void ShowRemoraRequisitionDialog() = 0;
+
+  // ChromeVox hint.
+  virtual void GiveChromeVoxHint() = 0;
 };
 
 // WebUI implementation of WelcomeScreenView. It is used to interact with
@@ -72,6 +75,7 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
   void ShowDemoModeConfirmationDialog() override;
   void ShowEditRequisitionDialog(const std::string& requisition) override;
   void ShowRemoraRequisitionDialog() override;
+  void GiveChromeVoxHint() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
@@ -93,6 +97,7 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
   void HandleEnableSelectToSpeak(bool /* enabled */);
   void HandleEnableDockedMagnifier(bool /* enabled */);
   void HandleSetDeviceRequisition(const std::string& requisition);
+  void HandleRecordChromeVoxHintSpokenSuccess();
 
   // Notification of a change in the accessibility settings.
   void OnAccessibilityStatusChanged(

@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_mode_detector.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
 #include "chrome/browser/chromeos/login/wizard_context.h"
@@ -106,6 +107,12 @@ class WelcomeScreen : public BaseScreen,
     return &(context()->configuration);
   }
 
+  void CancelChromeVoxHintTimer();
+  void GiveChromeVoxHintForTesting();
+  bool GetChromeVoxHintTimerCancelledForTesting() {
+    return chromevox_hint_timer_cancelled_for_testing_;
+  }
+
  protected:
   // Exposes exit callback to test overrides.
   ScreenExitCallback* exit_callback() { return &exit_callback_; }
@@ -157,6 +164,10 @@ class WelcomeScreen : public BaseScreen,
   void NotifyLocaleChange();
   void OnLocaleChangeResult(ash::LocaleNotificationResult result);
 
+  // ChromeVox hint.
+  void StartChromeVoxHintTimer();
+  void GiveChromeVoxHint();
+
   WelcomeView* view_ = nullptr;
   ScreenExitCallback exit_callback_;
 
@@ -174,6 +185,12 @@ class WelcomeScreen : public BaseScreen,
   std::string selected_language_code_;
 
   base::ObserverList<Observer>::Unchecked observers_;
+
+  base::OneShotTimer chromevox_hint_timer_;
+
+  bool chromevox_hint_timer_activated_ = false;
+
+  bool chromevox_hint_timer_cancelled_for_testing_ = false;
 
   base::WeakPtrFactory<WelcomeScreen> weak_factory_{this};
 

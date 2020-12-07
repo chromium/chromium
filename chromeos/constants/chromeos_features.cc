@@ -270,6 +270,10 @@ const base::Feature kEnableHostnameSetting{"EnableHostnameSetting",
 const base::Feature kEnableLocalSearchService{
     "EnableLocalSearchService", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the OOBE ChromeVox hint dialog and announcement feature.
+const base::Feature kEnableOobeChromeVoxHint{"EnableOobeChromeVoxHint",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables Device End Of Lifetime warning notifications.
 const base::Feature kEolWarningNotifications{"EolWarningNotifications",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
@@ -771,6 +775,10 @@ bool IsMinimumChromeVersionEnabled() {
 
 bool IsNewOobeLayoutEnabled() {
   return base::FeatureList::IsEnabled(kNewOobeLayout);
+}
+
+bool IsOobeChromeVoxHintEnabled() {
+  return base::FeatureList::IsEnabled(kEnableOobeChromeVoxHint);
 }
 
 bool IsClipboardHistoryEnabled() {

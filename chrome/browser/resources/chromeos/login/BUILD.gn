@@ -74,6 +74,7 @@ js_library("oobe_welcome") {
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
     "//ui/webui/resources/js/cr/ui:dialogs",
   ]
+  externs_list = [ "$externs_path/tts.js" ]
 }
 
 js_library("offline_ad_login") {

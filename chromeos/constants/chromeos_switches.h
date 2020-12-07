@@ -92,6 +92,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kDisableMultiDisplayLayout[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kDisableNewZIPUnpacker[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const char kDisableOOBEChromeVoxHintTimerForTesting[];
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kDisablePerUserTimezone[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kDisableRollbackOption[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
@@ -281,6 +283,10 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool ShouldOobeUseTabletModeFirstRun();
 // Auto Update Expiration is reached. This should only be used for testing.
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsAueReachedForUpdateRequiredForTest();
+
+// Returns true if the OOBE ChromeVox hint timer is disabled for testing.
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+bool IsOOBEChromeVoxHintTimerDisabledForTesting();
 
 }  // namespace switches
 }  // namespace chromeos

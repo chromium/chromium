@@ -394,6 +394,16 @@
 
       this.titleLongTouchDetector_ = new TitleLongTouchDetector(
           this.$.title, this.onTitleLongTouch_.bind(this));
+      this.$.chromeVoxHint.addEventListener('keydown', (event) => {
+        // When the ChromeVox hint dialog is open, allow users to press the
+        // space bar to activate ChromeVox. This is intended to help first time
+        // users easily activate ChromeVox.
+        if (this.$.chromeVoxHint.open && event.key === ' ') {
+          this.activateChromeVox_();
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      });
       this.focus();
     },
 
@@ -436,5 +446,36 @@
     onWindowResize() {
       this.isInPortraitMode = window.innerHeight > window.innerWidth;
     },
+
+    // ChromeVox hint section.
+
+    /**
+     * Called to show the ChromeVox hint dialog.
+     */
+    showChromeVoxHint() {
+      this.$.chromeVoxHint.showModal();
+    },
+
+    /**
+     * Called to close the ChromeVox hint dialog.
+     */
+    closeChromeVoxHint() {
+      this.$.chromeVoxHint.close();
+    },
+
+    /**
+     * Called when the 'Continue without ChromeVox' button is clicked.
+     * @private
+     */
+    dismissChromeVoxHint_() {
+      this.fire('chromevox-hint-dismissed');
+      this.closeChromeVoxHint();
+    },
+
+    /** @private */
+    activateChromeVox_() {
+      this.closeChromeVoxHint();
+      this.fire('chromevox-hint-accepted');
+    }
   });
 }

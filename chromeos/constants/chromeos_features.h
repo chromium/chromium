@@ -130,6 +130,7 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kEnableHostnameSetting;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kEnableLocalSearchService;
+extern const base::Feature kEnableOobeChromeVoxHint;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kEolWarningNotifications;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
@@ -344,6 +345,7 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsClipboardHistoryNudgeSessionResetEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsClipboardHistorySimpleRenderEnabled();
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsOobeChromeVoxHintEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsOobeScreensPriorityEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsPhoneHubEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsPhoneHubUseBleEnabled();

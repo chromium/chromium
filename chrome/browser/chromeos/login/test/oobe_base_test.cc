@@ -103,6 +103,8 @@ void OobeBaseTest::SetUp() {
 void OobeBaseTest::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitch(chromeos::switches::kLoginManager);
   command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
+  command_line->AppendSwitch(
+      chromeos::switches::kDisableOOBEChromeVoxHintTimerForTesting);
   if (!needs_background_networking_)
     command_line->AppendSwitch(::switches::kDisableBackgroundNetworking);
   command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile, "user");

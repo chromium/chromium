@@ -5,6 +5,7 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 <link rel="import" href="chrome://resources/html/action_link.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 
 <link rel="import" href="/components/oobe_i18n_behavior.html">
@@ -153,5 +154,19 @@
         </oobe-text-button>
       </div>
     </oobe-dialog>
+    <cr-dialog id="chromeVoxHint">
+      <div class="title" slot="title">
+        <p>[[i18nDynamic(locale, 'chromeVoxHintText')]]</p>
+      </div>
+      <div class="button-container" slot="button-container">
+        <oobe-text-button id="dismissChromeVoxButton"
+            on-click="dismissChromeVoxHint_"
+            text-key="continueWithoutChromeVox">
+        </oobe-text-button>
+        <oobe-text-button id="activateChromeVoxButton" inverse
+            on-click="activateChromeVox_" text-key="activateChromeVox">
+        </oobe-text-button>
+      </div>
+    </cr-dialog>
   </template>
 </dom-module>

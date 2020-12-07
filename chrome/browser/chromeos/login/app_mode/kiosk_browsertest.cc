@@ -68,6 +68,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -1473,6 +1474,9 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
 // TODO(crbug.com/1149893): Migrate to KioskDeviceOwnedTest.
 IN_PROC_BROWSER_TEST_F(KioskTest, SpokenFeedback) {
   test::SpeechMonitor sm;
+  // Disable the TTS engine for testing so that we don't wait for the TTS engine
+  // to load (the engine will never load on linux-chromeos builds).
+  TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);

@@ -855,10 +855,16 @@
     "dependencies": ["permission:topSites"],
     "contexts": ["blessed_extension"]
   },
-  "tts": {
+  "tts": [{
     "dependencies": ["permission:tts"],
     "contexts": ["blessed_extension"]
-  },
+  }, {
+    "channel": "stable",
+    "contexts": ["webui"],
+    "matches": [
+      "chrome://oobe/*"
+    ]
+  }],
   "ttsEngine": {
     "dependencies": ["permission:ttsEngine"],
     "contexts": ["blessed_extension"]

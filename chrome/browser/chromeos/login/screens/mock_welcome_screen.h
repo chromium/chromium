@@ -47,6 +47,7 @@ class MockWelcomeView : public WelcomeView {
   MOCK_METHOD(void, ShowDemoModeConfirmationDialog, ());
   MOCK_METHOD(void, ShowEditRequisitionDialog, (const std::string&));
   MOCK_METHOD(void, ShowRemoraRequisitionDialog, ());
+  MOCK_METHOD(void, GiveChromeVoxHint, ());
 
  private:
   WelcomeScreen* screen_ = nullptr;

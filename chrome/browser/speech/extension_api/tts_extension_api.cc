@@ -293,7 +293,8 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   utterance->SetDesiredEventTypes(desired_event_types);
   utterance->SetEngineId(voice_extension_id);
   utterance->SetOptions(options.get());
-  utterance->SetEventDelegate(new TtsExtensionEventHandler(extension_id()));
+  if (extension())
+    utterance->SetEventDelegate(new TtsExtensionEventHandler(extension_id()));
 
   content::TtsController* controller = content::TtsController::GetInstance();
   controller->SpeakOrEnqueue(std::move(utterance));

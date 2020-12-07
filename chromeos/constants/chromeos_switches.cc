@@ -231,6 +231,11 @@ const char kDisableMachineCertRequest[] = "disable-machine-cert-request";
 // Disables the multiple display layout UI.
 const char kDisableMultiDisplayLayout[] = "disable-multi-display-layout";
 
+// Disables the ChromeVox hint timer in OOBE, which can lead to unexpected
+// behavior during tests.
+const char kDisableOOBEChromeVoxHintTimerForTesting[] =
+    "disable-oobe-chromevox-hint-timer-for-testing";
+
 // Disables per-user timezone.
 const char kDisablePerUserTimezone[] = "disable-per-user-timezone";
 
@@ -669,6 +674,11 @@ bool ShouldOobeUseTabletModeFirstRun() {
 bool IsAueReachedForUpdateRequiredForTest() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kUpdateRequiredAueForTest);
+}
+
+bool IsOOBEChromeVoxHintTimerDisabledForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kDisableOOBEChromeVoxHintTimerForTesting);
 }
 
 }  // namespace switches

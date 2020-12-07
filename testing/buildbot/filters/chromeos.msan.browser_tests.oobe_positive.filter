@@ -141,6 +141,8 @@ WebviewClientCertsTokenLoadingLoginTest.*
 WebviewLoginTest.*
 WebviewProxyAuthLoginTest.*
 WelcomeScreenBrowserTest.*
+WelcomeScreenChromeVoxHintTest.*
+WelcomeScreenInternationalChromeVoxHintTest.*
 WelcomeScreenSystemDevModeBrowserTest.*
 WelcomeScreenTimezone.*
 WizardControllerBrokenLocalStateTest.*

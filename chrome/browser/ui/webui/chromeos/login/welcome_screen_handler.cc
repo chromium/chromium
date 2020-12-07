@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task_runner_util.h"
 #include "base/values.h"
@@ -184,6 +185,15 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
                IDS_ENABLE_DEMO_MODE_DIALOG_CONFIRM);
   builder->Add("enableDemoModeDialogCancel",
                IDS_ENABLE_DEMO_MODE_DIALOG_CANCEL);
+
+  // Strings for ChromeVox hint.
+  builder->Add("activateChromeVox", IDS_OOBE_ACTIVATE_CHROMEVOX);
+  builder->Add("continueWithoutChromeVox", IDS_OOBE_CONTINUE_WITHOUT_CHROMEVOX);
+  builder->Add("chromeVoxHintText", IDS_OOBE_CHROMEVOX_HINT_TEXT);
+  builder->Add("chromeVoxHintAnnouncementTextLaptop",
+               IDS_OOBE_CHROMEVOX_HINT_ANNOUNCEMENT_TEXT_LAPTOP);
+  builder->Add("chromeVoxHintAnnouncementTextTablet",
+               IDS_OOBE_CHROMEVOX_HINT_ANNOUNCEMENT_TEXT_TABLET);
 }
 
 void WelcomeScreenHandler::DeclareJSCallbacks() {
@@ -195,6 +205,8 @@ void WelcomeScreenHandler::DeclareJSCallbacks() {
               &WelcomeScreenHandler::HandleSetTimezoneId);
   AddCallback("WelcomeScreen.setDeviceRequisition",
               &WelcomeScreenHandler::HandleSetDeviceRequisition);
+  AddCallback("WelcomeScreen.recordChromeVoxHintSpokenSuccess",
+              &WelcomeScreenHandler::HandleRecordChromeVoxHintSpokenSuccess);
 }
 
 void WelcomeScreenHandler::GetAdditionalParameters(
@@ -287,6 +299,17 @@ void WelcomeScreenHandler::HandleSetDeviceRequisition(
     screen_->SetDeviceRequisition(requisition);
 }
 
+void WelcomeScreenHandler::GiveChromeVoxHint() {
+  // Show the ChromeVox hint dialog and give a spoken announcement with
+  // instructions for activating ChromeVox.
+  CallJS("login.WelcomeScreen.maybeGiveChromeVoxHint");
+}
+
+void WelcomeScreenHandler::HandleRecordChromeVoxHintSpokenSuccess() {
+  base::UmaHistogramBoolean("OOBE.WelcomeScreen.ChromeVoxHintSpokenSuccess",
+                            true);
+}
+
 void WelcomeScreenHandler::OnAccessibilityStatusChanged(
     const AccessibilityStatusEventDetails& details) {
   if (details.notification_type == ACCESSIBILITY_MANAGER_SHUTDOWN)
@@ -312,6 +335,8 @@ void WelcomeScreenHandler::UpdateA11yState() {
                        MagnificationManager::Get()->IsDockedMagnifierEnabled());
   a11y_info.SetBoolean("virtualKeyboardEnabled",
                        AccessibilityManager::Get()->IsVirtualKeyboardEnabled());
+  if (screen_ && AccessibilityManager::Get()->IsSpokenFeedbackEnabled())
+    screen_->CancelChromeVoxHintTimer();
   CallJS("login.WelcomeScreen.refreshA11yInfo", a11y_info);
 }
 
