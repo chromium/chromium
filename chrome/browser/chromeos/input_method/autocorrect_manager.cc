@@ -32,8 +32,26 @@ void LogAssistiveAutocorrectAction(AutocorrectActions action) {
 }  // namespace
 
 namespace chromeos {
+namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Needs to match ImeAutocorrectActions
+// in enums.xml.
+enum class AutocorrectActions {
+  kWindowShown = 0,
+  kUnderlined = 1,
+  kReverted = 2,
+  kMaxValue = kReverted,
+};
+
+void LogAssistiveAutocorrectAction(AutocorrectActions action) {
+  base::UmaHistogramEnumeration("InputMethod.Assistive.Autocorrect.Actions",
+                                action);
+}
 
 constexpr int kKeysUntilAutocorrectWindowHides = 4;
+
+}  // namespace
 
 AutocorrectManager::AutocorrectManager(InputMethodEngine* engine)
     : engine_(engine) {}
@@ -166,6 +184,7 @@ void AutocorrectManager::UndoAutocorrect() {
        last_typed_word_)
           .c_str(),
       &error);
+  LogAssistiveAutocorrectAction(AutocorrectActions::kReverted);
 }
 
 }  // namespace chromeos
