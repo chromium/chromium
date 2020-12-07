@@ -1,5 +1,1 @@
 file://third_party/blink/renderer/modules/background_fetch/OWNERS
-
-# TEAM: platform-capabilities@chromium.org
-# COMPONENT: Blink>BackgroundFetch
-# WPT-NOTIFY: true
