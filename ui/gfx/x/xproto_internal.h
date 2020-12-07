@@ -16,13 +16,13 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/optional.h"
-#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/future.h"
+#include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_types.h"
 
 namespace x11 {
 
-template <class Reply>
-class Future;
+class Connection;
 
 template <typename T, typename Enable = void>
 struct EnumBase {
@@ -130,22 +130,6 @@ inline void Align(WriteBuffer* buf, size_t align) {
 
 inline void Align(ReadBuffer* buf, size_t align) {
   Pad(buf, (align - (buf->offset % align)) % align);
-}
-
-base::Optional<unsigned int> SendRequestImpl(x11::Connection* connection,
-                                             WriteBuffer* buf,
-                                             bool generates_reply,
-                                             bool reply_has_fds);
-
-template <typename Reply>
-Future<Reply> SendRequest(x11::Connection* connection,
-                          WriteBuffer* buf,
-                          bool reply_has_fds,
-                          const char* request_name) {
-  auto sequence = SendRequestImpl(connection, buf, !std::is_void<Reply>::value,
-                                  reply_has_fds);
-  return {sequence ? connection : nullptr, sequence,
-          sequence ? request_name : nullptr};
 }
 
 // Helper function for xcbproto popcount.  Given an integral type, returns the

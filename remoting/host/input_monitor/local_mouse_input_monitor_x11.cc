@@ -22,6 +22,8 @@
 #include "ui/events/devices/x11/xinput_util.h"
 #include "ui/events/event.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/event.h"
+#include "ui/gfx/x/future.h"
 #include "ui/gfx/x/xinput.h"
 #include "ui/gfx/x/xproto.h"
 

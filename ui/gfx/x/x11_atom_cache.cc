@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/future.h"
 
 namespace {
 

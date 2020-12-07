@@ -9,6 +9,7 @@
 #include "base/memory/singleton.h"
 #include "ui/events/devices/x11/device_data_manager_x11.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/future.h"
 
 namespace ui {
 

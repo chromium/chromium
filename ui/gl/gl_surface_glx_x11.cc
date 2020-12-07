@@ -4,6 +4,7 @@
 
 #include "ui/gl/gl_surface_glx_x11.h"
 
+#include "ui/gfx/x/future.h"
 
 using ui::X11EventSource;
 

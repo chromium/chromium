@@ -134,6 +134,7 @@ component("xprotos") {
               "xproto_internal.cc",
               "xproto_types.h",
               "xproto_types.cc",
+              "future.h",
               "xproto_util.h",
             ]
   configs += [ ":x11_private_config" ]

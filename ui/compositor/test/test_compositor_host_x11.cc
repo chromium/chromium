@@ -10,6 +10,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "ui/events/x/x11_window_event_manager.h"
+#include "ui/gfx/x/future.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {

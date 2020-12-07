@@ -33,6 +33,7 @@
 #include "ui/gfx/icc_profile.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
+#include "ui/gfx/x/future.h"
 #include "ui/gfx/x/xproto_types.h"
 
 typedef unsigned long Cursor;

@@ -6,6 +6,7 @@
 
 #include "base/i18n/case_conversion.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/future.h"
 #include "ui/gfx/x/keysyms/keysyms.h"
 #include "ui/gfx/x/xkb.h"
 #include "ui/gfx/x/xproto.h"

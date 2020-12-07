@@ -20,6 +20,8 @@
 #include "base/single_thread_task_runner.h"
 #include "ui/events/devices/x11/xinput_util.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/event.h"
+#include "ui/gfx/x/future.h"
 #include "ui/gfx/x/keysyms/keysyms.h"
 #include "ui/gfx/x/xinput.h"
 

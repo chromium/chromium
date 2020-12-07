@@ -9,6 +9,7 @@
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/dri3.h"
+#include "ui/gfx/x/future.h"
 #include "ui/gfx/x/xproto_types.h"
 #include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_bindings.h"

@@ -30,6 +30,7 @@ extern "C" {
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/overlay_transform.h"
+#include "ui/gfx/x/future.h"
 #include "ui/gl/gl_fence.h"
 
 #define VK_STRUCTURE_TYPE_WSI_IMAGE_CREATE_INFO_MESA (VkStructureType)1000001002

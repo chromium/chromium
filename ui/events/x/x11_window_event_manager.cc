@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/memory/singleton.h"
+#include "ui/gfx/x/future.h"
 
 namespace ui {
 

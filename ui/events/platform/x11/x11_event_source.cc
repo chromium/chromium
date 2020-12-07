@@ -24,6 +24,7 @@
 #include "ui/events/x/x11_window_event_manager.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/extension_manager.h"
+#include "ui/gfx/x/future.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xkb.h"
 #include "ui/gfx/x/xproto.h"

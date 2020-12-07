@@ -6,6 +6,7 @@
 
 #include "ui/base/x/x11_cursor_loader.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/future.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {

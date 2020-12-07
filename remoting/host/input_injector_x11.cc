@@ -30,6 +30,7 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/gfx/x/future.h"
 #include "ui/gfx/x/keysyms/keysyms.h"
 #include "ui/gfx/x/xinput.h"
 #include "ui/gfx/x/xkb.h"

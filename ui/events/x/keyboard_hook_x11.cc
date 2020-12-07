@@ -14,6 +14,7 @@
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/gfx/x/future.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {

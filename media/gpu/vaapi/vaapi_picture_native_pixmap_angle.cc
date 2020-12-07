@@ -8,6 +8,7 @@
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/future.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_image_egl_pixmap.h"

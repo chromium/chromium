@@ -8,162 +8,6 @@
 # wire format.  However, we don't parse the XML here; xcbproto ships
 # with xcbgen, a python library that parses the files into python data
 # structures for us.
-#
-# The generated header and source files will look like this:
-
-# #ifndef GEN_UI_GFX_X_XPROTO_H_
-# #define GEN_UI_GFX_X_XPROTO_H_
-#
-# #include <array>
-# #include <cstddef>
-# #include <cstdint>
-# #include <cstring>
-# #include <vector>
-#
-# #include "base/component_export.h"
-# #include "ui/gfx/x/xproto_types.h"
-#
-# namespace x11 {
-#
-# class Connection;
-#
-# class COMPONENT_EXPORT(X11) XProto {
-#  public:
-#   explicit XProto(Connection* connection);
-#
-#   Connection* connection() const { return connection_; }
-#
-#   struct RGB {
-#     uint16_t red{};
-#     uint16_t green{};
-#     uint16_t blue{};
-#   };
-#
-#   struct QueryColorsRequest {
-#     uint32_t cmap{};
-#     std::vector<uint32_t> pixels{};
-#   };
-#
-#   struct QueryColorsReply {
-#     uint16_t colors_len{};
-#     std::vector<RGB> colors{};
-#   };
-#
-#   using QueryColorsResponse = Response<QueryColorsReply>;
-#
-#   Future<QueryColorsReply> QueryColors(const QueryColorsRequest& request);
-#
-#  private:
-#   Connection* const connection_;
-# };
-#
-# }  // namespace x11
-#
-# #endif  // GEN_UI_GFX_X_XPROTO_H_
-
-# #include "xproto.h"
-#
-# #include <xcb/xcb.h>
-# #include <xcb/xcbext.h>
-#
-# #include "base/notreached.h"
-# #include "base/check_op.h"
-# #include "ui/gfx/x/xproto_internal.h"
-#
-# namespace x11 {
-#
-# XProto::XProto(Connection* connection) : connection_(connection) {}
-#
-# Future<XProto::QueryColorsReply>
-# XProto::QueryColors(
-#     const XProto::QueryColorsRequest& request) {
-#   WriteBuffer buf;
-#
-#   auto& cmap = request.cmap;
-#   auto& pixels = request.pixels;
-#   size_t pixels_len = pixels.size();
-#
-#   // major_opcode
-#   uint8_t major_opcode = 91;
-#   Write(&major_opcode, &buf);
-#
-#   // pad0
-#   Pad(&buf, 1);
-#
-#   // length
-#   // Caller fills in length for writes.
-#   Pad(&buf, sizeof(uint16_t));
-#
-#   // cmap
-#   Write(&cmap, &buf);
-#
-#   // pixels
-#   DCHECK_EQ(static_cast<size_t>(pixels_len), pixels.size());
-#   for (auto& pixels_elem : pixels) {
-#     Write(&pixels_elem, &buf);
-#   }
-#
-#   return x11::SendRequest<XProto::QueryColorsReply>(connection_, &buf);
-# }
-#
-# template<> COMPONENT_EXPORT(X11)
-# std::unique_ptr<XProto::QueryColorsReply>
-# detail::ReadReply<XProto::QueryColorsReply>(const uint8_t* buffer) {
-#   ReadBuffer buf{buffer, 0UL};
-#   auto reply = std::make_unique<XProto::QueryColorsReply>();
-#
-#   auto& colors_len = (*reply).colors_len;
-#   auto& colors = (*reply).colors;
-#
-#   // response_type
-#   uint8_t response_type;
-#   Read(&response_type, &buf);
-#
-#   // pad0
-#   Pad(&buf, 1);
-#
-#   // sequence
-#   uint16_t sequence;
-#   Read(&sequence, &buf);
-#
-#   // length
-#   uint32_t length;
-#   Read(&length, &buf);
-#
-#   // colors_len
-#   Read(&colors_len, &buf);
-#
-#   // pad1
-#   Pad(&buf, 22);
-#
-#   // colors
-#   colors.resize(colors_len);
-#   for (auto& colors_elem : colors) {
-#     auto& red = colors_elem.red;
-#     auto& green = colors_elem.green;
-#     auto& blue = colors_elem.blue;
-#
-#     // red
-#     Read(&red, &buf);
-#
-#     // green
-#     Read(&green, &buf);
-#
-#     // blue
-#     Read(&blue, &buf);
-#
-#     // pad0
-#     Pad(&buf, 2);
-#
-#   }
-#
-#   Align(&buf, 4);
-#   DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
-#
-#   return reply;
-# }
-#
-# }  // namespace x11
 
 from __future__ import print_function
 
@@ -1034,8 +878,8 @@ class GenXproto(FileWriter):
             self.write()
             reply_has_fds = reply and any(field.isfd for field in reply.fields)
             self.write(
-                'return x11::SendRequest<%s>(connection_, &buf, %s, "%s");' %
-                (reply_name, 'true' if reply_has_fds else 'false', prefix))
+                'return connection_->SendRequest<%s>(&buf, "%s", %s);' %
+                (reply_name, prefix, 'true' if reply_has_fds else 'false'))
         self.write()
 
         if not reply:
@@ -1351,7 +1195,6 @@ class GenXproto(FileWriter):
         self.write('#include "base/optional.h"')
         self.write('#include "base/files/scoped_file.h"')
         self.write('#include "ui/gfx/x/error.h"')
-        self.write('#include "ui/gfx/x/xproto_types.h"')
         imports = set(self.module.direct_imports)
         if self.module.namespace.is_ext:
             imports.add(('xproto', 'xproto'))
@@ -1361,6 +1204,12 @@ class GenXproto(FileWriter):
         self.write('namespace x11 {')
         self.write()
         self.write('class Connection;')
+        self.write()
+        self.write('template <typename Reply>')
+        self.write('struct Response;')
+        self.write()
+        self.write('template <typename Reply>')
+        self.write('class Future;')
         self.write()
 
         self.namespace = ['x11']
@@ -1620,6 +1469,7 @@ class GenReadEvent(FileWriter):
         self.write('#include <xcb/xcb.h>')
         self.write()
         self.write('#include "ui/gfx/x/connection.h"')
+        self.write('#include "ui/gfx/x/xproto_types.h"')
         for genproto in self.genprotos:
             self.write('#include "ui/gfx/x/%s.h"' % genproto.proto)
         self.write()
@@ -1710,7 +1560,7 @@ class GenReadError(FileWriter):
         self.write('namespace {')
         self.write()
         self.write('template <typename T>')
-        sig = 'std::unique_ptr<Error> MakeError(FutureBase::RawError error_)'
+        sig = 'std::unique_ptr<Error> MakeError(Connection::RawError error_)'
         with Indent(self, '%s {' % sig, '}'):
             self.write('ReadBuffer buf(error_);')
             self.write('auto error = std::make_unique<T>();')

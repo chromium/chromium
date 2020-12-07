@@ -3,14 +3,12 @@
 // found in the LICENSE file.
 
 #include "ui/gfx/x/connection.h"
+
 #include "base/memory/ref_counted_memory.h"
-#include "ui/gfx/x/xproto.h"
-
-#undef Bool
-
-#include <xcb/xcb.h>
-
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/x/event.h"
+#include "ui/gfx/x/future.h"
+#include "ui/gfx/x/xproto.h"
 
 namespace x11 {
 
@@ -36,14 +34,12 @@ Window CreateWindow(Connection* connection) {
 // Connection setup and teardown.
 TEST(X11ConnectionTest, Basic) {
   Connection connection;
-  ASSERT_TRUE(connection.XcbConnection());
-  EXPECT_TRUE(connection.Ready());
+  ASSERT_TRUE(connection.Ready());
 }
 
 TEST(X11ConnectionTest, Request) {
   Connection connection;
-  ASSERT_TRUE(connection.XcbConnection());
-  EXPECT_TRUE(connection.Ready());
+  ASSERT_TRUE(connection.Ready());
 
   Window window = CreateWindow(&connection);
 
@@ -62,8 +58,7 @@ TEST(X11ConnectionTest, Request) {
 
 TEST(X11ConnectionTest, Event) {
   Connection connection;
-  ASSERT_TRUE(connection.XcbConnection());
-  EXPECT_TRUE(connection.Ready());
+  ASSERT_TRUE(connection.Ready());
 
   Window window = CreateWindow(&connection);
 
@@ -94,8 +89,7 @@ TEST(X11ConnectionTest, Event) {
 
 TEST(X11ConnectionTest, Error) {
   Connection connection;
-  ASSERT_TRUE(connection.XcbConnection());
-  EXPECT_TRUE(connection.Ready());
+  ASSERT_TRUE(connection.Ready());
 
   Window invalid_window = connection.GenerateId<Window>();
 

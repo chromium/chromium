@@ -68,7 +68,7 @@ void DefaultIOErrorHandler() {
 
 class UnknownError : public Error {
  public:
-  explicit UnknownError(FutureBase::RawError error_bytes)
+  explicit UnknownError(Connection::RawError error_bytes)
       : error_bytes_(error_bytes) {}
 
   ~UnknownError() override = default;
@@ -89,7 +89,7 @@ class UnknownError : public Error {
   }
 
  private:
-  FutureBase::RawError error_bytes_;
+  Connection::RawError error_bytes_;
 };
 
 }  // namespace
@@ -184,13 +184,6 @@ Connection::~Connection() {
   xcb_disconnect(connection_);
 }
 
-xcb_connection_t* Connection::XcbConnection() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (io_error_handler_ && xcb_connection_has_error(connection_))
-    std::move(io_error_handler_).Run();
-  return connection_;
-}
-
 XlibDisplayWrapper Connection::GetXlibDisplay(XlibDisplayType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!xlib_display_)
@@ -198,18 +191,85 @@ XlibDisplayWrapper Connection::GetXlibDisplay(XlibDisplayType type) {
   return XlibDisplayWrapper(xlib_display_->display_, type);
 }
 
-Connection::Request::Request(FutureBase::ResponseCallback callback,
-                             const char* request_name_for_tracing,
-                             bool generates_reply)
-    : callback(std::move(callback)),
-      request_name_for_tracing(request_name_for_tracing),
-      generates_reply(generates_reply) {
+Connection::FutureImpl::FutureImpl(Connection* connection,
+                                   SequenceType sequence,
+                                   bool generates_reply,
+                                   const char* request_name_for_tracing)
+    : connection(connection),
+      sequence(sequence),
+      generates_reply(generates_reply),
+      request_name_for_tracing(request_name_for_tracing) {}
+
+void Connection::FutureImpl::Wait() {
+  connection->WaitForResponse(this);
+  ProcessResponse();
+}
+
+void Connection::FutureImpl::Sync(RawReply* raw_reply,
+                                  std::unique_ptr<Error>* error) {
+  connection->WaitForResponse(this);
+  TakeResponse(raw_reply, error);
+}
+
+void Connection::FutureImpl::OnResponse(ResponseCallback callback) {
+  UpdateRequestHandler(std::move(callback));
+}
+
+void Connection::FutureImpl::UpdateRequestHandler(ResponseCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(connection->sequence_checker_);
+  DCHECK(callback);
+
+  auto* request = connection->GetRequestForFuture(this);
+  // Make sure we haven't processed this request yet.
+  DCHECK(request->callback);
+
+  request->callback = std::move(callback);
+}
+
+void Connection::FutureImpl::ProcessResponse() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(connection->sequence_checker_);
+
+  auto* request = connection->GetRequestForFuture(this);
+  DCHECK(request->callback);
+  DCHECK(request->have_response);
+
+  std::move(request->callback)
+      .Run(std::move(request->reply), std::move(request->error));
+}
+
+void Connection::FutureImpl::TakeResponse(RawReply* raw_reply,
+                                          std::unique_ptr<Error>* error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(connection->sequence_checker_);
+
+  auto* request = connection->GetRequestForFuture(this);
+  DCHECK(request->callback);
+  DCHECK(request->have_response);
+
+  *raw_reply = std::move(request->reply);
+  *error = std::move(request->error);
+  request->callback.Reset();
+}
+
+Connection::Request::Request(ResponseCallback callback)
+    : callback(std::move(callback)) {
   DCHECK(this->callback);
 }
 
 Connection::Request::Request(Request&& other) = default;
 
 Connection::Request::~Request() = default;
+
+void Connection::Request::SetResponse(Connection* connection,
+                                      void* raw_reply,
+                                      void* raw_error) {
+  have_response = true;
+  if (raw_reply)
+    reply = base::MakeRefCounted<MallocedRefCountedMemory>(raw_reply);
+  if (raw_error) {
+    error = connection->ParseError(
+        base::MakeRefCounted<MallocedRefCountedMemory>(raw_error));
+  }
+}
 
 bool Connection::HasNextResponse() {
   if (requests_.empty())
@@ -220,13 +280,11 @@ bool Connection::HasNextResponse() {
 
   void* reply = nullptr;
   xcb_generic_error_t* error = nullptr;
-  request.have_response =
-      xcb_poll_for_reply(XcbConnection(), first_request_id_, &reply, &error);
-  if (reply)
-    request.reply = base::MakeRefCounted<MallocedRefCountedMemory>(reply);
-  if (error)
-    request.error = base::MakeRefCounted<MallocedRefCountedMemory>(error);
-  return request.have_response;
+  if (!xcb_poll_for_reply(XcbConnection(), first_request_id_, &reply, &error))
+    return false;
+
+  request.SetResponse(this, reply, error);
+  return true;
 }
 
 int Connection::GetFd() {
@@ -358,8 +416,10 @@ void Connection::Dispatch(Delegate* delegate) {
       last_non_void_request_id_ = base::nullopt;
     }
     first_request_id_++;
-    if (request.callback)
-      std::move(request.callback).Run(request.reply, request.error);
+    if (request.callback) {
+      std::move(request.callback)
+          .Run(std::move(request.reply), std::move(request.error));
+    }
   };
 
   auto process_next_event = [&] {
@@ -414,6 +474,13 @@ void Connection::SetIOErrorHandler(IOErrorHandler new_handler) {
   io_error_handler_ = std::move(new_handler);
 }
 
+xcb_connection_t* Connection::XcbConnection() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (io_error_handler_ && xcb_connection_has_error(connection_))
+    std::move(io_error_handler_).Run();
+  return connection_;
+}
+
 void Connection::InitRootDepthAndVisual() {
   for (auto& depth : default_screen_->allowed_depths) {
     for (auto& visual : depth.visuals) {
@@ -427,12 +494,75 @@ void Connection::InitRootDepthAndVisual() {
   NOTREACHED();
 }
 
-void Connection::AddRequest(SequenceType sequence,
-                            FutureBase::ResponseCallback callback,
-                            const char* request_name_for_tracing,
-                            bool generates_reply) {
+std::unique_ptr<Connection::FutureImpl> Connection::SendRequest(
+    WriteBuffer* buf,
+    const char* request_name_for_tracing,
+    bool generates_reply,
+    bool reply_has_fds) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(callback);
+
+  xcb_protocol_request_t xpr{
+      .ext = nullptr,
+      .isvoid = !generates_reply,
+  };
+
+  struct RequestHeader {
+    uint8_t major_opcode;
+    uint8_t minor_opcode;
+    uint16_t length;
+  };
+
+  struct ExtendedRequestHeader {
+    RequestHeader header;
+    uint32_t long_length;
+  };
+  static_assert(sizeof(ExtendedRequestHeader) == 8, "");
+
+  auto& first_buffer = buf->GetBuffers()[0];
+  DCHECK_GE(first_buffer->size(), sizeof(RequestHeader));
+  auto* old_header = reinterpret_cast<RequestHeader*>(
+      const_cast<uint8_t*>(first_buffer->data()));
+  ExtendedRequestHeader new_header{*old_header, 0};
+
+  // Requests are always a multiple of 4 bytes on the wire.  Because of this,
+  // the length field represents the size in chunks of 4 bytes.
+  DCHECK_EQ(buf->offset() % 4, 0UL);
+  size_t size32 = buf->offset() / 4;
+
+  // XCB requires 2 iovecs for its own internal usage.
+  std::vector<struct iovec> io{{nullptr, 0}, {nullptr, 0}};
+  if (size32 < setup_.maximum_request_length) {
+    // Regular request
+    old_header->length = size32;
+  } else if (size32 < extended_max_request_length_) {
+    // BigRequests extension request
+    DCHECK_EQ(new_header.header.length, 0U);
+    new_header.long_length = size32 + 1;
+
+    io.push_back({&new_header, sizeof(ExtendedRequestHeader)});
+    first_buffer = base::MakeRefCounted<OffsetRefCountedMemory>(
+        first_buffer, sizeof(RequestHeader),
+        first_buffer->size() - sizeof(RequestHeader));
+  } else {
+    LOG(ERROR) << "Cannot send request of length " << buf->offset();
+    return nullptr;
+  }
+
+  for (auto& buffer : buf->GetBuffers())
+    io.push_back({const_cast<uint8_t*>(buffer->data()), buffer->size()});
+  xpr.count = io.size() - 2;
+
+  xcb_connection_t* conn = XcbConnection();
+  auto flags = XCB_REQUEST_CHECKED | XCB_REQUEST_RAW;
+  if (reply_has_fds)
+    flags |= XCB_REQUEST_REPLY_FDS;
+
+  for (int fd : buf->fds())
+    xcb_send_fd(conn, fd);
+  SequenceType sequence = xcb_send_request(conn, flags, &io[2], &xpr);
+
+  if (xcb_connection_has_error(conn))
+    return nullptr;
 
   SequenceType next_request_id = first_request_id_ + requests_.size();
   DCHECK_EQ(CompareSequenceIds(next_request_id, sequence), 0);
@@ -442,46 +572,42 @@ void Connection::AddRequest(SequenceType sequence,
   next_request_id++;
   CHECK_NE(next_request_id, first_request_id_);
 
-  requests_.emplace_back(std::move(callback), request_name_for_tracing,
-                         generates_reply);
+  // Install a default response-handler that throws away the reply and prints
+  // the error if there is one.  This handler may be overridden by clients.
+  auto callback = base::BindOnce(
+      [](const char* request_name, Connection::ErrorHandler error_handler,
+         RawReply raw_reply, std::unique_ptr<Error> error) {
+        if (error)
+          error_handler.Run(error.get(), request_name);
+      },
+      request_name_for_tracing, error_handler_);
+  requests_.emplace_back(std::move(callback));
   if (generates_reply)
     last_non_void_request_id_ = sequence;
   if (synchronous_)
     Sync();
+
+  return std::make_unique<FutureImpl>(this, sequence, generates_reply,
+                                      request_name_for_tracing);
 }
 
-void Connection::UpdateRequestHandler(SequenceType sequence,
-                                      FutureBase::ResponseCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(callback);
-
-  auto* request = GetRequestForSequence(sequence);
-  // Make sure we haven't processed this request yet.
-  DCHECK(request->callback);
-
-  request->callback = std::move(callback);
-}
-
-void Connection::WaitForResponse(SequenceType sequence) {
+void Connection::WaitForResponse(FutureImpl* future) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto* request = GetRequestForSequence(sequence);
+  auto* request = GetRequestForFuture(future);
   DCHECK(request->callback);
   if (request->have_response)
     return;
 
-  if (request->generates_reply) {
-    xcb_generic_error_t* error = nullptr;
-    void* reply = nullptr;
-    if (!xcb_poll_for_reply(XcbConnection(), sequence, &reply, &error)) {
+  xcb_generic_error_t* error = nullptr;
+  void* reply = nullptr;
+  if (future->generates_reply) {
+    if (!xcb_poll_for_reply(XcbConnection(), future->sequence, &reply,
+                            &error)) {
       TRACE_EVENT1("ui", "xcb_wait_for_reply", "request",
-                   request->request_name_for_tracing);
-      reply = xcb_wait_for_reply(XcbConnection(), sequence, &error);
+                   future->request_name_for_tracing);
+      reply = xcb_wait_for_reply(XcbConnection(), future->sequence, &error);
     }
-    if (reply)
-      request->reply = base::MakeRefCounted<MallocedRefCountedMemory>(reply);
-    if (error)
-      request->error = base::MakeRefCounted<MallocedRefCountedMemory>(error);
   } else {
     // There's a special case here.  This request doesn't generate a reply, and
     // may not generate an error, so the only way to know if it finished is to
@@ -493,11 +619,20 @@ void Connection::WaitForResponse(SequenceType sequence) {
     // GetInputFocus request if necessary (which is the request xcb would have
     // made -- GetInputFocus is chosen since it has the minimum size request and
     // reply, and can be made at any time).
-    if (NeedsExtraRequestForCheck(sequence)) {
+    bool needs_extra_request_for_check = false;
+    if (!last_non_void_request_id_.has_value()) {
+      needs_extra_request_for_check = true;
+    } else {
+      SequenceType last_non_void_offset =
+          last_non_void_request_id_.value() - first_request_id_;
+      SequenceType sequence_offset = future->sequence - first_request_id_;
+      needs_extra_request_for_check = sequence_offset > last_non_void_offset;
+    }
+    if (needs_extra_request_for_check) {
       GetInputFocus({}).IgnoreError();
       // The circular_deque may have swapped buffers, so we need to get a fresh
       // pointer to the request.
-      request = GetRequestForSequence(sequence);
+      request = GetRequestForFuture(future);
     }
 
     // libxcb has a bug where it doesn't flush in xcb_request_check() under some
@@ -505,57 +640,19 @@ void Connection::WaitForResponse(SequenceType sequence) {
     // [1] https://gitlab.freedesktop.org/xorg/lib/libxcb/-/issues/53
     Flush();
 
-    xcb_generic_error_t* error = nullptr;
     {
       TRACE_EVENT1("ui", "xcb_request_check", "request",
-                   request->request_name_for_tracing);
-      error = xcb_request_check(XcbConnection(), {sequence});
+                   future->request_name_for_tracing);
+      error = xcb_request_check(XcbConnection(), {future->sequence});
     }
-    if (error)
-      request->error = base::MakeRefCounted<MallocedRefCountedMemory>(error);
   }
-  request->have_response = true;
+  request->SetResponse(this, reply, error);
 }
 
-void Connection::ProcessResponse(SequenceType sequence) {
+Connection::Request* Connection::GetRequestForFuture(FutureImpl* future) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto* request = GetRequestForSequence(sequence);
-  DCHECK(request->callback);
-  DCHECK(request->have_response);
-
-  std::move(request->callback).Run(request->reply, request->error);
-}
-
-void Connection::TakeResponse(SequenceType sequence,
-                              FutureBase::RawReply* raw_reply,
-                              FutureBase::RawError* raw_error) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto* request = GetRequestForSequence(sequence);
-  DCHECK(request->callback);
-  DCHECK(request->have_response);
-
-  *raw_reply = std::move(request->reply);
-  *raw_error = std::move(request->error);
-  request->callback.Reset();
-}
-
-bool Connection::NeedsExtraRequestForCheck(SequenceType sequence) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!last_non_void_request_id_.has_value())
-    return true;
-  SequenceType last_non_void_offset =
-      last_non_void_request_id_.value() - first_request_id_;
-  SequenceType sequence_offset = sequence - first_request_id_;
-  return sequence_offset > last_non_void_offset;
-}
-
-Connection::Request* Connection::GetRequestForSequence(SequenceType sequence) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  SequenceType offset = sequence - first_request_id_;
+  SequenceType offset = future->sequence - first_request_id_;
   DCHECK_LT(offset, requests_.size());
   return &requests_[offset];
 }
@@ -611,8 +708,7 @@ int Connection::ScreenIndexFromRootWindow(Window root) const {
   return -1;
 }
 
-std::unique_ptr<Error> Connection::ParseError(
-    FutureBase::RawError error_bytes) {
+std::unique_ptr<Error> Connection::ParseError(RawError error_bytes) {
   if (!error_bytes)
     return nullptr;
   struct ErrorHeader {

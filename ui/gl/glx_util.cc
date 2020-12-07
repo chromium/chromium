@@ -4,10 +4,9 @@
 
 #include "ui/gl/glx_util.h"
 
-#include <dlfcn.h>
-
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "ui/gfx/x/future.h"
 #include "ui/gfx/x/glx.h"
 #include "ui/gl/gl_bindings.h"
 

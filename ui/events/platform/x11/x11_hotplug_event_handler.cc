@@ -32,6 +32,7 @@
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/extension_manager.h"
+#include "ui/gfx/x/future.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 
 namespace ui {

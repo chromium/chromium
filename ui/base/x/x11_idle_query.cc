@@ -5,6 +5,7 @@
 #include "ui/base/x/x11_idle_query.h"
 
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/future.h"
 #include "ui/gfx/x/screensaver.h"
 
 namespace ui {

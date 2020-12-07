@@ -8,13 +8,13 @@
 #include <list>
 #include <queue>
 
+#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "ui/events/platform/platform_event_source.h"
-#include "ui/gfx/x/event.h"
 #include "ui/gfx/x/extension_manager.h"
 #include "ui/gfx/x/xlib_support.h"
 #include "ui/gfx/x/xproto.h"
@@ -23,7 +23,9 @@ typedef struct xcb_connection_t xcb_connection_t;
 
 namespace x11 {
 
+class Event;
 class KeyboardState;
+class WriteBuffer;
 
 // Represents a socket to the X11 server.
 class COMPONENT_EXPORT(X11) Connection : public XProto,
@@ -31,6 +33,14 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
  public:
   using ErrorHandler = base::RepeatingCallback<void(const Error*, const char*)>;
   using IOErrorHandler = base::OnceClosure;
+  using RawReply = scoped_refptr<base::RefCountedMemory>;
+  using RawError = scoped_refptr<base::RefCountedMemory>;
+  using ResponseCallback =
+      base::OnceCallback<void(RawReply reply, std::unique_ptr<Error> error)>;
+
+  // xcb returns unsigned int when making requests.  This may be updated to
+  // uint16_t if/when we stop using xcb for socket IO.
+  using SequenceType = unsigned int;
 
   class Delegate {
    public:
@@ -52,13 +62,26 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   // Sets the thread local connection instance.
   static void Set(std::unique_ptr<x11::Connection> connection);
 
+  template <typename T>
+  T GenerateId() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return static_cast<T>(GenerateIdImpl());
+  }
+
+  template <typename Reply>
+  Future<Reply> SendRequest(WriteBuffer* buf,
+                            const char* request_name,
+                            bool reply_has_fds) {
+    bool generates_reply = !std::is_void<Reply>::value;
+    return Future<Reply>(
+        SendRequest(buf, request_name, generates_reply, reply_has_fds));
+  }
+
   explicit Connection(const std::string& address = "");
   ~Connection();
 
   Connection(const Connection&) = delete;
   Connection(Connection&&) = delete;
-
-  xcb_connection_t* XcbConnection();
 
   // Obtain an Xlib display that's connected to the same server as |this|.  This
   // is meant to be used only for compatibility with components like GLX,
@@ -103,12 +126,6 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   std::string GetConnectionHostname() const;
 
   int DefaultScreenId() const;
-
-  template <typename T>
-  T GenerateId() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return static_cast<T>(GenerateIdImpl());
-  }
 
   // Is the connection up and error-free?
   bool Ready() const;
@@ -164,70 +181,82 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   std::unique_ptr<ui::PlatformEventSource> platform_event_source;
 
  private:
-  friend class FutureBase;
+  template <typename Reply>
+  friend class Future;
 
-  // xcb returns unsigned int when making requests.  This may be updated to
-  // uint16_t if/when we stop using xcb for socket IO.
-  using SequenceType = unsigned int;
+  class COMPONENT_EXPORT(X11) FutureImpl {
+   public:
+    FutureImpl(Connection* connection,
+               SequenceType sequence,
+               bool generates_reply,
+               const char* request_name_for_tracing);
+
+    void Wait();
+
+    void Sync(RawReply* raw_reply, std::unique_ptr<Error>* error);
+
+    void OnResponse(ResponseCallback callback);
+
+    // Update an existing Request with a new handler.  |sequence| must
+    // correspond to a request in the queue that has not already been processed
+    // out-of-order.
+    void UpdateRequestHandler(ResponseCallback callback);
+
+    // Call the response handler for request |sequence| now (out-of-order).  The
+    // response must already have been obtained from a call to
+    // WaitForResponse().
+    void ProcessResponse();
+
+    // Clear the response handler for request |sequence| and take the response.
+    // The response must already have been obtained using WaitForResponse().
+    void TakeResponse(RawReply* reply, std::unique_ptr<Error>* error);
+
+    Connection* connection = nullptr;
+    SequenceType sequence = 0;
+    bool generates_reply = false;
+    const char* request_name_for_tracing = nullptr;
+  };
 
   struct Request {
-    Request(FutureBase::ResponseCallback callback,
-            const char* request_name_for_tracing,
-            bool generates_reply);
+    explicit Request(ResponseCallback callback);
     Request(Request&& other);
     ~Request();
 
+    // Takes ownership of |reply| and |error|.
+    void SetResponse(Connection* connection, void* raw_reply, void* raw_error);
+
     // If |callback| is nullptr, then this request has already been processed
     // out-of-order.
-    FutureBase::ResponseCallback callback;
-
-    const char* const request_name_for_tracing;
-
-    const bool generates_reply;
+    ResponseCallback callback;
 
     // Indicates if |reply| and |error| are available.  A separate
     // |have_response| flag is necessary to distinguish the case where a request
     // hasn't finished yet from the case where a request finished but didn't
     // generate a reply or error.
     bool have_response = false;
-    FutureBase::RawReply reply;
-    FutureBase::RawError error;
+    RawReply reply;
+    std::unique_ptr<Error> error;
   };
+
+  xcb_connection_t* XcbConnection();
 
   void InitRootDepthAndVisual();
 
-  // Creates a new Request and adds it to the end of the queue.
-  // |request_name_for_tracing| must be valid until the response is dispatched;
-  // currently the string values are only stored in .rodata, so this constraint
-  // is satisfied.
-  void AddRequest(SequenceType sequence,
-                  FutureBase::ResponseCallback callback,
-                  const char* request_name_for_tracing,
-                  bool generates_reply);
+  bool HasNextResponse();
 
-  // Update an existing Request with a new handler.  |sequence| must correspond
-  // to a request in the queue that has not already been processed out-of-order.
-  void UpdateRequestHandler(SequenceType sequence,
-                            FutureBase::ResponseCallback callback);
+  // Creates a new Request and adds it to the end of the queue.
+  // |request_name_for_tracing| must be valid until the response is
+  // dispatched; currently the string values are only stored in .rodata, so
+  // this constraint is satisfied.
+  std::unique_ptr<FutureImpl> SendRequest(WriteBuffer* buf,
+                                          const char* request_name_for_tracing,
+                                          bool generates_reply,
+                                          bool reply_has_fds);
 
   // Block until the reply or error for request |sequence| is received.
-  void WaitForResponse(SequenceType sequence);
+  void WaitForResponse(FutureImpl* future);
 
-  // Call the response handler for request |sequence| now (out-of-order).  The
-  // response must already have been obtained from a call to WaitForResponse().
-  void ProcessResponse(SequenceType sequence);
-
-  // Clear the response handler for request |sequence| and take the response.
-  // The response must already have been obtained using WaitForResponse().
-  void TakeResponse(SequenceType sequence,
-                    FutureBase::RawReply* reply,
-                    FutureBase::RawError* error);
-
-  bool NeedsExtraRequestForCheck(SequenceType sequence) const;
-
-  Request* GetRequestForSequence(SequenceType sequence);
-
-  bool HasNextResponse();
+  Request* GetRequestForFuture(FutureImpl* future);
 
   void PreDispatchEvent(const Event& event);
 
@@ -236,7 +265,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   // This function is implemented in the generated read_error.cc.
   void InitErrorParsers();
 
-  std::unique_ptr<Error> ParseError(FutureBase::RawError error_bytes);
+  std::unique_ptr<Error> ParseError(RawError error_bytes);
 
   uint32_t GenerateIdImpl();
 
@@ -270,8 +299,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   // latest one, otherwise this is base::nullopt.
   base::Optional<SequenceType> last_non_void_request_id_;
 
-  using ErrorParser =
-      std::unique_ptr<Error> (*)(FutureBase::RawError error_bytes);
+  using ErrorParser = std::unique_ptr<Error> (*)(RawError error_bytes);
   std::array<ErrorParser, 256> error_parsers_{};
 
   ErrorHandler error_handler_;

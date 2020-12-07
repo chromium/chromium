@@ -14,6 +14,7 @@
 #include "remoting/base/logging.h"
 #include "remoting/base/util.h"
 #include "ui/gfx/x/extension_manager.h"
+#include "ui/gfx/x/future.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
 
