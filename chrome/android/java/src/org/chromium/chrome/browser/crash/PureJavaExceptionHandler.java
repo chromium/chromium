@@ -4,10 +4,8 @@
 
 package org.chromium.chrome.browser.crash;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.MainDex;
-import org.chromium.chrome.browser.base.SplitCompatUtils;
 import org.chromium.components.crash.CrashKeys;
 
 /**
@@ -21,11 +19,6 @@ public class PureJavaExceptionHandler implements Thread.UncaughtExceptionHandler
     private final Thread.UncaughtExceptionHandler mParent;
     private boolean mHandlingException;
     private static boolean sIsDisabled;
-
-    /** Interface to allow uploading reports. */
-    public interface JavaExceptionReporter {
-        void createAndUploadReport(Throwable e);
-    }
 
     private PureJavaExceptionHandler(Thread.UncaughtExceptionHandler parent) {
         mParent = parent;
@@ -60,10 +53,6 @@ public class PureJavaExceptionHandler implements Thread.UncaughtExceptionHandler
     }
 
     private void reportJavaException(Throwable e) {
-        // PureJavaExceptionReporter may be in the chrome module, so load by reflection from there.
-        JavaExceptionReporter reporter = (JavaExceptionReporter) SplitCompatUtils.newInstance(
-                SplitCompatUtils.createChromeContext(ContextUtils.getApplicationContext()),
-                "org.chromium.chrome.browser.crash.PureJavaExceptionReporter");
-        reporter.createAndUploadReport(e);
+        PureJavaExceptionReporter.reportJavaException(e);
     }
 }
