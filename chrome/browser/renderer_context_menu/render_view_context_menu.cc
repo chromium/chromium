@@ -146,6 +146,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/base/escape.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -184,6 +185,10 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/extension.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "extensions/common/constants.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -562,6 +567,13 @@ bool DoesInputFieldTypeSupportEmoji(
       return true;
   }
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+bool IsPdfPluginURL(const GURL& url) {
+  return url.SchemeIs(extensions::kExtensionScheme) &&
+         url.host_piece() == extension_misc::kPdfExtensionId;
+}
+#endif
 
 }  // namespace
 
@@ -1059,7 +1071,7 @@ void RenderViewContextMenu::RecordShownItem(int id) {
 }
 
 bool RenderViewContextMenu::IsHTML5Fullscreen() const {
-  Browser* browser = chrome::FindBrowserWithWebContents(source_web_contents_);
+  Browser* browser = chrome::FindBrowserWithWebContents(embedder_web_contents_);
   if (!browser)
     return false;
 
@@ -2014,8 +2026,17 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
               WebContextMenuData::kMediaCanToggleControls) != 0;
 
     case IDC_CONTENT_CONTEXT_ROTATECW:
-    case IDC_CONTENT_CONTEXT_ROTATECCW:
-      return (params_.media_flags & WebContextMenuData::kMediaCanRotate) != 0;
+    case IDC_CONTENT_CONTEXT_ROTATECCW: {
+      bool is_pdf_viewer_fullscreen = false;
+#if BUILDFLAG(ENABLE_PDF)
+      // Rotate commands should be disabled when in PDF Viewer's Presentation
+      // mode.
+      is_pdf_viewer_fullscreen =
+          IsPdfPluginURL(GetDocumentURL(params_)) && IsHTML5Fullscreen();
+#endif
+      return !is_pdf_viewer_fullscreen &&
+             (params_.media_flags & WebContextMenuData::kMediaCanRotate) != 0;
+    }
 
     case IDC_CONTENT_CONTEXT_COPYAVLOCATION:
     case IDC_CONTENT_CONTEXT_COPYIMAGELOCATION:

@@ -313,6 +313,36 @@ class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {
     return test_guest_view_manager_;
   }
 
+  std::unique_ptr<TestRenderViewContextMenu> SetupAndCreateMenu() {
+    // Load a pdf page.
+    GURL page_url = ui_test_utils::GetTestUrl(
+        base::FilePath(FILE_PATH_LITERAL("pdf")),
+        base::FilePath(FILE_PATH_LITERAL("test.pdf")));
+    ui_test_utils::NavigateToURL(browser(), page_url);
+
+    WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    // Wait for the PDF plugin to load.
+    EXPECT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
+    content::BrowserPluginGuestManager* guest_manager =
+        web_contents->GetBrowserContext()->GetGuestManager();
+    WebContents* guest_contents = guest_manager->GetFullPageGuest(web_contents);
+    EXPECT_TRUE(guest_contents);
+    // Get the pdf plugin's main frame.
+    content::RenderFrameHost* frame = guest_contents->GetMainFrame();
+    EXPECT_TRUE(frame);
+    EXPECT_NE(frame, web_contents->GetMainFrame());
+
+    content::ContextMenuParams params;
+    params.page_url = page_url;
+    params.frame_url = frame->GetLastCommittedURL();
+    params.media_type = blink::ContextMenuDataMediaType::kPlugin;
+    params.media_flags |= blink::WebContextMenuData::kMediaCanRotate;
+    auto menu = std::make_unique<TestRenderViewContextMenu>(frame, params);
+    menu->Init();
+    return menu;
+  }
+
   // Helper function for testing context menu of a pdf plugin inside a web page.
   void TestContextMenuOfPdfInsideWebPage(
       const base::FilePath::CharType* file_name) {
@@ -1406,34 +1436,29 @@ IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest, ImageSearchWithCorruptImage) {
 
 IN_PROC_BROWSER_TEST_F(PdfPluginContextMenuBrowserTest,
                        FullPagePdfHasPageItems) {
-  // Load a pdf page.
-  GURL page_url =
-      ui_test_utils::GetTestUrl(base::FilePath(FILE_PATH_LITERAL("pdf")),
-                                base::FilePath(FILE_PATH_LITERAL("test.pdf")));
-  ui_test_utils::NavigateToURL(browser(), page_url);
-
-  WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  // Wait for the PDF plugin to load.
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
-  content::BrowserPluginGuestManager* guest_manager =
-      web_contents->GetBrowserContext()->GetGuestManager();
-  WebContents* guest_contents = guest_manager->GetFullPageGuest(web_contents);
-  ASSERT_TRUE(guest_contents);
-  // Get the pdf plugin's main frame.
-  content::RenderFrameHost* frame = guest_contents->GetMainFrame();
-  ASSERT_TRUE(frame);
-  ASSERT_NE(frame, web_contents->GetMainFrame());
-
-  content::ContextMenuParams params;
-  params.page_url = page_url;
-  params.frame_url = frame->GetLastCommittedURL();
-  params.media_type = blink::ContextMenuDataMediaType::kPlugin;
-  TestRenderViewContextMenu menu(frame, params);
-  menu.Init();
+  std::unique_ptr<TestRenderViewContextMenu> menu = SetupAndCreateMenu();
 
   // The full page related items such as 'reload' should be there.
-  ASSERT_TRUE(menu.IsItemPresent(IDC_RELOAD));
+  ASSERT_TRUE(menu->IsItemPresent(IDC_RELOAD));
+}
+
+IN_PROC_BROWSER_TEST_F(PdfPluginContextMenuBrowserTest,
+                       FullPagePdfFullscreenItems) {
+  std::unique_ptr<TestRenderViewContextMenu> menu = SetupAndCreateMenu();
+
+  // Test that the 'Rotate' items exist and are enabled.
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_ROTATECW));
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_ROTATECCW));
+  ASSERT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_ROTATECW));
+  ASSERT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_ROTATECCW));
+
+  // Set to tab fullscreen, and test that 'Rotate' items are disabled.
+  FullscreenController* fullscreen_controller =
+      browser()->exclusive_access_manager()->fullscreen_controller();
+  fullscreen_controller->set_is_tab_fullscreen_for_testing(true);
+
+  ASSERT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_ROTATECW));
+  ASSERT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_ROTATECCW));
 }
 
 IN_PROC_BROWSER_TEST_F(PdfPluginContextMenuBrowserTest,
