@@ -12,7 +12,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,13 +22,11 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
-import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.WebContentsState;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.Semaphore;
@@ -38,15 +35,9 @@ import java.util.concurrent.Semaphore;
  * Test relating to {@link CriticalPersistedTabData}
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
 public class CriticalPersistedTabDataTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(mActivityTestRule, false);
+    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
     private static final int TAB_ID = 1;
     private static final int PARENT_ID = 2;
