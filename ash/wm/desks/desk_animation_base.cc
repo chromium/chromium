@@ -143,9 +143,9 @@ void DeskAnimationBase::OnVisibleDeskChanged() {
 }
 
 RootWindowDeskSwitchAnimator*
-DeskAnimationBase::GetDeskSwitchAnimatorAtIndexForTesting(size_t index) const {
-  DCHECK_LT(index, desk_switch_animators_.size());
-  return desk_switch_animators_[index].get();
+DeskAnimationBase::GetFirstDeskSwitchAnimatorForTesting() const {
+  DCHECK(!desk_switch_animators_.empty());
+  return desk_switch_animators_.front().get();
 }
 
 }  // namespace ash

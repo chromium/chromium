@@ -129,8 +129,7 @@ bool DeskActivationAnimation::Replace(bool moving_left,
   }
 
   // Activate the target desk and take a screenshot.
-  // TODO(crbug.com/1134390): Convert back to DCHECK when the issue is fixed.
-  CHECK_EQ(pending_animators.size(), desk_switch_animators_.size());
+  DCHECK_EQ(pending_animators.size(), desk_switch_animators_.size());
   PrepareDeskForScreenshot(new_ending_desk_index);
   for (auto* animator : pending_animators)
     animator->TakeEndingDeskScreenshot();
@@ -143,27 +142,28 @@ bool DeskActivationAnimation::UpdateSwipeAnimation(float scroll_delta_x) {
 
   presentation_time_recorder_->RequestNext();
 
-  // If any of the displays need a new screenshot while scrolling, take the
-  // ending desk screenshot for all of them to keep them in sync.
-  base::Optional<int> ending_desk_index;
+  // List of animators that need a screenshot. It should be either empty or
+  // match the size of |desk_switch_animators_| as all the animations should be
+  // in sync.
+  std::vector<RootWindowDeskSwitchAnimator*> pending_animators;
   for (const auto& animator : desk_switch_animators_) {
-    if (!ending_desk_index)
-      ending_desk_index = animator->UpdateSwipeAnimation(scroll_delta_x);
-    else
-      animator->UpdateSwipeAnimation(scroll_delta_x);
+    if (animator->UpdateSwipeAnimation(scroll_delta_x))
+      pending_animators.push_back(animator.get());
   }
 
   // No screenshot needed.
-  if (!ending_desk_index)
+  if (pending_animators.empty()) {
+    OnEndingDeskScreenshotTaken();
     return true;
+  }
 
   // Activate the target desk and take a screenshot.
-  ending_desk_index_ = *ending_desk_index;
+  // TODO(crbug.com/1134390): Convert back to DCHECK when the issue is fixed.
+  CHECK_EQ(pending_animators.size(), desk_switch_animators_.size());
+  ending_desk_index_ = desk_switch_animators_[0]->ending_desk_index();
   PrepareDeskForScreenshot(ending_desk_index_);
-  for (const auto& animator : desk_switch_animators_) {
-    animator->PrepareForEndingDeskScreenshot(ending_desk_index_);
+  for (auto* animator : pending_animators)
     animator->TakeEndingDeskScreenshot();
-  }
   return true;
 }
 

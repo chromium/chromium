@@ -129,7 +129,7 @@ class WmGestureHandlerTest : public AshTestBase {
       auto* animation = DesksController::Get()->animation();
       DCHECK(animation);
       auto* desk_switch_animator =
-          animation->GetDeskSwitchAnimatorAtIndexForTesting(0);
+          animation->GetFirstDeskSwitchAnimatorForTesting();
       base::RunLoop run_loop;
       RootWindowDeskSwitchAnimatorTestApi(desk_switch_animator)
           .SetOnEndingScreenshotTakenCallback(run_loop.QuitClosure());

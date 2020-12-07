@@ -62,8 +62,7 @@ class ASH_EXPORT DeskAnimationBase
     skip_notify_controller_on_animation_finished_for_testing_ = val;
   }
 
-  RootWindowDeskSwitchAnimator* GetDeskSwitchAnimatorAtIndexForTesting(
-      size_t index) const;
+  RootWindowDeskSwitchAnimator* GetFirstDeskSwitchAnimatorForTesting() const;
 
  protected:
   // Abstract functions that can be overridden by child classes to do different
