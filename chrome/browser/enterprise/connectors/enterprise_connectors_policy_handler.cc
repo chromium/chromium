@@ -16,12 +16,14 @@ namespace enterprise_connectors {
 EnterpriseConnectorsPolicyHandler::EnterpriseConnectorsPolicyHandler(
     const char* policy_name,
     const char* pref_path,
+    const char* pref_scope_path,
     policy::Schema schema)
     : SchemaValidatingPolicyHandler(
           policy_name,
           schema.GetKnownProperty(policy_name),
           policy::SchemaOnErrorStrategy::SCHEMA_ALLOW_UNKNOWN),
-      pref_path_(pref_path) {}
+      pref_path_(pref_path),
+      pref_scope_path_(pref_scope_path) {}
 
 EnterpriseConnectorsPolicyHandler::~EnterpriseConnectorsPolicyHandler() =
     default;
@@ -46,11 +48,18 @@ bool EnterpriseConnectorsPolicyHandler::CheckPolicySettings(
 void EnterpriseConnectorsPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
-  if (!pref_path_)
+  if (!pref_path_ || !pref_scope_path_)
     return;
-  const base::Value* value = policies.GetValue(policy_name());
-  if (value)
+
+  const policy::PolicyMap::Entry* policy = policies.Get(policy_name());
+  if (!policy)
+    return;
+
+  const base::Value* value = policy->value();
+  if (value) {
     prefs->SetValue(pref_path_, value->Clone());
+    prefs->SetInteger(pref_scope_path_, policy->scope);
+  }
 }
 
 }  // namespace enterprise_connectors

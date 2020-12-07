@@ -41,6 +41,27 @@ const char* ConnectorPref(ReportingConnector connector) {
   }
 }
 
+const char* ConnectorScopePref(AnalysisConnector connector) {
+  switch (connector) {
+    case AnalysisConnector::BULK_DATA_ENTRY:
+      return kOnBulkDataEntryScopePref;
+    case AnalysisConnector::FILE_DOWNLOADED:
+      return kOnFileDownloadedScopePref;
+    case AnalysisConnector::FILE_ATTACHED:
+      return kOnFileAttachedScopePref;
+    case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
+      NOTREACHED() << "Using unspecified analysis connector";
+      return "";
+  }
+}
+
+const char* ConnectorScopePref(ReportingConnector connector) {
+  switch (connector) {
+    case ReportingConnector::SECURITY_EVENT:
+      return kOnSecurityEventScopePref;
+  }
+}
+
 TriggeredRule::Action GetHighestPrecedenceAction(
     const ContentAnalysisResponse& response) {
   auto action = TriggeredRule::ACTION_UNSPECIFIED;

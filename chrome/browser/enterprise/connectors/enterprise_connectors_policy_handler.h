@@ -16,6 +16,7 @@ class EnterpriseConnectorsPolicyHandler
  public:
   EnterpriseConnectorsPolicyHandler(const char* policy_name,
                                     const char* pref_path,
+                                    const char* pref_scope_path,
                                     policy::Schema schema);
   EnterpriseConnectorsPolicyHandler(EnterpriseConnectorsPolicyHandler&) =
       delete;
@@ -31,6 +32,10 @@ class EnterpriseConnectorsPolicyHandler
 
  private:
   const char* pref_path_;
+
+  // Key used to store the policy::PolicyScope of the policy. This is looked up
+  // later so the Connector can adjust its behaviour.
+  const char* pref_scope_path_;
 };
 
 }  // namespace enterprise_connectors

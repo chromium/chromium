@@ -1517,27 +1517,32 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<
           enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
           key::kOnFileAttachedEnterpriseConnector,
-          enterprise_connectors::kOnFileAttachedPref, chrome_schema));
+          enterprise_connectors::kOnFileAttachedPref,
+          enterprise_connectors::kOnFileAttachedScopePref, chrome_schema));
   handlers->AddHandler(
       std::make_unique<
           enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
           key::kOnFileDownloadedEnterpriseConnector,
-          enterprise_connectors::kOnFileDownloadedPref, chrome_schema));
+          enterprise_connectors::kOnFileDownloadedPref,
+          enterprise_connectors::kOnFileDownloadedScopePref, chrome_schema));
   handlers->AddHandler(
       std::make_unique<
           enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
           key::kOnBulkDataEntryEnterpriseConnector,
-          enterprise_connectors::kOnBulkDataEntryPref, chrome_schema));
+          enterprise_connectors::kOnBulkDataEntryPref,
+          enterprise_connectors::kOnBulkDataEntryScopePref, chrome_schema));
   handlers->AddHandler(
       std::make_unique<
           enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
           key::kOnSecurityEventEnterpriseConnector,
-          enterprise_connectors::kOnSecurityEventPref, chrome_schema));
+          enterprise_connectors::kOnSecurityEventPref,
+          enterprise_connectors::kOnSecurityEventScopePref, chrome_schema));
   handlers->AddHandler(
       std::make_unique<
           enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
           key::kEnterpriseRealTimeUrlCheckMode,
-          prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode, chrome_schema));
+          prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+          prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope, chrome_schema));
 
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
       key::kBrowsingDataLifetime, browsing_data::prefs::kBrowsingDataLifetime,

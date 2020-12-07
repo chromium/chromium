@@ -30,6 +30,10 @@ extern const char kSafeBrowsingEnhanced[];
 // enterprise policy.
 extern const char kSafeBrowsingEnterpriseRealTimeUrlCheckMode[];
 
+// Integer indicating the scope at which the
+// kSafeBrowsingEnterpriseRealTimeUrlCheckMode pref is set.
+extern const char kSafeBrowsingEnterpriseRealTimeUrlCheckScope[];
+
 // Boolean that tells us whether users are given the option to opt in to Safe
 // Browsing extended reporting. This is exposed as a preference that can be
 // overridden by enterprise policy.

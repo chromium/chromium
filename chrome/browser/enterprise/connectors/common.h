@@ -73,6 +73,8 @@ struct ReportingSettings {
 // Returns the pref path corresponding to a connector.
 const char* ConnectorPref(AnalysisConnector connector);
 const char* ConnectorPref(ReportingConnector connector);
+const char* ConnectorScopePref(AnalysisConnector connector);
+const char* ConnectorScopePref(ReportingConnector connector);
 
 // Returns the highest precedence action in the given parameters.
 TriggeredRule::Action GetHighestPrecedenceAction(

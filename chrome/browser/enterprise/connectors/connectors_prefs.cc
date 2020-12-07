@@ -16,11 +16,24 @@ const char kOnBulkDataEntryPref[] = "enterprise_connectors.on_bulk_data_entry";
 
 const char kOnSecurityEventPref[] = "enterprise_connectors.on_security_event";
 
+const char kOnFileAttachedScopePref[] =
+    "enterprise_connectors.scope.on_file_attached";
+const char kOnFileDownloadedScopePref[] =
+    "enterprise_connectors.scope.on_file_downloaded";
+const char kOnBulkDataEntryScopePref[] =
+    "enterprise_connectors.scope.on_bulk_data_entry";
+const char kOnSecurityEventScopePref[] =
+    "enterprise_connectors.scope.on_security_event";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kOnFileAttachedPref);
   registry->RegisterListPref(kOnFileDownloadedPref);
   registry->RegisterListPref(kOnBulkDataEntryPref);
   registry->RegisterListPref(kOnSecurityEventPref);
+  registry->RegisterIntegerPref(kOnFileAttachedScopePref, 0);
+  registry->RegisterIntegerPref(kOnFileDownloadedScopePref, 0);
+  registry->RegisterIntegerPref(kOnBulkDataEntryScopePref, 0);
+  registry->RegisterIntegerPref(kOnSecurityEventScopePref, 0);
 }
 
 }  // namespace enterprise_connectors

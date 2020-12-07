@@ -21,6 +21,13 @@ extern const char kOnBulkDataEntryPref[];
 // Pref that maps to the "OnSecurityEventEnterpriseConnector" policy.
 extern const char kOnSecurityEventPref[];
 
+// Prefs that map to the scope of each policy using a
+// EnterpriseConnectorsPolicyHandler.
+extern const char kOnFileAttachedScopePref[];
+extern const char kOnFileDownloadedScopePref[];
+extern const char kOnBulkDataEntryScopePref[];
+extern const char kOnSecurityEventScopePref[];
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace enterprise_connectors
