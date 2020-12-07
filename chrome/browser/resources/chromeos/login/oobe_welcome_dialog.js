@@ -453,14 +453,14 @@
      * Called to show the ChromeVox hint dialog.
      */
     showChromeVoxHint() {
-      this.$.chromeVoxHint.showModal();
+      this.$.chromeVoxHint.showDialog();
     },
 
     /**
      * Called to close the ChromeVox hint dialog.
      */
     closeChromeVoxHint() {
-      this.$.chromeVoxHint.close();
+      this.$.chromeVoxHint.hideDialog();
     },
 
     /**
