@@ -13,6 +13,10 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/sharesheet/sharesheet_types.h"
+#include "chrome/browser/webshare/chromeos/sharesheet_client.h"
+#endif
 #if defined(OS_WIN)
 #include "chrome/browser/webshare/win/scoped_share_operation_fake_components.h"
 #endif
@@ -23,13 +27,28 @@ class ShareServiceBrowserTest : public InProcessBrowserTest {
     feature_list_.InitAndEnableFeature(features::kWebShare);
   }
 
-#if defined(OS_WIN)
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+#if defined(OS_CHROMEOS)
+    webshare::SharesheetClient::SetSharesheetCallbackForTesting(
+        base::BindRepeating(&ShareServiceBrowserTest::AcceptShareRequest));
+#endif
+#if defined(OS_WIN)
     if (!IsSupportedEnvironment())
       return;
 
     ASSERT_NO_FATAL_FAILURE(scoped_fake_components_.SetUp());
+#endif
+  }
+
+#if defined(OS_CHROMEOS)
+  static void AcceptShareRequest(content::WebContents* web_contents,
+                                 const std::vector<base::FilePath>& file_paths,
+                                 const std::vector<std::string>& content_types,
+                                 const std::string& text,
+                                 const std::string& title,
+                                 sharesheet::CloseCallback close_callback) {
+    std::move(close_callback).Run(sharesheet::SharesheetResult::kSuccess);
   }
 #endif
 
@@ -63,10 +82,5 @@ IN_PROC_BROWSER_TEST_F(ShareServiceBrowserTest, Text) {
   const std::string script = "share_text('hello')";
   const content::EvalJsResult result = content::EvalJs(contents, script);
 
-#if defined(OS_CHROMEOS)
-  // ChromeOS currently only supports file sharing.
-  EXPECT_EQ("share failed: AbortError: Share canceled", result);
-#else
   EXPECT_EQ("share succeeded", result);
-#endif
 }

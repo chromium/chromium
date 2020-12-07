@@ -91,12 +91,6 @@ void SharesheetClient::Share(
     return;
   }
 
-  if (files.empty()) {
-    // TODO(crbug.com/1127670): Support title/text/url sharing without files.
-    std::move(callback).Run(blink::mojom::ShareError::CANCELED);
-    return;
-  }
-
   Profile* const profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   DCHECK(profile);
@@ -116,6 +110,16 @@ void SharesheetClient::Share(
   }
   current_share_->title = title;
   current_share_->callback = std::move(callback);
+
+  if (current_share_->files.empty()) {
+    GetSharesheetCallback().Run(
+        web_contents(), current_share_->file_paths,
+        current_share_->content_types, current_share_->text,
+        current_share_->title,
+        base::BindOnce(&SharesheetClient::OnShowSharesheet,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
 
   current_share_->prepare_directory_task =
       std::make_unique<PrepareDirectoryTask>(
@@ -167,9 +171,8 @@ void SharesheetClient::OnStoreFiles(blink::mojom::ShareError error) {
   }
 
   GetSharesheetCallback().Run(
-      web_contents(), std::move(current_share_->file_paths),
-      std::move(current_share_->content_types), current_share_->text,
-      current_share_->title,
+      web_contents(), current_share_->file_paths, current_share_->content_types,
+      current_share_->text, current_share_->title,
       base::BindOnce(&SharesheetClient::OnShowSharesheet,
                      weak_ptr_factory_.GetWeakPtr()));
 }

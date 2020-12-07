@@ -41,6 +41,53 @@
       }
     }
 
+    async function share_title() {
+      try {
+        await navigator.share({title: "Subject"});
+        return 'share succeeded';
+      } catch(error) {
+        return ('share failed: ' + error);
+      }
+    }
+
+    async function share_title_url() {
+      try {
+        await navigator.share({title: "Subject",
+                               url: "https://example.com/"});
+        return 'share succeeded';
+      } catch(error) {
+        return ('share failed: ' + error);
+      }
+    }
+
+    async function share_text() {
+      try {
+        await navigator.share({text: "Message"});
+        return 'share succeeded';
+      } catch(error) {
+        return ('share failed: ' + error);
+      }
+    }
+
+    async function share_text_url() {
+      try {
+        await navigator.share({text: "Message",
+                               url: "https://example.com/"});
+        return 'share succeeded';
+      } catch(error) {
+        return ('share failed: ' + error);
+      }
+    }
+
+    async function share_url() {
+      try {
+        await navigator.share({url: "https://example.com/"});
+        return 'share succeeded';
+      } catch(error) {
+        return ('share failed: ' + error);
+      }
+    }
+
     async function share_file_title() {
       try {
         const single_file = create_file('sample.webp', 'image/webp', 12);

@@ -59,12 +59,14 @@ class SharesheetClientBrowserTest : public InProcessBrowserTest {
     return embedded_test_server()->GetURL("/webshare/index.html");
   }
 
-  void ConfirmShareText(const std::string& script,
-                        const char* expected_text,
-                        const char* expected_title) {
+  void ConfirmShareText(
+      const std::string& script,
+      const char* expected_text,
+      const char* expected_title,
+      const std::vector<std::string>& expected_content_types) {
     SharesheetClient::SetSharesheetCallbackForTesting(
         base::BindLambdaForTesting(
-            [&expected_text, &expected_title](
+            [&expected_text, &expected_title, &expected_content_types](
                 content::WebContents* in_contents,
                 const std::vector<base::FilePath>& file_paths,
                 const std::vector<std::string>& content_types,
@@ -72,14 +74,15 @@ class SharesheetClientBrowserTest : public InProcessBrowserTest {
                 SharesheetClient::CloseCallback close_callback) {
               EXPECT_EQ(text, expected_text);
               EXPECT_EQ(title, expected_title);
+              EXPECT_EQ(file_paths.size(), content_types.size());
+              EXPECT_EQ(content_types, expected_content_types);
               std::move(close_callback)
-                  .Run(sharesheet::SharesheetResult::kCancel);
+                  .Run(sharesheet::SharesheetResult::kSuccess);
             }));
 
     content::WebContents* const contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    EXPECT_EQ("share failed: AbortError: Share canceled",
-              content::EvalJs(contents, script));
+    EXPECT_EQ("share succeeded", content::EvalJs(contents, script));
   }
 
  private:
@@ -179,24 +182,45 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, CancelledShare) {
             content::EvalJs(contents, script));
 }
 
+IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, Text) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ui_test_utils::NavigateToURL(browser(), GetAppUrl());
+  ConfirmShareText("share_title()",
+                   /*expected_text=*/"",
+                   /*expected_title=*/"Subject", /*expected_content_types=*/{});
+  ConfirmShareText("share_title_url()",
+                   /*expected_text=*/"https://example.com/",
+                   /*expected_title=*/"Subject", /*expected_content_types=*/{});
+  ConfirmShareText("share_text()",
+                   /*expected_text=*/"Message",
+                   /*expected_title=*/"", /*expected_content_types=*/{});
+  ConfirmShareText("share_text_url()",
+                   /*expected_text=*/"Message https://example.com/",
+                   /*expected_title=*/"", /*expected_content_types=*/{});
+  ConfirmShareText("share_url()",
+                   /*expected_text=*/"https://example.com/",
+                   /*expected_title=*/"", /*expected_content_types=*/{});
+}
+
 IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, TextWithFile) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ui_test_utils::NavigateToURL(browser(), GetAppUrl());
+  const std::vector<std::string> expected_content_types{"image/webp"};
   ConfirmShareText("share_file_title()",
                    /*expected_text=*/"",
-                   /*expected_title=*/"Subject");
+                   /*expected_title=*/"Subject", expected_content_types);
   ConfirmShareText("share_file_title_url()",
                    /*expected_text=*/"https://example.com/",
-                   /*expected_title=*/"Subject");
+                   /*expected_title=*/"Subject", expected_content_types);
   ConfirmShareText("share_file_text()",
                    /*expected_text=*/"Message",
-                   /*expected_title=*/"");
+                   /*expected_title=*/"", expected_content_types);
   ConfirmShareText("share_file_text_url()",
                    /*expected_text=*/"Message https://example.com/",
-                   /*expected_title=*/"");
+                   /*expected_title=*/"", expected_content_types);
   ConfirmShareText("share_file_url()",
                    /*expected_text=*/"https://example.com/",
-                   /*expected_title=*/"");
+                   /*expected_title=*/"", expected_content_types);
 }
 
 }  // namespace webshare
