@@ -1855,6 +1855,9 @@
                   '|chrome/browser/ui/ash/network/tether*'\
                   '|chromeos/components/tether/'
     },
+    'text_to_speech': {
+      'filepath': 'tts'
+    },
     'textinput': {
       'filepath': 'content/browser/renderer_host/render_widget_host_view'\
                   '|content/browser/renderer_host/text_input'\
@@ -2823,6 +2826,7 @@
     'tests': [],
     'tether': ['hansberry+watch-tether@chromium.org',
                'vecore+watch-tether@google.com'],
+    'text_to_speech': ['dtseng+watch@chromium.org'],
     'textinput': ['keithlee+watch@chromium.org',
                   'nona+watch@chromium.org',
                   'shuchen+watch@chromium.org',
