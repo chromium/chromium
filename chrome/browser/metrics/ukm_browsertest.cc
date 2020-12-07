@@ -1096,8 +1096,13 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MetricsReportingCheck) {
 // Make sure that pending data is deleted when user deletes history.
 // Keep in sync with testHistoryDelete in ios/chrome/browser/metrics/
 // ukm_egtest.mm.
-// Quite flaky: https://crbug.com/1131541
-IN_PROC_BROWSER_TEST_F(UkmBrowserTest, DISABLED_HistoryDeleteCheck) {
+// Quite flaky on Android: https://crbug.com/1131541
+#if defined(OS_ANDROID)
+#define MAYBE_HistoryDeleteCheck DISABLED_HistoryDeleteCheck
+#else
+#define MAYBE_HistoryDeleteCheck HistoryDeleteCheck
+#endif
+IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MAYBE_HistoryDeleteCheck) {
   ukm::UkmTestHelper ukm_test_helper(GetUkmService());
   MetricsConsentOverride metrics_consent(true);
 
