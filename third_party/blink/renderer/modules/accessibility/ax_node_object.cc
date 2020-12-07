@@ -476,8 +476,6 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
   if (role_ == ax::mojom::blink::Role::kRootWebArea)
     return false;
 
-  // TODO(accessibility) In the case of display locking, might we have a stale
-  // pointer to a layout object? Should the display locking case be first?
   if (GetLayoutObject()) {
     if (role_ == ax::mojom::blink::Role::kUnknown) {
       if (ignored_reasons)
