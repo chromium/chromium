@@ -352,12 +352,15 @@ void MediaHistoryKeyedService::GetURLsInTableForTest(
       std::move(callback));
 }
 
-void MediaHistoryKeyedService::DiscoverMediaFeed(const GURL& url,
-                                                 base::OnceClosure callback) {
+void MediaHistoryKeyedService::DiscoverMediaFeed(
+    const GURL& url,
+    const base::Optional<GURL>& favicon,
+    base::OnceClosure callback) {
   if (auto* store = store_->GetForWrite()) {
     store->db_task_runner_->PostTaskAndReply(
         FROM_HERE,
-        base::BindOnce(&MediaHistoryStore::DiscoverMediaFeed, store, url),
+        base::BindOnce(&MediaHistoryStore::DiscoverMediaFeed, store, url,
+                       favicon),
         std::move(callback));
   } else {
     std::move(callback).Run();

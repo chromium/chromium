@@ -53,7 +53,10 @@ constexpr base::FilePath::CharType kMediaFeedsTestDir[] =
 
 const char kMediaFeedsTestHTML[] =
     "  <!DOCTYPE html>"
-    "  <head>%s</head>";
+    "  <head>"
+    "  <link rel=\"icon\" type=\"image/png\" href=\"https://a.com/icon.png\">"
+    "  %s"
+    "  </head>";
 
 const char kMediaFeedsTestHeadHTML[] =
     "<link rel=media-feed type=\"application/ld+json\" "
@@ -266,6 +269,7 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest, DiscoverAndFetch) {
   std::vector<media_feeds::mojom::MediaFeedPtr> discovered_feeds =
       GetDiscoveredFeeds();
   EXPECT_EQ(1u, discovered_feeds.size());
+  EXPECT_EQ(GURL("https://a.com/icon.png"), discovered_feeds[0]->favicon);
 
   base::RunLoop run_loop;
   GetMediaFeedsService()->FetchMediaFeed(

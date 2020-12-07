@@ -357,9 +357,15 @@ void MediaFeedsService::SetCookieChangeCallbackForTest(
 }
 
 void MediaFeedsService::DiscoverMediaFeed(const GURL& url) {
+  DiscoverMediaFeed(url, base::nullopt);
+}
+
+void MediaFeedsService::DiscoverMediaFeed(const GURL& url,
+                                          const base::Optional<GURL>& favicon) {
   GetMediaHistoryService()->DiscoverMediaFeed(
-      url, base::BindOnce(&MediaFeedsService::OnDiscoveredFeed,
-                          weak_factory_.GetWeakPtr()));
+      url, favicon,
+      base::BindOnce(&MediaFeedsService::OnDiscoveredFeed,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void MediaFeedsService::ResetMediaFeed(const url::Origin& origin,

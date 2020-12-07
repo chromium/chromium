@@ -36,7 +36,8 @@ MediaFeedsWebUIBrowserTest.prototype = {
     GEN('    browser()->profile());');
     GEN('auto* feeds_service =');
     GEN('  media_feeds::MediaFeedsService::Get(browser()->profile());');
-    GEN('feeds_service->DiscoverMediaFeed(GURL("' + EXAMPLE_URL_1 + '"));');
+    GEN('feeds_service->DiscoverMediaFeed(GURL("' + EXAMPLE_URL_1 + '"), ');
+    GEN('  GURL("https://example.com/icon.png"));');
     GEN('auto items = std::vector<media_feeds::mojom::MediaFeedItemPtr>();');
     GEN('auto item = media_feeds::mojom::MediaFeedItem::New();');
     GEN('item->name = base::ASCIIToUTF16("The Movie");');
@@ -178,12 +179,26 @@ TEST_F('MediaFeedsWebUIBrowserTest', 'All', function() {
 
     assertDeepEquals(
         [
-          'ID', 'Url', 'Display Name', 'Last Discovery Time', 'Last Fetch Time',
-          'User Status', 'User ID', 'Last Fetch Result', 'Fetch Failed Count',
-          'Last Fetch Time (not cache hit)', 'Last Fetch Item Count',
-          'Last Fetch Play Next Count', 'Last Fetch Content Types',
-          'Last Display Time', 'Reset Reason', 'Cookie Name Filter',
-          'Safe Search Result', 'Logos', 'Actions'
+          'ID',
+          'Url',
+          'Display Name',
+          'Last Discovery Time',
+          'Last Fetch Time',
+          'User Status',
+          'User ID',
+          'Last Fetch Result',
+          'Fetch Failed Count',
+          'Last Fetch Time (not cache hit)',
+          'Last Fetch Item Count',
+          'Last Fetch Play Next Count',
+          'Last Fetch Content Types',
+          'Last Display Time',
+          'Reset Reason',
+          'Cookie Name Filter',
+          'Safe Search Result',
+          'Favicon',
+          'Logos',
+          'Actions'
         ],
         feedsHeaders.map(x => x.textContent.trim()));
 
@@ -210,14 +225,17 @@ TEST_F('MediaFeedsWebUIBrowserTest', 'All', function() {
     assertEquals('TEST', feedsContents.childNodes[15].textContent.trim());
     assertEquals('Unknown', feedsContents.childNodes[16].textContent.trim());
     assertEquals(
-        'https://www.example.org/logo1.pngContentAttributes=HasTitle, ForLightBackgroundhttps://www.example.org/logo2.pngContentAttributes=NoTitle, ForDarkBackground',
+        'https://example.com/icon.png',
         feedsContents.childNodes[17].textContent.trim());
     assertEquals(
-        'Show ContentsFetch Feed',
+        'https://www.example.org/logo1.pngContentAttributes=HasTitle, ForLightBackgroundhttps://www.example.org/logo2.pngContentAttributes=NoTitle, ForDarkBackground',
         feedsContents.childNodes[18].textContent.trim());
+    assertEquals(
+        'Show ContentsFetch Feed',
+        feedsContents.childNodes[19].textContent.trim());
 
     // Click on the show contents button.
-    feedsContents.childNodes[18].firstChild.click();
+    feedsContents.childNodes[19].firstChild.click();
 
     return whenFeedTableIsPopulatedForTest().then(() => {
       assertEquals(

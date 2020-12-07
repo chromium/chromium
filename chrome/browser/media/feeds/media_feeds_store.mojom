@@ -86,6 +86,9 @@ struct MediaFeed {
 
   // The aggregate watchtime for the media feed.
   mojo_base.mojom.TimeDelta? aggregate_watchtime;
+
+  // The favicon of the page that hosts the Media Feed.
+  url.mojom.Url? favicon;
 };
 
 // Contains details about the user signed into the website.

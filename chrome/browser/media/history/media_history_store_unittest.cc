@@ -1079,7 +1079,10 @@ TEST_P(MediaHistoryStoreFeedsTest, DiscoverMediaFeed) {
     EXPECT_EQ(feeds, GetMediaFeedsSync(otr_service()));
   }
 
-  DiscoverMediaFeed(url_c);
+  GURL favicon("https://www.google.com/favicon.ico");
+  if (auto* service = GetMediaFeedsService())
+    service->DiscoverMediaFeed(url_c, favicon);
+
   WaitForDB();
 
   {
@@ -1094,8 +1097,10 @@ TEST_P(MediaHistoryStoreFeedsTest, DiscoverMediaFeed) {
 
       EXPECT_EQ(2, feeds[0]->id);
       EXPECT_EQ(url_b, feeds[0]->url);
+      EXPECT_FALSE(feeds[0]->favicon.has_value());
       EXPECT_EQ(3, feeds[1]->id);
       EXPECT_EQ(url_c, feeds[1]->url);
+      EXPECT_EQ(favicon, feeds[1]->favicon);
     }
 
     // The OTR service should have the same data.

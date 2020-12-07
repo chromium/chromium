@@ -35,7 +35,7 @@
 
 namespace {
 
-constexpr int kCurrentVersionNumber = 4;
+constexpr int kCurrentVersionNumber = 5;
 constexpr int kCompatibleVersionNumber = 1;
 
 constexpr base::FilePath::CharType kMediaHistoryDatabaseName[] =
@@ -132,6 +132,26 @@ int MigrateFrom3To4(sql::Database* db, sql::MetaTable* meta_table) {
     return target_version;
   }
   return 3;
+}
+
+int MigrateFrom4To5(sql::Database* db, sql::MetaTable* meta_table) {
+  // Version 5 adds a new column to mediaFeed.
+  const int target_version = 5;
+
+  // The mediaFeed table might not exist if the feature is disabled.
+  if (!db->DoesTableExist("mediaFeed")) {
+    meta_table->SetVersionNumber(target_version);
+    return target_version;
+  }
+
+  static const char k4To5Sql[] =
+      "ALTER TABLE mediaFeed ADD COLUMN favicon TEXT DEFAULT 0;";
+  sql::Transaction transaction(db);
+  if (transaction.Begin() && db->Execute(k4To5Sql) && transaction.Commit()) {
+    meta_table->SetVersionNumber(target_version);
+    return target_version;
+  }
+  return 4;
 }
 
 bool IsCauseFromExpiration(const net::CookieChangeCause& cause) {
@@ -431,6 +451,8 @@ sql::InitStatus MediaHistoryStore::CreateOrUpgradeIfNeeded() {
     cur_version = MigrateFrom2To3(db_.get(), meta_table_.get());
   if (cur_version == 3)
     cur_version = MigrateFrom3To4(db_.get(), meta_table_.get());
+  if (cur_version == 4)
+    cur_version = MigrateFrom4To5(db_.get(), meta_table_.get());
 
   if (cur_version == kCurrentVersionNumber)
     return sql::INIT_OK;
@@ -757,7 +779,8 @@ std::set<GURL> MediaHistoryStore::GetURLsInTableForTest(
   return urls;
 }
 
-void MediaHistoryStore::DiscoverMediaFeed(const GURL& url) {
+void MediaHistoryStore::DiscoverMediaFeed(const GURL& url,
+                                          const base::Optional<GURL>& favicon) {
   DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
   if (!CanAccessDatabase())
     return;
@@ -771,7 +794,7 @@ void MediaHistoryStore::DiscoverMediaFeed(const GURL& url) {
   }
 
   if (!(CreateOriginId(url::Origin::Create(url)) &&
-        feeds_table_->DiscoverFeed(url))) {
+        feeds_table_->DiscoverFeed(url, favicon))) {
     DB()->RollbackTransaction();
     return;
   }

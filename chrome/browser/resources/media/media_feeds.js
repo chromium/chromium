@@ -332,6 +332,8 @@ class MediaFeedsTableDelegate {
           td.textContent += ' Image=' + data.image.src.url;
         }
       }
+    } else if (key === 'favicon') {
+      td.textContent = data.url;
     } else {
       td.textContent = data;
     }

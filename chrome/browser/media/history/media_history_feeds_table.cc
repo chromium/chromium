@@ -78,6 +78,7 @@ sql::InitStatus MediaHistoryFeedsTable::CreateTableIfNonExistent() {
                          "reset_token BLOB, "
                          "cookie_name_filter TEXT, "
                          "safe_search_result INTEGER DEFAULT 0, "
+                         "favicon TEXT, "
                          "CONSTRAINT fk_origin "
                          "FOREIGN KEY (origin_id) "
                          "REFERENCES origin(id) "
@@ -135,7 +136,8 @@ sql::InitStatus MediaHistoryFeedsTable::CreateTableIfNonExistent() {
   return sql::INIT_OK;
 }
 
-bool MediaHistoryFeedsTable::DiscoverFeed(const GURL& url) {
+bool MediaHistoryFeedsTable::DiscoverFeed(const GURL& url,
+                                          const base::Optional<GURL>& favicon) {
   DCHECK_LT(0, DB()->transaction_nesting());
   if (!CanAccessDatabase())
     return false;
@@ -170,20 +172,35 @@ bool MediaHistoryFeedsTable::DiscoverFeed(const GURL& url) {
     sql::Statement statement(DB()->GetCachedStatement(
         SQL_FROM_HERE,
         "INSERT OR REPLACE INTO mediaFeed "
-        "(origin_id, url, last_discovery_time_s) VALUES "
-        "((SELECT id FROM origin WHERE origin = ?), ?, ?)"));
+        "(origin_id, url, last_discovery_time_s, favicon) VALUES "
+        "((SELECT id FROM origin WHERE origin = ?), ?, ?, ?)"));
     statement.BindString(0, origin);
     statement.BindString(1, url.spec());
     statement.BindInt64(2, now);
+
+    if (favicon.has_value()) {
+      statement.BindString(3, favicon->spec());
+    } else {
+      statement.BindNull(3);
+    }
+
     return statement.Run() && DB()->GetLastChangeCount() == 1;
   } else {
     // If the feed already exists in the database with the same URL we should
     // just update the last discovery time so we don't delete the old entry.
-    sql::Statement statement(DB()->GetCachedStatement(
-        SQL_FROM_HERE,
-        "UPDATE mediaFeed SET last_discovery_time_s = ? WHERE id = ?"));
+    sql::Statement statement(
+        DB()->GetCachedStatement(SQL_FROM_HERE,
+                                 "UPDATE mediaFeed SET last_discovery_time_s = "
+                                 "?, favicon = ? WHERE id = ?"));
     statement.BindInt64(0, now);
     statement.BindInt64(1, *feed_id);
+
+    if (favicon.has_value()) {
+      statement.BindString(2, favicon->spec());
+    } else {
+      statement.BindNull(2);
+    }
+
     return statement.Run() && DB()->GetLastChangeCount() == 1;
   }
 }
@@ -225,7 +242,8 @@ std::vector<media_feeds::mojom::MediaFeedPtr> MediaHistoryFeedsTable::GetRows(
       "mediaFeed.user_identifier, "
       "mediaFeed.cookie_name_filter, "
       "mediaFeed.safe_search_result, "
-      "mediaFeed.reset_token ");
+      "mediaFeed.reset_token, "
+      "mediaFeed.favicon ");
 
   sql::Statement statement;
 
@@ -449,9 +467,12 @@ std::vector<media_feeds::mojom::MediaFeedPtr> MediaHistoryFeedsTable::GetRows(
         feed->reset_token = ProtoToUnguessableToken(token);
     }
 
+    if (statement.GetColumnType(20) == sql::ColumnType::kText)
+      feed->favicon = GURL(statement.ColumnString(20));
+
     if (top_feeds) {
       feed->aggregate_watchtime =
-          base::TimeDelta::FromSeconds(statement.ColumnInt64(20));
+          base::TimeDelta::FromSeconds(statement.ColumnInt64(21));
     }
 
     feeds.push_back(std::move(feed));

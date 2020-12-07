@@ -91,8 +91,15 @@ void MediaFeedsContentsObserver::DidFindMediaFeed(
       return;
     }
 
+    base::Optional<GURL> favicon;
+    for (auto& found : web_contents()->GetFaviconURLs()) {
+      if (found->icon_type == blink::mojom::FaviconIconType::kFavicon) {
+        favicon = found->icon_url;
+      }
+    }
+
     CHECK(url->SchemeIsCryptographic());
-    service->DiscoverMediaFeed(*url);
+    service->DiscoverMediaFeed(*url, favicon);
 
     ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
     if (!ukm_recorder)

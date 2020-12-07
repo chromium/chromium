@@ -158,7 +158,7 @@ class MediaHistoryStore : public base::RefCountedThreadSafe<MediaHistoryStore> {
 
   std::set<GURL> GetURLsInTableForTest(const std::string& table);
 
-  void DiscoverMediaFeed(const GURL& url);
+  void DiscoverMediaFeed(const GURL& url, const base::Optional<GURL>& favicon);
 
   void StoreMediaFeedFetchResult(
       MediaHistoryKeyedService::MediaFeedFetchResult result);

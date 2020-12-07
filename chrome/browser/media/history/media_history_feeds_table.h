@@ -52,7 +52,7 @@ class MediaHistoryFeedsTable : public MediaHistoryTableBase {
   sql::InitStatus CreateTableIfNonExistent() override;
 
   // Saves a newly discovered feed in the database.
-  bool DiscoverFeed(const GURL& url);
+  bool DiscoverFeed(const GURL& url, const base::Optional<GURL>& favicon);
 
   // Updates the feed following a fetch.
   bool UpdateFeedFromFetch(

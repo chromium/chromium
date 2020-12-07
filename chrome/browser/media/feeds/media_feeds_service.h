@@ -100,6 +100,7 @@ class MediaFeedsService : public KeyedService {
 
   // Saves a newly discovered media feed.
   void DiscoverMediaFeed(const GURL& url);
+  void DiscoverMediaFeed(const GURL& url, const base::Optional<GURL>& favicon);
 
   // Resets a Media Feed by deleting any items and resetting it to defaults. If
   // |include_subdomains| is true then this will reset any feeds on any

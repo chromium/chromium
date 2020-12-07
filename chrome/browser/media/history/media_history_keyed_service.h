@@ -367,6 +367,7 @@ class MediaHistoryKeyedService : public KeyedService,
 
   // Saves a newly discovered media feed in the media history store.
   void DiscoverMediaFeed(const GURL& url,
+                         const base::Optional<GURL>& favicon,
                          base::OnceClosure callback = base::DoNothing());
 
  private:
