@@ -668,6 +668,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, SameUpdatesAreIgnored) {
   pdm->RecordUseOf(*cards[0]);
   std::vector<AutofillProfile*> profiles = pdm->GetServerProfiles();
   ASSERT_EQ(1uL, profiles.size());
+  // TODO(crbug.com/941498): Server profiles are not recorded.
   pdm->RecordUseOf(*profiles[0]);
 
   // Keep the same data (only change the customer data and the cloud token to
@@ -725,6 +726,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ChangedEntityGetsUpdated) {
   pdm->RecordUseOf(*cards[0]);
   std::vector<AutofillProfile*> profiles = pdm->GetServerProfiles();
   ASSERT_EQ(1uL, profiles.size());
+  // TODO(crbug.com/941498): Server profiles are not recorded.
   pdm->RecordUseOf(*profiles[0]);
 
   // Update the data (also change the customer data to force the full update as
