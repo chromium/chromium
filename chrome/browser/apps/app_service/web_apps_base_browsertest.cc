@@ -92,8 +92,9 @@ void CheckUrlScopeFilter(const apps::mojom::IntentFilterPtr& intent_filter,
 }
 
 void CheckShareFileFilter(const apps::mojom::IntentFilterPtr& intent_filter,
-                          const std::vector<std::string>& content_types,
-                          const std::string& different_content_type) {
+                          const std::vector<std::string>& filter_types,
+                          const std::vector<std::string>& accepted_types,
+                          const std::vector<std::string>& rejected_types) {
   EXPECT_FALSE(intent_filter->activity_name.has_value());
   EXPECT_FALSE(intent_filter->activity_label.has_value());
 
@@ -116,34 +117,36 @@ void CheckShareFileFilter(const apps::mojom::IntentFilterPtr& intent_filter,
   {
     const Condition& condition = *intent_filter->conditions[1];
     EXPECT_EQ(condition.condition_type, ConditionType::kMimeType);
-    EXPECT_EQ(condition.condition_values.size(), content_types.size());
+    EXPECT_EQ(condition.condition_values.size(), filter_types.size());
 
-    for (unsigned i = 0; i < content_types.size(); ++i) {
+    for (unsigned i = 0; i < filter_types.size(); ++i) {
       EXPECT_EQ(condition.condition_values[i]->match_type,
-                PatternMatchType::kNone);
-      EXPECT_EQ(condition.condition_values[i]->value, content_types[i]);
-
-      {
-        std::vector<GURL> filesystem_urls(1U);
-        std::vector<std::string> mime_types(1U, content_types[i]);
-        EXPECT_TRUE(apps_util::IntentMatchesFilter(
-            apps_util::CreateShareIntentFromFiles(filesystem_urls, mime_types),
-            intent_filter));
-      }
-
-      {
-        std::vector<GURL> filesystem_urls(3U);
-        std::vector<std::string> mime_types(3U, content_types[i]);
-        EXPECT_TRUE(apps_util::IntentMatchesFilter(
-            apps_util::CreateShareIntentFromFiles(filesystem_urls, mime_types),
-            intent_filter));
-      }
+                PatternMatchType::kMimeType);
+      EXPECT_EQ(condition.condition_values[i]->value, filter_types[i]);
     }
   }
 
-  {
+  for (const std::string& accepted_type : accepted_types) {
+    {
+      std::vector<GURL> filesystem_urls(1U);
+      std::vector<std::string> mime_types(1U, accepted_type);
+      EXPECT_TRUE(apps_util::IntentMatchesFilter(
+          apps_util::CreateShareIntentFromFiles(filesystem_urls, mime_types),
+          intent_filter));
+    }
+
+    {
+      std::vector<GURL> filesystem_urls(3U);
+      std::vector<std::string> mime_types(3U, accepted_type);
+      EXPECT_TRUE(apps_util::IntentMatchesFilter(
+          apps_util::CreateShareIntentFromFiles(filesystem_urls, mime_types),
+          intent_filter));
+    }
+  }
+
+  for (const std::string& rejected_type : rejected_types) {
     std::vector<GURL> filesystem_urls(1U);
-    std::vector<std::string> mime_types(1U, different_content_type);
+    std::vector<std::string> mime_types(1U, rejected_type);
     EXPECT_FALSE(apps_util::IntentMatchesFilter(
         apps_util::CreateShareIntentFromFiles(filesystem_urls, mime_types),
         intent_filter));
@@ -186,11 +189,42 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, PopulateIntentFilters) {
   CheckUrlScopeFilter(target[0], app_url.GetWithoutFilename(),
                       /*different_url=*/GURL("file:///"));
 
-  const std::vector<std::string> content_types(
+  const std::vector<std::string> filter_types(
       {"text/*", "image/svg+xml", "*/*"});
-  CheckShareFileFilter(
-      target[1], content_types,
-      /*different_content_type=*/"application/vnd.android.package-archive");
+  const std::vector<std::string> accepted_types(
+      {"text/plain", "image/svg+xml", "video/webm"});
+  const std::vector<std::string> rejected_types;  // No types are rejected.
+  CheckShareFileFilter(target[1], filter_types, accepted_types, rejected_types);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, PartialWild) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url(
+      embedded_test_server()->GetURL("/web_share_target/partial-wild.html"));
+
+  std::vector<mojom::IntentFilterPtr> target;
+  {
+    const web_app::WebAppRegistrar* registrar =
+        web_app::WebAppProvider::Get(browser()->profile())
+            ->registrar()
+            .AsWebAppRegistrar();
+    const web_app::AppId app_id =
+        web_app::InstallWebAppFromManifest(browser(), app_url);
+    const web_app::WebApp* web_app = registrar->GetAppById(app_id);
+    ASSERT_TRUE(web_app);
+    PopulateIntentFilters(*web_app, target);
+  }
+
+  EXPECT_EQ(target.size(), 2U);
+
+  CheckUrlScopeFilter(target[0], app_url.GetWithoutFilename(),
+                      /*different_url=*/GURL("file:///"));
+
+  const std::vector<std::string> filter_types({"image/*"});
+  const std::vector<std::string> accepted_types({"image/png", "image/svg+xml"});
+  const std::vector<std::string> rejected_types(
+      {"application/vnd.android.package-archive", "text/plain"});
+  CheckShareFileFilter(target[1], filter_types, accepted_types, rejected_types);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, LaunchWithIntent) {

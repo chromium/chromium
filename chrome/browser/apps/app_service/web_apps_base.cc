@@ -81,7 +81,7 @@ apps::mojom::IntentFilterPtr CreateShareFileFilter(
   std::vector<apps::mojom::ConditionValuePtr> mime_type_condition_values;
   for (auto& mime_type : content_types) {
     mime_type_condition_values.push_back(apps_util::MakeConditionValue(
-        mime_type, apps::mojom::PatternMatchType::kNone));
+        mime_type, apps::mojom::PatternMatchType::kMimeType));
   }
   if (!mime_type_condition_values.empty()) {
     auto mime_type_condition =
