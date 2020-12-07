@@ -41,7 +41,7 @@ bool AssociateCompletionPort(HANDLE job, HANDLE port, void* key) {
              : false;
 }
 
-// the different commands that you can send to the worker thread that
+// The different commands that you can send to the worker thread that
 // executes TargetEventsThread().
 enum {
   THREAD_CTRL_NONE,
@@ -217,7 +217,7 @@ DWORD WINAPI BrokerServicesBase::TargetEventsThread(PVOID param) {
     LPOVERLAPPED ovl = nullptr;
 
     if (!::GetQueuedCompletionStatus(port, &events, &key, &ovl, INFINITE)) {
-      // this call fails if the port has been closed before we have a
+      // This call fails if the port has been closed before we have a
       // chance to service the last packet which is 'exit' anyway so
       // this is not an error.
       return 1;
