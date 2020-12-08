@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.payments;
 
+import android.content.Context;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -17,7 +18,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.PayerData;
 import org.chromium.components.payments.PaymentApp;
@@ -122,17 +122,22 @@ public class AndroidPaymentApp
             mWebContents = webContents;
         }
 
+        @Nullable
+        private Context getActivityContext() {
+            WindowAndroid window = mWebContents.getTopLevelNativeWindow();
+            return window == null ? null : window.getActivity().get();
+        }
+
         // Launcher implementation.
         @Override
         public void showLeavingIncognitoWarning(
                 Callback<String> denyCallback, Runnable approveCallback) {
-            ChromeActivity activity = ChromeActivity.fromWebContents(mWebContents);
-            if (activity == null) {
+            Context context = getActivityContext();
+            if (context == null) {
                 denyCallback.onResult(ErrorStrings.ACTIVITY_NOT_FOUND);
                 return;
             }
-
-            new UiUtils.CompatibleAlertDialogBuilder(activity, R.style.Theme_Chromium_AlertDialog)
+            new UiUtils.CompatibleAlertDialogBuilder(context, R.style.Theme_Chromium_AlertDialog)
                     .setTitle(R.string.external_app_leave_incognito_warning_title)
                     .setMessage(R.string.external_payment_app_leave_incognito_warning)
                     .setPositiveButton(
