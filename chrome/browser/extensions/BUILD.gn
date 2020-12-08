@@ -997,8 +997,6 @@ static_library("extensions") {
       "api/tabs/tabs_util_chromeos.cc",
       "api/terminal/crostini_startup_status.cc",
       "api/terminal/crostini_startup_status.h",
-      "api/terminal/terminal_extension_helper.cc",
-      "api/terminal/terminal_extension_helper.h",
       "api/terminal/terminal_private_api.cc",
       "api/terminal/terminal_private_api.h",
       "api/virtual_keyboard_private/chrome_virtual_keyboard_delegate.cc",

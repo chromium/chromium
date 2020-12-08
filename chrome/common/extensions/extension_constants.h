@@ -79,12 +79,6 @@ extern const char kGoogleSheetsAppId[];
 // The extension id of the Google Slides application.
 extern const char kGoogleSlidesAppId[];
 
-// The extension id of the HTerm app for ChromeOS.
-extern const char kHTermAppId[];
-
-// The extension id of the HTerm dev app for ChromeOS.
-extern const char kHTermDevAppId[];
-
 // The extension id of the Identity API UI application.
 extern const char kIdentityApiUiAppId[];
 

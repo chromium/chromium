@@ -38,8 +38,6 @@ const char kGooglePlayMusicAppId[] = "icppfcnhkcmnfdhfhphakoifcfokfdhg";
 const char kGooglePlusAppId[] = "dlppkpafhbajpcmmoheippocdidnckmm";
 const char kGoogleSheetsAppId[] = "felcaaldnbdncclmgdcncolpebgiejap";
 const char kGoogleSlidesAppId[] = "aapocclcgogkmnckokdopfmhonfmgoek";
-const char kHTermAppId[] = "pnhechapfaindjhompbnflcldabbghjo";
-const char kHTermDevAppId[] = "okddffdblfhhnmhodogpojmfkjmhinfp";
 const char kIdentityApiUiAppId[] = "ahjaciijnoiaklcomgnblndopackapon";
 const char kTextEditorAppId[] = "mmfbcljfglbokpmkimbfghdkjmjhdgbg";
 const char kInAppPaymentsSupportAppId[] = "nmmhkkegccagdldgiimedpiccmgmieda";
@@ -63,8 +61,6 @@ const char* const kBuiltInFirstPartyExtensionIds[] = {
     kGooglePlusAppId,
     kGoogleSheetsAppId,
     kGoogleSlidesAppId,
-    kHTermAppId,
-    kHTermDevAppId,
     kIdentityApiUiAppId,
     kTextEditorAppId,
     kInAppPaymentsSupportAppId,
