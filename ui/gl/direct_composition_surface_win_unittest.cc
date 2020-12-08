@@ -551,7 +551,7 @@ std::vector<SkColor> ReadBackWindow(HWND window, const gfx::Size& size) {
   DCHECK(mem_hdc.IsValid());
 
   BITMAPV4HEADER hdr;
-  gfx::CreateBitmapV4Header(size.width(), size.height(), &hdr);
+  gfx::CreateBitmapV4HeaderForARGB888(size.width(), size.height(), &hdr);
 
   void* bits = nullptr;
   base::win::ScopedBitmap bitmap(

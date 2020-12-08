@@ -312,11 +312,11 @@ bool TestRenderViewHost::IsTestRenderViewHost() const {
   return true;
 }
 
-void TestRenderViewHost::TestOnStartDragging(
-    const DropData& drop_data) {
+void TestRenderViewHost::TestOnStartDragging(const DropData& drop_data,
+                                             SkBitmap bitmap) {
   blink::WebDragOperationsMask drag_operation = blink::kWebDragOperationEvery;
   DragEventSourceInfo event_info;
-  GetWidget()->OnStartDragging(drop_data, drag_operation, SkBitmap(),
+  GetWidget()->OnStartDragging(drop_data, drag_operation, std::move(bitmap),
                                gfx::Vector2d(), event_info);
 }
 

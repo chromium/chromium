@@ -104,6 +104,7 @@
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "skia/ext/image_operations.h"
 #include "skia/ext/platform_canvas.h"
+#include "skia/ext/skia_utils_base.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
@@ -2006,11 +2007,21 @@ void RenderWidgetHostImpl::SelectionBoundsChanged(
 void RenderWidgetHostImpl::OnStartDragging(
     const DropData& drop_data,
     blink::WebDragOperationsMask drag_operations_mask,
-    const SkBitmap& bitmap,
+    const SkBitmap& unsafe_bitmap,
     const gfx::Vector2d& bitmap_offset_in_dip,
     const DragEventSourceInfo& event_info) {
   RenderViewHostDelegateView* view = delegate_->GetDelegateView();
   if (!view || !GetView()) {
+    // Need to clear drag and drop state in blink.
+    DragSourceSystemDragEnded();
+    return;
+  }
+  SkBitmap bitmap;
+  // On receipt of an arbitrary bitmap from the renderer, we convert to an N32
+  // 32bpp bitmap. Other pixel sizes can lead to out-of-bounds mistakes when
+  // transferring the pixels out of the/ bitmap into other buffers.
+  if (!skia::SkBitmapToN32OpaqueOrPremul(unsafe_bitmap, &bitmap)) {
+    NOTREACHED() << "Unable to convert bitmap for drag-and-drop";
     // Need to clear drag and drop state in blink.
     DragSourceSystemDragEnded();
     return;

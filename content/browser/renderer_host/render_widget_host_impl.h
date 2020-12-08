@@ -908,7 +908,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void OnRequestSetBounds(const gfx::Rect& bounds);
   void OnStartDragging(const DropData& drop_data,
                        blink::WebDragOperationsMask operations_allowed,
-                       const SkBitmap& bitmap,
+                       const SkBitmap& unsafe_bitmap,
                        const gfx::Vector2d& bitmap_offset_in_dip,
                        const DragEventSourceInfo& event_info);
   void OnUpdateDragCursor(blink::WebDragOperation current_op);

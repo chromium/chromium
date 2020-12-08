@@ -84,6 +84,12 @@ void WriteSkFontStyle(base::Pickle* pickle, SkFontStyle style) {
 
 bool SkBitmapToN32OpaqueOrPremul(const SkBitmap& in, SkBitmap* out) {
   DCHECK(out);
+  if (in.colorType() == kUnknown_SkColorType &&
+      in.alphaType() == kUnknown_SkAlphaType && in.empty() && in.isNull()) {
+    // Default-initialized bitmaps convert to the same.
+    *out = SkBitmap();
+    return true;
+  }
   const SkImageInfo& info = in.info();
   if (info.colorType() == kN32_SkColorType &&
       (info.alphaType() == kPremul_SkAlphaType ||

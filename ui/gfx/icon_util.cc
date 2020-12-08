@@ -329,9 +329,8 @@ base::win::ScopedHICON IconUtil::CreateCursorFromSkBitmap(
   }
 
   BITMAPINFO icon_bitmap_info = {};
-  skia::CreateBitmapHeader(
-      bitmap.width(), bitmap.height(),
-      reinterpret_cast<BITMAPINFOHEADER*>(&icon_bitmap_info));
+  skia::CreateBitmapHeaderForN32SkBitmap(
+      bitmap, reinterpret_cast<BITMAPINFOHEADER*>(&icon_bitmap_info));
 
   base::win::ScopedGetDC dc(NULL);
   base::win::ScopedCreateDC working_dc(CreateCompatibleDC(dc));

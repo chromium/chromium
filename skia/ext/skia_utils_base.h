@@ -47,6 +47,11 @@ SK_API void WriteSkFontStyle(base::Pickle* pickle, SkFontStyle style);
 // |in|. |out| may or may not be GPU-backed.
 //
 // If unsuccessful, returns false, but |out| may be modified.
+//
+// This should be called as early as possible at IPC endpoints from
+// less-privileged contexts (e.g. on a message from the renderer process) if the
+// code handling the SkBitmap wants to work with an N32 type, rather than
+// delaying this conversion until a later time.
 SK_API bool SkBitmapToN32OpaqueOrPremul(const SkBitmap& in, SkBitmap* out);
 
 }  // namespace skia
