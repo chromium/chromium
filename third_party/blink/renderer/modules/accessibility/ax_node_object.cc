@@ -2446,14 +2446,6 @@ void AXNodeObject::AriaOwnsElements(AXObjectVector& owns) const {
   AccessibilityChildrenFromAOMProperty(AOMRelationListProperty::kOwns, owns);
 }
 
-bool AXNodeObject::SupportsARIAOwns() const {
-  if (!GetLayoutObject())
-    return false;
-  const AtomicString& aria_owns = GetAttribute(html_names::kAriaOwnsAttr);
-
-  return !aria_owns.IsEmpty();
-}
-
 // TODO(accessibility): Aria-dropeffect and aria-grabbed are deprecated in
 // aria 1.1 Also those properties are expected to be replaced by a new feature
 // in a future version of WAI-ARIA. After that we will re-implement them
