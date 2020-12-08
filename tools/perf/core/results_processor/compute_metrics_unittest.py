@@ -18,7 +18,7 @@ import mock
 
 RUN_METRICS_METHOD = 'tracing.metrics.metric_runner.RunMetricOnSingleTrace'
 GETSIZE_METHOD = 'os.path.getsize'
-TRACE_PROCESSOR_METRIC_METHOD = 'core.tbmv3.trace_processor.RunMetric'
+TRACE_PROCESSOR_METRIC_METHOD = 'core.tbmv3.trace_processor.RunMetrics'
 
 
 class ComputeMetricsTest(unittest.TestCase):

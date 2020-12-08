@@ -188,28 +188,30 @@ def _PluckField(json_dict, field_path):
     return _PluckField(field_value, path_tail)
 
 
-def RunMetric(trace_processor_path, trace_file, metric_name,
-              fetch_power_profile=False):
-  """Run a TBMv3 metric using trace processor.
+def RunMetrics(trace_processor_path, trace_file, metric_names,
+               fetch_power_profile=False):
+  """Run TBMv3 metrics using trace processor.
 
   Args:
     trace_processor_path: path to the trace_processor executable.
     trace_file: path to the trace file.
-    metric_name: the metric name (the corresponding files must exist in
+    metric_names: a list of metric names (the corresponding files must exist in
         tbmv3/metrics directory).
 
   Returns:
     A HistogramSet with metric results.
   """
   trace_processor_path = _EnsureTraceProcessor(trace_processor_path)
-  metric_files = _CreateMetricFiles(metric_name)
-  if metric_files.internal_metric:
-    metric_name_arg = metric_name
-  else:
-    metric_name_arg = metric_files.sql
+  metric_name_args = []
+  for metric_name in metric_names:
+    metric_files = _CreateMetricFiles(metric_name)
+    if metric_files.internal_metric:
+      metric_name_args.append(metric_name)
+    else:
+      metric_name_args.append(metric_files.sql)
   command_args = [
       trace_processor_path,
-      '--run-metrics', metric_name_arg,
+      '--run-metrics', ','.join(metric_name_args),
       '--metrics-output', 'json',
       trace_file,
   ]
@@ -222,28 +224,36 @@ def RunMetric(trace_processor_path, trace_file, metric_name,
 
   histograms = histogram_set.HistogramSet()
   root_annotations = measurements.get('__annotations', {})
-  full_metric_name = 'perfetto.protos.' + metric_name
-  annotations = root_annotations.get(full_metric_name, None)
-  metric_proto = measurements.get(full_metric_name, None)
-  if metric_proto is None:
-    logging.warn("No metric found in the output.")
-    return histograms
-  elif annotations is None:
-    logging.info("Metric has no field with unit. Histograms will be empty.")
-    return histograms
-
-  for field in _LeafFieldAnnotations(annotations):
-    unit = field.field_options.get('unit', None)
-    if unit is None:
-      logging.debug('Skipping field %s to histograms because it has no unit',
-          field.name)
+  for metric_name in metric_names:
+    full_metric_name = 'perfetto.protos.' + metric_name
+    annotations = root_annotations.get(full_metric_name, None)
+    metric_proto = measurements.get(full_metric_name, None)
+    if metric_proto is None:
+      logging.warn("Metric not found in the output: %s", metric_name)
       continue
-    histogram_name = ':'.join([field.name for field in field.path_from_root])
-    samples = _PluckField(metric_proto, field.path_from_root)
-    scoped_histogram_name = _ScopedHistogramName(metric_name, histogram_name)
-    histograms.CreateHistogram(scoped_histogram_name, unit, samples)
+    elif annotations is None:
+      logging.info("Skipping metric %s because it has no field with unit.",
+                   metric_name)
+      continue
+
+    for field in _LeafFieldAnnotations(annotations):
+      unit = field.field_options.get('unit', None)
+      if unit is None:
+        logging.debug('Skipping field %s to histograms because it has no unit',
+            field.name)
+        continue
+      histogram_name = ':'.join([field.name for field in field.path_from_root])
+      samples = _PluckField(metric_proto, field.path_from_root)
+      scoped_histogram_name = _ScopedHistogramName(metric_name, histogram_name)
+      histograms.CreateHistogram(scoped_histogram_name, unit, samples)
 
   return histograms
+
+
+def RunMetric(trace_processor_path, trace_file, metric_name,
+              fetch_power_profile=False):
+  return RunMetrics(trace_processor_path, trace_file, [metric_name],
+                    fetch_power_profile)
 
 
 def ConvertProtoTraceToJson(trace_processor_path, proto_file, json_path):

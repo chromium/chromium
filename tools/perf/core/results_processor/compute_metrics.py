@@ -108,10 +108,9 @@ def ComputeTBMv3Metrics(test_result,
     return
 
   start = time.time()
-  for metric in metrics:
-    histograms = trace_processor.RunMetric(
-        trace_processor_path, artifacts[CONCATENATED_PROTO_NAME]['filePath'],
-        metric, fetch_power_profile)
-    test_result['_histograms'].Merge(histograms)
+  histograms = trace_processor.RunMetrics(
+      trace_processor_path, artifacts[CONCATENATED_PROTO_NAME]['filePath'],
+      metrics, fetch_power_profile)
+  test_result['_histograms'].Merge(histograms)
   logging.info('%s: Computing TBMv3 metrics took %.3f seconds.' % (
       test_result['testPath'], time.time() - start))
