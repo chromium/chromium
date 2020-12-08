@@ -599,7 +599,7 @@ static void AdjustEffectiveTouchAction(ComputedStyle& style,
   TouchAction enforced_by_policy = TouchAction::kNone;
   if (element->GetDocument().IsVerticalScrollEnforced())
     enforced_by_policy = TouchAction::kPanY;
-  if (base::FeatureList::IsEnabled(::features::kSwipeToMoveCursor) &&
+  if (::features::IsSwipeToMoveCursorEnabled() &&
       IsEditableElement(element, style)) {
     element_touch_action &= ~TouchAction::kInternalPanXScrolls;
   }

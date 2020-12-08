@@ -826,7 +826,6 @@ class TouchActionBrowserTestEnableCursorControl
  public:
   TouchActionBrowserTestEnableCursorControl() {
     feature_list_.InitWithFeatures({::features::kSwipeToMoveCursor}, {});
-    DCHECK(base::FeatureList::IsEnabled(::features::kSwipeToMoveCursor));
   }
 
  private:
@@ -838,6 +837,8 @@ class TouchActionBrowserTestEnableCursorControl
 // scroll, and changes the selection.
 IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
                        BasicCursorControl) {
+  if (!::features::IsSwipeToMoveCursorEnabled())
+    return;
   base::HistogramTester histograms;
   LoadURL(kContentEditableDataURL.c_str());
 
@@ -869,6 +870,8 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
 // changed and scroll should happen.
 IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
                        NoCursorControlForHorizontalScrollable) {
+  if (!::features::IsSwipeToMoveCursorEnabled())
+    return;
   base::HistogramTester histograms;
   LoadURL(kContentEditableHorizontalScrollableDataURL.c_str());
 
@@ -900,6 +903,8 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
 // Ensure the swipe is not triggering cursor control.
 IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
                        NoCursorControlForNonPassiveLisenter) {
+  if (!::features::IsSwipeToMoveCursorEnabled())
+    return;
   LoadURL(kContentEditableNonPassiveHandlerDataURL.c_str());
 
   EXPECT_EQ(32,
@@ -925,6 +930,8 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
 // scroll, and changes the selection.
 IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
                        CursorControlOnInput) {
+  if (!::features::IsSwipeToMoveCursorEnabled())
+    return;
   base::HistogramTester histograms;
   // input size larger than the text size, not horizontally scrollable.
   LoadURL(base::StringPrintf(kInputTagCursorControl.c_str(), 40).c_str());
@@ -953,6 +960,8 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
 // right to left. Ensure the swipe is doing scrolling other than cursor control.
 IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
                        NoCursorControlOnHorizontalScrollableInput) {
+  if (!::features::IsSwipeToMoveCursorEnabled())
+    return;
   base::HistogramTester histograms;
   // Make the input size smaller than the text size, so it horizontally
   // scrollable.

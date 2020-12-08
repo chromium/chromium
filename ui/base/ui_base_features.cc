@@ -10,6 +10,10 @@
 #include "base/win/windows_version.h"
 #endif
 
+#if defined(OS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 namespace features {
 
 #if defined(OS_WIN)
@@ -267,5 +271,17 @@ const char kFilterNameOneEuro[] = "one_euro_filter";
 
 const base::Feature kSwipeToMoveCursor{"SwipeToMoveCursor",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsSwipeToMoveCursorEnabled() {
+  static const bool enabled =
+      base::FeatureList::IsEnabled(kSwipeToMoveCursor)
+#if defined(OS_ANDROID)
+      && base::android::BuildInfo::GetInstance()->sdk_int() >=
+             base::android::SDK_VERSION_R;
+#else
+      ;
+#endif
+  return enabled;
+}
 
 }  // namespace features

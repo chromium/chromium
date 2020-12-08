@@ -147,6 +147,8 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) extern const char kFilterNameOneEuro[];
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kSwipeToMoveCursor;
 
+COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsSwipeToMoveCursorEnabled();
+
 }  // namespace features
 
 #endif  // UI_BASE_UI_BASE_FEATURES_H_

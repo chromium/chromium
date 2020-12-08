@@ -668,7 +668,8 @@ TEST_P(ScrollingTest, nestedTouchActionChangesUnion) {
 TEST_P(ScrollingTest, touchActionEditableElement) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({::features::kSwipeToMoveCursor}, {});
-  ASSERT_TRUE(base::FeatureList::IsEnabled(::features::kSwipeToMoveCursor));
+  if (!::features::IsSwipeToMoveCursorEnabled())
+    return;
   // Long text that will overflow in y-direction.
   LoadHTML(R"HTML(
     <style>
