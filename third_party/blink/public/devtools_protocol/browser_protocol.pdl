@@ -5507,6 +5507,8 @@ domain Network
       RequestId transportId
       # WebTransport request URL.
       string url
+      # Timestamp.
+      MonotonicTime timestamp
       # Request initiator.
       optional Initiator initiator
 
@@ -5514,6 +5516,8 @@ domain Network
     parameters
       # WebTransport identifier.
       RequestId transportId
+      # Timestamp.
+      MonotonicTime timestamp
 
   experimental type PrivateNetworkRequestPolicy extends string
     enum

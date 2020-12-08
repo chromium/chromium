@@ -1684,7 +1684,8 @@ void InspectorNetworkAgent::WebTransportCreated(
   if (!current_stack_trace) {
     GetFrontend()->webTransportCreated(
         IdentifiersFactory::SubresourceRequestId(transport_id),
-        UrlWithoutFragment(request_url).GetString());
+        UrlWithoutFragment(request_url).GetString(),
+        base::TimeTicks::Now().since_origin().InSecondsF());
     return;
   }
 
@@ -1695,12 +1696,15 @@ void InspectorNetworkAgent::WebTransportCreated(
   initiator_object->setStack(std::move(current_stack_trace));
   GetFrontend()->webTransportCreated(
       IdentifiersFactory::SubresourceRequestId(transport_id),
-      UrlWithoutFragment(request_url).GetString(), std::move(initiator_object));
+      UrlWithoutFragment(request_url).GetString(),
+      base::TimeTicks::Now().since_origin().InSecondsF(),
+      std::move(initiator_object));
 }
 
 void InspectorNetworkAgent::WebTransportClosed(uint64_t transport_id) {
   GetFrontend()->webTransportClosed(
-      IdentifiersFactory::SubresourceRequestId(transport_id));
+      IdentifiersFactory::SubresourceRequestId(transport_id),
+      base::TimeTicks::Now().since_origin().InSecondsF());
 }
 
 Response InspectorNetworkAgent::enable(Maybe<int> total_buffer_size,
