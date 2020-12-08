@@ -2547,6 +2547,7 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/css/selectors/focus-visible-002.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-break/widows-orphans-017.html [ Failure ]
 crbug.com/626703 virtual/layout_ng_block_frag/external/wpt/css/css-break/widows-orphans-017.html [ Failure ]
 crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-peerconnection-no-sink.https.html [ Timeout ]
