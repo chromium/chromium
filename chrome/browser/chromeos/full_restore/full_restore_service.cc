@@ -53,7 +53,7 @@ FullRestoreService::FullRestoreService(Profile* profile) : profile_(profile) {
   // don't need to consider restoration.
   if (user_manager::UserManager::Get()->IsCurrentUserNew()) {
     new_user_pref_handler_ =
-        std::make_unique<NewUserRestorePrefHanlder>(profile_);
+        std::make_unique<NewUserRestorePrefHandler>(profile_);
     return;
   }
 

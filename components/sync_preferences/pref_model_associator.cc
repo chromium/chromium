@@ -223,6 +223,7 @@ PrefModelAssociator::MergeDataAndStartSyncing(
 
     remaining_preferences.erase(sync_pref_name);
     InitPrefAndAssociate(*sync_iter, sync_pref_name, &new_changes);
+    NotifyStartedSyncing(sync_pref_name);
   }
 
   // Go through and build sync data for any remaining preferences.
@@ -632,6 +633,15 @@ void PrefModelAssociator::EnforceRegisteredTypeInStore(
                             true);
     }
   }
+}
+
+void PrefModelAssociator::NotifyStartedSyncing(const std::string& path) const {
+  auto observer_iter = synced_pref_observers_.find(path);
+  if (observer_iter == synced_pref_observers_.end())
+    return;
+
+  for (auto& observer : *observer_iter->second)
+    observer.OnStartedSyncing(path);
 }
 
 }  // namespace sync_preferences

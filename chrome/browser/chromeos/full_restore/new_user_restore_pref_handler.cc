@@ -13,23 +13,37 @@
 namespace chromeos {
 namespace full_restore {
 
-NewUserRestorePrefHanlder::NewUserRestorePrefHanlder(Profile* profile)
+NewUserRestorePrefHandler::NewUserRestorePrefHandler(Profile* profile)
     : profile_(profile) {
   SetDefaultRestorePrefIfNecessary(profile_->GetPrefs());
-  syncable_pref_observer_.Observe(PrefServiceSyncableFromProfile(profile));
+
+  auto* pref_service = PrefServiceSyncableFromProfile(profile_);
+  syncable_pref_observer_.Observe(pref_service);
+  pref_service->AddSyncedPrefObserver(kRestoreAppsAndPagesPrefName, this);
 
   local_restore_pref_ = std::make_unique<IntegerPrefMember>();
 
   // base::Unretained() is safe because this class owns |local_restore_pref_|.
   local_restore_pref_->Init(
       kRestoreAppsAndPagesPrefName, profile_->GetPrefs(),
-      base::Bind(&NewUserRestorePrefHanlder::OnPreferenceChanged,
+      base::Bind(&NewUserRestorePrefHandler::OnPreferenceChanged,
                  base::Unretained(this)));
 }
 
-NewUserRestorePrefHanlder::~NewUserRestorePrefHanlder() = default;
+NewUserRestorePrefHandler::~NewUserRestorePrefHandler() {
+  if (!is_restore_pref_synced_) {
+    PrefServiceSyncableFromProfile(profile_)->RemoveSyncedPrefObserver(
+        kRestoreAppsAndPagesPrefName, this);
+  }
+}
 
-void NewUserRestorePrefHanlder::OnIsSyncingChanged() {
+void NewUserRestorePrefHandler::OnStartedSyncing(const std::string& path) {
+  is_restore_pref_synced_ = true;
+  PrefServiceSyncableFromProfile(profile_)->RemoveSyncedPrefObserver(
+      kRestoreAppsAndPagesPrefName, this);
+}
+
+void NewUserRestorePrefHandler::OnIsSyncingChanged() {
   // Wait until the initial sync happens.
   auto* pref_service = PrefServiceSyncableFromProfile(profile_);
   bool is_syncing = chromeos::features::IsSplitSettingsSyncEnabled()
@@ -46,7 +60,7 @@ void NewUserRestorePrefHanlder::OnIsSyncingChanged() {
   // means |kRestoreAppsAndPagesPrefName| is modifyed from sync, or the user
   // has set |kRestoreAppsAndPagesPrefName|. Then we should keep it, and not
   // update it.
-  if (is_restore_pref_changed_)
+  if (is_restore_pref_changed_ || is_restore_pref_synced_)
     return;
 
   // If |kRestoreAppsAndPagesPrefName| is not modified and still the default
@@ -55,7 +69,7 @@ void NewUserRestorePrefHanlder::OnIsSyncingChanged() {
   UpdateRestorePrefIfNecessary(profile_->GetPrefs());
 }
 
-void NewUserRestorePrefHanlder::OnPreferenceChanged(
+void NewUserRestorePrefHandler::OnPreferenceChanged(
     const std::string& pref_name) {
   is_restore_pref_changed_ = true;
   local_restore_pref_.reset();

@@ -32,6 +32,7 @@
 #include "components/sync/test/model/sync_error_factory_mock.h"
 #include "components/sync_preferences/pref_model_associator.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
+#include "components/sync_preferences/pref_service_syncable_observer.h"
 #include "components/sync_preferences/synced_pref_observer.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -122,8 +123,37 @@ class TestSyncedPrefObserver : public SyncedPrefObserver {
     changed_count_++;
   }
 
+  void OnStartedSyncing(const std::string& path) override {
+    synced_pref_ = path;
+    sync_started_count_++;
+  }
+
   std::string last_pref_;
   int changed_count_ = 0;
+
+  std::string synced_pref_;
+  int sync_started_count_ = 0;
+};
+
+class TestPrefServiceSyncableObserver : public PrefServiceSyncableObserver {
+ public:
+  TestPrefServiceSyncableObserver() = default;
+  ~TestPrefServiceSyncableObserver() override = default;
+
+  void OnIsSyncingChanged() override {
+    if (sync_pref_observer_ && sync_pref_observer_->sync_started_count_ > 0)
+      is_syncing_changed_ = true;
+  }
+
+  void SetSyncedPrefObserver(const TestSyncedPrefObserver* sync_pref_observer) {
+    sync_pref_observer_ = sync_pref_observer;
+  }
+
+  bool is_syncing_changed() { return is_syncing_changed_; }
+
+ private:
+  bool is_syncing_changed_ = false;
+  const TestSyncedPrefObserver* sync_pref_observer_ = nullptr;
 };
 
 syncer::SyncChange MakeRemoteChange(const std::string& name,
@@ -343,7 +373,7 @@ class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
 
   bool IsMergeableDictionaryPreference(
       const std::string& pref_name) const override {
-    return true;
+    return is_dict_pref_;
   }
 
   std::unique_ptr<base::Value> MaybeMergePreferenceValues(
@@ -353,7 +383,11 @@ class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
     return nullptr;
   }
 
+  void SetIsDictPref(bool is_dict_pref) { is_dict_pref_ = is_dict_pref; }
+
  private:
+  bool is_dict_pref_ = true;
+
   DISALLOW_COPY_AND_ASSIGN(TestPrefModelAssociatorClient);
 };
 
@@ -890,6 +924,7 @@ class PrefServiceSyncableChromeOsTest : public testing::Test {
     pref_registry_->RegisterStringPref(
         "os_priority_pref", std::string(),
         PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
+    client_.SetIsDictPref(false);
 
     // Create the PrefServiceSyncable after prefs are registered, which is the
     // order used in production.
@@ -929,6 +964,20 @@ class PrefServiceSyncableChromeOsTest : public testing::Test {
       }
     }
     return registered_types;
+  }
+
+  SyncData MakeRemoteSyncData(const std::string& name,
+                              const base::Value& value,
+                              syncer::ModelType model_type) {
+    std::string serialized;
+    JSONStringValueSerializer json(&serialized);
+    EXPECT_TRUE(json.Serialize(value));
+    sync_pb::EntitySpecifics entity;
+    sync_pb::PreferenceSpecifics* pref =
+        PrefModelAssociator::GetMutableSpecifics(model_type, &entity);
+    pref->set_name(name);
+    pref->set_value(serialized);
+    return SyncData::CreateRemoteData(entity);
   }
 
  protected:
@@ -1202,6 +1251,97 @@ TEST_F(PrefServiceSyncableChromeOsTest,
 
   prefs_->RemoveSyncedPrefObserver("os_pref", &observer);
 }
+
+TEST_F(PrefServiceSyncableChromeOsTest,
+       SyncedPrefObserver_OsPrefIsChangedFromSync) {
+  feature_list_.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
+  CreatePrefService();
+  prefs_->SetString("os_pref", "default_value");
+
+  TestSyncedPrefObserver observer;
+  prefs_->AddSyncedPrefObserver("os_pref", &observer);
+
+  TestPrefServiceSyncableObserver pref_service_sync_observer;
+  pref_service_sync_observer.SetSyncedPrefObserver(&observer);
+  prefs_->AddObserver(&pref_service_sync_observer);
+
+  // Simulate that "os_pref" is registered as SYNCABLE_PREF
+  syncer::SyncDataList list;
+  list.push_back(MakeRemoteSyncData("os_pref", base::Value("new_value"),
+                                    syncer::OS_PREFERENCES));
+
+  // Simulate the first sync at startup.
+  syncer::SyncChangeList outgoing_changes;
+  prefs_->GetSyncableService(syncer::OS_PREFERENCES)
+      ->MergeDataAndStartSyncing(
+          syncer::OS_PREFERENCES, list,
+          std::make_unique<TestSyncProcessorStub>(&outgoing_changes),
+          std::make_unique<syncer::SyncErrorFactoryMock>());
+
+  EXPECT_EQ("os_pref", observer.synced_pref_);
+  EXPECT_EQ(1, observer.sync_started_count_);
+  EXPECT_TRUE(pref_service_sync_observer.is_syncing_changed());
+
+  prefs_->RemoveObserver(&pref_service_sync_observer);
+  prefs_->RemoveSyncedPrefObserver("os_pref", &observer);
+}
+
+TEST_F(PrefServiceSyncableChromeOsTest,
+       SyncedPrefObserver_OsPrefIsNotChangedFromSync) {
+  feature_list_.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
+  CreatePrefService();
+  prefs_->SetString("os_pref", "default_value");
+
+  TestSyncedPrefObserver observer;
+  prefs_->AddSyncedPrefObserver("os_pref", &observer);
+
+  TestPrefServiceSyncableObserver pref_service_sync_observer;
+  pref_service_sync_observer.SetSyncedPrefObserver(&observer);
+  prefs_->AddObserver(&pref_service_sync_observer);
+
+  // Simulate that "os_pref" is registered as SYNCABLE_PREF
+  syncer::SyncDataList list;
+  list.push_back(MakeRemoteSyncData("os_pref", base::Value("new_value"),
+                                    syncer::OS_PREFERENCES));
+
+  // Simulate the first sync at startup.
+  syncer::SyncChangeList outgoing_changes;
+  prefs_->GetSyncableService(syncer::OS_PREFERENCES)
+      ->MergeDataAndStartSyncing(
+          syncer::OS_PREFERENCES, list,
+          std::make_unique<TestSyncProcessorStub>(&outgoing_changes),
+          std::make_unique<syncer::SyncErrorFactoryMock>());
+
+  EXPECT_EQ("os_pref", observer.synced_pref_);
+  EXPECT_EQ(1, observer.sync_started_count_);
+  EXPECT_TRUE(pref_service_sync_observer.is_syncing_changed());
+
+  prefs_->RemoveObserver(&pref_service_sync_observer);
+  prefs_->RemoveSyncedPrefObserver("os_pref", &observer);
+}
+
+TEST_F(PrefServiceSyncableChromeOsTest, SyncedPrefObserver_EmptyCloud) {
+  feature_list_.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
+  CreatePrefService();
+  prefs_->SetString("os_pref", "new_value");
+
+  TestSyncedPrefObserver observer;
+  prefs_->AddSyncedPrefObserver("os_pref", &observer);
+
+  // Simulate the first sync at startup.
+  syncer::SyncChangeList outgoing_changes;
+  prefs_->GetSyncableService(syncer::OS_PREFERENCES)
+      ->MergeDataAndStartSyncing(
+          syncer::OS_PREFERENCES, syncer::SyncDataList(),
+          std::make_unique<TestSyncProcessorStub>(&outgoing_changes),
+          std::make_unique<syncer::SyncErrorFactoryMock>());
+
+  EXPECT_EQ("", observer.synced_pref_);
+  EXPECT_EQ(0, observer.sync_started_count_);
+
+  prefs_->RemoveSyncedPrefObserver("os_pref", &observer);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace

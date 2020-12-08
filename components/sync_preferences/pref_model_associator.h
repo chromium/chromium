@@ -169,6 +169,10 @@ class PrefModelAssociator : public syncer::SyncableService {
   // gets removed.
   void EnforceRegisteredTypeInStore(const std::string& pref_name);
 
+  // Notifies the synced pref observers that the pref for the given |path| is
+  // synced.
+  void NotifyStartedSyncing(const std::string& path) const;
+
   // Do we have an active association between the preferences and sync models?
   // Set when start syncing, reset in StopSyncing. While this is not set, we
   // ignore any local preference changes (when we start syncing we will look

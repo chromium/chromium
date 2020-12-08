@@ -17,19 +17,36 @@ class Profile;
 namespace chromeos {
 namespace full_restore {
 
-// This class handles the new user's restore prefs. It sets the default restore
-// pref setting as |kAskEveryTime|. If the user has the browser restore setting,
-// updates the restore pref |kRestoreAppsAndPagesPrefName|, when the browser
-// restore settings is synced.
-class NewUserRestorePrefHanlder
-    : public sync_preferences::PrefServiceSyncableObserver {
+// This class handles the new user's OS restore pref "restore_apps_and_pages".
+//
+// 1. At startup, both the OS restore pref "restore_apps_and_pages" and the
+// browser's "restore_on_startup" are empty, so the "restore_apps_and_pages"'s
+// value is initialized as |kAskEveryTime|.
+//
+// 2. When synced, there are 3 scenarios:
+// A. The OS restore pref "restore_apps_and_pages" is not empty in the init sync
+// list, then don't update the "restore_apps_and_pages"'s value, and use the
+// value from sync.
+// B. The OS restore pref "restore_apps_and_pages" is empty in the init sync
+// list, and "restore_apps_and_pages" is set by the user, then don't update
+// the "restore_apps_and_pages"'s value, and use the value set by the user.
+// C. The OS restore pref "restore_apps_and_pages" is empty in the init sync
+// list, "restore_apps_and_pages" is not set by the user, and the browser's
+// "restore_on_startup" is not empty; then reset the "restore_apps_and_pages"
+// value based on the browser's setting "restore_on_startup".
+class NewUserRestorePrefHandler
+    : public sync_preferences::SyncedPrefObserver,
+      public sync_preferences::PrefServiceSyncableObserver {
  public:
-  explicit NewUserRestorePrefHanlder(Profile* profile);
-  ~NewUserRestorePrefHanlder() override;
+  explicit NewUserRestorePrefHandler(Profile* profile);
+  ~NewUserRestorePrefHandler() override;
 
-  NewUserRestorePrefHanlder(const NewUserRestorePrefHanlder&) = delete;
-  NewUserRestorePrefHanlder& operator=(const NewUserRestorePrefHanlder&) =
+  NewUserRestorePrefHandler(const NewUserRestorePrefHandler&) = delete;
+  NewUserRestorePrefHandler& operator=(const NewUserRestorePrefHandler&) =
       delete;
+
+  // sync_preferences::SyncedPrefObserver overrides:
+  void OnStartedSyncing(const std::string& path) override;
 
   // sync_preferences::PrefServiceSyncableObserver overrides:
   void OnIsSyncingChanged() override;
@@ -41,6 +58,7 @@ class NewUserRestorePrefHanlder
   Profile* profile_ = nullptr;
 
   bool is_restore_pref_changed_ = false;
+  bool is_restore_pref_synced_ = false;
 
   // Local restore pref to keep track the pref |kRestoreAppsAndPagesPrefName|
   // changes.
