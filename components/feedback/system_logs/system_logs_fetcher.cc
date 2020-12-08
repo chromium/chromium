@@ -14,6 +14,10 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/feedback/feedback_report.h"
+#endif
+
 using content::BrowserThread;
 
 namespace system_logs {
@@ -27,6 +31,10 @@ constexpr const char* const kExemptKeysOfUUIDs[] = {
     "CHROMEOS_CANARY_APPID",
     "CHROMEOS_RELEASE_APPID",
 };
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kLacrosLogEntryPrefix[] = "Lacros ";
+#endif
 
 // Returns true if the given |key| and its corresponding value are exempt from
 // redaction.
@@ -45,6 +53,19 @@ void Redact(feedback::RedactionTool* redactor, SystemLogsResponse* response) {
       element.second = redactor->Redact(element.second);
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+std::string MergeStingsByComma(const std::string& str1,
+                               const std::string str2) {
+  if (str1.empty())
+    return str2;
+
+  if (str2.empty())
+    return str1;
+
+  return str1 + ", " + str2;
+}
+#endif
 
 }  // namespace
 
@@ -136,8 +157,73 @@ void SystemLogsFetcher::AddResponse(
   if (num_pending_requests_ > 0)
     return;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  MergeAshAndLacrosCrashReportIdsInReponse();
+#endif
+
   RunCallbackAndDeleteSoon();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(https://crbug.com/1156750): Add test cases to exercise this code path.
+void SystemLogsFetcher::MergeAshAndLacrosCrashReportIdsInReponse() {
+  // Merge the lacros and ash recent crash report ids into a single log entry
+  // with the key defined by kCrashReportIdsKey, i.e. crash_report_ids.
+  auto ash_crash_iter =
+      response_->find(feedback::FeedbackReport::kCrashReportIdsKey);
+  // If ash crash_report_ids log entry is not found, it means CrashIdsSource
+  // is not included in log sources, for example, the code is called by
+  // BuildShellSystemLogsFetcher. Stop further processing.
+  if (ash_crash_iter == response_->end())
+    return;
+  std::string ash_crash_report_ids = ash_crash_iter->second;
+
+  std::string lacros_crash_report_ids;
+  std::string lacros_crash_report_key =
+      std::string(kLacrosLogEntryPrefix) +
+      feedback::FeedbackReport::kCrashReportIdsKey;
+  auto lacros_crash_iter = response_->find(lacros_crash_report_key);
+  if (lacros_crash_iter != response_->end())
+    lacros_crash_report_ids = lacros_crash_iter->second;
+
+  // Update the crash_report_ids with the merged value.
+  ash_crash_iter->second =
+      MergeStingsByComma(ash_crash_report_ids, lacros_crash_report_ids);
+  // Remove the lacros log entry of recent crash report ids.
+  response_->erase(lacros_crash_report_key);
+
+  // Merge the lacros and ash all crash report ids into a single log entry
+  // with key defined by kAllCrashReportIdsKey, i.e. all_crash_report_ids.
+  auto ash_all_crash_iter =
+      response_->find(feedback::FeedbackReport::kAllCrashReportIdsKey);
+  DCHECK(ash_all_crash_iter != response_->end());
+  std::string ash_all_crash_report_ids = ash_all_crash_iter->second;
+
+  std::string lacros_all_crash_report_ids;
+  std::string lacros_all_crash_report_key =
+      std::string(kLacrosLogEntryPrefix) +
+      feedback::FeedbackReport::kAllCrashReportIdsKey;
+  auto lacros_all_crash_iter = response_->find(lacros_all_crash_report_key);
+  if (lacros_all_crash_iter != response_->end())
+    lacros_all_crash_report_ids = lacros_all_crash_iter->second;
+
+  std::string all_crash_report_ids;
+  // If there are only recent crashes from Lacros, let lacros crash ids
+  // go first; otherwise, ash crash ids will go first.
+  if (ash_crash_report_ids.empty() && !lacros_crash_report_ids.empty()) {
+    all_crash_report_ids = MergeStingsByComma(lacros_all_crash_report_ids,
+                                              ash_all_crash_report_ids);
+  } else {
+    all_crash_report_ids = MergeStingsByComma(ash_all_crash_report_ids,
+                                              lacros_all_crash_report_ids);
+  }
+
+  // Update all_crash_report_ids with merged value.
+  ash_all_crash_iter->second = all_crash_report_ids;
+  // Remove the Lacros log entry of all crash report ids.
+  response_->erase(lacros_all_crash_report_key);
+}
+#endif
 
 void SystemLogsFetcher::RunCallbackAndDeleteSoon() {
   DCHECK(!callback_.is_null());
