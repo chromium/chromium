@@ -527,7 +527,7 @@ void ProfilePickerHandler::OnSwitchToProfileComplete(
 
   if (new_profile) {
     RecordProfilePickerAction(ProfilePickerAction::kLaunchNewProfile);
-  } else if (profile->IsGuestSession()) {
+  } else if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile()) {
     RecordProfilePickerAction(ProfilePickerAction::kLaunchGuestProfile);
   } else {
     RecordProfilePickerAction(
