@@ -15,6 +15,3 @@ per-file host_zoom_map_browsertest.cc=wjmaclean@chromium.org
 per-file gaia_info_update_service*=msalama@chromium.org
 per-file profile_attributes*=msalama@chromium.org
 per-file profile_info*=msalama@chromium.org
-
-# COMPONENT: UI>Browser>Profiles
-# TEAM: chrome-signin@chromium.org
