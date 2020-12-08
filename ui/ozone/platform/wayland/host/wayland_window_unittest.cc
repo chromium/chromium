@@ -34,6 +34,7 @@
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_keyboard.h"
+#include "ui/ozone/platform/wayland/test/test_output.h"
 #include "ui/ozone/platform/wayland/test/test_region.h"
 #include "ui/ozone/platform/wayland/test/test_touch.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
@@ -1395,6 +1396,45 @@ TEST_P(WaylandWindowTest, DispatchWindowResize) {
                                                              gfx::Point());
     }
   }
+}
+
+TEST_P(WaylandWindowTest, ToplevelWindowUpdateBufferScale) {
+  VerifyAndClearExpectations();
+
+  // Buffer scale must be 1 when no output has been entered by the window.
+  EXPECT_EQ(1, window_->buffer_scale());
+
+  // Creating an output with scale 1.
+  wl::TestOutput* output1 = server_.CreateAndInitializeOutput();
+  output1->SetRect(gfx::Rect(0, 0, 1920, 1080));
+  output1->SetScale(1);
+  Sync();
+
+  // Creating an output with scale 2.
+  wl::TestOutput* output2 = server_.CreateAndInitializeOutput();
+  output2->SetRect(gfx::Rect(0, 0, 1920, 1080));
+  output2->SetScale(2);
+  Sync();
+
+  // Send the window to |output1|.
+  wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+  ASSERT_TRUE(surface);
+  wl_surface_send_enter(surface->resource(), output1->resource());
+  Sync();
+
+  // The window's scale and bounds must remain unchanged.
+  EXPECT_EQ(1, window_->buffer_scale());
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 600), window_->GetBounds());
+
+  // Simulating drag process from |output1| to |output2|.
+  wl_surface_send_enter(surface->resource(), output2->resource());
+  wl_surface_send_leave(surface->resource(), output1->resource());
+  Sync();
+
+  // The window must change its scale and bounds to keep DIP bounds the same.
+  EXPECT_EQ(2, window_->buffer_scale());
+  EXPECT_EQ(gfx::Rect(0, 0, 1600, 1200), window_->GetBounds());
 }
 
 // Tests WaylandWindow repositions menu windows to be relative to parent window
