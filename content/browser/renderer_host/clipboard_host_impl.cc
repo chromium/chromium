@@ -354,15 +354,7 @@ void ClipboardHostImpl::WriteBookmark(const std::string& url,
   clipboard_writer_->WriteBookmark(title, url);
 }
 
-void ClipboardHostImpl::WriteImage(const SkBitmap& unsafe_bitmap) {
-  SkBitmap bitmap;
-  // On receipt of an arbitrary bitmap from the renderer, we convert to an N32
-  // 32bpp bitmap. Other pixel sizes can lead to out-of-bounds mistakes when
-  // transferring the pixels out of the bitmap into other buffers.
-  if (!skia::SkBitmapToN32OpaqueOrPremul(unsafe_bitmap, &bitmap)) {
-    NOTREACHED() << "Unable to convert bitmap for clipboard";
-    return;
-  }
+void ClipboardHostImpl::WriteImage(const SkBitmap& bitmap) {
   clipboard_writer_->WriteImage(bitmap);
 }
 

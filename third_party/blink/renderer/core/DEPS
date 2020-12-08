@@ -85,6 +85,7 @@ include_rules = [
     "+skia/public/mojom",
     "+skia/ext/image_operations.h",
     "+skia/ext/legacy_display_globals.h",
+    "+skia/ext/skia_utils_base.h",
     "+skia/ext/skia_utils_mac.h",
     "+third_party/blink/public/common",
     "+third_party/blink/public/mojom",

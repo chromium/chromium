@@ -95,38 +95,6 @@ TEST_F(ClipboardHostImplTest, SimpleImage) {
   EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, actual));
 }
 
-// The clipboard implementations work with N32 ARGB bitmaps, but the renderer
-// may send arbitrary formats. They are converted appropriately.
-TEST_F(ClipboardHostImplTest, IncompatibleImage) {
-  SkBitmap bitmap;
-  bitmap.allocPixels(
-      SkImageInfo::Make(3, 2, kARGB_4444_SkColorType, kPremul_SkAlphaType));
-  bitmap.eraseARGB(255, 0, 255, 0);
-  mojo_clipboard()->WriteImage(bitmap);
-  uint64_t sequence_number =
-      system_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
-  mojo_clipboard()->CommitWrite();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_NE(sequence_number, system_clipboard()->GetSequenceNumber(
-                                 ui::ClipboardBuffer::kCopyPaste));
-  EXPECT_FALSE(system_clipboard()->IsFormatAvailable(
-      ui::ClipboardFormatType::GetPlainTextType(),
-      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr));
-  EXPECT_TRUE(system_clipboard()->IsFormatAvailable(
-      ui::ClipboardFormatType::GetBitmapType(), ui::ClipboardBuffer::kCopyPaste,
-      /*data_dst=*/nullptr));
-
-  // The input was not N32, but we want to compare the output against something,
-  // so we convert the input to N32.
-  SkBitmap converted_input;
-  EXPECT_TRUE(skia::SkBitmapToN32OpaqueOrPremul(bitmap, &converted_input));
-
-  SkBitmap actual = ui::clipboard_test_util::ReadImage(system_clipboard());
-  EXPECT_EQ(actual.colorType(), kN32_SkColorType);
-  EXPECT_TRUE(gfx::BitmapsAreEqual(converted_input, actual));
-}
-
 TEST_F(ClipboardHostImplTest, ReentrancyInSyncCall) {
   // Due to the nature of this test, it's somewhat racy. On some platforms
   // (currently Linux), reading the clipboard requires running a nested message

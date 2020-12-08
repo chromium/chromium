@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -183,7 +184,15 @@ void SystemClipboard::WriteImageWithTag(Image* image,
   SkBitmap bitmap;
   if (sk_sp<SkImage> sk_image = paint_image.GetSwSkImage())
     sk_image->asLegacyBitmap(&bitmap);
-  clipboard_->WriteImage(bitmap);
+  // The bitmap backing a canvas can be in non-native skia pixel order (aka
+  // RGBA when kN32_SkColorType is BGRA-ordered, or higher bit-depth color-types
+  // like F16. The IPC to the browser requires the bitmap to be in N32 format
+  // so we convert it here if needed.
+  SkBitmap n32_bitmap;
+  if (skia::SkBitmapToN32OpaqueOrPremul(bitmap, &n32_bitmap))
+    clipboard_->WriteImage(n32_bitmap);
+  else
+    clipboard_->WriteImage(SkBitmap());
 
   if (url.IsValid() && !url.IsEmpty()) {
 #if !defined(OS_MAC)
