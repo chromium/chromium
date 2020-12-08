@@ -322,6 +322,11 @@ const char kCheckOfflineCapabilityDescription[] =
     "Use advanced offline capability check to decide whether the browser "
     "displays install prompts for PWAs.";
 
+const char kChromeLabsName[] = "Chrome Labs";
+const char kChromeLabsDescription[] =
+    "Access Chrome Labs through the toolbar menu to see featured user-facing "
+    "experimental features.";
+
 const char kContextMenuGoogleLensChipName[] =
     "Google Lens powered image search for surfaced as a chip below the context "
     "menu.";

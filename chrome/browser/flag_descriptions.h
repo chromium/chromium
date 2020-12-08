@@ -199,6 +199,9 @@ extern const char kChangePasswordAffiliationInfoDescription[];
 extern const char kCheckOfflineCapabilityName[];
 extern const char kCheckOfflineCapabilityDescription[];
 
+extern const char kChromeLabsName[];
+extern const char kChromeLabsDescription[];
+
 extern const char kContextMenuGoogleLensChipName[];
 extern const char kContextMenuGoogleLensChipDescription[];
 

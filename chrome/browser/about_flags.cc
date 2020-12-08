@@ -6934,6 +6934,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(continuous_search::features::kContinuousSearch)},
 #endif  // defined(OS_ANDROID)
 
+    // TODO(crbug.com/1155358): Enable Chrome Labs for ChromeOS
+    {"chrome-labs", flag_descriptions::kChromeLabsName,
+     flag_descriptions::kChromeLabsDescription, kOsLinux | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(features::kChromeLabs)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
