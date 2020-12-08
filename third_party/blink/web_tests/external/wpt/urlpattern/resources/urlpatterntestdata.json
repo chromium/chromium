@@ -1,0 +1,455 @@
+[
+  {
+    "pattern": { "pathname": "/foo/bar" },
+    "input": { "pathname": "/foo/bar" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/bar" },
+    "input": { "pathname": "/foo/ba" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/bar" },
+    "input": { "pathname": "/foo/bar/" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/bar" },
+    "input": { "pathname": "/foo/bar/baz" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/bar" },
+    "input": "https://example.com/foo/bar",
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/bar" },
+    "input": "https://example.com/foo/bar/baz",
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/bar" },
+    "input": { "hostname": "example.com", "pathname": "/foo/bar" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/bar" },
+    "input": { "hostname": "example.com", "pathname": "/foo/bar/baz" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/bar" },
+    "input": { "pathname": "/foo/bar", "baseURL": "https://example.com" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/bar" },
+    "input": { "pathname": "/foo/bar/baz", "baseURL": "https://example.com" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/bar",
+                 "baseURL": "https://example.com?query#hash" },
+    "input": { "pathname": "/foo/bar" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/bar",
+                 "baseURL": "https://example.com?query#hash" },
+    "input": { "hostname": "example.com", "pathname": "/foo/bar" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/bar",
+                 "baseURL": "https://example.com?query#hash" },
+    "input": { "protocol": "https", "hostname": "example.com",
+               "pathname": "/foo/bar" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/bar",
+                 "baseURL": "https://example.com?query#hash" },
+    "input": { "protocol": "https", "hostname": "example.com",
+               "pathname": "/foo/bar/baz" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/bar",
+                 "baseURL": "https://example.com?query#hash" },
+    "input": { "protocol": "https", "hostname": "example.com",
+               "pathname": "/foo/bar", "search": "otherquery",
+               "hash": "otherhash" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/bar",
+                 "baseURL": "https://example.com?query#hash" },
+    "input": "https://example.com/foo/bar",
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/bar",
+                 "baseURL": "https://example.com?query#hash" },
+    "input": "https://example.com/foo/bar?otherquery#otherhash",
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/bar",
+                 "baseURL": "https://example.com?query#hash" },
+    "input": "https://example.com/foo/bar/baz",
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/bar",
+                 "baseURL": "https://example.com?query#hash" },
+    "input": "https://other.com/foo/bar",
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/bar",
+                 "baseURL": "https://example.com?query#hash" },
+    "input": "http://other.com/foo/bar",
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/bar",
+                 "baseURL": "https://example.com?query#hash" },
+    "input": { "pathname": "/foo/bar", "baseURL": "https://example.com" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/bar",
+                 "baseURL": "https://example.com?query#hash" },
+    "input": { "pathname": "/foo/bar/baz", "baseURL": "https://example.com" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/bar",
+                 "baseURL": "https://example.com?query#hash" },
+    "input": { "pathname": "/foo/bar", "baseURL": "https://other.com" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/bar",
+                 "baseURL": "https://example.com?query#hash" },
+    "input": { "pathname": "/foo/bar", "baseURL": "http://example.com" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar" },
+    "input": { "pathname": "/foo/bar" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar" },
+    "input": { "pathname": "/foo/index.html" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar" },
+    "input": { "pathname": "/foo/bar/" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar" },
+    "input": { "pathname": "/foo/" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/(.*)" },
+    "input": { "pathname": "/foo/bar" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/(.*)" },
+    "input": { "pathname": "/foo/bar/baz" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/(.*)" },
+    "input": { "pathname": "/foo/" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/(.*)" },
+    "input": { "pathname": "/foo" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar(.*)" },
+    "input": { "pathname": "/foo/bar" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar(.*)" },
+    "input": { "pathname": "/foo/bar/baz" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar(.*)" },
+    "input": { "pathname": "/foo/" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar(.*)" },
+    "input": { "pathname": "/foo" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar?" },
+    "input": { "pathname": "/foo/bar" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar?" },
+    "input": { "pathname": "/foo" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar?" },
+    "input": { "pathname": "/foo/" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar?" },
+    "input": { "pathname": "/foobar" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar?" },
+    "input": { "pathname": "/foo/bar/baz" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar+" },
+    "input": { "pathname": "/foo/bar" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar+" },
+    "input": { "pathname": "/foo/bar/baz" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar+" },
+    "input": { "pathname": "/foo" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar+" },
+    "input": { "pathname": "/foo/" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar+" },
+    "input": { "pathname": "/foobar" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar*" },
+    "input": { "pathname": "/foo/bar" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar*" },
+    "input": { "pathname": "/foo/bar/baz" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar*" },
+    "input": { "pathname": "/foo" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar*" },
+    "input": { "pathname": "/foo/" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/:bar*" },
+    "input": { "pathname": "/foobar" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/(.*)?" },
+    "input": { "pathname": "/foo/bar" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/(.*)?" },
+    "input": { "pathname": "/foo/bar/baz" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/(.*)?" },
+    "input": { "pathname": "/foo" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/(.*)?" },
+    "input": { "pathname": "/foo/" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/(.*)?" },
+    "input": { "pathname": "/foobar" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/(.*)?" },
+    "input": { "pathname": "/fo" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/(.*)+" },
+    "input": { "pathname": "/foo/bar" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/(.*)+" },
+    "input": { "pathname": "/foo/bar/baz" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/(.*)+" },
+    "input": { "pathname": "/foo" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/(.*)+" },
+    "input": { "pathname": "/foo/" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/(.*)+" },
+    "input": { "pathname": "/foobar" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/(.*)+" },
+    "input": { "pathname": "/fo" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/(.*)*" },
+    "input": { "pathname": "/foo/bar" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/(.*)*" },
+    "input": { "pathname": "/foo/bar/baz" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/(.*)*" },
+    "input": { "pathname": "/foo" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/(.*)*" },
+    "input": { "pathname": "/foo/" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo/(.*)*" },
+    "input": { "pathname": "/foobar" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo/(.*)*" },
+    "input": { "pathname": "/fo" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo{/bar}" },
+    "input": { "pathname": "/foo/bar" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo{/bar}" },
+    "input": { "pathname": "/foo/bar/baz" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo{/bar}" },
+    "input": { "pathname": "/foo" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo{/bar}" },
+    "input": { "pathname": "/foo/" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo{/bar}?" },
+    "input": { "pathname": "/foo/bar" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo{/bar}?" },
+    "input": { "pathname": "/foo/bar/baz" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo{/bar}?" },
+    "input": { "pathname": "/foo" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo{/bar}?" },
+    "input": { "pathname": "/foo/" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo{/bar}+" },
+    "input": { "pathname": "/foo/bar" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo{/bar}+" },
+    "input": { "pathname": "/foo/bar/bar" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo{/bar}+" },
+    "input": { "pathname": "/foo/bar/baz" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo{/bar}+" },
+    "input": { "pathname": "/foo" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo{/bar}+" },
+    "input": { "pathname": "/foo/" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo{/bar}*" },
+    "input": { "pathname": "/foo/bar" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo{/bar}*" },
+    "input": { "pathname": "/foo/bar/bar" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo{/bar}*" },
+    "input": { "pathname": "/foo/bar/baz" },
+    "expected": false
+  },
+  {
+    "pattern": { "pathname": "/foo{/bar}*" },
+    "input": { "pathname": "/foo" },
+    "expected": true
+  },
+  {
+    "pattern": { "pathname": "/foo{/bar}*" },
+    "input": { "pathname": "/foo/" },
+    "expected": false
+  }
+]
