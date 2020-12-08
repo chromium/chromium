@@ -32455,6 +32455,15 @@ Called by update_feature_policy_enum.py.-->
   <int value="642" label="NSFileWriteVolumeReadOnlyError"/>
 </enum>
 
+<enum name="FoundBuyableProductAnnotation">
+  <summary>
+    Whether a buyable product annotation was found in the response from an
+    endpoint which provides page metadata in ShoppingPersistedTabData.
+  </summary>
+  <int value="0" label="NotFound"/>
+  <int value="1" label="Found"/>
+</enum>
+
 <enum name="FramebustInterventionOutcome">
   <int value="0" label="Accepted"/>
   <int value="1" label="Declined and navigated"/>

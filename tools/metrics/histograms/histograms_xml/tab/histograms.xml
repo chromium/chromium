@@ -1685,6 +1685,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Tabs.ShoppingPersistedTabData.FoundBuyableProductAnnotation"
+    enum="FoundBuyableProductAnnotation" expires_after="2021-12-05">
+  <owner>yusufo@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <summary>
+    Records if we find a BuyableProductAnnotation in the response from our
+    endpoint which provides page annotations to enrich the user experience. The
+    endpoint is called for every Tab when we enter the Tab grid switcher and is
+    cached with a time to live of 1 hour.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.StateTransfer.NumberOfOtherTabsActivatedBeforeMadeActive"
     units="tabs" expires_after="M77">
   <owner>kouhei@chromium.org</owner>

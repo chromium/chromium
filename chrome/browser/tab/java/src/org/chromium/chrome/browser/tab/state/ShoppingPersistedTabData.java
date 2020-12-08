@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab.state;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -16,12 +17,15 @@ import org.json.JSONObject;
 import org.chromium.base.Callback;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.proto.ShoppingPersistedTabData.ShoppingPersistedTabDataProto;
 import org.chromium.components.payments.CurrencyFormatter;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -151,9 +155,22 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                 ShoppingPersistedTabData.class, callback);
     }
 
+    /**
+     * Whether a BuyableProductAnnotation was found or not
+     */
+    @IntDef({FoundBuyableProductAnnotation.NOT_FOUND, FoundBuyableProductAnnotation.FOUND})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface FoundBuyableProductAnnotation {
+        int NOT_FOUND = 0;
+        int FOUND = 1;
+        int NUM_ENTRIES = 2;
+    }
+
     private static ShoppingPersistedTabData build(Tab tab, String responseString,
             ShoppingPersistedTabData previousShoppingPersistedTabData) {
         ShoppingPersistedTabData res = new ShoppingPersistedTabData(tab);
+        @FoundBuyableProductAnnotation
+        int foundBuyableProductAnnotation = FoundBuyableProductAnnotation.NOT_FOUND;
         try {
             JSONObject jsonObject = new JSONObject(responseString);
             JSONArray annotations = jsonObject.getJSONArray(ANNOTATIONS_KEY);
@@ -165,6 +182,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                     res.setPriceMicros(Long.parseLong(priceMetadata.getString(AMOUNT_MICROS_KEY)),
                             previousShoppingPersistedTabData);
                     res.setCurrencyCode(priceMetadata.getString(CURRENCY_CODE_KEY));
+                    foundBuyableProductAnnotation = FoundBuyableProductAnnotation.FOUND;
                     break;
                 }
             }
@@ -176,6 +194,9 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                                     + "Details: %s",
                             e.toString()));
         }
+        RecordHistogram.recordEnumeratedHistogram(
+                "Tabs.ShoppingPersistedTabData.FoundBuyableProductAnnotation",
+                foundBuyableProductAnnotation, FoundBuyableProductAnnotation.NUM_ENTRIES);
         return res;
     }
 
