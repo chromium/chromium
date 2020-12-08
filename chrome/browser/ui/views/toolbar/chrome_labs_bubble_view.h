@@ -26,6 +26,9 @@ class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
 
   ~ChromeLabsBubbleView() override;
 
+  // This function is exposed for testing.
+  static bool IsFeatureSupportedOnPlatform(const flags_ui::FeatureEntry* entry);
+
   // Getter functions for testing.
   static ChromeLabsBubbleView* GetChromeLabsBubbleViewForTesting();
   flags_ui::FlagsState* GetFlagsStateForTesting();

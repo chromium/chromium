@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "components/flags_ui/feature_entry_macros.h"
 #include "components/flags_ui/flags_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/combobox_test_api.h"
@@ -161,4 +162,27 @@ TEST_F(ChromeLabsBubbleTest, SelectDefaultTwiceNoRestart) {
   // default.
   lab_item_combobox->SetSelectedRow(0);
   EXPECT_FALSE(bubble_view->IsRestartPromptVisibleForTesting());
+}
+
+// This test checks that IsFeatureSupportedOnPlatform correctly returns whether
+// a feature is supported on a platform.
+TEST_F(ChromeLabsBubbleTest, IsFeatureSupportedOnPlatformTest) {
+  const base::Feature kTestFeature1{"FeatureName1",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+  int os_other_than_current = 1;
+  while (os_other_than_current == flags_ui::FlagsState::GetCurrentPlatform())
+    os_other_than_current <<= 1;
+  flags_ui::FeatureEntry feature_entry_unsupported{
+      "flag1", "", "", os_other_than_current,
+      FEATURE_VALUE_TYPE(kTestFeature1)};
+  EXPECT_FALSE(ChromeLabsBubbleView::IsFeatureSupportedOnPlatform(
+      &feature_entry_unsupported));
+
+  const base::Feature kTestFeature2{"FeatureName2",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+  flags_ui::FeatureEntry feature_entry_supported{
+      "flag2", "", "", flags_ui::FlagsState::GetCurrentPlatform(),
+      FEATURE_VALUE_TYPE(kTestFeature2)};
+  EXPECT_TRUE(ChromeLabsBubbleView::IsFeatureSupportedOnPlatform(
+      &feature_entry_supported));
 }

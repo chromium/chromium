@@ -104,10 +104,12 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(
   for (const auto& lab : all_labs) {
     const flags_ui::FeatureEntry* entry =
         flags_state_->FindFeatureEntryByName(lab.internal_name);
-    DCHECK_EQ(entry->type, flags_ui::FeatureEntry::FEATURE_VALUE);
-    int default_index = GetIndexOfEnabledLabState(entry);
-    menu_item_container_->AddChildView(
-        CreateLabItem(lab, default_index, entry));
+    if (IsFeatureSupportedOnPlatform(entry)) {
+      DCHECK_EQ(entry->type, flags_ui::FeatureEntry::FEATURE_VALUE);
+      int default_index = GetIndexOfEnabledLabState(entry);
+      menu_item_container_->AddChildView(
+          CreateLabItem(lab, default_index, entry));
+    }
   }
   // TODO(elainechien): Build UI for 0 experiments case.
   DCHECK(menu_item_container_->children().size() >= 1);
@@ -159,6 +161,14 @@ void ChromeLabsBubbleView::ShowRelaunchPrompt() {
   restart_prompt_->SetVisible(about_flags::IsRestartNeededToCommitChanges());
   DCHECK_EQ(g_chrome_labs_bubble, this);
   g_chrome_labs_bubble->SizeToContents();
+}
+
+// TODO(elainechien): ChromeOS specific logic for owner access only flags.
+// static
+bool ChromeLabsBubbleView::IsFeatureSupportedOnPlatform(
+    const flags_ui::FeatureEntry* entry) {
+  return (entry && (entry->supported_platforms &
+                    flags_ui::FlagsState::GetCurrentPlatform()) != 0);
 }
 
 ChromeLabsBubbleView::~ChromeLabsBubbleView() {
