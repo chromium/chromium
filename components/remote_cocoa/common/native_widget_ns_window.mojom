@@ -186,8 +186,8 @@ interface NativeWidgetNSWindow {
   // Set the window level of the NSWindow.
   SetWindowLevel(int32 level);
 
-  // Set the content aspect ratio of the NSWindow.
-  SetContentAspectRatio(gfx.mojom.SizeF aspect_ratio);
+  // Set the aspect ratio of the NSWindow. |aspect_ratio| must not be empty.
+  SetAspectRatio(gfx.mojom.SizeF aspect_ratio);
 
   // Specify the content to draw in the NSView.
   SetCALayerParams(gfx.mojom.CALayerParams ca_layer_params);

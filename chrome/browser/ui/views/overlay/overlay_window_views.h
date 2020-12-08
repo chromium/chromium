@@ -95,6 +95,10 @@ class OverlayWindowViews : public content::OverlayWindow,
   ui::Layer* video_layer_for_testing() const;
   cc::Layer* GetLayerForTesting() override;
 
+  void set_minimum_size_for_testing(const gfx::Size& min_size) {
+    min_size_ = min_size;
+  }
+
  private:
   explicit OverlayWindowViews(
       content::PictureInPictureWindowController* controller);
@@ -104,8 +108,7 @@ class OverlayWindowViews : public content::OverlayWindow,
 
   // Determine the intended bounds of |this|. This should be called when there
   // is reason for the bounds to change, such as switching primary displays or
-  // playing a new video (i.e. different aspect ratio). This also updates
-  // |min_size_| and |max_size_|.
+  // playing a new video (i.e. different aspect ratio).
   gfx::Rect CalculateAndUpdateWindowBounds();
 
   // Set up the views::Views that will be shown on the window.

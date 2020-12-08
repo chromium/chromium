@@ -607,7 +607,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
 
   // Updates |rect| to adhere to the |aspect_ratio| of the window. |param|
   // refers to the edge of the window being sized.
-  void SizeRectToAspectRatio(UINT param, gfx::Rect* rect);
+  void SizeWindowToAspectRatio(UINT param, gfx::Rect* rect);
 
   // Get the cursor position, which may be mocked if running a test
   POINT GetCursorPos() const;

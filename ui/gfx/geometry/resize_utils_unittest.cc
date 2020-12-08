@@ -4,6 +4,10 @@
 
 #include "ui/gfx/geometry/resize_utils.h"
 
+#include <string>
+
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -16,132 +20,162 @@ constexpr float kAspectRatioSquare = 1.0f;
 constexpr float kAspectRatioHorizontal = 2.0f;
 constexpr float kAspectRatioVertical = 0.5f;
 
-const Size kMinSizeSquare = Size(10, 10);
-const Size kMaxSizeSquare = Size(50, 50);
+constexpr Size kMinSizeHorizontal(20, 10);
+constexpr Size kMaxSizeHorizontal(50, 25);
 
-const Size kMinSizeHorizontal = Size(20, 10);
-const Size kMaxSizeHorizontal = Size(50, 25);
+constexpr Size kMinSizeVertical(10, 20);
+constexpr Size kMaxSizeVertical(25, 50);
 
-const Size kMinSizeVertical = Size(10, 20);
-const Size kMaxSizeVertical = Size(25, 50);
+std::string HitTestToString(ResizeEdge resize_edge) {
+  switch (resize_edge) {
+    case ResizeEdge::kTop:
+      return "top";
+    case ResizeEdge::kTopRight:
+      return "top-righ";
+    case ResizeEdge::kRight:
+      return "right";
+    case ResizeEdge::kBottomRight:
+      return "bottom-right";
+    case ResizeEdge::kBottom:
+      return "bottom";
+    case ResizeEdge::kBottomLeft:
+      return "bottom-left";
+    case ResizeEdge::kLeft:
+      return "left";
+    case ResizeEdge::kTopLeft:
+      return "top-left";
+  }
+}
 
 }  // namespace
 
-// Tests resizing of window with a 1:1 aspect ratio. This test also tests the
-// 'pivot points' when resizing, i.e. the opposite side or corner of the
-// window.
-TEST(WindowResizeUtilsTest, SizeToSquareAspectRatio) {
-  // Size from the top of the window.
-  // |window_rect| within the bounds of kMinSizeSquare and kMaxSizeSquare.
-  Rect window_rect(100, 100, 15, 15);
-  SizeRectToAspectRatio(ResizeEdge::kTop, kAspectRatioSquare, kMinSizeSquare,
-                        kMaxSizeSquare, &window_rect);
-  EXPECT_EQ(window_rect, Rect(100, 100, 15, 15));
+struct SizingParams {
+  ResizeEdge resize_edge{};
+  float aspect_ratio = 0.0f;
+  Size min_size;
+  Size max_size;
+  Rect input_rect;
+  Rect expected_output_rect;
 
-  // Size from the bottom right corner of the window.
-  // |window_rect| smaller than kMinSizeSquare.
-  window_rect.SetRect(100, 100, 5, 5);
-  SizeRectToAspectRatio(ResizeEdge::kBottomRight, kAspectRatioSquare,
-                        kMinSizeSquare, kMaxSizeSquare, &window_rect);
-  EXPECT_EQ(window_rect,
-            Rect(100, 100, kMinSizeSquare.width(), kMinSizeSquare.height()));
+  std::string ToString() const {
+    return base::StrCat({HitTestToString(resize_edge),
+                         " ratio=", base::NumberToString(aspect_ratio), " [",
+                         min_size.ToString(), "..", max_size.ToString(), "] ",
+                         input_rect.ToString(), " -> ",
+                         expected_output_rect.ToString()});
+  }
+};
 
-  // Size from the top of the window.
-  // |window_rect| larger than kMaxSizeSquare.
-  window_rect.SetRect(100, 100, 100, 100);
-  SizeRectToAspectRatio(ResizeEdge::kTop, kAspectRatioSquare, kMinSizeSquare,
-                        kMaxSizeSquare, &window_rect);
-  EXPECT_EQ(window_rect,
-            Rect(100, 150, kMaxSizeSquare.width(), kMaxSizeSquare.height()));
+using ResizeUtilsTest = testing::TestWithParam<SizingParams>;
 
-  // Size from the bottom of the window.
-  window_rect.SetRect(100, 100, 100, 100);
-  SizeRectToAspectRatio(ResizeEdge::kBottom, kAspectRatioSquare, kMinSizeSquare,
-                        kMaxSizeSquare, &window_rect);
-  EXPECT_EQ(window_rect,
-            Rect(100, 100, kMaxSizeSquare.width(), kMaxSizeSquare.height()));
-
-  // Size from the left of the window.
-  window_rect.SetRect(100, 100, 100, 100);
-  SizeRectToAspectRatio(ResizeEdge::kLeft, kAspectRatioSquare, kMinSizeSquare,
-                        kMaxSizeSquare, &window_rect);
-  EXPECT_EQ(window_rect,
-            Rect(150, 150, kMaxSizeSquare.width(), kMaxSizeSquare.height()));
-
-  // Size from the right of the window.
-  window_rect.SetRect(100, 100, 100, 100);
-  SizeRectToAspectRatio(ResizeEdge::kRight, kAspectRatioSquare, kMinSizeSquare,
-                        kMaxSizeSquare, &window_rect);
-  EXPECT_EQ(window_rect,
-            Rect(100, 100, kMaxSizeSquare.width(), kMaxSizeSquare.height()));
-
-  // Size from the top left corner of the window.
-  window_rect.SetRect(100, 100, 100, 100);
-  SizeRectToAspectRatio(ResizeEdge::kTopLeft, kAspectRatioSquare,
-                        kMinSizeSquare, kMaxSizeSquare, &window_rect);
-  EXPECT_EQ(window_rect,
-            Rect(150, 150, kMaxSizeSquare.width(), kMaxSizeSquare.height()));
-
-  // Size from the top right corner of the window.
-  window_rect.SetRect(100, 100, 100, 100);
-  SizeRectToAspectRatio(ResizeEdge::kTopRight, kAspectRatioSquare,
-                        kMinSizeSquare, kMaxSizeSquare, &window_rect);
-  EXPECT_EQ(window_rect,
-            Rect(100, 150, kMaxSizeSquare.width(), kMaxSizeSquare.height()));
-
-  // Size from the bottom left corner of the window.
-  window_rect.SetRect(100, 100, 100, 100);
-  SizeRectToAspectRatio(ResizeEdge::kBottomLeft, kAspectRatioSquare,
-                        kMinSizeSquare, kMaxSizeSquare, &window_rect);
-  EXPECT_EQ(window_rect,
-            Rect(150, 100, kMaxSizeSquare.width(), kMaxSizeSquare.height()));
+TEST_P(ResizeUtilsTest, SizeRectToAspectRatio) {
+  Rect rect = GetParam().input_rect;
+  SizeRectToAspectRatio(GetParam().resize_edge, GetParam().aspect_ratio,
+                        GetParam().min_size, GetParam().max_size, &rect);
+  EXPECT_EQ(rect, GetParam().expected_output_rect) << GetParam().ToString();
 }
 
-// Tests the aspect ratio of the Rect adheres to the horizontal aspect
-// ratio.
-TEST(WindowResizeUtilsTest, SizeToHorizontalAspectRatio) {
-  // |window_rect| within bounds of kMinSizeHorizontal and kMaxSizeHorizontal.
-  Rect window_rect(100, 100, 20, 10);
-  SizeRectToAspectRatio(ResizeEdge::kTop, kAspectRatioHorizontal,
-                        kMinSizeHorizontal, kMaxSizeHorizontal, &window_rect);
-  EXPECT_EQ(window_rect, Rect(100, 100, 20, 10));
+const SizingParams kSizeRectToSquareAspectRatioTestCases[] = {
+    // Dragging the top resizer up.
+    {ResizeEdge::kTop, kAspectRatioSquare, kMinSizeHorizontal,
+     kMaxSizeHorizontal, Rect(100, 98, 22, 24), Rect(100, 98, 24, 24)},
 
-  // |window_rect| smaller than kMinSizeHorizontal.
-  window_rect.SetRect(100, 100, 5, 5);
-  SizeRectToAspectRatio(ResizeEdge::kBottomRight, kAspectRatioHorizontal,
-                        kMinSizeHorizontal, kMaxSizeHorizontal, &window_rect);
-  EXPECT_EQ(window_rect, Rect(100, 100, kMinSizeHorizontal.width(),
-                              kMinSizeHorizontal.height()));
+    // Dragging the bottom resizer down.
+    {ResizeEdge::kBottom, kAspectRatioSquare, kMinSizeHorizontal,
+     kMaxSizeHorizontal, Rect(100, 100, 22, 24), Rect(100, 100, 24, 24)},
 
-  // |window_rect| greater than kMaxSizeHorizontal.
-  window_rect.SetRect(100, 100, 100, 100);
-  SizeRectToAspectRatio(ResizeEdge::kTop, kAspectRatioHorizontal,
-                        kMinSizeHorizontal, kMaxSizeHorizontal, &window_rect);
-  EXPECT_EQ(window_rect, Rect(100, 175, kMaxSizeHorizontal.width(),
-                              kMaxSizeHorizontal.height()));
-}
+    // Dragging the left resizer right.
+    {ResizeEdge::kLeft, kAspectRatioSquare, kMinSizeHorizontal,
+     kMaxSizeHorizontal, Rect(102, 100, 22, 24), Rect(102, 102, 22, 22)},
 
-// Tests the aspect ratio of the Rect adheres to the vertical aspect ratio.
-TEST(WindowResizeUtilsTest, SizeToVerticalAspectRatio) {
-  // |window_rect| within bounds of kMinSizeVertical and kMaxSizeVertical.
-  Rect window_rect(100, 100, 10, 20);
-  SizeRectToAspectRatio(ResizeEdge::kBottomRight, kAspectRatioVertical,
-                        kMinSizeVertical, kMaxSizeVertical, &window_rect);
-  EXPECT_EQ(window_rect, Rect(100, 100, 10, 20));
+    // Dragging the right resizer left.
+    {ResizeEdge::kRight, kAspectRatioSquare, kMinSizeHorizontal,
+     kMaxSizeHorizontal, Rect(100, 100, 22, 24), Rect(100, 100, 22, 22)},
 
-  // |window_rect| smaller than kMinSizeVertical.
-  window_rect.SetRect(100, 100, 5, 5);
-  SizeRectToAspectRatio(ResizeEdge::kBottomRight, kAspectRatioVertical,
-                        kMinSizeVertical, kMaxSizeVertical, &window_rect);
-  EXPECT_EQ(window_rect, Rect(100, 100, kMinSizeVertical.width(),
-                              kMinSizeVertical.height()));
+    // Dragging the top-left resizer right.
+    {ResizeEdge::kTopLeft, kAspectRatioSquare, kMinSizeHorizontal,
+     kMaxSizeHorizontal, Rect(102, 100, 22, 24), Rect(102, 102, 22, 22)},
 
-  // |window_rect| greater than kMaxSizeVertical.
-  window_rect.SetRect(100, 100, 100, 100);
-  SizeRectToAspectRatio(ResizeEdge::kBottomRight, kAspectRatioVertical,
-                        kMinSizeVertical, kMaxSizeVertical, &window_rect);
-  EXPECT_EQ(window_rect, Rect(100, 100, kMaxSizeVertical.width(),
-                              kMaxSizeVertical.height()));
-}
+    // Dragging the top-right resizer down.
+    {ResizeEdge::kTopRight, kAspectRatioSquare, kMinSizeHorizontal,
+     kMaxSizeHorizontal, Rect(100, 102, 24, 22), Rect(100, 102, 22, 22)},
+
+    // Dragging the bottom-left resizer right.
+    {ResizeEdge::kBottomLeft, kAspectRatioSquare, kMinSizeHorizontal,
+     kMaxSizeHorizontal, Rect(100, 102, 22, 24), Rect(100, 102, 22, 22)},
+
+    // Dragging the bottom-right resizer up.
+    {ResizeEdge::kBottomRight, kAspectRatioSquare, kMinSizeHorizontal,
+     kMaxSizeHorizontal, Rect(100, 100, 24, 22), Rect(100, 100, 22, 22)},
+
+    // Dragging the bottom-right resizer left.
+    // Rect already as small as `kMinSizeHorizontal` allows.
+    {ResizeEdge::kBottomRight, kAspectRatioSquare, kMinSizeHorizontal,
+     kMaxSizeHorizontal,
+     Rect(100, 100, kMinSizeHorizontal.width(), kMinSizeHorizontal.width()),
+     Rect(100, 100, kMinSizeHorizontal.width(), kMinSizeHorizontal.width())},
+
+    // Dragging the top-left resizer left.
+    // Rect already as large as `kMaxSizeHorizontal` allows.
+    {ResizeEdge::kTopLeft, kAspectRatioSquare, kMinSizeHorizontal,
+     kMaxSizeHorizontal,
+     Rect(100, 100, kMaxSizeHorizontal.height(), kMaxSizeHorizontal.height()),
+     Rect(100, 100, kMaxSizeHorizontal.height(), kMaxSizeHorizontal.height())},
+};
+
+const SizingParams kSizeRectToHorizontalAspectRatioTestCases[] = {
+    // Dragging the top resizer down.
+    {ResizeEdge::kTop, kAspectRatioHorizontal, kMinSizeHorizontal,
+     kMaxSizeHorizontal, Rect(100, 102, 48, 22), Rect(100, 102, 44, 22)},
+
+    // Dragging the left resizer left.
+    {ResizeEdge::kLeft, kAspectRatioHorizontal, kMinSizeHorizontal,
+     kMaxSizeHorizontal, Rect(96, 100, 48, 22), Rect(96, 98, 48, 24)},
+
+    // Rect already as small as `kMinSizeHorizontal` allows.
+    {ResizeEdge::kTop, kAspectRatioHorizontal, kMinSizeHorizontal,
+     kMaxSizeHorizontal,
+     Rect(100, 100, kMinSizeHorizontal.width(), kMinSizeHorizontal.height()),
+     Rect(100, 100, kMinSizeHorizontal.width(), kMinSizeHorizontal.height())},
+
+    // Rect already as large as `kMaxSizeHorizontal` allows.
+    {ResizeEdge::kTop, kAspectRatioHorizontal, kMinSizeHorizontal,
+     kMaxSizeHorizontal,
+     Rect(100, 100, kMaxSizeHorizontal.width(), kMaxSizeHorizontal.height()),
+     Rect(100, 100, kMaxSizeHorizontal.width(), kMaxSizeHorizontal.height())},
+};
+
+const SizingParams kSizeRectToVerticalAspectRatioTestCases[] = {
+    // Dragging the bottom resizer up.
+    {ResizeEdge::kBottom, kAspectRatioVertical, kMinSizeVertical,
+     kMaxSizeVertical, Rect(100, 100, 24, 44), Rect(100, 100, 22, 44)},
+
+    // Dragging the right resizer right.
+    {ResizeEdge::kRight, kAspectRatioVertical, kMinSizeVertical,
+     kMaxSizeVertical, Rect(100, 100, 24, 44), Rect(100, 100, 24, 48)},
+
+    // Rect already as small as `kMinSizeVertical` allows.
+    {ResizeEdge::kTop, kAspectRatioVertical, kMinSizeVertical, kMaxSizeVertical,
+     Rect(100, 100, kMinSizeVertical.width(), kMinSizeVertical.height()),
+     Rect(100, 100, kMinSizeVertical.width(), kMinSizeVertical.height())},
+
+    // Rect already as large as `kMaxSizeVertical` allows.
+    {ResizeEdge::kTop, kAspectRatioVertical, kMinSizeVertical, kMaxSizeVertical,
+     Rect(100, 100, kMaxSizeVertical.width(), kMaxSizeVertical.height()),
+     Rect(100, 100, kMaxSizeVertical.width(), kMaxSizeVertical.height())},
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    Square,
+    ResizeUtilsTest,
+    testing::ValuesIn(kSizeRectToSquareAspectRatioTestCases));
+INSTANTIATE_TEST_SUITE_P(
+    Horizontal,
+    ResizeUtilsTest,
+    testing::ValuesIn(kSizeRectToHorizontalAspectRatioTestCases));
+INSTANTIATE_TEST_SUITE_P(
+    Vertical,
+    ResizeUtilsTest,
+    testing::ValuesIn(kSizeRectToVerticalAspectRatioTestCases));
 
 }  // namespace gfx

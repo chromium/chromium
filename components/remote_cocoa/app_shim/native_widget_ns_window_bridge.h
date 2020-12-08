@@ -235,7 +235,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
                           bool is_maximizable) override;
   void SetOpacity(float opacity) override;
   void SetWindowLevel(int32_t level) override;
-  void SetContentAspectRatio(const gfx::SizeF& aspect_ratio) override;
+  void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
   void SetCALayerParams(const gfx::CALayerParams& ca_layer_params) override;
   void SetWindowTitle(const base::string16& title) override;
   void SetIgnoresMouseEvents(bool ignores_mouse_events) override;

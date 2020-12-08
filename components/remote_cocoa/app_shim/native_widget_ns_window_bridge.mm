@@ -1223,10 +1223,11 @@ void NativeWidgetNSWindowBridge::SetWindowLevel(int32_t level) {
   [window_ setCollectionBehavior:behavior];
 }
 
-void NativeWidgetNSWindowBridge::SetContentAspectRatio(
+void NativeWidgetNSWindowBridge::SetAspectRatio(
     const gfx::SizeF& aspect_ratio) {
-  [window_ setContentAspectRatio:NSMakeSize(aspect_ratio.width(),
-                                            aspect_ratio.height())];
+  DCHECK(!aspect_ratio.IsEmpty());
+  [window_delegate_
+      setAspectRatio:aspect_ratio.width() / aspect_ratio.height()];
 }
 
 void NativeWidgetNSWindowBridge::SetCALayerParams(

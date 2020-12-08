@@ -469,7 +469,6 @@ void WindowResizer::CalculateBoundsWithAspectRatio(float aspect_ratio,
   DCHECK(!min_size.IsEmpty());
   DCHECK(!max_size.IsEmpty());
 
-  gfx::SizeMinMaxToAspectRatio(aspect_ratio, &min_size, &max_size);
   gfx::SizeRectToAspectRatio(GetWindowResizeEdge(details().window_component),
                              aspect_ratio, min_size, max_size, new_bounds);
 }

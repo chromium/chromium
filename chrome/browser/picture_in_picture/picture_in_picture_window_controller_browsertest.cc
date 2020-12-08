@@ -1306,11 +1306,14 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   ASSERT_TRUE(overlay_window);
   ASSERT_TRUE(overlay_window->IsVisible());
 
+  const auto max_size = overlay_window->GetMaximumSize();
+  const int side_length = std::min(max_size.width(), max_size.height());
+
   // Move and resize the window to the top left corner and wait for ack.
   {
     WidgetBoundsChangeWaiter waiter(overlay_window);
 
-    overlay_window->SetBounds(gfx::Rect(0, 0, 400, 400));
+    overlay_window->SetBounds(gfx::Rect(0, 0, side_length, side_length));
 
     waiter.Wait();
   }
@@ -1329,7 +1332,8 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
     overlay_window->SetSurfaceId(viz::SurfaceId(
         viz::FrameSinkId(1, 1),
         viz::LocalSurfaceId(9, base::UnguessableToken::Create())));
-    overlay_window->UpdateVideoSize(gfx::Size(200, 100));
+    overlay_window->UpdateVideoSize(
+        gfx::Size(side_length / 2, side_length / 4));
 
     waiter.Wait();
   }

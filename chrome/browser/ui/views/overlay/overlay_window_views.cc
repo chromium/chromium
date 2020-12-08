@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -56,6 +57,9 @@
 #endif
 
 namespace {
+
+// Lower bound size of the window is a fixed value to allow for minimal sizes
+// on UI affordances, such as buttons.
 constexpr gfx::Size kMinWindowSize(260, 146);
 
 constexpr int kOverlayBorderThickness = 10;
@@ -252,6 +256,7 @@ std::unique_ptr<content::OverlayWindow> content::OverlayWindow::Create(
 OverlayWindowViews::OverlayWindowViews(
     content::PictureInPictureWindowController* controller)
     : controller_(controller),
+      min_size_(kMinWindowSize),
       hide_controls_timer_(
           FROM_HERE,
           base::TimeDelta::FromMilliseconds(2500),
@@ -268,10 +273,6 @@ gfx::Rect OverlayWindowViews::CalculateAndUpdateWindowBounds() {
   gfx::Rect work_area = GetWorkAreaForWindow();
 
   UpdateMaxSize(work_area);
-
-  // Lower bound size of the window is a fixed value to allow for minimal sizes
-  // on UI affordances, such as buttons.
-  min_size_ = kMinWindowSize;
 
   gfx::Size window_size = window_bounds_.size();
   if (!has_been_shown_) {
@@ -309,7 +310,6 @@ gfx::Rect OverlayWindowViews::CalculateAndUpdateWindowBounds() {
     // Update the window size to adhere to the aspect ratio.
     gfx::Size min_size = min_size_;
     gfx::Size max_size = max_size_;
-    gfx::SizeMinMaxToAspectRatio(aspect_ratio, &min_size, &max_size);
     gfx::Rect window_rect(GetBounds().origin(), window_size);
     gfx::SizeRectToAspectRatio(resize_edge, aspect_ratio, min_size, max_size,
                                &window_rect);
@@ -510,12 +510,22 @@ void OverlayWindowViews::UpdateLayerBoundsWithLetterboxing(
   if (letterbox_region.IsEmpty())
     return;
 
-  // To avoid one-pixel black line in the window when floated aspect ratio is
-  // not perfect (e.g. 848x480 for 16:9 video), letterbox region size is the
-  // same as window size.
-  if ((std::abs(window_size.width() - letterbox_region.width()) <= 1) &&
-      (std::abs(window_size.height() - letterbox_region.height()) <= 1)) {
-    letterbox_region.set_size(window_size);
+  // To avoid black stripes in the window when integer window dimensions don't
+  // correspond to the video aspect ratio exactly (e.g. 854x480 for 16:9
+  // video) force the letterbox region size to be equal to the window size.
+  const float aspect_ratio =
+      static_cast<float>(natural_size_.width()) / natural_size_.height();
+  if (aspect_ratio > 1 && window_size.height() == letterbox_region.height()) {
+    const int height_from_width =
+        base::ClampRound(window_size.width() / aspect_ratio);
+    if (height_from_width == window_size.height())
+      letterbox_region.set_width(window_size.width());
+  } else if (aspect_ratio <= 1 &&
+             window_size.width() == letterbox_region.width()) {
+    const int width_from_height =
+        base::ClampRound(window_size.height() * aspect_ratio);
+    if (width_from_height == window_size.width())
+      letterbox_region.set_height(window_size.height());
   }
 
   gfx::Size letterbox_size = letterbox_region.size();

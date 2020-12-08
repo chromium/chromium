@@ -665,7 +665,7 @@ void NativeWidgetMac::SetOpacity(float opacity) {
 void NativeWidgetMac::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
   if (!GetNSWindowMojo())
     return;
-  GetNSWindowMojo()->SetContentAspectRatio(aspect_ratio);
+  GetNSWindowMojo()->SetAspectRatio(aspect_ratio);
 }
 
 void NativeWidgetMac::FlashFrame(bool flash_frame) {

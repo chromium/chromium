@@ -23,12 +23,6 @@ enum class ResizeEdge {
   kTopRight
 };
 
-// Force the min and max window sizes to adhere to the aspect ratio.
-// |aspect_ratio| must be valid and is found using width / height.
-void GEOMETRY_EXPORT SizeMinMaxToAspectRatio(float aspect_ratio,
-                                             Size* min_window_size,
-                                             Size* max_window_size);
-
 // Updates |rect| to adhere to the |aspect_ratio| of the window, if it has
 // been set. |resize_edge| refers to the edge of the window being sized.
 // |min_window_size| and |max_window_size| are expected to adhere to the

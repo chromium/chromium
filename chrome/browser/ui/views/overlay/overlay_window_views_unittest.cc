@@ -80,6 +80,7 @@ class OverlayWindowViewsTest : public ChromeViewsTestBase {
     SetDisplayWorkArea({0, 0, 1000, 1000});
 
     overlay_window_ = OverlayWindowViews::Create(&pip_window_controller_);
+    overlay_window_->set_minimum_size_for_testing({200, 100});
   }
 
   void TearDown() override {
@@ -106,6 +107,143 @@ class OverlayWindowViewsTest : public ChromeViewsTestBase {
 
   std::unique_ptr<OverlayWindowViews> overlay_window_;
 };
+
+TEST_F(OverlayWindowViewsTest, InitialWindowSize_Square) {
+  // Fit the window taking 1/5 (both dimensions) of the work area as the
+  // starting size, and applying the size and aspect ratio constraints.
+  overlay_window().UpdateVideoSize({400, 400});
+  EXPECT_EQ(gfx::Size(200, 200), overlay_window().GetBounds().size());
+  EXPECT_EQ(gfx::Size(200, 200),
+            overlay_window().video_layer_for_testing()->size());
+}
+
+TEST_F(OverlayWindowViewsTest, InitialWindowSize_Horizontal) {
+  // Fit the window taking 1/5 (both dimensions) of the work area as the
+  // starting size, and applying the size and aspect ratio constraints.
+  overlay_window().UpdateVideoSize({400, 200});
+  EXPECT_EQ(gfx::Size(400, 200), overlay_window().GetBounds().size());
+  EXPECT_EQ(gfx::Size(400, 200),
+            overlay_window().video_layer_for_testing()->size());
+}
+
+TEST_F(OverlayWindowViewsTest, InitialWindowSize_Vertical) {
+  // Fit the window taking 1/5 (both dimensions) of the work area as the
+  // starting size, and applying the size and aspect ratio constraints.
+  overlay_window().UpdateVideoSize({400, 500});
+  EXPECT_EQ(gfx::Size(200, 250), overlay_window().GetBounds().size());
+  EXPECT_EQ(gfx::Size(200, 250),
+            overlay_window().video_layer_for_testing()->size());
+}
+
+TEST_F(OverlayWindowViewsTest, Letterboxing) {
+  overlay_window().UpdateVideoSize({400, 10});
+
+  // Must fit within the minimum height of 146. But with the aspect ratio of
+  // 40:1 the width gets exceedingly big and must be limited to the maximum of
+  // 500. Thus, letterboxing is unavoidable.
+  EXPECT_EQ(gfx::Size(500, 100), overlay_window().GetBounds().size());
+  EXPECT_EQ(gfx::Size(500, 13),
+            overlay_window().video_layer_for_testing()->size());
+}
+
+TEST_F(OverlayWindowViewsTest, Pillarboxing) {
+  overlay_window().UpdateVideoSize({10, 400});
+
+  // Must fit within the minimum width of 260. But with the aspect ratio of
+  // 1:40 the height gets exceedingly big and must be limited to the maximum of
+  // 500. Thus, pillarboxing is unavoidable.
+  EXPECT_EQ(gfx::Size(200, 500), overlay_window().GetBounds().size());
+  EXPECT_EQ(gfx::Size(13, 500),
+            overlay_window().video_layer_for_testing()->size());
+}
+
+TEST_F(OverlayWindowViewsTest, Pillarboxing_Square) {
+  overlay_window().UpdateVideoSize({100, 100});
+
+  // Pillarboxing also occurs on Linux even with the square aspect ratio,
+  // because the user is allowed to size the window to the rectangular minimum
+  // size.
+  overlay_window().SetSize({200, 100});
+  EXPECT_EQ(gfx::Size(100, 100),
+            overlay_window().video_layer_for_testing()->size());
+}
+
+TEST_F(OverlayWindowViewsTest, ApproximateAspectRatio_Horizontal) {
+  // "Horizontal" video.
+  overlay_window().UpdateVideoSize({320, 240});
+
+  // The user drags the window resizer horizontally and now the integer window
+  // dimensions can't reproduce the video aspect ratio exactly. The video
+  // should still fill the entire window area.
+  overlay_window().SetSize({320, 240});
+  EXPECT_EQ(gfx::Size(320, 240),
+            overlay_window().video_layer_for_testing()->size());
+
+  overlay_window().SetSize({321, 241});
+  EXPECT_EQ(gfx::Size(321, 241),
+            overlay_window().video_layer_for_testing()->size());
+
+  // Wide video.
+  overlay_window().UpdateVideoSize({1600, 900});
+
+  overlay_window().SetSize({444, 250});
+  EXPECT_EQ(gfx::Size(444, 250),
+            overlay_window().video_layer_for_testing()->size());
+
+  overlay_window().SetSize({445, 250});
+  EXPECT_EQ(gfx::Size(445, 250),
+            overlay_window().video_layer_for_testing()->size());
+
+  // Very wide video.
+  overlay_window().UpdateVideoSize({400, 100});
+
+  overlay_window().SetSize({478, 120});
+  EXPECT_EQ(gfx::Size(478, 120),
+            overlay_window().video_layer_for_testing()->size());
+
+  overlay_window().SetSize({481, 120});
+  EXPECT_EQ(gfx::Size(481, 120),
+            overlay_window().video_layer_for_testing()->size());
+}
+
+TEST_F(OverlayWindowViewsTest, ApproximateAspectRatio_Vertical) {
+  // "Vertical" video.
+  overlay_window().UpdateVideoSize({240, 320});
+
+  // The user dragged the window resizer vertically and now the integer window
+  // dimensions can't reproduce the video aspect ratio exactly. The video
+  // should still fill the entire window area.
+  overlay_window().SetSize({240, 320});
+  EXPECT_EQ(gfx::Size(240, 320),
+            overlay_window().video_layer_for_testing()->size());
+
+  overlay_window().SetSize({239, 319});
+  EXPECT_EQ(gfx::Size(239, 319),
+            overlay_window().video_layer_for_testing()->size());
+
+  // Narrow video.
+  overlay_window().UpdateVideoSize({900, 1600});
+
+  overlay_window().SetSize({250, 444});
+  EXPECT_EQ(gfx::Size(250, 444),
+            overlay_window().video_layer_for_testing()->size());
+
+  overlay_window().SetSize({250, 445});
+  EXPECT_EQ(gfx::Size(250, 445),
+            overlay_window().video_layer_for_testing()->size());
+
+  // Very narrow video.
+  // NOTE: Window width is bounded by the minimum size.
+  overlay_window().UpdateVideoSize({100, 400});
+
+  overlay_window().SetSize({200, 478});
+  EXPECT_EQ(gfx::Size(120, 478),
+            overlay_window().video_layer_for_testing()->size());
+
+  overlay_window().SetSize({200, 481});
+  EXPECT_EQ(gfx::Size(120, 481),
+            overlay_window().video_layer_for_testing()->size());
+}
 
 TEST_F(OverlayWindowViewsTest, UpdateMaximumSize) {
   SetDisplayWorkArea({0, 0, 4000, 4000});

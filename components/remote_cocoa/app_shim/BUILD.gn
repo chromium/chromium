@@ -67,6 +67,7 @@ component("app_shim") {
     "//ui/base/ime:ime",
     "//ui/events",
     "//ui/gfx",
+    "//ui/gfx/geometry",
     "//ui/strings:ui_strings_grit",
   ]
   frameworks = [
