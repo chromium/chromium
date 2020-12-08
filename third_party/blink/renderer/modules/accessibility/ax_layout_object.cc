@@ -1086,7 +1086,7 @@ static AXObject* NextOnLineInternalNG(const AXObject& ax_object) {
             ax_object.AXObjectCache().GetOrCreate(runner_layout_object))
       return result;
   }
-  if (!ax_object.ParentObject())
+  if (!ax_object.ParentObjectIncludedInTree())
     return nullptr;
   // Returns next object of parent, since next of |ax_object| isn't appeared on
   // line.
@@ -1142,7 +1142,7 @@ AXObject* AXLayoutObject::NextOnLine() const {
     }
 
     if (!result) {
-      AXObject* parent = ParentObject();
+      AXObject* parent = ParentObjectIncludedInTree();
       // Our parent object could have been created based on an ignored inline or
       // inline block spanning multiple lines. We need to ensure that we are
       // really at the end of our parent before attempting to connect to the
@@ -1210,7 +1210,7 @@ static AXObject* PreviousOnLineInlineNG(const AXObject& ax_object) {
     return nullptr;
   // Returns previous object of parent, since next of |ax_object| isn't appeared
   // on line.
-  return ax_object.ParentObject()->PreviousOnLine();
+  return ax_object.ParentObjectIncludedInTree()->PreviousOnLine();
 }
 
 AXObject* AXLayoutObject::PreviousOnLine() const {
@@ -1259,7 +1259,7 @@ AXObject* AXLayoutObject::PreviousOnLine() const {
     }
 
     if (!result) {
-      AXObject* parent = ParentObject();
+      AXObject* parent = ParentObjectIncludedInTree();
       // Our parent object could have been created based on an ignored inline or
       // inline block spanning multiple lines. We need to ensure that we are
       // really at the start of our parent before attempting to connect to the
