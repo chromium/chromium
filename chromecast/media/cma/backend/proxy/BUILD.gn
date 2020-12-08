@@ -38,9 +38,12 @@ cast_source_set("proxy") {
     "cast_runtime_audio_channel_broker.h",
     "cma_backend_proxy.cc",
     "cma_backend_proxy.h",
+    "cma_proxy_handler.h",
     "multizone_audio_decoder_proxy.h",
     "multizone_audio_decoder_proxy_impl.cc",
     "multizone_audio_decoder_proxy_impl.h",
+    "proxy_call_translator.cc",
+    "proxy_call_translator.h",
     "push_buffer_queue.cc",
     "push_buffer_queue.h",
   ]
@@ -51,6 +54,7 @@ cast_source_set("proxy") {
     "//chromecast/base",
     "//chromecast/media/api",
     "//chromecast/public/media",
+    "//third_party/grpc:grpc++",
     "//third_party/protobuf:protobuf_full",
   ]
 }
