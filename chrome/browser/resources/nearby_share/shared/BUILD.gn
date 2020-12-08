@@ -48,6 +48,8 @@ preprocess_if_expr("preprocess_v2") {
     "nearby_onboarding_page.js",
     "nearby_page_template.html",
     "nearby_page_template.js",
+    "nearby_progress.html",
+    "nearby_progress.js",
     "nearby_share_settings.html",
     "nearby_share_settings.js",
     "nearby_share_settings_behavior.html",
@@ -71,6 +73,7 @@ preprocess_if_expr("preprocess_v3") {
     "nearby_device.m.js",
     "nearby_onboarding_page.m.js",
     "nearby_page_template.m.js",
+    "nearby_progress.m.js",
     "nearby_share_settings.m.js",
     "nearby_share_settings_behavior.m.js",
     "nearby_shared_icons.m.js",
@@ -87,6 +90,7 @@ js_type_check("closure_compile") {
     ":nearby_device",
     ":nearby_onboarding_page",
     ":nearby_page_template",
+    ":nearby_progress",
     ":nearby_share_settings",
     ":nearby_share_settings_behavior",
     ":nearby_visibility_page",
@@ -135,6 +139,13 @@ js_library("nearby_device") {
 }
 
 js_library("nearby_page_template") {
+}
+
+js_library("nearby_progress") {
+  deps = [
+    ":nearby_device_icon",
+    "//third_party/polymer/v1_0/components-chromium/iron-icon:iron-icon-extracted",
+  ]
 }
 
 js_library("nearby_onboarding_page") {
@@ -186,6 +197,7 @@ js_type_check("closure_compile_module") {
     ":nearby_device.m",
     ":nearby_onboarding_page.m",
     ":nearby_page_template.m",
+    ":nearby_progress.m",
     ":nearby_share_settings.m",
     ":nearby_share_settings_behavior.m",
     ":nearby_visibility_page.m",
@@ -200,6 +212,7 @@ group("polymer3_elements") {
     ":nearby_device_module",
     ":nearby_onboarding_page_module",
     ":nearby_page_template_module",
+    ":nearby_progress_module",
     ":nearby_shared_icons_module",
     ":nearby_shared_share_type_icons_module",
     ":nearby_visibility_page_module",
@@ -270,6 +283,15 @@ js_library("nearby_page_template.m") {
   extra_deps = [ ":nearby_page_template_module" ]
 }
 
+js_library("nearby_progress.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_progress.m.js" ]
+  deps = [
+    ":nearby_device_icon.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":nearby_progress_module" ]
+}
+
 js_library("nearby_share_settings_behavior.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_share_settings_behavior.m.js" ]
   deps = [
@@ -336,6 +358,14 @@ polymer_modulizer("nearby_onboarding_page") {
 polymer_modulizer("nearby_page_template") {
   js_file = "nearby_page_template.js"
   html_file = "nearby_page_template.html"
+  html_type = "dom-module"
+  auto_imports = nearby_shared_auto_imports
+  namespace_rewrites = nearby_shared_namespace_rewrites
+}
+
+polymer_modulizer("nearby_progress") {
+  js_file = "nearby_progress.js"
+  html_file = "nearby_progress.html"
   html_type = "dom-module"
   auto_imports = nearby_shared_auto_imports
   namespace_rewrites = nearby_shared_namespace_rewrites
