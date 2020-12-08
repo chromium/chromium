@@ -218,7 +218,6 @@ class ForceCloseDBCallbacks : public IndexedDBCallbacks {
         origin_(origin) {}
 
   void OnSuccess() override {}
-  void OnSuccess(const std::vector<base::string16>&) override {}
   void OnSuccess(std::unique_ptr<IndexedDBConnection> connection,
                  const IndexedDBDatabaseMetadata& metadata) override {
     connection_ = std::move(connection);

@@ -138,20 +138,6 @@ void IndexedDBCallbacks::OnSuccess(
   complete_ = true;
 }
 
-void IndexedDBCallbacks::OnSuccess(const std::vector<base::string16>& value) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!complete_);
-
-  if (!callbacks_)
-    return;
-  if (!dispatcher_host_) {
-    OnConnectionError();
-    return;
-  }
-  callbacks_->SuccessStringList(value);
-  complete_ = true;
-}
-
 void IndexedDBCallbacks::OnBlocked(int64_t existing_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!complete_);

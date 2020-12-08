@@ -437,19 +437,6 @@ void IDBRequest::EnqueueResponse(DOMException* error) {
   EnqueueEvent(Event::CreateCancelableBubble(event_type_names::kError));
 }
 
-void IDBRequest::EnqueueResponse(const Vector<String>& string_list) {
-  IDB_TRACE("IDBRequest::onSuccess(StringList)");
-  if (!ShouldEnqueueEvent()) {
-    metrics_.RecordAndReset();
-    return;
-  }
-
-  auto* dom_string_list = MakeGarbageCollected<DOMStringList>();
-  for (const auto& item : string_list)
-    dom_string_list->Append(item);
-  EnqueueResultInternal(MakeGarbageCollected<IDBAny>(dom_string_list));
-}
-
 void IDBRequest::EnqueueResponse(std::unique_ptr<WebIDBCursor> backend,
                                  std::unique_ptr<IDBKey> key,
                                  std::unique_ptr<IDBKey> primary_key,

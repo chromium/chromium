@@ -91,12 +91,6 @@ class BackendFactoryWithMockedDatabaseInfo : public mojom::blink::IDBFactory {
     NOTREACHED();
   }
 
-  void GetDatabaseNames(
-      mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks>
-          pending_callbacks) override {
-    NOTREACHED();
-  }
-
   void GetDatabaseInfo(mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks>
                            pending_callbacks) override {
     callbacks_ptr_->Bind(std::move(pending_callbacks));

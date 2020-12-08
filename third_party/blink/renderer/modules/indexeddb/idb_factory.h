@@ -70,7 +70,6 @@ class MODULES_EXPORT IDBFactory final : public ScriptWrappable {
               ExceptionState&);
 
   // These are not exposed to the web applications and only used by DevTools.
-  IDBRequest* GetDatabaseNames(ScriptState*, ExceptionState&);
   IDBOpenDBRequest* CloseConnectionsAndDeleteDatabase(ScriptState*,
                                                       const String& name,
                                                       ExceptionState&);

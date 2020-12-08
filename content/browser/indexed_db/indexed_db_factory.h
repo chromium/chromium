@@ -41,9 +41,6 @@ class CONTENT_EXPORT IndexedDBFactory {
   virtual void GetDatabaseInfo(scoped_refptr<IndexedDBCallbacks> callbacks,
                                const url::Origin& origin,
                                const base::FilePath& data_directory) = 0;
-  virtual void GetDatabaseNames(scoped_refptr<IndexedDBCallbacks> callbacks,
-                                const url::Origin& origin,
-                                const base::FilePath& data_directory) = 0;
   virtual void Open(
       const base::string16& name,
       std::unique_ptr<IndexedDBPendingConnection> connection,

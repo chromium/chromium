@@ -38,7 +38,6 @@ void MockIndexedDBCallbacks::OnSuccess() {}
 
 void MockIndexedDBCallbacks::OnSuccess(int64_t result) {}
 
-void MockIndexedDBCallbacks::OnSuccess(const std::vector<base::string16>&) {}
 void MockIndexedDBCallbacks::OnSuccess(
     std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions) {
   info_called_ = true;

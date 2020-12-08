@@ -30,7 +30,6 @@ class MockIndexedDBCallbacks : public IndexedDBCallbacks {
 
   void OnSuccess() override;
   void OnSuccess(int64_t result) override;
-  void OnSuccess(const std::vector<base::string16>& result) override;
   void OnSuccess(std::vector<blink::mojom::IDBNameAndVersionPtr>
                      names_and_versions) override;
   void OnSuccess(std::unique_ptr<IndexedDBConnection> connection,

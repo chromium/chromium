@@ -129,8 +129,6 @@ class GetDatabaseNamesCallback final : public mojom::blink::IDBCallbacks {
     request_callback_->sendSuccess(std::move(database_names));
   }
 
-  void SuccessStringList(const Vector<String>&) override { NOTREACHED(); }
-
   void SuccessDatabase(
       mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_backend,
       const IDBDatabaseMetadata& metadata) override {

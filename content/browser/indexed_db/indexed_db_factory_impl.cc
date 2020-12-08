@@ -227,49 +227,6 @@ void IndexedDBFactoryImpl::GetDatabaseInfo(
   callbacks->OnSuccess(std::move(names_and_versions));
 }
 
-void IndexedDBFactoryImpl::GetDatabaseNames(
-    scoped_refptr<IndexedDBCallbacks> callbacks,
-    const Origin& origin,
-    const base::FilePath& data_directory) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  IDB_TRACE("IndexedDBFactoryImpl::GetDatabaseInfo");
-  IndexedDBOriginStateHandle origin_state_handle;
-  leveldb::Status s;
-  IndexedDBDatabaseError error;
-  // Note: Any data loss information here is not piped up to the renderer, and
-  // will be lost.
-  std::tie(origin_state_handle, s, error, std::ignore, std::ignore) =
-      GetOrOpenOriginFactory(origin, data_directory,
-                             /*create_if_missing=*/false);
-  if (!origin_state_handle.IsHeld() || !origin_state_handle.origin_state()) {
-    if (s.IsNotFound()) {
-      callbacks->OnSuccess(std::vector<base::string16>());
-    } else {
-      callbacks->OnError(error);
-    }
-    if (s.IsCorruption())
-      HandleBackingStoreCorruption(origin, error);
-    return;
-  }
-  IndexedDBOriginState* factory = origin_state_handle.origin_state();
-
-  IndexedDBMetadataCoding metadata_coding;
-  std::vector<base::string16> names;
-  s = metadata_coding.ReadDatabaseNames(
-      factory->backing_store_->db(),
-      factory->backing_store_->origin_identifier(), &names);
-  if (!s.ok()) {
-    error = IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError,
-                                   "Internal error opening backing store for "
-                                   "indexedDB.webkitGetDatabaseNames.");
-    callbacks->OnError(error);
-    if (s.IsCorruption())
-      HandleBackingStoreCorruption(origin, error);
-    return;
-  }
-  callbacks->OnSuccess(names);
-}
-
 void IndexedDBFactoryImpl::Open(
     const base::string16& name,
     std::unique_ptr<IndexedDBPendingConnection> connection,

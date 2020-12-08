@@ -278,20 +278,6 @@ void IndexedDBDispatcherHost::GetDatabaseInfo(
       std::move(callbacks), origin, indexed_db_path);
 }
 
-void IndexedDBDispatcherHost::GetDatabaseNames(
-    mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
-        pending_callbacks) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const auto& origin = receivers_.current_context();
-  scoped_refptr<IndexedDBCallbacks> callbacks(
-      new IndexedDBCallbacks(this->AsWeakPtr(), origin,
-                             std::move(pending_callbacks), IDBTaskRunner()));
-  base::FilePath indexed_db_path = indexed_db_context_->data_path();
-  indexed_db_context_->GetIDBFactory()->GetDatabaseNames(
-      std::move(callbacks), origin, indexed_db_path);
-}
-
 void IndexedDBDispatcherHost::Open(
     mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks> pending_callbacks,
     mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>

@@ -263,9 +263,6 @@ interface IDBCallbacks {
   // Factory::GetDatabaseInfo
   SuccessNamesAndVersionsList(array<IDBNameAndVersion> value);
 
-  // Factory::GetDatabaseNames
-  SuccessStringList(array<mojo_base.mojom.String16> value);
-
   // Factory::Open / DeleteDatabase
   Blocked(int64 existing_version);
 
@@ -483,10 +480,6 @@ interface IDBFactory {
   // Gets high level info about databases that exist in the frame's
   // origin. Posts results to |pending_callbacks|.
   GetDatabaseInfo(pending_associated_remote<IDBCallbacks> pending_callbacks);
-
-  // Gets a list of database names that exist in the frame's
-  // origin. Posts results to |pending_callbacks|.
-  GetDatabaseNames(pending_associated_remote<IDBCallbacks> pending_callbacks);
 
   // Opens a database |name| in the frame's origin at version |version|.
   // |version_change_transaction_receiver| will have version change

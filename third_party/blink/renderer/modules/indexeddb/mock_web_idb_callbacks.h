@@ -40,8 +40,6 @@ class MockWebIDBCallbacks : public WebIDBCallbacks {
   MOCK_METHOD1(SuccessNamesAndVersionsList,
                void(Vector<mojom::blink::IDBNameAndVersionPtr>));
 
-  MOCK_METHOD1(SuccessStringList, void(const Vector<String>&));
-
   void SuccessCursor(
       mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> cursor_info,
       std::unique_ptr<IDBKey> key,

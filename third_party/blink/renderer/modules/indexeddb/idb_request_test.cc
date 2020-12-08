@@ -233,7 +233,6 @@ void EnsureIDBCallbacksDontThrow(IDBRequest* request,
   request->HandleResponse();
   request->HandleResponse(IDBKey::CreateInvalid(), IDBKey::CreateInvalid(),
                           CreateNullIDBValueForTesting(scope.GetIsolate()));
-  request->EnqueueResponse(Vector<String>());
 
   EXPECT_TRUE(!exception_state.HadException());
 }

@@ -101,9 +101,6 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
   // blink::mojom::IDBFactory implementation:
   void GetDatabaseInfo(mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
                            pending_callbacks) override;
-  void GetDatabaseNames(
-      mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
-          pending_callbacks) override;
   void Open(mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
                 pending_callbacks,
             mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>

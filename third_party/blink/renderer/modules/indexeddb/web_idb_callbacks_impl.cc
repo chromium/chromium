@@ -116,20 +116,6 @@ void WebIDBCallbacksImpl::SuccessNamesAndVersionsList(
   NOTREACHED();
 }
 
-void WebIDBCallbacksImpl::SuccessStringList(const Vector<String>& string_list) {
-  if (!request_)
-    return;
-
-  probe::AsyncTask async_task(request_->GetExecutionContext(), &async_task_id_,
-                              "success");
-#if DCHECK_IS_ON()
-  DCHECK(!request_->TransactionHasQueuedResults());
-#endif  // DCHECK_IS_ON()
-  IDBRequest* request = request_.Get();
-  Detach();
-  request->EnqueueResponse(std::move(string_list));
-}
-
 void WebIDBCallbacksImpl::SuccessCursor(
     mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> cursor_info,
     std::unique_ptr<IDBKey> key,
