@@ -175,7 +175,7 @@ def add_import_line(file_lines, variable, relative_path, is_unittest):
                 index = last_import_line_index
             else:
                 file_lines.insert(index + 1, '')
-            file_lines.insert(index + 1, '// clang-format off')
+            file_lines.insert(index + 1, '// clang-format on')
         elif 'import ' not in file_lines[index + 1]:
             file_lines.insert(index, '')
 
@@ -241,10 +241,6 @@ def add_dependency(file_lines, section_first_line, list_name, dependency_line):
         print 'Unable to find ' + section_first_line
         return False
 
-    # Return False if dependency already found.
-    if dependency_line in file_lines:
-        return False
-
     # Find index of `list_name`. Get index of 'sources = [' in case `list_name`
     # is not defined.
     rule_index = file_lines.index(section_first_line)
@@ -263,8 +259,11 @@ def add_dependency(file_lines, section_first_line, list_name, dependency_line):
             if file_lines[i].endswith(']'):
                 single_line_dependency_list = True
 
-            # Jump to the end of the dependency list.
+            # Go to the end of the dependency list.
             while not ']' in file_lines[i]:
+                if dependency_line == file_lines[i]:
+                    # Dependency already found.
+                    return False
                 i += 1
             insertion_index = i
             break
@@ -650,14 +649,17 @@ def convert_js_file(js_file_path):
         if line.startswith('class '):
             # Extract class name.
             class_name = line.split(' ')[1]
-            # Make sure this class is not used locally.
-            if get_index_substr(file_lines, 'new ' + class_name) >= 0:
-                # Export only if the class name is the name of the file.
-                snake_case_name = ''.join([
-                    '_' + c.lower() if c.isupper() else c for c in class_name
-                ]).lstrip('_')
-                if not snake_case_name + '.js' == js_file_path.split('/')[-1]:
-                    continue
+            # Export class if this class is used or referred to in another js
+            # file.
+            out, _ = subprocess.Popen([
+                'egrep', '-R', '\W{}\W'.format(class_name), '-l',
+                './ui/file_manager/'
+            ],
+                                      stdout=subprocess.PIPE).communicate()
+            path = out.rstrip()
+            if not '\n' in path:
+                print 'Not exporting ' + class_name + ': local class'
+                continue
             file_lines[i] = '/* #export */ ' + line
         # Export variable in global namespace.
         elif line.startswith('const ') or line.startswith(
