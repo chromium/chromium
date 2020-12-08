@@ -61,6 +61,15 @@ Polymer({
   },
 
   /**
+   * Returns the correct arrow icon depending on if the routine group is
+   * expanded.
+   * @param {boolean} expanded
+   */
+  getArrowIcon_(expanded) {
+    return expanded ? 'cr:expand-less' : 'cr:expand-more';
+  },
+
+  /**
    * Helper function to get the icon for a group of routines based on all of
    * their results.
    * @param {!PolymerDeepPropertyChange} routines

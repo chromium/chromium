@@ -110,6 +110,7 @@ js_library("routine_group.m") {
   deps = [
     ":network_diagnostics_mojo.m",
     ":network_diagnostics_types.m",
+    "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]

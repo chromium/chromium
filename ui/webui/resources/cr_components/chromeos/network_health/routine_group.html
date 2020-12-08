@@ -1,6 +1,8 @@
 <link rel="import" href="../../../html/i18n_behavior.html">
 <link rel="import" href="../../../html/polymer.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="network_diagnostics_mojo.html">
 <link rel="import" href="network_diagnostics_types.html">
 
@@ -54,6 +56,7 @@
         </template>
         <img class="routine-icon" hidden="[[!showGroupIcon]]"
             src="[[getGroupIcon_(routines.*)]]">
+        <iron-icon icon="[[getArrowIcon_(expanded)]]"></iron-icon>
       </div>
       <template is="dom-if" if="[[expanded]]">
         <template is="dom-repeat" items="[[routines]]" as="routine"
