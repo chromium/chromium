@@ -61,7 +61,6 @@ static const char* const kAcceptLanguageList[] = {
     "az",              // Azerbaijani
     "be",              // Belarusian
     "bg",              // Bulgarian
-    "bh",              // Bihari
     "bn",              // Bengali
     "br",              // Breton
     "bs",              // Bosnian
