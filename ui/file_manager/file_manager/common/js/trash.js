@@ -76,8 +76,7 @@ class TrashDirs {
   }
 
   /**
-   * Promise wrapper for FileSystemDirectoryEntry.getDirectory(). Creates dir if
-   * it does not exist.
+   * Promise wrapper for FileSystemDirectoryEntry.getDirectory().
    *
    * @param {!DirectoryEntry} dirEntry current directory.
    * @param {string} path name of directory within dirEntry.

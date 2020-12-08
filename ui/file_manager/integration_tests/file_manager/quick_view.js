@@ -2711,7 +2711,7 @@
    * Tests that the tab-index focus stays within the delete confirm dialog.
    */
   testcase.openQuickViewTabIndexDeleteDialog = async () => {
-    // Open Files app on Downloads containing ENTRIES.hello.
+    // Open Files app.
     const appId =
         await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
 
@@ -2756,7 +2756,7 @@
    * that Quick View closes when there are no more items to view.
    */
   testcase.openQuickViewAndDeleteSingleSelection = async () => {
-    // Open Files app on Downloads containing ENTRIES.hello.
+    // Open Files app.
     const appId =
         await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
 
@@ -2788,7 +2788,7 @@
    * deletion.
    */
   testcase.openQuickViewAndDeleteCheckSelection = async () => {
-    // Open Files app on Downloads containing BASIC_LOCAL_ENTRY_SET.
+    // Open Files app.
     const appId =
         await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_LOCAL_ENTRY_SET);
 
