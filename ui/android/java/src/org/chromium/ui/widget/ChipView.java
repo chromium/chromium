@@ -126,8 +126,7 @@ public class ChipView extends LinearLayout {
                 R.styleable.ChipView_secondaryTextAppearance, R.style.TextAppearance_ChipText);
         int verticalInset = a.getDimensionPixelSize(R.styleable.ChipView_verticalInset,
                 getResources().getDimensionPixelSize(R.dimen.chip_bg_vertical_inset));
-        mColorList = AppCompatResources.getColorStateList(context,
-            R.color.modern_blue_600);
+        mColorList = AppCompatResources.getColorStateList(context, R.color.modern_blue_600);
         boolean allowMultipleLines = a.getBoolean(R.styleable.ChipView_allowMultipleLines, false);
         boolean textAlignStart = a.getBoolean(R.styleable.ChipView_textAlignStart, false);
         a.recycle();

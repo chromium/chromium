@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.feed;
 
-import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuDivider;
 import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuListItem;
 
 import android.app.Activity;
@@ -302,9 +301,10 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         public ModelList getMenuModelList() {
             ModelList modelList = new ModelList();
             int icon_id = 0;
-            modelList.add(buildMenuListItem(R.string.menu_item_customize_shopping_feed,
-                    R.id.ntp_feed_header_menu_customize_shopping_feed, icon_id));
-            modelList.add(buildMenuDivider());
+            // TODO(meiliang): Add the menu item back after we pump the curation handler.
+            // modelList.add(buildMenuListItem(R.string.menu_item_customize_shopping_feed,
+            //         R.id.ntp_feed_header_menu_customize_shopping_feed, icon_id));
+            // modelList.add(buildMenuDivider());
             if (mMediator.hasPrimaryAccount()) {
                 modelList.add(buildMenuListItem(R.string.ntp_manage_my_activity,
                         R.id.ntp_feed_header_menu_item_activity, icon_id));

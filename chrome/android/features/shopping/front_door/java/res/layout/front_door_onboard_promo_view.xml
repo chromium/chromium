@@ -14,7 +14,7 @@
       android:gravity="center"
       android:paddingVertical="16dp"
       android:paddingHorizontal="10dp"
-      android:text="Curate your own shopping feed"
+      android:text="@string/onboarding_card_title"
       android:textAppearance="@style/TextAppearance.Headline.Primary" />
   <LinearLayout
       android:id="@+id/category_container"
@@ -138,7 +138,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:paddingVertical="16dp"
-    android:text="Get started"
+    android:text="@string/onboarding_card_get_started"
     android:layout_gravity="center"
     android:textAppearance="@style/TextAppearance.Button.Text.Blue"/>
 

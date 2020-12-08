@@ -127,7 +127,6 @@ public class DummyProductProvider implements ShoppingProductsProvider {
                     }
                 }
             }
-            mCallback.onResult(mProducts);
         } catch (JSONException e) {
             Log.e("Meil",
                     String.format(

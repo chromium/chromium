@@ -288,7 +288,7 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
         if (mSkipPeak) return HeightMode.DISABLED;
         if (mOpenMode == OpenMode.PEEK) {
             int toolbarHeight =
-                mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+                    mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
             return (int) (toolbarHeight * PEEK_TOOLBAR_HEIGHT_MULTIPLE);
         } else {
             return HeightMode.DISABLED;

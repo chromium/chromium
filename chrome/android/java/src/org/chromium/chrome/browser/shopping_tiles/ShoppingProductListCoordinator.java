@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.shopping.front_door.FrontDoorFeedProvider;
 import org.chromium.chrome.browser.shopping.front_door.FrontDoorOnBoardingCoordinator;
 import org.chromium.chrome.browser.shopping.front_door.ProductLineInfo;
 import org.chromium.chrome.browser.shopping.front_door.ScrimableImageContainer;
+import org.chromium.chrome.browser.shopping.front_door.ShoppingFeedFetcher.CountryCodeProvider;
 import org.chromium.chrome.browser.shopping_tiles.ShoppingProductListMediator.ContextMenuDelegate;
 import org.chromium.components.query_tiles.QueryTileConstants;
 import org.chromium.ui.UiUtils;
@@ -117,16 +118,18 @@ public class ShoppingProductListCoordinator
                 view.setOnClickListener((v) -> {
                     model.get(ShoppingProductProperties.ON_CLICK_CALLBACK).onResult(url);
                 });
-            }  else if (propertyKey == ShoppingProductProperties.BOOKMARK_CLICK_CALLBACK) {
+            } else if (propertyKey == ShoppingProductProperties.BOOKMARK_CLICK_CALLBACK) {
                 String url = model.get(ShoppingProductProperties.URL);
                 view.findViewById(R.id.bookmark_product).setOnClickListener((v) -> {
                     model.get(ShoppingProductProperties.BOOKMARK_CLICK_CALLBACK).onResult(url);
                 });
             } else if (propertyKey == ShoppingProductProperties.IS_BOOKMARKED) {
                 if (model.get(ShoppingProductProperties.IS_BOOKMARKED)) {
-                    ((ImageView) view.findViewById(R.id.bookmark_product)).setImageResource(R.drawable.btn_star_filled);
+                    ((ImageView) view.findViewById(R.id.bookmark_product))
+                            .setImageResource(R.drawable.btn_star_filled);
                 } else {
-                    ((ImageView) view.findViewById(R.id.bookmark_product)).setImageResource(R.drawable.btn_star);
+                    ((ImageView) view.findViewById(R.id.bookmark_product))
+                            .setImageResource(R.drawable.btn_star);
                 }
             } else if (propertyKey == ShoppingProductProperties.ITEM_CONTEXT_MENU_DELEGATE) {
                 model.get(ShoppingProductProperties.ITEM_CONTEXT_MENU_DELEGATE)
@@ -162,8 +165,13 @@ public class ShoppingProductListCoordinator
                     }
                     view.removeAllViews();
                 }
+                View suppliedView = model.get(FullSpanSuppliedViewProperties.VIEW_SUPPLIER).get();
 
-                view.addView(model.get(FullSpanSuppliedViewProperties.VIEW_SUPPLIER).get(),
+                if (suppliedView.getParent() != null) {
+                    UiUtils.removeViewFromParent(suppliedView);
+                }
+
+                view.addView(suppliedView,
                         new ViewGroup.LayoutParams(
                                 ViewGroup.LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
             }
@@ -257,12 +265,12 @@ public class ShoppingProductListCoordinator
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier, Profile profile,
             @ListType int listType, ModalDialogManager modalDialogManager,
             Supplier<ContextMenuManager> contextMenuManagerSupplier, OpenUrlHelper openUrlHelper,
-            ShareUrlHelper shareUrlHelper) {
+            ShareUrlHelper shareUrlHelper, CountryCodeProvider countryCodeProvider) {
         mContext = context;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
 
-        mOnboardingViewProvider = new FrontDoorOnBoardingCoordinator(
-                context, modalDialogManager, this::handleChipToggle, mFeedProvider);
+        mOnboardingViewProvider = new FrontDoorOnBoardingCoordinator(context, modalDialogManager,
+                this::handleChipToggle, mFeedProvider, countryCodeProvider);
 
         mProductListModel = new MVCListAdapter.ModelList();
         mAdapter = new SimpleRecyclerViewAdapter(mProductListModel);

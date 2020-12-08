@@ -9,6 +9,12 @@
       android:id="@+id/image"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:scaleType="fitCenter"
+      android:adjustViewBounds="true"
+      app:cornerRadiusTopStart="8dp"
+      app:cornerRadiusTopEnd="8dp"
+      app:cornerRadiusBottomStart="8dp"
+      app:cornerRadiusBottomEnd="8dp"
       android:src="@color/thumbnail_placeholder_on_primary_bg"/>
   <LinearLayout
       android:id="@+id/name_bookmark_container"
@@ -21,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:id="@+id/name"
-        android:maxLines="2"
+        android:maxLines="1"
         android:ellipsize="end"
         android:layout_gravity="center_vertical"
         android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>

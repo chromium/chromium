@@ -2,6 +2,7 @@ package org.chromium.chrome.browser.shopping.front_door;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.shopping.front_door.ShoppingFeedFetcher.CountryCodeProvider;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -17,8 +18,7 @@ import java.util.Set;
 // TODO(meiliang): Migrate the offer product here as well. Move the logic from DummyProductProvider
 //  to here.
 // Feed data storage for Front door.
-public class FrontDoorFeedProvider
-        implements ProductLineProvider, OnboardCategoryAndBrandProvider {
+public class FrontDoorFeedProvider implements ProductLineProvider, OnboardCategoryAndBrandProvider {
     private static final boolean DEBUG = true;
     private static final boolean USING_DUMMY_JSON = false;
 
@@ -105,6 +105,9 @@ public class FrontDoorFeedProvider
         Log.e("Meil", "getProductLinesForCategory: " + identifier);
         assert mCategoryKeyToBrandIdsMap.containsKey(identifier);
         List<ProductLineInfo> infoList = new ArrayList<>();
+        Set<String> brandIds = mCategoryKeyToBrandIdsMap.get(identifier);
+
+        if (brandIds == null) return infoList;
 
         for (String brandId : mCategoryKeyToBrandIdsMap.get(identifier)) {
             infoList.addAll(getProductLinesForBrand(brandId));
@@ -132,8 +135,9 @@ public class FrontDoorFeedProvider
 
     // OnboardCategoryAndBrandProvider implementations
     @Override
-    public void getBrandsForCategoriesWithCallback(
-            List<String> categoryKeys, Callback<Map<String, List<BrandInfo>>> callback) {
+    public void getBrandsForCategoriesWithCallback(List<String> categoryKeys,
+            Callback<Map<String, List<BrandInfo>>> callback,
+            CountryCodeProvider countryCodeProvider) {
         Log.e("Meil_FrontDoorFeedProvider", "getBrandsForCategories: " + categoryKeys.toString());
 
         Map<String, List<BrandInfo>> resultMap = new LinkedHashMap<>();
@@ -154,6 +158,6 @@ public class FrontDoorFeedProvider
             if (DEBUG) writeResponseToFile(response, "/sdcard/onboardBrandResponse.txt");
             OnboardBrandParser.parse(response, resultMap);
             callback.onResult(resultMap);
-        });
+        }, countryCodeProvider);
     }
 }

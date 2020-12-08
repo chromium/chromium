@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.chrome.browser.shopping.front_door.ChipProperties.ToggleHandler;
+import org.chromium.chrome.browser.shopping.front_door.ShoppingFeedFetcher.CountryCodeProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -18,9 +19,10 @@ public class FrontDoorOnBoardingCoordinator implements ChipsProvider {
     private FrontDoorOnBoardingMediator mMediator;
 
     public FrontDoorOnBoardingCoordinator(Context context, ModalDialogManager modalDialogManager,
-            ToggleHandler chipToggleHandler, OnboardCategoryAndBrandProvider dataProvider) {
+            ToggleHandler chipToggleHandler, OnboardCategoryAndBrandProvider dataProvider,
+            CountryCodeProvider countryCodeProvider) {
         mMediator = new FrontDoorOnBoardingMediator(
-                context, modalDialogManager, chipToggleHandler, dataProvider);
+                context, modalDialogManager, chipToggleHandler, dataProvider, countryCodeProvider);
     }
 
     public boolean hasDoneOnboarding() {

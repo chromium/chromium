@@ -2473,13 +2473,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             updateNtpTransitionAnimation();
         }
 
-        if (getToolbarDataProvider().getNewTabPageDelegate().wasShowingNtp()) {
-            onTabLayoutScrollChanged(
-                    getToolbarDataProvider().getNewTabPageDelegate().isTabLayoutShownOnNtp() ? 0
-                                                                                             : 1);
-        } else {
-            onTabLayoutScrollChanged(0);
-        }
+        onTabLayoutScrollChanged(0);
 
         getMenuButtonCoordinator().setVisibility(true);
 

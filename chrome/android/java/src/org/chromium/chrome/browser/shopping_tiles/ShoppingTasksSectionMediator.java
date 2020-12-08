@@ -40,7 +40,7 @@ class ShoppingTasksSectionMediator {
         for (ShoppingTask task : mTasksProvider.getTasks()) {
             ShoppingProductListCoordinator productListBuilder =
                     new ShoppingProductListCoordinator(mContext, mEphemeralTabCoordinatorSupplier,
-                            mProfile, ListType.GRID, null, null, null, null);
+                            mProfile, ListType.GRID, null, null, null, null, null);
             productListBuilder.setProductList(task.getProductList());
             PropertyModel taskModel = new PropertyModel.Builder(ShoppingTaskProperties.ALL_KEYS)
                                               .with(TASK_NAME, task.name)

@@ -145,22 +145,25 @@ public class BookmarkUtils {
         });
     }
 
-    public static void addUrlToShoppingFolder(ChromeTabbedActivity activity, final String url, final String title, boolean remove) {
+    public static void addUrlToShoppingFolder(
+            ChromeTabbedActivity activity, final String url, final String title, boolean remove) {
         final BookmarkModel bookmarkModel = new BookmarkModel();
         bookmarkModel.finishLoadingBookmarkModel(() -> {
             BookmarkId shoppingFolder = findOrCreateShoppingFolderInternal(bookmarkModel);
 
             if (remove) {
-                for (BookmarkItem item:bookmarkModel.getBookmarksForFolder(shoppingFolder)) {
+                for (BookmarkItem item : bookmarkModel.getBookmarksForFolder(shoppingFolder)) {
                     if (item.getUrl().startsWith(url)) {
                         bookmarkModel.deleteBookmark(item.getId());
                     }
                 }
             } else {
                 bookmarkModel.addBookmark(shoppingFolder, 0, title, url);
-                Snackbar snackbar = Snackbar.make("Shopping", new SnackbarController() {}, Snackbar.TYPE_ACTION,
-                    Snackbar.UMA_BOOKMARK_ADDED)
-                    .setTemplateText(activity.getString(R.string.bookmark_page_saved_folder));
+                Snackbar snackbar =
+                        Snackbar.make("Shopping", new SnackbarController() {}, Snackbar.TYPE_ACTION,
+                                        Snackbar.UMA_BOOKMARK_ADDED)
+                                .setTemplateText(
+                                        activity.getString(R.string.bookmark_page_saved_folder));
                 activity.getSnackbarManager().showSnackbar(snackbar);
             }
         });
@@ -174,8 +177,7 @@ public class BookmarkUtils {
             }
         }
 
-        BookmarkId shoppingId = model.addFolder(
-            rootId, model.getChildCount(rootId), "Shopping");
+        BookmarkId shoppingId = model.addFolder(rootId, model.getChildCount(rootId), "Shopping");
         return shoppingId;
     }
 

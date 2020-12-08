@@ -104,9 +104,8 @@ public class NativePageFactory {
             return new NewTabPage(mActivity, mActivity.getBrowserControlsManager(),
                     mActivity.getActivityTabProvider(), mActivity.getSnackbarManager(),
                     mActivity.getLifecycleDispatcher(), mActivity.getTabModelSelector(),
-                    mActivity.isTablet(), mUma.get(),
-                        ColorUtils.inNightMode(mActivity), nativePageHost, tab,
-                    mBottomSheetController, mEphemeralTabCoordinatorSupplier,
+                    mActivity.isTablet(), mUma.get(), ColorUtils.inNightMode(mActivity),
+                    nativePageHost, tab, mBottomSheetController, mEphemeralTabCoordinatorSupplier,
                     mOverviewModeBehaviorSupplier, mActivity.getModalDialogManager());
         }
 

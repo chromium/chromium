@@ -45,7 +45,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             Supplier<ShareDelegate> shareDelegateSupplier,
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             BottomSheetController sheetController,
-            Supplier<OverviewModeBehavior> overviewModeBehaviorSupplier, Runnable contextMenuCopyLinkObserver) {
+            Supplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
+            Runnable contextMenuCopyLinkObserver) {
         mActivity = activity;
         mAppBrowserControlsVisibilityDelegate = appBrowserControlsVisibilityDelegate;
         mShareDelegateSupplier = shareDelegateSupplier;

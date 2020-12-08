@@ -111,7 +111,7 @@ public class NestedRecyclerView extends RecyclerView {
         dispatchScroll(event);
         boolean intercept = super.onInterceptTouchEvent(event);
         Log.e("Meil", "onIntercept touch event: " + intercept);
-        return super.onInterceptTouchEvent(event);
+        return intercept;
     }
 
     @Override
@@ -119,6 +119,6 @@ public class NestedRecyclerView extends RecyclerView {
         dispatchScroll(event);
         boolean onTouch = super.onTouchEvent(event);
         Log.e("Meil", "on touch event: " + onTouch);
-        return super.onTouchEvent(event);
+        return onTouch;
     }
 }

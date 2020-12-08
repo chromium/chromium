@@ -31,11 +31,10 @@ public class ShoppingProductProperties {
             .WritableObjectPropertyKey<Callback<String>> ON_CLICK_CALLBACK =
             new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel
-        .WritableObjectPropertyKey<Callback<String>> BOOKMARK_CLICK_CALLBACK =
-        new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel
-        .WritableBooleanPropertyKey IS_BOOKMARKED =
-        new PropertyModel.WritableBooleanPropertyKey();
+            .WritableObjectPropertyKey<Callback<String>> BOOKMARK_CLICK_CALLBACK =
+            new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableBooleanPropertyKey IS_BOOKMARKED =
+            new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel
             .WritableObjectPropertyKey<ContextMenuDelegate> ITEM_CONTEXT_MENU_DELEGATE =
             new WritableObjectPropertyKey<>();

@@ -61,7 +61,6 @@ class ShoppingProductListMediator {
     private SimpleRecyclerViewAdapter.ListItem mOnboardingViewItem;
     private final FilterChipListCoordinator mFilterChipListViewProvider;
 
-    private int mProductLineItemStartedIndex = INVALID_INDEX;
     private SimpleRecyclerViewAdapter.ListItem mFirstProductLineListItem;
 
     private final Set<String> mSelectedCategoryFilterIds = new HashSet<>();
@@ -152,6 +151,7 @@ class ShoppingProductListMediator {
                     return true;
                 case ContextMenuItemId.NOT_INTERESTED:
                     Log.e("Meil_menu", "Not interested");
+                    removeNotInterestedItem(mItemProperty);
                     return true;
             }
             return false;
@@ -191,8 +191,10 @@ class ShoppingProductListMediator {
             mOnboardingViewItem = new SimpleRecyclerViewAdapter.ListItem(
                     ItemType.FULL_SPAN_SUPPLIED_VIEW,
                     new PropertyModel.Builder(FullSpanSuppliedViewProperties.ALL_KEYS).build());
-            mOnboardingViewItem.model.set(FullSpanSuppliedViewProperties.VIEW_SUPPLIER,
-                    () -> mOnboardingViewProvider.getOnboardPromoCard(this::removeOnboardingItem));
+            mOnboardingViewItem.model.set(FullSpanSuppliedViewProperties.VIEW_SUPPLIER, () -> {
+                Log.e("Meil", "Full span view get: onboarding promo item");
+                return mOnboardingViewProvider.getOnboardPromoCard(this::removeOnboardingItem);
+            });
             mModel.add(mOnboardingViewItem);
         }
 
@@ -205,6 +207,29 @@ class ShoppingProductListMediator {
         assert mOnboardingViewProvider.hasDoneOnboarding() && mOnboardingViewItem != null;
 
         mModel.remove(mOnboardingViewItem);
+    }
+
+    private void removeNotInterestedItem(PropertyModel model) {
+        // need to update fist product line item. if model is the first produce line item.
+        int modelIndex = getModelIndex(model);
+
+        assert modelIndex != INVALID_INDEX : "modelIndex should not be invalid";
+
+        if (model == mFirstProductLineListItem.model) {
+            mFirstProductLineListItem =
+                    modelIndex + 1 < mModel.size() ? mModel.get(modelIndex + 1) : null;
+        }
+
+        mModel.removeAt(modelIndex);
+    }
+
+    private int getModelIndex(PropertyModel model) {
+        for (int i = 0; i < mModel.size(); i++) {
+            PropertyModel itemModel = mModel.get(i).model;
+            if (model == itemModel) return i;
+        }
+
+        return INVALID_INDEX;
     }
 
     void resetProductList(List<ProductInfo> productList) {
@@ -276,13 +301,6 @@ class ShoppingProductListMediator {
             productList.addAll(mFeedProvider.getProductLinesForBrand(brandId));
         }
 
-        if (productList.size() == 0) {
-            // No chip is enabled, we should show all.
-            productList = mFeedProvider.getAllProductLines();
-        }
-
-        resetProductLineItem(productList);
-
         // Intentionally update the map to include the new checked chip here to ensure this checked
         // chips data show first in the list.
         if (isChecked) {
@@ -292,6 +310,14 @@ class ShoppingProductListMediator {
                 mSelectedBrandFilterIds.add(chipId);
             }
         }
+
+        if (productList.size() == 0 && mSelectedBrandFilterIds.size() == 0
+                && mSelectedCategoryFilterIds.size() == 0) {
+            // No chip is enabled, we should show all.
+            productList = mFeedProvider.getAllProductLines();
+        }
+
+        resetProductLineItem(productList);
     }
 
     void resetProductLineItem(List<ProductLineInfo> productList) {
@@ -312,8 +338,6 @@ class ShoppingProductListMediator {
 
             mFirstProductLineListItem = null;
         }
-
-        if (productList.size() == 0) return;
 
         int index = firstProductLineIndex != INVALID_INDEX ? firstProductLineIndex : mModel.size();
 
@@ -362,21 +386,30 @@ class ShoppingProductListMediator {
 
             mModel.add(index + i, item);
         }
-        addDivider();
+
+        SimpleRecyclerViewAdapter.ListItem dividerItem = addDivider();
+        if (mFirstProductLineListItem == null) {
+            mFirstProductLineListItem = dividerItem;
+        }
         addEndOfFeedItem();
     }
 
-    void addDivider() {
-        mModel.add(new SimpleRecyclerViewAdapter.ListItem(ItemType.DIVIDER, new PropertyModel()));
+    SimpleRecyclerViewAdapter.ListItem addDivider() {
+        SimpleRecyclerViewAdapter.ListItem item =
+                new SimpleRecyclerViewAdapter.ListItem(ItemType.DIVIDER, new PropertyModel());
+        mModel.add(item);
+        return item;
     }
 
     void addEndOfFeedItem() {
         mModel.add(new SimpleRecyclerViewAdapter.ListItem(ItemType.FULL_SPAN_SUPPLIED_VIEW,
                 new PropertyModel.Builder(FullSpanSuppliedViewProperties.ALL_KEYS)
                         .with(FullSpanSuppliedViewProperties.VIEW_SUPPLIER,
-                                ()
-                                        -> LayoutInflater.from(mContext).inflate(
-                                                R.layout.end_of_feed_view, null, false))
+                                () -> {
+                                    Log.e("Meil", "Full span view get: end of feed item");
+                                    return LayoutInflater.from(mContext).inflate(
+                                            R.layout.end_of_feed_view, null, false);
+                                })
                         .build()));
     }
 
@@ -409,14 +442,17 @@ class ShoppingProductListMediator {
                         GlobalDiscardableReferencePool.getReferencePool());
         Callback<String> productOnClickedCallback = (url) -> {
             mEphemeralTabCoordinatorSupplier.get().requestOpenSheet(url, product.name, false, true);
-            Log.e("YUSUF","URL IS "+url);
+            Log.e("YUSUF", "URL IS " + url);
         };
 
         BookmarkModel bookmarkModel = new BookmarkModel();
-        boolean isBookmarked = bookmarkModel.isBookmarkModelLoaded() && bookmarkModel.isBookmarked(new GURL(product.productUrl));
+        boolean isBookmarked = bookmarkModel.isBookmarkModelLoaded()
+                && bookmarkModel.isBookmarked(new GURL(product.productUrl));
         Callback<String> bookmarkClickedCallback = (url) -> {
-            boolean wasBookmarked = mModel.get(index).model.get(ShoppingProductProperties.IS_BOOKMARKED);
-            BookmarkUtils.addUrlToShoppingFolder(((ChromeTabbedActivity)mContext), url, product.name, wasBookmarked);
+            boolean wasBookmarked =
+                    mModel.get(index).model.get(ShoppingProductProperties.IS_BOOKMARKED);
+            BookmarkUtils.addUrlToShoppingFolder(
+                    ((ChromeTabbedActivity) mContext), url, product.name, wasBookmarked);
             mModel.get(index).model.set(ShoppingProductProperties.IS_BOOKMARKED, !wasBookmarked);
         };
 

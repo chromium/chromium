@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.shopping.front_door;
 
-import java.util.Locale;
-import org.chromium.base.ContextUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,11 +15,15 @@ import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * This is used to fetch the front door feed endpoint.
  */
 public class ShoppingFeedFetcher {
+    public interface CountryCodeProvider {
+        public String getCountryCode();
+    }
     // Shared param
     private static final String GET_METHOD = "GET";
     private static final String POST_METHOD = "POST";
@@ -100,13 +102,15 @@ public class ShoppingFeedFetcher {
     }
 
     // Fetch brands for Onboarding.
-    public static void fetchBrandsForCategories(
-            List<String> categoryKeys, Callback<String> callback) {
+    public static void fetchBrandsForCategories(List<String> categoryKeys,
+            Callback<String> callback, CountryCodeProvider countryCodeProvider) {
         JSONObject jsonRequestObject = new JSONObject();
         try {
             jsonRequestObject.put("categoryIds", new JSONArray(categoryKeys));
-            String country = ContextUtils.getApplicationContext().getResources().getConfiguration().
-                locale.getCountry().toLowerCase();
+            // String country =
+            // ContextUtils.getApplicationContext().getResources().getConfiguration().
+            //     locale.getCountry().toLowerCase();
+            String country = countryCodeProvider.getCountryCode().toLowerCase();
             country = !country.equals(Locale.JAPAN.toString().toLowerCase()) ? "us" : country;
             jsonRequestObject.put("studyRegion", country);
         } catch (JSONException e) {

@@ -32,6 +32,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feed.shared.ScrollTracker;
 import org.chromium.chrome.browser.feed.shared.stream.Stream.ContentChangedListener;
@@ -140,6 +141,8 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
     private final ShareHelperWrapper mShareHelper;
 
     private static ProcessScope sXSurfaceProcessScope;
+
+    private boolean mIsShoppingFeedOpened;
 
     public static ProcessScope xSurfaceProcessScope() {
         if (sXSurfaceProcessScope == null) {
@@ -361,11 +364,13 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
             if (tab.getPosition() == 0) {
                 Log.e("Meil_tabSelected", "onTabSelected position: " + 0);
                 // onSurfaceOpened();
+                mIsShoppingFeedOpened = false;
                 FeedStreamSurfaceJni.get().surfaceOpened(
                         mNativeFeedStreamSurface, FeedStreamSurface.this);
                 mHybridListRenderer.onSurfaceOpened();
             } else {
                 Log.e("Meil_tabSelected", "onTabSelected position: " + tab.getPosition());
+                mIsShoppingFeedOpened = true;
                 // if tab is the shopping tab, show shopping content
                 List<FeedListContentManager.FeedContent> contents = new ArrayList<>();
 
@@ -454,10 +459,10 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         }
 
         // Front door Recycler view supplier.
-        mShoppingList =
-                new ShoppingProductListCoordinator(mActivity, ephemeralTabCoordinatorSupplier,
-                        Profile.getLastUsedRegularProfile(), ListType.STAGGERED, modalDialogManager,
-                        contextMenuManagerSupplier, this::openUrl, this::share);
+        mShoppingList = new ShoppingProductListCoordinator(mActivity,
+                ephemeralTabCoordinatorSupplier, Profile.getLastUsedRegularProfile(),
+                ListType.STAGGERED, modalDialogManager, contextMenuManagerSupplier, this::openUrl,
+                this::share, this::getCountryCode);
 
         trackSurface(this);
     }
@@ -473,6 +478,10 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
             mSliceViewTracker = null;
         }
         mHybridListRenderer.unbind();
+    }
+
+    private String getCountryCode() {
+        return ChromeActivitySessionTracker.getInstance().getVariationsLatestCountry();
     }
 
     /**
@@ -564,7 +573,7 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
     void onStreamUpdated(byte[] data) {
         // There should be no updates while the surface is closed. If the surface was recently
         // closed, just ignore these.
-        if (!mOpened) return;
+        if (!mOpened || mIsShoppingFeedOpened) return;
         StreamUpdate streamUpdate;
         try {
             streamUpdate = StreamUpdate.parseFrom(data);
@@ -974,6 +983,8 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
      */
     public void setStreamContentVisibility(boolean visible) {
         if (mStreamContentVisible == visible) return;
+        mIsShoppingFeedOpened = false;
+        mTabLayoutDelegate.mSelectedTabIndex = 0;
         mStreamContentVisible = visible;
         updateSurfaceOpenState();
     }
@@ -989,7 +1000,7 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
 
     private void updateSurfaceOpenState() {
         boolean shouldOpen = sStartupCalled && mStreamContentVisible && mStreamVisible;
-        if (shouldOpen == mOpened) return;
+        if (shouldOpen == mOpened || mIsShoppingFeedOpened) return;
         if (shouldOpen) {
             onSurfaceOpened();
         } else {
@@ -1006,7 +1017,7 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         assert (sStartupCalled);
         assert (mStreamContentVisible);
         // No feed content should exist.
-        assert (mContentManager.getItemCount() == mHeaderCount);
+        assert (mIsShoppingFeedOpened || mContentManager.getItemCount() == mHeaderCount);
 
         mOpened = true;
         FeedStreamSurfaceJni.get().surfaceOpened(mNativeFeedStreamSurface, FeedStreamSurface.this);

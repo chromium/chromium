@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.shopping.front_door.ChipProperties.ToggleHand
 import org.chromium.chrome.browser.shopping.front_door.FrontDoorOnBoardingCoordinator.OnboardingObserver;
 import org.chromium.chrome.browser.shopping.front_door.Picker.ListType;
 import org.chromium.chrome.browser.shopping.front_door.Picker.PickerItemPropertyModel;
+import org.chromium.chrome.browser.shopping.front_door.ShoppingFeedFetcher.CountryCodeProvider;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
@@ -46,7 +47,6 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
-import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -182,7 +182,8 @@ class FrontDoorOnBoardingMediator {
                     model.set(PickerItemPropertyModel.IS_PICKED, !isPicked);
                 });
             } else if (propertyKey == OnBoardBrandItemProperties.IMAGE_FETCHER) {
-                updateImages(view.findViewById(R.id.images_container), ((ImageView) view.findViewById(R.id.favicon)), model);
+                updateImages(view.findViewById(R.id.images_container),
+                        ((ImageView) view.findViewById(R.id.favicon)), model);
             }
         }
 
@@ -194,7 +195,7 @@ class FrontDoorOnBoardingMediator {
                     model.get(OnBoardBrandItemProperties.REPRESENTATIVE_IMAGE_URLS);
 
             assert imageUrls.size() == 3;
-            
+
             String logo = model.get(OnBoardBrandItemProperties.LOGO_URL);
             if (!TextUtils.isEmpty(logo)) {
                 logoView.setVisibility(View.VISIBLE);
@@ -202,7 +203,7 @@ class FrontDoorOnBoardingMediator {
             } else {
                 logoView.setVisibility(View.GONE);
             }
-            
+
             ImageView startImageView = (ImageView) imageViews.findViewById(R.id.start_image);
             fetchAndUpdateImage(startImageView, fetcher, imageUrls.get(0));
 
@@ -328,14 +329,17 @@ class FrontDoorOnBoardingMediator {
     private final LargeIconBridge mServerFaviconHelper;
 
     private final ObserverList<OnboardingObserver> mObservers = new ObserverList<>();
+    private final CountryCodeProvider mCountryCodeProvider;
 
     FrontDoorOnBoardingMediator(Context context, ModalDialogManager modalDialogManager,
-            ToggleHandler chipToggleHandler, OnboardCategoryAndBrandProvider dataProvider) {
+            ToggleHandler chipToggleHandler, OnboardCategoryAndBrandProvider dataProvider,
+            CountryCodeProvider countryCodeProvider) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mChipToggleHandler = chipToggleHandler;
         mDataProvider = dataProvider;
         mServerFaviconHelper = new LargeIconBridge(Profile.getLastUsedRegularProfile());
+        mCountryCodeProvider = countryCodeProvider;
 
         mCategoryThumbnailResourceIds = new ArrayList<>(
                 Arrays.asList(R.drawable.Thumbnail_Electronics, R.drawable.Thumbnail_Beauty,
@@ -366,7 +370,8 @@ class FrontDoorOnBoardingMediator {
                             if (mStage == OnboardingStage.PICK_CATEGORIES) {
                                 // Finish picking categories, show the brands next.
                                 dataProvider.getBrandsForCategoriesWithCallback(
-                                        mInterestedCategories, (map) -> setUpBrands(map));
+                                        mInterestedCategories,
+                                        (map) -> setUpBrands(map), mCountryCodeProvider);
                             } else {
                                 // Finish picking brands, finished the onboarding process.
                                 doneOnboarding();
@@ -429,13 +434,13 @@ class FrontDoorOnBoardingMediator {
             mBrandsPicker.registerItemView(BrandPickerItemType.PICKABLE_ITEM, parent -> {
                 ViewGroup group;
 
-            if (BRAND_LIST_PICKED_ZOOM) {
-                group = (ViewGroup) LayoutInflater.from(context).inflate(
-                        R.layout.brand_picker_brand_item, parent, false);
-            } else {
-                group = (ViewGroup) LayoutInflater.from(context).inflate(
-                        R.layout.brand_picker_brand_checkbox_item, parent, false);
-            }
+                if (BRAND_LIST_PICKED_ZOOM) {
+                    group = (ViewGroup) LayoutInflater.from(context).inflate(
+                            R.layout.brand_picker_brand_item, parent, false);
+                } else {
+                    group = (ViewGroup) LayoutInflater.from(context).inflate(
+                            R.layout.brand_picker_brand_checkbox_item, parent, false);
+                }
 
                 return group;
             }, BrandItemViewBinder::bind);
@@ -655,31 +660,38 @@ class FrontDoorOnBoardingMediator {
                 assert bitmap != null : "Meil Favicon bitmap should not be null";
                 Drawable favicon = FaviconUtils.createRoundedBitmapDrawable(mContext.getResources(),
                         Bitmap.createScaledBitmap(bitmap, size, size, true));
-                //item.set(OnBoardBrandItemProperties.FAVICON, favicon);
+                // item.set(OnBoardBrandItemProperties.FAVICON, favicon);
             };
 
-            FaviconImageCallback faviconCallback = (bitmap, url) -> {
-                if (bitmap == null) {
-                    Log.e("Meil_Favicon",
-                            "local favicon is null for brand url: " + info.url + "; Try server");
-
-                    final GURL gurlOrigin = new GURL(info.url);
-                    assert gurlOrigin.isValid() : "Meil Favicon gurl should be valid";
-
-                    mServerFaviconHelper.getLargeIconForUrl(gurlOrigin, size,
-                            (icon, fallbackColor, isFallbackColorDefault, iconType) -> {
-                                if (icon == null) {
-                                    Log.e("Meil_Favicon",
-                                            "Server favicon is null for brand url: " + info.url);
-                                    return;
-                                }
-                                updateFavicon.onResult(icon);
-                            });
-
-                } else {
-                    updateFavicon.onResult(bitmap);
-                }
-            };
+            FaviconImageCallback faviconCallback = (bitmap, url)
+                    -> {
+                            // TODO(meiliang): Update after we support favicon instead of using
+                            // brand logo.
+                            // if (bitmap == null) {
+                            //     Log.e("Meil_Favicon",
+                            //             "local favicon is null for brand url: " + info.url + ";
+                            //             Try server");
+                            //
+                            //     final GURL gurlOrigin = new GURL(info.url);
+                            //     assert gurlOrigin.isValid() : "Meil Favicon gurl should be
+                            //     valid";
+                            //
+                            //     mServerFaviconHelper.getLargeIconForUrl(gurlOrigin, size,
+                            //             (icon, fallbackColor, isFallbackColorDefault, iconType)
+                            //             -> {
+                            //                 if (icon == null) {
+                            //                     Log.e("Meil_Favicon",
+                            //                             "Server favicon is null for brand url: "
+                            //                             + info.url);
+                            //                     return;
+                            //                 }
+                            //                 updateFavicon.onResult(icon);
+                            //             });
+                            //
+                            // } else {
+                            //     updateFavicon.onResult(bitmap);
+                            // }
+                    };
 
             mFaviconHelper.getLocalFaviconImageForURL(
                     Profile.getLastUsedRegularProfile(), info.url, size, faviconCallback);

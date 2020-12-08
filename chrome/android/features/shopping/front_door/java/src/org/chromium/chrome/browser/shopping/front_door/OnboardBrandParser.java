@@ -65,12 +65,12 @@ public class OnboardBrandParser {
                         continue;
                     }
 
-                  String brandLogoUrl = "";
+                    String brandLogoUrl = "";
                     if (brand.has(BRAND_LOGO_KEY)) {
-                      brandLogoUrl = brand.getString(BRAND_LOGO_KEY);
+                        brandLogoUrl = brand.getString(BRAND_LOGO_KEY);
                     } else {
-                      Log.e("Meil_brand_parser", "brand does not contain: " + BRAND_LOGO_KEY);
-                      continue;
+                        Log.e("Meil_brand_parser", "brand does not contain: " + BRAND_LOGO_KEY);
+                        continue;
                     }
 
                     JSONArray representativeImageUrlJson =
@@ -102,20 +102,20 @@ public class OnboardBrandParser {
         }
     }
 
-  private static List<String> convertJSONArrayToListString(JSONArray categoryKeys) {
-    List<String> keys = new ArrayList<>();
+    private static List<String> convertJSONArrayToListString(JSONArray categoryKeys) {
+        List<String> keys = new ArrayList<>();
 
-    try {
-      for (int i = 0; i < categoryKeys.length(); i++) {
-        keys.add(categoryKeys.getString(i));
-      }
-    } catch (JSONException e) {
-      Log.e("Meil",
-          String.format(
-              "There was a problem parsing the brand category keys\n Details: %s",
-              e.getMessage()));
+        try {
+            for (int i = 0; i < categoryKeys.length(); i++) {
+                keys.add(categoryKeys.getString(i));
+            }
+        } catch (JSONException e) {
+            Log.e("Meil",
+                    String.format(
+                            "There was a problem parsing the brand category keys\n Details: %s",
+                            e.getMessage()));
+        }
+
+        return keys;
     }
-
-    return keys;
-  }
 }

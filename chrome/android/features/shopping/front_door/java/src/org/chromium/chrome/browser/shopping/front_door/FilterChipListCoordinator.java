@@ -69,6 +69,7 @@ public class FilterChipListCoordinator implements Supplier<View> {
 
     @Override
     public View get() {
+        Log.e("Meil", "Full span view get: filter chips");
         return mView;
     }
 

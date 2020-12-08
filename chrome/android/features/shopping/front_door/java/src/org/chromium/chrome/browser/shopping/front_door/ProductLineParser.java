@@ -69,7 +69,7 @@ public class ProductLineParser {
                                               .withBrandUrl(brandUrl)
                                               .withProductLineName(productLineName)
                                               .withImageUrl(productLineImageUrl)
-                                              .withClickingUrl(productLineSrpUrl)
+                                              .withClickingUrl(productLineSrpUrl + "#rso")
                                               .withCategoryKeyList(categoryKeyList)
                                               .build());
                 }

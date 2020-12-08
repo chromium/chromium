@@ -131,8 +131,8 @@ public class NTPTabLayout extends LinearLayout {
     }
 
     private void setState(boolean isEnabled) {
-        if (isEnabled) {
-            mTabLayout.getTabAt(0).select();
+        if (isEnabled && mTabSelectionDelegate != null) {
+            mTabLayout.getTabAt(mTabSelectionDelegate.getSelectedTabIndex()).select();
         }
         mTabLayout.setVisibility(isEnabled ? VISIBLE : GONE);
         mOffContentView.setVisibility(isEnabled ? GONE : VISIBLE);
@@ -144,6 +144,7 @@ public class NTPTabLayout extends LinearLayout {
         super.onVisibilityChanged(changedView, visibility);
 
         if (visibility == VISIBLE) {
+            if (mTabSelectionDelegate == null) return;
             // Initial state to match the delegate.
             Tab delegateSelectedTab =
                     mTabLayout.getTabAt(mTabSelectionDelegate.getSelectedTabIndex());

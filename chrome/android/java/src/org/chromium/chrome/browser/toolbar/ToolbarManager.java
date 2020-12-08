@@ -876,7 +876,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             NewTabPage newVisibleNtp = getNewTabPageForCurrentTab();
             if (mVisibleNtp != null) mVisibleNtp.setTabLayoutScrollListener(null, null, null);
             mVisibleNtp = newVisibleNtp;
-            if (mVisibleNtp != null && shouldUpdateListener()) {
+            if (mVisibleNtp != null) {
                 mVisibleNtp.setTabLayoutScrollListener(
                         listener, verticalPositionSupplier, tabLayoutSupplier);
             }
@@ -884,7 +884,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         @Override
         public boolean isTabLayoutShownOnNtp() {
-            assert wasShowingNtp();
+            assert isCurrentlyVisible();
 
             return mVisibleNtp.getNewTabPageLayout().isTabLayoutOffscreen();
         }
