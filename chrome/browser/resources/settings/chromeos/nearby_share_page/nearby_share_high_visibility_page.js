@@ -28,6 +28,9 @@ Polymer({
    * @private
    */
   getSubTitle_() {
-    return this.i18n('nearbyShareHighVisibilitySubTitle', this.deviceName);
+    // TODO(joonbug): Get timer value and dynamically update this.
+    const timeValue = this.i18n('nearbyShareHighVisibilitySubTitleMinutes', 5);
+    return this.i18n(
+        'nearbyShareHighVisibilitySubTitle', this.deviceName, timeValue);
   },
 });

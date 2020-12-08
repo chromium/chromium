@@ -182,7 +182,13 @@
 
   <!-- High Visibility Page Strings -->
   <message name="IDS_NEARBY_HIGH_VISIBILITY_SUB_TITLE" desc="Describes to the user that their device is visible to nearby devices with a specific device name. This is used on the sub-title of the of high visibility receive dialog for the Nearby Share feature.">
-    Visible to nearby devices as <ph name="DEVICE_NAME">$1<ex>Rea’s Chromebook</ex></ph>
+    Visible to nearby devices as <ph name="DEVICE_NAME">$1<ex>Rea’s Chromebook</ex></ph> for <ph name="REMAINING_TIME">$2<ex>5 min</ex></ph>...
+  </message>
+  <message name="IDS_NEARBY_HIGH_VISIBILITY_SUB_TITLE_MINUTES" desc="A short string showing the nearest number of whole minutes until Nearby Share high visibility turns off. To be used with IDS_NEARBY_HIGH_VISIBILITY_SUB_TITLE. [CHAR_LIMIT=7]">
+    <ph name="MINUTES">$1<ex>2</ex></ph> min
+  </message>
+  <message name="IDS_NEARBY_HIGH_VISIBILITY_SUB_TITLE_SECONDS" desc="A short string showing the nearest number of whole seconds until Nearby Share high visibility turns off. To be used with IDS_NEARBY_HIGH_VISIBILITY_SUB_TITLE. [CHAR_LIMIT=7]">
+    <ph name="SECONDS">$1<ex>40</ex></ph> sec
   </message>
   <message name="IDS_NEARBY_HIGH_VISIBILITY_HELP_TEXT" desc="Describes to the user that their device is visible to nearby devices with a specific device name. This is used on the sub-title of the of high visibility receive dialog for the Nearby Share feature.">
     Make sure both devices are unlocked, close together, and have Bluetooth turned on. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
