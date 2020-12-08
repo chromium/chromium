@@ -303,7 +303,7 @@ This file contains the strings for ash.
         All available users have already been added to this session.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_BUTTON_LABEL" desc="The shorter label used for the button in the status tray to toggle Nearby Share high visibility mode, which makes the device visible to all nearby devices for file sharing. [CHAR_LIMIT=14]">
-        Nearby Share
+        Nearby visibility
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_OFF_STATE" desc="Sub-label for the Nearby Share system tray button." meaning="Nearby Share high visibility mode is currently inactive. [CHAR_LIMIT=14]">
         Off
