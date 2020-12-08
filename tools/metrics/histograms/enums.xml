@@ -55152,6 +55152,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="1101" label="Verified Access"/>
   <int value="1102" label="Keep Wi-Fi On During Sleep (Deprecated)"/>
   <int value="1103" label="Usage Stats And Crash Reports"/>
+  <int value="1104" label="Privacy: Guest Browsing V2"/>
+  <int value="1105" label="Privacy: Show Usernames And Photos At Sign In V2"/>
+  <int value="1106" label="Privacy: Restrict Sign In V2"/>
+  <int value="1107" label="Privacy: Add To User Allowlist V2"/>
+  <int value="1108" label="Privacy: Remove From User Allowlist V2"/>
   <int value="1200" label="Add Language"/>
   <int value="1201" label="Show Input Options In Shelf"/>
   <int value="1202" label="Show Personal Information Suggestions"/>
@@ -55315,6 +55320,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="804" label="Crostini Develop Android Apps"/>
   <int value="805" label="Crostini Port Forwarding"/>
   <int value="1000" label="Time Zone"/>
+  <int value="1100" label="Manage Other People V2"/>
   <int value="1200" label="Languages And Input Details"/>
   <int value="1201" label="Manage Input Methods"/>
   <int value="1202" label="Smart Inputs"/>

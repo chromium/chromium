@@ -6,37 +6,68 @@
 <link rel="import" href="../../router.html">
 <link rel="import" href="../../controls/settings_toggle_button.html">
 <link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="../../settings_page/settings_subpage.html">
+<link rel="import" href="../os_people_page/users_page.html">
+<link rel="import" href="../../settings_page/settings_animated_pages.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 
 <dom-module id="os-settings-privacy-page">
   <template>
     <style include="settings-shared"></style>
+    <settings-animated-pages id="pages" section="osPrivacy"
+        focus-config="[[focusConfig_]]">
+
+      <div route-path="default">
+        <template is="dom-if" if="[[isAccountManagementFlowsV2Enabled_]]">
+          <cr-link-row id="manageOtherPeopleSubpageTrigger" class="hr"
+              label="$i18n{manageOtherPeople}"
+              on-click="onManageOtherPeople_"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+        </template>
+
 <if expr="_google_chrome">
-    <settings-toggle-button
-        id="enable-logging"
-        class="hr"
-        pref="{{prefs.cros.metrics.reportingEnabled}}"
-        label="$i18n{enableLogging}"
-        sub-label="$i18n{enableLoggingDesc}"
-        deep-link-focus-id$="[[Setting.kUsageStatsAndCrashReports]]">
-    </settings-toggle-button>
+        <settings-toggle-button
+            id="enable-logging"
+            class="hr"
+            pref="{{prefs.cros.metrics.reportingEnabled}}"
+            label="$i18n{enableLogging}"
+            sub-label="$i18n{enableLoggingDesc}"
+            deep-link-focus-id$="[[Setting.kUsageStatsAndCrashReports]]">
+        </settings-toggle-button>
 </if>
-    <template is="dom-if" if="[[showSuggestedContentToggle_]]">
-      <settings-toggle-button
-          id="suggested-content"
-          class="hr"
-          pref="{{prefs.settings.suggested_content_enabled}}"
-          label="$i18n{enableSuggestedContent}"
-          sub-label="$i18n{enableSuggestedContentDesc}"
-          learn-more-url="$i18n{suggestedContentLearnMoreURL}">
-      </settings-toggle-button>
-    </template>
-    <settings-toggle-button
-        id="enable-verified-access"
-        class="hr"
-        pref="{{prefs.cros.device.attestation_for_content_protection_enabled}}"
-        label="$i18n{enableContentProtectionAttestation}"
-        deep-link-focus-id$="[[Setting.kVerifiedAccess]]">
-    </settings-toggle-button>
+        <template is="dom-if" if="[[showSuggestedContentToggle_]]">
+          <settings-toggle-button
+              id="suggested-content"
+              class="hr"
+              pref="{{prefs.settings.suggested_content_enabled}}"
+              label="$i18n{enableSuggestedContent}"
+              sub-label="$i18n{enableSuggestedContentDesc}"
+              learn-more-url="$i18n{suggestedContentLearnMoreURL}">
+          </settings-toggle-button>
+        </template>
+        <settings-toggle-button
+            id="enable-verified-access"
+            class="hr"
+            pref="{{
+              prefs.cros.device.attestation_for_content_protection_enabled}}"
+            label="$i18n{enableContentProtectionAttestation}"
+            deep-link-focus-id$="[[Setting.kVerifiedAccess]]">
+        </settings-toggle-button>
+      </div>
+
+      <template is="dom-if" if="[[isAccountManagementFlowsV2Enabled_]]">
+        <template is="dom-if" route-path="/osPrivacy/accounts">
+          <settings-subpage
+              associated-control="[[$$('#manageOtherPeopleSubpageTrigger')]]"
+              page-title="$i18n{manageOtherPeople}">
+            <settings-users-page prefs="{{prefs}}">
+            </settings-users-page>
+          </settings-subpage>
+        </template>
+      </template>
+
+    </settings-animated-pages>
   </template>
   <script src="os_privacy_page.js"></script>
 </dom-module>

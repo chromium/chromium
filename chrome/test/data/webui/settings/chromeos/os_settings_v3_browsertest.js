@@ -97,6 +97,19 @@ var OSSettingsNearbyShareSubPageV3Test = class extends OSSettingsV3BrowserTest {
 TEST_F('OSSettingsNearbyShareSubPageV3Test', 'All', () => mocha.run());
 
 // eslint-disable-next-line no-var
+var OSSettingsPrivacyPageV3Test = class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_privacy_page_test.m.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {disabled: ['chromeos::features::kAccountManagementFlowsV2']};
+  }
+};
+
+// eslint-disable-next-line no-var
 var OSSettingsPeoplePageAccountManagerV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
@@ -124,6 +137,39 @@ var OSSettingsPeoplePageAccountManagerV3TestWithAccountManagementFlowsV2Enabled 
 TEST_F(
     'OSSettingsPeoplePageAccountManagerV3TestWithAccountManagementFlowsV2Enabled',
     'All', () => mocha.run());
+
+TEST_F('OSSettingsPrivacyPageV3Test', 'AllBuilds', () => {
+  mocha.grep('/^(?!PrivacePageTest_OfficialBuild).*$/').run();
+});
+
+GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)');
+TEST_F('OSSettingsPrivacyPageV3Test', 'PrivacePage_OfficialBuild', () => {
+  mocha.grep('PrivacePageTest_OfficialBuild').run();
+});
+GEN('#endif');
+
+// eslint-disable-next-line no-var
+var OSSettingsPrivacyPageV3TestWithAccountManagementFlowsV2Enabled =
+    class extends OSSettingsPrivacyPageV3Test {
+  /** @override */
+  get featureList() {
+    return {enabled: ['chromeos::features::kAccountManagementFlowsV2']};
+  }
+};
+
+TEST_F(
+    'OSSettingsPrivacyPageV3TestWithAccountManagementFlowsV2Enabled',
+    'AllBuilds', () => {
+      mocha.grep('/^(?!PrivacePageTest_OfficialBuild).*$/').run();
+    });
+
+GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)');
+TEST_F(
+    'OSSettingsPrivacyPageV3TestWithAccountManagementFlowsV2Enabled',
+    'PrivacePage_OfficialBuild', () => {
+      mocha.grep('PrivacePageTest_OfficialBuild').run();
+    });
+GEN('#endif');
 
 [['AboutPage', 'os_about_page_tests.m.js'],
  ['AmbientModePage', 'ambient_mode_page_test.m.js'],
@@ -171,7 +217,6 @@ TEST_F(
  ['PeoplePageKerberosAccounts', 'people_page_kerberos_accounts_test.m.js'],
  ['PersonalizationPage', 'personalization_page_test.m.js'],
  ['PrintingPage', 'os_printing_page_tests.m.js'],
- ['PrivacyPage', 'os_privacy_page_test.m.js'],
  ['ResetPage', 'os_reset_page_test.m.js'],
  ['SmartInputsPage', 'smart_inputs_page_test.m.js'],
  ['SmbPage', 'smb_shares_page_tests.m.js'],

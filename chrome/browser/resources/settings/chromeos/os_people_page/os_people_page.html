@@ -125,10 +125,12 @@
           </settings-parental-controls-page>
         </template>
 
-        <cr-link-row id="manage-other-people-subpage-trigger"
-            label="$i18n{manageOtherPeople}" on-click="onManageOtherPeople_"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
+        <template is="dom-if" if="[[!isAccountManagementFlowsV2Enabled_]]">
+          <cr-link-row id="manage-other-people-subpage-trigger"
+              label="$i18n{manageOtherPeople}" on-click="onManageOtherPeople_"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+        </template>
 
         <template is="dom-if" if="[[pageVisibility.people.kerberosAccounts]]">
           <cr-link-row id="kerberos-accounts-subpage-trigger" class="hr"
@@ -204,13 +206,16 @@
           </settings-subpage>
         </template>
       </template>
-      <template is="dom-if" route-path="/accounts">
-        <settings-subpage
-            associated-control="[[$$('#manage-other-people-subpage-trigger')]]"
-            page-title="$i18n{manageOtherPeople}">
-          <settings-users-page prefs="{{prefs}}">
-          </settings-users-page>
-        </settings-subpage>
+      <template is="dom-if" if="[[!isAccountManagementFlowsV2Enabled_]]">
+        <template is="dom-if" route-path="/accounts">
+          <settings-subpage
+              associated-control="[[
+                $$('#manage-other-people-subpage-trigger')]]"
+              page-title="$i18n{manageOtherPeople}">
+            <settings-users-page prefs="{{prefs}}">
+            </settings-users-page>
+          </settings-subpage>
+        </template>
       </template>
       <template is="dom-if" route-path="/accountManager">
         <settings-subpage

@@ -531,6 +531,9 @@ Polymer({
 
   /** @private */
   onManageOtherPeople_() {
+    assert(
+        !this.isAccountManagementFlowsV2Enabled_,
+        'onManageOtherPeople_ was called when kAccountManagementFlowsV2 is enabled');
     settings.Router.getInstance().navigateTo(settings.routes.ACCOUNTS);
   },
 

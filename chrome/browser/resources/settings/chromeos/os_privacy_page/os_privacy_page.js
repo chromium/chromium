@@ -25,6 +25,20 @@ Polymer({
       notify: true,
     },
 
+    /** @private {!Map<string, string>} */
+    focusConfig_: {
+      type: Object,
+      value() {
+        const map = new Map();
+        if (settings.routes.ACCOUNTS) {
+          map.set(
+              settings.routes.ACCOUNTS.path,
+              '#manageOtherPeopleSubpageTrigger');
+        }
+        return map;
+      },
+    },
+
     /**
      * Whether to show the Suggested Content toggle.
      * @private
@@ -47,6 +61,18 @@ Polymer({
         chromeos.settings.mojom.Setting.kUsageStatsAndCrashReports,
       ]),
     },
+
+    /**
+     * True if redesign of account management flows is enabled.
+     * @private
+     */
+    isAccountManagementFlowsV2Enabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled');
+      },
+      readOnly: true,
+    },
   },
 
   /**
@@ -60,5 +86,10 @@ Polymer({
     }
 
     this.attemptDeepLink();
+  },
+
+  /** @private */
+  onManageOtherPeople_() {
+    settings.Router.getInstance().navigateTo(settings.routes.ACCOUNTS);
   },
 });

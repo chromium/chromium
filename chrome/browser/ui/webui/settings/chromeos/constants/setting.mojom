@@ -170,6 +170,11 @@ enum Setting {
   // see https://bugs.chromium.org/p/chromium/issues/detail?id=1077126.
   // Do not reuse.
   kUsageStatsAndCrashReports = 1103,
+  kGuestBrowsingV2 = 1104,
+  kShowUsernamesAndPhotosAtSignInV2 = 1105,
+  kRestrictSignInV2 = 1106,
+  kAddToUserAllowlistV2 = 1107,
+  kRemoveFromUserAllowlistV2 = 1108,
 
   // Languages and Input section.
   kAddLanguage = 1200,

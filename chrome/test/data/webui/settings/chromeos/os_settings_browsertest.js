@@ -235,6 +235,11 @@ var OSSettingsUserPageTest = class extends OSSettingsBrowserTest {
   }
 
   /** @override */
+  get featureList() {
+    return {disabled: ['chromeos::features::kAccountManagementFlowsV2']};
+  }
+
+  /** @override */
   get extraLibraries() {
     return super.extraLibraries.concat([
       '//ui/webui/resources/js/assert.js',
@@ -249,6 +254,21 @@ var OSSettingsUserPageTest = class extends OSSettingsBrowserTest {
 TEST_F('OSSettingsUserPageTest', 'AllJsTests', () => {
   mocha.run();
 });
+
+// eslint-disable-next-line no-var
+var OSSettingsUserPageTestWithAccountManagementFlowsV2Enabled =
+    class extends OSSettingsUserPageTest {
+  /** @override */
+  get featureList() {
+    return {enabled: ['chromeos::features::kAccountManagementFlowsV2']};
+  }
+};
+
+TEST_F(
+    'OSSettingsUserPageTestWithAccountManagementFlowsV2Enabled', 'AllJsTests',
+    () => {
+      mocha.run();
+    });
 
 // Tests for ambient mode page.
 // eslint-disable-next-line no-var
@@ -1776,6 +1796,30 @@ GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)');
 TEST_F('OSSettingsPrivacyPageTest', 'PrivacePage_OfficialBuild', () => {
   mocha.grep('PrivacePageTest_OfficialBuild').run();
 });
+GEN('#endif');
+
+// Tests for the People section with `kAccountManagementFlowsV2` flag enabled.
+// eslint-disable-next-line no-var
+var OSSettingsPrivacyPageTestWithAccountManagementFlowsV2Enabled =
+    class extends OSSettingsPrivacyPageTest {
+  /** @override */
+  get featureList() {
+    return {enabled: ['chromeos::features::kAccountManagementFlowsV2']};
+  }
+};
+
+TEST_F(
+    'OSSettingsPrivacyPageTestWithAccountManagementFlowsV2Enabled', 'AllBuilds',
+    () => {
+      mocha.grep('/^(?!PrivacePageTest_OfficialBuild).*$/').run();
+    });
+
+GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)');
+TEST_F(
+    'OSSettingsPrivacyPageTestWithAccountManagementFlowsV2Enabled',
+    'PrivacePage_OfficialBuild', () => {
+      mocha.grep('PrivacePageTest_OfficialBuild').run();
+    });
 GEN('#endif');
 
 // Tests for the Files section.

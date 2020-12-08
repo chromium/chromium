@@ -23,20 +23,65 @@ namespace settings {
 namespace {
 
 const std::vector<SearchConcept>& GetPrivacySearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_PRIVACY_VERIFIED_ACCESS,
-       mojom::kPrivacyAndSecuritySectionPath,
-       mojom::SearchResultIcon::kShield,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kVerifiedAccess}},
-      {IDS_OS_SETTINGS_TAG_PRIVACY,
-       mojom::kPrivacyAndSecuritySectionPath,
-       mojom::SearchResultIcon::kShield,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSection,
-       {.section = mojom::Section::kPrivacyAndSecurity}},
-  });
+  static const base::NoDestructor<std::vector<SearchConcept>> tags([] {
+    std::vector<SearchConcept> all_tags({
+        {IDS_OS_SETTINGS_TAG_PRIVACY_VERIFIED_ACCESS,
+         mojom::kPrivacyAndSecuritySectionPath,
+         mojom::SearchResultIcon::kShield,
+         mojom::SearchResultDefaultRank::kMedium,
+         mojom::SearchResultType::kSetting,
+         {.setting = mojom::Setting::kVerifiedAccess}},
+        {IDS_OS_SETTINGS_TAG_PRIVACY,
+         mojom::kPrivacyAndSecuritySectionPath,
+         mojom::SearchResultIcon::kShield,
+         mojom::SearchResultDefaultRank::kMedium,
+         mojom::SearchResultType::kSection,
+         {.section = mojom::Section::kPrivacyAndSecurity}},
+    });
+
+    if (chromeos::features::IsAccountManagementFlowsV2Enabled()) {
+      all_tags.insert(
+          all_tags.end(),
+          {{IDS_OS_SETTINGS_TAG_GUEST_BROWSING,
+            mojom::kManageOtherPeopleSubpagePathV2,
+            mojom::SearchResultIcon::kAvatar,
+            mojom::SearchResultDefaultRank::kMedium,
+            mojom::SearchResultType::kSetting,
+            {.setting = mojom::Setting::kGuestBrowsingV2}},
+           {IDS_OS_SETTINGS_TAG_USERNAMES_AND_PHOTOS,
+            mojom::kManageOtherPeopleSubpagePathV2,
+            mojom::SearchResultIcon::kAvatar,
+            mojom::SearchResultDefaultRank::kMedium,
+            mojom::SearchResultType::kSetting,
+            {.setting = mojom::Setting::kShowUsernamesAndPhotosAtSignInV2},
+            {IDS_OS_SETTINGS_TAG_USERNAMES_AND_PHOTOS_ALT1,
+             IDS_OS_SETTINGS_TAG_USERNAMES_AND_PHOTOS_ALT2,
+             SearchConcept::kAltTagEnd}},
+           {IDS_OS_SETTINGS_TAG_RESTRICT_SIGN_IN,
+            mojom::kManageOtherPeopleSubpagePathV2,
+            mojom::SearchResultIcon::kAvatar,
+            mojom::SearchResultDefaultRank::kMedium,
+            mojom::SearchResultType::kSetting,
+            {.setting = mojom::Setting::kRestrictSignInV2},
+            {IDS_OS_SETTINGS_TAG_RESTRICT_SIGN_IN_ALT1,
+             SearchConcept::kAltTagEnd}},
+           {IDS_OS_SETTINGS_TAG_RESTRICT_SIGN_IN_ADD,
+            mojom::kManageOtherPeopleSubpagePathV2,
+            mojom::SearchResultIcon::kAvatar,
+            mojom::SearchResultDefaultRank::kMedium,
+            mojom::SearchResultType::kSetting,
+            {.setting = mojom::Setting::kAddToUserAllowlistV2}},
+           {IDS_OS_SETTINGS_TAG_RESTRICT_SIGN_IN_REMOVE,
+            mojom::kManageOtherPeopleSubpagePathV2,
+            mojom::SearchResultIcon::kAvatar,
+            mojom::SearchResultDefaultRank::kMedium,
+            mojom::SearchResultType::kSetting,
+            {.setting = mojom::Setting::kRemoveFromUserAllowlistV2}}});
+    }
+
+    return all_tags;
+  }());
+
   return *tags;
 }
 
@@ -125,6 +170,22 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kVerifiedAccess);
   generator->RegisterTopLevelSetting(
       mojom::Setting::kUsageStatsAndCrashReports);
+
+  // Manage other people.
+  generator->RegisterTopLevelSubpage(IDS_SETTINGS_PEOPLE_MANAGE_OTHER_PEOPLE,
+                                     mojom::Subpage::kManageOtherPeopleV2,
+                                     mojom::SearchResultIcon::kAvatar,
+                                     mojom::SearchResultDefaultRank::kMedium,
+                                     mojom::kManageOtherPeopleSubpagePathV2);
+  static constexpr mojom::Setting kManageOtherPeopleSettings[] = {
+      mojom::Setting::kGuestBrowsingV2,
+      mojom::Setting::kShowUsernamesAndPhotosAtSignInV2,
+      mojom::Setting::kRestrictSignInV2,
+      mojom::Setting::kAddToUserAllowlistV2,
+      mojom::Setting::kRemoveFromUserAllowlistV2,
+  };
+  RegisterNestedSettingBulk(mojom::Subpage::kManageOtherPeopleV2,
+                            kManageOtherPeopleSettings, generator);
 }
 
 }  // namespace settings

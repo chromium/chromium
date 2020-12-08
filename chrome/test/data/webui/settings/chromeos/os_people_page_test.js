@@ -209,6 +209,10 @@ cr.define('settings_people_page', function() {
       document.body.appendChild(peoplePage);
       Polymer.dom.flush();
 
+      if (peoplePage.isAccountManagementFlowsV2Enabled_) {
+        return;
+      }
+
       const params = new URLSearchParams;
       params.append('settingId', '305');
       settings.Router.getInstance().navigateTo(
