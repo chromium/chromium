@@ -2756,6 +2756,7 @@ if (!is_android) {
         "../browser/metrics/chromeos_metrics_provider_browsertest.cc",
         "../browser/metrics/family_link_user_metrics_provider_browsertest.cc",
         "../browser/metrics/family_user_metrics_provider_browsertest.cc",
+        "../browser/metrics/majority_age_user_metrics_provider_browsertest.cc",
         "../browser/notifications/notification_platform_bridge_chromeos_browsertest.cc",
         "../browser/resources/chromeos/zip_archiver/test/zip_archiver_jstest.cc",
         "../browser/signin/chromeos_mirror_account_consistency_browsertest.cc",

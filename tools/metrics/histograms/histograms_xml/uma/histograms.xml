@@ -669,6 +669,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="UMA.UserDemographics.IsNoisedAgeOver21Under85"
+    enum="BooleanNoisedAgeOver21Under85" expires_after="2021-11-04">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    True indicates that the current user is over the age of 21 and under the age
+    of 85 inclusive, and unknown otherwise. Specifically, this histogram can't
+    identify users under 21 and over 85. The user's age includes a random offset
+    for privacy. This metric is logged periodically through
+    ProvideCurrentSessionData().
+  </summary>
+</histogram>
+
 <histogram name="UMA.UserDemographics.Status" enum="UserDemographicsStatus"
     expires_after="2021-04-15">
   <owner>vincb@google.com</owner>

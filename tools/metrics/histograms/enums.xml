@@ -8281,6 +8281,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="NSObject is nil"/>
 </enum>
 
+<enum name="BooleanNoisedAgeOver21Under85">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Noised age between 21 and 85 inclusive"/>
+</enum>
+
 <enum name="BooleanNull">
   <int value="0" label="Is not a nullptr"/>
   <int value="1" label="Is a nullptr"/>

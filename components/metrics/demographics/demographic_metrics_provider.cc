@@ -115,6 +115,11 @@ void DemographicMetricsProvider::LogUserDemographicsStatusInHistogram(
   switch (metrics_service_type_) {
     case MetricsLogUploader::MetricServiceType::UMA:
       base::UmaHistogramEnumeration("UMA.UserDemographics.Status", status);
+      // If the user demographics data was retrieved successfully, then the user
+      // must be between the ages of |kUserDemographicsMinAgeInYears|+1=21 and
+      // |kUserDemographicsMaxAgeinYears|=85, so the user is not a minor.
+      base::UmaHistogramBoolean("UMA.UserDemographics.IsNoisedAgeOver21Under85",
+                                status == UserDemographicsStatus::kSuccess);
       return;
     case MetricsLogUploader::MetricServiceType::UKM:
       base::UmaHistogramEnumeration("UKM.UserDemographics.Status", status);
