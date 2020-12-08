@@ -77,6 +77,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillRefreshStyleAndroid,
     &autofill::features::kAutofillEnableCardNicknameManagement,
     &autofill::features::kAutofillEnableGoogleIssuedCard,
+    &autofill::features::kAutofillEnableUIForHonorificPrefixesInSettings,
     &autofill_assistant::features::kAutofillAssistant,
     &autofill_assistant::features::kAutofillAssistantChromeEntry,
     &autofill_assistant::features::kAutofillAssistantDirectActions,

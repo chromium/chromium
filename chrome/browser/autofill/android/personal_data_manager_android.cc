@@ -323,6 +323,8 @@ void PersonalDataManagerAndroid::PopulateNativeProfileFromJava(
       AutofillType(NAME_FULL),
       ConvertJavaStringToUTF16(Java_AutofillProfile_getFullName(env, jprofile)),
       g_browser_process->GetApplicationLocale());
+  MaybeSetRawInfo(profile, autofill::NAME_HONORIFIC_PREFIX,
+                  Java_AutofillProfile_getHonorificPrefix(env, jprofile));
   MaybeSetRawInfo(profile, autofill::COMPANY_NAME,
                   Java_AutofillProfile_getCompanyName(env, jprofile));
   MaybeSetRawInfo(profile, autofill::ADDRESS_HOME_STREET_ADDRESS,

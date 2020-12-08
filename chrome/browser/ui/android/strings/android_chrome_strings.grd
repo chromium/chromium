@@ -464,6 +464,9 @@ CHAR-LIMIT guidelines:
      <message name="IDS_AUTOFILL_PROFILE_EDITOR_COUNTRY" desc="Label for a spinner input field containing a list of countries or regions [CHAR-LIMIT=32]">
         Country/Region
       </message>
+      <message name="IDS_AUTOFILL_PROFILE_EDITOR_HONORIFIC_PREFIX" desc="Label for text input field containing a title that can be auto-filled by Chrome. [CHAR-LIMIT=32]" meaning="A 'Title' field in a web form could be a prefix like Ms., Mx., or Dr. or a position held, like Captain or Rabbi.">
+        Title
+      </message>
       <message name="IDS_AUTOFILL_PROFILE_EDITOR_EMAIL_ADDRESS" desc="Label for text input field containing an e-mail address. [CHAR-LIMIT=32]">
         Email
       </message>

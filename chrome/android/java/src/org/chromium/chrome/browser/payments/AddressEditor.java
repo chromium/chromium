@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.autofill.prefeditor.EditorModel;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressField;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressUiComponent;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.payments.mojom.AddressErrors;
 
 import java.lang.annotation.Retention;
@@ -62,6 +63,8 @@ public class AddressEditor
     private AutofillProfileBridge mAutofillProfileBridge;
     @Nullable
     private EditorFieldModel mCountryField;
+    @Nullable
+    private EditorFieldModel mHonorificField;
     @Nullable
     private EditorFieldModel mPhoneField;
     @Nullable
@@ -112,6 +115,11 @@ public class AddressEditor
         mAddressErrors = errors;
     }
 
+    private boolean isUIForHonorificPrefixesEnabled() {
+        return ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_ENABLE_UI_FOR_HONORIFIC_PREFIXES_IN_SETTINGS);
+    }
+
     private String getAddressError(int field) {
         if (mAddressErrors == null) return null;
 
@@ -152,6 +160,7 @@ public class AddressEditor
      * Builds and shows an editor model with the following fields.
      *
      * [ country dropdown    ] <----- country dropdown is always present.
+     * [ honorific field     ] <----- above name, present if purpose is Purpose.AUTOFILL_SETTINGS.
      * [ an address field    ] \
      * [ an address field    ]  \
      *         ...                <-- field order, presence, required, and labels depend on country.
@@ -225,6 +234,17 @@ public class AddressEditor
         assert mCountryField.getValue() != null;
         mPhoneValidator.setCountryCode(mCountryField.getValue().toString());
         mPhoneFormatter.setCountryCode(mCountryField.getValue().toString());
+
+        // Honorific prefix is present only for autofill settings.
+        if (mPurpose == Purpose.AUTOFILL_SETTINGS && isUIForHonorificPrefixesEnabled()) {
+            if (mHonorificField == null) {
+                mHonorificField = EditorFieldModel.createTextInput();
+                mHonorificField.setLabel(
+                        mContext.getString(R.string.autofill_profile_editor_honorific_prefix));
+            }
+            // Retrieve and set the honorific prefix value.
+            mHonorificField.setValue(mProfile.getHonorificPrefix());
+        }
 
         // There's a finite number of fields for address editing. Changing the country will re-order
         // and relabel the fields. The meaning of each field remains the same.
@@ -333,6 +353,9 @@ public class AddressEditor
         profile.setCountryCode(mCountryField.getValue().toString());
         profile.setPhoneNumber(mPhoneField.getValue().toString());
         if (mEmailField != null) profile.setEmailAddress(mEmailField.getValue().toString());
+        if (mHonorificField != null) {
+            profile.setHonorificPrefix(mHonorificField.getValue().toString());
+        }
 
         // Autofill profile bridge normalizes the language code for the autofill profile.
         profile.setLanguageCode(mAutofillProfileBridge.getCurrentBestLanguageCode());
@@ -506,6 +529,11 @@ public class AddressEditor
         mEditor.addField(mCountryField);
         for (int i = 0; i < mAddressUiComponents.size(); i++) {
             AddressUiComponent component = mAddressUiComponents.get(i);
+
+            // Honorific prefix should go before name.
+            if (component.id == AddressField.RECIPIENT && mHonorificField != null) {
+                mEditor.addField(mHonorificField);
+            }
 
             EditorFieldModel field = mAddressFields.get(component.id);
 

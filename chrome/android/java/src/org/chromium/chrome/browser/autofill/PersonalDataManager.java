@@ -214,6 +214,7 @@ public class PersonalDataManager {
             return mOrigin;
         }
 
+        @CalledByNative("AutofillProfile")
         public String getHonorificPrefix() {
             return mHonorificPrefix;
         }
