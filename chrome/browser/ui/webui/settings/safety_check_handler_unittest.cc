@@ -885,7 +885,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Safe) {
           kPasswords,
           static_cast<int>(SafetyCheckHandler::PasswordsStatus::kSafe));
   EXPECT_TRUE(event);
-  VerifyDisplayString(event, "No security issues found");
+  VerifyDisplayString(event, "No compromised passwords found");
   histogram_tester_.ExpectBucketCount(
       "Settings.SafetyCheck.PasswordsResult",
       SafetyCheckHandler::PasswordsStatus::kSafe, 1);

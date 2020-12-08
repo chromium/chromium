@@ -317,6 +317,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                                                   features::kNewProfilePicker));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+  html_source->AddBoolean(
+      "safetyCheckWeakPasswordsEnabled",
+      base::FeatureList::IsEnabled(features::kSafetyCheckWeakPasswords));
+
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));
 
@@ -333,6 +337,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   plural_string_handler->AddLocalizedString(
       "movePasswordsToAccount",
       IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT_COUNT);
+  plural_string_handler->AddLocalizedString(
+      "safetyCheckPasswordsCompromised",
+      IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT_SHORT);
+  plural_string_handler->AddLocalizedString(
+      "safetyCheckPasswordsWeak", IDS_SETTINGS_WEAK_PASSWORDS_COUNT_SHORT);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 
   // Add the metrics handler to write uma stats.

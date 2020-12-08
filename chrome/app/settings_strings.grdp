@@ -358,17 +358,29 @@
       =1 {{COUNT} compromised password}
       other {{COUNT} compromised passwords}}
   </message>
-  <message name="IDS_SETTINGS_INSECURE_PASSWORDS_COUNT" desc="Number of insecure passwords present in the database">
-    {COUNT, plural,
-      =0 {No security issues found}
-      =1 {Found {COUNT} security issue}
-      other {Found {COUNT} security issues}}
+  <message name="IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT_SHORT" desc="This short text shows the amount of compromised passwords that the Chrome password check found.">
+    {NUM_COMPROMISED, plural,
+      =0 {No compromised passwords}
+      =1 {1 compromised password}
+      other {{NUM_COMPROMISED} compromised passwords}}
   </message>
   <message name="IDS_SETTINGS_WEAK_PASSWORDS_COUNT" desc="Number of weak passwords present in the database. Displayed when the user is signed out and no compromised passwords exist">
     {COUNT, plural,
       =0 {No weak passwords found}
       =1 {Found {COUNT} weak password}
       other {Found {COUNT} weak passwords}}
+  </message>
+  <message name="IDS_SETTINGS_WEAK_PASSWORDS_COUNT_SHORT" desc="This short text shows the amount of weak passwords that the Chrome password check found.">
+    {NUM_WEAK, plural,
+      =0 {No weak passwords}
+      =1 {1 weak password}
+      other {{NUM_WEAK} weak passwords}}
+  </message>
+  <message name="IDS_SETTINGS_INSECURE_PASSWORDS_COUNT" desc="Number of insecure passwords present in the database">
+    {COUNT, plural,
+      =0 {No security issues found}
+      =1 {Found {COUNT} security issue}
+      other {Found {COUNT} security issues}}
   </message>
   <message name="IDS_SETTINGS_CHECK_PASSWORDS_AGAIN" desc="Button to start bulk password check manually in passwords check section.">
     Check again
@@ -1243,15 +1255,6 @@
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_PASSWORDS_FEATURE_UNAVAILABLE" desc="Explains that the password check feature is not available in this version of the browser.">
     Password check is not available in Chromium
-  </message>
-  <message name="IDS_SETTINGS_SAFETY_CHECK_PASSWORDS_SAFE" desc="This text explains that the Chrome password check did not find any insecure passwords.">
-    No security issues found
-  </message>
-  <message name="IDS_SETTINGS_SAFETY_CHECK_COMPROMISED_PASSWORDS" desc="This shows the amount of compromised passwords that the Chrome password check found.">
-    {NUM_COMPROMISED, plural, =0 {} =1 {1 compromised password} other {{NUM_COMPROMISED} compromised passwords}}
-  </message>
-  <message name="IDS_SETTINGS_SAFETY_CHECK_WEAK_PASSWORDS" desc="This shows the amount of weak passwords that the Chrome password check found.">
-    {NUM_WEAK, plural, =0 {} =1 {1 weak password} other {{NUM_WEAK} weak passwords}}
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_PASSWORDS_BUTTON_ARIA_LABEL" desc="Accessibility text for the button that allows users to review their passwords.">
     Review passwords

@@ -147,6 +147,16 @@ export const PasswordCheckBehavior = {
   },
 
   /**
+   * True if weak passwords are shown in SC, in which case the PW check UI
+   * adapts a bit to show the information in the same form as SC.
+   * @return {boolean}
+   * @private
+   */
+  safetyCheckWeakPasswordsEnabled_() {
+    return loadTimeData.getBoolean('safetyCheckWeakPasswordsEnabled');
+  },
+
+  /**
    * Helper that fetches pluralized strings corresponding to the number of
    * compromised, weak and insecure credentials.
    * @private
@@ -162,8 +172,28 @@ export const PasswordCheckBehavior = {
     proxy.getPluralString('weakPasswords', weak)
         .then(count => this.weakPasswordsCount = count);
 
-    proxy.getPluralString('insecurePasswords', compromised + weak)
-        .then(count => this.insecurePasswordsCount = count);
+    (() => {
+      if (!this.safetyCheckWeakPasswordsEnabled_()) {
+        // Old code path: adds up compromised and weak passwords.
+        return proxy.getPluralString('insecurePasswords', compromised + weak);
+      }
+      if (compromised > 0 && weak > 0) {
+        return proxy.getPluralStringTupleWithComma(
+            'safetyCheckPasswordsCompromised', compromised,
+            'safetyCheckPasswordsWeak', weak);
+      }
+      if (compromised > 0) {
+        // Only compromised and no weak passwords.
+        return proxy.getPluralString(
+            'safetyCheckPasswordsCompromised', compromised);
+      }
+      if (weak > 0) {
+        // Only weak and no compromised passwords.
+        return proxy.getPluralString('safetyCheckPasswordsWeak', weak);
+      }
+      // No security issues.
+      return proxy.getPluralString('compromisedPasswords', 0);
+    })().then(count => this.insecurePasswordsCount = count);
   },
 
   /**

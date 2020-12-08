@@ -652,13 +652,8 @@ base::string16 SafetyCheckHandler::GetStringForPasswords(
                                         base::FormatNumber(total.value()));
     }
     case PasswordsStatus::kSafe:
-      // TODO(crbug.com/1128904): Clean up the old code path.
-      if (!base::FeatureList::IsEnabled(features::kSafetyCheckWeakPasswords)) {
-        return l10n_util::GetPluralStringFUTF16(
-            IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT, 0);
-      }
-      return l10n_util::GetStringUTF16(
-          IDS_SETTINGS_SAFETY_CHECK_PASSWORDS_SAFE);
+      return l10n_util::GetPluralStringFUTF16(
+          IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT, 0);
     case PasswordsStatus::kCompromisedExist:
       // TODO(crbug.com/1128904): Clean up the old code path.
       if (!base::FeatureList::IsEnabled(features::kSafetyCheckWeakPasswords)) {
@@ -668,22 +663,22 @@ base::string16 SafetyCheckHandler::GetStringForPasswords(
       if (weak.value() == 0) {
         // Only compromised passwords, no weak passwords.
         return l10n_util::GetPluralStringFUTF16(
-            IDS_SETTINGS_SAFETY_CHECK_COMPROMISED_PASSWORDS,
+            IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT_SHORT,
             compromised.value());
       } else {
         // Both compromised and weak passwords.
         return l10n_util::GetStringFUTF16(
             IDS_CONCAT_TWO_STRINGS_WITH_COMMA,
             l10n_util::GetPluralStringFUTF16(
-                IDS_SETTINGS_SAFETY_CHECK_COMPROMISED_PASSWORDS,
+                IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT_SHORT,
                 compromised.value()),
             l10n_util::GetPluralStringFUTF16(
-                IDS_SETTINGS_SAFETY_CHECK_WEAK_PASSWORDS, weak.value()));
+                IDS_SETTINGS_WEAK_PASSWORDS_COUNT_SHORT, weak.value()));
       }
     case PasswordsStatus::kWeakPasswordsExist:
       // Only weak passwords.
       return l10n_util::GetPluralStringFUTF16(
-          IDS_SETTINGS_SAFETY_CHECK_WEAK_PASSWORDS, weak.value());
+          IDS_SETTINGS_WEAK_PASSWORDS_COUNT_SHORT, weak.value());
     case PasswordsStatus::kOffline:
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_CHECK_PASSWORDS_ERROR_OFFLINE);
