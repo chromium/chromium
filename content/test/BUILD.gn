@@ -1801,6 +1801,7 @@ test("content_unittests") {
     "../browser/file_system/browser_file_system_helper_unittest.cc",
     "../browser/file_system/file_system_operation_runner_unittest.cc",
     "../browser/file_system_access/file_system_chooser_unittest.cc",
+    "../browser/file_system_access/native_file_system_directory_handle_impl_unittest.cc",
     "../browser/file_system_access/native_file_system_file_handle_impl_unittest.cc",
     "../browser/file_system_access/native_file_system_file_writer_impl_unittest.cc",
     "../browser/file_system_access/native_file_system_handle_base_unittest.cc",

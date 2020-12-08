@@ -28,8 +28,6 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using storage::FileSystemURL;
-
 namespace content {
 
 using blink::mojom::PermissionStatus;
