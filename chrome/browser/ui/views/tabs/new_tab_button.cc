@@ -132,8 +132,12 @@ void NewTabButton::OnMouseReleased(const ui::MouseEvent& event) {
   bool destroyed = false;
   destroyed_ = &destroyed;
   views::ShowSystemMenuAtScreenPixelLocation(views::HWNDForView(this), point);
-  if (!destroyed)
+  if (!destroyed) {
     SetState(views::Button::STATE_NORMAL);
+    // Zero this pointer to avoid dangling references to the local that will
+    // soon go out of scope. Only do this if the object was not destroyed.
+    destroyed_ = nullptr;
+  }
 }
 #endif
 
