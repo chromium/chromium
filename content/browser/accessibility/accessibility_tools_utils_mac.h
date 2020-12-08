@@ -9,7 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "content/common/content_export.h"
-#include "ui/accessibility/platform/inspect/inspect.h"
+#include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 using ui::AXTreeSelector;
 

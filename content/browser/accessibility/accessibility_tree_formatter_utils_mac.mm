@@ -7,7 +7,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "content/browser/accessibility/accessibility_tools_utils_mac.h"
 #include "content/browser/accessibility/browser_accessibility_mac.h"
-#include "ui/accessibility/platform/inspect/property_node.h"
+#include "ui/accessibility/platform/inspect/ax_property_node.h"
 
 using ui::AXPropertyNode;
 

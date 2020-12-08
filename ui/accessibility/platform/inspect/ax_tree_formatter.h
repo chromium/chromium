@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_TREE_FORMATTER_H_
-#define UI_ACCESSIBILITY_PLATFORM_INSPECT_TREE_FORMATTER_H_
+#ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_H_
+#define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_H_
 
-#include "ui/accessibility/platform/inspect/inspect.h"
+#include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 #include "ui/gfx/native_widget_types.h"
 
@@ -83,4 +83,4 @@ class AX_EXPORT AXTreeFormatter {
 
 }  // namespace ui
 
-#endif  // UI_ACCESSIBILITY_PLATFORM_INSPECT_TREE_FORMATTER_H_
+#endif  // UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_H_

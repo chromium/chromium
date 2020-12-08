@@ -31,7 +31,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
-#include "ui/accessibility/platform/inspect/tree_formatter.h"
+#include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
 
 namespace content {
 

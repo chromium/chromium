@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/accessibility/platform/inspect/property_node.h"
+#include "ui/accessibility/platform/inspect/ax_property_node.h"
 
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "ui/accessibility/platform/inspect/inspect.h"
+#include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 namespace ui {
 

@@ -6,7 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_AX_INSPECT_FACTORY_H_
 
 #include "content/common/content_export.h"
-#include "ui/accessibility/platform/inspect/tree_formatter.h"
+#include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
 
 namespace content {
 

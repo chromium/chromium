@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_PROPERTY_NODE_H_
-#define UI_ACCESSIBILITY_PLATFORM_INSPECT_PROPERTY_NODE_H_
+#ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_PROPERTY_NODE_H_
+#define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_PROPERTY_NODE_H_
 
 #include <string>
 #include <vector>
@@ -95,4 +95,4 @@ class AX_EXPORT AXPropertyNode final {
 
 }  // namespace ui
 
-#endif  // UI_ACCESSIBILITY_PLATFORM_INSPECT_PROPERTY_NODE_H_
+#endif  // UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_PROPERTY_NODE_H_

@@ -15,7 +15,7 @@
 #include "content/browser/accessibility/accessibility_tree_formatter_utils_mac.h"
 #include "content/browser/accessibility/browser_accessibility_mac.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "ui/accessibility/platform/inspect/property_node.h"
+#include "ui/accessibility/platform/inspect/ax_property_node.h"
 
 // This file uses the deprecated NSObject accessibility interface.
 // TODO(crbug.com/948844): Migrate to the new NSAccessibility interface.

@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "content/common/content_export.h"
-#include "ui/accessibility/platform/inspect/inspect.h"
+#include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 namespace content {
 

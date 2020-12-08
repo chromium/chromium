@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/accessibility/platform/inspect/property_node.h"
+#include "ui/accessibility/platform/inspect/ax_property_node.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/platform/inspect/inspect.h"
+#include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 using ui::AXPropertyFilter;
 using ui::AXPropertyNode;

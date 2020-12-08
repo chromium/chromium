@@ -20,7 +20,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/accessibility/platform/inspect/property_node.h"
+#include "ui/accessibility/platform/inspect/ax_property_node.h"
 
 using ui::AXPropertyNode;
 

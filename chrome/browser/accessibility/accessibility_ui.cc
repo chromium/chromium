@@ -40,7 +40,7 @@
 #include "net/base/escape.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
-#include "ui/accessibility/platform/inspect/tree_formatter.h"
+#include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
 #include "ui/base/webui/web_ui_util.h"
 
 #if !defined(OS_ANDROID)

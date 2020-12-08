@@ -6,7 +6,7 @@
 #define TOOLS_ACCESSIBILITY_INSPECT_AX_UTILS_H_
 
 #include "base/command_line.h"
-#include "ui/accessibility/platform/inspect/inspect.h"
+#include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 namespace tools {
 
