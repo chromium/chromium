@@ -27,7 +27,6 @@
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "snapshot/elf/elf_image_reader.h"
-#include "snapshot/linux/test_modules.h"
 #include "test/linux/fake_ptrace_connection.h"
 #include "test/main_arguments.h"
 #include "test/multiprocess.h"
@@ -35,7 +34,6 @@
 #include "util/linux/auxiliary_vector.h"
 #include "util/linux/direct_ptrace_connection.h"
 #include "util/linux/memory_map.h"
-#include "util/numeric/safe_assignment.h"
 #include "util/process/process_memory_linux.h"
 #include "util/process/process_memory_range.h"
 
@@ -46,20 +44,6 @@
 namespace crashpad {
 namespace test {
 namespace {
-
-void ExpectLoadBias(bool is_64_bit,
-                    VMAddress unsigned_bias,
-                    VMOffset signed_bias) {
-  if (is_64_bit) {
-    EXPECT_EQ(unsigned_bias, static_cast<VMAddress>(signed_bias));
-  } else {
-    uint32_t unsigned_bias32;
-    ASSERT_TRUE(AssignIfInRange(&unsigned_bias32, unsigned_bias));
-
-    uint32_t casted_bias32 = static_cast<uint32_t>(signed_bias);
-    EXPECT_EQ(unsigned_bias32, casted_bias32);
-  }
-}
 
 void TestAgainstTarget(PtraceConnection* connection) {
   // Use ElfImageReader on the main executable which can tell us the debug
@@ -128,11 +112,9 @@ void TestAgainstTarget(PtraceConnection* connection) {
 
   // Android's loader doesn't set the load bias until Android 4.3 (API 18).
   if (android_runtime_api >= 18) {
-    ExpectLoadBias(connection->Is64Bit(),
-                   debug.Executable()->load_bias,
-                   exe_reader.GetLoadBias());
+    EXPECT_EQ(debug.Executable()->load_bias, exe_reader.GetLoadBias());
   } else {
-    EXPECT_EQ(debug.Executable()->load_bias, 0u);
+    EXPECT_EQ(debug.Executable()->load_bias, 0);
   }
 
   for (const DebugRendezvous::LinkEntry& module : debug.Modules()) {
@@ -148,7 +130,7 @@ void TestAgainstTarget(PtraceConnection* connection) {
     // (API 17).
     if (is_android_loader && android_runtime_api < 17) {
       EXPECT_EQ(module.dynamic_array, 0u);
-      EXPECT_EQ(module.load_bias, 0u);
+      EXPECT_EQ(module.load_bias, 0);
       continue;
     }
 
@@ -188,11 +170,7 @@ void TestAgainstTarget(PtraceConnection* connection) {
            const std::string& module_name) {
           const bool is_vdso_mapping =
               device == 0 && inode == 0 && mapping_name == "[vdso]";
-#if defined(ARCH_CPU_X86)
-          static constexpr char kPrefix[] = "linux-gate.so.";
-#else
           static constexpr char kPrefix[] = "linux-vdso.so.";
-#endif
           return is_vdso_mapping ==
                  (module_name.empty() ||
                   module_name.compare(0, strlen(kPrefix), kPrefix) == 0);
@@ -207,11 +185,9 @@ void TestAgainstTarget(PtraceConnection* connection) {
     // (API 20) until Android 6.0 (API 23).
     if (is_android_loader && android_runtime_api > 20 &&
         android_runtime_api < 23) {
-      EXPECT_EQ(module.load_bias, 0u);
+      EXPECT_EQ(module.load_bias, 0);
     } else {
-      ExpectLoadBias(connection->Is64Bit(),
-                     module.load_bias,
-                     static_cast<VMAddress>(module_reader->GetLoadBias()));
+      EXPECT_EQ(module.load_bias, module_reader->GetLoadBias());
     }
 
     CheckedLinuxAddressRange module_range(
@@ -220,13 +196,7 @@ void TestAgainstTarget(PtraceConnection* connection) {
   }
 }
 
-TEST(DebugRendezvous, Self) {
-  const std::string module_name = "test_module.so";
-  const std::string module_soname = "test_module_soname";
-  ScopedModuleHandle empty_test_module(
-      LoadTestModule(module_name, module_soname));
-  ASSERT_TRUE(empty_test_module.valid());
-
+TEST(DebugRendezvous, DISABLED_Self) {
   FakePtraceConnection connection;
   ASSERT_TRUE(connection.Initialize(getpid()));
 
@@ -251,7 +221,7 @@ class ChildTest : public Multiprocess {
   DISALLOW_COPY_AND_ASSIGN(ChildTest);
 };
 
-TEST(DebugRendezvous, Child) {
+TEST(DebugRendezvous, DISABLED_Child) {
   ChildTest test;
   test.Run();
 }

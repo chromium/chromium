@@ -30,10 +30,7 @@ namespace crashpad {
 //! will be released by calling `munmap()`.
 class ScopedMmap {
  public:
-  //! \brief Constructs this object.
-  //!
-  //! \param can_log `true` if methods of this class may log messages.
-  explicit ScopedMmap(bool can_log = true);
+  ScopedMmap();
   ~ScopedMmap();
 
   //! \brief Releases the memory-mapped region by calling `munmap()`.
@@ -108,7 +105,6 @@ class ScopedMmap {
  private:
   void* addr_ = MAP_FAILED;
   size_t len_ = 0;
-  bool can_log_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedMmap);
 };
