@@ -2381,8 +2381,8 @@ void PrintRenderFrameHelper::PrintPageInternal(const mojom::PrintParams& params,
 void PrintRenderFrameHelper::ShowScriptedPrintPreview() {
   if (is_scripted_preview_delayed_) {
     is_scripted_preview_delayed_ = false;
-    Send(new PrintHostMsg_ShowScriptedPrintPreview(
-        routing_id(), print_preview_context_.IsModifiable()));
+    GetPrintManagerHost()->ShowScriptedPrintPreview(
+        print_preview_context_.IsModifiable());
   }
 }
 
@@ -2414,8 +2414,8 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type) {
       // Shows scripted print preview in two stages.
       // 1. PrintHostMsg_SetupScriptedPrintPreview blocks this call and JS by
       //    pumping messages here.
-      // 2. PrintHostMsg_ShowScriptedPrintPreview shows preview once the
-      //    document has been loaded.
+      // 2. ShowScriptedPrintPreview() shows preview once the document has been
+      //    loaded.
       is_scripted_preview_delayed_ = true;
       if (is_loading_ && print_preview_context_.IsPlugin()) {
         // Wait for DidStopLoading. Plugins may not know the correct

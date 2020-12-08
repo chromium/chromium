@@ -64,6 +64,7 @@ class PrintViewManager : public PrintViewManagerBase,
 
   // mojom::PrintManagerHost:
   void DidShowPrintDialog() override;
+  void ShowScriptedPrintPreview(bool source_is_modifiable) override;
 
   // content::WebContentsObserver implementation.
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
@@ -100,8 +101,6 @@ class PrintViewManager : public PrintViewManagerBase,
   // IPC Message handlers.
   void OnSetupScriptedPrintPreview(content::RenderFrameHost* rfh,
                                    IPC::Message* reply_msg);
-  void OnShowScriptedPrintPreview(content::RenderFrameHost* rfh,
-                                  bool source_is_modifiable);
   void OnScriptedPrintPreviewReply(IPC::Message* reply_msg);
 
   void MaybeUnblockScriptedPreviewRPH();

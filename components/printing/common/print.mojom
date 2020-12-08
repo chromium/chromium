@@ -313,4 +313,10 @@ interface PrintManagerHost {
 
   // Tells the browser printing failed.
   PrintingFailed(int32 cookie);
+
+  // Tells the browser to show the print preview, when the document is
+  // sufficiently loaded such that the renderer can determine whether it is
+  // modifiable or not.
+  [EnableIf=enable_print_preview]
+  ShowScriptedPrintPreview(bool is_modifiable);
 };

@@ -295,13 +295,13 @@ void PrintViewManager::OnSetupScriptedPrintPreview(
   }
 }
 
-void PrintViewManager::OnShowScriptedPrintPreview(content::RenderFrameHost* rfh,
-                                                  bool source_is_modifiable) {
+void PrintViewManager::ShowScriptedPrintPreview(bool source_is_modifiable) {
   if (print_preview_state_ != SCRIPTED_PREVIEW)
     return;
 
   DCHECK(print_preview_rfh_);
-  if (rfh != print_preview_rfh_)
+  if (print_manager_host_receivers_.GetCurrentTargetFrame() !=
+      print_preview_rfh_)
     return;
 
   PrintPreviewDialogController* dialog_controller =
@@ -337,8 +337,6 @@ bool PrintViewManager::OnMessageReceived(
     IPC_MESSAGE_FORWARD_DELAY_REPLY(
         PrintHostMsg_SetupScriptedPrintPreview, &helper,
         FrameDispatchHelper::OnSetupScriptedPrintPreview)
-    IPC_MESSAGE_HANDLER(PrintHostMsg_ShowScriptedPrintPreview,
-                        OnShowScriptedPrintPreview)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
 

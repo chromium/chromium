@@ -329,8 +329,10 @@ class TestPrintManagerHost
     params->params->should_print_backgrounds = should_print_backgrounds.value();
     std::move(callback).Run(std::move(params), canceled);
   }
-
   void DidShowPrintDialog() override {}
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+  void ShowScriptedPrintPreview(bool source_is_modifiable) override {}
+#endif
 
   bool IsPrinted() { return is_printed_; }
   void SetExpectedPagesCount(uint32_t number_pages) {

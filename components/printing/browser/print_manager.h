@@ -60,6 +60,9 @@ class PrintManager : public content::WebContentsObserver,
   void DidShowPrintDialog() override;
   void ShowInvalidPrinterSettingsError() override;
   void PrintingFailed(int32_t cookie) override;
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+  void ShowScriptedPrintPreview(bool source_is_modifiable) override;
+#endif
 
  protected:
   explicit PrintManager(content::WebContents* contents);

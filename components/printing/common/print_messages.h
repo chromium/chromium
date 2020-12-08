@@ -325,11 +325,6 @@ IPC_MESSAGE_ROUTED2(PrintHostMsg_MetafileReadyForPrinting,
 // Run a nested run loop in the renderer until print preview for
 // window.print() finishes.
 IPC_SYNC_MESSAGE_ROUTED0_0(PrintHostMsg_SetupScriptedPrintPreview)
-
-// Tell the browser to show the print preview, when the document is sufficiently
-// loaded such that the renderer can determine whether it is modifiable or not.
-IPC_MESSAGE_ROUTED1(PrintHostMsg_ShowScriptedPrintPreview,
-                    bool /* is_modifiable */)
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 #endif  // COMPONENTS_PRINTING_COMMON_PRINT_MESSAGES_H_

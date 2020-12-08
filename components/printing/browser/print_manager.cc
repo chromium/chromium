@@ -92,6 +92,10 @@ void PrintManager::PrintingFailed(int32_t cookie) {
 #endif
 }
 
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+void PrintManager::ShowScriptedPrintPreview(bool source_is_modifiable) {}
+#endif
+
 const mojo::AssociatedRemote<printing::mojom::PrintRenderFrame>&
 PrintManager::GetPrintRenderFrame(content::RenderFrameHost* rfh) {
   auto it = print_render_frames_.find(rfh);
