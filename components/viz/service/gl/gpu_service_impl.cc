@@ -486,6 +486,12 @@ void GpuServiceImpl::UpdateGPUInfo() {
   gpu_info_.initialization_time = base::Time::Now() - start_time_;
 }
 
+void GpuServiceImpl::UpdateGPUInfoGL() {
+  DCHECK(main_runner_->BelongsToCurrentThread());
+  gpu::CollectGraphicsInfoGL(&gpu_info_);
+  gpu_host_->DidUpdateGPUInfo(gpu_info_);
+}
+
 void GpuServiceImpl::InitializeWithHost(
     mojo::PendingRemote<mojom::GpuHost> pending_gpu_host,
     gpu::GpuProcessActivityFlags activity_flags,
@@ -968,9 +974,16 @@ void GpuServiceImpl::WakeUpGpu() {
 
 void GpuServiceImpl::GpuSwitched(gl::GpuPreference active_gpu_heuristic) {
   DVLOG(1) << "GPU: GPU has switched";
-  if (!in_host_process())
+  if (!in_host_process()) {
     ui::GpuSwitchingManager::GetInstance()->NotifyGpuSwitched(
         active_gpu_heuristic);
+  }
+  if (io_runner_->BelongsToCurrentThread()) {
+    main_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&GpuServiceImpl::UpdateGPUInfoGL, weak_ptr_));
+    return;
+  }
+  GpuServiceImpl::UpdateGPUInfoGL();
 }
 
 void GpuServiceImpl::DisplayAdded() {

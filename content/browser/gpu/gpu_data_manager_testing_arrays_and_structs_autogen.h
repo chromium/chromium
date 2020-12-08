@@ -204,29 +204,6 @@ const GpuControlList::More kMoreForEntry6_572251052 = {
     GpuControlList::kDontCare,  // subpixel_font_rendering
 };
 
-const int kFeatureListForGpuManagerTestingEntry7[1] = {
-    GPU_FEATURE_TYPE_ACCELERATED_WEBGL,
-};
-
-const GpuControlList::More kMoreForEntry7_572251052 = {
-    GpuControlList::kGLTypeNone,  // gl_type
-    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-     GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // gl_version
-    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-     GpuControlList::kVersionSchemaCommon, nullptr,
-     nullptr},  // pixel_shader_version
-    false,      // in_process_gpu
-    0,          // gl_reset_notification_strategy
-    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-     GpuControlList::kVersionSchemaCommon, nullptr,
-     nullptr},  // direct_rendering_version
-    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-     GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // gpu_count
-    GpuControlList::kDontCare,  // hardware_overlay
-    0,                          // test_group
-    GpuControlList::kDontCare,  // subpixel_font_rendering
-};
-
 }  // namespace gpu
 
 #endif  // CONTENT_BROWSER_GPU_GPU_DATA_MANAGER_TESTING_ARRAYS_AND_STRUCTS_AUTOGEN_H_

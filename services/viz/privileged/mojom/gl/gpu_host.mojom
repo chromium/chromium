@@ -36,6 +36,10 @@ interface GpuHost {
                  ContextLostReason reason,
                  url.mojom.Url active_url);
 
+  // Tells the GPU host that the GPUInfo has been updated in the GPU
+  // process.
+  DidUpdateGPUInfo(gpu.mojom.GpuInfo gpu_info);
+
   // Tells the GPU host that the overlay info has been updated in the GPU
   // process.
   [EnableIf=is_win]

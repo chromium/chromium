@@ -51,15 +51,6 @@
       "features": [
         "all"
       ]
-    },
-    {
-      "id": 7,
-      "description": "GpuDataManagerImplPrivateTest.UpdateActiveGpu",
-      "vendor_id": "0x8086",
-      "multi_gpu_category": "active",
-      "features": [
-        "accelerated_webgl"
-      ]
     }
   ]
 }

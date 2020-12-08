@@ -103,6 +103,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   ~GpuServiceImpl() override;
 
   void UpdateGPUInfo();
+  void UpdateGPUInfoGL();
 
   void InitializeWithHost(
       mojo::PendingRemote<mojom::GpuHost> gpu_host,

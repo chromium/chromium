@@ -220,40 +220,6 @@ const GpuControlList::Entry kGpuDataManagerTestingEntries[] = {
         0,        // exceptions count
         nullptr,  // exceptions
     },
-    {
-        7,  // id
-        "GpuDataManagerImplPrivateTest.UpdateActiveGpu",
-        base::size(kFeatureListForGpuManagerTestingEntry7),  // features size
-        kFeatureListForGpuManagerTestingEntry7,              // features
-        0,        // DisabledExtensions size
-        nullptr,  // DisabledExtensions
-        0,        // DisabledWebGLExtensions size
-        nullptr,  // DisabledWebGLExtensions
-        0,        // CrBugs size
-        nullptr,  // CrBugs
-        {
-            GpuControlList::kOsAny,  // os_type
-            {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-             GpuControlList::kVersionSchemaCommon, nullptr,
-             nullptr},                                // os_version
-            0x8086,                                   // vendor_id
-            0,                                        // Devices size
-            nullptr,                                  // Devices
-            GpuControlList::kMultiGpuCategoryActive,  // multi_gpu_category
-            GpuControlList::kMultiGpuStyleNone,       // multi_gpu_style
-            nullptr,                                  // driver info
-            nullptr,                                  // GL strings
-            nullptr,                                  // machine model info
-            0,                                        // intel_gpu_series size
-            nullptr,                                  // intel_gpu_series
-            {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-             GpuControlList::kVersionSchemaCommon, nullptr,
-             nullptr},                  // intel_gpu_generation
-            &kMoreForEntry7_572251052,  // more data
-        },
-        0,        // exceptions count
-        nullptr,  // exceptions
-    },
 };
-const size_t kGpuDataManagerTestingEntryCount = 7;
+const size_t kGpuDataManagerTestingEntryCount = 6;
 }  // namespace gpu
