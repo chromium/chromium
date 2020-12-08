@@ -9,7 +9,6 @@ namespace mojo {
 bool StructTraits<blink::mojom::FramePolicyDataView, blink::FramePolicy>::Read(
     blink::mojom::FramePolicyDataView in,
     blink::FramePolicy* out) {
-  out->allowed_to_download = in.allowed_to_download();
   out->disallow_document_access = in.disallow_document_access();
 
   // TODO(chenleihu): Add sanity check on enum values in

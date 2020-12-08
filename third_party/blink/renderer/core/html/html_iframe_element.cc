@@ -175,9 +175,6 @@ void HTMLIFrameElement::ParseAttribute(
                 parsed.error_message)));
       }
     }
-    SetAllowedToDownload(
-        (current_flags & network::mojom::blink::WebSandboxFlags::kDownloads) ==
-        network::mojom::blink::WebSandboxFlags::kNone);
     SetSandboxFlags(current_flags);
     UseCounter::Count(GetDocument(), WebFeature::kSandboxViaIFrame);
   } else if (name == html_names::kReferrerpolicyAttr) {

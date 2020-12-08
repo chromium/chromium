@@ -18,6 +18,5 @@ struct FramePolicy {
   network.mojom.WebSandboxFlags sandbox_flags;
   array<blink.mojom.ParsedFeaturePolicyDeclaration> container_policy;
   map<blink.mojom.DocumentPolicyFeature, blink.mojom.PolicyValue> required_document_policy;
-  bool allowed_to_download = true;
   bool disallow_document_access = false;
 };

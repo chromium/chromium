@@ -138,9 +138,6 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   HTMLFrameOwnerElement(const QualifiedName& tag_name, Document&);
 
   void SetSandboxFlags(network::mojom::blink::WebSandboxFlags);
-  void SetAllowedToDownload(bool allowed) {
-    frame_policy_.allowed_to_download = allowed;
-  }
   void SetDisallowDocumentAccesss(bool disallowed);
 
   bool LoadOrRedirectSubframe(const KURL&,

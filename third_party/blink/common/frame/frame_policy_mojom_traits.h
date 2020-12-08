@@ -16,10 +16,6 @@ template <>
 class BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::FramePolicyDataView, blink::FramePolicy> {
  public:
-  static bool allowed_to_download(const blink::FramePolicy& frame_policy) {
-    return frame_policy.allowed_to_download;
-  }
-
   static bool disallow_document_access(const blink::FramePolicy& frame_policy) {
     return frame_policy.disallow_document_access;
   }

@@ -28,7 +28,6 @@ struct BLINK_COMMON_EXPORT FramePolicy {
   FramePolicy(network::mojom::WebSandboxFlags sandbox_flags,
               const ParsedFeaturePolicy& container_policy,
               const DocumentPolicyFeatureState& required_document_policy,
-              bool allowed_to_download = true,
               bool disallow_document_access = false);
   FramePolicy(const FramePolicy& lhs);
   ~FramePolicy();
@@ -40,14 +39,6 @@ struct BLINK_COMMON_EXPORT FramePolicy {
   // - 'Require-Document-Policy' http header
   // - |required_document_policy| of parent frame
   DocumentPolicyFeatureState required_document_policy;
-  // With FeaturePolicyForSandbox, as a policy affecting the document,
-  // "downloads" is included in |container_policy|.
-  // However, in certain cases where the initiator of the navigation is not the
-  // document itself (e.g., a parent document), the FrameOwner element should be
-  // checked for "downloads" flag. If this boolean is false then navigations
-  // leading to downloads should be blocked. Note: this flag is currently only
-  // set if the frame is sandboxed for downloads.
-  bool allowed_to_download;
 
   // Whether or not a frame allows direct script access across frame
   // boundaries.
