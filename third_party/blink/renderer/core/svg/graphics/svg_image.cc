@@ -282,10 +282,6 @@ static float ResolveHeightForRatio(float width,
   return width * intrinsic_ratio.Height() / intrinsic_ratio.Width();
 }
 
-bool SVGImage::HasIntrinsicDimensions() const {
-  return !ConcreteObjectSize(FloatSize()).IsEmpty();
-}
-
 bool SVGImage::HasIntrinsicSizingInfo() const {
   return LayoutRoot();
 }

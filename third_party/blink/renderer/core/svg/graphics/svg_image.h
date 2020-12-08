@@ -109,12 +109,6 @@ class CORE_EXPORT SVGImage final : public Image {
   // returns true if GetIntrinsicSizingInfo would.)
   bool HasIntrinsicSizingInfo() const;
 
-  // Unlike the above (HasIntrinsicSizingInfo) - which only indicates that
-  // dimensions can be read - this returns true if those dimensions are not
-  // empty (i.e if the concrete object size resolved using an empty default
-  // object size is non-empty.)
-  bool HasIntrinsicDimensions() const;
-
   PaintImage PaintImageForCurrentFrame() override;
 
  protected:
