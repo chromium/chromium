@@ -30,6 +30,10 @@ class FakeAudioConsumer
       public fuchsia::media::testing::StreamSink_TestBase,
       public fuchsia::media::audio::testing::VolumeControl_TestBase {
  public:
+  // Lead time range returned from WatchStatus().
+  static const base::TimeDelta kMinLeadTime;
+  static const base::TimeDelta kMaxLeadTime;
+
   FakeAudioConsumer(
       uint64_t session_id,
       fidl::InterfaceRequest<fuchsia::media::AudioConsumer> request);

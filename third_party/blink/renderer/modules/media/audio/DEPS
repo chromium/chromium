@@ -24,6 +24,7 @@ specific_include_rules = {
     ],
     "fuchsia_audio_device_factory\.cc" : [
         "+media/fuchsia/audio/fuchsia_audio_capturer_source.h",
+        "+media/fuchsia/audio/fuchsia_audio_output_device.h",
         "+media/fuchsia/mojom",
     ],
 }
