@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.init;
 
-import android.support.test.rule.ActivityTestRule;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -14,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DummyUiActivity;
@@ -24,12 +24,13 @@ import java.util.concurrent.CountDownLatch;
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class FirstDrawDetectorTest {
     @Rule
-    public ActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new ActivityTestRule<>(DummyUiActivity.class);
+    public BaseActivityTestRule<DummyUiActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(DummyUiActivity.class);
 
     @Test
     @SmallTest
     public void testFirstDraw() throws Exception {
+        mActivityTestRule.launchActivity(null);
         final CountDownLatch firstDrawEvent = new CountDownLatch(1);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             DummyUiActivity activity = mActivityTestRule.getActivity();

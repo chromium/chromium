@@ -81,6 +81,11 @@ public class RadioButtonWithEditTextTest extends DummyUiActivityTestCase {
     private Button mDummyButton;
 
     @Override
+    public void beforeActivityLaunch() {
+        InstrumentationRegistry.getInstrumentation().setInTouchMode(false);
+    }
+
+    @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
         mActivity = getActivity();

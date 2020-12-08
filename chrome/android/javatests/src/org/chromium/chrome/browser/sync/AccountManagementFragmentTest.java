@@ -11,6 +11,13 @@ import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.is;
+
+import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
+
+import android.view.View;
+
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -72,8 +79,9 @@ public class AccountManagementFragmentTest {
     public void testAccountManagementFragmentViewLegacy() throws Exception {
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(mSettingsActivityTestRule.getFragment().getView(),
-                "account_management_fragment_view_legacy");
+        View view = mSettingsActivityTestRule.getFragment().getView();
+        onViewWaiting(allOf(is(view), isDisplayed()));
+        mRenderTestRule.render(view, "account_management_fragment_view_legacy");
     }
 
     @Test
@@ -83,8 +91,9 @@ public class AccountManagementFragmentTest {
     public void testAccountManagementFragmentView() throws Exception {
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(mSettingsActivityTestRule.getFragment().getView(),
-                "account_management_fragment_view");
+        View view = mSettingsActivityTestRule.getFragment().getView();
+        onViewWaiting(allOf(is(view), isDisplayed()));
+        mRenderTestRule.render(view, "account_management_fragment_view");
     }
 
     @Test
@@ -95,8 +104,9 @@ public class AccountManagementFragmentTest {
         mAccountManagerTestRule.addAccount("testSecondary@gmail.com");
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(mSettingsActivityTestRule.getFragment().getView(),
-                "account_management_fragment_signed_in_account_on_top");
+        View view = mSettingsActivityTestRule.getFragment().getView();
+        onViewWaiting(allOf(is(view), isDisplayed()));
+        mRenderTestRule.render(view, "account_management_fragment_signed_in_account_on_top");
     }
 
     @Test

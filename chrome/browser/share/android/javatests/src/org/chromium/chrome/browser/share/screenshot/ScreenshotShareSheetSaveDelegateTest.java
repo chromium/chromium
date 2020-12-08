@@ -10,7 +10,6 @@ import android.Manifest.permission;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.support.test.rule.ActivityTestRule;
 
 import androidx.test.filters.MediumTest;
 
@@ -23,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -41,8 +41,8 @@ public class ScreenshotShareSheetSaveDelegateTest {
     private ScreenshotShareSheetSaveDelegate mScreenshotShareSheetSaveDelegate;
 
     @Rule
-    public ActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new ActivityTestRule<>(DummyUiActivity.class);
+    public BaseActivityTestRule<DummyUiActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(DummyUiActivity.class);
 
     @Mock
     private PropertyModel mModel;
@@ -59,6 +59,7 @@ public class ScreenshotShareSheetSaveDelegateTest {
         Mockito.when(mModel.get(eq(ScreenshotShareSheetViewProperties.SCREENSHOT_BITMAP)))
                 .thenReturn(Bitmap.createBitmap(10, 10, Bitmap.Config.ALPHA_8));
 
+        mActivityTestRule.launchActivity(null);
         Activity activity = mActivityTestRule.getActivity();
         mPermissionDelegate = new TestAndroidPermissionDelegate();
         mScreenshotShareSheetSaveDelegate = new ScreenshotShareSheetSaveDelegate(

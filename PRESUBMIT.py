@@ -126,6 +126,16 @@ _BANNED_JAVA_IMPORTS = (
         'https://crbug.com/1111893.',
       ),
       ()
+    ),
+    (
+      'android.support.test.rule.ActivityTestRule;',
+      (
+        'Do not use ActivityTestRule, use '
+        'org.chromium.base.test.BaseActivityTestRule instead.',
+      ),
+      (
+        'components/cronet/',
+      )
     )
 )
 

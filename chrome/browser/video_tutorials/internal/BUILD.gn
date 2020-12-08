@@ -193,6 +193,7 @@ if (is_android) {
       "//third_party/android_deps:androidx_test_runner_java",
       "//third_party/android_deps:espresso_java",
       "//third_party/android_support_test_runner:rules_java",
+      "//third_party/android_support_test_runner:runner_java",
       "//third_party/gif_player:gif_player_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/junit",

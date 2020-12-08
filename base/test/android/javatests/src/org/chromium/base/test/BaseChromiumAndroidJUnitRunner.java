@@ -190,6 +190,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             }
             checkOrDeleteOnDiskSharedPreferences(false);
             clearDataDirectory(sInMemorySharedPreferencesContext);
+            InstrumentationRegistry.getInstrumentation().setInTouchMode(true);
             super.onStart();
         }
     }

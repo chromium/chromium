@@ -10,13 +10,15 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.PowerManager;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.ActivityTestRule;
 import android.view.View;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 
 import org.chromium.base.Log;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -50,7 +52,7 @@ import java.util.concurrent.TimeUnit;
  *
  * Test can use this ActivityTestRule to launch or get ContentShellActivity.
  */
-public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellActivity> {
+public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentShellActivity> {
     /** The maximum time the waitForActiveShellToBeDoneLoading method will wait. */
     private static final long WAIT_FOR_ACTIVE_SHELL_LOADING_TIMEOUT = 10000L;
 
@@ -58,24 +60,28 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
 
     protected static final long WAIT_PAGE_LOADING_TIMEOUT_SECONDS = 15L;
 
-    private final boolean mLaunchActivity;
-
     public ContentShellActivityTestRule() {
-        this(false, false);
-    }
-
-    public ContentShellActivityTestRule(boolean initialTouchMode, boolean launchActivity) {
-        super(ContentShellActivity.class, initialTouchMode, launchActivity);
-        mLaunchActivity = launchActivity;
+        super(ContentShellActivity.class);
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    protected void beforeActivityLaunched() {
-        PowerManager pm = (PowerManager) InstrumentationRegistry.getInstrumentation()
-                                  .getContext()
-                                  .getSystemService(Context.POWER_SERVICE);
-        Assert.assertTrue("Many tests will fail if the screen is not on.", pm.isInteractive());
+    public Statement apply(final Statement base, final Description desc) {
+        return super.apply(new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                PowerManager pm = (PowerManager) InstrumentationRegistry.getInstrumentation()
+                                          .getContext()
+                                          .getSystemService(Context.POWER_SERVICE);
+                Assert.assertTrue(
+                        "Many tests will fail if the screen is not on.", pm.isInteractive());
+                base.evaluate();
+            }
+        }, desc);
+    }
+
+    public void runOnUiThread(Runnable r) {
+        TestThreadUtils.runOnUiThreadBlocking(r);
     }
 
     /**
@@ -83,9 +89,6 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
      * The URL can be null, in which case will default to ContentShellActivity.DEFAULT_SHELL_URL.
      */
     public ContentShellActivity launchContentShellWithUrl(String url) {
-        Assert.assertFalse(
-                "Activity is already launched, setup the test rule to NOT auto-launch activity",
-                mLaunchActivity);
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -93,7 +96,8 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
         intent.setComponent(
                 new ComponentName(InstrumentationRegistry.getInstrumentation().getTargetContext(),
                         ContentShellActivity.class));
-        return launchActivity(intent);
+        launchActivity(intent);
+        return getActivity();
     }
 
     /**
@@ -301,7 +305,7 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
     public void handleBlockingCallbackAction(CallbackHelper callbackHelper, Runnable uiThreadAction)
             throws Throwable {
         int currentCallCount = callbackHelper.getCallCount();
-        runOnUiThread(uiThreadAction);
+        TestThreadUtils.runOnUiThreadBlocking(uiThreadAction);
         callbackHelper.waitForCallback(
                 currentCallCount, 1, WAIT_PAGE_LOADING_TIMEOUT_SECONDS, TimeUnit.SECONDS);
     }

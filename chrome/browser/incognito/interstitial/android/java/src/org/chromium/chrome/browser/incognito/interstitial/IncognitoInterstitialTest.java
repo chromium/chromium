@@ -13,7 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.lifecycle.Stage;
 import android.view.View;
 
 import androidx.test.filters.MediumTest;
@@ -27,6 +27,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
@@ -49,8 +51,8 @@ public class IncognitoInterstitialTest {
     private Runnable mOnIncognitoTabOpenedMock;
 
     @Rule
-    public final ActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new ActivityTestRule<>(DummyUiActivity.class);
+    public final BaseActivityTestRule<DummyUiActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(DummyUiActivity.class);
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
@@ -65,6 +67,8 @@ public class IncognitoInterstitialTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mActivityTestRule.launchActivity(null);
+        ApplicationTestUtils.waitForActivityState(mActivityTestRule.getActivity(), Stage.RESUMED);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             View contentView = mActivityTestRule.getActivity().findViewById(android.R.id.content);
             IncognitoInterstitialCoordinator incognitoInterstitialCoordinator =

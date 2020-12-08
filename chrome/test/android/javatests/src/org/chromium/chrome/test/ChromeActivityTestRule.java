@@ -13,8 +13,6 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.internal.runner.listener.InstrumentationResultPrinter;
 import android.view.Menu;
 
-import androidx.annotation.NonNull;
-
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -225,7 +223,10 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     }
 
     @Override
-    public void launchActivity(@NonNull Intent startIntent) {
+    public void launchActivity(Intent startIntent) {
+        // Avoid relying on explicit intents, bypassing LaunchIntentDispatcher, created by null
+        // startIntent launch behavior.
+        Assert.assertNotNull(startIntent);
         Features.ensureCommandLineIsUpToDate();
         super.launchActivity(startIntent);
     }

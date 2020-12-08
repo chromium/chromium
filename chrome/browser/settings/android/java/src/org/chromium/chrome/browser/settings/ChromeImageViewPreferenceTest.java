@@ -15,7 +15,6 @@ import static org.hamcrest.Matchers.allOf;
 import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.ActivityTestRule;
 
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
@@ -28,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.R;
@@ -41,8 +41,8 @@ import org.chromium.components.browser_ui.settings.R;
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class ChromeImageViewPreferenceTest {
     @Rule
-    public ActivityTestRule<SettingsActivity> mRule =
-            new ActivityTestRule<>(SettingsActivity.class);
+    public BaseActivityTestRule<SettingsActivity> mRule =
+            new BaseActivityTestRule<>(SettingsActivity.class);
 
     private PreferenceScreen mPreferenceScreen;
     private Context mContext;

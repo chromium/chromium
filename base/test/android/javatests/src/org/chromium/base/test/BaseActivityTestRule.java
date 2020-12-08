@@ -47,9 +47,12 @@ public class BaseActivityTestRule<T extends Activity> implements TestRule {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                base.evaluate();
-                if (mFinishActivity && mActivity != null) {
-                    ApplicationTestUtils.finishActivity(mActivity);
+                try {
+                    base.evaluate();
+                } finally {
+                    if (mFinishActivity && mActivity != null) {
+                        ApplicationTestUtils.finishActivity(mActivity);
+                    }
                 }
             }
         };

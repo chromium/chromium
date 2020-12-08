@@ -418,6 +418,7 @@ android_library("ui_java_test_support") {
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_support_test_runner:rules_java",
+    "//third_party/android_support_test_runner:runner_java",
     "//third_party/junit",
   ]
 }

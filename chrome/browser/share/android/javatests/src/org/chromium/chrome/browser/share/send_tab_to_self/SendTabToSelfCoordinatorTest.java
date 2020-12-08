@@ -8,32 +8,26 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 
-import android.app.Activity;
 import android.support.test.filters.SmallTest;
-import android.support.test.rule.ActivityTestRule;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.ui.test.util.DummyUiActivity;
 
 /** Tests for SendTabToSelfCoordinator */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.UNIT_TESTS)
 public class SendTabToSelfCoordinatorTest {
-    @Rule
-    public ActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new ActivityTestRule<>(DummyUiActivity.class);
-
     @Mock
     private BottomSheetController mBottomSheetController;
     @Mock
@@ -48,11 +42,11 @@ public class SendTabToSelfCoordinatorTest {
     @SmallTest
     public void testShow() {
         SendTabToSelfCoordinator.setBottomSheetContentForTesting(mBottomSheetContent);
-        Activity activity = mActivityTestRule.getActivity();
-        SendTabToSelfCoordinator coordinator = new SendTabToSelfCoordinator(activity, "test",
-                "test", mBottomSheetController, /*settingsLauncher=*/null,
+        SendTabToSelfCoordinator coordinator = new SendTabToSelfCoordinator(/*context*/ null,
+                "test", "test", mBottomSheetController, /*settingsLauncher=*/null,
                 /*isSyncEnabled=*/true, /*navigationTime=*/0);
         coordinator.show();
         verify(mBottomSheetController).requestShowContent(any(BottomSheetContent.class), eq(true));
+        SendTabToSelfCoordinator.setBottomSheetContentForTesting(null);
     }
 }

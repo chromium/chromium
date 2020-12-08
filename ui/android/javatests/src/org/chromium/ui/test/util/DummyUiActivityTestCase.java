@@ -4,7 +4,7 @@
 
 package org.chromium.ui.test.util;
 
-import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.lifecycle.Stage;
 
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -13,6 +13,8 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.ApplicationTestUtils;
 
 /**
  * Test case to instrument DummyUiActivity for UI testing scenarios.
@@ -22,8 +24,8 @@ import org.junit.runners.model.Statement;
 public class DummyUiActivityTestCase {
     private DummyUiActivity mActivity;
 
-    private ActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new ActivityTestRule<>(DummyUiActivity.class);
+    private BaseActivityTestRule<DummyUiActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(DummyUiActivity.class);
 
     // Disable animations to reduce flakiness.
     @ClassRule
@@ -42,6 +44,10 @@ public class DummyUiActivityTestCase {
             return new Statement() {
                 @Override
                 public void evaluate() throws Throwable {
+                    beforeActivityLaunch();
+                    mActivityTestRule.launchActivity(null);
+                    ApplicationTestUtils.waitForActivityState(
+                            mActivityTestRule.getActivity(), Stage.RESUMED);
                     setUpTest();
                     try {
                         base.evaluate();
@@ -52,6 +58,8 @@ public class DummyUiActivityTestCase {
             };
         }
     }
+
+    public void beforeActivityLaunch() throws Exception {}
 
     // Override this to setup before test.
     public void setUpTest() throws Exception {
@@ -65,7 +73,7 @@ public class DummyUiActivityTestCase {
         return mActivity;
     }
 
-    public ActivityTestRule<DummyUiActivity> getActivityTestRule() {
+    public BaseActivityTestRule<DummyUiActivity> getActivityTestRule() {
         return mActivityTestRule;
     }
 }

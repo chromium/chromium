@@ -179,10 +179,14 @@ public class JavaBridgeActivityTestRule extends ContentShellActivityTestRule {
         onPageFinishedHelper.waitForCallback(currentCallCount);
     }
 
-
     @Override
     public Statement apply(Statement base, Description desc) {
-        setUpContentView();
-        return super.apply(base, desc);
+        return super.apply(new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                setUpContentView();
+                base.evaluate();
+            }
+        }, desc);
     }
 }
