@@ -117,19 +117,22 @@ void SilencePhoneQuickActionController::SetItemState(ActionState state) {
       // TODO(1155784): Update disabled view with matching toggle-state colors.
       icon_enabled = dnd_controller_->IsDndEnabled();
       button_enabled = false;
-      state_text_id = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_DISABLED_STATE_TOOLTIP;
+      state_text_id = IDS_ASH_PHONE_HUB_SILENCE_BUTTON_NOT_AVAILABLE_TOOLTIP;
       sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_AVAILABLE_STATE;
   }
 
   item_->SetEnabled(button_enabled);
   item_->SetToggled(icon_enabled);
   item_->SetSubLabel(l10n_util::GetStringUTF16(sub_label_text));
-  base::string16 tooltip_state =
-      l10n_util::GetStringFUTF16(state_text_id, item_->GetItemLabel());
-  item_->SetIconTooltip(
-      l10n_util::GetStringFUTF16(IDS_ASH_PHONE_HUB_QUICK_ACTIONS_TOGGLE_TOOLTIP,
-                                 item_->GetItemLabel(), tooltip_state));
-
+  if (state == ActionState::kDisabled) {
+    item_->SetIconTooltip(l10n_util::GetStringUTF16(state_text_id));
+  } else {
+    base::string16 tooltip_state =
+        l10n_util::GetStringFUTF16(state_text_id, item_->GetItemLabel());
+    item_->SetIconTooltip(l10n_util::GetStringFUTF16(
+        IDS_ASH_PHONE_HUB_QUICK_ACTIONS_TOGGLE_TOOLTIP, item_->GetItemLabel(),
+        tooltip_state));
+  }
   for (auto& observer : observer_list_)
     observer.OnSilencePhoneItemStateChanged();
 }
