@@ -210,6 +210,10 @@ Polymer({
     });
 
     assert(this.selectedItems.size === 0);
+
+    IronA11yAnnouncer.requestAvailability();
+    this.fire(
+        'iron-announce', {text: loadTimeData.getString('itemsUnselected')});
   },
 
   /** @return {number} */

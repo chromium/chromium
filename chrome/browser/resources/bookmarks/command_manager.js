@@ -407,6 +407,10 @@ export const CommandManager = Polymer({
         break;
       case Command.DESELECT_ALL:
         this.dispatch(deselectItems());
+        IronA11yAnnouncer.requestAvailability();
+        this.fire('iron-announce', {
+          text: loadTimeData.getString('itemsUnselected'),
+        });
         break;
       case Command.CUT:
         chrome.bookmarkManagerPrivate.cut(Array.from(itemIds));

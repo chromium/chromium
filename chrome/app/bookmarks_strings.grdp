@@ -427,6 +427,9 @@
   <message name="IDS_BOOKMARK_MANAGER_ITEMS_SELECTED" desc="Label displayed in bookmark manager toolbar telling the user how many items they have selected.">
     <ph name="NUMBER_OF_ITEMS_SELECTED">$1</ph> selected
   </message>
+  <message name="IDS_BOOKMARK_MANAGER_ITEMS_UNSELECTED" desc="Message screen readers read out when unselecting all bookmarks and folders.">
+    All items unselected, selection mode exited.
+  </message>
   <message name="IDS_BOOKMARK_MANAGER_SIDEBAR_AX_LABEL" desc="Message announced by screenreaders for the bookmark manager sidebar.">
     Bookmark folder tree
   </message>

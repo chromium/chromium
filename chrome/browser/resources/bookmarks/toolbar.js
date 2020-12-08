@@ -99,7 +99,10 @@ Polymer({
 
   /** @private */
   onClearSelectionTap_() {
-    this.dispatch(deselectItems());
+    const commandManager = CommandManager.getInstance();
+    assert(
+        commandManager.canExecute(Command.DESELECT_ALL, this.selectedItems_));
+    commandManager.handle(Command.DESELECT_ALL, this.selectedItems_);
   },
 
   /**
