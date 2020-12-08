@@ -14,9 +14,13 @@
 class AutocompleteResult;
 class PrefService;
 
+namespace bookmarks {
+class BookmarkModel;
+}  // namespace bookmarks
+
 namespace gfx {
 struct VectorIcon;
-}
+}  // namespace gfx
 
 namespace omnibox {
 
@@ -42,11 +46,13 @@ std::string AutocompleteMatchVectorIconToResourceName(
     const gfx::VectorIcon& icon);
 
 std::vector<search::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
-    const AutocompleteResult& result);
+    const AutocompleteResult& result,
+    bookmarks::BookmarkModel* bookmark_model);
 
 search::mojom::AutocompleteResultPtr CreateAutocompleteResult(
     const base::string16& input,
     const AutocompleteResult& result,
+    bookmarks::BookmarkModel* bookmark_model,
     PrefService* prefs);
 
 }  // namespace omnibox

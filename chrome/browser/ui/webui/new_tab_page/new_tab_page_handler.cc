@@ -1407,7 +1407,9 @@ void NewTabPageHandler::OnResultChanged(AutocompleteController* controller,
 
   page_->AutocompleteResultChanged(omnibox::CreateAutocompleteResult(
       autocomplete_controller_->input().text(),
-      autocomplete_controller_->result(), profile_->GetPrefs()));
+      autocomplete_controller_->result(),
+      BookmarkModelFactory::GetForBrowserContext(profile_),
+      profile_->GetPrefs()));
 
   // Clear pending bitmap requests before requesting new ones.
   for (auto bitmap_request_id : bitmap_request_ids_) {

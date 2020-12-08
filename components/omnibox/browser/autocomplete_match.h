@@ -204,6 +204,10 @@ struct AutocompleteMatch {
   // |is_bookmark| is true, returns a bookmark icon rather than what the type
   // would normally determine.  Note that in addition to |type|, the icon chosen
   // may depend on match contents (e.g. Drive |document_type| or |pedal|).
+  // The reason |is_bookmark| is passed as a parameter and is not baked into the
+  // AutocompleteMatch is likely that 1) this info is not used elsewhere in the
+  // Autocomplete machinery except before displaying the match and 2) obtaining
+  // this info is trivially done by calling BookmarkModel::IsBookmarked().
   const gfx::VectorIcon& GetVectorIcon(bool is_bookmark) const;
 #endif
 

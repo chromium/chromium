@@ -452,7 +452,9 @@ void SearchTabHelper::OnResultChanged(AutocompleteController* controller,
 
   ipc_router_.AutocompleteResultChanged(omnibox::CreateAutocompleteResult(
       autocomplete_controller_->input().text(),
-      autocomplete_controller_->result(), profile()->GetPrefs()));
+      autocomplete_controller_->result(),
+      BookmarkModelFactory::GetForBrowserContext(profile()),
+      profile()->GetPrefs()));
 
   BitmapFetcherService* bitmap_fetcher_service =
       BitmapFetcherServiceFactory::GetForBrowserContext(profile());
@@ -741,7 +743,8 @@ void SearchTabHelper::OnDeleteAutocompleteMatchConfirm(
       autocomplete_controller_->Stop(false);
       autocomplete_controller_->DeleteMatch(match);
       matches = omnibox::CreateAutocompleteMatches(
-          autocomplete_controller_->result());
+          autocomplete_controller_->result(),
+          BookmarkModelFactory::GetForBrowserContext(profile()));
     }
   }
 }

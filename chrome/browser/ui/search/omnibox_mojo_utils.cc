@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "chrome/common/search/omnibox.mojom.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -104,7 +105,8 @@ std::string AutocompleteMatchVectorIconToResourceName(
 }
 
 std::vector<search::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
-    const AutocompleteResult& result) {
+    const AutocompleteResult& result,
+    bookmarks::BookmarkModel* bookmark_model) {
   std::vector<search::mojom::AutocompleteMatchPtr> matches;
   for (const AutocompleteMatch& match : result) {
     search::mojom::AutocompleteMatchPtr mojom_match =
@@ -126,8 +128,10 @@ std::vector<search::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
     mojom_match->destination_url = match.destination_url;
     mojom_match->suggestion_group_id = match.suggestion_group_id.value_or(
         SearchSuggestionParser::kNoSuggestionGroupId);
-    mojom_match->icon_url =
-        AutocompleteMatchVectorIconToResourceName(match.GetVectorIcon(false));
+    const bool is_bookmarked =
+        bookmark_model->IsBookmarked(match.destination_url);
+    mojom_match->icon_url = AutocompleteMatchVectorIconToResourceName(
+        match.GetVectorIcon(is_bookmarked));
     mojom_match->image_dominant_color = match.image_dominant_color;
     mojom_match->image_url = match.image_url.spec();
     mojom_match->fill_into_edit = match.fill_into_edit;
@@ -145,10 +149,11 @@ std::vector<search::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
 search::mojom::AutocompleteResultPtr CreateAutocompleteResult(
     const base::string16& input,
     const AutocompleteResult& result,
+    bookmarks::BookmarkModel* bookmark_model,
     PrefService* prefs) {
   return search::mojom::AutocompleteResult::New(
       input, CreateSuggestionGroupsMap(result, prefs, result.headers_map()),
-      CreateAutocompleteMatches(result));
+      CreateAutocompleteMatches(result, bookmark_model));
 }
 
 }  // namespace omnibox
