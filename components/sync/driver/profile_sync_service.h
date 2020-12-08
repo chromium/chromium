@@ -285,10 +285,6 @@ class ProfileSyncService : public SyncService,
 
   bool IsEngineAllowedToRun() const;
 
-  // Same as GetTransportState() returning PAUSED. In this state, the engine
-  // shouldn't run.
-  bool IsInPausedState() const;
-
   // Reconfigures the data type manager with the latest enabled types.
   // Note: Does not initialize the engine if it is not already initialized.
   // If a Sync setup is currently in progress (i.e. a settings UI is open), then

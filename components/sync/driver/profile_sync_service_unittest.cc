@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -327,19 +328,6 @@ class ProfileSyncServiceTest : public ::testing::Test {
   ProfileSyncServiceBundle profile_sync_service_bundle_;
   std::unique_ptr<ProfileSyncService> service_;
   SyncClientMock* sync_client_;  // Owned by |service_|.
-};
-
-class ProfileSyncServiceTestWithStopSyncInPausedState
-    : public ProfileSyncServiceTest {
- public:
-  ProfileSyncServiceTestWithStopSyncInPausedState() {
-    override_features_.InitAndEnableFeature(switches::kStopSyncInPausedState);
-  }
-
-  ~ProfileSyncServiceTestWithStopSyncInPausedState() override = default;
-
- private:
-  base::test::ScopedFeatureList override_features_;
 };
 
 class ProfileSyncServiceTestWithSyncInvalidationsServiceCreated
@@ -807,7 +795,7 @@ TEST_F(ProfileSyncServiceTest, RevokeAccessTokenFromTokenService) {
   EXPECT_CALL(*component_factory(), CreateSyncEngine)
       .WillOnce(
           Return(ByMove(std::make_unique<FakeSyncEngineCollectCredentials>(
-              &init_account_id, base::RepeatingClosure()))));
+              &init_account_id, base::DoNothing()))));
   InitializeForNthSync();
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
@@ -840,9 +828,6 @@ TEST_F(ProfileSyncServiceTest, RevokeAccessTokenFromTokenService) {
 // Checks that CREDENTIALS_REJECTED_BY_CLIENT resets the access token and stops
 // Sync. Regression test for https://crbug.com/824791.
 TEST_F(ProfileSyncServiceTest, CredentialsRejectedByClient_StopSync) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(switches::kStopSyncInPausedState);
-
   CoreAccountId init_account_id;
 
   SignIn();
@@ -850,7 +835,7 @@ TEST_F(ProfileSyncServiceTest, CredentialsRejectedByClient_StopSync) {
   EXPECT_CALL(*component_factory(), CreateSyncEngine)
       .WillOnce(
           Return(ByMove(std::make_unique<FakeSyncEngineCollectCredentials>(
-              &init_account_id, base::RepeatingClosure()))));
+              &init_account_id, base::DoNothing()))));
   InitializeForNthSync();
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
@@ -898,70 +883,6 @@ TEST_F(ProfileSyncServiceTest, CredentialsRejectedByClient_StopSync) {
   service()->RemoveObserver(&observer);
 }
 
-TEST_F(ProfileSyncServiceTest, CredentialsRejectedByClient_DoNotStopSync) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(switches::kStopSyncInPausedState);
-
-  CoreAccountId init_account_id;
-
-  bool invalidate_credentials_called = false;
-  base::RepeatingClosure invalidate_credentials_callback =
-      base::BindRepeating([](bool* called) { *called = true; },
-                          base::Unretained(&invalidate_credentials_called));
-
-  SignIn();
-  CreateService(ProfileSyncService::MANUAL_START);
-  EXPECT_CALL(*component_factory(), CreateSyncEngine)
-      .WillOnce(
-          Return(ByMove(std::make_unique<FakeSyncEngineCollectCredentials>(
-              &init_account_id, invalidate_credentials_callback))));
-  InitializeForNthSync();
-  ASSERT_EQ(SyncService::TransportState::ACTIVE,
-            service()->GetTransportState());
-
-  TestSyncServiceObserver observer;
-  service()->AddObserver(&observer);
-
-  const CoreAccountId primary_account_id =
-      identity_manager()->GetPrimaryAccountId();
-
-  // Make sure the expected account_id was passed to the SyncEngine.
-  ASSERT_EQ(primary_account_id, init_account_id);
-
-  // At this point, the real SyncEngine would try to connect to the server, fail
-  // (because it has no access token), and eventually call
-  // OnConnectionStatusChange(CONNECTION_AUTH_ERROR). Since our fake SyncEngine
-  // doesn't do any of this, call that explicitly here.
-  service()->OnConnectionStatusChange(CONNECTION_AUTH_ERROR);
-
-  base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(service()->GetAccessTokenForTest().empty());
-  ASSERT_EQ(GoogleServiceAuthError::AuthErrorNone(), service()->GetAuthError());
-  ASSERT_EQ(GoogleServiceAuthError::AuthErrorNone(), observer.auth_error());
-
-  // Simulate the credentials getting locally rejected by the client by setting
-  // the refresh token to a special invalid value.
-  identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
-  const GoogleServiceAuthError rejected_by_client =
-      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-              CREDENTIALS_REJECTED_BY_CLIENT);
-  ASSERT_EQ(rejected_by_client,
-            identity_test_env()
-                ->identity_manager()
-                ->GetErrorStateOfRefreshTokenForAccount(primary_account_id));
-  EXPECT_TRUE(service()->GetAccessTokenForTest().empty());
-  EXPECT_TRUE(invalidate_credentials_called);
-
-  // The observer should have been notified of the auth error state.
-  EXPECT_EQ(rejected_by_client, observer.auth_error());
-  // The Sync engine should still be running.
-  EXPECT_EQ(SyncService::TransportState::ACTIVE,
-            service()->GetTransportState());
-
-  service()->RemoveObserver(&observer);
-}
-
 // CrOS does not support signout.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ProfileSyncServiceTest, SignOutRevokeAccessToken) {
@@ -972,7 +893,7 @@ TEST_F(ProfileSyncServiceTest, SignOutRevokeAccessToken) {
   EXPECT_CALL(*component_factory(), CreateSyncEngine)
       .WillOnce(
           Return(ByMove(std::make_unique<FakeSyncEngineCollectCredentials>(
-              &init_account_id, base::RepeatingClosure()))));
+              &init_account_id, base::DoNothing()))));
   InitializeForNthSync();
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
@@ -1079,7 +1000,7 @@ TEST_F(ProfileSyncServiceTest, CredentialErrorReturned) {
   EXPECT_CALL(*component_factory(), CreateSyncEngine)
       .WillOnce(
           Return(ByMove(std::make_unique<FakeSyncEngineCollectCredentials>(
-              &init_account_id, base::RepeatingClosure()))));
+              &init_account_id, base::DoNothing()))));
   InitializeForNthSync();
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
@@ -1140,7 +1061,7 @@ TEST_F(ProfileSyncServiceTest, CredentialErrorClearsOnNewToken) {
   EXPECT_CALL(*component_factory(), CreateSyncEngine)
       .WillOnce(
           Return(ByMove(std::make_unique<FakeSyncEngineCollectCredentials>(
-              &init_account_id, base::RepeatingClosure()))));
+              &init_account_id, base::DoNothing()))));
   InitializeForNthSync();
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
@@ -1391,8 +1312,7 @@ TEST_F(ProfileSyncServiceTest, GenerateCacheGUID) {
 
 // Regression test for crbug.com/1043642, can be removed once
 // ProfileSyncService usages after shutdown are addressed.
-TEST_F(ProfileSyncServiceTestWithStopSyncInPausedState,
-       ShouldProvideDisableReasonsAfterShutdown) {
+TEST_F(ProfileSyncServiceTest, ShouldProvideDisableReasonsAfterShutdown) {
   SignIn();
   CreateService(ProfileSyncService::MANUAL_START);
   InitializeForFirstSync();

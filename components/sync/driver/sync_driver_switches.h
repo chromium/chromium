@@ -25,7 +25,6 @@ extern const char kSyncIncludeSpecificsInProtocolLog[];
 extern const char kSyncShortInitialRetryOverride[];
 extern const char kSyncShortNudgeDelayForTest[];
 
-extern const base::Feature kStopSyncInPausedState;
 extern const base::Feature
     kSyncAllowWalletDataInTransportModeWithCustomPassphrase;
 extern const base::Feature kSyncAutofillWalletOfferData;

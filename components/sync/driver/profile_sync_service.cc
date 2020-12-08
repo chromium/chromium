@@ -486,12 +486,7 @@ bool ProfileSyncService::IsEngineAllowedToRun() const {
   auto disable_reasons = GetDisableReasons();
   disable_reasons.RemoveAll(SyncService::DisableReasonSet(
       DISABLE_REASON_USER_CHOICE, DISABLE_REASON_PLATFORM_OVERRIDE));
-  return disable_reasons.Empty() && !IsInPausedState();
-}
-
-bool ProfileSyncService::IsInPausedState() const {
-  return auth_manager_->IsSyncPaused() &&
-         base::FeatureList::IsEnabled(switches::kStopSyncInPausedState);
+  return disable_reasons.Empty() && !auth_manager_->IsSyncPaused();
 }
 
 void ProfileSyncService::OnProtocolEvent(const ProtocolEvent& event) {
@@ -788,8 +783,8 @@ SyncService::TransportState ProfileSyncService::GetTransportState() const {
   if (!IsEngineAllowedToRun()) {
     // We generally shouldn't have an engine while in a disabled state, but it
     // can happen if this method gets called during ShutdownImpl().
-    return IsInPausedState() ? TransportState::PAUSED
-                             : TransportState::DISABLED;
+    return auth_manager_->IsSyncPaused() ? TransportState::PAUSED
+                                         : TransportState::DISABLED;
   }
 
   if (!engine_ || !engine_->IsInitialized()) {
