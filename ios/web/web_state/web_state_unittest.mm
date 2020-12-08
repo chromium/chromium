@@ -16,7 +16,6 @@
 #import "ios/net/protocol_handler_util.h"
 #include "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
-#import "ios/web/navigation/wk_based_navigation_manager_impl.h"
 #import "ios/web/navigation/wk_navigation_util.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/navigation/navigation_item.h"

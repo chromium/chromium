@@ -182,7 +182,7 @@ TEST_F(SessionRestorationBrowserAgentTest,
 }
 
 // TODO(crbug.com/888674): This test requires commiting item to
-// WKBasedNavigationManager which is not possible, migrate this to EG test so
+// NavigationManagerImpl which is not possible, migrate this to EG test so
 // it can be tested.
 TEST_F(SessionRestorationBrowserAgentTest, DISABLED_RestoreSessionOnNTPTest) {
   web::WebState* web_state =

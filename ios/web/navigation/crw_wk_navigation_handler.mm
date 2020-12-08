@@ -641,8 +641,8 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   // This is renderer-initiated navigation which was not seen before and
   // should be registered.
 
-  // When using WKBasedNavigationManager, renderer-initiated app-specific loads
-  // should only be allowed in these specific cases:
+  // Renderer-initiated app-specific loads should only be allowed in these
+  // specific cases:
   // 1) if |backForwardList.currentItem| is a placeholder URL for the
   //    provisional load URL (i.e. webView.URL), then this is an in-progress
   //    app-specific load and should not be restarted.

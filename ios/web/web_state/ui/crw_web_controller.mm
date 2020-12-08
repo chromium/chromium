@@ -691,12 +691,11 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   if (!_containerView)
     return;
 
-  // WKBasedNavigationManagerImpl needs WKWebView to load native views, but
-  // WKWebView cannot be created while web usage is disabled to avoid breaking
-  // clearing browser data. Bail now and let the URL be loaded when web
-  // usage is enabled again. This can happen when purging web pages when an
-  // interstitial is presented over a native view. See https://crbug.com/865985
-  // for details.
+  // NavigationManagerImpl needs WKWebView to load native views, but WKWebView
+  // cannot be created while web usage is disabled to avoid breaking clearing
+  // browser data. Bail now and let the URL be loaded when web usage is enabled
+  // again. This can happen when purging web pages when an interstitial is
+  // presented over a native view. See https://crbug.com/865985 for details.
   if (!_webUsageEnabled)
     return;
 

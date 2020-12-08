@@ -8,7 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #import "ios/web/navigation/navigation_context_impl.h"
-#import "ios/web/navigation/wk_based_navigation_manager_impl.h"
+#import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/test/fakes/test_browser_state.h"
 #import "ios/web/test/fakes/crw_fake_back_forward_list.h"
@@ -26,7 +26,7 @@ namespace web {
 class NavigationManagerUtilTest : public PlatformTest {
  protected:
   NavigationManagerUtilTest() {
-    manager_ = std::make_unique<WKBasedNavigationManagerImpl>();
+    manager_ = std::make_unique<NavigationManagerImpl>();
     manager_->SetBrowserState(&browser_state_);
     WKWebView* mock_web_view = OCMClassMock([WKWebView class]);
     mock_wk_list_ = [[CRWFakeBackForwardList alloc] init];

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/navigation/wk_based_navigation_manager_impl.h"
+#import "ios/web/navigation/navigation_manager_impl.h"
 
 #include <WebKit/WebKit.h>
 #include <memory>
@@ -99,10 +99,12 @@ class MockNavigationManagerDelegate : public NavigationManagerDelegate {
   id mock_web_view_;
 };
 
-// Test fixture for WKBasedNavigationManagerImpl.
+// Test fixture for NavigationManagerImpl.
+// TODO(crbug.com/738020): Rename these tests and merge them into
+// navigation_manager_impl_unittest.mm.
 class WKBasedNavigationManagerTest : public PlatformTest {
  protected:
-  WKBasedNavigationManagerTest() : manager_(new WKBasedNavigationManagerImpl) {
+  WKBasedNavigationManagerTest() : manager_(new NavigationManagerImpl) {
     mock_web_view_ = OCMClassMock([WKWebView class]);
     mock_wk_list_ = [[CRWFakeBackForwardList alloc] init];
     OCMStub([mock_web_view_ backForwardList]).andReturn(mock_wk_list_);
@@ -829,7 +831,7 @@ TEST_F(WKBasedNavigationManagerTest, EmptyWindowOpenNavigation) {
   manager_->GoToIndex(0);
 }
 
-// Test fixture for detach from web view mode for WKBasedNavigationManagerImpl.
+// Test fixture for detach from web view mode for NavigationManagerImpl.
 class WKBasedNavigationManagerDetachedModeTest
     : public WKBasedNavigationManagerTest {
  protected:

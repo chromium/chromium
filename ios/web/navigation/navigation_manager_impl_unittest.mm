@@ -13,7 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_manager_delegate.h"
-#import "ios/web/navigation/wk_based_navigation_manager_impl.h"
+#import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/navigation/wk_navigation_util.h"
 #include "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/test/fakes/test_browser_state.h"
@@ -117,7 +117,7 @@ struct ItemInfoToBeRestored {
 class NavigationManagerTest : public PlatformTest {
  protected:
   NavigationManagerTest() {
-    manager_.reset(new WKBasedNavigationManagerImpl);
+    manager_.reset(new NavigationManagerImpl);
     mock_web_view_ = OCMClassMock([WKWebView class]);
     mock_wk_list_ = [[CRWFakeBackForwardList alloc] init];
     OCMStub([mock_web_view_ backForwardList]).andReturn(mock_wk_list_);
@@ -543,11 +543,11 @@ TEST_F(NavigationManagerTest, NotReplaceSameUrlPendingItemIfNotFormSubmission) {
       web::NavigationInitiationType::BROWSER_INITIATED);
   ASSERT_TRUE(navigation_manager()->GetPendingItem());
 
-    // WKBasedNavigationManager assumes that AddPendingItem() is only called for
-    // new navigation, so it always creates a new pending item.
-    EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
-        navigation_manager()->GetPendingItem()->GetTransitionType(),
-        ui::PAGE_TRANSITION_LINK));
+  // NavigationManagerImpl assumes that AddPendingItem() is only called for
+  // new navigation, so it always creates a new pending item.
+  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
+      navigation_manager()->GetPendingItem()->GetTransitionType(),
+      ui::PAGE_TRANSITION_LINK));
   EXPECT_EQ(0, navigation_manager()->GetItemCount());
 }
 
@@ -596,11 +596,11 @@ TEST_F(NavigationManagerTest, NotReplaceSameUrlPendingItemIfOverrideInherit) {
 
   ASSERT_TRUE(navigation_manager()->GetPendingItem());
 
-    // WKBasedNavigationManager assumes that AddPendingItem() is only called for
-    // new navigation, so it always creates a new pending item.
-    EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
-        navigation_manager()->GetPendingItem()->GetTransitionType(),
-        ui::PAGE_TRANSITION_LINK));
+  // NavigationManagerImpl assumes that AddPendingItem() is only called for
+  // new navigation, so it always creates a new pending item.
+  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
+      navigation_manager()->GetPendingItem()->GetTransitionType(),
+      ui::PAGE_TRANSITION_LINK));
   EXPECT_EQ(0, navigation_manager()->GetItemCount());
 }
 
@@ -701,7 +701,7 @@ TEST_F(NavigationManagerTest, NotAddSameUrlPendingItemIfNotFormSubmission) {
       existing_url, Referrer(), ui::PAGE_TRANSITION_LINK,
       web::NavigationInitiationType::BROWSER_INITIATED);
 
-  // WKBasedNavigationManager assumes that AddPendingItem() is only called for
+  // NavigationManagerImpl assumes that AddPendingItem() is only called for
   // new navigation, so it always creates a new pending item.
   ASSERT_TRUE(navigation_manager()->GetPendingItem());
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
@@ -761,7 +761,7 @@ TEST_F(NavigationManagerTest, NotAddSameUrlPendingItemIfOverrideInherit) {
       existing_url, Referrer(), ui::PAGE_TRANSITION_LINK,
       web::NavigationInitiationType::BROWSER_INITIATED);
 
-  // WKBasedNavigationManager assumes that AddPendingItem() is only called for
+  // NavigationManagerImpl assumes that AddPendingItem() is only called for
   // new navigation, so it always creates a new pending item.
   ASSERT_TRUE(navigation_manager()->GetPendingItem());
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
@@ -1341,7 +1341,7 @@ TEST_F(NavigationManagerTest, Restore) {
     restore_done = true;
   }));
 
-  // Session restore is asynchronous for WKBasedNavigationManager.
+  // Session restore is asynchronous.
   ASSERT_TRUE(navigation_manager()->IsRestoreSessionInProgress());
   ASSERT_FALSE(restore_done);
 

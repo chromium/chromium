@@ -123,7 +123,7 @@ class NavigationItemImpl : public web::NavigationItem {
   // doesn't specify a title.
   static base::string16 GetDisplayTitleForURL(const GURL& url);
 
-  // Used only by WKBasedNavigationManager.  SetUntrusted() is only used for
+  // Used only by NavigationManagerImpl.  SetUntrusted() is only used for
   // Visible or LastCommitted NavigationItems where the |url_| may be incorrect
   // due to timining problems or bugs in WKWebView.
   void SetUntrusted();
@@ -170,7 +170,7 @@ class NavigationItemImpl : public web::NavigationItem {
   // |ResetForCommit| and not persisted.
   web::NavigationInitiationType navigation_initiation_type_;
 
-  // Used only by WKBasedNavigationManager.  |is_untrusted_| is only |true| for
+  // Used only by NavigationManagerImpl.  |is_untrusted_| is only |true| for
   // Visible or LastCommitted NavigationItems where the |url_| may be incorrect
   // due to timining problems or bugs in WKWebView.
   bool is_untrusted_;

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 //
 // This file contains utility functions for creating and managing magic URLs
-// used to implement WKBasedNavigationManagerImpl.
+// used to implement NavigationManagerImpl.
 //
 // A restore session URL is a specific local file that is used to inject history
 // into a new web view. See ios/web/navigation/resources/restore_session.html.
@@ -83,9 +83,8 @@ bool IsRestoreSessionUrl(NSURL* url);
 // the URL fragment with a "targetUrl=" prefix. When this URL is loaded in the
 // web view, it executes a client-side redirect to |target_url|. This results in
 // a new navigation entry and prunes forward navigation history. This URL is
-// used by WKBasedNavigationManagerImpl to reload a page with user agent
-// override, as reloading |target_url| directly doesn't create a new navigation
-// entry.
+// used by NavigationManagerImpl to reload a page with user agent override,
+// as reloading |target_url| directly doesn't create a new navigation entry.
 GURL CreateRedirectUrl(const GURL& target_url);
 
 // Extracts the URL encoded in the URL fragment of |restore_session_url| to

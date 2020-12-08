@@ -364,7 +364,7 @@ TEST_F(HistoryStateOperationsTest, StateReplacementBackForward) {
     navigation_manager()->GoBack();
   }));
 
-  // WebKit doesn't trigger onload on back. WKBasedNavigationManager inherits
+  // WebKit doesn't trigger onload on back. NavigationManagerImpl inherits
   // this behavior.
   WaitForNoOpText();
 

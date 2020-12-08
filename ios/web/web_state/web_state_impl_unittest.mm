@@ -1095,7 +1095,7 @@ TEST_F(WebStateImplTest, ShowAndClearInterstitialWithNoCommittedItems) {
 // Tests showing and clearing interstitial when NavigationManager has a
 // committed item.
 // TODO(crbug.com/862733): This test requires injecting a committed item to
-// navigation manager, which can't be done with WKBasedNavigationManager.
+// navigation manager, which can't be done with NavigationManagerImpl.
 // Re-enable this test after switching to TestNavigationManager.
 TEST_F(WebStateImplTest, DISABLED_ShowAndClearInterstitialWithCommittedItem) {
   // Add SECURITY_STYLE_AUTHENTICATED committed item to navigation manager.
@@ -1129,7 +1129,7 @@ TEST_F(WebStateImplTest, DISABLED_ShowAndClearInterstitialWithCommittedItem) {
 // Tests showing and clearing interstitial when visible SSL status does not
 // change.
 // TODO(crbug.com/862733): This test requires injecting a committed item to
-// navigation manager, which can't be done with WKBasedNavigationManager.
+// navigation manager, which can't be done with NavigationManagerImpl.
 // Re-enable this test after switching to TestNavigationManager.
 TEST_F(WebStateImplTest,
        DISABLED_ShowAndClearInterstitialWithoutChangingSslStatus) {

@@ -400,14 +400,13 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 
   [ChromeEarlGrey waitForPageToFinishLoading];
 
-    // WKBasedNavigationManager displays repost on |reload|. So after
-    // cancelling, web view should show |destinationURL|.
-    [ChromeEarlGrey waitForWebStateContainingText:kDestinationText];
-    [[EarlGrey
-        selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
-        assertWithMatcher:grey_notNil()];
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
-        assertWithMatcher:grey_interactable()];
+  // NavigationManagerImpl displays repost on |reload|. So after
+  // cancelling, web view should show |destinationURL|.
+  [ChromeEarlGrey waitForWebStateContainingText:kDestinationText];
+  [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+      assertWithMatcher:grey_interactable()];
 }
 
 // A new navigation dismisses the repost dialog.
