@@ -113,12 +113,6 @@ void SetAssistantPrivacyInfoShownCount(int count) {
   prefs->SetInteger(prefs::kAssistantPrivacyInfoShownInLauncher, count);
 }
 
-bool IsAssistantPrivacyInfoDismissed() {
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  return prefs->GetBoolean(prefs::kAssistantPrivacyInfoDismissedInLauncher);
-}
-
 void SetAssistantPrivacyInfoDismissed() {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
@@ -1321,19 +1315,8 @@ bool AppListControllerImpl::IsAssistantAllowedAndEnabled() const {
 }
 
 bool AppListControllerImpl::ShouldShowAssistantPrivacyInfo() const {
-  if (!IsAssistantAllowedAndEnabled())
-    return false;
-
-  if (!app_list_features::IsAssistantSearchEnabled())
-    return false;
-
-  const bool dismissed = IsAssistantPrivacyInfoDismissed();
-  if (dismissed)
-    return false;
-
-  const int count = GetAssistantPrivacyInfoShownCount();
-  constexpr int kThresholdToShow = 6;
-  return count >= 0 && count <= kThresholdToShow;
+  // TODO(b/174506130) completely remove Assistant privacy info in followup.
+  return false;
 }
 
 void AppListControllerImpl::MarkAssistantPrivacyInfoDismissed() {
