@@ -111,7 +111,7 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusSnapshotUpdate) {
   expected_phone_properties->set_profile_type(
       proto::ProfileType::DEFAULT_PROFILE);
   expected_phone_properties->set_notification_access_state(
-      proto::NotificationAccessState::ACCESS_GRANTED);
+      proto::NotificationAccessState::ACCESS_NOT_GRANTED);
   expected_phone_properties->set_ring_status(
       proto::FindMyDeviceRingStatus::RINGING);
   expected_phone_properties->set_battery_percentage(24u);
@@ -142,7 +142,8 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusSnapshotUpdate) {
   EXPECT_TRUE(fake_do_not_disturb_controller_->CanRequestNewDndState());
   EXPECT_EQ(FindMyDeviceController::Status::kRingingOn,
             fake_find_my_device_controller_->GetPhoneRingingStatus());
-  EXPECT_TRUE(fake_notification_access_manager_->HasAccessBeenGranted());
+  EXPECT_EQ(NotificationAccessManager::AccessStatus::kAvailableButNotGranted,
+            fake_notification_access_manager_->GetAccessStatus());
 
   base::Optional<PhoneStatusModel> phone_status_model =
       mutable_phone_model_->phone_status_model();
@@ -206,7 +207,8 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
   EXPECT_FALSE(fake_do_not_disturb_controller_->CanRequestNewDndState());
   EXPECT_EQ(FindMyDeviceController::Status::kRingingOn,
             fake_find_my_device_controller_->GetPhoneRingingStatus());
-  EXPECT_TRUE(fake_notification_access_manager_->HasAccessBeenGranted());
+  EXPECT_EQ(NotificationAccessManager::AccessStatus::kProhibited,
+            fake_notification_access_manager_->GetAccessStatus());
 
   base::Optional<PhoneStatusModel> phone_status_model =
       mutable_phone_model_->phone_status_model();
@@ -220,18 +222,21 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
   EXPECT_EQ(PhoneStatusModel::MobileStatus::kSimWithReception,
             phone_status_model->mobile_status());
 
-  // Update with one removed notification.
+  // Update with one removed notification and a default profile.
   expected_update.add_removed_notification_ids(0u);
+  expected_update.mutable_properties()->set_profile_type(
+      proto::ProfileType::DEFAULT_PROFILE);
   fake_message_receiver_->NotifyPhoneStatusUpdateReceived(expected_update);
 
   EXPECT_EQ(0u, fake_notification_manager_->num_notifications());
   EXPECT_EQ(base::UTF8ToUTF16(test_remote_device_.name()),
             *mutable_phone_model_->phone_name());
   EXPECT_TRUE(fake_do_not_disturb_controller_->IsDndEnabled());
-  EXPECT_FALSE(fake_do_not_disturb_controller_->CanRequestNewDndState());
+  EXPECT_TRUE(fake_do_not_disturb_controller_->CanRequestNewDndState());
   EXPECT_EQ(FindMyDeviceController::Status::kRingingOn,
             fake_find_my_device_controller_->GetPhoneRingingStatus());
-  EXPECT_TRUE(fake_notification_access_manager_->HasAccessBeenGranted());
+  EXPECT_EQ(NotificationAccessManager::AccessStatus::kAccessGranted,
+            fake_notification_access_manager_->GetAccessStatus());
 
   phone_status_model = mutable_phone_model_->phone_status_model();
   EXPECT_EQ(PhoneStatusModel::ChargingState::kChargingAc,

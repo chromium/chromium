@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_COMPONENTS_PHONEHUB_NOTIFICATION_ACCESS_MANAGER_H_
 #define CHROMEOS_COMPONENTS_PHONEHUB_NOTIFICATION_ACCESS_MANAGER_H_
 
+#include <ostream>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -25,11 +27,25 @@ namespace phonehub {
 // access setup flow via AttemptNotificationSetup().
 class NotificationAccessManager {
  public:
+  // Status of notification access. Numerical values are stored in prefs and
+  // should not be changed or reused.
+  enum class AccessStatus {
+    // Access has not been granted and is prohibited from being granted (e.g.,
+    // if the phone is using a Work Profile).
+    kProhibited = 0,
+
+    // Access has not been granted, but the user is free to grant access.
+    kAvailableButNotGranted = 1,
+
+    // Access has been granted by the user.
+    kAccessGranted = 2
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     ~Observer() override = default;
 
-    // Called when notification access has changed; use HasAccessBeenGranted()
+    // Called when notification access has changed; use GetAccessStatus()
     // for the new status.
     virtual void OnNotificationAccessChanged() = 0;
   };
@@ -39,7 +55,7 @@ class NotificationAccessManager {
       delete;
   virtual ~NotificationAccessManager();
 
-  virtual bool HasAccessBeenGranted() const = 0;
+  virtual AccessStatus GetAccessStatus() const = 0;
 
   virtual bool HasNotificationSetupUiBeenDismissed() const = 0;
 
@@ -77,11 +93,9 @@ class NotificationAccessManager {
   friend class NotificationAccessManagerImplTest;
   friend class PhoneStatusProcessor;
 
-  // This only sets the internal state of the whether notification access has
-  // mode been enabled and does not send a request to set the state of the
-  // remote phone device.
-  virtual void SetHasAccessBeenGrantedInternal(
-      bool has_access_been_granted) = 0;
+  // Sets the internal AccessStatus but does not send a request for a new
+  // status to the remote phone device.
+  virtual void SetAccessStatusInternal(AccessStatus access_status) = 0;
 
   void OnSetupOperationDeleted(int operation_id);
 
@@ -90,6 +104,9 @@ class NotificationAccessManager {
   base::ObserverList<Observer> observer_list_;
   base::WeakPtrFactory<NotificationAccessManager> weak_ptr_factory_{this};
 };
+
+std::ostream& operator<<(std::ostream& stream,
+                         NotificationAccessManager::AccessStatus status);
 
 }  // namespace phonehub
 }  // namespace chromeos

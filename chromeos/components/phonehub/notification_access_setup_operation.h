@@ -48,6 +48,10 @@ class NotificationAccessSetupOperation {
 
     // The user has completed the phone-side opt-in flow.
     kCompletedSuccessfully = 5,
+
+    // The user's phone is prohibited from granting notification access (e.g.,
+    // the user could be using a Work Profile).
+    kProhibitedFromProvidingAccess = 6
   };
 
   // Returns true if the provided status is the final one for this operation,

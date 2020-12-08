@@ -17,7 +17,9 @@ namespace phonehub {
 // static
 void NotificationAccessManagerImpl::RegisterPrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kNotificationAccessGranted, false);
+  registry->RegisterIntegerPref(
+      prefs::kNotificationAccessStatus,
+      static_cast<int>(AccessStatus::kAvailableButNotGranted));
   registry->RegisterBooleanPref(prefs::kHasDismissedSetupRequiredUi, false);
 }
 
@@ -50,25 +52,40 @@ void NotificationAccessManagerImpl::DismissSetupRequiredUi() {
   pref_service_->SetBoolean(prefs::kHasDismissedSetupRequiredUi, true);
 }
 
-bool NotificationAccessManagerImpl::HasAccessBeenGranted() const {
-  return pref_service_->GetBoolean(prefs::kNotificationAccessGranted);
+NotificationAccessManagerImpl::AccessStatus
+NotificationAccessManagerImpl::GetAccessStatus() const {
+  int status = pref_service_->GetInteger(prefs::kNotificationAccessStatus);
+  return static_cast<AccessStatus>(status);
 }
 
-void NotificationAccessManagerImpl::SetHasAccessBeenGrantedInternal(
-    bool has_access_been_granted) {
-  if (has_access_been_granted == HasAccessBeenGranted())
+void NotificationAccessManagerImpl::SetAccessStatusInternal(
+    AccessStatus access_status) {
+  if (access_status == GetAccessStatus())
     return;
 
-  PA_LOG(INFO) << "Notification access state has been set to: "
-               << has_access_been_granted;
+  PA_LOG(INFO) << "Notification access: " << GetAccessStatus() << " => "
+               << access_status;
 
-  pref_service_->SetBoolean(prefs::kNotificationAccessGranted,
-                            has_access_been_granted);
+  pref_service_->SetInteger(prefs::kNotificationAccessStatus,
+                            static_cast<int>(access_status));
   NotifyNotificationAccessChanged();
 
-  if (IsSetupOperationInProgress() && has_access_been_granted) {
-    SetNotificationSetupOperationStatus(
-        NotificationAccessSetupOperation::Status::kCompletedSuccessfully);
+  if (!IsSetupOperationInProgress())
+    return;
+
+  switch (access_status) {
+    case AccessStatus::kProhibited:
+      SetNotificationSetupOperationStatus(
+          NotificationAccessSetupOperation::Status::
+              kProhibitedFromProvidingAccess);
+      break;
+    case AccessStatus::kAccessGranted:
+      SetNotificationSetupOperationStatus(
+          NotificationAccessSetupOperation::Status::kCompletedSuccessfully);
+      break;
+    case AccessStatus::kAvailableButNotGranted:
+      // Intentionally blank; the operation status should not change.
+      break;
   }
 }
 

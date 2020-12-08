@@ -8,9 +8,11 @@ namespace chromeos {
 namespace phonehub {
 namespace prefs {
 
-// Whether notification access had been granted by the user on their phone.
-const char kNotificationAccessGranted[] =
-    "cros.phonehub.notification_access_granted";
+// The last provided notification access status provided by the phone. This pref
+// stores the numerical value associated with the
+// NotificationAccessManager::AccessStatus enum.
+const char kNotificationAccessStatus[] =
+    "cros.phonehub.notification_access_status";
 
 // Whether user has completed onboarding and dismissed the UI before or if
 // the user has already gone through the onboarding process and has enabled the

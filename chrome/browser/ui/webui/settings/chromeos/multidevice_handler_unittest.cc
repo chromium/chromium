@@ -158,7 +158,8 @@ class MultideviceHandlerTest : public testing::Test {
         std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
     fake_notification_access_manager_ =
         std::make_unique<phonehub::FakeNotificationAccessManager>(
-            /*has_access_been_granted=*/false);
+            phonehub::NotificationAccessManager::AccessStatus::
+                kAvailableButNotGranted);
     fake_android_sms_pairing_state_tracker_ = std::make_unique<
         multidevice_setup::FakeAndroidSmsPairingStateTracker>();
     fake_android_sms_app_manager_ =
@@ -227,8 +228,11 @@ class MultideviceHandlerTest : public testing::Test {
   }
 
   void CallAttemptNotificationSetup(bool has_access_been_granted) {
-    fake_notification_access_manager()->SetHasAccessBeenGrantedInternal(
-        has_access_been_granted);
+    fake_notification_access_manager()->SetAccessStatusInternal(
+        has_access_been_granted
+            ? phonehub::NotificationAccessManager::AccessStatus::kAccessGranted
+            : phonehub::NotificationAccessManager::AccessStatus::
+                  kAvailableButNotGranted);
     base::ListValue empty_args;
     test_web_ui()->HandleReceivedMessage("attemptNotificationSetup",
                                          &empty_args);

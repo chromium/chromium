@@ -73,9 +73,9 @@ class NotificationAccessManagerImplTest : public testing::Test {
 
   void TearDown() override { manager_->RemoveObserver(&fake_observer_); }
 
-  void Initialize(bool initial_has_access_been_granted) {
-    pref_service_.SetBoolean(prefs::kNotificationAccessGranted,
-                             initial_has_access_been_granted);
+  void Initialize(NotificationAccessManager::AccessStatus expected_status) {
+    pref_service_.SetInteger(prefs::kNotificationAccessStatus,
+                             static_cast<int>(expected_status));
     manager_ = std::make_unique<NotificationAccessManagerImpl>(
         &pref_service_, fake_feature_status_provider_.get(),
         fake_message_sender_.get(), fake_connection_scheduler_.get());
@@ -87,10 +87,11 @@ class NotificationAccessManagerImplTest : public testing::Test {
     return fake_delegate_.status();
   }
 
-  void VerifyNotificationAccessGrantedState(bool expected_value) {
-    EXPECT_EQ(expected_value,
-              pref_service_.GetBoolean(prefs::kNotificationAccessGranted));
-    EXPECT_EQ(expected_value, manager_->HasAccessBeenGranted());
+  void VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus expected_status) {
+    EXPECT_EQ(static_cast<int>(expected_status),
+              pref_service_.GetInteger(prefs::kNotificationAccessStatus));
+    EXPECT_EQ(expected_status, manager_->GetAccessStatus());
   }
 
   bool HasNotificationSetupUiBeenDismissed() {
@@ -107,8 +108,8 @@ class NotificationAccessManagerImplTest : public testing::Test {
     return manager_->IsSetupOperationInProgress();
   }
 
-  void SetHasAccessBeenGrantedInternal(bool has_access_been_granted) {
-    manager_->SetHasAccessBeenGrantedInternal(has_access_been_granted);
+  void SetAccessStatusInternal(NotificationAccessManager::AccessStatus status) {
+    manager_->SetAccessStatusInternal(status);
   }
 
   void SetFeatureStatus(FeatureStatus status) {
@@ -143,12 +144,12 @@ class NotificationAccessManagerImplTest : public testing::Test {
 TEST_F(NotificationAccessManagerImplTest, ShouldShowSetupRequiredUi) {
   // Notification setup is not dismissed initially even when access has been
   // granted.
-  Initialize(/*initial_has_access_been_granted=*/true);
+  Initialize(NotificationAccessManager::AccessStatus::kAccessGranted);
   EXPECT_FALSE(HasNotificationSetupUiBeenDismissed());
 
   // Notification setup is not dismissed initially when access has not been
   // granted.
-  Initialize(/*initial_has_access_been_granted=*/false);
+  Initialize(NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
   EXPECT_FALSE(HasNotificationSetupUiBeenDismissed());
 
   // Simlulate dismissal of UI.
@@ -156,17 +157,18 @@ TEST_F(NotificationAccessManagerImplTest, ShouldShowSetupRequiredUi) {
   EXPECT_TRUE(HasNotificationSetupUiBeenDismissed());
 
   // Dismissal value is persisted on initialization with access not granted.
-  Initialize(/*initial_has_access_been_granted=*/false);
+  Initialize(NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
   EXPECT_TRUE(HasNotificationSetupUiBeenDismissed());
 
   // Dismissal value is persisted on initialization with access granted.
-  Initialize(/*initial_has_access_been_granted=*/true);
+  Initialize(NotificationAccessManager::AccessStatus::kAccessGranted);
   EXPECT_TRUE(HasNotificationSetupUiBeenDismissed());
 }
 
 TEST_F(NotificationAccessManagerImplTest, InitiallyGranted) {
-  Initialize(/*initial_has_access_been_granted=*/true);
-  VerifyNotificationAccessGrantedState(/*expected_value=*/true);
+  Initialize(NotificationAccessManager::AccessStatus::kAccessGranted);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kAccessGranted);
 
   // Cannot start the notification access setup flow if access has already been
   // granted.
@@ -175,8 +177,9 @@ TEST_F(NotificationAccessManagerImplTest, InitiallyGranted) {
 }
 
 TEST_F(NotificationAccessManagerImplTest, OnFeatureStatusChanged) {
-  Initialize(/*initial_has_access_been_granted=*/false);
-  VerifyNotificationAccessGrantedState(/*expected_value=*/false);
+  Initialize(NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
 
   // Set initial state to disconnected.
   SetFeatureStatus(FeatureStatus::kEnabledButDisconnected);
@@ -210,8 +213,9 @@ TEST_F(NotificationAccessManagerImplTest, StartDisconnectedAndNoAccess) {
   // Set initial state to disconnected.
   SetFeatureStatus(FeatureStatus::kEnabledButDisconnected);
 
-  Initialize(/*initial_has_access_been_granted=*/false);
-  VerifyNotificationAccessGrantedState(/*expected_value=*/false);
+  Initialize(NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
 
   // Start a setup operation with enabled but disconnected status and access
   // not granted.
@@ -231,18 +235,56 @@ TEST_F(NotificationAccessManagerImplTest, StartDisconnectedAndNoAccess) {
             GetNotifcationAccessSetupOperationStatus());
 
   // Simulate getting a response back from the phone.
-  SetHasAccessBeenGrantedInternal(/*has_access_been_granted=*/true);
-  VerifyNotificationAccessGrantedState(/*expected_value=*/true);
+  SetAccessStatusInternal(
+      NotificationAccessManager::AccessStatus::kAccessGranted);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kAccessGranted);
   EXPECT_EQ(NotificationAccessSetupOperation::Status::kCompletedSuccessfully,
             GetNotifcationAccessSetupOperationStatus());
+}
+
+TEST_F(NotificationAccessManagerImplTest,
+       StartDisconnectedAndNoAccess_Prohibited) {
+  // Set initial state to disconnected.
+  SetFeatureStatus(FeatureStatus::kEnabledButDisconnected);
+
+  Initialize(NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
+
+  // Start a setup operation with enabled but disconnected status and access
+  // not granted.
+  auto operation = StartSetupOperation();
+  EXPECT_TRUE(operation);
+  EXPECT_EQ(1u, GetNumScheduleConnectionNowCalls());
+
+  // Simulate changing states from connecting to connected.
+  SetFeatureStatus(FeatureStatus::kEnabledAndConnecting);
+  SetFeatureStatus(FeatureStatus::kEnabledAndConnected);
+
+  // Verify that the request message has been sent and our operation status
+  // is updated.
+  EXPECT_EQ(1u, GetNumShowNotificationAccessSetupRequestCount());
+  EXPECT_EQ(NotificationAccessSetupOperation::Status::
+                kSentMessageToPhoneAndWaitingForResponse,
+            GetNotifcationAccessSetupOperationStatus());
+
+  // Simulate getting a response back from the phone.
+  SetAccessStatusInternal(NotificationAccessManager::AccessStatus::kProhibited);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kProhibited);
+  EXPECT_EQ(
+      NotificationAccessSetupOperation::Status::kProhibitedFromProvidingAccess,
+      GetNotifcationAccessSetupOperationStatus());
 }
 
 TEST_F(NotificationAccessManagerImplTest, StartConnectingAndNoAccess) {
   // Set initial state to connecting.
   SetFeatureStatus(FeatureStatus::kEnabledAndConnecting);
 
-  Initialize(/*initial_has_access_been_granted=*/false);
-  VerifyNotificationAccessGrantedState(/*expected_value=*/false);
+  Initialize(NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
 
   // Start a setup operation with enabled and connecting status and access
   // not granted.
@@ -260,8 +302,10 @@ TEST_F(NotificationAccessManagerImplTest, StartConnectingAndNoAccess) {
             GetNotifcationAccessSetupOperationStatus());
 
   // Simulate getting a response back from the phone.
-  SetHasAccessBeenGrantedInternal(/*has_access_been_granted=*/true);
-  VerifyNotificationAccessGrantedState(/*expected_value=*/true);
+  SetAccessStatusInternal(
+      NotificationAccessManager::AccessStatus::kAccessGranted);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kAccessGranted);
   EXPECT_EQ(NotificationAccessSetupOperation::Status::kCompletedSuccessfully,
             GetNotifcationAccessSetupOperationStatus());
 }
@@ -270,8 +314,9 @@ TEST_F(NotificationAccessManagerImplTest, StartConnectedAndNoAccess) {
   // Set initial state to connected.
   SetFeatureStatus(FeatureStatus::kEnabledAndConnected);
 
-  Initialize(/*initial_has_access_been_granted=*/false);
-  VerifyNotificationAccessGrantedState(/*expected_value=*/false);
+  Initialize(NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
 
   // Start a setup operation with enabled and connected status and access
   // not granted.
@@ -286,8 +331,10 @@ TEST_F(NotificationAccessManagerImplTest, StartConnectedAndNoAccess) {
             GetNotifcationAccessSetupOperationStatus());
 
   // Simulate getting a response back from the phone.
-  SetHasAccessBeenGrantedInternal(/*has_access_been_granted=*/true);
-  VerifyNotificationAccessGrantedState(/*expected_value=*/true);
+  SetAccessStatusInternal(
+      NotificationAccessManager::AccessStatus::kAccessGranted);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kAccessGranted);
   EXPECT_EQ(NotificationAccessSetupOperation::Status::kCompletedSuccessfully,
             GetNotifcationAccessSetupOperationStatus());
 }
@@ -296,8 +343,9 @@ TEST_F(NotificationAccessManagerImplTest, SimulateConnectingToDisconnected) {
   // Set initial state to connecting.
   SetFeatureStatus(FeatureStatus::kEnabledAndConnecting);
 
-  Initialize(/*initial_has_access_been_granted=*/false);
-  VerifyNotificationAccessGrantedState(/*expected_value=*/false);
+  Initialize(NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
 
   auto operation = StartSetupOperation();
   EXPECT_TRUE(operation);
@@ -312,8 +360,9 @@ TEST_F(NotificationAccessManagerImplTest, SimulateConnectedToDisconnected) {
   // Simulate connected state.
   SetFeatureStatus(FeatureStatus::kEnabledAndConnected);
 
-  Initialize(/*initial_has_access_been_granted=*/false);
-  VerifyNotificationAccessGrantedState(/*expected_value=*/false);
+  Initialize(NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
 
   auto operation = StartSetupOperation();
   EXPECT_TRUE(operation);
@@ -330,8 +379,9 @@ TEST_F(NotificationAccessManagerImplTest, SimulateConnectedToDisabled) {
   // Simulate connected state.
   SetFeatureStatus(FeatureStatus::kEnabledAndConnected);
 
-  Initialize(/*initial_has_access_been_granted=*/false);
-  VerifyNotificationAccessGrantedState(/*expected_value=*/false);
+  Initialize(NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
 
   auto operation = StartSetupOperation();
   EXPECT_TRUE(operation);
@@ -345,12 +395,27 @@ TEST_F(NotificationAccessManagerImplTest, SimulateConnectedToDisabled) {
 }
 
 TEST_F(NotificationAccessManagerImplTest, FlipAccessGrantedToNotGranted) {
-  Initialize(/*initial_has_access_been_granted=*/true);
-  VerifyNotificationAccessGrantedState(/*expected_value=*/true);
+  Initialize(NotificationAccessManager::AccessStatus::kAccessGranted);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kAccessGranted);
 
   // Simulate flipping the access state to no granted.
-  SetHasAccessBeenGrantedInternal(/*has_access_been_granted=*/false);
-  VerifyNotificationAccessGrantedState(/*expected_value=*/false);
+  SetAccessStatusInternal(
+      NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
 }
+
+TEST_F(NotificationAccessManagerImplTest, FlipAccessGrantedToProhibited) {
+  Initialize(NotificationAccessManager::AccessStatus::kAccessGranted);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kAccessGranted);
+
+  // Simulate flipping the access state to prohibited.
+  SetAccessStatusInternal(NotificationAccessManager::AccessStatus::kProhibited);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kProhibited);
+}
+
 }  // namespace phonehub
 }  // namespace chromeos

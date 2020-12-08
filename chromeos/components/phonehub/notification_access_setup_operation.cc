@@ -16,11 +16,13 @@ namespace {
 // Status values which are considered "final" - i.e., once the status of an
 // operation changes to one of these values, the operation has completed. These
 // status values indicate either a success or a fatal error.
-constexpr std::array<NotificationAccessSetupOperation::Status, 3>
+constexpr std::array<NotificationAccessSetupOperation::Status, 4>
     kOperationFinishedStatus{
         NotificationAccessSetupOperation::Status::kTimedOutConnecting,
         NotificationAccessSetupOperation::Status::kConnectionDisconnected,
         NotificationAccessSetupOperation::Status::kCompletedSuccessfully,
+        NotificationAccessSetupOperation::Status::
+            kProhibitedFromProvidingAccess,
     };
 
 }  // namespace
@@ -65,6 +67,10 @@ std::ostream& operator<<(std::ostream& stream,
       break;
     case NotificationAccessSetupOperation::Status::kCompletedSuccessfully:
       stream << "[Completed successfully]";
+      break;
+    case NotificationAccessSetupOperation::Status::
+        kProhibitedFromProvidingAccess:
+      stream << "[Prohibited from providing access]";
       break;
   }
 

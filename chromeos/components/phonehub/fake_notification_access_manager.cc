@@ -8,22 +8,23 @@ namespace chromeos {
 namespace phonehub {
 
 FakeNotificationAccessManager::FakeNotificationAccessManager(
-    bool has_access_been_granted)
-    : has_access_been_granted_(has_access_been_granted) {}
+    AccessStatus access_status)
+    : access_status_(access_status) {}
 
 FakeNotificationAccessManager::~FakeNotificationAccessManager() = default;
 
-void FakeNotificationAccessManager::SetHasAccessBeenGrantedInternal(
-    bool has_access_been_granted) {
-  if (has_access_been_granted_ == has_access_been_granted)
+void FakeNotificationAccessManager::SetAccessStatusInternal(
+    AccessStatus access_status) {
+  if (access_status_ == access_status)
     return;
 
-  has_access_been_granted_ = has_access_been_granted;
+  access_status_ = access_status;
   NotifyNotificationAccessChanged();
 }
 
-bool FakeNotificationAccessManager::HasAccessBeenGranted() const {
-  return has_access_been_granted_;
+NotificationAccessManager::AccessStatus
+FakeNotificationAccessManager::GetAccessStatus() const {
+  return access_status_;
 }
 
 bool FakeNotificationAccessManager::HasNotificationSetupUiBeenDismissed()
@@ -41,9 +42,17 @@ void FakeNotificationAccessManager::ResetHasNotificationSetupUiBeenDismissed() {
 
 void FakeNotificationAccessManager::SetNotificationSetupOperationStatus(
     NotificationAccessSetupOperation::Status new_status) {
-  if (new_status ==
-      NotificationAccessSetupOperation::Status::kCompletedSuccessfully) {
-    SetHasAccessBeenGrantedInternal(true);
+  switch (new_status) {
+    case NotificationAccessSetupOperation::Status::kCompletedSuccessfully:
+      SetAccessStatusInternal(AccessStatus::kAccessGranted);
+      break;
+    case NotificationAccessSetupOperation::Status::
+        kProhibitedFromProvidingAccess:
+      SetAccessStatusInternal(AccessStatus::kProhibited);
+      break;
+    default:
+      // Do not update access status based on other operation status values.
+      break;
   }
 
   NotificationAccessManager::SetNotificationSetupOperationStatus(new_status);
