@@ -2711,7 +2711,7 @@ blink::WebLocalFrame* RenderFrameImpl::GetWebFrame() {
 }
 
 const blink::web_pref::WebPreferences& RenderFrameImpl::GetBlinkPreferences() {
-  return render_view_->GetBlinkPreferences();
+  return GetWebFrame()->View()->GetWebPreferences();
 }
 
 const blink::RendererPreferences& RenderFrameImpl::GetRendererPreferences()
@@ -5036,11 +5036,10 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   // This check is very similar to RenderFrameHostImpl::CanCommitOrigin, but
   // adapted to the renderer process side.
   if (!params->origin.opaque() && params->url.IsStandard() &&
-      render_view_->GetBlinkPreferences().web_security_enabled) {
+      GetBlinkPreferences().web_security_enabled) {
     // Exclude file: URLs when settings allow them access any origin.
     if (params->origin.scheme() != url::kFileScheme ||
-        !render_view_->GetBlinkPreferences()
-             .allow_universal_access_from_file_urls) {
+        !GetBlinkPreferences().allow_universal_access_from_file_urls) {
       if (!params->origin.IsSameOriginWith(url::Origin::Create(params->url))) {
         base::debug::CrashKeyString* url = base::debug::AllocateCrashKeyString(
             "mismatched_url", base::debug::CrashKeySize::Size256);

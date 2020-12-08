@@ -176,10 +176,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   blink::WebPagePopup* CreatePopup(blink::WebLocalFrame* creator) override;
   base::StringPiece GetSessionStorageNamespaceId() override;
   void PrintPage(blink::WebLocalFrame* frame) override;
-  void SetValidationMessageDirection(base::string16* main_text,
-                                     base::i18n::TextDirection main_text_hint,
-                                     base::string16* sub_text,
-                                     base::i18n::TextDirection sub_text_hint);
   bool AcceptsLoadDrops() override;
   bool CanUpdateLayout() override;
   void DidUpdateMainFrameLayout() override;
@@ -200,10 +196,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   bool Send(IPC::Message* message) override;
   RenderFrameImpl* GetMainRenderFrame() override;
   int GetRoutingID() override;
-  float GetZoomLevel() override;
-  const blink::web_pref::WebPreferences& GetBlinkPreferences() override;
-  void SetBlinkPreferences(
-      const blink::web_pref::WebPreferences& preferences) override;
   blink::WebView* GetWebView() override;
 
   // Please do not add your stuff randomly to the end here. If there is an
@@ -222,67 +214,15 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
 
  private:
   // For unit tests.
-  friend class DevToolsAgentTest;
-  friend class RenderViewImplScaleFactorTest;
   friend class RenderViewImplTest;
   friend class RenderViewTest;
-  friend class RendererAccessibilityTest;
 
   // TODO(nasko): Temporarily friend RenderFrameImpl, so we don't duplicate
   // utility functions needed in both classes, while we move frame specific
   // code away from this class.
   friend class RenderFrameImpl;
 
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, EmulatingPopupRect);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, RenderFrameMessageAfterDetach);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, BeginNavigationForWebUI);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest,
-                           DidFailProvisionalLoadWithErrorForError);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest,
-                           DidFailProvisionalLoadWithErrorForCancellation);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, ImeComposition);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, InsertCharacters);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, JSBlockSentAfterPageLoad);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, LastCommittedUpdateState);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, OnHandleKeyboardEvent);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, OnImeTypeChanged);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, OnNavStateChanged);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, SetBlinkPreferences);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest,
-                           SetEditableSelectionAndComposition);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, StaleNavigationsIgnored);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest,
-                           DontIgnoreBackAfterNavEntryLimit);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest,
-                           GetCompositionCharacterBoundsTest);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, OnNavigationHttpPost);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, UpdateDSFAfterSwapIn);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest,
-                           BeginNavigationHandlesAllTopLevel);
-#if defined(OS_MAC)
-  FRIEND_TEST_ALL_PREFIXES(RenderViewTest, MacTestCmdUp);
-#endif
   FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, SetHistoryLengthAndOffset);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, NavigateFrame);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, BasicRenderFrame);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, TextInputTypeWithPepper);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest,
-                           MessageOrderInDidChangeSelection);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, SendCandidateWindowEvents);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, RenderFrameClearedAfterClose);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, PaintAfterSwapOut);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest,
-                           SetZoomLevelAfterCrossProcessNavigation);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplScaleFactorTest,
-                           ConverViewportToScreenWithZoomForDSF);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplEnableZoomForDSFTest,
-                           GetCompositionCharacterBoundsTest);
-
-  enum ErrorPageType {
-    DNS_ERROR,
-    HTTP_404,
-    CONNECTION_ERROR,
-  };
 
   // Initialize() is separated out from the constructor because it is possible
   // to accidentally call virtual functions. All RenderViewImpl creation is
@@ -292,15 +232,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
                   mojom::CreateViewParamsPtr params,
                   bool was_created_by_renderer,
                   scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-
-  // Old WebLocalFrameClient implementations
-  // ----------------------------------------
-
-  // RenderViewImpl used to be a WebLocalFrameClient, but now RenderFrameImpl is
-  // the WebLocalFrameClient. However, many implementations of
-  // WebLocalFrameClient methods still live here and are called from
-  // RenderFrameImpl. These implementations are to be moved to RenderFrameImpl
-  // <http://crbug.com/361761>.
 
   static WindowOpenDisposition NavigationPolicyToDisposition(
       blink::WebNavigationPolicy policy);
@@ -417,8 +348,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // use the Observer interface to filter IPC messages and receive frame change
   // notifications.
   // ---------------------------------------------------------------------------
-
-  base::WeakPtrFactory<RenderViewImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RenderViewImpl);
 };

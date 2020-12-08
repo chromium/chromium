@@ -541,29 +541,6 @@ void RenderViewImpl::PropagatePageZoomToNewlyAttachedFrame(
     GetWebView()->SetZoomLevel(GetWebView()->ZoomLevel());
 }
 
-void RenderViewImpl::SetValidationMessageDirection(
-    base::string16* wrapped_main_text,
-    base::i18n::TextDirection main_text_hint,
-    base::string16* wrapped_sub_text,
-    base::i18n::TextDirection sub_text_hint) {
-  if (main_text_hint == base::i18n::LEFT_TO_RIGHT) {
-    *wrapped_main_text =
-        base::i18n::GetDisplayStringInLTRDirectionality(*wrapped_main_text);
-  } else if (main_text_hint == base::i18n::RIGHT_TO_LEFT &&
-             !base::i18n::IsRTL()) {
-    base::i18n::WrapStringWithRTLFormatting(wrapped_main_text);
-  }
-
-  if (!wrapped_sub_text->empty()) {
-    if (sub_text_hint == base::i18n::RIGHT_TO_LEFT) {
-      *wrapped_sub_text =
-          base::i18n::GetDisplayStringInLTRDirectionality(*wrapped_sub_text);
-    } else if (sub_text_hint == base::i18n::LEFT_TO_RIGHT) {
-      base::i18n::WrapStringWithRTLFormatting(wrapped_sub_text);
-    }
-  }
-}
-
 void RenderViewImpl::StartNavStateSyncTimerIfNecessary(RenderFrameImpl* frame) {
   // Keep track of which frames have pending updates.
   frames_with_pending_state_.insert(frame->GetRoutingID());
@@ -661,19 +638,6 @@ RenderFrameImpl* RenderViewImpl::GetMainRenderFrame() {
 
 int RenderViewImpl::GetRoutingID() {
   return routing_id_;
-}
-
-float RenderViewImpl::GetZoomLevel() {
-  return webview_->ZoomLevel();
-}
-
-const blink::web_pref::WebPreferences& RenderViewImpl::GetBlinkPreferences() {
-  return webview_->GetWebPreferences();
-}
-
-void RenderViewImpl::SetBlinkPreferences(
-    const blink::web_pref::WebPreferences& preferences) {
-  webview_->SetWebPreferences(preferences);
 }
 
 blink::WebView* RenderViewImpl::GetWebView() {

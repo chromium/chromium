@@ -263,7 +263,8 @@ void RenderFrameProxy::Init(blink::WebRemoteFrame* web_frame,
   // propagate VisualProperty changes down the frame/process hierarchy. Remote
   // main frame proxies do not participate in this flow.
   if (ancestor_web_frame_widget_) {
-    pending_visual_properties_.zoom_level = render_view->GetZoomLevel();
+    pending_visual_properties_.zoom_level =
+        render_view->GetWebView()->ZoomLevel();
     pending_visual_properties_.page_scale_factor =
         ancestor_web_frame_widget_->PageScaleInMainFrame();
     pending_visual_properties_.is_pinch_gesture_active =

@@ -32,6 +32,7 @@
 #include "ppapi/shared_impl/ppapi_permissions.h"
 #include "ppapi/shared_impl/resource_tracker.h"
 #include "ppapi/shared_impl/var.h"
+#include "third_party/blink/public/web/web_view.h"
 
 // Note that the code in the creation functions in this file should generally
 // be the same as that in ppapi/proxy/resource_creation_proxy.cc. See
@@ -58,7 +59,9 @@ PP_Resource PepperInProcessResourceCreation::CreateBrowserFont(
   // GPU process whether these features are blacklisted or not.
   gpu::GpuFeatureInfo gpu_feature_info;
   ppapi::Preferences prefs(PpapiPreferencesBuilder::Build(
-      host_impl_->GetRenderViewForInstance(instance)->GetBlinkPreferences(),
+      host_impl_->GetRenderViewForInstance(instance)
+          ->GetWebView()
+          ->GetWebPreferences(),
       gpu_feature_info));
   return (new BrowserFontResource_Trusted(
               host_impl_->in_process_router()->GetPluginConnection(instance),

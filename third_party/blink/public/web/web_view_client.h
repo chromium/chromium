@@ -119,14 +119,6 @@ class WebViewClient {
   // notification unless the view did not need a layout.
   virtual void DidUpdateMainFrameLayout() {}
 
-  // Return true to swallow the input event if the embedder will start a
-  // disambiguation popup
-  virtual bool DidTapMultipleTargets(const gfx::Size& visual_viewport_offset,
-                                     const WebRect& touch_rect,
-                                     const WebVector<WebRect>& target_rects) {
-    return false;
-  }
-
   // Returns comma separated list of accept languages.
   virtual WebString AcceptLanguages() { return WebString(); }
 
@@ -151,15 +143,6 @@ class WebViewClient {
   // history item.
   virtual int HistoryBackListCount() { return 0; }
   virtual int HistoryForwardListCount() { return 0; }
-
-  // Developer tools -----------------------------------------------------
-
-  // Called to notify the client that the inspector's settings were
-  // changed and should be saved.  See WebView::inspectorSettings.
-  virtual void DidUpdateInspectorSettings() {}
-
-  virtual void DidUpdateInspectorSetting(const WebString& key,
-                                         const WebString& value) {}
 
   // History -------------------------------------------------------------
   virtual void OnSetHistoryOffsetAndLength(int history_offset,

@@ -86,7 +86,7 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   blink::WebFrameWidget* blink_widget =
       view->GetMainRenderFrame()->GetLocalRootWebFrameWidget();
 
-  view->SetBlinkPreferences(prefs);
+  view->GetWebView()->SetWebPreferences(prefs);
 
   const int kMaxOutputCharacters = 1024;
   std::string output;

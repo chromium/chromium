@@ -2781,14 +2781,13 @@ void TestRunner::ReplicateWorkQueueStates(const base::DictionaryValue& values) {
 
 void TestRunner::OnTestPreferencesChanged(const TestPreferences& test_prefs,
                                           RenderFrame* frame) {
-  RenderView* render_view = frame->GetRenderView();
-  blink::web_pref::WebPreferences web_prefs =
-      render_view->GetBlinkPreferences();
+  blink::WebView* web_view = frame->GetWebFrame()->View();
+  blink::web_pref::WebPreferences web_prefs = web_view->GetWebPreferences();
 
   // Turns the TestPreferences into WebPreferences.
   ExportWebTestSpecificPreferences(test_prefs, &web_prefs);
 
-  render_view->SetBlinkPreferences(web_prefs);
+  web_view->SetWebPreferences(web_prefs);
 
   GetWebTestControlHostRemote()->OverridePreferences(web_prefs);
 }

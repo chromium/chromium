@@ -2546,7 +2546,7 @@ TEST_F(RenderViewImplTest, NavigateSubframe) {
 // This test ensures that a RenderFrame object is created for the top level
 // frame in the RenderView.
 TEST_F(RenderViewImplTest, BasicRenderFrame) {
-  EXPECT_TRUE(view()->main_render_frame_);
+  EXPECT_TRUE(view()->GetMainRenderFrame());
 }
 
 namespace {
@@ -3062,7 +3062,7 @@ TEST_F(RenderViewImplBlinkSettingsTest, DefaultPageScaleSettings) {
   prefs.shrinks_viewport_contents_to_fit = true;
   prefs.default_minimum_page_scale_factor = 0.1f;
   prefs.default_maximum_page_scale_factor = 5.5f;
-  view()->SetBlinkPreferences(prefs);
+  view()->GetWebView()->SetWebPreferences(prefs);
 
   EXPECT_EQ(1.f, view()->GetWebView()->PageScaleFactor());
   EXPECT_EQ(1.f, view()->GetWebView()->MinimumPageScaleFactor());
@@ -3237,13 +3237,13 @@ TEST_F(RenderViewImplScaleFactorTest, AutoResizeWithoutZoomForDSF) {
 TEST_F(RenderViewImplTest, ZoomLevelUpdate) {
   // 0 will use the minimum zoom level, which is the default, nothing will
   // change.
-  EXPECT_FLOAT_EQ(0u, view()->GetZoomLevel());
+  EXPECT_FLOAT_EQ(0u, view()->GetWebView()->ZoomLevel());
 
   double zoom_level = blink::PageZoomFactorToZoomLevel(0.25);
   // Change the zoom level to 25% and check if the view gets the change.
   main_frame_widget()->SetZoomLevelForTesting(zoom_level);
   // Use EXPECT_FLOAT_EQ here because view()->GetZoomLevel returns a float.
-  EXPECT_FLOAT_EQ(zoom_level, view()->GetZoomLevel());
+  EXPECT_FLOAT_EQ(zoom_level, view()->GetWebView()->ZoomLevel());
 }
 
 #endif

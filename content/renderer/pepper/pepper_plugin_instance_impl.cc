@@ -2380,8 +2380,10 @@ uint32_t PepperPluginInstanceImpl::GetAudioHardwareOutputBufferSize(
 PP_Var PepperPluginInstanceImpl::GetDefaultCharSet(PP_Instance instance) {
   if (!render_frame_)
     return PP_MakeUndefined();
-  return StringVar::StringToPPVar(
-      render_frame_->render_view()->GetBlinkPreferences().default_encoding);
+  return StringVar::StringToPPVar(render_frame_->GetWebFrame()
+                                      ->View()
+                                      ->GetWebPreferences()
+                                      .default_encoding);
 }
 
 void PepperPluginInstanceImpl::SetPluginToHandleFindRequests(

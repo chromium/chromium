@@ -266,7 +266,8 @@ void WebFrameTestProxy::Reset() {
     blink::WebTestingSupport::ResetInternalsObject(GetWebFrame());
     // Resetting the internals object also overrides the WebPreferences, so we
     // have to sync them to WebKit again.
-    render_view()->SetBlinkPreferences(render_view()->GetBlinkPreferences());
+    blink::WebView* web_view = GetWebFrame()->View();
+    web_view->SetWebPreferences(web_view->GetWebPreferences());
 
     web_view_test_proxy_->Reset();
   }

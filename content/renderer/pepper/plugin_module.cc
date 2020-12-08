@@ -134,6 +134,7 @@
 #include "ppapi/thunk/thunk.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_view.h"
 
 using ppapi::InputEventData;
 using ppapi::PpapiGlobals;
@@ -617,11 +618,12 @@ RendererPpapiHostImpl* PluginModule::CreateOutOfProcessModule(
   const gpu::GpuFeatureInfo& gpu_feature_info =
       channel ? channel->gpu_feature_info() : default_gpu_feature_info;
 
-  if (!dispatcher->Init(channel_handle, &GetInterface,
-                        ppapi::Preferences(PpapiPreferencesBuilder::Build(
-                            render_frame->render_view()->GetBlinkPreferences(),
-                            gpu_feature_info)),
-                        hung_filter.get(), task_runner)) {
+  if (!dispatcher->Init(
+          channel_handle, &GetInterface,
+          ppapi::Preferences(PpapiPreferencesBuilder::Build(
+              render_frame->GetWebFrame()->View()->GetWebPreferences(),
+              gpu_feature_info)),
+          hung_filter.get(), task_runner)) {
     return nullptr;
   }
 
