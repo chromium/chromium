@@ -2,22 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * TODO(lucmult): Remove this when converting to JS modules.
- * @suppress {checkTypes}
- */
-chrome.fileManagerPrivate = {
-  FormatFileSystemType: {
-    VFAT: 'vfat',
-    EXFAT: 'exfat',
-    NTFS: 'ntfs',
-  },
-};
+// clang-format off
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://test/chai_assert.js';
+
+import {FilesMessage} from './files_message.m.js';
+// clang-format on
 
 /**
  * Adds a FilesMessage element to the page, initially hidden.
  */
-function setUpPage() {
+export function setUpPage() {
   document.body.innerHTML +=
       '<files-message id="test-files-message" hidden></files-message>';
 }
@@ -43,7 +38,7 @@ function setFilesMessageContent() {
 
   // <files-message> [hidden] controls visual display.
   assertEquals('none', window.getComputedStyle(message).display);
-  assertNotEqual(null, message.getAttribute('hidden'));
+  assertNotEquals(null, message.getAttribute('hidden'));
   assertTrue(message.hidden);
 
   // <files-message> extends HTMLElement and so the setContent() method
@@ -53,7 +48,7 @@ function setFilesMessageContent() {
   });
 
   // <files-message> element should be visually displayed.
-  assertNotEqual('none', window.getComputedStyle(message).display);
+  assertNotEquals('none', window.getComputedStyle(message).display);
   assertEquals(null, message.getAttribute('hidden'));
   assertFalse(message.hidden);
 
@@ -65,7 +60,7 @@ function setFilesMessageContent() {
  * setting its content via the element's property setters, and hiding its
  * sub-elements.
  */
-async function testFilesMessage(done) {
+export async function testFilesMessage(done) {
   // Setup and return the <files-message> element.
   /** @type {!FilesMessage|!Element} */
   const message = setFilesMessageContent();
@@ -83,11 +78,11 @@ async function testFilesMessage(done) {
   const close = assert(message.shadowRoot.querySelector('#close'));
 
   // The sub-elements should be displayed.
-  assertNotEqual('none', window.getComputedStyle(icon).display);
-  assertNotEqual('none', window.getComputedStyle(text).display);
-  assertNotEqual('none', window.getComputedStyle(dismiss).display);
-  assertNotEqual('none', window.getComputedStyle(action).display);
-  assertNotEqual('none', window.getComputedStyle(close).display);
+  assertNotEquals('none', window.getComputedStyle(icon).display);
+  assertNotEquals('none', window.getComputedStyle(text).display);
+  assertNotEquals('none', window.getComputedStyle(dismiss).display);
+  assertNotEquals('none', window.getComputedStyle(action).display);
+  assertNotEquals('none', window.getComputedStyle(close).display);
 
   // To work with screen readers, the icon & text element containing
   // parent element should have aria role 'alert'.
@@ -118,7 +113,7 @@ async function testFilesMessage(done) {
 
   // Clicking the main element does not emit a visual signal.
   signal = 'main-element-not-clickable';
-  assertNotEqual(null, message.onclick);
+  assertNotEquals(null, message.onclick);
   message.click();
   assertEquals('main-element-not-clickable', signal);
 
@@ -175,7 +170,7 @@ async function testFilesMessage(done) {
   message.close = {label: 'aria close label'};
   assertEquals('aria close label', close.getAttribute('aria-label'));
   assertEquals('cr:close', close.getAttribute('iron-icon'));
-  assertNotEqual(null, close.onclick);
+  assertNotEquals(null, close.onclick);
   signal = null;
   close.click();
   assertEquals('cr:close', signal);
@@ -218,7 +213,7 @@ async function testFilesMessage(done) {
   // Setting null text should display empty text.
   message.message = null;
   assertEquals('', text.getAttribute('aria-label'));
-  assertNotEqual('none', window.getComputedStyle(text).display);
+  assertNotEquals('none', window.getComputedStyle(text).display);
 
   done();
 }

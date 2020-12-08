@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FilesDisplayPanel) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FilesMessage) {
-  RunTestURL("foreground/elements/files_message_unittest_gen.html");
+  RunTestURL("foreground/elements/files_message_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FilesPasswordDialog) {

@@ -6,6 +6,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//tools/polymer/polymer.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 
 visibility = [ "//ui/file_manager/file_manager/foreground/*" ]
 
@@ -57,11 +58,13 @@ js_type_check("closure_compile_jsmodules") {
   deps = [
     ":files_format_dialog.m",
     ":files_icon_button.m",
+    ":files_message.m",
     ":files_metadata_box.m",
     ":files_metadata_entry.m",
     ":files_quick_view.m",
     ":files_ripple.m",
     ":files_safe_media.m",
+    ":files_spinner.m",
     ":files_toast.m",
     ":files_toggle_ripple.m",
     ":files_tooltip.m",
@@ -154,11 +157,23 @@ js_library("files_message") {
   ]
 }
 
-js_unittest("files_message_unittest") {
+js_unittest("files_message_unittest.m") {
   deps = [
-    ":files_message",
-    "//ui/webui/resources/js:webui_resource_test",
+    ":files_message.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/webui/resources/js:assert.m",
   ]
+}
+
+js_library("files_message.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_message.m.js" ]
+  deps = [
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("files_metadata_box") {
@@ -298,6 +313,12 @@ js_library("files_safe_media_webview_content") {
 js_library("files_spinner") {
 }
 
+js_library("files_spinner.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_spinner.m.js" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 # TODO(tapted): Move this to //ui/file_manager/base.
 js_library("files_toast") {
   visibility += [ "//ui/file_manager/gallery/*" ]
@@ -391,7 +412,6 @@ js_unittest("files_xf_elements_unittest") {
 
 js_test_gen_html("js_test_gen_html") {
   deps = [
-    ":files_message_unittest",
     ":files_password_dialog_unittest",
     ":files_xf_elements_unittest",
   ]
@@ -415,9 +435,17 @@ js_library("xf_display_panel") {
   ]
 }
 
+js_modulizer("modulize") {
+  input_files = [
+    "files_message.js",
+    "files_spinner.js",
+  ]
+}
+
 js_test_gen_html("js_test_gen_html_modules") {
   is_polymer3 = true
   deps = [
+    ":files_message_unittest.m",
     ":files_toast_unittest.m",
     ":files_tooltip_unittest.m",
   ]
