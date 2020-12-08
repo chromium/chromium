@@ -38,10 +38,6 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data) {
   AppLaunchConfiguration config;
   config.additional_args.push_back(std::string("--") +
                                    switches::kEnableEnterprisePolicy);
-  config.additional_args.push_back(std::string("--") +
-                                   switches::kInstallManagedBookmarksHandler);
-  config.additional_args.push_back(
-      std::string("--enable-features=ManagedBookmarksIOS"));
 
   // Remove whitespace from the policy data, because the XML parser does not
   // tolerate newlines.

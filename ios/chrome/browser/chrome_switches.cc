@@ -39,10 +39,6 @@ const char kEnableSpotlightActions[] = "enable-spotlight-actions";
 const char kEnableThirdPartyKeyboardWorkaround[] =
     "enable-third-party-keyboard-workaround";
 
-// Installs the managed bookmarks policy handler.
-const char kInstallManagedBookmarksHandler[] =
-    "install-managed-bookmarks-handler";
-
 // Installs the URLBlocklist and URLAllowlist handlers.
 const char kInstallURLBlocklistHandlers[] = "install-url-blocklist-handlers";
 
