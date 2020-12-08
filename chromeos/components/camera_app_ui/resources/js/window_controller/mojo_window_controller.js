@@ -45,41 +45,41 @@ export class MojoWindowController {
 
   /** @override */
   async minimize() {
-    assertInstanceof(
-        this.windowStateController_,
-        chromeosCamera.mojom.WindowStateControllerRemote)
+    return assertInstanceof(
+               this.windowStateController_,
+               chromeosCamera.mojom.WindowStateControllerRemote)
         .minimize();
   }
 
   /** @override */
   async maximize() {
-    assertInstanceof(
-        this.windowStateController_,
-        chromeosCamera.mojom.WindowStateControllerRemote)
+    return assertInstanceof(
+               this.windowStateController_,
+               chromeosCamera.mojom.WindowStateControllerRemote)
         .maximize();
   }
 
   /** @override */
   async restore() {
-    assertInstanceof(
-        this.windowStateController_,
-        chromeosCamera.mojom.WindowStateControllerRemote)
+    return assertInstanceof(
+               this.windowStateController_,
+               chromeosCamera.mojom.WindowStateControllerRemote)
         .restore();
   }
 
   /** @override */
   async fullscreen() {
-    assertInstanceof(
-        this.windowStateController_,
-        chromeosCamera.mojom.WindowStateControllerRemote)
+    return assertInstanceof(
+               this.windowStateController_,
+               chromeosCamera.mojom.WindowStateControllerRemote)
         .fullscreen();
   }
 
   /** @override */
   async focus() {
-    assertInstanceof(
-        this.windowStateController_,
-        chromeosCamera.mojom.WindowStateControllerRemote)
+    return assertInstanceof(
+               this.windowStateController_,
+               chromeosCamera.mojom.WindowStateControllerRemote)
         .focus();
   }
 

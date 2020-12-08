@@ -4,6 +4,8 @@
 
 #include "chromeos/components/camera_app_ui/camera_app_window_state_controller.h"
 
+#include "ash/public/cpp/tablet_mode.h"
+
 namespace chromeos {
 
 CameraAppWindowStateController::CameraAppWindowStateController(
@@ -37,26 +39,54 @@ void CameraAppWindowStateController::GetWindowState(
 }
 
 void CameraAppWindowStateController::Minimize(MinimizeCallback callback) {
+  if (GetCurrentWindowState() == WindowStateType::MINIMIZED) {
+    std::move(callback).Run();
+    return;
+  }
   minimize_callbacks_.push(std::move(callback));
   widget_->Minimize();
 }
 
 void CameraAppWindowStateController::Restore(RestoreCallback callback) {
+  auto current_state = GetCurrentWindowState();
+
+  // In tablet mode, it won't do anything when calling restore() for windows
+  // which are already maximized. Therefore, for maximized windows, trigger the
+  // callback immediately.
+  if (current_state == WindowStateType::REGULAR ||
+      (ash::TabletMode::Get()->InTabletMode() &&
+       (current_state == WindowStateType::MAXIMIZED ||
+        current_state == WindowStateType::FULLSCREEN))) {
+    std::move(callback).Run();
+    return;
+  }
   restore_callbacks_.push(std::move(callback));
   widget_->Restore();
 }
 
 void CameraAppWindowStateController::Maximize(MaximizeCallback callback) {
+  if (GetCurrentWindowState() == WindowStateType::MAXIMIZED) {
+    std::move(callback).Run();
+    return;
+  }
   maximize_callbacks_.push(std::move(callback));
   widget_->Maximize();
 }
 
 void CameraAppWindowStateController::Fullscreen(FullscreenCallback callback) {
+  if (GetCurrentWindowState() == WindowStateType::FULLSCREEN) {
+    std::move(callback).Run();
+    return;
+  }
   fullscreen_callbacks_.push(std::move(callback));
   widget_->SetFullscreen(true);
 }
 
 void CameraAppWindowStateController::Focus(FocusCallback callback) {
+  if (widget_->IsActive()) {
+    std::move(callback).Run();
+    return;
+  }
   focus_callbacks_.push(std::move(callback));
   widget_->Activate();
 }
