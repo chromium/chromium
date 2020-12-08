@@ -23,7 +23,9 @@ namespace {
 
 template <typename T>
 std::string ConvertToString(const T& value) {
-  return (std::stringstream() << value).str();
+  std::stringstream ss;
+  ss << value;
+  return ss.str();
 }
 
 }  // namespace

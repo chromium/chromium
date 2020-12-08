@@ -551,6 +551,9 @@ class BASE_EXPORT Value {
   // base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
 
+  // Serializes to a string for logging and debug purposes.
+  std::string DebugString() const;
+
  protected:
   // Checked convenience accessors for dict and list.
   const LegacyDictStorage& dict() const {

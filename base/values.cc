@@ -996,6 +996,12 @@ size_t Value::EstimateMemoryUsage() const {
   }
 }
 
+std::string Value::DebugString() const {
+  std::string json;
+  JSONWriter::WriteWithOptions(*this, JSONWriter::OPTIONS_PRETTY_PRINT, &json);
+  return json;
+}
+
 Value* Value::SetKeyInternal(StringPiece key,
                              std::unique_ptr<Value>&& val_ptr) {
   CHECK(is_dict());
@@ -1680,9 +1686,7 @@ ValueSerializer::~ValueSerializer() = default;
 ValueDeserializer::~ValueDeserializer() = default;
 
 std::ostream& operator<<(std::ostream& out, const Value& value) {
-  std::string json;
-  JSONWriter::WriteWithOptions(value, JSONWriter::OPTIONS_PRETTY_PRINT, &json);
-  return out << json;
+  return out << value.DebugString();
 }
 
 std::ostream& operator<<(std::ostream& out, const Value::Type& type) {
