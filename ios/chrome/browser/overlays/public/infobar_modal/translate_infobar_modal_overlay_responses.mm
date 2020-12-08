@@ -27,6 +27,6 @@ OVERLAY_USER_DATA_SETUP_IMPL(ToggleAlwaysTranslate);
 
 OVERLAY_USER_DATA_SETUP_IMPL(ToggleNeverTranslateSourceLanguage);
 
-OVERLAY_USER_DATA_SETUP_IMPL(ToggleBlacklistSite);
+OVERLAY_USER_DATA_SETUP_IMPL(ToggleNeverPromptSite);
 
 }  // translate_infobar_modal_responses

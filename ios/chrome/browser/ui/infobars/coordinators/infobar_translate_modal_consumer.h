@@ -22,8 +22,7 @@ NSString* kDisplayNeverTranslateLanguagePrefKey =
 NSString* kIsTranslatableLanguagePrefKey = @"isTranslatableLanguage";
 NSString* kDisplayNeverTranslateSiteButtonPrefKey =
     @"displayNeverTranslateSite";
-NSString* kIsSiteBlacklistedPrefKey = @"isSiteBlacklisted";
-
+NSString* kIsSiteOnNeverPromptListPrefKey = @"isSiteBlacklisted";
 }
 
 // Protocol consumer used to push information to the Infobar Translate Modal UI

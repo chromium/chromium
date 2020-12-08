@@ -25,6 +25,7 @@
       [prefs[kDisplayNeverTranslateSiteButtonPrefKey] boolValue];
   self.isTranslatableLanguage =
       [prefs[kIsTranslatableLanguagePrefKey] boolValue];
-  self.isSiteBlacklisted = [prefs[kIsSiteBlacklistedPrefKey] boolValue];
+  self.isSiteOnNeverPromptList =
+      [prefs[kIsSiteOnNeverPromptListPrefKey] boolValue];
 }
 @end

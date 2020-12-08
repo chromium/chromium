@@ -47,7 +47,7 @@ class ModalRequestCallbackInstaller
   // Used as a callback for OverlayResponses dispatched through |request|'s
   // callback manager. The OverlayDispatchCallback is created with an
   // OverlayResponseSupport that guarantees that |response| is created with a
-  // translate_infobar_modal_responses::ToggleBlacklistSite.
+  // translate_infobar_modal_responses::ToggleNeverPromptSite.
   void ToggleNeverTranslateSiteCallback(OverlayRequest* request,
                                         OverlayResponse* response);
 

@@ -34,7 +34,7 @@
 // NO if the current pref is set to never translate the source language.
 @property(nonatomic, assign) BOOL isTranslatableLanguage;
 // YES if the pref is set to never translate the current site.
-@property(nonatomic, assign) BOOL isSiteBlacklisted;
+@property(nonatomic, assign) BOOL isSiteOnNeverPromptList;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_TEST_FAKE_INFOBAR_TRANSLATE_MODAL_CONSUMER_H_

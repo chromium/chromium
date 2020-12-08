@@ -198,7 +198,7 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
 }
 
 - (void)neverTranslateSite {
-  DCHECK(!self.config->is_site_blacklisted());
+  DCHECK(!self.config->is_site_on_never_prompt_list());
   [self
       recordInfobarEvent:translate::InfobarEvent::INFOBAR_NEVER_TRANSLATE_SITE];
   [TranslateInfobarMetricsRecorder
@@ -206,15 +206,15 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
                            TappedNeverForThisSite];
   [self dispatchResponse:
             OverlayResponse::CreateWithInfo<
-                translate_infobar_modal_responses::ToggleBlacklistSite>()];
+                translate_infobar_modal_responses::ToggleNeverPromptSite>()];
   [self dismissOverlay];
 }
 
 - (void)undoNeverTranslateSite {
-  DCHECK(self.config->is_site_blacklisted());
+  DCHECK(self.config->is_site_on_never_prompt_list());
   [self dispatchResponse:
             OverlayResponse::CreateWithInfo<
-                translate_infobar_modal_responses::ToggleBlacklistSite>()];
+                translate_infobar_modal_responses::ToggleNeverPromptSite>()];
   [self dismissOverlay];
 }
 
@@ -381,7 +381,8 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
     kDisplayNeverTranslateLanguagePrefKey : @(currentStepBeforeTranslate),
     kDisplayNeverTranslateSiteButtonPrefKey : @(currentStepBeforeTranslate),
     kIsTranslatableLanguagePrefKey : @(self.config->is_translatable_language()),
-    kIsSiteBlacklistedPrefKey : @(self.config->is_site_blacklisted()),
+    kIsSiteOnNeverPromptListPrefKey :
+        @(self.config->is_site_on_never_prompt_list()),
   };
 }
 

@@ -64,7 +64,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // YES if the pref is set to show the "Never Translate Site" button.
 @property(nonatomic, assign) BOOL shouldDisplayNeverTranslateSiteButton;
 // YES if the pref is set to never translate the current site.
-@property(nonatomic, assign) BOOL isSiteBlacklisted;
+@property(nonatomic, assign) BOOL isSiteOnNeverPromptList;
 
 @end
 
@@ -227,7 +227,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [prefs[kDisplayNeverTranslateSiteButtonPrefKey] boolValue];
   self.isTranslatableLanguage =
       [prefs[kIsTranslatableLanguagePrefKey] boolValue];
-  self.isSiteBlacklisted = [prefs[kIsSiteBlacklistedPrefKey] boolValue];
+  self.isSiteOnNeverPromptList =
+      [prefs[kIsSiteOnNeverPromptListPrefKey] boolValue];
   [self loadModel];
   [self.tableView reloadData];
 }
@@ -305,7 +306,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
           base::mac::ObjCCastStrict<TableViewTextButtonCell>(cell);
       tableViewTextButtonCell.selectionStyle =
           UITableViewCellSelectionStyleNone;
-      if (self.isSiteBlacklisted) {
+      if (self.isSiteOnNeverPromptList) {
         [tableViewTextButtonCell.button
                    addTarget:self.infobarModalDelegate
                       action:@selector(undoNeverTranslateSite)
@@ -415,7 +416,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Returns the text of the modal button allowing the user to never translate the
 // site or revert back to offering to translate.
 - (NSString*)shouldNeverTranslateSiteButtonText {
-  if (self.isSiteBlacklisted) {
+  if (self.isSiteOnNeverPromptList) {
     return l10n_util::GetNSString(
         IDS_IOS_TRANSLATE_INFOBAR_OFFER_TRANSLATE_SITE_BUTTON_TITLE);
   } else {

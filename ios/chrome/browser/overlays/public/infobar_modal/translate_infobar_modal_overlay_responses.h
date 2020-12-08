@@ -44,7 +44,7 @@ DEFINE_STATELESS_OVERLAY_RESPONSE_INFO(ToggleNeverTranslateSourceLanguage);
 
 // Response info used to create dispatched OverlayResponses that notify the
 // translate infobar to toggle the never translate site preference.
-DEFINE_STATELESS_OVERLAY_RESPONSE_INFO(ToggleBlacklistSite);
+DEFINE_STATELESS_OVERLAY_RESPONSE_INFO(ToggleNeverPromptSite);
 
 }  // namespace translate_infobar_modal_responses
 

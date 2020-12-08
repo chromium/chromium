@@ -35,7 +35,7 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
 using translate_infobar_modal_responses::RevertTranslation;
 using translate_infobar_modal_responses::ToggleAlwaysTranslate;
 using translate_infobar_modal_responses::ToggleNeverTranslateSourceLanguage;
-using translate_infobar_modal_responses::ToggleBlacklistSite;
+using translate_infobar_modal_responses::ToggleNeverPromptSite;
 using translate_infobar_modal_responses::UpdateLanguageInfo;
 using translate_infobar_modal_responses::UpdateLanguageInfo;
 
@@ -51,7 +51,7 @@ class TranslateInfobarModalOverlayMediatorTest : public PlatformTest {
             {InfobarModalMainActionResponse::ResponseSupport(),
              RevertTranslation::ResponseSupport(),
              ToggleNeverTranslateSourceLanguage::ResponseSupport(),
-             ToggleBlacklistSite::ResponseSupport(),
+             ToggleNeverPromptSite::ResponseSupport(),
              ToggleAlwaysTranslate::ResponseSupport()}),
         delegate_(
             OCMStrictProtocolMock(@protocol(OverlayRequestMediatorDelegate))) {
@@ -103,7 +103,7 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest, SetUpConsumer) {
   EXPECT_TRUE(consumer.shouldDisplayNeverTranslateLanguageButton);
   EXPECT_TRUE(consumer.isTranslatableLanguage);
   EXPECT_TRUE(consumer.shouldDisplayNeverTranslateSiteButton);
-  EXPECT_FALSE(consumer.isSiteBlacklisted);
+  EXPECT_FALSE(consumer.isSiteOnNeverPromptList);
 }
 
 // Tests that TranslateInfobarModalOverlayMediator calls RevertTranslation when
@@ -181,12 +181,12 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest, NeverTranslateSourceLanguage) {
   [mediator_ neverTranslateSourceLanguage];
 }
 
-// Tests that TranslateInfobarModalOverlayMediator calls ToggleBlacklistSite
+// Tests that TranslateInfobarModalOverlayMediator calls ToggleNeverPromptSite
 // when its neverTranslateSite API is called.
 TEST_F(TranslateInfobarModalOverlayMediatorTest, NeverTranslateSite) {
-  EXPECT_CALL(
-      callback_receiver_,
-      DispatchCallback(request_.get(), ToggleBlacklistSite::ResponseSupport()));
+  EXPECT_CALL(callback_receiver_,
+              DispatchCallback(request_.get(),
+                               ToggleNeverPromptSite::ResponseSupport()));
   OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ neverTranslateSite];
 }

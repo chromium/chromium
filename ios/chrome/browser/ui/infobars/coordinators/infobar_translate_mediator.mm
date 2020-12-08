@@ -262,7 +262,7 @@ const int kInvalidLanguageIndex = -1;
     kDisplayNeverTranslateSiteButtonPrefKey : @(currentStepBeforeTranslate),
     kIsTranslatableLanguagePrefKey :
         @(self.translateInfobarDelegate->IsTranslatableLanguageByPrefs()),
-    kIsSiteBlacklistedPrefKey :
+    kIsSiteOnNeverPromptListPrefKey :
         @(self.translateInfobarDelegate->IsSiteOnNeverPromptList()),
   };
 }

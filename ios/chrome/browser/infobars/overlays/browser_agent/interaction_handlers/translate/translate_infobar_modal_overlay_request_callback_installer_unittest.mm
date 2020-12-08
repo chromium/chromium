@@ -112,7 +112,7 @@ TEST_F(TranslateInfobarModalOverlayRequestCallbackInstallerTest,
   EXPECT_CALL(mock_handler_, ToggleNeverTranslateSite(infobar_));
   request_->GetCallbackManager()->DispatchResponse(
       OverlayResponse::CreateWithInfo<
-          translate_infobar_modal_responses::ToggleBlacklistSite>());
+          translate_infobar_modal_responses::ToggleNeverPromptSite>());
 }
 
 TEST_F(TranslateInfobarModalOverlayRequestCallbackInstallerTest,

@@ -22,7 +22,7 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
 using translate_infobar_modal_responses::RevertTranslation;
 using translate_infobar_modal_responses::ToggleAlwaysTranslate;
 using translate_infobar_modal_responses::ToggleNeverTranslateSourceLanguage;
-using translate_infobar_modal_responses::ToggleBlacklistSite;
+using translate_infobar_modal_responses::ToggleNeverPromptSite;
 using translate_infobar_modal_responses::UpdateLanguageInfo;
 
 namespace translate_infobar_overlay {
@@ -118,7 +118,7 @@ void ModalRequestCallbackInstaller::InstallCallbacksInternal(
       base::BindRepeating(
           &ModalRequestCallbackInstaller::ToggleNeverTranslateSiteCallback,
           weak_factory_.GetWeakPtr(), request),
-      ToggleBlacklistSite::ResponseSupport()));
+      ToggleNeverPromptSite::ResponseSupport()));
   manager->AddDispatchCallback(OverlayDispatchCallback(
       base::BindRepeating(
           &ModalRequestCallbackInstaller::UpdateLanguageCallback,

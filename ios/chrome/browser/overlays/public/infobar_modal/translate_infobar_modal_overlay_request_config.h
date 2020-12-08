@@ -38,7 +38,9 @@ class TranslateModalRequestConfig
   bool is_translatable_language() const { return is_translatable_language_; }
   // Whether the current Translate pref is set to never translate for current
   // page.
-  bool is_site_blacklisted() const { return is_site_blacklisted_; }
+  bool is_site_on_never_prompt_list() const {
+    return is_site_on_never_prompt_list_;
+  }
 
  private:
   OVERLAY_USER_DATA_SETUP(TranslateModalRequestConfig);
@@ -56,7 +58,7 @@ class TranslateModalRequestConfig
   std::vector<base::string16> language_names_;
   bool is_always_translate_enabled_ = false;
   bool is_translatable_language_ = false;
-  bool is_site_blacklisted_ = false;
+  bool is_site_on_never_prompt_list_ = false;
 };
 
 }  // namespace translate_infobar_overlays
