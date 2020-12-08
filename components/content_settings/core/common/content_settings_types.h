@@ -126,6 +126,8 @@ enum class ContentSettingsType : int32_t {
   // Nothing is stored in this setting at present. Please refer to
   // PeriodicBackgroundSyncPermissionContext for details on how this permission
   // is ascertained.
+  // This content setting is not registered because it does not require access
+  // to any existing providers.
   PERIODIC_BACKGROUND_SYNC,
 
   // Content setting which stores whether to allow sites to ask for permission
