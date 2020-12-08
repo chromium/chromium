@@ -320,8 +320,6 @@ source_set("browser") {
     "about_url_loader_factory.h",
     "accessibility/accessibility_event_recorder.cc",
     "accessibility/accessibility_event_recorder.h",
-    "accessibility/accessibility_tree_formatter_base.cc",
-    "accessibility/accessibility_tree_formatter_base.h",
     "accessibility/accessibility_tree_formatter_blink.cc",
     "accessibility/accessibility_tree_formatter_blink.h",
     "accessibility/accessibility_tree_formatter_stub.cc",

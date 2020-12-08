@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_UTILS_MAC_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_UTILS_MAC_H_
 
-#include "content/browser/accessibility/accessibility_tree_formatter_base.h"
 #include "content/browser/accessibility/browser_accessibility_cocoa.h"
 
 namespace ui {

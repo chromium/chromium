@@ -2,29 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/accessibility_tree_formatter_base.h"
+#include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
-#include <stddef.h>
-
-#include <memory>
-#include <utility>
-
-#include "base/check_op.h"
-#include "base/strings/pattern.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
-#include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "content/browser/renderer_host/render_widget_host_view_base.h"
-#include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
 
-using ui::AXPropertyNode;
-
-namespace content {
+namespace ui {
 
 namespace {
 
@@ -35,28 +19,27 @@ const char kSkipChildren[] = "@NO_CHILDREN_DUMP";
 
 }  // namespace
 
-AccessibilityTreeFormatterBase::AccessibilityTreeFormatterBase() = default;
+AXTreeFormatterBase::AXTreeFormatterBase() = default;
 
-AccessibilityTreeFormatterBase::~AccessibilityTreeFormatterBase() = default;
+AXTreeFormatterBase::~AXTreeFormatterBase() = default;
 
-std::string AccessibilityTreeFormatterBase::Format(
-    ui::AXPlatformNodeDelegate* root) const {
-  auto* node_internal = BrowserAccessibility::FromAXPlatformNodeDelegate(root);
-  DCHECK(node_internal);
-  return FormatTree(BuildTree(node_internal));
+// static
+const char AXTreeFormatterBase::kChildrenDictAttr[] = "children";
+
+std::string AXTreeFormatterBase::Format(AXPlatformNodeDelegate* root) const {
+  DCHECK(root);
+  return FormatTree(BuildTree(root));
 }
 
-std::string AccessibilityTreeFormatterBase::FormatTree(
-    const base::Value& dict) const {
+std::string AXTreeFormatterBase::FormatTree(const base::Value& dict) const {
   std::string contents;
   RecursiveFormatTree(dict, &contents);
   return contents;
 }
 
-void AccessibilityTreeFormatterBase::RecursiveFormatTree(
-    const base::Value& dict,
-    std::string* contents,
-    int depth) const {
+void AXTreeFormatterBase::RecursiveFormatTree(const base::Value& dict,
+                                              std::string* contents,
+                                              int depth) const {
   // Check dictionary against node filters, may require us to skip this node
   // and its children.
   if (MatchesNodeFilters(dict))
@@ -86,7 +69,7 @@ void AccessibilityTreeFormatterBase::RecursiveFormatTree(
   }
 }
 
-void AccessibilityTreeFormatterBase::SetPropertyFilters(
+void AXTreeFormatterBase::SetPropertyFilters(
     const std::vector<AXPropertyFilter>& property_filters,
     PropertyFilterSet default_filter_set) {
   property_filters_.clear();
@@ -97,17 +80,16 @@ void AccessibilityTreeFormatterBase::SetPropertyFilters(
                            property_filters.end());
 }
 
-void AccessibilityTreeFormatterBase::SetNodeFilters(
+void AXTreeFormatterBase::SetNodeFilters(
     const std::vector<AXNodeFilter>& node_filters) {
   node_filters_ = node_filters;
 }
 
-void AccessibilityTreeFormatterBase::set_show_ids(bool show_ids) {
+void AXTreeFormatterBase::set_show_ids(bool show_ids) {
   show_ids_ = show_ids;
 }
 
-std::vector<AXPropertyNode>
-AccessibilityTreeFormatterBase::PropertyFilterNodesFor(
+std::vector<AXPropertyNode> AXTreeFormatterBase::PropertyFilterNodesFor(
     const std::string& line_index) const {
   std::vector<AXPropertyNode> list;
   for (const auto& filter : property_filters_) {
@@ -135,7 +117,7 @@ AccessibilityTreeFormatterBase::PropertyFilterNodesFor(
   return list;
 }
 
-bool AccessibilityTreeFormatterBase::HasMatchAllPropertyFilter() const {
+bool AXTreeFormatterBase::HasMatchAllPropertyFilter() const {
   for (const auto& filter : property_filters_) {
     if (filter.type == AXPropertyFilter::ALLOW && filter.match_str == "*") {
       return true;
@@ -144,19 +126,17 @@ bool AccessibilityTreeFormatterBase::HasMatchAllPropertyFilter() const {
   return false;
 }
 
-bool AccessibilityTreeFormatterBase::MatchesPropertyFilters(
-    const std::string& text,
-    bool default_result) const {
+bool AXTreeFormatterBase::MatchesPropertyFilters(const std::string& text,
+                                                 bool default_result) const {
   return ui::AXTreeFormatter::MatchesPropertyFilters(property_filters_, text,
                                                      default_result);
 }
 
-bool AccessibilityTreeFormatterBase::MatchesNodeFilters(
-    const base::Value& dict) const {
+bool AXTreeFormatterBase::MatchesNodeFilters(const base::Value& dict) const {
   return ui::AXTreeFormatter::MatchesNodeFilters(node_filters_, dict);
 }
 
-std::string AccessibilityTreeFormatterBase::FormatCoordinates(
+std::string AXTreeFormatterBase::FormatCoordinates(
     const base::Value& dict,
     const std::string& name,
     const std::string& x_name,
@@ -166,7 +146,7 @@ std::string AccessibilityTreeFormatterBase::FormatCoordinates(
   return base::StringPrintf("%s=(%d, %d)", name.c_str(), x, y);
 }
 
-std::string AccessibilityTreeFormatterBase::FormatRectangle(
+std::string AXTreeFormatterBase::FormatRectangle(
     const base::Value& dict,
     const std::string& name,
     const std::string& left_name,
@@ -181,9 +161,9 @@ std::string AccessibilityTreeFormatterBase::FormatRectangle(
                             width, height);
 }
 
-bool AccessibilityTreeFormatterBase::WriteAttribute(bool include_by_default,
-                                                    const std::string& attr,
-                                                    std::string* line) const {
+bool AXTreeFormatterBase::WriteAttribute(bool include_by_default,
+                                         const std::string& attr,
+                                         std::string* line) const {
   if (attr.empty())
     return false;
   if (!MatchesPropertyFilters(attr, include_by_default))
@@ -194,14 +174,14 @@ bool AccessibilityTreeFormatterBase::WriteAttribute(bool include_by_default,
   return true;
 }
 
-void AccessibilityTreeFormatterBase::AddPropertyFilter(
+void AXTreeFormatterBase::AddPropertyFilter(
     std::vector<AXPropertyFilter>* property_filters,
     std::string filter,
     AXPropertyFilter::Type type) {
   property_filters->push_back(AXPropertyFilter(filter, type));
 }
 
-void AccessibilityTreeFormatterBase::AddDefaultFilters(
+void AXTreeFormatterBase::AddDefaultFilters(
     std::vector<AXPropertyFilter>* property_filters) {}
 
-}  // namespace content
+}  // namespace ui

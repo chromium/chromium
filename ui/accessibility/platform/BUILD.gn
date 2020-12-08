@@ -65,6 +65,8 @@ source_set("platform") {
     "inspect/ax_property_node.h",
     "inspect/ax_tree_formatter.cc",
     "inspect/ax_tree_formatter.h",
+    "inspect/ax_tree_formatter_base.cc",
+    "inspect/ax_tree_formatter_base.h",
   ]
 
   public_deps = [

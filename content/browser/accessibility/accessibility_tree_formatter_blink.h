@@ -9,17 +9,18 @@
 #include <string>
 #include <vector>
 
-#include "content/browser/accessibility/accessibility_tree_formatter_base.h"
+#include "content/browser/accessibility/browser_accessibility.h"
+#include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
 namespace content {
 
 class CONTENT_EXPORT AccessibilityTreeFormatterBlink
-    : public AccessibilityTreeFormatterBase {
+    : public ui::AXTreeFormatterBase {
  public:
   explicit AccessibilityTreeFormatterBlink();
   ~AccessibilityTreeFormatterBlink() override;
 
-  base::Value BuildTree(BrowserAccessibility* root) const override;
+  base::Value BuildTree(ui::AXPlatformNodeDelegate* root) const override;
   base::Value BuildTreeForWindow(gfx::AcceleratedWidget widget) const override;
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;

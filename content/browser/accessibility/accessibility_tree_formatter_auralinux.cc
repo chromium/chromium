@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/accessibility_tree_formatter_base.h"
+#include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
 #include <atspi/atspi.h>
 #include <dbus/dbus.h>
@@ -20,6 +20,7 @@
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_utils_auralinux.h"
 #include "content/browser/accessibility/browser_accessibility_auralinux.h"
+#include "content/public/browser/ax_inspect_factory.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 
 #define CHECK_ATSPI_ERROR(error)                       \
@@ -31,8 +32,7 @@
 
 namespace content {
 
-class AccessibilityTreeFormatterAuraLinux
-    : public AccessibilityTreeFormatterBase {
+class AccessibilityTreeFormatterAuraLinux : public ui::AXTreeFormatterBase {
  public:
   AccessibilityTreeFormatterAuraLinux();
   ~AccessibilityTreeFormatterAuraLinux() override;
@@ -41,7 +41,7 @@ class AccessibilityTreeFormatterAuraLinux
   std::string ProcessTreeForOutput(
       const base::DictionaryValue& node) const override;
 
-  base::Value BuildTree(BrowserAccessibility* root) const override;
+  base::Value BuildTree(ui::AXPlatformNodeDelegate* root) const override;
   base::Value BuildTreeForWindow(gfx::AcceleratedWidget hwnd) const override;
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
@@ -138,11 +138,15 @@ base::Value AccessibilityTreeFormatterAuraLinux::BuildTreeForSelector(
 }
 
 base::Value AccessibilityTreeFormatterAuraLinux::BuildTree(
-    BrowserAccessibility* root) const {
+    ui::AXPlatformNodeDelegate* root) const {
   DCHECK(root);
 
+  BrowserAccessibility* root_internal =
+      BrowserAccessibility::FromAXPlatformNodeDelegate(root);
+  DCHECK(root_internal);
+
   BrowserAccessibilityAuraLinux* platform_root =
-      ToBrowserAccessibilityAuraLinux(root);
+      ToBrowserAccessibilityAuraLinux(root_internal);
   DCHECK(platform_root);
 
   AtkObject* atk_root = platform_root->GetNativeViewAccessible();

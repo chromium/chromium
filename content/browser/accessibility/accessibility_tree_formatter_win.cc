@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/accessibility_tree_formatter_base.h"
+#include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
 #include <math.h>
 #include <oleacc.h>
@@ -29,18 +29,19 @@
 #include "content/browser/accessibility/accessibility_tree_formatter_utils_win.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_win.h"
+#include "content/public/browser/ax_inspect_factory.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "ui/base/win/atl_module.h"
 #include "ui/gfx/win/hwnd_util.h"
 
 namespace content {
 
-class AccessibilityTreeFormatterWin : public AccessibilityTreeFormatterBase {
+class AccessibilityTreeFormatterWin : public ui::AXTreeFormatterBase {
  public:
   AccessibilityTreeFormatterWin();
   ~AccessibilityTreeFormatterWin() override;
 
-  base::Value BuildTree(BrowserAccessibility* start) const override;
+  base::Value BuildTree(ui::AXPlatformNodeDelegate* start) const override;
   base::Value BuildTreeForWindow(gfx::AcceleratedWidget hwnd) const override;
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
@@ -259,10 +260,13 @@ static HRESULT QueryIAccessibleValue(IAccessible* accessible,
 }
 
 base::Value AccessibilityTreeFormatterWin::BuildTree(
-    BrowserAccessibility* start_node) const {
-  DCHECK(start_node);
+    ui::AXPlatformNodeDelegate* start) const {
+  DCHECK(start);
+  BrowserAccessibility* start_internal =
+      BrowserAccessibility::FromAXPlatformNodeDelegate(start);
+  DCHECK(start_internal);
   BrowserAccessibilityManager* root_manager =
-      start_node->manager()->GetRootManager();
+      start_internal->manager()->GetRootManager();
   DCHECK(root_manager);
 
   base::win::ScopedVariant variant_self(CHILDID_SELF);
@@ -273,7 +277,7 @@ base::Value AccessibilityTreeFormatterWin::BuildTree(
   DCHECK(SUCCEEDED(hr));
 
   Microsoft::WRL::ComPtr<IAccessible> start_ia =
-      ToBrowserAccessibilityComWin(start_node);
+      ToBrowserAccessibilityComWin(start_internal);
 
   base::DictionaryValue dict;
   RecursiveBuildTree(start_ia, &dict, root_x, root_y);

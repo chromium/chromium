@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/accessibility_tree_formatter_base.h"
+#include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
 #include <string>
 
@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
+#include "content/public/browser/ax_inspect_factory.h"
 
 using base::StringPrintf;
 
@@ -78,13 +79,12 @@ const char* const INT_ATTRIBUTES[] = {
 // clang-format on
 }  // namespace
 
-class AccessibilityTreeFormatterAndroid
-    : public AccessibilityTreeFormatterBase {
+class AccessibilityTreeFormatterAndroid : public ui::AXTreeFormatterBase {
  public:
   AccessibilityTreeFormatterAndroid();
   ~AccessibilityTreeFormatterAndroid() override;
 
-  base::Value BuildTree(BrowserAccessibility* root) const override;
+  base::Value BuildTree(ui::AXPlatformNodeDelegate* root) const override;
   base::Value BuildTreeForWindow(gfx::AcceleratedWidget widget) const override;
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
@@ -133,12 +133,15 @@ AccessibilityTreeFormatterAndroid::AccessibilityTreeFormatterAndroid() {}
 AccessibilityTreeFormatterAndroid::~AccessibilityTreeFormatterAndroid() {}
 
 base::Value AccessibilityTreeFormatterAndroid::BuildTree(
-    BrowserAccessibility* root) const {
+    ui::AXPlatformNodeDelegate* root) const {
   CHECK(root);
+
+  BrowserAccessibility* root_internal =
+      BrowserAccessibility::FromAXPlatformNodeDelegate(root);
 
   // XXX: Android formatter should walk native Android tree (not internal one).
   base::DictionaryValue dict;
-  RecursiveBuildTree(*root, &dict);
+  RecursiveBuildTree(*root_internal, &dict);
   return std::move(dict);
 }
 

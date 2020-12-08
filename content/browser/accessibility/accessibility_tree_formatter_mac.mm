@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/accessibility_tree_formatter_base.h"
-
 #include "base/files/file_path.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -15,7 +13,9 @@
 #include "content/browser/accessibility/accessibility_tree_formatter_utils_mac.h"
 #include "content/browser/accessibility/browser_accessibility_mac.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "content/public/browser/ax_inspect_factory.h"
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
+#include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
 // This file uses the deprecated NSObject accessibility interface.
 // TODO(crbug.com/948844): Migrate to the new NSAccessibility interface.
@@ -56,12 +56,12 @@ const char kFailedToParseArgsError[] = "_const_ERROR:FAILED_TO_PARSE_ARGS";
 
 }  // namespace
 
-class AccessibilityTreeFormatterMac : public AccessibilityTreeFormatterBase {
+class AccessibilityTreeFormatterMac : public ui::AXTreeFormatterBase {
  public:
   explicit AccessibilityTreeFormatterMac();
   ~AccessibilityTreeFormatterMac() override;
 
-  base::Value BuildTree(BrowserAccessibility* root) const override;
+  base::Value BuildTree(ui::AXPlatformNodeDelegate* root) const override;
   base::Value BuildTreeForWindow(gfx::AcceleratedWidget widget) const override;
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
@@ -153,9 +153,10 @@ void AccessibilityTreeFormatterMac::AddDefaultFilters(
 }
 
 base::Value AccessibilityTreeFormatterMac::BuildTree(
-    BrowserAccessibility* root) const {
+    ui::AXPlatformNodeDelegate* root) const {
   DCHECK(root);
-  BrowserAccessibilityCocoa* cocoa_root = ToBrowserAccessibilityCocoa(root);
+  BrowserAccessibilityCocoa* cocoa_root = ToBrowserAccessibilityCocoa(
+      BrowserAccessibility::FromAXPlatformNodeDelegate(root));
   LineIndexer line_indexer(cocoa_root);
   base::Value dict(base::Value::Type::DICTIONARY);
   RecursiveBuildTree(cocoa_root, &line_indexer, &dict);

@@ -4,7 +4,7 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_UIA_WIN_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_UIA_WIN_H_
 
-#include "content/browser/accessibility/accessibility_tree_formatter_base.h"
+#include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
 #include <ole2.h>
 #include <stdint.h>
@@ -19,13 +19,13 @@
 
 namespace content {
 
-class AccessibilityTreeFormatterUia : public AccessibilityTreeFormatterBase {
+class AccessibilityTreeFormatterUia : public ui::AXTreeFormatterBase {
  public:
   AccessibilityTreeFormatterUia();
   ~AccessibilityTreeFormatterUia() override;
 
   // AccessibilityTreeFormatterBase:
-  base::Value BuildTree(BrowserAccessibility* start) const override;
+  base::Value BuildTree(ui::AXPlatformNodeDelegate* start) const override;
   base::Value BuildTreeForWindow(gfx::AcceleratedWidget hwnd) const override;
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;

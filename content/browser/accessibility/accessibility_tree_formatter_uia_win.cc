@@ -28,6 +28,7 @@
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_utils_win.h"
+#include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "ui/gfx/win/hwnd_util.h"
 
@@ -318,16 +319,19 @@ void AccessibilityTreeFormatterUia::AddDefaultFilters(
 }
 
 base::Value AccessibilityTreeFormatterUia::BuildTree(
-    BrowserAccessibility* start) const {
+    ui::AXPlatformNodeDelegate* start) const {
   // We use the UI Automation client API to produce the tree dump, but
   // BrowserAccessibility has a pointer to a provider API implementation, and
   // we can't directly relate the two -- the OS manages the relationship.
   // To locate the client element we want, we'll construct a RuntimeId
   // corresponding to our provider element, then search for that.
 
+  BrowserAccessibility* start_internal =
+      BrowserAccessibility::FromAXPlatformNodeDelegate(start);
   // Start by getting the root element for the HWND hosting the web content.
-  HWND hwnd =
-      start->manager()->GetRoot()->GetTargetForNativeAccessibilityEvent();
+  HWND hwnd = start_internal->manager()
+                  ->GetRoot()
+                  ->GetTargetForNativeAccessibilityEvent();
   Microsoft::WRL::ComPtr<IUIAutomationElement> root;
   uia_->ElementFromHandle(hwnd, &root);
   CHECK(root.Get());
@@ -364,7 +368,8 @@ base::Value AccessibilityTreeFormatterUia::BuildTree(
                           reinterpret_cast<void**>(&runtime_id_array));
     CHECK(runtime_id_array);
     CHECK((upper_bound - lower_bound) >= 0);
-    runtime_id_array[upper_bound - lower_bound] = start->GetUniqueId().Get();
+    runtime_id_array[upper_bound - lower_bound] =
+        start_internal->GetUniqueId().Get();
     ::SafeArrayUnaccessData(runtime_id.Get());
   }
 

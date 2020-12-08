@@ -2,69 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_BASE_H_
-#define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_BASE_H_
-
-#include <stdint.h>
+#ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_BASE_H_
+#define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_BASE_H_
 
 #include <vector>
 
-#include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/process/process_handle.h"
-#include "base/strings/string16.h"
-#include "base/strings/string_piece.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "content/browser/accessibility/browser_accessibility.h"
-#include "content/common/content_export.h"
-#include "content/public/browser/ax_inspect_factory.h"
-#include "ui/gfx/native_widget_types.h"
-
-namespace {
-const char kChildrenDictAttr[] = "children";
-}
+#include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
 
 namespace ui {
-class AXPropertyNode;
-}
 
-namespace content {
+class AXPropertyNode;
 
 // A utility class for formatting platform-specific accessibility information,
 // for use in testing, debugging, and developer tools.
 // This is extended by a subclass for each platform where accessibility is
 // implemented.
-class CONTENT_EXPORT AccessibilityTreeFormatterBase
-    : public ui::AXTreeFormatter {
+class AX_EXPORT AXTreeFormatterBase : public AXTreeFormatter {
  public:
-  AccessibilityTreeFormatterBase();
-  ~AccessibilityTreeFormatterBase() override;
+  AXTreeFormatterBase();
+  ~AXTreeFormatterBase() override;
 
-  std::string Format(ui::AXPlatformNodeDelegate* root) const override;
+  // Dumps formatted the given accessibility tree into a string.
+  std::string Format(AXPlatformNodeDelegate* root) const override;
 
-  // Populates the given DictionaryValue with the accessibility tree.
-  // The dictionary contains a key/value pair for each attribute of the node,
-  // plus a "children" attribute containing a list of all child nodes.
-  // {
-  //   "AXName": "node",  /* actual attributes will vary by platform */
-  //   "position": {  /* some attributes may be dictionaries */
-  //     "x": 0,
-  //     "y": 0
-  //   },
-  //   /* ... more attributes of |node| */
-  //   "children": [ {  /* list of children created recursively */
-  //     "AXName": "child node 1",
-  //     /* ... more attributes */
-  //     "children": [ ]
-  //   }, {
-  //     "AXName": "child name 2",
-  //     /* ... more attributes */
-  //     "children": [ ]
-  //   } ]
-  // }
   // Build an accessibility tree for the current Chrome app.
-  virtual base::Value BuildTree(BrowserAccessibility* root) const = 0;
+  virtual base::Value BuildTree(AXPlatformNodeDelegate* root) const = 0;
 
   // AXTreeFormatter overrides.
   std::string FormatTree(const base::Value& tree_node) const override;
@@ -74,6 +37,8 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBase
   void set_show_ids(bool show_ids) override;
 
  protected:
+  static const char kChildrenDictAttr[];
+
   //
   // Overridden by platform subclasses.
   //
@@ -84,7 +49,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBase
 
   // Returns property nodes complying to the line index filter for all
   // allow/allow_empty property filters.
-  std::vector<ui::AXPropertyNode> PropertyFilterNodesFor(
+  std::vector<AXPropertyNode> PropertyFilterNodesFor(
       const std::string& line_index) const;
 
   // Return true if match-all filter is present.
@@ -148,9 +113,9 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBase
   // Whether or not node ids should be included in the dump.
   bool show_ids_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityTreeFormatterBase);
+  DISALLOW_COPY_AND_ASSIGN(AXTreeFormatterBase);
 };
 
-}  // namespace content
+}  // namespace ui
 
-#endif  // CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_BASE_H_
+#endif  // UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_BASE_H_

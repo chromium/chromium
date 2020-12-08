@@ -46,6 +46,27 @@ class AX_EXPORT AXTreeFormatter {
   virtual std::string Format(AXPlatformNodeDelegate* root) const = 0;
 
   // Build an accessibility tree for any window.
+  //
+  // Returns a dictionary value with the accessibility tree populated.
+  // The dictionary contains a key/value pair for each attribute of a node,
+  // plus a "children" attribute containing a list of all child nodes.
+  // {
+  //   "AXName": "node",  /* actual attributes will vary by platform */
+  //   "position": {  /* some attributes may be dictionaries */
+  //     "x": 0,
+  //     "y": 0
+  //   },
+  //   /* ... more attributes of |node| */
+  //   "children": [ {  /* list of children created recursively */
+  //     "AXName": "child node 1",
+  //     /* ... more attributes */
+  //     "children": [ ]
+  //   }, {
+  //     "AXName": "child name 2",
+  //     /* ... more attributes */
+  //     "children": [ ]
+  //   } ]
+  // }
   virtual base::Value BuildTreeForWindow(
       gfx::AcceleratedWidget widget) const = 0;
 

@@ -154,10 +154,8 @@ std::string IntAttrToString(const BrowserAccessibility& node,
 
 }  // namespace
 
-AccessibilityTreeFormatterBlink::AccessibilityTreeFormatterBlink()
-    : AccessibilityTreeFormatterBase() {}
-
-AccessibilityTreeFormatterBlink::~AccessibilityTreeFormatterBlink() {}
+AccessibilityTreeFormatterBlink::AccessibilityTreeFormatterBlink() = default;
+AccessibilityTreeFormatterBlink::~AccessibilityTreeFormatterBlink() = default;
 
 void AccessibilityTreeFormatterBlink::AddDefaultFilters(
     std::vector<AXPropertyFilter>* property_filters) {
@@ -201,10 +199,12 @@ const char* STATE_FOCUSED = "focused";
 const char* STATE_OFFSCREEN = "offscreen";
 
 base::Value AccessibilityTreeFormatterBlink::BuildTree(
-    BrowserAccessibility* root) const {
+    ui::AXPlatformNodeDelegate* root) const {
   CHECK(root);
+  BrowserAccessibility* root_internal =
+      BrowserAccessibility::FromAXPlatformNodeDelegate(root);
   base::Value dict(base::Value::Type::DICTIONARY);
-  RecursiveBuildTree(*root, &dict);
+  RecursiveBuildTree(*root_internal, &dict);
   return dict;
 }
 
