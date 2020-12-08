@@ -4299,7 +4299,7 @@ constexpr auto pop_heap(Range&& range, Comp comp = {}, Proj proj = {}) {
 //
 // Returns: `last`.
 //
-// Complexity: At most `3 log(last - first)` comparisons and twice as many
+// Complexity: At most `3 * (last - first)` comparisons and twice as many
 // projections.
 //
 // Reference: https://wg21.link/make.heap#:~:text=ranges::make_heap(I
@@ -4323,7 +4323,7 @@ constexpr auto make_heap(RandomAccessIterator first,
 //
 // Returns: `end(range)`.
 //
-// Complexity: At most `3 log(size(range))` comparisons and twice as many
+// Complexity: At most `3 * size(range)` comparisons and twice as many
 // projections.
 //
 // Reference: https://wg21.link/make.heap#:~:text=ranges::make_heap(R
