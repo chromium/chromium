@@ -10,10 +10,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
+import android.os.SystemClock;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.JNIUtils;
+import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordHistogram;
 
 import java.lang.reflect.Field;
 
@@ -61,12 +64,18 @@ public class SplitChromeApplication extends SplitCompatApplication {
 
     @Override
     public Context createContextForSplit(String name) throws PackageManager.NameNotFoundException {
-        if (mSplitPreloader != null) {
-            // Wait for any splits that are preloading so we don't have a race to update the
-            // class loader cache (b/172602571).
-            mSplitPreloader.wait(name);
+        try (TraceEvent te = TraceEvent.scoped("SplitChromeApplication.createContextForSplit")) {
+            if (mSplitPreloader != null) {
+                // Wait for any splits that are preloading so we don't have a race to update the
+                // class loader cache (b/172602571).
+                mSplitPreloader.wait(name);
+            }
+            long startTime = SystemClock.uptimeMillis();
+            Context context = super.createContextForSplit(name);
+            RecordHistogram.recordTimesHistogram("Android.IsolatedSplits.CreateContextTime." + name,
+                    SystemClock.uptimeMillis() - startTime);
+            return context;
         }
-        return super.createContextForSplit(name);
     }
 
     @Override

@@ -5,10 +5,13 @@
 package org.chromium.chrome.browser.base;
 
 import android.content.Context;
+import android.os.SystemClock;
 
 import androidx.collection.SimpleArrayMap;
 
 import org.chromium.base.BundleUtils;
+import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.TaskTraits;
 
@@ -87,10 +90,16 @@ public class SplitPreloader {
 
     /** Waits for the specified split to be finished loading. */
     public void wait(String name) {
-        PreloadTask task = mPreloadTasks.remove(name);
-        if (task != null) {
-            // Make sure the task is finished and onComplete has run.
-            task.finish();
+        try (TraceEvent te = TraceEvent.scoped("SplitPreloader.wait")) {
+            PreloadTask task = mPreloadTasks.remove(name);
+            if (task != null) {
+                long startTime = SystemClock.uptimeMillis();
+                // Make sure the task is finished and onComplete has run.
+                task.finish();
+                RecordHistogram.recordTimesHistogram(
+                        "Android.IsolatedSplits.PreloadWaitTime." + name,
+                        SystemClock.uptimeMillis() - startTime);
+            }
         }
     }
 }

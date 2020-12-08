@@ -772,6 +772,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="autofill_assistant" label="Assistant-in-Chrome Module"/>
   <suffix name="cablev2_authenticator" label="caBLEv2 Authenticator Module"/>
   <suffix name="chime" label="Chime Notification Module"/>
+  <suffix name="chrome" label="Chrome Module"/>
   <suffix name="dev_ui" label="Developer UI Module"/>
   <suffix name="extra_icu" label="Extra ICU Module"/>
   <suffix name="image_editor" label="Image Editor Module"/>
@@ -827,6 +828,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="Android.FeatureModules.UncachedInstallDuration.PendingDownload"/>
   <affected-histogram
       name="Android.FeatureModules.UncachedInstallDuration.PendingInstall"/>
+  <affected-histogram name="Android.IsolatedSplits.ContextCreateTime"/>
+  <affected-histogram name="Android.IsolatedSplits.PreloadWaitTime"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="AndroidGATTEvents" separator=".">
