@@ -23,6 +23,7 @@ import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_VOICE_
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MORE_TABS_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.RESET_TASK_SURFACE_HEADER_SCROLL_POSITION;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.TAB_SWITCHER_TITLE_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.TRENDY_TERMS_VISIBLE;
@@ -98,6 +99,8 @@ class TasksViewBinder {
             view.setTabSwitcherTitleTopMargin(model.get(TAB_SWITCHER_TITLE_TOP_MARGIN));
         } else if (propertyKey == TRENDY_TERMS_VISIBLE) {
             view.setTrendyTermsVisibility(model.get(TRENDY_TERMS_VISIBLE));
+        } else if (propertyKey == RESET_TASK_SURFACE_HEADER_SCROLL_POSITION) {
+            view.resetScrollPosition();
         }
     }
 }

@@ -342,6 +342,14 @@ class TasksView extends CoordinatorLayoutForPointer {
     }
 
     /**
+     * Reset the scrolling position by expanding the {@link #mHeaderView}.
+     */
+    void resetScrollPosition() {
+        if (mHeaderView != null && mHeaderView.getHeight() != mHeaderView.getBottom()) {
+            mHeaderView.setExpanded(true);
+        }
+    }
+    /**
      * Add a header offset change listener.
      * @param onOffsetChangedListener The given header offset change listener.
      */

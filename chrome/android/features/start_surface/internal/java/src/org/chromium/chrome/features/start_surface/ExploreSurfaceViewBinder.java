@@ -9,11 +9,14 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_BOTTOM_BAR_VISIBLE;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_EXPLORE_SURFACE_VISIBLE;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SHOWING_OVERVIEW;
+import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.RESET_FEED_SURFACE_SCROLL_POSITION;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.TOP_MARGIN;
 
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -30,6 +33,8 @@ class ExploreSurfaceViewBinder {
                     model.get(IS_EXPLORE_SURFACE_VISIBLE) && model.get(IS_SHOWING_OVERVIEW));
         } else if (propertyKey == TOP_MARGIN) {
             setTopMargin(model);
+        } else if (propertyKey == RESET_FEED_SURFACE_SCROLL_POSITION) {
+            resetScrollPosition(model);
         }
     }
 
@@ -75,5 +80,15 @@ class ExploreSurfaceViewBinder {
 
         layoutParams.topMargin = model.get(TOP_MARGIN);
         feedSurfaceView.setLayoutParams(layoutParams);
+    }
+
+    private static void resetScrollPosition(PropertyModel model) {
+        if (model.get(FEED_SURFACE_COORDINATOR) == null) return;
+
+        RecyclerView feedStreamView =
+                (RecyclerView) model.get(FEED_SURFACE_COORDINATOR).getStream().getView();
+        if (feedStreamView != null) {
+            feedStreamView.scrollToPosition(0);
+        }
     }
 }
