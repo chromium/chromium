@@ -9,6 +9,7 @@ import re
 
 SPECIAL_TOKENS = [
     # This list should be sorted by length.
+    'WebCodecs',
     'WebSocket',
     'String16',
     'Float32',

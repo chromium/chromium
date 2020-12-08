@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_output_callback.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_web_codecs_error_callback.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_webcodecs_error_callback.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"

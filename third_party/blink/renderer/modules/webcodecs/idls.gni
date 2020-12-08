@@ -19,7 +19,7 @@ modules_callback_function_idl_files = [
   "audio_frame_output_callback.idl",
   "video_encoder_output_callback.idl",
   "video_frame_output_callback.idl",
-  "web_codecs_error_callback.idl",
+  "webcodecs_error_callback.idl",
 ]
 
 modules_dictionary_idl_files = [
