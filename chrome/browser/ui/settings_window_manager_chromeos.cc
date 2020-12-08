@@ -5,11 +5,9 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 
 #include "ash/public/cpp/app_types.h"
-#include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/window_properties.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -33,17 +31,6 @@ namespace chrome {
 namespace {
 
 bool g_force_deprecated_settings_window_for_testing = false;
-
-// This method handles the case of resurfacing the user's OS Settings
-// standalone window that may be at the time located on another user's desktop.
-void ShowSettingsOnCurrentDesktop(Browser* browser) {
-  auto* window_manager = MultiUserWindowManagerHelper::GetWindowManager();
-  if (window_manager && browser) {
-    window_manager->ShowWindowForUser(browser->window()->GetNativeWindow(),
-                                      window_manager->CurrentAccountId());
-    browser->window()->Show();
-  }
-}
 
 }  // namespace
 
@@ -84,18 +71,10 @@ void SettingsWindowManager::ShowChromePageForProfile(Profile* profile,
 
   // TODO(crbug.com/1067073): Remove legacy Settings Window.
   if (!UseDeprecatedSettingsWindow(profile)) {
-    bool did_create;
-    Browser* browser = web_app::LaunchSystemWebApp(
-        profile, web_app::SystemAppType::SETTINGS, gurl,
-        /*params=*/base::nullopt, &did_create);
-    ShowSettingsOnCurrentDesktop(browser);
-    // Only notify if we created a new browser.
-    if (!did_create || !browser)
-      return;
-
-    for (SettingsWindowManagerObserver& observer : observers_)
-      observer.OnNewSettingsWindow(browser);
-
+    web_app::LaunchSystemWebApp(profile, web_app::SystemAppType::SETTINGS,
+                                gurl);
+    // SWA OS Settings don't use SettingsWindowManager to manage windows, don't
+    // notify SettingsWindowObservers.
     return;
   }
 
