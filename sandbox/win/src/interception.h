@@ -151,13 +151,6 @@ class InterceptionManager {
   // Calculates the size of the required configuration buffer.
   size_t GetBufferSize() const;
 
-  // Rounds up the size of a given buffer, considering alignment (padding).
-  // value is the current size of the buffer, and alignment is specified in
-  // bytes.
-  static inline size_t RoundUpToMultiple(size_t value, size_t alignment) {
-    return ((value + alignment - 1) / alignment) * alignment;
-  }
-
   // Sets up a given buffer with all the information that has to be transfered
   // to the child.
   // Returns true on success.

@@ -35,6 +35,13 @@ namespace {
 const size_t kAllocGranularity = 65536;
 const size_t kPageSize = 4096;
 
+// Rounds up the size of a given buffer, considering alignment (padding).
+// value is the current size of the buffer, and alignment is specified in
+// bytes.
+inline size_t RoundUpToMultiple(size_t value, size_t alignment) {
+  return ((value + alignment - 1) / alignment) * alignment;
+}
+
 }  // namespace
 
 namespace internal {
