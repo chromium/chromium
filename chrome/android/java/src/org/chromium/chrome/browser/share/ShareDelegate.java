@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.share;
 
+import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareOrigin;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.share.ShareParams;
 
@@ -16,16 +17,19 @@ public interface ShareDelegate {
      *
      * @param params The share parameters.
      * @param chromeShareExtras The extras not contained in {@code params}.
+     * @param shareOrigin Where the share originated.
      */
-    void share(ShareParams params, ChromeShareExtras chromeShareExtras);
+    void share(
+            ShareParams params, ChromeShareExtras chromeShareExtras, @ShareOrigin int shareOrigin);
 
     /**
      * Initiate a share for the provided Tab.
      *
      * @param currentTab The Tab to be shared.
      * @param shareDirectly If this share should be sent directly to the last used share target.
+     * @param shareOrigin Where the share originated.
      */
-    void share(Tab currentTab, boolean shareDirectly);
+    void share(Tab currentTab, boolean shareDirectly, @ShareOrigin int shareOrigin);
 
     /**
      * Check if the custom share sheet is enabled.

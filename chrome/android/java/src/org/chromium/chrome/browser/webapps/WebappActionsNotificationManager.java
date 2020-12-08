@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
+import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareOrigin;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
@@ -168,7 +169,8 @@ class WebappActionsNotificationManager implements PauseResumeWithNativeObserver 
             // Not routing through onMenuOrKeyboardAction to control UMA String.
             Tab tab = customTabActivity.getActivityTab();
             boolean isIncognito = tab.isIncognito();
-            customTabActivity.getShareDelegateSupplier().get().share(tab, false);
+            customTabActivity.getShareDelegateSupplier().get().share(
+                    tab, false, ShareOrigin.WEBAPP_NOTIFICATION);
             RecordUserAction.record("Webapp.NotificationShare");
             return true;
         } else if (ACTION_OPEN_IN_CHROME.equals(intent.getAction())) {

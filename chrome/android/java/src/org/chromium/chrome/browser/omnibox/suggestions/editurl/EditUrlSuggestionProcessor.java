@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareOrigin;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -184,7 +185,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
         mUrlBarDelegate.clearOmniboxFocus();
         // TODO(mdjones): This should only share the displayed URL instead of the background tab.
         Tab activityTab = mTabSupplier.get();
-        mShareDelegateSupplier.get().share(activityTab, false);
+        mShareDelegateSupplier.get().share(activityTab, false, ShareOrigin.EDIT_URL);
     }
 
     /** Invoked when user interacts with Copy action button. */

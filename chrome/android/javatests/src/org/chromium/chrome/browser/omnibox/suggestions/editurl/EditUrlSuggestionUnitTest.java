@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewPr
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareOrigin;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
@@ -337,7 +338,8 @@ public final class EditUrlSuggestionUnitTest {
         List<Action> actions = mModel.get(BaseSuggestionViewProperties.ACTIONS);
         Assert.assertEquals("EditUrl suggestion should have 3 action buttons.", 3, actions.size());
         actions.get(ACTION_SHARE).callback.run();
-        verify(mShareDelegate, times(1)).share(mTab, false /* shareDirectly */);
+        verify(mShareDelegate, times(1))
+                .share(mTab, false /* shareDirectly */, ShareOrigin.EDIT_URL);
     }
 
     private void verifyCopyButtonPress(boolean isIncognito) {

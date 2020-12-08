@@ -1135,7 +1135,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
      */
     @VisibleForTesting
     public void share() {
-        RecordUserAction.record("MobileActionMode.Share");
+        RecordUserAction.record(UMA_MOBILE_ACTION_MODE_SHARE);
         String query = sanitizeQuery(getSelectedText(), MAX_SHARE_QUERY_LENGTH);
         if (TextUtils.isEmpty(query)) return;
 

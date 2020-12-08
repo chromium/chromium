@@ -99,7 +99,6 @@ public class ShareDelegateImplTest {
         public WebContents webContents;
         public String url;
         public boolean isShowingErrorPage;
-        public boolean isShowingInterstitialPage;
 
         public MockUrlTab() {
             super(INVALID_TAB_ID, false);

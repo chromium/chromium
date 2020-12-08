@@ -67270,6 +67270,21 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="SHARE_DISABLED"/>
 </enum>
 
+<enum name="ShareOrigin">
+  <int value="0" label="OVERFLOW_MENU"/>
+  <int value="1" label="TOP_TOOLBAR"/>
+  <int value="2" label="CONTEXT_MENU"/>
+  <int value="3" label="WEBSHARE_API"/>
+  <int value="4" label="MOBILE_ACTION_MODE">
+    Shared from text selection menu.
+  </int>
+  <int value="5" label="EDIT_URL">
+    Shared from share button shown when editing the URL in the omnibox.
+  </int>
+  <int value="6" label="TAB_GROUP"/>
+  <int value="7" label="WEBAPP_NOTIFICATION"/>
+</enum>
+
 <enum name="SharingActionSource">
 <!--
   SharingActionSource must be kept in sync with ValidSharingActionSource defined
