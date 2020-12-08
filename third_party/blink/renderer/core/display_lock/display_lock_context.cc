@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -105,6 +106,7 @@ void DisplayLockContext::SetRequestedState(EContentVisibility state) {
   if (state_ == state)
     return;
   state_ = state;
+  base::AutoReset<bool> scope(&set_requested_state_scope_, true);
   switch (state_) {
     case EContentVisibility::kVisible:
       RequestUnlock();
@@ -285,7 +287,7 @@ void DisplayLockContext::Lock() {
   // In the first case, we are already in style processing, so we don't need to
   // invalidate style. However, in the second case we invalidate style so that
   // `AdjustElementStyle()` can be called.
-  if (!document_->InStyleRecalc()) {
+  if (CanDirtyStyle()) {
     element_->SetNeedsStyleRecalc(
         kLocalStyleChange,
         StyleChangeReasonForTracing::Create(style_change_reason::kDisplayLock));
@@ -491,7 +493,7 @@ void DisplayLockContext::NotifyForcedUpdateScopeStarted() {
     // during a style update. If that's the case, don't mark style as dirty
     // from within style recalc. We rely on `AdjustStyleRecalcChangeForChildren`
     // instead.
-    if (!document_->InStyleRecalc())
+    if (CanDirtyStyle())
       MarkForStyleRecalcIfNeeded();
     MarkForLayoutIfNeeded();
     MarkAncestorsForPrePaintIfNeeded();
@@ -524,7 +526,7 @@ void DisplayLockContext::Unlock() {
   // In the first case, we are already in style processing, so we don't need to
   // invalidate style. However, in the second case we invalidate style so that
   // `AdjustElementStyle()` can be called.
-  if (!document_->InStyleRecalc()) {
+  if (CanDirtyStyle()) {
     // Since size containment depends on the activatability state, we should
     // invalidate the style for this element, so that the style adjuster can
     // properly remove the containment.
@@ -577,7 +579,7 @@ StyleRecalcChange DisplayLockContext::AdjustStyleRecalcChangeForChildren(
   // |change| and not on |element_|. This is only called during style recalc.
   // Note that since we're already in self style recalc, this code is shorter
   // since it doesn't have to deal with dirtying self-style.
-  DCHECK(document_->InStyleRecalc());
+  DCHECK(!CanDirtyStyle());
 
   if (reattach_layout_tree_was_blocked_) {
     change = change.ForceReattachLayoutTree();
@@ -590,6 +592,10 @@ StyleRecalcChange DisplayLockContext::AdjustStyleRecalcChangeForChildren(
     change = change.EnsureAtLeast(StyleRecalcChange::kRecalcChildren);
   blocked_style_traversal_type_ = kStyleUpdateNotRequired;
   return change;
+}
+
+bool DisplayLockContext::CanDirtyStyle() const {
+  return !set_requested_state_scope_ && !document_->InStyleRecalc();
 }
 
 bool DisplayLockContext::MarkForStyleRecalcIfNeeded() {

@@ -319,6 +319,12 @@ class CORE_EXPORT DisplayLockContext final
   // setting.
   void SetKeepUnlockedUntilLifecycleCount(int count);
 
+  // Returns true if the context can dirty element's style in the current
+  // processing. Note that this returns false if the document is doing a style
+  // recalc, or if we're currently setting a new requested state which happens
+  // in style adjustment.
+  bool CanDirtyStyle() const;
+
   WeakMember<Element> element_;
   WeakMember<Document> document_;
   EContentVisibility state_ = EContentVisibility::kVisible;
@@ -403,6 +409,12 @@ class CORE_EXPORT DisplayLockContext final
   int keep_unlocked_count_ = 0;
 
   bool had_lifecycle_update_since_last_unlock_ = false;
+
+  // Tracks whether we're updating requested state, which can only happen from
+  // the style adjuster. Note that this is different from a InStyleRecalc check
+  // since we can also force update style outside of this call (via ensure
+  // computed style).
+  bool set_requested_state_scope_ = false;
 };
 
 }  // namespace blink
