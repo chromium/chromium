@@ -256,8 +256,12 @@ void DialogOverlayImpl::RegisterWindowObserverIfNeeded(
 static void JNI_DialogOverlayImpl_NotifyDestroyedSynchronously(
     JNIEnv* env,
     int message_pipe_handle) {
+  // TODO(crbug.com/1155313): It's entirely unclear how this could happen,
+  // but it's the easiest way that the call to OnSynchronouslyDestroyed might
+  // crash.  This check will verify that it's really the problem.
+  CHECK_NE(static_cast<MojoHandle>(message_pipe_handle), MOJO_HANDLE_INVALID);
   mojo::MessagePipeHandle handle(message_pipe_handle);
-  mojo::ScopedMessagePipeHandle scoped_handle(std::move(handle));
+  mojo::ScopedMessagePipeHandle scoped_handle(handle);
   mojo::Remote<media::mojom::AndroidOverlayClient> remote(
       mojo::PendingRemote<media::mojom::AndroidOverlayClient>(
           std::move(scoped_handle),
