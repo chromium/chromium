@@ -70,8 +70,8 @@
         span.classList.add("failed");
       }
       entry.prepend(span);
-      e.target.disabled = true;
       setTimeout(function() {
+        e.target.disabled = true;
         // hack to close the color picker without user action.
         e.target.type="text";
         e.target.type="color";
