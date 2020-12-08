@@ -181,9 +181,12 @@ class ExtensionSameSiteCookiesTest
         base::StrCat({"/set-header?Content-Security-Policy: ", kCspHeader}));
     const char kAppendFrameScriptTemplate[] = R"(
         var f = document.createElement('iframe');
-        f.onload = (e) => window.domAutomationController.send(true);
         f.src = $1;
-        document.body.appendChild(f);)";
+        f.onload = function(e) {
+            window.domAutomationController.send(true);
+            f.onload = undefined;
+        }
+        document.body.appendChild(f); )";
     std::string append_frame_script =
         content::JsReplace(kAppendFrameScriptTemplate, url.spec());
     bool loaded = false;
@@ -364,7 +367,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 // initiator and requested URL are same-site => SameSite cookies are sent.
 // crbug.com/1153083: flaky on linux, win, and mac
 IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
-                       DISABLED_OnePermittedSameSiteFrame_Navigation) {
+                       OnePermittedSameSiteFrame_Navigation) {
   SetCookies(kPermittedHost);
   content::RenderFrameHost* main_frame = NavigateMainFrameToExtensionPage();
   content::RenderFrameHost* child_frame =
