@@ -70,9 +70,6 @@ void ServicesDelegateAndroid::ShutdownServices() {
 
 void ServicesDelegateAndroid::RefreshState(bool enable) {}
 
-void ServicesDelegateAndroid::ProcessResourceRequest(
-    const ResourceRequestInfo* request) {}
-
 std::unique_ptr<prefs::mojom::TrackedPreferenceValidationDelegate>
 ServicesDelegateAndroid::CreatePreferenceValidationDelegate(Profile* profile) {
   return nullptr;

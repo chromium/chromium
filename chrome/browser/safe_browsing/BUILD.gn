@@ -223,8 +223,6 @@ static_library("safe_browsing") {
         "incident_reporting/platform_state_store.h",
         "incident_reporting/preference_validation_delegate.cc",
         "incident_reporting/preference_validation_delegate.h",
-        "incident_reporting/resource_request_detector.cc",
-        "incident_reporting/resource_request_detector.h",
         "incident_reporting/resource_request_incident.cc",
         "incident_reporting/resource_request_incident.h",
         "incident_reporting/state_store.cc",

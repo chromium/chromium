@@ -5671,7 +5671,6 @@ test("unit_tests") {
       "../browser/safe_browsing/incident_reporting/mock_incident_receiver.h",
       "../browser/safe_browsing/incident_reporting/platform_state_store_unittest.cc",
       "../browser/safe_browsing/incident_reporting/preference_validation_delegate_unittest.cc",
-      "../browser/safe_browsing/incident_reporting/resource_request_detector_unittest.cc",
       "../browser/safe_browsing/incident_reporting/state_store_unittest.cc",
       "../browser/safe_browsing/incident_reporting/tracked_preference_incident_unittest.cc",
       "../browser/safe_browsing/local_two_phase_testserver.cc",

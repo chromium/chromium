@@ -39,8 +39,6 @@ class DownloadProtectionService;
 #endif
 class IncidentReportingService;
 class PasswordProtectionService;
-class ResourceRequestDetector;
-struct ResourceRequestInfo;
 class SafeBrowsingService;
 class SafeBrowsingDatabaseManager;
 struct V4ProtocolConfig;
@@ -64,7 +62,6 @@ class ServicesDelegate {
     virtual bool CanCreateDownloadProtectionService() = 0;
 #endif
     virtual bool CanCreateIncidentReportingService() = 0;
-    virtual bool CanCreateResourceRequestDetector() = 0;
 
     // Caller takes ownership of the returned object. Cannot use std::unique_ptr
     // because services may not be implemented for some build configs.
@@ -73,7 +70,6 @@ class ServicesDelegate {
     virtual DownloadProtectionService* CreateDownloadProtectionService() = 0;
 #endif
     virtual IncidentReportingService* CreateIncidentReportingService() = 0;
-    virtual ResourceRequestDetector* CreateResourceRequestDetector() = 0;
   };
 
   // Creates the ServicesDelegate using its's default ServicesCreator.
@@ -106,7 +102,6 @@ class ServicesDelegate {
   virtual void RefreshState(bool enable) = 0;
 
   // See the SafeBrowsingService methods of the same name.
-  virtual void ProcessResourceRequest(const ResourceRequestInfo* request) = 0;
   virtual std::unique_ptr<prefs::mojom::TrackedPreferenceValidationDelegate>
   CreatePreferenceValidationDelegate(Profile* profile) = 0;
   virtual void RegisterDelayedAnalysisCallback(

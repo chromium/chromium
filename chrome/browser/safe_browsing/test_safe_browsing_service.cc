@@ -110,9 +110,6 @@ bool TestSafeBrowsingService::CanCreateDownloadProtectionService() {
 bool TestSafeBrowsingService::CanCreateIncidentReportingService() {
   return true;
 }
-bool TestSafeBrowsingService::CanCreateResourceRequestDetector() {
-  return false;
-}
 
 SafeBrowsingDatabaseManager* TestSafeBrowsingService::CreateDatabaseManager() {
   DCHECK(!use_v4_local_db_manager_);
@@ -139,11 +136,6 @@ TestSafeBrowsingService::CreateIncidentReportingService() {
   NOTIMPLEMENTED();
   return nullptr;
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
-}
-ResourceRequestDetector*
-TestSafeBrowsingService::CreateResourceRequestDetector() {
-  NOTIMPLEMENTED();
-  return nullptr;
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

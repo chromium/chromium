@@ -11,7 +11,6 @@
 #include "chrome/browser/safe_browsing/client_side_detection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
-#include "chrome/browser/safe_browsing/incident_reporting/resource_request_detector.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
 
 namespace safe_browsing {
@@ -36,7 +35,6 @@ class ServicesDelegateDesktop : public ServicesDelegate {
       SafeBrowsingDatabaseManager* database_manager) override;
   void ShutdownServices() override;
   void RefreshState(bool enable) override;
-  void ProcessResourceRequest(const ResourceRequestInfo* request) override;
   std::unique_ptr<prefs::mojom::TrackedPreferenceValidationDelegate>
   CreatePreferenceValidationDelegate(Profile* profile) override;
   void RegisterDelayedAnalysisCallback(
@@ -61,11 +59,9 @@ class ServicesDelegateDesktop : public ServicesDelegate {
   scoped_refptr<SafeBrowsingDatabaseManager> CreateDatabaseManager();
   DownloadProtectionService* CreateDownloadProtectionService();
   IncidentReportingService* CreateIncidentReportingService();
-  ResourceRequestDetector* CreateResourceRequestDetector();
 
   std::unique_ptr<DownloadProtectionService> download_service_;
   std::unique_ptr<IncidentReportingService> incident_service_;
-  std::unique_ptr<ResourceRequestDetector> resource_request_detector_;
 
   // The database manager that handles the database checking and update logic
   // Accessed on both UI and IO thread.

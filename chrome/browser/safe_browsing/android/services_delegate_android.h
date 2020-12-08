@@ -29,7 +29,6 @@ class ServicesDelegateAndroid : public ServicesDelegate {
       SafeBrowsingDatabaseManager* database_manager) override;
   void ShutdownServices() override;
   void RefreshState(bool enable) override;
-  void ProcessResourceRequest(const ResourceRequestInfo* request) override;
   std::unique_ptr<prefs::mojom::TrackedPreferenceValidationDelegate>
   CreatePreferenceValidationDelegate(Profile* profile) override;
   void RegisterDelayedAnalysisCallback(
