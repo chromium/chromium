@@ -36,6 +36,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
+#include "third_party/blink/public/mojom/feature_policy/document_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -865,6 +866,15 @@ ScriptPromise Performance::profile(ScriptState* script_state,
   DCHECK(execution_context);
   DCHECK(
       RuntimeEnabledFeatures::ExperimentalJSProfilerEnabled(execution_context));
+
+  if (!GetExecutionContext()->IsFeatureEnabled(
+          mojom::blink::DocumentPolicyFeature::kJSProfiling,
+          ReportOptions::kReportOnFailure)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "JS profiling is disabled by Document Policy.");
+    return ScriptPromise();
+  }
 
   if (!execution_context->CrossOriginIsolatedCapability()) {
     exception_state.ThrowSecurityError(

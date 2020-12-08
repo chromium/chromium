@@ -8,6 +8,7 @@
 "lossy-images-max-bpp"
 "oversized-images"
 "report-to"
+"js-profiling"
 "*"
 "="
 "bpp"

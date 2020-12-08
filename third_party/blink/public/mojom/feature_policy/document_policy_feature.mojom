@@ -32,6 +32,8 @@ enum DocumentPolicyFeature {
   kDocumentWrite = 9,
   // Controls whether synchronous script elements will run.
   kSyncScript = 10,
+  // Controls whether or not the JS Self-Profiling API is enabled.
+  kJSProfiling = 11,
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_document_policy_enum.py in

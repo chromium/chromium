@@ -109,5 +109,12 @@
       default_value: "true",
       depends_on: ["ExperimentalProductivityFeatures"],
     },
+    {
+      name: "JSProfiling",
+      document_policy_name: "js-profiling",
+      value_type: "Bool",
+      default_value: "false",
+      depends_on: ["ExperimentalJSProfiler"],
+    },
   ],
 }
