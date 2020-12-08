@@ -7,11 +7,32 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/services/secure_channel/authenticated_channel.h"
+#include "chromeos/services/secure_channel/connection_metrics_logger.h"
 #include "chromeos/services/secure_channel/nearby_connection_manager.h"
 
 namespace chromeos {
 
 namespace secure_channel {
+
+namespace {
+
+NearbyInitiatorConnectionResult GetMetricsConnectionResult(
+    NearbyInitiatorFailureType failure_type) {
+  switch (failure_type) {
+    case NearbyInitiatorFailureType::kTimeoutDiscoveringDevice:
+      return NearbyInitiatorConnectionResult::kTimeoutDiscoveringDevice;
+    case NearbyInitiatorFailureType::kNearbyApiError:
+      return NearbyInitiatorConnectionResult::kNearbyApiError;
+    case NearbyInitiatorFailureType::kConnectionRejected:
+      return NearbyInitiatorConnectionResult::kConnectionRejected;
+    case NearbyInitiatorFailureType::kConnectivityError:
+      return NearbyInitiatorConnectionResult::kConnectivityError;
+    case NearbyInitiatorFailureType::kAuthenticationError:
+      return NearbyInitiatorConnectionResult::kAuthenticationError;
+  }
+}
+
+}  // namespace
 
 // static
 NearbyInitiatorOperation::Factory*
@@ -92,11 +113,14 @@ void NearbyInitiatorOperation::PerformUpdateConnectionPriority(
 void NearbyInitiatorOperation::OnSuccessfulConnection(
     std::unique_ptr<AuthenticatedChannel> authenticated_channel) {
   OnSuccessfulConnectionAttempt(std::move(authenticated_channel));
+  LogNearbyInitiatorConnectionResult(
+      NearbyInitiatorConnectionResult::kConnectionSuccess);
 }
 
 void NearbyInitiatorOperation::OnConnectionFailure(
     NearbyInitiatorFailureType failure_type) {
   OnFailedConnectionAttempt(failure_type);
+  LogNearbyInitiatorConnectionResult(GetMetricsConnectionResult(failure_type));
 }
 
 }  // namespace secure_channel
