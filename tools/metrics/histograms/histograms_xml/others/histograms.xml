@@ -11192,7 +11192,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="PointingStick.Acceleration" enum="BooleanEnabled"
+<histogram base="true" name="PointingStick.Acceleration" enum="BooleanEnabled"
     expires_after="2021-04-01">
 <!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
 
@@ -11206,8 +11206,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="PointingStick.PointerSensitivity" enum="PointerSensitivity"
-    expires_after="2021-04-01">
+<histogram base="true" name="PointingStick.PointerSensitivity"
+    enum="PointerSensitivity" expires_after="2021-04-01">
 <!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
 
   <owner>hcutts@chromium.org</owner>
