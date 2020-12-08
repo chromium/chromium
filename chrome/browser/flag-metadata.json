@@ -4596,12 +4596,12 @@
   {
     "name": "tab-hover-card-images",
     "owners": [ "dfried", "corising", "//chrome/browser/ui/views/tabs/OWNERS" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
   },
   {
     "name": "tab-hover-cards",
     "owners": [ "corising", "//chrome/browser/ui/views/tabs/OWNERS" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
   },
   {
     "name": "tab-outlines-in-low-contrast-themes",
