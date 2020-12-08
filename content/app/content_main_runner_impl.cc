@@ -17,6 +17,7 @@
 #include "base/allocator/allocator_extension.h"
 #include "base/allocator/allocator_shim.h"
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/at_exit.h"
 #include "base/base_switches.h"
 #include "base/bind.h"
@@ -246,12 +247,9 @@ void EnablePCScanForMallocPartitionsIfNeeded() {
 }
 
 void EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
-  static const base::Feature kPartitionAllocPCScanBrowserOnly{
-      "PartitionAllocPCScanBrowserOnly", base::FEATURE_DISABLED_BY_DEFAULT};
-  (void)kPartitionAllocPCScanBrowserOnly;
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   CHECK(base::FeatureList::GetInstance());
-  if (base::FeatureList::IsEnabled(kPartitionAllocPCScanBrowserOnly)) {
+  if (base::features::IsPartitionAllocPCScanBrowserOnlyEnabled()) {
     base::allocator::EnablePCScan();
   }
 #endif

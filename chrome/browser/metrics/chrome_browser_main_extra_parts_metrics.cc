@@ -7,6 +7,7 @@
 #include <cmath>
 #include <string>
 
+#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
@@ -546,11 +547,14 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
 
 #endif  // defined(OS_WIN)
 
-  // Records whether or not PartitionAlloc is used as the default allocator.
+  // Records whether or not PartitionAlloc is used as the default allocator,
+  // plus whether or not PCScan is enabled.
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "PartitionAllocEverywhere",
+      "PartitionAllocEverywhereAndPCScan",
 #if BUILDFLAG(USE_PARTITION_ALLOC_EVERYWHERE)
-      "Enabled"
+      base::features::IsPartitionAllocPCScanBrowserOnlyEnabled()
+          ? "EnabledWithPCScan"
+          : "EnabledWithoutPCScan"
 #else
       "Disabled"
 #endif

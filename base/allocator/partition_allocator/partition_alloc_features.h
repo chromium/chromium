@@ -27,6 +27,9 @@ namespace features {
 
 extern const BASE_EXPORT Feature kPartitionAllocGigaCage;
 extern const BASE_EXPORT Feature kPartitionAllocPCScan;
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+extern const BASE_EXPORT Feature kPartitionAllocPCScanBrowserOnly;
+#endif
 
 ALWAYS_INLINE bool IsPartitionAllocGigaCageEnabled() {
 #if defined(PA_HAS_64_BITS_POINTERS) && defined(OS_WIN)
@@ -61,11 +64,22 @@ ALWAYS_INLINE bool IsPartitionAllocGigaCageEnabled() {
 }
 
 ALWAYS_INLINE bool IsPartitionAllocPCScanEnabled() {
-#if !defined(PA_HAS_64_BITS_POINTERS)
-  return false;
-#endif  // !PA_HAS_64_BITS_POINTERS
+#if defined(PA_HAS_64_BITS_POINTERS)
   return FeatureList::IsEnabled(kPartitionAllocPCScan);
+#else  // PA_HAS_64_BITS_POINTERS
+  return false;
+#endif
 }
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+ALWAYS_INLINE bool IsPartitionAllocPCScanBrowserOnlyEnabled() {
+#if defined(PA_HAS_64_BITS_POINTERS)
+  return FeatureList::IsEnabled(kPartitionAllocPCScanBrowserOnly);
+#else  // PA_HAS_64_BITS_POINTERS
+  return false;
+#endif
+}
+#endif
 
 }  // namespace features
 }  // namespace base

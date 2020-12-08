@@ -25,5 +25,11 @@ const Feature kPartitionAllocGigaCage{"PartitionAllocGigaCage32bit",
 const Feature kPartitionAllocPCScan{"PartitionAllocPCScan",
                                     FEATURE_DISABLED_BY_DEFAULT};
 
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+// If enabled, PCScan is turned on only for the browser's malloc partition.
+const Feature kPartitionAllocPCScanBrowserOnly{
+    "PartitionAllocPCScanBrowserOnly", FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 }  // namespace features
 }  // namespace base
