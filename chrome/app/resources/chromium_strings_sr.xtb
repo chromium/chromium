@@ -29,6 +29,8 @@
 <translation id="1966382378801805537">Chromium не може да одреди ни да подеси подразумевани прегледач</translation>
 <translation id="2008474315282236005">Овим ћете избрисати 1 ставку са овог уређаја. Да бисте касније вратили податке, пријавите се у Chromium као <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">Да бисте проверили да ли су остале лозинке безбедне од упада у податке и других безбедносних проблема, <ph name="BEGIN_LINK" />пријавите се у Chromium<ph name="END_LINK" />.</translation>
+<translation id="2179192076895113433">Можете да управљате овим Google налогом и другим Google налозима које сте додали за корисника <ph name="USER_NAME" /> на једном месту у <ph name="LINK_BEGIN" />Подешавањима<ph name="LINK_END" />.
+          Дозволе које сте дали веб-сајтовима у прегледачу Chromium и апликацијама са Google Play-а могу да важе за све налоге.</translation>
 <translation id="2185166961232948079">Chromium – пријављивање на мрежу – <ph name="PAGE_TITLE" /></translation>
 <translation id="2225696941839557119">Chromium ОС није успео да синхронизује лозинке.</translation>
 <translation id="2241627712206172106">Ако делите рачунар, пријатељи и породица могу засебно да прегледају и да подесе Chromium баш онако како желе.</translation>

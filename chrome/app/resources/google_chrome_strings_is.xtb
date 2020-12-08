@@ -168,6 +168,8 @@ Sumir eiginleikar kunna að vera óaðgengilegir. Tilgreindu aðra prófílmöpp
 Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="556024056938947818">Google Chrome er að reyna að birta aðgangsorð.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-inn)</translation>
+<translation id="5655746611259367388">Þú getur stjórnað þessum reikningi og öðrum Google reikningum sem þú hefur bætt við <ph name="USER_NAME" /> á einum stað í <ph name="LINK_BEGIN" />Stillingum<ph name="LINK_END" />.
+          Heimildir sem þú veittir vefsvæðum í Chrome vafranum og forritum úr Google Play kunna að eiga við alla reikninga.</translation>
 <translation id="5657226924540934362">Ef stilling sést ekki á þessari síðu skaltu athuga <ph name="LINK_BEGIN" />
       stillingar Chrome OS<ph name="LINK_END" /></translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> gæti verið skaðleg skrá og Chrome útilokaði hana.</translation>

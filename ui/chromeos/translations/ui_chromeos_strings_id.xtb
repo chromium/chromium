@@ -115,6 +115,7 @@
 <translation id="2208919847696382164">Instal dengan Linux</translation>
 <translation id="2225536596944493418">Yakin ingin menghapus <ph name="NUMBER_OF_ITEMS" /> item?</translation>
 <translation id="2230062665678605299">Tidak dapat membuat folder "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2251368349685848079">Pulihkan dari sampah</translation>
 <translation id="2275059641601412272">Dipindahkan.</translation>
 <translation id="2288278176040912387">Pemutar piringan hitam</translation>
 <translation id="2291538123825441971">Membuka <ph name="NUMBER_OF_FILES" /> file.</translation>
@@ -182,6 +183,7 @@
 <translation id="2949781154072577687">Memformat <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Ubur-ubur</translation>
 <translation id="2984337792991268709"><ph name="TODAY_DAYTIME" /> hari ini</translation>
+<translation id="2994320653639462337">Memulihkan <ph name="COUNT" /> item ...</translation>
 <translation id="2994669386200004489">Tidak dapat mencadangkan <ph name="FILE_NAME" /></translation>
 <translation id="299638574917407533">Prancis (Kanada)</translation>
 <translation id="3003633581067744647">Beralih ke tampilan thumbnail</translation>
@@ -299,6 +301,7 @@
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">Link eksternal</translation>
+<translation id="4418686080762064601">Buat pintasan untuk file Anda</translation>
 <translation id="4425149324548788773">Drive Saya</translation>
 <translation id="4470564870223067757">2 Himpunan Hangul</translation>
 <translation id="4477002475007461989">Rumania</translation>
@@ -379,6 +382,7 @@
 <translation id="508423945471810158">Memindahkan <ph name="NUMBER_OF_ITEMS" /> item ke <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">Terjadi kesalahan.</translation>
 <translation id="5098629044894065541">Ibrani</translation>
+<translation id="5109254780565519649">Terjadi error. Beberapa item mungkin belum dipulihkan.</translation>
 <translation id="5110329002213341433">Inggris (Kanada)</translation>
 <translation id="5123433949759960244">Bola basket</translation>
 <translation id="5129662217315786329">Polandia</translation>
@@ -609,6 +613,7 @@
 <translation id="7547811415869834682">Belanda</translation>
 <translation id="7551643184018910560">Pin ke rak</translation>
 <translation id="7553492409867692754">Beri aplikasi Linux izin untuk mengakses file di folder <ph name="FOLDER_NAME" /></translation>
+<translation id="7575645593344061397">Memulihkan "<ph name="FILENAME" />" ...</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Tunggu sebentar</translation>
 <translation id="7592775719802218421">Membuat <ph name="FILE_NAME" /> tersedia secara offline</translation>
@@ -706,6 +711,7 @@
 <translation id="8395901698320285466">Dimensi</translation>
 <translation id="8437209419043462667">AS</translation>
 <translation id="8456681095658380701">Nama tidak valid</translation>
+<translation id="8461467696380332069">Klik kanan file, lalu pilih "Sematkan ke Rak" untuk mendapatkan akses cepat ke file Anda di rak.</translation>
 <translation id="8463494891489624050">VIQR Vietnam</translation>
 <translation id="8466234950814670489">Arsip Tar</translation>
 <translation id="8475647382427415476">Saat ini Google Drive tidak dapat menyinkronkan "<ph name="FILENAME" />". Google Drive akan mencoba lagi nanti.</translation>

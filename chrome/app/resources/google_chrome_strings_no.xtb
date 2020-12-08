@@ -160,6 +160,8 @@
 <translation id="5430073640787465221">Innstillingsfilen er skadet eller ugyldig. Google Chrome kan ikke gjenopprette innstillingene dine.</translation>
 <translation id="556024056938947818">Google Chrome prøver å vise passord.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-Inn)</translation>
+<translation id="5655746611259367388">Du kan administrere denne og andre Google-kontoer du har lagt til for <ph name="USER_NAME" />, på ett sted i <ph name="LINK_BEGIN" />Innstillinger<ph name="LINK_END" />.
+          Tillatelser du har gitt nettsteder i Chrome-nettleseren og apper fra Google Play, kan gjelde for alle kontoer.</translation>
 <translation id="5657226924540934362">Hvis en innstilling ikke vises på denne siden, kan du gå til <ph name="LINK_BEGIN" />
     innstillingene for Chrome OS<ph name="LINK_END" /></translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan være farlig, så Chrome har blokkert den.</translation>

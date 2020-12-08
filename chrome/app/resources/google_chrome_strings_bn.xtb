@@ -164,6 +164,8 @@
 <translation id="5430073640787465221">আপনার পছন্দের ফাইল ক্ষতিকর অথবা ভুল৷\n\nGoogle Chrome আপনার সেটিংস পুনরুদ্ধার করতে পারছে না৷</translation>
 <translation id="556024056938947818">Google Chrome পাসওয়ার্ডগুলি দেখানোর চেষ্টা করছে৷</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5655746611259367388"><ph name="LINK_BEGIN" />সেটিংসে<ph name="LINK_END" /> এক জায়গা থেকেই আপনি <ph name="USER_NAME" />-এর জন্য এই অ্যাকাউন্টটি ও অন্য যেসব Google অ্যাকাউন্ট যোগ করেছেন সেগুলি ম্যানেজ করতে পারবেন।
+          Chrome ব্রাউজারে বিভিন্ন ওয়েবসাইটে ও Google Play-এর বিভিন্ন অ্যাপে আপনি যেসব অনুমতি দিয়েছেন সেগুলি সব অ্যাকাউন্টে প্রয়োগ করা হতে পারে।</translation>
 <translation id="5657226924540934362">এই পৃষ্ঠাতে কোনও একটি সেটিং দেখা না গেলে, আপনার <ph name="LINK_BEGIN" />
       Chrome OS সেটিংস<ph name="LINK_END" /> বিকল্পটি দেখুন</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> বিপজ্জনক হতে পারে, তাই Chrome এটিকে অবরুদ্ধ করেছে।</translation>

@@ -183,6 +183,7 @@
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> formatlanır...</translation>
 <translation id="2951236788251446349">Meduza</translation>
 <translation id="2984337792991268709">Bu gün <ph name="TODAY_DAYTIME" /></translation>
+<translation id="2994320653639462337"><ph name="COUNT" /> element bərpa edilir...</translation>
 <translation id="2994669386200004489"><ph name="FILE_NAME" /> faylını yedəkləmək alınmadı</translation>
 <translation id="299638574917407533">Fransız (Kanada)</translation>
 <translation id="3003633581067744647">Eskiz görünüşünə keçin</translation>
@@ -300,6 +301,7 @@
 <translation id="4364327530094270451">Yemiş</translation>
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">Xarici keçid</translation>
+<translation id="4418686080762064601">Fayllarınız üçün qısayol yaradın</translation>
 <translation id="4425149324548788773">Diskim</translation>
 <translation id="4470564870223067757">Hangul 2 Dəsti</translation>
 <translation id="4477002475007461989">Rumın</translation>
@@ -380,6 +382,7 @@
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> element <ph name="FOLDER_NAME" /> qovluğuna köçürülür</translation>
 <translation id="509429900233858213">Xəta baş verdi.</translation>
 <translation id="5098629044894065541">İvrit</translation>
+<translation id="5109254780565519649">Xəta baş verdi. Bəzi elementlər bərpa edilməmiş ola bilər.</translation>
 <translation id="5110329002213341433">İngilis dili (Kanada)</translation>
 <translation id="5123433949759960244">Basketbol</translation>
 <translation id="5129662217315786329">Polyak</translation>
@@ -609,6 +612,7 @@
 <translation id="7547811415869834682">Holland</translation>
 <translation id="7551643184018910560">Rəfə sancaqlayın</translation>
 <translation id="7553492409867692754">Linux tətbiqlərinə <ph name="FOLDER_NAME" /> qovluğundakı fayllara giriş icazəsi verin</translation>
+<translation id="7575645593344061397">"<ph name="FILENAME" />" bərpa edilir...</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Bir saniyə gözləyin</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> oflayn əlçatan edilir</translation>
@@ -704,6 +708,7 @@
 <translation id="8395901698320285466">Ölçülər</translation>
 <translation id="8437209419043462667">ABŞ</translation>
 <translation id="8456681095658380701">Yanlış ad</translation>
+<translation id="8461467696380332069">Fayla sağ düymə ilə toxunun və rəfdəki fayllarınıza sürətli giriş üçün "Rəfə bərkidin" seçimini edin.</translation>
 <translation id="8463494891489624050">Vyetnam dili (VIQR)</translation>
 <translation id="8466234950814670489">Tar arxivi</translation>
 <translation id="8475647382427415476">Google Disk indi "<ph name="FILENAME" />" adlı faylı sinxronizasiya edə bilmədi. Google Disk daha sonra cəhd edəcək.</translation>

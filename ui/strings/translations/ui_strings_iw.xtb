@@ -228,7 +228,6 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{לפני שעה אחת}two{לפני שעתיים}many{לפני # שעות}other{לפני # שעות}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{נותרה שנ‘ אחת}two{נותרו # שנ‘}many{נותרו # שנ‘}other{נותרו # שנ‘}}</translation>
 <translation id="8134065097954893699">טעינה מחדש של הדף הזה</translation>
-<translation id="8144660977431427332">‏החיפושים שלך מופעלים על ידי Google Assistant. <ph name="LEARN_MORE" /></translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, השלמה אוטומטית</translation>
 <translation id="815598010540052116">גלילה למטה</translation>
 <translation id="8179976553408161302">Enter</translation>

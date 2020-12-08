@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Хэвлэсэн</translation>
 <translation id="1979103255016296513">Нууц үг солих хугацаа хэтэрсэн</translation>
 <translation id="1980044825731880088">Төв процессорын нэгжийн хурд</translation>
+<translation id="2008685064673031089">Үндсэн хайлт</translation>
 <translation id="2080070583977670716">Нэмэлт тохиргоо</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Хэвлэх ажлыг цуцлах</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Давсан</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> оролдлого үлдсэн</translation>
 <translation id="2391082728065870591">Санал хүсэлтийн тайлан илгээх</translation>
+<translation id="2446553403094072641">Хөвөгч цэгийн нарийвчлал</translation>
 <translation id="2461822463642141190">Одоогийн</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Шалгах</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Програм</translation>
 <translation id="2872961005593481000">Унтраах</translation>
+<translation id="2878387241690264070"><ph name="NUM_SECONDS" /> секундэд <ph name="RATE" /> цэнэггүй болсон.</translation>
 <translation id="3008341117444806826">ДАХИН ШИНЭЧЛЭХ</translation>
 <translation id="3009958530611748826">Хадгалах фолдероо сонгоно уу</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />мA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Файлс аппаас фолдер сонгох...</translation>
 <translation id="4848429997038228357">АЖИЛЛУУЛЖ БАЙНА</translation>
 <translation id="4890353053343094602">Нэн даруй шинийг сонгоно уу</translation>
+<translation id="4891842000192098784">Стресс</translation>
 <translation id="4917889632206600977">Зогссон - Цаас дууссан</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундэд <ph name="RATE" /> цэнэглэсэн.</translation>
 <translation id="4932733599132424254">Огноо</translation>
+<translation id="498186245079027698">Сканнерыг шалгаад дахин оролдоно уу. Скан хийсэн файлуудыг хадгалах хангалттай дотоод зай байгаа эсэхийг шалгана уу.</translation>
 <translation id="4985509611418653372">Ажиллуулах</translation>
 <translation id="500920857929044050">Туршилтыг зогсоох</translation>
 <translation id="5154917547274118687">Санах ойн</translation>
@@ -138,6 +143,7 @@
 <translation id="5551702563755460533">Тусламжийн төвөөс нэмэлт мэдээлэл авах</translation>
 <translation id="5635169860413004179">Тайланг харах</translation>
 <translation id="5719918614880940190">Энэ нь CPU-н ашиглалтыг хэмждэг бөгөөд бүх цөмийн хуримтлал юм</translation>
+<translation id="5781694279199921985">Харилцан үйлдлийн логийг хадгалах</translation>
 <translation id="5797428682393400134">АМЖИЛТТАЙ</translation>
 <translation id="5832805196449965646">Хүн нэм</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>
@@ -174,6 +180,8 @@
 <translation id="6766275201586212568">DNS-н тайлал амжилтгүй</translation>
 <translation id="6768237774506518020">DNS-н тайллын алдааны өндөр хувь</translation>
 <translation id="6839141349259399400">Сканнертай холбогдож чадахгүй байна уу?</translation>
+<translation id="6853312040151791195">Цэнэггүй болох хурд</translation>
+<translation id="6898743098396957679">Скан хийхийг гүйцээж чадсангүй</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> энэ төхөөрөмжийг удирддаг бөгөөд хэрэглэгчийн зочилсон веб хуудас, нууц үг болон имэйл зэрэг бүх үйл ажиллагаанд хандах эрхтэй.</translation>
 <translation id="714876143603641390">Lan-н холболт</translation>
 <translation id="7162487448488904999">Gallery</translation>
@@ -186,12 +194,15 @@
 <translation id="7648838807254605802">Өндөр HTTPS хоцролт</translation>
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7690294790491645610">Шинэ нууц үг баталгаажуулна уу</translation>
+<translation id="773153675489693198">Мөчлөгийн тоо</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> туршилт</translation>
 <translation id="7805768142964895445">Байр байдал</translation>
 <translation id="7855434858642800953">Скан хийсэн файлыг хадгалсан!</translation>
 <translation id="7928373994957558460">Файлын байршлыг харуулах</translation>
 <translation id="7936303884198020182">DNS олдсонгүй</translation>
+<translation id="7960831585769876809">Температур</translation>
 <translation id="8041089156583427627">Санал хүсэлт илгээх</translation>
+<translation id="8075838845814659848">Үлдсэн цэнэг</translation>
 <translation id="808894953321890993">Нууц үгийг солих</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8160445423316272678">Эхлүүлэхийн тулд документоо сканнер дээр байрлуулж, <ph name="SPAN_BEGIN" />Скан хийхийг<ph name="SPAN_END" /> сонгоно уу</translation>
@@ -219,6 +230,7 @@
 <translation id="8919837981463578619">Амжилтгүй болсон - Тавиур алга байна</translation>
 <translation id="8928727111548978589">Амжилтгүй болсон - Цаас дууссан</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> оролдлого үлдлээ</translation>
+<translation id="8968751544471797276">Цэнэглэх хурд</translation>
 <translation id="8970109610781093811">Дахин ажиллуулах</translation>
 <translation id="9088306295921699330">Одоогийн ашиглалт</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-н тасалбарыг дахин шинэчлэх</translation>

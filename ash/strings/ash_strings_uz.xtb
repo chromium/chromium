@@ -84,6 +84,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1698760176351776263">IPv6 manzil: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Ish stoli: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Tarmoq sozlamalari</translation>
+<translation id="1719094688023114093">Jonli izoh yoniq.</translation>
 <translation id="1743570585616704562">Barmoq izi aniqlanmadi</translation>
 <translation id="1746730358044914197">Matn kiritish usuli administratoringiz tomonidan sozlangan.</translation>
 <translation id="1747827819627189109">Ekran klaviaturasi yoqildi</translation>
@@ -134,6 +135,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2208323208084708176">Birlashgan ish stoli rejimi</translation>
 <translation id="2220572644011485463">PIN kod yoki parol</translation>
 <translation id="2222338659135520253">Hisob bilan kirish zarur</translation>
+<translation id="2222841058024245321">7-ish stoli</translation>
 <translation id="225680501294068881">Qurilma qidirilmoqda...</translation>
 <translation id="2268130516524549846">Bluetooth o‘chirildi</translation>
 <translation id="2268813581635650749">Hammasidan chiqish</translation>
@@ -180,6 +182,8 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2621713457727696555">Himoyalangan</translation>
 <translation id="2653659639078652383">Yuborish</translation>
 <translation id="2658778018866295321">Bosib torting</translation>
+<translation id="2678852583403169292">Teginib tinglash menyusi</translation>
+<translation id="2689613560355655046">8-ish stoli</translation>
 <translation id="2700493154570097719">Klaviaturani tanlash</translation>
 <translation id="2704781753052663061">Boshqa Wi-Fi tarmoqlarga ulanish</translation>
 <translation id="2705001408393684014">Mikrofon: <ph name="STATE_TEXT" /></translation>
@@ -326,6 +330,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4028481283645788203">Xavfsizlikni oshirish uchun parol kiriting</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Ekraningiz namoyish qilinmoqda</translation>
+<translation id="4057003836560082631">Brauzer varagʻi: <ph name="INDEX" />/<ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Yoqilmagan, 1 ta ilova}other{Yoqilmagan, # ta ilova}}</translation>
 <translation id="4066027111132117168">Yoniq, <ph name="REMAINING_TIME" /> qoldi</translation>
 <translation id="4072264167173457037">Signal o‘rtacha</translation>
@@ -371,6 +376,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4389184120735010762">Qadalgan lupa tezkor havolasini bosdingiz. Ishga tushirilsinmi?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> yoqilmagan</translation>
 <translation id="4421231901400348175">Ekraningiz boshqaruvini masofaviy yordamchi orqali <ph name="HELPER_NAME" /> bilan ulashish.</translation>
+<translation id="4424159417645388645">5-ish stoli</translation>
 <translation id="4427613789487709312">Standart (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Hajmi</translation>
 <translation id="4450893287417543264">Boshqa ko‘rsatilmasin</translation>
@@ -605,6 +611,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6614169507485700968">Maxfiylik ekrani yoniq</translation>
 <translation id="6627638273713273709">Qidiruv+Shift+K</translation>
 <translation id="6637729079642709226">Vaqtni oʻzgartirish</translation>
+<translation id="6641720045729354415">Jonli izohni yoqish/oʻchirish. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> shaxsingizni tasdiqlamoqchi</translation>
 <translation id="6650933572246256093"><ph name="DEVICE_NAME" /> qurilmasiga Bluetooth orqali ulanish uchun ruxsat berish kerak. Ekranida quyidagi kodni kiriting: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Parol</translation>
@@ -645,6 +652,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="698231206551913481">Bu foydalanuvchiga tegishli barcha fayllar va mahalliy ma’lumotlar foydalanuvchi olib tashlanganda butunlay o‘chib ketadi.</translation>
 <translation id="7007983414944123363">PIN kod yoki parolingiz tekshirilmadi. Qayta urining.</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> da qayting.</translation>
+<translation id="70168403932084660">6-ish stoli</translation>
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" /> qurilmasini telefoningiz bilan ulang</translation>
 <translation id="7026338066939101231">Kamaytirish</translation>
 <translation id="7029814467594812963">Seansdan chiqish</translation>
@@ -668,6 +676,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="7256634071279256947">Orqa mikrofon</translation>
 <translation id="726276584504105859">Ekranni bo‘lish xususiyatidan foydalanish uchun bu yerga torting</translation>
 <translation id="7262906531272962081">Eslatma yaratish</translation>
+<translation id="7302889331339392448">Jonli izoh yoqilmagan.</translation>
 <translation id="7303365578352795231">Boshqa qurilmada javob berilmoqda</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7346909386216857016">OK</translation>

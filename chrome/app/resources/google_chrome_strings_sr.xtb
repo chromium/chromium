@@ -168,6 +168,8 @@
 Google Chrome не може да врати подешавања.</translation>
 <translation id="556024056938947818">Google Chrome покушава да прикаже лозинке.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5655746611259367388">Можете да управљате овим Google налогом и другим Google налозима које сте додали за корисника <ph name="USER_NAME" /> на једном месту у <ph name="LINK_BEGIN" />Подешавањима<ph name="LINK_END" />.
+          Дозволе које сте дали веб-сајтовима у прегледачу Chrome и апликацијама са Google Play-а могу да важе за све налоге.</translation>
 <translation id="5657226924540934362">Ако се подешавање не приказује на овој страници, потражите га у <ph name="LINK_BEGIN" />
       подешавањима Chrome ОС-а<ph name="LINK_END" /></translation>
 <translation id="565744775970812598">Датотека <ph name="FILE_NAME" /> је можда опасна, па ју је Chrome блокирао.</translation>

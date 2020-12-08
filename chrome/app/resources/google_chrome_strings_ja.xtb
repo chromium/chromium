@@ -160,6 +160,8 @@
 <translation id="5430073640787465221">ユーザー設定ファイルが壊れているか無効です。設定を復元できません。</translation>
 <translation id="556024056938947818">Google Chrome はパスワードを表示しようとしています。</translation>
 <translation id="5566025111015594046">Google Chrome（mDNS インバウンド）</translation>
+<translation id="5655746611259367388">このアカウントと、<ph name="USER_NAME" /> さんの名前で追加した他の Google アカウントを [<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />] でまとめて管理できます。
+          Chrome ブラウザでウェブサイトに許可した権限と Google Play のアプリに許可した権限は、すべてのアカウントに適用されます。</translation>
 <translation id="5657226924540934362">このページに設定が表示されない場合は、<ph name="LINK_BEGIN" />
       Chrome OS の設定<ph name="LINK_END" />を確認してください</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> は危険なファイルの可能性があるため、Chrome でブロックしました。</translation>

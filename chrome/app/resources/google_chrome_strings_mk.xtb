@@ -168,6 +168,8 @@
 Google Chrome не може да ги обнови вашите поставки.</translation>
 <translation id="556024056938947818">Google Chrome се обидува да прикаже лозинки.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5655746611259367388">Може да управувате со оваа и другите сметки на Google што сте ги додале за <ph name="USER_NAME" /> од едно место во <ph name="LINK_BEGIN" />Поставки<ph name="LINK_END" />.
+          Дозволите што сте им ги одобриле на веб-сајтовите во прелистувачот Chrome и на апликациите од Google Play може да се применат за сите сметки.</translation>
 <translation id="5657226924540934362">Ако некоја поставка не се прикажува на страницава, погледнете во <ph name="LINK_BEGIN" />
     поставките за Chrome OS<ph name="LINK_END" /></translation>
 <translation id="565744775970812598">Датотеката <ph name="FILE_NAME" /> може да биде опасна, па затоа Chrome ја блокираше.</translation>

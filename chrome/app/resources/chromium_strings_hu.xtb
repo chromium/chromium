@@ -27,6 +27,8 @@
 <translation id="1966382378801805537">A Chromium problémába ütközött az alapértelmezett böngésző megállapításakor vagy beállításakor</translation>
 <translation id="2008474315282236005">Ezzel egyetlen elemet töröl erről az eszközről. Az adatok későbbi lekéréséhez jelentkezzen be a Chromiumba a következő e-mail-címmel: <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">Ha ellenőrizni szeretné, hogy a többi jelszava biztonságban van-e az adatvédelmi incidensektől és más biztonsági problémáktól, <ph name="BEGIN_LINK" />jelentkezzen be a Chromiumba<ph name="END_LINK" />.</translation>
+<translation id="2179192076895113433">Egy helyen, a <ph name="LINK_BEGIN" />Beállítások<ph name="LINK_END" /> oldalon kezelheti ezt és a következő felhasználó számára hozzáadott többi Google-fiókot: <ph name="USER_NAME" />.
+          A Chromium böngészőben a webhelyek számára, valamint a Google Playről származó alkalmazások számára megadott engedélyek az összes fiókra érvényesek lehetnek.</translation>
 <translation id="2185166961232948079">Chromium – Hálózati bejelentkezés – <ph name="PAGE_TITLE" /></translation>
 <translation id="2225696941839557119">A Chromium OS nem tudta szinkronizálni az Ön jelszavait.</translation>
 <translation id="2241627712206172106">Ha megoszt egy számítógépet, ismerősei és családtagjai külön fiókokban internetezve a saját kívánságaik szerint állíthatják be a Chromiumot.</translation>

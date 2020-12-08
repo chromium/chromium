@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">ታትሟል</translation>
 <translation id="1979103255016296513">የይለፍ ቃል ለውጥ ማድረጊያ ጊዜው አልፏል</translation>
 <translation id="1980044825731880088">የሲፒዩ ፍጥነት</translation>
+<translation id="2008685064673031089">ዋና ፍለጋ</translation>
 <translation id="2080070583977670716">ተጨማሪ ቅንብሮች</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">የኅትመት ሥራን ሰርዝ</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">አልፏል</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> ሙከራዎች ቀርተዋል</translation>
 <translation id="2391082728065870591">የግብረመልስ ሪፖርት ላክ</translation>
+<translation id="2446553403094072641">የተንሳፋፊ ነጥብ ትክክለኛነት</translation>
 <translation id="2461822463642141190">የአሁኑ ጊዜ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">ቃኝ</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">እሺ</translation>
 <translation id="2805756323405976993">መተግበሪያዎች</translation>
 <translation id="2872961005593481000">ዝጋ</translation>
+<translation id="2878387241690264070">በ<ph name="NUM_SECONDS" /> ሰከንዶች ውስጥ <ph name="RATE" /> ሞልቷል።</translation>
 <translation id="3008341117444806826">አድስ</translation>
 <translation id="3009958530611748826">የሚያስቀምጡበትን አቃፊ ይምረጡ</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> ሚአ</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">በፋይሎች መተግበሪያ ውስጥ አቃፊን ይምረጡ...</translation>
 <translation id="4848429997038228357">በማሄድ ላይ</translation>
 <translation id="4890353053343094602">ወዲያውኑ አዲስ ይምረጡ</translation>
+<translation id="4891842000192098784">ጭንቀት</translation>
 <translation id="4917889632206600977">ቆሟል - ወረቀት አልቋል</translation>
 <translation id="4921665434385737356">በ<ph name="NUM_SECONDS" /> ሰከንዶች ውስጥ <ph name="RATE" /> ሞልቷል።</translation>
 <translation id="4932733599132424254">ቀን</translation>
+<translation id="498186245079027698">መቃኛውን ይፈትሹ እና እንደገና ይሞክሩ። የተቃኙ ፋይሎችን ለማስቀመጥ በቂ አከባቢያዊ ቦታ መኖሩን ያረጋግጡ።</translation>
 <translation id="4985509611418653372">አሂድ</translation>
 <translation id="500920857929044050">ሙከራን አቁም</translation>
 <translation id="5154917547274118687">ማህደረ ትውስታ</translation>
@@ -138,6 +143,7 @@
 <translation id="5551702563755460533">በእገዛ ማዕከል ውስጥ የበለጠ ይረዱ</translation>
 <translation id="5635169860413004179">ሪፖርትን ይመልከቱ</translation>
 <translation id="5719918614880940190">ይህ የሲፒዩ አጠቃቀምን ይለካል፣ እና የሁሉም ኮሮች ድምር ነው</translation>
+<translation id="5781694279199921985">የክፍለ-ጊዜ ምዝግብ ማስታወሻን አስቀምጥ</translation>
 <translation id="5797428682393400134">ተሳክቷል</translation>
 <translation id="5832805196449965646">ሰው አክል</translation>
 <translation id="5895138241574237353">እንደገና ጀምር</translation>
@@ -174,6 +180,8 @@
 <translation id="6766275201586212568">ያልተሳኩ የዲኤንኤስ ጥራቶች</translation>
 <translation id="6768237774506518020">ከፍተኛ የዲኤንኤስ ጥራት አለመሳካት ብዛት</translation>
 <translation id="6839141349259399400">ከመቃኛዎች ጋር መገናኘት አልተቻለም?</translation>
+<translation id="6853312040151791195">የኃይል ማለቂያ ፍጥነት</translation>
+<translation id="6898743098396957679">ቅኝትን ማጠናቀቅ አልተቻለም</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ይህን መሣሪያ የሚያስተዳድር ሲሆን የተጎበኙ ድረ-ገጾች፣ የይለፍ ቃላት እና ኢሜይል ጨምሮ የሁሉም የተጠቃሚ እንቅስቃሴ መዳረሻ አለው።</translation>
 <translation id="714876143603641390">የላን ተገናኝነት</translation>
 <translation id="7162487448488904999">ማዕከለ-ስዕላት</translation>
@@ -186,12 +194,15 @@
 <translation id="7648838807254605802">ከፍተኛ የHTTPS የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="7658239707568436148">ይቅር</translation>
 <translation id="7690294790491645610">አዲስ የይለፍ ቃል ያረጋግጡ</translation>
+<translation id="773153675489693198">የዑደት ብዛት</translation>
 <translation id="7732651821766520760">የ<ph name="TEST_NAME" /> ሙከራ</translation>
 <translation id="7805768142964895445">ሁኔታ</translation>
 <translation id="7855434858642800953">የተቃኘ ፋይል ተቀምጧል!</translation>
 <translation id="7928373994957558460">የፋይል ቦታን አሳይ</translation>
 <translation id="7936303884198020182">ምንም የስም አገልጋዮች አልተገኙም</translation>
+<translation id="7960831585769876809">የሙቀት መጠን</translation>
 <translation id="8041089156583427627">ግብረ መልስ ላክ</translation>
+<translation id="8075838845814659848">የሚቀረው ኃይል መሙላት</translation>
 <translation id="808894953321890993">የይለፍ ቃል ለውጥ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° ሴ</translation>
 <translation id="8160445423316272678">ሰነድዎን በመቃኛው ላይ ያስቀምጡትና ለመጀመር <ph name="SPAN_BEGIN" />ቃኝ<ph name="SPAN_END" />ን ይምረጡ</translation>
@@ -219,6 +230,7 @@
 <translation id="8919837981463578619">አልተሳካም - መሳቢያ ይጎድላል</translation>
 <translation id="8928727111548978589">አልተሳካም - ወረቀት አልቋል</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> ቅንብሮች ቀርተዋል</translation>
+<translation id="8968751544471797276">ኃይል መሙላት መጠን</translation>
 <translation id="8970109610781093811">እንደገና ያሂዱ</translation>
 <translation id="9088306295921699330">የአሁኑ አጠቃቀም</translation>
 <translation id="910415269708673980">የ<ph name="PRINCIPAL_NAME" /> ቲኬትን ያድሱ</translation>

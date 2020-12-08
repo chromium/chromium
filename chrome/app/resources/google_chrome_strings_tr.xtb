@@ -162,6 +162,8 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5430073640787465221">Tercih dosyanız bozuk veya geçersiz. Google Chrome, ayarlarınızı kurtaramıyor.</translation>
 <translation id="556024056938947818">Google Chrome şifreleri göstermeyi deniyor.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5655746611259367388"><ph name="USER_NAME" /> için eklediğiniz bu ve diğer Google Hesaplarını, <ph name="LINK_BEGIN" />Ayarlar<ph name="LINK_END" />'da tek bir yerden yönetebilirsiniz.
+          Chrome tarayıcıda ve Google Play uygulamalarında web sitelerine verdiğiniz izinler, tüm hesaplar için geçerli olabilir.</translation>
 <translation id="5657226924540934362">Bir ayar bu sayfada görünmüyorsa <ph name="LINK_BEGIN" />
       Chromium OS ayarlarınıza<ph name="LINK_END" /> bakın</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> tehlikeli olabileceği için Chrome tarafından engellendi.</translation>

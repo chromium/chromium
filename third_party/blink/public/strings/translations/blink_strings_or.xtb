@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">ଦୟାକରି '<ph name="ATSIGN" />' ପୂର୍ବର ଅଂଶ ଲେଖନ୍ତୁ। '<ph name="INVALIDADDRESS" />' ଅସମ୍ପୂର୍ଣ୍ଣ ଅଟେ।</translation>
 <translation id="5334352251556557839">ମିଡିଆ ଚଲାଇବା ପାଇଁ ଅକ୍ଷମ।</translation>
 <translation id="537648784377940524">ସର୍ବନିମ୍ନ ତାରିଖ (<ph name="MIN_DATE_OR_TIME" />) ନିଶ୍ଚିତରୂପେ ସର୍ବାଧିକ ତାରିଖ (<ph name="MAX_DATE_OR_TIME" />) ପୂର୍ବରୁ ଆସିବା ଆବଶ୍ୟକ।</translation>
+<translation id="5378437566635403538">ବିସ୍ତାରିତ ହୋଇଛି, ଡାଏଲଗ୍ ଖୋଲା ଅଛି।</translation>
 <translation id="5406322316791861025">ଆକାର</translation>
 <translation id="5425179576310518467">ବର୍ତ୍ତମାନର ତାରିଖ</translation>
 <translation id="5453733299334684579">ଟ୍ରୀ ଆଇଟମ୍</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">ଅଧିକ ବିକଳ୍ପ</translation>
 <translation id="576709008726043716">ପରିଚୟ</translation>
 <translation id="57838592816432529">ମ୍ୟୁଟ୍‌</translation>
+<translation id="5787939484346677755">ବିସ୍ତାରିତ ହୋଇଛି, ସ୍ଵତଃସମ୍ପୂର୍ଣ୍ଣ ବିକଳ୍ପଗୁଡ଼ିକ ଉପଲବ୍ଧ ଅଛି।</translation>
 <translation id="5860033963881614850">ବନ୍ଦ ଅଛି</translation>
 <translation id="588258955323874662">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ</translation>
 <translation id="5888666972993069672">ବର୍ତ୍ତମାନ <ph name="DEVICE_FRIENDLY_NAME" />ରେ କାଷ୍ଟ କରାଯାଉଛି</translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">ତାଲିକା ବାକ୍ସ</translation>
 <translation id="6150588977291308318">ଗ୍ରନ୍ଥସୂଚୀ</translation>
 <translation id="6164829606128959761">ମିଟର୍</translation>
+<translation id="6165053282446038410">ବିସ୍ତାରିତ ହୋଇଛି, <ph name="COUNT" />ଟି ସ୍ଵତଃସମ୍ପୂର୍ଣ୍ଣ ବିକଳ୍ପ ଉପଲବ୍ଧ ଅଛି।</translation>
 <translation id="6166809985690652833">ଉପସଂହାର</translation>
 <translation id="6209276755895393898">ଏପରି ମନେ ହେଉଛି: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">ବର୍ତ୍ତମାନର ପୃଷ୍ଠା</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">ହେଡର୍</translation>
 <translation id="6941933287844615239">ମିଡିଆ ଡାଉନ୍‍‍ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="6981594929165378967">ଭର୍ତ୍ତି କରିବା</translation>
+<translation id="698788488269350478">ବିସ୍ତାରିତ ହୋଇଛି।</translation>
 <translation id="6989848892321993519">ଦୟାକରି ଏହି ଟେକ୍ସଟ୍‍କୁ <ph name="MIN_CHARACTERS" />ଟି କିମ୍ବା ଅଧିକ ଅକ୍ଷର ପର୍ଯ୍ୟନ୍ତ ଲମ୍ବା କରନ୍ତୁ।(ବର୍ତ୍ତମାନ ଆପଣ 1ଟି ଅକ୍ଷର ବ୍ୟବହାର କରୁଛନ୍ତି)।</translation>
 <translation id="7034405885550056553">ପ୍ରସ୍ତାବ</translation>
 <translation id="709897737746224366">ଦୟାକରି ଅନୁରୋଧ କରାଯାଇଥିବା ଫର୍ମାଟ୍ ମେଳ କରନ୍ତୁ।</translation>
 <translation id="7102274145889307184">ବର୍ତ୍ତମାନର ଲୋକେସନ୍</translation>
 <translation id="7118469954320184356">କୌଣସି ଡେସ୍କ୍ରିପସନ୍ ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="7139483182332611405">ଭୂମିକା</translation>
+<translation id="7198226213493847604">ମେନୁ ପପ୍ ଅପ୍ ବଟନ୍</translation>
 <translation id="7214187073215825913">ବିଷୟବସ୍ତୁର ସୂଚନା</translation>
 <translation id="7238347055216017155">ଏମ୍ଫାସିସ୍</translation>
 <translation id="7263440858009898357">ଦୟାକରି ତାଲିକାରେ ଏକ ଆଇଟମ୍ ଚୟନ କରନ୍ତୁ।</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">ଅଧ୍ୟାୟ</translation>
 <translation id="8845239796550121995">ବର୍ତ୍ତମାନ ଆପଣଙ୍କର ଟିଭିକୁ କାଷ୍ଟ କରାଯାଉଛି</translation>
 <translation id="8851136666856101339">ମୁଖ୍ୟ</translation>
+<translation id="8861621546968757188">ଡାଏଲଗ୍ ପପ୍ ଅପ୍ ବଟନ୍</translation>
 <translation id="8875657656876809964">ଭିଡିଓ ପ୍ଲେବ୍ୟାକ୍ ତ୍ରୁଟି</translation>
 <translation id="8889402386540077796">ରଙ୍ଗ</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

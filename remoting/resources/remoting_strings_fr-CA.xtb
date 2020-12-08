@@ -61,6 +61,7 @@ Si l'option « <ph name="SERVICE_SCRIPT_NAME" /> » est déjà cochée, décoc
 <translation id="405887016757208221">L'ordinateur à distance n'a pas pu initialiser la session. Si le problème persiste, veuillez essayer de configurer l'hôte à nouveau.</translation>
 <translation id="4060747889721220580">Télécharger le fichier</translation>
 <translation id="4126409073460786861">Une fois la configuration terminée, actualisez cette page, puis vous pourrez accéder à l'ordinateur en choisissant votre appareil et en entrant le NIP</translation>
+<translation id="4139423942711457311">Droits d'auteur 2020 Google LLC. Tous droits réservés.</translation>
 <translation id="4145029455188493639">Connecté en tant que <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="4155497795971509630">Certains composants nécessaires sont introuvables. Veuillez vous assurer que vous avez installé la dernière version du logiciel, puis réessayez.</translation>
 <translation id="4176825807642096119">Code d'accès</translation>

@@ -183,6 +183,7 @@
 <translation id="2949781154072577687">Formátování disku <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Medúza</translation>
 <translation id="2984337792991268709">Dnes <ph name="TODAY_DAYTIME" /></translation>
+<translation id="2994320653639462337">Obnovování položek (<ph name="COUNT" />)…</translation>
 <translation id="2994669386200004489">Zálohování souboru <ph name="FILE_NAME" /> se nezdařilo</translation>
 <translation id="299638574917407533">francouzština (Kanada)</translation>
 <translation id="3003633581067744647">Přepnout na zobrazení miniatur</translation>
@@ -300,6 +301,7 @@
 <translation id="4364327530094270451">Meloun</translation>
 <translation id="4372884569765913867">1:1</translation>
 <translation id="4394214039309501350">Externí odkaz</translation>
+<translation id="4418686080762064601">Vytvořte zástupce svých souborů</translation>
 <translation id="4425149324548788773">Můj disk</translation>
 <translation id="4470564870223067757">Hangul – 2 sady</translation>
 <translation id="4477002475007461989">rumunština</translation>
@@ -380,6 +382,7 @@
 <translation id="508423945471810158">Přesouvání <ph name="NUMBER_OF_ITEMS" /> položek do složky <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">Došlo k chybě.</translation>
 <translation id="5098629044894065541">hebrejština</translation>
+<translation id="5109254780565519649">Došlo k chybě. Některé položky možná nebyly obnoveny.</translation>
 <translation id="5110329002213341433">angličtina (Kanada)</translation>
 <translation id="5123433949759960244">Basketbal</translation>
 <translation id="5129662217315786329">polština</translation>
@@ -609,6 +612,7 @@
 <translation id="7547811415869834682">holandština</translation>
 <translation id="7551643184018910560">Připnout k poličce</translation>
 <translation id="7553492409867692754">Udělujete linuxovým aplikacím oprávnění k přístupu k souborům ve složce <ph name="FOLDER_NAME" />.</translation>
+<translation id="7575645593344061397">Obnovování souboru „<ph name="FILENAME" />“…</translation>
 <translation id="7576032389798113292">6:4</translation>
 <translation id="7589661784326793847">Chvilku strpení</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> se zpřístupňuje pro použití offline</translation>
@@ -706,6 +710,7 @@
 <translation id="8395901698320285466">Rozměry</translation>
 <translation id="8437209419043462667">Americká klávesnice</translation>
 <translation id="8456681095658380701">Neplatný název</translation>
+<translation id="8461467696380332069">Klikněte pravým tlačítkem na soubor a výběrem možnosti Připnout k poličce umožněte rychlý přístup k souborům na poličce.</translation>
 <translation id="8463494891489624050">vietnamština VIQR</translation>
 <translation id="8466234950814670489">Archiv ve formátu Tar</translation>
 <translation id="8475647382427415476">Soubor <ph name="FILENAME" /> teď nebylo možné synchronizovat. Disk Google to zkusí znovu později.</translation>

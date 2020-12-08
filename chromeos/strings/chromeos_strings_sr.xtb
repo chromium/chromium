@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Одштампано</translation>
 <translation id="1979103255016296513">Рок за промену лозинке је истекао</translation>
 <translation id="1980044825731880088">Брзина процесора</translation>
+<translation id="2008685064673031089">Примарна претрага</translation>
 <translation id="2080070583977670716">Више подешавања</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Откажи задатак штампања</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Прошло</translation>
 <translation id="2375079107209812402">Преостали покушаји: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Пошаљи извештај са повратним информацијама</translation>
+<translation id="2446553403094072641">Прецизност покретног зареза</translation>
 <translation id="2461822463642141190">Актуелно</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Скенирај</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">Потврди</translation>
 <translation id="2805756323405976993">Апликације</translation>
 <translation id="2872961005593481000">Искључи</translation>
+<translation id="2878387241690264070">Испражњено <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
 <translation id="3008341117444806826">ОСВЕЖИ</translation>
 <translation id="3009958530611748826">Изаберите фолдер за чување</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Изаберите фолдер у апликацији Фајлови...</translation>
 <translation id="4848429997038228357">У ТОКУ</translation>
 <translation id="4890353053343094602">Одмах одаберите нову</translation>
+<translation id="4891842000192098784">Стрес</translation>
 <translation id="4917889632206600977">Заустављено – нема више папира</translation>
 <translation id="4921665434385737356">Напуњено <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
 <translation id="4932733599132424254">Датум</translation>
+<translation id="498186245079027698">Проверите скенер и пробајте поново. Уверите се да има довољно локалне меморије за чување скенираних фајлова.</translation>
 <translation id="4985509611418653372">Покрени</translation>
 <translation id="500920857929044050">Заустави тест</translation>
 <translation id="5154917547274118687">Меморија</translation>
@@ -138,6 +143,7 @@
 <translation id="5551702563755460533">Сазнајте више у центру за помоћ</translation>
 <translation id="5635169860413004179">Прикажи извештај</translation>
 <translation id="5719918614880940190">Овим се мери коришћење процесора и збир је свих језгара</translation>
+<translation id="5781694279199921985">Сачувај евиденцију сесије</translation>
 <translation id="5797428682393400134">УСПЕЛО ЈЕ</translation>
 <translation id="5832805196449965646">Додај особу</translation>
 <translation id="5895138241574237353">Покрени поново</translation>
@@ -174,6 +180,8 @@
 <translation id="6766275201586212568">Неуспешна DNS разрешавања</translation>
 <translation id="6768237774506518020">Велика стопа неуспеха DNS разрешавања</translation>
 <translation id="6839141349259399400">Повезивање са скенерима није успело?</translation>
+<translation id="6853312040151791195">Брзина пражњења</translation>
+<translation id="6898743098396957679">Довршавање скенирања није успело</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управља овим уређајем и има приступ свим активностима корисника, укључујући посећене веб-странице, лозинке и имејлове.</translation>
 <translation id="714876143603641390">Повезивање LAN-а</translation>
 <translation id="7162487448488904999">Галерија</translation>
@@ -186,12 +194,15 @@
 <translation id="7648838807254605802">Велико HTTPS кашњење</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7690294790491645610">Потврдите нову лозинку</translation>
+<translation id="773153675489693198">Број циклуса</translation>
 <translation id="7732651821766520760">Тест <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7855434858642800953">Скенирани фајл је сачуван!</translation>
 <translation id="7928373994957558460">Прикажи локацију датотеке</translation>
 <translation id="7936303884198020182">Није пронађен ниједан сервер за имена</translation>
+<translation id="7960831585769876809">Температура</translation>
 <translation id="8041089156583427627">Пошаљи повратне информације</translation>
+<translation id="8075838845814659848">Преостали ниво напуњености батерије</translation>
 <translation id="808894953321890993">Промени лозинку</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">Поставите документ на скенер и изаберите <ph name="SPAN_BEGIN" />Скенирај<ph name="SPAN_END" /> да бисте започели</translation>
@@ -219,6 +230,7 @@
 <translation id="8919837981463578619">Није успело – недостаје фиока</translation>
 <translation id="8928727111548978589">Није успело – нема више папира</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Преостали покушаји: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="8968751544471797276">Брзина пуњења</translation>
 <translation id="8970109610781093811">Поново покрени</translation>
 <translation id="9088306295921699330">Тренутна искоришћеност</translation>
 <translation id="910415269708673980">Освежите тикет за <ph name="PRINCIPAL_NAME" /></translation>

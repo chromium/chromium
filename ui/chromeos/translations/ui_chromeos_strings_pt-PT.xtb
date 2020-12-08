@@ -183,6 +183,7 @@
 <translation id="2949781154072577687">A formatar <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Medusa</translation>
 <translation id="2984337792991268709">Hoje <ph name="TODAY_DAYTIME" /></translation>
+<translation id="2994320653639462337">A restaurar <ph name="COUNT" /> itens…</translation>
 <translation id="2994669386200004489">Não foi possível fazer uma cópia de segurança de <ph name="FILE_NAME" />.</translation>
 <translation id="299638574917407533">Francês (Canadá)</translation>
 <translation id="3003633581067744647">Mudar para a vista de miniatura</translation>
@@ -300,6 +301,7 @@
 <translation id="4364327530094270451">Melão</translation>
 <translation id="4372884569765913867">1 x 1</translation>
 <translation id="4394214039309501350">Link externo</translation>
+<translation id="4418686080762064601">Crie um atalho para os seus ficheiros</translation>
 <translation id="4425149324548788773">O meu disco</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
 <translation id="4477002475007461989">Romeno</translation>
@@ -380,6 +382,7 @@
 <translation id="508423945471810158">A mover <ph name="NUMBER_OF_ITEMS" /> itens para <ph name="FOLDER_NAME" />…</translation>
 <translation id="509429900233858213">Ocorreu um erro.</translation>
 <translation id="5098629044894065541">Hebraico</translation>
+<translation id="5109254780565519649">Ocorreu um erro. Alguns itens podem não ter sido restaurados.</translation>
 <translation id="5110329002213341433">Inglês (Canadá)</translation>
 <translation id="5123433949759960244">Bola de basquetebol</translation>
 <translation id="5129662217315786329">Polaco</translation>
@@ -610,6 +613,7 @@
 <translation id="7547811415869834682">Holandês</translation>
 <translation id="7551643184018910560">Fixar na prateleira</translation>
 <translation id="7553492409867692754">Conceda autorização às apps Linux para aceder a ficheiros na pasta <ph name="FOLDER_NAME" />.</translation>
+<translation id="7575645593344061397">A restaurar "<ph name="FILENAME" />"…</translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Aguarde um momento</translation>
 <translation id="7592775719802218421">A disponibilizar o ficheiro <ph name="FILE_NAME" /> offline…</translation>
@@ -707,6 +711,7 @@
 <translation id="8395901698320285466">Dimensões</translation>
 <translation id="8437209419043462667">EUA</translation>
 <translation id="8456681095658380701">Nome inválido</translation>
+<translation id="8461467696380332069">Clique com o botão direito do rato num ficheiro e selecione "Fixar na prateleira" para um acesso rápido aos seus ficheiros na prateleira.</translation>
 <translation id="8463494891489624050">VIQR vietnamita</translation>
 <translation id="8466234950814670489">Arquivo tar</translation>
 <translation id="8475647382427415476">O Google Drive não conseguiu sincronizar "<ph name="FILENAME" />" de momento e vai tentar novamente mais tarde.</translation>

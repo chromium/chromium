@@ -183,6 +183,7 @@
 <translation id="2949781154072577687">მიმდინარეობს <ph name="DRIVE_NAME" />-ის დაფორმატება...</translation>
 <translation id="2951236788251446349">მედუზა</translation>
 <translation id="2984337792991268709">დღეს <ph name="TODAY_DAYTIME" /></translation>
+<translation id="2994320653639462337">მიმდინარეობს <ph name="COUNT" /> ერთეულის აღდგენა...</translation>
 <translation id="2994669386200004489"><ph name="FILE_NAME" />-ის სარეზერვო ასლი ვერ შეიქმნა</translation>
 <translation id="299638574917407533">ფრანგული (კანადა)</translation>
 <translation id="3003633581067744647">ესკიზების ხედზე გადართვა</translation>
@@ -300,6 +301,7 @@
 <translation id="4364327530094270451">ნესვი</translation>
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">გარე ბმული</translation>
+<translation id="4418686080762064601">შექმენით თქვენი ფაილების მალსახმობი</translation>
 <translation id="4425149324548788773">ჩემი Drive</translation>
 <translation id="4470564870223067757">ჰანგული ნაკრები 2</translation>
 <translation id="4477002475007461989">რუმინული</translation>
@@ -380,6 +382,7 @@
 <translation id="508423945471810158">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ერთეულის გადატანა „<ph name="FOLDER_NAME" />“-ში</translation>
 <translation id="509429900233858213">შეცდომა მოხდა.</translation>
 <translation id="5098629044894065541">ებრაული</translation>
+<translation id="5109254780565519649">მოხდა შეცდომა. შესაძლოა, ზოგიერთი ერთეულის აღდგენა ვერ მოხერხებულიყო.</translation>
 <translation id="5110329002213341433">ინგლისური (კანადა)</translation>
 <translation id="5123433949759960244">კალათბურთის ბურთი</translation>
 <translation id="5129662217315786329">პოლონური</translation>
@@ -609,6 +612,7 @@
 <translation id="7547811415869834682">ჰოლანდიური</translation>
 <translation id="7551643184018910560">დაამაგრეთ თაროზე</translation>
 <translation id="7553492409867692754">მიეცით Linux აპებს საქაღალდეში „<ph name="FOLDER_NAME" />“ არსებულ ფაილებზე წვდომის ნებართვა</translation>
+<translation id="7575645593344061397">მიმდინარეობს „<ph name="FILENAME" />“-ის აღდგენა...</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">დაელოდეთ ერთი წამი</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> გარდაიქმნება ხაზგარეშე ხელმისაწვდომად</translation>
@@ -706,6 +710,7 @@
 <translation id="8395901698320285466">ზომები</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">არასწორი სახელი</translation>
+<translation id="8461467696380332069">თაროდან თქვენს ფაილებზე სწრაფი წვდომა რომ იქონიოთ, მარჯვენა ღილაკით დააწკაპუნეთ ფაილზე და აირჩიეთ „თაროზე ჩამაგრება“.</translation>
 <translation id="8463494891489624050">ვიეტნამური VIQR</translation>
 <translation id="8466234950814670489">Tar არქივი</translation>
 <translation id="8475647382427415476">Google Drive-მა ამჟამად ვერ დაასინქრონა „<ph name="FILENAME" />“. Google Drive ცდის მოგვიანებით.</translation>

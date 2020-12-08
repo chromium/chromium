@@ -61,6 +61,7 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="405887016757208221">Den eksterne datamaskinen kunne ikke initialisere økten. Hvis problemet vedvarer, kan du prøve å konfigurere verten på nytt.</translation>
 <translation id="4060747889721220580">Last ned fil</translation>
 <translation id="4126409073460786861">Når konfigureringen er fullført, laster du inn denne siden på nytt, så kan du bruke datamaskinen ved å velge enhet og skrive inn PIN-koden.</translation>
+<translation id="4139423942711457311">Copyright 2020 Google LLC. Med enerett.</translation>
 <translation id="4145029455188493639">Logget på som <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="4155497795971509630">Det mangler noen nødvendige komponenter. Kontrollér at du kjører den nyeste versjonen av programvaren, og prøv på nytt.</translation>
 <translation id="4176825807642096119">Tilgangskode</translation>

@@ -183,6 +183,7 @@
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> formateatzen…</translation>
 <translation id="2951236788251446349">Marmoka</translation>
 <translation id="2984337792991268709">Gaur, <ph name="TODAY_DAYTIME" /></translation>
+<translation id="2994320653639462337"><ph name="COUNT" /> elementu leheneratzen…</translation>
 <translation id="2994669386200004489">Ezin izan da egin <ph name="FILE_NAME" /> fitxategiaren babeskopia</translation>
 <translation id="299638574917407533">Frantsesa (Kanada)</translation>
 <translation id="3003633581067744647">Aldatu irudi txikien ikuspegira</translation>
@@ -300,6 +301,7 @@
 <translation id="4364327530094270451">Meloia</translation>
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">Kanpoko esteka</translation>
+<translation id="4418686080762064601">Sortu lasterbide bat fitxategietarako</translation>
 <translation id="4425149324548788773">Nire unitatea</translation>
 <translation id="4470564870223067757">2. hangul-karaktere sorta</translation>
 <translation id="4477002475007461989">Errumaniarra</translation>
@@ -380,6 +382,7 @@
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> elementu <ph name="FOLDER_NAME" /> karpetara eramaten</translation>
 <translation id="509429900233858213">Errore bat gertatu da.</translation>
 <translation id="5098629044894065541">Hebrearra</translation>
+<translation id="5109254780565519649">Errore bat gertatu da. Agian ez dira leheneratu elementu batzuk.</translation>
 <translation id="5110329002213341433">Ingelesa (Kanada)</translation>
 <translation id="5123433949759960244">Saskibaloiko baloia</translation>
 <translation id="5129662217315786329">Poloniarra</translation>
@@ -609,6 +612,7 @@
 <translation id="7547811415869834682">Nederlandarra</translation>
 <translation id="7551643184018910560">Ainguratu apalean</translation>
 <translation id="7553492409867692754">Eman <ph name="FOLDER_NAME" /> karpetako fitxategiak atzitzeko baimena Linux-eko aplikazioei</translation>
+<translation id="7575645593344061397">"<ph name="FILENAME" />" leheneratzen…</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Itxaron segundotxo batez</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> fitxategia konexiorik gabe erabiltzeko deskargatzen</translation>
@@ -706,6 +710,7 @@
 <translation id="8395901698320285466">Dimentsioak</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">Izenak ez du balio</translation>
+<translation id="8461467696380332069">Egin klik eskuineko botoiarekin fitxategi batean eta hautatu "Ainguratu apalean"; horrela, apalean dauden fitxategietarako sarbide bizkorra izango duzu.</translation>
 <translation id="8463494891489624050">Vietnamdarra (VIQR)</translation>
 <translation id="8466234950814670489">Tar artxiboa</translation>
 <translation id="8475647382427415476">Google Drive-k ezin izan du sinkronizatu "<ph name="FILENAME" />". Berriro saiatuko da geroago.</translation>

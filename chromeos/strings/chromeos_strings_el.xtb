@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Εκτυπώθηκε</translation>
 <translation id="1979103255016296513">Εκπρόθεσμη αλλαγή κωδικού πρόσβασης</translation>
 <translation id="1980044825731880088">Ταχύτητα CPU</translation>
+<translation id="2008685064673031089">Αναζήτηση Prime</translation>
 <translation id="2080070583977670716">Περισσότερες ρυθμίσεις</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Ακύρωση εργασίας εκτύπωσης</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Επιτυχία</translation>
 <translation id="2375079107209812402">Απομένουν <ph name="ATTEMPTS_LEFT" /> προσπάθειες</translation>
 <translation id="2391082728065870591">Αποστολή αναφοράς σχολίων</translation>
+<translation id="2446553403094072641">Ακρίβεια κινητής υποδιαστολής</translation>
 <translation id="2461822463642141190">Τρέχουσα</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Σάρωση</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">ΟK</translation>
 <translation id="2805756323405976993">Εφαρμογές </translation>
 <translation id="2872961005593481000">Τερματισμός λειτουργίας</translation>
+<translation id="2878387241690264070">Εκφόρτιση <ph name="RATE" /> σε <ph name="NUM_SECONDS" /> δευτερόλεπτα.</translation>
 <translation id="3008341117444806826">ΑΝΑΝΕΩΣΗ</translation>
 <translation id="3009958530611748826">Επιλέξτε έναν φάκελο στον οποίο θέλετε να γίνεται αποθήκευση.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Επιλογή φακέλου στην εφαρμογή Αρχεία…</translation>
 <translation id="4848429997038228357">ΕΚΤΕΛΕΙΤΑΙ</translation>
 <translation id="4890353053343094602">Επιλέξτε άμεσα έναν νέο</translation>
+<translation id="4891842000192098784">Καταπόνηση</translation>
 <translation id="4917889632206600977">Διακοπή - Τελείωσε το χαρτί</translation>
 <translation id="4921665434385737356">Φόρτιση κατά <ph name="RATE" /> σε <ph name="NUM_SECONDS" /> δευτερόλεπτα.</translation>
 <translation id="4932733599132424254">Ημερομηνία</translation>
+<translation id="498186245079027698">Ελέγξτε τον σαρωτή και δοκιμάστε ξανά. Βεβαιωθείτε ότι υπάρχει αρκετός τοπικός αποθηκευτικός χώρος για την αποθήκευση των αρχείων που σαρώνονται.</translation>
 <translation id="4985509611418653372">Εκτέλεση</translation>
 <translation id="500920857929044050">Διακοπή δοκιμής</translation>
 <translation id="5154917547274118687">Μνήμη</translation>
@@ -138,6 +143,7 @@
 <translation id="5551702563755460533">Μάθετε περισσότερα στο Κέντρο βοήθειας</translation>
 <translation id="5635169860413004179">Προβολή αναφοράς</translation>
 <translation id="5719918614880940190">Αυτή η επιλογή μετρά τη χρήση CPU και είναι αθροιστική για όλους τους πυρήνες.</translation>
+<translation id="5781694279199921985">Αποθήκευση αρχείου καταγραφής περιόδου λειτουργίας</translation>
 <translation id="5797428682393400134">ΕΠΙΤΥΧΙΑ</translation>
 <translation id="5832805196449965646">Προσθήκη ατόμου</translation>
 <translation id="5895138241574237353">Επανεκκίνηση</translation>
@@ -174,6 +180,8 @@
 <translation id="6766275201586212568">Αποτυχημένες αναλύσεις DNS</translation>
 <translation id="6768237774506518020">Υψηλό ποσοστό αποτυχίας ανάλυσης DNS</translation>
 <translation id="6839141349259399400">Δεν είναι δυνατή η σύνδεση σε σαρωτές;</translation>
+<translation id="6853312040151791195">Ρυθμός εκφόρτισης</translation>
+<translation id="6898743098396957679">Δεν ήταν δυνατή η ολοκλήρωση της σάρωσης.</translation>
 <translation id="7028979494427204405">Ο τομέας <ph name="MANAGER" /> διαχειρίζεται αυτήν τη συσκευή και έχει πρόσβαση σε όλη τη δραστηριότητα των χρηστών, συμπεριλαμβανομένων των ιστοσελίδων που επισκέπτεστε, των κωδικών πρόσβασης και του ηλεκτρονικού ταχυδρομείου.</translation>
 <translation id="714876143603641390">Συνδεσιμότητα LAN</translation>
 <translation id="7162487448488904999">Gallery</translation>
@@ -186,12 +194,15 @@
 <translation id="7648838807254605802">Μεγάλος λανθάνων χρόνος HTTPS</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7690294790491645610">Επιβεβαίωση νέου κωδικού πρόσβασης</translation>
+<translation id="773153675489693198">Πλήθος φορτίσεων-εξαντλήσεων μπαταρίας</translation>
 <translation id="7732651821766520760">Δοκιμή <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Κατάσταση</translation>
 <translation id="7855434858642800953">Το σαρωμένο αρχείο αποθηκεύτηκε!</translation>
 <translation id="7928373994957558460">Εμφάνιση τοποθεσίας αρχείου</translation>
 <translation id="7936303884198020182">Δεν βρέθηκαν διακομιστές ονομάτων.</translation>
+<translation id="7960831585769876809">Θερμοκρασία</translation>
 <translation id="8041089156583427627">Αποστολή σχολίων</translation>
+<translation id="8075838845814659848">Υπόλοιπο φόρτισης</translation>
 <translation id="808894953321890993">Αλλαγή κωδικού πρόσβασης</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">Τοποθετήστε το έγγραφο στον σαρωτή και επιλέξτε <ph name="SPAN_BEGIN" />Σάρωση<ph name="SPAN_END" /> για να ξεκινήσετε</translation>
@@ -219,6 +230,7 @@
 <translation id="8919837981463578619">Σφάλμα - Λείπει δίσκος</translation>
 <translation id="8928727111548978589">Σφάλμα - Τελείωσε το χαρτί</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> προσπάθειες απομένουν.</translation>
+<translation id="8968751544471797276">Ρυθμός φόρτισης</translation>
 <translation id="8970109610781093811">Επανεκτέλεση</translation>
 <translation id="9088306295921699330">Τρέχουσα χρήση</translation>
 <translation id="910415269708673980">Ανανέωση εισιτηρίου για το <ph name="PRINCIPAL_NAME" /></translation>

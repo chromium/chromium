@@ -56,6 +56,7 @@
 <translation id="2309047409763057870">ଏହା Google Chromeର ଏକ ସେକେଣ୍ଡାରୀ ଇନ୍‍ଷ୍ଟଲେସନ୍‌ ଏବଂ ଏହାକୁ ଆପଣଙ୍କର ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍‌ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="2348335408836342058">ଏହି ସାଇଟ୍ ପାଇଁ ଆପଣଙ୍କର କ୍ୟାମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ୍ ଆକ୍ସେସ୍ କରିବାକୁ Chrome ଅନୁମତି ଆବଶ୍ୟକ କରୁଛି</translation>
 <translation id="234869673307233423">Chrome ଆପଣଙ୍କର ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="235650106824528204">ଏହି ପ୍ରୋଫାଇଲର ବ୍ୟବହାର ସମୟରେ ସୃଷ୍ଟି ହୋଇଥିବା ଯେ କୌଣସି Chrome ଡାଟା (ଯେପରି ବୁକମାର୍କ୍, ଇତିହାସ, ପାସୱାର୍ଡ ଏବଂ ଅନ୍ୟ ସେଟିଂସର କ୍ରିଏସନ୍) ୱାର୍କ ପ୍ରୋଫାଇଲ୍ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା କାଢ଼ି ଦିଆଯାଇପାରିବ। <ph name="LEARN_MORE" /></translation>
 <translation id="2429317896000329049">ଆପଣଙ୍କର ଡୋମେନ୍ ପାଇଁ ସିଙ୍କ୍ ଉପଲବ୍ଧ ନଥିବାରୁ Google Chrome ଆପଣଙ୍କର ଡାଟା ସିଙ୍କ୍ କରିପାରିଲା ନାହିଁ।</translation>
 <translation id="2467438592969358367">Google Chrome ଆପଣଙ୍କର ପାସ୍‌ୱାର୍ଡଗୁଡିକୁ ଏକ୍ସପୋର୍ଟ କରିବାକୁ ଚାହେଁ। ଏହାକୁ ଅନୁମତି ଦେବା ପାଇଁ ନିଜର Windows ପାସ୍‌ୱାର୍ଡ ଟାଇପ୍ କରନ୍ତୁ।</translation>
 <translation id="2485422356828889247">ଅନ୍‍ଇନ୍‍ଷ୍ଟଲ୍‌ କରନ୍ତୁ</translation>
@@ -176,12 +177,14 @@
 <translation id="573759479754913123">Chrome OS ବିଷୟରେ</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome କେନେରୀ</translation>
 <translation id="5804318322022881572">Chrome ଲଞ୍ଚ କରାଯାଇପାରିଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="5851757216820085940">ଯଦି ଆପଣଙ୍କର ଏକାଧିକ Google ଆକାଉଣ୍ଟ ଅଛି, ତେବେ ଆପଣ ସେଗୁଡ଼ିକୁ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ଯୋଗ କରିପାରିବେ। ଆପଣଙ୍କ ଆକାଉଣ୍ଟଗୁଡ଼ିକ Chrome ବ୍ରାଉଜର୍ ଏବଂ Play Store ସହ Gmail, Drive ଏବଂ YouTube ପରି ସେବାଗୁଡ଼ିକରେ ଉପଲବ୍ଧ ହେବ।<ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଏଡିଟ୍ କରିବାକୁ ଚେଷ୍ଟା କରୁଛି।</translation>
 <translation id="5895138241574237353">ପୁନଃଆରମ୍ଭ</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ନେଟୱାର୍କ ସାଇନ୍-ଇନ୍</translation>
 <translation id="5940385492829620908">ଆପଣଙ୍କର ୱେବ୍, ବୁକ୍‌ମାର୍କ ଏବଂ ଅନ୍ୟାନ୍ୟ Chrome ଷ୍ଟଫ୍ ଏଠାରେ ଅଛି।</translation>
 <translation id="5941830788786076944">ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ ଭାବରେ Google Chrome ପ୍ରସ୍ତୁତ କରନ୍ତୁ</translation>
 <translation id="6070348360322141662">ଅତିରିକ୍ତ ସୁରକ୍ଷା ପାଇଁ, Google Chrome ଆପଣଙ୍କର ଡାଟା ଏନକ୍ରିପ୍ଟ କରିବ</translation>
+<translation id="608006075545470555">ଏହି ବ୍ରାଉଜରରେ ୱାର୍କ ପ୍ରୋଫାଇଲ୍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6113794647360055231">Chrome ଏଇ ବର୍ତ୍ତମାନ ଉନ୍ନତ ହୋଇଛି</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome ବିଟା</translation>
@@ -193,10 +196,12 @@
 <translation id="6368958679917195344">Chrome OS ଅତିରିକ୍ତ <ph name="BEGIN_LINK_CROS_OSS" />ମୁକ୍ତ ଉତ୍ସ ସଫ୍ଟୱେୟାର୍ <ph name="END_LINK_CROS_OSS" /> ଦ୍ୱାରା ସମ୍ଭବପର ହୋ‍ଇଛି।</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome ଅପ୍‌ଡେଟ୍ ହେଉଛି (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6568793831116033768">Chrome OS ସିଷ୍ଟମ୍</translation>
 <translation id="6650333065969705433">ସୁରକ୍ଷିତ ମିଡିଆ ଚଲାଇବା ପାଇଁ Rosetta ବ୍ୟବହାର କରିବାକୁ, ଆପଣଙ୍କୁ Chrome ରିଷ୍ଟାର୍ଟ କରିବାକୁ ହେବ।</translation>
 <translation id="6676384891291319759">ଇଣ୍ଟର୍ନେଟ୍ ପ୍ରବେଶ କରନ୍ତୁ</translation>
 <translation id="6679975945624592337">ପୃଷ୍ଠଭୂମିରେ Google Chromeକୁ ଚାଲିବାକୁ ଦିଅନ୍ତୁ</translation>
 <translation id="6750954913813541382">ବନାନ ଗତ ତ୍ରୁଟିଗୁଡ଼ିକର ସମାଧାନ ପାଇଁ, Chrome ବ୍ରାଉଜର୍‌ରେ ଆପଣ ଟାଇପ୍ କରିଥିବା ଟେକ୍ସଟ୍ Googleକୁ ପଠାଇଥାଏ</translation>
+<translation id="6755885556185485672">Chrome OS ସଠିକ୍ ରୂପେ ବନ୍ଦ ହୋଇନଥିଲା।</translation>
 <translation id="677276454032249905">ଯେକୌଣସିମତେ Chromeରୁ ବାହାରିବେ?</translation>
 <translation id="683440813066116847">mDNS ଟ୍ରାଫିକ୍‍କୁ ଅନୁମତି ଦେବା ପାଇଁ Google Chrome Canaryରେ ଅନ୍ତର୍ନିହିତ ଥିବା ନିୟମ।</translation>
 <translation id="6885412569789873916">Chrome ବିଟା ଆପ୍ସ</translation>
@@ -255,6 +260,7 @@
 <translation id="8498858610309223613">କିଛି ସମୟ ପୂର୍ବରୁ Google Chrome ପାଇଁ ଏକ ବିଶେଷ ସୁରକ୍ଷା ଅପ୍‌ଡେଟ୍ ଲାଗୁ କରାଯାଇଛି। ବର୍ତ୍ତମାନ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ ଏବଂ ଆମେ ଆପଣଙ୍କ ଟାବ୍ ରିଷ୍ଟୋର୍ କରିବୁ।</translation>
 <translation id="8521348052903287641">mDNS ଟ୍ରାଫିକ୍‍କୁ ଅନୁମତି ଦେବାକୁ Google Chrome Dev ପାଇଁ ଇନ୍‌ବାଉଣ୍ଡ ନିୟମ।</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8550334526674375523">ଏହି ୱାର୍କ ପ୍ରୋଫାଇଲ୍ ଆପଣଙ୍କ ବ୍ୟକ୍ତିଗତ ପ୍ରୋଫାଇଲରୁ ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ ଅଲଗା ଅଟେ।</translation>
 <translation id="8556340503434111824">Google Chromeର ଏକ ନୂଆ ସଂସ୍କରଣ ଉପଲବ୍ଧ ଅଛି ଏବଂ ଏହା ସବୁଠାରୁ ଦ୍ରୁତ ଅଟେ।</translation>
 <translation id="861359755029082151">Rosetta ଏହି ପୃଷ୍ଠାରେ ସୁରକ୍ଷିତ ମିଡିଆ ଚଲାଇବା ପାଇଁ Chromeକୁ ସକ୍ଷମ କରିଥାଏ।</translation>
 <translation id="8614913330719544658">Google Chrome କୌଣସି ପ୍ରତିକ୍ରିୟା ଦେଉନାହିଁ। ପୁଣିଥରେ ଲଞ୍ଚ କରିବେ?</translation>
@@ -273,6 +279,7 @@
 <translation id="8907709077090383765">ସୁରକ୍ଷିତ ମିଡିଆ ଚଲାଇବା ପାଇଁ Chromeକୁ ସକ୍ଷମ କରିବା ନିମନ୍ତେ, ଆପଣଙ୍କୁ Rosetta ଇନଷ୍ଟଲ୍ କରିବାକୁ ହେବ। ଏହାକୁ ଏବେ ଇନଷ୍ଟଲ୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି କି?</translation>
 <translation id="8914504000324227558">Chrome ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" />ରୁ ଆପଣଙ୍କ Android ଫୋନକୁ ଏକ ନମ୍ବର ପଠାଇବାକୁ, ଉଭୟ ଡିଭାଇସରେ Chromeରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>
+<translation id="8986207147630327271">ଆପଣ ଏହି ବ୍ରାଉଜରରେ ଏକ ୱାର୍କ ପ୍ରୋଫାଇଲ୍ ଯୋଗ କରୁଛନ୍ତି ଏବଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କୁ ସେହି ୱାର୍କ ପ୍ରୋଫାଇଲକୁ କେବଳ ନିୟନ୍ତ୍ରଣ କରିବା ପାଇଁ ଅନୁମତି ଦେଉଛନ୍ତି।</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome‍ର ଏକ ଅପ୍‍‍ଡେଟ୍ ଉପଲବ୍ଧ ଅଛି}=1{Chrome‍ର ଏକ ଅପ୍‍‍ଡେଟ୍ ଉପଲବ୍ଧ ଅଛି}other{# ଦିନ ପାଇଁ Chrome‍ର ଏକ ଅପ୍‍‍ଡେଟ୍ ଉପଲବ୍ଧ ଅଛି}}</translation>
 <translation id="9026991721384951619">ଆପଣଙ୍କର ଆକାଉଣ୍ଟ ସାଇନ୍ ଇନ୍ ବିବରଣୀ ପୁରୁଣା ହୋଇଥିବା ଯୋଗୁଁ Chrome OS ଆପଣଙ୍କର ଡାଟା ସିଙ୍କ୍ କରିପାରିଲା ନାହିଁ।</translation>
 <translation id="9067395829937117663">Google Chrome, Windows 7 କିମ୍ୱା ଉଚ୍ଚତର OS ଆବଶ୍ୟକ କରିଥାଏ।</translation>

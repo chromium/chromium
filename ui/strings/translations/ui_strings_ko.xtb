@@ -228,7 +228,6 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{1시간 전}other{#시간 전}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1초 남음}other{#초 남음}}</translation>
 <translation id="8134065097954893699">페이지 새로고침</translation>
-<translation id="8144660977431427332">Google 어시스턴트가 지원되는 검색입니다. <ph name="LEARN_MORE" /></translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, 자동 완성</translation>
 <translation id="815598010540052116">아래로 스크롤</translation>
 <translation id="8179976553408161302">Enter</translation>

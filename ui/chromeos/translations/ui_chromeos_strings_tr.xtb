@@ -183,6 +183,7 @@
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> biçimlendiriliyor...</translation>
 <translation id="2951236788251446349">Denizanası</translation>
 <translation id="2984337792991268709">Bugün <ph name="TODAY_DAYTIME" /></translation>
+<translation id="2994320653639462337"><ph name="COUNT" /> öğe geri yükleniyor...</translation>
 <translation id="2994669386200004489"><ph name="FILE_NAME" /> dosyası yedeklenemedi</translation>
 <translation id="299638574917407533">Fransızca (Kanada)</translation>
 <translation id="3003633581067744647">Küçük resim görünümüne geç</translation>
@@ -300,6 +301,7 @@
 <translation id="4364327530094270451">Kavun</translation>
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">Harici bağlantı</translation>
+<translation id="4418686080762064601">Dosyalarınız için kısayol oluşturun</translation>
 <translation id="4425149324548788773">Drive'ım</translation>
 <translation id="4470564870223067757">Hangul 2 Grubu</translation>
 <translation id="4477002475007461989">Romence</translation>
@@ -380,6 +382,7 @@
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> öğe <ph name="FOLDER_NAME" /> klasörüne taşınıyor</translation>
 <translation id="509429900233858213">Bir hata oluştu.</translation>
 <translation id="5098629044894065541">İbranice</translation>
+<translation id="5109254780565519649">Hata oluştu. Bazı öğeler geri yüklenmemiş olabilir.</translation>
 <translation id="5110329002213341433">İngilizce (Kanada)</translation>
 <translation id="5123433949759960244">Basketbol</translation>
 <translation id="5129662217315786329">Lehçe</translation>
@@ -610,6 +613,7 @@
 <translation id="7547811415869834682">Felemenkçe</translation>
 <translation id="7551643184018910560">Rafa sabitle</translation>
 <translation id="7553492409867692754">Linux uygulamalarına <ph name="FOLDER_NAME" /> klasöründeki dosyalara erişim izni verin</translation>
+<translation id="7575645593344061397">"<ph name="FILENAME" />" geri yükleniyor...</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Bir saniye bekleyin</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> çevrimdışı kullanılabilir hale getiriliyor</translation>
@@ -707,6 +711,7 @@
 <translation id="8395901698320285466">Boyutlar</translation>
 <translation id="8437209419043462667">ABD</translation>
 <translation id="8456681095658380701">Geçersiz ad</translation>
+<translation id="8461467696380332069">Raftaki dosyalarınıza hızlı erişim için dosyayı sağ tıklayıp "Rafa sabitle"yi seçin.</translation>
 <translation id="8463494891489624050">Vietnamca VIQR</translation>
 <translation id="8466234950814670489">Tar arşivi</translation>
 <translation id="8475647382427415476">Google Drive, "<ph name="FILENAME" />" dosyasını şu anda senkronize edemedi. Google Drive senkronize etme işlemini daha sonra tekrar deneyecek.</translation>

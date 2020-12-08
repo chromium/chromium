@@ -183,6 +183,7 @@
 <translation id="2949781154072577687">Memformat <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Obor-obor</translation>
 <translation id="2984337792991268709">Hari ini <ph name="TODAY_DAYTIME" /></translation>
+<translation id="2994320653639462337">Memulihkan <ph name="COUNT" /> item...</translation>
 <translation id="2994669386200004489">Tidak dapat menyandarkan <ph name="FILE_NAME" /></translation>
 <translation id="299638574917407533">Perancis (Kanada)</translation>
 <translation id="3003633581067744647">Tukar kepada paparan lakaran kecil</translation>
@@ -300,6 +301,7 @@
 <translation id="4364327530094270451">Tembikai</translation>
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">Pautan luaran</translation>
+<translation id="4418686080762064601">Buat pintasan untuk fail anda</translation>
 <translation id="4425149324548788773">Drive Saya</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
 <translation id="4477002475007461989">Romania</translation>
@@ -380,6 +382,7 @@
 <translation id="508423945471810158">Mengalihkan <ph name="NUMBER_OF_ITEMS" /> item ke <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">Ralat telah berlaku.</translation>
 <translation id="5098629044894065541">Bahasa Ibrani</translation>
+<translation id="5109254780565519649">Ralat telah berlaku. Sesetengah item mungkin belum dipulihkan.</translation>
 <translation id="5110329002213341433">Inggeris (Kanada)</translation>
 <translation id="5123433949759960244">Bola Keranjang</translation>
 <translation id="5129662217315786329">Bahasa Poland</translation>
@@ -610,6 +613,7 @@
 <translation id="7547811415869834682">Bahasa Belanda</translation>
 <translation id="7551643184018910560">Sematkan pada rak</translation>
 <translation id="7553492409867692754">Beri Linux kebenaran apl untuk mengakses fail dalam folder <ph name="FOLDER_NAME" /></translation>
+<translation id="7575645593344061397">Memulihkan "<ph name="FILENAME" />"...</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Sila tunggu sebentar</translation>
 <translation id="7592775719802218421">Menjadikan <ph name="FILE_NAME" /> tersedia di luar talian</translation>
@@ -707,6 +711,7 @@
 <translation id="8395901698320285466">Dimensi</translation>
 <translation id="8437209419043462667">AS</translation>
 <translation id="8456681095658380701">Nama tidak sah</translation>
+<translation id="8461467696380332069">Klik kanan fail dan pilih "Semat pada Rak" untuk mendapatkan akses pantas kepada fail dalam rak.</translation>
 <translation id="8463494891489624050">VIQR Vietnam</translation>
 <translation id="8466234950814670489">Arkib Tar</translation>
 <translation id="8475647382427415476">Google Drive tidak dapat menyegerakkan "<ph name="FILENAME" />" pada masa ini. Google Drive akan mencuba lagi nanti.</translation>

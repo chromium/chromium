@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">โปรดป้อนส่วนหนึ่งโดยตามด้วย "<ph name="ATSIGN" />" "<ph name="INVALIDADDRESS" />" นั้นไม่สมบูรณ์</translation>
 <translation id="5334352251556557839">เล่นสื่อไม่ได้</translation>
 <translation id="537648784377940524">วันที่น้อยสุด (<ph name="MIN_DATE_OR_TIME" />) ต้องมาก่อนวันที่มากสุด (<ph name="MAX_DATE_OR_TIME" />)</translation>
+<translation id="5378437566635403538">ขยายอยู่ กล่องโต้ตอบเปิดขึ้น</translation>
 <translation id="5406322316791861025">ตัวเลข</translation>
 <translation id="5425179576310518467">วันที่ปัจจุบัน</translation>
 <translation id="5453733299334684579">รายการแบบต้นไม้</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">ตัวเลือกเพิ่มเติม</translation>
 <translation id="576709008726043716">บทนำ</translation>
 <translation id="57838592816432529">ปิดเสียง</translation>
+<translation id="5787939484346677755">ขยายอยู่ มีตัวเลือกการเติมข้อความอัตโนมัติ</translation>
 <translation id="5860033963881614850">ปิด</translation>
 <translation id="588258955323874662">เต็มหน้าจอ</translation>
 <translation id="5888666972993069672">ขณะนี้กำลังแคสต์ไปที่ <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">ช่องรายการ</translation>
 <translation id="6150588977291308318">บรรณานุกรม</translation>
 <translation id="6164829606128959761">เมตร</translation>
+<translation id="6165053282446038410">ขยายอยู่ มีตัวเลือกการเติมข้อความอัตโนมัติ <ph name="COUNT" /> รายการ</translation>
 <translation id="6166809985690652833">คำแถลงท้ายเล่ม</translation>
 <translation id="6209276755895393898">ดูเหมือนเป็น<ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">หน้าปัจจุบัน</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">ส่วนหัว</translation>
 <translation id="6941933287844615239">ดาวน์โหลดสื่อ</translation>
 <translation id="6981594929165378967">การแทรก</translation>
+<translation id="698788488269350478">ขยายอยู่</translation>
 <translation id="6989848892321993519">โปรดกรอกข้อความนี้ให้มีอักขระอย่างน้อย <ph name="MIN_CHARACTERS" /> ตัว (ตอนนี้คุณมี 1 ตัว)</translation>
 <translation id="7034405885550056553">คำแนะนำ</translation>
 <translation id="709897737746224366">โปรดจับคู่รูปแบบที่ร้องขอ</translation>
 <translation id="7102274145889307184">ตำแหน่งปัจจุบัน</translation>
 <translation id="7118469954320184356">ไม่มีคำอธิบาย</translation>
 <translation id="7139483182332611405">ส่วนนำ</translation>
+<translation id="7198226213493847604">ปุ่มป๊อปอัปของเมนู</translation>
 <translation id="7214187073215825913">ข้อมูลเกี่ยวกับเนื้อหา</translation>
 <translation id="7238347055216017155">การเน้น</translation>
 <translation id="7263440858009898357">โปรดเลือกรายการจากหน้ารายการ</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">บท</translation>
 <translation id="8845239796550121995">ตอนนี้กำลังแคสต์ไปยัง TV</translation>
 <translation id="8851136666856101339">หลัก</translation>
+<translation id="8861621546968757188">ปุ่มป๊อปอัปของกล่องโต้ตอบ</translation>
 <translation id="8875657656876809964">ข้อผิดพลาดในการเล่นวิดีโอ</translation>
 <translation id="8889402386540077796">โทนสี</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

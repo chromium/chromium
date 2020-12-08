@@ -160,6 +160,8 @@
 <translation id="5430073640787465221">Datoteka vaših postavki oštećena je ili nevažeća. Google Chrome nema mogućnost oporavka vaših postavki.</translation>
 <translation id="556024056938947818">Google Chrome pokušava prikazati zaporke.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5655746611259367388">Ovim i drugim Google računima koje ste dodali za korisničko ime <ph name="USER_NAME" /> možete upravljati s jednog mjesta u <ph name="LINK_BEGIN" />postavkama<ph name="LINK_END" />.
+          Dopuštenja koja ste dali web-lokacijama u pregledniku Chrome i aplikacijama s Google Playa mogu se primijeniti na sve račune.</translation>
 <translation id="5657226924540934362">Ako se postavka ne prikazuje na ovoj stranici, pogledajte <ph name="LINK_BEGIN" />
       postavke OS-a Chrome<ph name="LINK_END" /></translation>
 <translation id="565744775970812598">Datoteka <ph name="FILE_NAME" /> mogla bi biti opasna, pa ju je Chrome blokirao.</translation>

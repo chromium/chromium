@@ -160,6 +160,8 @@
 <translation id="5430073640787465221">Ваш файл налаштувань пошкоджений або недійсний. Google Chrome не може відновити ваші налаштування.</translation>
 <translation id="556024056938947818">Google Chrome намагається показати паролі.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5655746611259367388">У <ph name="LINK_BEGIN" />налаштуваннях<ph name="LINK_END" /> можна керувати цим та іншими обліковими записами Google, доданими для користувача "<ph name="USER_NAME" />".
+          Дозволи, надані веб-сайтам у веб-переглядачі Chrome і додаткам із Google Play можуть стосуватися всіх облікових записів.</translation>
 <translation id="5657226924540934362">Якщо налаштування не з'явиться на цій сторінці, пошукайте його в <ph name="LINK_BEGIN" />
       налаштуваннях ОС Chrome<ph name="LINK_END" /></translation>
 <translation id="565744775970812598">Файл <ph name="FILE_NAME" /> може бути небезпечним, тому Chrome заблокував його.</translation>

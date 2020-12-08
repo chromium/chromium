@@ -107,6 +107,7 @@
 <translation id="3670030362669914947">Numer</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/s</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
+<translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="3842239759367498783">Kontynuuj czytanie przerwane na urządzeniu mobilnym <ph name="TITLE" /></translation>
 <translation id="385051799172605136">Wstecz</translation>
 <translation id="3889424535448813030">Strzałka w prawo</translation>
@@ -228,7 +229,6 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{1 godzinę temu}few{# godziny temu}many{# godzin temu}other{# godziny temu}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{Pozostała 1 s}few{Pozostały # s}many{Pozostało # s}other{Pozostało # s}}</translation>
 <translation id="8134065097954893699">Wczytaj ponownie tę stronę</translation>
-<translation id="8144660977431427332">Twoje wyszukiwania obsługuje Asystent Google. <ph name="LEARN_MORE" /></translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, autouzupełnianie</translation>
 <translation id="815598010540052116">Przewiń w dół</translation>
 <translation id="8179976553408161302">Enter</translation>

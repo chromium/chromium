@@ -107,6 +107,7 @@
 <translation id="3670030362669914947">Broj</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/s</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
+<translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="3842239759367498783">Nastavite čitati s mobilnog uređaja <ph name="TITLE" /></translation>
 <translation id="385051799172605136">Natrag</translation>
 <translation id="3889424535448813030">Strelica desno</translation>
@@ -228,7 +229,6 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{Prije 1 sat}one{Prije # sat}few{Prije # sata}other{Prije # sati}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{Još 1 s}one{Još # s}few{Još # s}other{Još # s}}</translation>
 <translation id="8134065097954893699">Ponovno učitavanje te stranice</translation>
-<translation id="8144660977431427332">Vaša pretraživanja pokreće Google asistent. <ph name="LEARN_MORE" /></translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, samodovrši</translation>
 <translation id="815598010540052116">Pomakni se dolje</translation>
 <translation id="8179976553408161302">Enter</translation>

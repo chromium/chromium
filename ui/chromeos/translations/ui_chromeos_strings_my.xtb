@@ -183,6 +183,7 @@
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> ကို ဖော်မက်ချနေသည်...</translation>
 <translation id="2951236788251446349">ငါးထီး</translation>
 <translation id="2984337792991268709">ယနေ့ <ph name="TODAY_DAYTIME" /></translation>
+<translation id="2994320653639462337"><ph name="COUNT" /> ခုကို ပြန်ယူနေသည်...</translation>
 <translation id="2994669386200004489"><ph name="FILE_NAME" /> ကို မိတ္ထူမပွားနိုင်ပါ</translation>
 <translation id="299638574917407533">ပြင်သစ် (ကနေဒါ)</translation>
 <translation id="3003633581067744647">ပုံသေးမြင်ကွင်းသို့ ပြောင်းရန်</translation>
@@ -300,6 +301,7 @@
 <translation id="4364327530094270451">ဖရဲသီး</translation>
 <translation id="4372884569765913867">၁x၁</translation>
 <translation id="4394214039309501350">ပြင်ပလင့်ခ်</translation>
+<translation id="4418686080762064601">သင့်ဖိုင်များအတွက် ဖြတ်လမ်းလင့်ခ် ပြုလုပ်ပါ</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4470564870223067757">ဟံဂူလ် ၂ စုံ</translation>
 <translation id="4477002475007461989">ရိုမေနီယား</translation>
@@ -380,6 +382,7 @@
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> ခုကို <ph name="FOLDER_NAME" /> သို့ ရွှေ့နေသည်</translation>
 <translation id="509429900233858213">အမှား တစ်ခု ကြုံခဲ့ရသည်။</translation>
 <translation id="5098629044894065541">ဟီဘရူး</translation>
+<translation id="5109254780565519649">အမှား ဖြစ်သွားသည်။ အချို့အရာများကို ပြန်ယူ၍မရနိုင်ပါ။</translation>
 <translation id="5110329002213341433">အင်္ဂလိပ် (ကနေဒါ)</translation>
 <translation id="5123433949759960244">ဘတ်စကက်ဘော</translation>
 <translation id="5129662217315786329">ပိုလန်</translation>
@@ -609,6 +612,7 @@
 <translation id="7547811415869834682">ဒတ်ချ</translation>
 <translation id="7551643184018910560">စင်သို့ ပင်ထိုးရန်</translation>
 <translation id="7553492409867692754"><ph name="FOLDER_NAME" /> ဖိုင်တွဲရှိ ဖိုင်များကို Linux အား အသုံးပြုခွင့်ပေးမည်</translation>
+<translation id="7575645593344061397">"<ph name="FILENAME" />" ကို ပြန်ယူနေသည်...</translation>
 <translation id="7576032389798113292">၆x၄</translation>
 <translation id="7589661784326793847">ခဏလေး</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> ကို အော့ဖ်လိုင်းသုံး၍ရအောင် ပြုလုပ်နေသည်</translation>
@@ -706,6 +710,7 @@
 <translation id="8395901698320285466">အတိုင်းအတာများ</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">အမည် မမှန်</translation>
+<translation id="8461467696380332069">ဖိုင်ကို ညာဘက်ခလုတ်နှိပ်ပြီး စင်ပေါ်ရှိ သင့်ဖိုင်များကို အမြန်သုံးခွင့်အတွက် "စင်တွင်ပင်ထိုးရန်" ကို ရွေးပါ။</translation>
 <translation id="8463494891489624050">ဗီယက်နမ် VIQR</translation>
 <translation id="8466234950814670489">Tar စနစ်ဖြင့် ချုံ့ထားသော ဖိုင်မှတ်တမ်း</translation>
 <translation id="8475647382427415476">Google Drive က "<ph name="FILENAME" />" ကို ယခုချက်ချင်း စင့်က် မလုပ်နိုင်ခဲ့ပါ။ Google Drive သည် နောက်မှာ ထပ်စမ်းကြည့်မည်။</translation>

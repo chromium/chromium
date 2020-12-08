@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">已列印</translation>
 <translation id="1979103255016296513">變更密碼已逾期</translation>
 <translation id="1980044825731880088">CPU 速度</translation>
+<translation id="2008685064673031089">尖峰搜尋</translation>
 <translation id="2080070583977670716">顯示更多設定</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">取消列印工作</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">已通過</translation>
 <translation id="2375079107209812402">剩餘嘗試次數：<ph name="ATTEMPTS_LEFT" /> 次</translation>
 <translation id="2391082728065870591">傳送意見反映報告</translation>
+<translation id="2446553403094072641">浮點準確性</translation>
 <translation id="2461822463642141190">電流</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">掃瞄</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">確定</translation>
 <translation id="2805756323405976993">應用程式</translation>
 <translation id="2872961005593481000">關閉</translation>
+<translation id="2878387241690264070">已在 <ph name="NUM_SECONDS" /> 秒內放電 <ph name="RATE" />。</translation>
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">選取儲存的資料夾</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">在「檔案」應用程式中選取資料夾...</translation>
 <translation id="4848429997038228357">執行中</translation>
 <translation id="4890353053343094602">立即選擇新密碼</translation>
+<translation id="4891842000192098784">壓力</translation>
 <translation id="4917889632206600977">已停止 - 紙張已用完</translation>
 <translation id="4921665434385737356">已在 <ph name="NUM_SECONDS" /> 秒內充電 <ph name="RATE" />。</translation>
 <translation id="4932733599132424254">日期</translation>
+<translation id="498186245079027698">請檢查掃瞄器，然後再試一次。請確保本機有足夠空間儲存已掃瞄的檔案。</translation>
 <translation id="4985509611418653372">執行</translation>
 <translation id="500920857929044050">停止測試</translation>
 <translation id="5154917547274118687">記憶體</translation>
@@ -138,6 +143,7 @@
 <translation id="5551702563755460533">詳情請瀏覽說明中心</translation>
 <translation id="5635169860413004179">查看報告</translation>
 <translation id="5719918614880940190">此數據測量 CPU 使用情況，並且為所有核心的彙整資料</translation>
+<translation id="5781694279199921985">儲存工作階段記錄</translation>
 <translation id="5797428682393400134">成功</translation>
 <translation id="5832805196449965646">新增使用者</translation>
 <translation id="5895138241574237353">重新啟動</translation>
@@ -174,6 +180,8 @@
 <translation id="6766275201586212568">DNS 解析失敗</translation>
 <translation id="6768237774506518020">DNS 解析失敗率高</translation>
 <translation id="6839141349259399400">無法連接至掃瞄器嗎？</translation>
+<translation id="6853312040151791195">放電率</translation>
+<translation id="6898743098396957679">無法完成掃瞄</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 會管理此裝置並可存取所有使用者活動，包括網頁瀏覽記錄、密碼和電郵。</translation>
 <translation id="714876143603641390">LAN 連接性</translation>
 <translation id="7162487448488904999">媒體庫</translation>
@@ -186,12 +194,15 @@
 <translation id="7648838807254605802">HTTPS 延遲時間長</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7690294790491645610">確認新密碼</translation>
+<translation id="773153675489693198">週期數</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" />測試</translation>
 <translation id="7805768142964895445">狀態</translation>
 <translation id="7855434858642800953">已儲存掃瞄的檔案！</translation>
 <translation id="7928373994957558460">顯示檔案位置</translation>
 <translation id="7936303884198020182">找不到域名伺服器</translation>
+<translation id="7960831585769876809">溫度</translation>
 <translation id="8041089156583427627">提供意見</translation>
+<translation id="8075838845814659848">剩餘電量</translation>
 <translation id="808894953321890993">變更密碼</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8160445423316272678">將文件放到掃瞄器上，並選取 [掃瞄]<ph name="SPAN_BEGIN" /><ph name="SPAN_END" /> 即可開始掃瞄</translation>
@@ -219,6 +230,7 @@
 <translation id="8919837981463578619">失敗 - 沒有紙匣</translation>
 <translation id="8928727111548978589">失敗 - 紙張已用完</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" />剩餘嘗試次數：<ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="8968751544471797276">充電率</translation>
 <translation id="8970109610781093811">再執行一次</translation>
 <translation id="9088306295921699330">目前使用量</translation>
 <translation id="910415269708673980">更新 <ph name="PRINCIPAL_NAME" /> 的票證</translation>

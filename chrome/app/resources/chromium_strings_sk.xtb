@@ -29,6 +29,8 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1966382378801805537">Chromium nedokáže určiť alebo nastaviť predvolený prehliadač</translation>
 <translation id="2008474315282236005">Táto akcia odstráni zo zariadenia jednu položku. Ak budete chcieť svoje údaje neskôr opäť načítať, prihláste sa do prehliadača Chromium ako <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">Ak chcete skontrolovať, či sú vaše ostatné heslá chránené pred porušením ochrany údajov a inými bezpečnostnými hrozbami, <ph name="BEGIN_LINK" />prihláste sa do prehliadača Chromium<ph name="END_LINK" />.</translation>
+<translation id="2179192076895113433">Tento a ďalšie účty Google, ktoré ste pridali pre používateľa <ph name="USER_NAME" />, môžete spravovať na jednom mieste v sekcii <ph name="LINK_BEGIN" />Nastavenia<ph name="LINK_END" />.
+          Na všetky účty sa môžu vzťahovať povolenia, ktoré ste udelili webom v prehliadači Chromium a aplikáciách zo služby Google Play.</translation>
 <translation id="2185166961232948079">Chromium – prihlásenie do siete – <ph name="PAGE_TITLE" /></translation>
 <translation id="2225696941839557119">Systému Chromium OS sa nepodarilo synchronizovať vaše heslá.</translation>
 <translation id="2241627712206172106">Ak počítač zdieľate s rodinou a priateľmi, môžu v prehliadači Chromium prehliadať oddelene a tiež si ho nastaviť podľa vlastných požiadaviek.</translation>

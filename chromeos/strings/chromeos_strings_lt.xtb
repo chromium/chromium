@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Atspausdinta</translation>
 <translation id="1979103255016296513">Vėluojama pakeisti slaptažodį</translation>
 <translation id="1980044825731880088">Centrinio procesoriaus sparta</translation>
+<translation id="2008685064673031089">Pagrindinė paieška</translation>
 <translation id="2080070583977670716">Daugiau nustatymų</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> proc.</translation>
 <translation id="2161394479394250669">Atšaukti spausdinimo užduotį</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Pavyko</translation>
 <translation id="2375079107209812402">Liko bandymų: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Siųsti atsiliepimo ataskaitą</translation>
+<translation id="2446553403094072641">Slankiojo kablelio tikslumas</translation>
 <translation id="2461822463642141190">Dabartinė</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Nuskaityti</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">Gerai</translation>
 <translation id="2805756323405976993">Taikomosios programos</translation>
 <translation id="2872961005593481000">Stabdyti</translation>
+<translation id="2878387241690264070">Išsikrovė: <ph name="RATE" /> per <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="3008341117444806826">ATNAUJINTI</translation>
 <translation id="3009958530611748826">Pasirinkite aplanką, kuriame pageidaujate išsaugoti</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Pasirinkite aplanką Failų programoje...</translation>
 <translation id="4848429997038228357">VYKDOMA</translation>
 <translation id="4890353053343094602">Nedelsdami pasirinkite naują</translation>
+<translation id="4891842000192098784">Įtampa</translation>
 <translation id="4917889632206600977">Sustabdyta – baigėsi popierius</translation>
 <translation id="4921665434385737356">Įkrauta: <ph name="RATE" /> per <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="498186245079027698">Patikrinkite skaitytuvą ir bandykite dar kartą. Įsitikinkite, kad vietinėje sistemoje pakanka vietos nuskaitytiems failams išsaugoti.</translation>
 <translation id="4985509611418653372">Vykdyti</translation>
 <translation id="500920857929044050">Stabdyti bandymą</translation>
 <translation id="5154917547274118687">Atmintis</translation>
@@ -138,6 +143,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5551702563755460533">Sužinokite daugiau pagalbos centre</translation>
 <translation id="5635169860413004179">Žr. ataskaitą</translation>
 <translation id="5719918614880940190">Tai įvertina centrinio procesoriaus naudojimą ir nurodo apibendrintus visų branduolių duomenis</translation>
+<translation id="5781694279199921985">Išsaugoti seanso žurnalą</translation>
 <translation id="5797428682393400134">SĖKMINGAS</translation>
 <translation id="5832805196449965646">Pridėti asmenį</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
@@ -174,6 +180,8 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6766275201586212568">Nepavykę DNS nustatymo veiksmai</translation>
 <translation id="6768237774506518020">Aukštas DNS nustatymo trikčių rodiklis</translation>
 <translation id="6839141349259399400">Nepavyko prisijungti prie skaitytuvų?</translation>
+<translation id="6853312040151791195">Išsikrovimo rodiklis</translation>
+<translation id="6898743098396957679">Nepavyko užbaigti nuskaitymo proceso</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> tvarko šį įrenginį ir gali pasiekti visus naudotojo veiklos duomenis, įskaitant tinklalapius, kuriuose lankėsi, slaptažodžius ir el. paštą.</translation>
 <translation id="714876143603641390">LAN ryšys</translation>
 <translation id="7162487448488904999">Galerija</translation>
@@ -186,12 +194,15 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7648838807254605802">Didelė HTTPS delsa</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7690294790491645610">Patvirtinkite naują slaptažodį</translation>
+<translation id="773153675489693198">Ciklų skaičius</translation>
 <translation id="7732651821766520760">Bandymas „<ph name="TEST_NAME" />“</translation>
 <translation id="7805768142964895445">Būsena</translation>
 <translation id="7855434858642800953">Nuskaitytas failas išsaugotas!</translation>
 <translation id="7928373994957558460">Rodyti failo vietą</translation>
 <translation id="7936303884198020182">Domenų pavadinimų serverių nerasta</translation>
+<translation id="7960831585769876809">Temperatūra</translation>
 <translation id="8041089156583427627">Siųsti atsiliepimą</translation>
+<translation id="8075838845814659848">Likusio įkrovimo rodiklis</translation>
 <translation id="808894953321890993">Keisti slaptažodį</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">Jei norite pradėti, padėkite dokumentą ant skaitytuvo ir pasirinkite <ph name="SPAN_BEGIN" />Nuskaityti<ph name="SPAN_END" /></translation>
@@ -219,6 +230,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8919837981463578619">Nepavyko – nėra dėklo</translation>
 <translation id="8928727111548978589">Nepavyko – baigėsi popierius</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" />. Liko bandymų: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="8968751544471797276">Įkrovimo rodiklis</translation>
 <translation id="8970109610781093811">Paleisti dar kartą</translation>
 <translation id="9088306295921699330">Dabartinis naudojimas</translation>
 <translation id="910415269708673980">Atnaujinkite <ph name="PRINCIPAL_NAME" /> bilietą</translation>

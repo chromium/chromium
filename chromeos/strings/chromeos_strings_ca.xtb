@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Imprès</translation>
 <translation id="1979103255016296513">Canvi de contrasenya vençut</translation>
 <translation id="1980044825731880088">Velocitat de la CPU</translation>
+<translation id="2008685064673031089">Cerca principal</translation>
 <translation id="2080070583977670716">Més opcions de configuració</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Cancel·la la tasca d'impressió</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Comprovació superada</translation>
 <translation id="2375079107209812402">Intents restants: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Envia un informe de suggeriments</translation>
+<translation id="2446553403094072641">Precisió de la coma flotant</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> (<ph name="SOURCE_LANGUAGE_NAME" />)</translation>
 <translation id="2517472476991765520">Escaneja</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">D'acord</translation>
 <translation id="2805756323405976993">Aplicacions</translation>
 <translation id="2872961005593481000">Apaga</translation>
+<translation id="2878387241690264070">S'ha descarregat un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segons.</translation>
 <translation id="3008341117444806826">ACTUALITZA</translation>
 <translation id="3009958530611748826">Selecciona en quina carpeta vols que es desi</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Selecciona una carpeta a l'aplicació Fitxers...</translation>
 <translation id="4848429997038228357">EN EXECUCIÓ</translation>
 <translation id="4890353053343094602">Tria'n una de nova immediatament</translation>
+<translation id="4891842000192098784">Estrès</translation>
 <translation id="4917889632206600977">S'ha aturat: no hi ha paper</translation>
 <translation id="4921665434385737356">S'ha carregat un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segons.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="498186245079027698">Comprova l'escàner i torna-ho a provar. Assegura't que hi hagi prou espai local per desar els fitxers escanejats.</translation>
 <translation id="4985509611418653372">Executa</translation>
 <translation id="500920857929044050">Atura la prova</translation>
 <translation id="5154917547274118687">Memòria</translation>
@@ -138,6 +143,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5551702563755460533">Més informació al Centre d'ajuda</translation>
 <translation id="5635169860413004179">Mostra l'informe</translation>
 <translation id="5719918614880940190">Mesura l'ús de la CPU i és una suma de tots els nuclis</translation>
+<translation id="5781694279199921985">Desa el registre de sessió</translation>
 <translation id="5797428682393400134">SUPERADA</translation>
 <translation id="5832805196449965646">Afegeix una persona</translation>
 <translation id="5895138241574237353">Reinicia</translation>
@@ -174,6 +180,8 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6766275201586212568">Algunes resolucions de DNS han fallat</translation>
 <translation id="6768237774506518020">El percentatge d'error de la resolució de DNS és alt</translation>
 <translation id="6839141349259399400">No et pots connectar als escàners?</translation>
+<translation id="6853312040151791195">Percentatge de descàrrega</translation>
+<translation id="6898743098396957679">No s'ha pogut completar l'escaneig</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestiona aquest dispositiu i té accés a tota l'activitat dels usuaris, com ara les pàgines web visitades, les contrasenyes i el correu electrònic.</translation>
 <translation id="714876143603641390">Connectivitat de la LAN</translation>
 <translation id="7162487448488904999">Galeria</translation>
@@ -186,12 +194,15 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7648838807254605802">La latència d'HTTPS és alta</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7690294790491645610">Confirma la contrasenya nova</translation>
+<translation id="773153675489693198">Nombre de cicles</translation>
 <translation id="7732651821766520760">Prova <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Estat</translation>
 <translation id="7855434858642800953">El fitxer escanejat s'ha desat.</translation>
 <translation id="7928373994957558460">Mostra la ubicació del fitxer</translation>
 <translation id="7936303884198020182">No s'han trobat servidors de noms</translation>
+<translation id="7960831585769876809">Temperatura</translation>
 <translation id="8041089156583427627">Envia suggeriments</translation>
+<translation id="8075838845814659848">Càrrega restant</translation>
 <translation id="808894953321890993">Canvia la contrasenya</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">Col·loca el document a l'escàner i selecciona <ph name="SPAN_BEGIN" />Escaneja<ph name="SPAN_END" /> per començar</translation>
@@ -219,6 +230,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8919837981463578619">Error: no es troba la safata</translation>
 <translation id="8928727111548978589">Error: no hi ha paper</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Intents restants: <ph name="ATTEMPTS_LEFT" />.</translation>
+<translation id="8968751544471797276">Percentatge de càrrega</translation>
 <translation id="8970109610781093811">Torna a executar</translation>
 <translation id="9088306295921699330">Ús actual</translation>
 <translation id="910415269708673980">Actualitza el tiquet de: <ph name="PRINCIPAL_NAME" /></translation>

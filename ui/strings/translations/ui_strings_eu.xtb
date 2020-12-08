@@ -107,6 +107,7 @@
 <translation id="3670030362669914947">Zenbakia</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/s</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
+<translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="3842239759367498783">Jarraitu irakurtzen gailu mugikorrean <ph name="TITLE" /></translation>
 <translation id="385051799172605136">Atzera</translation>
 <translation id="3889424535448813030">Eskuin gezia</translation>
@@ -228,7 +229,6 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{Duela 1 ordu}other{Duela # ordu}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 s gelditzen da}other{# s gelditzen dira}}</translation>
 <translation id="8134065097954893699">Orri hau berriro kargatzea</translation>
-<translation id="8144660977431427332">Google-ren Laguntzailea eginbideak egiten ditu bilaketak. <ph name="LEARN_MORE" /></translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatikoki betea</translation>
 <translation id="815598010540052116">Egin behera</translation>
 <translation id="8179976553408161302">Sartu</translation>

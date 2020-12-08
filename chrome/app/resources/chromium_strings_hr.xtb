@@ -27,6 +27,8 @@
 <translation id="1966382378801805537">Chromium ne može utvrditi niti postaviti zadani preglednik</translation>
 <translation id="2008474315282236005">Time će se izbrisati jedna stavka s uređaja. Da biste kasnije dohvatili svoje podatke, prijavite se na Chromium kao <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">Da biste provjerili jesu li vaše druge zaporke sigurne od povrede podataka i drugih poteškoća sa sigurnošću, <ph name="BEGIN_LINK" />prijavite se na Chromium<ph name="END_LINK" />.</translation>
+<translation id="2179192076895113433">Ovim i drugim Google računima koje ste dodali za korisničko ime <ph name="USER_NAME" /> možete upravljati s jednog mjesta u <ph name="LINK_BEGIN" />postavkama<ph name="LINK_END" />.
+          Dopuštenja koja ste dali web-lokacijama u pregledniku Chromium i aplikacijama s Google Playa mogu se primijeniti na sve račune.</translation>
 <translation id="2185166961232948079">Chromium – Prijava na mrežu – <ph name="PAGE_TITLE" /></translation>
 <translation id="2225696941839557119">OS Chromium nije mogao sinkronizirati vaše zaporke.</translation>
 <translation id="2241627712206172106">Ako dijelite računalo, prijatelji i članovi obitelji mogu zasebno pregledavati i postaviti Chromium prema svojim željama.</translation>

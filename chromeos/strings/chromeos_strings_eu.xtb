@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Inprimatuta</translation>
 <translation id="1979103255016296513">Pasahitza iraungita dago eta aldatu egin behar da</translation>
 <translation id="1980044825731880088">PUZaren abiadura</translation>
+<translation id="2008685064673031089">Prime bilaketa</translation>
 <translation id="2080070583977670716">Ezarpen gehiago</translation>
 <translation id="2141644705054017895">% <ph name="PERCENTAGE_VALUE" /></translation>
 <translation id="2161394479394250669">Utzi bertan behera inprimatze-lana</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Gaindituta</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> saiakera gelditzen dira</translation>
 <translation id="2391082728065870591">Bidali zerbitzuari buruzko iritzien txostena</translation>
+<translation id="2446553403094072641">Puntu gainerakorraren zehaztasuna</translation>
 <translation id="2461822463642141190">Uneko kontsumoa</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Bilatu</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">Ados</translation>
 <translation id="2805756323405976993">Aplikazioak</translation>
 <translation id="2872961005593481000">Itzali</translation>
+<translation id="2878387241690264070"><ph name="RATE" /> deskargatu da <ph name="NUM_SECONDS" /> segundotan.</translation>
 <translation id="3008341117444806826">FRESKATU</translation>
 <translation id="3009958530611748826">Hautatu zer karpetatan gorde nahi duzun</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Hautatu karpeta Fitxategiak aplikazioan…</translation>
 <translation id="4848429997038228357">ABIAN</translation>
 <translation id="4890353053343094602">Aukeratu beste bat berehala</translation>
+<translation id="4891842000192098784">Estresa</translation>
 <translation id="4917889632206600977">Geldituta: ez dago paperik</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> segundo behar izan dira <ph name="RATE" /> kargatzeko.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="498186245079027698">Eman begirada bat eskanerrari eta saiatu berriro. Ziurtatu eskaneatutako fitxategiak gordetzeko behar beste toki dagoela gailuan.</translation>
 <translation id="4985509611418653372">Exekutatu</translation>
 <translation id="500920857929044050">Gelditu proba</translation>
 <translation id="5154917547274118687">Memoria</translation>
@@ -138,6 +143,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5551702563755460533">Informazio gehiago lortzeko, joan Laguntza-zentroa atalera</translation>
 <translation id="5635169860413004179">Ikusi txostena</translation>
 <translation id="5719918614880940190">PUZaren erabilera neurtzen du honek, eta nukleo guztien multzokatze bat da</translation>
+<translation id="5781694279199921985">Gorde saioaren erregistroa</translation>
 <translation id="5797428682393400134">GAINDITU DA</translation>
 <translation id="5832805196449965646">Gehitu pertsona bat</translation>
 <translation id="5895138241574237353">Berrabiarazi</translation>
@@ -174,6 +180,8 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6766275201586212568">huts egin dute DNS bidezko ebazpenek</translation>
 <translation id="6768237774506518020">DNS bidezko ebazpenen hutsegite-tasa altua</translation>
 <translation id="6839141349259399400">Ezin zara konektatu eskanerretara?</translation>
+<translation id="6853312040151791195">Deskargatze-abiadura</translation>
+<translation id="6898743098396957679">Ezin izan da osatu eskaneatzea</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> domeinuak kudeatzen du gailu hau, eta erabiltzaileen jarduera guztiak atzi ditzake; besteak beste, bisitatutako webguneak, erabilitako pasahitzak eta posta elektronikoa.</translation>
 <translation id="714876143603641390">LAN sarearen konexioa</translation>
 <translation id="7162487448488904999">Galeria</translation>
@@ -186,12 +194,15 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7648838807254605802">HTTPS eskaeren itxarote-denbora luzea</translation>
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7690294790491645610">Berretsi pasahitz berria</translation>
+<translation id="773153675489693198">Ziklo kopurua</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> neurtzeko proba</translation>
 <translation id="7805768142964895445">Egoera</translation>
 <translation id="7855434858642800953">Gorde da eskaneatutako fitxategia</translation>
 <translation id="7928373994957558460">Erakutsi fitxategiaren kokapena</translation>
 <translation id="7936303884198020182">Ez da aurkitu izenen zerbitzaririk</translation>
+<translation id="7960831585769876809">Tenperatura</translation>
 <translation id="8041089156583427627">Bidali oharrak</translation>
+<translation id="8075838845814659848">Geratzen den bateria</translation>
 <translation id="808894953321890993">Aldatu pasahitza</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">Hasteko, kokatu dokumentua eskanerrean eta hautatu <ph name="SPAN_BEGIN" />Eskaneatu<ph name="SPAN_END" /></translation>
@@ -219,6 +230,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8919837981463578619">Hutsegitea - Erretilua falta da</translation>
 <translation id="8928727111548978589">Hutsegitea - Ez dago paperik</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> saiakera gelditzen dira</translation>
+<translation id="8968751544471797276">Kargatze-abiadura</translation>
 <translation id="8970109610781093811">Abiarazi berriro</translation>
 <translation id="9088306295921699330">Uneko erabilera</translation>
 <translation id="910415269708673980">Freskatu <ph name="PRINCIPAL_NAME" /> erabiltzailearen zerbitzu-eskaera</translation>

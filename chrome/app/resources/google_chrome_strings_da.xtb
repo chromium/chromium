@@ -160,6 +160,8 @@
 <translation id="5430073640787465221">Din præferencefil er beskadiget eller ugyldig. Google Chrome kan ikke gendanne dine præferencer.</translation>
 <translation id="556024056938947818">Google Chrome forsøger at vise adgangskoder.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5655746611259367388">Du kan administrere denne og andre Google-konti, du har tilføjet for <ph name="USER_NAME" />, på ét sted under <ph name="LINK_BEGIN" />Indstillinger<ph name="LINK_END" />.
+          De tilladelser, du har givet til websites i Chrome-browseren og apps fra Google Play, gælder muligvis for alle konti.</translation>
 <translation id="5657226924540934362">Hvis en indstilling ikke vises på denne side, kan du kigge i <ph name="LINK_BEGIN" />
       indstillingerne for Chrome OS<ph name="LINK_END" /></translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan være skadelig, så Chrome har blokeret den.</translation>

@@ -168,6 +168,8 @@ Nekatere funkcije morda ne bodo na voljo. Navedite drug imenik profila ali upora
 Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="556024056938947818">Google Chrome poskuša prikazati gesla.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5655746611259367388">Ta račun Google in druge, ki ste jih dodali za uporabniško ime <ph name="USER_NAME" />, lahko upravljate na enem mestu v <ph name="LINK_BEGIN" />nastavitvah<ph name="LINK_END" />.
+          Dovoljenja, ki ste jih odobrili spletnim mestom v brskalniku Chrome in aplikacijam iz Googla Play, morda veljajo za vse račune.</translation>
 <translation id="5657226924540934362">Če nastavitev ni prikazana na tej strani, preverite <ph name="LINK_BEGIN" />
       nastavitve sistema OS Chrome<ph name="LINK_END" /></translation>
 <translation id="565744775970812598">Datoteka <ph name="FILE_NAME" /> je morda nevarna, zato jo je Chrome blokiral.</translation>

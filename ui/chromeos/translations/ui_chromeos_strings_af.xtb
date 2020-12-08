@@ -183,6 +183,7 @@
 <translation id="2949781154072577687">Formateer tans <ph name="DRIVE_NAME" /> …</translation>
 <translation id="2951236788251446349">Jellievis</translation>
 <translation id="2984337792991268709">Vandag <ph name="TODAY_DAYTIME" /></translation>
+<translation id="2994320653639462337">Stel tans <ph name="COUNT" /> items terug …</translation>
 <translation id="2994669386200004489">Kon nie <ph name="FILE_NAME" /> rugsteun nie</translation>
 <translation id="299638574917407533">Frans (Kanada)</translation>
 <translation id="3003633581067744647">Skakel oor na kleinkiekie-aansig</translation>
@@ -300,6 +301,7 @@
 <translation id="4364327530094270451">Spanspek</translation>
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">Eksterne skakel</translation>
+<translation id="4418686080762064601">Skep 'n kortpad vir jou lêers</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4470564870223067757">Hangul 2 Stel</translation>
 <translation id="4477002475007461989">Roemeens</translation>
@@ -380,6 +382,7 @@
 <translation id="508423945471810158">Skuif <ph name="NUMBER_OF_ITEMS" /> items nou na <ph name="FOLDER_NAME" /> toe</translation>
 <translation id="509429900233858213">'n Fout het voorgekom.</translation>
 <translation id="5098629044894065541">Hebreeus</translation>
+<translation id="5109254780565519649">Iets was fout. Sommige items is dalk nie teruggestel nie.</translation>
 <translation id="5110329002213341433">Engels (Kanada)</translation>
 <translation id="5123433949759960244">Basketbal</translation>
 <translation id="5129662217315786329">Pools</translation>
@@ -609,6 +612,7 @@
 <translation id="7547811415869834682">Nederlands</translation>
 <translation id="7551643184018910560">Speld aan rak vas</translation>
 <translation id="7553492409867692754">Gee Linux-programme toegang tot lêers in die <ph name="FOLDER_NAME" />-vouer</translation>
+<translation id="7575645593344061397">Stel tans "<ph name="FILENAME" />" terug …</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Wag net 'n oomblik</translation>
 <translation id="7592775719802218421">Maak tans <ph name="FILE_NAME" /> vanlyn beskikbaar</translation>
@@ -706,6 +710,7 @@
 <translation id="8395901698320285466">Afmetings</translation>
 <translation id="8437209419043462667">VSA</translation>
 <translation id="8456681095658380701">Ongeldige naam</translation>
+<translation id="8461467696380332069">Regsklik 'n lêer en kies "Speld aan rak vas" vir kitstoegang tot jou lêers in die rak.</translation>
 <translation id="8463494891489624050">Viëtnamees-VIQR</translation>
 <translation id="8466234950814670489">Teerargief</translation>
 <translation id="8475647382427415476">Google Drive kon <ph name="FILENAME" /> nie nou onmiddellik sinkroniseer nie. Google Drive sal later weer probeer.</translation>

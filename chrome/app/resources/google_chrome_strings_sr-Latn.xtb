@@ -168,6 +168,8 @@ Neke funkcije su možda nedostupne. Navedite drugi direktorijum profila ili kori
 Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="556024056938947818">Google Chrome pokušava da prikaže lozinke.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5655746611259367388">Možete da upravljate ovim Google nalogom i drugim Google nalozima koje ste dodali za korisnika <ph name="USER_NAME" /> na jednom mestu u <ph name="LINK_BEGIN" />Podešavanjima<ph name="LINK_END" />.
+          Dozvole koje ste dali veb-sajtovima u pregledaču Chrome i aplikacijama sa Google Play-a mogu da važe za sve naloge.</translation>
 <translation id="5657226924540934362">Ako se podešavanje ne prikazuje na ovoj stranici, potražite ga u <ph name="LINK_BEGIN" />
       podešavanjima Chrome OS-a<ph name="LINK_END" /></translation>
 <translation id="565744775970812598">Datoteka <ph name="FILE_NAME" /> je možda opasna, pa ju je Chrome blokirao.</translation>

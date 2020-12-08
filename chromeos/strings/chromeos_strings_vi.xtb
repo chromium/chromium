@@ -22,6 +22,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> quản lý người dùng này và có thể quản lý từ xa các tùy chọn cài đặt cũng như giám sát hoạt động của người dùng.</translation>
 <translation id="150962533380566081">PUK không hợp lệ.</translation>
 <translation id="1510238584712386396">Trình chạy</translation>
+<translation id="1621067168122174824">Chạy quá trình Kiểm tra sạc</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> luồng)</translation>
 <translation id="1641857168437328880">Khay nạp tài liệu (1 mặt)</translation>
 <translation id="1644574205037202324">Lịch sử</translation>
@@ -29,11 +30,13 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Tồn tại trình phân giải hệ thống tên miền (DNS)</translation>
 <translation id="1743558184855585519">Pin được xem là hết thời gian sử dụng sau khi đạt đến giới hạn này</translation>
+<translation id="1792647875738159689">Đang hủy quá trình quét</translation>
 <translation id="1905710495812624430">Đã vượt quá số lần thử tối đa được phép.</translation>
 <translation id="1930797645656624981">Dịch vụ cung cấp phương thức nhập trên Chrome OS</translation>
 <translation id="1947737735496445907">Đã in</translation>
 <translation id="1979103255016296513">Đã quá hạn thay đổi mật khẩu</translation>
 <translation id="1980044825731880088">Tốc độ CPU</translation>
+<translation id="2008685064673031089">Tìm kiếm quan trọng</translation>
 <translation id="2080070583977670716">Cài đặt khác</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Hủy lệnh in</translation>
@@ -42,6 +45,7 @@
 <translation id="2364498172489649528">Đã đạt</translation>
 <translation id="2375079107209812402">Còn <ph name="ATTEMPTS_LEFT" /> lần thử</translation>
 <translation id="2391082728065870591">Gửi báo cáo phản hồi</translation>
+<translation id="2446553403094072641">Độ chính xác của dấu phẩy động</translation>
 <translation id="2461822463642141190">Hiện tại</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Quét</translation>
@@ -50,9 +54,11 @@
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2805756323405976993">Ứng dụng</translation>
 <translation id="2872961005593481000">Tắt</translation>
+<translation id="2878387241690264070">Đã xả <ph name="RATE" /> pin sau <ph name="NUM_SECONDS" /> giây.</translation>
 <translation id="3008341117444806826">LÀM MỚI</translation>
 <translation id="3009958530611748826">Chọn một thư mục để lưu</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3069085583900247081">Không kiểm tra được</translation>
 <translation id="3083667275341675831">Chẩn đoán kết nối</translation>
 <translation id="3091839911843451378">Không thành công – Đã dừng</translation>
 <translation id="3102119246920354026">Bộ nhớ đệm</translation>
@@ -62,6 +68,7 @@
 <translation id="3246869037381808805">Các lệnh in quá 1 ngày sẽ bị xóa</translation>
 <translation id="3268178239013324452">Không thành công – Cửa máy in đang mở</translation>
 <translation id="3310640316857623290">Độ trễ của Hệ thống tên miền (DNS) vượt ngưỡng cho phép đáng kể</translation>
+<translation id="3328783797891415197">Đang chạy quá trình kiểm tra</translation>
 <translation id="3369013195428705271">Bạn có chắc chắn muốn xóa toàn bộ lịch sử in không? Các lệnh in đang thực hiện sẽ không bị xóa.</translation>
 <translation id="3456078764689556234">Đã in trang <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">In</translation>
@@ -81,6 +88,7 @@
 <translation id="4034824040120875894">Máy in</translation>
 <translation id="4131410914670010031">Đen và trắng</translation>
 <translation id="4145784616224233563">Tường lửa HTTP</translation>
+<translation id="4170700058716978431">KHÔNG THÀNH CÔNG</translation>
 <translation id="4227825898293920515">Mật khẩu sẽ hết hạn sau <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Không có lệnh in nào đang xử lý</translation>
 <translation id="4297501883039923494">Đã dừng – Lỗi không xác định</translation>
@@ -105,17 +113,22 @@
 <translation id="4773299976671772492">Đã dừng</translation>
 <translation id="4808449224298348341">Đã hủy lệnh in <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">Chọn thư mục trong ứng dụng Files...</translation>
+<translation id="4848429997038228357">ĐANG CHẠY</translation>
 <translation id="4890353053343094602">Chọn ngay một mật khẩu mới</translation>
+<translation id="4891842000192098784">Độ ổn định</translation>
 <translation id="4917889632206600977">Đã dừng – Hết giấy</translation>
 <translation id="4921665434385737356">Đã sạc <ph name="RATE" /> trong <ph name="NUM_SECONDS" /> giây.</translation>
 <translation id="4932733599132424254">Ngày Tháng</translation>
+<translation id="498186245079027698">Hãy kiểm tra trình quét rồi thử lại. Đảm bảo máy có đủ dung lượng để lưu các tệp đã quét.</translation>
 <translation id="4985509611418653372">Chạy</translation>
+<translation id="500920857929044050">Dừng kiểm tra</translation>
 <translation id="5154917547274118687">Bộ nhớ</translation>
 <translation id="5168185087976003268">Tình trạng pin</translation>
 <translation id="520299634122159966">Chưa có máy quét nào</translation>
 <translation id="5212543919916444558">Tôi không tìm thấy nội dung nào trên màn hình để có thể trợ giúp cho bạn.
 Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translation>
 <translation id="5222676887888702881">Đăng xuất</translation>
+<translation id="5264277876637023664">Chạy quá trình Kiểm tra CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Chạy lại quy trình</translation>
 <translation id="5317780077021120954">Lưu</translation>
@@ -128,17 +141,23 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="54609108002486618">Được quản lý</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Tìm hiểu thêm trong Trung tâm trợ giúp</translation>
+<translation id="5635169860413004179">Xem báo cáo</translation>
 <translation id="5719918614880940190">Số liệu này đo mức sử dụng CPU và là số liệu tổng hợp của tất cả các lõi</translation>
+<translation id="5781694279199921985">Lưu nhật ký phiên</translation>
+<translation id="5797428682393400134">THÀNH CÔNG</translation>
 <translation id="5832805196449965646">Thêm người</translation>
 <translation id="5895138241574237353">Khởi động lại</translation>
+<translation id="5931523347251946569">Không tìm thấy tệp</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, phiên bản <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6048107060512778456">Không thành công – Kẹt giấy</translation>
 <translation id="6050189528197190982">Thang độ xám</translation>
 <translation id="6058625436358447366">Để hoàn tất, hãy nhập cả mật khẩu cũ và mật khẩu mới của bạn</translation>
 <translation id="6061772781719867950">Yêu cầu HTTP không thành công</translation>
+<translation id="6104112872696127344">Đã hủy quá trình quét</translation>
 <translation id="6106186594183574873">Để hoàn tất, hãy nhập mật khẩu cũ của bạn</translation>
 <translation id="6108689792487843350">Không thể kết nối với cổng</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" /> GHz/<ph name="MAX" /> GHz</translation>
 <translation id="6146993107019042706">Để hoàn tất, hãy nhập mật khẩu mới của bạn</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Tìm hiểu thêm</translation>
@@ -149,6 +168,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="649050271426829538">Đã dừng – Kẹt giấy</translation>
 <translation id="6517239166834772319">Khám phá</translation>
 <translation id="6527081081771465939">Giao thức bảo mật Wi-Fi không xác định</translation>
+<translation id="6532051501443766164">Ẩn báo cáo</translation>
 <translation id="65587193855025101">Mặt phẳng</translation>
 <translation id="6564646048574748301">Không thành công – Không thể kết nối với máy in</translation>
 <translation id="6618744767048954150">Đang chạy</translation>
@@ -156,9 +176,12 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6643016212128521049">Xóa</translation>
 <translation id="6704062477274546131">Phân giải DNS</translation>
 <translation id="6747215703636344499">Đã dừng – Khay giấy ra đã đầy</translation>
+<translation id="6756731097889387912">Không thể hủy quá trình quét</translation>
 <translation id="6766275201586212568">Quá trình phân giải DNS không thành công</translation>
 <translation id="6768237774506518020">Tỷ lệ lỗi cao trong quá trình phân giải DNS</translation>
 <translation id="6839141349259399400">Không thể kết nối với các máy quét?</translation>
+<translation id="6853312040151791195">Tốc độ xả pin</translation>
+<translation id="6898743098396957679">Không thể hoàn tất quy trình quét</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> quản lý thiết bị này và có quyền truy cập vào tất cả hoạt động của người dùng, bao gồm cả các trang web đã truy cập, mật khẩu và email.</translation>
 <translation id="714876143603641390">Khả năng kết nối với mạng LAN</translation>
 <translation id="7162487448488904999">Thư viện</translation>
@@ -171,11 +194,15 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7648838807254605802">Yêu cầu HTTPS có độ trễ cao</translation>
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7690294790491645610">Xác nhận mật khẩu mới</translation>
+<translation id="773153675489693198">Số chu kỳ</translation>
+<translation id="7732651821766520760">Kiểm tra <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Trạng thái</translation>
 <translation id="7855434858642800953">Đã lưu tệp được quét!</translation>
 <translation id="7928373994957558460">Hiển thị vị trí tệp</translation>
 <translation id="7936303884198020182">Không tìm thấy máy chủ định danh</translation>
+<translation id="7960831585769876809">Nhiệt độ</translation>
 <translation id="8041089156583427627">Gửi phản hồi</translation>
+<translation id="8075838845814659848">Mức pin còn lại</translation>
 <translation id="808894953321890993">Đổi mật khẩu</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8160445423316272678">Đặt tài liệu lên máy quét rồi chọn <ph name="SPAN_BEGIN" />Quét<ph name="SPAN_END" /> để bắt đầu</translation>
@@ -198,13 +225,17 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Mặc định</translation>
 <translation id="8845001906332463065">Nhận trợ giúp</translation>
+<translation id="8881098542468797602">Đã kiểm tra thành công</translation>
 <translation id="8910721771319628100">Mạng mặc định vượt ngưỡng độ trễ</translation>
 <translation id="8919837981463578619">Không thành công – Thiếu khay</translation>
 <translation id="8928727111548978589">Không thành công – Hết giấy</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Bạn còn <ph name="ATTEMPTS_LEFT" /> lần thử</translation>
+<translation id="8968751544471797276">Tốc độ sạc</translation>
 <translation id="8970109610781093811">Chạy lại</translation>
 <translation id="9088306295921699330">Mức sử dụng hiện tại</translation>
 <translation id="910415269708673980">Làm mới phiếu cho <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Đang quét trang <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Mở khóa</translation>
+<translation id="9149391708638971077">Chạy quá trình Kiểm tra bộ nhớ</translation>
+<translation id="982713511914535780">Chạy quá trình Kiểm tra mức xả pin</translation>
 </translationbundle>

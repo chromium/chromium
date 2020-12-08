@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Izdrukāts</translation>
 <translation id="1979103255016296513">Paroles maiņa ir nokavēta</translation>
 <translation id="1980044825731880088">Centrālā procesora ātrums</translation>
+<translation id="2008685064673031089">Pirmskaitļu meklēšana</translation>
 <translation id="2080070583977670716">Vairāk iestatījumu</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Atcelt drukas uzdevumu</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Pārbaude izpildīta</translation>
 <translation id="2375079107209812402">Vēl <ph name="ATTEMPTS_LEFT" /> mēģinājumi</translation>
 <translation id="2391082728065870591">Sūtīt atsauksmju pārskatu</translation>
+<translation id="2446553403094072641">Peldošā punkta precizitāte</translation>
 <translation id="2461822463642141190">Šobrīd</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> — <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Meklēt</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">Labi</translation>
 <translation id="2805756323405976993">Lietotnes</translation>
 <translation id="2872961005593481000">Beidzēt</translation>
+<translation id="2878387241690264070">Izlādes apjoms <ph name="NUM_SECONDS" /> s laikā: <ph name="RATE" />.</translation>
 <translation id="3008341117444806826">ATSVAIDZINĀT</translation>
 <translation id="3009958530611748826">Atlasiet mapi, kurā saglabāt failus</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Atlasīt mapi lietotnē Faili…</translation>
 <translation id="4848429997038228357">TIEK VEIKTA</translation>
 <translation id="4890353053343094602">Nekavējoties izvēlieties jaunu</translation>
+<translation id="4891842000192098784">Izturība</translation>
 <translation id="4917889632206600977">Apturēts — beidzies papīrs</translation>
 <translation id="4921665434385737356">Uzlādes apjoms: <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekundēs.</translation>
 <translation id="4932733599132424254">Datums</translation>
+<translation id="498186245079027698">Pārbaudiet skeneri un mēģiniet vēlreiz. Vietējā krātuvē jābūt pietiekami daudz vietas skenēto failu saglabāšanai.</translation>
 <translation id="4985509611418653372">Izpildīt</translation>
 <translation id="500920857929044050">Apturēt pārbaudi</translation>
 <translation id="5154917547274118687">Atmiņa</translation>
@@ -138,6 +143,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="5551702563755460533">Uzzināt vairāk palīdzības centrā</translation>
 <translation id="5635169860413004179">Skatīt pārskatu</translation>
 <translation id="5719918614880940190">Nosaka centrālā procesora lietojumu un atspoguļo visu rādītāju apkopojumu.</translation>
+<translation id="5781694279199921985">Saglabāt sesijas žurnālu</translation>
 <translation id="5797428682393400134">SEKMĪGA</translation>
 <translation id="5832805196449965646">Pievienot personu</translation>
 <translation id="5895138241574237353">Restartēt</translation>
@@ -174,6 +180,8 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6766275201586212568">DNS atrisināšanas kļūmes</translation>
 <translation id="6768237774506518020">Biežas DNS atrisināšanas kļūmes</translation>
 <translation id="6839141349259399400">Vai nevar izveidot savienojumu ar skeneriem?</translation>
+<translation id="6853312040151791195">Izlādes ātrums</translation>
+<translation id="6898743098396957679">Nevarēja pabeigt skenēšanu</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> pārvalda šo ierīci un var piekļūt visām lietotāja darbībām, tostarp apmeklētajām tīmekļa lapām, parolēm un e-pastam.</translation>
 <translation id="714876143603641390">LAN savienojamība</translation>
 <translation id="7162487448488904999">Galerija</translation>
@@ -186,12 +194,15 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7648838807254605802">Liels HTTPS latentums</translation>
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7690294790491645610">Apstipriniet jauno paroli</translation>
+<translation id="773153675489693198">Ciklu laiks</translation>
 <translation id="7732651821766520760">Pārbaude: <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Statuss</translation>
 <translation id="7855434858642800953">Skenētais fails ir saglabāts!</translation>
 <translation id="7928373994957558460">Parādīt faila atrašanās vietu</translation>
 <translation id="7936303884198020182">Netika atrasts neviens nosaukumu serveris</translation>
+<translation id="7960831585769876809">Temperatūra</translation>
 <translation id="8041089156583427627">Sūtīt atsauksmes</translation>
+<translation id="8075838845814659848">Atlikusī akumulatora enerģija</translation>
 <translation id="808894953321890993">Mainīt paroli</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">Lai sāktu darbu, novietojiet dokumentu uz skenera un atlasiet <ph name="SPAN_BEGIN" />Skenēt<ph name="SPAN_END" />.</translation>
@@ -219,6 +230,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8919837981463578619">Neizdevās — trūkst paliktņa</translation>
 <translation id="8928727111548978589">Neizdevās — beidzies papīrs</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" />. Atlikušais mēģinājumu skaits: <ph name="ATTEMPTS_LEFT" />.</translation>
+<translation id="8968751544471797276">Uzlādes ātrums</translation>
 <translation id="8970109610781093811">Izpildīt vēlreiz</translation>
 <translation id="9088306295921699330">Pašreizējais lietojums</translation>
 <translation id="910415269708673980">Atsvaidziniet <ph name="PRINCIPAL_NAME" /> biļeti</translation>

@@ -164,6 +164,8 @@
 <translation id="5430073640787465221">‏ملف الإعدادات المفضّلة تالف أو غير صالح. يتعذر على Google Chrome استرداد إعداداتك.</translation>
 <translation id="556024056938947818">‏يحاول Google Chrome إظهار كلمات المرور.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5655746611259367388">‏يمكنك إدارة هذا الحساب وحسابات Google الأخرى التي أضفتها لـ <ph name="USER_NAME" /> من خلال <ph name="LINK_BEGIN" />الإعدادات<ph name="LINK_END" />.
+          ويمكن أن تنطبق الأذونات التي منحتها للمواقع الإلكترونية في متصفّح Chrome وتطبيقات Google Play على جميع الحسابات.</translation>
 <translation id="5657226924540934362">‏في حال عدم عرض إعداد على هذه الصفحة، انتقل إلى <ph name="LINK_BEGIN" />
       إعدادات نظام التشغيل Chrome<ph name="LINK_END" /></translation>
 <translation id="565744775970812598">‏قد يكون ملف <ph name="FILE_NAME" /> ضارًا، لذلك فقد حظره Chrome.</translation>

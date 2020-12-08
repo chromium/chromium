@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">印刷完了</translation>
 <translation id="1979103255016296513">パスワードの変更期限を過ぎました</translation>
 <translation id="1980044825731880088">CPU 速度</translation>
+<translation id="2008685064673031089">Prime サーチ</translation>
 <translation id="2080070583977670716">詳細設定</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">印刷ジョブをキャンセル</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">成功</translation>
 <translation id="2375079107209812402">あと <ph name="ATTEMPTS_LEFT" /> 回</translation>
 <translation id="2391082728065870591">フィードバック レポートを送信</translation>
+<translation id="2446553403094072641">浮動小数点数精度</translation>
 <translation id="2461822463642141190">電流</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">スキャン</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">アプリ</translation>
 <translation id="2872961005593481000">終了</translation>
+<translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒で <ph name="RATE" /> 放電しました。</translation>
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">保存先のフォルダを選択</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">ファイルアプリ内のフォルダを選択...</translation>
 <translation id="4848429997038228357">実行中</translation>
 <translation id="4890353053343094602">新しいパスワードを今すぐ選択してください</translation>
+<translation id="4891842000192098784">ストレス</translation>
 <translation id="4917889632206600977">停止 - 用紙切れ</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒で <ph name="RATE" /> 充電しました。</translation>
 <translation id="4932733599132424254">日付</translation>
+<translation id="498186245079027698">スキャナを確認して、もう一度お試しください。デバイスにスキャンしたファイルを保存するのに十分な容量があるかどうかも確認してください。</translation>
 <translation id="4985509611418653372">実行</translation>
 <translation id="500920857929044050">テストを停止</translation>
 <translation id="5154917547274118687">メモリ</translation>
@@ -138,6 +143,7 @@
 <translation id="5551702563755460533">ヘルプセンターで詳細を確認</translation>
 <translation id="5635169860413004179">レポートを表示</translation>
 <translation id="5719918614880940190">コア CPU 全体の使用状況を測定します</translation>
+<translation id="5781694279199921985">セッションログを保存</translation>
 <translation id="5797428682393400134">完了</translation>
 <translation id="5832805196449965646">ユーザーを追加</translation>
 <translation id="5895138241574237353">再起動</translation>
@@ -174,6 +180,8 @@
 <translation id="6766275201586212568">DNS 解決に失敗しました</translation>
 <translation id="6768237774506518020">DNS 解決の失敗率が高くなっています</translation>
 <translation id="6839141349259399400">スキャナに接続できない場合</translation>
+<translation id="6853312040151791195">放電率</translation>
+<translation id="6898743098396957679">スキャンを完了できませんでした</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> はこのデバイスを管理しており、閲覧したウェブページ、パスワード、メールなど、すべてのユーザー アクティビティにアクセスできます。</translation>
 <translation id="714876143603641390">LAN 接続</translation>
 <translation id="7162487448488904999">ギャラリー</translation>
@@ -186,12 +194,15 @@
 <translation id="7648838807254605802">HTTPS レイテンシが高くなっています</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7690294790491645610">新しいパスワードの確認入力</translation>
+<translation id="773153675489693198">サイクル回数</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> テスト</translation>
 <translation id="7805768142964895445">ステータス</translation>
 <translation id="7855434858642800953">スキャンしたファイルを保存しました。</translation>
 <translation id="7928373994957558460">ファイルの場所を表示</translation>
 <translation id="7936303884198020182">ネームサーバーが見つかりませんでした</translation>
+<translation id="7960831585769876809">温度</translation>
 <translation id="8041089156583427627">フィードバックを送信</translation>
+<translation id="8075838845814659848">バッテリー残量</translation>
 <translation id="808894953321890993">パスワードの変更</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> ℃</translation>
 <translation id="8160445423316272678">スキャナにドキュメントを置いて、[<ph name="SPAN_BEGIN" />スキャン<ph name="SPAN_END" />] を選択してスキャンを開始してください</translation>
@@ -219,6 +230,7 @@
 <translation id="8919837981463578619">失敗 - トレイがありません</translation>
 <translation id="8928727111548978589">失敗 - 用紙がありません</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" />: あと <ph name="ATTEMPTS_LEFT" /> 回</translation>
+<translation id="8968751544471797276">充電率</translation>
 <translation id="8970109610781093811">再実行</translation>
 <translation id="9088306295921699330">現在の使用状況</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> のチケットを更新してください</translation>

@@ -183,6 +183,7 @@
 <translation id="2949781154072577687">Formaterer <ph name="DRIVE_NAME" /> …</translation>
 <translation id="2951236788251446349">Stormanet</translation>
 <translation id="2984337792991268709">I dag kl. <ph name="TODAY_DAYTIME" /></translation>
+<translation id="2994320653639462337">Gjenoppretter <ph name="COUNT" /> elementer …</translation>
 <translation id="2994669386200004489">Kunne ikke sikkerhetskopiere <ph name="FILE_NAME" /></translation>
 <translation id="299638574917407533">Fransk (Canada)</translation>
 <translation id="3003633581067744647">Bytt til miniatyrbildevisning</translation>
@@ -300,6 +301,7 @@
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4372884569765913867">1 x 1</translation>
 <translation id="4394214039309501350">Ekstern link</translation>
+<translation id="4418686080762064601">Opprett en snarvei til filene dine</translation>
 <translation id="4425149324548788773">Min disk</translation>
 <translation id="4470564870223067757">Hangul 2-sett</translation>
 <translation id="4477002475007461989">Rumensk</translation>
@@ -380,6 +382,7 @@
 <translation id="508423945471810158">Flytter <ph name="NUMBER_OF_ITEMS" /> elementer til <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">Det oppsto en feil.</translation>
 <translation id="5098629044894065541">Hebraisk</translation>
+<translation id="5109254780565519649">Det oppsto en feil. Noen elementer er kanskje ikke gjenopprettet.</translation>
 <translation id="5110329002213341433">Engelsk (Canada)</translation>
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5129662217315786329">Polsk</translation>
@@ -610,6 +613,7 @@
 <translation id="7547811415869834682">Nederlandsk</translation>
 <translation id="7551643184018910560">Fest til hyllen</translation>
 <translation id="7553492409867692754">Gi Linux-apper tilgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
+<translation id="7575645593344061397">Gjenoppretter «<ph name="FILENAME" />» …</translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Vent et øyeblikk</translation>
 <translation id="7592775719802218421">Gjør <ph name="FILE_NAME" /> tilgjengelig uten nett</translation>
@@ -707,6 +711,7 @@
 <translation id="8395901698320285466">Dimensjoner</translation>
 <translation id="8437209419043462667">Amerikansk</translation>
 <translation id="8456681095658380701">Ugyldig navn</translation>
+<translation id="8461467696380332069">Høyreklikk på en fil, og velg «Fest til hyllen» for rask tilgang til filene dine på hyllen.</translation>
 <translation id="8463494891489624050">Vietnamesisk VIQR</translation>
 <translation id="8466234950814670489">Tar-arkiv</translation>
 <translation id="8475647382427415476">Google Disk kunne ikke synkronisere «<ph name="FILENAME" />» akkurat nå. Vi prøver igjen senere.</translation>

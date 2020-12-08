@@ -171,6 +171,7 @@
 <translation id="2157851137955077194">तपाईंको फोनको कुनै कुरा अर्को यन्त्रसँग आदान प्रदान गर्न दुवै यन्त्रमा Chrome को सेटिङमा गई सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
 <translation id="2158408438301413340">Chrome ले सबै पासवर्डहरू जाँच्न सकेन</translation>
 <translation id="2169830938017475061">अहिले</translation>
+<translation id="2172688499998841696">'फोटोको वर्णन' सुविधा अफ छ</translation>
 <translation id="2175927920773552910">QR कोड</translation>
 <translation id="218608176142494674">आदान प्रदान गर्दै</translation>
 <translation id="2195339740518523951">Chrome को सबैभन्दा बलियो सुरक्षा विकल्प चयन गर्नुहोस्</translation>
@@ -208,6 +209,7 @@
 कुनै शब्द खोज्न उक्त शब्दमा टच एण्ड होल्ड गर्नुहोस्। आफ्नो खोज परिष्कृत गर्न अझ धेरै वा कम शब्दहरू चयन गर्नुहोस्। आफ्नो खोज पद सम्पादन गर्न प्यानल खोल्नुहोस्, नयाँ ट्याबमा खोल्ने आइकनमा ट्याप गर्नुहोस् र खोज बाकसमा रहेको खोज पदमा आवश्यक परिवर्तनहरू गर्नुहोस्।</translation>
 <translation id="2459390580524506445">परिष्कृत भ्वाइस सर्च</translation>
 <translation id="246532703174860178">सेयर गर्नुहोस्</translation>
+<translation id="247737702124049222">'फोटोको वर्णन' सुविधा अन छ</translation>
 <translation id="2478076885740497414">एप स्थापना गर्नुहोस्</translation>
 <translation id="2479148705183875116">सेटिङमा जानुहोस्</translation>
 <translation id="2482878487686419369">सूचनाहरू</translation>
@@ -313,6 +315,7 @@
 <translation id="3232754137068452469">वेब एप</translation>
 <translation id="3236059992281584593">१ मिनेट बाँकी छ</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3250563604907490871">Wi-Fi मा कनेक्ट हुँदा 'फोटोको वर्णन' सुविधा सुचारु हुने छ</translation>
 <translation id="3254409185687681395">यो पृष्ठलाई बुकमार्क गर्नुहोस्</translation>
 <translation id="3259831549858767975">पृष्ठमा रहेको सबै कुरालाई अझ सानो बनाउनुहोस्</translation>
 <translation id="3264124641674805320">पछि हेर्ने वा पढ्ने प्रयोजनका लागि सामग्री डाउनलोड गर्ने तरिका</translation>
@@ -608,7 +611,7 @@
 <translation id="5423934151118863508">तपाईँले धेरै भ्रमण गर्नुभएका पृष्ठहरू यहाँ देखिने छन्।</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> जि.बि. उपलब्ध छ</translation>
 <translation id="543338862236136125">पासवर्ड सम्पादन गर्नुहोस्</translation>
-<translation id="5433691172869980887">प्रयोगकर्ताको नाम प्रतिलिपि गरियो</translation>
+<translation id="5433691172869980887">युजरनेम प्रतिलिपि गरियो</translation>
 <translation id="543509235395288790"><ph name="COUNT" /> फाइलहरू डाउनलोड गर्दै (<ph name="MEGABYTES" />)।</translation>
 <translation id="5441466871879044658">यो भाषामा अनुवाद गर्नुहोस्</translation>
 <translation id="5441522332038954058">ठेगाना पट्टीमा जानुहोस्</translation>
@@ -896,6 +899,7 @@
 <translation id="7274013316676448362">रोक लगाइएका साइटहरू</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> परिवर्तन गर्ने हो?</translation>
 <translation id="7290209999329137901">नाम बदल्ने सुविधा उपलब्ध छैन</translation>
+<translation id="7291910923717764901">यो पेजमा फोटोसम्बन्धी विवरण हालिएको छ</translation>
 <translation id="7293171162284876153">सिंक गर्ने कार्य सुरु गर्न "Chrome को आफ्नो डेटा सिंक गर्नुहोस्"।</translation>
 <translation id="7293429513719260019">भाषा चयन गर्नुहोस्</translation>
 <translation id="729975465115245577">तपाईंको यन्त्रमा पासवर्डहरूको फाइल भण्डारण गर्ने कुनै एप छैन।</translation>

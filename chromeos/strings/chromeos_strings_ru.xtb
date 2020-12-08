@@ -22,6 +22,7 @@
 <translation id="1499900233129743732">Этим аккаунтом управляет <ph name="MANAGER" />. Администратор может отслеживать действия пользователя, а также удаленно изменять настройки.</translation>
 <translation id="150962533380566081">Неверный PUK-код.</translation>
 <translation id="1510238584712386396">Панель запуска</translation>
+<translation id="1621067168122174824">Запустить проверку зарядки</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (потоков: <ph name="THREAD_COUNT" />)</translation>
 <translation id="1641857168437328880">Автоподатчик документов (односторонний)</translation>
 <translation id="1644574205037202324">История</translation>
@@ -29,11 +30,13 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Наличие DNS-резолвера</translation>
 <translation id="1743558184855585519">Ресурс батареи считается исчерпанным, когда достигнут предел по количеству циклов перезарядки</translation>
+<translation id="1792647875738159689">Отмена сканирования</translation>
 <translation id="1905710495812624430">Превышено максимально допустимое число попыток.</translation>
 <translation id="1930797645656624981">Выбор способа ввода в Chrome OS</translation>
 <translation id="1947737735496445907">Напечатано</translation>
 <translation id="1979103255016296513">Истек срок изменения пароля</translation>
 <translation id="1980044825731880088">Скорость ЦП</translation>
+<translation id="2008685064673031089">Поиск простых чисел</translation>
 <translation id="2080070583977670716">Дополнительные настройки</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Отменить задание печати</translation>
@@ -42,6 +45,7 @@
 <translation id="2364498172489649528">Завершено</translation>
 <translation id="2375079107209812402">Осталось попыток: <ph name="ATTEMPTS_LEFT" />.</translation>
 <translation id="2391082728065870591">Отправить отзыв с отчетом</translation>
+<translation id="2446553403094072641">Точность чисел с плавающей запятой</translation>
 <translation id="2461822463642141190">Расход энергии</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Искать</translation>
@@ -50,9 +54,11 @@
 <translation id="2740531572673183784">ОК</translation>
 <translation id="2805756323405976993">Сервисы</translation>
 <translation id="2872961005593481000">Завершить работу</translation>
+<translation id="2878387241690264070">Батарея разрядилась на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
 <translation id="3008341117444806826">ОБНОВИТЬ</translation>
 <translation id="3009958530611748826">Выберите папку для сохранения</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> мА</translation>
+<translation id="3069085583900247081">Проверка не пройдена</translation>
 <translation id="3083667275341675831">Диагностика соединений</translation>
 <translation id="3091839911843451378">Сбой: остановка работы</translation>
 <translation id="3102119246920354026">Кеш</translation>
@@ -62,6 +68,7 @@
 <translation id="3246869037381808805">Задания печати, хранящиеся дольше 1 дня, будут удалены</translation>
 <translation id="3268178239013324452">Сбой: крышка открыта</translation>
 <translation id="3310640316857623290">Задержка на сервере доменных имен существенно превышает допустимое значение.</translation>
+<translation id="3328783797891415197">Идет проверка</translation>
 <translation id="3369013195428705271">Очистить историю печати? Текущие задания печати не будут удалены.</translation>
 <translation id="3456078764689556234">Напечатано страниц: <ph name="PRINTED_PAGES" /> из <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Печать</translation>
@@ -81,6 +88,7 @@
 <translation id="4034824040120875894">Принтер</translation>
 <translation id="4131410914670010031">Черно-белая печать</translation>
 <translation id="4145784616224233563">Брандмауэр HTTP</translation>
+<translation id="4170700058716978431">ОШИБКА</translation>
 <translation id="4227825898293920515">Срок действия пароля истекает через <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Задания печати не выполняются</translation>
 <translation id="4297501883039923494">Печать прервана: неизвестная ошибка</translation>
@@ -105,17 +113,22 @@
 <translation id="4773299976671772492">Остановлено</translation>
 <translation id="4808449224298348341">Отменено задание печати файла "<ph name="DOCUMENT_TITLE" />"</translation>
 <translation id="4832079907277790330">Выбрать папку в приложении Files…</translation>
+<translation id="4848429997038228357">ВЫПОЛНЯЕТСЯ</translation>
 <translation id="4890353053343094602">Смените пароль как можно скорее.</translation>
+<translation id="4891842000192098784">Стресс-тестирование</translation>
 <translation id="4917889632206600977">Печать прервана: нет бумаги</translation>
 <translation id="4921665434385737356">Батарея зарядилась на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
 <translation id="4932733599132424254">Дата</translation>
+<translation id="498186245079027698">Проверьте сканер и повторите попытку. Убедитесь, что на диске достаточно свободного места для хранения отсканированных файлов.</translation>
 <translation id="4985509611418653372">Проверить</translation>
+<translation id="500920857929044050">Прекратить проверку</translation>
 <translation id="5154917547274118687">Память</translation>
 <translation id="5168185087976003268">Уровень заряда</translation>
 <translation id="520299634122159966">Нет доступных сканеров.</translation>
 <translation id="5212543919916444558">Я не нашла на экране ничего подходящего.
 Попробуйте озвучить запрос, нажав на значок микрофона.</translation>
 <translation id="5222676887888702881">Выйти</translation>
+<translation id="5264277876637023664">Запустить проверку ЦП</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Запустить заново</translation>
 <translation id="5317780077021120954">Сохранить</translation>
@@ -128,17 +141,23 @@
 <translation id="54609108002486618">Автоматическое управление</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Подробнее в Справочном центре</translation>
+<translation id="5635169860413004179">Посмотреть отчет</translation>
 <translation id="5719918614880940190">Использование ЦП всеми ядрами</translation>
+<translation id="5781694279199921985">Сохранить журнал сеанса</translation>
+<translation id="5797428682393400134">ВЫПОЛНЕНО</translation>
 <translation id="5832805196449965646">Добавить пользователя</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
+<translation id="5931523347251946569">Файл не найден.</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, версия <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6048107060512778456">Сбой: застряла бумага</translation>
 <translation id="6050189528197190982">Оттенки серого</translation>
 <translation id="6058625436358447366">Для завершения введите старый и новый пароли.</translation>
 <translation id="6061772781719867950">невыполненные HTTPS-запросы</translation>
+<translation id="6104112872696127344">Сканирование отменено.</translation>
 <translation id="6106186594183574873">Для завершения введите старый пароль.</translation>
 <translation id="6108689792487843350">Шлюз недоступен.</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" /> ГГц/<ph name="MAX" /> ГГц</translation>
 <translation id="6146993107019042706">Чтобы завершить процедуру, введите новый пароль.</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Подробнее</translation>
@@ -149,6 +168,7 @@
 <translation id="649050271426829538">Печать прервана: застряла бумага</translation>
 <translation id="6517239166834772319">Возможности</translation>
 <translation id="6527081081771465939">Неизвестный протокол обеспечения безопасности сети Wi-Fi.</translation>
+<translation id="6532051501443766164">Скрыть отчет</translation>
 <translation id="65587193855025101">Планшетный</translation>
 <translation id="6564646048574748301">Сбой: принтер недоступен</translation>
 <translation id="6618744767048954150">Выполняется</translation>
@@ -156,9 +176,12 @@
 <translation id="6643016212128521049">Удалить</translation>
 <translation id="6704062477274546131">Разрешение DNS</translation>
 <translation id="6747215703636344499">Печать прервана: выходной лоток заполнен</translation>
+<translation id="6756731097889387912">Не удалось отменить сканирование.</translation>
 <translation id="6766275201586212568">невыполненные преобразования DNS</translation>
 <translation id="6768237774506518020">большое число невыполненных преобразований DNS</translation>
 <translation id="6839141349259399400">Не удается подключиться к сканерам?</translation>
+<translation id="6853312040151791195">Скорость разрядки</translation>
+<translation id="6898743098396957679">Не удалось выполнить сканирование</translation>
 <translation id="7028979494427204405">Этим устройством управляет <ph name="MANAGER" />. Администратору доступна информация обо всех действиях пользователя, в том числе о посещенных веб-страницах, а также адрес электронной почты и пароли.</translation>
 <translation id="714876143603641390">Подключение к локальной сети</translation>
 <translation id="7162487448488904999">Галерея</translation>
@@ -171,11 +194,15 @@
 <translation id="7648838807254605802">большое время ожидания HTTPS</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7690294790491645610">Введите новый пароль ещё раз</translation>
+<translation id="773153675489693198">Количество циклов</translation>
+<translation id="7732651821766520760"><ph name="TEST_NAME" />: проверка</translation>
 <translation id="7805768142964895445">Состояние</translation>
 <translation id="7855434858642800953">Отсканированный файл сохранен.</translation>
 <translation id="7928373994957558460">Показать, где сохранен файл</translation>
 <translation id="7936303884198020182">Не найдены серверы доменных имен.</translation>
+<translation id="7960831585769876809">Температура</translation>
 <translation id="8041089156583427627">Отправить отзыв</translation>
+<translation id="8075838845814659848">Уровень заряда</translation>
 <translation id="808894953321890993">Сменить пароль</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">Положите документ в сканер и нажмите <ph name="SPAN_BEGIN" />Сканировать<ph name="SPAN_END" />.</translation>
@@ -198,13 +225,17 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">По умолчанию</translation>
 <translation id="8845001906332463065">Справка</translation>
+<translation id="8881098542468797602">Проверка пройдена</translation>
 <translation id="8910721771319628100">В сети, используемой по умолчанию, превышено пороговое значение задержки.</translation>
 <translation id="8919837981463578619">Сбой: нет лотка для бумаги</translation>
 <translation id="8928727111548978589">Сбой: закончилась бумага</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Осталось попыток: <ph name="ATTEMPTS_LEFT" />.</translation>
+<translation id="8968751544471797276">Скорость зарядки</translation>
 <translation id="8970109610781093811">Выполнить ещё раз</translation>
 <translation id="9088306295921699330">Используется</translation>
 <translation id="910415269708673980">Обновите билет для аккаунта <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Сканирование страницы <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Разблокировать</translation>
+<translation id="9149391708638971077">Запустить проверку памяти</translation>
+<translation id="982713511914535780">Запустить проверку расхода заряда</translation>
 </translationbundle>

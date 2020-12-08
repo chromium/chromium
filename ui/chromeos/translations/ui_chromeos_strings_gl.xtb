@@ -183,6 +183,7 @@
 <translation id="2949781154072577687">Formatando <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Medusa</translation>
 <translation id="2984337792991268709">Hoxe, ás <ph name="TODAY_DAYTIME" /></translation>
+<translation id="2994320653639462337">Restaurando <ph name="COUNT" /> elementos...</translation>
 <translation id="2994669386200004489">Non se puido facer unha copia de seguranza de <ph name="FILE_NAME" /></translation>
 <translation id="299638574917407533">Francés (Canadá)</translation>
 <translation id="3003633581067744647">Cambiar á vista de miniaturas</translation>
@@ -300,6 +301,7 @@
 <translation id="4364327530094270451">Melón</translation>
 <translation id="4372884569765913867">1 x 1</translation>
 <translation id="4394214039309501350">Ligazón externa</translation>
+<translation id="4418686080762064601">Crea un atallo para acceder aos teus ficheiros</translation>
 <translation id="4425149324548788773">A miña unidade</translation>
 <translation id="4470564870223067757">Dobre alternancia hangul</translation>
 <translation id="4477002475007461989">Romanés</translation>
@@ -380,6 +382,7 @@
 <translation id="508423945471810158">Movendo <ph name="NUMBER_OF_ITEMS" /> elementos a <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">Produciuse un erro.</translation>
 <translation id="5098629044894065541">Hebreo</translation>
+<translation id="5109254780565519649">Produciuse un erro. Pode que non se restaurasen algúns elementos.</translation>
 <translation id="5110329002213341433">Inglés (Canadá)</translation>
 <translation id="5123433949759960244">Baloncesto</translation>
 <translation id="5129662217315786329">Polaco</translation>
@@ -609,6 +612,7 @@
 <translation id="7547811415869834682">Neerlandés</translation>
 <translation id="7551643184018910560">Fixar no estante</translation>
 <translation id="7553492409867692754">Concede permiso ás aplicacións de Linux para acceder aos ficheiros do cartafol <ph name="FOLDER_NAME" /></translation>
+<translation id="7575645593344061397">Restaurando <ph name="FILENAME" />...</translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Espere só un segundo</translation>
 <translation id="7592775719802218421">Activando acceso sen conexión a <ph name="FILE_NAME" /></translation>
@@ -706,6 +710,7 @@
 <translation id="8395901698320285466">Dimensións</translation>
 <translation id="8437209419043462667">EUA</translation>
 <translation id="8456681095658380701">Nome non válido</translation>
+<translation id="8461467696380332069">Para acceder de forma rápida aos teus ficheiros no estante, fai clic co botón dereito nun ficheiro e selecciona Fixar no estante.</translation>
 <translation id="8463494891489624050">Vietnamita (VIQR)</translation>
 <translation id="8466234950814670489">Arquivo Tar</translation>
 <translation id="8475647382427415476">Google Drive non puido sincronizar <ph name="FILENAME" /> neste momento. Google Drive tentarao de novo máis tarde.</translation>

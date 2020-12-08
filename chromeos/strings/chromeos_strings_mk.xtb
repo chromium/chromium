@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Отпечатено</translation>
 <translation id="1979103255016296513">Измина рокот за промена на лозинката</translation>
 <translation id="1980044825731880088">Брзина на CPU</translation>
+<translation id="2008685064673031089">Примарно пребарување</translation>
 <translation id="2080070583977670716">Повеќе поставки</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Откажи го налогот за печатење</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Помина</translation>
 <translation id="2375079107209812402">Преостануваат <ph name="ATTEMPTS_LEFT" /> обиди</translation>
 <translation id="2391082728065870591">Испрати извештај со повратни информации</translation>
+<translation id="2446553403094072641">Прецизност на подвижна запирка</translation>
 <translation id="2461822463642141190">Моментално</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Скенирај</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">Во ред</translation>
 <translation id="2805756323405976993">Апликации</translation>
 <translation id="2872961005593481000">Исклучи</translation>
+<translation id="2878387241690264070">Испразнета <ph name="RATE" /> за <ph name="NUM_SECONDS" /> секунди.</translation>
 <translation id="3008341117444806826">ОСВЕЖИ</translation>
 <translation id="3009958530611748826">Изберете папка за зачувување</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Изберете папка во апликацијата „Датотеки“…</translation>
 <translation id="4848429997038228357">СЕ ИЗВРШУВА</translation>
 <translation id="4890353053343094602">Веднаш изберете нова</translation>
+<translation id="4891842000192098784">Стрес</translation>
 <translation id="4917889632206600977">Запрено - нема хартија</translation>
 <translation id="4921665434385737356">Наполнета <ph name="RATE" /> за <ph name="NUM_SECONDS" /> секунди.</translation>
 <translation id="4932733599132424254">Датум</translation>
+<translation id="498186245079027698">Проверете го скенерот и обидете се повторно. Уверете се дека има доволно простор на уредот за да се зачуваат скенираните датотеки.</translation>
 <translation id="4985509611418653372">Изврши</translation>
 <translation id="500920857929044050">Запри го тестот</translation>
 <translation id="5154917547274118687">Меморија</translation>
@@ -138,6 +143,7 @@
 <translation id="5551702563755460533">Дознајте повеќе во „Центарот за помош“</translation>
 <translation id="5635169860413004179">Прикажи го извештајот</translation>
 <translation id="5719918614880940190">Ова го мери користењето на CPU и претставува збир од сите јадра</translation>
+<translation id="5781694279199921985">Зачувај евиденција за сесијата</translation>
 <translation id="5797428682393400134">УСПЕШЕН</translation>
 <translation id="5832805196449965646">Додај лице</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
@@ -174,6 +180,8 @@
 <translation id="6766275201586212568">Неуспешни одредувања со DNS</translation>
 <translation id="6768237774506518020">Висока стапка на неуспех на одредување со DNS</translation>
 <translation id="6839141349259399400">Не може да се поврзете со скенерите?</translation>
+<translation id="6853312040151791195">Брзина на празнење</translation>
+<translation id="6898743098396957679">Скенирањето не можеше да се заврши</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управува со уредов и има пристап до целата активност на корисникот, вклучувајќи ги и посетените веб-страници, лозинките и е-поштата.</translation>
 <translation id="714876143603641390">LAN-поврзливост</translation>
 <translation id="7162487448488904999">Галерија</translation>
@@ -186,12 +194,15 @@
 <translation id="7648838807254605802">Висока латенција на HTTPS</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7690294790491645610">Потврдете ја новата лозинка</translation>
+<translation id="773153675489693198">Број на циклуси</translation>
 <translation id="7732651821766520760">Тест за <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7855434858642800953">Скенираната датотека е зачувана.</translation>
 <translation id="7928373994957558460">Прикажи ја локацијата на датотеката</translation>
 <translation id="7936303884198020182">Не се најдени сервери за име</translation>
+<translation id="7960831585769876809">Температура</translation>
 <translation id="8041089156583427627">Испратете повратни информации</translation>
+<translation id="8075838845814659848">Преостанато полнење</translation>
 <translation id="808894953321890993">Промени лозинка</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">Ставете го документот на скенерот и изберете <ph name="SPAN_BEGIN" />Скенирај<ph name="SPAN_END" /> за да започнете</translation>
@@ -219,6 +230,7 @@
 <translation id="8919837981463578619">Неуспешно - недостасува фиоката</translation>
 <translation id="8928727111548978589">Неуспешно - нема хартија</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Преостанати обиди: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="8968751544471797276">Брзина на полнење</translation>
 <translation id="8970109610781093811">Изврши повторно</translation>
 <translation id="9088306295921699330">Моментално користење</translation>
 <translation id="910415269708673980">Освежете го билетот за <ph name="PRINCIPAL_NAME" /></translation>

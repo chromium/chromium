@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Tulostettu</translation>
 <translation id="1979103255016296513">Salasanan vaihto myöhässä</translation>
 <translation id="1980044825731880088">Suorittimen nopeus</translation>
+<translation id="2008685064673031089">Ensisijainen haku</translation>
 <translation id="2080070583977670716">Lisää asetuksia</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Peruuta tulostustyö</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Onnistui</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> yritystä jäljellä</translation>
 <translation id="2391082728065870591">Lähetä palauteraportti</translation>
+<translation id="2446553403094072641">Liukulukuesityksen tarkkuus</translation>
 <translation id="2461822463642141190">Nykyinen</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Etsi</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Sovellukset</translation>
 <translation id="2872961005593481000">Sammuta</translation>
+<translation id="2878387241690264070">Tyhjentynyt <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekunnissa.</translation>
 <translation id="3008341117444806826">PÄIVITÄ</translation>
 <translation id="3009958530611748826">Valitse tallennuskansio</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Valitse kansio Tiedostot-sovelluksesta…</translation>
 <translation id="4848429997038228357">KÄYNNISSÄ</translation>
 <translation id="4890353053343094602">Valitse uusi välittömästi</translation>
+<translation id="4891842000192098784">Rasitus</translation>
 <translation id="4917889632206600977">Pysähtynyt – Paperi loppu</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> ladattiin <ph name="NUM_SECONDS" /> sekunnissa.</translation>
 <translation id="4932733599132424254">Päiväys</translation>
+<translation id="498186245079027698">Tarkista skanneri ja yritä uudelleen. Varmista, että paikallinen tallennustila riittää skannattujen tiedostojen tallentamiseen.</translation>
 <translation id="4985509611418653372">Suorita</translation>
 <translation id="500920857929044050">Lopeta testi</translation>
 <translation id="5154917547274118687">Muisti</translation>
@@ -138,6 +143,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5551702563755460533">Katso lisätietoja ohjekeskuksesta</translation>
 <translation id="5635169860413004179">Katso raportti</translation>
 <translation id="5719918614880940190">Tämä mittaa prosessorin käyttöä ja tarkoittaa kaikkien ytimien yhteissummaa</translation>
+<translation id="5781694279199921985">Tallenna käyttökertaloki</translation>
 <translation id="5797428682393400134">ONNISTUI</translation>
 <translation id="5832805196449965646">Lisää henkilö</translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
@@ -174,6 +180,8 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6766275201586212568">Hylätyt DNS-selvitykset</translation>
 <translation id="6768237774506518020">Suuri DNS-selvitysten hylkäysprosentti</translation>
 <translation id="6839141349259399400">Etkö pysty yhdistämään skannereihin?</translation>
+<translation id="6853312040151791195">Tyhjentymisnopeus</translation>
+<translation id="6898743098396957679">Skannausta ei voitu tehdä loppuun</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ylläpitää tätä laitetta ja pääsee näkemään kaiken käyttäjätoiminnan, esim. avatut verkkosivustot, salasanat ja sähköpostit.</translation>
 <translation id="714876143603641390">LAN-yhteys</translation>
 <translation id="7162487448488904999">Galleria</translation>
@@ -186,12 +194,15 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7648838807254605802">Suuri HTTPS-viive</translation>
 <translation id="7658239707568436148">Peruuta</translation>
 <translation id="7690294790491645610">Vahvista uusi salasana</translation>
+<translation id="773153675489693198">Syklien määrä</translation>
 <translation id="7732651821766520760">Testi: <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Tila</translation>
 <translation id="7855434858642800953">Skannattu tiedosto tallennettu!</translation>
 <translation id="7928373994957558460">Näytä tiedoston sijainti</translation>
 <translation id="7936303884198020182">Nimipalvelimia ei löydy</translation>
+<translation id="7960831585769876809">Lämpötila</translation>
 <translation id="8041089156583427627">Lähetä palautetta</translation>
+<translation id="8075838845814659848">Virtaa jäljellä</translation>
 <translation id="808894953321890993">Vaihda salasana</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">Aseta dokumentti skanneriin ja aloita valitsemalla <ph name="SPAN_BEGIN" />Skannaa<ph name="SPAN_END" /></translation>
@@ -219,6 +230,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8919837981463578619">Epäonnistui – Lokero puuttuu</translation>
 <translation id="8928727111548978589">Epäonnistui – Paperi loppu</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> yritystä jäljellä</translation>
+<translation id="8968751544471797276">Latausnopeus</translation>
 <translation id="8970109610781093811">Suorita uudelleen</translation>
 <translation id="9088306295921699330">Nykyinen käyttö</translation>
 <translation id="910415269708673980">Päivitä tukipyyntö: <ph name="PRINCIPAL_NAME" /></translation>

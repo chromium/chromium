@@ -61,6 +61,7 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="405887016757208221">A távoli számítógépnek nem sikerült inicializálnia a munkamenetet. Ha a probléma továbbra is fennáll, próbálja meg újra beállítani a gazdagépet.</translation>
 <translation id="4060747889721220580">Fájl letöltése</translation>
 <translation id="4126409073460786861">Ha végzett a beállítással, frissítse ezt az oldalt, majd az eszköz kiválasztásával és a PIN-kód megadásával hozzáférhet a számítógéphez.</translation>
+<translation id="4139423942711457311">Copyright 2020 Google LLC. Minden jog fenntartva.</translation>
 <translation id="4145029455188493639">Bejelentkezve mint <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="4155497795971509630">Hiányzik néhány szükséges összetevő. Kérjük, ellenőrizze, hogy a szoftver legfrissebb verzióját telepítette-e, majd próbálja újra.</translation>
 <translation id="4176825807642096119">Elérési kód</translation>

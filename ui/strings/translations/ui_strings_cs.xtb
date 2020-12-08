@@ -228,7 +228,6 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{Před 1 hodinou}few{Před # hodinami}many{Před # hodiny}other{Před # hodinami}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{Zbývá 1 s}few{Zbývají # s}many{Zbývá # s}other{Zbývá # s}}</translation>
 <translation id="8134065097954893699">Načíst tuto stránku znovu</translation>
-<translation id="8144660977431427332">Pro vaše vyhledávání se používá technologie Asistenta Google. <ph name="LEARN_MORE" /></translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatické doplnění</translation>
 <translation id="815598010540052116">Posuv dolů</translation>
 <translation id="8179976553408161302">Enter</translation>

@@ -107,6 +107,7 @@
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/sek</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
+<translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="3842239759367498783">Fortsätt att läsa på din mobila enhet <ph name="TITLE" /></translation>
 <translation id="385051799172605136">Föregående</translation>
 <translation id="3889424535448813030">Högerpil</translation>
@@ -228,7 +229,6 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{för 1 timme sedan}other{för # timmar sedan}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 sek kvar}other{# sek kvar}}</translation>
 <translation id="8134065097954893699">Sidan läses in igen</translation>
-<translation id="8144660977431427332">Sökningarna görs med Google Assistent. <ph name="LEARN_MORE" /></translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, autoslutför</translation>
 <translation id="815598010540052116">Rulla nedåt</translation>
 <translation id="8179976553408161302">Enter</translation>

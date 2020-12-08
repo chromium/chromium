@@ -183,6 +183,7 @@
 <translation id="2949781154072577687">מתבצע פרמוט של <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">מדוזה</translation>
 <translation id="2984337792991268709">היום <ph name="TODAY_DAYTIME" /></translation>
+<translation id="2994320653639462337">בתהליך שחזור של <ph name="COUNT" /> פריטים…</translation>
 <translation id="2994669386200004489">לא ניתן היה לגבות את <ph name="FILE_NAME" /></translation>
 <translation id="299638574917407533">צרפתית (קנדה)</translation>
 <translation id="3003633581067744647">מעבר לתצוגה של תמונות ממוזערות</translation>
@@ -300,6 +301,7 @@
 <translation id="4364327530094270451">מלון</translation>
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">קישור חיצוני</translation>
+<translation id="4418686080762064601">יצירת קיצור דרך לקבצים</translation>
 <translation id="4425149324548788773">האחסון שלי</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
 <translation id="4477002475007461989">רומנית</translation>
@@ -380,6 +382,7 @@
 <translation id="508423945471810158">מתבצעת העברה של <ph name="NUMBER_OF_ITEMS" /> פריטים אל <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">אירעה שגיאה.</translation>
 <translation id="5098629044894065541">עברית</translation>
+<translation id="5109254780565519649">אירעה שגיאה. ייתכן שפריטים מסוימים לא שוחזרו.</translation>
 <translation id="5110329002213341433">אנגלית (קנדה)</translation>
 <translation id="5123433949759960244">כדורסל</translation>
 <translation id="5129662217315786329">פולנית</translation>
@@ -611,6 +614,7 @@
 <translation id="7547811415869834682">הולנדית</translation>
 <translation id="7551643184018910560">הצמדה למדף</translation>
 <translation id="7553492409867692754">‏הענקת הרשאת גישה לאפליקציות של Linux לקבצים בתיקייה <ph name="FOLDER_NAME" /></translation>
+<translation id="7575645593344061397">מתבצע שחזור של "<ph name="FILENAME" />"…</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">יש להמתין מספר רגעים</translation>
 <translation id="7592775719802218421">בתהליך להפוך את <ph name="FILE_NAME" /> לזמין אופליין</translation>
@@ -708,6 +712,7 @@
 <translation id="8395901698320285466">מידות</translation>
 <translation id="8437209419043462667">ארה"ב</translation>
 <translation id="8456681095658380701">שם לא חוקי</translation>
+<translation id="8461467696380332069">כדי לגשת במהירות לקבצים שבמדף, יש ללחוץ לחיצה ימנית על הקובץ ולבחור באפשרות "הצמדה למדף".</translation>
 <translation id="8463494891489624050">‏מקלדת וייטנאמית VIQR</translation>
 <translation id="8466234950814670489">‏ארכיון TAR</translation>
 <translation id="8475647382427415476">‏ל-Google Drive אין כרגע אפשרות לסנכרן את "<ph name="FILENAME" />". מערכת Google Drive תנסה זאת שוב מאוחר יותר.</translation>

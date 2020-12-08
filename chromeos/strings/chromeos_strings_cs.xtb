@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Vytištěno</translation>
 <translation id="1979103255016296513">Uběhl termín pro změnu hesla</translation>
 <translation id="1980044825731880088">Rychlost procesoru</translation>
+<translation id="2008685064673031089">Vyhledávání prvočísel</translation>
 <translation id="2080070583977670716">Další nastavení</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Zrušit tiskovou úlohu</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">V pořádku</translation>
 <translation id="2375079107209812402">Zbývající pokusy: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Odeslat zpětnou vazbu</translation>
+<translation id="2446553403094072641">Přesnost pohyblivé řádové čárky</translation>
 <translation id="2461822463642141190">Aktuální</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Vyhledat</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Aplikace</translation>
 <translation id="2872961005593481000">Vypnout</translation>
+<translation id="2878387241690264070">Vybilo se <ph name="RATE" /> kapacity během <ph name="NUM_SECONDS" /> sekund.</translation>
 <translation id="3008341117444806826">OBNOVIT</translation>
 <translation id="3009958530611748826">Vyberte cílovou složku</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Vyberte složku v aplikaci Soubory…</translation>
 <translation id="4848429997038228357">PROBÍHÁ</translation>
 <translation id="4890353053343094602">Ihned si zvolte nové</translation>
+<translation id="4891842000192098784">Zátěž</translation>
 <translation id="4917889632206600977">Zastaveno – došel papír</translation>
 <translation id="4921665434385737356">Nabito na <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="498186245079027698">Zkontrolujte skener a zkuste to znovu. Zkontrolujte, zda máte dostatek místního úložného prostoru k ukládání naskenovaných souborů.</translation>
 <translation id="4985509611418653372">Spustit</translation>
 <translation id="500920857929044050">Zastavit test</translation>
 <translation id="5154917547274118687">Paměť</translation>
@@ -138,6 +143,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5551702563755460533">Další informace v centru nápovědy</translation>
 <translation id="5635169860413004179">Zobrazit přehled</translation>
 <translation id="5719918614880940190">Tento údaj měří využití procesoru a jedná se o agregaci všech jader</translation>
+<translation id="5781694279199921985">Uložit protokol relace</translation>
 <translation id="5797428682393400134">ÚSPĚCH</translation>
 <translation id="5832805196449965646">Přidat uživatele</translation>
 <translation id="5895138241574237353">Restartovat</translation>
@@ -174,6 +180,8 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6766275201586212568">Neúspěšné překlady DNS</translation>
 <translation id="6768237774506518020">Vysoká míra selhání překladu DNS</translation>
 <translation id="6839141349259399400">Nemůžete se připojit ke skenerům?</translation>
+<translation id="6853312040151791195">Rychlost vybíjení</translation>
+<translation id="6898743098396957679">Skenování nelze dokončit</translation>
 <translation id="7028979494427204405">Toto zařízení je spravováno doménou <ph name="MANAGER" />, která má přístup k veškeré uživatelské aktivitě, včetně navštívených webových stránek, hesel a e‑mailu.</translation>
 <translation id="714876143603641390">Připojení k síti LAN</translation>
 <translation id="7162487448488904999">Galerie</translation>
@@ -186,12 +194,15 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7648838807254605802">Vysoká latence HTTPS</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7690294790491645610">Potvrďte nové heslo</translation>
+<translation id="773153675489693198">Počet cyklů</translation>
 <translation id="7732651821766520760">Test <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Stav</translation>
 <translation id="7855434858642800953">Naskenovaný soubor byl uložen</translation>
 <translation id="7928373994957558460">Zobrazit umístění souboru</translation>
 <translation id="7936303884198020182">Nebyly nalezeny žádné názvové servery</translation>
+<translation id="7960831585769876809">Teplota</translation>
 <translation id="8041089156583427627">Odeslat svůj názor</translation>
+<translation id="8075838845814659848">Zbývající kapacita</translation>
 <translation id="808894953321890993">Změnit heslo</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">Umístěte dokument na skener a stiskněte <ph name="SPAN_BEGIN" />Skenovat<ph name="SPAN_END" /></translation>
@@ -219,6 +230,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8919837981463578619">Tisk selhal – chybí zásobník</translation>
 <translation id="8928727111548978589">Tisk selhal – došel papír</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Zbývající pokusy: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="8968751544471797276">Rychlost nabíjení</translation>
 <translation id="8970109610781093811">Spustit znovu</translation>
 <translation id="9088306295921699330">Současné využití</translation>
 <translation id="910415269708673980">Obnovte lístek pro <ph name="PRINCIPAL_NAME" /></translation>

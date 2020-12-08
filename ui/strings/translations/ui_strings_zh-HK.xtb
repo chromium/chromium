@@ -228,7 +228,6 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{1 小時前}other{# 小時前}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{還有 1 秒}other{還有 # 秒}}</translation>
 <translation id="8134065097954893699">重新載入此頁面</translation>
-<translation id="8144660977431427332">您的搜尋結果由「Google 助理」提供。<ph name="LEARN_MORE" /></translation>
 <translation id="8152264887680882389"><ph name="TEXT" />，自動完成</translation>
 <translation id="815598010540052116">向下捲動</translation>
 <translation id="8179976553408161302">Enter 鍵</translation>

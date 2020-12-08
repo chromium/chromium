@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">Введите часть адреса до символа "<ph name="ATSIGN" />". Адрес "<ph name="INVALIDADDRESS" />" неполный.</translation>
 <translation id="5334352251556557839">Не удалось воспроизвести медиафайл.</translation>
 <translation id="537648784377940524">Минимальная дата (<ph name="MIN_DATE_OR_TIME" />) должна быть раньше максимальной даты (<ph name="MAX_DATE_OR_TIME" />)</translation>
+<translation id="5378437566635403538">развернуто, открыто диалоговое окно.</translation>
 <translation id="5406322316791861025">фигура</translation>
 <translation id="5425179576310518467">текущая дата</translation>
 <translation id="5453733299334684579">элемент дерева</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">дополнительные параметры</translation>
 <translation id="576709008726043716">введение</translation>
 <translation id="57838592816432529">Отключить звук</translation>
+<translation id="5787939484346677755">развернуто, доступны варианты автозаполнения.</translation>
 <translation id="5860033963881614850">ВЫКЛ</translation>
 <translation id="588258955323874662">Полноэкранный режим</translation>
 <translation id="5888666972993069672">Транслируется на устройство "<ph name="DEVICE_FRIENDLY_NAME" />"</translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">список</translation>
 <translation id="6150588977291308318">библиография</translation>
 <translation id="6164829606128959761">счетчик</translation>
+<translation id="6165053282446038410">развернуто, доступных вариантов автозаполнения: <ph name="COUNT" />.</translation>
 <translation id="6166809985690652833">послесловие</translation>
 <translation id="6209276755895393898">Кажется, это "<ph name="DESCRIPTION" />"</translation>
 <translation id="6212595056017402527">текущая страница</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">Заголовок</translation>
 <translation id="6941933287844615239">скачать файл</translation>
 <translation id="6981594929165378967">вставка</translation>
+<translation id="698788488269350478">развернуто.</translation>
 <translation id="6989848892321993519">Текст должен быть не короче <ph name="MIN_CHARACTERS" /> симв. Длина текста сейчас: 1 символ.</translation>
 <translation id="7034405885550056553">рекомендация</translation>
 <translation id="709897737746224366">Введите данные в указанном формате.</translation>
 <translation id="7102274145889307184">текущее местоположение</translation>
 <translation id="7118469954320184356">Нет описания.</translation>
 <translation id="7139483182332611405">вступление</translation>
+<translation id="7198226213493847604">всплывающая кнопка меню</translation>
 <translation id="7214187073215825913">информация о содержании</translation>
 <translation id="7238347055216017155">выделение</translation>
 <translation id="7263440858009898357">Выберите один из пунктов списка.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">глава</translation>
 <translation id="8845239796550121995">Транслируется на телевизор</translation>
 <translation id="8851136666856101339">main</translation>
+<translation id="8861621546968757188">всплывающая кнопка диалогового окна</translation>
 <translation id="8875657656876809964">Ошибка при воспроизведении видео</translation>
 <translation id="8889402386540077796">Тон</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> КБ</translation>

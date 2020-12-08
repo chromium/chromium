@@ -168,6 +168,8 @@
 Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ່າໄດ້.</translation>
 <translation id="556024056938947818">Google Chrome ກໍາລັງພະຍາຍາມສະແດງລະຫັດຜ່ານ.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5655746611259367388">ທ່ານສາມາດຈັດການບັນຊີນີ້ ແລະ ບັນຊີ Google ອື່ນທີ່ທ່ານເພີ່ມເຂົ້າສຳລັບ <ph name="USER_NAME" /> ໄດ້ຈາກບ່ອນດຽວໃນ <ph name="LINK_BEGIN" />ການຕັ້ງຄ່າ<ph name="LINK_END" />.
+          ການອະນຸຍາດທີ່ທ່ານໃຫ້ແກ່ເວັບໄຊໃນໂປຣແກຣມທ່ອງເວັບ Chrome ແລະ ແອັບຈາກ Google Play ອາດຈະນຳໃຊ້ກັບບັນຊີທັງໝົດ.</translation>
 <translation id="5657226924540934362">ຖ້າການຕັ້ງຄ່າບໍ່ສະແດງໃນໜ້ານີ້, ກະລຸນາກວດເບິ່ງໃນ <ph name="LINK_BEGIN" />
     ການຕັ້ງຄ່າ Chrome OS<ph name="LINK_END" /> ຂອງທ່ານ</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> ອາດຈະອັນຕະລາຍ, ສະນັ້ນ Chrome ໄດ້ບລັອກມັນໄວ້ແລ້ວ.</translation>

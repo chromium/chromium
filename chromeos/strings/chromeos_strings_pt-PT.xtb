@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Impressão concluída</translation>
 <translation id="1979103255016296513">Alteração da palavra-passe vencida</translation>
 <translation id="1980044825731880088">Velocidade da CPU</translation>
+<translation id="2008685064673031089">Pesquisa Prime</translation>
 <translation id="2080070583977670716">Mais definições</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Cancelar tarefa de impressão</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Aprovado</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> tentativas restantes</translation>
 <translation id="2391082728065870591">Enviar relatório de feedback</translation>
+<translation id="2446553403094072641">Precisão da vírgula flutuante</translation>
 <translation id="2461822463642141190">Atual</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Analisar</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Encerrar</translation>
+<translation id="2878387241690264070">Descarregou <ph name="RATE" /> em <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="3008341117444806826">ATUALIZAR</translation>
 <translation id="3009958530611748826">Selecione uma pasta onde guardar</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Selecionar pasta na app Files…</translation>
 <translation id="4848429997038228357">EM EXECUÇÃO</translation>
 <translation id="4890353053343094602">Escolha uma nova de imediato</translation>
+<translation id="4891842000192098784">Tensão</translation>
 <translation id="4917889632206600977">Parada – Sem papel</translation>
 <translation id="4921665434385737356">Carregou <ph name="RATE" /> em <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="498186245079027698">Verifique o scanner e tente novamente. Certifique-se de que existe espaço local suficiente para guardar os ficheiros digitalizados.</translation>
 <translation id="4985509611418653372">Executar</translation>
 <translation id="500920857929044050">Parar teste</translation>
 <translation id="5154917547274118687">Memória</translation>
@@ -138,6 +143,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5551702563755460533">Saber mais no Centro de Ajuda</translation>
 <translation id="5635169860413004179">Ver relatório</translation>
 <translation id="5719918614880940190">Isto mede a utilização da CPU e é uma agregação de todos os núcleos.</translation>
+<translation id="5781694279199921985">Guardar registo da sessão</translation>
 <translation id="5797428682393400134">ÊXITO</translation>
 <translation id="5832805196449965646">Adicionar pessoa</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -174,6 +180,8 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6766275201586212568">Resoluções de DNS com falhas</translation>
 <translation id="6768237774506518020">Taxa de falhas de resolução de DNS elevada</translation>
 <translation id="6839141349259399400">Não consegue ligar aos scanners?</translation>
+<translation id="6853312040151791195">Velocidade de descarregamento</translation>
+<translation id="6898743098396957679">Não foi possível concluir a digitalização</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gere este dispositivo e tem acesso a todas as atividades do utilizador, incluindo páginas Web visitadas, palavras-passe e emails.</translation>
 <translation id="714876143603641390">Conetividade de LAN</translation>
 <translation id="7162487448488904999">Galeria</translation>
@@ -186,12 +194,15 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7648838807254605802">Latência elevada de HTTPS</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7690294790491645610">Confirmar a nova palavra-passe</translation>
+<translation id="773153675489693198">Número de ciclos</translation>
 <translation id="7732651821766520760">Teste <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7855434858642800953">Ficheiro digitalizado guardado!</translation>
 <translation id="7928373994957558460">Mostrar localização do ficheiro</translation>
 <translation id="7936303884198020182">Não foram encontrados servidores de nomes.</translation>
+<translation id="7960831585769876809">Temperatura</translation>
 <translation id="8041089156583427627">Enviar feedback</translation>
+<translation id="8075838845814659848">Carregamento restante</translation>
 <translation id="808894953321890993">Alterar palavra-passe</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">Coloque o documento no scanner e selecione <ph name="SPAN_BEGIN" />Digitalizar<ph name="SPAN_END" /> para começar.</translation>
@@ -219,6 +230,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8919837981463578619">Falha – Tabuleiro em falta</translation>
 <translation id="8928727111548978589">Falha – Sem papel</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> tentativas restantes.</translation>
+<translation id="8968751544471797276">Velocidade de carregamento</translation>
 <translation id="8970109610781093811">Executar novamente</translation>
 <translation id="9088306295921699330">Utilização atual</translation>
 <translation id="910415269708673980">Atualize a permissão para <ph name="PRINCIPAL_NAME" /></translation>

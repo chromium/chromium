@@ -27,6 +27,8 @@
 <translation id="1966382378801805537">Chromium nu poate determina sau seta browserul prestabilit</translation>
 <translation id="2008474315282236005">Astfel, se va șterge 1 element de pe acest dispozitiv. Pentru a recupera datele mai târziu, conectează-te la Chromium ca <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">Ca să verifici dacă celelalte parole sunt protejate împotriva încălcării securității datelor și a altor probleme de securitate, <ph name="BEGIN_LINK" />conectează-te la Chromium<ph name="END_LINK" />.</translation>
+<translation id="2179192076895113433">Poți gestiona acest cont și alte Conturi Google pe care le-ai adăugat pentru <ph name="USER_NAME" /> dintr-un singur loc din <ph name="LINK_BEGIN" />Setări<ph name="LINK_END" />.
+          Permisiunile pe care le-ai acordat site-urilor din browserul Chrome și aplicațiilor din Google Play se pot aplica tuturor conturilor.</translation>
 <translation id="2185166961232948079">Chromium – conectare la rețea – <ph name="PAGE_TITLE" /></translation>
 <translation id="2225696941839557119">Sistemul de operare Chromium nu a putut sincroniza parolele.</translation>
 <translation id="2241627712206172106">Dacă permiteți accesul la un computer, familia și prietenii pot să navigheze separat și să configureze Chromium cum doresc.</translation>

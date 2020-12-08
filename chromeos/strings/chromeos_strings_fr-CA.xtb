@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Imprimée</translation>
 <translation id="1979103255016296513">Le mot de passe est expiré; vous devez le changer</translation>
 <translation id="1980044825731880088">Vitesse du processeur</translation>
+<translation id="2008685064673031089">Recherche de numéros premiers</translation>
 <translation id="2080070583977670716">Plus de paramètres</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Annuler la tâche d'impression</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Vérification réussie</translation>
 <translation id="2375079107209812402">Il vous reste <ph name="ATTEMPTS_LEFT" /> tentatives</translation>
 <translation id="2391082728065870591">Envoyer un rapport de commentaires</translation>
+<translation id="2446553403094072641">Précision en virgule flottante</translation>
 <translation id="2461822463642141190">Actuelle</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" />   <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Rechercher</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="2872961005593481000">Arrêter</translation>
+<translation id="2878387241690264070">Déchargée de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
 <translation id="3008341117444806826">ACTUALISER</translation>
 <translation id="3009958530611748826">Sélectionnez un dossier dans lequel enregistrer les fichiers</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Sélectionner un dossier dans l'application Fichiers…</translation>
 <translation id="4848429997038228357">EXÉCUTION EN COURS…</translation>
 <translation id="4890353053343094602">Choisissez-en un immédiatement</translation>
+<translation id="4891842000192098784">Stress</translation>
 <translation id="4917889632206600977">Tâche arrêtée : à court de papier</translation>
 <translation id="4921665434385737356">L'appareil s'est rechargé de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
 <translation id="4932733599132424254">Date</translation>
+<translation id="498186245079027698">Vérifiez le numériseur et réessayez. Assurez-vous qu'il y a suffisamment d'espace local pour enregistrer les fichiers numérisés.</translation>
 <translation id="4985509611418653372">Exécuter</translation>
 <translation id="500920857929044050">Arrêter le test</translation>
 <translation id="5154917547274118687">Mémoire</translation>
@@ -138,6 +143,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5551702563755460533">En savoir plus dans notre centre d'aide</translation>
 <translation id="5635169860413004179">Afficher le rapport</translation>
 <translation id="5719918614880940190">Il s'agit d'une mesure de l'usage du processeur, une agrégation de tous les cœurs</translation>
+<translation id="5781694279199921985">Enregistrer le journal de la session</translation>
 <translation id="5797428682393400134">OPÉRATION RÉUSSIE</translation>
 <translation id="5832805196449965646">Ajouter une personne</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
@@ -174,6 +180,8 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6766275201586212568">Échec de résolutions DNS</translation>
 <translation id="6768237774506518020">Taux d'échec élevé des résolutions DNS</translation>
 <translation id="6839141349259399400">Impossible d'établir la connexion avec les numériseurs?</translation>
+<translation id="6853312040151791195">Vitesse de décharge</translation>
+<translation id="6898743098396957679">Impossible de terminer la numérisation</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gère cet appareil et a accès à toutes les activités, y compris les pages Web que vous visitez, vos mots de passe et vos courriels.</translation>
 <translation id="714876143603641390">Connectivité LAN</translation>
 <translation id="7162487448488904999">Galerie</translation>
@@ -186,12 +194,15 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7648838807254605802">Latence HTTPS élevée</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7690294790491645610">Confirmez le nouveau mot de passe</translation>
+<translation id="773153675489693198">Compte de cycles</translation>
 <translation id="7732651821766520760">Test <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">État</translation>
 <translation id="7855434858642800953">Fichier numérisé enregistré!</translation>
 <translation id="7928373994957558460">Afficher le lieu du fichier</translation>
 <translation id="7936303884198020182">Aucun serveur de nom n'a été trouvé</translation>
+<translation id="7960831585769876809">Température</translation>
 <translation id="8041089156583427627">Envoyer des commentaires</translation>
+<translation id="8075838845814659848">Charge restante</translation>
 <translation id="808894953321890993">Changer le mot de passe</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">Placez votre document sur le numériseur, puis sélectionnez <ph name="SPAN_BEGIN" />Numériser<ph name="SPAN_END" /> pour commencer</translation>
@@ -219,6 +230,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8919837981463578619">Échec : bac manquant</translation>
 <translation id="8928727111548978589">Échec : à court de papier</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" />. Nombre de tentatives restantes : <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="8968751544471797276">Vitesse de recharge</translation>
 <translation id="8970109610781093811">Exécuter de nouveau</translation>
 <translation id="9088306295921699330">Utilisation actuelle</translation>
 <translation id="910415269708673980">Actualiser le ticket pour <ph name="PRINCIPAL_NAME" /></translation>

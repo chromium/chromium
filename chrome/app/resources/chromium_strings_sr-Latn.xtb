@@ -29,6 +29,8 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="1966382378801805537">Chromium ne može da odredi ni da podesi podrazumevani pregledač</translation>
 <translation id="2008474315282236005">Ovim ćete izbrisati 1 stavku sa ovog uređaja. Da biste kasnije vratili podatke, prijavite se u Chromium kao <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">Da biste proverili da li su ostale lozinke bezbedne od upada u podatke i drugih bezbednosnih problema, <ph name="BEGIN_LINK" />prijavite se u Chromium<ph name="END_LINK" />.</translation>
+<translation id="2179192076895113433">Možete da upravljate ovim Google nalogom i drugim Google nalozima koje ste dodali za korisnika <ph name="USER_NAME" /> na jednom mestu u <ph name="LINK_BEGIN" />Podešavanjima<ph name="LINK_END" />.
+          Dozvole koje ste dali veb-sajtovima u pregledaču Chromium i aplikacijama sa Google Play-a mogu da važe za sve naloge.</translation>
 <translation id="2185166961232948079">Chromium – prijavljivanje na mrežu – <ph name="PAGE_TITLE" /></translation>
 <translation id="2225696941839557119">Chromium OS nije uspeo da sinhronizuje lozinke.</translation>
 <translation id="2241627712206172106">Ako delite računar, prijatelji i porodica mogu zasebno da pregledaju i da podese Chromium baš onako kako žele.</translation>

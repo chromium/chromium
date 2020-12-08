@@ -34,6 +34,7 @@
 <translation id="1947737735496445907">प्रिन्ट गरियो</translation>
 <translation id="1979103255016296513">पासवर्ड परिवर्तन गर्न ढिला भइसकेको छ</translation>
 <translation id="1980044825731880088">CPU को गति</translation>
+<translation id="2008685064673031089">प्राइम सर्च</translation>
 <translation id="2080070583977670716">थप सेटिङहरू</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">प्रिन्ट गर्ने कार्य रद्द गर्नुहोस्</translation>
@@ -42,6 +43,7 @@
 <translation id="2364498172489649528">सुरक्षा जाँचमा पास भयो</translation>
 <translation id="2375079107209812402">अब <ph name="ATTEMPTS_LEFT" /> पटक प्रयास गर्न मिल्छ</translation>
 <translation id="2391082728065870591">फिडब्याक रिपोर्ट पठाउनुहोस्</translation>
+<translation id="2446553403094072641">फ्लोटिङ पोइन्टको सटीकता</translation>
 <translation id="2461822463642141190">हालको</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
@@ -50,6 +52,7 @@
 <translation id="2740531572673183784">ठिक छ</translation>
 <translation id="2805756323405976993">एप्स</translation>
 <translation id="2872961005593481000">बन्द गर्नुहोस्</translation>
+<translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकेन्डमा <ph name="RATE" /> घट्यो।</translation>
 <translation id="3008341117444806826">पुनः ताजा गर्नुहोस्</translation>
 <translation id="3009958530611748826">सुरक्षित गर्न कुनै फोल्डर चयन गर्नुहोस्</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -106,9 +109,11 @@
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> प्रिन्ट गर्ने कार्य रद्द गरियो</translation>
 <translation id="4832079907277790330">Files एप खोलेर कुनै फोल्डर चयन गर्नु...</translation>
 <translation id="4890353053343094602">तुरुन्तै एउटा नयाँ पासवर्ड राख्नुहोस्</translation>
+<translation id="4891842000192098784">स्ट्रेस</translation>
 <translation id="4917889632206600977">रोकियो - प्रिन्टरमा कागज सकियो</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकेन्डमा <ph name="RATE" /> चार्ज भयो।</translation>
 <translation id="4932733599132424254">मिति</translation>
+<translation id="498186245079027698">स्क्यानर जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्। स्क्यान गरिएका फाइलहरू सुरक्षित गर्न चाहिने पर्याप्त खाली ठाउँ छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="4985509611418653372">चलाउनुहोस्</translation>
 <translation id="5154917547274118687">स्मरण</translation>
 <translation id="5168185087976003268">ब्याट्रीको अवस्था</translation>
@@ -128,6 +133,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">मद्दत केन्द्रमा गई थप जान्नुहोस्</translation>
 <translation id="5719918614880940190">यसले CPU कति प्रयोग भएको छ भन्ने कुरा मापन गर्छ र यसमा सबै कोरहरूको डेटा समावेश हुन्छ</translation>
+<translation id="5781694279199921985">सत्रको लग सुरक्षित गर्नुहोस्</translation>
 <translation id="5832805196449965646">व्यक्ति थप्नुहोस्</translation>
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> औँ संस्करण)</translation>
@@ -158,6 +164,8 @@
 <translation id="6766275201586212568">DNS रिजोल्युसन पूरा हुन सकेनन्</translation>
 <translation id="6768237774506518020">DNS रिजोल्युसन पूरा हुन नसक्ने दर उच्च छ</translation>
 <translation id="6839141349259399400">स्क्यानरमा कनेक्ट गर्न सकिएन?</translation>
+<translation id="6853312040151791195">डिस्चार्ज हुने दर</translation>
+<translation id="6898743098396957679">स्क्यान गर्ने कार्य पूरा गर्न सकिएन</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ले यो यन्त्र व्यवस्थापन गर्छ र यसले हेरिएका वेबपेज, पासवर्ड र इमेललगायत प्रयोगकर्ताले गर्ने सबै क्रियाकलाप हेर्न सक्छ।</translation>
 <translation id="714876143603641390">Lan कनेक्टिभिटी</translation>
 <translation id="7162487448488904999">Gallery</translation>
@@ -170,11 +178,14 @@
 <translation id="7648838807254605802">HTTPS को विलम्बता धेरै छ</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7690294790491645610">नयाँ पासवर्ड पुष्टि गर्नुहोस्</translation>
+<translation id="773153675489693198">साइकल काउन्ट</translation>
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7855434858642800953">स्क्यान गरिएको फाइल सुरक्षित गरियो!</translation>
 <translation id="7928373994957558460">फाइल भएको स्थान देखाइयोस्</translation>
 <translation id="7936303884198020182">कुनै पनि डोमेन नेम सर्भर फेला परेन</translation>
+<translation id="7960831585769876809">तापक्रम</translation>
 <translation id="8041089156583427627">प्रतिक्रिया पठाउनुहोस्।</translation>
+<translation id="8075838845814659848">बाँकी ब्याट्री</translation>
 <translation id="808894953321890993">पासवर्ड परिवर्तन गर्नुहोस्‌</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से.</translation>
 <translation id="8160445423316272678">स्क्यानरमा आफ्नो कागजात राख्नुहोस् र स्क्यान गर्न थाल्न <ph name="SPAN_BEGIN" />स्क्यान गर्नुहोस्<ph name="SPAN_END" /> विकल्प चयन गर्नुहोस्</translation>
@@ -201,6 +212,7 @@
 <translation id="8919837981463578619">प्रिन्ट गर्न सकिएन - ट्रे छैन</translation>
 <translation id="8928727111548978589">प्रिन्ट गर्न सकिएन - कागज सकियो</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> अब <ph name="ATTEMPTS_LEFT" /> पटक प्रयास गर्न मिल्छ</translation>
+<translation id="8968751544471797276">चार्ज भइरहेको दर</translation>
 <translation id="9088306295921699330">हालको प्रयोग</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> को टिकट पुन: ताजा गर्नुहोस्</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> स्क्यान गरिँदै छ</translation>

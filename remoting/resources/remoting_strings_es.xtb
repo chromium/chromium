@@ -61,6 +61,7 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="405887016757208221">El equipo remoto no ha podido inicializar la sesión. Si el problema persiste, prueba a volver a configurar el host.</translation>
 <translation id="4060747889721220580">Descargar archivo</translation>
 <translation id="4126409073460786861">Cuando hayas completado la configuración, podrás acceder al ordenador seleccionando tu dispositivo e introduciendo el PIN</translation>
+<translation id="4139423942711457311">Copyright 2020 Google LLC. Todos los derechos reservados.</translation>
 <translation id="4145029455188493639">Has iniciado sesión como <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="4155497795971509630">Faltan algunos componentes requeridos. Asegúrate de haber instalado la última versión del software y vuelve a intentarlo.</translation>
 <translation id="4176825807642096119">Código de acceso</translation>

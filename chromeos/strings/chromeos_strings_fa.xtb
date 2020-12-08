@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">چاپ‌شده</translation>
 <translation id="1979103255016296513">مهلت تغییر گذرواژه به پایان رسید</translation>
 <translation id="1980044825731880088">‏سرعت CPU</translation>
+<translation id="2008685064673031089">جستجوی اصلی</translation>
 <translation id="2080070583977670716">تنظیمات بیشتر</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />٪</translation>
 <translation id="2161394479394250669">لغو کردن کار چاپ</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">موفق</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> فرصت باقی مانده است</translation>
 <translation id="2391082728065870591">ارسال گزارش بازخورد</translation>
+<translation id="2446553403094072641">دقت نقطه شناور</translation>
 <translation id="2461822463642141190">فعلی</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">اسکن</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">تأیید</translation>
 <translation id="2805756323405976993">برنامه‌ها</translation>
 <translation id="2872961005593481000">خاموش کردن</translation>
+<translation id="2878387241690264070"><ph name="RATE" /> در <ph name="NUM_SECONDS" /> ثانیه تخلیه شد.</translation>
 <translation id="3008341117444806826">بازخوانی</translation>
 <translation id="3009958530611748826">پوشه‌ای را برای ذخیره در آن انتخاب کنید</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> میلی‌آمپر</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">‏انتخاب پوشه در برنامه Files…</translation>
 <translation id="4848429997038228357">درحال اجرا</translation>
 <translation id="4890353053343094602">انتخاب فوری موردی جدید</translation>
+<translation id="4891842000192098784">استرس</translation>
 <translation id="4917889632206600977">متوقف شد - کاغذ تمام شده است</translation>
 <translation id="4921665434385737356">در <ph name="NUM_SECONDS" /> ثانیه <ph name="RATE" /> شارژ شد.</translation>
 <translation id="4932733599132424254">تاریخ</translation>
+<translation id="498186245079027698">اسکنر را بررسی کنید و دوباره امتحان کنید. مطمئن شوید فضای کافی برای ذخیره کردن فایل‌های اسکن‌شده در دستگاه وجود داشته باشد.</translation>
 <translation id="4985509611418653372">اجرا</translation>
 <translation id="500920857929044050">توقف آزمایش</translation>
 <translation id="5154917547274118687">حافظه</translation>
@@ -138,6 +143,7 @@
 <translation id="5551702563755460533">در «مرکز راهنمایی» اطلاعات بیشتری کسب کنید</translation>
 <translation id="5635169860413004179">دیدن گزارش</translation>
 <translation id="5719918614880940190">‏این مورد میزان استفاده از CPU را اندازه‌گیری می‌کند و مجموع همه هسته‌ها است</translation>
+<translation id="5781694279199921985">ذخیره گزارش «جلسه»</translation>
 <translation id="5797428682393400134">موفقیت‌آمیز</translation>
 <translation id="5832805196449965646">افزودن شخص</translation>
 <translation id="5895138241574237353">راه‌اندازی مجدد</translation>
@@ -174,6 +180,8 @@
 <translation id="6766275201586212568">تفکیک ساناد انجام نشد</translation>
 <translation id="6768237774506518020">میزان خطای تفکیک ساناد بالا است</translation>
 <translation id="6839141349259399400">نمی‌توانید به اسکنر متصل شوید؟</translation>
+<translation id="6853312040151791195">سرعت تخلیه شارژ</translation>
+<translation id="6898743098396957679">اسکن تکمیل نشد</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> این دستگاه را مدیریت می‌کند و به همه فعالیت‌های کاربر، ازجمله صفحه‌های وب بازدیدشده، گذرواژه‌ها، و ایمیل دسترسی دارد.</translation>
 <translation id="714876143603641390">‏اتصال LAN</translation>
 <translation id="7162487448488904999">گالری</translation>
@@ -186,12 +194,15 @@
 <translation id="7648838807254605802">‏تأخیر بالا در HTTPS</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7690294790491645610">تأیید گذرواژه جدید</translation>
+<translation id="773153675489693198">تعداد چرخه‌ها</translation>
 <translation id="7732651821766520760">آزمایش <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">وضعیت</translation>
 <translation id="7855434858642800953">فایل اسکن‌شده ذخیره شد!</translation>
 <translation id="7928373994957558460">نمایش مکان فایل</translation>
 <translation id="7936303884198020182">سرور نام دامنه پیدا نشد</translation>
+<translation id="7960831585769876809">دما</translation>
 <translation id="8041089156583427627">ارسال بازخورد</translation>
+<translation id="8075838845814659848">شارژ باقی‌مانده</translation>
 <translation id="808894953321890993">تغییر گذرواژه</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> درجه سانتی‌گراد</translation>
 <translation id="8160445423316272678">برای شروع به کار، سندتان را روی اسکنر قرار دهید و <ph name="SPAN_BEGIN" />اسکن<ph name="SPAN_END" /> را انتخاب کنید</translation>
@@ -219,6 +230,7 @@
 <translation id="8919837981463578619">انجام نشد - سینی موجود نیست</translation>
 <translation id="8928727111548978589">انجام نشد - کاغذ تمام شده است</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> فرصت باقی مانده است</translation>
+<translation id="8968751544471797276">سرعت شارژ کردن</translation>
 <translation id="8970109610781093811">اجرای دوباره</translation>
 <translation id="9088306295921699330">مصرف فعلی</translation>
 <translation id="910415269708673980">بازخوانی بلیت برای <ph name="PRINCIPAL_NAME" /></translation>

@@ -163,6 +163,8 @@
 Google Chrome ले तपाईंको सेटिङहरू पुन: प्राप्त गर्न सकदैन।</translation>
 <translation id="556024056938947818">Google Chrome ले पासवर्डहरू देखाउने प्रयास गरिरहेको छ।</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5655746611259367388">तपाईं <ph name="LINK_BEGIN" />सेटिङ<ph name="LINK_END" />मा गई यो Google खाता र <ph name="USER_NAME" /> का लागि हालिदिनुभएका अन्य Google खाताहरू एकै ठाउँबाट व्यवस्थापन गर्न सक्नुहुन्छ।
+          तपाईंले Chrome ब्राउजरमा चलाउने वेबसाइट र Google Play बाट डाउनलोड गरिएका एपहरूलाई दिनुभएका अनुमति सबै खाताहरूमा लागू हुन सक्छन्।</translation>
 <translation id="5657226924540934362">यो पृष्ठमा कुनै सेटिङ देखिएन भने आफ्नो <ph name="LINK_BEGIN" />
     Chrome OS का सेटिङ<ph name="LINK_END" />मा गई हेर्नुहोस्</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> खतरनाक हुन सक्छ, त्यसैले Chrome ले यसमाथि रोक लगाएको छ।</translation>

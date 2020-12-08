@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">تمت الطباعة</translation>
 <translation id="1979103255016296513">تأخير تغيير كلمة المرور</translation>
 <translation id="1980044825731880088">‏سرعة وحدة المعالجة المركزية (CPU)</translation>
+<translation id="2008685064673031089">البحث الأوّلي</translation>
 <translation id="2080070583977670716">مزيد من الإعدادات</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">إلغاء مهمة الطباعة</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">تم الاجتياز.</translation>
 <translation id="2375079107209812402">المحاولات المتبقية: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">إرسال تقرير بالتعليقات</translation>
+<translation id="2446553403094072641">دقة النقطة العائمة</translation>
 <translation id="2461822463642141190">الاستهلاك الحالي لطاقة البطارية</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">فحص</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">حسنًا</translation>
 <translation id="2805756323405976993">التطبيقات</translation>
 <translation id="2872961005593481000">إيقاف التشغيل</translation>
+<translation id="2878387241690264070">تم نفاد <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
 <translation id="3008341117444806826">إعادة التحميل</translation>
 <translation id="3009958530611748826">اختيار مجلّد لحفظ عمليات المسح الضوئي فيه</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> ميلي أمبير</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">اختيار مجلّد في تطبيق "الملفات"...</translation>
 <translation id="4848429997038228357">قيد التشغيل</translation>
 <translation id="4890353053343094602">اختيار كلمة مرور جديدة فورًا</translation>
+<translation id="4891842000192098784">الإجهاد</translation>
 <translation id="4917889632206600977">توقّفت الطابعة - نفد الورق</translation>
 <translation id="4921665434385737356">تم شحن <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
 <translation id="4932733599132424254">التاريخ</translation>
+<translation id="498186245079027698">يجب التحقُّق من جهاز "المسح الضوئي" ثم إعادة المحاولة. ويجب التأكّد من توفّر مساحة على الجهاز لحفظ الملفات التي تم "مسحها ضوئيًا".</translation>
 <translation id="4985509611418653372">تشغيل</translation>
 <translation id="500920857929044050">إيقاف الاختبار</translation>
 <translation id="5154917547274118687">الذاكرة</translation>
@@ -138,6 +143,7 @@
 <translation id="5551702563755460533">مزيد من المعلومات في مركز المساعدة</translation>
 <translation id="5635169860413004179">عرض التقرير</translation>
 <translation id="5719918614880940190">‏هذا يقيس استخدام وحدة المعالجة المركزية (CPU)، ويقدِّم بيانات مجمّعة عن كل النوى.</translation>
+<translation id="5781694279199921985">حفظ سجلّ الجلسة</translation>
 <translation id="5797428682393400134">نجح الاختبار</translation>
 <translation id="5832805196449965646">إضافة شخص</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
@@ -174,6 +180,8 @@
 <translation id="6766275201586212568">‏تعذَّر التحويل باستخدام نظام أسماء النطاقات (DNS).</translation>
 <translation id="6768237774506518020">‏إن متوسط تعطُّل التحويل باستخدام نظام أسماء النطاقات (DNS) عالٍ.</translation>
 <translation id="6839141349259399400">هل يتعذَّر الاتصال بالماسحات الضوئية؟</translation>
+<translation id="6853312040151791195">معدّل تفريغ الشحن</translation>
+<translation id="6898743098396957679">تعذَّر إكمال عملية "المسح الضوئي"</translation>
 <translation id="7028979494427204405">يُدير <ph name="MANAGER" /> هذا الجهاز ويمكنه الوصول إلى جميع أنشطة المستخدم، بما في ذلك صفحات الويب التي تمت زيارتها وكلمات المرور والبريد الإلكتروني.</translation>
 <translation id="714876143603641390">‏الاتصال بشبكة LAN</translation>
 <translation id="7162487448488904999">معرض الصور</translation>
@@ -186,12 +194,15 @@
 <translation id="7648838807254605802">‏وقت استجابة بروتوكول HTTPS طويل.</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7690294790491645610">تأكيد كلمة المرور الجديدة</translation>
+<translation id="773153675489693198">عدد مرات تفريغ البطارية وشحنها</translation>
 <translation id="7732651821766520760">اختبار <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">الحالة</translation>
 <translation id="7855434858642800953">تم حفظ الملف الذي تم مسحه ضوئيًا.</translation>
 <translation id="7928373994957558460">عرض مكان الملف</translation>
 <translation id="7936303884198020182">لم يتم العثور على خوادم الأسماء.</translation>
+<translation id="7960831585769876809">درجة الحرارة</translation>
 <translation id="8041089156583427627">إرسال تعليقات</translation>
+<translation id="8075838845814659848">شحن البطارية المتبقي</translation>
 <translation id="808894953321890993">تغيير كلمة المرور</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° مئوية</translation>
 <translation id="8160445423316272678">للبدء، يُرجى وضع المستند على الماسح الضوئي واختيار <ph name="SPAN_BEGIN" />المسح ضوئيًا<ph name="SPAN_END" />.</translation>
@@ -219,6 +230,7 @@
 <translation id="8919837981463578619">تعذَّرت الطباعة - دُرج الورق غير متوفّر</translation>
 <translation id="8928727111548978589">تعذَّرت الطباعة - نفد الورق</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> محاولة متبقية</translation>
+<translation id="8968751544471797276">معدّل الشحن</translation>
 <translation id="8970109610781093811">إعادة التشغيل مرة أخرى</translation>
 <translation id="9088306295921699330">الاستخدام الحالي</translation>
 <translation id="910415269708673980">تحديث تذكرة من أجل <ph name="PRINCIPAL_NAME" /></translation>

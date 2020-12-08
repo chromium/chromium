@@ -164,6 +164,8 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="5430073640787465221">Jūsu preferenču fails ir bojāts vai nederīgs. Google Chrome nespēj atkopt jūsu iestatījumus.</translation>
 <translation id="556024056938947818">Google Chrome mēģina rādīt paroles.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS ienākošā datplūsma)</translation>
+<translation id="5655746611259367388"><ph name="LINK_BEGIN" />Iestatījumos<ph name="LINK_END" /> varat vienuviet pārvaldīt gan šo, gan citus jūsu pievienotos Google kontus, ko izmanto <ph name="USER_NAME" />.
+          Jūsu piešķirtās atļaujas tīmekļa vietnēm pārlūkā Chrome un Google Play lietotnēm, iespējams, būs spēkā visos kontos.</translation>
 <translation id="5657226924540934362">Ja šajā lapā iestatījums nav pieejams, skatiet to sadaļā <ph name="LINK_BEGIN" />
       Chrome OS iestatījumi<ph name="LINK_END" />.</translation>
 <translation id="565744775970812598">Fails <ph name="FILE_NAME" /> var būt bīstams, tādēļ Chrome to bloķēja.</translation>

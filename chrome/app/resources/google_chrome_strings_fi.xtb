@@ -160,6 +160,8 @@
 <translation id="5430073640787465221">Asetustiedostosi on virheellinen. Google Chrome ei voi palauttaa asetuksiasi.</translation>
 <translation id="556024056938947818">Google Chrome yrittää näyttää salasanoja.</translation>
 <translation id="5566025111015594046">Google Chrome (saapuva mDNS)</translation>
+<translation id="5655746611259367388">Voit ylläpitää tätä ja muita Google-tilejä, joiden käyttäjä on <ph name="USER_NAME" />, samasta <ph name="LINK_BEGIN" />Asetusten<ph name="LINK_END" /> kohdasta.
+          Chrome-selaimella avatuille sivustoille ja Google Play ‑sovelluksille annetut luvat saattavat koskea kaikkia tilejä.</translation>
 <translation id="5657226924540934362">Jos asetus ei näy tällä sivulla, siirry <ph name="LINK_BEGIN" />
     Chrome-käyttöjärjestelmän asetuksiin<ph name="LINK_END" />.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> voi olla vaarallinen, joten Chrome on estänyt sen.</translation>

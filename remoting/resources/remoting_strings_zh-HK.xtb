@@ -61,6 +61,7 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="405887016757208221">遠端電腦無法初始化工作階段。如問題持續，請嘗試重新設定主機。</translation>
 <translation id="4060747889721220580">下載檔案</translation>
 <translation id="4126409073460786861">完成設定後重新整理此網頁，然後選擇您的裝置並輸入 PIN，即可存取該電腦</translation>
+<translation id="4139423942711457311">版權所有 2020 Google LLC 保留所有權利。</translation>
 <translation id="4145029455188493639">以 <ph name="EMAIL_ADDRESS" /> 的身分登入。</translation>
 <translation id="4155497795971509630">找不到部分所需組件。請確保您已安裝最新版本的軟件，然後再試一次。</translation>
 <translation id="4176825807642096119">存取碼</translation>

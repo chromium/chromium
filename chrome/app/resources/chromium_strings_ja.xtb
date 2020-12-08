@@ -27,6 +27,8 @@
 <translation id="1966382378801805537">Chromium では既定のブラウザを判定または設定できません</translation>
 <translation id="2008474315282236005">このデバイスから 1 件の項目を削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chromium にログインしてください。</translation>
 <translation id="2020032459870799438">他のパスワードにデータ侵害などセキュリティに関する問題がないかどうかを確認するには、<ph name="BEGIN_LINK" />Chromium にログイン<ph name="END_LINK" />してください。</translation>
+<translation id="2179192076895113433">このアカウントと、<ph name="USER_NAME" /> さんの名前で追加した他の Google アカウントを [<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />] でまとめて管理できます。
+          Chromium ブラウザでウェブサイトに許可した権限と Google Play のアプリに許可した権限は、すべてのアカウントに適用されます。</translation>
 <translation id="2185166961232948079">Chromium - ネットワークにログイン - <ph name="PAGE_TITLE" /></translation>
 <translation id="2225696941839557119">Chromium OS でパスワードを同期できませんでした。</translation>
 <translation id="2241627712206172106">パソコンを共有している場合、友だちや家族はそれぞれ Chromium を自分専用のブラウザとして自分用の設定をして使うことができます。</translation>

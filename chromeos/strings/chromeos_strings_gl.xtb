@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Impreso</translation>
 <translation id="1979103255016296513">Produciuse un atraso no cambio de contrasinal</translation>
 <translation id="1980044825731880088">Velocidade da CPU</translation>
+<translation id="2008685064673031089">Busca principal</translation>
 <translation id="2080070583977670716">Máis configuracións</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Cancelar traballo de impresión</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Aprobou</translation>
 <translation id="2375079107209812402">Quédanche <ph name="ATTEMPTS_LEFT" /> intentos</translation>
 <translation id="2391082728065870591">Enviar informe de comentarios</translation>
+<translation id="2446553403094072641">Precisión do punto flotante</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Buscar</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2805756323405976993">Aplicacións</translation>
 <translation id="2872961005593481000">Pechar</translation>
+<translation id="2878387241690264070">Descargouse un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="3008341117444806826">ACTUALIZAR</translation>
 <translation id="3009958530611748826">Seleccionar un cartafol para gardar os ficheiros</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Seleccionar cartafol na aplicación Ficheiros…</translation>
 <translation id="4848429997038228357">EN CURSO</translation>
 <translation id="4890353053343094602">Escolle un novo inmediatamente</translation>
+<translation id="4891842000192098784">Estrés</translation>
 <translation id="4917889632206600977">Detívose (esgotouse o papel)</translation>
 <translation id="4921665434385737356">Cargouse un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="498186245079027698">Comproba o escáner e téntao de novo. Asegúrate de que exista espazo local suficiente para gardar os ficheiros escaneados.</translation>
 <translation id="4985509611418653372">Executar</translation>
 <translation id="500920857929044050">Deter proba</translation>
 <translation id="5154917547274118687">Memoria</translation>
@@ -138,6 +143,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5551702563755460533">Máis información no Centro de Axuda</translation>
 <translation id="5635169860413004179">Ver informe</translation>
 <translation id="5719918614880940190">Mide o uso da CPU sumando o de todos os núcleos</translation>
+<translation id="5781694279199921985">Gardar rexistro da sesión</translation>
 <translation id="5797428682393400134">SUPEROUSE</translation>
 <translation id="5832805196449965646">Engadir unha persoa</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -174,6 +180,8 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6766275201586212568">Produciuse un erro coas resolucións de DNS</translation>
 <translation id="6768237774506518020">Hai un alto índice de erros relacionados coas resolucións de DNS</translation>
 <translation id="6839141349259399400">Non podes conectarte a ningún escáner?</translation>
+<translation id="6853312040151791195">Taxa de descarga</translation>
+<translation id="6898743098396957679">Non se puido completar o escaneado</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> xestiona este dispositivo e ten acceso a toda a actividade dos usuarios, como as páxinas web visitadas, os contrasinais e o correo electrónico.</translation>
 <translation id="714876143603641390">Conectividade LAN</translation>
 <translation id="7162487448488904999">Galería</translation>
@@ -186,12 +194,15 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7648838807254605802">Latencia de HTTPS alta</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7690294790491645610">Confirmar contrasinal novo</translation>
+<translation id="773153675489693198">Número de ciclos</translation>
 <translation id="7732651821766520760">Proba de <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7855434858642800953">Gardouse o ficheiro escaneado</translation>
 <translation id="7928373994957558460">Mostrar localización do ficheiro</translation>
 <translation id="7936303884198020182">Non se atoparon servidores de nomes</translation>
+<translation id="7960831585769876809">Temperatura</translation>
 <translation id="8041089156583427627">Enviar comentarios</translation>
+<translation id="8075838845814659848">Carga restante</translation>
 <translation id="808894953321890993">Cambiar contrasinal</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">Coloca o documento no escáner e selecciona <ph name="SPAN_BEGIN" />Escanear<ph name="SPAN_END" /> para comezar</translation>
@@ -219,6 +230,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8919837981463578619">Produciuse un erro: falta a bandexa</translation>
 <translation id="8928727111548978589">Produciuse un erro: a impresora quedou sen papel</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Intentos restantes: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="8968751544471797276">Taxa de carga</translation>
 <translation id="8970109610781093811">Repetir proba</translation>
 <translation id="9088306295921699330">En uso</translation>
 <translation id="910415269708673980">Actualiza o tícket de <ph name="PRINCIPAL_NAME" /></translation>

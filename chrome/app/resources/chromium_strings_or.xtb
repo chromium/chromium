@@ -42,6 +42,7 @@
 <translation id="2535480412977113886">ଆପଣଙ୍କର ଆକାଉଣ୍ଟ ସାଇନ୍ ଇନ୍ ବିବରଣୀ ପୁରୁଣା ହୋଇଥିବା ଯୋଗୁଁ Chromium OS ଆପଣଙ୍କର ଡାଟା ସିଙ୍କ କରିପାରିଲା ନାହିଁ।</translation>
 <translation id="2560420686485554789">ଫାଇଲ୍‌ଗୁଡ଼ିକ ଡାଉନ୍‌ଲୋଡ୍‍ କରିବାକୁ Chromium ଷ୍ଟୋରେଜ୍‍ ଆକ୍ସେସ୍‌ ଆବଶ୍ୟକ କରେ</translation>
 <translation id="2572494885440352020">Chromium ସାହାଯ୍ୟକାରୀ</translation>
+<translation id="2583187216237139145">ଏହି ପ୍ରୋଫାଇଲର ବ୍ୟବହାର ସମୟରେ ସୃଷ୍ଟି ହୋଇଥିବା ଯେ କୌଣସି Chromium ଡାଟା (ଯେପରି ବୁକମାର୍କ୍, ଇତିହାସ, ପାସୱାର୍ଡ ଏବଂ ଅନ୍ୟ ସେଟିଂସର କ୍ରିଏସନ୍) ୱାର୍କ ପ୍ରୋଫାଇଲ୍ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା କାଢ଼ି ଦିଆଯାଇପାରିବ। <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">ଅପ୍‌ଡେଟ୍‌କୁ ଲାଗୁ କରିବା ପାଇଁ Chromium OSକୁ ରିଷ୍ଟାର୍ଟ କରିବାର ଆବଶ୍ୟକତା ରହିଛି।</translation>
 <translation id="2615699638672665509">ଏହି କମ୍ପ୍ୟୁଟରର ହାର୍ଡୱେର ଆଉ ସମର୍ଥିତ ନଥିବା ଯୋଗୁଁ ଏହା ଶୀଘ୍ର Chromium ଅପଡେଟଗୁଡ଼ିକ ପ୍ରାପ୍ତ କରିବା ବନ୍ଦ କରିଦେବ।</translation>
 <translation id="2648074677641340862">ଇନ୍‍ଷ୍ଟଲେସନ୍ ସମୟରେ ଏକ ଅପରେଟିଂ ସିଷ୍ଟମ୍ ତ୍ରୁଟି ଦେଖାଦେଲା। ଦୟାକରି Chromium ପୁଣି ଡାଉନ୍‌ଲୋଡ୍ କରନ୍ତୁ।</translation>
@@ -143,6 +144,7 @@
 <translation id="6055895534982063517">Chromiumର ଏକ ନୂଆ ସଂସ୍କରଣ ଉପଲବ୍ଧ ଅଛି, ଏବଂ ଏହା ସବୁଠୁ ଦ୍ରୁତ ଅଟେ।</translation>
 <translation id="6063093106622310249">&amp;Chromiumରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> Chromiumରେ ଯୋଗ କରାଯାଇଛି</translation>
+<translation id="608006075545470555">ଏହି ବ୍ରାଉଜରରେ ୱାର୍କ ପ୍ରୋଫାଇଲ୍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="608189560609172163">ସାଇନ୍ ଇନ୍ କରିବାରେ ତ୍ରୁଟି କାରଣରୁ Chromium ଆପଣଙ୍କ ଡାଟା ସିଙ୍କ କରିପାରିଲା ନାହିଁ।</translation>
 <translation id="6096348254544841612">Chromium କଷ୍ଟମାଇଜ୍ ଓ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ। ଅପ୍‍‍ଡେଟ୍ ଉପଲବ୍ଧ ଅଟେ।</translation>
 <translation id="6120345080069858279">ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରେ Chromium ଏହି ପାସ୍‌ୱର୍ଡ ସେଭ୍ କରିବ। ଆପଣଙ୍କୁ ଏହା ମନେରଖିବାକୁ ପଡ଼ିବ ନାହିଁ।</translation>
@@ -163,6 +165,7 @@
 <translation id="6403826409255603130">Chromium ଗୋଟିଏ ୱେବ୍ ବ୍ରାଉଜର୍ ଅଟେ ଯାହା ଦ୍ରୁତତର ବେଗରେ ୱେ୍ବ୍‌ପୃଷ୍ଠା ଏବଂ ଆପ୍ଲିକେସନ୍‌ଗୁଡ଼ିକ ଚଲାଏ। ଏହା ଦ୍ରୁତ, ସ୍ଥିର ଏବଂ ବ୍ୟବହାର କରିବା ପାଇଁ ସହଜ ଅଟେ। Chromiumରେ ନିର୍ମିତ ମାଲ୍‌ୱାର୍ ଏବଂ ଫିସିଂ ସୁରକ୍ଷା ସହ ୱେବ୍‌କୁ ଅଧିକ ସୁରକ୍ଷିତ ଢଙ୍ଗରେ ବ୍ରାଉଜ୍ କରନ୍ତୁ।</translation>
 <translation id="6434250628340475518">Chromium OS ସିଷ୍ଟମ୍‌</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{1 ସେକେଣ୍ଡ ମଧ୍ୟରେ Chromium ରିଷ୍ଟାର୍ଟ ହେବ}other{# ସେକେଣ୍ଡ ମଧ୍ୟରେ Chromium ରିଷ୍ଟାର୍ଟ ହେବ}}</translation>
+<translation id="6464340581899189425">ଯଦି ଆପଣଙ୍କର ଏକାଧିକ Google ଆକାଉଣ୍ଟ ଅଛି, ତେବେ ଆପଣ ସେଗୁଡ଼ିକୁ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ଯୋଗ କରିପାରିବେ। ଆପଣଙ୍କ ଆକାଉଣ୍ଟଗୁଡ଼ିକ Chromium ବ୍ରାଉଜର୍ ଏବଂ Play Store ସହ Gmail, Drive ଏବଂ YouTube ପରି ସେବାଗୁଡ଼ିକରେ ଉପଲବ୍ଧ ହେବ।<ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">ଯେତେବେଳେ ଆପଣ Chromium ଆରମ୍ଭ କରନ୍ତି, ସେତେବେଳେ କେଉଁ ପୃଷ୍ଠା ଦେଖାଯିବ ତାହା ମଧ୍ୟ ନିୟନ୍ତ୍ରଣ କରେ।</translation>
 <translation id="6510925080656968729">Chromium ଅନ୍‍ଇନ୍‍ଷ୍ଟଲ୍‌ କରନ୍ତୁ</translation>
 <translation id="6570579332384693436">ବନାନ ତ୍ରୁଟି ଠିକ୍ କରିବା ପାଇଁ, Chromium ଟେକ୍ସଟ୍ କ୍ଷେତ୍ରରେ ଆପଣ ଟାଇପ୍ କରିଥିବା ଟେକ୍ସଟ୍ Googleକୁ ପଠାଏ</translation>
@@ -221,6 +224,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="7857220146454061152">Chromiumର ଭବିଷ୍ୟତର ଅପଡେଟଗୁଡ଼ିକ ପାଇବା ପାଇଁ, ଆପଣ OS X 10.11 କିମ୍ବା ତା'ପରର ସଂସ୍କରଣ ଆବଶ୍ୟକ କରିବେ। ଏହି କମ୍ପ୍ୟୁଟରରେ OS X 10.10 ସଂସ୍କରଣ ବ୍ୟବହାର କରାଯାଉଛି।</translation>
 <translation id="7867198900892795913">Chromium ନବୀନତମ ସଂସ୍କରଣକୁ ଅପ୍‌ଡେଟ୍ ହୋଇପାରିବନାହିଁ, ତେଣୁ ଆପଣ ନୂତନ ବୈଶିଷ୍ଟ୍ୟ ଏବଂ ସୁରକ୍ଷା ସମାଧାନରୁ ବଞ୍ଚିତ ହୋଇଛନ୍ତି।</translation>
 <translation id="7898472181347242998">ଆପଣଙ୍କ ଡିଭାଇସ୍ ଅପ୍ ଟୁ ଡେଟ୍ ଅଛି କି ନାହିଁ, ତାହା ଦେଖିବାକୁ <ph name="LINK_BEGIN" />Chromium OS ସେଟିଂସ୍‌<ph name="LINK_END" />କୁ ଯାଆନ୍ତୁ</translation>
+<translation id="7907774600618164274">Chromium OS ସଠିକ୍ ରୂପେ ବନ୍ଦ ହୋଇନଥିଲା।</translation>
 <translation id="7937630085815544518">ଆପଣ <ph name="USER_EMAIL_ADDRESS" />ରେ Chromiumକୁ ସାଇନ୍ ଇନ୍ କରିଛନ୍ତି। ଦୟାକରି ସାଇନ୍ ଇନ୍ କରିବା ଏହି ସମାନ ଆକାଉଣ୍ଟକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="7975919845073681630">ଏହା Chromiumର ଏକ ସେକେଣ୍ଡାରୀ ଇନ୍‍ଷ୍ଟଲେସନ୍‌ ଏବଂ ଏହାକୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍‌ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="7979877361127045932">Chromium ମେନୁରେ ଲୁଚାନ୍ତୁ</translation>
@@ -235,6 +239,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="8417404458978023919">{0,plural, =1{ଗୋଟିଏ ଦିନ ମଧ୍ୟରେ Chromium ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ}other{# ଦିନ ମଧ୍ୟରେ Chromium ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ}}</translation>
 <translation id="8453117565092476964">ଇନ୍‌ଷ୍ଟଲର୍‌ ଆର୍କାଇଭ୍‍ ଖରାପ ହୋ‍ଇଯାଇଛି କିମ୍ବା ଅବୈଧ ଅଟେ। ଦୟାକରି Chromium ପୁଣି ଡାଉନ୍‌ଲୋଡ୍‌ କରନ୍ତୁ।</translation>
 <translation id="8493179195440786826">Chromiumର ସମୟସୀମା ଶେଷ ହୋଇଛି</translation>
+<translation id="8550334526674375523">ଏହି ୱାର୍କ ପ୍ରୋଫାଇଲ୍ ଆପଣଙ୍କ ବ୍ୟକ୍ତିଗତ ପ୍ରୋଫାଇଲରୁ ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ ଅଲଗା ଅଟେ।</translation>
 <translation id="8558383651099478961">ଆପଣଙ୍କ ବାପାମା Chromium ପାଇଁ "ସାଇଟ୍, ଆପ୍ ଏବଂ ଏକ୍ସଟେନସନଗୁଡ଼ିକ ନିମନ୍ତେ ଅନୁମତିଗୁଡ଼ିକ" ବନ୍ଦ କରିଦେଇଛନ୍ତି। ଏହି <ph name="EXTENSION_TYPE_PARAMETER" />କୁ ଯୋଗ କରିବା ପାଇଁ ଅନୁମତି ନାହିଁ।</translation>
 <translation id="8568283329061645092">ଆପଣ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ସାଇନ୍ ଇନ୍ କଲେ, Chromium ଆପଣଙ୍କର ପାସୱାର୍ଡ ଯାଞ୍ଚ କରିପାରିବ</translation>
 <translation id="8586442755830160949">କପିରାଇଟ୍ <ph name="YEAR" /> Chromium ଲେଖକ। ସମସ୍ତ ଅଧିକାର ସଂରକ୍ଷିତ ଅଛି।</translation>
@@ -251,6 +256,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="8907580949721785412">Chromium, ପାସ୍‌ୱର୍ଡ ଦେଖାଇବାକୁ ଚେଷ୍ଟା କରୁଛି। ଏହାକୁ ଅନୁମତି ଦେବାପାଇଁ ନିଜର Windows ପାସ୍‌ୱର୍ଡ ଟାଇପ୍ କରନ୍ତୁ।</translation>
 <translation id="8941642502866065432">Chromium ଅପ୍‌ଡେଟ୍‌ କରିପାରିବ ନାହିଁ</translation>
 <translation id="8974095189086268230">Chromium OS ଅତିରିକ୍ତ <ph name="BEGIN_LINK_CROS_OSS" />ମୁକ୍ତ ଉତ୍ସ ସଫ୍ଟୱେୟାର୍ <ph name="END_LINK_CROS_OSS" /> ଦ୍ୱାରା ସମ୍ଭବପର ହୋ‍ଇଛି।</translation>
+<translation id="8986207147630327271">ଆପଣ ଏହି ବ୍ରାଉଜରରେ ଏକ ୱାର୍କ ପ୍ରୋଫାଇଲ୍ ଯୋଗ କରୁଛନ୍ତି ଏବଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କୁ ସେହି ୱାର୍କ ପ୍ରୋଫାଇଲକୁ କେବଳ ନିୟନ୍ତ୍ରଣ କରିବା ପାଇଁ ଅନୁମତି ଦେଉଛନ୍ତି।</translation>
 <translation id="9019929317751753759">Chromiumକୁ ଆହୁରି ସୁରକ୍ଷିତ କରିବା ପାଇଁ ଆମେ, ନିମ୍ନ ଏକ୍ସଟେନ୍‌ସନ୍‌କୁ ଅକ୍ଷମ କରିଦେଇଛୁ, ଯାହା <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />ରେ ତାଲିକାଭୁକ୍ତ ହୋଇନାହିଁ ଏବଂ ଆପଣଙ୍କ ଅଜାଣତରେ ଯୋଗ କରାଯାଇଥାଇପାରେ।</translation>
 <translation id="9089354809943900324">Chromiumର ସମୟସୀମା ଶେଷ ହୋଇଛି</translation>
 <translation id="9093206154853821181">{0,plural, =1{ଗୋଟିଏ ଘଣ୍ଟାରେ Chromium ପୁଣି ଲଞ୍ଚ ହେବ}other{# ଘଣ୍ଟାରେ Chromium ପୁଣି ଲଞ୍ଚ ହେବ}}</translation>
@@ -258,6 +264,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="911206726377975832">ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଡାଟା ମଧ୍ୟ ବିଲୋପ କରିବେ?</translation>
 <translation id="9158494823179993217"><ph name="TARGET_URL_HOSTNAME" />କୁ ଆକ୍ସେସ୍‌ କରିବା ପାଇଁ ଏକ ବିକଳ୍ପ ବ୍ରାଉଜର୍‌ ଖୋଲିବାକୁ ଆପଣଙ୍କର ସିଷ୍ଟମ୍ ବ୍ୟବସ୍ଥାପକ Chromium କନ୍‌ଫିଗର୍‌ କରିଛନ୍ତି।</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="9214764063801632699">Chromium OS ସିଷ୍ଟମ୍</translation>
 <translation id="93478295209880648">Chromium ହୁଏତ ସଠିକ୍ ଭାବେ କାର୍ଯ୍ୟ କରି ନପାରେ କାରଣ ଏହା ଆଉ Windows XP କିମ୍ବା Windows Vistaରେ ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="95514773681268843">ଏହି ଡିଭାଇସ୍‌କୁ ବ୍ୟବହାର କରିବା ପୂର୍ବରୁ ଆପଣ ନିମ୍ନୋକ୍ତ ସେବାର ସର୍ତ୍ତାବଳୀ ପଢ଼ନ୍ତୁ ଏବଂ ସେଗୁଡ଼ିକୁ ସ୍ଵୀକାର କରନ୍ତୁ ବୋଲି <ph name="DOMAIN" /> ଚାହେଁ। ଏହି ସର୍ତ୍ତଗୁଡ଼ିକ Chromium OS ସର୍ତ୍ତଗୁଡ଼ିକୁ ସମ୍ପ୍ରସାରିତ, ଆଂଶିକ ପରିବର୍ତ୍ତନ କିମ୍ବା ସୀମିତ କରେ ନାହିଁ।</translation>
 <translation id="965162752251293939">କିଏ Chromium ବ୍ୟବହାର କରୁଛନ୍ତି?</translation>

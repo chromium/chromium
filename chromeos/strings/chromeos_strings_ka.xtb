@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">დაბეჭდილი</translation>
 <translation id="1979103255016296513">პაროლის შეცვლა დაგვიანებულია</translation>
 <translation id="1980044825731880088">CPU-ს სიჩქარე</translation>
+<translation id="2008685064673031089">Prime Search</translation>
 <translation id="2080070583977670716">დამატებითი პარამეტრები</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">ბეჭდვის დავალების გაუქმება</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">გავლილია</translation>
 <translation id="2375079107209812402">დარჩენილია <ph name="ATTEMPTS_LEFT" /> მცდელობა</translation>
 <translation id="2391082728065870591">გამოხმაურების ანგარიშის გაგზავნა</translation>
+<translation id="2446553403094072641">მოლივლივე წერტილის სიზუსტე</translation>
 <translation id="2461822463642141190">ამჟამინდელი</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">სკანირება</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">კარგი</translation>
 <translation id="2805756323405976993">პროგრამები</translation>
 <translation id="2872961005593481000">გამორთვა</translation>
+<translation id="2878387241690264070"><ph name="RATE" /> განიმუხტა <ph name="NUM_SECONDS" /> წამში.</translation>
 <translation id="3008341117444806826">განახლება</translation>
 <translation id="3009958530611748826">აირჩიეთ საქაღალდე, რომელშიც უნდა შეინახოს</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> მა</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">საქაღალდის არჩევა ფაილების აპიდან...</translation>
 <translation id="4848429997038228357">გაშვებულია</translation>
 <translation id="4890353053343094602">დაუყოვნებლივ აირჩიეთ ახალი</translation>
+<translation id="4891842000192098784">სტრესი</translation>
 <translation id="4917889632206600977">გაჩერდა — ქაღალდი გათავდა</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> დაიტენა <ph name="NUM_SECONDS" /> წამში.</translation>
 <translation id="4932733599132424254">თარიღი</translation>
+<translation id="498186245079027698">შეამოწმეთ სკანერი და ცადეთ ხელახლა. დარწმუნდით, რომ ადგილობრივი მეხსიერება საკმარისია სკანირებული ფაილების შესანახად.</translation>
 <translation id="4985509611418653372">გაშვება</translation>
 <translation id="500920857929044050">ტესტის შეწყვეტა</translation>
 <translation id="5154917547274118687">მეხსიერება</translation>
@@ -138,6 +143,7 @@
 <translation id="5551702563755460533">შეიტყვეთ მეტი დახმარების ცენტრში</translation>
 <translation id="5635169860413004179">ანგარიშის ნახვა</translation>
 <translation id="5719918614880940190">ზომავს CPU-ს გამოყენებას (მონაცემები აგრეგირებულია ყველა ბირთვისთვის)</translation>
+<translation id="5781694279199921985">სესიის ჟურნალის შენახვა</translation>
 <translation id="5797428682393400134">წარმატებით შესრულდა</translation>
 <translation id="5832805196449965646">მომხმარებლის დამატება</translation>
 <translation id="5895138241574237353">გადატვირთვა</translation>
@@ -174,6 +180,8 @@
 <translation id="6766275201586212568">DNS ვერ დარეგულირდა</translation>
 <translation id="6768237774506518020">DNS-ის წარუმატებელი დარეგულირებების მაჩვენებელი მაღალია</translation>
 <translation id="6839141349259399400">ვერ უკავშირდებით სკანერებს?</translation>
+<translation id="6853312040151791195">განმუხტვის სიჩქარე</translation>
+<translation id="6898743098396957679">სკანირება ვერ დასრულდა</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> მართავს ამ მოწყობილობას და აქვს წვდომა მომხმარებლების ნებისმიერ აქტივობაზე, მათ შორის, მონახულებულ ვებგვერდებზე, პაროლებსა და ელფოსტაზე.</translation>
 <translation id="714876143603641390">LAN-ის კავშირი</translation>
 <translation id="7162487448488904999">გალერეა</translation>
@@ -186,12 +194,15 @@
 <translation id="7648838807254605802">HTTPS რეაგირების დრო დიდია</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
 <translation id="7690294790491645610">დაადასტურეთ ახალი პაროლი</translation>
+<translation id="773153675489693198">ციკლების რაოდენობა</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> — ტესტი</translation>
 <translation id="7805768142964895445">სტატუსი</translation>
 <translation id="7855434858642800953">სკანირებული ფაილი შენახულია!</translation>
 <translation id="7928373994957558460">ფაილის მდებარეობის ჩვენება</translation>
 <translation id="7936303884198020182">სახელების სერვერი ვერ მოიძებნა</translation>
+<translation id="7960831585769876809">ტემპერატურა</translation>
 <translation id="8041089156583427627">გამოხმაურება</translation>
+<translation id="8075838845814659848">დარჩენილი მუხტი</translation>
 <translation id="808894953321890993">პაროლის შეცვლა</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8160445423316272678">დასაწყებად მოათავსეთ დოკუმენტი სკანერზე და აირჩიეთ <ph name="SPAN_BEGIN" />სკანირება<ph name="SPAN_END" /></translation>
@@ -219,6 +230,7 @@
 <translation id="8919837981463578619">ვერ მოხერხდა — პრინტერს კალათა აკლია</translation>
 <translation id="8928727111548978589">ვერ მოხერხდა — ქაღალდი გაუთავდა</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> დარჩენილია <ph name="ATTEMPTS_LEFT" /> მცდელობა</translation>
+<translation id="8968751544471797276">დატენის სიჩქარე</translation>
 <translation id="8970109610781093811">ხელახლა გაშვება</translation>
 <translation id="9088306295921699330">ამჟამად გამოყენებული</translation>
 <translation id="910415269708673980">განაახლეთ ბილეთი <ph name="PRINCIPAL_NAME" />-ისთვის</translation>

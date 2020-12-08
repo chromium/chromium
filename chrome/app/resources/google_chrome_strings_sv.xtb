@@ -168,6 +168,8 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog om d
 Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="556024056938947818">Google Chrome försöker visa lösenord.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5655746611259367388">Du kan hantera det här kontot och andra Google-konton som hör till <ph name="USER_NAME" /> på ett ställe i <ph name="LINK_BEGIN" />inställningarna<ph name="LINK_END" />.
+          Behörigheter som du har gett webbplatser i webbläsaren Chrome och appar från Google Play kan gälla för alla kontona.</translation>
 <translation id="5657226924540934362">Om en inställning saknas på den här sidan tittar du i <ph name="LINK_BEGIN" />
       inställningarna för Chrome OS<ph name="LINK_END" /></translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan vara skadlig och har blockerats av Chrome.</translation>

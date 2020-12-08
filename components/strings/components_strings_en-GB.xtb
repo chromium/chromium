@@ -761,6 +761,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3996311196211510766">The site <ph name="ORIGIN" /> has requested that an origin policy will
     apply to all requests to it, but this policy cannot presently be applied.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF document containing {COUNT} page}other{PDF document containing {COUNT} pages}}</translation>
+<translation id="4023431997072828269">Because this form is being submitted using a connection that’s not secure, your information will be visible to others.</translation>
 <translation id="4030383055268325496">&amp;Undo add</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Key "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
@@ -859,6 +860,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4318566738941496689">Your device name and network address</translation>
 <translation id="4325863107915753736">Failed to find article</translation>
 <translation id="4326324639298822553">Check your expiry date and try again</translation>
+<translation id="4329871760342656885">Policy parsing error: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Stacker 5</translation>
 <translation id="4331708818696583467">Not Secure</translation>
 <translation id="4340982228985273705">This computer is not detected as enterprise managed, so policy can only automatically install extensions hosted on the Chrome Web Store. The Chrome Web Store update URL is '<ph name="CWS_UPDATE_URL" />'.</translation>

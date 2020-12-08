@@ -22,6 +22,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> administra a este usuario y es posible que administre la configuración y supervise la actividad del usuario de forma remota.</translation>
 <translation id="150962533380566081">PUK no válida.</translation>
 <translation id="1510238584712386396">Selector</translation>
+<translation id="1621067168122174824">Ejecutar prueba de carga</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> subprocesos)</translation>
 <translation id="1641857168437328880">Alimentador de documentos (una cara)</translation>
 <translation id="1644574205037202324">Historial</translation>
@@ -29,6 +30,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Agente de resolución de DNS disponible</translation>
 <translation id="1743558184855585519">Se considera que la batería está agotada una vez que se alcanza el límite</translation>
+<translation id="1792647875738159689">Cancelando el escaneo</translation>
 <translation id="1905710495812624430">Se superó la cantidad máxima de intentos permitidos.</translation>
 <translation id="1930797645656624981">Servicio de método de entrada del Sistema operativo Chrome</translation>
 <translation id="1947737735496445907">Impreso</translation>
@@ -53,6 +55,7 @@
 <translation id="3008341117444806826">ACTUALIZAR</translation>
 <translation id="3009958530611748826">Seleccionar una carpeta de destino</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3069085583900247081">No se pudo realizar la prueba</translation>
 <translation id="3083667275341675831">Diagnóstico de conectividad</translation>
 <translation id="3091839911843451378">Error: La impresora se detuvo</translation>
 <translation id="3102119246920354026">Caché</translation>
@@ -62,6 +65,7 @@
 <translation id="3246869037381808805">Se quitarán los trabajos de impresión que tengan más de 1 día</translation>
 <translation id="3268178239013324452">Error: La tapa está abierta</translation>
 <translation id="3310640316857623290">La latencia de DNS supera significativamente el umbral permitido</translation>
+<translation id="3328783797891415197">Prueba en ejecución</translation>
 <translation id="3369013195428705271">¿Seguro que quieres borrar todo el historial de impresiones? No se quitarán tus trabajos de impresión en curso.</translation>
 <translation id="3456078764689556234">Se imprimió la página <ph name="PRINTED_PAGES" /> de un total de <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Impresión</translation>
@@ -81,6 +85,7 @@
 <translation id="4034824040120875894">Impresora</translation>
 <translation id="4131410914670010031">Blanco y negro</translation>
 <translation id="4145784616224233563">Firewall de HTTP</translation>
+<translation id="4170700058716978431">ERROR</translation>
 <translation id="4227825898293920515">La contraseña caduca en <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No hay trabajos de impresión en curso</translation>
 <translation id="4297501883039923494">Se detuvo: error desconocido</translation>
@@ -105,17 +110,20 @@
 <translation id="4773299976671772492">Detenida</translation>
 <translation id="4808449224298348341">Se canceló el trabajo de impresión <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">Seleccionar carpeta en la app de Archivos…</translation>
+<translation id="4848429997038228357">EN EJECUCIÓN</translation>
 <translation id="4890353053343094602">Elige una nueva de inmediato</translation>
 <translation id="4917889632206600977">Se detuvo: no hay papel</translation>
 <translation id="4921665434385737356">Se cargó <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="4932733599132424254">Fecha</translation>
 <translation id="4985509611418653372">Ejecutar</translation>
+<translation id="500920857929044050">Detener la prueba</translation>
 <translation id="5154917547274118687">Memoria</translation>
 <translation id="5168185087976003268">Estado de la batería</translation>
 <translation id="520299634122159966">No hay escáneres disponibles</translation>
 <translation id="5212543919916444558">No hay nada en la pantalla con lo que pueda ayudarte.
 Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5222676887888702881">Salir</translation>
+<translation id="5264277876637023664">Ejecutar la prueba de CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Volver a ejecutar las rutinas</translation>
 <translation id="5317780077021120954">Guardar</translation>
@@ -128,17 +136,22 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="54609108002486618">Gestionado</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Más información en el Centro de ayuda</translation>
+<translation id="5635169860413004179">Ver el informe</translation>
 <translation id="5719918614880940190">Este valor mide el uso de la CPU y es una combinación de todos los núcleos</translation>
+<translation id="5797428682393400134">OPERACIÓN CORRECTA</translation>
 <translation id="5832805196449965646">Agregar a una persona</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
+<translation id="5931523347251946569">No se encontró el archivo</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versión <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6048107060512778456">Error: Se atascó el papel</translation>
 <translation id="6050189528197190982">Escala de grises</translation>
 <translation id="6058625436358447366">Para finalizar, ingresa tu contraseña anterior y la nueva</translation>
 <translation id="6061772781719867950">Solicitudes HTTPS con error</translation>
+<translation id="6104112872696127344">Se canceló el escaneo</translation>
 <translation id="6106186594183574873">Para finalizar, ingresa tu contraseña anterior</translation>
 <translation id="6108689792487843350">no se puede acceder a la puerta de enlace</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" /> GHz/<ph name="MAX" /> GHz</translation>
 <translation id="6146993107019042706">Para finalizar, ingresa tu nueva contraseña</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Más información</translation>
@@ -149,6 +162,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="649050271426829538">Se detuvo: se atascó el papel</translation>
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6527081081771465939">el protocolo de seguridad Wi-Fi es desconocido</translation>
+<translation id="6532051501443766164">Ocultar informe</translation>
 <translation id="65587193855025101">Cristal del escáner</translation>
 <translation id="6564646048574748301">Error: No se puede acceder a la impresora</translation>
 <translation id="6618744767048954150">En ejecución</translation>
@@ -156,6 +170,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6704062477274546131">Resolución de DNS</translation>
 <translation id="6747215703636344499">Se detuvo: la bandeja de salida está llena</translation>
+<translation id="6756731097889387912">No se pudo cancelar el escaneo</translation>
 <translation id="6766275201586212568">Resoluciones DNS con error</translation>
 <translation id="6768237774506518020">Tasa alta de errores para la resolución de DNS</translation>
 <translation id="6839141349259399400">¿No puedes establecer conexión con los escáneres?</translation>
@@ -171,6 +186,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7648838807254605802">Latencia de HTTPS alta</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7690294790491645610">Confirmar contraseña nueva</translation>
+<translation id="7732651821766520760">Prueba <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7855434858642800953">Se guardó el archivo escaneado</translation>
 <translation id="7928373994957558460">Mostrar ubicación del archivo</translation>
@@ -198,6 +214,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8845001906332463065">Obtener ayuda</translation>
+<translation id="8881098542468797602">Se completó correctamente la prueba</translation>
 <translation id="8910721771319628100">la red predeterminada supera el umbral de latencia</translation>
 <translation id="8919837981463578619">Error: Falta la bandeja</translation>
 <translation id="8928727111548978589">Error: No hay papel</translation>
@@ -207,4 +224,6 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="910415269708673980">Actualizar ticket para <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando página <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
+<translation id="9149391708638971077">Ejecutar prueba de memoria</translation>
+<translation id="982713511914535780">Ejecutar la prueba de descarga</translation>
 </translationbundle>

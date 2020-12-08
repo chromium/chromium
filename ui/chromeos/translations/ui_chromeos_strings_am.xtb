@@ -183,6 +183,7 @@
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> ላይ ቅርጸት በመስራት ላይ...</translation>
 <translation id="2951236788251446349">ዝልግልግ አሳ</translation>
 <translation id="2984337792991268709">ዛሬ <ph name="TODAY_DAYTIME" /></translation>
+<translation id="2994320653639462337"><ph name="COUNT" /> ንጥሎችን ወደነበሩበት በመመለስ ላይ...</translation>
 <translation id="2994669386200004489">የ<ph name="FILE_NAME" />ን ምትኬ ማስቀመጥ አልተቻለም</translation>
 <translation id="299638574917407533">ፈረንሳይኛ (ካናዳ)</translation>
 <translation id="3003633581067744647">ወደ የድንክዬ እይታ ቀይር</translation>
@@ -300,6 +301,7 @@
 <translation id="4364327530094270451">ሐብሐብ</translation>
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">ውጫዊ አገናኝ</translation>
+<translation id="4418686080762064601">ለፋይሎችዎ አቋራጭ ይፍጠሩ</translation>
 <translation id="4425149324548788773">የእኔ Drive</translation>
 <translation id="4470564870223067757">ሃንጉል 2 ስብስብ</translation>
 <translation id="4477002475007461989">ሮማኒያኛ</translation>
@@ -380,6 +382,7 @@
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> ንጥሎችን ወደ <ph name="FOLDER_NAME" /> በመውሰድ ላይ</translation>
 <translation id="509429900233858213">ስህተት አጋጥሟል።</translation>
 <translation id="5098629044894065541">ዕብራስጥ</translation>
+<translation id="5109254780565519649">ስህተት አጋጥሟል። አንዳንድ ንጥሎች ወደነበሩበት አልተመለሱም።</translation>
 <translation id="5110329002213341433">እንግሊዝኛ (ካናዳ)</translation>
 <translation id="5123433949759960244">ቅርጫት ኳስ</translation>
 <translation id="5129662217315786329">ፖሊሽ</translation>
@@ -609,6 +612,7 @@
 <translation id="7547811415869834682">ደች</translation>
 <translation id="7551643184018910560">መደርደሪያ ላይ ሰካ</translation>
 <translation id="7553492409867692754">የLinux መተግበሪያዎች በ<ph name="FOLDER_NAME" /> አቃፊ ውስጥ ያሉ ፋይሎችን እንዲደርስ ይፍቀዱ</translation>
+<translation id="7575645593344061397">«<ph name="FILENAME" />»ን ወደነበሩበት በመመለስ ላይ...</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">አንድ ሰከንድ ብቻ ይጠብቁ</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" />ን ከመስመር ውጪ እንዲገኝ በማድረግ ላይ</translation>
@@ -706,6 +710,7 @@
 <translation id="8395901698320285466">ልኬቶች</translation>
 <translation id="8437209419043462667">አሜሪካ</translation>
 <translation id="8456681095658380701">ልክ ያልሆነ ስም</translation>
+<translation id="8461467696380332069">በመደርደሪያ ውስጥ ያሉትን ፋይሎችዎ በፍጥነት ለመድረስ አንድ ፋይል በቀኝ ጠቅ ያድርጉ እና «ለመደርደሪያ ሰካ»ን ይምረጡ።</translation>
 <translation id="8463494891489624050">ቪዬትናምኛ VIQR</translation>
 <translation id="8466234950814670489">የTar ማህደር</translation>
 <translation id="8475647382427415476">Google Drive አሁን «<ph name="FILENAME" />» ማስመር አልቻለም። Google Drive ቆይቶ እንደገና ይሞክራል።</translation>

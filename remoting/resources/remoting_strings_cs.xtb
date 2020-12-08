@@ -61,6 +61,7 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="405887016757208221">Vzdálený počítač relaci neinicializoval. Pokud problém přetrvává, zkuste hostitele nakonfigurovat znovu.</translation>
 <translation id="4060747889721220580">Stáhnout soubor</translation>
 <translation id="4126409073460786861">Po dokončení nastavení tuto stránku obnovte. K počítači pak budete moci získat přístup tak, že vyberete požadované zařízení a zadáte PIN.</translation>
+<translation id="4139423942711457311">Copyright 2020 Google LLC. Všechna práva vyhrazena.</translation>
 <translation id="4145029455188493639">Jste přihlášeni pomocí účtu <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="4155497795971509630">Chybí některé povinné komponenty. Zkontrolujte, zda máte nainstalovanou nejnovější verzi softwaru, a zkuste to znovu.</translation>
 <translation id="4176825807642096119">Přístupový kód</translation>

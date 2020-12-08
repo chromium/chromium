@@ -168,6 +168,8 @@
 Google Chrome таны тохируулгыг дахин сэргээх боломжгүй байна.</translation>
 <translation id="556024056938947818">Google Chrome нууц харуулахыг хичээж байна.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5655746611259367388">Та үүнийг болон <ph name="USER_NAME" />-д нэмсэн бусад Google Бүртгэлийг нэг дороос <ph name="LINK_BEGIN" />Тохиргоо<ph name="LINK_END" /> хэсэгт удирдах боломжтой.
+          Таны Chrome хөтчийн вебсайтууд болон Google Play-н аппуудад өгсөн зөвшөөрөл нь бүх бүртгэлд хэрэгжиж болзошгүй.</translation>
 <translation id="5657226924540934362">Хэрэв энэ хуудсан дээр тохиргоог харуулахгүй байгаа бол <ph name="LINK_BEGIN" />
       Chrome үйлдлийн системийнхээ тохиргоо<ph name="LINK_END" /> дотроос хайна уу</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> аюултай байж болзошгүй тул үүнийг Chrome блок хийсэн.</translation>

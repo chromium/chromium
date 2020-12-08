@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Printată</translation>
 <translation id="1979103255016296513">Ai depășit timpul limită pentru schimbarea parolei</translation>
 <translation id="1980044825731880088">Viteza CPU</translation>
+<translation id="2008685064673031089">Căutare de numere prime</translation>
 <translation id="2080070583977670716">Mai multe setări</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Anulează sarcina de printare</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Reușită</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> încercări rămase</translation>
 <translation id="2391082728065870591">Trimite un raport de feedback</translation>
+<translation id="2446553403094072641">Precizia virgulei mobile</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Scanează</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Aplicații</translation>
 <translation id="2872961005593481000">Închide</translation>
+<translation id="2878387241690264070">S-a descărcat cu <ph name="RATE" /> în <ph name="NUM_SECONDS" /> secunde.</translation>
 <translation id="3008341117444806826">ACTUALIZEAZĂ</translation>
 <translation id="3009958530611748826">Selectează un dosar în care să salvezi</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Selectează dosarul în aplicația Fișiere...</translation>
 <translation id="4848429997038228357">RULEAZĂ</translation>
 <translation id="4890353053343094602">Alege imediat una nouă</translation>
+<translation id="4891842000192098784">Stres</translation>
 <translation id="4917889632206600977">Oprită – Hârtie epuizată</translation>
 <translation id="4921665434385737356">S-a încărcat cu <ph name="RATE" /> în <ph name="NUM_SECONDS" /> secunde.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="498186245079027698">Verifică scanerul și încearcă din nou. Asigură-te că există spațiu suficient la nivel local pentru a salva fișierele scanate.</translation>
 <translation id="4985509611418653372">Rulează</translation>
 <translation id="500920857929044050">Oprește testul</translation>
 <translation id="5154917547274118687">Memorie</translation>
@@ -138,6 +143,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5551702563755460533">Află mai multe din Centrul de ajutor</translation>
 <translation id="5635169860413004179">Consultă raportul</translation>
 <translation id="5719918614880940190">Indică utilizarea procesorului și este o valoare cumulată pentru toate nucleele</translation>
+<translation id="5781694279199921985">Salvează jurnalul de sesiune</translation>
 <translation id="5797428682393400134">TRECUT</translation>
 <translation id="5832805196449965646">Adăugați un utilizator</translation>
 <translation id="5895138241574237353">Reîncepe</translation>
@@ -174,6 +180,8 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6766275201586212568">Rezolvări DNS nereușite</translation>
 <translation id="6768237774506518020">Rată de eroare ridicată a rezolvărilor DNS</translation>
 <translation id="6839141349259399400">Nu te poți conecta la scanere?</translation>
+<translation id="6853312040151791195">Rata de descărcare</translation>
+<translation id="6898743098396957679">Nu s-a putut finaliza scanarea</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestionează acest dispozitiv și are acces la toată activitatea utilizatorului, inclusiv la paginile web accesate, parole și e-mail.</translation>
 <translation id="714876143603641390">Conectivitatea prin LAN</translation>
 <translation id="7162487448488904999">Galerie</translation>
@@ -186,12 +194,15 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7648838807254605802">Latență mare a solicitărilor HTTPS</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7690294790491645610">Confirmă noua parolă</translation>
+<translation id="773153675489693198">Numărul de cicluri</translation>
 <translation id="7732651821766520760">Testul <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Stare</translation>
 <translation id="7855434858642800953">Fișierul scanat a fost salvat!</translation>
 <translation id="7928373994957558460">Afișează locația fișierului</translation>
 <translation id="7936303884198020182">Nu s-au găsit servere de nume</translation>
+<translation id="7960831585769876809">Temperatură</translation>
 <translation id="8041089156583427627">Trimiteți feedback</translation>
+<translation id="8075838845814659848">Nivel de încărcare rămas</translation>
 <translation id="808894953321890993">Schimbă parola</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">Așază documentul pe scaner și selectează <ph name="SPAN_BEGIN" />Scanează<ph name="SPAN_END" /> pentru a începe</translation>
@@ -219,6 +230,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8919837981463578619">Nereușită – Tavă lipsă</translation>
 <translation id="8928727111548978589">Nereușită – Hârtie epuizată</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> încercări rămase</translation>
+<translation id="8968751544471797276">Rata de încărcare</translation>
 <translation id="8970109610781093811">Rulați din nou</translation>
 <translation id="9088306295921699330">Folosire actuală</translation>
 <translation id="910415269708673980">Actualizează tichetul pentru <ph name="PRINCIPAL_NAME" /></translation>

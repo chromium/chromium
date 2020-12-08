@@ -183,6 +183,7 @@
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> को फ़ॉर्मैट किया जा रहा है...</translation>
 <translation id="2951236788251446349">जेलीफ़िश</translation>
 <translation id="2984337792991268709">आज <ph name="TODAY_DAYTIME" /></translation>
+<translation id="2994320653639462337"><ph name="COUNT" /> आइटम वापस लाए जा रहे हैं...</translation>
 <translation id="2994669386200004489"><ph name="FILE_NAME" /> का बैक अप नहीं लिया जा सका</translation>
 <translation id="299638574917407533">फ़्रेंच (कनाडा)</translation>
 <translation id="3003633581067744647">थंबनेल व्यू में स्विच करें</translation>
@@ -300,6 +301,7 @@
 <translation id="4364327530094270451">खरबूजा</translation>
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">बाहरी लिंक</translation>
+<translation id="4418686080762064601">अपनी फ़ाइलों के लिए एक शॉर्टकट बनाएं</translation>
 <translation id="4425149324548788773">मेरी डिस्क</translation>
 <translation id="4470564870223067757">हंगुल 2 सेट</translation>
 <translation id="4477002475007461989">रोमेनियन</translation>
@@ -380,6 +382,7 @@
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> आइटम <ph name="FOLDER_NAME" /> में ट्रांसफ़र हो रहे हैं</translation>
 <translation id="509429900233858213">कोई गड़बड़ी हुई.</translation>
 <translation id="5098629044894065541">हिब्रू</translation>
+<translation id="5109254780565519649">कोई गड़बड़ी हुई. हो सकता है कि कुछ आइटम वापस न लाए जा सके हों.</translation>
 <translation id="5110329002213341433">अंग्रेज़ी (कनाडा)</translation>
 <translation id="5123433949759960244">बास्केटबॉल</translation>
 <translation id="5129662217315786329">पोलिश</translation>
@@ -610,6 +613,7 @@
 <translation id="7547811415869834682">डच</translation>
 <translation id="7551643184018910560">अलमारी से पिन करें</translation>
 <translation id="7553492409867692754">Linux ऐप्लिकेशन को <ph name="FOLDER_NAME" /> फ़ोल्डर की फ़ाइलें ऐक्सेस करने की अनुमति दें</translation>
+<translation id="7575645593344061397">"<ph name="FILENAME" />" को वापस लाया जा रहा है...</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">बस एक सेकंड प्रतीक्षा करें</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> को ऑफ़लाइन इस्तेमाल करने के लिए डाउनलोड किया जा रहा है</translation>
@@ -707,6 +711,7 @@
 <translation id="8395901698320285466">आयाम</translation>
 <translation id="8437209419043462667">यूएस</translation>
 <translation id="8456681095658380701">गलत नाम</translation>
+<translation id="8461467696380332069">शेल्फ़ में अपनी फ़ाइलों को तुरंत ऐक्सेस करने के लिए, किसी फ़ाइल पर दायां क्लिक करें और "शेल्फ़ पर पिन करें" को चुनें.</translation>
 <translation id="8463494891489624050">वियतनामीज़ वीआईक्यूआर</translation>
 <translation id="8466234950814670489">Tar संग्रह</translation>
 <translation id="8475647382427415476">Google डिस्क अभी "<ph name="FILENAME" />" को समन्वयित करने में असमर्थ थी. Google डिस्क द्वारा बाद में पुनः प्रयास किया जाएगा.</translation>

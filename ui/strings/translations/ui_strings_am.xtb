@@ -107,6 +107,7 @@
 <translation id="3670030362669914947">ቁጥር</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> ጊባ/ሰ</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> ጊባ</translation>
+<translation id="3804247818991980532"><ph name="TYPE_1" />። <ph name="TYPE_2" />።</translation>
 <translation id="3842239759367498783">ከእርስዎ ተንቀሳቃሽ መሣሪያ <ph name="TITLE" /> ማንበብ ይቀጥሉ</translation>
 <translation id="385051799172605136">ተመለስ</translation>
 <translation id="3889424535448813030">ቀኝ  ቀስት</translation>
@@ -228,7 +229,6 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{1 ሰዓት በፊት}one{# ሰዓቶች በፊት}other{# ሰዓቶች በፊት}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 ሰከንድ ቀርቷል}one{# ሰከንዶች ቀርቷል}other{# ሰከንዶች ቀርተዋል}}</translation>
 <translation id="8134065097954893699">ይህን ገጽ ዳግም በመጫን ላይ</translation>
-<translation id="8144660977431427332">የእርስዎ ፍለጋዎች የቀረቡት በ Google ረዳቱ ነው። <ph name="LEARN_MORE" /></translation>
 <translation id="8152264887680882389"><ph name="TEXT" />፣ ራስሰር ሙላ</translation>
 <translation id="815598010540052116">ወደ ታች ሸብልል</translation>
 <translation id="8179976553408161302">አስገባ</translation>

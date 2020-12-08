@@ -168,6 +168,8 @@
 Google Chrome 無法復原您的設定。</translation>
 <translation id="556024056938947818">Google Chrome 即將顯示密碼。</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5655746611259367388">您可在「<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />」中集中管理這個 Google 帳戶和其他已為 <ph name="USER_NAME" /> 新增的 Google 帳戶。
+         您向 Chrome 瀏覽器中的網站和 Google Play 中的應用程式授予的權限，可能會套用到所有帳戶。</translation>
 <translation id="5657226924540934362">如果此頁面沒有顯示設定，請前往 <ph name="LINK_BEGIN" />Chrome 作業系統設定<ph name="LINK_END" />。</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> 可能不安全，因此 Chrome 已封鎖此檔案。</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{管理員要求您重新啟動 Chrome，以套用此更新}=1{管理員要求您重新啟動 Chrome，以套用此更新。您的無痕式視窗不會重新開啟。}other{管理員要求您重新啟動 Chrome，以套用此更新。您的 # 個無痕式視窗不會重新開啟。}}</translation>

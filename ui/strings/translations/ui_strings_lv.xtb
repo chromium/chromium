@@ -228,7 +228,6 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{Pirms 1 stundas}zero{Pirms # stundām}one{Pirms # stundas}other{Pirms # stundām}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{Atlikusi 1 s}zero{Atlikušas # s}one{Atlikusi # s}other{Atlikušas # s}}</translation>
 <translation id="8134065097954893699">Notiek atkārtota šīs lapas ielādēšana</translation>
-<translation id="8144660977431427332">Jūsu meklēšanas vaicājumus nodrošina Google asistents. <ph name="LEARN_MORE" /></translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automātiski pabeigts</translation>
 <translation id="815598010540052116">Ritināt lejup</translation>
 <translation id="8179976553408161302">Ievadīt</translation>

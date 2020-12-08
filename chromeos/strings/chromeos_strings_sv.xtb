@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Utskrivet</translation>
 <translation id="1979103255016296513">Tiden för att ändra lösenordet har gått ut</translation>
 <translation id="1980044825731880088">CPU-hastighet</translation>
+<translation id="2008685064673031089">Primtalssökning</translation>
 <translation id="2080070583977670716">Fler inställningar</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Avbryt utskriftsjobb</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Godkänd</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> försök kvar</translation>
 <translation id="2391082728065870591">Skicka feedbackrapport</translation>
+<translation id="2446553403094072641">Flyttalsprecision</translation>
 <translation id="2461822463642141190">Nuvarande</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Sök</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Appar</translation>
 <translation id="2872961005593481000">Stäng av</translation>
+<translation id="2878387241690264070"><ph name="RATE" /> urladdat på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="3008341117444806826">UPPDATERA</translation>
 <translation id="3009958530611748826">Välj vilken mapp du vill spara i</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Välj en fil i appen Filer</translation>
 <translation id="4848429997038228357">KÖRS</translation>
 <translation id="4890353053343094602">Välj ett nytt omedelbart</translation>
+<translation id="4891842000192098784">Stress</translation>
 <translation id="4917889632206600977">Har stoppats – slut på papper</translation>
 <translation id="4921665434385737356">Har laddat <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="498186245079027698">Kontrollera skannern och försök igen. Kontrollera att utrymmet lokalt räcker för att spara de skannade filerna.</translation>
 <translation id="4985509611418653372">Kör</translation>
 <translation id="500920857929044050">Avsluta testet</translation>
 <translation id="5154917547274118687">Minne</translation>
@@ -138,6 +143,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5551702563755460533">Läs mer i hjälpcentret</translation>
 <translation id="5635169860413004179">Visa rapporten</translation>
 <translation id="5719918614880940190">Detta mäter CPU-användningen och är en sammanställning av alla kärnor</translation>
+<translation id="5781694279199921985">Spara sessionslogg</translation>
 <translation id="5797428682393400134">LYCKADES</translation>
 <translation id="5832805196449965646">Lägg till person</translation>
 <translation id="5895138241574237353">Starta om</translation>
@@ -174,6 +180,8 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6766275201586212568">Misslyckade DNS-matchningar</translation>
 <translation id="6768237774506518020">Hög felfrekvens för DNS-matchningar</translation>
 <translation id="6839141349259399400">Går det inte att ansluta till någon skanner?</translation>
+<translation id="6853312040151791195">Urladdningshastighet</translation>
+<translation id="6898743098396957679">Det gick inte att slutföra skanningen</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> hanterar den här enheten och har tillgång till all användaraktivitet, inklusive besökta webbsidor, lösenord och e-post.</translation>
 <translation id="714876143603641390">LAN-anslutningar</translation>
 <translation id="7162487448488904999">Gallery</translation>
@@ -186,12 +194,15 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7648838807254605802">Hög HTTPS-fördröjning</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7690294790491645610">Bekräfta det nya lösenordet</translation>
+<translation id="773153675489693198">Antal cykler</translation>
 <translation id="7732651821766520760">Test – <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7855434858642800953">Den skannade filen har sparats.</translation>
 <translation id="7928373994957558460">Visa filplats</translation>
 <translation id="7936303884198020182">Inga namnservrar hittades</translation>
+<translation id="7960831585769876809">Temperatur</translation>
 <translation id="8041089156583427627">Skicka feedback</translation>
+<translation id="8075838845814659848">Batteritid som återstår</translation>
 <translation id="808894953321890993">Ändra lösenord</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">Sätt dokumentet i skannern och välj <ph name="SPAN_BEGIN" />Skanna<ph name="SPAN_END" /> för att komma igång</translation>
@@ -219,6 +230,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8919837981463578619">Misslyckades – fack saknas</translation>
 <translation id="8928727111548978589">Misslyckades – slut på papper</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> försök kvar</translation>
+<translation id="8968751544471797276">Laddningshastighet</translation>
 <translation id="8970109610781093811">Kör igen</translation>
 <translation id="9088306295921699330">Nuvarande användning</translation>
 <translation id="910415269708673980">Uppdatera biljetten för <ph name="PRINCIPAL_NAME" /></translation>

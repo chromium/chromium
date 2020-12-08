@@ -168,6 +168,8 @@ Agian eginbide batzuk ez dira erabilgarri egongo. Zehaztu profilaren beste direk
 Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="556024056938947818">Google Chrome pasahitzak erakusten saiatzen ari da.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5655746611259367388"><ph name="LINK_BEGIN" />Ezarpenak<ph name="LINK_END" /> atalean kudea ditzakezu kontu hau eta <ph name="USER_NAME" /> erabiltzailearentzat gehitu dituzun Google-ko beste kontu batzuk toki bakarrean.
+          Baliteke Google Play-ko aplikazioei eta Chromium arakatzailearen bidez atzi dituzun webguneei eman dizkiezun baimenak kontu guztiei aplikatzea.</translation>
 <translation id="5657226924540934362">Ezarpenen bat orri honetan agertzen ez bada, bila ezazu <ph name="LINK_BEGIN" />
       Chrome OS-ren ezarpenetan.<ph name="LINK_END" /></translation>
 <translation id="565744775970812598">Baliteke <ph name="FILE_NAME" /> arriskutsua izatea; horregatik, blokeatu egin du Chrome-k.</translation>

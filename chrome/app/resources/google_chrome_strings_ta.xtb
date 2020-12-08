@@ -52,6 +52,7 @@
 <translation id="2309047409763057870">இது Google Chrome இன் இரண்டாம் நிலை நிறுவல் என்பதால், அதை இயல்புநிலை உலாவியாக அமைக்க முடியாது.</translation>
 <translation id="2348335408836342058">இந்தத் தளத்திற்காகக் கேமராவையும் மைக்ரோஃபோனையும் அணுக Chromeமுக்கு அனுமதி தேவை</translation>
 <translation id="234869673307233423">Chromeமால் உங்கள் கடவுச்சொற்களைச் சரிபார்க்க முடியவில்லை. பிறகு முயலவும்.</translation>
+<translation id="235650106824528204">இந்தச் சுயவிவரத்தைப் பயன்படுத்தும்போது உருவாக்கப்படும் Chrome தரவு அனைத்தையும் (எ.கா. நீங்கள் உருவாக்கும் புக்மார்க்குகள், வரலாறு, கடவுச்சொற்கள் மற்றும் பிற அமைப்புகள்) பணிக் கணக்கு நிர்வாகி அகற்றலாம். <ph name="LEARN_MORE" /></translation>
 <translation id="2429317896000329049">உங்கள் களத்திற்கு ஒத்திசைவு இல்லாததால், Google Chrome ஆல் உங்கள் தரவை ஒத்திசைக்க முடியவில்லை.</translation>
 <translation id="2467438592969358367">Google Chrome உங்கள் கடவுச்சொற்களை ஏற்ற விரும்புகிறது. இதை அனுமதிக்க, உங்கள் Windows கடவுச்சொல்லை உள்ளிடவும்.</translation>
 <translation id="2485422356828889247">நிறுவல் நீக்கு</translation>
@@ -169,12 +170,14 @@
 <translation id="573759479754913123">Chrome OS அறிமுகம்</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chromeஐத் தொடங்க முடியவில்லை. மீண்டும் முயலவும்.</translation>
+<translation id="5851757216820085940">உங்களிடம் ஒன்றுக்கும் மேற்பட்ட Google கணக்குகள் இருந்தால் அவற்றை உங்கள் <ph name="DEVICE_TYPE" /> இல் சேர்க்கலாம். Chrome உலாவி, Play ஸ்டோர் ஆகியவற்றிலும் Gmail, Drive, YouTube போன்ற சேவைகளிலும் உங்கள் கணக்குகளைப் பயன்படுத்த முடியும்.<ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome கடவுச்சொற்களைத் திருத்த முயல்கிறது.</translation>
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - நெட்வொர்க் உள்நுழைவு</translation>
 <translation id="5940385492829620908">உங்களின் இணையம், புக்மார்க்குகள் மற்றும் பிற Chrome உருப்படிகள் இங்கே உள்ளன.</translation>
 <translation id="5941830788786076944">Google Chrome ஐ இயல்புநிலை உலாவியாக அமை</translation>
 <translation id="6070348360322141662">கூடுதல் பாதுகாப்பிற்கு, Google Chrome உங்கள் தரவை என்கிரிப்ட் செய்யும்</translation>
+<translation id="608006075545470555">இந்த உலாவியில் பணிக் கணக்கைச் சேர்த்தல்</translation>
 <translation id="6113794647360055231">Chrome இன்னும் சிறப்படைந்துள்ளது</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome பீட்டா</translation>
@@ -186,10 +189,12 @@
 <translation id="6368958679917195344">கூடுதலான <ph name="BEGIN_LINK_CROS_OSS" />ஓப்பன் சோர்ஸ் மென்பொருள்களால்<ph name="END_LINK_CROS_OSS" /> Chrome OS ஐ உருவாக்குவது சாத்தியமானது.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chromeஐப் புதுப்பிக்கிறது (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6568793831116033768">Chrome OS சிஸ்டம்</translation>
 <translation id="6650333065969705433">பாதுகாக்கப்பட்ட மீடியாவைப் பிளே செய்வதற்கு Rosettaவைப் பயன்படுத்த Chromeமை மீண்டும் தொடங்க வேண்டும்.</translation>
 <translation id="6676384891291319759">இணையத்தை அணுகுதல்</translation>
 <translation id="6679975945624592337">பின்னணியில் Google Chromeஐ இயங்க அனுமதி</translation>
 <translation id="6750954913813541382">எழுத்துப்பிழைகளைச் சரிசெய்ய உலாவியில் உள்ளிடும் உரையை Chrome ஆப்ஸ் Googleளுக்கு அனுப்பும்</translation>
+<translation id="6755885556185485672">Chrome OS சரியாக ஷட் டவுன் செய்யப்படவில்லை.</translation>
 <translation id="677276454032249905">Chrome இலிருந்து வெளியேறவா?</translation>
 <translation id="683440813066116847">mDNS ட்ராஃபிக்கை அனுமதிப்பதற்கான, Google Chrome Canary க்கான உள்வரும் விதி.</translation>
 <translation id="6885412569789873916">Chrome பீட்டா ஆப்ஸ்</translation>
@@ -248,6 +253,7 @@
 <translation id="8498858610309223613">Google Chromeமுக்கான சிறப்புப் பாதுகாப்புப் புதுப்பிப்பு சற்றுமுன் இயக்கப்பட்டது. இப்போது Chromeமை மீண்டும் தொடங்கவும், உங்கள் தாவல்களை மீண்டும் காண்பிப்போம்.</translation>
 <translation id="8521348052903287641">mDNS ட்ராஃபிக்கை அனுமதிக்க, Google Chrome Devக்கான உள்வரும் விதி.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8550334526674375523">இந்தப் பணிக் கணக்கிற்கும் உங்கள் தனிப்பட்ட கணக்கிற்கும் எந்தவிதத் தொடர்பும் இல்லை.</translation>
 <translation id="8556340503434111824">Google Chrome இன் புதிய பதிப்பு கிடைக்கிறது, அது முன்னெப்போதையும் விட விரைவானது.</translation>
 <translation id="861359755029082151">பாதுகாக்கப்பட்ட மீடியாவை Chrome இந்தப் பக்கத்தில் பிளே செய்ய Rosetta உதவும்.</translation>
 <translation id="8614913330719544658">Google Chrome பதிலளிக்கவில்லை. இப்போது மீண்டும் தொடங்கவா?</translation>
@@ -266,6 +272,7 @@
 <translation id="8907709077090383765">பாதுகாக்கப்பட்ட மீடியாவை Chrome பிளே செய்ய Rosettaவை நிறுவுவது அவசியம். அதை இப்போதே நிறுவ விரும்புகிறீர்களா?</translation>
 <translation id="8914504000324227558">Chrome ஐ மீண்டும் தொடங்கு</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> என்ற தளத்தில் இருந்து உங்கள் Android மொபைலுக்கு ஓர் எண்ணை அனுப்ப, இரு சாதனங்களிலும் Chromeமில் உள்நுழையுங்கள்.</translation>
+<translation id="8986207147630327271">இந்த உலாவியில் ஒரு பணிக் கணக்கைச் சேர்த்து, அதற்கு மட்டுமான கட்டுப்பாட்டையே உங்கள் நிர்வாகிக்கு வழங்குகிறீர்கள்.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chromeமிற்கான புதுப்பிப்பு உள்ளது}=1{Chromeமிற்கான புதுப்பிப்பு உள்ளது}other{Chromeமிற்கான புதுப்பிப்பு வந்து # நாட்களாகிறது}}</translation>
 <translation id="9026991721384951619">உங்கள் கணக்கின் உள்நுழைவு விவரங்கள் காலாவதியாகிவிட்டதால், உங்கள் தரவை Chrome OS ஆல் ஒத்திசைக்க முடியவில்லை.</translation>
 <translation id="9067395829937117663">Windows 7 அல்லது அதற்குப் பிந்தைய பதிப்புகளில் மட்டுமே Google Chrome இயங்கும்.</translation>

@@ -228,7 +228,6 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{Il y a 1 heure}one{Il y a # heure}many{# hours ago}other{Il y a # heures}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 s restante}one{# s restante}many{# secs left}other{# s restantes}}</translation>
 <translation id="8134065097954893699">Actualiser cette page</translation>
-<translation id="8144660977431427332">Vos recherches sont optimisées par l'Assistant Google. <ph name="LEARN_MORE" /></translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, saisie semi-automatique</translation>
 <translation id="815598010540052116">Défilement vers le bas</translation>
 <translation id="8179976553408161302">Entrée</translation>

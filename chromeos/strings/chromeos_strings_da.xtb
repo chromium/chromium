@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Udskrevet</translation>
 <translation id="1979103255016296513">Adgangskoden mangler at blive ændret</translation>
 <translation id="1980044825731880088">CPU-hastighed</translation>
+<translation id="2008685064673031089">Prime-søgning</translation>
 <translation id="2080070583977670716">Flere indstillinger</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Annuller udskriftsjob</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Bestået</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> forsøg tilbage</translation>
 <translation id="2391082728065870591">Send feedbackrapport</translation>
+<translation id="2446553403094072641">Nøjagtighed af flydende komma</translation>
 <translation id="2461822463642141190">Aktuel</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Scan</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Sluk</translation>
+<translation id="2878387241690264070">Batteriet blev afladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="3008341117444806826">OPDATER</translation>
 <translation id="3009958530611748826">Vælg en mappe, du vil gemme i</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Vælg mappe i appen Filer...</translation>
 <translation id="4848429997038228357">KØRER</translation>
 <translation id="4890353053343094602">Vælg omgående en ny adgangskode</translation>
+<translation id="4891842000192098784">Stress</translation>
 <translation id="4917889632206600977">Stoppet – Papirbakken er tom</translation>
 <translation id="4921665434385737356">Opladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="4932733599132424254">Dato</translation>
+<translation id="498186245079027698">Tjek scanneren, og prøv igen. Sørg for, at der er nok lokal lagerplads til at gemme de scannede filer.</translation>
 <translation id="4985509611418653372">Kør</translation>
 <translation id="500920857929044050">Stop test</translation>
 <translation id="5154917547274118687">Hukommelse</translation>
@@ -137,6 +142,7 @@
 <translation id="5551702563755460533">Få flere oplysninger i Hjælp</translation>
 <translation id="5635169860413004179">Se rapport</translation>
 <translation id="5719918614880940190">Dette måler CPU-forbruget og er en sammenlægning af alle kerner</translation>
+<translation id="5781694279199921985">Gem sessionslogfil</translation>
 <translation id="5797428682393400134">GENNEMFØRT</translation>
 <translation id="5832805196449965646">Tilføj person</translation>
 <translation id="5895138241574237353">Genstart</translation>
@@ -173,6 +179,8 @@
 <translation id="6766275201586212568">Mislykkede DNS-opslag</translation>
 <translation id="6768237774506518020">Høj fejlrate for DNS-opslag</translation>
 <translation id="6839141349259399400">Kan du ikke oprette forbindelse til scannere?</translation>
+<translation id="6853312040151791195">Afladningshastighed</translation>
+<translation id="6898743098396957679">Scanningen kunne ikke gennemføres</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> administrerer denne enhed og har adgang til al brugeraktivitet, bl.a. besøgte websider, adgangskoder og mails.</translation>
 <translation id="714876143603641390">LAN-forbindelse</translation>
 <translation id="7162487448488904999">Galleri</translation>
@@ -185,12 +193,15 @@
 <translation id="7648838807254605802">Høj HTTPS-forsinkelse</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7690294790491645610">Bekræft den nye adgangskode</translation>
+<translation id="773153675489693198">Antal gennemførte cyklusser</translation>
 <translation id="7732651821766520760">Testen <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7855434858642800953">Den scannede fil er gemt.</translation>
 <translation id="7928373994957558460">Se filplacering</translation>
 <translation id="7936303884198020182">Der blev ikke fundet nogen navneservere</translation>
+<translation id="7960831585769876809">Temperatur</translation>
 <translation id="8041089156583427627">Send feedback</translation>
+<translation id="8075838845814659848">Resterende batteriniveau</translation>
 <translation id="808894953321890993">Skift adgangskode</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">Placer dit dokument i scanneren, og vælg <ph name="SPAN_BEGIN" />Scan<ph name="SPAN_END" /> for at komme i gang.</translation>
@@ -218,6 +229,7 @@
 <translation id="8919837981463578619">Handlingen mislykkedes – Bakke mangler</translation>
 <translation id="8928727111548978589">Handlingen mislykkedes – Papirbakken er tom</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> forsøg tilbage</translation>
+<translation id="8968751544471797276">Opladningshastighed</translation>
 <translation id="8970109610781093811">Kør igen</translation>
 <translation id="9088306295921699330">Aktuelt forbrug</translation>
 <translation id="910415269708673980">Gendan billetten for <ph name="PRINCIPAL_NAME" /></translation>

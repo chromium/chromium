@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Надруковано</translation>
 <translation id="1979103255016296513">Час для зміни пароля минув</translation>
 <translation id="1980044825731880088">Швидкість ЦП</translation>
+<translation id="2008685064673031089">Пошук Prime</translation>
 <translation id="2080070583977670716">Більше налаштувань</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Скасувати завдання друку</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Виконано</translation>
 <translation id="2375079107209812402">Залишилося спроб: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Надіслати відгук</translation>
+<translation id="2446553403094072641">Точність рухомої коми</translation>
 <translation id="2461822463642141190">Енергоспоживання</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Сканувати</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Додатки</translation>
 <translation id="2872961005593481000">Завершити роботу</translation>
+<translation id="2878387241690264070">Акумулятор розрядився на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
 <translation id="3008341117444806826">ОНОВИТИ</translation>
 <translation id="3009958530611748826">Виберіть, у якій папці зберегти</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> мА</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Вибрати папку в додатку "Файли"…</translation>
 <translation id="4848429997038228357">ТРИВАЄ</translation>
 <translation id="4890353053343094602">Негайно виберіть новий</translation>
+<translation id="4891842000192098784">Стрес</translation>
 <translation id="4917889632206600977">Зупинено – закінчився папір</translation>
 <translation id="4921665434385737356">Акумулятор зарядився на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
 <translation id="4932733599132424254">Дата</translation>
+<translation id="498186245079027698">Перевірте сканер і повторіть спробу. Переконайтеся, що на пристрої достатньо вільного місця для зберігання відсканованих файлів.</translation>
 <translation id="4985509611418653372">Виконати</translation>
 <translation id="500920857929044050">Зупинити перевірку</translation>
 <translation id="5154917547274118687">Пам’ять</translation>
@@ -138,6 +143,7 @@
 <translation id="5551702563755460533">Докладніше в довідковому центрі</translation>
 <translation id="5635169860413004179">Переглянути звіт</translation>
 <translation id="5719918614880940190">Показник використання ЦП, зведений для всіх ядер</translation>
+<translation id="5781694279199921985">Зберегти журнал сеансу</translation>
 <translation id="5797428682393400134">ЗАВЕРШЕНО</translation>
 <translation id="5832805196449965646">Додати користувача</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
@@ -174,6 +180,8 @@
 <translation id="6766275201586212568">невдалі перетворення DNS</translation>
 <translation id="6768237774506518020">велика частка збоїв під час перетворення DNS</translation>
 <translation id="6839141349259399400">Не вдається підключитися до сканерів?</translation>
+<translation id="6853312040151791195">Швидкість розряджання</translation>
+<translation id="6898743098396957679">Не вдалося зісканувати</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> керує цим пристроєм і має доступ до всіх дій користувача, зокрема відвіданих веб-сторінок, паролів і електронних листів.</translation>
 <translation id="714876143603641390">З'єднання LAN</translation>
 <translation id="7162487448488904999">Галерея</translation>
@@ -186,12 +194,15 @@
 <translation id="7648838807254605802">велика затримка HTTPS</translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7690294790491645610">Підтвердьте новий пароль</translation>
+<translation id="773153675489693198">Кількість циклів</translation>
 <translation id="7732651821766520760">Перевірка "<ph name="TEST_NAME" />"</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7855434858642800953">Відсканований файл збережено.</translation>
 <translation id="7928373994957558460">Показати, де збережено файл</translation>
 <translation id="7936303884198020182">не знайдено серверів імен</translation>
+<translation id="7960831585769876809">Температура</translation>
 <translation id="8041089156583427627">Надіслати відгук</translation>
+<translation id="8075838845814659848">Рівень заряду</translation>
 <translation id="808894953321890993">Змінити пароль</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">Щоб почати, покладіть документ і виберіть опцію <ph name="SPAN_BEGIN" />Сканувати<ph name="SPAN_END" /></translation>
@@ -219,6 +230,7 @@
 <translation id="8919837981463578619">Не надруковано – немає лотка</translation>
 <translation id="8928727111548978589">Не надруковано – закінчився папір</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" />. Залишилося спроб: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="8968751544471797276">Швидкість заряджання</translation>
 <translation id="8970109610781093811">Запустити знову</translation>
 <translation id="9088306295921699330">Використовується</translation>
 <translation id="910415269708673980">Оновити квиток для користувача <ph name="PRINCIPAL_NAME" /></translation>

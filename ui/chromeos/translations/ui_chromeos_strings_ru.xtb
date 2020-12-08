@@ -115,6 +115,7 @@
 <translation id="2208919847696382164">Установить с помощью Linux</translation>
 <translation id="2225536596944493418">Вы действительно хотите удалить объекты (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Не удалось создать папку "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2251368349685848079">Восстановить из корзины</translation>
 <translation id="2275059641601412272">Перемещено.</translation>
 <translation id="2288278176040912387">Патефон</translation>
 <translation id="2291538123825441971">Открываются файлы (<ph name="NUMBER_OF_FILES" />).</translation>
@@ -182,6 +183,7 @@
 <translation id="2949781154072577687">Форматирование внешнего хранилища "<ph name="DRIVE_NAME" />"…</translation>
 <translation id="2951236788251446349">Медуза</translation>
 <translation id="2984337792991268709">Сегодня, <ph name="TODAY_DAYTIME" /></translation>
+<translation id="2994320653639462337">Восстановление объектов (<ph name="COUNT" />)…</translation>
 <translation id="2994669386200004489">Не удалось сохранить резервную копию файла "<ph name="FILE_NAME" />"</translation>
 <translation id="299638574917407533">Французский (Канада)</translation>
 <translation id="3003633581067744647">Показать в виде уменьшенных изображений</translation>
@@ -299,6 +301,7 @@
 <translation id="4364327530094270451">Дыня</translation>
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">Внешняя ссылка</translation>
+<translation id="4418686080762064601">Создайте ярлык файла</translation>
 <translation id="4425149324548788773">Мой диск</translation>
 <translation id="4470564870223067757">Корейская раскладка (Dubeolsik)</translation>
 <translation id="4477002475007461989">Румынский</translation>
@@ -379,6 +382,7 @@
 <translation id="508423945471810158">Перемещение объектов (<ph name="NUMBER_OF_ITEMS" />) в папку "<ph name="FOLDER_NAME" />"…</translation>
 <translation id="509429900233858213">Произошла ошибка.</translation>
 <translation id="5098629044894065541">Иврит</translation>
+<translation id="5109254780565519649">Произошла ошибка. Возможно, не все объекты были восстановлены.</translation>
 <translation id="5110329002213341433">Английский (Канада)</translation>
 <translation id="5123433949759960244">Баскетбол</translation>
 <translation id="5129662217315786329">Польский</translation>
@@ -609,6 +613,7 @@
 <translation id="7547811415869834682">Нидерландская</translation>
 <translation id="7551643184018910560">Закрепить на панели запуска</translation>
 <translation id="7553492409867692754">Приложения Linux смогут получать доступ к файлам папки "<ph name="FOLDER_NAME" />".</translation>
+<translation id="7575645593344061397">Восстановление файла "<ph name="FILENAME" />"…</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Подождите…</translation>
 <translation id="7592775719802218421">Скачивание файла "<ph name="FILE_NAME" />" для офлайн-доступа…</translation>
@@ -706,6 +711,7 @@
 <translation id="8395901698320285466">Размеры</translation>
 <translation id="8437209419043462667">США</translation>
 <translation id="8456681095658380701">Недопустимое название</translation>
+<translation id="8461467696380332069">Нажмите на файл правой кнопкой мыши и выберите "Закрепить на панели запуска".</translation>
 <translation id="8463494891489624050">Вьетнамский, раскладка VIQR</translation>
 <translation id="8466234950814670489">Архив TAR</translation>
 <translation id="8475647382427415476">Не удалось синхронизировать <ph name="FILENAME" /> с Google Диском. Система повторит попытку позже.</translation>

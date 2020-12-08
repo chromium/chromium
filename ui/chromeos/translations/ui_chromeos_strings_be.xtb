@@ -183,6 +183,7 @@
 <translation id="2949781154072577687">Фармаціруецца дыск "<ph name="DRIVE_NAME" />"...</translation>
 <translation id="2951236788251446349">Медуза</translation>
 <translation id="2984337792991268709">Сёння <ph name="TODAY_DAYTIME" /></translation>
+<translation id="2994320653639462337">Ідзе аднаўленне элементаў (<ph name="COUNT" />)…</translation>
 <translation id="2994669386200004489">Не ўдалося стварыць рэзервовую копію файла "<ph name="FILE_NAME" />"</translation>
 <translation id="299638574917407533">Французская (Канада)</translation>
 <translation id="3003633581067744647">Пераключыцца на выгляд з мініяцюрамі</translation>
@@ -300,6 +301,7 @@
 <translation id="4364327530094270451">Дыня</translation>
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">Знешняя спасылка</translation>
+<translation id="4418686080762064601">Стварайце ярлыкі для файлаў</translation>
 <translation id="4425149324548788773">Мой Дыск</translation>
 <translation id="4470564870223067757">Карэйскі алфавіт (хангыль), рэжым 2 Set</translation>
 <translation id="4477002475007461989">Румынская</translation>
@@ -380,6 +382,7 @@
 <translation id="508423945471810158">Ідзе перамяшчэнне элементаў (<ph name="NUMBER_OF_ITEMS" />) у папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="509429900233858213">Адбылася памылка.</translation>
 <translation id="5098629044894065541">Іўрыт</translation>
+<translation id="5109254780565519649">Адбылася памылка. Некаторыя элементы маглі не аднавіцца.</translation>
 <translation id="5110329002213341433">Англійская (Канада)</translation>
 <translation id="5123433949759960244">Баскетбол</translation>
 <translation id="5129662217315786329">Польская</translation>
@@ -609,6 +612,7 @@
 <translation id="7547811415869834682">Галандская</translation>
 <translation id="7551643184018910560">Замацаваць на паліцы</translation>
 <translation id="7553492409867692754">Даць праграмам Linux доступ да файлаў у папцы "<ph name="FOLDER_NAME" />"</translation>
+<translation id="7575645593344061397">Ідзе аднаўленне файла "<ph name="FILENAME" />"...</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Пачакайце</translation>
 <translation id="7592775719802218421">Ідзе адкрыццё пазасеткавага доступу да файла "<ph name="FILE_NAME" />"</translation>
@@ -706,6 +710,7 @@
 <translation id="8395901698320285466">Памеры</translation>
 <translation id="8437209419043462667">ЗША</translation>
 <translation id="8456681095658380701">Недапушчальная назва</translation>
+<translation id="8461467696380332069">Каб атрымаць хуткі доступ да файла праз паліцу, націсніце на яго правай кнопкай мышы і выберыце пункт "Замацаваць на паліцы".</translation>
 <translation id="8463494891489624050">В'етнамская (раскладка VIQR)</translation>
 <translation id="8466234950814670489">Архіў .tar</translation>
 <translation id="8475647382427415476">Google Дыску зараз не ўдалося сінхранізаваць "<ph name="FILENAME" />". Спроба сінхранізацыі будзе паўторана пазней.</translation>

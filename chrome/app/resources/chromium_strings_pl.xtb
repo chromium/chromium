@@ -27,6 +27,8 @@
 <translation id="1966382378801805537">Chromium nie może określić ani ustawić domyślnej przeglądarki</translation>
 <translation id="2008474315282236005">Spowoduje to usunięcie 1 elementu z tego urządzenia. Aby później odzyskać dane, zaloguj się w Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">Aby sprawdzić, czy Twoje pozostałe hasła są chronione przed naruszeniami bezpieczeństwa danych i innymi zagrożeniami tego typu, <ph name="BEGIN_LINK" />zaloguj się w Chromium<ph name="END_LINK" />.</translation>
+<translation id="2179192076895113433">Tym i innymi kontami Google, których używa <ph name="USER_NAME" />, możesz zarządzać w jednym miejscu w <ph name="LINK_BEGIN" />Ustawieniach<ph name="LINK_END" />.
+          Uprawnienia przyznane stronom w przeglądarce Chromium oraz aplikacjom z Google Play mogą obowiązywać na wszystkich kontach.</translation>
 <translation id="2185166961232948079">Chromium – logowanie do sieci – <ph name="PAGE_TITLE" /></translation>
 <translation id="2225696941839557119">System operacyjny Chromium nie może zsynchronizować haseł.</translation>
 <translation id="2241627712206172106">Jeśli dzielisz się komputerem ze znajomymi lub rodziną, wszyscy możecie niezależnie przeglądać internet i po swojemu skonfigurować Chromium.</translation>

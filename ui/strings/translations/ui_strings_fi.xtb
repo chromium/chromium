@@ -228,7 +228,6 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{1 tunti sitten}other{# tuntia sitten}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 s jäljellä}other{# s jäljellä}}</translation>
 <translation id="8134065097954893699">Ladataan sivu uudelleen</translation>
-<translation id="8144660977431427332">Hakupalvelun tarjoaa Google Assistant. <ph name="LEARN_MORE" /></translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automaattinen täydennys</translation>
 <translation id="815598010540052116">Vieritä alas</translation>
 <translation id="8179976553408161302">Enter</translation>

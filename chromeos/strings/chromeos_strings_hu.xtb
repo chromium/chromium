@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Sikeres nyomtatás</translation>
 <translation id="1979103255016296513">Esedékes a jelszó frissítése</translation>
 <translation id="1980044825731880088">CPU-sebesség</translation>
+<translation id="2008685064673031089">Prímszámkeresés</translation>
 <translation id="2080070583977670716">További beállítások</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Nyomtatási feladat megszakítása</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Sikeres ellenőrzés</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> próbálkozás maradt</translation>
 <translation id="2391082728065870591">Visszajelzési jelentés küldése</translation>
+<translation id="2446553403094072641">Lebegőpontos pontosság</translation>
 <translation id="2461822463642141190">Jelenlegi</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Keresés</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Alkalmazások</translation>
 <translation id="2872961005593481000">Leállítás</translation>
+<translation id="2878387241690264070"><ph name="RATE" /> lemerítve <ph name="NUM_SECONDS" /> másodperc alatt.</translation>
 <translation id="3008341117444806826">FRISSÍTÉS</translation>
 <translation id="3009958530611748826">Válassza ki a mentés helyét</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Mappa kiválasztása a Fájlok alkalmazásban…</translation>
 <translation id="4848429997038228357">FUT</translation>
 <translation id="4890353053343094602">Azonnal válasszon új jelszót</translation>
+<translation id="4891842000192098784">Stressz</translation>
 <translation id="4917889632206600977">Leállt – Kifogyott a papír</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> töltöttség <ph name="NUM_SECONDS" /> másodperc alatt.</translation>
 <translation id="4932733599132424254">Dátum</translation>
+<translation id="498186245079027698">Ellenőrizze a szkennert, majd próbálja újra. Győződjön meg arról, hogy van elég helyi tárhely a beolvasott fájlok mentéséhez.</translation>
 <translation id="4985509611418653372">Futtatás</translation>
 <translation id="500920857929044050">Teszt leállítása</translation>
 <translation id="5154917547274118687">Memória</translation>
@@ -138,6 +143,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5551702563755460533">További információ a Súgóban</translation>
 <translation id="5635169860413004179">Jelentés megtekintése</translation>
 <translation id="5719918614880940190">Ez méri a processzorhasználatot, az összes magot egybevéve.</translation>
+<translation id="5781694279199921985">Munkamenetnapló mentése</translation>
 <translation id="5797428682393400134">SIKERÜLT</translation>
 <translation id="5832805196449965646">Személy hozzáadása</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
@@ -174,6 +180,8 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6766275201586212568">Sikertelen DNS-feloldások</translation>
 <translation id="6768237774506518020">Magas hibaarány DNS-feloldásnál</translation>
 <translation id="6839141349259399400">Nem tud szkennerhez csatlakozni?</translation>
+<translation id="6853312040151791195">Lemerítési sebesség</translation>
+<translation id="6898743098396957679">Nem sikerült befejezni a beolvasást</translation>
 <translation id="7028979494427204405">A(z) <ph name="MANAGER" /> kezeli ezt az eszközt, ezért hozzáfér az összes felhasználói tevékenységhez, köztük a felkeresett webhelyekhez, a jelszavakhoz és az e-mailekhez.</translation>
 <translation id="714876143603641390">LAN-csatlakozás</translation>
 <translation id="7162487448488904999">Galéria</translation>
@@ -186,12 +194,15 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7648838807254605802">Hosszú várakozási idő HTTPS esetén</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7690294790491645610">Új jelszó megerősítése</translation>
+<translation id="773153675489693198">Ciklusok száma</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> tesztelése</translation>
 <translation id="7805768142964895445">Állapot</translation>
 <translation id="7855434858642800953">Sikerült a beolvasott fájl mentése</translation>
 <translation id="7928373994957558460">Fájl helyének megjelenítése</translation>
 <translation id="7936303884198020182">Nem találhatók névszerverek</translation>
+<translation id="7960831585769876809">Hőmérséklet</translation>
 <translation id="8041089156583427627">Visszajelzés küldése</translation>
+<translation id="8075838845814659848">Töltöttségi szint</translation>
 <translation id="808894953321890993">Jelszó módosítása</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">A kezdéshez helyezze a dokumentumot a szkennerre, és válassza a <ph name="SPAN_BEGIN" />Scan<ph name="SPAN_END" /> (Beolvasás) gombot</translation>
@@ -219,6 +230,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8919837981463578619">Sikertelen – Hiányzó tálca</translation>
 <translation id="8928727111548978589">Sikertelen – Kifogyott a papír</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> kísérlet maradt</translation>
+<translation id="8968751544471797276">Töltési sebesség</translation>
 <translation id="8970109610781093811">Futtatás újra</translation>
 <translation id="9088306295921699330">Jelenleg felhasznált</translation>
 <translation id="910415269708673980">Frissítse a következőhöz tartozó jegyet: <ph name="PRINCIPAL_NAME" /></translation>

@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Басып шығарылған</translation>
 <translation id="1979103255016296513">Құпия сөзді өзгертуге берілген мерзім аяқталды</translation>
 <translation id="1980044825731880088">Орталық процессор жылдамдығы</translation>
+<translation id="2008685064673031089">Prime search</translation>
 <translation id="2080070583977670716">Қосымша параметрлер</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Баспа жұмысынан бас тарту</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Сынақтан өтті</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> мүмкіндік қалды</translation>
 <translation id="2391082728065870591">Пікірлер есебін жіберу</translation>
+<translation id="2446553403094072641">Жылжымалы үтір дәлдігі</translation>
 <translation id="2461822463642141190">Қазіргі</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Іздеу</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">Жарайды</translation>
 <translation id="2805756323405976993">Қолданбалар</translation>
 <translation id="2872961005593481000">Өшіру</translation>
+<translation id="2878387241690264070">Заряд <ph name="NUM_SECONDS" /> секундта <ph name="RATE" /> азайды.</translation>
 <translation id="3008341117444806826">ЖАҢАРТУ</translation>
 <translation id="3009958530611748826">Сканерленген мазмұн сақталатын қалтаны таңдаңыз</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Files қолданбасында қалта таңдау...</translation>
 <translation id="4848429997038228357">ТЕКСЕРІЛУДЕ</translation>
 <translation id="4890353053343094602">Дереу жаңа құпия сөз таңдаңыз.</translation>
+<translation id="4891842000192098784">Стресс</translation>
 <translation id="4917889632206600977">Тоқтатылды: қағаз бітіп қалды</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундта <ph name="RATE" /> зарядталды.</translation>
 <translation id="4932733599132424254">Күні</translation>
+<translation id="498186245079027698">Сканерді тексеріп, әрекетті қайталаңыз. Сканерленген файлдарды сақтайтын орынның жеткілікті екенін тексеріңіз.</translation>
 <translation id="4985509611418653372">Іске қосу</translation>
 <translation id="500920857929044050">Тексеруді тоқтату</translation>
 <translation id="5154917547274118687">Жад</translation>
@@ -137,6 +142,7 @@
 <translation id="5551702563755460533">Толығырақ ақпаратты Анықтамалық орталықтан қарау</translation>
 <translation id="5635169860413004179">Есепті көру</translation>
 <translation id="5719918614880940190">Бұл орталық процессорды қолдану трафигін есептейді және ол – барлық ядролар жинағы.</translation>
+<translation id="5781694279199921985">Сеанс журналын сақтау</translation>
 <translation id="5797428682393400134">СӘТТІ АЯҚТАЛДЫ.</translation>
 <translation id="5832805196449965646">Адам қосу</translation>
 <translation id="5895138241574237353">Қайта іске қосу</translation>
@@ -173,6 +179,8 @@
 <translation id="6766275201586212568">DNS ажыратымдылықтары сәтсіз болды.</translation>
 <translation id="6768237774506518020">DNS ажыратымдылығының ақау көрсеткіші жоғары.</translation>
 <translation id="6839141349259399400">Сканерлерге қосыла алмадыңыз ба?</translation>
+<translation id="6853312040151791195">Заряд азаюының жылдамдығы</translation>
+<translation id="6898743098396957679">Сканерлеуді аяқтау мүмкін болмады</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> осы құрылғыны басқарады және пайдаланушының барлық әрекетін (мысалы, кірген веб-сайттары, құпия сөздері және электрондық поштасы) көре алады.</translation>
 <translation id="714876143603641390">LAN қосылу мүмкіндігі</translation>
 <translation id="7162487448488904999">Галерея</translation>
@@ -185,12 +193,15 @@
 <translation id="7648838807254605802">HTTPS кідірісі жоғары.</translation>
 <translation id="7658239707568436148">Бас тарту</translation>
 <translation id="7690294790491645610">Жаңа құпия сөзді қайталаңыз</translation>
+<translation id="773153675489693198">Цикл саны</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> тексерісі</translation>
 <translation id="7805768142964895445">Күйі</translation>
 <translation id="7855434858642800953">Сканерленген файл сақталды!</translation>
 <translation id="7928373994957558460">Файл орнын көрсету</translation>
 <translation id="7936303884198020182">Атау серверлері табылмады.</translation>
+<translation id="7960831585769876809">Температура</translation>
 <translation id="8041089156583427627">Пікір жіберу</translation>
+<translation id="8075838845814659848">Қалған заряд</translation>
 <translation id="808894953321890993">Кұпия сөзді өзгерту</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">Құжатты сканерге қойып, <ph name="SPAN_BEGIN" />Сканерлеу<ph name="SPAN_END" /> опциясын таңдаңыз.</translation>
@@ -218,6 +229,7 @@
 <translation id="8919837981463578619">Сәтсіз: науа жоқ</translation>
 <translation id="8928727111548978589">Сәтсіз: қағаз бітіп қалды</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" />. Қалған әрекеттер саны: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="8968751544471797276">Зарядталу жылдамдығы</translation>
 <translation id="8970109610781093811">Қайта тексеру</translation>
 <translation id="9088306295921699330">Қазір пайдаланылуы</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> үшін билетті жаңарту</translation>

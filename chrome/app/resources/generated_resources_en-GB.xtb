@@ -105,7 +105,6 @@
 <translation id="1116639326869298217">Your identity couldn't be verified</translation>
 <translation id="1116694919640316211">About</translation>
 <translation id="1116779635164066733">This setting is enforced by the '<ph name="NAME" />' extension.</translation>
-<translation id="1116811861615819198">The device that you're sharing with didn't respond</translation>
 <translation id="1118738876271697201">The system failed to determine device model or serial number.</translation>
 <translation id="1119447706177454957">Internal error</translation>
 <translation id="1122068467107743258">Work</translation>
@@ -122,7 +121,6 @@
 <translation id="1128591060186966949">Edit search engine</translation>
 <translation id="1129850422003387628">Manage apps</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – Part of group <ph name="GROUP_NAME" /></translation>
-<translation id="1130712065489627903">You can now receive notifications from your phone on your <ph name="DEVICE_TYPE" />. Dismissing notifications on your <ph name="DEVICE_TYPE" /> will also dismiss them on your phone. Make sure that your phone is nearby, unlocked and has Bluetooth and Wi-Fi turned on.</translation>
 <translation id="1134009406053225289">Open in incognito window</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> of <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">The security key is locked because the wrong PIN was entered too many times. To unlock it, remove and reinsert it.</translation>
@@ -275,6 +273,7 @@
 <translation id="1302139669997477151">Screenshot is blocked</translation>
 <translation id="1302227299132585524">Allow JavaScript from Apple Events</translation>
 <translation id="1303101771013849280">Bookmarks HTML File</translation>
+<translation id="1303178898338186101">Couldn't reach Google Play. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="1303671224831497365">No Bluetooth devices found</translation>
 <translation id="130491383855577612">Linux apps &amp; files have been successfully replaced</translation>
 <translation id="1306606229401759371">Change settings</translation>
@@ -1746,7 +1745,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="29488703364906173">A fast, simple and secure web browser, built for the modern web.</translation>
 <translation id="2949289451367477459">Use location. Allow apps and services with location permission to use this device’s location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services. <ph name="BEGIN_LINK1" />Learn More<ph name="END_LINK1" /></translation>
 <translation id="2950666755714083615">Sign me up</translation>
-<translation id="2950809080616865502">Open a dialogue to assign a switch key</translation>
 <translation id="2956070239128776395">Section nested in group: <ph name="ERROR_LINE" /></translation>
 <translation id="2957117904572187936">Do not allow any sites to edit files or folders on your device</translation>
 <translation id="2958721676848865875">Pack extension warning</translation>
@@ -2142,6 +2140,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="343578350365773421">Out of paper</translation>
 <translation id="3435896845095436175">Enable</translation>
 <translation id="3438633801274389918">Ninja</translation>
+<translation id="3438643033528947620">Couldn’t connect with Google services. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="3439153939049640737">Always allow <ph name="HOST" /> to access your microphone</translation>
 <translation id="3439970425423980614">Opening PDF in Preview</translation>
 <translation id="3440663250074896476">More actions for <ph name="BOOKMARK_NAME" /></translation>
@@ -3193,7 +3192,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4651484272688821107">Could not load online component with demo mode resources.</translation>
 <translation id="4652935475563630866">The change in camera setting requires Parallels Desktop to relaunch. Relaunch Parallels Desktop to proceed.</translation>
 <translation id="4653405415038586100">Error configuring Linux</translation>
-<translation id="4653408778024877479">{NUM_WEAK,plural, =0{}=1{1 weak password}other{{NUM_WEAK} weak passwords}}</translation>
 <translation id="4657914796247705218">TrackPoint speed</translation>
 <translation id="465878909996028221">Only http, https and file protocols are supported for browser redirects.</translation>
 <translation id="4659077111144409915">Primary account</translation>
@@ -3273,7 +3271,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4761104368405085019">Use your microphone</translation>
 <translation id="4762718786438001384">Device disk space critically low</translation>
 <translation id="4763408175235639573">The following cookies were set when you viewed this page</translation>
-<translation id="4764368918650455114">Make sure that both devices are unlocked, close together and have Bluetooth turned on. If you’re sharing with a Chromebook, make sure that it has Nearby Sharing turned on (open the status area by selecting the time, then select Nearby Share). <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">Allows Android Messages to relay texts from your phone to your Chromebook</translation>
 <translation id="4768332406694066911">You have certificates from these organisations that identify you</translation>
 <translation id="4773112038801431077">Upgrade Linux</translation>
@@ -3338,6 +3335,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4848518990323155912">Enable SIM card locking (require PIN to use mobile data)</translation>
 <translation id="4849286518551984791">Coordinated Universal Time (UTC/GMT)</translation>
 <translation id="4849517651082200438">Don't Install</translation>
+<translation id="485053257961878904">Could not set up notifications syncing</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="485088796993065002">Sites might play sound to provide audio for music, videos and other media</translation>
 <translation id="4853020600495124913">Open in &amp;new window</translation>
@@ -3425,6 +3423,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4932733599132424254">Date</translation>
 <translation id="4933484234309072027">embedded on <ph name="URL" /></translation>
 <translation id="493571969993549666">Add supervised user</translation>
+<translation id="4936042273057045735">Notification syncing is not supported for phones in a work profile</translation>
 <translation id="4939805055470675027">Couldn't connect to <ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">There are <ph name="PRINTER_COUNT" /> printers available to save.</translation>
 <translation id="4940845626435830013">Reserve disk size</translation>
@@ -3927,7 +3926,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5539221284352502426">The password that you entered was rejected by the server. Possible reasons include: The password is too short. The password must include numbers or symbols. The password must be different from previous passwords.</translation>
 <translation id="5541694225089836610">Action is disabled by your administrator</translation>
 <translation id="5542132724887566711">Profile</translation>
-<translation id="5542133445231529202"><ph name="ORGANIZATION_NAME" /> requires you to update this device immediately.</translation>
 <translation id="5542750926112347543">Cookies from <ph name="DOMAIN" /> blocked</translation>
 <translation id="5542949973455282971">Connecting to <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Checking for status...</translation>
@@ -4620,7 +4618,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6325191661371220117">Disable auto-launch</translation>
 <translation id="6326175484149238433">Remove from Chrome</translation>
 <translation id="6326855256003666642">Keepalive Count</translation>
-<translation id="632707535499064463"><ph name="ORGANIZATION_NAME" /> requires you to update this device before the deadline.</translation>
 <translation id="6327785803543103246">Web proxy auto-discovery</translation>
 <translation id="6331566915566907158">Help improve Chrome OS features and performance</translation>
 <translation id="6331818708794917058">Sites can ask to connect to MIDI devices</translation>
@@ -4740,6 +4737,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6474498546677193336">Couldn't unshare because an application is using this folder. The folder will be unshared when Linux is next shut down.</translation>
 <translation id="6474884162850599008">Disconnect Google Drive account</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" /> wants to share the contents of your screen. Choose what you'd like to share.</translation>
+<translation id="6477822444490674459">Notification syncing is not supported for phones in a work profile. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Keep dangerous file?</translation>
 <translation id="6480327114083866287">Managed by <ph name="MANAGER" /></translation>
 <translation id="6483485061007832714">Open download</translation>
@@ -4970,7 +4968,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6767566652486411142">Choose another language…</translation>
 <translation id="6767639283522617719">Can’t join the domain. Make sure that the settings are correct for the organisational unit.</translation>
 <translation id="6768034047581882264">Not allowed to show insecure content</translation>
-<translation id="6769557323306147204"><ph name="ORGANIZATION_NAME" /> recommends that you update this device.</translation>
 <translation id="6770602306803890733">Improves security for you and everyone on the web</translation>
 <translation id="6770664076092644100">Verify via NFC</translation>
 <translation id="6771503742377376720">Is a Certification Authority</translation>
@@ -5057,6 +5054,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6860097299815761905">Proxy settings...</translation>
 <translation id="686022878923628150">Block sites from connecting to MIDI devices</translation>
 <translation id="6860427144121307915">Open in a Tab</translation>
+<translation id="6862729829592030773"><ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> within one week.<ph name="LINK_BEGIN" />See details<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">Delete password?</translation>
 <translation id="6865313869410766144">Auto-fill form data</translation>
 <translation id="6865598234501509159">Page Is not in <ph name="LANGUAGE" /></translation>
@@ -5140,6 +5138,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="696103774840402661">All files and local data for all users on this <ph name="DEVICE_TYPE" /> has been permanently deleted.</translation>
 <translation id="6964390816189577014">Hero</translation>
 <translation id="6964760285928603117">Remove From Group</translation>
+<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> today.<ph name="LINK_BEGIN" />See details<ph name="LINK_END" />}other{<ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> within {NUM_DAYS} days.<ph name="LINK_BEGIN" />See details<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965648386495488594">Port</translation>
 <translation id="6965978654500191972">Device</translation>
@@ -5229,6 +5228,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7051943809462976355">Searching for mouse...</translation>
 <translation id="7052237160939977163">Send performance trace data</translation>
 <translation id="7053983685419859001">Block</translation>
+<translation id="705508001219706572">To get back here quickly, install <ph name="APP_NAME" /></translation>
 <translation id="7055152154916055070">Redirect blocked:</translation>
 <translation id="7055451306017383754">Couldn't unshare because an application is using this folder. The folder will be unshared when Parallels Desktop is next shut down.</translation>
 <translation id="7056526158851679338">&amp;Inspect Devices</translation>
@@ -5274,7 +5274,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7093866338626856921">Exchange data with the devices named: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">USB-C device (left port in the back)</translation>
 <translation id="7098447629416471489">Other saved search engines will appear here</translation>
-<translation id="709869441357640014">{NUM_COMPROMISED,plural, =0{}=1{1 compromised password}other{{NUM_COMPROMISED} compromised passwords}}</translation>
 <translation id="7099337801055912064">Can’t load large PPD. Maximum size is 250 KB.</translation>
 <translation id="7102687220333134671">Automatic updates are turned on</translation>
 <translation id="7102832101143475489">The request timed out</translation>
@@ -6987,7 +6986,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9044646465488564462">Failed to connect to network: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Sends the web address of the page that you're trying to reach to Google</translation>
 <translation id="9046895021617826162">Connection failed</translation>
-<translation id="9048868107467198961">No security issues found</translation>
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="9052208328806230490">You have registered your printers with <ph name="CLOUD_PRINT_NAME" />, using the account <ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">Continue blocking</translation>

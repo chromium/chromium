@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">បានបោះពុម្ព</translation>
 <translation id="1979103255016296513">ការផ្លាស់ប្ដូរពាក្យសម្ងាត់​បានផុតកំណត់ហើយ</translation>
 <translation id="1980044825731880088">ល្បឿន CPU</translation>
+<translation id="2008685064673031089">ការស្វែងរកចម្បង</translation>
 <translation id="2080070583977670716">ការកំណត់ច្រើនទៀត</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">បោះបង់​ការងារ​បោះពុម្ព</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">ជាប់</translation>
 <translation id="2375079107209812402">អាច​ព្យាយាម​បាន <ph name="ATTEMPTS_LEFT" /> ដង​ទៀត</translation>
 <translation id="2391082728065870591">ផ្ញើ​របាយការណ៍អំពីមតិកែលម្អ</translation>
+<translation id="2446553403094072641">ភាពត្រឹមត្រូវនៃ​ពិន្ទុអណ្ដែត</translation>
 <translation id="2461822463642141190">បច្ចុប្បន្ន</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">ស្កេន</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">យល់ព្រម</translation>
 <translation id="2805756323405976993">កម្មវិធី</translation>
 <translation id="2872961005593481000">បិទ</translation>
+<translation id="2878387241690264070">បានឈប់សាកថ្ម <ph name="RATE" /> ក្នុងរយៈពេល <ph name="NUM_SECONDS" /> វិនាទី។</translation>
 <translation id="3008341117444806826">ផ្ទុក​ឡើង​វិញ</translation>
 <translation id="3009958530611748826">ជ្រើសរើសថត ដើម្បីរក្សាទុកឯកសារស្កេន</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">ជ្រើសរើសថតនៅក្នុងកម្មវិធី Files...</translation>
 <translation id="4848429997038228357">កំពុងដំណើរការ</translation>
 <translation id="4890353053343094602">សូមជ្រើសរើស​ពាក្យសម្ងាត់​ថ្មីភ្លាមៗ</translation>
+<translation id="4891842000192098784">ស្ត្រេស</translation>
 <translation id="4917889632206600977">បានឈប់ - អស់​ក្រដាស</translation>
 <translation id="4921665434385737356">បានសាកថ្ម <ph name="RATE" /> ក្នុងរយៈពេល <ph name="NUM_SECONDS" /> វិនាទី។</translation>
 <translation id="4932733599132424254">កាលបរិច្ឆេទ</translation>
+<translation id="498186245079027698">ពិនិត្យមើល​កម្មវិធីស្កេន រួចព្យាយាមម្ដងទៀត។ ត្រូវប្រាកដថា មានទំហំផ្ទុក​ក្នុងឧបករណ៍​គ្រប់គ្រាន់ ដើម្បីរក្សាទុក​ឯកសារដែលបានស្កេន។</translation>
 <translation id="4985509611418653372">ដំណើរការ</translation>
 <translation id="500920857929044050">បញ្ឈប់​ការធ្វើតេស្ត</translation>
 <translation id="5154917547274118687">មេម៉ូរី</translation>
@@ -137,6 +142,7 @@
 <translation id="5551702563755460533">ស្វែងយល់បន្ថែម​នៅក្នុង​មជ្ឈមណ្ឌលជំនួយ</translation>
 <translation id="5635169860413004179">មើល​របាយការណ៍</translation>
 <translation id="5719918614880940190">សកម្មភាពនេះវាស់ស្ទង់ការប្រើប្រាស់ CPU ហើយគឺជាការវាស់ស្ទង់ការប្រើប្រាស់សរុបនៃស្នូលទាំងអស់</translation>
+<translation id="5781694279199921985">រក្សាទុកកំណត់ហេតុវគ្គ</translation>
 <translation id="5797428682393400134">ជោគជ័យ</translation>
 <translation id="5832805196449965646">បន្ថែមបុគ្គល</translation>
 <translation id="5895138241574237353">ចាប់ផ្តើមឡើងវិញ</translation>
@@ -173,6 +179,8 @@
 <translation id="6766275201586212568">កម្រិតច្បាស់ DNS ដែលមិនដំណើរការ</translation>
 <translation id="6768237774506518020">អត្រាមិនដំណើរការ​នៃកម្រិតច្បាស់ DNS ខ្ពស់</translation>
 <translation id="6839141349259399400">មិនអាច​ភ្ជាប់​ម៉ាស៊ីនស្កេន​បានទេឬ​?</translation>
+<translation id="6853312040151791195">អត្រា​ឈប់សាកថ្ម</translation>
+<translation id="6898743098396957679">មិនអាច​បញ្ចប់​ការស្កេនបានទេ</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> គ្រប់គ្រង​ឧបករណ៍​នេះ និង​មានសិទ្ធិ​ចូលមើល​សកម្មភាព​អ្នកប្រើប្រាស់​ទាំងអស់ រួមទាំង​ទំព័របណ្ដាញ​ដែលបាន​ចូលមើល ពាក្យសម្ងាត់ និង​អ៊ីមែល​ផងដែរ។</translation>
 <translation id="714876143603641390">ការតភ្ជាប់ Lan</translation>
 <translation id="7162487448488904999">សាល​រូបភាព</translation>
@@ -185,12 +193,15 @@
 <translation id="7648838807254605802">ការពន្យារ HTTPS ខ្ពស់</translation>
 <translation id="7658239707568436148">បដិសេធ</translation>
 <translation id="7690294790491645610">បញ្ជាក់​ពាក្យ​សម្ងាត់​ថ្មី</translation>
+<translation id="773153675489693198">ចំនួនវដ្ដ</translation>
 <translation id="7732651821766520760">តេស្ត <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">ស្ថានភាព</translation>
 <translation id="7855434858642800953">បានរក្សាទុក​ឯកសារ​ដែលបានស្កេន!</translation>
 <translation id="7928373994957558460">បង្ហាញ​ទីតាំង​ឯកសារ</translation>
 <translation id="7936303884198020182">រកមិនឃើញ DNS ទេ</translation>
+<translation id="7960831585769876809">សីតុណ្ហភាព</translation>
 <translation id="8041089156583427627">ផ្ញើមតិ</translation>
+<translation id="8075838845814659848">ការសាកថ្ម​ដែលនៅសល់</translation>
 <translation id="808894953321890993">ប្ដូរ​ពាក្យ​សម្ងាត់</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">ដាក់​ឯកសារ​របស់អ្នក​នៅលើ​ម៉ាស៊ីនស្កេន រួច​ជ្រើសរើស <ph name="SPAN_BEGIN" />ស្កេន<ph name="SPAN_END" /> ដើម្បី​ចាប់ផ្ដើម</translation>
@@ -218,6 +229,7 @@
 <translation id="8919837981463578619">មិនបានសម្រេច - ​​បាត់ថាសដាក់ក្រដាស</translation>
 <translation id="8928727111548978589">មិនបានសម្រេច - ​​អស់ក្រដាស</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> អាច​ព្យាយាម​បាន <ph name="ATTEMPTS_LEFT" /> ដងទៀត</translation>
+<translation id="8968751544471797276">អត្រាសាកថ្ម</translation>
 <translation id="8970109610781093811">ដំណើរការម្ដងទៀត</translation>
 <translation id="9088306295921699330">ការប្រើប្រាស់​បច្ចុប្បន្ន</translation>
 <translation id="910415269708673980">ផ្ទុកសំបុត្រ​ឡើងវិញសម្រាប់ <ph name="PRINCIPAL_NAME" /></translation>

@@ -27,6 +27,8 @@
 <translation id="1966382378801805537">Chromium 無法偵測或設定預設瀏覽器</translation>
 <translation id="2008474315282236005">登出後，系統會將 1 個項目從這個裝置上刪除。日後如要重新取得你的資料，請以 <ph name="USER_EMAIL" /> 身分登入 Chromium。</translation>
 <translation id="2020032459870799438">如要檢查你其他的密碼是否因資料侵害事件而遭到外洩，或是否有其他安全性問題，<ph name="BEGIN_LINK" />請登入 Chromium<ph name="END_LINK" />。</translation>
+<translation id="2179192076895113433">你可以透過<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />集中管理這個 Google 帳戶和其他已為<ph name="USER_NAME" />新增的 Google 帳戶。
+          你為 Chromium 瀏覽器中的網站和 Google Play 中的應用程式提供的權限，可能會套用到所有帳戶。</translation>
 <translation id="2185166961232948079">Chromium - 網路登入 - <ph name="PAGE_TITLE" /></translation>
 <translation id="2225696941839557119">Chromium 作業系統無法同步處理你的密碼。</translation>
 <translation id="2241627712206172106">如果你與親朋好友共用電腦，人人皆可享有獨立的瀏覽空間，依照自己的偏好設定 Chromium。</translation>

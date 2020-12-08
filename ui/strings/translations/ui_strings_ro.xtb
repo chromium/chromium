@@ -228,7 +228,6 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{Acum o oră}few{Acum # ore}other{Acum # de ore}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{O sec. rămasă}few{# sec. rămase}other{# sec. rămase}}</translation>
 <translation id="8134065097954893699">Se reîncarcă pagina</translation>
-<translation id="8144660977431427332">Căutările tale funcționează cu Asistentul Google. <ph name="LEARN_MORE" /></translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, completare automată</translation>
 <translation id="815598010540052116">Derulează în jos</translation>
 <translation id="8179976553408161302">Enter</translation>

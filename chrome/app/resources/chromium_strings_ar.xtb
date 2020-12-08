@@ -27,6 +27,8 @@
 <translation id="1966382378801805537">‏يتعذَّر على Chromium تحديد المتصفح التلقائي أو تعيينه</translation>
 <translation id="2008474315282236005">‏سيعمل هذا على حذف عنصر واحد من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chromium كـ <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">‏للتحقُّق مما إذا كانت كلمات المرور الأخرى آمنة من عمليات اختراق البيانات ومشاكل الأمان الأخرى، يُرجى <ph name="BEGIN_LINK" />تسجيل الدخول إلى Chromium<ph name="END_LINK" />.</translation>
+<translation id="2179192076895113433">‏يمكنك إدارة هذا الحساب وحسابات Google الأخرى التي أضفتها لـ <ph name="USER_NAME" /> من خلال <ph name="LINK_BEGIN" />الإعدادات<ph name="LINK_END" />.
+          ويمكن أن تنطبق الأذونات التي منحتها للمواقع الإلكترونية في متصفِّح Chromium وتطبيقات Google Play على جميع الحسابات.</translation>
 <translation id="2185166961232948079">‏Chromium - تسجيل الدخول إلى الشبكة - <ph name="PAGE_TITLE" /></translation>
 <translation id="2225696941839557119">‏تعذّر على نظام التشغيل Chromium مزامنة كلمات المرور.</translation>
 <translation id="2241627712206172106">‏إذا كنت تشارك الكمبيوتر مع أصدقائك وعائلتك، فبإمكانهم التصفح على حدة وإعداد Chromium على النحو الذي يريدونه.</translation>

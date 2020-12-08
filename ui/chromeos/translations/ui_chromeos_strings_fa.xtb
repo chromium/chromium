@@ -183,6 +183,7 @@
 <translation id="2949781154072577687">درحال قالب‌بندی <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">عروس دریایی</translation>
 <translation id="2984337792991268709">امروز <ph name="TODAY_DAYTIME" /></translation>
+<translation id="2994320653639462337">درحال بازیابی <ph name="COUNT" /> مورد…</translation>
 <translation id="2994669386200004489"><ph name="FILE_NAME" /> پشتیبان‌گیری نشد</translation>
 <translation id="299638574917407533">فرانسوی (کانادا)</translation>
 <translation id="3003633581067744647">تغییر وضعیت به نمای تصویر کوچک</translation>
@@ -300,6 +301,7 @@
 <translation id="4364327530094270451">خربزه</translation>
 <translation id="4372884569765913867">۱x۱</translation>
 <translation id="4394214039309501350">پیوند خارجی</translation>
+<translation id="4418686080762064601">ایجاد میان‌بر برای فایل‌ها</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4470564870223067757">مجموعه هانگول ۲</translation>
 <translation id="4477002475007461989">رومانیایی</translation>
@@ -380,6 +382,7 @@
 <translation id="508423945471810158">درحال انتقال <ph name="NUMBER_OF_ITEMS" /> مورد به <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">خطایی روی داد.</translation>
 <translation id="5098629044894065541">عبری</translation>
+<translation id="5109254780565519649">خطایی روی داد. ممکن است برخی از موارد بازیابی نشده باشد.</translation>
 <translation id="5110329002213341433">انگلیسی (کانادا)</translation>
 <translation id="5123433949759960244">بسکتبال</translation>
 <translation id="5129662217315786329">لهستانی</translation>
@@ -610,6 +613,7 @@
 <translation id="7547811415869834682">هلند</translation>
 <translation id="7551643184018910560">پین به راه‌انداز</translation>
 <translation id="7553492409867692754">‏به برنامه‌های Linux اجازه دهید به فایل‌های پوشه <ph name="FOLDER_NAME" /> دسترسی داشته باشند</translation>
+<translation id="7575645593344061397">درحال بازیابی «<ph name="FILENAME" />»…</translation>
 <translation id="7576032389798113292">۶x۴</translation>
 <translation id="7589661784326793847">چند ثانیه صبر کنید</translation>
 <translation id="7592775719802218421">تنظیم <ph name="FILE_NAME" /> برای دسترسی آفلاین</translation>
@@ -707,6 +711,7 @@
 <translation id="8395901698320285466">ابعاد</translation>
 <translation id="8437209419043462667">آمریکایی</translation>
 <translation id="8456681095658380701">نام نامعتبر</translation>
+<translation id="8461467696380332069">برای دسترسی سریع به فایل‌ها در قفسه، روی فایلی کلیک راست کنید و «پین کردن به قفسه» را انتخاب کنید.</translation>
 <translation id="8463494891489624050">‏ویتنامی (VIQR)</translation>
 <translation id="8466234950814670489">تار نوار</translation>
 <translation id="8475647382427415476">‏Google Drive نتوانست در این لحظه «<ph name="FILENAME" />» را همگام‌سازی کند. Google Drive بعداً دوباره امتحان می‌کند.</translation>

@@ -34,6 +34,7 @@
 <translation id="1947737735496445907">Ispisano</translation>
 <translation id="1979103255016296513">Zakašnjela promjena zaporke</translation>
 <translation id="1980044825731880088">Brzina procesora</translation>
+<translation id="2008685064673031089">Glavno pretraživanje</translation>
 <translation id="2080070583977670716">Više postavki</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Otkaži zadatak ispisa</translation>
@@ -42,6 +43,7 @@
 <translation id="2364498172489649528">Uspješno</translation>
 <translation id="2375079107209812402">Preostalo pokušaja: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Slanje izvješća s povratnim informacijama</translation>
+<translation id="2446553403094072641">Točnost pomičnog zareza</translation>
 <translation id="2461822463642141190">Trenutačno</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Traži</translation>
@@ -49,6 +51,7 @@
 <translation id="2740531572673183784">U redu</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2872961005593481000">Isključi</translation>
+<translation id="2878387241690264070">Ispražnjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="3008341117444806826">OSVJEŽI</translation>
 <translation id="3009958530611748826">Odaberite mapu za spremanje</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -109,9 +112,11 @@
 <translation id="4832079907277790330">Odaberi mapu u aplikaciji Datoteke...</translation>
 <translation id="4848429997038228357">IZVODI SE</translation>
 <translation id="4890353053343094602">Odmah odaberite novu</translation>
+<translation id="4891842000192098784">Stres</translation>
 <translation id="4917889632206600977">Zaustavljeno – nema papira</translation>
 <translation id="4921665434385737356">Napunjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="498186245079027698">Provjerite skener i pokušajte ponovo. Provjerite ima li dovoljno lokalnog prostora za spremanje skeniranih datoteka.</translation>
 <translation id="4985509611418653372">Pokreni</translation>
 <translation id="500920857929044050">Zaustavi test</translation>
 <translation id="5154917547274118687">Memorija</translation>
@@ -134,6 +139,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Saznajte više u centru za pomoć.</translation>
 <translation id="5635169860413004179">Pogledaj izvješće</translation>
+<translation id="5781694279199921985">Spremi dnevnik sesije</translation>
 <translation id="5797428682393400134">USPJEH</translation>
 <translation id="5832805196449965646">Dodaj osobu</translation>
 <translation id="5895138241574237353">Ponovno pokreni</translation>
@@ -170,6 +176,8 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="6766275201586212568">Neuspješna razrješavanja DNS-a</translation>
 <translation id="6768237774506518020">Visoka stopa neuspješnih razrješavanja DNS-a</translation>
 <translation id="6839141349259399400">Ne možete se povezati sa skenerima?</translation>
+<translation id="6853312040151791195">Brzina pražnjenja</translation>
+<translation id="6898743098396957679">Skeniranje nije dovršeno</translation>
 <translation id="7028979494427204405">Uređajem upravlja <ph name="MANAGER" /> i taj upravitelj ima pristup svim aktivnostima korisnika, uključujući posjećene web-stranice, zaporke i e-poštu.</translation>
 <translation id="714876143603641390">LAN povezivost</translation>
 <translation id="7162487448488904999">Galerija</translation>
@@ -181,12 +189,15 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="7648838807254605802">Visoka latencija HTTPS-a</translation>
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="7690294790491645610">Potvrdite novu zaporku</translation>
+<translation id="773153675489693198">Broj ciklusa</translation>
 <translation id="7732651821766520760">Test <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7855434858642800953">Skenirana datoteka je spremljena!</translation>
 <translation id="7928373994957558460">Prikaži lokaciju datoteke</translation>
 <translation id="7936303884198020182">Nije pronađen nijedan poslužitelj naziva</translation>
+<translation id="7960831585769876809">Temperatura</translation>
 <translation id="8041089156583427627">Slanje povratnih informacija</translation>
+<translation id="8075838845814659848">Preostala razina napunjenosti</translation>
 <translation id="808894953321890993">Promjena zaporke</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">Postavite dokument na skener i odaberite <ph name="SPAN_BEGIN" />Skeniraj<ph name="SPAN_END" /> da biste započeli</translation>
@@ -212,6 +223,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="8919837981463578619">Nije uspjelo – nema ladice</translation>
 <translation id="8928727111548978589">Nije uspjelo – nema papira</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Preostalo pokušaja: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="8968751544471797276">Brzina punjenja</translation>
 <translation id="8970109610781093811">Pokreni ponovo</translation>
 <translation id="9088306295921699330">Trenutačna upotreba</translation>
 <translation id="910415269708673980">Osvježite tiket za <ph name="PRINCIPAL_NAME" /></translation>

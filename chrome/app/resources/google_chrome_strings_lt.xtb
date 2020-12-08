@@ -168,6 +168,8 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 „Google Chrome“ negali atkurti nustatymų.</translation>
 <translation id="556024056938947818">„Google Chrome“ bando rodyti slaptažodžius.</translation>
 <translation id="5566025111015594046">„Google Chrome“ (mDNS-In)</translation>
+<translation id="5655746611259367388">Galite vienoje vietoje tvarkyti šią ir kitas „Google“ paskyras, kurias pridėjote <ph name="USER_NAME" />, apsilankę skiltyje <ph name="LINK_BEGIN" />„Nustatymai“<ph name="LINK_END" />.
+          Leidimai, kuriuos suteikėte svetainėms „Chrome“ naršyklėje ir programoms iš „Google Play“, gali būti taikomi visoms paskyroms.</translation>
 <translation id="5657226924540934362">Jei nustatymai šiame puslapyje nerodomi, jų ieškokite <ph name="LINK_BEGIN" />
       naršyklės „Chrome“ nustatymuose<ph name="LINK_END" /></translation>
 <translation id="565744775970812598">Failas „<ph name="FILE_NAME" />“ gali būti pavojingas, todėl „Chrome“ jį užblokavo.</translation>

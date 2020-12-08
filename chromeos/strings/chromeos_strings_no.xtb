@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Skrevet ut</translation>
 <translation id="1979103255016296513">Det er på høy tid å endre passordet</translation>
 <translation id="1980044825731880088">CPU-hastighet</translation>
+<translation id="2008685064673031089">Primtallsøk</translation>
 <translation id="2080070583977670716">Flere innstillinger</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Avbryt utskriftsjobben</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Bestått</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> forsøk igjen</translation>
 <translation id="2391082728065870591">Send tilbakemeldingsrapport</translation>
+<translation id="2446553403094072641">Nøyaktighet av flytende desimalpunkt</translation>
 <translation id="2461822463642141190">Nåværende</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Skann</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Apper</translation>
 <translation id="2872961005593481000">Slå av</translation>
+<translation id="2878387241690264070">Ladet ut <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="3008341117444806826">OPPDATER</translation>
 <translation id="3009958530611748826">Velg mappen du vil lagre i</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Velg en mappe i Filer-appen …</translation>
 <translation id="4848429997038228357">KJØRER</translation>
 <translation id="4890353053343094602">Velg et nytt passord umiddelbart</translation>
+<translation id="4891842000192098784">Stress</translation>
 <translation id="4917889632206600977">Stoppet – tom for papir</translation>
 <translation id="4921665434385737356">Ladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="4932733599132424254">Dato</translation>
+<translation id="498186245079027698">Sjekk skanneren, og prøv på nytt. Sørg for at det er nok lokal lagringsplass til å lagre skannede filer.</translation>
 <translation id="4985509611418653372">Kjør</translation>
 <translation id="500920857929044050">Stans testen</translation>
 <translation id="5154917547274118687">Minne</translation>
@@ -138,6 +143,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5551702563755460533">Finn ut mer i brukerstøtten</translation>
 <translation id="5635169860413004179">Se rapporten</translation>
 <translation id="5719918614880940190">Dette er en sammenstilt måling av CPU-bruken for alle kjernene</translation>
+<translation id="5781694279199921985">Lagre øktlogg</translation>
 <translation id="5797428682393400134">FULLFØRT</translation>
 <translation id="5832805196449965646">Legg til person</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
@@ -174,6 +180,8 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6766275201586212568">Mislykkede DNS-oppslag</translation>
 <translation id="6768237774506518020">Høy feilfrekvens for DNS-oppslag</translation>
 <translation id="6839141349259399400">Kan du ikke koble til noen skannere?</translation>
+<translation id="6853312040151791195">Utladingsfrekvens</translation>
+<translation id="6898743098396957679">Kunne ikke fullføre skanningen</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> administrerer denne enheten og har tilgang til all brukeraktivitet, blant annet nettsteder som besøkes, passord og e-post.</translation>
 <translation id="714876143603641390">LAN-tilkobling</translation>
 <translation id="7162487448488904999">Galleri</translation>
@@ -186,12 +194,15 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7648838807254605802">Høy HTTPS-tidsforsinkelse</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7690294790491645610">Bekreft det nye passordet</translation>
+<translation id="773153675489693198">Syklusantall</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" />test</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7855434858642800953">Den skannede filen er lagret!</translation>
 <translation id="7928373994957558460">Vis filplassering</translation>
 <translation id="7936303884198020182">Fant ingen navnetjenere</translation>
+<translation id="7960831585769876809">Temperatur</translation>
 <translation id="8041089156583427627">Send tilbakemelding</translation>
+<translation id="8075838845814659848">Gjenværende batteri</translation>
 <translation id="808894953321890993">Endre passord</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">Legg dokumentet på skanneren, og velg <ph name="SPAN_BEGIN" />Skann<ph name="SPAN_END" /> for å komme i gang</translation>
@@ -219,6 +230,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8919837981463578619">Mislykket – en skuff mangler</translation>
 <translation id="8928727111548978589">Mislykket – tom for papir</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> forsøk igjen</translation>
+<translation id="8968751544471797276">Ladefrekvens</translation>
 <translation id="8970109610781093811">Kjør på nytt</translation>
 <translation id="9088306295921699330">Nåværende bruk</translation>
 <translation id="910415269708673980">Oppdater saken for <ph name="PRINCIPAL_NAME" /></translation>

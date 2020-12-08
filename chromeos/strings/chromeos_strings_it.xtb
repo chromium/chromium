@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Stampato</translation>
 <translation id="1979103255016296513">Modifica della password scaduta</translation>
 <translation id="1980044825731880088">Velocità CPU</translation>
+<translation id="2008685064673031089">Prime search</translation>
 <translation id="2080070583977670716">Altre impostazioni</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Annulla processo di stampa</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Superato</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> tentativi rimanenti</translation>
 <translation id="2391082728065870591">Invia rapporto di feedback</translation>
+<translation id="2446553403094072641">Precisione rappresentazione in virgola mobile</translation>
 <translation id="2461822463642141190">Attuale</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Scansiona</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">App</translation>
 <translation id="2872961005593481000">Spegni</translation>
+<translation id="2878387241690264070">Riduzione della carica: <ph name="RATE" /> in <ph name="NUM_SECONDS" /> secondi.</translation>
 <translation id="3008341117444806826">AGGIORNA</translation>
 <translation id="3009958530611748826">Seleziona una cartella in cui salvare i file</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Seleziona cartella nell'app File…</translation>
 <translation id="4848429997038228357">IN ESECUZIONE…</translation>
 <translation id="4890353053343094602">Scegline subito una nuova</translation>
+<translation id="4891842000192098784">Stress</translation>
 <translation id="4917889632206600977">Operazione interrotta - Carta esaurita</translation>
 <translation id="4921665434385737356">Ricarica del <ph name="RATE" /> in <ph name="NUM_SECONDS" /> secondi.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="498186245079027698">Controlla lo scanner e riprova. Assicurati di avere spazio locale sufficiente per salvare i file sottoposti a scansione.</translation>
 <translation id="4985509611418653372">Esegui</translation>
 <translation id="500920857929044050">Interrompi test</translation>
 <translation id="5154917547274118687">Memoria</translation>
@@ -138,6 +143,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="5551702563755460533">Scopri di più nel Centro assistenza</translation>
 <translation id="5635169860413004179">Visualizza rapporto</translation>
 <translation id="5719918614880940190">Questo valore indica l'utilizzo della CPU e aggrega tutti i core</translation>
+<translation id="5781694279199921985">Salva log di sessione</translation>
 <translation id="5797428682393400134">OPERAZIONE RIUSCITA</translation>
 <translation id="5832805196449965646">Aggiungi persona</translation>
 <translation id="5895138241574237353">Riavvia</translation>
@@ -174,6 +180,8 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6766275201586212568">Risoluzioni DNS non riuscite</translation>
 <translation id="6768237774506518020">Percentuale errori di risoluzione DNS elevata</translation>
 <translation id="6839141349259399400">Non riesci a collegare gli scanner?</translation>
+<translation id="6853312040151791195">Velocità di riduzione della carica</translation>
+<translation id="6898743098396957679">Impossibile completare la scansione</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestisce questo dispositivo e ha accesso a tutta l'attività utente, tra cui le pagine web visitate, le password e le email.</translation>
 <translation id="714876143603641390">Connettività LAN</translation>
 <translation id="7162487448488904999">Galleria</translation>
@@ -186,12 +194,15 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7648838807254605802">Latenza HTTPS elevata</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7690294790491645610">Conferma nuova password</translation>
+<translation id="773153675489693198">Conteggio dei cicli</translation>
 <translation id="7732651821766520760">Test <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Stato</translation>
 <translation id="7855434858642800953">File sottoposto a scansione salvato.</translation>
 <translation id="7928373994957558460">Mostra la posizione del file</translation>
 <translation id="7936303884198020182">nessun server dei nomi trovato</translation>
+<translation id="7960831585769876809">Temperatura</translation>
 <translation id="8041089156583427627">Invia feedback</translation>
+<translation id="8075838845814659848">Carica rimanente</translation>
 <translation id="808894953321890993">Cambia password</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">Posiziona il documento sullo scanner e seleziona <ph name="SPAN_BEGIN" />Scansiona<ph name="SPAN_END" /> per iniziare</translation>
@@ -219,6 +230,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="8919837981463578619">Operazione non riuscita - Vassoio mancante</translation>
 <translation id="8928727111548978589">Operazione non riuscita - Carta esaurita</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> tentativi rimanenti</translation>
+<translation id="8968751544471797276">Velocità di ricarica</translation>
 <translation id="8970109610781093811">Esegui di nuovo</translation>
 <translation id="9088306295921699330">Spazio utilizzato</translation>
 <translation id="910415269708673980">Aggiorna la richiesta per <ph name="PRINCIPAL_NAME" /></translation>

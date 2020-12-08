@@ -171,6 +171,7 @@
 <translation id="2157851137955077194">스마트폰에서 다른 기기로 콘텐츠를 공유하려면 두 기기의 Chrome 설정에서 동기화를 사용 설정하세요.</translation>
 <translation id="2158408438301413340">Chrome에서 일부 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="2169830938017475061">방금</translation>
+<translation id="2172688499998841696">이미지 설명 사용 중지됨</translation>
 <translation id="2175927920773552910">QR 코드</translation>
 <translation id="218608176142494674">공유</translation>
 <translation id="2195339740518523951">Chrome의 가장 강력한 보안 기능 사용하기</translation>
@@ -208,6 +209,7 @@
 아무 단어나 길게 터치하여 검색하세요. 더욱 상세히 검색하려면 단어를 더 많이 선택하거나 적게 선택합니다. 검색어를 수정하려면 패널을 열고 아이콘을 탭하여 새 탭에서 연 다음, 검색창 내용을 변경하세요.</translation>
 <translation id="2459390580524506445">향상된 음성 검색</translation>
 <translation id="246532703174860178">공유</translation>
+<translation id="247737702124049222">이미지 설명 사용 설정됨</translation>
 <translation id="2478076885740497414">앱 설치</translation>
 <translation id="2479148705183875116">설정으로 이동</translation>
 <translation id="2482878487686419369">알림</translation>
@@ -313,6 +315,7 @@
 <translation id="3232754137068452469">웹 앱</translation>
 <translation id="3236059992281584593">1분 남음</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3250563604907490871">이미지 설명은 Wi-Fi에 연결되면 재개됩니다.</translation>
 <translation id="3254409185687681395">현재 페이지를 북마크에 추가</translation>
 <translation id="3259831549858767975">페이지의 모든 항목 축소</translation>
 <translation id="3264124641674805320">나중에 보기 위해 콘텐츠를 다운로드하는 방법</translation>
@@ -897,6 +900,7 @@
 <translation id="7274013316676448362">차단된 사이트</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" />를 변경하시겠습니까?</translation>
 <translation id="7290209999329137901">이름 변경 불가</translation>
+<translation id="7291910923717764901">이 페이지에 추가된 이미지 설명</translation>
 <translation id="7293171162284876153">동기화를 시작하려면 'Chrome 데이터 동기화'를 사용 설정하세요.</translation>
 <translation id="7293429513719260019">언어 선택</translation>
 <translation id="729975465115245577">기기에 비밀번호 파일을 저장할 수 있는 앱이 없습니다.</translation>

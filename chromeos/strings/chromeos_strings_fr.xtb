@@ -22,6 +22,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> gère cet utilisateur dont il peut modifier les paramètres et surveiller l'activité à distance.</translation>
 <translation id="150962533380566081">Clé PUK incorrecte.</translation>
 <translation id="1510238584712386396">Lanceur d'applications</translation>
+<translation id="1621067168122174824">Lancer le test de recharge</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fils de discussion)</translation>
 <translation id="1641857168437328880">Chargeur de document (recto)</translation>
 <translation id="1644574205037202324">Historique</translation>
@@ -29,6 +30,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Présence du résolveur DNS</translation>
 <translation id="1743558184855585519">La batterie est considérée comme usagée une fois la limite atteinte</translation>
+<translation id="1792647875738159689">Annulation de la numérisation…</translation>
 <translation id="1905710495812624430">Vous avez atteint le nombre maximal autorisé de tentatives.</translation>
 <translation id="1930797645656624981">Service de mode de saisie Chrome OS</translation>
 <translation id="1947737735496445907">Impression terminée</translation>
@@ -53,6 +55,7 @@
 <translation id="3008341117444806826">ACTUALISER</translation>
 <translation id="3009958530611748826">Sélectionner un dossier de destination</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3069085583900247081">Échec du test</translation>
 <translation id="3083667275341675831">Diagnostic de connectivité</translation>
 <translation id="3091839911843451378">Échec – Imprimante à l'arrêt</translation>
 <translation id="3102119246920354026">Vider le cache</translation>
@@ -62,6 +65,7 @@
 <translation id="3246869037381808805">Les tâches d'impression de plus d'un jour seront supprimées</translation>
 <translation id="3268178239013324452">Échec – Capot de l'imprimante ouvert</translation>
 <translation id="3310640316857623290">Seuil de latence autorisé largement dépassé par le DNS</translation>
+<translation id="3328783797891415197">Test en cours</translation>
 <translation id="3369013195428705271">Voulez-vous vraiment effacer tout l'historique des impressions ? Vos tâches d'impression en cours ne seront pas supprimées de cet historique.</translation>
 <translation id="3456078764689556234">Page imprimée : <ph name="PRINTED_PAGES" /> sur <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Impression</translation>
@@ -81,6 +85,7 @@
 <translation id="4034824040120875894">Imprimante</translation>
 <translation id="4131410914670010031">Noir et blanc</translation>
 <translation id="4145784616224233563">Pare-feu HTTP</translation>
+<translation id="4170700058716978431">ÉCHEC</translation>
 <translation id="4227825898293920515">Le mot de passe arrive à expiration dans <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Aucune tâche d'impression en cours</translation>
 <translation id="4297501883039923494">Tâche suspendue - Erreur inconnue</translation>
@@ -105,17 +110,20 @@
 <translation id="4773299976671772492">Interrompu</translation>
 <translation id="4808449224298348341">Tâche d'impression annulée pour <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">Sélectionner un dossier dans l'application Fichiers…</translation>
+<translation id="4848429997038228357">EN COURS D'EXÉCUTION</translation>
 <translation id="4890353053343094602">Choisissez-en un nouveau immédiatement</translation>
 <translation id="4917889632206600977">Tâche suspendue - À court de papier</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> chargés en <ph name="NUM_SECONDS" /> secondes.</translation>
 <translation id="4932733599132424254">Date</translation>
 <translation id="4985509611418653372">Exécuter</translation>
+<translation id="500920857929044050">Arrêter le test</translation>
 <translation id="5154917547274118687">Mémoire</translation>
 <translation id="5168185087976003268">État de la batterie</translation>
 <translation id="520299634122159966">Aucun scanner disponible</translation>
 <translation id="5212543919916444558">Je ne parviens pas à détecter d'éléments sur votre écran pour lesquels je peux vous aider.
 Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
+<translation id="5264277876637023664">Lancer le test de CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Exécuter de nouveau les routines</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
@@ -128,17 +136,22 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="54609108002486618">Géré</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" /> : <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">En savoir plus dans le centre d'aide</translation>
+<translation id="5635169860413004179">Voir le rapport</translation>
 <translation id="5719918614880940190">Mesure de l'utilisation du processeur, tous cœurs confondus</translation>
+<translation id="5797428682393400134">TEST RÉUSSI</translation>
 <translation id="5832805196449965646">Ajouter une personne</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
+<translation id="5931523347251946569">Fichier introuvable</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6048107060512778456">Échec – Bourrage papier</translation>
 <translation id="6050189528197190982">Niveaux de gris</translation>
 <translation id="6058625436358447366">Pour terminer, saisissez votre ancien mot de passe et le nouveau</translation>
 <translation id="6061772781719867950">Échec des requêtes HTTPS</translation>
+<translation id="6104112872696127344">La numérisation a été annulée</translation>
 <translation id="6106186594183574873">Pour terminer, saisissez votre ancien mot de passe</translation>
 <translation id="6108689792487843350">Passerelle injoignable</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" /> GHz/<ph name="MAX" /> GHz</translation>
 <translation id="6146993107019042706">Pour terminer, saisissez votre nouveau mot de passe</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
@@ -149,6 +162,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="649050271426829538">Tâche suspendue - Bourrage papier</translation>
 <translation id="6517239166834772319">Explorer</translation>
 <translation id="6527081081771465939">Protocole de sécurité du réseau Wi-Fi inconnu</translation>
+<translation id="6532051501443766164">Masquer le rapport</translation>
 <translation id="65587193855025101">Vitre du plateau</translation>
 <translation id="6564646048574748301">Échec – Imprimante inaccessible</translation>
 <translation id="6618744767048954150">En cours</translation>
@@ -156,6 +170,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6704062477274546131">Résolution DNS</translation>
 <translation id="6747215703636344499">Tâche suspendue - Bac de sortie plein</translation>
+<translation id="6756731097889387912">Impossible d'annuler la numérisation</translation>
 <translation id="6766275201586212568">Échec de résolutions DNS</translation>
 <translation id="6768237774506518020">Taux d'échec élevé des résolutions DNS</translation>
 <translation id="6839141349259399400">Impossible d'établir la connexion avec les scanners ?</translation>
@@ -171,6 +186,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7648838807254605802">Latence élevée des requêtes HTTPS</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7690294790491645610">Confirmer le nouveau mot de passe</translation>
+<translation id="7732651821766520760">Test "<ph name="TEST_NAME" />"</translation>
 <translation id="7805768142964895445">État</translation>
 <translation id="7855434858642800953">Le fichier scanné a bien été enregistré !</translation>
 <translation id="7928373994957558460">Afficher l'emplacement du fichier</translation>
@@ -198,6 +214,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Par défaut</translation>
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
+<translation id="8881098542468797602">Test réussi</translation>
 <translation id="8910721771319628100">Seuil de latence dépassé pour le réseau par défaut</translation>
 <translation id="8919837981463578619">Échec – Bac à papier manquant</translation>
 <translation id="8928727111548978589">Échec – À court de papier</translation>
@@ -207,4 +224,6 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="910415269708673980">Actualiser le ticket associé à <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Numérisation de la page <ph name="PAGE_NUMBER" />…</translation>
 <translation id="9111102763498581341">Déverrouiller</translation>
+<translation id="9149391708638971077">Lancer le test de mémoire</translation>
+<translation id="982713511914535780">Lancer le test de décharge</translation>
 </translationbundle>

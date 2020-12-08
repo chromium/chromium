@@ -228,7 +228,6 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{1 цагийн өмнө}other{# цагийн өмнө}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 сек үлдсэн }other{# сек үлдсэн }}</translation>
 <translation id="8134065097954893699">Энэ хуудсыг дахин ачаалж байна</translation>
-<translation id="8144660977431427332">Таны хайлтыг Google Туслах дэмждэг. <ph name="LEARN_MORE" /></translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Автоматаар гүйцээх</translation>
 <translation id="815598010540052116">Доош нь гүйлгэж харах</translation>
 <translation id="8179976553408161302">Нэвтрэх</translation>

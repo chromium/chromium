@@ -168,6 +168,8 @@
 Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="556024056938947818">Chrome에서 비밀번호를 표시하려고 합니다.</translation>
 <translation id="5566025111015594046">Chrome(mDNS-In)</translation>
+<translation id="5655746611259367388"><ph name="LINK_BEGIN" />설정<ph name="LINK_END" />의 한 장소에서 <ph name="USER_NAME" />에 추가한 다른 Google 계정과 이 계정을 관리할 수 있습니다.
+          Chrome 브라우저의 웹사이트와 Google Play의 앱에서 부여한 권한은 모든 계정에 적용될 수 있습니다.</translation>
 <translation id="5657226924540934362">페이지에 표시되지 않는 설정이 있다면 <ph name="LINK_BEGIN" />
       Chrome OS 설정<ph name="LINK_END" />을 확인해 보세요.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" />은(는) 위험할 수 있으므로 Chrome에서 차단했습니다.</translation>

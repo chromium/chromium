@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Gedruk</translation>
 <translation id="1979103255016296513">Wagwoord moes al verander geword het</translation>
 <translation id="1980044825731880088">CPU-spoed</translation>
+<translation id="2008685064673031089">Hoofsoektog</translation>
 <translation id="2080070583977670716">Nog instellings</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Kanselleer druktaak</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Geslaag</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> pogings oor</translation>
 <translation id="2391082728065870591">Stuur terugvoerverslag</translation>
+<translation id="2446553403094072641">Akkuraatheid van wisselpunt</translation>
 <translation id="2461822463642141190">Huidig</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Skandeer</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Programme</translation>
 <translation id="2872961005593481000">Skakel af</translation>
+<translation id="2878387241690264070">Het <ph name="RATE" /> ontlaai binne <ph name="NUM_SECONDS" /> sekondes.</translation>
 <translation id="3008341117444806826">HERLAAI</translation>
 <translation id="3009958530611748826">Kies 'n vouer om in te stoor</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Kies vouer in Lêers-program …</translation>
 <translation id="4848429997038228357">LOOP TANS</translation>
 <translation id="4890353053343094602">Kies onmiddellik 'n nuwe een</translation>
+<translation id="4891842000192098784">Stres</translation>
 <translation id="4917889632206600977">Gestop – papier is op</translation>
 <translation id="4921665434385737356">Het <ph name="RATE" /> gelaai binne <ph name="NUM_SECONDS" /> sekondes.</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="498186245079027698">Gaan die skandeerder na en probeer weer. Maak seker daar is genoeg plaaslike spasie om lêers wat geskandeer is, te stoor.</translation>
 <translation id="4985509611418653372">Laat loop</translation>
 <translation id="500920857929044050">Stop toets</translation>
 <translation id="5154917547274118687">Geheue</translation>
@@ -138,6 +143,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5551702563755460533">Kom meer te wete in die Hulpsentrum</translation>
 <translation id="5635169860413004179">Sien verslag</translation>
 <translation id="5719918614880940190">Dit meet die CPU-gebruik en is 'n samevoeging van alle kerns</translation>
+<translation id="5781694279199921985">Stoor Sessie-loglêer</translation>
 <translation id="5797428682393400134">SUKSES</translation>
 <translation id="5832805196449965646">Voeg persoon by</translation>
 <translation id="5895138241574237353">Herbegin</translation>
@@ -174,6 +180,8 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6766275201586212568">Mislukte DNS-resolusies</translation>
 <translation id="6768237774506518020">Hoë DNS-resolusiemislukkingkoers</translation>
 <translation id="6839141349259399400">Kan jy nie aan skandeerders koppel nie?</translation>
+<translation id="6853312040151791195">Ontlaaikoers</translation>
+<translation id="6898743098396957679">Kon nie skandering voltooi nie</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bestuur hierdie toestel en het toegang tot alle gebruikeraktiwiteit, insluitend webblaaie wat besoek is, wagwoorde en e-pos.</translation>
 <translation id="714876143603641390">LAN-konnektiwiteit</translation>
 <translation id="7162487448488904999">Galery</translation>
@@ -186,12 +194,15 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7648838807254605802">Hoë HTTPS-traagheid</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7690294790491645610">Bevestig nuwe wagwoord</translation>
+<translation id="773153675489693198">Siklustelling</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" />-toets</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7855434858642800953">Geskandeerde lêer is gestoor!</translation>
 <translation id="7928373994957558460">Wys lêerligging</translation>
 <translation id="7936303884198020182">Geen naambedieners gekry nie</translation>
+<translation id="7960831585769876809">Temperatuur</translation>
 <translation id="8041089156583427627">Stuur terugvoer</translation>
+<translation id="8075838845814659848">Oorblywende batterykrag</translation>
 <translation id="808894953321890993">Verander wagwoord</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8160445423316272678">Plaas jou dokument op die skandeerder en kies <ph name="SPAN_BEGIN" />Skandeer<ph name="SPAN_END" /> om te begin</translation>
@@ -219,6 +230,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8919837981463578619">Misluk – Laai ontbreek</translation>
 <translation id="8928727111548978589">Misluk – Papier is op</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> pogings oor</translation>
+<translation id="8968751544471797276">Laaikoers</translation>
 <translation id="8970109610781093811">Laat loop weer</translation>
 <translation id="9088306295921699330">Huidige gebruik</translation>
 <translation id="910415269708673980">Herlaai kaartjie vir <ph name="PRINCIPAL_NAME" /></translation>
