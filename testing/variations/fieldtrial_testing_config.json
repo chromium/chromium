@@ -3049,10 +3049,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20201207",
                     "enable_features": [
-                        "InterestFeedV1ClickAndViewActionsConditionalUpload",
-                        "InterestFeedV2ClickAndViewActionsConditionalUpload"
+                        "InterestFeedV1ClickAndViewActionsConditionalUpload"
                     ]
                 }
             ]
