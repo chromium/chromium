@@ -13,6 +13,7 @@ static_library("scanning") {
     "scanning_paths_provider.h",
     "scanning_ui.cc",
     "scanning_ui.h",
+    "scanning_uma.h",
     "url_constants.cc",
     "url_constants.h",
   ]

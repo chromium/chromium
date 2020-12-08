@@ -86,6 +86,7 @@ tools/metrics/histograms/histograms_xml/renderer/histograms.xml
 tools/metrics/histograms/histograms_xml/renderer4/histograms.xml
 tools/metrics/histograms/histograms_xml/safe_browsing/histograms.xml
 tools/metrics/histograms/histograms_xml/sb_client/histograms.xml
+tools/metrics/histograms/histograms_xml/scanning/histograms.xml
 tools/metrics/histograms/histograms_xml/scheduler/histograms.xml
 tools/metrics/histograms/histograms_xml/search/histograms.xml
 tools/metrics/histograms/histograms_xml/security/histograms.xml
