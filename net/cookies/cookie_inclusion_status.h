@@ -292,6 +292,12 @@ NET_EXPORT inline std::ostream& operator<<(std::ostream& os,
   return os << status.GetDebugString();
 }
 
+// Provided to allow gtest to create more helpful error messages, instead of
+// printing hex.
+inline void PrintTo(const CookieInclusionStatus& cis, std::ostream* os) {
+  *os << cis;
+}
+
 }  // namespace net
 
 #endif  // NET_COOKIES_COOKIE_INCLUSION_STATUS_H_

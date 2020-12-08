@@ -312,11 +312,13 @@ class NET_EXPORT CanonicalCookie {
   // in a secure scheme, since whether the scheme is secure isn't part of
   // |options|.
   CookieAccessResult IsSetPermittedInContext(
+      const GURL& source_url,
       const CookieOptions& options,
       const CookieAccessParams& params) const;
 
   // Overload that updates an existing |status| rather than returning a new one.
-  void IsSetPermittedInContext(const CookieOptions& options,
+  void IsSetPermittedInContext(const GURL& source_url,
+                               const CookieOptions& options,
                                const CookieAccessParams& params,
                                CookieAccessResult* access_result) const;
 

@@ -662,19 +662,29 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
   // insecure scheme, unless it is a localhost url, or the CookieAccessDelegate
   // otherwise denotes them as trustworthy
   // (`delegate_treats_url_as_trustworthy`).
-  if (IsSecure()) {
-    CookieAccessScheme cookie_access_scheme =
-        cookie_util::ProvisionalAccessScheme(url);
-    if (cookie_access_scheme == CookieAccessScheme::kNonCryptographic &&
-        params.delegate_treats_url_as_trustworthy) {
-      cookie_access_scheme = CookieAccessScheme::kTrustworthy;
-    }
-    if (cookie_access_scheme == CookieAccessScheme::kNonCryptographic) {
-      status.AddExclusionReason(CookieInclusionStatus::EXCLUDE_SECURE_ONLY);
-    } else if (cookie_access_scheme == CookieAccessScheme::kTrustworthy) {
-      status.AddWarningReason(
-          CookieInclusionStatus::WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC);
-    }
+  bool is_allowed_to_access_secure_cookies = false;
+  CookieAccessScheme cookie_access_scheme =
+      cookie_util::ProvisionalAccessScheme(url);
+  if (cookie_access_scheme == CookieAccessScheme::kNonCryptographic &&
+      params.delegate_treats_url_as_trustworthy) {
+    cookie_access_scheme = CookieAccessScheme::kTrustworthy;
+  }
+  switch (cookie_access_scheme) {
+    case CookieAccessScheme::kNonCryptographic:
+      if (IsSecure())
+        status.AddExclusionReason(CookieInclusionStatus::EXCLUDE_SECURE_ONLY);
+      break;
+    case CookieAccessScheme::kTrustworthy:
+      is_allowed_to_access_secure_cookies = true;
+      if (IsSecure()) {
+        status.AddWarningReason(
+            CookieInclusionStatus::
+                WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC);
+      }
+      break;
+    case CookieAccessScheme::kCryptographic:
+      is_allowed_to_access_secure_cookies = true;
+      break;
   }
   // Don't include cookies for requests that don't apply to the cookie domain.
   if (!IsDomainMatch(url.host()))
@@ -771,21 +781,56 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
 
   // TODO(chlily): Log metrics.
   return CookieAccessResult(effective_same_site, status,
-                            params.access_semantics);
+                            params.access_semantics,
+                            is_allowed_to_access_secure_cookies);
 }
 
 CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
+    const GURL& source_url,
     const CookieOptions& options,
     const CookieAccessParams& params) const {
   CookieAccessResult access_result;
-  IsSetPermittedInContext(options, params, &access_result);
+  IsSetPermittedInContext(source_url, options, params, &access_result);
   return access_result;
 }
 
 void CanonicalCookie::IsSetPermittedInContext(
+    const GURL& source_url,
     const CookieOptions& options,
     const CookieAccessParams& params,
     CookieAccessResult* access_result) const {
+  CookieAccessScheme access_scheme =
+      cookie_util::ProvisionalAccessScheme(source_url);
+  if (access_scheme == CookieAccessScheme::kNonCryptographic &&
+      params.delegate_treats_url_as_trustworthy) {
+    access_scheme = CookieAccessScheme::kTrustworthy;
+  }
+
+  switch (access_scheme) {
+    case CookieAccessScheme::kNonCryptographic:
+      access_result->is_allowed_to_access_secure_cookies = false;
+      if (IsSecure()) {
+        access_result->status.AddExclusionReason(
+            CookieInclusionStatus::EXCLUDE_SECURE_ONLY);
+      }
+      break;
+
+    case CookieAccessScheme::kCryptographic:
+      // All cool!
+      access_result->is_allowed_to_access_secure_cookies = true;
+      break;
+
+    case CookieAccessScheme::kTrustworthy:
+      access_result->is_allowed_to_access_secure_cookies = true;
+      if (IsSecure()) {
+        // OK, but want people aware of this.
+        access_result->status.AddWarningReason(
+            CookieInclusionStatus::
+                WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC);
+      }
+      break;
+  }
+
   access_result->access_semantics = params.access_semantics;
   if (options.exclude_httponly() && IsHttpOnly()) {
     DVLOG(net::cookie_util::kVlogSetCookies)

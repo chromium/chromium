@@ -11,10 +11,13 @@ CookieAccessResult::CookieAccessResult() = default;
 CookieAccessResult::CookieAccessResult(
     CookieEffectiveSameSite effective_same_site,
     CookieInclusionStatus status,
-    CookieAccessSemantics access_semantics)
+    CookieAccessSemantics access_semantics,
+    bool is_allowed_to_access_secure_cookies)
     : status(status),
       effective_same_site(effective_same_site),
-      access_semantics(access_semantics) {}
+      access_semantics(access_semantics),
+      is_allowed_to_access_secure_cookies(is_allowed_to_access_secure_cookies) {
+}
 
 CookieAccessResult::CookieAccessResult(CookieInclusionStatus status)
     : status(status) {}

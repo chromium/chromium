@@ -217,6 +217,10 @@ struct StructTraits<network::mojom::CookieAccessResultDataView,
       const net::CookieAccessResult& c) {
     return c.access_semantics;
   }
+  static bool is_allowed_to_access_secure_cookies(
+      const net::CookieAccessResult& c) {
+    return c.is_allowed_to_access_secure_cookies;
+  }
   static bool Read(network::mojom::CookieAccessResultDataView access_result,
                    net::CookieAccessResult* out);
 };

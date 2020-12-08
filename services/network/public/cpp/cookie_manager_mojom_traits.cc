@@ -457,7 +457,8 @@ bool StructTraits<
   if (!c.ReadAccessSemantics(&access_semantics))
     return false;
 
-  *out = {effective_same_site, status, access_semantics};
+  *out = {effective_same_site, status, access_semantics,
+          c.is_allowed_to_access_secure_cookies()};
 
   return true;
 }

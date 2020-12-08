@@ -118,7 +118,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieInclusionStatus) {
           invalid, copied));
 }
 
-TEST(CookieManagerTraitsTest, Rountrips_CookieAccessResult) {
+TEST(CookieManagerTraitsTest, Roundtrips_CookieAccessResult) {
   net::CookieAccessResult original = net::CookieAccessResult(
       net::CookieEffectiveSameSite::LAX_MODE,
       net::CookieInclusionStatus(
@@ -126,7 +126,8 @@ TEST(CookieManagerTraitsTest, Rountrips_CookieAccessResult) {
               EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
           net::CookieInclusionStatus::
               WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT),
-      net::CookieAccessSemantics::LEGACY);
+      net::CookieAccessSemantics::LEGACY,
+      true /* is_allowed_to_access_secure_cookies */);
   net::CookieAccessResult copied;
 
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookieAccessResult>(
@@ -139,12 +140,14 @@ TEST(CookieManagerTraitsTest, Rountrips_CookieAccessResult) {
   EXPECT_TRUE(copied.status.HasExactlyWarningReasonsForTesting(
       {net::CookieInclusionStatus::
            WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT}));
+  EXPECT_EQ(original.is_allowed_to_access_secure_cookies,
+            copied.is_allowed_to_access_secure_cookies);
 }
 
 TEST(CookieManagerTraitsTest, Rountrips_CookieWithAccessResult) {
   net::CanonicalCookie original_cookie(
       "A", "B", "x.y", "/path", base::Time(), base::Time(), base::Time(),
-      /* secure = */ true, /* http_only = */ false,
+      /* secure = */ true, /* httponly = */ false,
       net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_LOW, false);
 
   net::CookieWithAccessResult original = {original_cookie,
@@ -172,10 +175,10 @@ TEST(CookieManagerTraitsTest, Rountrips_CookieWithAccessResult) {
   EXPECT_EQ(original.access_result.status, copied.access_result.status);
 }
 
-TEST(CookieManagerTraitsTest, Rountrips_CookieAndLineWithAccessResult) {
+TEST(CookieManagerTraitsTest, Roundtrips_CookieAndLineWithAccessResult) {
   net::CanonicalCookie original_cookie(
       "A", "B", "x.y", "/path", base::Time(), base::Time(), base::Time(),
-      /* secure = */ true, /* http_only = */ false,
+      /* secure = */ true, /* httponly = */ false,
       net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_LOW, false);
 
   net::CookieAndLineWithAccessResult original(original_cookie, "cookie-string",
@@ -374,14 +377,15 @@ TEST(CookieManagerTraitsTest, Roundtrips_FullPartyContext) {
 TEST(CookieManagerTraitsTest, Roundtrips_CookieChangeInfo) {
   net::CanonicalCookie original_cookie(
       "A", "B", "x.y", "/path", base::Time(), base::Time(), base::Time(),
-      /* secure = */ false, /* http_only = */ false,
+      /* secure = */ false, /* httponly = */ false,
       net::CookieSameSite::UNSPECIFIED, net::COOKIE_PRIORITY_LOW, false);
 
   net::CookieChangeInfo original(
       original_cookie,
       net::CookieAccessResult(net::CookieEffectiveSameSite::UNDEFINED,
                               net::CookieInclusionStatus(),
-                              net::CookieAccessSemantics::LEGACY),
+                              net::CookieAccessSemantics::LEGACY,
+                              false /* is_allowed_to_access_secure_cookies */),
       net::CookieChangeCause::EXPLICIT);
 
   net::CookieChangeInfo copied;

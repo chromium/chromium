@@ -1190,37 +1190,6 @@ void CookieMonster::SetCanonicalCookie(std::unique_ptr<CanonicalCookie> cc,
   bool delegate_treats_url_as_trustworthy =
       cookie_access_delegate() &&
       cookie_access_delegate()->ShouldTreatUrlAsTrustworthy(source_url);
-  CookieAccessScheme access_scheme =
-      cookie_util::ProvisionalAccessScheme(source_url);
-  if (access_scheme == CookieAccessScheme::kNonCryptographic &&
-      delegate_treats_url_as_trustworthy) {
-    access_scheme = CookieAccessScheme::kTrustworthy;
-  }
-
-  bool allowed_to_set_secure_cookie = false;
-  switch (access_scheme) {
-    case CookieAccessScheme::kNonCryptographic:
-      if (cc->IsSecure()) {
-        access_result.status.AddExclusionReason(
-            CookieInclusionStatus::EXCLUDE_SECURE_ONLY);
-      }
-      break;
-
-    case CookieAccessScheme::kCryptographic:
-      // All cool!
-      allowed_to_set_secure_cookie = true;
-      break;
-
-    case CookieAccessScheme::kTrustworthy:
-      allowed_to_set_secure_cookie = true;
-      if (cc->IsSecure()) {
-        // OK, but want people aware of this.
-        access_result.status.AddWarningReason(
-            CookieInclusionStatus::
-                WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC);
-      }
-      break;
-  }
 
   if (!IsCookieableScheme(source_url.scheme())) {
     access_result.status.AddExclusionReason(
@@ -1230,7 +1199,7 @@ void CookieMonster::SetCanonicalCookie(std::unique_ptr<CanonicalCookie> cc,
   const std::string key(GetKey(cc->Domain()));
 
   cc->IsSetPermittedInContext(
-      options,
+      source_url, options,
       CookieAccessParams(GetAccessSemanticsForCookie(*cc),
                          delegate_treats_url_as_trustworthy),
       &access_result);
@@ -1248,8 +1217,9 @@ void CookieMonster::SetCanonicalCookie(std::unique_ptr<CanonicalCookie> cc,
   // deletes an existing cookie, so any ExclusionReasons in |status| that would
   // prevent such deletion should be finalized beforehand.
   MaybeDeleteEquivalentCookieAndUpdateStatus(
-      key, *cc, allowed_to_set_secure_cookie, options.exclude_httponly(),
-      already_expired, &creation_date_to_inherit, &access_result.status);
+      key, *cc, access_result.is_allowed_to_access_secure_cookies,
+      options.exclude_httponly(), already_expired, &creation_date_to_inherit,
+      &access_result.status);
 
   if (access_result.status.HasExclusionReason(
           CookieInclusionStatus::EXCLUDE_OVERWRITE_SECURE) ||
@@ -1427,11 +1397,13 @@ void CookieMonster::InternalDeleteCookie(CookieMap::iterator it,
     store_->DeleteCookie(*cc);
   }
   change_dispatcher_.DispatchChange(
-      CookieChangeInfo(*cc,
-                       CookieAccessResult(CookieEffectiveSameSite::UNDEFINED,
-                                          CookieInclusionStatus(),
-                                          GetAccessSemanticsForCookie(*cc)),
-                       mapping.cause),
+      CookieChangeInfo(
+          *cc,
+          CookieAccessResult(CookieEffectiveSameSite::UNDEFINED,
+                             CookieInclusionStatus(),
+                             GetAccessSemanticsForCookie(*cc),
+                             true /* is_allowed_to_access_secure_cookies */),
+          mapping.cause),
       mapping.notify);
 
   // If this is the last cookie in |cookies_| with this key, decrement the

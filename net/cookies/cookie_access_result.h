@@ -5,6 +5,8 @@
 #ifndef NET_COOKIES_COOKIE_ACCESS_RESULT_H_
 #define NET_COOKIES_COOKIE_ACCESS_RESULT_H_
 
+#include <ostream>
+
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
@@ -18,7 +20,8 @@ struct NET_EXPORT CookieAccessResult {
   CookieAccessResult();
   CookieAccessResult(CookieEffectiveSameSite effective_same_site,
                      CookieInclusionStatus status,
-                     CookieAccessSemantics access_semantics);
+                     CookieAccessSemantics access_semantics,
+                     bool is_allowed_to_access_secure_cookie);
 
   explicit CookieAccessResult(CookieInclusionStatus status);
 
@@ -34,7 +37,20 @@ struct NET_EXPORT CookieAccessResult {
   CookieEffectiveSameSite effective_same_site =
       CookieEffectiveSameSite::UNDEFINED;
   CookieAccessSemantics access_semantics = CookieAccessSemantics::UNKNOWN;
+  // Whether access to Secure cookies should be allowed. This is expected to be
+  // set based on the scheme of the source URL.
+  bool is_allowed_to_access_secure_cookies = false;
 };
+
+// Provided to allow gtest to create more helpful error messages, instead of
+// printing hex.
+inline void PrintTo(const CookieAccessResult& car, std::ostream* os) {
+  *os << "{ { ";
+  PrintTo(car.status, os);
+  *os << " }, " << static_cast<int>(car.effective_same_site) << ", "
+      << static_cast<int>(car.access_semantics) << ", "
+      << car.is_allowed_to_access_secure_cookies << " }";
+}
 
 }  // namespace net
 
