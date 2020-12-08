@@ -1,3 +1,4 @@
 monorail {
   component: "Blink>Identity>WebID"
 }
+team_email: "web-identity@chromium.org"

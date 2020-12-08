@@ -126,10 +126,14 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
     CompleteRequest(RequestIdTokenStatus::kError, "");
     return;
   }
+  // Use the web contents of the page that initiated the WebID request (i.e.
+  // the Relying Party) for showing the initial permission dialog.
+  WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host());
 
   request_dialog_controller_->ShowInitialPermissionDialog(
-      base::BindOnce(&FederatedAuthRequestImpl::OnSigninApproved,
-                     weak_ptr_factory_.GetWeakPtr()));
+      web_contents, base::BindOnce(&FederatedAuthRequestImpl::OnSigninApproved,
+                                   weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FederatedAuthRequestImpl::OnSigninApproved(
@@ -157,8 +161,11 @@ void FederatedAuthRequestImpl::OnSigninResponseReceived(
         CompleteRequest(RequestIdTokenStatus::kError, "");
         return;
       }
+      WebContents* web_contents =
+          content::WebContents::FromRenderFrameHost(render_frame_host());
+
       request_dialog_controller_->ShowIdProviderWindow(
-          idp_signin_page_url,
+          web_contents, idp_signin_page_url,
           base::BindOnce(&FederatedAuthRequestImpl::OnIdpPageClosed,
                          weak_ptr_factory_.GetWeakPtr()));
       return;

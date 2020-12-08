@@ -7,9 +7,11 @@
 
 #include "base/callback.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
+#include "content/public/browser/web_contents.h"
 
 class GURL;
 
+using UserApproval = content::IdentityRequestDialogController::UserApproval;
 using InitialApprovalCallback =
     content::IdentityRequestDialogController::InitialApprovalCallback;
 using IdProviderWindowClosedCallback =
@@ -30,9 +32,12 @@ class IdentityDialogController
   ~IdentityDialogController() override;
 
   // content::IdentityRequestDelegate
-  void ShowInitialPermissionDialog(InitialApprovalCallback) override;
-  void ShowIdProviderWindow(const GURL& idp_signin_url,
+  void ShowInitialPermissionDialog(content::WebContents*,
+                                   InitialApprovalCallback) override;
+  void ShowIdProviderWindow(content::WebContents*,
+                            const GURL& idp_signin_url,
                             IdProviderWindowClosedCallback) override;
+
   void ShowTokenExchangePermissionDialog(
       TokenExchangeApprovalCallback) override;
 };
