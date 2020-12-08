@@ -28,9 +28,10 @@ enum class CanvasColorSpace {
 };
 
 enum class CanvasPixelFormat {
+  kF16,
   kRGBA8,
   kBGRA8,
-  kF16,
+  kRGBX8,
 };
 
 constexpr const char* kSRGBCanvasColorSpaceName = "srgb";

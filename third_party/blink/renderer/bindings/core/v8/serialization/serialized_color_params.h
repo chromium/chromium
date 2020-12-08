@@ -53,7 +53,8 @@ enum class SerializedPixelFormat : uint32_t {
   kF16 = 1,
   kRGBA8 = 2,
   kBGRA8 = 3,
-  kLast = kBGRA8,
+  kRGBX8 = 4,
+  kLast = kRGBX8,
 };
 
 // This enumeration specifies the values used to serialize

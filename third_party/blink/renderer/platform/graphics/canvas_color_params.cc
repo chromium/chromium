@@ -71,6 +71,8 @@ SkColorType CanvasColorParams::GetSkColorType() const {
       return kRGBA_8888_SkColorType;
     case CanvasPixelFormat::kBGRA8:
       return kBGRA_8888_SkColorType;
+    case CanvasPixelFormat::kRGBX8:
+      return kRGB_888x_SkColorType;
   }
   NOTREACHED();
   return kN32_SkColorType;
@@ -111,12 +113,14 @@ sk_sp<SkColorSpace> CanvasColorParams::GetSkColorSpace() const {
 
 gfx::BufferFormat CanvasColorParams::GetBufferFormat() const {
   switch (GetSkColorType()) {
+    case kRGBA_F16_SkColorType:
+      return gfx::BufferFormat::RGBA_F16;
     case kRGBA_8888_SkColorType:
       return gfx::BufferFormat::RGBA_8888;
     case kBGRA_8888_SkColorType:
       return gfx::BufferFormat::BGRA_8888;
-    case kRGBA_F16_SkColorType:
-      return gfx::BufferFormat::RGBA_F16;
+    case kRGB_888x_SkColorType:
+      return gfx::BufferFormat::RGBX_8888;
     default:
       NOTREACHED();
   }
@@ -127,12 +131,14 @@ gfx::BufferFormat CanvasColorParams::GetBufferFormat() const {
 GLenum CanvasColorParams::GLUnsizedInternalFormat() const {
   // TODO(junov): try GL_RGB when opacity_mode_ == kOpaque
   switch (GetSkColorType()) {
+    case kRGBA_F16_SkColorType:
+      return GL_RGBA;
     case kRGBA_8888_SkColorType:
       return GL_RGBA;
     case kBGRA_8888_SkColorType:
       return GL_BGRA_EXT;
-    case kRGBA_F16_SkColorType:
-      return GL_RGBA;
+    case kRGB_888x_SkColorType:
+      return GL_RGB;
     default:
       NOTREACHED();
   }
@@ -142,12 +148,14 @@ GLenum CanvasColorParams::GLUnsizedInternalFormat() const {
 
 GLenum CanvasColorParams::GLSizedInternalFormat() const {
   switch (GetSkColorType()) {
+    case kRGBA_F16_SkColorType:
+      return GL_RGBA16F;
     case kRGBA_8888_SkColorType:
       return GL_RGBA8;
     case kBGRA_8888_SkColorType:
       return GL_BGRA8_EXT;
-    case kRGBA_F16_SkColorType:
-      return GL_RGBA16F;
+    case kRGB_888x_SkColorType:
+      return GL_RGB8;
     default:
       NOTREACHED();
   }
@@ -157,11 +165,12 @@ GLenum CanvasColorParams::GLSizedInternalFormat() const {
 
 GLenum CanvasColorParams::GLType() const {
   switch (GetSkColorType()) {
-    case kRGBA_8888_SkColorType:
-    case kBGRA_8888_SkColorType:
-      return GL_UNSIGNED_BYTE;
     case kRGBA_F16_SkColorType:
       return GL_HALF_FLOAT_OES;
+    case kRGBA_8888_SkColorType:
+    case kBGRA_8888_SkColorType:
+    case kRGB_888x_SkColorType:
+      return GL_UNSIGNED_BYTE;
     default:
       NOTREACHED();
   }
@@ -197,6 +206,8 @@ CanvasColorParams::CanvasColorParams(const sk_sp<SkColorSpace> sk_color_space,
     pixel_format_ = CanvasPixelFormat::kF16;
   else if (sk_color_type == kRGBA_8888_SkColorType)
     pixel_format_ = CanvasPixelFormat::kRGBA8;
+  else if (sk_color_type == kRGB_888x_SkColorType)
+    pixel_format_ = CanvasPixelFormat::kRGBX8;
 }
 
 }  // namespace blink

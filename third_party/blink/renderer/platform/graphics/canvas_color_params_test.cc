@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/graphics/color_correction_test_utils.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gl/buffer_format_utils.h"
 
 namespace blink {
 
@@ -31,6 +32,26 @@ TEST(CanvasColorParamsTest, MatchSkColorSpaceWithGfxColorSpace) {
         color_params.GetStorageGfxColorSpace().ToSkColorSpace();
     ASSERT_TRUE(ColorCorrectionTestUtils::MatchColorSpace(
         canvas_drawing_color_space, canvas_media_color_space));
+  }
+}
+
+// Testing internal consistency of pixel format
+TEST(CanvasColorParamsTest, MatchPixelFormat) {
+  CanvasPixelFormat canvas_pixel_format[] = {
+      CanvasPixelFormat::kRGBA8,
+      CanvasPixelFormat::kBGRA8,
+      CanvasPixelFormat::kF16,
+      CanvasPixelFormat::kRGBX8,
+  };
+  for (auto pixelformat : canvas_pixel_format) {
+    CanvasColorParams color_params(CanvasColorSpace::kSRGB, pixelformat,
+                                   kNonOpaque);
+    gfx::BufferFormat buffer_format = color_params.GetBufferFormat();
+    unsigned gl_internal_format =
+        gl::BufferFormatToGLInternalFormat(buffer_format);
+    ASSERT_EQ(gl_internal_format, color_params.GLUnsizedInternalFormat());
+    auto gl_type = gl::BufferFormatToGLDataType(buffer_format);
+    ASSERT_EQ(gl_type, color_params.GLType());
   }
 }
 

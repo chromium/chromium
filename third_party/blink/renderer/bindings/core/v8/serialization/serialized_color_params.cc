@@ -14,14 +14,17 @@ SerializedColorParams::SerializedColorParams(CanvasColorParams color_params)
     : SerializedColorParams(color_params.ColorSpace(),
                             kUint8ClampedArrayStorageFormat) {
   switch (color_params.PixelFormat()) {
+    case CanvasPixelFormat::kF16:
+      pixel_format_ = SerializedPixelFormat::kF16;
+      break;
     case CanvasPixelFormat::kRGBA8:
       pixel_format_ = SerializedPixelFormat::kRGBA8;
       break;
     case CanvasPixelFormat::kBGRA8:
       pixel_format_ = SerializedPixelFormat::kBGRA8;
       break;
-    case CanvasPixelFormat::kF16:
-      pixel_format_ = SerializedPixelFormat::kF16;
+    case CanvasPixelFormat::kRGBX8:
+      pixel_format_ = SerializedPixelFormat::kRGBX8;
       break;
   }
 
@@ -91,14 +94,17 @@ CanvasColorParams SerializedColorParams::GetCanvasColorParams() const {
       pixel_format = CanvasPixelFormat::kBGRA8;
 #endif
       break;
+    case SerializedPixelFormat::kF16:
+      pixel_format = CanvasPixelFormat::kF16;
+      break;
     case SerializedPixelFormat::kRGBA8:
       pixel_format = CanvasPixelFormat::kRGBA8;
       break;
     case SerializedPixelFormat::kBGRA8:
       pixel_format = CanvasPixelFormat::kBGRA8;
       break;
-    case SerializedPixelFormat::kF16:
-      pixel_format = CanvasPixelFormat::kF16;
+    case SerializedPixelFormat::kRGBX8:
+      pixel_format = CanvasPixelFormat::kRGBX8;
       break;
   }
 
