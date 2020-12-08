@@ -1,15 +1,10 @@
-// META: script=/resources/testharness.js
-// META: script=/resources/testharnessreport.js
-// META: script=/gen/layout_test_data/mojo/public/js/mojo_bindings.js
-// META: script=/gen/mojo/public/mojom/base/unguessable_token.mojom.js
-// META: script=/gen/third_party/blink/public/mojom/serial/serial.mojom.js
+// META: script=/resources/test-only-api.js
 // META: script=/serial/resources/common.js
 // META: script=resources/automation.js
 
 serial_test(async (t, fake) => {
-  // Don't listen for 'disconnect' events on navigator.serial so we can listen
-  // for them on each SerialPort instance instead.
-  const eventWatcher = new EventWatcher(t, navigator.serial, ['connect']);
+  const eventWatcher =
+      new EventWatcher(t, navigator.serial, ['connect', 'disconnect']);
 
   // Wait for getPorts() to resolve in order to ensure that the Mojo client
   // interface has been configured.
@@ -19,14 +14,12 @@ serial_test(async (t, fake) => {
   // Add ports one at a time so that we can map tokens to ports.
   const token1 = fake.addPort();
   const port1 = (await eventWatcher.wait_for(['connect'])).target;
-  const port1Watcher = new EventWatcher(t, port1, ['disconnect']);
 
   const token2 = fake.addPort();
   const port2 = (await eventWatcher.wait_for(['connect'])).target;
-  const port2Watcher = new EventWatcher(t, port2, ['disconnect']);
 
   fake.removePort(token2);
-  const event1 = await port2Watcher.wait_for(['disconnect']);
+  const event1 = await eventWatcher.wait_for(['disconnect']);
   assert_true(event1 instanceof Event);
   assert_equals(event1.target, port2);
 
@@ -35,10 +28,10 @@ serial_test(async (t, fake) => {
   assert_equals(ports[0], port1);
 
   fake.removePort(token1);
-  const event2 = await port1Watcher.wait_for(['disconnect']);
+  const event2 = await eventWatcher.wait_for(['disconnect']);
   assert_true(event2 instanceof Event);
   assert_equals(event2.target, port1);
 
   ports = await navigator.serial.getPorts();
   assert_equals(ports.length, 0);
-}, 'A "disconnect" event is fired on ports when they are removed.');
+}, 'A "disconnect" event is fired when ports are added.');

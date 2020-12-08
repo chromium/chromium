@@ -1,32 +1,13 @@
-// META: script=/resources/testharness.js
-// META: script=/resources/testharnessreport.js
 // META: script=/resources/testdriver.js
 // META: script=/resources/testdriver-vendor.js
-// META: script=/gen/layout_test_data/mojo/public/js/mojo_bindings.js
-// META: script=/gen/mojo/public/mojom/base/unguessable_token.mojom.js
-// META: script=/gen/third_party/blink/public/mojom/serial/serial.mojom.js
+// META: script=/resources/test-only-api.js
 // META: script=/serial/resources/common.js
 // META: script=resources/automation.js
 
-promise_test((t) => {
+serial_test((t, fake) => {
   return promise_rejects_dom(
       t, 'SecurityError', navigator.serial.requestPort());
 }, 'requestPort() rejects without a user gesture');
-
-promise_test(async (t) => {
-  let interceptor =
-      new MojoInterfaceInterceptor(blink.mojom.SerialService.name);
-  interceptor.oninterfacerequest = e => e.handle.close();
-  interceptor.start();
-
-  await trustedClick();
-  try {
-    await promise_rejects_dom(
-        t, 'NotFoundError', navigator.serial.requestPort());
-  } finally {
-    interceptor.stop();
-  }
-}, 'requestPort() rejects if Mojo service connection fails');
 
 serial_test(async (t, fake) => {
   await trustedClick();
