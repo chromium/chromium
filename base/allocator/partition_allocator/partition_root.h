@@ -1027,9 +1027,8 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
       tcache = internal::ThreadCache::Create(this);
       with_thread_cache = true;
     }
-    ret = tcache->GetFromCache(bucket_index);
+    ret = tcache->GetFromCache(bucket_index, &utilized_slot_size);
     is_already_zeroed = false;
-    utilized_slot_size = bucket_at(bucket_index).slot_size;
 
 #if DCHECK_IS_ON()
     // Make sure that the allocated pointer comes from the same place it would

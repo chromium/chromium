@@ -228,19 +228,28 @@ ThreadCache::ThreadCache(PartitionRoot<ThreadSafe>* root)
 
   for (int index = 0; index < kBucketCount; index++) {
     const auto& root_bucket = root->buckets[index];
+    Bucket* tcache_bucket = &buckets_[index];
     // Invalid bucket.
-    if (!root_bucket.active_slot_spans_head)
+    if (!root_bucket.active_slot_spans_head) {
+      // Explicitly set this, as size computations iterate over all buckets.
+      tcache_bucket->limit = 0;
+      tcache_bucket->count = 0;
+      tcache_bucket->slot_size = 0;
       continue;
+    }
 
     // Smaller allocations are more frequent, and more performance-sensitive.
     // Cache more small objects, and fewer larger ones, to save memory.
-    size_t element_size = root_bucket.slot_size;
-    if (element_size <= 128) {
-      buckets_[index].limit = 128;
-    } else if (element_size <= 256) {
-      buckets_[index].limit = 64;
+    size_t slot_size = root_bucket.slot_size;
+    PA_CHECK(slot_size <= std::numeric_limits<uint16_t>::max());
+    tcache_bucket->slot_size = static_cast<uint16_t>(slot_size);
+
+    if (slot_size <= 128) {
+      tcache_bucket->limit = kMaxCountPerBucket;
+    } else if (slot_size <= 256) {
+      tcache_bucket->limit = kMaxCountPerBucket / 2;
     } else {
-      buckets_[index].limit = 32;
+      tcache_bucket->limit = kMaxCountPerBucket / 4;
     }
   }
 }
@@ -367,7 +376,7 @@ void ThreadCache::AccumulateStats(ThreadCacheStats* stats) const {
 
   for (size_t i = 0; i < kBucketCount; i++) {
     stats->bucket_total_memory +=
-        buckets_[i].count * root_->buckets[i].slot_size;
+        buckets_[i].count * static_cast<size_t>(buckets_[i].slot_size);
   }
   stats->metadata_overhead += sizeof(*this);
 }

@@ -184,8 +184,8 @@ class BASE_EXPORT ThreadCache {
   // Returns nullptr for failure.
   //
   // Has the same behavior as RawAlloc(), that is: no cookie nor ref-count
-  // handling.
-  ALWAYS_INLINE void* GetFromCache(size_t bucket_index);
+  // handling. Sets |slot_size| to the allocated size upon success.
+  ALWAYS_INLINE void* GetFromCache(size_t bucket_index, size_t* slot_size);
 
   // Asks this cache to trigger |Purge()| at a later point. Can be called from
   // any thread.
@@ -207,12 +207,15 @@ class BASE_EXPORT ThreadCache {
 
   // TODO(lizeb): Once we have periodic purge, lower the ratio.
   static constexpr uint16_t kBatchFillRatio = 8;
+  static constexpr uint8_t kMaxCountPerBucket = 128;
 
  private:
   struct Bucket {
     PartitionFreelistEntry* freelist_head;
-    uint16_t count;
-    uint16_t limit;
+    // Want to keep sizeof(Bucket) small, using small types.
+    uint8_t count;
+    uint8_t limit;
+    uint16_t slot_size;
   };
   enum class Mode { kNormal, kPurge, kNotifyRegistry };
 
@@ -286,7 +289,8 @@ ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* address,
   return true;
 }
 
-ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index) {
+ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index,
+                                              size_t* slot_size) {
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
   INCREMENT_COUNTER(stats_.alloc_count);
   // Only handle "small" allocations.
@@ -319,6 +323,7 @@ ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index) {
   bucket.count--;
   PA_DCHECK(bucket.count != 0 || !next);
   bucket.freelist_head = next;
+  *slot_size = bucket.slot_size;
 
   return result;
 }
