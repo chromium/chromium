@@ -717,56 +717,34 @@ namespace nested_test {
 
 // Verifies that calling the log macro goes to the Fuchsia system logs.
 TEST_F(LoggingTest, FuchsiaSystemLogging) {
-  const char kLogMessage[] = "system log!";
+  constexpr char kLogMessage[] = "system log!";
+
+  base::SimpleTestLogListener listener;
+
+  // Connect the test LogListenerSafe to the Log.
+  std::unique_ptr<fuchsia::logger::LogFilterOptions> options =
+      std::make_unique<fuchsia::logger::LogFilterOptions>();
+  options->tags = {"base_unittests__exec"};
+  fuchsia::logger::LogPtr log = base::ComponentContextForProcess()
+                                    ->svc()
+                                    ->Connect<fuchsia::logger::Log>();
+  listener.ListenToLog(log.get(), std::move(options));
+
+  // Emit the test log message, and spin the loop until it is reported to the
+  // test listener.
   LOG(ERROR) << kLogMessage;
 
-  base::TestLogListenerSafe listener;
-  fidl::Binding<fuchsia::logger::LogListenerSafe> binding(&listener);
+  base::Optional<fuchsia::logger::LogMessage> logged_message =
+      listener.RunUntilMessageReceived(kLogMessage);
 
-  fuchsia::logger::LogMessage logged_message;
-
-  base::RunLoop wait_for_message_loop;
-
-  fuchsia::logger::LogPtr logger = base::ComponentContextForProcess()
-                                       ->svc()
-                                       ->Connect<fuchsia::logger::Log>();
-  logger.set_error_handler([&wait_for_message_loop](zx_status_t status) {
-    ZX_LOG(ERROR, status) << "fuchsia.logger.Log disconnected";
-    ADD_FAILURE();
-    wait_for_message_loop.Quit();
-  });
-
-  // |dump_logs| checks whether the expected log line has been received yet,
-  // and invokes DumpLogsSafe() if not. It passes itself as the completion
-  // callback, so that when the call completes it can check again for the
-  // expected message and re-invoke DumpLogsSafe(), or quit the loop, as
-  // appropriate.
-  base::RepeatingClosure dump_logs = base::BindLambdaForTesting([&]() {
-    if (listener.DidReceiveString(kLogMessage, &logged_message)) {
-      wait_for_message_loop.Quit();
-      return;
-    }
-
-    std::unique_ptr<fuchsia::logger::LogFilterOptions> options =
-        std::make_unique<fuchsia::logger::LogFilterOptions>();
-    options->tags = {"base_unittests__exec"};
-    listener.set_on_dump_logs_done(dump_logs);
-    logger->DumpLogsSafe(binding.NewBinding(), std::move(options));
-  });
-
-  // Start the first DumpLogs() call.
-  dump_logs.Run();
-
-  // Run until kLogMessage is received.
-  wait_for_message_loop.Run();
-
-  EXPECT_EQ(logged_message.severity,
+  ASSERT_TRUE(logged_message.has_value());
+  EXPECT_EQ(logged_message->severity,
             static_cast<int32_t>(fuchsia::logger::LogLevelFilter::ERROR));
-  ASSERT_EQ(logged_message.tags.size(), 1u);
-  EXPECT_EQ(logged_message.tags[0], base::CommandLine::ForCurrentProcess()
-                                        ->GetProgram()
-                                        .BaseName()
-                                        .AsUTF8Unsafe());
+  ASSERT_EQ(logged_message->tags.size(), 1u);
+  EXPECT_EQ(logged_message->tags[0], base::CommandLine::ForCurrentProcess()
+                                         ->GetProgram()
+                                         .BaseName()
+                                         .AsUTF8Unsafe());
 }
 
 TEST_F(LoggingTest, FuchsiaLogging) {
@@ -786,6 +764,7 @@ TEST_F(LoggingTest, FuchsiaLogging) {
   ZX_CHECK(true, ZX_ERR_INTERNAL);
   ZX_DCHECK(true, ZX_ERR_INTERNAL);
 }
+
 #endif  // defined(OS_FUCHSIA)
 
 TEST_F(LoggingTest, LogPrefix) {
