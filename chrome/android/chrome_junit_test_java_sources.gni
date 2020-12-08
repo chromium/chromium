@@ -246,6 +246,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonCoordinatorTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonTest.java",
+  "junit/src/org/chromium/chrome/browser/toolbar/top/CohortUtilsTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/top/HomeButtonCoordinatorTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/top/OptionalBrowsingModeButtonControllerTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/top/StartSurfaceToolbarMediatorUnitTest.java",

@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 
 /**
  * Root component for the home button on the toolbar. Intended to own the {@link HomeButton}, but
@@ -39,6 +40,10 @@ public class HomeButtonCoordinator {
     static final String MAIN_INTENT_FROM_LAUNCHER_PARAM_NAME = "isMainIntentFromLauncher";
     @VisibleForTesting
     static final String INTENT_WITH_EFFECT_PARAM_NAME = "intentWithEffect";
+    // This is used to lookup the name of a feature used to track a cohort of users who triggered
+    // a particular IPH, or would have triggered for control groups with the tracking_only
+    // configuration.
+    private static final String COHORT_FEATURE_NAME_PARAM_NAME = "cohortFeatureName";
 
     private final Context mContext;
     private final View mHomeButton;
@@ -58,6 +63,7 @@ public class HomeButtonCoordinator {
      * @param promoShownOneshotSupplier Potentially delayed information about if a promo was shown.
      * @param isHomepageNonNtpSupplier Supplier for whether the current homepage is not NTP.
      * @param tabSupplier Supplier of the activity tab.
+     * @param tracker Feature engagement interface to check triggered state.
      */
     public HomeButtonCoordinator(@NonNull Context context, @Nullable View homeButton,
             @NonNull UserEducationHelper userEducationHelper,
@@ -65,7 +71,7 @@ public class HomeButtonCoordinator {
             @NonNull OneshotSupplier<IntentMetadata> intentMetadataOneshotSupplier,
             @NonNull OneshotSupplier<Boolean> promoShownOneshotSupplier,
             @NonNull Supplier<Boolean> isHomepageNonNtpSupplier,
-            @NonNull ObservableSupplier<Tab> tabSupplier) {
+            @NonNull ObservableSupplier<Tab> tabSupplier, @NonNull Tracker tracker) {
         mContext = context;
         mHomeButton = homeButton;
         mUserEducationHelper = userEducationHelper;
@@ -79,6 +85,8 @@ public class HomeButtonCoordinator {
                 handlePageLoadFinished(url);
             }
         });
+        CohortUtils.tagCohortGroupIfTriggered(tracker,
+                FeatureConstants.NEW_TAB_PAGE_HOME_BUTTON_FEATURE, COHORT_FEATURE_NAME_PARAM_NAME);
     }
 
     /** Cleans up observers. */
