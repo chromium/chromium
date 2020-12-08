@@ -1089,8 +1089,8 @@ var OSSettingsCellularSetupDialogTest =
     class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return super.browsePreload;/* +
-        'chromeos/internet_page/cellular_setup_dialog.html';*/
+    return super.browsePreload +
+        'chromeos/internet_page/cellular_setup_dialog.html';
   }
 
   /** @override */
