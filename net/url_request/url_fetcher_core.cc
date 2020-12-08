@@ -231,14 +231,13 @@ void URLFetcherCore::SetReferrerPolicy(ReferrerPolicy referrer_policy) {
   referrer_policy_ = referrer_policy;
 }
 
-void URLFetcherCore::SetExtraRequestHeaders(
-    const std::string& extra_request_headers) {
+void URLFetcherCore::ClearExtraRequestHeaders() {
   extra_request_headers_.Clear();
-  extra_request_headers_.AddHeadersFromString(extra_request_headers);
 }
 
-void URLFetcherCore::AddExtraRequestHeader(const std::string& header_line) {
-  extra_request_headers_.AddHeaderFromString(header_line);
+void URLFetcherCore::AddExtraRequestHeader(const std::string& name,
+                                           const std::string& value) {
+  extra_request_headers_.SetHeader(name, value);
 }
 
 void URLFetcherCore::SetRequestContext(

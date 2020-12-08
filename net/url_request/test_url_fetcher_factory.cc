@@ -107,14 +107,13 @@ void TestURLFetcher::SetReferrer(const std::string& referrer) {
 
 void TestURLFetcher::SetReferrerPolicy(ReferrerPolicy referrer_policy) {}
 
-void TestURLFetcher::SetExtraRequestHeaders(
-    const std::string& extra_request_headers) {
+void TestURLFetcher::ClearExtraRequestHeaders() {
   fake_extra_request_headers_.Clear();
-  fake_extra_request_headers_.AddHeadersFromString(extra_request_headers);
 }
 
-void TestURLFetcher::AddExtraRequestHeader(const std::string& header_line) {
-  fake_extra_request_headers_.AddHeaderFromString(header_line);
+void TestURLFetcher::AddExtraRequestHeader(const std::string& name,
+                                           const std::string& value) {
+  fake_extra_request_headers_.SetHeader(name, value);
 }
 
 void TestURLFetcher::SetRequestContext(

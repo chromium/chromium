@@ -328,8 +328,7 @@ PrinterJobHandler::HandleJobMetadataResponse(const net::URLFetcher* source,
           request_url = GURL(job_details_.print_ticket_url_);
         }
         request_->StartGetRequest(CloudPrintURLFetcher::REQUEST_TICKET,
-                                  request_url, this, kJobDataMaxRetryCount,
-                                  std::string());
+                                  request_url, this, kJobDataMaxRetryCount);
         return CloudPrintURLFetcher::STOP_PROCESSING;
       }
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -363,11 +362,9 @@ PrinterJobHandler::HandlePrintTicketResponse(const net::URLFetcher* source,
     job_details_.print_ticket_mime_type_ = mime_type;
     SetNextDataHandler(&PrinterJobHandler::HandlePrintDataResponse);
     request_ = CloudPrintURLFetcher::Create(kPartialTrafficAnnotation);
-    std::string accept_headers = "Accept: ";
-    accept_headers += print_system_->GetSupportedMimeTypes();
-    request_->StartGetRequest(CloudPrintURLFetcher::REQUEST_DATA,
-        GURL(job_details_.print_data_url_), this, kJobDataMaxRetryCount,
-        accept_headers);
+    request_->StartGetRequestWithAcceptHeader(
+        CloudPrintURLFetcher::REQUEST_DATA, GURL(job_details_.print_data_url_),
+        this, kJobDataMaxRetryCount, print_system_->GetSupportedMimeTypes());
   } else {
     UMA_HISTOGRAM_ENUMERATION("CloudPrint.JobHandlerEvent",
                               JOB_HANDLER_INVALID_TICKET, JOB_HANDLER_MAX);
@@ -479,7 +476,7 @@ void PrinterJobHandler::Start() {
         CloudPrintURLFetcher::REQUEST_JOB_FETCH,
         GetUrlForJobFetch(cloud_print_server_url_,
                           printer_info_cloud_.printer_id, job_fetch_reason_),
-        this, kCloudPrintAPIMaxRetryCount, std::string());
+        this, kCloudPrintAPIMaxRetryCount);
     last_job_fetch_time_ = base::TimeTicks::Now();
     VLOG(1) << "CP_CONNECTOR: Last job fetch time"
             << ", printer name: " << printer_info_.printer_name
@@ -567,7 +564,7 @@ void PrinterJobHandler::UpdateJobStatus(PrintJobStatus status,
       CloudPrintURLFetcher::REQUEST_UPDATE_JOB,
       GetUrlForJobStatusUpdate(cloud_print_server_url_, job_details_.job_id_,
                                status, error),
-      this, kCloudPrintAPIMaxRetryCount, std::string());
+      this, kCloudPrintAPIMaxRetryCount);
 }
 
 void PrinterJobHandler::RunScheduledJobCheck() {
@@ -752,13 +749,9 @@ void PrinterJobHandler::OnReceivePrinterCaps(
     request_ = CloudPrintURLFetcher::Create(kPartialTrafficAnnotation);
     request_->StartPostRequest(
         CloudPrintURLFetcher::REQUEST_UPDATE_PRINTER,
-        GetUrlForPrinterUpdate(
-            cloud_print_server_url_, printer_info_cloud_.printer_id),
-        this,
-        kCloudPrintAPIMaxRetryCount,
-        mime_type,
-        post_data,
-        std::string());
+        GetUrlForPrinterUpdate(cloud_print_server_url_,
+                               printer_info_cloud_.printer_id),
+        this, kCloudPrintAPIMaxRetryCount, mime_type, post_data);
   } else {
     // We are done here. Go to the Stop state
     VLOG(1) << "CP_CONNECTOR: Stopping printer job handler"

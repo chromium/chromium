@@ -236,7 +236,7 @@ void CloudPrintURLFetcherTest::CreateFetcher(const GURL& url, int max_retries) {
   max_retries_ = max_retries;
   start_time_ = Time::Now();
   fetcher_->StartGetRequest(CloudPrintURLFetcher::REQUEST_MAX, url, this,
-                            max_retries_, std::string());
+                            max_retries_);
 }
 
 CloudPrintURLFetcher::ResponseAction
@@ -305,7 +305,7 @@ CloudPrintURLFetcherOverloadTest::HandleRawData(
   response_count_++;
   if (response_count_ < 20) {
     fetcher_->StartGetRequest(CloudPrintURLFetcher::REQUEST_MAX, url, this,
-                              max_retries_, std::string());
+                              max_retries_);
   } else {
     // We have already sent 20 requests continuously. And we expect that
     // it takes more than 1 second due to the overload protection settings.

@@ -116,9 +116,9 @@ class TestURLFetcher : public URLFetcher {
   void SetAllowCredentials(bool allow_credentials) override {}
   void SetReferrer(const std::string& referrer) override;
   void SetReferrerPolicy(ReferrerPolicy referrer_policy) override;
-  void SetExtraRequestHeaders(
-      const std::string& extra_request_headers) override;
-  void AddExtraRequestHeader(const std::string& header_line) override;
+  void ClearExtraRequestHeaders() override;
+  void AddExtraRequestHeader(const std::string& name,
+                             const std::string& value) override;
   void SetRequestContext(
       URLRequestContextGetter* request_context_getter) override;
   void SetInitiator(const base::Optional<url::Origin>& initiator) override;

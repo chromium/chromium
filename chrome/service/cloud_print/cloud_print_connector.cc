@@ -347,8 +347,8 @@ void CloudPrintConnector::StartGetRequest(const GURL& url,
                                           ResponseHandler handler) {
   next_response_handler_ = handler;
   request_ = CloudPrintURLFetcher::Create(partial_traffic_annotation_);
-  request_->StartGetRequest(CloudPrintURLFetcher::REQUEST_UPDATE_JOB,
-                            url, this, max_retries, std::string());
+  request_->StartGetRequest(CloudPrintURLFetcher::REQUEST_UPDATE_JOB, url, this,
+                            max_retries);
 }
 
 void CloudPrintConnector::StartPostRequest(
@@ -360,8 +360,8 @@ void CloudPrintConnector::StartPostRequest(
     ResponseHandler handler) {
   next_response_handler_ = handler;
   request_ = CloudPrintURLFetcher::Create(partial_traffic_annotation_);
-  request_->StartPostRequest(
-      type, url, this, max_retries, mime_type, post_data, std::string());
+  request_->StartPostRequest(type, url, this, max_retries, mime_type,
+                             post_data);
 }
 
 void CloudPrintConnector::ReportUserMessage(const std::string& message_id,
@@ -380,7 +380,7 @@ void CloudPrintConnector::ReportUserMessage(const std::string& message_id,
       CloudPrintURLFetcher::Create(partial_traffic_annotation_);
   user_message_request_->StartPostRequest(
       CloudPrintURLFetcher::REQUEST_USER_MESSAGE, url, this, 1, mime_type,
-      post_data, std::string());
+      post_data);
 }
 
 bool CloudPrintConnector::RemovePrinterFromList(

@@ -39,8 +39,11 @@ std::string CloudPrintApiFlowRequest::GetOAuthScope() {
   return cloud_devices::kCloudPrintAuthScope;
 }
 
-std::vector<std::string> CloudPrintApiFlowRequest::GetExtraRequestHeaders() {
-  return std::vector<std::string>(1, cloud_print::kChromeCloudPrintProxyHeader);
+std::vector<std::pair<std::string, std::string>>
+CloudPrintApiFlowRequest::GetExtraRequestHeaders() {
+  return std::vector<std::pair<std::string, std::string>>(
+      1, std::make_pair(cloud_print::kChromeCloudPrintProxyHeaderName,
+                        cloud_print::kChromeCloudPrintProxyHeaderValue));
 }
 
 }  // namespace cloud_print

@@ -7,7 +7,8 @@
 namespace cloud_print {
 
 const char kCloudPrintUserAgent[] = "GoogleCloudPrintProxy";
-const char kChromeCloudPrintProxyHeader[] = "X-CloudPrint-Proxy: Chrome";
+const char kChromeCloudPrintProxyHeaderName[] = "X-CloudPrint-Proxy";
+const char kChromeCloudPrintProxyHeaderValue[] = "Chrome";
 const char kCloudPrintPushNotificationsSource[] = "cloudprint.google.com";
 
 const char kProxyIdValue[] = "proxy";

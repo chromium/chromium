@@ -207,16 +207,15 @@ class NET_EXPORT URLFetcher {
   // The referrer policy may only be changed before Start() is called.
   virtual void SetReferrerPolicy(ReferrerPolicy referrer_policy) = 0;
 
-  // Set extra headers on the request.  Must be called before the request
-  // is started.
-  // This replaces the entire extra request headers.
-  virtual void SetExtraRequestHeaders(
-      const std::string& extra_request_headers) = 0;
+  // Clear all extra headers on the request (if any have been set before).
+  // Must be called before the request is started.
+  virtual void ClearExtraRequestHeaders() = 0;
 
-  // Add header (with format field-name ":" [ field-value ]) to the request
-  // headers.  Must be called before the request is started.
+  // Add an extra header to the request headers.  Must be called before the
+  // request is started.
   // This appends the header to the current extra request headers.
-  virtual void AddExtraRequestHeader(const std::string& header_line) = 0;
+  virtual void AddExtraRequestHeader(const std::string& name,
+                                     const std::string& value) = 0;
 
   // Set the URLRequestContext on the request.  Must be called before the
   // request is started.

@@ -71,7 +71,7 @@ void CloudPrintAuth::AuthenticateWithToken(
   request_ = CloudPrintURLFetcher::Create(partial_traffic_annotation_);
   request_->StartGetRequest(CloudPrintURLFetcher::REQUEST_AUTH_CODE,
                             get_authcode_url, this,
-                            kCloudPrintAuthMaxRetryCount, std::string());
+                            kCloudPrintAuthMaxRetryCount);
 }
 
 void CloudPrintAuth::AuthenticateWithRobotToken(

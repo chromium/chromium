@@ -90,8 +90,8 @@ class URLFetcherCore : public base::RefCountedThreadSafe<URLFetcherCore>,
   void SetAllowCredentials(bool allow_credentials);
   void SetReferrer(const std::string& referrer);
   void SetReferrerPolicy(ReferrerPolicy referrer_policy);
-  void SetExtraRequestHeaders(const std::string& extra_request_headers);
-  void AddExtraRequestHeader(const std::string& header_line);
+  void ClearExtraRequestHeaders();
+  void AddExtraRequestHeader(const std::string& name, const std::string& value);
   void SetRequestContext(URLRequestContextGetter* request_context_getter);
   // Set the origin that should be considered as "initiating" the fetch. This
   // URL

@@ -1431,7 +1431,8 @@ class ReuseFetcherDelegate : public WaitingURLFetcherDelegate {
       EXPECT_EQ("request1", data);
 
       fetcher()->SetRequestContext(second_request_context_getter_.get());
-      fetcher()->SetExtraRequestHeaders("test: request2");
+      fetcher()->ClearExtraRequestHeaders();
+      fetcher()->AddExtraRequestHeader("test", "request2");
       fetcher()->Start();
       return;
     }
@@ -1454,7 +1455,8 @@ TEST_F(URLFetcherTest, ReuseFetcherForSameURL) {
   ReuseFetcherDelegate delegate(context_getter);
   delegate.CreateFetcher(test_server_->GetURL("/echoheader?test"),
                          URLFetcher::GET, context_getter);
-  delegate.fetcher()->SetExtraRequestHeaders("test: request1");
+  delegate.fetcher()->ClearExtraRequestHeaders();
+  delegate.fetcher()->AddExtraRequestHeader("test", "request1");
   delegate.StartFetcherAndWait();
 
   EXPECT_EQ(OK, delegate.fetcher()->GetError());

@@ -67,7 +67,9 @@ class GCDApiFlow {
     virtual std::string GetOAuthScope() = 0;
 
     // Returns extra headers, if any, to send with this request.
-    virtual std::vector<std::string> GetExtraRequestHeaders() = 0;
+    virtual std::vector<
+        std::pair<std::string /* name */, std::string /* value */>>
+    GetExtraRequestHeaders() = 0;
 
     // Returns the network traffic annotation tag for this request.
     virtual NetworkTrafficAnnotation GetNetworkTrafficAnnotationType() = 0;
@@ -93,7 +95,8 @@ class CloudPrintApiFlowRequest : public GCDApiFlow::Request {
 
   // GCDApiFlowRequest implementation
   std::string GetOAuthScope() override;
-  std::vector<std::string> GetExtraRequestHeaders() override;
+  std::vector<std::pair<std::string, std::string>> GetExtraRequestHeaders()
+      override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CloudPrintApiFlowRequest);
