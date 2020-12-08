@@ -111,13 +111,6 @@ void NigoriModelTypeProcessor::OnCommitCompleted(
   bridge_->ApplySyncChanges(/*data=*/base::nullopt);
 }
 
-void NigoriModelTypeProcessor::OnCommitFailed(SyncCommitError commit_error) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(entity_);
-
-  entity_->ClearTransientSyncState();
-}
-
 void NigoriModelTypeProcessor::OnUpdateReceived(
     const sync_pb::ModelTypeState& type_state,
     UpdateResponseDataList updates) {
