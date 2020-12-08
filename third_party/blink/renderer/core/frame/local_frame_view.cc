@@ -2802,8 +2802,14 @@ bool LocalFrameView::RunPrePaintLifecyclePhase(
             if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
               frame_view.SetPaintArtifactCompositorNeedsUpdate();
           }
-          if (layout_view->ShouldCheckForPaintInvalidation())
+          if (layout_view->ShouldCheckForPaintInvalidation()) {
             owner->SetShouldCheckForPaintInvalidation();
+          } else {
+            // TODO(szager): Remove these after diagnosing crash
+            CHECK(!layout_view->ShouldCheckGeometryForPaintInvalidation());
+            CHECK(!layout_view
+                       ->DescendantShouldCheckGeometryForPaintInvalidation());
+          }
         }
       }
       frame_view.pre_paint_skipped_while_throttled_ = false;
