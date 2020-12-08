@@ -287,6 +287,9 @@ if (is_chromeos_device) {
 
       # crbug.com/1115622
       "inputs.VirtualKeyboardOOBE",
+
+      # crbug.com/1156006
+      "filemanager.DragDrop",
     ]
   }
 
