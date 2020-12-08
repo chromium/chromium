@@ -400,7 +400,7 @@
   {
     "name": "back-forward-cache",
     "owners": [ "bfcache-dev@chromium.org" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 95
   },
   {
     "name": "background-task-component-update",
