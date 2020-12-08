@@ -59,7 +59,7 @@
 <translation id="1576937952766665062">Bengaleraren transliterazioa</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
-<translation id="162175252992296058">Portugaldarra, AEBko nazioarteko teklatuarekin</translation>
+<translation id="162175252992296058">Portugaldarra, nazioarteko teklatu estatubatuarrarekin</translation>
 <translation id="1641780993263690097">Txinatarra (pinyin)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> fitxategi konexiorik gabe erabiltzeko deskargatzen</translation>
 <translation id="164969095109328410">Chrome gailua</translation>
@@ -110,7 +110,7 @@
 <translation id="2125607626296734455">Khmertarra</translation>
 <translation id="2142680004883808240">Errusiarra, YaZHert teklatu fonetikoarekin</translation>
 <translation id="2163152940313951844">Karaktere honek ez du balio: <ph name="CHARACTER_NAME" /></translation>
-<translation id="2184934335987813305">Portugaldarra, AEBko nazioarteko teklatuarekin (ordenagailuetarako)</translation>
+<translation id="2184934335987813305">Portugaldarra, nazioarteko teklatu estatubatuarrarekin (ordenagailurako)</translation>
 <translation id="2198315389084035571">Txinera (sinplifikatua)</translation>
 <translation id="2208158072373999562">ZIP artxiboa</translation>
 <translation id="22085916256174561">Korearra</translation>
@@ -234,7 +234,7 @@
 <translation id="3527085408025491307">Karpeta</translation>
 <translation id="3549797760399244642">Joan drive.google.com webgunera…</translation>
 <translation id="3553048479571901246">Fitxategiak <ph name="APP_NAME" /> aplikazioarekin irekitzeko, lehenik kopia itzazu Windows-eko fitxategien karpetan.</translation>
-<translation id="3556731189587832921">Ingelesa (AEB), nazioarteko teklatuarekin (ordenagailuetarako)</translation>
+<translation id="3556731189587832921">Ingelesa (AEB), nazioarteko teklatuarekin (ordenagailurako)</translation>
 <translation id="357479282490346887">Lituaniarra</translation>
 <translation id="3603385196401704894">Frantsesa (Kanada)</translation>
 <translation id="3606220979431771195">Turkierako F teklatua</translation>
@@ -469,7 +469,7 @@
 <translation id="5911887972742538906">Errore bat gertatu da Linux aplikazioa instalatzean.</translation>
 <translation id="5912396950572065471">Formatua</translation>
 <translation id="5913638992615760742">Ezin izan da kopiatu ustekabeko errore hau gertatu delako: <ph name="ERROR_MESSAGE" /></translation>
-<translation id="5926082595146149752">Nederlandarra (Herbehereak), AEBko nazioarteko teklatuarekin (ordenagailuetarako)</translation>
+<translation id="5926082595146149752">Nederlandarra (Herbehereak), nazioarteko teklatu estatubatuarrarekin (ordenagailurako)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementu</translation>
 <translation id="5957366693331451795">Chromebox-ak</translation>
@@ -485,7 +485,7 @@
 <translation id="610101264611565198"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> karpetara eramaten</translation>
 <translation id="6129953537138746214">Zuriunea</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> mugitzen…</translation>
-<translation id="613750717151263950">Japoniarra, AEBko teklatuarekin</translation>
+<translation id="613750717151263950">Japoniarra, teklatu estatubatuarrarekin</translation>
 <translation id="6146563240635539929">Bideoak</translation>
 <translation id="6150853954427645995">Fitxategia gordetzeko eta konexiorik gabe erabili ahal izateko, konekta zaitez berriro, egin klik eskuineko botoiarekin fitxategiaren gainean eta hautatu <ph name="OFFLINE_CHECKBOX_NAME" /> aukera.</translation>
 <translation id="6164412158936057769">Tximeletak</translation>

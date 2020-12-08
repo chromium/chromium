@@ -538,7 +538,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="158849752021629804">Need home network</translation>
 <translation id="1588870296199743671">Open Link With...</translation>
-<translation id="1589055389569595240">Show Spelling and Grammar</translation>
+<translation id="1589055389569595240">Show spelling and grammar</translation>
 <translation id="1591679663873027990">Give Parallels Desktop permission to access USB devices. Parallels Desktop won't remember a USB device after it's removed.</translation>
 <translation id="1593594475886691512">Formatting...</translation>
 <translation id="159359590073980872">Image Cache</translation>
@@ -870,7 +870,7 @@
 <translation id="1956390763342388273">This will upload all files from '<ph name="FOLDER_PATH" />'. Only do this if you trust the site.</translation>
 <translation id="196040970347962278">Establish an Internet connection first</translation>
 <translation id="1962233722219655970">This page uses a Native Client app that doesn't work on your computer.</translation>
-<translation id="1963227389609234879">Remove All</translation>
+<translation id="1963227389609234879">Remove all</translation>
 <translation id="1963976881984600709">Standard protection</translation>
 <translation id="196425401113508486">Highlight the cursor when moving</translation>
 <translation id="1965624977906726414">Has no special permissions.</translation>
@@ -1000,7 +1000,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2124930039827422115">{1,plural, =1{Rated <ph name="AVERAGE_RATING" /> by one user.}other{Rated <ph name="AVERAGE_RATING" /> by # users.}}</translation>
 <translation id="2126167708562367080">Sync is disabled by your administrator.</translation>
 <translation id="2127372758936585790">Low-power charger</translation>
-<translation id="212862741129535676">Frequency State Occupancy Percentage</translation>
+<translation id="212862741129535676">Frequency state occupancy percentage</translation>
 <translation id="212876957201860463">Preparing to set up your mobile device…</translation>
 <translation id="2129825002735785149">Update plug-in</translation>
 <translation id="2131077480075264">Unable to install "<ph name="APP_NAME" />" because it is not allowed by "<ph name="IMPORT_NAME" />"</translation>
@@ -1986,7 +1986,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3266179261140759675">Block closed sites from sending and receiving data</translation>
 <translation id="3266274118485960573">Safety check is running.</translation>
 <translation id="3267726687589094446">Continue allowing automatic downloads of multiple files</translation>
-<translation id="3268451620468152448">Open Tabs</translation>
+<translation id="3268451620468152448">Open tabs</translation>
 <translation id="3269069891205016797">Your information will be removed from the device when you sign out.</translation>
 <translation id="3269093882174072735">Load image</translation>
 <translation id="3269612321104318480">Light teal and white</translation>
@@ -2236,7 +2236,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3550593477037018652">Disconnect mobile network</translation>
 <translation id="3550915441744863158">Chrome updates automatically so you always have the freshest version</translation>
 <translation id="3551320343578183772">Close Tab</translation>
-<translation id="3552780134252864554">Cleared on Exit</translation>
+<translation id="3552780134252864554">Cleared on exit</translation>
 <translation id="3555812735919707620">Remove extension</translation>
 <translation id="3556000484321257665">Your search engine was changed to <ph name="URL" />.</translation>
 <translation id="3556433843310711081">Your manager can unblock it for you</translation>
@@ -5028,7 +5028,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6848388270925200958">At the moment, you have some cards that can only be used on this device</translation>
 <translation id="6850286078059909152">Text colour</translation>
 <translation id="6851181413209322061">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. If additional Web &amp; App Activity is turned on for your child, this data may be saved to their Google Account.</translation>
-<translation id="6851497530878285708">App Enabled</translation>
+<translation id="6851497530878285708">App enabled</translation>
 <translation id="6853388645642883916">Updater sleeping</translation>
 <translation id="68541483639528434">Close other tabs</translation>
 <translation id="6855892664589459354">Crostini backup and restore</translation>

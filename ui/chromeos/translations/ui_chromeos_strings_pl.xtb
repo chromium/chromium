@@ -8,7 +8,7 @@
 <translation id="1060368002126861100">Aby otworzyć pliki w aplikacji <ph name="APP_NAME" />, najpierw przenieś je do folderu Pliki systemu Windows.</translation>
 <translation id="1062407476771304334">Zastąp</translation>
 <translation id="1119069657431255176">Archiwum Tar po kompresji Bzip2</translation>
-<translation id="1120073797882051782">Hangul Romaja</translation>
+<translation id="1120073797882051782">hangul romaja</translation>
 <translation id="112387589102719461">Angielski (USA) z klawiaturą programisty Dvoraka</translation>
 <translation id="1134697384939541955">Angielski (USA) z klawiaturą rozszerzoną</translation>
 <translation id="1148097584170732637">Znaleziono <ph name="FILE_COUNT" />.
@@ -17,7 +17,7 @@
     <ph name="LINE_BREAK2" />
     Wybierz mniej zdjęć.</translation>
 <translation id="1150565364351027703">Okulary przeciwsłoneczne</translation>
-<translation id="115443833402798225">Hangul Ahnmatae</translation>
+<translation id="115443833402798225">hangul ahnmatae</translation>
 <translation id="1155759005174418845">Kataloński</translation>
 <translation id="1172970565351728681">Zostało około <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Zmień nazwę</translation>
@@ -304,7 +304,7 @@
 <translation id="4372884569765913867">1 x 1</translation>
 <translation id="4394214039309501350">Link zewnętrzny</translation>
 <translation id="4425149324548788773">Mój dysk</translation>
-<translation id="4470564870223067757">Zestaw Hangul 2</translation>
+<translation id="4470564870223067757">zestaw Hangul 2</translation>
 <translation id="4477002475007461989">Rumuński</translation>
 <translation id="4477219268485577442">bułgarska klawiatura fonetyczna</translation>
 <translation id="4509667233588080747">Angielski (USA) z międzynarodową klawiaturą Workman</translation>
@@ -386,7 +386,7 @@
 <translation id="5110329002213341433">Angielski (Kanada)</translation>
 <translation id="5123433949759960244">Piłka do koszykówki</translation>
 <translation id="5129662217315786329">polski</translation>
-<translation id="5144820558584035333">Zestaw Hangul 3 (390)</translation>
+<translation id="5144820558584035333">zestaw Hangul 3 (390)</translation>
 <translation id="5145331109270917438">Data modyfikacji</translation>
 <translation id="515594325917491223">Szachy</translation>
 <translation id="5158593464696388225">Nie udało się zapisać obrazu.</translation>
@@ -460,7 +460,7 @@
 <translation id="5804245609861364054">Kannada – transliteracja</translation>
 <translation id="5817397429773072584">chiński tradycyjny</translation>
 <translation id="5818003990515275822">Koreański</translation>
-<translation id="5819442873484330149">Zestaw Hangul 3 (ostateczny)</translation>
+<translation id="5819442873484330149">zestaw Hangul 3 (ostateczny)</translation>
 <translation id="5833610766403489739">Plik gdzieś się zawieruszył. Sprawdź ustawienie lokalizacji pobierania i spróbuj ponownie.</translation>
 <translation id="5838451609423551646">Usunięto wszystkie elementy z zaznaczenia.</translation>
 <translation id="5838825566232597749">Amerykańska klawiatura międzynarodowa Workman</translation>
@@ -547,7 +547,7 @@
 <translation id="6862635236584086457">Wszystkie pliki przechowywane w tym folderze są automatycznie zapisywane online</translation>
 <translation id="6864328437977279120">Sanskryt</translation>
 <translation id="6876155724392614295">Rower</translation>
-<translation id="6878261347041253038">Klawiatura dewanagari (fonetyczna)</translation>
+<translation id="6878261347041253038">klawiatura dewanagari (fonetyczna)</translation>
 <translation id="6885780034956018177">Ślimak</translation>
 <translation id="6896758677409633944">Kopiuj</translation>
 <translation id="6898028766943174120">Więcej podfolderów…</translation>
@@ -597,7 +597,7 @@
 <translation id="7359359531237882347">Kopiuję elementy (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="7375951387215729722">Lista plików posortowana według kolumny <ph name="COLUMN_NAME" /> w kolejności malejącej.</translation>
 <translation id="7408870451288633753">Czeski</translation>
-<translation id="7417453074306512035">Klawiatura etiopska</translation>
+<translation id="7417453074306512035">klawiatura etiopska</translation>
 <translation id="7417705661718309329">Mapa Google</translation>
 <translation id="7460898608667578234">Ukraiński</translation>
 <translation id="7489215562877293245">Znaleziono <ph name="FILE_COUNT" />
@@ -698,7 +698,7 @@
 <translation id="8269755669432358899">Zwiń panele informacji zwrotnej o plikach</translation>
 <translation id="8280151743281770066">ormiańska klawiatura fonetyczna</translation>
 <translation id="8294431847097064396">Źródło</translation>
-<translation id="8297012244086013755">Zestaw Hangul 3 (bez Shiftu)</translation>
+<translation id="8297012244086013755">zestaw Hangul 3 (bez Shiftu)</translation>
 <translation id="8299269255470343364">Japoński</translation>
 <translation id="8312871300878166382">Wklej do folderu</translation>
 <translation id="8329978297633540474">Zwykły tekst</translation>
