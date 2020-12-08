@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/ash/login_screen_client.h"
 #include "chrome/browser/ui/webui/chromeos/login/cookie_waiter.h"
 #include "chrome/browser/ui/webui/chromeos/login/enrollment_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
@@ -455,6 +456,12 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
                            .path()
                            .substr(1));
       break;
+    case GaiaPath::kReauth:
+      params.SetString(
+          "gaiaPath",
+          GaiaUrls::GetInstance()->embedded_reauth_chromeos_url().path().substr(
+              1));
+      break;
   }
 
   // We only send `chromeos_board` Gaia URL parameter if user has opted into
@@ -488,6 +495,23 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     }
   }
   public_saml_url_fetcher_.reset();
+
+  bool is_reauth = !context.email.empty();
+  if (is_reauth && features::IsGaiaReauthEndpointEnabled()) {
+    const AccountId account_id =
+        GetAccountId(context.email, context.gaia_id, AccountType::GOOGLE);
+    auto* user = user_manager::UserManager::Get()->FindUser(account_id);
+    DCHECK(user);
+    bool is_child_account = user && user->IsChild();
+    // Enable the new endpoint for supervised account for now. We might expand
+    // it to other account type in the future.
+    if (is_child_account) {
+      params.SetBoolean("isSupervisedUser", is_child_account);
+      params.SetBoolean(
+          "isDeviceOwner",
+          account_id == user_manager::UserManager::Get()->GetOwnerAccountId());
+    }
+  }
 
   was_security_token_pin_canceled_ = false;
 
@@ -625,6 +649,7 @@ void GaiaScreenHandler::RegisterMessages() {
   AddCallback("securityTokenPinEntered",
               &GaiaScreenHandler::HandleSecurityTokenPinEntered);
   AddCallback("onFatalError", &GaiaScreenHandler::HandleOnFatalError);
+  AddCallback("removeUserByEmail", &GaiaScreenHandler::HandleUserRemoved);
 
   BaseScreenHandler::RegisterMessages();
 }
@@ -942,6 +967,20 @@ void GaiaScreenHandler::HandleOnFatalError(
       ->GetWizardController()
       ->ShowSignInFatalErrorScreen(SignInFatalErrorScreen::Error(error_code),
                                    params);
+}
+
+void GaiaScreenHandler::HandleUserRemoved(const std::string& email) {
+  const AccountId account_id = user_manager::known_user::GetAccountId(
+      email, /*id=*/std::string(), AccountType::UNKNOWN);
+  if (account_id == user_manager::UserManager::Get()->GetOwnerAccountId()) {
+    // Shows powerwash UI if the user is device owner.
+    DCHECK(LoginDisplayHost::default_host());
+    LoginDisplayHost::default_host()->StartWizard(ResetView::kScreenId);
+  } else {
+    // Removes the account on the device.
+    user_manager::UserManager::Get()->RemoveUser(account_id,
+                                                 nullptr /*delegate*/);
+  }
 }
 
 void GaiaScreenHandler::OnShowAddUser() {

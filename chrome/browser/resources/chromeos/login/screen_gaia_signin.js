@@ -401,9 +401,11 @@ Polymer({
     const authenticatorEventListeners = {
       'authDomainChange': this.onAuthDomainChange_,
       'authFlowChange': this.onAuthFlowChange_,
+      'exit': this.onExitMessage_,
       'identifierEntered': this.onIdentifierEnteredMessage_,
       'loadAbort': this.onLoadAbortMessage_,
       'ready': this.onAuthReady_,
+      'removeUserByEmail': this.onRemoveUserByEmailMessage_,
       'setPrimaryActionEnabled': this.onSetPrimaryActionEnabled_,
       'setPrimaryActionLabel': this.onSetPrimaryActionLabel_,
       'setSecondaryActionEnabled': this.onSetSecondaryActionEnabled_,
@@ -1240,6 +1242,15 @@ Polymer({
   },
 
   /**
+   * Invoked when exit message received.
+   * @param {!CustomEvent<!Object>} e Event
+   * @private
+   */
+  onExitMessage_(e) {
+    this.cancel();
+  },
+
+  /**
    * Invoked when identifierEntered message received.
    * @param {!CustomEvent<!Object>} e Event with payload containing:
    *     {string} accountIdentifier User identifier.
@@ -1247,6 +1258,16 @@ Polymer({
    */
   onIdentifierEnteredMessage_(e) {
     this.onIdentifierEntered_(e.detail);
+  },
+
+  /**
+   * Invoked when removeUserByEmail message received.
+   * @param {!CustomEvent<!Object>} e Event with payload containing:
+   *     {string} email User email.
+   * @private
+   */
+  onRemoveUserByEmailMessage_(e) {
+    this.onRemoveUserByEmail_(e.detail);
   },
 
   /**
@@ -1336,6 +1357,17 @@ Polymer({
    */
   onIdentifierEntered_(data) {
     chrome.send('identifierEntered', [data.accountIdentifier]);
+  },
+
+  /**
+   * Handler for removeUserByEmail event.
+   * @param {!Object} data The user email:
+   *     {string} email User email.
+   * @private
+   */
+  onRemoveUserByEmail_(data) {
+    chrome.send('removeUserByEmail', [data]);
+    this.cancel();
   },
 
   /**

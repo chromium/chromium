@@ -7,7 +7,10 @@
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_context.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 
 namespace {
 constexpr char kUserActionCancel[] = "cancel";
@@ -46,7 +49,14 @@ void GaiaScreen::SetView(GaiaView* view) {
 }
 
 void GaiaScreen::LoadOnline(const AccountId& account) {
-  view_->SetGaiaPath(GaiaView::GaiaPath::kDefault);
+  auto gaia_path = GaiaView::GaiaPath::kDefault;
+  if (!account.empty() && features::IsGaiaReauthEndpointEnabled()) {
+    auto* user = user_manager::UserManager::Get()->FindUser(account);
+    DCHECK(user);
+    if (user && user->IsChild())
+      gaia_path = GaiaView::GaiaPath::kReauth;
+  }
+  view_->SetGaiaPath(gaia_path);
   view_->LoadGaiaAsync(account);
 }
 

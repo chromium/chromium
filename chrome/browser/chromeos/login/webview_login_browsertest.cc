@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
@@ -519,10 +520,70 @@ IN_PROC_BROWSER_TEST_F(ReauthWebviewLoginTest, EmailPrefill) {
             reauth_user_.account_id.GetUserEmail());
 }
 
+class ReauthEndpointWebviewLoginTest : public WebviewLoginTest {
+ protected:
+  ReauthEndpointWebviewLoginTest() {
+    // TODO(https://crbug.com/1121910) Migrate to the kChildSpecificSignin
+    // enabled.
+    // TODO(https://crbug.com/1153912) Makes tests work with
+    // kParentAccessCodeForOnlineLogin enabled.
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGaiaReauthEndpoint},
+        {features::kChildSpecificSignin,
+         ::features::kParentAccessCodeForOnlineLogin});
+  }
+  ~ReauthEndpointWebviewLoginTest() override = default;
+
+  LoginManagerMixin::TestUserInfo reauth_user_{
+      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
+                                     FakeGaiaMixin::kFakeUserGaiaId),
+      user_manager::USER_TYPE_CHILD,
+      /* invalid token status to force online signin */
+      user_manager::User::OAUTH2_TOKEN_STATUS_INVALID};
+  LoginManagerMixin login_manager_mixin_{&mixin_host_, {reauth_user_}};
+};
+
+IN_PROC_BROWSER_TEST_F(ReauthEndpointWebviewLoginTest, SupervisedUser) {
+  EXPECT_TRUE(
+      ash::LoginScreenTestApi::IsForcedOnlineSignin(reauth_user_.account_id));
+  // Focus triggers online signin.
+  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(reauth_user_.account_id));
+  WaitForGaiaPageLoad();
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_EQ(fake_gaia_.fake_gaia()->prefilled_email(),
+            reauth_user_.account_id.GetUserEmail());
+  EXPECT_EQ(fake_gaia_.fake_gaia()->is_supervised(), "1");
+  EXPECT_TRUE(fake_gaia_.fake_gaia()->is_device_owner().empty());
+}
+
+class ReauthEndpointWebviewLoginOwnerTest
+    : public ReauthEndpointWebviewLoginTest {
+ protected:
+  ReauthEndpointWebviewLoginOwnerTest() {
+    scoped_testing_cros_settings_.device_settings()->Set(
+        kDeviceOwner, base::Value(FakeGaiaMixin::kFakeUserEmail));
+  }
+  ~ReauthEndpointWebviewLoginOwnerTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(ReauthEndpointWebviewLoginOwnerTest, SupervisedUser) {
+  EXPECT_TRUE(
+      ash::LoginScreenTestApi::IsForcedOnlineSignin(reauth_user_.account_id));
+  // Focus triggers online signin.
+  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(reauth_user_.account_id));
+  WaitForGaiaPageLoad();
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_EQ(fake_gaia_.fake_gaia()->prefilled_email(),
+            reauth_user_.account_id.GetUserEmail());
+  EXPECT_EQ(fake_gaia_.fake_gaia()->is_supervised(), "1");
+  EXPECT_EQ(fake_gaia_.fake_gaia()->is_device_owner(), "1");
+}
+
 IN_PROC_BROWSER_TEST_F(WebviewLoginTest, StoragePartitionHandling) {
   WaitForGaiaPageLoadAndPropertyUpdate();
 
-  // Start with identifer page.
+  // Start with identifier page.
   ExpectIdentifierPage();
 
   // WebContents of the embedding frame

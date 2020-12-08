@@ -174,6 +174,12 @@ class FakeGaia {
   void SetErrorResponse(const GURL& gaia_url,
                         net::HttpStatusCode http_status_code);
 
+  // Returns the is_supervised param from the reauth URL if any.
+  const std::string& is_supervised() { return is_supervised_; }
+
+  // Returns the is_device_owner param from the reauth URL if any.
+  const std::string& is_device_owner() { return is_device_owner_; }
+
  protected:
   // HTTP handler for /MergeSession.
   virtual void HandleMergeSession(
@@ -226,6 +232,9 @@ class FakeGaia {
   void HandleServiceLogin(const net::test_server::HttpRequest& request,
                           net::test_server::BasicHttpResponse* http_response);
   void HandleEmbeddedSetupChromeos(
+      const net::test_server::HttpRequest& request,
+      net::test_server::BasicHttpResponse* http_response);
+  void HandleEmbeddedReauthChromeos(
       const net::test_server::HttpRequest& request,
       net::test_server::BasicHttpResponse* http_response);
   void HandleOAuthLogin(const net::test_server::HttpRequest& request,
@@ -298,6 +307,8 @@ class FakeGaia {
   bool issue_oauth_code_cookie_;
   RefreshTokenToDeviceIdMap refresh_token_to_device_id_map_;
   std::string prefilled_email_;
+  std::string is_supervised_;
+  std::string is_device_owner_;
   GaiaAuthConsumer::ReAuthProofTokenStatus next_reauth_status_ =
       GaiaAuthConsumer::ReAuthProofTokenStatus::kSuccess;
   GURL embedded_setup_chromeos_iframe_url_;

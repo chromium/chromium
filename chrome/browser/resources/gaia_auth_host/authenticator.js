@@ -68,7 +68,9 @@ cr.define('cr.login', function() {
    *   ignoreCrOSIdpSetting: boolean,
    *   enableGaiaActionButtons: boolean,
    *   enterpriseEnrollmentDomain: string,
-   *   samlAclUrl: string
+   *   samlAclUrl: string,
+   *   isSupervisedUser: boolean,
+   *   isDeviceOwner: boolean,
    * }}
    */
   /* #export */ let AuthParams;
@@ -172,6 +174,8 @@ cr.define('cr.login', function() {
     // SAML assertion consumer URL, used to detect when Gaia-less SAML flows end
     // (e.g. for SAML managed guest sessions).
     'samlAclUrl',
+    'isSupervisedUser',  // True if the user is supervised user.
+    'isDeviceOwner',     // True if the user is device owner.
   ];
 
   /**
@@ -269,6 +273,13 @@ cr.define('cr.login', function() {
       }
       this.dispatchEvent(
           new CustomEvent('setAllActionsEnabled', {detail: msg.value}));
+    },
+    'removeUserByEmail'(msg) {
+      this.dispatchEvent(
+          new CustomEvent('removeUserByEmail', {detail: msg.email}));
+    },
+    'exit'(msg) {
+      this.dispatchEvent(new CustomEvent('exit'));
     }
   };
 
@@ -700,6 +711,13 @@ cr.define('cr.login', function() {
       if (data.enableGaiaActionButtons) {
         url = appendParam(url, 'use_native_navigation', '1');
       }
+      if (data.isSupervisedUser) {
+        url = appendParam(url, 'is_supervised', '1');
+      }
+      if (data.isDeviceOwner) {
+        url = appendParam(url, 'is_device_owner', '1');
+      }
+
       return url;
     }
 

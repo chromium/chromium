@@ -238,6 +238,10 @@ void FakeGaia::Initialize() {
   REGISTER_RESPONSE_HANDLER(gaia_urls->embedded_setup_chromeos_kid_signin_url(),
                             HandleEmbeddedSetupChromeos);
 
+  // Handles /embedded/reauth/chromeos GAIA call.
+  REGISTER_RESPONSE_HANDLER(gaia_urls->embedded_reauth_chromeos_url(),
+                            HandleEmbeddedReauthChromeos);
+
   // Handles /OAuthLogin GAIA call.
   REGISTER_RESPONSE_HANDLER(
       gaia_urls->oauth1_login_url(), HandleOAuthLogin);
@@ -489,6 +493,33 @@ void FakeGaia::HandleEmbeddedSetupChromeos(const HttpRequest& request,
     return;
   }
 
+  GetQueryParameter(request_url.query(), "Email", &prefilled_email_);
+
+  http_response->set_code(net::HTTP_OK);
+  http_response->set_content(GetEmbeddedSetupChromeosResponseContent());
+  http_response->set_content_type("text/html");
+}
+
+void FakeGaia::HandleEmbeddedReauthChromeos(const HttpRequest& request,
+                                            BasicHttpResponse* http_response) {
+  GURL request_url = GURL("http://localhost").Resolve(request.relative_url);
+
+  std::string client_id;
+  if (!GetQueryParameter(request_url.query(), "client_id", &client_id) ||
+      GaiaUrls::GetInstance()->oauth2_chrome_client_id() != client_id) {
+    LOG(ERROR) << "Missing or invalid param 'client_id' in "
+                  "/embedded/reauth/chromeos call";
+    return;
+  }
+
+  if (!GetQueryParameter(request_url.query(), "is_supervised",
+                         &is_supervised_)) {
+    LOG(ERROR) << "Missing param 'is_supervised' in "
+                  "/embedded/reauth/chromeos call";
+    return;
+  }
+
+  GetQueryParameter(request_url.query(), "is_device_owner", &is_device_owner_);
   GetQueryParameter(request_url.query(), "Email", &prefilled_email_);
 
   http_response->set_code(net::HTTP_OK);

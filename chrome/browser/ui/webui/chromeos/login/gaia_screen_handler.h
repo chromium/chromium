@@ -47,6 +47,7 @@ class GaiaView {
     kDefault,
     kChildSignup,
     kChildSignin,
+    kReauth,
   };
 
   constexpr static StaticOobeScreenId kScreenId{"gaia-signin"};
@@ -243,6 +244,9 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // an empty string when the request is canceled.
   void HandleSecurityTokenPinEntered(const std::string& user_input);
   void HandleOnFatalError(int error_code, const base::DictionaryValue* params);
+
+  // Called when the user is removed.
+  void HandleUserRemoved(const std::string& email);
 
   void OnShowAddUser();
 

@@ -171,6 +171,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const base::Feature kFsNosymfollow;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kHandwritingGestureEditing;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kGaiaReauthEndpoint;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kGamepadVibration;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kGesturePropertiesDBusService;
@@ -333,6 +335,7 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsDeepLinkingEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsDiagnosticsAppEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsHostnameSettingEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsFamilyLinkOnSchoolDeviceEnabled();
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsGaiaReauthEndpointEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsImeSandboxEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsInstantTetheringBackgroundAdvertisingSupported();

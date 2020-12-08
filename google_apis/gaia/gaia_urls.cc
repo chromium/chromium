@@ -33,6 +33,7 @@ const char kDefaultOAuthAccountManagerBaseUrl[] =
 const char kClientLoginUrlSuffix[] = "ClientLogin";
 const char kServiceLoginUrlSuffix[] = "ServiceLogin";
 const char kEmbeddedSetupChromeOsUrlSuffixV2[] = "embedded/setup/v2/chromeos";
+const char kEmbeddedReauthChromeOsUrlSuffix[] = "embedded/reauth/chromeos";
 const char kEmbeddedSetupChromeOsKidSignupUrlSuffix[] =
     "embedded/setup/kidsignup/chromeos";
 const char kEmbeddedSetupChromeOsKidSigninUrlSuffix[] =
@@ -179,6 +180,10 @@ const GURL& GaiaUrls::embedded_setup_chromeos_kid_signin_url() const {
 
 const GURL& GaiaUrls::embedded_setup_windows_url() const {
   return embedded_setup_windows_url_;
+}
+
+const GURL& GaiaUrls::embedded_reauth_chromeos_url() const {
+  return embedded_reauth_chromeos_url_;
 }
 
 const GURL& GaiaUrls::signin_chrome_sync_dice() const {
@@ -348,6 +353,8 @@ void GaiaUrls::InitializeDefault() {
                       kEmbeddedSetupChromeOsKidSigninUrlSuffix);
   ResolveURLIfInvalid(&embedded_setup_windows_url_, gaia_url_,
                       kEmbeddedSetupWindowsUrlSuffix);
+  ResolveURLIfInvalid(&embedded_reauth_chromeos_url_, gaia_url_,
+                      kEmbeddedReauthChromeOsUrlSuffix);
   ResolveURLIfInvalid(&signin_chrome_sync_dice_, gaia_url_,
                       kSigninChromeSyncDice);
   ResolveURLIfInvalid(&signin_chrome_sync_keys_url_, gaia_url_,
@@ -422,6 +429,7 @@ void GaiaUrls::InitializeFromConfig() {
   config->GetURLIfExists(
       URL_KEY_AND_PTR(embedded_setup_chromeos_kid_signin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(embedded_setup_windows_url));
+  config->GetURLIfExists(URL_KEY_AND_PTR(embedded_reauth_chromeos_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(signin_chrome_sync_dice));
   config->GetURLIfExists(URL_KEY_AND_PTR(signin_chrome_sync_keys_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(service_login_auth_url));

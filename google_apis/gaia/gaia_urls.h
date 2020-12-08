@@ -29,6 +29,7 @@ class GaiaUrls {
   const GURL& embedded_setup_chromeos_kid_signup_url() const;
   const GURL& embedded_setup_chromeos_kid_signin_url() const;
   const GURL& embedded_setup_windows_url() const;
+  const GURL& embedded_reauth_chromeos_url() const;
   const GURL& signin_chrome_sync_dice() const;
   const GURL& signin_chrome_sync_keys_url() const;
   const GURL& service_login_auth_url() const;
@@ -87,6 +88,7 @@ class GaiaUrls {
   GURL embedded_setup_chromeos_kid_signup_url_;
   GURL embedded_setup_chromeos_kid_signin_url_;
   GURL embedded_setup_windows_url_;
+  GURL embedded_reauth_chromeos_url_;
   GURL signin_chrome_sync_dice_;
   GURL signin_chrome_sync_keys_url_;
   GURL service_login_auth_url_;

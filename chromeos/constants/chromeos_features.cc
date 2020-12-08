@@ -344,6 +344,10 @@ const base::Feature kFilesZipPack{"FilesZipPack",
 const base::Feature kFilesZipUnpack{"FilesZipUnpack",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the Gaia reauth endpoint with deleted user customization page.
+const base::Feature kGaiaReauthEndpoint{"GaiaReauthEndpoint",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls gamepad vibration in Exo.
 const base::Feature kGamepadVibration{"ExoGamepadVibration",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
@@ -756,6 +760,10 @@ bool IsLocalSearchServiceEnabled() {
 
 bool IsFamilyLinkOnSchoolDeviceEnabled() {
   return base::FeatureList::IsEnabled(kFamilyLinkOnSchoolDevice);
+}
+
+bool IsGaiaReauthEndpointEnabled() {
+  return base::FeatureList::IsEnabled(kGaiaReauthEndpoint);
 }
 
 bool IsInstantTetheringBackgroundAdvertisingSupported() {
