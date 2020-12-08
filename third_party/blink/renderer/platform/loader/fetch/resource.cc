@@ -757,13 +757,16 @@ Resource::MatchStatus Resource::CanReuse(const FetchParameters& params) const {
     return MatchStatus::kUnknownFailure;
   }
 
+  // Use GetResourceRequest to get the const resource_request_.
+  const ResourceRequestHead& current_request = GetResourceRequest();
+
   // If credentials were sent with the previous request and won't be with this
   // one, or vice versa, re-fetch the resource.
   //
   // This helps with the case where the server sends back
   // "Access-Control-Allow-Origin: *" all the time, but some of the client's
   // requests are made without CORS and some with.
-  if (GetResourceRequest().AllowStoredCredentials() !=
+  if (current_request.AllowStoredCredentials() !=
       new_request.AllowStoredCredentials()) {
     return MatchStatus::kRequestCredentialsModeDoesNotMatch;
   }
@@ -810,10 +813,10 @@ Resource::MatchStatus Resource::CanReuse(const FetchParameters& params) const {
     return MatchStatus::kSynchronousFlagDoesNotMatch;
   }
 
-  if (resource_request_.GetKeepalive() || new_request.GetKeepalive())
+  if (current_request.GetKeepalive() || new_request.GetKeepalive())
     return MatchStatus::kKeepaliveSet;
 
-  if (GetResourceRequest().HttpMethod() != http_names::kGET ||
+  if (current_request.HttpMethod() != http_names::kGET ||
       new_request.HttpMethod() != http_names::kGET) {
     return MatchStatus::kRequestMethodDoesNotMatch;
   }
@@ -825,16 +828,13 @@ Resource::MatchStatus Resource::CanReuse(const FetchParameters& params) const {
   if (!existing_origin->IsSameOriginWith(new_origin.get()))
     return MatchStatus::kUnknownFailure;
 
-  // securityOrigin has more complicated checks which callers are responsible
-  // for.
-
   if (new_request.GetCredentialsMode() !=
-      resource_request_.GetCredentialsMode()) {
+      current_request.GetCredentialsMode()) {
     return MatchStatus::kRequestCredentialsModeDoesNotMatch;
   }
 
   const auto new_mode = new_request.GetMode();
-  const auto existing_mode = resource_request_.GetMode();
+  const auto existing_mode = current_request.GetMode();
 
   if (new_mode != existing_mode)
     return MatchStatus::kRequestModeDoesNotMatch;
