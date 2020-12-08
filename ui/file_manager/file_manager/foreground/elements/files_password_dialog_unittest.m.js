@@ -2,6 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+import "chrome://resources/cr_elements/cr_button/cr_button.m.js";
+import "chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js";
+import "chrome://resources/cr_elements/cr_input/cr_input.m.js";
+
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {assertEquals, assertFalse, assertNotReached} from 'chrome://test/chai_assert.js';
+import {waitUntil} from '../../../base/js/test_error_reporting.m.js';
+import {FilesPasswordDialog} from './files_password_dialog.m.js';
+// clang-format on
+
 /** @type {!FilesPasswordDialog} */
 let passwordDialog;
 /** @type {!CrDialogElement} */
@@ -16,21 +27,9 @@ let cancel;
 let unlock;
 
 /**
- * TODO(lucmult): Remove this when converting to JS modules.
- * @suppress {checkTypes}
- */
-chrome.fileManagerPrivate = {
-  FormatFileSystemType: {
-    VFAT: 'vfat',
-    EXFAT: 'exfat',
-    NTFS: 'ntfs',
-  },
-};
-
-/**
  * Mock LoadTimeData strings.
  */
-function setUpPage() {
+export function setUpPage() {
   window.loadTimeData.getString = id => {
     switch (id) {
       case 'PASSWORD_DIALOG_INVALID':
@@ -44,7 +43,7 @@ function setUpPage() {
 /**
  * Adds a FilesPasswordDialog element to the page.
  */
-function setUp() {
+export function setUp() {
   document.body.innerHTML =
       `<files-password-dialog id="test-files-password-dialog" hidden>
       </files-password-dialog>`;
@@ -71,7 +70,7 @@ function setUp() {
  * The askForPassword method should return a promise that is rejected with
  * FilesPasswordDialog.USER_CANCELLED.
  */
-async function testSingleArchiveCancelPasswordPrompt(done) {
+export async function testSingleArchiveCancelPasswordPrompt(done) {
   // Check that the dialog is closed.
   assertFalse(dialog.open);
 
@@ -116,7 +115,7 @@ async function testSingleArchiveCancelPasswordPrompt(done) {
  * method should return a promise that resolves with the expected input
  * password.
  */
-async function testUnlockSingleArchive(done) {
+export async function testUnlockSingleArchive(done) {
   // Check that the dialog is closed.
   assertFalse(dialog.open);
 
@@ -152,7 +151,7 @@ async function testUnlockSingleArchive(done) {
  * Tests opening the password dialog with an 'Invalid password' message. This
  * message is displayed when a wrong password was previously entered.
  */
-async function testDialogWithWrongPassword(done) {
+export async function testDialogWithWrongPassword(done) {
   // Check that the dialog is closed.
   assertFalse(dialog.open);
 
@@ -178,7 +177,7 @@ async function testDialogWithWrongPassword(done) {
 /**
  * Tests cancel functionality for multiple encrypted archives.
  */
-async function testCancelMultiplePasswordPrompts(done) {
+export async function testCancelMultiplePasswordPrompts(done) {
   // Check that the dialog is closed.
   assertFalse(dialog.open);
 
@@ -240,7 +239,7 @@ async function testCancelMultiplePasswordPrompts(done) {
 /**
  * Tests unlock functionality for multiple encrypted archives.
  */
-async function testUnlockMultipleArchives(done) {
+export async function testUnlockMultipleArchives(done) {
   // Check that the dialog is closed.
   assertFalse(dialog.open);
 

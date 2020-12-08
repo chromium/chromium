@@ -61,6 +61,7 @@ js_type_check("closure_compile_jsmodules") {
     ":files_message.m",
     ":files_metadata_box.m",
     ":files_metadata_entry.m",
+    ":files_password_dialog.m",
     ":files_quick_view.m",
     ":files_ripple.m",
     ":files_safe_media.m",
@@ -223,12 +224,26 @@ js_library("files_password_dialog") {
   ]
 }
 
-js_unittest("files_password_dialog_unittest") {
+js_unittest("files_password_dialog_unittest.m") {
   deps = [
-    ":files_password_dialog",
-    "//ui/file_manager/base/js:test_error_reporting",
-    "//ui/webui/resources/js:webui_resource_test",
+    ":files_password_dialog.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/webui/resources/js:assert.m",
   ]
+}
+
+js_library("files_password_dialog.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_password_dialog.m.js" ]
+  deps = [
+    "//ui/file_manager/file_manager/common/js:async_util.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("files_quick_view") {
@@ -411,10 +426,7 @@ js_unittest("files_xf_elements_unittest") {
 }
 
 js_test_gen_html("js_test_gen_html") {
-  deps = [
-    ":files_password_dialog_unittest",
-    ":files_xf_elements_unittest",
-  ]
+  deps = [ ":files_xf_elements_unittest" ]
   html_import = true
 }
 
@@ -439,6 +451,7 @@ js_modulizer("modulize") {
   input_files = [
     "files_message.js",
     "files_spinner.js",
+    "files_password_dialog.js",
   ]
 }
 
@@ -446,6 +459,7 @@ js_test_gen_html("js_test_gen_html_modules") {
   is_polymer3 = true
   deps = [
     ":files_message_unittest.m",
+    ":files_password_dialog_unittest.m",
     ":files_toast_unittest.m",
     ":files_tooltip_unittest.m",
   ]

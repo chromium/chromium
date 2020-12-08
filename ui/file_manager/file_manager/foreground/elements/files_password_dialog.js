@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// #import {AsyncUtil} from '../../common/js/async_util.m.js';
+
 /**
  * FilesPasswordDialog template.
  * @const @type {string}
@@ -54,7 +57,7 @@ const filesPasswordDialogTemplate = `
  * FilesPasswordDialog.USER_CANCELLED.
  * @extends HTMLElement
  */
-class FilesPasswordDialog extends HTMLElement {
+/* #export */ class FilesPasswordDialog extends HTMLElement {
   constructor() {
     /*
      * Create element content.
