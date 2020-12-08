@@ -95,8 +95,6 @@ public class SmsProviderGms {
         // fails. The initial call to verification is expected to be cheap so this should not have
         // any noticeable impact.
 
-        // TODO(yigu): Add UMA to better understand this. In particular it is interesting to find
-        // out how often we use the fallback option. http://crbug.com/1141024
         if (mBackend == GmsBackend.AUTO) {
             Log.d(TAG, "Retry using user consent API.");
             mUserConsentReceiver.listen(mWindow);

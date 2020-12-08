@@ -77123,6 +77123,13 @@ others/histograms.xml -->
   <int value="4" label="FlingingRendererClientFactory"/>
 </enum>
 
+<enum name="WebOTPBackendAvailability">
+  <int value="0" label="Available"/>
+  <int value="1" label="API not connected"/>
+  <int value="2" label="Platform not supported"/>
+  <int value="3" label="API not available"/>
+</enum>
+
 <enum name="WebOTPServiceDestroyedReason">
   <int value="0" label="Navigated to new page"/>
   <int value="1" label="Navigated to existing page"/>
