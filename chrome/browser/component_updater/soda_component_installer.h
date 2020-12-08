@@ -29,6 +29,9 @@ class SODAComponentInstallerPolicy : public ComponentInstallerPolicy {
   static const std::string GetExtensionId();
   static void UpdateSODAComponentOnDemand();
 
+  static update_client::CrxInstaller::Result SetComponentDirectoryPermission(
+      const base::FilePath& install_dir);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SODAComponentInstallerTest,
                            ComponentReady_CallsLambda);
