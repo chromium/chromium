@@ -104,6 +104,8 @@ _OS_SPECIFIC_FILTER['mac'] = [
     'MobileEmulationCapabilityTest.testTapElement',
     # https://bugs.chromium.org/p/chromium/issues/detail?id=1011225
     'ChromeDriverTest.testActionsMultiTouchPoint',
+    # Flaky: https://crbug.com/1156576.
+    'ChromeDriverTestLegacy.testContextMenuEventFired',
 ]
 
 _DESKTOP_NEGATIVE_FILTER = [
