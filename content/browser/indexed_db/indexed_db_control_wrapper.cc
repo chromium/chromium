@@ -205,11 +205,9 @@ void IndexedDBControlWrapper::BindRemoteIfNeeded() {
 
   if (indexed_db_control_.is_bound())
     return;
-  IndexedDBContextImpl* idb_context = GetIndexedDBContextInternal();
-  idb_context->IDBTaskRunner()->PostTask(
+  context_->IDBTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&IndexedDBContextImpl::Bind,
-                     base::WrapRefCounted(idb_context),
+      base::BindOnce(&IndexedDBContextImpl::Bind, context_,
                      indexed_db_control_.BindNewPipeAndPassReceiver()));
 }
 
