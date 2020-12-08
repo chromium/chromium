@@ -89,6 +89,3 @@ per-file chrome_back_forward_cache_browsertest.cc=file://content/OWNERS
 
 # Web Platform security metrics tests:
 per-file chrome_web_platform_security_metrics_browsertest.cc=file://content/OWNERS
-
-# COMPONENT: UI>Browser
-# TEAM: chromium-reviews@chromium.org
