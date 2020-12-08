@@ -95,6 +95,17 @@ export class TabSearchSearchField extends TabSearchSearchFieldBase {
   onInputBlur_(text) {
     this.announceText_ = '';
   }
+
+  /**
+   * Do not schedule the timer from CrSearchFieldBehavior to make search more
+   * responsive.
+   * @override
+   */
+  onSearchTermInput() {
+    this.hasSearchText = this.$.searchInput.value !== '';
+    this.getSearchInput().dispatchEvent(
+        new CustomEvent('search', {composed: true, detail: this.getValue()}));
+  }
 }
 
 customElements.define(TabSearchSearchField.is, TabSearchSearchField);
