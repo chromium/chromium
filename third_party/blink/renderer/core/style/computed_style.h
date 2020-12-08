@@ -2262,7 +2262,8 @@ class ComputedStyle : public ComputedStyleBase,
 
   // Table layout utility functions.
   bool IsFixedTableLayout() const {
-    return TableLayout() == ETableLayout::kFixed && !LogicalWidth().IsAuto();
+    return TableLayout() == ETableLayout::kFixed &&
+           !LogicalWidth().IsAutoOrContentOrIntrinsic();
   }
 
   LogicalSize TableBorderSpacing() const {
