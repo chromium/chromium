@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS Table-layout:fixed is not applied when width is auto
-FAIL Table-layout:fixed reports it is not applied when width is auto assert_equals: expected "auto" but got "fixed"
-PASS Table-layout:fixed is not applied when width is max-content
-FAIL Table-layout:fixed reports it is not applied when width is max-content assert_equals: expected "auto" but got "fixed"
-PASS Table-layout:fixed is not applied when width is min-content
-Harness: the test ran to completion.
-
