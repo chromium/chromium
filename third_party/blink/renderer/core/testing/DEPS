@@ -1,6 +1,7 @@
 include_rules = [
     "+base/run_loop.h",
     "+cc",
+    "+components/ukm/test_ukm_recorder.h",
     # TODO(crbug.com/838693): Test harnesses use LayerTreeView
     # from content instead of a fake WebLayerTreeView implementation, so
     # that the Web abstraction can go away.

@@ -418,6 +418,8 @@ source_set("testing") {
     "testing/origin_trials_test_partial.h",
     "testing/record_test.cc",
     "testing/record_test.h",
+    "testing/scoped_fake_ukm_recorder.cc",
+    "testing/scoped_fake_ukm_recorder.h",
     "testing/scoped_mock_overlay_scrollbars.h",
     "testing/sequence_test.cc",
     "testing/sequence_test.h",
