@@ -278,10 +278,10 @@ GURL ParseExchangeURL(base::StringPiece str) {
   if (url.has_ref() || url.has_username() || url.has_password())
     return GURL();
 
-  // For now, we allow only http: and https: schemes in Web Bundle URLs.
+  // For now, we allow only http:, https: and urn: schemes in Web Bundle URLs.
   // TODO(crbug.com/966753): Revisit this once
   // https://github.com/WICG/webpackage/issues/468 is resolved.
-  if (!url.SchemeIsHTTPOrHTTPS())
+  if (!url.SchemeIsHTTPOrHTTPS() && !url.SchemeIs("urn"))
     return GURL();
 
   return url;

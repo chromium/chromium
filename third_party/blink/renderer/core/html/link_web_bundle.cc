@@ -211,6 +211,8 @@ bool LinkWebBundle::CanHandleRequest(const KURL& url) const {
     return false;
   if (!owner_ || !owner_->ValidResourceUrls().Contains(url))
     return false;
+  if (url.Protocol() == "urn")
+    return true;
   DCHECK(bundle_loader_);
   if (!bundle_loader_->GetSecurityOrigin()->IsSameOriginWith(
           SecurityOrigin::Create(url).get())) {
@@ -255,10 +257,10 @@ KURL LinkWebBundle::ParseResourceUrl(const AtomicString& str) {
       !url.Pass().IsEmpty())
     return KURL();
 
-  // For now, we allow only http: and https: schemes in Web Bundle URLs.
+  // For now, we allow only http:, https: and urn: schemes in Web Bundle URLs.
   // TODO(crbug.com/966753): Revisit this once
   // https://github.com/WICG/webpackage/issues/468 is resolved.
-  if (!url.ProtocolIsInHTTPFamily())
+  if (!url.ProtocolIsInHTTPFamily() && !url.ProtocolIs("urn"))
     return KURL();
 
   return url;
