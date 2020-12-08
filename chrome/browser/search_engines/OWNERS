@@ -3,5 +3,3 @@ file://components/search_engines/OWNERS
 treib@chromium.org
 
 per-file default_search_policy_handler*=atwilson@chromium.org
-
-# COMPONENT: UI>Browser>Search
