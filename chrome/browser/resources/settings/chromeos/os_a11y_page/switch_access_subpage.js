@@ -240,6 +240,31 @@ Polymer({
   },
 
   /**
+   * @param {!Array<string>} switches List of switch names
+   * @return {string} (e.g. 'Alt, Backspace, Enter, and 4 more switches')
+   * @private
+   */
+  getAssignSwitchSubLabel_(switches) {
+    switch (switches.length) {
+      case 0:
+        return this.i18n('assignSwitchSubLabel0Switches');
+      case 1:
+        return this.i18n('assignSwitchSubLabel1Switch', switches[0]);
+      case 2:
+        return this.i18n('assignSwitchSubLabel2Switches', ...switches);
+      case 3:
+        return this.i18n('assignSwitchSubLabel3Switches', ...switches);
+      case 4:
+        return this.i18n(
+            'assignSwitchSubLabel4Switches', ...switches.slice(0, 3));
+      default:
+        return this.i18n(
+            'assignSwitchSubLabel5OrMoreSwitches', ...switches.slice(0, 3),
+            switches.length - 3);
+    }
+  },
+
+  /**
    * @return {string}
    * @private
    */

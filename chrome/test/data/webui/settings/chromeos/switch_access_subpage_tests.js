@@ -95,6 +95,19 @@ suite('ManageAccessibilityPageTests', function() {
     settings.Router.getInstance().resetRouteForTesting();
   });
 
+  /**
+   * @param {!Array<string>} switches New switch assignments for select action.
+   * @return {string} Sub-label text from the select link row.
+   */
+  function getSublabelForSelectUpdates(switches) {
+    cr.webUIListenerCallback(
+        'switch-access-assignments-changed',
+        {select: switches, next: [], previous: []});
+
+    return page.$$('#selectLinkRow').$$('#subLabel').textContent.trim();
+  }
+
+
   test('Switch assignment key display', function() {
     initPage();
 
@@ -111,6 +124,32 @@ suite('ManageAccessibilityPageTests', function() {
     assertEquals('a', page.selectAssignments_[0]);
     assertEquals(0, page.nextAssignments_.length);
     assertEquals(0, page.previousAssignments_.length);
+  });
+
+  test('Switch assignment sub-labels', function() {
+    initPage();
+
+    assertEquals('0 switches assigned', getSublabelForSelectUpdates([]));
+    assertEquals('Backspace', getSublabelForSelectUpdates(['Backspace']));
+    assertEquals(
+        'Backspace, Tab', getSublabelForSelectUpdates(['Backspace', 'Tab']));
+    assertEquals(
+        'Backspace, Tab, Enter',
+        getSublabelForSelectUpdates(['Backspace', 'Tab', 'Enter']));
+    assertEquals(
+        'Backspace, Tab, Enter, and 1 more switch',
+        getSublabelForSelectUpdates(['Backspace', 'Tab', 'Enter', 'a']));
+    assertEquals(
+        'Backspace, Tab, Enter, and 2 more switches',
+        getSublabelForSelectUpdates(['Backspace', 'Tab', 'Enter', 'a', 'b']));
+    assertEquals(
+        'Backspace, Tab, Enter, and 3 more switches',
+        getSublabelForSelectUpdates(
+            ['Backspace', 'Tab', 'Enter', 'a', 'b', 'c']));
+    assertEquals(
+        'Backspace, Tab, Enter, and 4 more switches',
+        getSublabelForSelectUpdates(
+            ['Backspace', 'Tab', 'Enter', 'a', 'b', 'c', 'd']));
   });
 
   test('Switch access action assignment dialog', async function() {

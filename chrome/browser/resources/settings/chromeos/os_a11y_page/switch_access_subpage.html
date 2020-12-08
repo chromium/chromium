@@ -31,36 +31,18 @@
         <cr-link-row on-click="onSelectAssignClick_"
             id="selectLinkRow"
             label="$i18n{assignSelectSwitchLabel}"
-            sub-label="$i18n{assignSwitchSubLabel}"
+            sub-label="[[getAssignSwitchSubLabel_(selectAssignments_)]]"
             deep-link-focus-id$="[[Setting.kSwitchActionAssignment]]">
-          <ul id="selectAssignmentList">
-            <template is="dom-repeat"
-                items="[[selectAssignments_]]" as="assignment">
-              <li>[[assignment]]</li>
-            </template>
-          </ul>
         </cr-link-row>
         <cr-link-row on-click="onNextAssignClick_"
             id="nextLinkRow"
             label="$i18n{assignNextSwitchLabel}"
-            sub-label="$i18n{assignSwitchSubLabel}">
-          <ul id="nextAssignmentList">
-            <template is="dom-repeat"
-                items="[[nextAssignments_]]" as="assignment">
-              <li>[[assignment]]</li>
-            </template>
-          </ul>
+            sub-label="[[getAssignSwitchSubLabel_(nextAssignments_)]]">
         </cr-link-row>
         <cr-link-row on-click="onPreviousAssignClick_"
             id="previousLinkRow"
             label="$i18n{assignPreviousSwitchLabel}"
-            sub-label="$i18n{assignSwitchSubLabel}">
-          <ul id="previousAssignmentList">
-            <template is="dom-repeat"
-                items="[[previousAssignments_]]" as="assignment">
-              <li>[[assignment]]</li>
-            </template>
-          </ul>
+            sub-label="[[getAssignSwitchSubLabel_(previousAssignments_)]]">
         </cr-link-row>
     </div>
     <template is="dom-if"

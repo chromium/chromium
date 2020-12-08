@@ -993,7 +993,7 @@
   <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_TITLE" desc="A title for a dialog to assign a switch key to an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     Assign switch <ph name="action">$1<ex>Select</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WAIT_FOR_KEY_PROMPT" desc="A message shown to ask a suer to press a switch key to be assigned to an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WAIT_FOR_KEY_PROMPT" desc="A message shown to ask a user to press a switch key to be assigned to an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     Please press a switch key to assign.
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WAIT_FOR_CONFIRMATION_PROMPT" desc="A message shown to ask a user to confirm by pressing a switch key to be assigned to an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
@@ -1005,8 +1005,23 @@
   <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WARN_NOT_CONFIRMED_PROMPT" desc="A message warning the user that the switch key pressed during confirmation did not match the initial switch key pressed. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     Keys do not match. '<ph name="unexpectedKey">$1<ex>enter</ex></ph>' was pressed. '<ph name="currentKey">$2<ex>backspace</ex></ph>' was pressed before. Press any key to exit.
   </message>
-  <message name="IDS_SETTINGS_ASSIGN_SWITCH_SUB_LABEL" desc="A sub-label for the link that brings up a dialog to assign a switch key to an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    Open a dialog to assign a switch key
+  <message name="IDS_SETTINGS_ASSIGN_SWITCH_SUB_LABEL_0_SWITCHES" desc="A sub-label for the link that brings up a dialog to assign a switch key to an action. Mentions no switches assigned. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    0 switches assigned
+  </message>
+  <message name="IDS_SETTINGS_ASSIGN_SWITCH_SUB_LABEL_1_SWITCH" desc="A sub-label for the link that brings up a dialog to assign a switch key to an action. Includes currently assigned switch. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    <ph name="SWITCH">$1<ex>backspace</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_ASSIGN_SWITCH_SUB_LABEL_2_SWITCHES" desc="A sub-label for the link that brings up a dialog to assign a switch key to an action. Includes listing of two currently assigned switches. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    <ph name="FIRST_SWITCH">$1<ex>backspace</ex></ph>, <ph name="SECOND_SWITCH">$2<ex>enter</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_ASSIGN_SWITCH_SUB_LABEL_3_SWITCHES" desc="A sub-label for the link that brings up a dialog to assign a switch key to an action. Includes listing of three currently assigned switches. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    <ph name="FIRST_SWITCH">$1<ex>backspace</ex></ph>, <ph name="SECOND_SWITCH">$2<ex>enter</ex></ph>, <ph name="THIRD_SWITCH">$3<ex>escape</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_ASSIGN_SWITCH_SUB_LABEL_4_SWITCHES" desc="A sub-label for the link that brings up a dialog to assign a switch key to an action. Includes listing of three currently assigned switches, and mentions one other switch is assigned. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    <ph name="FIRST_SWITCH">$1<ex>backspace</ex></ph>, <ph name="SECOND_SWITCH">$2<ex>enter</ex></ph>, <ph name="THIRD_SWITCH">$3<ex>escape</ex></ph>, and 1 more switch
+  </message>
+  <message name="IDS_SETTINGS_ASSIGN_SWITCH_SUB_LABEL_5_OR_MORE_SWITCHES" desc="A sub-label for the link that brings up a dialog to assign a switch key to an action. Includes listing of three currently assigned switches, and mentions number of other switches assigned. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    <ph name="FIRST_SWITCH">$1<ex>backspace</ex></ph>, <ph name="SECOND_SWITCH">$2<ex>enter</ex></ph>, <ph name="THIRD_SWITCH">$3<ex>escape</ex></ph>, and <ph name="NUMBER_OF_OTHER_SWITCHES">$4<ex>2</ex></ph> more switches
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WARN_ALREADY_ASSIGNED_ACTION_PROMPT" desc="A message warning the user that the switch key pressed is assigned to another action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     '<ph name="currentKey">$1<ex>enter</ex></ph>' is already assigned to the '<ph name="action">$2<ex>Select</ex></ph>' action. Press any key to exit.
