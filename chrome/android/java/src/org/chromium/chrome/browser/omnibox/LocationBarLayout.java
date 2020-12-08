@@ -36,8 +36,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.WindowDelegate;
-import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
@@ -55,15 +53,11 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
-import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.KeyboardVisibilityDelegate;
-import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -114,7 +108,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
     private Runnable mKeyboardResizeModeTask;
     private Runnable mKeyboardHideTask;
     private TemplateUrlServiceObserver mTemplateUrlObserver;
-    private OverrideUrlLoadingDelegate mOverrideUrlLoadingDelegate;
 
     public LocationBarLayout(Context context, AttributeSet attrs) {
         this(context, attrs, R.layout.location_bar);
@@ -209,7 +202,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
             @NonNull UrlBarCoordinator urlCoordinator, @NonNull StatusCoordinator statusCoordinator,
             @NonNull LocationBarDataProvider locationBarDataProvider,
             @NonNull WindowDelegate windowDelegate, @NonNull WindowAndroid windowAndroid,
-            @NonNull OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
             @NonNull VoiceRecognitionHandler voiceRecognitionHandler,
             @NonNull OneshotSupplier<AssistantVoiceSearchService> assistantVoiceSearchSupplier) {
         mAutocompleteCoordinator = autocompleteCoordinator;
@@ -218,7 +210,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         mWindowDelegate = windowDelegate;
         mWindowAndroid = windowAndroid;
         mLocationBarDataProvider = locationBarDataProvider;
-        mOverrideUrlLoadingDelegate = overrideUrlLoadingDelegate;
         mVoiceRecognitionHandler = voiceRecognitionHandler;
         mAssistantVoiceSearchServiceSupplier = assistantVoiceSearchSupplier;
 
@@ -330,18 +321,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         // When we restore tabs, we focus the selected tab so the URL of the page shows.
     }
 
-    public void performSearchQuery(String query, List<String> searchParams) {
-        if (TextUtils.isEmpty(query)) return;
-
-        String queryUrl = TemplateUrlServiceFactory.get().getUrlForSearchQuery(query, searchParams);
-
-        if (!TextUtils.isEmpty(queryUrl)) {
-            loadUrl(queryUrl, PageTransition.GENERATED, 0);
-        } else {
-            setSearchQuery(query);
-        }
-    }
-
     /**
      * Sets the query string in the omnibox (ensuring the URL bar has focus and triggering
      * autocomplete for the specified query) as if the user typed it.
@@ -394,7 +373,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
         // Revert the URL to match the current page.
         setUrl(mLocationBarDataProvider.getCurrentUrl());
-        focusCurrentTab();
     }
 
     public void gestureDetected(boolean isLongPress) {
@@ -599,78 +577,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         mUrlCoordinator.setUrlBarData(UrlBarData.forNonUrlText(text), UrlBar.ScrollType.NO_SCROLL,
                 UrlBarCoordinator.SelectionState.SELECT_END);
         updateButtonVisibility();
-    }
-
-    /* package */ void loadUrlFromVoice(String url) {
-        loadUrl(url, PageTransition.TYPED, 0);
-    }
-
-    /**
-     * Load the url given with the given transition. Exposed for child classes to overwrite as
-     * necessary.
-     */
-    /* package */ void loadUrl(String url, @PageTransition int transition, long inputStart) {
-        loadUrlWithPostData(url, transition, inputStart, null, null);
-    }
-
-    protected void loadUrlWithPostData(String url, @PageTransition int transition, long inputStart,
-            @Nullable String postDataType, @Nullable byte[] postData) {
-        Tab currentTab = getCurrentTab();
-
-        // The code of the rest of this class ensures that this can't be called until the native
-        // side is initialized
-        assert mNativeInitialized : "Loading URL before native side initialized";
-
-        // TODO(crbug.com/1085812): Should be taking a full loaded LoadUrlParams.
-        if (mOverrideUrlLoadingDelegate.willHandleLoadUrlWithPostData(url, transition, postDataType,
-                    postData, mLocationBarDataProvider.isIncognito())) {
-            return;
-        }
-
-        if (currentTab != null
-                && (currentTab.isNativePage()
-                        || UrlUtilities.isNTPUrl(currentTab.getUrlString()))) {
-            NewTabPageUma.recordOmniboxNavigation(url, transition);
-            // Passing in an empty string should not do anything unless the user is at the NTP.
-            // Since the NTP has no url, pressing enter while clicking on the URL bar should refresh
-            // the page as it does when you click and press enter on any other site.
-            if (url.isEmpty()) url = currentTab.getUrlString();
-        }
-
-        // Loads the |url| in a new tab or the current ContentView and gives focus to the
-        // ContentView.
-        if (currentTab != null && !url.isEmpty()) {
-            LoadUrlParams loadUrlParams = new LoadUrlParams(url);
-            loadUrlParams.setVerbatimHeaders(GeolocationHeader.getGeoHeader(url, currentTab));
-            loadUrlParams.setTransitionType(transition | PageTransition.FROM_ADDRESS_BAR);
-            if (inputStart != 0) {
-                loadUrlParams.setInputStartTimestamp(inputStart);
-            }
-
-            if (!TextUtils.isEmpty(postDataType)) {
-                StringBuilder headers = new StringBuilder();
-                String prevHeader = loadUrlParams.getVerbatimHeaders();
-                if (prevHeader != null && !prevHeader.isEmpty()) {
-                    headers.append(prevHeader);
-                    headers.append("\r\n");
-                }
-                loadUrlParams.setExtraHeaders(new HashMap<String, String>() {
-                    { put("Content-Type", postDataType); }
-                });
-                headers.append(loadUrlParams.getExtraHttpRequestHeadersString());
-                loadUrlParams.setVerbatimHeaders(headers.toString());
-            }
-
-            if (postData != null && postData.length != 0) {
-                loadUrlParams.setPostData(ResourceRequestBody.createFromBytes(postData));
-            }
-
-            currentTab.loadUrl(loadUrlParams);
-            RecordUserAction.record("MobileOmniboxUse");
-        }
-        LocaleManager.getInstance().recordLocaleBasedSearchMetrics(false, url, transition);
-
-        focusCurrentTab();
     }
 
     /**

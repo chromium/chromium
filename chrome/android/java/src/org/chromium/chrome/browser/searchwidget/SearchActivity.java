@@ -107,6 +107,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
     /** Input submitted before before the native library was loaded. */
     private String mQueuedUrl;
+    private @PageTransition int mQueuedTransition;
     private String mQueuedPostDataType;
     private byte[] mQueuedPostData;
 
@@ -176,7 +177,10 @@ public class SearchActivity extends AsyncInitializationActivity
                 /*shareDelegateSupplier=*/null, /*incognitoStateProvider=*/null,
                 getLifecycleDispatcher(), /*overrideUrlLoadingDelegate=*/
                 (String url, @PageTransition int transition, String postDataType, byte[] postData,
-                        boolean incognito) -> false);
+                        boolean incognito) -> {
+                    loadUrl(url, transition, postDataType, postData);
+                    return true;
+                });
 
         // Kick off everything needed for the user to type into the box.
         beginQuery();
@@ -292,7 +296,9 @@ public class SearchActivity extends AsyncInitializationActivity
         assert !mIsActivityUsable
                 : "finishDeferredInitialization() incorrectly called multiple times";
         mIsActivityUsable = true;
-        if (mQueuedUrl != null) loadUrl(mQueuedUrl, mQueuedPostDataType, mQueuedPostData);
+        if (mQueuedUrl != null) {
+            loadUrl(mQueuedUrl, mQueuedTransition, mQueuedPostDataType, mQueuedPostData);
+        }
 
         // TODO(tedchoc): Warmup triggers the CustomTab layout to be inflated, but this widget
         //                will navigate to Tabbed mode.  Investigate whether this can inflate
@@ -345,11 +351,12 @@ public class SearchActivity extends AsyncInitializationActivity
         return true;
     }
 
-    @Override
-    public void loadUrl(String url, @Nullable String postDataType, @Nullable byte[] postData) {
+    /* package */ void loadUrl(String url, @PageTransition int transition,
+            @Nullable String postDataType, @Nullable byte[] postData) {
         // Wait until native has loaded.
         if (!mIsActivityUsable) {
             mQueuedUrl = url;
+            mQueuedTransition = transition;
             mQueuedPostDataType = postDataType;
             mQueuedPostData = postData;
             return;
@@ -363,6 +370,7 @@ public class SearchActivity extends AsyncInitializationActivity
                         .makeCustomAnimation(this, android.R.anim.fade_in, android.R.anim.fade_out)
                         .toBundle());
         RecordUserAction.record("SearchWidget.SearchMade");
+        LocaleManager.getInstance().recordLocaleBasedSearchMetrics(true, url, transition);
         finish();
     }
 

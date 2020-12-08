@@ -11,26 +11,31 @@ import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.BuildConfig;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
@@ -43,12 +48,16 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.PageTransition;
 
 /** Unit tests for LocationBarMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Features.EnableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
 public class LocationBarMediatorTest {
+    private static final String TEST_URL = "http://testurl.com";
+
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule
@@ -82,6 +91,13 @@ public class LocationBarMediatorTest {
     private OmniboxPrerender.Natives mPrerenderJni;
     @Mock
     private SearchEngineLogoUtils.Delegate mSearchEngineDelegate;
+    @Mock
+    private OverrideUrlLoadingDelegate mOverrideUrlLoadingDelegate;
+    @Mock
+    private LocaleManager mLocaleManager;
+
+    @Captor
+    private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
     private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
     private LocationBarMediator mMediator;
@@ -93,7 +109,8 @@ public class LocationBarMediatorTest {
         mJniMocker.mock(ProfileJni.TEST_HOOKS, mProfileNativesJniMock);
         mJniMocker.mock(OmniboxPrerenderJni.TEST_HOOKS, mPrerenderJni);
         mMediator = new LocationBarMediator(mLocationBarLayout, mLocationBarDataProvider,
-                mAssistantVoiceSearchSupplier, mProfileSupplier, mPrivacyPreferencesManager);
+                mAssistantVoiceSearchSupplier, mProfileSupplier, mPrivacyPreferencesManager,
+                mOverrideUrlLoadingDelegate, mLocaleManager);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordintor);
         SearchEngineLogoUtils.setDelegateForTesting(mSearchEngineDelegate);
     }
@@ -179,5 +196,45 @@ public class LocationBarMediatorTest {
                 .prerenderMaybe(123L, omniboxPrerenderCaptor.getValue(), "text", "originalUrl",
                         456L, profile, mTab);
         verify(mUrlCoordinator).setAutocompleteText("text", "textWithAutocomplete");
+    }
+
+    @Test
+    public void testLoadUrl() {
+        mMediator.onFinishNativeInitialization();
+
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0);
+
+        verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
+        Assert.assertEquals(TEST_URL, mLoadUrlParamsCaptor.getValue().getUrl());
+        Assert.assertEquals(PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
+                mLoadUrlParamsCaptor.getValue().getTransitionType());
+    }
+
+    @Test
+    public void testLoadUrl_NativeNotInitialized() {
+        if (BuildConfig.DCHECK_IS_ON) {
+            // clang-format off
+            try {
+                mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0);
+                throw new Error("Expected an assert to be triggered.");
+            } catch (AssertionError e) {}
+            // clang-format on
+        }
+    }
+
+    @Test
+    public void testLoadUrl_OverrideLoadingDelegate() {
+        mMediator.onFinishNativeInitialization();
+
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        doReturn(true)
+                .when(mOverrideUrlLoadingDelegate)
+                .willHandleLoadUrlWithPostData(TEST_URL, PageTransition.TYPED, null, null, false);
+        mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0);
+
+        verify(mOverrideUrlLoadingDelegate)
+                .willHandleLoadUrlWithPostData(TEST_URL, PageTransition.TYPED, null, null, false);
+        verify(mTab, times(0)).loadUrl(any());
     }
 }

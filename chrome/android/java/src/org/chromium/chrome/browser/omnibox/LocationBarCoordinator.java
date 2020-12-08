@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
+import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
@@ -118,10 +119,12 @@ public final class LocationBarCoordinator
         mUrlBar = mLocationBarLayout.findViewById(R.id.url_bar);
         OneshotSupplierImpl<AssistantVoiceSearchService> assistantVoiceSearchSupplier =
                 new OneshotSupplierImpl();
-
+        // TODO(crbug.com/1151513): Inject LocaleManager instance to LocationBarCoordinator instead
+        // of using the singleton.
         mLocationBarMediator = new LocationBarMediator(mLocationBarLayout, locationBarDataProvider,
                 assistantVoiceSearchSupplier, profileObservableSupplier,
-                PrivacyPreferencesManagerImpl.getInstance());
+                PrivacyPreferencesManagerImpl.getInstance(), overrideUrlLoadingDelegate,
+                LocaleManager.getInstance());
         mUrlCoordinator =
                 new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
@@ -149,7 +152,7 @@ public final class LocationBarCoordinator
 
         mLocationBarLayout.addUrlFocusChangeListener(mAutocompleteCoordinator);
         mLocationBarLayout.initialize(mAutocompleteCoordinator, mUrlCoordinator, mStatusCoordinator,
-                locationBarDataProvider, windowDelegate, windowAndroid, overrideUrlLoadingDelegate,
+                locationBarDataProvider, windowDelegate, windowAndroid,
                 mLocationBarMediator.getVoiceRecognitionHandler(), assistantVoiceSearchSupplier);
     }
 
