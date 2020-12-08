@@ -34,14 +34,6 @@ constexpr char kHatsSurveyTriggerTesting[] = "testing";
 constexpr char kHatsSurveyTriggerSatisfaction[] = "satisfaction";
 constexpr char kHatsSurveyTriggerSettings[] = "settings";
 constexpr char kHatsSurveyTriggerSettingsPrivacy[] = "settings-privacy";
-constexpr char kHatsSurveyTriggerDevToolsIssuesCOEP[] = "devtools-issues-coep";
-constexpr char kHatsSurveyTriggerDevToolsIssuesMixedContent[] =
-    "devtools-issues-mixed-content";
-constexpr char kHatsSurveyTriggerDevToolsIssuesCookiesSameSite[] =
-    "devtools-issues-cookies-samesite";
-constexpr char kHatsSurveyTriggerDevToolsIssuesHeavyAd[] =
-    "devtools-issues-heavy-ad";
-constexpr char kHatsSurveyTriggerDevToolsIssuesCSP[] = "devtools-issues-csp";
 
 constexpr char kHatsNextSurveyTriggerIDTesting[] =
     "zishSVViB0kPN8UwQ150VGjBKuBP";
@@ -50,19 +42,6 @@ constexpr char kHatsShouldShowSurveyReasonHistogram[] =
     "Feedback.HappinessTrackingSurvey.ShouldShowSurveyReason";
 
 namespace {
-
-const base::Feature* survey_features[] = {
-    &features::kHappinessTrackingSurveysForDesktop,
-    &features::kHaTSDesktopDevToolsIssuesCOEP,
-    &features::kHaTSDesktopDevToolsIssuesMixedContent,
-    &features::kHappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSite,
-    &features::kHaTSDesktopDevToolsIssuesHeavyAd,
-    &features::kHaTSDesktopDevToolsIssuesCSP,
-    &features::kHappinessTrackingSurveysForDesktopSettings,
-    &features::kHappinessTrackingSurveysForDesktopSettingsPrivacy};
-
-// Which survey we're triggering
-constexpr char kHatsSurveyTrigger[] = "survey";
 
 constexpr char kHatsSurveyProbability[] = "probability";
 
@@ -140,24 +119,58 @@ void HatsService::DelayedSurveyTask::WebContentsDestroyed() {
   hats_service_->RemoveTask(*this);
 }
 
+struct SurveyIdentifiers {
+  const base::Feature* feature;
+  const char* trigger;
+  const char* trigger_id;
+};
+
+const char* kTriggerIdProvidedByFeatureParams = "";
+
+// The Feature for each survey is generally disabled by default, and only
+// enabled via a Finch config. The trigger_id can be provided via feature
+// params. If the feature params don't contain a trigger_id (called en_site_id
+// in the params), the fallback here will be used. For features that we want to
+// enable all at the same time (in the same 'group'), we can't provide the
+// trigger_id via feature params due to a limitation that prevents duplicate
+// param names, even for different features within a group.
+const SurveyIdentifiers surveys[] = {
+    {&features::kHappinessTrackingSurveysForDesktop,
+     kHatsSurveyTriggerSatisfaction, "test_site_id"},
+    {&features::kHaTSDesktopDevToolsIssuesCOEP, "devtools-issues-coep",
+     "1DbEs89FS0ugnJ3q1cK0Nx6T99yT"},
+    {&features::kHaTSDesktopDevToolsIssuesMixedContent,
+     "devtools-issues-mixed-content", "BhCYpUmyf0ugnJ3q1cK0VtxCftzo"},
+    {&features::
+         kHappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSite,
+     "devtools-issues-cookies-samesite", "w9JqqpmEr0ugnJ3q1cK0NezVg4iK"},
+    {&features::kHaTSDesktopDevToolsIssuesHeavyAd, "devtools-issues-heavy-ad",
+     "bAeiT5J4P0ugnJ3q1cK0Ra6jg7s8"},
+    {&features::kHaTSDesktopDevToolsIssuesCSP, "devtools-issues-csp",
+     "c9fjDmwjb0ugnJ3q1cK0USeAJJ9C"},
+    {&features::kHappinessTrackingSurveysForDesktopSettings,
+     kHatsSurveyTriggerSettings, kTriggerIdProvidedByFeatureParams},
+    {&features::kHappinessTrackingSurveysForDesktopSettingsPrivacy,
+     kHatsSurveyTriggerSettingsPrivacy, kTriggerIdProvidedByFeatureParams},
+};
+
 HatsService::HatsService(Profile* profile) : profile_(profile) {
   constexpr char kHatsSurveyUserPrompted[] = "user_prompted";
   constexpr bool kHatsSurveyUserPromptedDefault = false;
 
-  for (auto* survey_feature : survey_features) {
-    if (!base::FeatureList::IsEnabled(*survey_feature))
+  for (const SurveyIdentifiers& survey : surveys) {
+    if (!base::FeatureList::IsEnabled(*survey.feature))
       continue;
     survey_configs_by_triggers_.emplace(
-        base::FeatureParam<std::string>(survey_feature, kHatsSurveyTrigger, "")
-            .Get(),
+        survey.trigger,
         SurveyConfig(
-            base::FeatureParam<double>(survey_feature, kHatsSurveyProbability,
+            base::FeatureParam<double>(survey.feature, kHatsSurveyProbability,
                                        kHatsSurveyProbabilityDefault)
                 .Get(),
-            base::FeatureParam<std::string>(survey_feature, kHatsSurveyEnSiteID,
-                                            kHatsSurveyEnSiteIDDefault)
+            base::FeatureParam<std::string>(survey.feature, kHatsSurveyEnSiteID,
+                                            survey.trigger_id)
                 .Get(),
-            base::FeatureParam<bool>(survey_feature, kHatsSurveyUserPrompted,
+            base::FeatureParam<bool>(survey.feature, kHatsSurveyUserPrompted,
                                      kHatsSurveyUserPromptedDefault)
                 .Get()));
   }
