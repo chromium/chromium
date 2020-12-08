@@ -116,6 +116,7 @@ class MigrationTest : public SyncTest  {
     // request that it be migrated.
     preferred_data_types.Remove(syncer::AUTOFILL_WALLET_DATA);
     preferred_data_types.Remove(syncer::AUTOFILL_WALLET_METADATA);
+    preferred_data_types.Remove(syncer::AUTOFILL_WALLET_OFFER);
 
     // ARC package will be unready during this test, so we should not request
     // that it be migrated.
