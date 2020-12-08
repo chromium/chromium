@@ -310,6 +310,8 @@ component("capture_lib") {
       "video/chromeos/token_manager.h",
       "video/chromeos/vendor_tag_ops_delegate.cc",
       "video/chromeos/vendor_tag_ops_delegate.h",
+      "video/chromeos/video_capture_device_chromeos_delegate.cc",
+      "video/chromeos/video_capture_device_chromeos_delegate.h",
       "video/chromeos/video_capture_device_chromeos_halv3.cc",
       "video/chromeos/video_capture_device_chromeos_halv3.h",
       "video/chromeos/video_capture_device_factory_chromeos.cc",

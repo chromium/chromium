@@ -25,6 +25,7 @@
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
+#include "media/capture/video/chromeos/video_capture_device_chromeos_delegate.h"
 #include "media/capture/video/chromeos/video_capture_device_chromeos_halv3.h"
 
 namespace media {
@@ -205,13 +206,17 @@ std::unique_ptr<VideoCaptureDevice> CameraHalDelegate::CreateDevice(
           bridge->OnDeviceClosed(device_id);
         },
         device_descriptor.device_id, camera_app_device_bridge);
-    return std::make_unique<VideoCaptureDeviceChromeOSHalv3>(
+    auto delegate = std::make_unique<VideoCaptureDeviceChromeOSDelegate>(
         std::move(task_runner_for_screen_observer), device_descriptor, this,
         camera_app_device, std::move(cleanup_callback));
-  } else {
     return std::make_unique<VideoCaptureDeviceChromeOSHalv3>(
+        std::move(delegate));
+  } else {
+    auto delegate = std::make_unique<VideoCaptureDeviceChromeOSDelegate>(
         std::move(task_runner_for_screen_observer), device_descriptor, this,
         nullptr, base::DoNothing());
+    return std::make_unique<VideoCaptureDeviceChromeOSHalv3>(
+        std::move(delegate));
   }
 }
 
