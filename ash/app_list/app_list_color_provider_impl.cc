@@ -5,10 +5,22 @@
 #include "ash/app_list/app_list_color_provider_impl.h"
 
 #include "ash/public/cpp/ash_features.h"
+#include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/default_colors.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 
 namespace ash {
+
+namespace {
+
+// Helper to check if tablet mode is enabled.
+bool IsTabletModeEnabled() {
+  return Shell::Get()->tablet_mode_controller() &&
+         Shell::Get()->tablet_mode_controller()->InTabletMode();
+}
+
+}  // namespace
 
 AppListColorProviderImpl::AppListColorProviderImpl()
     : ash_color_provider_(AshColorProvider::Get()) {}
@@ -39,6 +51,12 @@ SkColor AppListColorProviderImpl::GetAppListBackgroundColor() const {
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxBackgroundColor() const {
+  if (IsTabletModeEnabled()) {
+    return DeprecatedGetBaseLayerColor(
+        AshColorProvider::BaseLayerType::kTransparent80,
+        /*default_color*/ SK_ColorWHITE);
+  }
+
   return DeprecatedGetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
       SK_ColorWHITE);
@@ -69,6 +87,12 @@ SkColor AppListColorProviderImpl::GetSearchBoxSecondaryTextColor(
 }
 
 SkColor AppListColorProviderImpl::GetSuggestionChipBackgroundColor() const {
+  if (IsTabletModeEnabled()) {
+    return DeprecatedGetBaseLayerColor(
+        AshColorProvider::BaseLayerType::kTransparent80,
+        /*default_color*/ SkColorSetA(gfx::kGoogleGrey100, 0x14));
+  }
+
   return DeprecatedGetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
       /*default_color*/ SkColorSetA(gfx::kGoogleGrey100, 0x14));
