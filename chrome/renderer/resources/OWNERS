@@ -1,4 +1,3 @@
 file://ui/webui/PLATFORM_OWNERS
 
 per-file offline.js=edwardjung@chromium.org
-# COMPONENT: UI>Browser>WebUI

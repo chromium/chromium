@@ -20,4 +20,3 @@ per-file chrome_content_renderer_client_browsertest.cc=*
 per-file chrome_content_renderer_client.cc=*
 per-file chrome_content_renderer_client.h=*
 per-file chrome_content_renderer_client_unittest.cc=*
-# COMPONENT: Internals>Services>Network
