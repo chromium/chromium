@@ -78,7 +78,6 @@ source_set("common") {
   deps = [
     ":fourcc",
     "//base",
-    "//build/config/linux/libdrm",
     "//gpu/ipc/common:common",
     "//media",
     "//media/gpu:buildflags",
@@ -89,8 +88,6 @@ source_set("common") {
     "//ui/gfx:buffer_types",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
-    "//ui/gfx/linux:drm",
-    "//ui/gfx/linux:gbm",
     "//ui/gl",
   ]
 }

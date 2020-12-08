@@ -23,13 +23,7 @@ namespace media {
 
 // Create GpuMemoryBuffer-based media::VideoFrame with |buffer_usage|.
 // See //media/base/video_frame.h for other parameters.
-// If |gpu_memory_buffer_factory| is not null, it's used to allocate the
-// GpuMemoryBuffer and it must outlive the returned VideoFrame. If it's null,
-// the buffer is allocated using the render node (this is intended to be used
-// only for the internals of video encoding when the usage is
-// SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE). It's safe to call this function
-// concurrently from multiple threads (as long as either
-// |gpu_memory_buffer_factory| is thread-safe or nullptr).
+// |gpu_memory_buffer_factory| must outlive the returned VideoFrame.
 MEDIA_GPU_EXPORT scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
     gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     VideoPixelFormat pixel_format,
@@ -41,13 +35,7 @@ MEDIA_GPU_EXPORT scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
 
 // Create platform dependent media::VideoFrame with |buffer_usage|.
 // See //media/base/video_frame.h for other parameters.
-// If |gpu_memory_buffer_factory| is not null, it's used to allocate the
-// video frame's storage and it must outlive the returned VideoFrame. If it's
-// null, the buffer is allocated using the render node (this is intended to be
-// used only for the internals of video encoding when the usage is
-// SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE). It's safe to call this function
-// concurrently from multiple threads (as long as either
-// |gpu_memory_buffer_factory| is thread-safe or nullptr).
+// |gpu_memory_buffer_factory| must outlive the returned VideoFrame.
 MEDIA_GPU_EXPORT scoped_refptr<VideoFrame> CreatePlatformVideoFrame(
     gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     VideoPixelFormat pixel_format,
@@ -60,12 +48,6 @@ MEDIA_GPU_EXPORT scoped_refptr<VideoFrame> CreatePlatformVideoFrame(
 // Get VideoFrameLayout of platform dependent video frame with |pixel_format|,
 // |coded_size| and |buffer_usage|. This function is not cost-free as this
 // allocates a platform dependent video frame.
-// If |gpu_memory_buffer_factory| is not null, it's used to allocate the
-// video frame's storage. If it's null, the storage is allocated using the
-// render node (this is intended to be used only for the internals of video
-// encoding when the usage is SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE). It's
-// safe to call this function concurrently from multiple threads (as long as
-// either |gpu_memory_buffer_factory| is thread-safe or nullptr).
 MEDIA_GPU_EXPORT base::Optional<VideoFrameLayout> GetPlatformVideoFrameLayout(
     gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     VideoPixelFormat pixel_format,
