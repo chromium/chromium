@@ -13,15 +13,13 @@
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
-#include "ui/events/platform/x11/x11_event_source.h"
-#include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/dri3.h"
-#include "ui/gfx/x/present.h"
 
+namespace base {
+class Thread;
+}
 namespace viz {
 
-class VIZ_SERVICE_EXPORT OutputPresenterX11 : public OutputPresenter,
-                                              public ui::XEventDispatcher {
+class VIZ_SERVICE_EXPORT OutputPresenterX11 : public OutputPresenter {
  public:
   static const uint32_t kDefaultSharedImageUsage;
 
@@ -48,8 +46,6 @@ class VIZ_SERVICE_EXPORT OutputPresenterX11 : public OutputPresenter,
       gfx::ColorSpace color_space,
       gfx::Size image_size,
       size_t num_images) final;
-  std::unique_ptr<Image> AllocateBackgroundImage(gfx::ColorSpace color_space,
-                                                 gfx::Size image_size) final;
   void SwapBuffers(SwapCompletionCallback completion_callback,
                    BufferPresentedCallback presentation_callback) final;
   void PostSubBuffer(const gfx::Rect& rect,
@@ -63,18 +59,9 @@ class VIZ_SERVICE_EXPORT OutputPresenterX11 : public OutputPresenter,
       bool is_submitted) final;
   void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays,
                         std::vector<ScopedOverlayAccess*> accesses) final;
-  void ScheduleBackground(Image* image) final;
-
-  // ui::XEventDispatcher implementations:
-  bool DispatchXEvent(x11::Event* event) final;
 
  private:
   bool Initialize();
-
-  bool OnConfigureNotifyEvent(const x11::Present::ConfigureNotifyEvent* event);
-  bool OnCompleteNotifyEvent(const x11::Present::CompleteNotifyEvent* event);
-  bool OnIdleNotifyEvent(const x11::Present::IdleNotifyEvent* event);
-  bool OnRedirectNotifyEvent(const x11::Present::RedirectNotifyEvent* event);
 
   SkiaOutputSurfaceDependency* dependency_;
 
@@ -84,30 +71,20 @@ class VIZ_SERVICE_EXPORT OutputPresenterX11 : public OutputPresenter,
       shared_image_representation_factory_;
   const uint32_t shared_image_usage_;
 
-  // For executing task on GPU main thread.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  x11::Connection* connection_ = nullptr;
-  x11::Window window_ = x11::Window::None;
   int depth_ = 0;
-  uint32_t event_id_ = 0;
 
   ResourceFormat image_format_ = BGRA_8888;
-
-  size_t allocated_image_count_ = 0;
 
   std::vector<std::vector<uint64_t>> modifier_vectors_;
   bool supports_rgba_ = false;
 
-  // Image in present queue.
-  base::circular_deque<Image*> present_images_;
+  Image* scheduled_image_ = nullptr;
 
-  uint64_t last_target_msc_ = 0;
-  uint64_t last_present_msc_ = 0;
+  // Thread for using present extension to present pixmap.
+  std::unique_ptr<base::Thread> x11_thread_;
 
-  // Callbacks wait for X11 CompleteNotifyEvent
-  base::circular_deque<SwapCompletionCallback> swap_completion_callbacks_;
-  base::circular_deque<BufferPresentedCallback> presentation_callbacks_;
+  class OnX11;
+  std::unique_ptr<OnX11> on_x11_;
 };
 
 }  // namespace viz
