@@ -8,6 +8,6 @@ If (@($all).length -gt 1) {
 }
 
 $hwnd = Get-Process | Where-Object {$_.ProcessName -eq 'chrome'} | where MainWindowTitle -like "*$($args[0])*Google Chrome*" | select MainWindowHandle -ExpandProperty MainWindowHandle | Out-String
-$hwnd_arg = "--window=" + $hwnd
+$hwnd_arg = "--pid=" + $hwnd
 $exe = ".\ax_dump_tree.exe"
 & $exe $hwnd_arg

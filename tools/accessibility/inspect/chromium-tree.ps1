@@ -1,5 +1,5 @@
 # Powershell script to dump accessibility tree for Chromium. Takes optional first argument with part of window title to disambiguate the desired window.
-$all = ps | where {$_.ProcessName -eq 'chrome'} |where MainWindowTitle -like "*$($args[0])*Google Chrome" | select MainWindowHandle, MainWindowTitle
+$all = ps | where {$_.ProcessName -eq 'chrome'} |where MainWindowTitle -like "*$($args[0])*Chromium" | select MainWindowHandle, MainWindowTitle
 echo $all
 echo ""
 If (@($all).length -gt 1) {
@@ -8,6 +8,6 @@ If (@($all).length -gt 1) {
 }
 
 $hwnd = Get-Process | where {$_.ProcessName -eq 'chrome'} | where MainWindowTitle -like "*$($args[0])*Chromium*" | select MainWindowHandle -ExpandProperty MainWindowHandle | Out-String
-$hwnd_arg = "--window=" + $hwnd
+$hwnd_arg = "--pid=" + $hwnd
 $exe = ".\ax_dump_tree.exe"
 & $exe $hwnd_arg

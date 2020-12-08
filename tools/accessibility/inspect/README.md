@@ -44,8 +44,8 @@ At your convenience the number of pre-defined application selectors are availabl
 You can also specify an application by its title:
 `ax_dump_tree --pattern=title`
 
-Alternatively you can dump a tree by HWDN on Windows:
-`--window=HWDN`
+Alternatively you can dump a tree by HWND on Windows:
+`--pid=HWND`
 Note, to use a hex window handle prefix it with `0x`.
 
 Or by application PID on Mac and Linux:
