@@ -33,5 +33,5 @@ interface PdfThumbnailer {
   [EnableIf=is_chromeos]
   GetThumbnail(ThumbParams params,
                mojo_base.mojom.ReadOnlySharedMemoryRegion pdf_region)
-      => (skia.mojom.BitmapWithArbitraryBpp? bitmap);
+      => (skia.mojom.BitmapN32? bitmap);
 };
