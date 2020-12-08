@@ -1351,16 +1351,16 @@ This file contains the strings for ash.
       <message name="IDS_ASH_DESKS_DESK_4_MINI_VIEW_TITLE" desc="The label of the fourth virtual desk thumbnail.">
         Desk 4
       </message>
-      <message name="IDS_ASH_DESKS_DESK_5_MINI_VIEW_TITLE" desc="The label of the fourth virtual desk thumbnail.">
+      <message name="IDS_ASH_DESKS_DESK_5_MINI_VIEW_TITLE" desc="The label of the fifth virtual desk thumbnail.">
         Desk 5
       </message>
-      <message name="IDS_ASH_DESKS_DESK_6_MINI_VIEW_TITLE" desc="The label of the fourth virtual desk thumbnail.">
+      <message name="IDS_ASH_DESKS_DESK_6_MINI_VIEW_TITLE" desc="The label of the sixth virtual desk thumbnail.">
         Desk 6
       </message>
-      <message name="IDS_ASH_DESKS_DESK_7_MINI_VIEW_TITLE" desc="The label of the fourth virtual desk thumbnail.">
+      <message name="IDS_ASH_DESKS_DESK_7_MINI_VIEW_TITLE" desc="The label of the seventh virtual desk thumbnail.">
         Desk 7
       </message>
-      <message name="IDS_ASH_DESKS_DESK_8_MINI_VIEW_TITLE" desc="The label of the fourth virtual desk thumbnail.">
+      <message name="IDS_ASH_DESKS_DESK_8_MINI_VIEW_TITLE" desc="The label of the eighth virtual desk thumbnail.">
         Desk 8
       </message>
       <message name="IDS_ASH_DESKS_MAX_NUM_REACHED" desc="Message shown to users when they attempt to add a new virtual desk when the maximum number of desks has been reached.">
