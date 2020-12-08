@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.payments;
+package org.chromium.components.payments;
 
 import android.content.Context;
 import android.content.DialogInterface.OnClickListener;
@@ -17,13 +17,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.R;
-import org.chromium.components.payments.ErrorStrings;
-import org.chromium.components.payments.PayerData;
-import org.chromium.components.payments.PaymentApp;
-import org.chromium.components.payments.PaymentAppType;
-import org.chromium.components.payments.PaymentDetailsUpdateServiceHelper;
-import org.chromium.components.payments.SupportedDelegations;
 import org.chromium.components.payments.intent.IsReadyToPayServiceHelper;
 import org.chromium.components.payments.intent.WebPaymentIntentHelper;
 import org.chromium.components.payments.intent.WebPaymentIntentHelperType;
@@ -239,7 +232,7 @@ public class AndroidPaymentApp
     }
 
     /** Callback for receiving responses to IS_READY_TO_PAY queries. */
-    /* package */ interface IsReadyToPayCallback {
+    public interface IsReadyToPayCallback {
         /**
          * Called after it is known whether the given app is ready to pay.
          * @param app          The app that has been queried.
@@ -249,7 +242,7 @@ public class AndroidPaymentApp
     }
 
     /** Queries the IS_READY_TO_PAY service. */
-    /* package */ void maybeQueryIsReadyToPayService(Map<String, PaymentMethodData> methodDataMap,
+    public void maybeQueryIsReadyToPayService(Map<String, PaymentMethodData> methodDataMap,
             String origin, String iframeOrigin, @Nullable byte[][] certificateChain,
             Map<String, PaymentDetailsModifier> modifiers, IsReadyToPayCallback callback) {
         ThreadUtils.assertOnUiThread();
@@ -279,7 +272,7 @@ public class AndroidPaymentApp
     }
 
     @VisibleForTesting
-    /* package */ void bypassIsReadyToPayServiceInTest() {
+    public void bypassIsReadyToPayServiceInTest() {
         mBypassIsReadyToPayServiceInTest = true;
     }
 
@@ -401,7 +394,7 @@ public class AndroidPaymentApp
     }
 
     @VisibleForTesting
-    /* package */ void onIntentCompletedForTesting(IntentResult intentResult) {
+    public void onIntentCompletedForTesting(IntentResult intentResult) {
         onIntentCompleted(intentResult);
     }
 

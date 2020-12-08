@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.payments;
+package org.chromium.components.payments;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -21,9 +21,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.components.payments.PayerData;
-import org.chromium.components.payments.PaymentApp;
-import org.chromium.components.payments.SupportedDelegations;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
 import org.chromium.payments.mojom.PaymentDetailsModifier;

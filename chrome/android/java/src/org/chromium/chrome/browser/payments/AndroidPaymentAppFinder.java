@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.payments.PaymentManifestVerifier.ManifestVerifyCallback;
+import org.chromium.components.payments.AndroidPaymentApp;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.MethodStrings;
 import org.chromium.components.payments.PackageManagerDelegate;

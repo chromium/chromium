@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.payments.ui.PaymentUiService;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.payments.AbortReason;
+import org.chromium.components.payments.AndroidPaymentApp;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.Event;

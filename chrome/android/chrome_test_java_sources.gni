@@ -369,7 +369,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/password_manager/settings/PasswordViewingTypeTest.java",
   "javatests/src/org/chromium/chrome/browser/payments/AndroidPaymentAppFinderTest.java",
   "javatests/src/org/chromium/chrome/browser/payments/AndroidPaymentAppFinderUnitTest.java",
-  "javatests/src/org/chromium/chrome/browser/payments/AndroidPaymentAppUnitTest.java",
   "javatests/src/org/chromium/chrome/browser/payments/CurrencyFormatterTest.java",
   "javatests/src/org/chromium/chrome/browser/payments/ExpandablePaymentHandlerChangePaymentMethodTest.java",
   "javatests/src/org/chromium/chrome/browser/payments/ExpandablePaymentHandlerTest.java",

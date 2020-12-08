@@ -74,6 +74,11 @@ generate_jni("jni_headers") {
 
 android_resources("java_resources") {
   sources = payments_java_resources
+  deps = [
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/strings:components_strings_grd",
+  ]
 }
 
 # Minimal target to depend on PaymentDetailsUpdateService. This should be kept
@@ -108,6 +113,7 @@ android_library("service_java") {
 android_library("java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
+    "java/src/org/chromium/components/payments/AndroidPaymentApp.java",
     "java/src/org/chromium/components/payments/BasicCardUtils.java",
     "java/src/org/chromium/components/payments/BrowserPaymentRequest.java",
     "java/src/org/chromium/components/payments/CanMakePaymentQuery.java",
@@ -146,6 +152,7 @@ android_library("java") {
     "java/src/org/chromium/components/payments/intent/IsReadyToPayServiceHelper.java",
     "java/src/org/chromium/components/payments/intent/WebPaymentIntentHelperTypeConverter.java",
   ]
+  resources_package = "org.chromium.components.payments"
   deps = [
     ":java_resources",
     ":service_java",
@@ -161,8 +168,11 @@ android_library("java") {
     "//mojo/public/java:system_java",
     "//services/service_manager/public/java:service_manager_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/android_deps:androidx_appcompat_appcompat_java",
     "//third_party/android_deps:androidx_collection_collection_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//ui/android:ui_utils_java",
     "//url:gurl_java",
     "//url:origin_java",
   ]
@@ -236,5 +246,22 @@ java_library("junit") {
     "//third_party/mockito:mockito_java",
     "//url:gurl_java",
     "//url:origin_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/components/payments/AndroidPaymentAppUnitTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//components/payments/mojom:mojom_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:androidx_test_runner_java",
+    "//third_party/android_sdk:android_test_base_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
   ]
 }
