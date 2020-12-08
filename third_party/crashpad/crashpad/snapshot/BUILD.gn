@@ -368,6 +368,8 @@ source_set("snapshot_test") {
       "linux/exception_snapshot_linux_test.cc",
       "linux/process_reader_linux_test.cc",
       "linux/system_snapshot_linux_test.cc",
+      "linux/test_modules.cc",
+      "linux/test_modules.h",
       "sanitized/process_snapshot_sanitized_test.cc",
       "sanitized/sanitization_information_test.cc",
     ]
