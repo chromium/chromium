@@ -44,9 +44,6 @@ enum class InitiatorLockCompatibility {
   // - HTML Imports (see https://crbug.com/871827#c9).
   kIncorrectLock = 4,
 
-  // Covered by CrossOriginReadBlockingExceptionForPlugin::ShouldAllowForPlugin.
-  kExcludedCorbForPlugin = 6,
-
   // Covered by AddAllowedRequestInitiatorForPlugin.
   kAllowedRequestInitiatorForPlugin = 7,
 

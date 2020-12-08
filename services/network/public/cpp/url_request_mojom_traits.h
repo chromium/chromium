@@ -177,9 +177,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static bool corb_detachable(const network::ResourceRequest& request) {
     return request.corb_detachable;
   }
-  static bool corb_excluded(const network::ResourceRequest& request) {
-    return request.corb_excluded;
-  }
   static network::mojom::RequestMode mode(
       const network::ResourceRequest& request) {
     return request.mode;

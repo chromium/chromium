@@ -64175,6 +64175,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="6" label="ExcludedCorbForPlugin">
     Requests from a renderer process that embeds a plugin (e.g. Flash) that
     needs to disable CORB and request_initiator_origin_lock enforcement.
+
+    Obsolete - this enum value was removed in Nov 2020 (M89).
   </int>
   <int value="7" label="AllowedRequestInitiatorForPlugin">
     Requests from a renderer process that embeds a plugin (e.g. PDF) that needs

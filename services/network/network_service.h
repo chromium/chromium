@@ -203,7 +203,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 #if defined(OS_WIN) || defined(OS_MAC)
   void SetEncryptionKey(const std::string& encryption_key) override;
 #endif
-  void AddCorbExceptionForPlugin(int32_t process_id) override;
   void AddAllowedRequestInitiatorForPlugin(
       int32_t process_id,
       const url::Origin& allowed_request_initiator) override;

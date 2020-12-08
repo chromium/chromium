@@ -118,7 +118,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   bool originated_from_service_worker = false;
   bool skip_service_worker = false;
   bool corb_detachable = false;
-  bool corb_excluded = false;
   mojom::RequestMode mode = mojom::RequestMode::kNoCors;
   mojom::CredentialsMode credentials_mode = mojom::CredentialsMode::kInclude;
   mojom::RedirectMode redirect_mode = mojom::RedirectMode::kFollow;

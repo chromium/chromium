@@ -160,6 +160,9 @@ class NetworkServiceRestartBrowserTest : public ContentBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
 #if BUILDFLAG(ENABLE_PLUGINS)
+    // TODO(lukasza, kmoon): https://crbug.com/702993: Remove this dependency
+    // (and //ppapi/tests/corb_test_plugin.cc + BUILD.gn dependencies) once
+    // PDF support doesn't depend on PPAPI anymore.
     ASSERT_TRUE(ppapi::RegisterCorbTestPlugin(command_line));
 #endif
     ContentBrowserTest::SetUpCommandLine(command_line);
@@ -1130,34 +1133,58 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, Cookies) {
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-// Make sure that "trusted" plugins continue to be able to issue cross-origin
-// requests after a network process crash.
+// Make sure that "trusted" plugins continue to be able to issue requests that
+// are cross-origin (wrt the host frame) after a network process crash:
+// - html frame: main-frame.com/title1.html
+// \-- plugin document: cross.origin.com/.../js.txt (`plugin_document_url`)
+//   \-- request from plugin: cross.origin.com/.../js.txt
+// This mimics the behavior of PDFs, which only issue requests for the plugin
+// document (e.q. network::ResourceRequest::request_initiator is same-origin wrt
+// ResourceRequest::url).
+//
+// This primarily verifies that OnNetworkServiceCrashRestorePluginExceptions in
+// render_process_host_impl.cc refreshes AddAllowedRequestInitiatorForPlugin
+// data after a NetworkService crash.
+//
+// See also https://crbug.com/874515 and https://crbug.com/846339.
+//
+// TODO(lukasza, kmoon): https://crbug.com/702993: Remove this test once PDF
+// support doesn't depend on PPAPI anymore.
 IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, Plugin) {
   if (IsInProcessNetworkService())
     return;
   auto* web_contents = shell()->web_contents();
-  ASSERT_TRUE(NavigateToURL(web_contents,
-                            embedded_test_server()->GetURL("/title1.html")));
+  ASSERT_TRUE(NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL("main.frame.com", "/title1.html")));
 
-  // Load the test plugin (see ppapi::RegisterCorbTestPlugin).
-  const char kLoadingScript[] = R"(
+  // Load cross-origin document into the test plugin (see
+  // ppapi::RegisterCorbTestPlugin).
+  //
+  // The document has to be a MIME type that CORB will allow (such as
+  // javascript) - it cannot be a pdf or json, because these would be blocked by
+  // CORB (the real PDF plugin works because the plugin is hosted in a Chrome
+  // Extension where CORB is turned off).
+  GURL plugin_document_url = embedded_test_server()->GetURL(
+      "cross.origin.com", "/site_isolation/js.txt");
+  const char kLoadingScriptTemplate[] = R"(
       var obj = document.createElement('object');
       obj.id = 'plugin';
-      obj.data = 'test.swf';
-      obj.type = 'application/x-shockwave-flash';
+      obj.data = $1;
+      obj.type = 'application/x-fake-pdf-for-testing';
       obj.width = 400;
       obj.height = 400;
 
       document.body.appendChild(obj);
   )";
-  ASSERT_TRUE(ExecJs(web_contents, kLoadingScript));
+  EXPECT_FALSE(
+      web_contents->GetMainFrame()->GetLastCommittedOrigin().IsSameOriginWith(
+          url::Origin::Create(plugin_document_url)));
+  ASSERT_TRUE(ExecJs(web_contents,
+                     JsReplace(kLoadingScriptTemplate, plugin_document_url)));
 
-  // Ask the plugin to perform a cross-origin, CORB-eligible (i.e.
-  // application/json + nosniff) URL request.  Plugins with universal access
-  // should not be subject to CORS/CORB and so the request should go through.
-  // See also https://crbug.com/874515 and https://crbug.com/846339.
-  GURL cross_origin_url = embedded_test_server()->GetURL(
-      "cross.origin.com", "/site_isolation/nosniff.json");
+  // Ask the plugin to re-request the document URL (similarly to what the PDF
+  // plugin does to get chunks of linearized PDFs).
   const char kFetchScriptTemplate[] = R"(
       new Promise(function (resolve, reject) {
           var obj = document.getElementById('plugin');
@@ -1173,10 +1200,11 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, Plugin) {
           obj.postMessage('requestUrl: ' + $1);
       });
   )";
-  std::string fetch_script = JsReplace(kFetchScriptTemplate, cross_origin_url);
+  std::string fetch_script =
+      JsReplace(kFetchScriptTemplate, plugin_document_url);
   ASSERT_EQ(
       "msg-from-plugin: requestUrl: RESPONSE BODY: "
-      "runMe({ \"name\" : \"chromium\" });\n",
+      "var j = 0; document.write(j);\n",
       EvalJs(web_contents, fetch_script));
 
   // Crash the Network Service process and wait until host frame's
@@ -1185,11 +1213,11 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, Plugin) {
   main_frame()->FlushNetworkAndNavigationInterfacesForTesting();
 
   // Try the fetch again - it should still work (i.e. the mechanism for relaxing
-  // CORB for universal-access-plugins should be resilient to network process
-  // crashes).  See also https://crbug.com/891904.
+  // request_initiator_origin_lock enforcement should be resilient to network
+  // process crashes).
   ASSERT_EQ(
       "msg-from-plugin: requestUrl: RESPONSE BODY: "
-      "runMe({ \"name\" : \"chromium\" });\n",
+      "var j = 0; document.write(j);\n",
       EvalJs(web_contents, fetch_script));
 }
 #endif

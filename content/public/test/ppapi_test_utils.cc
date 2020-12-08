@@ -73,17 +73,17 @@ bool RegisterPluginWithDefaultMimeType(
   return RegisterPlugins(command_line, plugins);
 }
 
-bool RegisterFlashTestPluginLibrary(base::CommandLine* command_line,
-                                    const StringType& library_name) {
+bool RegisterFakePdfPluginLibrary(base::CommandLine* command_line,
+                                  const StringType& library_name) {
   std::vector<PluginInfo> plugins;
-  // Register a fake Flash with 100.0 version (to avoid outdated checks).
-  base::FilePath::StringType fake_flash_parameter =
-      base::FilePath::FromUTF8Unsafe(std::string("#") + "Shockwave Flash" +
+  // Register a fake PDF plugin with 100.0 version (to avoid outdated checks).
+  base::FilePath::StringType fake_pdf_parameter =
+      base::FilePath::FromUTF8Unsafe(std::string("#") + "Fake PDF" +
                                      "#Description#100.0")
           .value();
   plugins.push_back(
-      PluginInfo(library_name, fake_flash_parameter,
-                 FILE_PATH_LITERAL("application/x-shockwave-flash")));
+      PluginInfo(library_name, fake_pdf_parameter,
+                 FILE_PATH_LITERAL("application/x-fake-pdf-for-testing")));
   return RegisterPlugins(command_line, plugins);
 }
 
@@ -111,7 +111,7 @@ bool RegisterTestPluginWithExtraParameters(
 bool RegisterCorbTestPlugin(base::CommandLine* command_line) {
   StringType library_name =
       base::FilePath::FromUTF8Unsafe(ppapi::kCorbTestPluginName).value();
-  return RegisterFlashTestPluginLibrary(command_line, library_name);
+  return RegisterFakePdfPluginLibrary(command_line, library_name);
 }
 
 bool RegisterBlinkTestPlugin(base::CommandLine* command_line) {

@@ -647,14 +647,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
       mojo::PendingReceiver<blink::mojom::WebSocketConnector> receiver)
       override;
 
-  // Disables CORB (Cross-Origin Read Blocking) and
-  // |request_initiator_origin_lock| enforcement for |process_id|.
-  //
-  // The exception will be removed when the corresponding RenderProcessHostImpl
-  // is destroyed (see
-  // |cleanup_network_service_plugin_exceptions_upon_destruction_|).
-  static void AddCorbExceptionForPlugin(int process_id);
-
   // Allows |process_id| to use an additional |allowed_request_initiator|
   // (bypassing |request_initiator_origin_lock| enforcement).
   //

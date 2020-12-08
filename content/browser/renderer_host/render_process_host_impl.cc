@@ -1127,10 +1127,9 @@ GetCodeCacheHostReceiverHandler() {
   return *instance;
 }
 
-// Keep track of plugin process IDs that require exceptions from CORB,
-// request_initiator_origin_lock checks (for particular origins), or both.
+// Keep track of plugin process IDs that require exceptions for particular
+// initiator origins.
 struct PluginExceptionsForNetworkService {
-  bool is_corb_disabled = false;
   std::set<url::Origin> allowed_request_initiators;
 };
 std::map<int, PluginExceptionsForNetworkService>&
@@ -1146,9 +1145,6 @@ void OnNetworkServiceCrashRestorePluginExceptions() {
   for (auto it : GetPluginExceptionsForNetworkService()) {
     const int process_id = it.first;
     const PluginExceptionsForNetworkService& exceptions = it.second;
-
-    if (exceptions.is_corb_disabled)
-      network_service->AddCorbExceptionForPlugin(process_id);
 
     for (const url::Origin& origin : exceptions.allowed_request_initiators)
       network_service->AddAllowedRequestInitiatorForPlugin(process_id, origin);
@@ -1179,15 +1175,6 @@ bool PrepareToAddNewPluginExceptions(int process_id) {
   }
 
   return true;  // success
-}
-
-void AddCorbExceptionForPluginOnUIThread(int process_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!PrepareToAddNewPluginExceptions(process_id))
-    return;
-
-  GetPluginExceptionsForNetworkService()[process_id].is_corb_disabled = true;
-  GetNetworkService()->AddCorbExceptionForPlugin(process_id);
 }
 
 void AddAllowedRequestInitiatorForPluginOnUIThread(
@@ -2134,15 +2121,6 @@ void RenderProcessHostImpl::DelayProcessShutdownForUnload(
           &RenderProcessHostImpl::CancelProcessShutdownDelayForUnload,
           weak_factory_.GetWeakPtr()),
       timeout);
-}
-
-// static
-void RenderProcessHostImpl::AddCorbExceptionForPlugin(int process_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AddCorbExceptionForPluginOnUIThread, process_id));
 }
 
 // static

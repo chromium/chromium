@@ -155,6 +155,10 @@ class PepperWebPluginImplBrowserTest : public RenderViewTest {
           render_frame->CreatePlugin(GetPluginInfo().ToWebPluginInfo(), params);
       return *plugin;
     }
+
+    bool IsOriginIsolatedPepperPlugin(const base::FilePath& ignored) override {
+      return false;
+    }
   };
 
   PP_Module pp_module_;

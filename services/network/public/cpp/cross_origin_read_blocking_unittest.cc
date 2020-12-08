@@ -366,11 +366,9 @@ const TestScenario kScenarios[] = {
     },
     {
         // Blocked, because the unit test doesn't make a call to
-        // CrossOriginReadBlocking::AddExceptionForFlash (simulating a behavior
-        // of a compromised renderer that only pretends to be hosting Flash).
-        //
-        // The regular scenario is covered by integration tests:
-        // OutOfProcessPPAPITest.URLLoaderTrusted.
+        // NetworkService::AddAllowedRequestInitiatorForPlugin (simulating a
+        // behavior of a compromised renderer that only pretends to be hosting
+        // PDF).
         "Blocked: Cross-site fetch HTML from Flash without CORS",
         __LINE__,
         "http://www.b.com/plugin.html",  // target_url

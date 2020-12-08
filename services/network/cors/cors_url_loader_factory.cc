@@ -20,7 +20,6 @@
 #include "services/network/cors/cors_url_loader.h"
 #include "services/network/cors/preflight_controller.h"
 #include "services/network/crash_keys.h"
-#include "services/network/cross_origin_read_blocking_exception_for_plugin.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/cors/cors.h"
@@ -405,7 +404,6 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
   switch (initiator_lock_compatibility) {
     case InitiatorLockCompatibility::kCompatibleLock:
     case InitiatorLockCompatibility::kBrowserProcess:
-    case InitiatorLockCompatibility::kExcludedCorbForPlugin:
     case InitiatorLockCompatibility::kAllowedRequestInitiatorForPlugin:
       break;
 
@@ -427,7 +425,12 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
 
     case InitiatorLockCompatibility::kIncorrectLock:
       // Requests from the renderer need to always specify a correct initiator.
-      NOTREACHED();
+      NOTREACHED() << "request_initiator_origin_lock_ = "
+                   << request_initiator_origin_lock_.value_or(
+                          url::Origin::Create(GURL("https://no-lock.com")))
+                   << "; request.request_initiator = "
+                   << request.request_initiator.value_or(url::Origin::Create(
+                          GURL("https://no-initiator.com")));
       if (base::FeatureList::IsEnabled(
               features::kRequestInitiatorSiteLockEnfocement)) {
         url::debug::ScopedOriginCrashKey initiator_lock_crash_key(
@@ -515,12 +518,6 @@ CorsURLLoaderFactory::VerifyRequestInitiatorLockWithPluginCheck(
 
   InitiatorLockCompatibility result = VerifyRequestInitiatorLock(
       request_initiator_origin_lock, request_initiator);
-
-  if (result == InitiatorLockCompatibility::kIncorrectLock &&
-      CrossOriginReadBlockingExceptionForPlugin::ShouldAllowForPlugin(
-          process_id)) {
-    result = InitiatorLockCompatibility::kExcludedCorbForPlugin;
-  }
 
   if (result == InitiatorLockCompatibility::kIncorrectLock &&
       request_initiator.has_value() &&

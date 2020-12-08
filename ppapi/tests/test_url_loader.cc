@@ -580,9 +580,9 @@ std::string TestURLLoader::TestUntrustedCorbEligibleRequest() {
   PASS();
 }
 
-// CORB (Cross-Origin Read Blocking) shouldn't apply to plugins with universal
-// access (see PepperURLLoaderHost::has_universal_access_) - such plugins may
-// have their own CORS-like mechanisms - e.g. crossdomain.xml in Flash).
+// CORB (Cross-Origin Read Blocking) should apply, even to plugins with
+// universal access like the PDF plugin.
+//
 // This test is quite similar to TestTrustedSameOriginRestriction, but it
 // explicitly uses a CORB-eligible response (test/json + nosniff) and also
 // explicitly verifies that the response body was not blocked.
@@ -595,14 +595,27 @@ std::string TestURLLoader::TestTrustedCorbEligibleRequest() {
   request.SetURL(cross_origin_url);
   request.SetAllowCrossOriginRequests(true);
 
+  // The test code below (similarly to the PDF plugin) sets the referrer - this
+  // will propagate into network::ResourceRequest::request_initiator and should
+  // match the NetworkService::AddAllowedRequestInitiatorForPlugin exemption.
+  // This will pass `request_initiator_origin_lock` verification.
+  std::string referrer = GetReachableAbsoluteURL("");
+  request.SetCustomReferrerURL(referrer);
+  request.SetHeaders(referrer);
+
   std::string response_body;
   int32_t rv = OpenTrusted(request, &response_body);
   if (rv != PP_OK)
     return ReportError("Trusted CORB-eligible request failed", rv);
 
-  // Main verification - if CORB blocked the response, then |response_body|
-  // would be empty.
-  ASSERT_EQ("{ \"foo\": \"bar\" }\n", response_body);
+  // Main verification - CORB should block the response where the
+  // `request_initiator` is cross-origin wrt the target URL.
+  //
+  // Note that this case (and CORB blocking) does never apply to the PDF plugin,
+  // because the PDF plugin only triggers requests where both
+  // `request_initiator` and the target URL are based on the URL of the PDF
+  // document (i.e. they are same-origin wrt each other).
+  ASSERT_EQ("", response_body);
   PASS();
 }
 
@@ -718,11 +731,15 @@ std::string TestURLLoader::TestTrustedHttpRequests() {
     ASSERT_EQ(PP_OK, OpenTrusted("GET", "Via:\n"));
     ASSERT_EQ(PP_OK, OpenTrusted("GET", "Sec-foo:\n"));
   }
-  // Trusted requests with custom referrer should succeed.
+  // Trusted requests with custom referrer should succeed.  Note that the
+  // referrer has to be from the same origin as the plugin (this matches the
+  // behavior of the PDF plugin, which after Flash removal is the only plugin
+  // that depends on custom referrers).
   {
     pp::URLRequestInfo request(instance_);
-    request.SetCustomReferrerURL("http://www.referer.com/");
-    request.SetHeaders("Referer: http://www.referer.com/");
+    std::string referrer = GetReachableAbsoluteURL("");
+    request.SetCustomReferrerURL(referrer);
+    request.SetHeaders(referrer);
 
     int32_t rv = OpenTrusted(request, NULL);
     if (rv != PP_OK)

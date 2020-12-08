@@ -360,15 +360,6 @@ interface NetworkService {
   [EnableIf=is_win]
   SetEncryptionKey(string encryption_key);
 
-  // Notifies CORB (Cross-Origin Read Blocking) that |process_id| is proxying
-  // requests on behalf of a universal-access plugin and therefore CORB should
-  // stop blocking requests marked as ResourceType::kPluginResource.
-  //
-  // TODO(lukasza, laforge): https://crbug.com/702995: Remove the ...ForPlugin
-  // methods once Flash support is removed from Chromium (probably around 2020
-  // - see https://www.chromium.org/flash-roadmap).
-  AddCorbExceptionForPlugin(int32 process_id);
-
   // Notifies |request_initiator_origin_lock| enforcement code that |process_id|
   // is proxying requests on behalf of a plugin from
   // |allowed_request_initiator| origin.
@@ -379,7 +370,7 @@ interface NetworkService {
       int32 process_id,
       url.mojom.Origin allowed_request_initiator);
 
-  // Reverts AddCorbExceptionForPlugin and AddAllowedRequestInitiatorForPlugin.
+  // Reverts AddAllowedRequestInitiatorForPlugin.
   RemoveSecurityExceptionsForPlugin(int32 process_id);
 
   // Called when the system is low on memory.

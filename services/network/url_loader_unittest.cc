@@ -75,7 +75,6 @@
 #include "net/url_request/url_request_job.h"
 #include "net/url_request/url_request_test_job.h"
 #include "net/url_request/url_request_test_util.h"
-#include "services/network/cross_origin_read_blocking_exception_for_plugin.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
@@ -3637,7 +3636,6 @@ TEST_F(URLLoaderTest, CorbEffectiveWithCors) {
   request.resource_type = kResourceType;
   request.mode = mojom::RequestMode::kCors;
   request.request_initiator = url::Origin::Create(GURL("http://foo.com/"));
-  request.corb_excluded = true;
 
   base::RunLoop delete_run_loop;
   mojo::PendingRemote<mojom::URLLoader> loader;
@@ -3666,58 +3664,12 @@ TEST_F(URLLoaderTest, CorbEffectiveWithCors) {
 
   // Blocked because this is a cross-origin request made with a CORS request
   // header, but without a valid CORS response header.
-  // request.corb_excluded does not apply in that case.
   ASSERT_EQ(std::string(), body);
 }
 
-// This simulates plugins with universal access, like Flash. These can make
-// cross-origin requests that are not subject to CORB.
-TEST_F(URLLoaderTest, CorbExcludedWithNoCors) {
-  int kResourceType = 1;
-  ResourceRequest request =
-      CreateResourceRequest("GET", test_server()->GetURL("/hello.html"));
-  request.resource_type = kResourceType;
-  request.mode = mojom::RequestMode::kNoCors;
-  request.request_initiator = url::Origin::Create(GURL("http://foo.com/"));
-  request.corb_excluded = true;
-
-  base::RunLoop delete_run_loop;
-  mojo::PendingRemote<mojom::URLLoader> loader;
-  std::unique_ptr<URLLoader> url_loader;
-  mojom::URLLoaderFactoryParams params;
-  params.process_id = 123;
-  CrossOriginReadBlockingExceptionForPlugin::AddExceptionForPlugin(123);
-  url_loader = std::make_unique<URLLoader>(
-      context(), nullptr /* network_service_client */,
-      nullptr /* network_context_client */,
-      DeleteLoaderCallback(&delete_run_loop, &url_loader),
-      loader.InitWithNewPipeAndPassReceiver(), 0, request,
-      client()->CreateRemote(), /*reponse_body_use_tracker=*/base::nullopt,
-      TRAFFIC_ANNOTATION_FOR_TESTS, &params,
-      /*coep_reporter=*/nullptr, 0 /* request_id */,
-      0 /* keepalive_request_size */, resource_scheduler_client(), nullptr,
-      nullptr /* network_usage_accumulator */, nullptr /* header_client */,
-      nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
-
-  client()->RunUntilResponseBodyArrived();
-  std::string body = ReadBody();
-
-  client()->RunUntilComplete();
-
-  delete_run_loop.Run();
-
-  // The request body is allowed through because CORB isn't applied.
-  ASSERT_NE(std::string(), body);
-
-  CrossOriginReadBlockingExceptionForPlugin::RemoveExceptionForPlugin(123);
-}
-
-// This simulates a renderer that pretends to be proxying requests for Flash
-// (when browser didn't actually confirm that Flash is hosted by the given
-// process via
-// CrossOriginReadBlockingExceptionForPlugin::AddExceptionForPlugin).  We should
+// This simulates a renderer that _pretends_ to be proxying requests for PDF
+// plugin (when browser didn't _actually_ confirm that Flash or PDF are hosted
+// by the given process via AddAllowedRequestInitiatorForPlugin).  We should
 // still apply CORB in this case.
 TEST_F(URLLoaderTest, CorbEffectiveWithNoCorsWhenNoActualPlugin) {
   int kResourceType = 1;
@@ -3726,16 +3678,14 @@ TEST_F(URLLoaderTest, CorbEffectiveWithNoCorsWhenNoActualPlugin) {
   request.resource_type = kResourceType;
   request.mode = mojom::RequestMode::kNoCors;
   request.request_initiator = url::Origin::Create(GURL("http://foo.com/"));
-  request.corb_excluded = true;
 
   base::RunLoop delete_run_loop;
   mojo::PendingRemote<mojom::URLLoader> loader;
   std::unique_ptr<URLLoader> url_loader;
   mojom::URLLoaderFactoryParams params;
   params.process_id = 234;
-  // No call to
-  // CrossOriginReadBlockingExceptionForPlugin::AddExceptionForPlugin(123) -
-  // this is what we primarily want to cover in this test.
+  // No call to NetworkService::AddAllowedRequestInitiatorForPlugin - this is
+  // what we primarily want to cover in this test.
   url_loader = std::make_unique<URLLoader>(
       context(), nullptr /* network_service_client */,
       nullptr /* network_context_client */,

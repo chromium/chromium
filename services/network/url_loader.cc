@@ -46,7 +46,6 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/chunked_data_pipe_upload_data_stream.h"
-#include "services/network/cross_origin_read_blocking_exception_for_plugin.h"
 #include "services/network/data_pipe_element_reader.h"
 #include "services/network/network_usage_accumulator.h"
 #include "services/network/origin_policy/origin_policy_constants.h"
@@ -586,10 +585,6 @@ URLLoader::URLLoader(
   url_request_->SetUserData(kUserDataKey,
                             std::make_unique<UnownedPointer>(this));
 
-  is_nocors_corb_excluded_request_ =
-      request.corb_excluded && request.mode == mojom::RequestMode::kNoCors &&
-      CrossOriginReadBlockingExceptionForPlugin::ShouldAllowForPlugin(
-          factory_params_->process_id);
   request_mode_ = request.mode;
 
   if (request.trusted_params) {
@@ -1363,7 +1358,7 @@ void URLLoader::ContinueOnResponseStarted() {
 
   // Figure out if we need to sniff (for MIME type detection or for Cross-Origin
   // Read Blocking / CORB).
-  if (factory_params_->is_corb_enabled && !is_nocors_corb_excluded_request_) {
+  if (factory_params_->is_corb_enabled) {
     CrossOriginReadBlocking::LogAction(
         CrossOriginReadBlocking::Action::kResponseStarted);
 

@@ -4,7 +4,9 @@
 
 #include "content/public/renderer/content_renderer_client.h"
 
+#include "base/command_line.h"
 #include "build/build_config.h"
+#include "content/public/common/content_switches.h"
 #include "media/base/demuxer.h"
 #include "media/base/renderer_factory.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
@@ -150,7 +152,13 @@ bool ContentRendererClient::IsExternalPepperPlugin(
 
 bool ContentRendererClient::IsOriginIsolatedPepperPlugin(
     const base::FilePath& plugin_path) {
-  return false;
+  // Hosting plugins in-process is inherently incompatible with attempting to
+  // process-isolate plugins from different origins.
+  auto* cmdline = base::CommandLine::ForCurrentProcess();
+  if (cmdline->HasSwitch(switches::kPpapiInProcess))
+    return false;
+
+  return true;
 }
 
 void ContentRendererClient::AddSupportedKeySystems(

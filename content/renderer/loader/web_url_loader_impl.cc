@@ -613,10 +613,6 @@ void WebURLLoaderImpl::Context::Start(
     request->corb_detachable = true;
   }
 
-  if (resource_type == blink::mojom::ResourceType::kPluginResource) {
-    request->corb_excluded = true;
-  }
-
   auto throttles =
       url_request_extra_data->TakeURLLoaderThrottles().ReleaseVector();
   // The frame request blocker is only for a frame's subresources.

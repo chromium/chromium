@@ -1340,7 +1340,26 @@ bool ChromeContentRendererClient::IsExternalPepperPlugin(
 
 bool ChromeContentRendererClient::IsOriginIsolatedPepperPlugin(
     const base::FilePath& plugin_path) {
-  return plugin_path.value() == ChromeContentClient::kPDFPluginPath;
+  // Hosting plugins in-process is inherently incompatible with attempting to
+  // process-isolate plugins from different origins.
+  auto* cmdline = base::CommandLine::ForCurrentProcess();
+  if (cmdline->HasSwitch(switches::kPpapiInProcess)) {
+    // The kPpapiInProcess switch should only be used by tests.  In particular,
+    // we expect that the PDF plugin should always be isolated in the product
+    // (and that the switch won't interfere with PDF isolation).
+    CHECK_NE(ChromeContentClient::kPDFPluginPath, plugin_path.value());
+
+    return false;
+  }
+
+#if BUILDFLAG(ENABLE_NACL)
+  // Don't isolate the NaCl plugin (preserving legacy behavior).
+  if (plugin_path.value() == ChromeContentClient::kNaClPluginFileName)
+    return false;
+#endif
+
+  // Isolate all the other plugins (including the PDF plugin + test plugins).
+  return true;
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS) && BUILDFLAG(ENABLE_EXTENSIONS)

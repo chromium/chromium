@@ -261,11 +261,6 @@ struct URLRequest {
   // If true then the request continues even if it's blocked by CORB.
   bool corb_detachable = false;
 
-  // TODO(lukasza): https://crbug.com/846339: Remove the field below and instead
-  // make plugins use a separate URLoaderFactory. Note requests of this type are
-  // only excluded if mode is kNoCors.
-  bool corb_excluded = false;
-
   // https://fetch.spec.whatwg.org/#concept-request-mode
   // Used mainly by CORS handling (out-of-blink CORS), CORB, Service Worker.
   // CORS handling needs a proper origin (including a unique opaque origin).
