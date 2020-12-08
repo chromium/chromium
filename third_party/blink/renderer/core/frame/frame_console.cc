@@ -76,8 +76,9 @@ void FrameConsole::ReportMessageToClient(mojom::ConsoleMessageSource source,
   if (source == mojom::ConsoleMessageSource::kConsoleApi) {
     if (!frame_->GetPage())
       return;
-    if (frame_->GetChromeClient().ShouldReportDetailedMessageForSource(*frame_,
-                                                                       url)) {
+    if (frame_->GetChromeClient()
+            .ShouldReportDetailedMessageForSourceAndSeverity(*frame_, level,
+                                                             url)) {
       std::unique_ptr<SourceLocation> full_location =
           SourceLocation::CaptureWithFullStackTrace();
       if (!full_location->IsUnknown())
@@ -85,8 +86,9 @@ void FrameConsole::ReportMessageToClient(mojom::ConsoleMessageSource source,
     }
   } else {
     if (!location->IsUnknown() &&
-        frame_->GetChromeClient().ShouldReportDetailedMessageForSource(*frame_,
-                                                                       url))
+        frame_->GetChromeClient()
+            .ShouldReportDetailedMessageForSourceAndSeverity(*frame_, level,
+                                                             url))
       stack_trace = location->ToString();
   }
 

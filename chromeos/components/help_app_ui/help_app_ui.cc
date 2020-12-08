@@ -80,10 +80,6 @@ HelpAppUI::HelpAppUI(content::WebUI* web_ui,
                             ContentSettingsType::JAVASCRIPT,
                             ContentSettingsType::SOUND,
                         });
-
-  // JavaScript errors are reported via CrashReportPrivate.reportError. Don't
-  // send duplicate reports via WebUI.
-  web_ui->DisableJavaScriptErrorReporting();
 }
 
 HelpAppUI::~HelpAppUI() = default;
@@ -108,6 +104,12 @@ void HelpAppUI::CreatePageHandler(
     mojo::PendingReceiver<help_app_ui::mojom::PageHandler> receiver) {
   page_handler_ =
       std::make_unique<HelpAppPageHandler>(this, std::move(receiver));
+}
+
+bool HelpAppUI::IsJavascriptErrorReportingEnabled() {
+  // JavaScript errors are reported via CrashReportPrivate.reportError. Don't
+  // send duplicate reports via WebUI.
+  return false;
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(HelpAppUI)

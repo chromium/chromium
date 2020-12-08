@@ -1574,6 +1574,10 @@ void RenderFrameHostImpl::GetSerializedHtmlWithLocalLinks(
                                           std::move(serializer_handler));
 }
 
+void RenderFrameHostImpl::SetWantErrorMessageStackTrace() {
+  GetNavigationControl()->SetWantErrorMessageStackTrace();
+}
+
 void RenderFrameHostImpl::ExecuteMediaPlayerActionAtLocation(
     const gfx::Point& location,
     const blink::mojom::MediaPlayerAction& action) {

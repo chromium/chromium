@@ -16,4 +16,8 @@ WebUIController::Type WebUIController::GetType() {
   return nullptr;
 }
 
+bool WebUIController::IsJavascriptErrorReportingEnabled() {
+  return true;
+}
+
 }  // namespace content

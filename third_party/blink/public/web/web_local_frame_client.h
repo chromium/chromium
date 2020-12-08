@@ -46,6 +46,7 @@
 #include "third_party/blink/public/common/navigation/triggering_event_info.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
@@ -276,8 +277,11 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // Console messages ----------------------------------------------------
 
-  // Whether or not we should report a detailed message for the given source.
-  virtual bool ShouldReportDetailedMessageForSource(const WebString& source) {
+  // Whether or not we should report a detailed message for the given source and
+  // severity level.
+  virtual bool ShouldReportDetailedMessageForSourceAndSeverity(
+      mojom::ConsoleMessageLevel log_level,
+      const WebString& source) {
     return false;
   }
 

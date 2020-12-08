@@ -130,19 +130,6 @@ class CONTENT_EXPORT WebUI {
       const std::string& function_name,
       const std::vector<const base::Value*>& args) = 0;
 
-  // Controls whether the engineering team receives JavaScript error reports for
-  // this WebUI. For example, WebUIs may report JavaScript errors and unhandled
-  // exceptions to an error reporting service if this function isn't called.
-  //
-  // WebUIs may want to call this function if they are reporting errors via
-  // other channels and don't want duplicates. For instance, a WebUI which uses
-  // crashReportPrivate to report JS errors might call this function to avoid
-  // duplicate reports. WebUIs might also call this function to avoid noise if
-  // the engineering team doesn't expect to fix reported errors; for instance,
-  // a low-usage debugging page might turn off error reports if the owners feel
-  // any reported bugs would be too low priority to bother with.
-  virtual void DisableJavaScriptErrorReporting() = 0;
-
   // Allows mutable access to this WebUI's message handlers for testing.
   virtual std::vector<std::unique_ptr<WebUIMessageHandler>>*
   GetHandlersForTesting() = 0;

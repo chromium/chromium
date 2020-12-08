@@ -35,10 +35,6 @@ class CONTENT_EXPORT WebUIMainFrameObserver : public WebContentsObserver {
   WebUIMainFrameObserver(const WebUIMainFrameObserver& rhs) = delete;
   WebUIMainFrameObserver& operator=(const WebUIMainFrameObserver& rhs) = delete;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  void DisableJavaScriptErrorReporting();
-#endif
-
  protected:
   friend class WebUIMainFrameObserverTest;
 
@@ -58,12 +54,13 @@ class CONTENT_EXPORT WebUIMainFrameObserver : public WebContentsObserver {
       int32_t line_no,
       const base::string16& source_id,
       const base::Optional<base::string16>& untrusted_stack_trace) override;
+  void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
  private:
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // Do we report JavaScript errors ?
-  bool error_reporting_enabled_ = true;
+  bool error_reporting_enabled_ = false;
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
   WebUIImpl* web_ui_;

@@ -57,6 +57,20 @@ class CONTENT_EXPORT WebUIController {
                                                  : nullptr;
   }
 
+  // Controls whether the engineering team receives JavaScript error reports for
+  // this WebUI. For example, WebUIs may report JavaScript errors and unhandled
+  // exceptions to an error reporting service if this function isn't called.
+  //
+  // WebUIs may want to override this function if they are reporting errors via
+  // other channels and don't want duplicates. For instance, a WebUI which uses
+  // crashReportPrivate to report JS errors might override this function to
+  // return to false in order to avoid duplicate reports. WebUIs might also
+  // override this function to return false to avoid noise if the engineering
+  // team doesn't expect to fix reported errors; for instance, a low-usage
+  // debugging page might turn off error reports if the owners feel any reported
+  // bugs would be too low priority to bother with.
+  virtual bool IsJavascriptErrorReportingEnabled();
+
  protected:
   // TODO(calamity): Make this abstract once all subclasses implement GetType().
   virtual Type GetType();

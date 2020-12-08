@@ -37,6 +37,8 @@ class HelpAppUI : public ui::MojoWebUIController,
 
   HelpAppUIDelegate* delegate() { return delegate_.get(); }
 
+  bool IsJavascriptErrorReportingEnabled() override;
+
  private:
   // help_app_ui::mojom::PageHandlerFactory:
   void CreatePageHandler(

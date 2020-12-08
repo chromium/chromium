@@ -14,6 +14,7 @@
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -69,6 +70,27 @@ class FakeJsErrorReportProcessor : public JsErrorReportProcessor {
   int error_report_count_ = 0;
   BrowserContext* browser_context_ = nullptr;
 };
+
+class MockWebUIController : public WebUIController {
+ public:
+  explicit MockWebUIController(WebUI* web_ui) : WebUIController(web_ui) {}
+
+  bool IsJavascriptErrorReportingEnabled() override {
+    return enable_javascript_error_reporting_;
+  }
+  void enable_javascript_error_reporting(
+      bool enable_javascript_error_reporting) {
+    enable_javascript_error_reporting_ = enable_javascript_error_reporting;
+  }
+
+ private:
+  bool enable_javascript_error_reporting_ = true;
+
+  WEB_UI_CONTROLLER_TYPE_DECL();
+};
+
+WEB_UI_CONTROLLER_TYPE_IMPL(MockWebUIController)
+
 }  // namespace
 
 class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
@@ -81,13 +103,14 @@ class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
           "true"}});
     site_instance_ = SiteInstance::Create(browser_context());
     SetContents(TestWebContents::Create(browser_context(), site_instance_));
-    CHECK(main_rfh());
     // Since we just created the web_contents() pointer with
-    // TestWebContents::Create, the static_cast is safe.
+    // TestWebContents::Create, the static_casts are safe.
     web_ui_ = std::make_unique<WebUIImpl>(
-        static_cast<TestWebContents*>(web_contents()), main_rfh());
-    observer_ =
-        std::make_unique<WebUIMainFrameObserver>(web_ui_.get(), web_contents());
+        static_cast<TestWebContents*>(web_contents()),
+        static_cast<TestWebContents*>(web_contents())->GetMainFrame());
+    web_ui_->SetController(
+        std::make_unique<MockWebUIController>(web_ui_.get()));
+    process()->Init();
 
     previous_processor_ = JsErrorReportProcessor::Get();
     processor_ = base::MakeRefCounted<FakeJsErrorReportProcessor>(
@@ -106,16 +129,22 @@ class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
     // can.
     previous_processor_.reset();
     processor_.reset();
-    observer_.reset();
     web_ui_.reset();
     site_instance_.reset();
 
     RenderViewHostTestHarness::TearDown();
   }
 
-  // Calls observer_->OnDidAddMessageToConsole with the given arguments. This
-  // is just here so that we don't need to FRIEND_TEST_ALL_PREFIXES for each
-  // and every test.
+  // Simulate the remote renderer becoming alive.
+  void CreateRenderFrame() {
+    static_cast<TestWebContents*>(web_contents())
+        ->GetRenderViewHost()
+        ->CreateRenderView(base::nullopt, 0, false);
+  }
+
+  // Calls the observer's OnDidAddMessageToConsole with the given arguments.
+  // This is just here so that we don't need to FRIEND_TEST_ALL_PREFIXES for
+  // each and every test.
   void CallOnDidAddMessageToConsole(
       RenderFrameHost* source_frame,
       blink::mojom::ConsoleMessageLevel log_level,
@@ -123,15 +152,14 @@ class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
       int32_t line_no,
       const base::string16& source_id,
       const base::Optional<base::string16>& stack_trace) {
-    observer_->OnDidAddMessageToConsole(source_frame, log_level, message,
-                                        line_no, source_id, stack_trace);
+    web_ui_->GetWebUIMainFrameObserverForTest()->OnDidAddMessageToConsole(
+        source_frame, log_level, message, line_no, source_id, stack_trace);
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_refptr<SiteInstance> site_instance_;
   std::unique_ptr<WebUIImpl> web_ui_;
-  std::unique_ptr<WebUIMainFrameObserver> observer_;
   scoped_refptr<FakeJsErrorReportProcessor> processor_;
   scoped_refptr<JsErrorReportProcessor> previous_processor_;
 
@@ -150,6 +178,7 @@ constexpr char WebUIMainFrameObserverTest::kSourceURL8[];
 constexpr char WebUIMainFrameObserverTest::kStackTrace8[];
 
 TEST_F(WebUIMainFrameObserverTest, ErrorReported) {
+  CreateRenderFrame();
   CallOnDidAddMessageToConsole(web_ui_->frame_host(),
                                blink::mojom::ConsoleMessageLevel::kError,
                                kMessage16, 5, kSourceId16, kStackTrace16);
@@ -169,6 +198,7 @@ TEST_F(WebUIMainFrameObserverTest, ErrorReported) {
 }
 
 TEST_F(WebUIMainFrameObserverTest, NoStackTrace) {
+  CreateRenderFrame();
   CallOnDidAddMessageToConsole(web_ui_->frame_host(),
                                blink::mojom::ConsoleMessageLevel::kError,
                                kMessage16, 5, kSourceId16, base::nullopt);
@@ -178,6 +208,7 @@ TEST_F(WebUIMainFrameObserverTest, NoStackTrace) {
 }
 
 TEST_F(WebUIMainFrameObserverTest, NonErrorsIgnored) {
+  CreateRenderFrame();
   CallOnDidAddMessageToConsole(web_ui_->frame_host(),
                                blink::mojom::ConsoleMessageLevel::kWarning,
                                kMessage16, 5, kSourceId16, kStackTrace16);
@@ -192,6 +223,7 @@ TEST_F(WebUIMainFrameObserverTest, NonErrorsIgnored) {
 }
 
 TEST_F(WebUIMainFrameObserverTest, NoProcessorDoesntCrash) {
+  CreateRenderFrame();
   FakeJsErrorReportProcessor::SetDefault(nullptr);
   CallOnDidAddMessageToConsole(web_ui_->frame_host(),
                                blink::mojom::ConsoleMessageLevel::kError,
@@ -203,6 +235,7 @@ TEST_F(WebUIMainFrameObserverTest, NotSentIfFlagDisabled) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndDisableFeature(
       features::kSendWebUIJavaScriptErrorReports);
+  CreateRenderFrame();
   CallOnDidAddMessageToConsole(web_ui_->frame_host(),
                                blink::mojom::ConsoleMessageLevel::kError,
                                kMessage16, 5, kSourceId16, kStackTrace16);
@@ -211,6 +244,7 @@ TEST_F(WebUIMainFrameObserverTest, NotSentIfFlagDisabled) {
 }
 
 TEST_F(WebUIMainFrameObserverTest, NotSentIfInvalidURL) {
+  CreateRenderFrame();
   CallOnDidAddMessageToConsole(
       web_ui_->frame_host(), blink::mojom::ConsoleMessageLevel::kError,
       kMessage16, 5, base::UTF8ToUTF16("invalid URL"), kStackTrace16);
@@ -219,7 +253,9 @@ TEST_F(WebUIMainFrameObserverTest, NotSentIfInvalidURL) {
 }
 
 TEST_F(WebUIMainFrameObserverTest, NotSentIfDisabledForPage) {
-  observer_->DisableJavaScriptErrorReporting();
+  static_cast<MockWebUIController*>(web_ui_->GetController())
+      ->enable_javascript_error_reporting(false);
+  CreateRenderFrame();
   CallOnDidAddMessageToConsole(web_ui_->frame_host(),
                                blink::mojom::ConsoleMessageLevel::kError,
                                kMessage16, 5, kSourceId16, kStackTrace16);
@@ -228,6 +264,7 @@ TEST_F(WebUIMainFrameObserverTest, NotSentIfDisabledForPage) {
 }
 
 TEST_F(WebUIMainFrameObserverTest, URLPathIsPreservedOtherPartsRemoved) {
+  CreateRenderFrame();
   struct URLTest {
     const char* const input;
     const char* const expected;
@@ -270,6 +307,7 @@ TEST_F(WebUIMainFrameObserverTest, URLPathIsPreservedOtherPartsRemoved) {
 }
 
 TEST_F(WebUIMainFrameObserverTest, ErrorsNotReportedInOtherFrames) {
+  CreateRenderFrame();
   auto another_contents =
       TestWebContents::Create(browser_context(), site_instance_);
   CHECK(another_contents->GetMainFrame());
@@ -281,6 +319,7 @@ TEST_F(WebUIMainFrameObserverTest, ErrorsNotReportedInOtherFrames) {
 }
 
 TEST_F(WebUIMainFrameObserverTest, ErrorsNotReportedForNonChromeURLs) {
+  CreateRenderFrame();
   const char* const kNonChromeSourceURLs[] = {
       "chrome-untrusted://media-app",
       "chrome-error://chromewebdata/",

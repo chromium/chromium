@@ -18,7 +18,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
@@ -29,13 +31,8 @@ namespace content {
 WebUIMainFrameObserver::WebUIMainFrameObserver(WebUIImpl* web_ui,
                                                WebContents* contents)
     : WebContentsObserver(contents), web_ui_(web_ui) {}
-WebUIMainFrameObserver::~WebUIMainFrameObserver() = default;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-void WebUIMainFrameObserver::DisableJavaScriptErrorReporting() {
-  error_reporting_enabled_ = false;
-}
-#endif
+WebUIMainFrameObserver::~WebUIMainFrameObserver() = default;
 
 void WebUIMainFrameObserver::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
@@ -57,20 +54,20 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
     int32_t line_no,
     const base::string16& source_id,
     const base::Optional<base::string16>& untrusted_stack_trace) {
+  // TODO(iby) Change all VLOGs to DVLOGs once tast tests are stable.
   VLOG(3) << "OnDidAddMessageToConsole called for " << message;
+  if (untrusted_stack_trace) {
+    VLOG(3) << "stack is " << *untrusted_stack_trace;
+  }
+
   if (!error_reporting_enabled_) {
-    VLOG(3) << "Message not reported, error reporting disabled for this page";
+    VLOG(3) << "Message not reported, error reporting disabled for this page "
+               "or experiment is off";
     return;
   }
 
   if (log_level != blink::mojom::ConsoleMessageLevel::kError) {
     VLOG(3) << "Message not reported, not an error";
-    return;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          features::kSendWebUIJavaScriptErrorReports)) {
-    VLOG(3) << "Message not reported, error report sending flag off";
     return;
   }
 
@@ -131,6 +128,31 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
   processor->SendErrorReport(std::move(report), base::DoNothing(),
                              web_contents()->GetBrowserContext());
 }
+
+void WebUIMainFrameObserver::RenderFrameCreated(
+    RenderFrameHost* render_frame_host) {
+  if (!base::FeatureList::IsEnabled(
+          features::kSendWebUIJavaScriptErrorReports)) {
+    return;
+  }
+
+  if (render_frame_host != web_ui_->frame_host()) {
+    return;
+  }
+
+  error_reporting_enabled_ =
+      web_ui_->GetController()->IsJavascriptErrorReportingEnabled();
+
+  // If we are collecting error reports, make sure the main frame sends us
+  // stacks along with those messages. Warning: Don't call
+  // RenderFrameHostImpl::SetWantErrorMessageStackTrace() before the remote
+  // frame is created, or it will lock up the communications channel. (See
+  // https://crbug.com/1154866).
+  if (error_reporting_enabled_) {
+    web_ui_->frame_host()->SetWantErrorMessageStackTrace();
+  }
+}
+
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 }  // namespace content

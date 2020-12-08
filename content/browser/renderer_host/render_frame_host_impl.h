@@ -930,6 +930,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
     no_create_browser_accessibility_manager_for_testing_ = flag;
   }
 
+  // Indicates that this process wants the |untrusted_stack_trace| parameter of
+  // FrameHost.DidAddMessageToConsole() to be filled in as much as possible for
+  // log_level == kError messages.
+  void SetWantErrorMessageStackTrace();
+
   // Indicates that a navigation is ready to commit and can be
   // handled by this RenderFrame.
   // |subresource_loader_params| is used in network service land to pass

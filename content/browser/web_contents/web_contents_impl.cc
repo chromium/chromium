@@ -7769,7 +7769,7 @@ NavigationControllerImpl& WebContentsImpl::GetControllerForRenderManager() {
 }
 
 std::unique_ptr<WebUIImpl> WebContentsImpl::CreateWebUIForRenderFrameHost(
-    RenderFrameHost* frame_host,
+    RenderFrameHostImpl* frame_host,
     const GURL& url) {
   return CreateWebUI(frame_host, url);
 }
@@ -8064,7 +8064,7 @@ void WebContentsImpl::OnPreferredSizeChanged(const gfx::Size& old_size) {
 }
 
 std::unique_ptr<WebUIImpl> WebContentsImpl::CreateWebUI(
-    RenderFrameHost* frame_host,
+    RenderFrameHostImpl* frame_host,
     const GURL& url) {
   TRACE_EVENT2("content", "WebContentsImpl::CreateWebUI", "frame_host",
                base::trace_event::ToTracedValue(frame_host), "url",

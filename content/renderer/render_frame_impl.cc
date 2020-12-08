@@ -2648,6 +2648,11 @@ void RenderFrameImpl::GetSerializedHtmlWithLocalLinks(
                                 save_with_empty_url);
 }
 
+void RenderFrameImpl::SetWantErrorMessageStackTrace() {
+  want_error_message_stack_trace_ = true;
+  v8::Isolate::GetCurrent()->SetCaptureStackTraceForUncaughtExceptions(true);
+}
+
 #if defined(OS_ANDROID)
 void RenderFrameImpl::ExtractSmartClipData(
     const gfx::Rect& rect,
@@ -4021,8 +4026,13 @@ void RenderFrameImpl::DidMatchCSS(
     observer.DidMatchCSS(newly_matching_selectors, stopped_matching_selectors);
 }
 
-bool RenderFrameImpl::ShouldReportDetailedMessageForSource(
+bool RenderFrameImpl::ShouldReportDetailedMessageForSourceAndSeverity(
+    blink::mojom::ConsoleMessageLevel log_level,
     const blink::WebString& source) {
+  if (want_error_message_stack_trace_ &&
+      log_level == blink::mojom::ConsoleMessageLevel::kError) {
+    return true;
+  }
   return GetContentClient()->renderer()->ShouldReportDetailedMessageForSource(
       source.Utf16());
 }
@@ -4032,7 +4042,8 @@ void RenderFrameImpl::DidAddMessageToConsole(
     const blink::WebString& source_name,
     unsigned source_line,
     const blink::WebString& stack_trace) {
-  if (ShouldReportDetailedMessageForSource(source_name)) {
+  if (ShouldReportDetailedMessageForSourceAndSeverity(message.level,
+                                                      source_name)) {
     for (auto& observer : observers_) {
       observer.DetailedConsoleMessageAdded(
           message.text.Utf16(), source_name.Utf16(), stack_trace.Utf16(),

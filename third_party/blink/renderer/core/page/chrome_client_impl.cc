@@ -311,13 +311,15 @@ void ChromeClientImpl::Show(const base::UnguessableToken& opener_frame_token,
                   user_gesture);
 }
 
-bool ChromeClientImpl::ShouldReportDetailedMessageForSource(
+bool ChromeClientImpl::ShouldReportDetailedMessageForSourceAndSeverity(
     LocalFrame& local_frame,
+    mojom::blink::ConsoleMessageLevel log_level,
     const String& url) {
   WebLocalFrameImpl* webframe =
       WebLocalFrameImpl::FromFrame(local_frame.LocalFrameRoot());
   return webframe && webframe->Client() &&
-         webframe->Client()->ShouldReportDetailedMessageForSource(url);
+         webframe->Client()->ShouldReportDetailedMessageForSourceAndSeverity(
+             log_level, url);
 }
 
 void ChromeClientImpl::AddMessageToConsole(LocalFrame* local_frame,

@@ -96,10 +96,6 @@ MediaAppUI::MediaAppUI(content::WebUI* web_ui,
 
   // Add ability to request chrome-untrusted: URLs.
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
-
-  // JavaScript errors are reported via CrashReportPrivate.reportError. Don't
-  // send duplicate reports via WebUI.
-  web_ui->DisableJavaScriptErrorReporting();
 }
 
 MediaAppUI::~MediaAppUI() = default;
@@ -114,6 +110,12 @@ void MediaAppUI::CreatePageHandler(
     mojo::PendingReceiver<media_app_ui::mojom::PageHandler> receiver) {
   page_handler_ =
       std::make_unique<MediaAppPageHandler>(this, std::move(receiver));
+}
+
+bool MediaAppUI::IsJavascriptErrorReportingEnabled() {
+  // JavaScript errors are reported via CrashReportPrivate.reportError. Don't
+  // send duplicate reports via WebUI.
+  return false;
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(MediaAppUI)

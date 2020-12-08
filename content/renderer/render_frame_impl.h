@@ -522,6 +522,7 @@ class CONTENT_EXPORT RenderFrameImpl
       bool wants_result,
       int32_t world_id,
       JavaScriptExecuteRequestInIsolatedWorldCallback callback) override;
+  void SetWantErrorMessageStackTrace() override;
   void SwapIn() override;
 
   // mojom::MhtmlFileWriter implementation:
@@ -587,7 +588,8 @@ class CONTENT_EXPORT RenderFrameImpl
       const blink::WebVector<blink::WebString>& newly_matching_selectors,
       const blink::WebVector<blink::WebString>& stopped_matching_selectors)
       override;
-  bool ShouldReportDetailedMessageForSource(
+  bool ShouldReportDetailedMessageForSourceAndSeverity(
+      blink::mojom::ConsoleMessageLevel log_level,
       const blink::WebString& source) override;
   void DidAddMessageToConsole(const blink::WebConsoleMessage& message,
                               const blink::WebString& source_name,
@@ -1435,6 +1437,10 @@ class CONTENT_EXPORT RenderFrameImpl
   // |devtools_frame_token_| is only defined by the browser and is never
   // sent back from the renderer in the control calls.
   base::UnguessableToken devtools_frame_token_;
+
+  // True if the frame host wants stack traces on JavaScript console messages of
+  // kError severity.
+  bool want_error_message_stack_trace_ = false;
 
   // Contains a representation of the accessibility tree stored in content for
   // use inside of Blink.

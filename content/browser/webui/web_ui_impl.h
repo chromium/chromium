@@ -22,6 +22,7 @@
 
 namespace content {
 class RenderFrameHost;
+class RenderFrameHostImpl;
 class WebContentsImpl;
 class WebUIMainFrameObserver;
 
@@ -29,7 +30,8 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
                                  public mojom::WebUIHost,
                                  public base::SupportsWeakPtr<WebUIImpl> {
  public:
-  explicit WebUIImpl(WebContentsImpl* contents, RenderFrameHost* frame_host);
+  explicit WebUIImpl(WebContentsImpl* contents,
+                     RenderFrameHostImpl* frame_host);
   ~WebUIImpl() override;
 
   // Called when a RenderFrame is created for a WebUI (reload after a renderer
@@ -91,11 +93,13 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
       const std::vector<const base::Value*>& args) override;
   std::vector<std::unique_ptr<WebUIMessageHandler>>* GetHandlersForTesting()
       override;
-  void DisableJavaScriptErrorReporting() override;
 
   const mojo::Remote<mojom::WebUI>& GetRemoteForTest() const { return remote_; }
+  WebUIMainFrameObserver* GetWebUIMainFrameObserverForTest() const {
+    return web_contents_observer_.get();
+  }
 
-  RenderFrameHost* frame_host() const { return frame_host_; }
+  RenderFrameHostImpl* frame_host() const { return frame_host_; }
 
  private:
   friend class WebUIMainFrameObserver;
@@ -122,7 +126,7 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   std::vector<std::string> requestable_schemes_;
 
   // RenderFrameHost associated with |this|.
-  RenderFrameHost* frame_host_;
+  RenderFrameHostImpl* frame_host_;
 
   // Non-owning pointer to the WebContentsImpl this WebUI is associated with.
   WebContentsImpl* web_contents_;

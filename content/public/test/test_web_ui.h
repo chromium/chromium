@@ -68,7 +68,6 @@ class TestWebUI : public WebUI {
       const std::vector<const base::Value*>& args) override;
   std::vector<std::unique_ptr<WebUIMessageHandler>>* GetHandlersForTesting()
       override;
-  void DisableJavaScriptErrorReporting() override;
 
   class CallData {
    public:

@@ -202,6 +202,11 @@ interface FrameNavigationControl {
       bool wants_result,
       int32 world_id) => (mojo_base.mojom.Value result);
 
+  // Indicates that the frame host (browser) wants the |untrusted_stack_trace|
+  // parameter of DidAddMessageToConsole() filled in for Error messages if at
+  // all possible.
+  SetWantErrorMessageStackTrace();
+
   // Requests that a provisional RenderFrame swap itself into the frame tree,
   // replacing the RenderFrameProxy that it is associated with. This is used
   // with remote-to-local frame navigations when the RenderFrameProxy
@@ -517,8 +522,9 @@ interface FrameHost {
   // error reporting service. |source_id| is usually a URL.
   // |untrusted_stack_trace| should only be printed or sent to other services;
   // it's untrusted and should not be parsed to get a structured stack trace.
-  // The stack trace is only present if the message is from an exception and
-  // only if Frame.SetWantExceptionStackTrace has been called for this frame.
+  // The stack trace is only present if
+  // FrameNavigationControl.SetWantErrorMessageStackTrace has been called for
+  // this frame and the log_level is kError.
   DidAddMessageToConsole(
       blink.mojom.ConsoleMessageLevel log_level,
       mojo_base.mojom.BigString16 msg,

@@ -31,6 +31,8 @@ class MediaAppUI : public ui::MojoWebUIController,
       mojo::PendingReceiver<media_app_ui::mojom::PageHandlerFactory> receiver);
   MediaAppUIDelegate* delegate() { return delegate_.get(); }
 
+  bool IsJavascriptErrorReportingEnabled() override;
+
  private:
   // media_app_ui::mojom::PageHandlerFactory:
   void CreatePageHandler(mojo::PendingReceiver<media_app_ui::mojom::PageHandler>

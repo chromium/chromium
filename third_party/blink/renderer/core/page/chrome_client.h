@@ -263,8 +263,10 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void SetOverscrollBehavior(LocalFrame& main_frame,
                                      const cc::OverscrollBehavior&) = 0;
 
-  virtual bool ShouldReportDetailedMessageForSource(LocalFrame&,
-                                                    const String& source) = 0;
+  virtual bool ShouldReportDetailedMessageForSourceAndSeverity(
+      LocalFrame&,
+      mojom::blink::ConsoleMessageLevel log_level,
+      const String& source) = 0;
   virtual void AddMessageToConsole(LocalFrame*,
                                    mojom::ConsoleMessageSource,
                                    mojom::ConsoleMessageLevel,
