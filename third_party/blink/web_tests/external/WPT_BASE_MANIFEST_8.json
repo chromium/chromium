@@ -223118,7 +223118,7 @@
         []
        ],
        "redirect.py": [
-        "21a3dec9d224c1fca4a8815d9830d392c44cd18b",
+        "88dbd60fae7a41e245a0b822f8336ddeff56f410",
         []
        ],
        "report.py": [
@@ -246684,7 +246684,7 @@
       []
      ],
      "pr_preview.py": [
-      "2396e9b8aee8a166c3b9321c7e9ec2e8f9b549c0",
+      "5bd2365164b98ba1a8c90a8d1a987fbaf8c97c73",
       []
      ],
      "regen_certs.py": [
@@ -254313,8 +254313,8 @@
    },
    "urlpattern": {
     "resources": {
-     "utils.js": [
-      "9132a52816e0c1cf0bc3a1b577d6611e65be8f6f",
+     "urlpatterntestdata.json": [
+      "9bdf4d281fb3d1a0aad24df23d312a0d7430b368",
       []
      ]
     }
@@ -424084,127 +424084,48 @@
     ]
    },
    "urlpattern": {
-    "input.https.any.js": [
-     "71a8fb237b8101789828e1352dc516d97c7d509a",
+    "urlpattern.https.any.js": [
+     "212352db64dc5cecf2dfe05b9c919d263a47eb0f",
      [
-      "urlpattern/input.https.any.html",
+      "urlpattern/urlpattern.https.any.html",
       {
        "script_metadata": [
         [
          "global",
          "window,worker"
-        ],
-        [
-         "script",
-         "resources/utils.js"
         ]
        ]
       }
      ],
      [
-      "urlpattern/input.https.any.serviceworker.html",
+      "urlpattern/urlpattern.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
          "global",
          "window,worker"
-        ],
-        [
-         "script",
-         "resources/utils.js"
         ]
        ]
       }
      ],
      [
-      "urlpattern/input.https.any.sharedworker.html",
+      "urlpattern/urlpattern.https.any.sharedworker.html",
       {
        "script_metadata": [
         [
          "global",
          "window,worker"
-        ],
-        [
-         "script",
-         "resources/utils.js"
         ]
        ]
       }
      ],
      [
-      "urlpattern/input.https.any.worker.html",
+      "urlpattern/urlpattern.https.any.worker.html",
       {
        "script_metadata": [
         [
          "global",
          "window,worker"
-        ],
-        [
-         "script",
-         "resources/utils.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "pathname.https.any.js": [
-     "5de41ccc438de61af3dd396b3b67489059140f55",
-     [
-      "urlpattern/pathname.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,worker"
-        ],
-        [
-         "script",
-         "resources/utils.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "urlpattern/pathname.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,worker"
-        ],
-        [
-         "script",
-         "resources/utils.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "urlpattern/pathname.https.any.sharedworker.html",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,worker"
-        ],
-        [
-         "script",
-         "resources/utils.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "urlpattern/pathname.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,worker"
-        ],
-        [
-         "script",
-         "resources/utils.js"
         ]
        ]
       }
