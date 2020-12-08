@@ -79,8 +79,17 @@ cast_source_set("unittests") {
   # Building the required proto files here cause a linker issue on
   # Android because both protobuf_full and protobuf_lite get included.
   if (!is_android) {
-    sources += [ "backend/proxy/cma_backend_proxy_unittest.cc" ]
-    deps += [ "//chromecast/media/cma/backend/proxy" ]
+    sources += [
+      "backend/proxy/cma_backend_proxy_unittest.cc",
+      "backend/proxy/push_buffer_queue_unittest.cc",
+    ]
+    deps += [
+      "//chromecast/media/cma/backend/proxy",
+      "//chromecast/media/cma/backend/proxy:cast_audio_decoder_service_proto",
+
+      # TODO(b/174874712): Remove the explicit gRPC dependency.
+      "//third_party/grpc:grpc++",
+    ]
   }
 
   if (enable_video_with_mixed_audio) {

@@ -41,6 +41,8 @@ cast_source_set("proxy") {
     "multizone_audio_decoder_proxy.h",
     "multizone_audio_decoder_proxy_impl.cc",
     "multizone_audio_decoder_proxy_impl.h",
+    "push_buffer_queue.cc",
+    "push_buffer_queue.h",
   ]
 
   deps = [
@@ -49,5 +51,6 @@ cast_source_set("proxy") {
     "//chromecast/base",
     "//chromecast/media/api",
     "//chromecast/public/media",
+    "//third_party/protobuf:protobuf_full",
   ]
 }
