@@ -11,6 +11,11 @@ declare_args() {
   # Whether to perform critical memory pressure handling when in foreground (if
   # false, critical memory pressure is treated like moderate pressure in foreground).
   allow_critical_memory_pressure_handling_in_foreground = is_chromecast
+
+  # Whether or not MBI mode (Multiple Blink Isolates) should be enabled,
+  # depending on the build argument.
+  mbi_mode = is_linux || is_chromeos || is_mac || is_win || is_android
 }
 
-enable_screen_capture = is_linux || is_chromeos || is_mac || is_win || is_android
+enable_screen_capture =
+    is_linux || is_chromeos || is_mac || is_win || is_android

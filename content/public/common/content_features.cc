@@ -6,6 +6,7 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/common/buildflags.h"
 
 #if defined(OS_WIN)
 #include "base/win/windows_version.h"
@@ -368,13 +369,30 @@ const base::Feature kLogJsConsoleMessages {
 // creation. This will break ordering guarantees between different agent
 // scheduling groups (ordering withing a group is still preserved).
 // DO NOT USE! The feature is not yet fully implemented. See crbug.com/1111231.
-const base::Feature kMBIMode{"MBIMode", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kMBIMode {
+  "MBIMode",
+#if BUILDFLAG(MBI_MODE_PER_RENDER_PROCESS_HOST) || \
+    BUILDFLAG(MBI_MODE_PER_SITE_INSTANCE)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 const base::FeatureParam<MBIMode>::Option mbi_mode_types[] = {
     {MBIMode::kLegacy, "legacy"},
     {MBIMode::kEnabledPerRenderProcessHost, "per_render_process_host"},
     {MBIMode::kEnabledPerSiteInstance, "per_site_instance"}};
 const base::FeatureParam<MBIMode> kMBIModeParam{
-    &kMBIMode, "mode", MBIMode::kLegacy, &mbi_mode_types};
+  &kMBIMode, "mode",
+#if BUILDFLAG(MBI_MODE_PER_RENDER_PROCESS_HOST)
+      MBIMode::kEnabledPerRenderProcessHost,
+#elif BUILDFLAG(MBI_MODE_PER_SITE_INSTANCE)
+      MBIMode::kEnabledPerSiteInstance,
+#else
+      MBIMode::kLegacy,
+#endif
+      &mbi_mode_types
+};
 
 // If this feature is enabled, media-device enumerations use a cache that is
 // invalidated upon notifications sent by base::SystemMonitor. If disabled, the

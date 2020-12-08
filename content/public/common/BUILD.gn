@@ -79,7 +79,10 @@ source_set("static_features") {
   ]
   public_deps = [ "//base" ]
 
-  deps = [ "//build:chromeos_buildflags" ]
+  deps = [
+    "//build:chromeos_buildflags",
+    "//content/common:buildflags",
+  ]
 
   public_configs = [ ":static_switches_defines" ]
 
