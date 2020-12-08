@@ -37,7 +37,8 @@ class ApiBindingsClientTest : public cr_fuchsia::WebEngineBrowserTest {
   void SetUp() override { cr_fuchsia::WebEngineBrowserTest::SetUp(); }
 
  protected:
-  void StartClient() {
+  void StartClient(bool disconnect_before_attach,
+                   base::OnceClosure on_error_closure) {
     base::ScopedAllowBlockingForTesting allow_blocking;
 
     // Get the bindings from |api_service_|.
@@ -53,8 +54,13 @@ class ApiBindingsClientTest : public cr_fuchsia::WebEngineBrowserTest {
     connector_ =
         std::make_unique<NamedMessagePortConnectorFuchsia>(frame_.get());
 
+    if (disconnect_before_attach)
+      api_service_binding_.Unbind();
+
+    base::RunLoop().RunUntilIdle();
+
     client_->AttachToFrame(frame_.get(), connector_.get(),
-                           base::MakeExpectedNotRunClosure(FROM_HERE));
+                           std::move(on_error_closure));
   }
 
   void SetUpOnMainThread() override {
@@ -91,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(ApiBindingsClientTest, EndToEnd) {
   binding_list.emplace_back(std::move(echo_binding));
   api_service_.set_bindings(std::move(binding_list));
 
-  StartClient();
+  StartClient(false, base::MakeExpectedNotRunClosure(FROM_HERE));
 
   base::RunLoop post_message_responses_loop;
   base::RepeatingClosure post_message_response_closure =
@@ -141,6 +147,15 @@ IN_PROC_BROWSER_TEST_F(ApiBindingsClientTest, EndToEnd) {
 
   // Ensure that we've received acks for all messages.
   post_message_responses_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ApiBindingsClientTest,
+                       ClientDisconnectsBeforeFrameAttached) {
+  bool error_signaled = false;
+  StartClient(
+      true, base::BindOnce([](bool* error_signaled) { *error_signaled = true; },
+                           base::Unretained(&error_signaled)));
+  EXPECT_TRUE(error_signaled);
 }
 
 }  // namespace

@@ -54,6 +54,12 @@ void ApiBindingsClient::AttachToFrame(
   DCHECK(bindings_)
       << "AttachToFrame() was called before bindings were received.";
 
+  if (!bindings_service_) {
+    LOG(ERROR) << "ApiBindings channel disconnect before attaching Frame.";
+    std::move(on_error_callback).Run();
+    return;
+  }
+
   connector_ = connector;
   frame_ = frame;
 
