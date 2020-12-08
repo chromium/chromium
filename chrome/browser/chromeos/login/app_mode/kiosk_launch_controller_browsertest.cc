@@ -2,24 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/strcat.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_types.h"
 #include "chrome/browser/chromeos/app_mode/web_app/mock_web_kiosk_app_launcher.h"
 #include "chrome/browser/chromeos/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/chromeos/login/test/kiosk_test_helpers.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/chromeos/login/fake_app_launch_splash_screen_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/browser/pref_names.h"
+#include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
 
 namespace chromeos {
+
+const char kExtensionId1[] = "extensionId1";
+const char kExtensionId2[] = "extensionId2";
+const char kExtensionName1[] = "extensionName1";
+const char kExtensionName2[] = "extensionName2";
+
+// URL of Chrome Web.
+const char kExtensionUpdateUrl[] =
+    "https://clients2.google.com/service/update2/crx";
 
 class KioskLaunchControllerTest
     : public InProcessBrowserTest,
@@ -204,7 +222,7 @@ IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest,
   view_controls()->OnNetworkConfigFinished();
 
   launch_controls()->OnAppInstalling();
-  ExpectState(AppState::INSTALLING, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::INSTALLING_APP, NetworkUIState::NOT_SHOWING);
 
   launch_controls()->OnAppPrepared();
   ExpectState(AppState::INSTALLED, NetworkUIState::NOT_SHOWING);
@@ -231,7 +249,7 @@ IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest,
   SetOnline(true);
 
   launch_controls()->OnAppInstalling();
-  ExpectState(AppState::INSTALLING, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::INSTALLING_APP, NetworkUIState::NOT_SHOWING);
 
   SetOnline(false);
   launch_controls()->InitializeNetwork();
@@ -241,7 +259,7 @@ IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest,
   view_controls()->OnNetworkConfigFinished();
 
   launch_controls()->OnAppInstalling();
-  ExpectState(AppState::INSTALLING, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::INSTALLING_APP, NetworkUIState::NOT_SHOWING);
 
   launch_controls()->OnAppPrepared();
   ExpectState(AppState::INSTALLED, NetworkUIState::NOT_SHOWING);
@@ -256,6 +274,121 @@ IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          KioskLaunchControllerTest,
+                         testing::Values(KioskAppType::ARC_APP,
+                                         KioskAppType::CHROME_APP,
+                                         KioskAppType::WEB_APP));
+
+class KioskLaunchControllerWithExtensionTest
+    : public KioskLaunchControllerTest {
+ public:
+  void SetupForceList() {
+    std::unique_ptr<base::Value> dict =
+        extensions::DictionaryBuilder()
+            .Set(kExtensionId1,
+                 extensions::DictionaryBuilder()
+                     .Set(extensions::ExternalProviderImpl::kExternalUpdateUrl,
+                          kExtensionUpdateUrl)
+                     .Build())
+            .Set(kExtensionId2,
+                 extensions::DictionaryBuilder()
+                     .Set(extensions::ExternalProviderImpl::kExternalUpdateUrl,
+                          kExtensionUpdateUrl)
+                     .Build())
+            .Build();
+    ProfileManager::GetPrimaryUserProfile()->GetPrefs()->Set(
+        extensions::pref_names::kInstallForceList, std::move(*dict));
+
+    base::Value list(base::Value::Type::LIST);
+    list.Append(base::StrCat({kExtensionId1, ";", kExtensionUpdateUrl}));
+    list.Append(base::StrCat({kExtensionId2, ";", kExtensionUpdateUrl}));
+
+    policy::PolicyMap map;
+    map.Set(extensions::pref_names::kInstallForceList,
+            policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+            policy::POLICY_SOURCE_CLOUD, std::move(list), nullptr);
+
+    extensions::ExtensionRegistry* registry =
+        extensions::ExtensionRegistry::Get(
+            ProfileManager::GetPrimaryUserProfile());
+    extensions::TestExtensionRegistryObserver install_observer(registry);
+    policy_provider_.UpdateChromePolicy(map);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void PreRunTestOnMainThread() override {
+    SetupForceList();
+    InProcessBrowserTest::PreRunTestOnMainThread();
+  }
+
+  extensions::ForceInstalledTracker* force_installed_tracker() {
+    return extensions::ExtensionSystem::Get(profile())
+        ->extension_service()
+        ->force_installed_tracker();
+  }
+
+  void RunUntilAppPrepared() {
+    controller()->Start(kiosk_app_id(), false);
+    ExpectState(AppState::CREATING_PROFILE, NetworkUIState::NOT_SHOWING);
+
+    EXPECT_CALL(*launcher(), Initialize()).Times(1);
+    profile_controls()->OnProfileLoaded(profile());
+
+    launch_controls()->InitializeNetwork();
+    ExpectState(AppState::INIT_NETWORK, NetworkUIState::NOT_SHOWING);
+    EXPECT_CALL(*launcher(), ContinueWithNetworkReady()).Times(1);
+    SetOnline(true);
+
+    launch_controls()->OnAppInstalling();
+
+    launch_controls()->OnAppPrepared();
+  }
+
+  void SetExtensionLoaded() {
+    auto ext1 = extensions::ExtensionBuilder(kExtensionName1)
+                    .SetID(kExtensionId1)
+                    .Build();
+    auto ext2 = extensions::ExtensionBuilder(kExtensionName2)
+                    .SetID(kExtensionId2)
+                    .Build();
+    force_installed_tracker()->OnExtensionReady(profile(), ext1.get());
+    force_installed_tracker()->OnExtensionReady(profile(), ext2.get());
+  }
+
+  policy::MockConfigurationPolicyProvider policy_provider_;
+};
+
+IN_PROC_BROWSER_TEST_P(KioskLaunchControllerWithExtensionTest,
+                       ExtensionLoadedBeforeAppPrepared) {
+  SetExtensionLoaded();
+  RunUntilAppPrepared();
+  ExpectState(AppState::INSTALLED, NetworkUIState::NOT_SHOWING);
+
+  EXPECT_CALL(*launcher(), LaunchApp()).Times(1);
+  FireSplashScreenTimer();
+
+  launch_controls()->OnAppLaunched();
+  ExpectState(AppState::LAUNCHED, NetworkUIState::NOT_SHOWING);
+  EXPECT_TRUE(session_manager::SessionManager::Get()->IsSessionStarted());
+}
+
+IN_PROC_BROWSER_TEST_P(KioskLaunchControllerWithExtensionTest,
+                       ExtensionLoadedAfterAppPrepared) {
+  RunUntilAppPrepared();
+  ExpectState(AppState::INSTALLING_EXTENSIONS, NetworkUIState::NOT_SHOWING);
+
+  SetExtensionLoaded();
+  ExpectState(AppState::INSTALLED, NetworkUIState::NOT_SHOWING);
+
+  EXPECT_CALL(*launcher(), LaunchApp()).Times(1);
+  FireSplashScreenTimer();
+
+  launch_controls()->OnAppLaunched();
+  ExpectState(AppState::LAUNCHED, NetworkUIState::NOT_SHOWING);
+  EXPECT_TRUE(session_manager::SessionManager::Get()->IsSessionStarted());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         KioskLaunchControllerWithExtensionTest,
                          testing::Values(KioskAppType::ARC_APP,
                                          KioskAppType::CHROME_APP,
                                          KioskAppType::WEB_APP));

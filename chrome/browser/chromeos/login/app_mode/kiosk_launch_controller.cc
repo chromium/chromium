@@ -19,6 +19,8 @@
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.h"
@@ -37,6 +39,12 @@ constexpr base::TimeDelta kKioskSplashScreenMinTime =
 constexpr base::TimeDelta kKioskNetworkWaitTime =
     base::TimeDelta::FromSeconds(10);
 base::TimeDelta g_network_wait_time = kKioskNetworkWaitTime;
+
+// Time of waiting for the force-installed extension to be ready to start
+// application window. Can be changed in tests.
+constexpr base::TimeDelta kKioskExtensionWaitTime =
+    base::TimeDelta::FromMinutes(2);
+base::TimeDelta g_extension_wait_time = kKioskExtensionWaitTime;
 
 // Whether we should skip the wait for minimum screen show time.
 bool g_skip_splash_wait_for_testing = false;
@@ -84,6 +92,15 @@ void RecordKioskLaunchUMA(bool is_auto_launch) {
             ? enterprise_user_session_metrics::SignInEventType::AUTOMATIC_KIOSK
             : enterprise_user_session_metrics::SignInEventType::MANUAL_KIOSK);
   }
+}
+
+extensions::ForceInstalledTracker* GetForceInstalledTracker(Profile* profile) {
+  extensions::ExtensionSystem* system =
+      extensions::ExtensionSystem::Get(profile);
+  DCHECK(system);
+
+  extensions::ExtensionService* service = system->extension_service();
+  return service ? service->force_installed_tracker() : nullptr;
 }
 
 // This is a not-owning wrapper around ArcKioskAppService which allows to be
@@ -265,6 +282,7 @@ bool KioskLaunchController::IsNetworkRequired() {
 }
 
 void KioskLaunchController::CleanUp() {
+  extension_wait_timer_.Stop();
   network_wait_timer_.Stop();
   splash_wait_timer_.Stop();
 
@@ -293,7 +311,7 @@ void KioskLaunchController::CloseSplashScreen() {
 
 void KioskLaunchController::OnAppInstalling() {
   SYSLOG(INFO) << "Kiosk app started installing.";
-  app_state_ = AppState::INSTALLING;
+  app_state_ = AppState::INSTALLING_APP;
   if (!splash_screen_view_)
     return;
   splash_screen_view_->UpdateAppLaunchState(
@@ -305,7 +323,6 @@ void KioskLaunchController::OnAppInstalling() {
 
 void KioskLaunchController::OnAppPrepared() {
   SYSLOG(INFO) << "Kiosk app is ready to launch.";
-  app_state_ = AppState::INSTALLED;
 
   if (!splash_screen_view_)
     return;
@@ -313,12 +330,23 @@ void KioskLaunchController::OnAppPrepared() {
   if (network_ui_state_ != NetworkUIState::NOT_SHOWING)
     return;
 
-  splash_screen_view_->UpdateAppLaunchState(
-      AppLaunchSplashScreenView::AppLaunchState::
-          APP_LAUNCH_STATE_WAITING_APP_WINDOW);
-  splash_screen_view_->Show();
-  if (launch_on_install_ || g_skip_splash_wait_for_testing)
-    LaunchApp();
+  app_state_ = AppState::INSTALLING_EXTENSIONS;
+  extensions::ForceInstalledTracker* tracker =
+      GetForceInstalledTracker(profile_);
+
+  if (tracker && !tracker->IsReady()) {
+    extension_wait_timer_.Start(
+        FROM_HERE, g_extension_wait_time, this,
+        &KioskLaunchController::OnExtensionWaitTimedOut);
+    tracker->AddObserver(this);
+
+    splash_screen_view_->UpdateAppLaunchState(
+        AppLaunchSplashScreenView::AppLaunchState::
+            APP_LAUNCH_STATE_INSTALLING_EXTENSION);
+    splash_screen_view_->Show();
+  } else {
+    OnForceInstalledExtensionsReady();
+  }
 }
 
 void KioskLaunchController::InitializeNetwork() {
@@ -357,6 +385,13 @@ void KioskLaunchController::OnNetworkWaitTimedOut() {
     std::move(*network_timeout_callback).Run();
     network_timeout_callback = nullptr;
   }
+}
+
+void KioskLaunchController::OnExtensionWaitTimedOut() {
+  SYSLOG(WARNING) << "OnExtensionWaitTimedout...";
+
+  // TODO: show a notification banner, then run the app anyways.
+  OnForceInstalledExtensionsReady();
 }
 
 bool KioskLaunchController::IsNetworkReady() const {
@@ -462,6 +497,22 @@ void KioskLaunchController::OnOldEncryptionDetected(
   migration_screen->SetupInitialView();
 }
 
+void KioskLaunchController::OnForceInstalledExtensionsReady() {
+  app_state_ = AppState::INSTALLED;
+  extensions::ForceInstalledTracker* tracker =
+      GetForceInstalledTracker(profile_);
+  if (tracker)
+    tracker->RemoveObserver(this);
+
+  splash_screen_view_->UpdateAppLaunchState(
+      AppLaunchSplashScreenView::AppLaunchState::
+          APP_LAUNCH_STATE_WAITING_APP_WINDOW);
+  splash_screen_view_->Show();
+
+  if (launch_on_install_ || g_skip_splash_wait_for_testing)
+    LaunchApp();
+}
+
 void KioskLaunchController::OnOwnerSigninSuccess() {
   ShowNetworkConfigureUI();
 }
@@ -544,7 +595,8 @@ void KioskLaunchController::OnNetworkConfigRequested() {
     case AppState::INSTALLED:
       MaybeShowNetworkConfigureUI();
       break;
-    case AppState::INSTALLING:
+    case AppState::INSTALLING_APP:
+    case AppState::INSTALLING_EXTENSIONS:
       // When requesting to show network configure UI, we should cancel current
       // installation and restart it as soon as the network is configured.
       app_state_ = AppState::INIT_NETWORK;
@@ -577,7 +629,9 @@ void KioskLaunchController::OnNetworkStateChanged(bool online) {
     }
   }
 
-  if (app_state_ == AppState::INSTALLING && network_required_ && !online) {
+  if ((app_state_ == AppState::INSTALLING_APP ||
+       app_state_ == AppState::INSTALLING_EXTENSIONS) &&
+      network_required_ && !online) {
     SYSLOG(WARNING)
         << "Connection lost during installation, restarting launcher.";
     OnNetworkWaitTimedOut();
