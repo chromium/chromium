@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 
-#include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -16,7 +15,8 @@ const char kPrivacySandboxApisEnabled[] = "privacy_sandbox.apis_enabled";
 const char kPrivacySandboxManuallyControlled[] =
     "privacy_sandbox.manually_controlled";
 
-const char kPrivacySandboxUiAvailable[] = "privacy_sandbox.ui_available";
+const char kPrivacySandboxPreferencesReconciled[] =
+    "privacy_sandbox.preferences_reconciled";
 
 }  // namespace prefs
 
@@ -24,12 +24,13 @@ namespace privacy_sandbox {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
-      prefs::kPrivacySandboxApisEnabled, false,
+      prefs::kPrivacySandboxApisEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       prefs::kPrivacySandboxManuallyControlled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(prefs::kPrivacySandboxUiAvailable, false);
+  registry->RegisterBooleanPref(prefs::kPrivacySandboxPreferencesReconciled,
+                                false);
 }
 
 }  // namespace privacy_sandbox

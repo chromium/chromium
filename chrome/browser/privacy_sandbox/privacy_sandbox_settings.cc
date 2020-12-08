@@ -6,10 +6,10 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

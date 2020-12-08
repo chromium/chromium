@@ -227,6 +227,7 @@ include_rules = [
   "+components/previews/core",
   "+components/printing/browser",
   "+components/printing/common",
+  "+components/privacy_sandbox",
   "+components/profile_metrics",
   "+components/proxy_config",
   "+components/query_parser",

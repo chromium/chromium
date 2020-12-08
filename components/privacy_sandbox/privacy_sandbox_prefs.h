@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_PREFS_H_
-#define CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_PREFS_H_
+#ifndef COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_PREFS_H_
+#define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_PREFS_H_
 
 class PrefRegistrySimple;
 
@@ -19,9 +19,10 @@ extern const char kPrivacySandboxApisEnabled[];
 // associated with the PrivacySandboxSettings feature.
 extern const char kPrivacySandboxManuallyControlled[];
 
-// Boolean to indicate whether or not the UI for Privacy Sandbox settings has
-// been made available on the device.
-extern const char kPrivacySandboxUiAvailable[];
+// Boolean to indicate whether or not the preferecnes have been reconciled for
+// this device. This occurs for each device once when privacy sandbox is first
+// enabled.
+extern const char kPrivacySandboxPreferencesReconciled[];
 
 }  // namespace prefs
 
@@ -32,4 +33,4 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace privacy_sandbox
 
-#endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_PREFS_H_
+#endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_PREFS_H_
