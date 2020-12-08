@@ -363,57 +363,45 @@ class GLRendererShaderPixelTest : public cc::PixelTest {
                                       false));
   }
 
-  void TestShadersWithPrecisionAndSampler(TexCoordPrecision precision,
-                                          SamplerType sampler) {
-    TestShader(ProgramKey::Texture(precision, sampler, PREMULTIPLIED_ALPHA,
-                                   false, true, false, false));
-    TestShader(ProgramKey::Texture(precision, sampler, PREMULTIPLIED_ALPHA,
-                                   false, false, false, false));
-    TestShader(ProgramKey::Texture(precision, sampler, PREMULTIPLIED_ALPHA,
-                                   true, true, false, false));
-    TestShader(ProgramKey::Texture(precision, sampler, PREMULTIPLIED_ALPHA,
-                                   true, false, false, false));
-    TestShader(ProgramKey::Texture(precision, sampler, NON_PREMULTIPLIED_ALPHA,
-                                   false, true, false, false));
-    TestShader(ProgramKey::Texture(precision, sampler, NON_PREMULTIPLIED_ALPHA,
-                                   false, false, false, false));
-    TestShader(ProgramKey::Texture(precision, sampler, NON_PREMULTIPLIED_ALPHA,
-                                   true, true, false, false));
-    TestShader(ProgramKey::Texture(precision, sampler, NON_PREMULTIPLIED_ALPHA,
-                                   true, false, false, false));
+  void TestShadersWithPrecisionAndSampler(
+      TexCoordPrecision precision,
+      SamplerType sampler,
+      PremultipliedAlphaMode premultipliedAlpha,
+      bool has_background_color,
+      bool has_tex_clamp_rect) {
+    TestShader(ProgramKey::Texture(precision, sampler, premultipliedAlpha,
+                                   has_background_color, has_tex_clamp_rect,
+                                   false, false));
+  }
 
-    TestShader(ProgramKey::Tile(precision, sampler, USE_AA, PREMULTIPLIED_ALPHA,
+  void TestShadersWithPrecisionAndSamplerTiledAA(
+      TexCoordPrecision precision,
+      SamplerType sampler,
+      PremultipliedAlphaMode premultipliedAlpha) {
+    TestShader(ProgramKey::Tile(precision, sampler, USE_AA, premultipliedAlpha,
                                 false, false, false, false));
-    TestShader(ProgramKey::Tile(precision, sampler, NO_AA, PREMULTIPLIED_ALPHA,
-                                false, false, false, false));
-    TestShader(ProgramKey::Tile(precision, sampler, NO_AA, PREMULTIPLIED_ALPHA,
-                                true, false, false, false));
-    TestShader(ProgramKey::Tile(precision, sampler, NO_AA, PREMULTIPLIED_ALPHA,
-                                false, true, false, false));
-    TestShader(ProgramKey::Tile(precision, sampler, NO_AA, PREMULTIPLIED_ALPHA,
-                                true, true, false, false));
-    TestShader(ProgramKey::Tile(precision, sampler, USE_AA,
-                                NON_PREMULTIPLIED_ALPHA, false, false, false,
-                                false));
-    TestShader(ProgramKey::Tile(precision, sampler, NO_AA,
-                                NON_PREMULTIPLIED_ALPHA, false, false, false,
-                                false));
-    TestShader(ProgramKey::Tile(precision, sampler, NO_AA,
-                                NON_PREMULTIPLIED_ALPHA, true, false, false,
-                                false));
-    TestShader(ProgramKey::Tile(precision, sampler, NO_AA,
-                                NON_PREMULTIPLIED_ALPHA, false, true, false,
-                                false));
-    TestShader(ProgramKey::Tile(precision, sampler, NO_AA,
-                                NON_PREMULTIPLIED_ALPHA, true, true, false,
-                                false));
+  }
 
+  void TestShadersWithPrecisionAndSamplerTiled(
+      TexCoordPrecision precision,
+      SamplerType sampler,
+      PremultipliedAlphaMode premultipliedAlpha,
+      bool is_opaque,
+      bool has_tex_clamp_rect) {
+    TestShader(ProgramKey::Tile(precision, sampler, NO_AA, premultipliedAlpha,
+                                is_opaque, has_tex_clamp_rect, false, false));
+  }
+
+  void TestYUVShadersWithPrecisionAndSampler(TexCoordPrecision precision,
+                                             SamplerType sampler) {
     // Iterate over alpha plane and nv12 parameters.
     UVTextureMode uv_modes[2] = {UV_TEXTURE_MODE_UV, UV_TEXTURE_MODE_U_V};
     YUVAlphaTextureMode a_modes[2] = {YUV_NO_ALPHA_TEXTURE,
                                       YUV_HAS_ALPHA_TEXTURE};
     for (auto uv_mode : uv_modes) {
+      SCOPED_TRACE(uv_mode);
       for (auto a_mode : a_modes) {
+        SCOPED_TRACE(a_mode);
         TestShader(ProgramKey::YUVVideo(precision, sampler, a_mode, uv_mode,
                                         false, false));
       }
@@ -458,6 +446,9 @@ static const SamplerType kSamplerList[] = {
     SAMPLER_TYPE_2D, SAMPLER_TYPE_2D_RECT, SAMPLER_TYPE_EXTERNAL_OES,
 };
 
+static const PremultipliedAlphaMode kPremultipliedAlphaModeList[] = {
+    PREMULTIPLIED_ALPHA, NON_PREMULTIPLIED_ALPHA};
+
 TEST_F(GLRendererShaderPixelTest, BasicShadersCompile) {
   TestBasicShaders();
 }
@@ -497,18 +488,107 @@ INSTANTIATE_TEST_SUITE_P(
 class PrecisionSamplerShaderPixelTest
     : public GLRendererShaderPixelTest,
       public ::testing::WithParamInterface<
-          std::tuple<TexCoordPrecision, SamplerType>> {};
+          std::tuple<TexCoordPrecision,
+                     SamplerType,
+                     PremultipliedAlphaMode,
+                     bool,       // has_background_color
+                     bool>> {};  // has_tex_clamp_rect
 
 TEST_P(PrecisionSamplerShaderPixelTest, ShadersCompile) {
   SamplerType sampler = std::get<1>(GetParam());
   if (sampler != SAMPLER_TYPE_2D_RECT ||
       context_provider()->ContextCapabilities().texture_rectangle) {
-    TestShadersWithPrecisionAndSampler(std::get<0>(GetParam()), sampler);
+    TestShadersWithPrecisionAndSampler(
+        std::get<0>(GetParam()),  // TexCoordPrecision
+        sampler,
+        std::get<2>(GetParam()),   // PremultipliedAlphaMode
+        std::get<3>(GetParam()),   // has_background_color
+        std::get<4>(GetParam()));  // has_tex_clamp_rect
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PrecisionSamplerShadersCompile,
+    PrecisionSamplerShaderPixelTest,
+    ::testing::Combine(::testing::ValuesIn(kPrecisionList),
+                       ::testing::ValuesIn(kSamplerList),
+                       ::testing::ValuesIn(kPremultipliedAlphaModeList),
+                       ::testing::Bool(),    // has_background_color
+                       ::testing::Bool()));  // has_tex_clamp_rect
+
+class PrecisionSamplerShaderPixelTestTiled
+    : public GLRendererShaderPixelTest,
+      public ::testing::WithParamInterface<
+          std::tuple<TexCoordPrecision,
+                     SamplerType,
+                     PremultipliedAlphaMode,
+                     bool,   // is_opaque
+                     bool>>  // has_tex_clamp_rect
+{};
+
+TEST_P(PrecisionSamplerShaderPixelTestTiled, ShadersCompile) {
+  SamplerType sampler = std::get<1>(GetParam());
+  if (sampler != SAMPLER_TYPE_2D_RECT ||
+      context_provider()->ContextCapabilities().texture_rectangle) {
+    TestShadersWithPrecisionAndSamplerTiled(
+        std::get<0>(GetParam()),  // TexCoordPrecision
+        sampler,
+        std::get<2>(GetParam()),   // PremultipliedAlphaMode
+        std::get<3>(GetParam()),   // is_opaque
+        std::get<4>(GetParam()));  // has_tex_clamp_rect
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PrecisionSamplerShadersCompile,
+    PrecisionSamplerShaderPixelTestTiled,
+    ::testing::Combine(::testing::ValuesIn(kPrecisionList),
+                       ::testing::ValuesIn(kSamplerList),
+                       ::testing::ValuesIn(kPremultipliedAlphaModeList),
+                       ::testing::Bool(),    // is_opaque
+                       ::testing::Bool()));  // has_tex_clamp_rect
+
+class PrecisionSamplerShaderPixelTestTiledAA
+    : public GLRendererShaderPixelTest,
+      public ::testing::WithParamInterface<
+          std::tuple<TexCoordPrecision, SamplerType, PremultipliedAlphaMode>> {
+};
+
+TEST_P(PrecisionSamplerShaderPixelTestTiledAA, ShadersCompile) {
+  SamplerType sampler = std::get<1>(GetParam());
+  if (sampler != SAMPLER_TYPE_2D_RECT ||
+      context_provider()->ContextCapabilities().texture_rectangle) {
+    TestShadersWithPrecisionAndSamplerTiledAA(
+        std::get<0>(GetParam()),  // TexCoordPrecision
+        sampler,
+        std::get<2>(GetParam()));  // PremultipliedAlphaMode
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PrecisionSamplerShadersCompile,
+    PrecisionSamplerShaderPixelTestTiledAA,
+    ::testing::Combine(::testing::ValuesIn(kPrecisionList),
+                       ::testing::ValuesIn(kSamplerList),
+                       ::testing::ValuesIn(kPremultipliedAlphaModeList)));
+
+class PrecisionSamplerYUVShaderPixelTest
+    : public GLRendererShaderPixelTest,
+      public ::testing::WithParamInterface<
+          std::tuple<TexCoordPrecision, SamplerType>> {};
+
+TEST_P(PrecisionSamplerYUVShaderPixelTest, ShadersCompile) {
+  SamplerType sampler = std::get<1>(GetParam());
+  if (sampler != SAMPLER_TYPE_2D_RECT ||
+      context_provider()->ContextCapabilities().texture_rectangle) {
+    TestYUVShadersWithPrecisionAndSampler(
+        std::get<0>(GetParam()),  // TexCoordPrecision
+        sampler);
   }
 }
 
 INSTANTIATE_TEST_SUITE_P(PrecisionSamplerShadersCompile,
-                         PrecisionSamplerShaderPixelTest,
+                         PrecisionSamplerYUVShaderPixelTest,
                          ::testing::Combine(::testing::ValuesIn(kPrecisionList),
                                             ::testing::ValuesIn(kSamplerList)));
 
