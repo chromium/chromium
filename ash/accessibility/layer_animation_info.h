@@ -15,17 +15,11 @@ struct LayerAnimationInfo {
   base::TimeDelta fade_in_time;
   base::TimeDelta fade_out_time;
   float opacity = 0;
-  float offset = 0;
-  float offset_bound = 0;
-  float animation_rate = 0;
   bool smooth = false;
 };
 
 void ComputeOpacity(LayerAnimationInfo* animation_info,
                     base::TimeTicks timestamp);
-
-void ComputeOffset(LayerAnimationInfo* animation_info,
-                   base::TimeTicks timestamp);
 
 }  // namespace ash
 

@@ -1090,7 +1090,7 @@ bool AccessibilityControllerImpl::IsPointScanEnabled() {
 void AccessibilityControllerImpl::ActivatePointScan() {
   if (::switches::IsSwitchAccessPointScanningEnabled()) {
     point_scan_controller_ = std::make_unique<PointScanController>();
-    point_scan_controller_->Start();
+    point_scan_controller_->StartHorizontalRangeScan();
   }
 }
 

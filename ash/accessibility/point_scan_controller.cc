@@ -3,33 +3,48 @@
 // found in the LICENSE file.
 
 #include "ash/accessibility/point_scan_controller.h"
-
-#include "ash/accessibility/layer_animation_info.h"
 #include "ash/accessibility/point_scan_layer.h"
+#include "ash/accessibility/point_scan_layer_animation_info.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
 namespace {
-// Scanning time in seconds from the start of the screen (offset = 0) to the end
-// of the screen (offset = bound).
+// Scanning time in seconds from the start of the screen (offset_start) to the
+// end of the screen (offset_bound).
 constexpr float kHorizontalScanTimeSecs = 20;
 constexpr float kVerticalScanTimeSecs = 20;
+constexpr float kHorizontalRangeScanTimeSecs = 30;
+constexpr int kDefaultRangeWidthDips = 150;
+
 }  // namespace
 
 namespace ash {
 
 PointScanController::PointScanController() {
   horizontal_line_layer_info_.animation_rate = kHorizontalScanTimeSecs;
+  horizontal_range_layer_info_.animation_rate = kHorizontalRangeScanTimeSecs;
   vertical_line_layer_info_.animation_rate = kVerticalScanTimeSecs;
 }
 
 PointScanController::~PointScanController() = default;
 
-void PointScanController::Start() {
+void PointScanController::StartHorizontalRangeScan() {
+  state_ = PointScanState::kHorizontalRangeScanning;
+  horizontal_range_layer_.reset(new PointScanLayer(this));
+  horizontal_range_layer_info_.offset_bound =
+      horizontal_range_layer_->GetBounds().width() - kDefaultRangeWidthDips;
+  horizontal_range_layer_->StartHorizontalRangeScanning();
+}
+
+void PointScanController::StartHorizontalLineScan() {
   state_ = PointScanState::kHorizontalScanning;
+  horizontal_range_layer_->PauseHorizontalRangeScanning();
   horizontal_line_layer_.reset(new PointScanLayer(this));
+  horizontal_line_layer_info_.offset = horizontal_range_layer_info_.offset;
+  horizontal_line_layer_info_.offset_start =
+      horizontal_range_layer_info_.offset;
   horizontal_line_layer_info_.offset_bound =
-      horizontal_line_layer_->GetBounds().width();
+      horizontal_range_layer_info_.offset + kDefaultRangeWidthDips;
   horizontal_line_layer_->StartHorizontalScanning();
 }
 
@@ -49,6 +64,9 @@ void PointScanController::Stop() {
 
 base::Optional<gfx::PointF> PointScanController::OnPointSelect() {
   switch (state_) {
+    case PointScanState::kHorizontalRangeScanning:
+      StartHorizontalLineScan();
+      return base::nullopt;
     case PointScanState::kHorizontalScanning:
       Pause();
       return base::nullopt;
@@ -63,6 +81,7 @@ base::Optional<gfx::PointF> PointScanController::OnPointSelect() {
 
 bool PointScanController::IsPointScanEnabled() {
   switch (state_) {
+    case PointScanState::kHorizontalRangeScanning:
     case PointScanState::kVerticalScanning:
     case PointScanState::kHorizontalScanning:
       return true;
@@ -77,14 +96,20 @@ void PointScanController::OnAnimationStep(base::TimeTicks timestamp) {
   AnimateLine(timestamp);
 }
 
-void PointScanController::UpdateTimeInfo(LayerAnimationInfo* animation_info,
-                                         base::TimeTicks timestamp) {
+void PointScanController::UpdateTimeInfo(
+    PointScanLayerAnimationInfo* animation_info,
+    base::TimeTicks timestamp) {
   animation_info->start_time = animation_info->change_time;
   animation_info->change_time = timestamp;
 }
 
 void PointScanController::AnimateLine(base::TimeTicks timestamp) {
-  if (horizontal_line_layer_->IsMoving()) {
+  if (horizontal_range_layer_->IsMoving()) {
+    ComputeOffset(&horizontal_range_layer_info_, timestamp);
+    horizontal_range_layer_->SetSubpixelPositionOffset(
+        gfx::Vector2dF(horizontal_range_layer_info_.offset, 0.0));
+    UpdateTimeInfo(&horizontal_range_layer_info_, timestamp);
+  } else if (horizontal_line_layer_->IsMoving()) {
     ComputeOffset(&horizontal_line_layer_info_, timestamp);
     horizontal_line_layer_->SetSubpixelPositionOffset(
         gfx::Vector2dF(horizontal_line_layer_info_.offset, 0.0));

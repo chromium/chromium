@@ -172,6 +172,8 @@ component("ash") {
     "accessibility/point_scan_controller.h",
     "accessibility/point_scan_layer.cc",
     "accessibility/point_scan_layer.h",
+    "accessibility/point_scan_layer_animation_info.cc",
+    "accessibility/point_scan_layer_animation_info.h",
     "accessibility/spoken_feedback_enabler.cc",
     "accessibility/spoken_feedback_enabler.h",
     "accessibility/touch_accessibility_enabler.cc",

@@ -20,6 +20,7 @@ namespace ash {
 
 namespace {
 const int kDefaultStrokeWidth = 6;
+constexpr int kDefaultRangeWidthDips = 150;
 
 display::Display GetPrimaryDisplay() {
   DCHECK(display::Screen::GetScreen());
@@ -37,11 +38,24 @@ PointScanLayer::PointScanLayer(AccessibilityLayerDelegate* delegate)
   layer()->SetBounds(bounds_);
 }
 
-void PointScanLayer::StartHorizontalScanning() {
+void PointScanLayer::StartHorizontalRangeScanning() {
+  is_range_scan_ = true;
   gfx::Point end = bounds_.bottom_left();
   bounds_.set_origin(line_.start);
   line_.end = end;
   is_moving_ = true;
+}
+
+void PointScanLayer::StartHorizontalScanning() {
+  is_range_scan_ = false;
+  gfx::Point end = bounds_.bottom_left();
+  bounds_.set_origin(line_.start);
+  line_.end = end;
+  is_moving_ = true;
+}
+
+void PointScanLayer::PauseHorizontalRangeScanning() {
+  is_moving_ = false;
 }
 
 void PointScanLayer::PauseHorizontalScanning() {
@@ -86,6 +100,12 @@ void PointScanLayer::OnPaintLayer(const ui::PaintContext& context) {
   flags.setColor(gfx::kGoogleBlue300);
 
   SkPath path;
+
+  if (is_range_scan_) {
+    path.moveTo(line_.start.x() + kDefaultRangeWidthDips, line_.start.y());
+    path.lineTo(line_.end.x() + kDefaultRangeWidthDips, line_.end.y());
+  }
+
   path.moveTo(line_.start.x(), line_.start.y());
   path.lineTo(line_.end.x(), line_.end.y());
   recorder.canvas()->DrawPath(path, flags);

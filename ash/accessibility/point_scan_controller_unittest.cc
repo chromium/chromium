@@ -134,7 +134,7 @@ TEST_F(PointScanControllerTest, StartScanning) {
   CaptureBeforeImage(bounds);
 
   PointScanController controller;
-  controller.Start();
+  controller.StartHorizontalRangeScan();
 
   CaptureAfterImage(bounds);
   ComputeImageStats();
