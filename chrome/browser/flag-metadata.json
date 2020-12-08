@@ -4267,7 +4267,11 @@
   {
     "name": "scheduler-configuration",
     "owners": [ "kerrnel", "mnissler" ],
-    "expiry_milestone": 88
+    // This flag never expires because some users need to override CPU security
+    // settings for performance gains, at their own risk. Chrome OS users cannot
+    // modify the command line, so a flag is the publicly documented mechanism
+    // exposed to users.
+    "expiry_milestone": -1
   },
   {"name": "schemeful-same-site",
     "owners": [ "bingler", "chlily" ],

@@ -83,6 +83,7 @@
   "reader-mode-heuristics",
   "record-web-app-debug-info",
   "release-notes-notification-all-channels",
+  "scheduler-configuration",
   "set-market-url-for-testing",
   "show-autofill-type-predictions",
   "show-bluetooth-debug-log-toggle",
