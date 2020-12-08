@@ -786,28 +786,29 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::GenerateFragment(
 
   base::Optional<LayoutUnit> table_baseline;
   wtf_size_t section_index = 0;
-  bool has_section = false;
+  bool needs_end_border_spacing = false;
   for (NGBlockNode section : grouped_children) {
     scoped_refptr<const NGLayoutResult> section_result =
         section.Layout(CreateSectionConstraintSpace(section_index++));
     const NGPhysicalBoxFragment& physical_fragment =
         To<NGPhysicalBoxFragment>(section_result->PhysicalFragment());
     NGBoxFragment fragment(table_writing_direction, physical_fragment);
-    if (fragment.BlockSize() != LayoutUnit() || !has_section)
+    if (fragment.HasDescendantsForTablePart()) {
       section_offset.block_offset += border_spacing.block_size;
+      needs_end_border_spacing = true;
+    }
     container_builder_.AddResult(*section_result, section_offset);
     if (!table_baseline) {
       if (const auto& section_baseline = fragment.Baseline())
         table_baseline = *section_baseline + section_offset.block_offset;
     }
     section_offset.block_offset += fragment.BlockSize();
-    has_section = true;
   }
-  if (has_section)
+  if (needs_end_border_spacing)
     section_offset.block_offset += border_spacing.block_size;
   LayoutUnit column_block_size =
       section_offset.block_offset - border_padding.block_start;
-  if (has_section)
+  if (needs_end_border_spacing)
     column_block_size -= border_spacing.block_size * 2;
 
   const LayoutUnit grid_block_size = std::max(

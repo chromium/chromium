@@ -68,10 +68,10 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
     return physical_box_fragment.Padding().ConvertToLogical(writing_direction_);
   }
 
-  bool HasDescendantsForTableCell() const {
+  bool HasDescendantsForTablePart() const {
     const NGPhysicalBoxFragment& box_fragment =
         To<NGPhysicalBoxFragment>(physical_fragment_);
-    DCHECK(box_fragment.IsTableNGCell());
+    DCHECK(physical_fragment_.IsTableNGPart() || box_fragment.IsTableNGCell());
     return !box_fragment.Children().empty() ||
            box_fragment.HasOutOfFlowPositionedFragmentainerDescendants() ||
            box_fragment.HasOutOfFlowPositionedDescendants();
