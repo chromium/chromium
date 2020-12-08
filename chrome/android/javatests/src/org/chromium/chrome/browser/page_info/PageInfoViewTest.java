@@ -358,6 +358,9 @@ public class PageInfoViewTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_connection_row)).perform(click());
+        onViewWaiting(
+                allOf(withText(containsString("Test Root CA issued this website's certificate.")),
+                        isDisplayed()));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_ConnectionInfoSubpage");
     }
 
@@ -373,6 +376,7 @@ public class PageInfoViewTest {
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_permissions_row)).perform(click());
+        onViewWaiting(allOf(withText("Control this site's access to your device"), isDisplayed()));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_PermissionsSubpage");
     }
 
@@ -383,12 +387,13 @@ public class PageInfoViewTest {
     @MediumTest
     @Feature({"RenderTest"})
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
-    @FlakyTest(message = "https://crbug.com/1156285")
     public void testShowCookiesSubpage() throws IOException {
         mActivityTestRule.startMainActivityOnBlankPage();
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_cookies_row)).perform(click());
+        onViewWaiting(allOf(
+                withText(containsString("Cookies and other site data are used")), isDisplayed()));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_CookiesSubpage");
     }
 
@@ -402,7 +407,6 @@ public class PageInfoViewTest {
     public void testNoPermissionsSubpage() throws IOException {
         mActivityTestRule.startMainActivityOnBlankPage();
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
-        View dialog = (View) getPageInfoView().getParent();
         onView(withId(R.id.page_info_permissions_row))
                 .check(matches(withEffectiveVisibility(GONE)));
     }
