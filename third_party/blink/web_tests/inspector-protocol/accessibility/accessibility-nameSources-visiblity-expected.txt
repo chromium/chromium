@@ -361,7 +361,7 @@ Tests name sources in invisible nodes.
                         [0] : {
                             idref : label4
                             nodeResult : div#label4
-                            text : 1 2 7
+                            text : 1 2 3 4 5 6 7
                         }
                     ]
                     type : idrefList
@@ -370,7 +370,7 @@ Tests name sources in invisible nodes.
                 type : relatedElement
                 value : {
                     type : computedString
-                    value : 1 2 7
+                    value : 1 2 3 4 5 6 7
                 }
             }
             [1] : {
@@ -400,7 +400,7 @@ Tests name sources in invisible nodes.
             }
         ]
         type : computedString
-        value : 1 2 7
+        value : 1 2 3 4 5 6 7
     }
     nodeId : <string>
     properties : [
@@ -460,7 +460,7 @@ Tests name sources in invisible nodes.
                     [0] : {
                         idref : label4
                         nodeResult : div#label4
-                        text : 1 2 7
+                        text : 1 2 3 4 5 6 7
                     }
                 ]
                 type : nodeList
