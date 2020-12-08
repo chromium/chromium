@@ -24,8 +24,10 @@ js_type_check("closure_compile") {
 }
 
 js_library("nearby_share_confirm_page") {
-  deps =
-      [ "//chrome/browser/resources/nearby_share/shared:nearby_page_template" ]
+  deps = [
+    "//chrome/browser/resources/nearby_share/shared:nearby_device_icon",
+    "//chrome/browser/resources/nearby_share/shared:nearby_page_template",
+  ]
 }
 
 js_library("nearby_account_manager_browser_proxy") {
@@ -160,6 +162,7 @@ js_type_check("closure_compile_module") {
 js_library("nearby_share_confirm_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/nearby_share_page/nearby_share_confirm_page.m.js" ]
   deps = [
+    "//chrome/browser/resources/nearby_share/shared:nearby_device_icon.m",
     "//chrome/browser/resources/nearby_share/shared:nearby_page_template.m",
   ]
   extra_deps = [ ":nearby_share_confirm_page_module" ]

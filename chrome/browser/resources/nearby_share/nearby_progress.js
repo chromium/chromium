@@ -11,7 +11,7 @@
 
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
-import './nearby_device_icon.js';
+import './shared/nearby_device_icon.m.js';
 import './mojo/nearby_share_target_types.mojom-lite.js';
 import './mojo/nearby_share.mojom-lite.js';
 

@@ -13,6 +13,7 @@ js_modulizer("modulize") {
     "fake_nearby_contact_manager.js",
     "fake_nearby_share_settings.js",
     "nearby_contact_visibility_test.js",
+    "nearby_device_icon_test.js",
     "nearby_onboarding_page_test.js",
     "nearby_page_template_test.js",
     "nearby_visibility_page_test.js",
@@ -36,6 +37,7 @@ js_type_check("closure_compile") {
     ":fake_nearby_contact_manager.m",
     ":fake_nearby_share_settings.m",
     ":nearby_contact_visibility_test.m",
+    ":nearby_device_icon_test.m",
     ":nearby_onboarding_page_test.m",
     ":nearby_page_template_test.m",
     ":nearby_visibility_page_test.m",
@@ -56,6 +58,16 @@ js_library("nearby_contact_visibility_test.m") {
     "../..:chai_assert",
     "../..:test_util.m",
     "//chrome/browser/resources/nearby_share/shared:nearby_contact_visibility.m",
+  ]
+  extra_deps = [ ":modulize" ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("nearby_device_icon_test.m") {
+  sources = [ "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_device_icon_test.m.js" ]
+  deps = [
+    "../..:chai_assert",
+    "//chrome/browser/resources/nearby_share/shared:nearby_device_icon.m",
   ]
   extra_deps = [ ":modulize" ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]

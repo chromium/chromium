@@ -42,8 +42,6 @@ if (enable_js_type_check) {
         "management:closure_compile",
         "media_router:closure_compile",
         "nearby_internals:closure_compile",
-        "nearby_share/shared:closure_compile",
-        "nearby_share/shared:closure_compile_module",
         "new_tab_page:closure_compile",
         "ntp4:closure_compile",
         "omnibox:closure_compile",
@@ -72,6 +70,8 @@ if (enable_js_type_check) {
       deps += [
         "chromeos:closure_compile",
         "nearby_share:closure_compile",
+        "nearby_share/shared:closure_compile",
+        "nearby_share/shared:closure_compile_module",
       ]
     }
     if (enable_extensions) {

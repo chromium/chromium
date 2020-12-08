@@ -38,6 +38,23 @@ const NearbySharedBrowserTest = class extends PolymerTest {
   }
 };
 
+/**
+ * @extends {NearbySharedBrowserTest}
+ */
+var NearbyDeviceIconTest = class extends NearbySharedBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload + 'shared/nearby_device_icon.html';
+  }
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      'nearby_device_icon_test.js',
+    ]);
+  }
+};
+
+TEST_F('NearbyDeviceIconTest', 'All', () => mocha.run());
 
 /**
  * @extends {NearbySharedBrowserTest}

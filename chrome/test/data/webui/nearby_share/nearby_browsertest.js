@@ -42,7 +42,6 @@ const NearbyBrowserTest = class extends PolymerTest {
 
 [['ConfirmationPage', 'nearby_confirmation_page_test.js'],
  ['Device', 'nearby_device_test.js'],
- ['DeviceIcon', 'nearby_device_icon_test.js'],
  ['DiscoveryPage', 'nearby_discovery_page_test.js'],
  ['Preview', 'nearby_preview_test.js'],
  ['Progress', 'nearby_progress_test.js'],

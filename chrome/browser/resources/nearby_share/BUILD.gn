@@ -56,7 +56,7 @@ generate_grd("build_grd") {
   resource_path_rewrites = [
     "chrome/browser/ui/webui/nearby_share/nearby_share.mojom-lite.js|mojo/nearby_share.mojom-lite.js",
     "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom-lite.js|mojo/nearby_share_settings.mojom-lite.js",
-    "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom-lite.js|mojo/nearby_share_settings.mojom-lite.js",
+    "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom-lite.js|mojo/nearby_share_target_types.mojom-lite.js",
   ]
 }
 
@@ -80,7 +80,6 @@ preprocess_if_expr("preprocess_gen") {
     "icons.js",
     "nearby_confirmation_page.js",
     "nearby_device.js",
-    "nearby_device_icon.js",
     "nearby_discovery_page.js",
     "nearby_preview.js",
     "nearby_progress.js",
@@ -128,7 +127,6 @@ js_type_check("closure_compile") {
     ":discovery_manager",
     ":nearby_confirmation_page",
     ":nearby_device",
-    ":nearby_device_icon",
     ":nearby_discovery_page",
     ":nearby_preview",
     ":nearby_progress",
@@ -167,15 +165,7 @@ js_library("nearby_confirmation_page") {
 
 js_library("nearby_device") {
   deps = [
-    ":nearby_device_icon",
-    "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
-    "//third_party/polymer/v3_0/components-chromium/iron-icon",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("nearby_device_icon") {
-  deps = [
+    "./shared:nearby_device_icon.m",
     "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -204,7 +194,7 @@ js_library("nearby_preview") {
 
 js_library("nearby_progress") {
   deps = [
-    ":nearby_device_icon",
+    "./shared:nearby_device_icon.m",
     "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -216,7 +206,6 @@ html_to_js("web_components") {
     "icons.js",
     "nearby_confirmation_page.js",
     "nearby_device.js",
-    "nearby_device_icon.js",
     "nearby_discovery_page.js",
     "nearby_preview.js",
     "nearby_progress.js",
