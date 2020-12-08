@@ -159,25 +159,21 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
       protected_session_state_ = ProtectedSessionState::kFailed;
       return protected_session_state_;
     }
-    // TODO(jkardatzke): Fix pattern based encryption after Intel updates their
-    // API.
-    VAEncryptionSegmentInfo segment_info;
-    segment_info.segment_start_offset = subsamples[0].clear_bytes;
-    segment_info.segment_length =
-        DecryptConfig::kDecryptionKeySize *
-        (decrypt_config_->encryption_pattern()->skip_byte_block() +
-         decrypt_config_->encryption_pattern()->crypt_byte_block());
-    segment_info.partial_aes_block_size = 0;
-    segment_info.init_byte_length =
-        DecryptConfig::kDecryptionKeySize *
+    crypto_params->blocks_stripe_encrypted =
+        decrypt_config_->encryption_pattern()->crypt_byte_block();
+    crypto_params->blocks_stripe_clear =
         decrypt_config_->encryption_pattern()->skip_byte_block();
+    VAEncryptionSegmentInfo segment_info = {};
+    segment_info.init_byte_length = subsamples[0].clear_bytes;
+    segment_info.segment_length =
+        subsamples[0].clear_bytes + subsamples[0].cypher_bytes;
     memcpy(segment_info.aes_cbc_iv_or_ctr, decrypt_config_->iv().data(),
            DecryptConfig::kDecryptionKeySize);
     segments->emplace_back(std::move(segment_info));
   } else {
     size_t offset = 0;
     for (const auto& entry : subsamples) {
-      VAEncryptionSegmentInfo segment_info;
+      VAEncryptionSegmentInfo segment_info = {};
       segment_info.segment_start_offset = offset;
       segment_info.segment_length = entry.clear_bytes + entry.cypher_bytes;
       segment_info.partial_aes_block_size = 0;

@@ -178,7 +178,7 @@ typedef struct _VAEncryptionSegmentInfo {
   uint32_t va_reserved[VA_PADDING_MEDIUM];
 } VAEncryptionSegmentInfo;
 
-/** \brief encrytpion parameters, corresonding to
+/** \brief encryption parameters, corresponding to
  * #VAEncryptionParameterBufferType*/
 typedef struct _VAEncryptionParameters {
   /** \brief Encryption type, attribute values. */
@@ -197,6 +197,21 @@ typedef struct _VAEncryptionParameters {
   uint8_t wrapped_decrypt_blob[16];
   /** \brief Wrapped Key blob info (Sne)kb */
   uint8_t wrapped_encrypt_blob[16];
+  /** \brief Indicates the number of 16-byte BLOCKS that are encrypted in any
+   *  given encrypted region of segments.
+   *  If this value is zero:
+   *    1. All bytes in encrypted region of segments are encrypted, i.e. the
+   *       CENC or CBC1 scheme is being used
+   *    2. blocks_stripe_clear must also be zero.
+   *  If this value is non-zero, blocks_stripe_clear must also be non-zero. */
+  uint32_t blocks_stripe_encrypted;
+  /** \brief Indicates the number of 16-byte BLOCKS that are clear in any given
+   *  encrypted region of segments, as defined by the CENS and CBCS schemes in
+   *  the common encryption spec.
+   *  If this value is zero, all bytes in encrypted region of segments are
+   *  encrypted, i.e. the CENC or CBC1 scheme is being used.
+   */
+  uint32_t blocks_stripe_clear;
   /** \brief Reserved bytes for future use, must be zero */
   uint32_t va_reserved[VA_PADDING_MEDIUM];
 } VAEncryptionParameters;
@@ -215,7 +230,7 @@ typedef struct _VA_PROTECTED_BLT_PARAMS {
   void* reserved_extension;  // The reserved extension for future BLT operations
 } VA_PROTECTED_BLT_PARAMS;
 
-/** \brief cenc status parameters, corresonding to
+/** \brief cenc status parameters, corresponding to
  * #VACencStatusParameterBufferType*/
 typedef struct _VACencStatusParameters {
   /** \brief The status report index feedback. */
@@ -485,7 +500,7 @@ typedef enum {
 /** \brief Buffer for CENC status reporting*/
 typedef struct _VACencStatusBuf {
   /** \brief Encryption status. VA_ENCRYPTION_STATUS_SUCCESSFUL if
-   *  hardware has returned detailed inforamtion, others mean the
+   *  hardware has returned detailed information, others mean the
    *  CENC result is invalid  */
   VAEncryptionStatus status;
   /* \brief feedback of status report index
