@@ -8,7 +8,9 @@
 #include <wrl/client.h>
 
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
@@ -77,6 +79,16 @@ class ViewAXPlatformNodeDelegateWinTest : public ViewsTestBase {
     ComPtr<IRawElementProviderSimple> result;
     EXPECT_HRESULT_SUCCEEDED(view->GetNativeViewAccessible()->QueryInterface(
         __uuidof(IRawElementProviderSimple), &result));
+    return result;
+  }
+
+  ComPtr<IAccessible2> ToIAccessible2(ComPtr<IAccessible> accessible) {
+    CHECK(accessible);
+    ComPtr<IServiceProvider> service_provider;
+    accessible.As(&service_provider);
+    ComPtr<IAccessible2> result;
+    CHECK(SUCCEEDED(service_provider->QueryService(IID_IAccessible2,
+                                                   IID_PPV_ARGS(&result))));
     return result;
   }
 };
@@ -530,5 +542,123 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, IsUIAControlIsTrueEvenWhenReadonly) {
       GetIRawElementProviderSimple(text_field);
   EXPECT_UIA_BOOL_EQ(textfield_provider, UIA_IsControlElementPropertyId, true);
 }
+
+//
+// TableView tests.
+//
+
+namespace {
+class TestTableModel : public ui::TableModel {
+ public:
+  TestTableModel() = default;
+
+  // ui::TableModel:
+  int RowCount() override { return 3; }
+
+  base::string16 GetText(int row, int column_id) override {
+    if (row == -1)
+      return base::string16();
+
+    const char* const cells[5][3] = {
+        {"Australia", "24,584,620", "1,323,421,072,479"},
+        {"Spain", "46,647,428", "1,314,314,164,402"},
+        {"Nigeria", "190.873,244", "375,745,486,521"},
+    };
+
+    return base::ASCIIToUTF16(cells[row % 5][column_id]);
+  }
+
+  void SetObserver(ui::TableModelObserver* observer) override {}
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(TestTableModel);
+};
+}  // namespace
+
+class ViewAXPlatformNodeDelegateWinTableTest
+    : public ViewAXPlatformNodeDelegateWinTest {
+  void SetUp() override {
+    ViewAXPlatformNodeDelegateWinTest::SetUp();
+
+    std::vector<ui::TableColumn> columns;
+    columns.push_back(TestTableColumn(0, "Country"));
+    columns.push_back(TestTableColumn(1, "Population"));
+    columns.push_back(TestTableColumn(2, "GDP"));
+
+    model_ = std::make_unique<TestTableModel>();
+    auto table =
+        std::make_unique<TableView>(model_.get(), columns, TEXT_ONLY, true);
+    table_ = table.get();
+
+    widget_ = new Widget;
+    Widget::InitParams init_params =
+        CreateParams(Widget::InitParams::TYPE_POPUP);
+    init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    init_params.bounds = gfx::Rect(0, 0, 400, 400);
+    widget_->Init(std::move(init_params));
+
+    View* content = widget_->SetContentsView(std::make_unique<View>());
+    content->AddChildView(
+        TableView::CreateScrollViewWithTable(std::move(table)));
+    widget_->Show();
+  }
+
+  void TearDown() override {
+    if (!widget_->IsClosed())
+      widget_->Close();
+    ViewAXPlatformNodeDelegateWinTest::TearDown();
+  }
+
+  ui::TableColumn TestTableColumn(int id, const std::string& title) {
+    ui::TableColumn column;
+    column.id = id;
+    column.title = base::ASCIIToUTF16(title.c_str());
+    column.sortable = true;
+    return column;
+  }
+
+ protected:
+  std::unique_ptr<TestTableModel> model_;
+  Widget* widget_ = nullptr;
+  TableView* table_ = nullptr;  // Owned by parent.
+};
+
+TEST_F(ViewAXPlatformNodeDelegateWinTableTest, TableCellAttributes) {
+  ComPtr<IAccessible2_2> table_accessible;
+  GetIAccessible2InterfaceForView(table_, &table_accessible);
+
+  auto get_attributes = [&](int row_child, int cell_child) -> base::string16 {
+    ComPtr<IDispatch> row_dispatch;
+    CHECK_EQ(S_OK, table_accessible->get_accChild(ScopedVariant(row_child),
+                                                  &row_dispatch));
+    ComPtr<IAccessible> row;
+    CHECK_EQ(S_OK, row_dispatch.As(&row));
+    ComPtr<IAccessible2> ia2_row = ToIAccessible2(row);
+
+    ComPtr<IDispatch> cell_dispatch;
+    CHECK_EQ(S_OK,
+             row->get_accChild(ScopedVariant(cell_child), &cell_dispatch));
+    ComPtr<IAccessible> cell;
+    CHECK_EQ(S_OK, cell_dispatch.As(&cell));
+    ComPtr<IAccessible2> ia2_cell = ToIAccessible2(cell);
+
+    ScopedBstr attributes_bstr;
+    CHECK_EQ(S_OK, ia2_cell->get_attributes(attributes_bstr.Receive()));
+    base::string16 attributes(attributes_bstr.Get());
+    return attributes;
+  };
+
+  // These strings should NOT contain rowindex or colindex, since those
+  // imply an ARIA override.
+  EXPECT_EQ(get_attributes(1, 1),
+            L"explicit-name:true;sort:none;class:AXVirtualView;");
+  EXPECT_EQ(get_attributes(1, 2),
+            L"explicit-name:true;sort:none;class:AXVirtualView;");
+  EXPECT_EQ(get_attributes(2, 1),
+            L"hidden:true;explicit-name:true;class:AXVirtualView;");
+  EXPECT_EQ(get_attributes(2, 2),
+            L"hidden:true;explicit-name:true;class:AXVirtualView;");
+}
+
 }  // namespace test
 }  // namespace views

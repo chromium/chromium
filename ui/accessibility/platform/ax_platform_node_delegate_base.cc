@@ -447,13 +447,23 @@ base::Optional<int> AXPlatformNodeDelegateBase::GetTableCellRowSpan() const {
 
 base::Optional<int> AXPlatformNodeDelegateBase::GetTableCellAriaColIndex()
     const {
-  return GetData().GetIntAttribute(
-      ax::mojom::IntAttribute::kAriaCellColumnIndex);
+  if (GetData().HasIntAttribute(
+          ax::mojom::IntAttribute::kAriaCellColumnIndex)) {
+    return GetData().GetIntAttribute(
+        ax::mojom::IntAttribute::kAriaCellColumnIndex);
+  }
+
+  return base::nullopt;
 }
 
 base::Optional<int> AXPlatformNodeDelegateBase::GetTableCellAriaRowIndex()
     const {
-  return GetData().GetIntAttribute(ax::mojom::IntAttribute::kAriaCellRowIndex);
+  if (GetData().HasIntAttribute(ax::mojom::IntAttribute::kAriaCellRowIndex)) {
+    return GetData().GetIntAttribute(
+        ax::mojom::IntAttribute::kAriaCellRowIndex);
+  }
+
+  return base::nullopt;
 }
 
 base::Optional<int32_t> AXPlatformNodeDelegateBase::GetCellId(
