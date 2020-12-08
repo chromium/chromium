@@ -28,7 +28,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityStart;
@@ -308,7 +307,6 @@ import java.util.List;
     @Test
     @MediumTest
     @Feature({"Downloads"})
-    @FlakyTest(message = "crbug.com/415711")
     public void testDuplicateHttpPostDownload_Dismiss() throws Exception {
         // Download a file.
         mDownloadTestRule.loadUrl(mTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "post.html"));
@@ -325,9 +323,9 @@ import java.util.List;
         currentView = mDownloadTestRule.getActivity().getActivityTab().getView();
         callCount = mDownloadTestRule.getChromeDownloadCallCount();
         TouchCommon.singleClickView(currentView);
-        assertPollForInfoBarSize(1);
+        waitForDuplicateInfobar();
         Assert.assertTrue("Close button wasn't found",
-                InfoBarUtil.clickCloseButton(mDownloadTestRule.getInfoBars().get(0)));
+                InfoBarUtil.clickCloseButton(findDuplicateDownloadInfoBar()));
         Assert.assertFalse("Download should not happen when closing infobar",
                 mDownloadTestRule.waitForChromeDownloadToFinish(callCount));
 
