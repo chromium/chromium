@@ -39,6 +39,7 @@
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
@@ -290,13 +291,13 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
 
   if (IdentifiabilityStudySettings::Get()->ShouldSample(
           IdentifiableSurface::Type::kCanvasRenderingContext)) {
-    auto* context = GetExecutionContext();
-    IdentifiabilityMetricBuilder(context->UkmSourceID())
+    Document& doc = GetDocument();
+    IdentifiabilityMetricBuilder(doc.UkmSourceID())
         .Set(IdentifiableSurface::FromTypeAndToken(
                  IdentifiableSurface::Type::kCanvasRenderingContext,
                  CanvasRenderingContext::ContextTypeFromId(type)),
              !!result)
-        .Record(context->UkmRecorder());
+        .Record(doc.UkmRecorder());
   }
 
   if (ContentsCcLayer() != old_contents_cc_layer)
@@ -872,8 +873,7 @@ bool HTMLCanvasElement::IsPrinting() const {
 }
 
 UkmParameters HTMLCanvasElement::GetUkmParameters() {
-  auto* context = GetExecutionContext();
-  return {context->UkmRecorder(), context->UkmSourceID()};
+  return {GetDocument().UkmRecorder(), GetDocument().UkmSourceID()};
 }
 
 void HTMLCanvasElement::SetSurfaceSize(const IntSize& size) {
