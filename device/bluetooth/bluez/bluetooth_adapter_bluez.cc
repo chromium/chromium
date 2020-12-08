@@ -775,6 +775,8 @@ void BluetoothAdapterBlueZ::DevicePropertyChanged(
     device_bluez->UpdateManufacturerData();
   else if (property_name == properties->advertising_data_flags.name())
     device_bluez->UpdateAdvertisingDataFlags();
+  else if (property_name == properties->uuids.name())
+    device_bluez->UpdateServiceUUIDs();
 
   if (property_name == properties->bluetooth_class.name() ||
       property_name == properties->appearance.name() ||
@@ -1274,18 +1276,20 @@ void BluetoothAdapterBlueZ::NotifyDeviceAdvertisementReceived(
         base::BindOnce(&BluetoothAdapterBlueZ::OnAdvertisementReceived,
                        weak_ptr_factory_.GetWeakPtr(), device->GetAddress(),
                        device->GetName() ? *(device->GetName()) : std::string(),
-                       rssi, device->GetAppearance());
+                       rssi, device->GetAppearance(), device->object_path());
     ble_scan_parser_->Parse(eir, std::move(callback));
   }
 #endif  // BUILDFLAG(IS_ASH)
 }
 
 #if BUILDFLAG(IS_ASH)
-void BluetoothAdapterBlueZ::OnAdvertisementReceived(std::string device_address,
-                                                    std::string device_name,
-                                                    uint8_t rssi,
-                                                    uint16_t device_appearance,
-                                                    ScanRecordPtr scan_record) {
+void BluetoothAdapterBlueZ::OnAdvertisementReceived(
+    std::string device_address,
+    std::string device_name,
+    uint8_t rssi,
+    uint16_t device_appearance,
+    const dbus::ObjectPath& device_path,
+    ScanRecordPtr scan_record) {
   // Ignore the packet if it could not be parsed successfully.
   if (!scan_record)
     return;
@@ -1299,6 +1303,14 @@ void BluetoothAdapterBlueZ::OnAdvertisementReceived(std::string device_address,
         scan_record->tx_power, device_appearance, scan_record->service_uuids,
         service_data_map, manufacturer_data_map);
   }
+
+  BluetoothDeviceBlueZ* device = GetDeviceWithPath(device_path);
+  if (!device) {
+    BLUETOOTH_LOG(ERROR) << "Device " << device_path.value() << " not found!";
+    return;
+  }
+
+  device->SetAdvertisedUUIDs(scan_record->service_uuids);
 }
 #endif  // BUILDFLAG(IS_ASH)
 

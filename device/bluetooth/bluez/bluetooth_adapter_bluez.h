@@ -198,6 +198,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
                                std::string device_name,
                                uint8_t rssi,
                                uint16_t device_appearance,
+                               const dbus::ObjectPath& device_path,
                                ScanRecordPtr scan_record);
 #endif  // BUILDFLAG(IS_ASH)
 

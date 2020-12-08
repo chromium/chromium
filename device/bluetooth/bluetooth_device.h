@@ -672,6 +672,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
     void ReplaceServiceUUIDs(
         const BluetoothDevice::GattServiceMap& gatt_services);
 
+    void ReplaceServiceUUIDs(UUIDList new_service_uuids);
+
     void ClearServiceUUIDs();
 
     // Returns the union of Advertised UUIDs and Service UUIDs.

@@ -144,6 +144,21 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
   // from UpdateServiceData() also applies here.
   void UpdateAdvertisingDataFlags();
 
+  // Called by BluetoothAdapterBlueZ to update device_uuids_ defined in
+  // BluetoothDevice when receiving DevicePropertyChanged event for the UUIDs
+  // property. Note that BlueZ's implementation returns service UUIDs (SDP or
+  // GATT) when they are available, otherwise it contains the EIR or
+  // advertisement UUIDs. However, currently there is no way of knowing which
+  // one we will get. Since the advertised UUIDs can be tracked while we receive
+  // advertisement packets, here we assume it contains the service UUIDs. Both
+  // are merged behind the scenes, so GetUUIDs() would return the expected
+  // result.
+  void UpdateServiceUUIDs();
+
+  // Called by BluetoothAdapterBlueZ to update device_uuids_ defined in
+  // BluetoothDevice when receiving advertisement data.
+  void SetAdvertisedUUIDs(const BluetoothDevice::UUIDList& uuids);
+
   // Creates a pairing object with the given delegate |pairing_delegate| and
   // establishes it as the pairing context for this device. All pairing-related
   // method calls will be forwarded to this object until it is released.

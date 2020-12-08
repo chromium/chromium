@@ -36,6 +36,7 @@
 #include "device/bluetooth/dbus/fake_bluetooth_input_client.h"
 #include "device/bluetooth/test/test_bluetooth_adapter_observer.h"
 #include "device/bluetooth/test/test_pairing_delegate.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -4585,6 +4586,79 @@ TEST_F(BluetoothBlueZTest, BatteryEvents) {
   fake_bluetooth_battery_client_->RemoveBattery(
       dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath));
   EXPECT_FALSE(device->battery_percentage().has_value());
+}
+
+TEST_F(BluetoothBlueZTest, DeviceUUIDsCombinedFromServiceAndAdvertisement) {
+  // Simulate addition and removal of service and advertisement UUIDs.
+  GetAdapter();
+
+  fake_bluetooth_device_client_->CreateDevice(
+      dbus::ObjectPath(bluez::FakeBluetoothAdapterClient::kAdapterPath),
+      dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath));
+  BluetoothDevice* device =
+      adapter_->GetDevice(bluez::FakeBluetoothDeviceClient::kLowEnergyAddress);
+  ASSERT_TRUE(device);
+
+  BluetoothDeviceBlueZ* device_bluez =
+      static_cast<BluetoothDeviceBlueZ*>(device);
+
+  bluez::FakeBluetoothDeviceClient::Properties* properties =
+      fake_bluetooth_device_client_->GetProperties(
+          dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath));
+
+  // Have these 9 UUIDs divided into 3 groups:
+  // -UUIDs which is available from the start, but later is missing
+  // -UUIDs which is not available in the beginning, but later is added
+  // -UUIDs which is always available
+  // In each group, they are further divided into 3 groups:
+  // -advertisement UUIDs
+  // -service UUIDs (from SDP / GATT)
+  // -UUIDs which appear in both
+  BluetoothUUID uuidInitAdv = BluetoothUUID("1111");
+  BluetoothUUID uuidInitServ = BluetoothUUID("2222");
+  BluetoothUUID uuidInitBoth = BluetoothUUID("3333");
+  BluetoothUUID uuidLaterAdv = BluetoothUUID("4444");
+  BluetoothUUID uuidLaterServ = BluetoothUUID("5555");
+  BluetoothUUID uuidLaterBoth = BluetoothUUID("6666");
+  BluetoothUUID uuidAlwaysAdv = BluetoothUUID("7777");
+  BluetoothUUID uuidAlwaysServ = BluetoothUUID("8888");
+  BluetoothUUID uuidAlwaysBoth = BluetoothUUID("9999");
+
+  BluetoothAdapter::UUIDList uuidsInitAdv{uuidInitAdv, uuidInitBoth,
+                                          uuidAlwaysAdv, uuidAlwaysBoth};
+  BluetoothAdapter::UUIDList uuidsLaterAdv{uuidLaterAdv, uuidLaterBoth,
+                                           uuidAlwaysAdv, uuidAlwaysBoth};
+
+  std::vector<std::string> uuidsInitServ{
+      uuidInitServ.canonical_value(), uuidInitBoth.canonical_value(),
+      uuidAlwaysServ.canonical_value(), uuidAlwaysBoth.canonical_value()};
+  std::vector<std::string> uuidsLaterServ{
+      uuidLaterServ.canonical_value(), uuidLaterBoth.canonical_value(),
+      uuidAlwaysServ.canonical_value(), uuidAlwaysBoth.canonical_value()};
+
+  device_bluez->SetAdvertisedUUIDs(uuidsInitAdv);
+  properties->uuids.ReplaceValue(uuidsInitServ);
+
+  // The result should be the union of service and advertisement UUIDs
+  BluetoothDevice::UUIDSet dev_uuids = device->GetUUIDs();
+  EXPECT_THAT(dev_uuids, ::testing::ElementsAre(
+                             uuidInitAdv, uuidInitServ, uuidInitBoth,
+                             uuidAlwaysAdv, uuidAlwaysServ, uuidAlwaysBoth));
+
+  // advertisement UUIDs updated
+  device_bluez->SetAdvertisedUUIDs(uuidsLaterAdv);
+  dev_uuids = device->GetUUIDs();
+  EXPECT_THAT(dev_uuids,
+              ::testing::ElementsAre(uuidInitServ, uuidInitBoth, uuidLaterAdv,
+                                     uuidLaterBoth, uuidAlwaysAdv,
+                                     uuidAlwaysServ, uuidAlwaysBoth));
+
+  // service UUIDs updated
+  properties->uuids.ReplaceValue(uuidsLaterServ);
+  dev_uuids = device->GetUUIDs();
+  EXPECT_THAT(dev_uuids, ::testing::ElementsAre(
+                             uuidLaterAdv, uuidLaterServ, uuidLaterBoth,
+                             uuidAlwaysAdv, uuidAlwaysServ, uuidAlwaysBoth));
 }
 
 }  // namespace bluez

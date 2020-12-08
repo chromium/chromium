@@ -62,6 +62,15 @@ void BluetoothDevice::DeviceUUIDs::ReplaceServiceUUIDs(
   UpdateDeviceUUIDs();
 }
 
+void BluetoothDevice::DeviceUUIDs::ReplaceServiceUUIDs(
+    UUIDList new_service_uuids) {
+  service_uuids_.clear();
+  for (auto& it : new_service_uuids) {
+    service_uuids_.insert(std::move(it));
+  }
+  UpdateDeviceUUIDs();
+}
+
 void BluetoothDevice::DeviceUUIDs::ClearServiceUUIDs() {
   service_uuids_.clear();
   UpdateDeviceUUIDs();
