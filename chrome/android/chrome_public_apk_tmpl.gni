@@ -171,10 +171,6 @@ template("chrome_public_common_apk_or_module_tmpl") {
     # Material design layouts that cause views to be kept that we don't use.
     # Instead of manually filtering, unused resource removal would be better:
     # https://crbug.com/636448
-    resource_exclusion_regex += "|${_material_package}/layout"
-    resource_exclusion_regex += "|${_material_package}/color.*(choice|chip_|card_|calendar_|bottom_nav_|slider_)"
-    resource_exclusion_regex +=
-        "|${_material_package}/drawable.*design_snackbar"
     resource_exclusion_regex += "|${_material_package}/xml.*badge_"
     _material_package = "*com_google_android_material*"
     resource_exclusion_exceptions += [
@@ -190,26 +186,7 @@ template("chrome_public_common_apk_or_module_tmpl") {
     ]
 
     # Remove unneeded entries from material design values.xml files.
-    resource_values_filter_rules = [
-      "${_material_package}:[Bb]adge",
-      "${_material_package}:[Bb]ottomNavigation",
-      "${_material_package}:[Bb]ottomSheet",
-      "${_material_package}:[Bb]uttonToggleGroup",
-      "${_material_package}:[Cc]alendar",
-      "${_material_package}:[Cc]ardView",
-      "${_material_package}:\b[Cc]hip",
-      "${_material_package}:design_snackbar",
-      "${_material_package}:[Ff]loatingActionButton",
-      "${_material_package}:[Mm]aterialAlertDialog",
-      "${_material_package}:mtrl_alert",
-      "${_material_package}:mtrl_navigation",
-      "${_material_package}:mtrl_slider",
-      "${_material_package}:[Nn]avigationView",
-      "${_material_package}:picker",
-      "${_material_package}:[Ss]nackbar",
-      "${_material_package}:[Ss]lider",
-      "${_material_package}:[Tt]oolbarLayout",
-    ]
+    resource_values_filter_rules = [ "${_material_package}:[Tt]oolbarLayout" ]
 
     if (!_is_monochrome) {
       product_config_java_packages = [ "org.chromium.chrome.browser" ]
