@@ -111,8 +111,9 @@ class FakeMediaPacketizer
       : WiFiDisplayMediaPacketizer(
             delay_for_unit_time_stamps,
             stream_infos,
-            base::Bind(&FakeMediaPacketizer::OnPacketizedMediaDatagramPacket,
-                       base::Unretained(this))) {}
+            base::BindRepeating(
+                &FakeMediaPacketizer::OnPacketizedMediaDatagramPacket,
+                base::Unretained(this))) {}
 
   // Extend the interface in order to allow to bypass packetization of units to
   // Packetized Elementary Stream (PES) packets and further to Transport Stream

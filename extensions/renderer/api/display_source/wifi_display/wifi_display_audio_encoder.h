@@ -18,10 +18,10 @@ class WiFiDisplayAudioEncoder : public WiFiDisplayMediaEncoder,
                                 public blink::WebMediaStreamAudioSink {
  public:
   using AudioEncoderCallback =
-      base::Callback<void(scoped_refptr<WiFiDisplayAudioEncoder>)>;
+      base::OnceCallback<void(scoped_refptr<WiFiDisplayAudioEncoder>)>;
 
   static void Create(const wds::AudioCodec& audio_codec,
-                     const AudioEncoderCallback& encoder_callback);
+                     AudioEncoderCallback encoder_callback);
 
  protected:
   static const size_t kInvalidCodecModeValue = ~static_cast<size_t>(0u);
@@ -29,7 +29,7 @@ class WiFiDisplayAudioEncoder : public WiFiDisplayMediaEncoder,
   // A factory method that creates a new encoder instance for Linear Pulse-Code
   // Modulation (LPCM) audio encoding.
   static void CreateLPCM(const wds::AudioCodec& audio_codec,
-                         const AudioEncoderCallback& encoder_callback);
+                         AudioEncoderCallback encoder_callback);
 
   explicit WiFiDisplayAudioEncoder(const wds::AudioCodec& audio_codec);
   ~WiFiDisplayAudioEncoder() override;

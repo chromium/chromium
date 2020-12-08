@@ -26,7 +26,7 @@ using WiFiDisplayEncodedFrame = WiFiDisplayEncodedUnit;
 class WiFiDisplayVideoEncoder : public WiFiDisplayMediaEncoder {
  public:
   using VideoEncoderCallback =
-      base::Callback<void(scoped_refptr<WiFiDisplayVideoEncoder>)>;
+      base::OnceCallback<void(scoped_refptr<WiFiDisplayVideoEncoder>)>;
 
   using ReceiveVideoEncodeAcceleratorCallback =
       base::Callback<void(scoped_refptr<base::SingleThreadTaskRunner>,
@@ -37,7 +37,8 @@ class WiFiDisplayVideoEncoder : public WiFiDisplayMediaEncoder {
   using ReceiveEncodeMemoryCallback =
       base::Callback<void(base::UnsafeSharedMemoryRegion)>;
   using CreateEncodeMemoryCallback =
-      base::Callback<void(size_t size, const ReceiveEncodeMemoryCallback&)>;
+      base::RepeatingCallback<void(size_t size,
+                                   const ReceiveEncodeMemoryCallback&)>;
 
   struct InitParameters {
     InitParameters();
@@ -64,7 +65,7 @@ class WiFiDisplayVideoEncoder : public WiFiDisplayMediaEncoder {
   // |params|, the encoder instance is returned as an argument of
   // |result_callback| ('nullptr' argument means encoder creation failure).
   static void Create(const InitParameters& params,
-                     const VideoEncoderCallback& encoder_callback);
+                     VideoEncoderCallback encoder_callback);
 
   // WiFiDisplayMediaEncoder
   WiFiDisplayElementaryStreamInfo CreateElementaryStreamInfo() const final;
@@ -83,14 +84,14 @@ class WiFiDisplayVideoEncoder : public WiFiDisplayMediaEncoder {
   // A factory method that creates a new encoder instance which uses OpenH264
   // SVC encoder for encoding.
   static void CreateSVC(const InitParameters& params,
-                        const VideoEncoderCallback& encoder_callback);
+                        VideoEncoderCallback encoder_callback);
 
   // A factory method that creates a new encoder instance which uses Video
   // Encode Accelerator (VEA) for encoding.
   static void CreateVEA(const InitParameters& params,
-                        const VideoEncoderCallback& encoder_callback);
+                        VideoEncoderCallback encoder_callback);
   static void OnCreatedVEA(const InitParameters& params,
-                           const VideoEncoderCallback& encoder_callback,
+                           VideoEncoderCallback encoder_callback,
                            scoped_refptr<WiFiDisplayVideoEncoder> vea_encoder);
 
   explicit WiFiDisplayVideoEncoder(

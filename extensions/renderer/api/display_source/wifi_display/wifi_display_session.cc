@@ -40,14 +40,13 @@ WiFiDisplaySession::WiFiDisplaySession(const DisplaySourceSessionParams& params)
   DCHECK(params_.render_frame);
   wds::LogSystem::set_error_func(&LogWDSError);
   params.render_frame->GetBrowserInterfaceBroker()->GetInterface(&service_);
-  service_.set_connection_error_handler(base::Bind(
-          &WiFiDisplaySession::OnIPCConnectionError,
-          weak_factory_.GetWeakPtr()));
+  service_.set_connection_error_handler(base::BindRepeating(
+      &WiFiDisplaySession::OnIPCConnectionError, weak_factory_.GetWeakPtr()));
 
   mojo::Remote<WiFiDisplaySessionServiceClient> client;
   receiver_.Bind(client.BindNewPipeAndPassReceiver());
   service_->SetClient(std::move(client));
-  receiver_.set_disconnect_handler(base::Bind(
+  receiver_.set_disconnect_handler(base::BindRepeating(
       &WiFiDisplaySession::OnIPCConnectionError, weak_factory_.GetWeakPtr()));
 }
 
@@ -79,8 +78,8 @@ void WiFiDisplaySession::OnConnected(const net::IPAddress& local_ip_address,
   media_manager_.reset(new WiFiDisplayMediaManager(
       params_.video_track, params_.audio_track, sink_ip_address,
       params_.render_frame->GetBrowserInterfaceBroker(),
-      base::Bind(&WiFiDisplaySession::OnMediaError,
-                 weak_factory_.GetWeakPtr())));
+      base::BindRepeating(&WiFiDisplaySession::OnMediaError,
+                          weak_factory_.GetWeakPtr())));
   wfd_source_.reset(wds::Source::Create(this, media_manager_.get(), this));
   wfd_source_->Start();
 }
@@ -137,11 +136,10 @@ unsigned WiFiDisplaySession::CreateTimer(int seconds) {
       timers_.insert(std::pair<int, std::unique_ptr<base::RepeatingTimer>>(
           ++timer_id_, std::move(timer)));
   DCHECK(insert_ret.second);
-  insert_ret.first->second->Start(FROM_HERE,
-               base::TimeDelta::FromSeconds(seconds),
-               base::Bind(&wds::Source::OnTimerEvent,
-                          base::Unretained(wfd_source_.get()),
-                          timer_id_));
+  insert_ret.first->second->Start(
+      FROM_HERE, base::TimeDelta::FromSeconds(seconds),
+      base::BindOnce(&wds::Source::OnTimerEvent,
+                     base::Unretained(wfd_source_.get()), timer_id_));
   return static_cast<unsigned>(timer_id_);
 }
 

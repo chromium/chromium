@@ -36,7 +36,7 @@ size_t CalculateFrameBitStreamLength(const SFrameBSInfo& frame_info) {
 class WiFiDisplayVideoEncoderSVC final : public WiFiDisplayVideoEncoder {
  public:
   static void Create(const InitParameters& params,
-                     const VideoEncoderCallback& encoder_callback);
+                     VideoEncoderCallback encoder_callback);
 
  private:
   WiFiDisplayVideoEncoderSVC(
@@ -57,9 +57,8 @@ class WiFiDisplayVideoEncoderSVC final : public WiFiDisplayVideoEncoder {
 };
 
 // static
-void WiFiDisplayVideoEncoderSVC::Create(
-    const InitParameters& params,
-    const VideoEncoderCallback& encoder_callback) {
+void WiFiDisplayVideoEncoderSVC::Create(const InitParameters& params,
+                                        VideoEncoderCallback encoder_callback) {
   // TODO(e_hakkinen): Use normal media thread once it is exposed to extensions
   // and can be passed to this class.
   std::unique_ptr<base::Thread> media_thread(
@@ -73,7 +72,7 @@ void WiFiDisplayVideoEncoderSVC::Create(
           base::WrapRefCounted(new WiFiDisplayVideoEncoderSVC(
               base::ThreadTaskRunnerHandle::Get(), std::move(media_thread))),
           params),
-      base::BindOnce(encoder_callback));
+      base::BindOnce(std::move(encoder_callback)));
 }
 
 WiFiDisplayVideoEncoderSVC::WiFiDisplayVideoEncoderSVC(
@@ -200,10 +199,9 @@ void WiFiDisplayVideoEncoderSVC::InsertFrameOnMediaThread(
 }  // namespace
 
 // static
-void WiFiDisplayVideoEncoder::CreateSVC(
-    const InitParameters& params,
-    const VideoEncoderCallback& encoder_callback) {
-  WiFiDisplayVideoEncoderSVC::Create(params, encoder_callback);
+void WiFiDisplayVideoEncoder::CreateSVC(const InitParameters& params,
+                                        VideoEncoderCallback encoder_callback) {
+  WiFiDisplayVideoEncoderSVC::Create(params, std::move(encoder_callback));
 }
 
 }  // namespace extensions

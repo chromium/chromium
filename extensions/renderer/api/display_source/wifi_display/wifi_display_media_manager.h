@@ -30,7 +30,7 @@ class WiFiDisplayMediaPipeline;
 
 class WiFiDisplayMediaManager : public wds::SourceMediaManager {
  public:
-  using ErrorCallback = base::Callback<void(const std::string&)>;
+  using ErrorCallback = base::RepeatingCallback<void(const std::string&)>;
 
   WiFiDisplayMediaManager(const blink::WebMediaStreamTrack& video_track,
                           const blink::WebMediaStreamTrack& audio_track,

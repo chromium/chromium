@@ -226,9 +226,9 @@ WiFiDisplayAudioEncoderLPCM::GetOutputSamplingFrequency() const {
 
 void WiFiDisplayAudioEncoder::CreateLPCM(
     const wds::AudioCodec& audio_codec,
-    const AudioEncoderCallback& encoder_callback) {
-  encoder_callback.Run(
-      base::MakeRefCounted<WiFiDisplayAudioEncoderLPCM>(audio_codec));
+    AudioEncoderCallback encoder_callback) {
+  std::move(encoder_callback)
+      .Run(base::MakeRefCounted<WiFiDisplayAudioEncoderLPCM>(audio_codec));
 }
 
 }  // namespace extensions

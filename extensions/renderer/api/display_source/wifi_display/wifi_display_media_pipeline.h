@@ -33,10 +33,10 @@ namespace extensions {
 class WiFiDisplayMediaPipeline {
  public:
   using ErrorCallback = base::Callback<void(const std::string&)>;
-  using InitCompletionCallback = base::Callback<void(bool)>;
-  using RegisterMediaServiceCallback =
-      base::Callback<void(mojo::PendingReceiver<mojom::WiFiDisplayMediaService>,
-                          const base::Closure&)>;
+  using InitCompletionCallback = base::OnceCallback<void(bool)>;
+  using RegisterMediaServiceCallback = base::OnceCallback<void(
+      mojo::PendingReceiver<mojom::WiFiDisplayMediaService>,
+      const base::Closure&)>;
 
   static std::unique_ptr<WiFiDisplayMediaPipeline> Create(
       wds::SessionType type,
@@ -44,11 +44,11 @@ class WiFiDisplayMediaPipeline {
       const wds::AudioCodec& audio_codec,
       const net::IPAddress& sink_ip_address,
       const std::pair<int, int>& sink_rtp_ports,
-      const RegisterMediaServiceCallback& service_callback,
+      RegisterMediaServiceCallback service_callback,
       const ErrorCallback& error_callback);
   ~WiFiDisplayMediaPipeline();
   // Note: to be called only once.
-  void Initialize(const InitCompletionCallback& callback);
+  void Initialize(InitCompletionCallback callback);
 
   void InsertRawVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
                            base::TimeTicks reference_time);
@@ -67,20 +67,20 @@ class WiFiDisplayMediaPipeline {
       const wds::AudioCodec& audio_codec,
       const net::IPAddress& sink_ip_address,
       const std::pair<int, int>& sink_rtp_ports,
-      const RegisterMediaServiceCallback& service_callback,
+      RegisterMediaServiceCallback service_callback,
       const ErrorCallback& error_callback);
 
   void CreateMediaPacketizer();
-  void OnInitialize(const InitCompletionCallback& callback,
+  void OnInitialize(InitCompletionCallback callback,
                     InitializationStep current_step,
                     bool success);
   void OnAudioEncoderCreated(
-      const InitStepCompletionCallback& callback,
+      InitStepCompletionCallback callback,
       scoped_refptr<WiFiDisplayAudioEncoder> audio_encoder);
   void OnVideoEncoderCreated(
-      const InitStepCompletionCallback& callback,
+      InitStepCompletionCallback callback,
       scoped_refptr<WiFiDisplayVideoEncoder> video_encoder);
-  void OnMediaServiceRegistered(const InitCompletionCallback& callback);
+  void OnMediaServiceRegistered(InitCompletionCallback callback);
 
   void OnEncodedAudioUnit(std::unique_ptr<WiFiDisplayEncodedUnit> unit);
   void OnEncodedVideoFrame(std::unique_ptr<WiFiDisplayEncodedFrame> frame);

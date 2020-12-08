@@ -49,7 +49,7 @@ class WiFiDisplayMediaEncoder
     : public base::RefCountedThreadSafe<WiFiDisplayMediaEncoder> {
  public:
   using EncodedUnitCallback =
-      base::Callback<void(std::unique_ptr<WiFiDisplayEncodedUnit>)>;
+      base::OnceCallback<void(std::unique_ptr<WiFiDisplayEncodedUnit>)>;
 
   // Creates an elementary stream info describing the stream of encoded units
   // which this encoder generates and passes to a callback set using
@@ -61,8 +61,8 @@ class WiFiDisplayMediaEncoder
   // Sets callbacks for the obtained encoder instance:
   // |encoded_callback| is invoked to return the next encoded unit
   // |error_callback| is invoked to report a fatal encoder error
-  void SetCallbacks(const EncodedUnitCallback& encoded_callback,
-                    const base::Closure& error_callback);
+  void SetCallbacks(EncodedUnitCallback encoded_callback,
+                    base::OnceClosure error_callback);
 
  protected:
   friend class base::RefCountedThreadSafe<WiFiDisplayMediaEncoder>;
@@ -72,7 +72,7 @@ class WiFiDisplayMediaEncoder
 
   base::ThreadChecker client_thread_checker_;
   EncodedUnitCallback encoded_callback_;
-  base::Closure error_callback_;
+  base::OnceClosure error_callback_;
 };
 
 }  // namespace extensions

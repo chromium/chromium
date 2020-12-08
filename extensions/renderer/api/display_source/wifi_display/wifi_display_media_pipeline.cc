@@ -25,14 +25,14 @@ WiFiDisplayMediaPipeline::WiFiDisplayMediaPipeline(
     const wds::AudioCodec& audio_codec,
     const net::IPAddress& sink_ip_address,
     const std::pair<int, int>& sink_rtp_ports,
-    const RegisterMediaServiceCallback& service_callback,
+    RegisterMediaServiceCallback service_callback,
     const ErrorCallback& error_callback)
     : type_(type),
       video_parameters_(video_parameters),
       audio_codec_(audio_codec),
       sink_ip_address_(sink_ip_address),
       sink_rtp_ports_(sink_rtp_ports),
-      service_callback_(service_callback),
+      service_callback_(std::move(service_callback)),
       error_callback_(error_callback),
       weak_factory_(this) {}
 
@@ -43,7 +43,7 @@ std::unique_ptr<WiFiDisplayMediaPipeline> WiFiDisplayMediaPipeline::Create(
     const wds::AudioCodec& audio_codec,
     const net::IPAddress& sink_ip_address,
     const std::pair<int, int>& sink_rtp_ports,
-    const RegisterMediaServiceCallback& service_callback,
+    RegisterMediaServiceCallback service_callback,
     const ErrorCallback& error_callback) {
   return std::unique_ptr<WiFiDisplayMediaPipeline>(
       new WiFiDisplayMediaPipeline(type,
@@ -79,18 +79,16 @@ enum class WiFiDisplayMediaPipeline::InitializationStep : unsigned {
   LAST = MEDIA_SERVICE
 };
 
-void WiFiDisplayMediaPipeline::Initialize(
-    const InitCompletionCallback& callback) {
+void WiFiDisplayMediaPipeline::Initialize(InitCompletionCallback callback) {
   DCHECK(!audio_encoder_ && !video_encoder_ && !packetizer_);
-  OnInitialize(callback, InitializationStep::FIRST, true);
+  OnInitialize(std::move(callback), InitializationStep::FIRST, true);
 }
 
-void WiFiDisplayMediaPipeline::OnInitialize(
-    const InitCompletionCallback& callback,
-    InitializationStep current_step,
-    bool success) {
+void WiFiDisplayMediaPipeline::OnInitialize(InitCompletionCallback callback,
+                                            InitializationStep current_step,
+                                            bool success) {
   if (!success) {
-    callback.Run(false);
+    std::move(callback).Run(false);
     return;
   }
 
@@ -98,9 +96,9 @@ void WiFiDisplayMediaPipeline::OnInitialize(
   if (current_step < InitializationStep::LAST) {
     InitializationStep next_step = static_cast<InitializationStep>(
         static_cast<unsigned>(current_step) + 1u);
-    init_step_callback =
-        base::Bind(&WiFiDisplayMediaPipeline::OnInitialize,
-                   weak_factory_.GetWeakPtr(), callback, next_step);
+    init_step_callback = base::BindOnce(&WiFiDisplayMediaPipeline::OnInitialize,
+                                        weak_factory_.GetWeakPtr(),
+                                        std::move(callback), next_step);
   }
 
   switch (current_step) {
@@ -108,8 +106,8 @@ void WiFiDisplayMediaPipeline::OnInitialize(
       DCHECK(!audio_encoder_);
       if (type_ & wds::AudioSession) {
         auto result_callback =
-            base::Bind(&WiFiDisplayMediaPipeline::OnAudioEncoderCreated,
-                       weak_factory_.GetWeakPtr(), init_step_callback);
+            base::BindOnce(&WiFiDisplayMediaPipeline::OnAudioEncoderCreated,
+                           weak_factory_.GetWeakPtr(), init_step_callback);
         WiFiDisplayAudioEncoder::Create(audio_codec_, result_callback);
       } else {
         init_step_callback.Run(true);
@@ -118,9 +116,9 @@ void WiFiDisplayMediaPipeline::OnInitialize(
     case InitializationStep::VIDEO_ENCODER:
       DCHECK(!video_encoder_);
       if (type_ & wds::VideoSession) {
-        auto result_callback =
-            base::Bind(&WiFiDisplayMediaPipeline::OnVideoEncoderCreated,
-                       weak_factory_.GetWeakPtr(), init_step_callback);
+        auto result_callback = base::BindOnce(
+            &WiFiDisplayMediaPipeline::OnVideoEncoderCreated,
+            weak_factory_.GetWeakPtr(), std::move(init_step_callback));
         WiFiDisplayVideoEncoder::Create(video_parameters_, result_callback);
       } else {
         init_step_callback.Run(true);
@@ -134,8 +132,8 @@ void WiFiDisplayMediaPipeline::OnInitialize(
     case InitializationStep::MEDIA_SERVICE:
       service_callback_.Run(
           media_service_.BindNewPipeAndPassReceiver(),
-          base::Bind(&WiFiDisplayMediaPipeline::OnMediaServiceRegistered,
-                     weak_factory_.GetWeakPtr(), callback));
+          base::BindOnce(&WiFiDisplayMediaPipeline::OnMediaServiceRegistered,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
       break;
   }
 }
@@ -156,59 +154,63 @@ void WiFiDisplayMediaPipeline::CreateMediaPacketizer() {
 
   packetizer_.reset(new WiFiDisplayMediaPacketizer(
       base::TimeDelta::FromMilliseconds(200), stream_infos,
-      base::Bind(&WiFiDisplayMediaPipeline::OnPacketizedMediaDatagramPacket,
-                 base::Unretained(this))));
+      base::BindRepeating(
+          &WiFiDisplayMediaPipeline::OnPacketizedMediaDatagramPacket,
+          base::Unretained(this))));
 }
 
 void WiFiDisplayMediaPipeline::OnAudioEncoderCreated(
-    const InitStepCompletionCallback& callback,
+    InitStepCompletionCallback callback,
     scoped_refptr<WiFiDisplayAudioEncoder> audio_encoder) {
   DCHECK(!audio_encoder_);
 
   if (!audio_encoder) {
-    callback.Run(false);
+    std::move(callback).Run(false);
     return;
   }
 
   audio_encoder_ = std::move(audio_encoder);
   auto encoded_callback =
-      base::Bind(&WiFiDisplayMediaPipeline::OnEncodedAudioUnit,
-                 weak_factory_.GetWeakPtr());
-  auto error_callback = base::Bind(error_callback_, kErrorAudioEncoderError);
+      base::BindOnce(&WiFiDisplayMediaPipeline::OnEncodedAudioUnit,
+                     weak_factory_.GetWeakPtr());
+  auto error_callback =
+      base::BindOnce(error_callback_, kErrorAudioEncoderError);
   audio_encoder_->SetCallbacks(encoded_callback, error_callback);
 
-  callback.Run(true);
+  std::move(callback).Run(true);
 }
 
 void WiFiDisplayMediaPipeline::OnVideoEncoderCreated(
-    const InitStepCompletionCallback& callback,
+    InitStepCompletionCallback callback,
     scoped_refptr<WiFiDisplayVideoEncoder> video_encoder) {
   DCHECK(!video_encoder_);
 
   if (!video_encoder) {
-    callback.Run(false);
+    std::move(callback).Run(false);
     return;
   }
 
   video_encoder_ = std::move(video_encoder);
-  auto encoded_callback = base::Bind(
-      &WiFiDisplayMediaPipeline::OnEncodedVideoFrame,
-      weak_factory_.GetWeakPtr());
-  auto error_callback = base::Bind(error_callback_, kErrorVideoEncoderError);
+  auto encoded_callback =
+      base::BindOnce(&WiFiDisplayMediaPipeline::OnEncodedVideoFrame,
+                     weak_factory_.GetWeakPtr());
+  auto error_callback =
+      base::BindOnce(error_callback_, kErrorVideoEncoderError);
   video_encoder_->SetCallbacks(encoded_callback, error_callback);
 
-  callback.Run(true);
+  std::move(callback).Run(true);
 }
 
 void WiFiDisplayMediaPipeline::OnMediaServiceRegistered(
-    const InitCompletionCallback& callback) {
+    InitCompletionCallback callback) {
   DCHECK(media_service_);
-  auto error_callback = base::Bind(error_callback_, kErrorUnableSendMedia);
+  auto error_callback =
+      base::BindRepeating(error_callback_, kErrorUnableSendMedia);
   media_service_.set_disconnect_handler(error_callback);
   media_service_->SetDestinationPoint(
       net::IPEndPoint(sink_ip_address_,
                       static_cast<uint16_t>(sink_rtp_ports_.first)),
-      callback);
+      std::move(callback));
 }
 
 void WiFiDisplayMediaPipeline::OnEncodedAudioUnit(

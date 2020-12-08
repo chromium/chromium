@@ -29,7 +29,7 @@ class WiFiDisplayVideoEncoderVEA final
  public:
   static void Create(
       const InitParameters& params,
-      const VideoEncoderCallback& encoder_callback,
+      VideoEncoderCallback encoder_callback,
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
       std::unique_ptr<media::VideoEncodeAccelerator> vea);
 
@@ -91,11 +91,11 @@ WiFiDisplayVideoEncoderVEA::InProgressFrameEncode::~InProgressFrameEncode() =
 // static
 void WiFiDisplayVideoEncoderVEA::Create(
     const InitParameters& params,
-    const VideoEncoderCallback& encoder_callback,
+    VideoEncoderCallback encoder_callback,
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
     std::unique_ptr<media::VideoEncodeAccelerator> vea) {
   if (!vea || !media_task_runner) {
-    encoder_callback.Run(nullptr);
+    std::move(encoder_callback).Run(nullptr);
     return;
   }
 
@@ -106,7 +106,7 @@ void WiFiDisplayVideoEncoderVEA::Create(
                          std::move(media_task_runner), vea.release(),
                          params.create_memory_callback)),
                      params),
-      base::BindOnce(encoder_callback));
+      base::BindOnce(std::move(encoder_callback)));
 }
 
 WiFiDisplayVideoEncoderVEA::WiFiDisplayVideoEncoderVEA(
@@ -148,7 +148,8 @@ void WiFiDisplayVideoEncoderVEA::RequireBitstreamBuffers(
   for (size_t i = 0; i < input_count; ++i) {
     create_video_encode_memory_cb_.Run(
         output_buffer_size,
-        base::Bind(&WiFiDisplayVideoEncoderVEA::OnCreateSharedMemory, this));
+        base::BindOnce(&WiFiDisplayVideoEncoderVEA::OnCreateSharedMemory,
+                       this));
   }
 }
 
@@ -239,11 +240,10 @@ void WiFiDisplayVideoEncoderVEA::NotifyError(
 }  // namespace
 
 // static
-void WiFiDisplayVideoEncoder::CreateVEA(
-    const InitParameters& params,
-    const VideoEncoderCallback& encoder_callback) {
-  auto on_vea_cb =
-      base::Bind(&WiFiDisplayVideoEncoderVEA::Create, params, encoder_callback);
+void WiFiDisplayVideoEncoder::CreateVEA(const InitParameters& params,
+                                        VideoEncoderCallback encoder_callback) {
+  auto on_vea_cb = base::BindOnce(&WiFiDisplayVideoEncoderVEA::Create, params,
+                                  std::move(encoder_callback));
   params.vea_create_callback.Run(media::BindToCurrentLoop(on_vea_cb));
 }
 

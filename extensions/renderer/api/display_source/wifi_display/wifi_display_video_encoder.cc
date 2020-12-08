@@ -53,20 +53,20 @@ std::vector<wds::H264Profile> WiFiDisplayVideoEncoder::FindSupportedProfiles(
 }
 
 // static
-void WiFiDisplayVideoEncoder::Create(
-    const InitParameters& params,
-    const VideoEncoderCallback& encoder_callback) {
-  CreateVEA(params, base::Bind(&OnCreatedVEA, params, encoder_callback));
+void WiFiDisplayVideoEncoder::Create(const InitParameters& params,
+                                     VideoEncoderCallback encoder_callback) {
+  CreateVEA(params,
+            base::BindOnce(&OnCreatedVEA, params, std::move(encoder_callback)));
 }
 
 // static
 void WiFiDisplayVideoEncoder::OnCreatedVEA(
     const InitParameters& params,
-    const VideoEncoderCallback& encoder_callback,
+    VideoEncoderCallback encoder_callback,
     scoped_refptr<WiFiDisplayVideoEncoder> vea_encoder) {
   if (vea_encoder) {
     // An accelerated encoder was created successfully. Pass it on.
-    encoder_callback.Run(vea_encoder);
+    std::move(encoder_callback).Run(vea_encoder);
   } else {
     // An accelerated encoder was not created. Fall back to a software encoder.
     CreateSVC(params, encoder_callback);

@@ -30,15 +30,14 @@ WiFiDisplayEncodedUnit::WiFiDisplayEncodedUnit(
 WiFiDisplayMediaEncoder::WiFiDisplayMediaEncoder() = default;
 WiFiDisplayMediaEncoder::~WiFiDisplayMediaEncoder() = default;
 
-void WiFiDisplayMediaEncoder::SetCallbacks(
-    const EncodedUnitCallback& encoded_callback,
-    const base::Closure& error_callback) {
+void WiFiDisplayMediaEncoder::SetCallbacks(EncodedUnitCallback encoded_callback,
+                                           base::OnceClosure error_callback) {
   DCHECK(client_thread_checker_.CalledOnValidThread());
   // This is not thread-safe if encoding has been started thus allow
   // this to be called only once.
-  DCHECK(encoded_callback_.is_null() && error_callback_.is_null());
-  encoded_callback_ = media::BindToCurrentLoop(encoded_callback);
-  error_callback_ = media::BindToCurrentLoop(error_callback);
+  DCHECK(!encoded_callback_ && !error_callback_);
+  encoded_callback_ = media::BindToCurrentLoop(std::move(encoded_callback));
+  error_callback_ = media::BindToCurrentLoop(std::move(error_callback));
 }
 
 }  // namespace extensions

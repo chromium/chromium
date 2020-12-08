@@ -113,17 +113,17 @@ WiFiDisplayMediaManager::~WiFiDisplayMediaManager() {
 void WiFiDisplayMediaManager::Play() {
   is_playing_ = true;
   if (!player_) {
-    auto service_callback = base::Bind(
-        &WiFiDisplayMediaManager::RegisterMediaService,
-        base::Unretained(this),
+    auto service_callback = base::BindOnce(
+        &WiFiDisplayMediaManager::RegisterMediaService, base::Unretained(this),
         base::ThreadTaskRunnerHandle::Get());
     base::PostTaskAndReplyWithResult(
         io_task_runner_.get(), FROM_HERE,
-        base::BindOnce(&WiFiDisplayMediaPipeline::Create, GetSessionType(),
-                       video_encoder_parameters_, optimal_audio_codec_,
-                       sink_ip_address_, sink_rtp_ports_,
-                       service_callback,  // To be invoked on IO thread.
-                       media::BindToCurrentLoop(error_callback_)),
+        base::BindOnce(
+            &WiFiDisplayMediaPipeline::Create, GetSessionType(),
+            video_encoder_parameters_, optimal_audio_codec_, sink_ip_address_,
+            sink_rtp_ports_,
+            std::move(service_callback),  // To be invoked on IO thread.
+            media::BindToCurrentLoop(error_callback_)),
         base::BindOnce(&WiFiDisplayMediaManager::OnPlayerCreated,
                        weak_factory_.GetWeakPtr()));
     return;
@@ -141,9 +141,9 @@ void WiFiDisplayMediaManager::Play() {
 
   if (!video_track_.isNull()) {
     // To be called on IO thread.
-    auto on_raw_video_frame = base::Bind(
-        &WiFiDisplayMediaPipeline::InsertRawVideoFrame,
-        base::Unretained(player_));
+    auto on_raw_video_frame =
+        base::BindRepeating(&WiFiDisplayMediaPipeline::InsertRawVideoFrame,
+                            base::Unretained(player_));
     video_sink_.reset(
         new WiFiDisplayVideoSink(video_track_, on_raw_video_frame));
     video_sink_->Start();
@@ -397,10 +397,9 @@ bool WiFiDisplayMediaManager::InitOptimalVideoFormat(
   video_encoder_parameters_.profile = optimal_video_format_.profile;
   video_encoder_parameters_.level = optimal_video_format_.level;
   video_encoder_parameters_.create_memory_callback =
-      media::BindToCurrentLoop(base::Bind(&CreateVideoEncodeMemory));
-  video_encoder_parameters_.vea_create_callback =
-      media::BindToCurrentLoop(
-          base::Bind(&content::CreateVideoEncodeAccelerator));
+      media::BindToCurrentLoop(base::BindRepeating(&CreateVideoEncodeMemory));
+  video_encoder_parameters_.vea_create_callback = media::BindToCurrentLoop(
+      base::BindRepeating(&content::CreateVideoEncodeAccelerator));
 
   return true;
 }
@@ -448,9 +447,9 @@ void WiFiDisplayMediaManager::OnPlayerCreated(
   DCHECK(content::RenderThread::Get());
   player_ = player.release();
 
-  auto completion_callback = base::Bind(
-     &WiFiDisplayMediaManager::OnMediaPipelineInitialized,
-     weak_factory_.GetWeakPtr());
+  auto completion_callback =
+      base::BindOnce(&WiFiDisplayMediaManager::OnMediaPipelineInitialized,
+                     weak_factory_.GetWeakPtr());
 
   io_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&WiFiDisplayMediaPipeline::Initialize,
@@ -475,10 +474,10 @@ void WiFiDisplayMediaManager::OnMediaPipelineInitialized(bool success) {
 void WiFiDisplayMediaManager::RegisterMediaService(
     const scoped_refptr<base::SingleThreadTaskRunner>& main_runner,
     mojo::PendingReceiver<mojom::WiFiDisplayMediaService> receiver,
-    const base::Closure& on_completed) {
+    const base::OnceClosure& on_completed) {
   auto connect_service_callback =
-      base::Bind(&WiFiDisplayMediaManager::ConnectToRemoteService,
-                 base::Unretained(this), base::Passed(&receiver));
+      base::BindOnce(&WiFiDisplayMediaManager::ConnectToRemoteService,
+                     base::Unretained(this), std::move(receiver));
   main_runner->PostTaskAndReply(FROM_HERE,
       connect_service_callback,
       media::BindToCurrentLoop(on_completed));
