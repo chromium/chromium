@@ -4,6 +4,7 @@
 
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -111,10 +112,12 @@ class PrivacySandboxSettingsTest : public testing::Test {
   }
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
 
+ protected:
+  std::unique_ptr<PrivacySandboxSettings> privacy_sandbox_settings_;
+
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
   TestingProfile profile_;
-  std::unique_ptr<PrivacySandboxSettings> privacy_sandbox_settings_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -132,6 +135,14 @@ TEST_F(PrivacySandboxSettingsTest, CookieSettingAppliesWhenUiDisabled) {
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
 
+  EXPECT_TRUE(privacy_sandbox_settings()->IsConversionMeasurementAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->ShouldSendConversionReport(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://another-test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+
   SetupTestState(
       /*privacy_sandbox_available=*/false,
       /*privacy_sandbox_enabled=*/false,
@@ -139,15 +150,24 @@ TEST_F(PrivacySandboxSettingsTest, CookieSettingAppliesWhenUiDisabled) {
       /*user_cookie_exceptions=*/
       {{"https://embedded.com", "https://test.com",
         ContentSetting::CONTENT_SETTING_ALLOW},
-       {"https://another-embedded.com", "*",
+       {"https://another-test.com", "*",
         ContentSetting::CONTENT_SETTING_BLOCK}},
       /*managed_cookie_setting=*/kNoSetting,
       /*managed_cookie_exceptions=*/{});
+
   EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowed(
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
   EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed(
-      GURL("https://another-embedded.com"), base::nullopt));
+      GURL("https://another-test.com"), base::nullopt));
+
+  EXPECT_TRUE(privacy_sandbox_settings()->IsConversionMeasurementAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->ShouldSendConversionReport(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://another-test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
 
   SetupTestState(
       /*privacy_sandbox_available=*/false,
@@ -159,11 +179,20 @@ TEST_F(PrivacySandboxSettingsTest, CookieSettingAppliesWhenUiDisabled) {
       /*managed_cookie_setting=*/kNoSetting,
       {{"https://embedded.com", "https://test.com",
         ContentSetting::CONTENT_SETTING_BLOCK}});
+
   EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed(
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
   EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowed(
       GURL("https://embedded.com"), base::nullopt));
+
+  EXPECT_FALSE(privacy_sandbox_settings()->IsConversionMeasurementAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->ShouldSendConversionReport(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://another-test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
 }
 
 TEST_F(PrivacySandboxSettingsTest, PreferenceOverridesDefaultContentSetting) {
@@ -176,9 +205,18 @@ TEST_F(PrivacySandboxSettingsTest, PreferenceOverridesDefaultContentSetting) {
       /*user_cookie_exceptions=*/{},
       /*managed_cookie_setting=*/kNoSetting,
       /*managed_cookie_exceptions=*/{});
+
   EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowed(
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
+
+  EXPECT_TRUE(privacy_sandbox_settings()->IsConversionMeasurementAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->ShouldSendConversionReport(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://another-test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
 
   // An allow exception should not override the preference value.
   SetupTestState(
@@ -187,12 +225,23 @@ TEST_F(PrivacySandboxSettingsTest, PreferenceOverridesDefaultContentSetting) {
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/
       {{"https://embedded.com", "https://test.com",
+        ContentSetting::CONTENT_SETTING_ALLOW},
+       {"https://embedded.com", "https://another-test.com",
         ContentSetting::CONTENT_SETTING_ALLOW}},
       /*managed_cookie_setting=*/kNoSetting,
       /*managed_cookie_exceptions=*/{});
+
   EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed(
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
+
+  EXPECT_FALSE(privacy_sandbox_settings()->IsConversionMeasurementAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->ShouldSendConversionReport(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://another-test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
 }
 
 TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
@@ -207,9 +256,18 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
         ContentSetting::CONTENT_SETTING_BLOCK}},
       /*managed_cookie_setting=*/kNoSetting,
       /*managed_cookie_exceptions=*/{});
+
   EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed(
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
+
+  EXPECT_FALSE(privacy_sandbox_settings()->IsConversionMeasurementAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->ShouldSendConversionReport(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://another-test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
 
   // User created exceptions should not apply if a managed default coookie
   // setting exists. What the managed default setting actually is should *not*
@@ -221,12 +279,22 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/
       {{"https://embedded.com", "https://test.com",
+        ContentSetting::CONTENT_SETTING_BLOCK},
+       {"https://embedded.com", "https://another-test.com",
         ContentSetting::CONTENT_SETTING_BLOCK}},
       /*managed_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
       /*managed_cookie_exceptions=*/{});
+
   EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowed(
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsConversionMeasurementAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->ShouldSendConversionReport(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://another-test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
 
   // Managed content setting exceptions should override both the privacy
   // sandbox pref and any user settings.
@@ -236,16 +304,34 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/
       {{"https://embedded.com", "https://test.com",
+        ContentSetting::CONTENT_SETTING_ALLOW},
+       {"https://embedded.com", "https://another-test.com",
         ContentSetting::CONTENT_SETTING_ALLOW}},
       /*managed_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       {{"https://embedded.com", "https://test.com",
         ContentSetting::CONTENT_SETTING_BLOCK}});
+
   EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed(
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
   EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowed(
       GURL("https://unrelated.com"),
       url::Origin::Create(GURL("https://unrelated.com"))));
+
+  EXPECT_FALSE(privacy_sandbox_settings()->IsConversionMeasurementAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->ShouldSendConversionReport(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://another-test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsConversionMeasurementAllowed(
+      url::Origin::Create(GURL("https://unrelated-a.com")),
+      url::Origin::Create(GURL("https://unrelated-b.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->ShouldSendConversionReport(
+      url::Origin::Create(GURL("https://unrelated-c.com")),
+      url::Origin::Create(GURL("https://unrelated-d.com")),
+      url::Origin::Create(GURL("https://unrelated-e.com"))));
 
   // A less specific block exception should not override a more specific allow
   // exception. The effective content setting in this scenario is still allow,
@@ -257,7 +343,11 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
       /*user_cookie_exceptions=*/
       {{"https://embedded.com", "https://test.com",
         ContentSetting::CONTENT_SETTING_ALLOW},
+       {"https://embedded.com", "https://another-test.com",
+        ContentSetting::CONTENT_SETTING_ALLOW},
        {"https://[*.]embedded.com", "https://[*.]test.com",
+        ContentSetting::CONTENT_SETTING_BLOCK},
+       {"https://[*.]embedded.com", "https://[*.]another-test.com",
         ContentSetting::CONTENT_SETTING_BLOCK}},
       /*managed_cookie_setting=*/kNoSetting,
       /*managed_cookie_exceptions=*/{});
@@ -265,8 +355,8 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
 
-  // Exceptions which specify a top frame origin should not match against an
-  // empty top frame.
+  // Exceptions which specify a top frame origin should not match against other
+  // top frame origins, or an empty origin.
   SetupTestState(
       /*privacy_sandbox_available=*/true,
       /*privacy_sandbox_enabled=*/true,
@@ -278,8 +368,17 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
       /*managed_cookie_exceptions=*/
       {{"https://embedded.com", "https://test.com",
         ContentSetting::CONTENT_SETTING_BLOCK}});
+
   EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowed(
       GURL("https://embedded.com"), base::nullopt));
+
+  EXPECT_TRUE(privacy_sandbox_settings()->IsConversionMeasurementAllowed(
+      url::Origin::Create(GURL("https://another-test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->ShouldSendConversionReport(
+      url::Origin::Create(GURL("https://another-test.com")),
+      url::Origin::Create(GURL("https://yet-another-test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
 
   // Exceptions which specify a wildcard top frame origin should match both
   // empty top frames and non empty top frames.
@@ -291,15 +390,24 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
       {{"https://embedded.com", "*", ContentSetting::CONTENT_SETTING_BLOCK}},
       /*managed_cookie_setting=*/kNoSetting,
       /*managed_cookie_exceptions=*/{});
+
   EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed(
       GURL("https://embedded.com"), base::nullopt));
   EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed(
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
+
+  EXPECT_FALSE(privacy_sandbox_settings()->IsConversionMeasurementAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->ShouldSendConversionReport(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://another-test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
 }
 
-TEST_F(PrivacySandboxSettingsTest, FlocAlwaysThirdParty) {
-  // Check that when the UI is not enabled, all FLoC requests are considered
+TEST_F(PrivacySandboxSettingsTest, ThirdPartyByDefault) {
+  // Check that when the UI is not enabled, all requests are considered
   // as third party requests.
   profile()->GetTestingPrefService()->SetUserPref(
       prefs::kCookieControlsMode,
@@ -312,9 +420,18 @@ TEST_F(PrivacySandboxSettingsTest, FlocAlwaysThirdParty) {
       /*user_cookie_exceptions=*/{},
       /*managed_cookie_setting=*/kNoSetting,
       /*managed_cookie_exceptions=*/{});
+
   EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed(
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://embedded.com"))));
   EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed(
       GURL("https://embedded.com"), base::nullopt));
+
+  EXPECT_FALSE(privacy_sandbox_settings()->IsConversionMeasurementAllowed(
+      url::Origin::Create(GURL("https://embedded.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->ShouldSendConversionReport(
+      url::Origin::Create(GURL("https://embedded.com")),
+      url::Origin::Create(GURL("https://embedded.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
 }

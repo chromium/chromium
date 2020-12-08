@@ -60,6 +60,17 @@ class PrivacySandboxSettings : public KeyedService {
                                   const url::Origin& conversion_origin,
                                   const url::Origin& reporting_origin) const;
 
+ protected:
+  // Determines based on the current features, preferences and provided
+  // |cookie_settings| whether Privacy Sandbox APIs are generally allowable for
+  // |url| on |top_frame_origin|. Individual APIs may perform additional checks
+  // for allowability (such as incognito) ontop of this. |cookie_settings| is
+  // provided as a parameter to allow callers to cache it between calls.
+  bool IsPrivacySandboxAllowed(
+      const GURL& url,
+      const base::Optional<url::Origin>& top_frame_origin,
+      const ContentSettingsForOneType& cookie_settings) const;
+
  private:
   content_settings::CookieSettings* cookie_settings_;
   PrefService* pref_service_;

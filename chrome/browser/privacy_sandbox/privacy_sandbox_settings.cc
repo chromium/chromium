@@ -61,25 +61,10 @@ PrivacySandboxSettings::PrivacySandboxSettings(
 bool PrivacySandboxSettings::IsFlocAllowed(
     const GURL& url,
     const base::Optional<url::Origin>& top_frame_origin) const {
-  if (!base::FeatureList::IsEnabled(features::kPrivacySandboxSettings)) {
-    // Simply respect cookie settings if the UI is not available. An empty site
-    // for cookies is provided so the context is always as a third party.
-    return cookie_settings_->IsCookieAccessAllowed(url, GURL(),
-                                                   top_frame_origin);
-  }
-
-  if (!pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled))
-    return false;
-
-  // TODO (crbug.com/1155504): Bypassing CookieSettings to access content
-  // settings directly ignores allowlisted schemes and the storage access API.
-  // These should be taken into account here.
   ContentSettingsForOneType cookie_settings;
   cookie_settings_->GetCookieSettings(&cookie_settings);
 
-  return !HasNonDefaultBlockSetting(
-      cookie_settings, url,
-      top_frame_origin ? top_frame_origin->GetURL() : GURL());
+  return IsPrivacySandboxAllowed(url, top_frame_origin, cookie_settings);
 }
 
 base::Time PrivacySandboxSettings::FlocDataAccessibleSince() const {
@@ -91,16 +76,50 @@ base::Time PrivacySandboxSettings::FlocDataAccessibleSince() const {
 bool PrivacySandboxSettings::IsConversionMeasurementAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& reporting_origin) const {
-  // Simply respect the 3P cookie setting.
-  // TODO(crbug.com/1152336): Respect privacy sandbox settings.
-  return !cookie_settings_->ShouldBlockThirdPartyCookies();
+  ContentSettingsForOneType cookie_settings;
+  cookie_settings_->GetCookieSettings(&cookie_settings);
+
+  return IsPrivacySandboxAllowed(reporting_origin.GetURL(), top_frame_origin,
+                                 cookie_settings);
 }
 
 bool PrivacySandboxSettings::ShouldSendConversionReport(
     const url::Origin& impression_origin,
     const url::Origin& conversion_origin,
     const url::Origin& reporting_origin) const {
-  // Simply respect the 3P cookie setting.
-  // TODO(crbug.com/1152336): Respect privacy sandbox settings.
-  return !cookie_settings_->ShouldBlockThirdPartyCookies();
+  // Re-using the |cookie_settings| allows this function to be faster
+  // than simply calling IsConversionMeasurementAllowed() twice
+  ContentSettingsForOneType cookie_settings;
+  cookie_settings_->GetCookieSettings(&cookie_settings);
+
+  // The |reporting_origin| needs to have been accessible in both impression
+  // and conversion contexts. These are both checked when they occur, but
+  // user settings may have changed between then and when the conversion report
+  // is sent.
+  return IsPrivacySandboxAllowed(reporting_origin.GetURL(), impression_origin,
+                                 cookie_settings) &&
+         IsPrivacySandboxAllowed(reporting_origin.GetURL(), reporting_origin,
+                                 cookie_settings);
+}
+
+bool PrivacySandboxSettings::IsPrivacySandboxAllowed(
+    const GURL& url,
+    const base::Optional<url::Origin>& top_frame_origin,
+    const ContentSettingsForOneType& cookie_settings) const {
+  if (!base::FeatureList::IsEnabled(features::kPrivacySandboxSettings)) {
+    // Simply respect cookie settings if the UI is not available. An empty site
+    // for cookies is provided so the context is always as a third party.
+    return cookie_settings_->IsCookieAccessAllowed(url, GURL(),
+                                                   top_frame_origin);
+  }
+
+  if (!pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled))
+    return false;
+
+  // TODO (crbug.com/1155504): Bypassing the CookieSettings class to access
+  // content settings directly ignores allowlisted schemes and the storage
+  // access API. These should be taken into account here.
+  return !HasNonDefaultBlockSetting(
+      cookie_settings, url,
+      top_frame_origin ? top_frame_origin->GetURL() : GURL());
 }
