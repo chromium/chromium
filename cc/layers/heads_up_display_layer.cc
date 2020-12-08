@@ -52,6 +52,8 @@ void HeadsUpDisplayLayer::UpdateLocationAndSize(
     // hand side_, make sure the bounds has the correct width, with a fixed
     // height.
     bounds.set_width(device_viewport_in_layout_pixels.width());
+    // Increase HUD layer height to make sure all the metrics are showing.
+    bounds.set_height(kDefaultHUDSize * 2);
   }
 
   SetBounds(bounds);

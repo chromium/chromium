@@ -21,6 +21,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "build/build_config.h"
 #include "cc/debug/debug_colors.h"
 #include "cc/metrics/dropped_frame_counter.h"
 #include "cc/paint/display_item_list.h"
@@ -97,6 +98,29 @@ std::string ToStringTwoDecimalPrecision(double input) {
   return stream.str();
 }
 
+#if defined(OS_ANDROID)
+struct MetricsDrawSizes {
+  const int kTopPadding = 35;
+  const int kPadding = 15;
+  const int kFontHeight = 32;
+  const int kWidth = 500;
+  const int kSidePadding = 20;
+} constexpr metrics_sizes;
+#else
+struct MetricsDrawSizes {
+  const int kTopPadding = 35;
+  const int kPadding = 15;
+  const int kFontHeight = 22;
+  const int kWidth = 400;
+  const int kSidePadding = 20;
+} constexpr metrics_sizes;
+#endif
+
+constexpr int ComputeTotalHeight(int num_of_lines) {
+  int num_of_spaces = std::max(0, num_of_lines - 1);
+  return num_of_lines * metrics_sizes.kFontHeight +
+         num_of_spaces * metrics_sizes.kPadding + 2 * metrics_sizes.kTopPadding;
+}
 }  // namespace
 
 HeadsUpDisplayLayerImpl::HeadsUpDisplayLayerImpl(LayerTreeImpl* tree_impl,
@@ -604,17 +628,18 @@ void HeadsUpDisplayLayerImpl::DrawHudContents(PaintCanvas* canvas) {
   }
 
   SkRect metrics_area = SkRect::MakeXYWH(
-      std::max<SkScalar>(0, bounds().width() - 150), 0, 150, 0);
+      std::max<SkScalar>(0, bounds().width() - metrics_sizes.kWidth), 0,
+      metrics_sizes.kWidth, 0);
   if (debug_state.show_web_vital_metrics) {
-    metrics_area =
-        DrawWebVitalMetrics(canvas, metrics_area.left(), metrics_area.bottom(),
-                            std::max<SkScalar>(metrics_area.width(), 150));
+    metrics_area = DrawWebVitalMetrics(
+        canvas, metrics_area.left(), metrics_area.bottom(),
+        std::max<SkScalar>(metrics_area.width(), metrics_sizes.kWidth));
   }
 
   if (debug_state.show_smoothness_metrics) {
     metrics_area = DrawSmoothnessMetrics(
         canvas, metrics_area.left(), metrics_area.bottom(),
-        std::max<SkScalar>(metrics_area.width(), 150));
+        std::max<SkScalar>(metrics_area.width(), metrics_sizes.kWidth));
   }
 
   canvas->restore();
@@ -670,6 +695,16 @@ void HeadsUpDisplayLayerImpl::DrawGraphLines(PaintCanvas* canvas,
                    bounds.top() - 1, *flags);
   canvas->drawLine(bounds.left(), bounds.bottom(), bounds.right(),
                    bounds.bottom(), *flags);
+}
+
+void HeadsUpDisplayLayerImpl::DrawSeparatorLine(PaintCanvas* canvas,
+                                                PaintFlags* flags,
+                                                const SkRect& bounds) const {
+  // Draw separator line as transparent white.
+  constexpr auto kSeparatorLineColor = SkColorSetARGB(64, 255, 255, 255);
+  flags->setColor(kSeparatorLineColor);
+  canvas->drawLine(bounds.left(), bounds.top(), bounds.right(), bounds.top(),
+                   *flags);
 }
 
 SkRect HeadsUpDisplayLayerImpl::DrawFrameThroughputDisplay(
@@ -1073,53 +1108,46 @@ int HeadsUpDisplayLayerImpl::DrawSingleMetric(
     else
       metrics_color = SK_ColorRED;
   }
-  const int kPadding = 4;
-  const int kTitleFontHeight = 13;
-  const int kFontHeight = 12;
 
   PaintFlags flags;
   flags.setColor(DebugColors::HUDTitleColor());
-  DrawText(canvas, flags, name, TextAlign::kLeft, kTitleFontHeight,
-           left + kPadding, top);
+  DrawText(canvas, flags, name, TextAlign::kLeft, metrics_sizes.kFontHeight,
+           left + metrics_sizes.kSidePadding, top);
   flags.setColor(metrics_color);
-  DrawText(canvas, flags, value_str, TextAlign::kRight, kFontHeight,
-           right - kPadding, top + kFontHeight + kPadding);
+  DrawText(canvas, flags, value_str, TextAlign::kRight,
+           metrics_sizes.kFontHeight, right - metrics_sizes.kSidePadding, top);
 
-  return top + 2 * kFontHeight + 2 * kPadding;
+  return top + metrics_sizes.kFontHeight + metrics_sizes.kPadding;
 }
 
 SkRect HeadsUpDisplayLayerImpl::DrawWebVitalMetrics(PaintCanvas* canvas,
                                                     int left,
                                                     int top,
                                                     int width) const {
-  const int kPadding = 4;
-  const int kTitleFontHeight = 13;
-  const int kFontHeight = 12;
-
-  const int height = 3 * kTitleFontHeight + 3 * kFontHeight + 7 * kPadding;
+  const int height = ComputeTotalHeight(3);
   const SkRect area = SkRect::MakeXYWH(left, top, width, height);
 
   PaintFlags flags;
   DrawGraphBackground(canvas, &flags, area);
 
-  int current_top = top + kFontHeight + kPadding;
+  int current_top = top + metrics_sizes.kTopPadding + metrics_sizes.kFontHeight;
   double lcp_value = -1;
   if (web_vital_metrics_ &&
       web_vital_metrics_->largest_contentful_paint.has_value())
     lcp_value = web_vital_metrics_->largest_contentful_paint->InSecondsF();
   current_top = DrawSingleMetric(canvas, left, left + width, current_top,
-                                 "Largest contentful paint",
+                                 "Largest Contentful Paint",
                                  WebVitalMetrics::lcp_info, lcp_value);
 
   double fid_value = -1;
   if (web_vital_metrics_ && web_vital_metrics_->first_input_delay.has_value())
     fid_value = web_vital_metrics_->first_input_delay->InMillisecondsF();
   current_top = DrawSingleMetric(canvas, left, left + width, current_top,
-                                 "First input delay", WebVitalMetrics::fid_info,
+                                 "First Input Delay", WebVitalMetrics::fid_info,
                                  fid_value);
 
   current_top = DrawSingleMetric(
-      canvas, left, left + width, current_top, "Cumulative layout shift",
+      canvas, left, left + width, current_top, "Cumulative Layout Shift",
       WebVitalMetrics::cls_info,
       web_vital_metrics_ ? web_vital_metrics_->layout_shift : -1);
 
@@ -1137,23 +1165,27 @@ SkRect HeadsUpDisplayLayerImpl::DrawSmoothnessMetrics(PaintCanvas* canvas,
   if (smoothness_data >= 0.f)
     avg_smoothness = ToStringTwoDecimalPrecision(smoothness_data) + " %";
 
-  const int kPadding = 4;
-  const int kTitleFontHeight = 13;
-  const int kFontHeight = 12;
-
-  const int height = kTitleFontHeight + kFontHeight + 3 * kPadding;
+  const int height = ComputeTotalHeight(1);
   const SkRect area = SkRect::MakeXYWH(left, top, width, height);
 
   PaintFlags flags;
   DrawGraphBackground(canvas, &flags, area);
+  if (top != 0) {
+    // There are metrics drawn before this.
+    SkRect separator =
+        SkRect::MakeXYWH(area.x(), area.y(), area.width(), area.height());
+    DrawSeparatorLine(canvas, &flags, separator);
+  }
 
-  SkPoint metrics_pos = SkPoint::Make(left + width - kPadding,
-                                      top + 2 * kFontHeight + 2 * kPadding);
+  SkPoint metrics_pos = SkPoint::Make(
+      left + width - metrics_sizes.kSidePadding,
+      top + metrics_sizes.kTopPadding + metrics_sizes.kFontHeight);
   flags.setColor(DebugColors::HUDTitleColor());
-  DrawText(canvas, flags, "Average Dropped Frame:", TextAlign::kLeft,
-           kTitleFontHeight, left + kPadding, top + kFontHeight + kPadding);
-  DrawText(canvas, flags, avg_smoothness, TextAlign::kRight, kFontHeight,
-           metrics_pos);
+  DrawText(canvas, flags, "Average Dropped Frame", TextAlign::kLeft,
+           metrics_sizes.kFontHeight, left + metrics_sizes.kSidePadding,
+           top + metrics_sizes.kFontHeight + metrics_sizes.kTopPadding);
+  DrawText(canvas, flags, avg_smoothness, TextAlign::kRight,
+           metrics_sizes.kFontHeight, metrics_pos);
   return area;
 }
 

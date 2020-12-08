@@ -105,6 +105,10 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   void DrawGraphLines(PaintCanvas* canvas,
                       PaintFlags* flags,
                       const SkRect& bounds) const;
+  // Draw a separator line at top of bounds.
+  void DrawSeparatorLine(PaintCanvas* canvas,
+                         PaintFlags* flags,
+                         const SkRect& bounds) const;
 
   SkRect DrawFrameThroughputDisplay(
       PaintCanvas* canvas,
