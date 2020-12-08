@@ -79,6 +79,29 @@ PreloadedFirstPartySets::ParseAndSet(base::StringPiece raw_sets) {
   return &sets_;
 }
 
+bool PreloadedFirstPartySets::IsContextSamePartyWithSite(
+    const net::SchemefulSite& site,
+    const net::SchemefulSite& top_frame_site,
+    const std::set<net::SchemefulSite>& party_context) const {
+  const auto it = sets_.find(site);
+  if (it == sets_.end())
+    return false;
+  const net::SchemefulSite& site_owner = it->second;
+  const auto is_owned_by_site_owner =
+      [this, &site_owner](const net::SchemefulSite& context_site) {
+        const auto context_owner = sets_.find(context_site);
+        return context_owner != sets_.end() &&
+               context_owner->second == site_owner;
+      };
+  return is_owned_by_site_owner(top_frame_site) &&
+         base::ranges::all_of(party_context, is_owned_by_site_owner);
+}
+
+bool PreloadedFirstPartySets::IsInNontrivialFirstPartySet(
+    const net::SchemefulSite& site) const {
+  return base::Contains(sets_, site);
+}
+
 void PreloadedFirstPartySets::ApplyManuallySpecifiedSet() {
   if (!manually_specified_set_)
     return;
