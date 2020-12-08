@@ -716,7 +716,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.PostedClientToServerMessage"
-    enum="SyncClientToServerMessageContents" expires_after="2021-04-04">
+    enum="SyncClientToServerMessageContents" expires_after="2021-06-06">
   <owner>mastiz@chromium.org</owner>
   <summary>
     Number of network requests issued by sync to the sync server, grouped by
@@ -725,7 +725,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.PostedClientToServerMessageError" enum="SyncErrorType"
-    expires_after="2021-04-04">
+    expires_after="2021-06-06">
   <owner>mastiz@chromium.org</owner>
   <summary>
     A sync error code received from the sync server as a result of a
