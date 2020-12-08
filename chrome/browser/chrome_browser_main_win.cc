@@ -60,6 +60,7 @@
 #include "chrome/browser/web_applications/chrome_pwa_launcher/launcher_update.h"
 #include "chrome/browser/web_applications/components/web_app_handler_registration_utils_win.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/win/browser_util.h"
 #include "chrome/browser/win/chrome_elf_init.h"
 #include "chrome/browser/win/conflicts/enumerate_input_method_editors.h"
@@ -96,7 +97,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
-#include "extensions/browser/extension_registry.h"
 #include "ui/base/cursor/cursor_loader_win.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_win.h"
@@ -467,20 +467,20 @@ void UpdatePwaLaunchersForProfile(const base::FilePath& profile_dir) {
     // The profile was unloaded.
     return;
   }
+  auto* provider = web_app::WebAppProvider::Get(profile);
+  if (!provider)
+    return;
+  web_app::AppRegistrar& registrar = provider->registrar();
 
   // Create a vector of all PWA-launcher paths in |profile_dir|.
   std::vector<base::FilePath> pwa_launcher_paths;
-  for (const auto& extension :
-       extensions::ExtensionRegistry::Get(profile)->enabled_extensions()) {
-    if (extension->from_bookmark()) {
-      base::FilePath web_app_path =
-          web_app::GetOsIntegrationResourcesDirectoryForApp(
-              profile_dir, extension->id(), GURL());
-      web_app_path =
-          web_app_path.Append(web_app::GetAppSpecificLauncherFilename(
-              base::UTF8ToUTF16(extension->name())));
-      pwa_launcher_paths.push_back(std::move(web_app_path));
-    }
+  for (const web_app::AppId& app_id : registrar.GetAppIds()) {
+    base::FilePath web_app_path =
+        web_app::GetOsIntegrationResourcesDirectoryForApp(profile_dir, app_id,
+                                                          GURL());
+    web_app_path = web_app_path.Append(web_app::GetAppSpecificLauncherFilename(
+        base::UTF8ToUTF16(registrar.GetAppShortName(app_id))));
+    pwa_launcher_paths.push_back(std::move(web_app_path));
   }
 
   base::ThreadPool::PostTask(
