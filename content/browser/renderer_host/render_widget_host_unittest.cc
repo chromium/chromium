@@ -2295,23 +2295,4 @@ TEST_F(RenderWidgetHostTest, SetCursorWithBitmap) {
   EXPECT_EQ(WebCursor(cursor), view_->last_cursor());
 }
 
-TEST_F(RenderWidgetHostTest, SetCursorWithInvalidBitmap) {
-  ui::Cursor cursor;
-
-  SkBitmap badbitmap;
-  badbitmap.allocPixels(
-      SkImageInfo::Make(1, 1, kARGB_4444_SkColorType, kPremul_SkAlphaType));
-  badbitmap.eraseColor(SK_ColorGREEN);
-
-  SkBitmap n32bitmap;
-  EXPECT_TRUE(skia::SkBitmapToN32OpaqueOrPremul(badbitmap, &n32bitmap));
-
-  // A non-N32 32bpp bitmap will be converted on receipt from IPC.
-  cursor.set_custom_bitmap(badbitmap);
-  host_->SetCursor(cursor);
-  // Compare to the `n32bitmap`.
-  cursor.set_custom_bitmap(n32bitmap);
-  EXPECT_EQ(WebCursor(cursor), view_->last_cursor());
-}
-
 }  // namespace content

@@ -17,7 +17,7 @@ struct Cursor {
   gfx.mojom.Point hotspot;
 
   // The custom bitmap. Must be non-empty if |cursor_type| is kCustom.
-  skia.mojom.BitmapWithArbitraryBpp? bitmap;
+  skia.mojom.BitmapN32? bitmap;
 
   // This is the image scale of this cursor.
   float image_scale_factor;
