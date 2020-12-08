@@ -156,9 +156,9 @@ void TranslateCompactInfoBar::ApplyBoolTranslateOption(
       delegate->OnInfoBarClosedByUser();
     }
   } else if (option == translate::TranslateUtils::OPTION_NEVER_TRANSLATE_SITE) {
-    if (value && !delegate->IsSiteBlacklisted()) {
+    if (value && !delegate->IsSiteOnNeverPromptList()) {
       action_flags_ |= FLAG_NEVER_SITE;
-      delegate->ToggleSiteBlacklist();
+      delegate->ToggleNeverPrompt();
       RemoveSelf();
       delegate->OnInfoBarClosedByUser();
     }

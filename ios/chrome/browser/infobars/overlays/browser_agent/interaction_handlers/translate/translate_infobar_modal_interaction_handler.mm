@@ -76,8 +76,8 @@ void TranslateInfobarModalInteractionHandler::ToggleNeverTranslateLanguage(
 void TranslateInfobarModalInteractionHandler::ToggleNeverTranslateSite(
     InfoBarIOS* infobar) {
   translate::TranslateInfoBarDelegate* delegate = GetDelegate(infobar);
-  bool should_remove_infobar = !delegate->IsSiteBlacklisted();
-  delegate->ToggleSiteBlacklist();
+  bool should_remove_infobar = !delegate->IsSiteOnNeverPromptList();
+  delegate->ToggleNeverPrompt();
   // Remove infobar if turning it on.
   if (should_remove_infobar)
     infobar->RemoveSelf();

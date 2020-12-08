@@ -399,7 +399,8 @@ NSString* const kTranslateNotificationSnackbarCategory =
   [self dismissInfobarModalAnimated:YES
                          completion:^{
                            // Completely remove the Infobar along with its badge
-                           // after blacklisting the Website.
+                           // after adding site to never prompt list for the
+                           // Website.
                            [self detachView];
                          }];
 }
@@ -412,9 +413,9 @@ NSString* const kTranslateNotificationSnackbarCategory =
 }
 
 - (void)neverTranslateSite {
-  DCHECK(!self.translateInfobarDelegate->IsSiteBlacklisted());
+  DCHECK(!self.translateInfobarDelegate->IsSiteOnNeverPromptList());
   self.userAction |= UserActionNeverTranslateSite;
-  self.translateInfobarDelegate->ToggleSiteBlacklist();
+  self.translateInfobarDelegate->ToggleNeverPrompt();
   [self
       recordInfobarEvent:translate::InfobarEvent::INFOBAR_NEVER_TRANSLATE_SITE];
   [TranslateInfobarMetricsRecorder
@@ -423,14 +424,15 @@ NSString* const kTranslateNotificationSnackbarCategory =
   [self dismissInfobarModalAnimated:YES
                          completion:^{
                            // Completely remove the Infobar along with its badge
-                           // after blacklisting the Website.
+                           // after adding site to never prompt list for the
+                           // Website.
                            [self detachView];
                          }];
 }
 
 - (void)undoNeverTranslateSite {
-  DCHECK(self.translateInfobarDelegate->IsSiteBlacklisted());
-  self.translateInfobarDelegate->ToggleSiteBlacklist();
+  DCHECK(self.translateInfobarDelegate->IsSiteOnNeverPromptList());
+  self.translateInfobarDelegate->ToggleNeverPrompt();
   [self dismissInfobarModalAnimated:YES completion:nil];
   // TODO(crbug.com/1014959): implement else logic. Should aything be done?
 }

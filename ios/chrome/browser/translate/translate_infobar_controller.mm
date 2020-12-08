@@ -356,7 +356,7 @@ typedef NS_ENUM(NSInteger, LanguageSelectionState) {
 
   [_infobarView updateUIForPopUpMenuDisplayed:NO];
 
-  if (!self.infoBarDelegate->IsSiteBlacklisted()) {
+  if (!self.infoBarDelegate->IsSiteOnNeverPromptList()) {
     [self recordInfobarEvent:translate::InfobarEvent::
                                  INFOBAR_NEVER_TRANSLATE_SITE];
     [self recordInfobarEvent:
@@ -409,7 +409,7 @@ typedef NS_ENUM(NSInteger, LanguageSelectionState) {
       self.delegate->RemoveInfoBar();
       break;
     case TranslateNotificationTypeNeverTranslateSite:
-      self.infoBarDelegate->ToggleSiteBlacklist();
+      self.infoBarDelegate->ToggleNeverPrompt();
       self.delegate->RemoveInfoBar();
       break;
     case TranslateNotificationTypeError:

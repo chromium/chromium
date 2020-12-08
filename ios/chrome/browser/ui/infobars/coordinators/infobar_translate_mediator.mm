@@ -263,7 +263,7 @@ const int kInvalidLanguageIndex = -1;
     kIsTranslatableLanguagePrefKey :
         @(self.translateInfobarDelegate->IsTranslatableLanguageByPrefs()),
     kIsSiteBlacklistedPrefKey :
-        @(self.translateInfobarDelegate->IsSiteBlacklisted()),
+        @(self.translateInfobarDelegate->IsSiteOnNeverPromptList()),
   };
 }
 

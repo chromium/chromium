@@ -191,12 +191,11 @@ void TranslateInfoBarDelegate::ToggleTranslatableLanguageByPrefs() {
   ui_delegate_.SetLanguageBlocked(!ui_delegate_.IsLanguageBlocked());
 }
 
-// TODO(crbug.com/1028966): Update this name to use inclusive language.
-bool TranslateInfoBarDelegate::IsSiteBlacklisted() const {
+bool TranslateInfoBarDelegate::IsSiteOnNeverPromptList() const {
   return ui_delegate_.IsSiteOnNeverPromptList();
 }
 
-void TranslateInfoBarDelegate::ToggleSiteBlacklist() {
+void TranslateInfoBarDelegate::ToggleNeverPrompt() {
   ui_delegate_.SetNeverPrompt(!ui_delegate_.IsSiteOnNeverPromptList());
 }
 

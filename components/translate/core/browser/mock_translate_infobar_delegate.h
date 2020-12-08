@@ -55,7 +55,7 @@ class MockTranslateInfoBarDelegate
   MOCK_METHOD0(Translate, void());
   MOCK_METHOD0(ToggleAlwaysTranslate, void());
   MOCK_METHOD0(ToggleTranslatableLanguageByPrefs, void());
-  MOCK_METHOD0(ToggleSiteBlacklist, void());
+  MOCK_METHOD0(ToggleNeverPrompt, void());
   MOCK_METHOD0(RevertWithoutClosingInfobar, void());
   MOCK_METHOD1(UpdateTargetLanguage, void(const std::string& language_code));
   MOCK_METHOD1(UpdateOriginalLanguage, void(const std::string& language_code));

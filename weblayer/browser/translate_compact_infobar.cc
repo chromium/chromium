@@ -149,9 +149,9 @@ void TranslateCompactInfoBar::ApplyBoolTranslateOption(
       delegate->ToggleTranslatableLanguageByPrefs();
     }
   } else if (option == translate::TranslateUtils::OPTION_NEVER_TRANSLATE_SITE) {
-    if (delegate->IsSiteBlacklisted() != value) {
+    if (delegate->IsSiteOnNeverPromptList() != value) {
       action_flags_ |= FLAG_NEVER_SITE;
-      delegate->ToggleSiteBlacklist();
+      delegate->ToggleNeverPrompt();
     }
   } else {
     DCHECK(false);

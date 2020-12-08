@@ -34,7 +34,7 @@ TranslateModalRequestConfig::TranslateModalRequestConfig(InfoBarIOS* infobar)
   }
   is_always_translate_enabled_ = delegate->ShouldAlwaysTranslate();
   is_translatable_language_ = delegate->IsTranslatableLanguageByPrefs();
-  is_site_blacklisted_ = delegate->IsSiteBlacklisted();
+  is_site_blacklisted_ = delegate->IsSiteOnNeverPromptList();
 }
 
 TranslateModalRequestConfig::~TranslateModalRequestConfig() = default;
