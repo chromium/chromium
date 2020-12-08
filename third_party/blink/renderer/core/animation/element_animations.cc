@@ -51,6 +51,8 @@ void UpdateAnimationFlagsForEffect(const KeyframeEffect& effect,
     style.SetHasCurrentFilterAnimation(true);
   if (effect.Affects(PropertyHandle(GetCSSPropertyBackdropFilter())))
     style.SetHasCurrentBackdropFilterAnimation(true);
+  if (effect.Affects(PropertyHandle(GetCSSPropertyBackgroundColor())))
+    style.SetHasCurrentBackgroundColorAnimation(true);
 }
 
 }  // namespace

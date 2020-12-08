@@ -25,7 +25,7 @@ class MODULES_EXPORT BackgroundColorPaintImageGeneratorImpl final
 
   // The |container_size| is without subpixel snapping.
   scoped_refptr<Image> Paint(const FloatSize& container_size,
-                             SkColor color) final;
+                             const Node*) final;
 
   void Shutdown() final;
 

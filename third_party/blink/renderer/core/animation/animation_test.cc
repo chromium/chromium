@@ -1403,6 +1403,49 @@ TEST_F(AnimationAnimationTestCompositing, InfiniteDurationAnimation) {
             animation->CheckCanStartAnimationOnCompositor(nullptr));
 }
 
+// This test ensures that a background-color animation can start on compositor.
+TEST_F(AnimationAnimationTestCompositing, BackgroundColorComposited) {
+  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  // Create KeyframeEffect
+  Timing timing;
+  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+
+  Persistent<StringKeyframe> start_keyframe =
+      MakeGarbageCollected<StringKeyframe>();
+  start_keyframe->SetCSSPropertyValue(CSSPropertyID::kBackgroundColor, "red",
+                                      SecureContextMode::kInsecureContext,
+                                      nullptr);
+  Persistent<StringKeyframe> end_keyframe =
+      MakeGarbageCollected<StringKeyframe>();
+  end_keyframe->SetCSSPropertyValue(CSSPropertyID::kBackgroundColor, "green",
+                                    SecureContextMode::kInsecureContext,
+                                    nullptr);
+
+  StringKeyframeVector keyframes;
+  keyframes.push_back(start_keyframe);
+  keyframes.push_back(end_keyframe);
+
+  Element* element = GetElementById("target");
+  auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+
+  NonThrowableExceptionState exception_state;
+  DocumentTimeline* timeline =
+      MakeGarbageCollected<DocumentTimeline>(&GetDocument());
+  Animation* animation = Animation::Create(
+      MakeGarbageCollected<KeyframeEffect>(element, model, timing), timeline,
+      exception_state);
+
+  UpdateAllLifecyclePhasesForTest();
+  animation->play();
+  EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(nullptr),
+            CompositorAnimations::kNoFailure);
+}
+
 TEST_F(AnimationAnimationTestCompositing,
        ScrollLinkedAnimationCanBeComposited) {
   ResetWithCompositedAnimation();

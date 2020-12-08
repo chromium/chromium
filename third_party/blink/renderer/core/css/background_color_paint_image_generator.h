@@ -14,6 +14,7 @@ namespace blink {
 
 class Image;
 class LocalFrame;
+class Node;
 
 class CORE_EXPORT BackgroundColorPaintImageGenerator
     : public NativePaintImageGenerator {
@@ -28,7 +29,7 @@ class CORE_EXPORT BackgroundColorPaintImageGenerator
       BackgroundColorPaintImageGeneratorCreateFunction create_function);
 
   virtual scoped_refptr<Image> Paint(const FloatSize& container_size,
-                                     SkColor color) = 0;
+                                     const Node*) = 0;
 };
 
 }  // namespace blink

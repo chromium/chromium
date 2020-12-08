@@ -6,11 +6,13 @@
 #define CC_ANIMATION_KEYFRAME_MODEL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_export.h"
 #include "cc/paint/element_id.h"
+#include "cc/paint/paint_worklet_input.h"
 
 namespace cc {
 
@@ -62,7 +64,9 @@ class CC_ANIMATION_EXPORT KeyframeModel {
       int keyframe_model_id,
       int group_id,
       int target_property_id,
-      const std::string& custom_property_name = "");
+      const std::string& custom_property_name = "",
+      PaintWorkletInput::NativePropertyType native_property_type =
+          PaintWorkletInput::NativePropertyType::kInvalid);
 
   std::unique_ptr<KeyframeModel> CreateImplInstance(
       RunState initial_run_state) const;
@@ -179,6 +183,10 @@ class CC_ANIMATION_EXPORT KeyframeModel {
     return custom_property_name_;
   }
 
+  PaintWorkletInput::NativePropertyType native_property_type() const {
+    return native_property_type_;
+  }
+
   KeyframeModel::Phase CalculatePhaseForTesting(
       base::TimeDelta local_time) const;
 
@@ -187,7 +195,8 @@ class CC_ANIMATION_EXPORT KeyframeModel {
                 int keyframe_model_id,
                 int group_id,
                 int target_property_id,
-                const std::string& custom_property_name);
+                const std::string& custom_property_name,
+                PaintWorkletInput::NativePropertyType native_property_type);
 
   // Return local time for this keyframe model given the absolute monotonic
   // time.
@@ -231,11 +240,21 @@ class CC_ANIMATION_EXPORT KeyframeModel {
   // properties until all KeyframeModels in the group have finished animating.
   int group_;
 
+  // TODO(crbug.com/1156631): wrap the following 3 attributes into a class.
+  // If this is CSS_CUSTOM_PROPERTY then |custom_property_name_| should be
+  // non-empty which identifies which custom property it is. If this is
+  // NATIVE_PROPERTY then |native_property_type_| should be set to targeted
+  // property.
+  int target_property_id_;
+  // Name of the animated custom property. Empty if it is an animated native
+  // property.
+  std::string custom_property_name_;
+  // Type of the animated native property.
+  PaintWorkletInput::NativePropertyType native_property_type_;
+
   // If specified, overrides the ElementId to apply this KeyframeModel's effect
   // value on.
   ElementId element_id_;
-
-  int target_property_id_;
   RunState run_state_;
   double iterations_;
   double iteration_start_;
@@ -287,10 +306,6 @@ class CC_ANIMATION_EXPORT KeyframeModel {
   // longer affect any elements, and are deleted.
   bool affects_active_elements_;
   bool affects_pending_elements_;
-
-  // Name of the animated custom property. Empty if it is an animated native
-  // property.
-  std::string custom_property_name_;
 };
 
 }  // namespace cc

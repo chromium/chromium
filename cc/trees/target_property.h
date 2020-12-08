@@ -24,6 +24,9 @@ enum Type {
   BACKGROUND_COLOR,
   BOUNDS,
   CSS_CUSTOM_PROPERTY,
+  // This is used for the set of properties whose animation use paint worklet
+  // infra. The value of the animation represents its progress.
+  NATIVE_PROPERTY,
   BACKDROP_FILTER,
   // These sentinels must be last
   FIRST_TARGET_PROPERTY = TRANSFORM,

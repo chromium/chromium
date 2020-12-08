@@ -153,6 +153,16 @@ bool HasIncompatibleAnimations(const Element& target_element,
   return false;
 }
 
+void DefaultToUnsupportedProperty(
+    PropertyHandleSet* unsupported_properties,
+    const PropertyHandle& property,
+    CompositorAnimations::FailureReasons* reasons) {
+  (*reasons) |= CompositorAnimations::kUnsupportedCSSProperty;
+  if (unsupported_properties) {
+    unsupported_properties->insert(property);
+  }
+}
+
 }  // namespace
 
 CompositorElementIdNamespace
@@ -169,10 +179,11 @@ CompositorAnimations::CompositorElementNamespaceForProperty(
       return CompositorElementIdNamespace::kPrimaryTransform;
     case CSSPropertyID::kFilter:
       return CompositorElementIdNamespace::kEffectFilter;
+    case CSSPropertyID::kBackgroundColor:
     case CSSPropertyID::kVariable:
-      // TODO(crbug.com/883721): Variables should not require the target
-      // element to have any composited property tree nodes - i.e. should
-      // not need to check for existence of a property tree node.
+      // TODO(crbug.com/883721): Variables and background color should not
+      // require the target element to have any composited property tree nodes -
+      // i.e. should not need to check for existence of a property tree node.
       // For now, variable animations target the primary animation target
       // node - the effect namespace.
       return CompositorElementIdNamespace::kPrimaryEffect;
@@ -272,6 +283,12 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           // Backdrop-filter pixel moving filters do not change the layer bounds
           // like regular filters do, so they can still be composited.
           break;
+        case CSSPropertyID::kBackgroundColor:
+          if (!RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled()) {
+            DefaultToUnsupportedProperty(unsupported_properties, property,
+                                         &reasons);
+          }
+          break;
         case CSSPropertyID::kVariable: {
           // Custom properties are supported only in the case of
           // OffMainThreadCSSPaintEnabled, and even then only for some specific
@@ -287,10 +304,8 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
                 !layout_object->Style()->HasCSSPaintImagesUsingCustomProperty(
                     property.CustomPropertyName(),
                     layout_object->GetDocument())) {
-              if (unsupported_properties) {
-                unsupported_properties->insert(property);
-              }
-              reasons |= kUnsupportedCSSProperty;
+              DefaultToUnsupportedProperty(unsupported_properties, property,
+                                           &reasons);
             }
             // TODO: Add support for keyframes containing different types
             if (!keyframes.front() ||
@@ -302,10 +317,8 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           } else {
             // We skip the rest of the loop in this case for the same reason as
             // unsupported CSS properties - see below.
-            if (unsupported_properties) {
-              unsupported_properties->insert(property);
-            }
-            reasons |= kUnsupportedCSSProperty;
+            DefaultToUnsupportedProperty(unsupported_properties, property,
+                                         &reasons);
             continue;
           }
           break;
@@ -316,10 +329,8 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           //       an unsupported property.
           //   ii. GetCompositorKeyframeValue() will be false so we will
           //       accidentally count this as kInvalidAnimationOrEffect as well.
-          if (unsupported_properties) {
-            unsupported_properties->insert(property);
-          }
-          reasons |= kUnsupportedCSSProperty;
+          DefaultToUnsupportedProperty(unsupported_properties, property,
+                                       &reasons);
           continue;
       }
 
@@ -406,7 +417,7 @@ CompositorAnimations::CheckCanStartElementOnCompositor(
           (effect && effect->HasDirectCompositingReasons());
     }
     if (!has_direct_compositing_reasons &&
-        To<KeyframeEffectModelBase>(model).HasNonVariableProperty()) {
+        To<KeyframeEffectModelBase>(model).RequiresPropertyNode()) {
       reasons |= kTargetHasInvalidCompositingState;
     }
   } else {
@@ -696,6 +707,8 @@ void CompositorAnimations::GetAnimationOnCompositor(
   DCHECK(!properties.IsEmpty());
   for (const auto& property : properties) {
     AtomicString custom_property_name = "";
+    CompositorPaintWorkletInput::NativePropertyType native_property_type =
+        CompositorPaintWorkletInput::NativePropertyType::kInvalid;
     // If the animation duration is infinite, it doesn't make sense to scale
     // the keyframe offset, so use a scale of 1.0. This is connected to
     // the known issue of how the Web Animations spec handles infinite
@@ -749,6 +762,17 @@ void CompositorAnimations::GetAnimationOnCompositor(
         curve = std::move(transform_curve);
         break;
       }
+      case CSSPropertyID::kBackgroundColor: {
+        native_property_type =
+            CompositorPaintWorkletInput::NativePropertyType::kBackgroundColor;
+        auto float_curve = std::make_unique<CompositorFloatAnimationCurve>();
+        target_property = compositor_target_property::NATIVE_PROPERTY;
+        AddKeyframesToCurve(*float_curve, values);
+        float_curve->SetTimingFunction(*timing.timing_function);
+        float_curve->SetScaledDuration(scale);
+        curve = std::move(float_curve);
+        break;
+      }
       case CSSPropertyID::kVariable: {
         DCHECK(RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled());
         custom_property_name = property.CustomPropertyName();
@@ -777,7 +801,8 @@ void CompositorAnimations::GetAnimationOnCompositor(
     DCHECK(curve.get());
 
     auto keyframe_model = std::make_unique<CompositorKeyframeModel>(
-        *curve, target_property, 0, group, std::move(custom_property_name));
+        *curve, target_property, 0, group, std::move(custom_property_name),
+        native_property_type);
 
     if (start_time)
       keyframe_model->SetStartTime(start_time.value());
