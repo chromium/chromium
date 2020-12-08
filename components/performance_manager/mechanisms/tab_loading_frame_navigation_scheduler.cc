@@ -5,6 +5,7 @@
 #include "components/performance_manager/public/mechanisms/tab_loading_frame_navigation_scheduler.h"
 
 #include "base/no_destructor.h"
+#include "base/trace_event/trace_event.h"
 #include "components/performance_manager/public/graph/policies/tab_loading_frame_navigation_policy.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/performance_manager_main_thread_mechanism.h"
@@ -97,11 +98,16 @@ class TabLoadingFrameNavigationScheduler::Throttle
   Throttle(content::NavigationHandle* handle,
            TabLoadingFrameNavigationScheduler* scheduler)
       : content::NavigationThrottle(handle), scheduler_(scheduler) {
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+        "navigation", "TabLoadingFrameNavigationScheduler::Throttle", this,
+        "url", handle->GetURL().spec());
     DCHECK(scheduler);
   }
   ~Throttle() override {
     if (scheduler_)
       scheduler_->NotifyThrottleDestroyed(this);
+    TRACE_EVENT_NESTABLE_ASYNC_END0(
+        "navigation", "TabLoadingFrameNavigationScheduler::Throttle", this);
   }
 
   // content::NavigationThrottle implementation
