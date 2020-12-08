@@ -6,20 +6,8 @@
  * @fileoverview The 'nearby-device' component shows details of a remote device.
  */
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './icons.js';
-import './shared/nearby_device_icon.m.js';
-import './mojo/nearby_share_target_types.mojom-lite.js';
-import './mojo/nearby_share.mojom-lite.js';
-
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 Polymer({
   is: 'nearby-device',
-
-  _template: html`{__html_template__}`,
 
   properties: {
     /**

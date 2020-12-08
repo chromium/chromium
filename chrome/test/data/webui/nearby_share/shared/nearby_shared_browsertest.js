@@ -59,6 +59,24 @@ TEST_F('NearbyDeviceIconTest', 'All', () => mocha.run());
 /**
  * @extends {NearbySharedBrowserTest}
  */
+var NearbyDeviceTest = class extends NearbySharedBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload + 'shared/nearby_device.html';
+  }
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      'nearby_device_test.js',
+    ]);
+  }
+};
+
+TEST_F('NearbyDeviceTest', 'All', () => mocha.run());
+
+/**
+ * @extends {NearbySharedBrowserTest}
+ */
 var NearbyOnboardingPageTest = class extends NearbySharedBrowserTest {
   /** @override */
   get extraLibraries() {

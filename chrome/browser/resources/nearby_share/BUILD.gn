@@ -79,7 +79,6 @@ preprocess_if_expr("preprocess_gen") {
     "app.js",
     "icons.js",
     "nearby_confirmation_page.js",
-    "nearby_device.js",
     "nearby_discovery_page.js",
     "nearby_preview.js",
     "nearby_progress.js",
@@ -126,7 +125,6 @@ js_type_check("closure_compile") {
     ":app",
     ":discovery_manager",
     ":nearby_confirmation_page",
-    ":nearby_device",
     ":nearby_discovery_page",
     ":nearby_preview",
     ":nearby_progress",
@@ -163,20 +161,11 @@ js_library("nearby_confirmation_page") {
   ]
 }
 
-js_library("nearby_device") {
-  deps = [
-    "./shared:nearby_device_icon.m",
-    "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
-    "//third_party/polymer/v3_0/components-chromium/iron-icon",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
 js_library("nearby_discovery_page") {
   deps = [
     ":discovery_manager",
-    ":nearby_device",
     ":nearby_preview",
+    "./shared:nearby_device.m",
     "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -205,7 +194,6 @@ html_to_js("web_components") {
     "app.js",
     "icons.js",
     "nearby_confirmation_page.js",
-    "nearby_device.js",
     "nearby_discovery_page.js",
     "nearby_preview.js",
     "nearby_progress.js",
