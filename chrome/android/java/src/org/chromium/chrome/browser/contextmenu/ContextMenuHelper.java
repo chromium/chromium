@@ -207,10 +207,8 @@ public class ContextMenuHelper {
         final RevampedContextMenuCoordinator menuCoordinator =
                 new RevampedContextMenuCoordinator(topContentOffsetPx, mCurrentNativeDelegate);
         mCurrentContextMenu = menuCoordinator;
-        if (LensUtils.enableImageChip(mIsIncognito)) {
-            mChipDelegate = new LensChipDelegate(mCurrentContextMenuParams.getPageUrl(),
-                    mCurrentContextMenuParams.getTitleText(), mCurrentContextMenuParams.getSrcUrl(),
-                    mPageTitle, mIsIncognito, mWebContents, mCurrentNativeDelegate);
+        mChipDelegate = mCurrentPopulator.getChipDelegate();
+        if (mChipDelegate != null) {
             menuCoordinator.displayMenuWithChip(mWindow, mWebContents, mCurrentContextMenuParams,
                     items, mCallback, mOnMenuShown, mOnMenuClosed, mChipDelegate);
         } else {

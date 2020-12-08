@@ -8,6 +8,8 @@ import("//chrome/browser/buildflags.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/contextmenu/ChipDelegate.java",
+    "java/src/org/chromium/chrome/browser/contextmenu/ChipRenderParams.java",
     "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuItemDelegate.java",
     "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuNativeDelegate.java",
     "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuNativeDelegateImpl.java",

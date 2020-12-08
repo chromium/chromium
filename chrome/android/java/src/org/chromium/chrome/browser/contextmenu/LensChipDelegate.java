@@ -18,10 +18,12 @@ public class LensChipDelegate implements ChipDelegate {
     private LensQueryParams mLensQueryParams;
     private LensController mLensController;
     private ContextMenuNativeDelegate mNativeDelegate;
+    private Runnable mOnChipClickedCallback;
+    private Runnable mOnChipShownCallback;
 
     public LensChipDelegate(String pageUrl, String titleOrAltText, String srcUrl, String pageTitle,
-            boolean isIncognito, WebContents webContents,
-            ContextMenuNativeDelegate nativeDelegate) {
+            boolean isIncognito, WebContents webContents, ContextMenuNativeDelegate nativeDelegate,
+            Runnable onChipClickedCallback, Runnable onChipShownCallback) {
         mLensController = LensController.getInstance();
         if (!mLensController.isQueryEnabled()) {
             return;
@@ -35,6 +37,8 @@ public class LensChipDelegate implements ChipDelegate {
                                    .withWebContents(webContents)
                                    .build();
         mNativeDelegate = nativeDelegate;
+        mOnChipClickedCallback = onChipClickedCallback;
+        mOnChipShownCallback = onChipShownCallback;
     }
 
     @Override
@@ -46,8 +50,19 @@ public class LensChipDelegate implements ChipDelegate {
 
         Callback<Uri> callback = (uri) -> {
             mLensQueryParams.setImageUri(uri);
-            mLensController.getChipRenderParams(
-                    mLensQueryParams, (chipParams) -> { chipParamsCallback.onResult(chipParams); });
+            mLensController.getChipRenderParams(mLensQueryParams, (chipParams) -> {
+                if (isValidChipRenderParams(chipParams)) {
+                    Runnable mergedOnClickCallback = () -> {
+                        // The onClickCallback defined in LensController.
+                        chipParams.onClickCallback.run();
+                        // The onClickCallback defined when initialize the LensChipDelegate.
+                        mOnChipClickedCallback.run();
+                    };
+                    chipParams.onClickCallback = mergedOnClickCallback;
+                    chipParams.onShowCallback = mOnChipShownCallback;
+                }
+                chipParamsCallback.onResult(chipParams);
+            });
         };
 
         // Must occur on UI thread.

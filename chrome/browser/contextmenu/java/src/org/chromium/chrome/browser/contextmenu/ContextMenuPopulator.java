@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.contextmenu;
 
 import android.util.Pair;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;
@@ -46,4 +48,10 @@ public interface ContextMenuPopulator {
      * @return The title of current web page.
      */
     String getPageTitle();
+
+    /**
+     * @return A chip delegate responsible for populating chip data and action handling.
+     */
+    @Nullable
+    ChipDelegate getChipDelegate();
 }

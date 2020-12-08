@@ -137,7 +137,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 Action.SHARE_LINK, Action.OPEN_IN_EPHEMERAL_TAB, Action.OPEN_IMAGE_IN_EPHEMERAL_TAB,
                 Action.DIRECT_SHARE_LINK, Action.DIRECT_SHARE_IMAGE, Action.SEARCH_WITH_GOOGLE_LENS,
                 Action.COPY_IMAGE, Action.SHOP_SIMILAR_PRODUCTS, Action.SHOP_IMAGE_WITH_GOOGLE_LENS,
-                Action.SEARCH_SIMILAR_PRODUCTS, Action.READ_LATER})
+                Action.SEARCH_SIMILAR_PRODUCTS, Action.READ_LATER,
+                Action.SHOP_WITH_GOOGLE_LENS_CHIP})
         @Retention(RetentionPolicy.SOURCE)
         public @interface Action {
             int OPEN_IN_NEW_TAB = 0;
@@ -178,7 +179,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int SHOP_IMAGE_WITH_GOOGLE_LENS = 31;
             int SEARCH_SIMILAR_PRODUCTS = 32;
             int READ_LATER = 33;
-            int NUM_ENTRIES = 34;
+            int SHOP_WITH_GOOGLE_LENS_CHIP = 34;
+            int NUM_ENTRIES = 35;
         }
 
         // Note: these values must match the ContextMenuSaveLinkType enum in enums.xml.
@@ -843,6 +845,30 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     mParams.getSrcUrl(), mParams.getTitleText(), mParams.getPageUrl(),
                     lensQueryResult, requiresConfirmation);
         });
+    }
+
+    @Override
+    public @Nullable ChipDelegate getChipDelegate() {
+        if (LensUtils.enableImageChip(isIncognito())) {
+            return new LensChipDelegate(mParams.getPageUrl(), mParams.getTitleText(),
+                    mParams.getSrcUrl(), getPageTitle(), isIncognito(),
+                    mItemDelegate.getWebContents(), mNativeDelegate, getOnChipClickedCallback(),
+                    getOnChipShownCallback());
+        }
+
+        return null;
+    }
+
+    private Runnable getOnChipClickedCallback() {
+        return () -> {
+            recordContextMenuSelection(ContextMenuUma.Action.SHOP_WITH_GOOGLE_LENS_CHIP);
+        };
+    }
+
+    private Runnable getOnChipShownCallback() {
+        return () -> {
+            maybeRecordBooleanUkm("ContextMenuAndroid.Shown", "ShopWithGoogleLensChip");
+        };
     }
 
     /**
