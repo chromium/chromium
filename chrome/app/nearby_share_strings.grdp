@@ -69,7 +69,7 @@
 
   <!-- Discovery page -->
   <message name="IDS_NEARBY_DISCOVERY_PAGE_INFO" desc="Help text on how to use the Nearby Share feature. Explains how to enable it on a nearby Chromebook to share with it.">
-    Make sure both devices are unlocked, close together, and have Bluetooth turned on. If you’re sharing with a Chromebook, make sure it has Nearby Sharing turned on (open the status area by selecting the time, then select Nearby Share). <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+    Make sure both devices are unlocked, close together, and have Bluetooth turned on. If you’re sharing with a Chromebook not in your contacts, make sure it has Nearby visibility turned on (open the status area by selecting the time, then select Nearby visibility). <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_NEARBY_DISCOVERY_PAGE_SUBTITLE" desc="Subtitle of the Nearby Share device discovery page. This is where users select a device to share files with.">
     Select the device you’d like to share files with
@@ -113,6 +113,9 @@
   <message name="IDS_NEARBY_ACTIONS_CANCEL" desc="Action button text to cancel the current step in the Nearby Share UI.">
     Cancel
   </message>
+  <message name="IDS_NEARBY_ACTIONS_CLOSE" desc="Action button text to close the dialog. Shown when the process is complete or failed due to error.">
+    Close
+  </message>
   <message name="IDS_NEARBY_ACTIONS_CONFIRM" desc="Action button text to confirm a transfer in the Nearby Share UI.">
     Confirm
   </message>
@@ -128,8 +131,8 @@
   <message name="IDS_NEARBY_ERROR_CANT_SHARE" desc="Notify user that the file wasn't able to be shared. Generic title text for displaying errors to the user. To be shown next to more specific error text.">
     Can't share
   </message>
-  <message name="IDS_NEARBY_ERROR_NO_RESPONSE" desc="Notify user that the file share failed because the receiver neither accepted nor declined the share.">
-    The device you're sharing with didn't respond
+  <message name="IDS_NEARBY_ERROR_NO_RESPONSE" desc="Notify user that the file share failed because the receiver neither accepted nor declined the share. Suggest trying again.">
+    The device you're sharing with didn't respond. Please try again.
   </message>
   <message name="IDS_NEARBY_ERROR_NOT_ENOUGH_SPACE" desc="Notify user that the file can't be shared because there isn't enough disk space to store it. Displayed as a subtitle under a more generic file-couldn't-be-shared message.">
     Not enough disk space
@@ -137,8 +140,8 @@
   <message name="IDS_NEARBY_ERROR_REJECTED" desc="Notify sender that receiver declined the file share.">
     The device you’re trying to share with did not accept
   </message>
-  <message name="IDS_NEARBY_ERROR_SOMETHING_WRONG" desc="Generic error text shown when the reason for the failure is unknown or too technical to explain.">
-    Something went wrong
+  <message name="IDS_NEARBY_ERROR_SOMETHING_WRONG" desc="Generic error text shown when the reason for the failure is unknown or too technical to explain. Suggest trying again.">
+    Something went wrong. Please try again.
   </message>
   <message name="IDS_NEARBY_ERROR_TIME_OUT" desc="Notify user that the file share failed because something didn't happen in time, e.g. the receiver neither accepted nor declined the share. Generic title text to be shown next to more specific error text describing the situation.">
     Time out

@@ -36,6 +36,7 @@ suite('nearby-page-template', function() {
     assertFalse(isVisible('#utilityButton'));
     assertFalse(isVisible('#actionButton'));
     assertFalse(isVisible('#cancelButton'));
+    assertFalse(isVisible('#closeButton'));
   });
 
   test('Everything on', async function() {
@@ -52,6 +53,7 @@ suite('nearby-page-template', function() {
     assertTrue(isVisible('#utilityButton'));
     assertTrue(isVisible('#actionButton'));
     assertTrue(isVisible('#cancelButton'));
+    assertFalse(isVisible('#closeButton'));
 
     /** @type {boolean} */
     let utilityTriggered = false;
@@ -73,5 +75,29 @@ suite('nearby-page-template', function() {
         element.actionButtonEventName, () => actionTrigger = true);
     element.$$('#actionButton').click();
     assertTrue(actionTrigger);
+  });
+
+  test('Close only', async function() {
+    element.title = 'title';
+    element.subTitle = 'subTitle';
+    element.utilityButtonLabel = 'utility';
+    element.cancelButtonLabel = 'cancel';
+    element.actionButtonLabel = 'action';
+    element.closeOnly = true;
+
+    await test_util.waitAfterNextRender(element);
+
+    assertEquals('title', element.$$('#pageTitle').innerHTML.trim());
+    assertEquals('subTitle', element.$$('#pageSubTitle').innerHTML.trim());
+    assertFalse(isVisible('#utilityButton'));
+    assertFalse(isVisible('#actionButton'));
+    assertFalse(isVisible('#cancelButton'));
+    assertTrue(isVisible('#closeButton'));
+
+    /** @type {boolean} */
+    let closeTrigger = false;
+    element.addEventListener('close', () => closeTrigger = true);
+    element.$$('#closeButton').click();
+    assertTrue(closeTrigger);
   });
 });

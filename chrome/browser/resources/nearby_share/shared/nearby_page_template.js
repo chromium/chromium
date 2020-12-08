@@ -21,23 +21,28 @@ Polymer({
       type: String,
     },
 
-    /** @type {?string} */
+    /**
+     * Text to show on the action button. If either this is falsey, or if
+     * |closeOnly| is true, then the action button is hidden.
+     * @type {?string}
+     * */
     actionButtonLabel: {
       type: String,
     },
 
     /** @type {string} */
-    actionButtonEventName: {
-      type: String,
-      value: 'action'
-    },
+    actionButtonEventName: {type: String, value: 'action'},
 
     actionDisabled: {
       type: Boolean,
       value: false,
     },
 
-    /** @type {?string} */
+    /**
+     * Text to show on the cancel button. If either this is falsey, or if
+     * |closeOnly| is true, then the cancel button is hidden.
+     * @type {?string}
+     * */
     cancelButtonLabel: {
       type: String,
     },
@@ -48,7 +53,11 @@ Polymer({
       value: 'cancel',
     },
 
-    /** @type {?string} */
+    /**
+     * Text to show on the utility button. If either this is falsey, or if
+     * |closeOnly| is true, then the utility button is hidden.
+     * @type {?string}
+     * */
     utilityButtonLabel: {
       type: String,
     },
@@ -57,7 +66,16 @@ Polymer({
     utilityButtonEventName: {
       type: String,
       value: 'utility',
-    }
+    },
+
+    /**
+     * When true, hide all other buttons and show a close button.
+     * @type {boolean}
+     * */
+    closeOnly: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /** @private */
@@ -73,5 +91,10 @@ Polymer({
   /** @private */
   onUtilityClick_() {
     this.fire(this.utilityButtonEventName);
+  },
+
+  /** @private */
+  onCloseClick_() {
+    this.fire('close');
   },
 });

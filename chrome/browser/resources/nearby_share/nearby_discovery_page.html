@@ -142,7 +142,8 @@
         action-button-event-name="next"
         action-disabled="[[!selectedShareTarget]]"
         cancel-button-label="$i18n{nearbyShareActionsCancel}"
-        cancel-button-event-name="close">
+        cancel-button-event-name="close"
+        close-only="[[errorTitle_]]">
   <div id="centerContent" slot="content">
     <cr-lottie animation-url="nearby_share_pulse_animation.json"
         autoplay="true">

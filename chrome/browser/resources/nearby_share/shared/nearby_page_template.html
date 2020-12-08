@@ -70,23 +70,32 @@
       </div>
 
       <div id="actions">
-        <template is="dom-if" if="[[utilityButtonLabel]]">
-          <cr-button id="utilityButton" class="cancel-button"
-              on-click="onUtilityClick_" aria-label="[[utilityButtonLabel]]">
-            [[utilityButtonLabel]]
-          </cr-button>
+        <template is="dom-if" if="[[!closeOnly]]">
+          <template is="dom-if" if="[[utilityButtonLabel]]">
+            <cr-button id="utilityButton" class="cancel-button"
+                on-click="onUtilityClick_" aria-label="[[utilityButtonLabel]]">
+              [[utilityButtonLabel]]
+            </cr-button>
+          </template>
+          <template is="dom-if" if="[[cancelButtonLabel]]">
+            <cr-button id="cancelButton" class="cancel-button"
+                on-click="onCancelClick_" aria-label="[[cancelButtonLabel]]">
+              [[cancelButtonLabel]]
+            </cr-button>
+          </template>
+          <template is="dom-if" if="[[actionButtonLabel]]">
+            <cr-button id="actionButton" class="action-button"
+                on-click="onActionClick_" disabled="[[actionDisabled]]"
+                aria-label="[[actionButtonLabel]]">
+              [[actionButtonLabel]]
+            </cr-button>
+          </template>
         </template>
-        <template is="dom-if" if="[[cancelButtonLabel]]">
-          <cr-button id="cancelButton" class="cancel-button"
-              on-click="onCancelClick_" aria-label="[[cancelButtonLabel]]">
-            [[cancelButtonLabel]]
-          </cr-button>
-        </template>
-        <template is="dom-if" if="[[actionButtonLabel]]">
-          <cr-button id="actionButton" class="action-button"
-              on-click="onActionClick_" disabled="[[actionDisabled]]"
-              aria-label="[[actionButtonLabel]]">
-            [[actionButtonLabel]]
+        <template is="dom-if" if="[[closeOnly]]">
+          <cr-button id="closeButton" class="action-button"
+              on-click="onCloseClick_"
+              aria-label="$i18n{nearbyShareActionsClose}">
+            $i18n{nearbyShareActionsClose}
           </cr-button>
         </template>
       </div>
