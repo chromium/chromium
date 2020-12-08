@@ -233,10 +233,6 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   bool CanAccessNativeFileSystem() const { return !IsOpaque(); }
   bool CanAccessCacheStorage() const { return !IsOpaque(); }
   bool CanAccessLocks() const { return !IsOpaque(); }
-
-  // Technically, we should always allow access to sessionStorage, but we
-  // currently don't handle creating a sessionStorage area for opaque
-  // origins.
   bool CanAccessSessionStorage() const { return !IsOpaque(); }
 
   // The local SecurityOrigin is the most privileged SecurityOrigin.
