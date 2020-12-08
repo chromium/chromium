@@ -642,10 +642,6 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
       allow_discard_start_margin = true;
     } while (column_break_token);
 
-    // TODO(mstensho): Nested column balancing.
-    if (container_builder_.DidBreakSelf())
-      break;
-
     if (!balance_columns) {
       if (result->ColumnSpanner()) {
         // We always have to balance columns preceding a spanner, so if we
@@ -688,23 +684,22 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
     if (actual_column_count <= forced_break_count + 1)
       break;
 
-    // TODO(mstensho): Handle this situation also when we're inside another
-    // balanced multicol container, rather than bailing (which we do now, to
-    // avoid infinite loops). If we exhaust the inner column-count in such
-    // cases, that piece of information may have to be propagated to the outer
-    // multicol, and instead stretch there (not here). We have no such mechanism
-    // in place yet.
-    if (ConstraintSpace().IsInsideBalancedColumns())
-      break;
-
     LayoutUnit new_column_block_size =
         StretchColumnBlockSize(minimal_space_shortage, column_size.block_size);
 
     // Give up if we cannot get taller columns. The multicol container may have
     // a specified block-size preventing taller columns, for instance.
     DCHECK_GE(new_column_block_size, column_size.block_size);
-    if (new_column_block_size <= column_size.block_size)
+    if (new_column_block_size <= column_size.block_size) {
+      if (ConstraintSpace().IsInsideBalancedColumns()) {
+        // If we're doing nested column balancing, propagate any space shortage
+        // to the outer multicol container, so that the outer multicol container
+        // can attempt to stretch, so that this inner one may fit as well.
+        if (!container_builder_.IsInitialColumnBalancingPass())
+          container_builder_.PropagateSpaceShortage(minimal_space_shortage);
+      }
       break;
+    }
 
     // Remove column fragments and re-attempt layout with taller columns.
     new_columns.clear();
