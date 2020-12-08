@@ -48,7 +48,7 @@ class DataChannel(WebrtcPage):
   def ParseTestResults(self, action_runner):
     self.AddJavaScriptMeasurement(
         'data_transferred',
-        'bytes',
+        'bytes_biggerIsBetter',
         'receiveProgress.value',
         description='Amount of data transferred by data channel in 10 seconds')
 
@@ -155,7 +155,7 @@ class InsertableStreamsVideoProcessing(WebrtcPage):
 
   def ExecuteTest(self, action_runner):
     self.AddMeasurement(
-        'supported', 'count', 1 if self.supported else 0,
+        'supported', 'count_biggerIsBetter', 1 if self.supported else 0,
         'Boolean flag indicating if this benchmark is supported by the browser.'
     )
     if not self.supported:
@@ -178,7 +178,7 @@ class InsertableStreamsVideoProcessing(WebrtcPage):
       action_runner.Wait(10)
     self.AddJavaScriptMeasurement(
         'sink_decoded_frames',
-        'count',
+        'count_biggerIsBetter',
         'document.querySelector(".sinkVideo").webkitDecodedFrameCount',
         description='Number of frames received at the sink video.')
 
