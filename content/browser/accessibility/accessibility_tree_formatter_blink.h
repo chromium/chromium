@@ -24,8 +24,10 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBlink
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
 
+ protected:
   void AddDefaultFilters(
       std::vector<AXPropertyFilter>* property_filters) override;
+
  private:
   void RecursiveBuildTree(const BrowserAccessibility& node,
                           base::Value* dict) const;

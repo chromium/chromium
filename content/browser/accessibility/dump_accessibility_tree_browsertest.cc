@@ -151,7 +151,8 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
 
   std::vector<std::string> Dump(std::vector<std::string>& unused) override {
     std::unique_ptr<AXTreeFormatter> formatter(CreateFormatter());
-    formatter->SetPropertyFilters(property_filters_);
+    formatter->SetPropertyFilters(property_filters_,
+                                  AXTreeFormatter::kFiltersDefaultSet);
     formatter->SetNodeFilters(node_filters_);
     std::string actual_contents =
         formatter->Format(GetRootAccessibilityNode(shell()->web_contents()));

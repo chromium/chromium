@@ -68,8 +68,8 @@ void AccessibilityTreeFormatterMacBrowserTest::TestAndCheck(
         ui::AXPropertyFilter(filter, ui::AXPropertyFilter::ALLOW_EMPTY));
   }
 
-  formatter->AddDefaultFilters(&property_filters);
-  formatter->SetPropertyFilters(property_filters);
+  formatter->SetPropertyFilters(property_filters,
+                                ui::AXTreeFormatter::kFiltersDefaultSet);
 
   BrowserAccessibility* root = GetManager()->GetRoot();
   ASSERT_NE(nullptr, root);

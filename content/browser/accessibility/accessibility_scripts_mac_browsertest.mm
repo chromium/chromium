@@ -37,8 +37,8 @@ class AccessibilityScriptsMacBrowserTest : public ContentBrowserTest {
         helper_("mac") {
     // Set property filters.
     std::vector<ui::AXPropertyFilter> property_filters;
-    formatter_->AddDefaultFilters(&property_filters);
-    formatter_->SetPropertyFilters(property_filters);
+    formatter_->SetPropertyFilters(property_filters,
+                                   ui::AXTreeFormatter::kFiltersDefaultSet);
   }
 
   void LoadFile(const std::string& file);

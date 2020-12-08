@@ -87,8 +87,14 @@ void AccessibilityTreeFormatterBase::RecursiveFormatTree(
 }
 
 void AccessibilityTreeFormatterBase::SetPropertyFilters(
-    const std::vector<AXPropertyFilter>& property_filters) {
-  property_filters_ = property_filters;
+    const std::vector<AXPropertyFilter>& property_filters,
+    PropertyFilterSet default_filter_set) {
+  property_filters_.clear();
+  if (default_filter_set == kFiltersDefaultSet) {
+    AddDefaultFilters(&property_filters_);
+  }
+  property_filters_.insert(property_filters_.end(), property_filters.begin(),
+                           property_filters.end());
 }
 
 void AccessibilityTreeFormatterBase::SetNodeFilters(

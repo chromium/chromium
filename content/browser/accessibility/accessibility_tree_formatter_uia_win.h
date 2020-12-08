@@ -25,12 +25,14 @@ class AccessibilityTreeFormatterUia : public AccessibilityTreeFormatterBase {
   ~AccessibilityTreeFormatterUia() override;
 
   // AccessibilityTreeFormatterBase:
-  void AddDefaultFilters(
-      std::vector<AXPropertyFilter>* property_filters) override;
   base::Value BuildTree(BrowserAccessibility* start) const override;
   base::Value BuildTreeForWindow(gfx::AcceleratedWidget hwnd) const override;
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
+
+ protected:
+  void AddDefaultFilters(
+      std::vector<AXPropertyFilter>* property_filters) override;
 
  private:
   static const long properties_[];

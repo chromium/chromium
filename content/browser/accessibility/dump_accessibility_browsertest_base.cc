@@ -144,9 +144,7 @@ void DumpAccessibilityTestBase::ChooseFeatures(
 std::string
 DumpAccessibilityTestBase::DumpUnfilteredAccessibilityTreeAsString() {
   std::unique_ptr<AXTreeFormatter> formatter(CreateFormatter());
-  std::vector<AXPropertyFilter> property_filters;
-  property_filters.emplace_back("*", AXPropertyFilter::ALLOW);
-  formatter->SetPropertyFilters(property_filters);
+  formatter->SetPropertyFilters({{"*", AXPropertyFilter::ALLOW}});
   formatter->set_show_ids(true);
   return formatter->Format(GetRootAccessibilityNode(shell()->web_contents()));
 }
@@ -210,8 +208,6 @@ void DumpAccessibilityTestBase::RunTest(const base::FilePath file_path,
 void DumpAccessibilityTestBase::RunTestForPlatform(
     const base::FilePath file_path,
     const char* file_dir) {
-  formatter_ = CreateFormatter();
-
   // Disable the "hot tracked" state (set when the mouse is hovering over
   // an object) because it makes test output change based on the mouse position.
   BrowserAccessibilityStateImpl::GetInstance()
@@ -270,7 +266,6 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   std::vector<std::string> default_action_on;
   property_filters_.clear();
   node_filters_.clear();
-  formatter_->AddDefaultFilters(&property_filters_);
   AddDefaultFilters(&property_filters_);
   ParseHtmlForExtraDirectives(html_contents, &no_load_expected, &wait_for,
                               &execute, &run_until, &default_action_on);

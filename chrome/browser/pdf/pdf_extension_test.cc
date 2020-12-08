@@ -3185,10 +3185,10 @@ class PDFExtensionAccessibilityTreeDumpTest
     std::unique_ptr<AXTreeFormatter> formatter =
         AXInspectFactory::CreateFormatter(GetParam().second);
     std::vector<AXPropertyFilter> property_filters;
-    formatter->AddDefaultFilters(&property_filters);
     AddDefaultFilters(&property_filters);
     ParsePdfForExtraDirectives(pdf_contents, &property_filters);
-    formatter->SetPropertyFilters(property_filters);
+    formatter->SetPropertyFilters(property_filters,
+                                  AXTreeFormatter::kFiltersDefaultSet);
 
     // Exit without running the test if we can't find an expectation file or if
     // the expectation file contains a skip marker.

@@ -61,13 +61,14 @@ class AccessibilityTreeFormatterMac : public AccessibilityTreeFormatterBase {
   explicit AccessibilityTreeFormatterMac();
   ~AccessibilityTreeFormatterMac() override;
 
-  void AddDefaultFilters(
-      std::vector<AXPropertyFilter>* property_filters) override;
-
   base::Value BuildTree(BrowserAccessibility* root) const override;
   base::Value BuildTreeForWindow(gfx::AcceleratedWidget widget) const override;
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
+
+ protected:
+  void AddDefaultFilters(
+      std::vector<AXPropertyFilter>* property_filters) override;
 
  private:
   base::Value BuildTreeForAXUIElement(AXUIElementRef node) const;

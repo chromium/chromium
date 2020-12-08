@@ -29,10 +29,6 @@ class AX_EXPORT AXTreeFormatter {
 
   virtual ~AXTreeFormatter() = default;
 
-  // Appends default filters of the formatter.
-  virtual void AddDefaultFilters(
-      std::vector<AXPropertyFilter>* property_filters) = 0;
-
   // Returns true if the given text matches |allow| property filters, or false
   // if matches |deny| filter. Returns default value if doesn't match any
   // property filters.
@@ -60,10 +56,21 @@ class AX_EXPORT AXTreeFormatter {
   // Dumps accessibility tree.
   virtual std::string FormatTree(const base::Value& tree_node) const = 0;
 
+  // Propery filter predefined sets.
+  enum PropertyFilterSet {
+    // Empty set.
+    kFiltersEmptySet,
+
+    // Default filters set, defined by a formatter.
+    kFiltersDefaultSet,
+  };
+
   // Set regular expression filters that apply to each property of every node
-  // before it's output.
+  // before it's output. If a default filter set is given, then filters defined
+  // by the set are preappended to the given property filters.
   virtual void SetPropertyFilters(
-      const std::vector<AXPropertyFilter>& property_filters) = 0;
+      const std::vector<AXPropertyFilter>& property_filters,
+      PropertyFilterSet default_filters_set = kFiltersEmptySet) = 0;
 
   // Set regular expression filters that apply to every node before output.
   virtual void SetNodeFilters(

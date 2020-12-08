@@ -67,11 +67,9 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBase
   virtual base::Value BuildTree(BrowserAccessibility* root) const = 0;
 
   // AXTreeFormatter overrides.
-  void AddDefaultFilters(
-      std::vector<AXPropertyFilter>* property_filters) override;
   std::string FormatTree(const base::Value& tree_node) const override;
-  void SetPropertyFilters(
-      const std::vector<AXPropertyFilter>& property_filters) override;
+  void SetPropertyFilters(const std::vector<AXPropertyFilter>& property_filters,
+                          PropertyFilterSet default_filters_set) override;
   void SetNodeFilters(const std::vector<AXNodeFilter>& node_filters) override;
   void set_show_ids(bool show_ids) override;
 
@@ -79,6 +77,10 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBase
   //
   // Overridden by platform subclasses.
   //
+
+  // Appends default filters of the formatter.
+  virtual void AddDefaultFilters(
+      std::vector<AXPropertyFilter>* property_filters);
 
   // Returns property nodes complying to the line index filter for all
   // allow/allow_empty property filters.

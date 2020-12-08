@@ -45,6 +45,7 @@ class AccessibilityTreeFormatterWin : public AccessibilityTreeFormatterBase {
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
 
+ protected:
   void AddDefaultFilters(
       std::vector<AXPropertyFilter>* property_filters) override;
 
