@@ -167,7 +167,7 @@ class CORE_EXPORT LocalFrameView final
   void UpdateLayout();
   bool DidFirstLayout() const;
   bool LifecycleUpdatesActive() const;
-  void SetLifecycleUpdatesThrottledForTesting(bool throttled = true);
+  void SetLifecycleUpdatesThrottledForTesting();
   void ScheduleRelayout();
   void ScheduleRelayoutOfSubtree(LayoutObject*);
   bool LayoutPending() const;
@@ -624,21 +624,6 @@ class CORE_EXPORT LocalFrameView final
 
   void BeginLifecycleUpdates();
 
-  // Records a timestamp in PaintTiming when the frame is first not
-  // render-throttled (since it last was throttled if applicable).
-  void MarkFirstEligibleToPaint();
-
-  // Resets the optional timestamp in PaintTiming to null to indicate
-  // that the frame is now render-throttled, unless the frame already has
-  // a first contentful paint. This is a necessary workaround, as when
-  // constructing the frame, HTMLConstructionSite::InsertHTMLBodyElement
-  // initiates a call via Document::WillInsertBody to begin lifecycle
-  // updates, and hence |lifecycle_updates_throttled_| is set to false, which
-  // can cause the frame to be briefly unthrottled and receive a paint
-  // eligibility timestamp, even if the frame is throttled shortly thereafter
-  // and not actually painted.
-  void MarkIneligibleToPaint();
-
   // Shorthands of LayoutView's corresponding methods.
   void SetNeedsPaintPropertyUpdate();
 
@@ -992,6 +977,21 @@ class CORE_EXPORT LocalFrameView final
   // Returns true if we should paint the color adjust background from the
   // StyleEngine instead of the base background color.
   bool ShouldUseColorAdjustBackground() const;
+
+  // Records a timestamp in PaintTiming when the frame is first not
+  // render-throttled (since it last was throttled if applicable).
+  void MarkFirstEligibleToPaint();
+
+  // Resets the optional timestamp in PaintTiming to null to indicate
+  // that the frame is now render-throttled, unless the frame already has
+  // a first contentful paint. This is a necessary workaround, as when
+  // constructing the frame, HTMLConstructionSite::InsertHTMLBodyElement
+  // initiates a call via Document::WillInsertBody to begin lifecycle
+  // updates, and hence |lifecycle_updates_throttled_| is set to false, which
+  // can cause the frame to be briefly unthrottled and receive a paint
+  // eligibility timestamp, even if the frame is throttled shortly thereafter
+  // and not actually painted.
+  void MarkIneligibleToPaint();
 
   LayoutSize size_;
 

@@ -461,8 +461,18 @@ bool LocalFrameView::LifecycleUpdatesActive() const {
   return !lifecycle_updates_throttled_;
 }
 
-void LocalFrameView::SetLifecycleUpdatesThrottledForTesting(bool throttled) {
-  lifecycle_updates_throttled_ = throttled;
+void LocalFrameView::SetLifecycleUpdatesThrottledForTesting() {
+  if (lifecycle_updates_throttled_)
+    return;
+
+  lifecycle_updates_throttled_ = true;
+  // In real world we never set lifecycle_updates_throttled_ to true after
+  // StartLifecycleUpdates(). For testing, we need to schedule updates for the
+  // change.
+  ScheduleAnimation();
+  // We may record fewer pre-composited layers under the frame.
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    SetPaintArtifactCompositorNeedsUpdate();
 }
 
 void LocalFrameView::InvalidateRect(const IntRect& rect) {
@@ -4559,6 +4569,8 @@ void LocalFrameView::BeginLifecycleUpdates() {
   if (GetFrame().GetDocument()->IsInitialEmptyDocument())
     return;
   lifecycle_updates_throttled_ = false;
+  RenderThrottlingStatusChanged();
+  // TODO(wangxianzhu): The following call seems unnecessary.
   if (auto* owner = GetLayoutEmbeddedContent())
     owner->SetShouldCheckForPaintInvalidation();
 
@@ -4569,9 +4581,6 @@ void LocalFrameView::BeginLifecycleUpdates() {
     layout_view->SetNeedsLayout(layout_invalidation_reason::kAddedToLayout,
                                 kMarkOnlyThis);
   }
-
-  ScheduleAnimation();
-  SetIntersectionObservationState(kRequired);
 
   // Non-main-frame lifecycle and commit deferral are controlled by their
   // main frame.
