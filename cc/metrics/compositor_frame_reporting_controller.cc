@@ -486,8 +486,12 @@ void CompositorFrameReportingController::CreateReportersForDroppedFrames(
             old_args.frame_id.sequence_number);
   const uint32_t interval =
       new_args.frame_id.sequence_number - old_args.frame_id.sequence_number;
-  auto timestamp = old_args.frame_time + old_args.interval;
-  for (uint32_t i = 1; i < interval; ++i, timestamp += old_args.interval) {
+
+  // Up to 100 frames will be reported (100 closest frames to new_args).
+  const uint32_t kMaxFrameCount = 100;
+  uint32_t index = (interval > kMaxFrameCount) ? interval - kMaxFrameCount : 1;
+  auto timestamp = old_args.frame_time + (old_args.interval * index);
+  for (uint32_t i = index; i < interval; ++i, timestamp += old_args.interval) {
     auto args = viz::BeginFrameArgs::Create(
         BEGINFRAME_FROM_HERE, old_args.frame_id.source_id,
         old_args.frame_id.sequence_number + i, timestamp,
