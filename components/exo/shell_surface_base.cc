@@ -329,6 +329,12 @@ ShellSurfaceBase::~ShellSurfaceBase() {
   // Remove activation observer before hiding widget to prevent it from
   // casuing the configure callback to be called.
   WMHelper::GetInstance()->RemoveActivationObserver(this);
+
+  // Client is gone by now, so don't call callbacks.
+  close_callback_.Reset();
+  pre_close_callback_.Reset();
+  surface_destroyed_callback_.Reset();
+
   if (widget_) {
     widget_->GetNativeWindow()->RemoveObserver(this);
     widget_->RemoveObserver(this);

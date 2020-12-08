@@ -17,6 +17,7 @@
 #include "base/callback.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "components/exo/buffer.h"
 #include "components/exo/permission.h"
 #include "components/exo/shell_surface_util.h"
@@ -472,11 +473,17 @@ TEST_F(ShellSurfaceTest, SetStartupId) {
 }
 
 TEST_F(ShellSurfaceTest, StartMove) {
+  // TODO: Ractor out the shell surface creation.
+  gfx::Size buffer_size(64, 64);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
   std::unique_ptr<Surface> surface(new Surface);
   std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
 
   // Map shell surface.
+  surface->Attach(buffer.get());
   surface->Commit();
+  ASSERT_TRUE(shell_surface->GetWidget());
 
   // The interactive move should end when surface is destroyed.
   shell_surface->StartMove();
@@ -486,17 +493,61 @@ TEST_F(ShellSurfaceTest, StartMove) {
 }
 
 TEST_F(ShellSurfaceTest, StartResize) {
+  gfx::Size buffer_size(64, 64);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
   std::unique_ptr<Surface> surface(new Surface);
   std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
 
   // Map shell surface.
+  surface->Attach(buffer.get());
   surface->Commit();
+  ASSERT_TRUE(shell_surface->GetWidget());
 
   // The interactive resize should end when surface is destroyed.
   shell_surface->StartResize(HTBOTTOMRIGHT);
 
   // Test that destroying the surface before resize ends is OK.
   surface.reset();
+}
+
+TEST_F(ShellSurfaceTest, StartResizeAndDestroyShell) {
+  gfx::Size buffer_size(64, 64);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  std::unique_ptr<Surface> surface(new Surface);
+  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
+
+  uint32_t serial = 0;
+  auto configure_callback = base::BindRepeating(
+      [](uint32_t* const serial_ptr, const gfx::Size& size,
+         chromeos::WindowStateType state_type, bool resizing, bool activated,
+         const gfx::Vector2d& origin_offset) { return ++(*serial_ptr); },
+      &serial);
+
+  // Map shell surface.
+  surface->Attach(buffer.get());
+  shell_surface->set_configure_callback(configure_callback);
+
+  surface->Commit();
+  ASSERT_TRUE(shell_surface->GetWidget());
+
+  // The interactive resize should end when surface is destroyed.
+  shell_surface->StartResize(HTBOTTOMRIGHT);
+
+  // Go through configure/commit stage to update the resize component.
+  shell_surface->AcknowledgeConfigure(serial);
+  surface->Commit();
+
+  shell_surface->set_configure_callback(base::BindRepeating(
+      [](const gfx::Size& size, chromeos::WindowStateType state_type,
+         bool resizing, bool activated, const gfx::Vector2d& origin_offset) {
+        ADD_FAILURE() << "Configure Should not be called";
+        return uint32_t{0};
+      }));
+
+  // Test that destroying the surface before resize ends is OK.
+  shell_surface.reset();
 }
 
 TEST_F(ShellSurfaceTest, SetGeometry) {

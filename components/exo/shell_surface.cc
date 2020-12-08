@@ -106,6 +106,8 @@ ShellSurface::ShellSurface(Surface* surface)
 
 ShellSurface::~ShellSurface() {
   DCHECK(!scoped_configure_);
+  // Client is gone by now, so don't call callbask.
+  configure_callback_.Reset();
   if (widget_)
     ash::WindowState::Get(widget_->GetNativeWindow())->RemoveObserver(this);
 }
@@ -551,8 +553,8 @@ void ShellSurface::Configure(bool ends_drag) {
   // If surface is being resized, save the resize direction.
   if (window_state && window_state->is_dragged() && !ends_drag)
     resize_component = window_state->drag_details()->window_component;
-
   uint32_t serial = 0;
+
   if (!configure_callback_.is_null()) {
     if (window_state) {
       serial = configure_callback_.Run(
@@ -604,7 +606,8 @@ void ShellSurface::AttemptToStartDrag(int component) {
   }
   auto end_drag = [](ShellSurface* shell_surface,
                      ash::ToplevelWindowEventHandler::DragResult result) {
-    shell_surface->EndDrag();
+    if (result != ash::ToplevelWindowEventHandler::DragResult::WINDOW_DESTROYED)
+      shell_surface->EndDrag();
   };
 
   if (gesture_target) {
