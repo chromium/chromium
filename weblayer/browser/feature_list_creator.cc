@@ -16,9 +16,12 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "weblayer/browser/android/metrics/weblayer_metrics_service_client.h"
 #include "weblayer/browser/system_network_context_manager.h"
 #include "weblayer/browser/weblayer_variations_service_client.h"
+
+#if defined(OS_ANDROID)
+#include "weblayer/browser/android/metrics/weblayer_metrics_service_client.h"
+#endif
 
 #if defined(OS_ANDROID)
 namespace switches {

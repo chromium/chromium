@@ -31,9 +31,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/json/json_writer.h"
-#include "components/metrics/metrics_service.h"
-#include "components/ukm/ukm_service.h"
-#include "weblayer/browser/android/metrics/weblayer_metrics_service_client.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/java/jni/BrowserImpl_jni.h"
 #endif
@@ -45,41 +42,6 @@ using base::android::ScopedJavaLocalRef;
 #endif
 
 namespace weblayer {
-
-namespace {
-
-#if defined(OS_ANDROID)
-void UpdateMetricsService() {
-  static bool s_foreground = false;
-  // TODO(sky): convert this to observer.
-  bool foreground = BrowserList::GetInstance()->HasAtLeastOneResumedBrowser();
-
-  if (foreground == s_foreground)
-    return;
-
-  s_foreground = foreground;
-
-  auto* metrics_service =
-      WebLayerMetricsServiceClient::GetInstance()->GetMetricsService();
-  if (metrics_service) {
-    if (foreground)
-      metrics_service->OnAppEnterForeground();
-    else
-      metrics_service->OnAppEnterBackground();
-  }
-
-  auto* ukm_service =
-      WebLayerMetricsServiceClient::GetInstance()->GetUkmService();
-  if (ukm_service) {
-    if (foreground)
-      ukm_service->OnAppEnterForeground();
-    else
-      ukm_service->OnAppEnterBackground();
-  }
-}
-#endif  // defined(OS_ANDROID)
-
-}  // namespace
 
 // static
 constexpr char BrowserImpl::kPersistenceFilePrefix[];
@@ -443,7 +405,6 @@ void BrowserImpl::UpdateFragmentResumedState(bool state) {
   const bool old_has_at_least_one_active_browser =
       BrowserList::GetInstance()->HasAtLeastOneResumedBrowser();
   fragment_resumed_ = state;
-  UpdateMetricsService();
   if (old_has_at_least_one_active_browser !=
       BrowserList::GetInstance()->HasAtLeastOneResumedBrowser()) {
     BrowserList::GetInstance()->NotifyHasAtLeastOneResumedBrowserChanged();

@@ -427,4 +427,24 @@ TEST_F(AndroidMetricsServiceClientTest,
   EXPECT_TRUE(base::PathExists(upload_dir));
 }
 
+TEST_F(AndroidMetricsServiceClientTest,
+       MetricsServiceCreatedFromInitializeWithNoConsent) {
+  auto prefs = CreateTestPrefs();
+  auto client = std::make_unique<TestClient>();
+  client->Initialize(prefs.get());
+  EXPECT_FALSE(client->IsReportingEnabled());
+  EXPECT_TRUE(client->GetMetricsService());
+}
+
+TEST_F(AndroidMetricsServiceClientTest, GetMetricsServiceIfStarted) {
+  auto prefs = CreateTestPrefs();
+  auto client = std::make_unique<TestClient>();
+  client->SetInSample(true);
+  client->Initialize(prefs.get());
+  EXPECT_EQ(nullptr, client->GetMetricsServiceIfStarted());
+  client->SetHaveMetricsConsent(/* user_consent= */ true,
+                                /* app_consent= */ true);
+  EXPECT_TRUE(client->GetMetricsServiceIfStarted());
+}
+
 }  // namespace metrics

@@ -31,17 +31,22 @@ ProfileImpl* GetProfileByName(const std::string& name) {
 
 }  // namespace
 
-void InstallTestGmsBridge(bool has_user_consent,
+void InstallTestGmsBridge(ConsentType consent_type,
                           const OnLogsMetricsCallback on_log_metrics) {
   GetOnLogMetricsCallback() = on_log_metrics;
   Java_MetricsTestHelper_installTestGmsBridge(
-      base::android::AttachCurrentThread(), has_user_consent);
+      base::android::AttachCurrentThread(), static_cast<int>(consent_type));
 }
 
 void RemoveTestGmsBridge() {
   Java_MetricsTestHelper_removeTestGmsBridge(
       base::android::AttachCurrentThread());
   GetOnLogMetricsCallback().Reset();
+}
+
+void RunConsentCallback(bool has_consent) {
+  Java_MetricsTestHelper_runConsentCallback(
+      base::android::AttachCurrentThread(), has_consent);
 }
 
 ProfileImpl* CreateProfile(const std::string& name) {

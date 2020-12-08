@@ -23,12 +23,9 @@ import org.chromium.weblayer.shell.InstrumentationActivity;
  * Assertions for WebLayer.registerExternalExperimentIDs().
  */
 // The flags are necessary for the following reasons:
-// force-enable-metrics-reporting: forces metrics to be enabled. Without this, whether metrics are
-// enabled depends upon the android version and system. The test needs metrics to be enabled.
 // host-resolver-rules: to make 'google.com' redirect to the port created by TestWebServer.
 // ignore-certificate-errors: TestWebServer doesn't have a real cert.
-@CommandLineFlags.Add({"force-enable-metrics-reporting", "host-resolver-rules='MAP * 127.0.0.1'",
-        "ignore-certificate-errors"})
+@CommandLineFlags.Add({"host-resolver-rules='MAP * 127.0.0.1'", "ignore-certificate-errors"})
 @RunWith(WebLayerJUnit4ClassRunner.class)
 public class RegisterExternalExperimentIdsTest {
     @Rule

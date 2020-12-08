@@ -17,7 +17,7 @@ class BrowserListObserver : public base::CheckedObserver {
 #if defined(OS_ANDROID)
   // Called when the value of BrowserList::HasAtLeastOneResumedBrowser()
   // changes.
-  void OnHasAtLeastOneResumedBrowserStateChanged(bool new_value) {}
+  virtual void OnHasAtLeastOneResumedBrowserStateChanged(bool new_value) {}
 #endif
 
   virtual void OnBrowserCreated(Browser* browser) {}

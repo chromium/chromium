@@ -87,6 +87,9 @@ extern const char kCrashpadHistogramAllocatorName[];
 // the client ID (generating a new ID if there was none). If this client is in
 // the sample, it then calls MetricsService::Start(). If consent was not
 // granted, MaybeStartMetrics() instead clears the client ID, if any.
+//
+// To match chrome on other platforms (including android), the MetricsService is
+// always created.
 class AndroidMetricsServiceClient : public MetricsServiceClient,
                                     public EnabledStateProvider,
                                     public content::NotificationObserver {
@@ -124,6 +127,10 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
   // EnabledStateProvider
   bool IsConsentGiven() const override;
   bool IsReportingEnabled() const override;
+
+  // Returns the MetricService only if it has been started (which means consent
+  // was given).
+  MetricsService* GetMetricsServiceIfStarted();
 
   // MetricsServiceClient
   MetricsService* GetMetricsService() override;
@@ -247,6 +254,7 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
   bool app_consent_ = false;
   bool is_client_id_forced_ = false;
   bool fast_startup_for_testing_ = false;
+  bool did_start_metrics_ = false;
 
   // When non-zero, this overrides the default value in
   // GetStandardUploadInterval().
