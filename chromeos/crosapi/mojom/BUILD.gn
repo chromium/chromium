@@ -14,6 +14,7 @@ mojom("mojom") {
     "file_manager.mojom",
     "keystore_service.mojom",
     "message_center.mojom",
+    "metrics_reporting.mojom",
     "notification.mojom",
     "screen_manager.mojom",
     "select_file.mojom",

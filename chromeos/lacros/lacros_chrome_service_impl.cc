@@ -213,6 +213,12 @@ class LacrosChromeServiceNeverBlockingState
         std::move(pending_receiver));
   }
 
+  void BindMetricsReportingReceiver(
+      mojo::PendingReceiver<crosapi::mojom::MetricsReporting> receiver) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    ash_chrome_service_->BindMetricsReporting(std::move(receiver));
+  }
+
   base::WeakPtr<LacrosChromeServiceNeverBlockingState> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -514,6 +520,22 @@ void LacrosChromeServiceImpl::BindMediaControllerManager(
       FROM_HERE, base::BindOnce(&LacrosChromeServiceNeverBlockingState::
                                     BindMediaSessionControllerReceiver,
                                 weak_sequenced_state_, std::move(remote)));
+}
+
+bool LacrosChromeServiceImpl::IsMetricsReportingAvailable() {
+  base::Optional<uint32_t> version = AshChromeServiceVersion();
+  return version && version.value() >= AshChromeService::MethodMinVersions::
+                                           kBindMetricsReportingMinVersion;
+}
+
+void LacrosChromeServiceImpl::BindMetricsReporting(
+    mojo::PendingReceiver<crosapi::mojom::MetricsReporting> receiver) {
+  DCHECK(IsMetricsReportingAvailable());
+  never_blocking_sequence_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &LacrosChromeServiceNeverBlockingState::BindMetricsReportingReceiver,
+          weak_sequenced_state_, std::move(receiver)));
 }
 
 bool LacrosChromeServiceImpl::IsCertDbAvailable() {

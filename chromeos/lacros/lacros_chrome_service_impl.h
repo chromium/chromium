@@ -19,6 +19,7 @@
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
+#include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -162,6 +163,14 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   void BindMediaControllerManager(
       mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
           remote);
+
+  // Whether the MetricsReporting API is available.
+  bool IsMetricsReportingAvailable();
+
+  // Binds a receiver for the MetricsReporting API. May be called on any thread.
+  void BindMetricsReporting(
+      mojo::PendingReceiver<crosapi::mojom::MetricsReporting> receiver);
+
   // cert_database_remote() can only be used when this method returns true;
   bool IsCertDbAvailable();
 

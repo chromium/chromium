@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/lacros/metrics_reporting_observer.h"
 #include "content/public/common/result_codes.h"
 
 ChromeBrowserMainPartsLacros::ChromeBrowserMainPartsLacros(
@@ -20,9 +21,12 @@ int ChromeBrowserMainPartsLacros::PreEarlyInitialization() {
   if (result != content::RESULT_CODE_NORMAL_EXIT)
     return result;
 
+  // The observer sets the initial metrics consent state, then observes ash
+  // for updates. Create it here because local state is required to check for
+  // policy overrides.
   DCHECK(g_browser_process->local_state());
-  // TODO(https://crbug.com/1148604): Inherit metrics consent from ash. Do it
-  // here because local state is required to check for policy overrides.
+  metrics_reporting_observer_ = std::make_unique<MetricsReportingObserver>();
+  metrics_reporting_observer_->Init();
 
   return content::RESULT_CODE_NORMAL_EXIT;
 }

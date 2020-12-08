@@ -4581,6 +4581,8 @@ static_library("browser") {
       "lacros/immersive_context_lacros.h",
       "lacros/lacros_chrome_service_delegate_impl.cc",
       "lacros/lacros_chrome_service_delegate_impl.h",
+      "lacros/metrics_reporting_observer.cc",
+      "lacros/metrics_reporting_observer.h",
       "lacros/snap_controller_lacros.cc",
       "lacros/snap_controller_lacros.h",
       "lacros/system_logs/lacros_system_log_fetcher.cc",

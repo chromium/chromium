@@ -18,6 +18,7 @@
 #include "chrome/browser/chromeos/crosapi/file_manager_ash.h"
 #include "chrome/browser/chromeos/crosapi/keystore_service_ash.h"
 #include "chrome/browser/chromeos/crosapi/message_center_ash.h"
+#include "chrome/browser/chromeos/crosapi/metrics_reporting_ash.h"
 #include "chrome/browser/chromeos/crosapi/screen_manager_ash.h"
 #include "chrome/browser/chromeos/crosapi/select_file_ash.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -40,6 +41,8 @@ namespace crosapi {
 AshChromeServiceImpl::AshChromeServiceImpl(
     mojo::PendingReceiver<mojom::AshChromeService> pending_receiver)
     : receiver_(this, std::move(pending_receiver)),
+      metrics_reporting_ash_(std::make_unique<MetricsReportingAsh>(
+          g_browser_process->local_state())),
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
       cert_database_ash_(std::make_unique<CertDatabaseAsh>()) {
   // TODO(hidehiko): Remove non-critical log from here.
@@ -103,6 +106,11 @@ void AshChromeServiceImpl::BindMessageCenter(
   // TODO(https://crbug.com/1148448): Convert this to allow multiple,
   // simultaneous crosapi clients. See BindScreenManager for an example.
   message_center_ash_ = std::make_unique<MessageCenterAsh>(std::move(receiver));
+}
+
+void AshChromeServiceImpl::BindMetricsReporting(
+    mojo::PendingReceiver<mojom::MetricsReporting> receiver) {
+  metrics_reporting_ash_->BindReceiver(std::move(receiver));
 }
 
 void AshChromeServiceImpl::BindSelectFile(
