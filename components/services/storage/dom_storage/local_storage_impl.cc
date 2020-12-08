@@ -431,12 +431,12 @@ class LocalStorageImpl::StorageAreaHolder final
 
   LocalStorageImpl* context_;
   url::Origin origin_;
-  std::unique_ptr<StorageAreaImpl> area_;
   // Holds the same value as |area_|. The reason for this is that
   // during destruction of the StorageAreaImpl instance we might still get
   // called and need access  to the StorageAreaImpl instance. The unique_ptr
   // could already be null, but this field should still be valid.
   StorageAreaImpl* area_ptr_;
+  std::unique_ptr<StorageAreaImpl> area_;
   bool deleted_old_data_ = false;
   bool has_bindings_ = false;
 };
