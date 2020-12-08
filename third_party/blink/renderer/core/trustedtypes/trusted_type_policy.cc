@@ -18,7 +18,9 @@ namespace blink {
 
 TrustedTypePolicy::TrustedTypePolicy(const String& policy_name,
                                      TrustedTypePolicyOptions* policy_options)
-    : name_(policy_name), policy_options_(policy_options) {}
+    : name_(policy_name), policy_options_(policy_options) {
+  DCHECK(policy_options_);
+}
 
 TrustedHTML* TrustedTypePolicy::createHTML(ScriptState* script_state,
                                            const String& input,

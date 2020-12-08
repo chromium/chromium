@@ -8,7 +8,7 @@
     Exposed=(Window, Worker),
     RuntimeEnabled=TrustedDOMTypes
 ] interface TrustedTypePolicyFactory : EventTarget {
-    [RaisesException] TrustedTypePolicy createPolicy(DOMString policyName, TrustedTypePolicyOptions policyOptions);
+    [RaisesException] TrustedTypePolicy createPolicy(DOMString policyName, optional TrustedTypePolicyOptions policyOptions);
     // All the policy object names that have been created
     [CallWith=ScriptState] boolean isHTML(any checkedObject);
     [CallWith=ScriptState] boolean isScript(any checkedObject);

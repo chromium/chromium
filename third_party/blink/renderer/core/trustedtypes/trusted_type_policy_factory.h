@@ -31,6 +31,7 @@ class CORE_EXPORT TrustedTypePolicyFactory final
   explicit TrustedTypePolicyFactory(ExecutionContext*);
 
   // TrustedTypePolicyFactory.idl
+  TrustedTypePolicy* createPolicy(const String&, ExceptionState&);
   TrustedTypePolicy* createPolicy(const String&,
                                   const TrustedTypePolicyOptions*,
                                   ExceptionState&);

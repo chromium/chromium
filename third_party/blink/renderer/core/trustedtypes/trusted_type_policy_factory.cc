@@ -28,6 +28,14 @@ namespace blink {
 
 TrustedTypePolicy* TrustedTypePolicyFactory::createPolicy(
     const String& policy_name,
+    ExceptionState& exception_state) {
+  return createPolicy(policy_name,
+                      MakeGarbageCollected<TrustedTypePolicyOptions>(),
+                      exception_state);
+}
+
+TrustedTypePolicy* TrustedTypePolicyFactory::createPolicy(
+    const String& policy_name,
     const TrustedTypePolicyOptions* policy_options,
     ExceptionState& exception_state) {
   if (RuntimeEnabledFeatures::TrustedTypeBeforePolicyCreationEventEnabled()) {
