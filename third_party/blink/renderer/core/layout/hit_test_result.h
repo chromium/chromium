@@ -47,7 +47,6 @@ class KURL;
 class MediaStreamDescriptor;
 class NGPhysicalBoxFragment;
 class Node;
-class LayoutObject;
 class Region;
 class Scrollbar;
 struct PhysicalOffset;
@@ -142,7 +141,6 @@ class CORE_EXPORT HitTestResult {
 
   PositionWithAffinity GetPosition() const;
   PositionWithAffinity GetPositionForInnerNodeOrImageMapImage() const;
-  LayoutObject* GetLayoutObject() const;
 
   void SetToShadowHostIfInRestrictedShadowRoot();
 

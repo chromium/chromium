@@ -203,7 +203,7 @@ viz::FrameSinkId GetRemoteFrameSinkId(const HitTestResult& result) {
   RemoteFrame* remote_frame = To<RemoteFrame>(frame_owner->ContentFrame());
   if (remote_frame->IsIgnoredForHitTest())
     return viz::FrameSinkId();
-  LayoutObject* object = result.GetLayoutObject();
+  LayoutObject* object = node->GetLayoutObject();
   DCHECK(object);
   if (!object->IsBox())
     return viz::FrameSinkId();
@@ -665,7 +665,7 @@ viz::FrameSinkId WebFrameWidgetImpl::GetFrameSinkIdAtPoint(
   viz::FrameSinkId remote_frame_sink_id = GetRemoteFrameSinkId(result);
   if (remote_frame_sink_id.is_valid()) {
     FloatPoint local_point = FloatPoint(result.LocalPoint());
-    LayoutObject* object = result.GetLayoutObject();
+    LayoutObject* object = result_node->GetLayoutObject();
     if (auto* box = DynamicTo<LayoutBox>(object))
       local_point.MoveBy(-FloatPoint(box->PhysicalContentBoxOffset()));
 

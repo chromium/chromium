@@ -206,17 +206,13 @@ PositionWithAffinity HitTestResult::GetPositionForInnerNodeOrImageMapImage()
   PositionWithAffinity position;
   if (box_fragment_ &&
       RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled() &&
-      layout_object == GetLayoutObject())
+      layout_object == InnerPossiblyPseudoNode()->GetLayoutObject())
     position = box_fragment_->PositionForPoint(LocalPoint());
   else
     position = layout_object->PositionForPoint(LocalPoint());
   if (position.IsNull())
     return PositionWithAffinity(FirstPositionInOrBeforeNode(*node));
   return position;
-}
-
-LayoutObject* HitTestResult::GetLayoutObject() const {
-  return inner_node_ ? inner_node_->GetLayoutObject() : nullptr;
 }
 
 void HitTestResult::SetToShadowHostIfInRestrictedShadowRoot() {
