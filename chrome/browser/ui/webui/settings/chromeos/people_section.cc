@@ -723,7 +723,10 @@ PeopleSection::PeopleSection(
     FetchAccounts();
   }
 
-  if (kerberos_credentials_manager_) {
+  // No Kerberos search tags are registered here if Kerberos settings are in a
+  // separate section.
+  if (kerberos_credentials_manager_ &&
+      !chromeos::features::IsKerberosSettingsSectionEnabled()) {
     // Kerberos search tags are added/removed dynamically.
     kerberos_credentials_manager_->AddObserver(this);
     OnKerberosEnabledStateChanged();
@@ -761,8 +764,10 @@ PeopleSection::PeopleSection(
 }
 
 PeopleSection::~PeopleSection() {
-  if (kerberos_credentials_manager_)
+  if (kerberos_credentials_manager_ &&
+      !chromeos::features::IsKerberosSettingsSectionEnabled()) {
     kerberos_credentials_manager_->RemoveObserver(this);
+  }
 
   if (chromeos::features::IsSplitSettingsSyncEnabled() && sync_service_)
     sync_service_->RemoveObserver(this);
@@ -905,12 +910,16 @@ void PeopleSection::AddHandlers(content::WebUI* web_ui) {
             profile()));
   }
 
-  std::unique_ptr<chromeos::settings::KerberosAccountsHandler>
-      kerberos_accounts_handler =
-          KerberosAccountsHandler::CreateIfKerberosEnabled(profile());
-  if (kerberos_accounts_handler) {
-    // Note that the UI is enabled only if Kerberos is enabled.
-    web_ui->AddMessageHandler(std::move(kerberos_accounts_handler));
+  // No Kerberos handler is created/added here if Kerberos settings are in a
+  // separate section.
+  if (!chromeos::features::IsKerberosSettingsSectionEnabled()) {
+    std::unique_ptr<chromeos::settings::KerberosAccountsHandler>
+        kerberos_accounts_handler =
+            KerberosAccountsHandler::CreateIfKerberosEnabled(profile());
+    if (kerberos_accounts_handler) {
+      // Note that the UI is enabled only if Kerberos is enabled.
+      web_ui->AddMessageHandler(std::move(kerberos_accounts_handler));
+    }
   }
 }
 

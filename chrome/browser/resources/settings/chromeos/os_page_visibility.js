@@ -137,7 +137,8 @@ cr.define('settings', function() {
       autofill: true,
       people: {
         lockScreen: true,
-        kerberosAccounts: isKerberosEnabled,
+        kerberosAccounts:
+            isKerberosEnabled && !isKerberosSettingsSectionEnabled,
         googleAccounts: isAccountManagerEnabled,
         manageUsers: true,
       },
