@@ -4,6 +4,7 @@
 
 #include "content/browser/indexed_db/indexed_db_compaction_task.h"
 
+#include "content/browser/indexed_db/indexed_db_tracing.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 
 namespace content {
@@ -21,6 +22,7 @@ void IndexedDBCompactionTask::Stop(
     IndexedDBPreCloseTaskQueue::StopReason reason) {}
 
 bool IndexedDBCompactionTask::RunRound() {
+  IDB_TRACE("CompactRange");
   database()->CompactRange(nullptr, nullptr);
   return true;
 }
