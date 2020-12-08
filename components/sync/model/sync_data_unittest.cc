@@ -54,6 +54,7 @@ TEST_F(SyncDataTest, CreateLocalData) {
   EXPECT_EQ(kDatatype, data.GetDataType());
   EXPECT_EQ(kNonUniqueTitle, data.GetTitle());
   EXPECT_TRUE(data.GetSpecifics().has_preference());
+  EXPECT_FALSE(data.ToString().empty());
 }
 
 TEST_F(SyncDataTest, CreateRemoteData) {
@@ -65,6 +66,7 @@ TEST_F(SyncDataTest, CreateRemoteData) {
   EXPECT_EQ(ClientTagHash::FromUnhashed(PREFERENCES, kSyncTag),
             data.GetClientTagHash());
   EXPECT_TRUE(data.GetSpecifics().has_preference());
+  EXPECT_FALSE(data.ToString().empty());
 }
 
 }  // namespace

@@ -42,7 +42,7 @@ std::unique_ptr<EntityData> ConvertPersistedToEntityData(
   return entity_data;
 }
 
-sync_pb::PersistedEntityData CreatePersistedFromEntityData(
+sync_pb::PersistedEntityData CreatePersistedFromRemoteData(
     const EntityData& entity_data) {
   sync_pb::PersistedEntityData persisted;
   persisted.set_name(entity_data.name);
@@ -50,10 +50,12 @@ sync_pb::PersistedEntityData CreatePersistedFromEntityData(
   return persisted;
 }
 
-sync_pb::PersistedEntityData CreatePersistedFromSyncData(
+sync_pb::PersistedEntityData CreatePersistedFromLocalData(
     const SyncData& sync_data) {
   DCHECK(sync_data.IsLocal());
+  DCHECK(sync_data.IsValid());
   DCHECK(!sync_data.GetTitle().empty());
+
   sync_pb::PersistedEntityData persisted;
   persisted.set_name(sync_data.GetTitle());
   *persisted.mutable_specifics() = sync_data.GetSpecifics();
@@ -149,7 +151,7 @@ class LocalChangeProcessor : public SyncChangeProcessor {
 
           (*in_memory_store_)[storage_key] = change.sync_data().GetSpecifics();
           sync_pb::PersistedEntityData persisted_entity =
-              CreatePersistedFromSyncData(change.sync_data());
+              CreatePersistedFromLocalData(change.sync_data());
           batch->WriteData(storage_key, persisted_entity.SerializeAsString());
 
           other_->Put(storage_key,
@@ -564,7 +566,7 @@ SyncChangeList SyncableServiceBasedBridge::StoreAndConvertRemoteChanges(
 
         batch->WriteData(
             storage_key,
-            CreatePersistedFromEntityData(change->data()).SerializeAsString());
+            CreatePersistedFromRemoteData(change->data()).SerializeAsString());
         in_memory_store_[storage_key] = change->data().specifics;
         break;
       }

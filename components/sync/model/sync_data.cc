@@ -102,8 +102,6 @@ ClientTagHash SyncData::GetClientTagHash() const {
 }
 
 const std::string& SyncData::GetTitle() const {
-  // TODO(zea): set this for data coming from the syncer too.
-  DCHECK(immutable_entity_.Get().has_non_unique_name());
   return immutable_entity_.Get().non_unique_name();
 }
 
