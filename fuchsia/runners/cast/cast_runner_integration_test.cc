@@ -1145,6 +1145,31 @@ TEST_F(CastRunnerIntegrationTest, MissingCorsExemptHeaderProvider) {
   EXPECT_TRUE(!component_state_);
 }
 
+// Verifies that CastRunner offers a chromium.cast.DataReset service.
+// TODO(crbug.com/1146474): Expand the test to verify that the persisted data is
+// correctly cleared (e.g. using a custom test HTML app that uses persisted
+// data).
+TEST_F(CastRunnerIntegrationTest, DataReset) {
+  constexpr char kDataResetComponentName[] = "cast:chromium.cast.DataReset";
+  StartCastComponent(kDataResetComponentName);
+
+  base::RunLoop loop;
+  auto data_reset =
+      component_services_client_->Connect<chromium::cast::DataReset>();
+  data_reset.set_error_handler([quit_loop = loop.QuitClosure()](zx_status_t) {
+    quit_loop.Run();
+    ADD_FAILURE();
+  });
+  bool succeeded = false;
+  data_reset->DeletePersistentData([&succeeded, &loop](bool result) {
+    succeeded = result;
+    loop.Quit();
+  });
+  loop.Run();
+
+  EXPECT_TRUE(succeeded);
+}
+
 class CastRunnerFrameHostIntegrationTest : public CastRunnerIntegrationTest {
  public:
   CastRunnerFrameHostIntegrationTest()
