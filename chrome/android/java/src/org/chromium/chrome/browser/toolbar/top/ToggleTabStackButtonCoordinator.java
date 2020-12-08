@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.url.GURL;
 
 /**
  * Root component for the tab switcher button on the toolbar. Intended to own the
@@ -91,7 +92,7 @@ public class ToggleTabStackButtonCoordinator {
                 mCallbackController.makeCancelable(this::setLayoutStateProvider));
         mPageLoadObserver = new CurrentTabObserver(activityTabSupplier, new EmptyTabObserver() {
             @Override
-            public void onPageLoadFinished(Tab tab, String url) {
+            public void onPageLoadFinished(Tab tab, GURL url) {
                 handlePageLoadFinished();
             }
         });

@@ -78,6 +78,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.test.util.UiDisableIf;
+import org.chromium.url.GURL;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -418,7 +419,7 @@ public class NewTabPageTest {
             final CallbackHelper loadedCallback = new CallbackHelper();
             mTab.addObserver(new EmptyTabObserver() {
                 @Override
-                public void onPageLoadFinished(Tab tab, String url) {
+                public void onPageLoadFinished(Tab tab, GURL url) {
                     loadedCallback.notifyCalled();
                     tab.removeObserver(this);
                 }

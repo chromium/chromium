@@ -78,9 +78,9 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
         // Manually generating metrics in case the hidden tab has completely finished loading.
         if (!tab.isLoading() && !tab.isShowingErrorPage()) {
             mCustomTabObserver.get().onPageLoadStarted(tab, gurl);
-            mCustomTabObserver.get().onPageLoadFinished(tab, url);
+            mCustomTabObserver.get().onPageLoadFinished(tab, gurl);
             mNavigationEventObserver.onPageLoadStarted(tab, gurl);
-            mNavigationEventObserver.onPageLoadFinished(tab, url);
+            mNavigationEventObserver.onPageLoadFinished(tab, gurl);
         }
 
         // No actual load to do if the hidden tab already has the exact correct url.

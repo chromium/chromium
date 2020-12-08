@@ -70,6 +70,7 @@ import org.chromium.content_public.common.Referrer;
 import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -311,11 +312,11 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         }
 
         @Override
-        public void onPageLoadFinished(Tab tab, String url) {
+        public void onPageLoadFinished(Tab tab, GURL url) {
             // TODO(jianli): onPageLoadFinished is called on successful load, and if a user manually
             // stops the page load. We should only capture successful page loads.
             FeedStreamSurfaceJni.get().reportPageLoaded(
-                    mNativeFeedStreamSurface, FeedStreamSurface.this, url, mInNewTab);
+                    mNativeFeedStreamSurface, FeedStreamSurface.this, mInNewTab);
             tab.removeObserver(this);
         }
 
@@ -1093,8 +1094,8 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         void reportSliceViewed(
                 long nativeFeedStreamSurface, FeedStreamSurface caller, String sliceId);
         void reportNavigationStarted(long nativeFeedStreamSurface, FeedStreamSurface caller);
-        void reportPageLoaded(long nativeFeedStreamSurface, FeedStreamSurface caller, String url,
-                boolean inNewTab);
+        void reportPageLoaded(
+                long nativeFeedStreamSurface, FeedStreamSurface caller, boolean inNewTab);
         void reportOpenAction(
                 long nativeFeedStreamSurface, FeedStreamSurface caller, String sliceId);
         void reportOpenInNewTabAction(

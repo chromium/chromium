@@ -96,6 +96,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.url.GURL;
 
 import java.io.File;
 import java.util.Locale;
@@ -1845,7 +1846,7 @@ public class TabsTest {
                     pageLoadedCallbacks[index] = pageLoadCallback;
                     currentTab.addObserver(new EmptyTabObserver() {
                         @Override
-                        public void onPageLoadFinished(Tab tab, String url) {
+                        public void onPageLoadFinished(Tab tab, GURL url) {
                             pageLoadCallback.notifyCalled();
                             tab.removeObserver(this);
                         }

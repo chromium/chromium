@@ -137,7 +137,7 @@ public class CustomTabObserver extends EmptyTabObserver {
     }
 
     @Override
-    public void onPageLoadFinished(Tab tab, String url) {
+    public void onPageLoadFinished(Tab tab, GURL url) {
         long pageLoadFinishedTimestamp = SystemClock.elapsedRealtime();
 
         if (mCurrentState == State.WAITING_LOAD_FINISH && mIntentReceivedTimestamp > 0) {

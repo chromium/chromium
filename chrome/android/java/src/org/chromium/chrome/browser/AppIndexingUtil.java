@@ -25,6 +25,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.services.service_manager.InterfaceProvider;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -58,7 +59,7 @@ public class AppIndexingUtil {
         if (mTabModelSelectorImpl != null && isEnabledForDevice()) {
             mObserver = new TabModelSelectorTabObserver(mTabModelSelectorImpl) {
                 @Override
-                public void onPageLoadFinished(final Tab tab, String url) {
+                public void onPageLoadFinished(final Tab tab, GURL url) {
                     extractDocumentMetadata(tab);
                 }
 

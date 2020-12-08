@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.infobars.InfoBarAnimationListener;
 import org.chromium.components.infobars.InfoBarUiItem;
 import org.chromium.components.variations.VariationsAssociatedData;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -229,7 +230,7 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
             }
 
             @Override
-            public void onPageLoadFinished(Tab tab, String url) {
+            public void onPageLoadFinished(Tab tab, GURL url) {
                 showInfoBarIfApplicable(tab, siteId, this);
             }
 

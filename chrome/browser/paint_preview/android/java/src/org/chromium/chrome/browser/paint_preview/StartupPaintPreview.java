@@ -238,7 +238,7 @@ public class StartupPaintPreview implements PlayerManager.Listener {
 
     private class StartupPaintPreviewTabObserver extends EmptyTabObserver {
         @Override
-        public void onPageLoadFinished(Tab tab, String url) {
+        public void onPageLoadFinished(Tab tab, GURL url) {
             // onWebContentsFirstMeaningfulPaint won't be called if we're loading an offline page,
             // hence the preview won't get removed.
             // We need to listen to onPageLoadFinished and remove the preview if an offline page is

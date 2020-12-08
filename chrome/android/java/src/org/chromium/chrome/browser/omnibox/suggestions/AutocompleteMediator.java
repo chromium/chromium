@@ -49,7 +49,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
-import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.query_tiles.QueryTile;
@@ -182,14 +182,14 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             mDropdownViewInfoListBuilder.setActivityTabProvider(activityTabProvider);
             mTabObserver = new ActivityTabTabObserver(activityTabProvider) {
                 @Override
-                public void onPageLoadFinished(Tab tab, String url) {
+                public void onPageLoadFinished(Tab tab, GURL url) {
                     maybeTriggerCacheRefresh(url);
                 }
 
                 @Override
                 protected void onObservingDifferentTab(Tab tab, boolean hint) {
                     if (tab == null) return;
-                    maybeTriggerCacheRefresh(tab.getUrlString());
+                    maybeTriggerCacheRefresh(tab.getUrl());
                 }
 
                 /**
@@ -197,9 +197,9 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
                  * Avoid issuing multiple concurrent server requests for the same event to
                  * reduce server pressure.
                  */
-                private void maybeTriggerCacheRefresh(String url) {
+                private void maybeTriggerCacheRefresh(GURL url) {
                     if (url == null) return;
-                    if (!UrlConstants.NTP_URL.equals(url)) return;
+                    if (!UrlUtilities.isNTPUrl(url)) return;
                     AutocompleteControllerJni.get().prefetchZeroSuggestResults();
                 }
             };

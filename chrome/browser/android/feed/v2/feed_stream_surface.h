@@ -104,7 +104,6 @@ class FeedStreamSurface : public FeedStreamApi::SurfaceInterface {
                                const base::android::JavaParamRef<jobject>& obj);
   void ReportPageLoaded(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj,
-                        const base::android::JavaParamRef<jstring>& url,
                         jboolean in_new_tab);
   void ReportRemoveAction(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& obj);

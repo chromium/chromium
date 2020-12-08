@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -65,8 +66,8 @@ public class StaticLayoutUnitTest {
     private static final int TAB2_ID = 789;
     private static final int POSITION1 = 0;
     private static final int POSITION2 = 1;
-    private static final String TAB1_URL = "https://tab1.com";
-    private static final String TAB2_URL = "https://tab2.com";
+    private static final String TAB1_URL = JUnitTestGURLs.URL_1;
+    private static final String TAB2_URL = JUnitTestGURLs.URL_2;
 
     private static final int BACKGROUND_COLOR = Color.WHITE;
     private static final int TOOLBAR_BACKGROUND_COLOR = Color.BLUE;
@@ -290,7 +291,8 @@ public class StaticLayoutUnitTest {
         assertEquals(0.0f, mModel.get(LayoutTab.SATURATION), 0);
 
         // Index 1 is the TabObserver for mTab2.
-        mTabObserverCaptor.getAllValues().get(1).onPageLoadFinished(mTab2, TAB2_URL);
+        mTabObserverCaptor.getAllValues().get(1).onPageLoadFinished(
+                mTab2, JUnitTestGURLs.getGURL(TAB2_URL));
 
         assertFalse(mModel.get(LayoutTab.SHOULD_STALL));
         assertEquals(0.0f, mModel.get(LayoutTab.STATIC_TO_VIEW_BLEND), 0);

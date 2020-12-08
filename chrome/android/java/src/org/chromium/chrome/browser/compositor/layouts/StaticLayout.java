@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarColors;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceManager;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -172,7 +173,7 @@ public class StaticLayout extends Layout {
 
         mTabModelSelectorTabObserver = new TabModelSelectorTabObserver(tabModelSelector) {
             @Override
-            public void onPageLoadFinished(Tab tab, String url) {
+            public void onPageLoadFinished(Tab tab, GURL url) {
                 if (mIsActive) unstallImmediately(tab.getId());
             }
             @Override

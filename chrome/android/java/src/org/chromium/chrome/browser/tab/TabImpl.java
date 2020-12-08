@@ -530,7 +530,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         if (isLoading()) {
             RewindableIterator<TabObserver> observers = getTabObservers();
             while (observers.hasNext()) {
-                observers.next().onPageLoadFinished(this, getUrlString());
+                observers.next().onPageLoadFinished(this, getUrl());
             }
         }
         if (getWebContents() != null) getWebContents().stop();
@@ -1004,7 +1004,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      * Called when a page has finished loading.
      * @param url URL that was loaded.
      */
-    void didFinishPageLoad(String url) {
+    void didFinishPageLoad(GURL url) {
         mIsTabStateDirty = true;
         updateTitle();
 
@@ -1243,7 +1243,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             didStartPageLoad(getUrl());
 
             // Simulate the PAGE_LOAD_FINISHED notification that we did not get.
-            if (didFinishLoad) didFinishPageLoad(getUrlString());
+            if (didFinishLoad) didFinishPageLoad(getUrl());
         }
 
         for (TabObserver observer : mObservers) {

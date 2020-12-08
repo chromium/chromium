@@ -111,8 +111,8 @@ public class ChromeTabUtils {
         }
 
         @Override
-        public void onPageLoadFinished(Tab tab, String url) {
-            if (mExpectedUrl == null || TextUtils.equals(url, mExpectedUrl)) {
+        public void onPageLoadFinished(Tab tab, GURL url) {
+            if (mExpectedUrl == null || TextUtils.equals(url.getSpec(), mExpectedUrl)) {
                 mCallback.notifyCalled();
                 tab.removeObserver(this);
             }

@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.List;
@@ -55,7 +56,7 @@ public class CustomTabDeferredStartupTest {
         private boolean mIsPageLoadFinished;
 
         @Override
-        public void onPageLoadFinished(Tab tab, String url) {
+        public void onPageLoadFinished(Tab tab, GURL url) {
             mIsPageLoadFinished = true;
         }
 

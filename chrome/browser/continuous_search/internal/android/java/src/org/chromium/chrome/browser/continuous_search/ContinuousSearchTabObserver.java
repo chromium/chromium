@@ -25,15 +25,14 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
     }
 
     @Override
-    public void onPageLoadFinished(Tab tab, String url) {
+    public void onPageLoadFinished(Tab tab, GURL url) {
         SearchResultUserData searchResultUserData = getSearchResultUserData();
-        searchResultUserData.updateCurrentUrl(new GURL(url));
+        searchResultUserData.updateCurrentUrl(url);
 
         // Cancel any existing requests.
         resetProducer();
 
-        GURL gurl = new GURL(url);
-        String query = SearchUrlHelper.getQueryIfSrpUrl(gurl);
+        String query = SearchUrlHelper.getQueryIfSrpUrl(url);
         if (query == null) return;
 
         mProducer = SearchResultProducerFactory.create(mTab, this);
@@ -41,7 +40,7 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
         // TODO: Remove this once mProducer is always created.
         if (mProducer == null) return;
 
-        mProducer.fetchResults(gurl, query);
+        mProducer.fetchResults(url, query);
     }
 
     @Override

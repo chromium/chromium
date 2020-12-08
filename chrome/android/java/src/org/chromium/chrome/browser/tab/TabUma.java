@@ -12,6 +12,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.net.NetError;
+import org.chromium.url.GURL;
 
 /**
  * Centralizes UMA data collection for Tab management.
@@ -260,7 +261,7 @@ public class TabUma extends EmptyTabObserver implements UserData {
 
     /** Called when the corresponding tab completes a page load. */
     @Override
-    public void onPageLoadFinished(Tab tab, String url) {
+    public void onPageLoadFinished(Tab tab, GURL url) {
         // Record only tab restores that the user became aware of. If the restore is triggered
         // speculatively and completes before the user switches to the tab, then this case is
         // reflected in Tab.StatusWhenSwitchedBackToForeground metric.

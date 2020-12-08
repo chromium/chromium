@@ -258,7 +258,6 @@ void FeedStreamSurface::ReportNavigationStarted(
 
 void FeedStreamSurface::ReportPageLoaded(JNIEnv* env,
                                          const JavaParamRef<jobject>& obj,
-                                         const JavaParamRef<jstring>& url,
                                          jboolean in_new_tab) {
   if (!feed_stream_api_)
     return;

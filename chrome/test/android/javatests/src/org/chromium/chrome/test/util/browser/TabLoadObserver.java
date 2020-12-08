@@ -50,7 +50,7 @@ public class TabLoadObserver extends EmptyTabObserver {
     }
 
     @Override
-    public void onPageLoadFinished(Tab tab, String url) {
+    public void onPageLoadFinished(Tab tab, GURL url) {
         mTabLoadFinishedCallback.notifyCalled();
     }
 

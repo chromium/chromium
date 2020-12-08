@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.url.GURL;
 
 /**
  * Root component for the home button on the toolbar. Intended to own the {@link HomeButton}, but
@@ -81,7 +82,7 @@ public class HomeButtonCoordinator {
         mIsHomepageNonNtpSupplier = isHomepageNonNtpSupplier;
         mPageLoadObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
             @Override
-            public void onPageLoadFinished(Tab tab, String url) {
+            public void onPageLoadFinished(Tab tab, GURL url) {
                 handlePageLoadFinished(url);
             }
         });
@@ -99,7 +100,7 @@ public class HomeButtonCoordinator {
      * @param url The URL of the current page that was just loaded.
      */
     @VisibleForTesting
-    void handlePageLoadFinished(String url) {
+    void handlePageLoadFinished(GURL url) {
         if (mHomeButton == null || !mHomeButton.isShown()) return;
         if (mIsIncognitoSupplier.getAsBoolean()) return;
         if (UrlUtilities.isNTPUrl(url)) return;

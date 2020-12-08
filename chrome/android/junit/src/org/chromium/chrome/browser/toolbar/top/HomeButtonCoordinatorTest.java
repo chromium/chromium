@@ -40,10 +40,10 @@ import org.chromium.chrome.browser.intent.IntentMetadata;
 import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,13 +51,12 @@ import java.util.Map;
 
 /** Unit tests for HomeButtonCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {HomeButtonCoordinatorTest.ShadowUrlUtilities.class,
-                HomeButtonCoordinatorTest.ShadowHomepageManager.class,
+@Config(shadows = {HomeButtonCoordinatorTest.ShadowHomepageManager.class,
                 HomeButtonCoordinatorTest.ShadowFeedFeatures.class,
                 HomeButtonCoordinatorTest.ShadowChromeFeatureList.class})
 public class HomeButtonCoordinatorTest {
-    private static final String NTP_URL = UrlConstants.NTP_NON_NATIVE_URL;
-    private static final String NOT_NTP_URL = "http://www.foo.com/";
+    private static final GURL NTP_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL);
+    private static final GURL NOT_NTP_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
 
     private static final ImmutableMap<Integer, String> ID_TO_STRING_MAP = ImmutableMap.of(
             R.string.iph_ntp_with_feed_text, "feed", R.string.iph_ntp_without_feed_text, "no_feed",
@@ -66,14 +65,6 @@ public class HomeButtonCoordinatorTest {
 
     private static final IntentMetadata DEFAULT_INTENT_METADATA =
             new IntentMetadata(/*isMainIntent*/ true, /*isIntentWithEffect*/ false);
-
-    @Implements(UrlUtilities.class)
-    static class ShadowUrlUtilities {
-        @Implementation
-        public static boolean isNTPUrl(String url) {
-            return NTP_URL.equals(url);
-        }
-    }
 
     @Implements(HomepageManager.class)
     static class ShadowHomepageManager {

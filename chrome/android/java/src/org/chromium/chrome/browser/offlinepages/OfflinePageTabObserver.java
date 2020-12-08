@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.net.NetworkChangeNotifier;
+import org.chromium.url.GURL;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -142,7 +143,7 @@ public class OfflinePageTabObserver
 
     // Methods from EmptyTabObserver
     @Override
-    public void onPageLoadFinished(Tab tab, String url) {
+    public void onPageLoadFinished(Tab tab, GURL url) {
         Log.d(TAG, "onPageLoadFinished");
         if (isObservingTab(tab)) {
             mObservedTabs.get(tab.getId()).isLoaded = true;

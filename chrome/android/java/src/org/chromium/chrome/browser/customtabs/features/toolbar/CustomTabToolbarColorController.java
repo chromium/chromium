@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.webapps.WebDisplayMode;
 import org.chromium.chrome.browser.webapps.WebappExtras;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -107,7 +108,7 @@ public class CustomTabToolbarColorController {
     private void observeTabToUpdateColor() {
         mTabObserverRegistrar.registerActivityTabObserver(new CustomTabTabObserver() {
             @Override
-            public void onPageLoadFinished(Tab tab, String url) {
+            public void onPageLoadFinished(Tab tab, GURL url) {
                 // Update the color when the page load finishes.
                 updateColor();
             }

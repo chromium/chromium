@@ -38,6 +38,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
 
@@ -49,8 +51,7 @@ import java.lang.ref.WeakReference;
 public class OfflinePageTabObserverTest {
     // Using a null tab, as it cannot be mocked. TabHelper will help return proper mocked responses.
     private static final int TAB_ID = 77;
-    private static final String TAB_URL = "mock.com";
-
+    private static final GURL TAB_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
     @Mock
     private ChromeActivity mActivity;
     @Mock
@@ -87,7 +88,7 @@ public class OfflinePageTabObserverTest {
         // Setting up a mock tab. These are the values common to most tests, but individual
         // tests might easily overwrite them.
         doReturn(TAB_ID).when(mTab).getId();
-        doReturn(TAB_URL).when(mTab).getUrlString();
+        doReturn(TAB_URL).when(mTab).getUrl();
         doReturn(false).when(mTab).isFrozen();
         doReturn(false).when(mTab).isHidden();
         doReturn(mWindowAndroid).when(mTab).getWindowAndroid();
