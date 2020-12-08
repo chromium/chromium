@@ -43,9 +43,11 @@
   [[getTitleText_(pageNumber)]]
 </h1>
 <div class="container">
-  <span class="label">[[i18n('showFileLocationLabel')]]</span>
+  <span id="showFileLocationLabel" class="label" aria-hidden="true">
+    [[i18n('showFileLocationLabel')]]
+  </span>
   <cr-icon-button id="showFileButton" class="button" iron-icon="cr:open-in-new"
-      on-click="showFileInLocation_">
+      on-click="showFileInLocation_" aria-labelledby="showFileLocationLabel">
   </cr-icon-button>
 </div>
 <div class="done-button-container">

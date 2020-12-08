@@ -1,11 +1,12 @@
 <style include="scanning-shared"></style>
 <scan-settings-section>
-  <span id="fileTypeLabel" slot="label">[[i18n('fileTypeDropdownLabel')]]</span>
+  <span id="fileTypeLabel" slot="label" aria-hidden="true">
+    [[i18n('fileTypeDropdownLabel')]]
+  </span>
   <div slot="settings">
-    <!-- TODO(jschettler): Verify this meets a11y expecations (e.g. ChromeVox
-        should announce when a new option is focused). -->
     <select id="fileTypeSelect" class="md-select"
-        value="{{selectedFileType::change}}" disabled="[[disabled]]">
+        value="{{selectedFileType::change}}" disabled="[[disabled]]"
+        aria-labelledby="fileTypeLabel">
       <!-- The option values must match the chromeos.scanning.mojom.FileType
           values they correspond to. -->
       <!-- TODO(jschettler): Change default back to PDF when it's supported. -->

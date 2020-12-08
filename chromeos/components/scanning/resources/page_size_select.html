@@ -1,11 +1,12 @@
 <style include="scanning-shared"></style>
 <scan-settings-section>
-  <span id="pageSizeLabel" slot="label">[[i18n('pageSizeDropdownLabel')]]</span>
+  <span id="pageSizeLabel" slot="label" aria-hidden="true">
+    [[i18n('pageSizeDropdownLabel')]]
+  </span>
   <div slot="settings">
-    <!-- TODO(jschettler): Verify this meets a11y expecations (e.g. ChromeVox
-        should announce when a new option is focused). -->
     <select id="pageSizeSelect" class="md-select"
-        value="{{selectedPageSize::change}}" disabled="[[disabled]]">
+        value="{{selectedPageSize::change}}" disabled="[[disabled]]"
+        aria-labelledby="pageSizeLabel">
       <!-- TODO(jschettler): Sort the page sizes. -->
       <template is="dom-repeat" items="[[pageSizes]]" as="pageSize">
         <option value="[[pageSize]]"

@@ -12,16 +12,16 @@
   }
 </style>
 <scan-settings-section>
-  <span id="scannerLabel" slot="label">[[i18n('scannerDropdownLabel')]]</span>
+  <span id="scannerLabel" slot="label" aria-hidden="true">
+    [[i18n('scannerDropdownLabel')]]
+  </span>
   <div slot="settings">
     <div class="throbber-container" hidden$="[[loaded]]">
       <div class="throbber"></div>
     </div>
-    <!-- TODO(jschettler): Verify this meets a11y expecations (e.g. ChromeVox
-        should announce when a new option is focused). -->
     <select id="scannerSelect" class="md-select"
         value="{{selectedScannerId::change}}" hidden$="[[!loaded]]"
-        disabled="[[disabled]]">
+        disabled="[[disabled]]" aria-labelledby="scannerLabel">
       <!-- TODO(jschettler): Figure out why hiding/disabling the option doesn't
           remove it from the dropdown. -->
       <template is="dom-if" if="[[!scanners.length]]" restamp>

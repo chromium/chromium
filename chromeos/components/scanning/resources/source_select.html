@@ -1,11 +1,12 @@
 <style include="scanning-shared"></style>
 <scan-settings-section>
-  <span id="sourceLabel" slot="label">[[i18n('sourceDropdownLabel')]]</span>
+  <span id="sourceLabel" slot="label" aria-hidden="true">
+    [[i18n('sourceDropdownLabel')]]
+  </span>
   <div slot="settings">
-    <!-- TODO(jschettler): Verify this meets a11y expecations (e.g. ChromeVox
-        should announce when a new option is focused). -->
     <select id="sourceSelect" class="md-select"
-        value="{{selectedSource::change}}" disabled="[[disabled]]">
+        value="{{selectedSource::change}}" disabled="[[disabled]]"
+        aria-labelledby="sourceLabel">
       <template is="dom-if" if="[[!sources.length]]" restamp>
         <option value="">
           [[i18n('defaultSourceOptionText')]]

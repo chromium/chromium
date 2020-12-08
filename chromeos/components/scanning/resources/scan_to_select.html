@@ -1,10 +1,11 @@
 <style include="scanning-shared"></style>
 <scan-settings-section>
-  <span id="scanToLabel" slot="label">[[i18n('scanToDropdownLabel')]]</span>
+  <span id="scanToLabel" slot="label" aria-hidden="true">
+    [[i18n('scanToDropdownLabel')]]
+  </span>
   <div slot="settings">
-    <!-- TODO(jschettler): Verify this meets a11y expecations (e.g. ChromeVox
-        should announce when a new option is focused). -->
-    <select id="scanToSelect" class="md-select" disabled="[[disabled]]" on-change="onSelectFolder_">
+    <select id="scanToSelect" class="md-select" disabled="[[disabled]]"
+        on-change="onSelectFolder_" aria-labelledby="scanToLabel">
       <option selected>
         [[displayText_]]
       </option>
