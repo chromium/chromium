@@ -32,7 +32,7 @@ class ASH_EXPORT HoldingSpaceItemScreenCaptureView
  private:
   void UpdateImage();
 
-  // Overlays a play icon over the Screen Capture preview.
+  // Overlays a play icon over `image_`.
   void AddPlayIcon();
 
   RoundedImageView* image_ = nullptr;

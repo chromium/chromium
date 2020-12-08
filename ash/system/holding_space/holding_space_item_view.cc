@@ -13,7 +13,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view_delegate.h"
 #include "base/bind.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/class_property.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/compositor/layer_animation_element.h"
@@ -306,23 +305,6 @@ views::ToggleImageButton* HoldingSpaceItemView::AddPin(views::View* parent) {
                                         base::Unretained(this)));
 
   return pin_;
-}
-
-views::View* HoldingSpaceItemView::CreatePlayIcon(views::View* parent) {
-  DCHECK(!play_icon_);
-  play_icon_ = parent->AddChildView(std::make_unique<views::ImageView>());
-  play_icon_->SetFocusBehavior(views::View::FocusBehavior::NEVER);
-  play_icon_->SetVisible(true);
-
-  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor);
-
-  const gfx::ImageSkia play_icon_image = gfx::CreateVectorIcon(
-      vector_icons::kPlayArrowIcon, kHoldingSpaceIconSize, icon_color);
-
-  play_icon_->SetImage(&play_icon_image);
-
-  return play_icon_;
 }
 
 void HoldingSpaceItemView::OnPaintFocus(gfx::Canvas* canvas, gfx::Size size) {

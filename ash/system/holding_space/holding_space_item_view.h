@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ui/views/animation/ink_drop_host_view.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
 namespace ui {
@@ -74,13 +73,8 @@ class ASH_EXPORT HoldingSpaceItemView : public views::InkDropHostView {
   void SetSelected(bool selected);
   bool selected() const { return selected_; }
 
-  views::View* play_icon() { return play_icon_; }
-
  protected:
   views::ToggleImageButton* AddPin(views::View* parent);
-  // Creates a View consisting of a play icon.
-  views::View* CreatePlayIcon(views::View* parent);
-
   virtual void OnPinVisiblityChanged(bool pin_visible) {}
 
  private:
@@ -105,7 +99,6 @@ class ASH_EXPORT HoldingSpaceItemView : public views::InkDropHostView {
   const std::string item_id_;
 
   views::ToggleImageButton* pin_ = nullptr;  // Owned by view hierarchy.
-  views::ImageView* play_icon_ = nullptr;    // Owned by view hierarchy.
 
   // Owners for the layers used to paint focused and selected states.
   std::unique_ptr<ui::LayerOwner> selected_layer_owner_;

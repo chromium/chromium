@@ -9,10 +9,14 @@
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/rounded_image_view.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
+#include "components/vector_icons/vector_icons.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
@@ -69,24 +73,29 @@ void HoldingSpaceItemScreenCaptureView::UpdateImage() {
 }
 
 void HoldingSpaceItemScreenCaptureView::AddPlayIcon() {
-  views::View* play_icon_container =
-      AddChildView(std::make_unique<views::View>());
+  auto* play_icon_container = AddChildView(std::make_unique<views::View>());
+  play_icon_container->SetFocusBehavior(views::View::FocusBehavior::NEVER);
 
   auto* layout =
       play_icon_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal,
-          kHoldingSpaceScreenCapturePadding));
+          views::BoxLayout::Orientation::kHorizontal));
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  views::View* play_icon = CreatePlayIcon(play_icon_container);
+  auto* play_icon =
+      play_icon_container->AddChildView(std::make_unique<views::ImageView>());
+  play_icon->SetID(kHoldingSpaceScreenCapturePlayIconId);
+  play_icon->SetImage(gfx::CreateVectorIcon(
+      vector_icons::kPlayArrowIcon, kHoldingSpaceIconSize,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kButtonIconColor)));
+  play_icon->SetPreferredSize(kHoldingSpaceScreenCapturePlayIconSize);
 
   // Create contrasting background for the play icon.
   play_icon->SetBackground(views::CreateRoundedRectBackground(
       HoldingSpaceColorProvider::Get()->GetBackgroundColor(),
       kHoldingSpaceScreenCapturePlayIconSize.width() / 2));
-  play_icon->SetPreferredSize(kHoldingSpaceScreenCapturePlayIconSize);
 }
 
 BEGIN_METADATA(HoldingSpaceItemScreenCaptureView, HoldingSpaceItemView)

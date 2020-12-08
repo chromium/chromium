@@ -1335,10 +1335,12 @@ TEST_P(HoldingSpaceTrayTest, PlayIconForScreenRecordings) {
 
   EXPECT_EQ(screenshot_item->id(),
             HoldingSpaceItemView::Cast(screen_capture_chips[1])->item()->id());
-  EXPECT_FALSE(HoldingSpaceItemView::Cast(screen_capture_chips[1])->play_icon());
+  EXPECT_FALSE(screen_capture_chips[1]->GetViewByID(
+      kHoldingSpaceScreenCapturePlayIconId));
   EXPECT_EQ(screen_recording_item->id(),
             HoldingSpaceItemView::Cast(screen_capture_chips[0])->item()->id());
-  EXPECT_TRUE(HoldingSpaceItemView::Cast(screen_capture_chips[0])->play_icon());
+  EXPECT_TRUE(screen_capture_chips[0]->GetViewByID(
+      kHoldingSpaceScreenCapturePlayIconId));
 }
 
 INSTANTIATE_TEST_SUITE_P(All, HoldingSpaceTrayTest, testing::Bool());
