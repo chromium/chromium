@@ -168,7 +168,7 @@ void ContextualSearchManager::EnableContextualSearchJsApiForWebContents(
       overlay_web_contents, this);
 }
 
-void ContextualSearchManager::WhitelistContextualSearchJsApiUrl(
+void ContextualSearchManager::AllowlistContextualSearchJsApiUrl(
     JNIEnv* env,
     jobject obj,
     const base::android::JavaParamRef<jstring>& j_url) {
