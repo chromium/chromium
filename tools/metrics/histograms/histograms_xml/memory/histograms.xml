@@ -1028,7 +1028,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Memory.Experimental.Renderer.PeakResidentSet.AtHighestPrivateMemoryFootprint"
-    units="MB" expires_after="2021-04-04">
+    units="MB" expires_after="2021-06-06">
   <owner>tasak@google.com</owner>
   <owner>bartekn@google.com</owner>
   <summary>

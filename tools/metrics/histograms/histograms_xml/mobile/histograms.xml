@@ -587,7 +587,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MobileDownload.Location.Dialog.Result"
-    enum="DownloadLocationDialogResult" expires_after="2021-03-01">
+    enum="DownloadLocationDialogResult" expires_after="2021-06-06">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>

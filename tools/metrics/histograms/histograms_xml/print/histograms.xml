@@ -221,7 +221,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.UserAction" enum="PrintPreviewUserActionType"
-    expires_after="2021-04-04">
+    expires_after="2021-06-06">
   <owner>thestig@chromium.org</owner>
   <summary>
     Action taken by the user in the preview tab such as print, cancel, print to

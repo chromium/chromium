@@ -48,7 +48,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Reset.ResetContextMode"
-    enum="FingerprintSensorMode" expires_after="2021-03-15">
+    enum="FingerprintSensorMode" expires_after="2021-06-06">
   <owner>tomhughes@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>The mode FPMCU was in when we reset context.</summary>

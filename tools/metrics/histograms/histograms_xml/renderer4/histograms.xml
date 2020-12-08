@@ -75,7 +75,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer4.GpuImageDecodeState.CachePeakUsagePercent"
-    units="units" expires_after="2021-04-04">
+    units="units" expires_after="2021-06-06">
   <owner>sashamcintosh@chromium.org</owner>
   <owner>ericrk@chromium.org</owner>
   <summary>
