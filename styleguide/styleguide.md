@@ -5,6 +5,7 @@
   * [Chromium C++ style guide](c++/c++.md)
     * See also: [C++ Dos and Don'ts](c++/c++-dos-and-donts.md) for Chromium best-practices.
   * [Chromium Objective-C style guide](objective-c/objective-c.md)
+  * [Chromium Swift style guide](swift/swift.md)
   * [Java style guide for Android](java/java.md)
   * [Chromium Python style guide](python/python.md)
   * [GN style guide](https://gn.googlesource.com/gn/+/master/docs/style_guide.md) for build files.
