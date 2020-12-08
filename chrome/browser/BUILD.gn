@@ -4504,6 +4504,7 @@ static_library("browser") {
       "//components/arc",
       "//components/arc:arc_base",
       "//components/arc/mojom",
+      "//components/full_restore",
       "//components/metrics/structured",
       "//components/services/app_service/public/cpp:instance_update",
       "//components/services/font:lib",

@@ -192,6 +192,10 @@ content::WebContents* WebAppsBase::LaunchAppWithIntentImpl(
           GetRegistrar()->GetAppEffectiveDisplayMode(app_id)),
       std::move(intent));
   params.launch_source = launch_source;
+  return LaunchAppWithParams(std::move(params));
+}
+
+content::WebContents* WebAppsBase::LaunchAppWithParams(AppLaunchParams params) {
   return web_app_launch_manager_->OpenApplication(std::move(params));
 }
 
@@ -305,12 +309,14 @@ void WebAppsBase::Launch(const std::string& app_id,
       display_id,
       /*fallback_container=*/
       web_app::ConvertDisplayModeToAppLaunchContainer(display_mode));
+
   // This is used only in the case that a SystemWebApp is being opened. We
   // avoided recording the metrics above, in app_service_proxy.cc, and will
   // record the launch metrics as part of the call to LaunchSystemWebApp.
   params.launch_source = launch_source;
-  // The app will be created for the currently active profile.
-  web_app_launch_manager_->OpenApplication(std::move(params));
+
+  // The app will be launched for the currently active profile.
+  LaunchAppWithParams(std::move(params));
 }
 
 void WebAppsBase::LaunchAppWithFiles(const std::string& app_id,
@@ -326,8 +332,8 @@ void WebAppsBase::LaunchAppWithFiles(const std::string& app_id,
     params.launch_files.push_back(file_path);
   }
 
-  // The app will be created for the currently active profile.
-  web_app_launch_manager_->OpenApplication(std::move(params));
+  // The app will be launched for the currently active profile.
+  LaunchAppWithParams(std::move(params));
 }
 
 void WebAppsBase::LaunchAppWithIntent(const std::string& app_id,

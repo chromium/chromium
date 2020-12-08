@@ -70,6 +70,13 @@ int GetEventFlags(apps::mojom::LaunchContainer container,
                   WindowOpenDisposition disposition,
                   bool prefer_container);
 
+// Returns the browser's session id for restoration if |web_contents| is valid
+// for a system web app, or for a web app not opened in tab. Otherwise, returns
+// an invalid session id.
+int GetSessionIdForRestoreFromWebContents(
+    apps::mojom::LaunchContainer container,
+    const content::WebContents* web_contents);
+
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_APP_SERVICE_LAUNCH_UTILS_H_

@@ -5,11 +5,17 @@
 component("full_restore") {
   output_name = "full_restore_lib"
   sources = [
+    "app_launch_info.cc",
+    "app_launch_info.h",
     "full_restore_utils.cc",
     "full_restore_utils.h",
   ]
 
   defines = [ "IS_FULL_RESTORE_IMPL" ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//components/services/app_service/public/mojom",
+  ]
 }

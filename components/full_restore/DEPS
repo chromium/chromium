@@ -1,3 +1,5 @@
 include_rules = [
+  "+ash/public",
   "+components/services/app_service/public",
+  "+ui",
 ]

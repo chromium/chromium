@@ -49,7 +49,10 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -443,6 +446,30 @@ void WebAppsChromeOs::SetIconEffect(const std::string& app_id) {
       GetIconEffects(web_app, paused_apps_.IsPaused(app_id),
                      web_app->chromeos_data()->is_disabled));
   Publish(std::move(app), subscribers());
+}
+
+content::WebContents* WebAppsChromeOs::LaunchAppWithParams(
+    AppLaunchParams params) {
+  AppLaunchParams params_for_restore(params.app_id, params.container,
+                                     params.disposition, params.display_id,
+                                     params.launch_files, params.intent);
+
+  auto* web_contents = WebAppsBase::LaunchAppWithParams(std::move(params));
+
+  int session_id = GetSessionIdForRestoreFromWebContents(
+      params_for_restore.container, web_contents);
+  if (!SessionID::IsValidValue(session_id)) {
+    return web_contents;
+  }
+
+  full_restore::SaveAppLaunchInfo(
+      profile()->GetPath(),
+      std::make_unique<full_restore::AppLaunchInfo>(
+          params_for_restore.app_id, session_id, params_for_restore.container,
+          params_for_restore.disposition, params_for_restore.display_id,
+          std::move(params_for_restore.launch_files),
+          params_for_restore.intent));
+  return web_contents;
 }
 
 bool WebAppsChromeOs::Accepts(const std::string& app_id) {

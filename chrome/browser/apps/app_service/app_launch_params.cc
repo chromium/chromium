@@ -18,6 +18,20 @@ AppLaunchParams::AppLaunchParams(const std::string& app_id,
       source(source),
       display_id(display_id) {}
 
+AppLaunchParams::AppLaunchParams(const std::string& app_id,
+                                 apps::mojom::LaunchContainer container,
+                                 WindowOpenDisposition disposition,
+                                 int64_t display_id,
+                                 const std::vector<base::FilePath>& files,
+                                 const apps::mojom::IntentPtr& intentPtr)
+    : app_id(app_id),
+      container(container),
+      disposition(disposition),
+      command_line(base::CommandLine::NO_PROGRAM),
+      display_id(display_id),
+      launch_files(files),
+      intent(intentPtr ? intentPtr.Clone() : nullptr) {}
+
 AppLaunchParams::AppLaunchParams(AppLaunchParams&&) = default;
 AppLaunchParams& AppLaunchParams::operator=(AppLaunchParams&&) = default;
 

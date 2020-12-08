@@ -40,6 +40,8 @@ class WebAppRegistrar;
 
 namespace apps {
 
+struct AppLaunchParams;
+
 // An app publisher (in the App Service sense) of Web Apps.
 class WebAppsBase : public apps::PublisherBase,
                     public web_app::AppRegistrarObserver,
@@ -73,6 +75,8 @@ class WebAppsBase : public apps::PublisherBase,
       apps::mojom::IntentPtr intent,
       apps::mojom::LaunchSource launch_source,
       int64_t display_id);
+
+  virtual content::WebContents* LaunchAppWithParams(AppLaunchParams params);
 
   const mojo::RemoteSet<apps::mojom::Subscriber>& subscribers() const {
     return subscribers_;

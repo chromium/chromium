@@ -116,6 +116,10 @@ class WebAppsChromeOs : public WebAppsBase,
 
   void SetIconEffect(const std::string& app_id);
 
+  // Launches an app in a way specified by |params|. If the app is a system web
+  // app, or not opened in tabs, saves the launch parameters.
+  content::WebContents* LaunchAppWithParams(AppLaunchParams params) override;
+
   bool Accepts(const std::string& app_id) override;
 
   apps::InstanceRegistry* instance_registry_;
