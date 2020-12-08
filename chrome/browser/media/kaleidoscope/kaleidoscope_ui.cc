@@ -204,58 +204,7 @@ void OnStringsRequest(const std::string& path,
   std::move(callback).Run(ref_contents);
 }
 
-content::WebUIDataSource* CreateUntrustedPALChildWebUIDataSource() {
-  content::WebUIDataSource* untrusted_source =
-      content::WebUIDataSource::Create(kKaleidoscopeUntrustedPALChildURL);
-  untrusted_source->DisableDenyXFrameOptions();
-
-  // Allow scripts from Google.
-  untrusted_source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src https://imasdk.googleapis.com 'unsafe-inline' 'self';");
-  untrusted_source->DisableTrustedTypesCSP();
-
-#if BUILDFLAG(ENABLE_KALEIDOSCOPE)
-  untrusted_source->AddResourcePath("pal-child.html",
-                                    IDR_KALEIDOSCOPE_PAL_CHILD_HTML);
-  untrusted_source->AddResourcePath("pal-child.js",
-                                    IDR_KALEIDOSCOPE_PAL_CHILD_JS);
-#endif  // BUILDFLAG(ENABLE_KALEIDOSCOPE)
-
-  return untrusted_source;
-}
-
-}  // anonymous namespace
-
-// We set |enable_chrome_send| to true since we need it for browser tests.
-KaleidoscopeUI::KaleidoscopeUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
-  web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
-
-  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, CreateWebUIDataSource());
-  content::WebUIDataSource::Add(browser_context,
-                                CreateUntrustedWebUIDataSource());
-  content::WebUIDataSource::Add(browser_context,
-                                CreateUntrustedPALChildWebUIDataSource());
-}
-
-KaleidoscopeUI::~KaleidoscopeUI() {
-  if (metrics_recorder_)
-    metrics_recorder_->OnExitPage();
-
-  // Ensure that the provider is deleted before the metrics recorder, since the
-  // provider has a pointer to the metrics recorder.
-  provider_.reset();
-  metrics_recorder_.reset();
-  identity_manager_.reset();
-}
-
-// static
-content::WebUIDataSource* KaleidoscopeUI::CreateWebUIDataSource() {
-  content::WebUIDataSource* html_source =
-      content::WebUIDataSource::Create(kKaleidoscopeUIHost);
-
+void ConfigureMainFrameWebUIDataSource(content::WebUIDataSource* html_source) {
   // Allows us to put content in an IFrame.
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ChildSrc,
@@ -307,7 +256,68 @@ content::WebUIDataSource* KaleidoscopeUI::CreateWebUIDataSource() {
 #endif  // BUILDFLAG(ENABLE_KALEIDOSCOPE)
 
   html_source->AddResourcePath("module.js", IDR_KALEIDOSCOPE_NTP_MODULE_JS);
+}
 
+content::WebUIDataSource* CreateUntrustedPALChildWebUIDataSource() {
+  content::WebUIDataSource* untrusted_source =
+      content::WebUIDataSource::Create(kKaleidoscopeUntrustedPALChildURL);
+  untrusted_source->DisableDenyXFrameOptions();
+
+  // Allow scripts from Google.
+  untrusted_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src https://imasdk.googleapis.com 'unsafe-inline' 'self';");
+  untrusted_source->DisableTrustedTypesCSP();
+
+#if BUILDFLAG(ENABLE_KALEIDOSCOPE)
+  untrusted_source->AddResourcePath("pal-child.html",
+                                    IDR_KALEIDOSCOPE_PAL_CHILD_HTML);
+  untrusted_source->AddResourcePath("pal-child.js",
+                                    IDR_KALEIDOSCOPE_PAL_CHILD_JS);
+#endif  // BUILDFLAG(ENABLE_KALEIDOSCOPE)
+
+  return untrusted_source;
+}
+
+}  // anonymous namespace
+
+// We set |enable_chrome_send| to true since we need it for browser tests.
+KaleidoscopeUI::KaleidoscopeUI(content::WebUI* web_ui)
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
+  web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
+
+  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
+  content::WebUIDataSource::Add(browser_context, CreateWebUIDataSource());
+  content::WebUIDataSource::Add(browser_context, CreateWatchDataSource());
+  content::WebUIDataSource::Add(browser_context,
+                                CreateUntrustedWebUIDataSource());
+  content::WebUIDataSource::Add(browser_context,
+                                CreateUntrustedPALChildWebUIDataSource());
+}
+
+KaleidoscopeUI::~KaleidoscopeUI() {
+  if (metrics_recorder_)
+    metrics_recorder_->OnExitPage();
+
+  // Ensure that the provider is deleted before the metrics recorder, since the
+  // provider has a pointer to the metrics recorder.
+  provider_.reset();
+  metrics_recorder_.reset();
+  identity_manager_.reset();
+}
+
+// static
+content::WebUIDataSource* KaleidoscopeUI::CreateWebUIDataSource() {
+  auto* html_source = content::WebUIDataSource::Create(kKaleidoscopeUIHost);
+  ConfigureMainFrameWebUIDataSource(html_source);
+  return html_source;
+}
+
+// static
+content::WebUIDataSource* KaleidoscopeUI::CreateWatchDataSource() {
+  auto* html_source =
+      content::WebUIDataSource::Create(kKaleidoscopeUIWatchHost);
+  ConfigureMainFrameWebUIDataSource(html_source);
   return html_source;
 }
 

@@ -7,7 +7,11 @@
 
 extern const char kKaleidoscopeUIHost[];
 
+extern const char kKaleidoscopeUIWatchHost[];
+
 extern const char kKaleidoscopeUIURL[];
+
+extern const char kKaleidoscopeWatchUIURL[];
 
 extern const char kKaleidoscopeUntrustedContentUIURL[];
 

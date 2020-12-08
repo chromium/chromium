@@ -21,6 +21,12 @@ const url::Origin& KaleidoscopeOrigin() {
   return *origin;
 }
 
+const url::Origin& WatchOrigin() {
+  static base::NoDestructor<url::Origin> origin(
+      url::Origin::Create(GURL(kKaleidoscopeWatchUIURL)));
+  return *origin;
+}
+
 const url::Origin& KaleidoscopeUntrustedOrigin() {
   static base::NoDestructor<url::Origin> origin(
       url::Origin::Create(GURL(kKaleidoscopeUntrustedContentUIURL)));
@@ -44,7 +50,8 @@ bool ShouldAllowAutoplay(content::NavigationHandle* handle) {
   // If the tab is Kaleidoscope then we should allow autoplay.
   auto parent_origin =
       url::Origin::Create(handle->GetWebContents()->GetLastCommittedURL());
-  if (parent_origin.IsSameOriginWith(KaleidoscopeOrigin())) {
+  if (parent_origin.IsSameOriginWith(KaleidoscopeOrigin()) ||
+      parent_origin.IsSameOriginWith(WatchOrigin())) {
     return true;
   }
 
@@ -91,13 +98,18 @@ void KaleidoscopeTabHelper::ReadyToCommitNavigation(
       !new_origin.IsSameOriginWith(KaleidoscopeOrigin()) &&
       handle->IsInMainFrame()) {
     OnKaleidoscopeSessionEnded();
+  } else if (current_origin.IsSameOriginWith(WatchOrigin()) &&
+             !new_origin.IsSameOriginWith(WatchOrigin()) &&
+             handle->IsInMainFrame()) {
+    OnKaleidoscopeSessionEnded();
   }
 }
 
 void KaleidoscopeTabHelper::WebContentsDestroyed() {
   auto current_origin =
       url::Origin::Create(web_contents()->GetLastCommittedURL());
-  if (current_origin.IsSameOriginWith(KaleidoscopeOrigin())) {
+  if (current_origin.IsSameOriginWith(KaleidoscopeOrigin()) ||
+      current_origin.IsSameOriginWith(WatchOrigin())) {
     OnKaleidoscopeSessionEnded();
   }
 }

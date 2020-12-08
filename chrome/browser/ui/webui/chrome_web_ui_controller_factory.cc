@@ -886,8 +886,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 
 #if !defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(media::kKaleidoscope)) {
-    if (url.host_piece() == kKaleidoscopeUIHost)
+    if (url.host_piece() == kKaleidoscopeUIHost ||
+        url.host_piece() == kKaleidoscopeUIWatchHost) {
       return &NewWebUI<KaleidoscopeUI>;
+    }
   }
 #endif  // !defined(OS_ANDROID)
 #if BUILDFLAG(ENABLE_NACL)

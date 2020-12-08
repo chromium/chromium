@@ -6,7 +6,11 @@
 
 const char kKaleidoscopeUIHost[] = "kaleidoscope";
 
+const char kKaleidoscopeUIWatchHost[] = "watch";
+
 const char kKaleidoscopeUIURL[] = "chrome://kaleidoscope";
+
+const char kKaleidoscopeWatchUIURL[] = "chrome://watch";
 
 const char kKaleidoscopeUntrustedContentUIURL[] =
     "chrome-untrusted://kaleidoscope/";

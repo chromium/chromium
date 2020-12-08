@@ -146,6 +146,32 @@ IN_PROC_BROWSER_TEST_F(KaleidoscopeTabHelperBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(KaleidoscopeTabHelperBrowserTest,
+                       SessionMetric_OpenedRecommendation_Watch) {
+  const GURL kTestPageUrl = embedded_test_server()->GetURL(kTestPagePath);
+
+  {
+    // Navigate to Kaleidoscope.
+    NavigateParams params(browser(), GURL(kKaleidoscopeWatchUIURL),
+                          ui::PAGE_TRANSITION_LINK);
+    ui_test_utils::NavigateToURL(&params);
+  }
+
+  // Simulate a playback.
+  KaleidoscopeTabHelper::FromWebContents(GetWebContents())->MarkAsSuccessful();
+
+  {
+    // Navigate away from Kaleidoscope.
+    NavigateParams params(browser(), kTestPageUrl, ui::PAGE_TRANSITION_LINK);
+    ui_test_utils::NavigateToURL(&params);
+  }
+
+  histogram_tester_.ExpectBucketCount(
+      KaleidoscopeTabHelper::
+          kKaleidoscopeOpenedMediaRecommendationHistogramName,
+      true, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(KaleidoscopeTabHelperBrowserTest,
                        SessionMetric_DidNotOpenRecommendation) {
   const GURL kTestPageUrl = embedded_test_server()->GetURL(kTestPagePath);
 

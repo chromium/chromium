@@ -207,7 +207,7 @@ void KaleidoscopeDataProviderImpl::GetContinueWatchingMediaFeedItems(
 }
 
 void KaleidoscopeDataProviderImpl::SendFeedback() {
-  chrome::ShowFeedbackPage(GURL(kKaleidoscopeUIURL), profile_,
+  chrome::ShowFeedbackPage(GURL(kKaleidoscopeWatchUIURL), profile_,
                            chrome::kFeedbackSourceKaleidoscope,
                            std::string() /* description_template */,
                            std::string() /* description_placeholder_text */,

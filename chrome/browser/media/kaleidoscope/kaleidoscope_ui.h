@@ -30,6 +30,8 @@ class KaleidoscopeUI : public ui::MojoWebUIController {
 
   static content::WebUIDataSource* CreateWebUIDataSource();
 
+  static content::WebUIDataSource* CreateWatchDataSource();
+
   static content::WebUIDataSource* CreateUntrustedWebUIDataSource();
 
  private:
