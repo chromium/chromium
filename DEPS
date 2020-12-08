@@ -449,7 +449,7 @@ deps = {
     'dep_type': 'cipd',
     'condition': 'host_os == "win"',
   },
-  'src/tools/reclient': {
+  'src/buildtools/reclient': {
     'packages': [
       {
         'package': 'infra/rbe/client/${{platform}}',

@@ -16,6 +16,12 @@ vars = {
   # GN CIPD package version.
   'gn_version': 'git_revision:53d92014bf94c3893886470a1c7c1289f8818db0',
 
+  # By default, do not checkout the re-client binaries.
+  'checkout_reclient': False,
+
+  # reclient CIPD package version
+  'reclient_version': 're_client_version:0.17.0.7d283ef',
+
   # When changing these, also update the svn revisions in deps_revisions.gni
   'clang_format_revision': '96636aa0e9f047f17447f2d45a094d0b59ed7917',
   'libcxx_revision':       'd9040c75cfea5928c804ab7c235fed06a63f743a',
@@ -68,5 +74,15 @@ deps = {
     ],
     'dep_type': 'cipd',
     'condition': 'host_os == "win"',
+  },
+  'reclient': {
+    'packages': [
+      {
+        'package': 'infra/rbe/client/${{platform}}',
+        'version': Var('reclient_version'),
+      }
+    ],
+    'dep_type': 'cipd',
+    'condition': '(host_os == "linux" or host_os == "windows") and checkout_reclient',
   },
 }
