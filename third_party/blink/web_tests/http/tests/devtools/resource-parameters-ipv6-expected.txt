@@ -8,7 +8,7 @@ http://[::1]:8000/devtools/resources/post-target.cgi?queryParam1=queryValue1&que
     cache : {
     }
     connection : <string>
-    pageref : "page_1"
+    pageref : "page_2"
     request : {
         bodySize : <number>
         cookies : [
