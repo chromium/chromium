@@ -22,8 +22,8 @@
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 
 class ExtensionFunctionRegistry;
@@ -177,7 +177,7 @@ class ExtensionsBrowserClient {
   // webview and dev tools. May be called on either the UI or IO thread.
   virtual bool AllowCrossRendererResourceLoad(
       const network::ResourceRequest& request,
-      blink::mojom::ResourceType resource_type,
+      network::mojom::RequestDestination destination,
       ui::PageTransition page_transition,
       int child_id,
       bool is_incognito,

@@ -217,17 +217,18 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
 namespace extensions {
 namespace chrome_url_request_util {
 
-bool AllowCrossRendererResourceLoad(const network::ResourceRequest& request,
-                                    blink::mojom::ResourceType resource_type,
-                                    ui::PageTransition page_transition,
-                                    int child_id,
-                                    bool is_incognito,
-                                    const Extension* extension,
-                                    const ExtensionSet& extensions,
-                                    const ProcessMap& process_map,
-                                    bool* allowed) {
+bool AllowCrossRendererResourceLoad(
+    const network::ResourceRequest& request,
+    network::mojom::RequestDestination destination,
+    ui::PageTransition page_transition,
+    int child_id,
+    bool is_incognito,
+    const Extension* extension,
+    const ExtensionSet& extensions,
+    const ProcessMap& process_map,
+    bool* allowed) {
   if (url_request_util::AllowCrossRendererResourceLoad(
-          request, resource_type, page_transition, child_id, is_incognito,
+          request, destination, page_transition, child_id, is_incognito,
           extension, extensions, process_map, allowed)) {
     return true;
   }

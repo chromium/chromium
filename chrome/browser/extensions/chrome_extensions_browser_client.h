@@ -21,6 +21,7 @@
 #include "extensions/browser/kiosk/kiosk_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 
 namespace base {
 class CommandLine;
@@ -82,14 +83,15 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
       const std::string& content_security_policy,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       bool send_cors_header) override;
-  bool AllowCrossRendererResourceLoad(const network::ResourceRequest& request,
-                                      blink::mojom::ResourceType resource_type,
-                                      ui::PageTransition page_transition,
-                                      int child_id,
-                                      bool is_incognito,
-                                      const Extension* extension,
-                                      const ExtensionSet& extensions,
-                                      const ProcessMap& process_map) override;
+  bool AllowCrossRendererResourceLoad(
+      const network::ResourceRequest& request,
+      network::mojom::RequestDestination destination,
+      ui::PageTransition page_transition,
+      int child_id,
+      bool is_incognito,
+      const Extension* extension,
+      const ExtensionSet& extensions,
+      const ProcessMap& process_map) override;
   PrefService* GetPrefServiceForContext(
       content::BrowserContext* context) override;
   void GetEarlyExtensionPrefsObservers(

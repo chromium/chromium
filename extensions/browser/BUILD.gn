@@ -414,6 +414,7 @@ source_set("browser_sources") {
     "//ppapi/buildflags",
     "//services/device/public/mojom",
     "//services/metrics/public/cpp:metrics_cpp",
+    "//services/network/public/mojom",
     "//services/preferences/public/cpp",
     "//services/service_manager/public/cpp",
     "//skia",

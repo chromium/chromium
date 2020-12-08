@@ -12,9 +12,12 @@ bool IsResourceTypeFrame(blink::mojom::ResourceType type) {
 }
 
 bool IsRequestDestinationFrame(network::mojom::RequestDestination destination) {
+  // kObject and kEmbed can also be destinations for a frame navigation.
   return destination == network::mojom::RequestDestination::kDocument ||
          destination == network::mojom::RequestDestination::kFrame ||
-         destination == network::mojom::RequestDestination::kIframe;
+         destination == network::mojom::RequestDestination::kIframe ||
+         destination == network::mojom::RequestDestination::kObject ||
+         destination == network::mojom::RequestDestination::kEmbed;
 }
 
 }  // namespace blink

@@ -21,22 +21,23 @@
 namespace extensions {
 namespace url_request_util {
 
-bool AllowCrossRendererResourceLoad(const network::ResourceRequest& request,
-                                    blink::mojom::ResourceType resource_type,
-                                    ui::PageTransition page_transition,
-                                    int child_id,
-                                    bool is_incognito,
-                                    const Extension* extension,
-                                    const ExtensionSet& extensions,
-                                    const ProcessMap& process_map,
-                                    bool* allowed) {
+bool AllowCrossRendererResourceLoad(
+    const network::ResourceRequest& request,
+    network::mojom::RequestDestination destination,
+    ui::PageTransition page_transition,
+    int child_id,
+    bool is_incognito,
+    const Extension* extension,
+    const ExtensionSet& extensions,
+    const ProcessMap& process_map,
+    bool* allowed) {
   const GURL& url = request.url;
   base::StringPiece resource_path = url.path_piece();
 
   // This logic is performed for main frame requests in
   // ExtensionNavigationThrottle::WillStartRequest.
   if (child_id != -1 ||
-      resource_type != blink::mojom::ResourceType::kMainFrame) {
+      destination != network::mojom::RequestDestination::kDocument) {
     // Extensions with webview: allow loading certain resources by guest
     // renderers with privileged partition IDs as specified in owner's extension
     // the manifest file.
@@ -83,7 +84,7 @@ bool AllowCrossRendererResourceLoad(const network::ResourceRequest& request,
 
   // Navigating the main frame to an extension URL is allowed, even if not
   // explicitly listed as web_accessible_resource.
-  if (resource_type == blink::mojom::ResourceType::kMainFrame) {
+  if (destination == network::mojom::RequestDestination::kDocument) {
     *allowed = true;
     return true;
   }
@@ -91,7 +92,8 @@ bool AllowCrossRendererResourceLoad(const network::ResourceRequest& request,
   // When navigating in subframe, allow if it is the same origin
   // as the top-level frame. This can only be the case if the subframe
   // request is coming from the extension process.
-  if (resource_type == blink::mojom::ResourceType::kSubFrame &&
+  if ((destination == network::mojom::RequestDestination::kIframe ||
+       destination == network::mojom::RequestDestination::kFrame) &&
       process_map.Contains(child_id)) {
     *allowed = true;
     return true;

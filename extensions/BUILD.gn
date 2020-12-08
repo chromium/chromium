@@ -159,6 +159,7 @@ static_library("test_support") {
     "//extensions/common/api",
     "//extensions/common/api:extensions_features",
     "//net:test_support",
+    "//services/network/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/cld_3/src/src:cld_3",

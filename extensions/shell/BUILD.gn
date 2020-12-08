@@ -68,6 +68,7 @@ source_set("app_shell_lib") {
     "//extensions/shell/browser/system_logs",
     "//extensions/shell/common/api",
     "//extensions/shell/common/api:extensions_features",
+    "//services/network/public/mojom",
     "//third_party/blink/public:blink",
     "//ui/base",
     "//ui/base/ime/init",
