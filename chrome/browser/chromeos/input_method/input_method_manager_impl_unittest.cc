@@ -808,7 +808,6 @@ TEST_F(InputMethodManagerImplTest, TestXkbSetting) {
   EXPECT_TRUE(manager_->GetActiveIMEState()->ReplaceEnabledInputMethods(ids));
   EXPECT_EQ(4U, manager_->GetActiveIMEState()->GetNumActiveInputMethods());
   EXPECT_EQ(2, keyboard_->set_current_keyboard_layout_by_name_count_);
-  // See input_methods.txt for an expected XKB layout name.
   EXPECT_EQ("us(dvorak)", keyboard_->last_layout_);
   manager_->GetActiveIMEState()->SwitchToNextInputMethod();
   EXPECT_EQ(3, keyboard_->set_current_keyboard_layout_by_name_count_);
