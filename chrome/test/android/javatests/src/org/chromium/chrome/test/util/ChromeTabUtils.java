@@ -271,8 +271,8 @@ public class ChromeTabUtils {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             tab.addObserver(new EmptyTabObserver() {
                 @Override
-                public void onPageLoadStarted(Tab tab, String url) {
-                    if (expectedUrl == null || TextUtils.equals(url, expectedUrl)) {
+                public void onPageLoadStarted(Tab tab, GURL url) {
+                    if (expectedUrl == null || TextUtils.equals(url.getSpec(), expectedUrl)) {
                         startedCallback.notifyCalled();
                         tab.removeObserver(this);
                     }

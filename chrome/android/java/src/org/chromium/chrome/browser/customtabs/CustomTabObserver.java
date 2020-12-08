@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -113,7 +114,7 @@ public class CustomTabObserver extends EmptyTabObserver {
     }
 
     @Override
-    public void onPageLoadStarted(Tab tab, String url) {
+    public void onPageLoadStarted(Tab tab, GURL url) {
         if (mCurrentState == State.WAITING_LOAD_START) {
             mPageLoadStartedTimestamp = SystemClock.elapsedRealtime();
             mCurrentState = State.WAITING_LOAD_FINISH;

@@ -132,6 +132,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -2061,7 +2062,7 @@ public class TabListMediatorUnitTest {
     public void searchListener_frozenTab() {
         initAndAssertAllProperties();
 
-        String searchUrl = "https://www.google.com/search?q=test";
+        String searchUrl = JUnitTestGURLs.SEARCH_URL;
         String searchTerm = "test";
         TemplateUrlService service = Mockito.mock(TemplateUrlService.class);
         doReturn(searchTerm).when(service).getSearchQueryForUrl(searchUrl);
@@ -2087,7 +2088,7 @@ public class TabListMediatorUnitTest {
         verify(navigationController, never()).goToOffset(0);
 
         doReturn(webContents).when(mTab1).getWebContents();
-        mTabObserverCaptor.getValue().onPageLoadStarted(mTab1, searchUrl);
+        mTabObserverCaptor.getValue().onPageLoadStarted(mTab1, JUnitTestGURLs.getGURL(searchUrl));
         verify(mTab1).loadUrl(
                 refEq(new LoadUrlParams(searchUrl, PageTransition.KEYWORD_GENERATED)));
     }

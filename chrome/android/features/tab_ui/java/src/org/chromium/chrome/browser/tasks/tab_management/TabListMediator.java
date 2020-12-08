@@ -77,6 +77,7 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -1612,7 +1613,7 @@ class TabListMediator {
 
         private static TabObserver sLazyNavigateToLastSearchQuery = new EmptyTabObserver() {
             @Override
-            public void onPageLoadStarted(Tab tab, String url) {
+            public void onPageLoadStarted(Tab tab, GURL url) {
                 assert tab.getWebContents() != null;
                 if (tab.getWebContents() == null) return;
 

@@ -43,6 +43,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.url.GURL;
 import org.chromium.url.URI;
 
 import java.util.Locale;
@@ -74,7 +75,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
         mDataReductionProxyContextMenuTabObserver = new EmptyTabObserver() {
             @Override
-            public void onPageLoadStarted(Tab tab, String url) {
+            public void onPageLoadStarted(Tab tab, GURL url) {
                 mLoadOriginalImageRequestedForPageLoad = false;
             }
         };

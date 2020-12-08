@@ -15,6 +15,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.NetError;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 /**
  * An implementation of the {@link TabObserver} which has empty implementations of all methods.
@@ -45,7 +46,7 @@ public class EmptyTabObserver implements TabObserver {
     public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {}
 
     @Override
-    public void onPageLoadStarted(Tab tab, String url) {}
+    public void onPageLoadStarted(Tab tab, GURL url) {}
 
     @Override
     public void onPageLoadFinished(Tab tab, String url) {}

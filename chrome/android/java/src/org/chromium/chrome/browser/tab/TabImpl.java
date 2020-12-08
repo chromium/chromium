@@ -996,7 +996,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         updateTitle();
         if (mIsRendererUnresponsive) handleRendererResponsiveStateChanged(true);
         for (TabObserver observer : mObservers) {
-            observer.onPageLoadStarted(this, validatedUrl.getSpec());
+            observer.onPageLoadStarted(this, validatedUrl);
         }
     }
 

@@ -18,6 +18,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.url.GURL;
 
 /**
  * Monitors that a Tab starts loading and stops loading a URL.
@@ -44,7 +45,7 @@ public class TabLoadObserver extends EmptyTabObserver {
     }
 
     @Override
-    public void onPageLoadStarted(Tab tab, String url) {
+    public void onPageLoadStarted(Tab tab, GURL url) {
         mTabLoadStartedCallback.notifyCalled();
     }
 

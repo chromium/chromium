@@ -20,6 +20,7 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.util.TokenHolder;
+import org.chromium.url.GURL;
 
 /**
  * Class responsible for handling dismissal of a tab modal dialog on user actions outside the tab
@@ -43,7 +44,7 @@ public class TabModalLifetimeHandler implements NativeInitObserver, Destroyable 
         }
 
         @Override
-        public void onPageLoadStarted(Tab tab, String url) {
+        public void onPageLoadStarted(Tab tab, GURL url) {
             if (mActiveTab == tab) {
                 mManager.dismissDialogsOfType(ModalDialogType.TAB, DialogDismissalCause.NAVIGATE);
             }

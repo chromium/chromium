@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.url.GURL;
 
 /**
  * Wrapper for the dom_distiller::url_utils.
@@ -45,15 +46,19 @@ public final class DomDistillerUrlUtils {
         return DomDistillerUrlUtilsJni.get().getOriginalUrlFromDistillerUrl(url);
     }
 
+    public static boolean isDistilledPage(String url) {
+        if (TextUtils.isEmpty(url)) return false;
+        return DomDistillerUrlUtilsJni.get().isDistilledPage(url);
+    }
+
     /**
      * Returns whether the url is for a distilled page.
      *
      * @param url The url of the page.
      * @return whether the url is for a distilled page.
      */
-    public static boolean isDistilledPage(String url) {
-        if (TextUtils.isEmpty(url)) return false;
-        return DomDistillerUrlUtilsJni.get().isDistilledPage(url);
+    public static boolean isDistilledPage(GURL url) {
+        return isDistilledPage(url.getSpec());
     }
 
     public static String getValueForKeyInUrl(String url, String key) {

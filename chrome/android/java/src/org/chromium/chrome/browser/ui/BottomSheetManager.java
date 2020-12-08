@@ -39,6 +39,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.ui.vr.VrModeObserver;
+import org.chromium.url.GURL;
 
 /**
  * A class that manages activity-specific interactions with the BottomSheet component that it
@@ -154,7 +155,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
         //                sheet is actually used.
         mTabObserver = new EmptyTabObserver() {
             @Override
-            public void onPageLoadStarted(Tab tab, String url) {
+            public void onPageLoadStarted(Tab tab, GURL url) {
                 controller.clearRequestsAndHide();
             }
 

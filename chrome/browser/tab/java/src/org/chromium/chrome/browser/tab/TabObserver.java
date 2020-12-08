@@ -14,6 +14,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 /**
  * An observer that is notified of changes to a {@link Tab} object.
@@ -86,11 +87,10 @@ public interface TabObserver {
      * <p>
      * For visual loading indicators/throbbers, {@link #onLoadStarted(Tab)} and
      * {@link #onLoadStopped(Tab)} should be used to drive updates.
-     *
-     * @param tab The notifying {@link Tab}.
+     *  @param tab The notifying {@link Tab}.
      * @param url The committed URL being navigated to.
      */
-    void onPageLoadStarted(Tab tab, String url);
+    void onPageLoadStarted(Tab tab, GURL url);
 
     /**
      * Called when a tab has finished loading a page.
@@ -182,9 +182,9 @@ public interface TabObserver {
 
     /**
      * Called when the WebContents starts loading. Different from
-     * {@link #onPageLoadStarted(Tab, String)}, if the user is navigated to a different url while
+     * {@link #onPageLoadStarted(Tab, GURL)}, if the user is navigated to a different url while
      * staying in the same html document, {@link #onLoadStarted(Tab)} will be called, while
-     * {@link #onPageLoadStarted(Tab, String)} will not.
+     * {@link #onPageLoadStarted(Tab, GURL)} will not.
      * @param tab The notifying {@link Tab}.
      * @param toDifferentDocument Whether this navigation will transition between
      * documents (i.e., not a fragment navigation or JS History API call).

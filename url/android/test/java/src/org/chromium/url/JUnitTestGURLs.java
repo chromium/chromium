@@ -26,6 +26,9 @@ public class JUnitTestGURLs {
     public static final String EXAMPLE_URL = "https://www.example.com";
     public static final String URL_1 = "https://www.one.com";
     public static final String URL_2 = "https://www.two.com";
+    public static final String SEARCH_URL = "https://www.google.com/search?q=test";
+    public static final String INITIAL_URL = "https://initial.com";
+    public static final String SPECULATED_URL = "https://speculated.com";
 
     // Map of URL string to GURL serialization.
     /* package */ static final Map<String, String> sGURLMap;
@@ -40,6 +43,15 @@ public class JUnitTestGURLs {
         map.put(URL_2,
                 "78,1,true,0,5,0,-1,0,-1,8,11,0,-1,19,1,0,-1,0,-1,"
                         + "false,false,https://www.two.com/");
+        map.put(SEARCH_URL,
+                "94,1,true,0,5,0,-1,0,-1,8,14,0,-1,22,7,30,6,0,-1,"
+                        + "false,false,https://www.google.com/search?q=test");
+        map.put(INITIAL_URL,
+                "78,1,true,0,5,0,-1,0,-1,8,11,0,-1,19,1,0,-1,0,-1,"
+                        + "false,false,https://initial.com/");
+        map.put(SPECULATED_URL,
+                "81,1,true,0,5,0,-1,0,-1,8,14,0,-1,22,1,0,-1,0,-1,"
+                        + "false,false,https://speculated.com/");
         sGURLMap = Collections.unmodifiableMap(map);
     }
 

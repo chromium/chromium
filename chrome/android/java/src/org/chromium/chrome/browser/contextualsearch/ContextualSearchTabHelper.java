@@ -27,6 +27,7 @@ import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 /** Manages the enabling and disabling and gesture listeners for ContextualSearch on a given Tab. */
 public class ContextualSearchTabHelper
@@ -95,7 +96,7 @@ public class ContextualSearchTabHelper
     // ============================================================================================
 
     @Override
-    public void onPageLoadStarted(Tab tab, String url) {
+    public void onPageLoadStarted(Tab tab, GURL url) {
         updateHooksForTab(tab);
         ContextualSearchManager manager = getContextualSearchManager(tab);
         if (manager != null) manager.onBasePageLoadStarted();

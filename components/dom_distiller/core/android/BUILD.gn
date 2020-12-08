@@ -10,6 +10,7 @@ android_library("dom_distiller_core_java") {
     "//base:jni_java",
     "//components/dom_distiller/core/mojom:mojom_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//url:gurl_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [

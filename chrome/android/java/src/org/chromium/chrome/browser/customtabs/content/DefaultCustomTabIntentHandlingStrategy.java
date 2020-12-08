@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.customtabs.content;
 
 import android.text.TextUtils;
 
+import org.chromium.base.annotations.RemovableInRelease;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabNavigationEventObserver;
@@ -14,6 +15,7 @@ import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.url.GURL;
 
 import javax.inject.Inject;
 
@@ -54,6 +56,15 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
         }
     }
 
+    @RemovableInRelease
+    // TODO(yfriedman): Remove & inline once CustomTabs junit tests can be created from a provided
+    // GURL. This depends on switching *IntentDataProvider over to GURL.
+    // https://crbug.com/783819
+    public GURL getGurlForUrl(String url) {
+        // TODO(mthiesse): As this is user-provided it should be going through UrlFormatter.fixupUrl
+        return new GURL(url);
+    }
+
     // The hidden tab case needs a bit of special treatment.
     private void handleInitialLoadForHiddedTab(@TabCreationMode int initialTabCreationMode,
             BrowserServicesIntentDataProvider intentDataProvider) {
@@ -62,12 +73,13 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
             throw new IllegalStateException("handleInitialIntent called before Tab created");
         }
         String url = intentDataProvider.getUrlToLoad();
+        GURL gurl = getGurlForUrl(url);
 
         // Manually generating metrics in case the hidden tab has completely finished loading.
         if (!tab.isLoading() && !tab.isShowingErrorPage()) {
-            mCustomTabObserver.get().onPageLoadStarted(tab, url);
+            mCustomTabObserver.get().onPageLoadStarted(tab, gurl);
             mCustomTabObserver.get().onPageLoadFinished(tab, url);
-            mNavigationEventObserver.onPageLoadStarted(tab, url);
+            mNavigationEventObserver.onPageLoadStarted(tab, gurl);
             mNavigationEventObserver.onPageLoadFinished(tab, url);
         }
 
@@ -84,8 +96,8 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
                 // CustomTabObserver and CustomTabActivityNavigationObserver are attached
                 // as observers in CustomTabActivityTabController, not when the navigation is
                 // initiated in HiddenTabHolder or StartupTabPreloader.
-                mCustomTabObserver.get().onPageLoadStarted(tab, url);
-                mNavigationEventObserver.onPageLoadStarted(tab, url);
+                mCustomTabObserver.get().onPageLoadStarted(tab, gurl);
+                mNavigationEventObserver.onPageLoadStarted(tab, gurl);
             }
             return;
         }

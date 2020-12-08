@@ -22,6 +22,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
+import org.chromium.url.GURL;
 
 /**
  * Manages the lifecycle of a {@link Stream} associated with a Tab in an Activity.
@@ -76,7 +77,7 @@ public class NtpStreamLifecycleManager extends StreamLifecycleManager {
             }
 
             @Override
-            public void onPageLoadStarted(Tab tab, String url) {
+            public void onPageLoadStarted(Tab tab, GURL url) {
                 saveInstanceState();
             }
         };

@@ -54,6 +54,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.net.URL;
@@ -347,10 +348,10 @@ public class NavigateTest {
 
         TabObserver onPageLoadStartedObserver = new EmptyTabObserver() {
             @Override
-            public void onPageLoadStarted(Tab tab, String newUrl) {
+            public void onPageLoadStarted(Tab tab, GURL newUrl) {
                 tab.removeObserver(this);
                 Assert.assertEquals(url1, ChromeTabUtils.getUrlStringOnUiThread(tab));
-                Assert.assertEquals(url2, newUrl);
+                Assert.assertEquals(url2, newUrl.getSpec());
             }
         };
         Tab tab = mActivityTestRule.getActivity().getActivityTab();

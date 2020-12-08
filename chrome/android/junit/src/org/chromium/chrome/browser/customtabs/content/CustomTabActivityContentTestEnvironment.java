@@ -59,15 +59,17 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 /**
  * A TestRule that sets up the mocks and contains helper methods for JUnit/Robolectric tests scoped
  * to the content layer of Custom Tabs code.
  */
 public class CustomTabActivityContentTestEnvironment extends TestWatcher {
-    public static final String INITIAL_URL = "https://initial.com";
-    public static final String SPECULATED_URL = "https://speculated.com";
-    public static final String OTHER_URL = "https://other.com";
+    public static final String INITIAL_URL = JUnitTestGURLs.INITIAL_URL;
+    public static final String SPECULATED_URL = JUnitTestGURLs.SPECULATED_URL;
+    public static final String OTHER_URL = JUnitTestGURLs.EXAMPLE_URL;
 
     public final Intent intent = new Intent();
 
@@ -172,9 +174,14 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
 
     public CustomTabIntentHandler createIntentHandler(
             CustomTabActivityNavigationController navigationController) {
-        CustomTabIntentHandlingStrategy strategy = new DefaultCustomTabIntentHandlingStrategy(
-                tabProvider, navigationController, navigationEventObserver,
-                () -> customTabObserver);
+        CustomTabIntentHandlingStrategy strategy =
+                new DefaultCustomTabIntentHandlingStrategy(tabProvider, navigationController,
+                        navigationEventObserver, () -> customTabObserver) {
+                    @Override
+                    public GURL getGurlForUrl(String url) {
+                        return JUnitTestGURLs.getGURL(url);
+                    }
+                };
         return new CustomTabIntentHandler(tabProvider,
                 intentDataProvider, strategy, (intent) -> false, activity);
     }

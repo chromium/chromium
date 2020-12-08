@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.ResourceManager;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -433,7 +434,7 @@ public class StripLayoutHelperManager implements SceneOverlay {
             }
 
             @Override
-            public void onPageLoadStarted(Tab tab, String url) {
+            public void onPageLoadStarted(Tab tab, GURL url) {
                 getStripLayoutHelper(tab.isIncognito()).tabPageLoadStarted(tab.getId());
             }
 

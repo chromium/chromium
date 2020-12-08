@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 /**
  * Tracks the first navigation and first contentful paint events for a tab within an activity during
@@ -45,7 +46,7 @@ public class ActivityTabStartupMetricsTracker {
                     private boolean mIsFirstPageLoadStart = true;
 
                     @Override
-                    public void onPageLoadStarted(Tab tab, String url) {
+                    public void onPageLoadStarted(Tab tab, GURL url) {
                         // Discard startup navigation measurements when the user interfered and
                         // started the 2nd navigation (in activity lifetime) in parallel.
                         if (!mIsFirstPageLoadStart) {

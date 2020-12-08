@@ -39,6 +39,7 @@ import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
+import org.chromium.url.GURL;
 import org.chromium.url.URI;
 
 import java.lang.annotation.Retention;
@@ -310,16 +311,12 @@ public class ExploreSitesPage extends BasicNativePage {
             // state, for making "back" work correctly.
             mTabObserver = new EmptyTabObserver() {
                 @Override
-                public void onPageLoadStarted(Tab tab, String url) {
-                    try {
-                        URI uri = new URI(url);
-                        if (UrlConstants.CHROME_NATIVE_SCHEME.equals(uri.getScheme())
-                                && UrlConstants.EXPLORE_HOST.equals(uri.getHost())) {
-                            return;
-                        }
-                        savePageState();
-                    } catch (URISyntaxException e) {
+                public void onPageLoadStarted(Tab tab, GURL url) {
+                    if (UrlConstants.CHROME_NATIVE_SCHEME.equals(url.getScheme())
+                            && UrlConstants.EXPLORE_HOST.equals(url.getHost())) {
+                        return;
                     }
+                    savePageState();
                 }
             };
             mTab.addObserver(mTabObserver);
