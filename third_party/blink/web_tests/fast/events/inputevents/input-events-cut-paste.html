@@ -1,8 +1,16 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>Cut and Paste should trigger corresponding InputEvent</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="resources/inputevent_common_input.js"></script>
+<!--
+  This layout tests is a duplicate of a WPT test wpt/input-events/
+  input-events-cut-paste.html. We need this duplicated test to
+  maintain test coverage because testdriver's key actions are not
+  supported in GpuBenchmarking::PointerActionSequence, which is used
+  to run layout tests.
+-->
 <p>To manually run this test, please follow the steps below:<br/>
 1. Select 'plain' => Cut (e.g. Ctrl/Cmd-X) => Paste (e.g. Ctrl/Cmd-V).<br/>
 2. Select 'rich' => Cut => Paste.<br/>
@@ -15,6 +23,22 @@ If a "PASS" result appears the test passes, otherwise it fails</p>
 <p id="test3_editable_prevent" contenteditable>prevent</p>
 <p id="test3_editable_normal" contenteditable>normal</p>
 <script>
+function inject_input() {
+  return selectAndKeyDown('#test1_plain', 'Cut').then(() => {
+    return keyDown('Paste');
+  }).then(() => {
+    return selectAndKeyDown('#test2_editable', 'Cut');
+  }).then(() => {
+    return keyDown('Paste');
+  }).then(() => {
+    return selectAndKeyDown('#test3_editable_prevent', 'Paste');
+  }).then(() => {
+    return selectAndKeyDown('#test3_editable_prevent', 'Cut');
+  }).then(() => {
+    return selectAndKeyDown('#test3_editable_normal', 'Paste');
+  });
+}
+
 async_test(t => {
     const expectedEventLog = [
         'cut-[null]', 'beforeinput-deleteByCut', 'input-deleteByCut',
@@ -80,4 +104,6 @@ async_test(t => {
         }
     }));
 }, 'preventDefault() should prevent DOM modification but allow clipboard updates.');
+
+inject_input();
 </script>

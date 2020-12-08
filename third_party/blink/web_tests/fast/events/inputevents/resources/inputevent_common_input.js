@@ -33,9 +33,8 @@ function collapseEndAndKeyDown(selector, key, modifiers) {
 }
 
 function selectAndKeyDown(selector, key) {
-  const target = document.querySelector(selector);
   selectTarget(selector);
-  return test_driver.send_keys(target, key);
+  return keyDown(key);
 }
 
 function selectAndExecCommand(selector, command) {
