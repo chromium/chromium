@@ -29,12 +29,12 @@ UsbDeviceWin::UsbDeviceWin(const std::wstring& device_path,
                            const base::flat_map<int, FunctionInfo>& functions,
                            uint32_t bus_number,
                            uint32_t port_number,
-                           bool is_supported)
+                           DriverType driver_type)
     : UsbDevice(bus_number, port_number),
       device_path_(device_path),
       hub_path_(hub_path),
       functions_(functions),
-      is_supported_(is_supported) {}
+      driver_type_(driver_type) {}
 
 UsbDeviceWin::~UsbDeviceWin() {}
 
@@ -42,7 +42,7 @@ void UsbDeviceWin::Open(OpenCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   scoped_refptr<UsbDeviceHandle> device_handle;
-  if (is_supported_) {
+  if (driver_type_ != DriverType::kUnsupported) {
     device_handle = new UsbDeviceHandleWin(this);
     handles().push_back(device_handle.get());
   }

@@ -28,12 +28,18 @@ class UsbDeviceWin : public UsbDevice {
     std::wstring path;
   };
 
+  enum class DriverType {
+    kUnsupported,
+    kWinUSB,
+    kComposite,
+  };
+
   UsbDeviceWin(const std::wstring& device_path,
                const std::wstring& hub_path,
                const base::flat_map<int, FunctionInfo>& functions,
                uint32_t bus_number,
                uint32_t port_number,
-               bool is_supported);
+               DriverType driver_type);
 
   // UsbDevice implementation:
   void Open(OpenCallback callback) override;
@@ -48,6 +54,7 @@ class UsbDeviceWin : public UsbDevice {
   const base::flat_map<int, FunctionInfo>& functions() const {
     return functions_;
   }
+  DriverType driver_type() const { return driver_type_; }
 
   // Opens the device's parent hub in order to read the device, configuration
   // and string descriptors.
@@ -85,7 +92,7 @@ class UsbDeviceWin : public UsbDevice {
   const std::wstring device_path_;
   const std::wstring hub_path_;
   base::flat_map<int, FunctionInfo> functions_;
-  const bool is_supported_;
+  const DriverType driver_type_;
 
   DISALLOW_COPY_AND_ASSIGN(UsbDeviceWin);
 };

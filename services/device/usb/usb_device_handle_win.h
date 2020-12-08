@@ -130,6 +130,13 @@ class UsbDeviceHandleWin : public UsbDeviceHandle {
 
   void OpenInterfaceHandle(Interface* interface,
                            OpenInterfaceCallback callback);
+
+  // Interfaces on a USB device are organized into "functions". When making a
+  // request to a device the first interface of each function is the one that
+  // has a valid |function_handle|. This function finds the correct interface
+  // for making requests to the provided interface based on the device's driver
+  // configuration.
+  Interface* GetFirstInterfaceForFunction(Interface* interface);
   void OnFunctionAvailable(OpenInterfaceCallback callback,
                            Interface* interface);
   void OnFirstInterfaceOpened(int interface_number,
