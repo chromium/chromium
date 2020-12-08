@@ -20,6 +20,7 @@
       <structure name="IDR_CAMERA_BACKGROUND_JS" file="js/background.js" type="chrome_html" />
       <structure name="IDR_CAMERA_BACKGROUND_OPS_JS" file="js/background_ops.js" type="chrome_html" />
       <structure name="IDR_CAMERA_BARCODE_JS" file="js/models/barcode.js" type="chrome_html" />
+      <structure name="IDR_CAMERA_BARCODE_CHIP_JS" file="js/barcode_chip.js" type="chrome_html" />
       <structure name="IDR_CAMERA_BARCODE_WORKER_JS" file="js/models/barcode_worker.js" type="chrome_html" />
       <structure name="IDR_CAMERA_BARCODE_WORKER_INTERFACE_JS" file="js/models/barcode_worker_interface.js" type="chrome_html" />
       <structure name="IDR_CAMERA_BROWSER_PROXY_INTERFACE_JS" file="js/browser_proxy/browser_proxy_interface.js" type="chrome_html" />
@@ -154,49 +155,51 @@
       <include name="IDR_CAMERA_TICK_FINAL_OGG" file="sounds/tick_final.ogg" type="BINDATA" />
       <include name="IDR_CAMERA_TICK_INC_OGG" file="sounds/tick_inc.ogg" type="BINDATA" />
       <include name="IDR_CAMERA_TICK_START_OGG" file="sounds/tick_start.ogg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_MODE_SQUARE_SVG" file="images/camera_mode_square.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_SETTINGS_BUTTON_BACK_SVG" file="images/settings_button_back.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_MODE_PORTRAIT_SVG" file="images/camera_mode_portrait.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_BUTTON_TIMER_ON_3S_SVG" file="images/camera_button_timer_on_3s.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_SPINNER_SVG" file="images/spinner.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_BUTTON_GRID_OFF_SVG" file="images/camera_button_grid_off.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_BUTTON_MIC_ON_SVG" file="images/camera_button_mic_on.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_MODE_VIDEO_SVG" file="images/camera_mode_video.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_SHUTTER_PHOTO_STOP_SVG" file="images/camera_shutter_photo_stop.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_BUTTON_MIC_OFF_SVG" file="images/camera_button_mic_off.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_SETTINGS_EXPERT_SVG" file="images/settings_expert.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_SETTINGS_RESOLUTION_SVG" file="images/settings_resolution.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_APP_ICONS_48_PNG" file="images/camera_app_icons_48.png" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_BUTTON_TIMER_OFF_SVG" file="images/camera_button_timer_off.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_SHUTTER_PHOTO_START_ACTIVE_SVG" file="images/camera_shutter_photo_start_active.svg" type="BINDATA" />
+
       <include name="IDR_CAMERA_CAMERA_APP_ICONS_128_PNG" file="images/camera_app_icons_128.png" type="BINDATA" />
       <include name="IDR_CAMERA_CAMERA_APP_ICONS_192_PNG" file="images/camera_app_icons_192.png" type="BINDATA" />
-      <include name="IDR_CAMERA_SETTINGS_TIMER_DURATION_SVG" file="images/settings_timer_duration.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_SETTINGS_HELP_SVG" file="images/settings_help.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_BUTTON_MIRROR_ON_SVG" file="images/camera_button_mirror_on.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_SETTINGS_BUTTON_EXPAND_SVG" file="images/settings_button_expand.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_BUTTON_GRID_ON_SVG" file="images/camera_button_grid_on.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_BUTTON_SWITCH_DEVICE_SVG" file="images/camera_button_switch_device.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_SHUTTER_PHOTO_STOP_HOVER_SVG" file="images/camera_shutter_photo_stop_hover.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_SETTINGS_GRID_TYPE_SVG" file="images/settings_grid_type.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_BUTTON_MIRROR_OFF_SVG" file="images/camera_button_mirror_off.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_SHUTTER_PHOTO_START_SVG" file="images/camera_shutter_photo_start.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_BUTTON_SWITCH_PHOTO_SVG" file="images/camera_button_switch_photo.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_SETTINGS_FEEDBACK_SVG" file="images/settings_feedback.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_BUTTON_SWITCH_VIDEO_SVG" file="images/camera_button_switch_video.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_SHUTTER_PHOTO_START_HOVER_SVG" file="images/camera_shutter_photo_start_hover.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_SHUTTER_VIDEO_PAUSE_SVG" file="images/camera_shutter_video_pause.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_BUTTON_TIMER_ON_10S_SVG" file="images/camera_button_timer_on_10s.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_MODE_PHOTO_SVG" file="images/camera_mode_photo.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_FOCUS_AIM_SVG" file="images/camera_focus_aim.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_BUTTON_SETTINGS_SVG" file="images/camera_button_settings.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_INTENT_PLAY_VIDEO_SVG" file="images/camera_intent_play_video.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_APP_ICONS_48_PNG" file="images/camera_app_icons_48.png" type="BINDATA" />
+      <include name="IDR_CAMERA_BARCODE_URL_SVG" file="images/barcode_url.svg" type="BINDATA" />
       <include name="IDR_CAMERA_CAMERA_BUTTON_FPS_30_SVG" file="images/camera_button_fps_30.svg" type="BINDATA" />
       <include name="IDR_CAMERA_CAMERA_BUTTON_FPS_60_SVG" file="images/camera_button_fps_60.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_BUTTON_GRID_OFF_SVG" file="images/camera_button_grid_off.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_BUTTON_GRID_ON_SVG" file="images/camera_button_grid_on.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_BUTTON_MIC_OFF_SVG" file="images/camera_button_mic_off.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_BUTTON_MIC_ON_SVG" file="images/camera_button_mic_on.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_BUTTON_MIRROR_OFF_SVG" file="images/camera_button_mirror_off.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_BUTTON_MIRROR_ON_SVG" file="images/camera_button_mirror_on.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_BUTTON_SETTINGS_SVG" file="images/camera_button_settings.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_BUTTON_SWITCH_DEVICE_SVG" file="images/camera_button_switch_device.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_BUTTON_SWITCH_PHOTO_SVG" file="images/camera_button_switch_photo.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_BUTTON_SWITCH_VIDEO_SVG" file="images/camera_button_switch_video.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_BUTTON_TIMER_OFF_SVG" file="images/camera_button_timer_off.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_BUTTON_TIMER_ON_10S_SVG" file="images/camera_button_timer_on_10s.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_BUTTON_TIMER_ON_3S_SVG" file="images/camera_button_timer_on_3s.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_FOCUS_AIM_SVG" file="images/camera_focus_aim.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_INTENT_PLAY_VIDEO_SVG" file="images/camera_intent_play_video.svg" type="BINDATA" />
       <include name="IDR_CAMERA_CAMERA_INTENT_RESULT_CANCEL_SVG" file="images/camera_intent_result_cancel.svg" type="BINDATA" />
       <include name="IDR_CAMERA_CAMERA_INTENT_RESULT_CONFIRM_SVG" file="images/camera_intent_result_confirm.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_INTRO_BANNER_ICON_SVG" file="images/camera_intro_banner_icon.svg" type="BINDATA" />
       <include name="IDR_CAMERA_CAMERA_INTRO_BANNER_CLOSE_SVG" file="images/camera_intro_banner_close.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_INTRO_BANNER_ICON_SVG" file="images/camera_intro_banner_icon.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_MODE_PHOTO_SVG" file="images/camera_mode_photo.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_MODE_PORTRAIT_SVG" file="images/camera_mode_portrait.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_MODE_SQUARE_SVG" file="images/camera_mode_square.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_MODE_VIDEO_SVG" file="images/camera_mode_video.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_SHUTTER_PHOTO_START_ACTIVE_SVG" file="images/camera_shutter_photo_start_active.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_SHUTTER_PHOTO_START_HOVER_SVG" file="images/camera_shutter_photo_start_hover.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_SHUTTER_PHOTO_START_SVG" file="images/camera_shutter_photo_start.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_SHUTTER_PHOTO_STOP_HOVER_SVG" file="images/camera_shutter_photo_stop_hover.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_SHUTTER_PHOTO_STOP_SVG" file="images/camera_shutter_photo_stop.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_CAMERA_SHUTTER_VIDEO_PAUSE_SVG" file="images/camera_shutter_video_pause.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_SETTINGS_BUTTON_BACK_SVG" file="images/settings_button_back.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_SETTINGS_BUTTON_EXPAND_SVG" file="images/settings_button_expand.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_SETTINGS_EXPERT_SVG" file="images/settings_expert.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_SETTINGS_FEEDBACK_SVG" file="images/settings_feedback.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_SETTINGS_GRID_TYPE_SVG" file="images/settings_grid_type.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_SETTINGS_HELP_SVG" file="images/settings_help.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_SETTINGS_RESOLUTION_SVG" file="images/settings_resolution.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_SETTINGS_TIMER_DURATION_SVG" file="images/settings_timer_duration.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_SPINNER_SVG" file="images/spinner.svg" type="BINDATA" />
     </includes>
   </release>
 </grit>

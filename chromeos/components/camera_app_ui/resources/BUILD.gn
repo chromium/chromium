@@ -75,6 +75,7 @@ copy("chrome_camera_app_js") {
     "js/async_job_queue.js",
     "js/background.js",
     "js/background_ops.js",
+    "js/barcode_chip.js",
     "js/chrome_util.js",
     "js/dom.js",
     "js/dynamic_import.js",

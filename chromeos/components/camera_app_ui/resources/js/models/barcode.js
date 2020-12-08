@@ -63,6 +63,7 @@ export class BarcodeScanner {
     if (this.intervalId_ !== null) {
       return;
     }
+    // TODO(b/172879638): Move |prevCode| related logic to barcode_chip.js.
     let prevCode = null;
     this.intervalId_ = setAsyncInterval(async () => {
       const code = await this.scan_();

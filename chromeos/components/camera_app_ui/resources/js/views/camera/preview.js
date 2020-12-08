@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import * as barcodeChip from '../../barcode_chip.js';
 import {browserProxy} from '../../browser_proxy/browser_proxy.js';
 import * as dom from '../../dom.js';
 import {BarcodeScanner} from '../../models/barcode.js';
 import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
 import * as nav from '../../nav.js';
 import * as state from '../../state.js';
-import * as toast from '../../toast.js';
 import * as util from '../../util.js';
 import {windowController} from '../../window_controller/window_controller.js';
 
@@ -162,9 +162,8 @@ export class Preview {
           this.onNewStreamNeeded_();
         }
       }, 100);
-      this.scanner_ = new BarcodeScanner(this.video_, (code) => {
-        // TODO(b/172879638): Show this with a actionable toast.
-        toast.showDebugMessage(code);
+      this.scanner_ = new BarcodeScanner(this.video_, (value) => {
+        barcodeChip.show(value);
       });
       this.updateScanBarcode_();
       this.updateShowMetadata_();
@@ -213,6 +212,7 @@ export class Preview {
     if (this.scanner_ === null) {
       return;
     }
+    // TODO(b/172879638): Only enables barcode scanning in Photo mode.
     if (state.get(state.State.EXPERT) && state.get(state.State.SCAN_BARCODE)) {
       this.scanner_.start();
     } else {

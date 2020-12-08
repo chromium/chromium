@@ -1498,3 +1498,65 @@ body.tab-navigation .dialog-buttons button:focus::after {
 body:not(.mode-switching):not(.streaming):not(.review-result) #spinner {
   visibility: visible;
 }
+
+.barcode-chip-container {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* TODO(b/172879638): Tune the animation according to the final motion spec. */
+.barcode-chip-container.animate {
+  animation: 8s show-barcode-chip ease-out;
+  visibility: visible;
+}
+
+@keyframes show-barcode-chip {
+  0% {
+    opacity: 0;
+  }
+  3%,
+  97% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* TODO(b/172879638): Tune the position and layout after we finalized the
+ * responsive window design. */
+.barcode-chip-url {
+  align-items: center;
+  background: rgb(32, 33, 36);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
+  display: flex;
+  font: 400 15px Roboto;
+  height: 32px;
+  left: 50%;
+  padding: 8px;
+  position: absolute;
+  top: 15%;
+  transform: translate(-50%, -50%);
+  z-index: 50;
+}
+
+.barcode-chip-url::before {
+  background: url(/images/barcode_url.svg) no-repeat;
+  content: '';
+  display: inline-block;
+  height: 20px;
+  margin-inline-end: 6px;
+  vertical-align: middle;
+  width: 20px;
+}
+
+.barcode-chip-url > a {
+  color: rgb(138, 180, 248);
+  max-width: 416px;
+  overflow: hidden;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

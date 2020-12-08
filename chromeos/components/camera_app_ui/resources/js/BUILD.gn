@@ -55,6 +55,7 @@ js_library("compile_resources") {
     "async_job_queue.js",
     "background.js",
     "background_ops.js",
+    "barcode_chip.js",
     "browser_proxy/browser_proxy.js",
     "browser_proxy/browser_proxy_interface.js",
     "browser_proxy/webui_browser_proxy.js",
