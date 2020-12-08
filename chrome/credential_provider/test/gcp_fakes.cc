@@ -706,7 +706,7 @@ std::unique_ptr<WinHttpUrlFetcher> FakeWinHttpUrlFetcherFactory::Create(
   if (fake_responses_.count(url) == 0 && failed_http_fetch_hr_.count(url) == 0)
     return nullptr;
 
-  FakeWinHttpUrlFetcher* fetcher = new FakeWinHttpUrlFetcher(std::move(url));
+  FakeWinHttpUrlFetcher* fetcher = new FakeWinHttpUrlFetcher(url);
 
   if (fake_responses_.count(url) != 0) {
     const Response& response = fake_responses_[url].front();
