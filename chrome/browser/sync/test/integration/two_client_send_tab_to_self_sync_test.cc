@@ -5,6 +5,7 @@
 #include "base/callback_list.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
@@ -296,7 +297,7 @@ class TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn
 };
 
 // Non-primary accounts don't exist on ChromeOS.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(
     TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn,
     SignedInClientCanReceive) {
@@ -328,4 +329,4 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(device_infos[0]->send_tab_to_self_receiving_enabled());
   EXPECT_TRUE(device_infos[1]->send_tab_to_self_receiving_enabled());
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

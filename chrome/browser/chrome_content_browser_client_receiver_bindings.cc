@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/cache_stats_recorder.h"
@@ -42,7 +43,7 @@
 #elif defined(OS_WIN)
 #include "chrome/browser/win/conflicts/module_database.h"
 #include "chrome/browser/win/conflicts/module_event_sink_impl.h"
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/performance_manager/mechanisms/userspace_swap_chromeos.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -183,7 +184,7 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
       content::GetUIThreadTaskRunner({}));
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (performance_manager::mechanism::userspace_swap::
           UserspaceSwapInitializationImpl::UserspaceSwapSupportedAndEnabled()) {
     registry->AddInterface(
@@ -294,10 +295,10 @@ void ChromeContentBrowserClient::BindGpuHostReceiver(
     return;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (auto r = receiver.As<chromeos::cdm::mojom::CdmFactoryDaemon>())
     chromeos::CdmFactoryDaemonProxy::Create(std::move(r));
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ChromeContentBrowserClient::BindUtilityHostReceiver(

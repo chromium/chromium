@@ -18,6 +18,7 @@
 #include "base/macros.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/shutdown_signal_handlers_posix.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/sessions/session_restore.h"
@@ -69,7 +70,9 @@ void ExitHandler::ExitWhenPossibleOnUIThread(int signal) {
     // ExitHandler takes care of deleting itself.
     new ExitHandler();
   } else {
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     switch (signal) {
       case SIGINT:
       case SIGHUP:
@@ -120,7 +123,7 @@ void ExitHandler::OnSessionRestoreDone(int /* num_tabs */) {
 
 // static
 void ExitHandler::Exit() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS, exiting on signal should be always clean.
   chrome::ExitIgnoreUnloadHandlers();
 #else
@@ -162,7 +165,7 @@ void ChromeBrowserMainPartsPosix::PostMainMessageLoopStart() {
 }
 
 void ChromeBrowserMainPartsPosix::ShowMissingLocaleMessageBox() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   NOTREACHED();  // Should not ever happen on ChromeOS.
 #elif defined(OS_MAC)
   // Not called on Mac because we load the locale files differently.

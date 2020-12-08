@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/installer/util/google_update_settings.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/path_service.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/installer/util/google_update_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -79,7 +80,7 @@ TEST_F(GoogleUpdateTest, IsOrganicFirstRunBrandCodes) {
 #endif
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Test for http://crbug.com/383003
 TEST_F(GoogleUpdateTest, ConsentFileIsWorldReadable) {
   // Turn on stats reporting.

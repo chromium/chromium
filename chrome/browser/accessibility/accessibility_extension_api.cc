@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/accessibility/magnification_manager.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
@@ -38,7 +39,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/accessibility_focus_ring_info.h"
@@ -82,7 +83,7 @@ AccessibilityPrivateOpenSettingsSubpageFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(chrome-a11y-core): we can't open a settings page when you're on the
   // signin profile, but maybe we should notify the user and explain why?
   Profile* profile = chromeos::AccessibilityManager::Get()->profile();
@@ -94,13 +95,13 @@ AccessibilityPrivateOpenSettingsSubpageFunction::Run() {
 #else
   // This function should only be available on ChromeOS.
   EXTENSION_FUNCTION_VALIDATE(false);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction
 AccessibilityPrivateSetFocusRingsFunction::Run() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<accessibility_private::SetFocusRings::Params> params(
       accessibility_private::SetFocusRings::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -171,12 +172,12 @@ AccessibilityPrivateSetFocusRingsFunction::Run() {
   return RespondNow(NoArguments());
 #else
   return RespondNow(Error(kErrorNotSupported));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 ExtensionFunction::ResponseAction
 AccessibilityPrivateSetHighlightsFunction::Run() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<accessibility_private::SetHighlights::Params> params(
       accessibility_private::SetHighlights::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -194,7 +195,7 @@ AccessibilityPrivateSetHighlightsFunction::Run() {
   chromeos::AccessibilityManager::Get()->SetHighlights(rects, color);
 
   return RespondNow(NoArguments());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return RespondNow(Error(kErrorNotSupported));
 }
@@ -204,7 +205,7 @@ AccessibilityPrivateSetKeyboardListenerFunction::Run() {
   ChromeExtensionFunctionDetails details(this);
   CHECK(extension());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool enabled;
   bool capture;
   EXTENSION_FUNCTION_VALIDATE(args_->GetBoolean(0, &enabled));
@@ -223,14 +224,14 @@ AccessibilityPrivateSetKeyboardListenerFunction::Run() {
   ash::EventRewriterController::Get()->CaptureAllKeysForSpokenFeedback(
       enabled && capture);
   return RespondNow(NoArguments());
-#endif  // defined OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return RespondNow(Error(kErrorNotSupported));
 }
 
 ExtensionFunction::ResponseAction
 AccessibilityPrivateDarkenScreenFunction::Run() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool darken = false;
   EXTENSION_FUNCTION_VALIDATE(args_->GetBoolean(0, &darken));
   chromeos::AccessibilityManager::Get()->SetDarkenScreen(darken);
@@ -240,7 +241,7 @@ AccessibilityPrivateDarkenScreenFunction::Run() {
 #endif
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 ExtensionFunction::ResponseAction
 AccessibilityPrivateSetNativeChromeVoxArcSupportForCurrentAppFunction::Run() {
   std::unique_ptr<

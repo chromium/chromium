@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 PrefetchProxyNetworkContextClient::PrefetchProxyNetworkContextClient() =
@@ -94,7 +95,7 @@ void PrefetchProxyNetworkContextClient::OnGenerateHttpNegotiateAuthToken(
 }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PrefetchProxyNetworkContextClient::OnTrustAnchorUsed() {}
 #endif
 

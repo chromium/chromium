@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "build/chromeos_buildflags.h"
 #include "extensions/browser/extension_function.h"
 
 // API function that enables or disables web content accessibility support.
@@ -61,7 +62,7 @@ class AccessibilityPrivateOpenSettingsSubpageFunction
                              ACCESSIBILITY_PRIVATE_OPENSETTINGSSUBPAGE)
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // API function that sets native ChromeVox ARC support.
 class AccessibilityPrivateSetNativeChromeVoxArcSupportForCurrentAppFunction
     : public ExtensionFunction {

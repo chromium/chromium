@@ -6,6 +6,7 @@
 #include "chrome/browser/sharing/sharing_handler_registry_impl.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sharing/ack_message_handler.h"
 #include "chrome/browser/sharing/ping_message_handler.h"
 #include "chrome/browser/sharing/sharing_device_registration.h"
@@ -25,8 +26,8 @@
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
 #include "chrome/browser/sharing/shared_clipboard/remote_copy_message_handler.h"
-#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
-        // defined(OS_CHROMEOS)
+#endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS_LACROS)) defined(OS_CHROMEOS)
 
 SharingHandlerRegistryImpl::SharingHandlerRegistryImpl(
     Profile* profile,

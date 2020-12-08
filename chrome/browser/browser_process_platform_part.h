@@ -6,11 +6,12 @@
 #define CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_H_
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 // Include the appropriate BrowserProcessPlatformPart based on the platform.
 #if defined(OS_ANDROID)
 #include "chrome/browser/browser_process_platform_part_android.h"
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
 #elif defined(OS_MAC)
 #include "chrome/browser/browser_process_platform_part_mac.h"

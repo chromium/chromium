@@ -4,6 +4,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_test.h"
@@ -22,7 +23,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityStateImplTest, TestHistograms) {
   BrowserAccessibilityState::GetInstance()->UpdateHistogramsForTesting();
 #if defined(OS_WIN)
   histograms.ExpectTotalCount("Accessibility.WinScreenReader", 1);
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   histograms.ExpectTotalCount("Accessibility.CrosSpokenFeedback", 1);
 #endif
 }

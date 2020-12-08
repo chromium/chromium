@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string16.h"
+#include "build/chromeos_buildflags.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/ssl/client_cert_identity.h"
@@ -22,7 +23,7 @@ class BrowserContext;
 class ResourceContext;
 }  // namespace content
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace chromeos {
 class CertificateProvider;
 class PolicyCertificateProvider;
@@ -121,7 +122,7 @@ class CertificateManagerModel {
 
   // Holds parameters during construction.
   struct Params {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // May be nullptr.
     chromeos::PolicyCertificateProvider* policy_certs_provider = nullptr;
     // May be nullptr.

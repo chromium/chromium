@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(OS_CHROMEOS)
+#include "build/chromeos_buildflags.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/external_arc/overlay/arc_overlay_manager.h"
 #endif
 #include "base/test/scoped_feature_list.h"
@@ -48,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
 // goods purchase.
 IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
                        IgnoreOtherPaymentAppsInTwaWhenHaveAppStoreBilling) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ArcOverlayManager overlay_manager_;
 #endif
 
@@ -71,11 +73,11 @@ IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
   test_controller()->SetTwaPaymentApp("https://play.google.com/billing",
                                       "{\"status\": \"" + response + "\"}");
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string expected_response = response;
 #else
   std::string expected_response = "success";
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   NavigateTo("b.com", "/payment_handler_status.html");
   ASSERT_EQ(expected_response,

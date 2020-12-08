@@ -4,17 +4,19 @@
 
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 
-#if defined(OS_CHROMEOS)
+#include "build/chromeos_buildflags.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #else
 #include <stdint.h>
 #include "content/public/browser/browser_accessibility_state.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace accessibility_state_utils {
 
 bool IsScreenReaderEnabled() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return chromeos::AccessibilityManager::Get() &&
          chromeos::AccessibilityManager::Get()->IsSpokenFeedbackEnabled();
 #else
@@ -23,7 +25,7 @@ bool IsScreenReaderEnabled() {
   ui::AXMode mode =
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
   return mode.has_mode(ui::AXMode::kScreenReader);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace accessibility_state_utils

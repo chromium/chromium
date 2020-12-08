@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/env_vars.h"
 #include "chrome/common/logging_chrome.h"
 #include "content/public/common/content_switches.h"
@@ -90,7 +91,7 @@ TEST_F(ChromeLoggingTest, EnvironmentAndFlagLogFileName) {
   RestoreEnvironmentVariable();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ChromeLoggingTest, TimestampedName) {
   base::FilePath path = base::FilePath(FILE_PATH_LITERAL("xy.zzy"));
   base::FilePath timestamped_path =
@@ -155,4 +156,4 @@ TEST_F(ChromeLoggingTest, SetUpSymlink) {
               ::testing::MatchesRegex("^.*chrome-test-log_\\d+-\\d+$"));
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

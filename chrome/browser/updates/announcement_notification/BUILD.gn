@@ -50,6 +50,7 @@ source_set("unit_tests") {
 
   deps = [
     ":announcement_notification",
+    "//build:chromeos_buildflags",
     "//chrome/test:test_support",
     "//skia",
     "//testing/gmock",

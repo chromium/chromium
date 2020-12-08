@@ -198,7 +198,7 @@ ChromeComponentExtensionResourceManager::GetTemplateReplacementsForExtension(
 
   LazyInitData();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (extension_id == extension_misc::kFilesManagerAppId) {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     // Disable $i18n{} template JS string replacement during JS code coverage.

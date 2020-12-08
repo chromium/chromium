@@ -13,6 +13,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_data.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "content/public/test/browser_task_environment.h"
@@ -300,7 +301,7 @@ TEST_F(OneGoogleBarLoaderImplTest, MirrorAccountConsistencyNotRequired) {
   EXPECT_CALL(callback, Run(_, _)).WillOnce(Quit(&loop));
   loop.Run();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS, X-Chrome-Connected header is present, but
   // enable_account_consistency is set to false.
   std::string header_value;
@@ -338,7 +339,7 @@ TEST_F(OneGoogleBarLoaderImplWithMirrorAccountConsistencyTest,
   loop.Run();
 
   // Make sure mirror account consistency is requested.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS, X-Chrome-Connected header is present, and
   // enable_account_consistency is set to true.
   std::string header_value;

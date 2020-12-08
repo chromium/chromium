@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -54,7 +55,7 @@ class SerialTest : public InProcessBrowserTest {
 
 // TODO(crbug/1069695): Flaky on linux-chromeos-chrome.
 // TODO(crbug/1116072): Flaky on Linux Ozone Tester (X11).
-#if defined(OS_CHROMEOS) || defined(USE_OZONE)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(USE_OZONE)
 #define MAYBE_NavigateWithChooserCrossOrigin \
   DISABLED_NavigateWithChooserCrossOrigin
 #else

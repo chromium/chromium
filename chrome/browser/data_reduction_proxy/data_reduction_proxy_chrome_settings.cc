@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/data_use_measurement/chrome_data_use_measurement.h"
@@ -287,7 +288,7 @@ data_reduction_proxy::Client DataReductionProxyChromeSettings::GetClient() {
   return data_reduction_proxy::Client::CHROME_ANDROID;
 #elif defined(OS_MAC)
   return data_reduction_proxy::Client::CHROME_MAC;
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   return data_reduction_proxy::Client::CHROME_CHROMEOS;
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS)
   return data_reduction_proxy::Client::CHROME_LINUX;

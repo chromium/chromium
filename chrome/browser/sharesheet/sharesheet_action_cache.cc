@@ -4,11 +4,12 @@
 
 #include "chrome/browser/sharesheet/sharesheet_action_cache.h"
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sharesheet/share_action.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "ui/gfx/vector_icon_types.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/sharesheet/nearby_share_action.h"
 #include "chrome/browser/sharesheet/drive_share_action.h"
@@ -18,7 +19,7 @@ namespace sharesheet {
 
 SharesheetActionCache::SharesheetActionCache() {
   // ShareActions will be initialised here by calling AddShareAction.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(features::kNearbySharing)) {
     AddShareAction(std::make_unique<NearbyShareAction>());
   }

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/singleton.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
@@ -16,7 +17,7 @@
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "components/user_manager/user.h"
 #endif
@@ -52,7 +53,7 @@ KeyedService* SendTabToSelfClientServiceFactory::BuildServiceInstanceFor(
   SendTabToSelfSyncService* sync_service =
       SendTabToSelfSyncServiceFactory::GetForProfile(profile);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Create SendTabToSelfClientService only for profiles of Gaia users.
   // ChromeOS has system level profiles, such as the sign-in profile, or
   // users that are not Gaia users, such as public account users. Do not

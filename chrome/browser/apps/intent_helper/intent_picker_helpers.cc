@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_auto_display_service.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_internal.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
@@ -15,7 +16,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/apps/intent_helper/chromeos_intent_picker_helpers.h"
 #elif defined(OS_MAC)
 #include "chrome/browser/apps/intent_helper/mac_intent_picker_helpers.h"
@@ -85,7 +86,7 @@ void MaybeShowIntentPicker(content::NavigationHandle* navigation_handle) {
 // TODO(crbug.com/824598): Store the apps that is found in
 // intent_picker_tab_helper and update the icon visibility and apps if there is
 // app installed or uninstalled.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   MaybeShowIntentPickerChromeOs(navigation_handle);
 #else
   const GURL& url = navigation_handle->GetURL();
@@ -96,7 +97,7 @@ void MaybeShowIntentPicker(content::NavigationHandle* navigation_handle) {
 
 void ShowIntentPickerBubble(content::WebContents* web_contents,
                             const GURL& url) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ShowIntentPickerBubbleChromeOs(web_contents, url);
 #else
   std::vector<IntentPickerAppInfo> apps = FindAppsForUrl(web_contents, url, {});

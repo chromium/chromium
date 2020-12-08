@@ -6,15 +6,16 @@
 
 #include <memory>
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace sharesheet {
 
@@ -51,7 +52,7 @@ content::BrowserContext* SharesheetServiceFactory::GetBrowserContextToUse(
     return nullptr;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::ProfileHelper::IsSigninProfile(profile)) {
     return nullptr;
   }
@@ -60,7 +61,7 @@ content::BrowserContext* SharesheetServiceFactory::GetBrowserContextToUse(
   if (profile->IsGuestSession()) {
     return chrome::GetBrowserContextOwnInstanceInIncognito(context);
   }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return chrome::GetBrowserContextRedirectedInIncognito(context);
 }

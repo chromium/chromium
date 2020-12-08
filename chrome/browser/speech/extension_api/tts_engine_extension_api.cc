@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,7 +35,7 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/common/extensions/extension_constants.h"
 #endif
 
@@ -335,7 +336,7 @@ bool TtsExtensionEngine::LoadBuiltInTtsEngine(
   if (disable_built_in_tts_engine_for_testing_)
     return false;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
   // Load the component extensions into this profile.
@@ -354,7 +355,7 @@ bool TtsExtensionEngine::IsBuiltInTtsEngineInitialized(
   if (!browser_context || disable_built_in_tts_engine_for_testing_)
     return true;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::vector<content::VoiceData> voices;
   GetVoices(browser_context, &voices);
   bool saw_google_tts = false;

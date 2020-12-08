@@ -13,6 +13,7 @@ static_library("error_reporting") {
   ]
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/crash/content/browser/error_reporting",
     "//components/crash/core/app",
     "//components/feedback",

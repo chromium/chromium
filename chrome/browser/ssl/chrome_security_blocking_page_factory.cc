@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/interstitials/chrome_settings_page_helper.h"
@@ -28,7 +29,7 @@
 
 #if defined(OS_WIN)
 #include "base/enterprise_util.h"
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #endif
@@ -80,7 +81,7 @@ bool IsEnterpriseManaged() {
   if (base::IsMachineExternallyManaged()) {
     return true;
   }
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   if (g_browser_process->platform_part()->browser_policy_connector_chromeos()) {
     return true;
   }
@@ -319,7 +320,7 @@ void ChromeSecurityBlockingPageFactory::DoChromeSpecificSetup(
 
 #if defined(OS_WIN)
         report->SetIsEnterpriseManaged(base::IsMachineExternallyManaged());
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
         report->SetIsEnterpriseManaged(g_browser_process->platform_part()
                                            ->browser_policy_connector_chromeos()
                                            ->IsEnterpriseManaged());

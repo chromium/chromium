@@ -105,6 +105,7 @@ source_set("browser_process") {
   ]
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//chrome/common:buildflags",
     "//media:media_buildflags",
   ]
@@ -2361,7 +2362,7 @@ static_library("browser") {
     "//ui/webui",
     "//ui/webui/resources/cr_components/customize_themes:mojom",
   ]
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "apps/digital_goods/digital_goods_factory_impl.cc",
       "apps/digital_goods/digital_goods_factory_impl.h",
@@ -2451,7 +2452,7 @@ static_library("browser") {
 
   # Platforms that have a network diagnostics dialog. All others fall through
   # to the stub which is not implemented.
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [ "net/net_error_diagnostics_dialog_chromeos.cc" ]
   } else if (is_win) {
     sources += [ "net/net_error_diagnostics_dialog_win.cc" ]
@@ -4159,7 +4160,7 @@ static_library("browser") {
       "//courgette:courgette_lib",
       "//third_party/sqlite",
     ]
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [
         "sharing/webrtc/ice_config_fetcher.cc",
         "sharing/webrtc/ice_config_fetcher.h",
@@ -4195,14 +4196,13 @@ static_library("browser") {
         "task_manager/sampling/shared_sampler_posix.cc",
       ]
 
-      # TODO(crbug.com / 1052397): Rename chromeos_is_browser_only to is_lacros.
-      if (!chromeos_is_browser_only) {
+      if (!is_chromeos_lacros) {
         sources += [ "first_run/first_run_internal_posix.cc" ]
       }
     }
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     assert(enable_native_notifications)
     sources += [
       "apps/app_service/arc_activity_adaptive_icon_impl.cc",
@@ -4547,21 +4547,21 @@ static_library("browser") {
     ]
   }
 
-  if (is_chromeos || enable_extensions || is_android) {
+  if (is_chromeos_ash || enable_extensions || is_android) {
     sources += [
       "metrics/cached_metrics_profile.cc",
       "metrics/cached_metrics_profile.h",
     ]
   }
 
-  if (is_chromeos || chromeos_is_browser_only) {
+  if (is_chromeos_ash || is_chromeos_lacros) {
     sources += [
       "feedback/system_logs/log_sources/user_log_files_log_source.cc",
       "feedback/system_logs/log_sources/user_log_files_log_source.h",
     ]
   }
 
-  if (is_lacros) {
+  if (is_chromeos_lacros) {
     assert(enable_native_notifications)
     sources += [
       "chrome_browser_main_parts_lacros.cc",
@@ -5013,7 +5013,7 @@ static_library("browser") {
     }
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     if (use_allocator == "tcmalloc") {
       deps += [ "//chrome/common/performance_manager/mojom" ]
 
@@ -5024,7 +5024,7 @@ static_library("browser") {
     }
   }
 
-  if (is_linux) {
+  if (is_linux || is_chromeos_lacros) {
     # Desktop linux, doesn't count ChromeOS.
     sources += [
       "download/download_status_updater_linux.cc",
@@ -5045,7 +5045,7 @@ static_library("browser") {
       deps += [ "//components/dbus/thread_linux" ]
     }
 
-    if (!is_lacros) {
+    if (!is_chromeos_lacros) {
       sources += [ "platform_util_linux.cc" ]
 
       if (enable_native_notifications) {
@@ -5106,14 +5106,14 @@ static_library("browser") {
     ]
   }
 
-  if (is_win || is_chromeos) {
+  if (is_win || is_chromeos_ash) {
     sources += [
       "webshare/share_service_impl.cc",
       "webshare/share_service_impl.h",
     ]
   }
 
-  if (is_win || is_mac || is_linux) {
+  if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
     sources += [
       "browser_switcher/alternative_browser_driver.h",
       "browser_switcher/browser_switcher_navigation_throttle.cc",
@@ -5132,12 +5132,12 @@ static_library("browser") {
     if (is_win) {
       sources += [ "browser_switcher/alternative_browser_driver_win.cc" ]
     }
-    if (is_mac || is_linux) {
+    if (is_mac || (is_linux || is_chromeos_lacros)) {
       sources += [ "browser_switcher/alternative_browser_driver_posix.cc" ]
     }
   }
 
-  if (is_chromeos && use_cras) {
+  if (is_chromeos_ash && use_cras) {
     defines += [ "USE_CRAS" ]
   }
 
@@ -5158,7 +5158,7 @@ static_library("browser") {
     ]
   }
 
-  if (!is_android && !is_chromeos) {
+  if (!is_android && !is_chromeos_ash) {
     sources += [
       "device_identity/device_oauth2_token_store_desktop.cc",
       "device_identity/device_oauth2_token_store_desktop.h",
@@ -5225,7 +5225,7 @@ static_library("browser") {
       "upgrade_detector/upgrade_detector_impl.cc",
       "upgrade_detector/upgrade_detector_impl.h",
     ]
-  } else {  # is_android || is_chromeos
+  } else {  # is_android || is_chromeos_ash
     sources += [
       "installable/digital_asset_links/digital_asset_links_handler.cc",
       "installable/digital_asset_links/digital_asset_links_handler.h",
@@ -5278,7 +5278,7 @@ static_library("browser") {
     ]
   }
 
-  if (is_win || is_mac || (is_chromeos && use_dbus)) {
+  if (is_win || is_mac || (is_chromeos_ash && use_dbus)) {
     sources += [
       "media_galleries/fileapi/device_media_async_file_util.cc",
       "media_galleries/fileapi/device_media_async_file_util.h",
@@ -5289,7 +5289,7 @@ static_library("browser") {
       "media_galleries/fileapi/mtp_file_stream_reader.cc",
       "media_galleries/fileapi/mtp_file_stream_reader.h",
     ]
-    if (is_chromeos && use_dbus) {
+    if (is_chromeos_ash && use_dbus) {
       # TODO(donna.wu@intel.com): push this into chrome / browser / chromeos
       # and chrome / browser / media_galleries / chromeos
       deps += [ "//services/device/public/mojom" ]
@@ -5344,10 +5344,10 @@ static_library("browser") {
     if (is_mac) {
       sources += [ "background/background_mode_manager_mac.mm" ]
     }
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [ "background/background_mode_manager_chromeos.cc" ]
     }
-    if (use_aura && !is_win && !is_chromeos) {
+    if (use_aura && !is_win && !is_chromeos_ash) {
       sources += [ "background/background_mode_manager_aura.cc" ]
     }
   }
@@ -5448,7 +5448,7 @@ static_library("browser") {
         ]
       }
 
-      if (!is_chromeos) {
+      if (!is_chromeos_ash) {
         sources += [
           "printing/cloud_print/cloud_print_proxy_service.cc",
           "printing/cloud_print/cloud_print_proxy_service.h",
@@ -5742,7 +5742,7 @@ static_library("browser") {
       "//google_apis/drive",
       "//services/device/public/mojom",
     ]
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [
         "speech/extension_api/tts_engine_extension_observer_chromeos.cc",
         "speech/extension_api/tts_engine_extension_observer_chromeos.h",
@@ -6024,7 +6024,7 @@ static_library("browser") {
       "//services/device/public/mojom",
       "//third_party/adobe/flash:flapper_version_h",
     ]
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       deps += [ "//chromeos/cryptohome" ]
     }
   }
@@ -6295,7 +6295,7 @@ static_library("browser") {
 
   if (use_cups) {
     configs += [ "//printing:cups" ]
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       deps += [
         "//chrome/services/cups_proxy",
         "//chrome/services/cups_proxy/public/mojom",
@@ -6310,10 +6310,10 @@ static_library("browser") {
       "net/nss_context.cc",
       "net/nss_context.h",
     ]
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [ "net/nss_context_chromeos.cc" ]
     }
-    if (is_linux) {
+    if (is_linux || is_chromeos_lacros) {
       sources += [ "net/nss_context_linux.cc" ]
     }
   }
@@ -6450,10 +6450,10 @@ grit("resources") {
 
   if (enable_plugins) {
     #.json is not in the default sources_assignment_filter.
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       inputs = [ "resources/plugin_metadata/plugins_chromeos.json" ]
     }
-    if (is_linux && !is_chromeos) {
+    if (is_linux || is_chromeos_lacros) {
       inputs = [ "resources/plugin_metadata/plugins_linux.json" ]
     }
     if (is_mac) {
@@ -6480,7 +6480,7 @@ grit("resources") {
     deps +=
         [ "//chrome/browser/ui/webui/explore_sites_internals:mojo_bindings_js" ]
   }
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       "//chrome/browser/resources/chromeos/account_manager:web_components",
       "//chrome/browser/resources/chromeos/account_manager/components:web_components",
@@ -6504,7 +6504,7 @@ grit("resources") {
     ]
   }
 
-  if (is_chromeos && optimize_webui) {
+  if (is_chromeos_ash && optimize_webui) {
     deps += [
       "//chrome/browser/resources/chromeos/internet_config_dialog:build",
       "//chrome/browser/resources/chromeos/internet_detail_dialog:build",
@@ -6748,7 +6748,7 @@ static_library("test_support") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "chromeos/app_mode/fake_cws.cc",
       "chromeos/app_mode/fake_cws.h",
@@ -6854,7 +6854,7 @@ static_library("test_support") {
       "//google_apis:test_support",
       "//services/data_decoder/public/cpp:test_support",
     ]
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       deps += [ "//chrome/browser/chromeos" ]
     }
   }

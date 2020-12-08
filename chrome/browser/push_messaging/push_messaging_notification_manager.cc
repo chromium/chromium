@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
@@ -50,7 +51,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_urls.h"
 #include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
@@ -109,7 +110,7 @@ void PushMessagingNotificationManager::EnforceUserVisibleOnlyRequirements(
     EnforceRequirementsCallback message_handled_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ShouldSkipUserVisibleOnlyRequirements(origin)) {
     std::move(message_handled_callback)
         .Run(/* did_show_generic_notification= */ false);
@@ -285,7 +286,7 @@ void PushMessagingNotificationManager::DidWriteNotificationData(
       .Run(/* did_show_generic_notification= */ true);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool PushMessagingNotificationManager::ShouldSkipUserVisibleOnlyRequirements(
     const GURL& origin) {
   // This is a short-term exception to user visible only enforcement added

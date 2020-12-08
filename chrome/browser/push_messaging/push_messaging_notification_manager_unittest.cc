@@ -4,15 +4,16 @@
 
 #include "chrome/browser/push_messaging/push_messaging_notification_manager.h"
 
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "base/bind.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/android_sms/fake_android_sms_app_manager.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #endif
@@ -53,7 +54,7 @@ TEST_F(PushMessagingNotificationManagerTest, IsTabVisibleViewSource) {
   EXPECT_FALSE(manager.IsTabVisible(profile(), web_contents(), origin));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PushMessagingNotificationManagerTest,
        SkipEnforceUserVisibleOnlyRequirementsForAndroidMessages) {
   GURL app_url("https://example.com/test/");

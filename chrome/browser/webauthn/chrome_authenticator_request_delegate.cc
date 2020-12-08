@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
@@ -46,7 +47,7 @@
 #include "device/fido/win/authenticator.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/webauthn_request_registrar.h"
 #include "ui/aura/window.h"
 #endif
@@ -468,7 +469,7 @@ ChromeAuthenticatorRequestDelegate::TouchIdAuthenticatorConfigForProfile(
 }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 ChromeAuthenticatorRequestDelegate::ChromeOSGenerateRequestIdCallback
 ChromeAuthenticatorRequestDelegate::GetGenerateRequestIdCallback(
     content::RenderFrameHost* render_frame_host) {
@@ -476,7 +477,7 @@ ChromeAuthenticatorRequestDelegate::GetGenerateRequestIdCallback(
       render_frame_host->GetNativeView()->GetToplevelWindow();
   return ash::WebAuthnRequestRegistrar::Get()->GetRegisterCallback(window);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ChromeAuthenticatorRequestDelegate::UpdateLastTransportUsed(
     device::FidoTransportProtocol transport) {

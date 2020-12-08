@@ -13,6 +13,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/grit/chromium_strings.h"
 #include "components/crash/core/app/breakpad_linux.h"
@@ -24,7 +25,7 @@
 #include "media/audio/audio_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/installer/util/google_update_settings.h"
 #else
 #include "base/command_line.h"
@@ -45,7 +46,7 @@ ChromeBrowserMainPartsLinux::~ChromeBrowserMainPartsLinux() {
 }
 
 void ChromeBrowserMainPartsLinux::PreProfileInit() {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Needs to be called after we have chrome::DIR_USER_DATA and
   // g_browser_process.  This happens in PreCreateThreads.
   // base::GetLinuxDistro() will initialize its value if needed.
@@ -57,7 +58,7 @@ void ChromeBrowserMainPartsLinux::PreProfileInit() {
   media::AudioManager::SetGlobalAppName(
       l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME));
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Set up crypt config. This should be kept in sync with the OSCrypt parts of
   // SystemNetworkContextManager::OnNetworkServiceCreated.
   std::unique_ptr<os_crypt::Config> config(new os_crypt::Config());
@@ -88,7 +89,7 @@ void ChromeBrowserMainPartsLinux::PostProfileInit() {
     // true all the time isn't useful, we overload the meaning of the breakpad
     // registration metric to mean "is crash reporting enabled", since that's
     // what breakpad registration effectively meant in the days before crashpad.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     breakpad_registered = GoogleUpdateSettings::GetCollectStatsConsent();
 #else
     breakpad_registered = crash_reporter::GetUploadsEnabled();
@@ -101,7 +102,7 @@ void ChromeBrowserMainPartsLinux::PostProfileInit() {
 }
 
 void ChromeBrowserMainPartsLinux::PostMainMessageLoopStart() {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   bluez::BluezDBusManager::Initialize(nullptr /* system_bus */);
 #endif
 
@@ -109,7 +110,7 @@ void ChromeBrowserMainPartsLinux::PostMainMessageLoopStart() {
 }
 
 void ChromeBrowserMainPartsLinux::PostDestroyThreads() {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   bluez::BluezDBusManager::Shutdown();
   bluez::BluezDBusThreadManager::Shutdown();
 #endif

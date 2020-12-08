@@ -6,10 +6,11 @@
 
 #include "base/memory/memory_pressure_monitor.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/memory/enterprise_memory_limit_pref_observer.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/logging.h"
 #include "base/system/sys_info.h"
 #include "chromeos/memory/pressure/system_memory_pressure_evaluator.h"
@@ -29,7 +30,7 @@ void ChromeBrowserMainExtraPartsMemory::PostBrowserStart() {
               g_browser_process->local_state());
     }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (base::SysInfo::IsRunningOnChromeOS()) {
       cros_evaluator_ =
           std::make_unique<chromeos::memory::SystemMemoryPressureEvaluator>(
@@ -47,7 +48,7 @@ void ChromeBrowserMainExtraPartsMemory::PostMainMessageLoopRun() {
   // pref_service.
   memory_limit_pref_observer_.reset();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   cros_evaluator_.reset();
 #endif
 }

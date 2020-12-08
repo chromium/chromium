@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -52,7 +53,7 @@
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/chromeos/app_mode/web_app/web_kiosk_app_manager.h"
 #include "components/user_manager/user.h"
@@ -156,7 +157,7 @@ void ChromePermissionsClient::AreSitesImportant(
   }
 }
 
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 // Some Google-affiliated domains are not allowed to delete cookies for
 // supervised accounts.
 bool ChromePermissionsClient::IsCookieDeletionDisabled(
@@ -191,7 +192,7 @@ void ChromePermissionsClient::GetUkmSourceId(
 
 permissions::PermissionRequest::IconId
 ChromePermissionsClient::GetOverrideIconId(ContentSettingsType type) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(xhwang): fix this icon, see crbug.com/446263.
   if (type == ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER)
     return kProductIcon;
@@ -263,7 +264,7 @@ ChromePermissionsClient::HasPreviouslyAutoRevokedPermission(
 }
 
 base::Optional<url::Origin> ChromePermissionsClient::GetAutoApprovalOrigin() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // In web kiosk mode, all permission requests are auto-approved for the origin
   // of the main app.
   if (user_manager::UserManager::IsInitialized() &&

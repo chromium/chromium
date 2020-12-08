@@ -4,6 +4,8 @@
 
 #include "chrome/browser/browser_features.h"
 
+#include "build/chromeos_buildflags.h"
+
 namespace features {
 
 // Enables using the ClosedTabCache to instantly restore recently closed tabs
@@ -27,7 +29,7 @@ const base::Feature kPromoBrowserCommands{"PromoBrowserCommands",
 // chrome/browser/promo_browser_command/promo_browser_command.mojom
 const char kPromoBrowserCommandIdParam[] = "PromoBrowserCommandIdParam";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables being able to zoom a web page by double tapping in Chrome OS tablet
 // mode.
 const base::Feature kDoubleTapToZoomInTabletMode{
@@ -57,11 +59,11 @@ const base::Feature kNewMacNotificationAPI{"NewMacNotificationAPI",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables taking snapshots of the user data directory after a major
 // milestone update and restoring them after a version rollback.
 const base::Feature kUserDataSnapshot{"UserDataSnapshot",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace features

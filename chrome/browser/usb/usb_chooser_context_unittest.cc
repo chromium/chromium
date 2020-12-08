@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
@@ -702,7 +703,7 @@ TEST_F(UsbChooserContextTest,
                                          *unrelated_device_info));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 class DeviceLoginScreenWebUsbChooserContextTest : public UsbChooserContextTest {
  public:
@@ -774,7 +775,7 @@ TEST_F(DeviceLoginScreenWebUsbChooserContextTest,
                            kInvalidRequestingOrigins, *specific_device_info);
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 

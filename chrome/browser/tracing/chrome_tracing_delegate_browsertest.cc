@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -35,7 +36,7 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
         started_finalizations_count_(0),
         last_on_started_finalizing_success_(false) {}
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   void SetUpOnMainThread() override {
     PrefService* local_state = g_browser_process->local_state();
     DCHECK(local_state);

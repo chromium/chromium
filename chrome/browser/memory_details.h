@@ -16,6 +16,7 @@
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/common/process_type.h"
 
 namespace memory_instrumentation {
@@ -141,7 +142,7 @@ class MemoryDetails : public base::RefCountedThreadSafe<MemoryDetails> {
   // Returns a pointer to the ProcessData structure for Chrome.
   ProcessData* ChromeBrowser();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const base::SwapInfo& swap_info() const { return swap_info_; }
 #endif
 
@@ -172,7 +173,7 @@ class MemoryDetails : public base::RefCountedThreadSafe<MemoryDetails> {
 
   std::vector<ProcessData> process_data_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::SwapInfo swap_info_;
 #endif
 

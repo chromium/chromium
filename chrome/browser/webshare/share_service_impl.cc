@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -25,7 +26,7 @@
 ShareServiceImpl::ShareServiceImpl(content::RenderFrameHost& render_frame_host)
     : content::WebContentsObserver(
           content::WebContents::FromRenderFrameHost(&render_frame_host)),
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       sharesheet_client_(web_contents()),
 #endif
       render_frame_host_(&render_frame_host) {
@@ -171,7 +172,7 @@ void ShareServiceImpl::Share(const std::string& title,
     // the blobs.
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   sharesheet_client_.Share(title, text, share_url, std::move(files),
                            std::move(callback));
 #elif defined(OS_WIN)

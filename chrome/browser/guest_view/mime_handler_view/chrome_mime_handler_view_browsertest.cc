@@ -188,7 +188,7 @@ class StubDevToolsAgentHostClient : public content::DevToolsAgentHostClient {
 }  // namespace
 
 // Flaky on ChromeOS and Lacros (https://crbug.com/1033009)
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_GuestDevToolsReloadsEmbedder DISABLED_GuestDevToolsReloadsEmbedder
 #else
 #define MAYBE_GuestDevToolsReloadsEmbedder GuestDevToolsReloadsEmbedder

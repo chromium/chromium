@@ -35,7 +35,7 @@ void OomMemoryDetails::OnDetailsAvailable() {
   // These logs are collected by user feedback reports.  We want them to help
   // diagnose user-reported problems with frequently discarded tabs.
   std::string log_string = ToLogString(/*include_tab_title=*/false);
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   base::GraphicsMemoryInfoKB gpu_meminfo;
   if (base::GetGraphicsMemoryInfo(&gpu_meminfo)) {
     log_string +=

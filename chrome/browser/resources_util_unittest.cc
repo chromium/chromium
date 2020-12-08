@@ -8,11 +8,12 @@
 
 #include "base/stl_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/grit/components_scaled_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/resources/grit/ui_resources.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #endif
 
@@ -25,7 +26,7 @@ TEST(ResourcesUtil, SpotCheckIds) {
     {"IDR_ERROR_NETWORK_GENERIC", IDR_ERROR_NETWORK_GENERIC},
     // IDRs from ui/resources/ui_resources.grd should be valid.
     {"IDR_DEFAULT_FAVICON", IDR_DEFAULT_FAVICON},
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Check IDRs from ui/chromeos/resources/ui_chromeos_resources.grd.
     {"IDR_LOGIN_DEFAULT_USER", IDR_LOGIN_DEFAULT_USER},
 #endif

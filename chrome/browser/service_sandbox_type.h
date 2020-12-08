@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SERVICE_SANDBOX_TYPE_H_
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/service_process_host.h"
 #include "media/base/media_switches.h"
 #include "sandbox/policy/sandbox_type.h"
@@ -153,7 +154,7 @@ content::GetServiceSandboxType<sharing::mojom::Sharing>() {
 }
 #endif  // !defined(OS_MAC)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // recording::mojom::RecordingService
 namespace recording {
 namespace mojom {
@@ -169,6 +170,6 @@ inline sandbox::policy::SandboxType
 content::GetServiceSandboxType<recording::mojom::RecordingService>() {
   return sandbox::policy::SandboxType::kVideoCapture;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #endif  // CHROME_BROWSER_SERVICE_SANDBOX_TYPE_H_

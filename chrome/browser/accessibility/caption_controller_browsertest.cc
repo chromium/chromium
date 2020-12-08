@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/caption_controller_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -473,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnError_MultipleBrowsers) {
 #endif
 }
 
-#if !defined(OS_CHROMEOS)  // No multi-profile on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)  // No multi-profile on ChromeOS.
 
 IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
                        LiveCaptionEnabledChanged_MultipleProfiles) {

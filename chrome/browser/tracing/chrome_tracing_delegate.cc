@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -179,7 +180,7 @@ bool ProfileAllowsScenario(const content::BackgroundTracingConfig& config,
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
 
-#if !defined(OS_CHROMEOS) && defined(OFFICIAL_BUILD)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(OFFICIAL_BUILD)
   if (!local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled)) {
     RecordDisallowedMetric(
         TracingFinalizationDisallowedReason::kMetricsReportingDisabled);

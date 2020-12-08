@@ -13,6 +13,7 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autocomplete/document_suggestions_service_factory.h"
 #include "chrome/browser/autocomplete/in_memory_url_index_factory.h"
@@ -123,7 +124,7 @@ const char* const kChromeSettingsSubPages[] = {
     chrome::kLanguageOptionsSubPage,  chrome::kPasswordManagerSubPage,
     chrome::kPaymentsSubPage,         chrome::kResetProfileSettingsSubPage,
     chrome::kSearchEnginesSubPage,    chrome::kSyncSetupSubPage,
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     chrome::kCreateProfileSubPage,    chrome::kImportDataSubPage,
     chrome::kManageProfileSubPage,    chrome::kPeopleSubPage,
 #endif

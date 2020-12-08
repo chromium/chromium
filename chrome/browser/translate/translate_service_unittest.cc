@@ -5,6 +5,7 @@
 #include "chrome/browser/translate/translate_service.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/url_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -15,7 +16,7 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "extensions/common/constants.h"
 #endif
@@ -49,7 +50,7 @@ TEST(TranslateServiceTest, CheckTranslatableURL) {
   GURL file_url = GURL(file);
   EXPECT_FALSE(TranslateService::IsTranslatableURL(file_url));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string filemanager = std::string(extensions::kExtensionScheme) +
                             std::string("://") +
                             std::string(file_manager::kFileManagerAppId);

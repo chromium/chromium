@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "build/chromeos_buildflags.h"
 
 namespace data_decoder {
 class DataDecoder;
@@ -80,9 +81,9 @@ class ImageDecoder {
 
   enum ImageCodec {
     DEFAULT_CODEC = 0,  // Uses WebKit image decoding (via WebImage).
-#if defined(OS_CHROMEOS)
-    ROBUST_PNG_CODEC,   // Restrict decoding to robust PNG codec.
-#endif                  // defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    ROBUST_PNG_CODEC,  // Restrict decoding to robust PNG codec.
+#endif                 // BUILDFLAG(IS_CHROMEOS_ASH)
   };
 
   static ImageDecoder* GetInstance();

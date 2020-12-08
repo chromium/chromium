@@ -13,11 +13,12 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/installer/util/google_update_settings.h"
 
 #if defined(OS_MAC)
 #include "chrome/browser/mac/keystone_glue.h"
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/google/google_brand_chromeos.h"
 #endif
 
@@ -77,7 +78,7 @@ bool GetBrand(std::string* brand) {
 
 #if defined(OS_MAC)
   brand->assign(keystone_glue::BrandCode());
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   brand->assign(google_brand::chromeos::GetBrand());
 #else
   brand->clear();
@@ -93,7 +94,7 @@ bool GetReactivationBrand(std::string* brand) {
 #endif
 
 bool GetRlzBrand(std::string* brand) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   brand->assign(google_brand::chromeos::GetRlzBrand());
   return true;
 #else

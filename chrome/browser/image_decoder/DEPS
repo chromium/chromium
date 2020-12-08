@@ -3,6 +3,7 @@ noparent = True
 include_rules = [
   "+base",
   "+build/build_config.h",
+  "+build/chromeos_buildflags.h",
   "+chrome/grit/generated_resources.h",
   "+chrome/test",
   "+content/public/browser",

@@ -18,6 +18,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -152,7 +153,7 @@ void TraceCrashServiceUploader::DoCompressOnBackgroundThread(
   const char product[] = "Chrome";
 #elif defined(OS_MAC)
   const char product[] = "Chrome_Mac";
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS, defined(OS_LINUX) also evalutes to true, so the
   // defined(OS_CHROMEOS) block must come first.
   const char product[] = "Chrome_ChromeOS";

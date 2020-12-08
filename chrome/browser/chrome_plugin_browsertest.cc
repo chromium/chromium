@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
@@ -48,7 +49,7 @@ std::vector<content::WebPluginInfo> GetPlugins() {
 using ChromePluginTest = InProcessBrowserTest;
 
 // Verify that the official builds have the known set of plugins.
-#if defined(OS_CHROMEOS) // http://crbug.com/1147726
+#if BUILDFLAG(IS_CHROMEOS_ASH)  // http://crbug.com/1147726
 #define MAYBE_InstalledPlugins DISABLED_InstalledPlugins
 #else
 #define MAYBE_InstalledPlugins InstalledPlugins

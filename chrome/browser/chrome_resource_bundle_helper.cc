@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/prefs/chrome_command_line_pref_store.h"
@@ -27,7 +28,7 @@
 #include "ui/base/resource/resource_bundle_android.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_switches.h"
 #endif
@@ -38,7 +39,7 @@ extern void InitializeLocalState(
     ChromeFeatureListCreator* chrome_feature_list_creator) {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::InitializeLocalState");
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(chromeos::switches::kLoginManager)) {
     PrefService* local_state = chrome_feature_list_creator->local_state();
@@ -54,7 +55,7 @@ extern void InitializeLocalState(
       local_state->SetString(language::prefs::kApplicationLocale, owner_locale);
     }
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // Initializes the shared instance of ResourceBundle and returns the application

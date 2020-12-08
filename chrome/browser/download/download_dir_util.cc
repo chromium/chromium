@@ -5,6 +5,7 @@
 #include "chrome/browser/download/download_dir_util.h"
 
 #include "base/files/file_path.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/policy_path_parser.h"
 #include "components/policy/core/browser/configuration_policy_handler_parameters.h"
 

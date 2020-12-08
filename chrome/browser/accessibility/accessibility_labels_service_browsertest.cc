@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -14,11 +15,11 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #else
 #include "content/public/browser/browser_accessibility_state.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class AccessibilityLabelsBrowserTest : public InProcessBrowserTest {
  public:
@@ -34,7 +35,7 @@ class AccessibilityLabelsBrowserTest : public InProcessBrowserTest {
   void TearDownOnMainThread() override { EnableScreenReader(false); }
 
   void EnableScreenReader(bool enabled) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Enable Chromevox.
     chromeos::AccessibilityManager::Get()->EnableSpokenFeedback(enabled);
 #else
@@ -46,7 +47,7 @@ class AccessibilityLabelsBrowserTest : public InProcessBrowserTest {
       content::BrowserAccessibilityState::GetInstance()
           ->RemoveAccessibilityModeFlags(ui::AXMode::kScreenReader);
     }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
  private:
