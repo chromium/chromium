@@ -647,8 +647,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerOfflineCapabilityCheckBrowserTest,
 
 // Sites with a service worker are identified as supporting offline capability
 // only when it returns a valid response in the offline mode.
-#if defined(OS_WIN)
+#if defined(OS_WIN) || defined(OS_MAC)
 // Flaky on Win7: https://crbug.com/1156081
+// Flaky on Mac: https://crbug.com/1156626
 #define MAYBE_CheckOfflineCapability DISABLED_CheckOfflineCapability
 #else
 #define MAYBE_CheckOfflineCapability CheckOfflineCapability
