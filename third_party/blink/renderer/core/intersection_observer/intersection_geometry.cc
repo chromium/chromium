@@ -97,24 +97,27 @@ PhysicalRect InitializeRootRect(const LayoutObject* root,
   return result;
 }
 
-// Return the bounding box of target in target's own coordinate system
-PhysicalRect InitializeTargetRect(const LayoutObject* target,
-                                  unsigned flags,
-                                  const Vector<Length>& margin,
-                                  const LayoutObject* root) {
-  PhysicalRect result;
+// Return the bounding box of target in target's own coordinate system, also
+// return a bool indicating whether the target rect before margin application
+// was empty.
+std::pair<PhysicalRect, bool> InitializeTargetRect(const LayoutObject* target,
+                                                   unsigned flags,
+                                                   const Vector<Length>& margin,
+                                                   const LayoutObject* root) {
+  std::pair<PhysicalRect, bool> result;
   if ((flags & IntersectionGeometry::kShouldUseReplacedContentRect) &&
       target->IsLayoutEmbeddedContent()) {
-    result = To<LayoutEmbeddedContent>(target)->ReplacedContentRect();
+    result.first = To<LayoutEmbeddedContent>(target)->ReplacedContentRect();
   } else if (target->IsBox()) {
-    result = PhysicalRect(To<LayoutBox>(target)->BorderBoundingBox());
+    result.first = PhysicalRect(To<LayoutBox>(target)->BorderBoundingBox());
   } else if (target->IsLayoutInline()) {
-    result = target->AbsoluteToLocalRect(
+    result.first = target->AbsoluteToLocalRect(
         PhysicalRect::EnclosingRect(target->AbsoluteBoundingBoxFloatRect()));
   } else {
-    result = To<LayoutText>(target)->PhysicalLinesBoundingBox();
+    result.first = To<LayoutText>(target)->PhysicalLinesBoundingBox();
   }
-  ApplyMargin(result, margin, root->StyleRef().EffectiveZoom(),
+  result.second = result.first.IsEmpty();
+  ApplyMargin(result.first, margin, root->StyleRef().EffectiveZoom(),
               InitializeRootRect(root, {} /* margin */));
   return result;
 }
@@ -293,22 +296,30 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
   //   root_rect_ is in root's coordinate system
   //   The coordinate system for unclipped_intersection_rect_ depends on whether
   //       or not we can use previously cached geometry...
+  bool pre_margin_target_rect_is_empty;
   if (ShouldUseCachedRects()) {
     target_rect_ = cached_rects->local_target_rect;
+    pre_margin_target_rect_is_empty =
+        cached_rects->pre_margin_target_rect_is_empty;
+
     // The cached intersection rect has already been mapped/clipped up to the
     // root, except that the root's scroll offset and overflow clip have not
     // been applied.
     unclipped_intersection_rect_ =
         cached_rects->unscrolled_unclipped_intersection_rect;
   } else {
-    target_rect_ = InitializeTargetRect(target, flags_, target_margin, root);
+    std::tie(target_rect_, pre_margin_target_rect_is_empty) =
+        InitializeTargetRect(target, flags_, target_margin, root);
     // We have to map/clip target_rect_ up to the root, so we begin with the
     // intersection rect in target's coordinate system. After ClipToRoot, it
     // will be in root's coordinate system.
     unclipped_intersection_rect_ = target_rect_;
   }
-  if (cached_rects)
+  if (cached_rects) {
     cached_rects->local_target_rect = target_rect_;
+    cached_rects->pre_margin_target_rect_is_empty =
+        pre_margin_target_rect_is_empty;
+  }
   root_rect_ = root_geometry.local_root_rect;
 
   bool does_intersect =
@@ -398,7 +409,14 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
   if (does_intersect) {
     const PhysicalRect& comparison_rect =
         ShouldTrackFractionOfRoot() ? root_rect_ : target_rect_;
-    if (comparison_rect.IsEmpty()) {
+    // Note that if we are checking whether target is empty, we have to use
+    // pre_margin_target_rect_is_empty for the check. This is because if we are
+    // using target margin, we may have inflated the rect, so direct empty check
+    // will be wrong.
+    bool comparison_rect_empty = ShouldTrackFractionOfRoot()
+                                     ? root_rect_.IsEmpty()
+                                     : pre_margin_target_rect_is_empty;
+    if (comparison_rect_empty) {
       intersection_ratio_ = 1;
     } else {
       const PhysicalSize& intersection_size = intersection_rect_.size;
