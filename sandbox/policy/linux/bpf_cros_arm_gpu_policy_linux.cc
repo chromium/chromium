@@ -49,6 +49,8 @@ ResultExpr CrosArmGpuProcessPolicy::EvaluateSyscall(int sysno) const {
     case __NR_connect:
     case __NR_getpeername:
     case __NR_getsockname:
+    case __NR_sched_setaffinity:
+    case __NR_sched_setscheduler:
     case __NR_sysinfo:
     case __NR_uname:
       return Allow();
