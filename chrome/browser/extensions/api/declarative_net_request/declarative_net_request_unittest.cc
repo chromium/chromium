@@ -195,8 +195,6 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
     tester.ExpectTotalCount(kManifestRulesCountHistogram, 0u);
   }
 
-  // void Update
-
   enum class RulesetScope { kDynamic, kSession };
 
   // Runs the updateDynamicRules/updateSessionRules extension function based on
