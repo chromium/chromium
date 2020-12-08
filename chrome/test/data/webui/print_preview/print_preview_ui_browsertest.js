@@ -726,6 +726,16 @@ var PrintPreviewDestinationDialogCrosTest = class extends PrintPreviewTest {
   get suiteName() {
     return destination_dialog_cros_test.suiteName;
   }
+
+  /** @override */
+  get featureList() {
+    const featureList = super.featureList || [];
+    const kPrintServerScaling = ['chromeos::features::kPrintServerScaling'];
+    featureList.enabled = featureList.enabled ?
+        featureList.enabled.concat(kPrintServerScaling) :
+        kPrintServerScaling;
+    return featureList;
+  }
 };
 
 TEST_F('PrintPreviewDestinationDialogCrosTest', 'PrinterList', function() {
@@ -742,6 +752,18 @@ TEST_F(
 TEST_F('PrintPreviewDestinationDialogCrosTest', 'UserAccounts', function() {
   this.runMochaTest(destination_dialog_cros_test.TestNames.UserAccounts);
 });
+
+TEST_F(
+    'PrintPreviewDestinationDialogCrosTest', 'PrintServersChanged', function() {
+      this.runMochaTest(
+          destination_dialog_cros_test.TestNames.PrintServersChanged);
+    });
+
+TEST_F(
+    'PrintPreviewDestinationDialogCrosTest', 'PrintServerSelected', function() {
+      this.runMochaTest(
+          destination_dialog_cros_test.TestNames.PrintServerSelected);
+    });
 
 GEN('#endif');
 

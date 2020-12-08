@@ -313,6 +313,10 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
     {"selectButton", IDS_PRINT_PREVIEW_BUTTON_SELECT},
     {"seeMore", IDS_PRINT_PREVIEW_SEE_MORE},
     {"seeMoreDestinationsLabel", IDS_PRINT_PREVIEW_SEE_MORE_DESTINATIONS_LABEL},
+#if defined(OS_CHROMEOS)
+    {"serverSearchBoxPlaceholder",
+     IDS_PRINT_PREVIEW_SERVER_SEARCH_BOX_PLACEHOLDER},
+#endif
     {"title", IDS_PRINT_PREVIEW_TITLE},
     {"top", IDS_PRINT_PREVIEW_TOP_MARGIN_LABEL},
     {"unsupportedCloudPrinter", IDS_PRINT_PREVIEW_UNSUPPORTED_CLOUD_PRINTER},
@@ -400,6 +404,9 @@ void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
   source->AddBoolean(
       "printSaveToDrive",
       base::FeatureList::IsEnabled(chromeos::features::kPrintSaveToDrive));
+  source->AddBoolean(
+      "printServerScaling",
+      base::FeatureList::IsEnabled(chromeos::features::kPrintServerScaling));
 #endif
 }
 
@@ -574,8 +581,7 @@ void PrintPreviewUI::ClearAllPreviewData() {
   PrintPreviewDataService::GetInstance()->RemoveEntry(*id_);
 }
 
-void PrintPreviewUI::SetInitiatorTitle(
-    const base::string16& job_title) {
+void PrintPreviewUI::SetInitiatorTitle(const base::string16& job_title) {
   initiator_title_ = job_title;
 }
 

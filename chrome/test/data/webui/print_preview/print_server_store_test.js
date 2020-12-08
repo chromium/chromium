@@ -80,7 +80,7 @@ suite(print_server_store_test.suiteName, function() {
       async () => {
         const printServers = [
           {id: 'server1', name: 'Print Server 1'},
-          {id: 'server2', name: 'Print Server 2'}
+          {id: 'server2', name: 'Print Server 2'},
         ];
         const whenPrintServersChangedEvent = eventToPromise(
             PrintServerStore.EventType.PRINT_SERVERS_CHANGED, printServerStore);

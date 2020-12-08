@@ -4,15 +4,16 @@
 
 import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, InvitationStore, LocalDestinationInfo, makeRecentDestination, NativeLayerImpl, RecentDestination} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {eventToPromise} from '../test_util.m.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {eventToPromise, waitAfterNextRender} from '../test_util.m.js';
 
 import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
-import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
+import {NativeLayerCrosStub, setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 import {NativeLayerStub} from './native_layer_stub.js';
 import {createDestinationStore, getDestinations, getGoogleDriveDestination, setupTestListenerElement} from './print_preview_test_utils.js';
 
@@ -24,6 +25,8 @@ destination_dialog_cros_test.TestNames = {
   PrinterList: 'PrinterList',
   ShowProvisionalDialog: 'ShowProvisionalDialog',
   UserAccounts: 'UserAccounts',
+  PrintServersChanged: 'PrintServersChanged',
+  PrintServerSelected: 'PrintServerSelected',
 };
 
 suite(destination_dialog_cros_test.suiteName, function() {
@@ -35,6 +38,9 @@ suite(destination_dialog_cros_test.suiteName, function() {
 
   /** @type {!NativeLayerStub} */
   let nativeLayer;
+
+  /** @type {!NativeLayerCrosStub} */
+  let nativeLayerCros;
 
   /** @type {!CloudPrintInterfaceStub} */
   let cloudPrintInterface;
@@ -61,7 +67,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
     // Create data classes
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.instance_ = nativeLayer;
-    setNativeLayerCrosInstance();
+    nativeLayerCros = setNativeLayerCrosInstance();
     cloudPrintInterface = new CloudPrintInterfaceStub();
     destinationStore = createDestinationStore();
     destinationStore.setCloudPrintInterface(cloudPrintInterface);
@@ -305,5 +311,62 @@ suite(destination_dialog_cros_test.suiteName, function() {
         assertEquals(3, nativeLayer.getCallCount('getPrinters'));
         // Cloud print should have been queried again for the new account.
         assertEquals(3, cloudPrintInterface.getCallCount('search'));
+      });
+
+  // Test that checks that print server searchable input and its selections are
+  // updated according to the PRINT_SERVERS_CHANGED event.
+  test(
+      assert(destination_dialog_cros_test.TestNames.PrintServersChanged),
+      async () => {
+        await finishSetup();
+
+        const printServers = [
+          {id: 'print-server-1', name: 'Print Server 1'},
+          {id: 'print-server-2', name: 'Print Server 2'},
+        ];
+        const isSingleServerFetchingMode = true;
+        webUIListenerCallback('print-servers-config-changed', {
+          printServers: printServers,
+          isSingleServerFetchingMode: isSingleServerFetchingMode,
+        });
+        await waitAfterNextRender(dialog);
+
+        assertFalse(dialog.$$('.server-search-box-input').hidden);
+        const serverSelector = dialog.$$('.server-search-box-input');
+        const serverSelections =
+            serverSelector.shadowRoot.querySelectorAll('.list-item');
+        assertEquals('Print Server 1', serverSelections[0].textContent.trim());
+        assertEquals('Print Server 2', serverSelections[1].textContent.trim());
+      });
+
+  // Tests that choosePrintServers is called when the print server searchable
+  // input value is changed.
+  test(
+      assert(destination_dialog_cros_test.TestNames.PrintServerSelected),
+      async () => {
+        await finishSetup();
+        const printServers = [
+          {id: 'user-print-server-1', name: 'Print Server 1'},
+          {id: 'user-print-server-2', name: 'Print Server 2'},
+          {id: 'device-print-server-1', name: 'Print Server 1'},
+          {id: 'device-print-server-2', name: 'Print Server 2'},
+        ];
+        const isSingleServerFetchingMode = true;
+        webUIListenerCallback('print-servers-config-changed', {
+          printServers: printServers,
+          isSingleServerFetchingMode: isSingleServerFetchingMode,
+        });
+        await waitAfterNextRender(dialog);
+        nativeLayerCros.reset();
+
+        const pendingPrintServerId =
+            nativeLayerCros.whenCalled('choosePrintServers');
+        dialog.$$('cr-searchable-drop-down').value = 'Print Server 2';
+        await waitAfterNextRender(dialog);
+
+        assertEquals(1, nativeLayerCros.getCallCount('choosePrintServers'));
+        assertDeepEquals(
+            ['user-print-server-2', 'device-print-server-2'],
+            await pendingPrintServerId);
       });
 });

@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.m.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/js/action_link.js';
@@ -26,20 +27,26 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {beforeNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
 import {DestinationStore} from '../data/destination_store.js';
 import {InvitationStore} from '../data/invitation_store.js';
+import {PrintServerStore} from '../data/print_server_store.js';
 import {Metrics, MetricsContext} from '../metrics.js';
 import {NativeLayerImpl} from '../native_layer.js';
+import {PrintServer, PrintServersConfig} from '../native_layer_cros.js';
 
 Polymer({
   is: 'print-preview-destination-dialog-cros',
 
   _template: html`{__html_template__}`,
 
-  behaviors: [ListPropertyUpdateBehavior],
+  behaviors: [
+    ListPropertyUpdateBehavior,
+    WebUIListenerBehavior,
+  ],
 
   properties: {
     /** @type {?DestinationStore} */
@@ -60,6 +67,13 @@ Polymer({
 
     /** @type {!Array<string>} */
     users: Array,
+
+    /** @private */
+    printServerSelected_: {
+      type: String,
+      value: '',
+      observer: 'onPrintServerSelected_',
+    },
 
     /** @private {!Array<!Destination>} */
     destinations_: {
@@ -90,6 +104,42 @@ Polymer({
       },
       readOnly: true,
     },
+
+    /** @private {boolean} */
+    isSingleServerFetchingMode_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private {!Array<string>} */
+    printServerNames_: {
+      type: Array,
+      value() {
+        return [''];
+      },
+    },
+
+    /** @private */
+    printServerScalingFlagEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('printServerScaling');
+      },
+      readOnly: true,
+    },
+
+    /** @private {boolean} */
+    loadingServerPrinters_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private {boolean} */
+    loadingAnyDestinations_: {
+      type: Boolean,
+      computed:
+          'computeLoadingDestinations_(loadingDestinations_, loadingServerPrinters_)'
+    },
   },
 
   listeners: {
@@ -105,9 +155,35 @@ Polymer({
   /** @private {boolean} */
   initialized_: false,
 
+  /** @private {?PrintServerStore} */
+  printServerStore_: null,
+
   /** @override */
   detached() {
     this.tracker_.removeAll();
+  },
+
+  /** @override */
+  ready() {
+    if (!this.printServerScalingFlagEnabled_) {
+      return;
+    }
+    this.printServerStore_ = new PrintServerStore(
+        (/** string */ eventName, /** !Function */ callback) =>
+            void this.addWebUIListener(eventName, callback));
+    this.tracker_.add(
+        this.printServerStore_,
+        PrintServerStore.EventType.PRINT_SERVERS_CHANGED,
+        event => void this.onPrintServersChanged_(event));
+    this.tracker_.add(
+        this.printServerStore_,
+        PrintServerStore.EventType.SERVER_PRINTERS_LOADING,
+        event => void this.onServerPrintersLoading_(event));
+    this.printServerStore_.getPrintServersConfig().then(config => {
+      this.printServerNames_ =
+          config.printServers.map(printServer => printServer.name);
+      this.isSingleServerFetchingMode_ = config.isSingleServerFetchingMode;
+    });
   },
 
   /**
@@ -290,6 +366,45 @@ Polymer({
   /** @return {boolean} Whether the dialog is open. */
   isOpen() {
     return this.$.dialog.hasAttribute('open');
+  },
+
+  /**
+   * @param {string} printServerName The name of the print server.
+   * @private
+   */
+  onPrintServerSelected_(printServerName) {
+    if (!this.printServerScalingFlagEnabled_ || !this.printServerStore_) {
+      return;
+    }
+    this.printServerStore_.choosePrintServers(printServerName);
+  },
+
+  /**
+   * @param {!CustomEvent<!{printServerNames: !Array<string>,
+   *     isSingleServerFetchingMode: boolean}>} e Event containing the current
+   *     print server names and fetching mode.
+   * @private
+   */
+  onPrintServersChanged_(e) {
+    this.isSingleServerFetchingMode_ = e.detail.isSingleServerFetchingMode;
+    this.printServerNames_ = e.detail.printServerNames;
+  },
+
+  /**
+   * @param {!CustomEvent<boolean>} e Event containing whether server printers
+   *     are currently loading.
+   * @private
+   */
+  onServerPrintersLoading_(e) {
+    this.loadingServerPrinters_ = e.detail;
+  },
+
+  /**
+   * @return {boolean} Whether the destinations are loading.
+   * @private
+   */
+  computeLoadingDestinations_() {
+    return this.loadingDestinations_ || this.loadingServerPrinters_;
   },
 
   /** @private */
