@@ -411,8 +411,7 @@ class TabHoverCardBubbleView::ThumbnailObserver
     if (current_image_ == thumbnail_image)
       return;
 
-    if (scoped_observation_.IsObserving())
-      scoped_observation_.RemoveObservation();
+    scoped_observation_.Reset();
     current_image_ = std::move(thumbnail_image);
 
     if (current_image_) {

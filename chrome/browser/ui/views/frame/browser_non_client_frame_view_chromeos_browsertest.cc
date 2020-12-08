@@ -241,7 +241,8 @@ class ImmersiveModeTester : public ImmersiveModeController::Observer {
   }
 
   void OnImmersiveModeControllerDestroyed() override {
-    scoped_observation_.RemoveObservation();
+    DCHECK(scoped_observation_.IsObserving());
+    scoped_observation_.Reset();
   }
 
   void OnImmersiveFullscreenExited() override {

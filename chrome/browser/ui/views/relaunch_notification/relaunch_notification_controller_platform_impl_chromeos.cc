@@ -152,8 +152,6 @@ void RelaunchNotificationControllerPlatformImpl::StartObserving() {
 }
 
 void RelaunchNotificationControllerPlatformImpl::StopObserving() {
-  if (display_observation_.IsObserving())
-    display_observation_.RemoveObservation();
-  if (session_observation_.IsObserving())
-    session_observation_.RemoveObservation();
+  display_observation_.Reset();
+  session_observation_.Reset();
 }

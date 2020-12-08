@@ -1197,8 +1197,7 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
       loading_bar_->SetWebContents(nullptr);
     contents_web_view_->SetWebContents(nullptr);
     infobar_container_->ChangeInfoBarManager(nullptr);
-    if (app_banner_manager_observation_.IsObserving())
-      app_banner_manager_observation_.RemoveObservation();
+    app_banner_manager_observation_.Reset();
     UpdateDevToolsForContents(nullptr, true);
   }
 }
@@ -2574,7 +2573,7 @@ views::View* BrowserView::CreateOverlayView() {
 
 void BrowserView::OnWidgetDestroying(views::Widget* widget) {
   DCHECK(widget_observation_.IsObservingSource(widget));
-  widget_observation_.RemoveObservation();
+  widget_observation_.Reset();
   // Destroy any remaining WebContents early on. Doing so may result in
   // calling back to one of the Views/LayoutManagers or supporting classes of
   // BrowserView. By destroying here we ensure all said classes are valid.

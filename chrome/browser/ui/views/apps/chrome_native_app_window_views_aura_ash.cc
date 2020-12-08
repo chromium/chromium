@@ -507,13 +507,9 @@ void ChromeNativeAppWindowViewsAuraAsh::OnWindowPropertyChanged(
 
 void ChromeNativeAppWindowViewsAuraAsh::OnWindowDestroying(
     aura::Window* window) {
-  if (window_state_observation_.IsObserving()) {
-    DCHECK(window_state_observation_.IsObservingSource(
-        ash::WindowState::Get(window)));
-    window_state_observation_.RemoveObservation();
-  }
+  window_state_observation_.Reset();
   DCHECK(window_observation_.IsObservingSource(window));
-  window_observation_.RemoveObservation();
+  window_observation_.Reset();
 }
 
 void ChromeNativeAppWindowViewsAuraAsh::OnTabletModeToggled(bool enabled) {

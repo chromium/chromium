@@ -229,8 +229,7 @@ void MenuViewDragAndDropTest::DoTestWithMenuOpen() {
 }
 
 void MenuViewDragAndDropTest::TearDown() {
-  if (widget_observation_.IsObserving())
-    widget_observation_.RemoveObservation();
+  widget_observation_.Reset();
   MenuTestBase::TearDown();
 }
 

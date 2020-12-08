@@ -457,8 +457,10 @@ class BookmarkBarViewDragTestBase : public BookmarkBarViewEventTestBase,
   }
 
   void OnWidgetDestroying(views::Widget* widget) override {
-    if (widget == window())
-      bookmark_bar_observation_.RemoveObservation();
+    if (widget == window()) {
+      DCHECK(bookmark_bar_observation_.IsObserving());
+      bookmark_bar_observation_.Reset();
+    }
   }
 
   void OnWidgetDestroyed(views::Widget* widget) override {

@@ -1034,8 +1034,7 @@ TabStrip::~TabStrip() {
   // but before moving the mouse.
   RemoveMessageLoopObserver();
 
-  if (hover_card_observation_.IsObserving())
-    hover_card_observation_.RemoveObservation();
+  hover_card_observation_.Reset();
 
   // Since TabGroupViews expects be able to remove the views it creates, clear
   // |group_views_| before removing the remaining children below.
@@ -3288,7 +3287,7 @@ void TabStrip::DropArrow::SetWindowBounds(const gfx::Rect& bounds) {
 
 void TabStrip::DropArrow::OnWidgetDestroying(views::Widget* widget) {
   DCHECK(scoped_observation_.IsObservingSource(arrow_window_));
-  scoped_observation_.RemoveObservation();
+  scoped_observation_.Reset();
   arrow_window_ = nullptr;
 }
 
@@ -3629,7 +3628,7 @@ views::View* TabStrip::TargetForRect(views::View* root, const gfx::Rect& rect) {
 void TabStrip::OnViewIsDeleting(views::View* observed_view) {
   if (observed_view == hover_card_) {
     DCHECK(hover_card_observation_.IsObservingSource(hover_card_));
-    hover_card_observation_.RemoveObservation();
+    hover_card_observation_.Reset();
     hover_card_event_sniffer_.reset();
     hover_card_ = nullptr;
   }

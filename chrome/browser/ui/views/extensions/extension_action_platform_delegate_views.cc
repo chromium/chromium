@@ -133,7 +133,8 @@ void ExtensionActionPlatformDelegateViews::OnExtensionCommandRemoved(
 }
 
 void ExtensionActionPlatformDelegateViews::OnCommandServiceDestroying() {
-  command_service_observation_.RemoveObservation();
+  DCHECK(command_service_observation_.IsObserving());
+  command_service_observation_.Reset();
 }
 
 bool ExtensionActionPlatformDelegateViews::AcceleratorPressed(

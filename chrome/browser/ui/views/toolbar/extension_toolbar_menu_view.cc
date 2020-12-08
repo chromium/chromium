@@ -84,7 +84,7 @@ void ExtensionToolbarMenuView::set_close_menu_delay_for_testing(
 
 void ExtensionToolbarMenuView::OnToolbarActionsBarDestroyed() {
   DCHECK(toolbar_actions_bar_observation_.IsObserving());
-  toolbar_actions_bar_observation_.RemoveObservation();
+  toolbar_actions_bar_observation_.Reset();
 }
 
 void ExtensionToolbarMenuView::OnToolbarActionDragDone() {

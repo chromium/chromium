@@ -1431,7 +1431,7 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
 
   if (move_loop_widget_ &&
       widget_observation_.IsObservingSource(move_loop_widget_)) {
-    widget_observation_.RemoveObservation();
+    widget_observation_.Reset();
   }
   move_loop_widget_ = nullptr;
 

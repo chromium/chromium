@@ -854,8 +854,7 @@ void OmniboxViewViews::AddedToWidget() {
 
 void OmniboxViewViews::RemovedFromWidget() {
   views::Textfield::RemovedFromWidget();
-  if (scoped_compositor_observation_.IsObserving())
-    scoped_compositor_observation_.RemoveObservation();
+  scoped_compositor_observation_.Reset();
 }
 
 OmniboxViewViews::ElideAnimation*
@@ -2524,8 +2523,7 @@ void OmniboxViewViews::OnCompositingEnded(ui::Compositor* compositor) {
 }
 
 void OmniboxViewViews::OnCompositingShuttingDown(ui::Compositor* compositor) {
-  if (scoped_compositor_observation_.IsObserving())
-    scoped_compositor_observation_.RemoveObservation();
+  scoped_compositor_observation_.Reset();
 }
 
 void OmniboxViewViews::OnTemplateURLServiceChanged() {

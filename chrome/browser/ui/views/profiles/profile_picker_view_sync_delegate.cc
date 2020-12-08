@@ -128,7 +128,7 @@ void ProfilePickerViewSyncDelegate::OnSyncConfirmationUIClosed(
   // No need to listen to further confirmations any more.
   DCHECK(scoped_login_ui_service_observation_.IsObservingSource(
       LoginUIServiceFactory::GetForProfile(profile_)));
-  scoped_login_ui_service_observation_.RemoveObservation();
+  scoped_login_ui_service_observation_.Reset();
 
   DCHECK(sync_confirmation_callback_);
   std::move(sync_confirmation_callback_).Run(result);

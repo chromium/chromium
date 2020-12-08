@@ -419,7 +419,7 @@ void ExtensionInstallDialogView::OnShutdown(
       extensions::ExtensionRegistry::Get(profile_);
   DCHECK_EQ(extension_registry, registry);
   DCHECK(extension_registry_observation_.IsObservingSource(extension_registry));
-  extension_registry_observation_.RemoveObservation();
+  extension_registry_observation_.Reset();
   CloseDialog();
 }
 

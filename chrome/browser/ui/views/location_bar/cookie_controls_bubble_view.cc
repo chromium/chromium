@@ -299,5 +299,5 @@ void CookieControlsBubbleView::OnTooltipBubbleShown(views::TooltipIcon* icon) {
 void CookieControlsBubbleView::OnTooltipIconDestroying(
     views::TooltipIcon* icon) {
   DCHECK(tooltip_observation_.IsObservingSource(icon));
-  tooltip_observation_.RemoveObservation();
+  tooltip_observation_.Reset();
 }

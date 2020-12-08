@@ -111,7 +111,7 @@ void GlassBrowserCaptionButtonContainer::AddedToWidget() {
 
 void GlassBrowserCaptionButtonContainer::RemovedFromWidget() {
   DCHECK(widget_observation_.IsObserving());
-  widget_observation_.RemoveObservation();
+  widget_observation_.Reset();
 }
 
 void GlassBrowserCaptionButtonContainer::OnWidgetBoundsChanged(

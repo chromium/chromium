@@ -211,7 +211,7 @@ void ContentSettingImageView::OnWidgetDestroying(views::Widget* widget) {
     return;
 
   DCHECK(observation_.IsObservingSource(widget));
-  observation_.RemoveObservation();
+  observation_.Reset();
   bubble_view_ = nullptr;
   UnpauseAnimation();
 }

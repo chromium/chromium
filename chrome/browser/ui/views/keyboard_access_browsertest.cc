@@ -104,7 +104,8 @@ class SendKeysMenuListener : public AppMenuButtonObserver {
           FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated(),
           base::TimeDelta::FromMilliseconds(200));
     } else {
-      observation_.RemoveObservation();
+      DCHECK(observation_.IsObserving());
+      observation_.Reset();
       // Press DOWN to select the first item, then RETURN to select it.
       SendKeyPress(browser_, ui::VKEY_DOWN);
       SendKeyPress(browser_, ui::VKEY_RETURN);

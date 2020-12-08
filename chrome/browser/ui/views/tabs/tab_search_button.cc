@@ -98,7 +98,7 @@ void TabSearchButton::OnWidgetDestroying(views::Widget* widget) {
   DCHECK_EQ(webui_bubble_manager_.GetBubbleWidget(), widget);
   DCHECK(bubble_widget_observation_.IsObservingSource(
       webui_bubble_manager_.GetBubbleWidget()));
-  bubble_widget_observation_.RemoveObservation();
+  bubble_widget_observation_.Reset();
   pressed_lock_.reset();
 }
 

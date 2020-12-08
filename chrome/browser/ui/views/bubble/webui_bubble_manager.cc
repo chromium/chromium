@@ -76,7 +76,8 @@ void WebUIBubbleManagerBase::OnWidgetDestroying(views::Widget* widget) {
   DCHECK(bubble_view_);
   DCHECK_EQ(bubble_view_->GetWidget(), widget);
   cached_web_view_ = bubble_view_->RemoveWebView();
-  bubble_widget_observation_.RemoveObservation();
+  DCHECK(bubble_widget_observation_.IsObserving());
+  bubble_widget_observation_.Reset();
   DCHECK(close_bubble_helper_);
   close_bubble_helper_.reset();
   cache_timer_->Reset();

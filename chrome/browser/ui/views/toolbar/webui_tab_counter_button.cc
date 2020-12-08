@@ -161,7 +161,7 @@ class InteractionTracker : public ui::EventHandler,
     // Clean up all of our observers and event handlers before the native window
     // disappears.
     DCHECK(scoped_widget_observation_.IsObservingSource(widget));
-    scoped_widget_observation_.RemoveObservation();
+    scoped_widget_observation_.Reset();
     if (widget->GetNativeWindow()) {
       widget->GetNativeWindow()->RemovePreTargetHandler(this);
       native_window_ = nullptr;

@@ -152,7 +152,8 @@ class Tab::TabCloseButtonObserver : public views::ViewObserver {
   TabCloseButtonObserver& operator=(const TabCloseButtonObserver&) = delete;
 
   ~TabCloseButtonObserver() override {
-    tab_close_button_observation_.RemoveObservation();
+    DCHECK(tab_close_button_observation_.IsObserving());
+    tab_close_button_observation_.Reset();
   }
 
  private:

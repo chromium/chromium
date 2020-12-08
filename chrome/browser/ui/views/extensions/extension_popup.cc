@@ -162,7 +162,8 @@ void ExtensionPopup::OnExtensionUnloaded(
     host_.reset();
     // Stop observing the registry immediately to prevent any subsequent
     // notifications, since Widget::Close is asynchronous.
-    extension_registry_observation_.RemoveObservation();
+    DCHECK(extension_registry_observation_.IsObserving());
+    extension_registry_observation_.Reset();
 
     GetWidget()->Close();
   }

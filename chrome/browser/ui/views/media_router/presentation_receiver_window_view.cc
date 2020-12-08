@@ -90,7 +90,8 @@ class FullscreenWindowObserver : public aura::WindowObserver {
   }
 
   void OnWindowDestroying(aura::Window* window) override {
-    window_observation_.RemoveObservation();
+    DCHECK(window_observation_.IsObserving());
+    window_observation_.Reset();
   }
 
   base::RepeatingClosure on_fullscreen_change_;

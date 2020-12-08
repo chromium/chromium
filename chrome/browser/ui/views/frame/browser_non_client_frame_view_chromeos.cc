@@ -512,7 +512,8 @@ gfx::ImageSkia BrowserNonClientFrameViewChromeOS::GetFaviconForTabIconView() {
 
 void BrowserNonClientFrameViewChromeOS::OnWindowDestroying(
     aura::Window* window) {
-  window_observation_.RemoveObservation();
+  DCHECK(window_observation_.IsObserving());
+  window_observation_.Reset();
 }
 
 void BrowserNonClientFrameViewChromeOS::OnWindowPropertyChanged(

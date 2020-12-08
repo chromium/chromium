@@ -550,7 +550,7 @@ void ProfilePickerView::OnProfileNameAvailable() {
   // Stop listening to further changes.
   DCHECK(identity_manager_observation_.IsObservingSource(
       IdentityManagerFactory::GetForProfile(signed_in_profile_being_created_)));
-  identity_manager_observation_.RemoveObservation();
+  identity_manager_observation_.Reset();
 
   if (on_profile_name_available_)
     std::move(on_profile_name_available_).Run();
