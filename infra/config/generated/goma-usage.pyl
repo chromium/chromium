@@ -3,9 +3,9 @@
 # This is consumed by presubmit checks that need to validate the config
 
 {
-  # 61550 (scheduler total) + 344990 (weighted CQ total)
-  # (weighted CQ total) = 6899.8 (CQ total) * 50 (CQ weight)
-  '*weighted total*': 406540,
+  # 61550 (scheduler total) + 344750 (weighted CQ total)
+  # (weighted CQ total) = 6895 (CQ total) * 50 (CQ weight)
+  '*weighted total*': 406300,
   'scheduler': {
     '*total*': 61550,
     'triggered': {
@@ -545,7 +545,7 @@
     },
   },
   'cq': {
-    '*total*': 6899.8,
+    '*total*': 6895,
     'try/android-binary-size': 150,
     'try/android-cronet-arm-dbg': 80,
     'try/android-lollipop-arm-rel': 150,
@@ -580,16 +580,10 @@
     'try/fuchsia_x64': 80,
     # jobs count assumes an 8-core machine
     'try/ios-simulator': 80,
-    # 80 jobs x 3% experiment
-    # jobs count assumes an 8-core machine
-    'try/ios-simulator-coverage-exp': 2.4,
     # jobs count assumes an 8-core machine
     'try/ios-simulator-cronet': 80,
     # jobs count assumes an 8-core machine
     'try/ios-simulator-full-configs': 80,
-    # 80 jobs x 3% experiment
-    # jobs count assumes an 8-core machine
-    'try/ios-simulator-full-configs-coverage-exp': 2.4,
     'try/linux-blink-rel': 80,
     'try/linux-chromeos-compile-dbg': 80,
     'try/linux-chromeos-rel': 150,

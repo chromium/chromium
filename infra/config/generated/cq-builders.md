@@ -373,15 +373,6 @@ These builders are run on some percentage of builds. Their results are ignored
 by CQ. These are often used to test new configurations before they are added
 as required builders.
 
-* [ios-simulator-coverage-exp](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-coverage-exp) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+ios-simulator-coverage-exp)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+ios-simulator-coverage-exp))
-  * Experiment percentage: 3
-
-* [ios-simulator-full-configs-coverage-exp](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-full-configs-coverage-exp) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+ios-simulator-full-configs-coverage-exp)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+ios-simulator-full-configs-coverage-exp))
-  * Experiment percentage: 3
-
-  Path regular expressions:
-  * [`//ios/.+`](https://cs.chromium.org/chromium/src/ios/)
-
 * [linux-perfetto-rel](https://ci.chromium.org/p/chromium/builders/try/linux-perfetto-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-perfetto-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-perfetto-rel))
   * Experiment percentage: 100
 

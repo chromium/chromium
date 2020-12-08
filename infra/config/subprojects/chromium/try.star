@@ -1356,23 +1356,6 @@ try_.chromium_mac_ios_builder(
 )
 
 try_.chromium_mac_ios_builder(
-    name = "ios-simulator-code-coverage",
-    use_clang_coverage = True,
-    coverage_exclude_sources = "ios_test_files_and_test_utils",
-    coverage_test_types = ["unit"],
-    os = os.MAC_10_15,
-)
-
-try_.chromium_mac_ios_builder(
-    name = "ios-simulator-coverage-exp",
-    use_clang_coverage = True,
-    coverage_exclude_sources = "ios_test_files_and_test_utils",
-    coverage_test_types = ["unit"],
-    os = os.MAC_10_15,
-    tryjob = try_.job(experiment_percentage = 3),
-)
-
-try_.chromium_mac_ios_builder(
     name = "ios-simulator-cronet",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
@@ -1397,20 +1380,6 @@ try_.chromium_mac_ios_builder(
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["unit"],
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/ios/.+",
-        ],
-    ),
-)
-
-try_.chromium_mac_ios_builder(
-    name = "ios-simulator-full-configs-coverage-exp",
-    use_clang_coverage = True,
-    coverage_exclude_sources = "ios_test_files_and_test_utils",
-    coverage_test_types = ["unit"],
-    os = os.MAC_10_15,
-    tryjob = try_.job(
-        experiment_percentage = 3,
         location_regexp = [
             ".+/[+]/ios/.+",
         ],
