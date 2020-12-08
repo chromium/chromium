@@ -7,6 +7,7 @@ syntax = "proto2";
 package paint_preview;
 
 option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.paint_preview.common.proto";
 
 // Any fields annotated with "// required" are enforced as if they are
 // required by paint_preview::PaintPreviewProtoValid().

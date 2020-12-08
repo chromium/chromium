@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
@@ -42,7 +44,8 @@ class LongScreenshotsTabService
   // generation of the bitmap.
   //
   // A Java counterpart will be generated for this enum.
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.share.long_screenshots
+  // GENERATED_JAVA_ENUM_PACKAGE: (
+  // org.chromium.chrome.browser.share.long_screenshots)
   enum Status {
     kUnknown = 0,
     kOk = 1,
@@ -51,19 +54,27 @@ class LongScreenshotsTabService
     kProtoSerializationFailed = 4,
     kWebContentsGone = 5,
     kNativeServiceUninitialized = 6,
+    kLowMemoryDetected = 7,
+    kProtoDeserializationFailed = 8,
+    kNativeServiceNotInitialized = 9,
   };
-
-  using FinishedCallback = base::OnceCallback<void(Status)>;
 
   // Captures a Paint Preview of |contents| which should be associated with
   // |tab_id| for storage. |callback| is invoked on completion to indicate
   // status.
-  void CaptureTab(int tab_id,
-                  content::WebContents* contents,
-                  FinishedCallback callback);
+  void CaptureTab(int tab_id, content::WebContents* contents);
 
   // Delete all old long screenshot files.
   void DeleteAllLongScreenshotFiles();
+
+  // JNI wrapped versions of the above methods
+  void CaptureTabAndroid(
+      JNIEnv* env,
+      jint j_tab_id,
+      const base::android::JavaParamRef<jobject>& j_web_contents);
+  void LongScreenshotsClosedAndroid(JNIEnv* env);
+
+  base::android::ScopedJavaGlobalRef<jobject> GetJavaRef() { return java_ref_; }
 
  private:
   // Retrieves the content::WebContents from the |frame_tree_node_id|
@@ -73,18 +84,15 @@ class LongScreenshotsTabService
                           const paint_preview::DirectoryKey& key,
                           int frame_tree_node_id,
                           content::GlobalFrameRoutingId frame_routing_id,
-                          FinishedCallback callback,
                           const base::Optional<base::FilePath>& file_path);
 
   void OnCaptured(int tab_id,
                   const paint_preview::DirectoryKey& key,
                   int frame_tree_node_id,
-                  FinishedCallback callback,
                   paint_preview::PaintPreviewBaseService::CaptureStatus status,
                   std::unique_ptr<paint_preview::CaptureResult> result);
 
-  void OnFinished(int tab_id, FinishedCallback callback, bool success);
-
+  base::android::ScopedJavaGlobalRef<jobject> java_ref_;
   base::WeakPtrFactory<LongScreenshotsTabService> weak_ptr_factory_{this};
 };
 

@@ -3030,6 +3030,8 @@ static_library("browser") {
       "installable/quality_enforcer.cc",
       "lifetime/application_lifetime_android.cc",
       "lifetime/application_lifetime_android.h",
+      "long_screenshots/long_screenshots_tab_service_factory.cc",
+      "long_screenshots/long_screenshots_tab_service_factory.h",
       "media/android/cdm/media_drm_origin_id_manager.cc",
       "media/android/cdm/media_drm_origin_id_manager.h",
       "media/android/cdm/media_drm_origin_id_manager_factory.cc",

@@ -6,10 +6,16 @@
 
 #include <utility>
 
+#include "base/android/callback_android.h"
+#include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
 #include "base/callback.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "components/paint_preview/browser/file_manager.h"
+
+#include "chrome/browser/share/android/jni_headers/LongScreenshotsTabService_jni.h"
 
 namespace long_screenshots {
 
@@ -19,6 +25,7 @@ using paint_preview::FileManager;
 namespace {
 // TODO(tgupta): Evaluate whether this is the right size.
 constexpr size_t kMaxPerCaptureSizeBytes = 5 * 1000L * 1000L;  // 5 MB.
+
 }  // namespace
 
 LongScreenshotsTabService::LongScreenshotsTabService(
@@ -28,22 +35,30 @@ LongScreenshotsTabService::LongScreenshotsTabService(
     : PaintPreviewBaseService(std::move(file_mixin),
                               std::move(policy),
                               is_off_the_record) {
-  // TODO(tgupta): Populate this.
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  // TODO(tgupta): If using PlayerCompositorDelegate for compositing to bitmaps
+  // reinterpret the service pointer as PaintPreviewBaseService.
+  java_ref_.Reset(Java_LongScreenshotsTabService_Constructor(
+      env, reinterpret_cast<intptr_t>(this)));
 }
 
 LongScreenshotsTabService::~LongScreenshotsTabService() {
-  // TODO(tgupta): Populate this.
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_LongScreenshotsTabService_onNativeDestroyed(env, java_ref_);
+  java_ref_.Reset();
 }
 
 void LongScreenshotsTabService::CaptureTab(int tab_id,
-                                           content::WebContents* contents,
-                                           FinishedCallback callback) {
+                                           content::WebContents* contents) {
   // If the system is under memory pressure don't try to capture.
   auto* memory_monitor = base::MemoryPressureMonitor::Get();
   if (memory_monitor &&
       memory_monitor->GetCurrentPressureLevel() >=
           base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
-    // TODO(tgupta): Consider returning a callback with an error message.
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_LongScreenshotsTabService_processCaptureTabStatus(
+        env, java_ref_, Status::kLowMemoryDetected);
     return;
   }
 
@@ -62,8 +77,7 @@ void LongScreenshotsTabService::CaptureTab(int tab_id,
       base::BindOnce(&LongScreenshotsTabService::CaptureTabInternal,
                      weak_ptr_factory_.GetWeakPtr(), tab_id, key,
                      contents->GetMainFrame()->GetFrameTreeNodeId(),
-                     contents->GetMainFrame()->GetGlobalFrameRoutingId(),
-                     std::move(callback)));
+                     contents->GetMainFrame()->GetGlobalFrameRoutingId()));
 }
 
 void LongScreenshotsTabService::CaptureTabInternal(
@@ -71,10 +85,11 @@ void LongScreenshotsTabService::CaptureTabInternal(
     const paint_preview::DirectoryKey& key,
     int frame_tree_node_id,
     content::GlobalFrameRoutingId frame_routing_id,
-    FinishedCallback callback,
     const base::Optional<base::FilePath>& file_path) {
   if (!file_path.has_value()) {
-    std::move(callback).Run(Status::kDirectoryCreationFailed);
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_LongScreenshotsTabService_processCaptureTabStatus(
+        env, java_ref_, Status::kDirectoryCreationFailed);
     return;
   }
   auto* contents =
@@ -88,9 +103,12 @@ void LongScreenshotsTabService::CaptureTabInternal(
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id);
   if (!contents || !rfh || contents->IsBeingDestroyed() ||
       contents->GetMainFrame() != rfh || !rfh->IsCurrent()) {
-    std::move(callback).Run(Status::kWebContentsGone);
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_LongScreenshotsTabService_processCaptureTabStatus(
+        env, java_ref_, Status::kWebContentsGone);
     return;
   }
+
   // TODO(tgupta): Modify this call to specify the size of the capture rather
   // than the whole area.
   CaptureParams capture_params;
@@ -100,18 +118,16 @@ void LongScreenshotsTabService::CaptureTabInternal(
   capture_params.clip_rect = gfx::Rect();
   capture_params.capture_links = true;
   capture_params.max_per_capture_size = kMaxPerCaptureSizeBytes;
-  CapturePaintPreview(
-      capture_params,
-      base::BindOnce(&LongScreenshotsTabService::OnCaptured,
-                     weak_ptr_factory_.GetWeakPtr(), tab_id, key,
-                     frame_tree_node_id, std::move(callback)));
+  CapturePaintPreview(capture_params,
+                      base::BindOnce(&LongScreenshotsTabService::OnCaptured,
+                                     weak_ptr_factory_.GetWeakPtr(), tab_id,
+                                     key, frame_tree_node_id));
 }
 
 void LongScreenshotsTabService::OnCaptured(
     int tab_id,
     const paint_preview::DirectoryKey& key,
     int frame_tree_node_id,
-    FinishedCallback callback,
     paint_preview::PaintPreviewBaseService::CaptureStatus status,
     std::unique_ptr<paint_preview::CaptureResult> result) {
   auto* web_contents =
@@ -119,28 +135,19 @@ void LongScreenshotsTabService::OnCaptured(
   if (web_contents)
     web_contents->DecrementCapturerCount(true);
 
+  JNIEnv* env = base::android::AttachCurrentThread();
+
   if (status != PaintPreviewBaseService::CaptureStatus::kOk ||
       !result->capture_success) {
-    std::move(callback).Run(Status::kCaptureFailed);
+    Java_LongScreenshotsTabService_processCaptureTabStatus(
+        env, java_ref_, Status::kCaptureFailed);
     return;
   }
 
-  auto file_manager = GetFileMixin()->GetFileManager();
-  GetFileMixin()->GetTaskRunner()->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&FileManager::SerializePaintPreviewProto,
-                     GetFileMixin()->GetFileManager(), key, result->proto,
-                     true),
-      base::BindOnce(&LongScreenshotsTabService::OnFinished,
-                     weak_ptr_factory_.GetWeakPtr(), tab_id,
-                     std::move(callback)));
-}
-
-void LongScreenshotsTabService::OnFinished(int tab_id,
-                                           FinishedCallback callback,
-                                           bool success) {
-  std::move(callback).Run(success ? Status::kOk
-                                  : Status::kProtoSerializationFailed);
+  std::string serialized;
+  (result->proto).SerializeToString(&serialized);
+  Java_LongScreenshotsTabService_processPaintPreviewResponse(
+      env, java_ref_, base::android::ToJavaByteArray(env, serialized));
 }
 
 void LongScreenshotsTabService::DeleteAllLongScreenshotFiles() {
@@ -149,4 +156,17 @@ void LongScreenshotsTabService::DeleteAllLongScreenshotFiles() {
                                 GetFileMixin()->GetFileManager()));
 }
 
+void LongScreenshotsTabService::CaptureTabAndroid(
+    JNIEnv* env,
+    jint j_tab_id,
+    const base::android::JavaParamRef<jobject>& j_web_contents) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(j_web_contents);
+
+  CaptureTab(static_cast<int>(j_tab_id), web_contents);
+}
+
+void LongScreenshotsTabService::LongScreenshotsClosedAndroid(JNIEnv* env) {
+  DeleteAllLongScreenshotFiles();
+}
 }  // namespace long_screenshots

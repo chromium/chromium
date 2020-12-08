@@ -121,11 +121,7 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTab) {
   OverrideInterface(&recorder);
 
   auto* service = GetService();
-  service->CaptureTab(
-      kTabId, web_contents(),
-      base::BindOnce([](LongScreenshotsTabService::Status status) {
-        EXPECT_EQ(status, LongScreenshotsTabService::Status::kOk);
-      }));
+  service->CaptureTab(kTabId, web_contents());
   task_environment()->RunUntilIdle();
 
   auto file_manager = service->GetFileMixin()->GetFileManager();
@@ -155,11 +151,7 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabFailed) {
   OverrideInterface(&recorder);
 
   auto* service = GetService();
-  service->CaptureTab(
-      kTabId, web_contents(),
-      base::BindOnce([](LongScreenshotsTabService::Status status) {
-        EXPECT_EQ(status, LongScreenshotsTabService::Status::kCaptureFailed);
-      }));
+  service->CaptureTab(kTabId, web_contents());
   task_environment()->RunUntilIdle();
 
   auto file_manager = service->GetFileMixin()->GetFileManager();

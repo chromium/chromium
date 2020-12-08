@@ -606,6 +606,7 @@ android_library("chrome_java") {
   # TODO(crbug/1022172): Instead of adding source files, add it as a separate
   # dependency when circular deps is resolved.
   sources += share_java_sources
+  deps += share_java_deps
 }
 
 # Template for strict mode detection enabling/disabling so that proguard strips out
@@ -1162,6 +1163,7 @@ android_library("chrome_test_java") {
     "//components/omnibox/browser:browser_java",
     "//components/page_info/android:java",
     "//components/page_info/android:page_info_action_enum_java",
+    "//components/paint_preview/common/proto:proto_java",
     "//components/paint_preview/player/android:java",
     "//components/paint_preview/player/android:javatests",
     "//components/password_manager/core/browser:password_manager_java_enums",

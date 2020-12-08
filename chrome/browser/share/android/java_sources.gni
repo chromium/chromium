@@ -10,6 +10,8 @@ share_java_sources = [
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextCoordinator.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextMetricsBridge.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/LongScreenshotsCoordinator.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/LongScreenshotsTabService.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/LongScreenshotsTabServiceFactory.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QRCodeGenerationRequest.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QrCodeCoordinator.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QrCodeDialog.java",
@@ -57,3 +59,5 @@ share_java_sources = [
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetItemViewProperties.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetPropertyModelBuilder.java",
 ]
+
+share_java_deps = [ "//components/paint_preview/common/proto:proto_java" ]
