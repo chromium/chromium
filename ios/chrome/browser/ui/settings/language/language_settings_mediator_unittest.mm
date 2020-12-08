@@ -207,7 +207,7 @@ TEST_F(LanguageSettingsMediatorTest, TestSupportedLanguagesItems) {
 TEST_F(LanguageSettingsMediatorTest, TestAcceptLanguagesItems) {
   translate_prefs()->AddToLanguageList("fa", /*force_blocked=*/false);
   translate_prefs()->AddToLanguageList("en-US", /*force_blocked=*/false);
-  translate_prefs()->AddToLanguageList("ug", /*force_blocked=*/false);
+  translate_prefs()->AddToLanguageList("to", /*force_blocked=*/false);
   translate_prefs()->SetRecentTargetLanguage("fa");
   translate_prefs()->UnblockLanguage("en-US");
 
@@ -225,7 +225,7 @@ TEST_F(LanguageSettingsMediatorTest, TestAcceptLanguagesItems) {
   EXPECT_FALSE(acceptLanguagesItems[1].targetLanguage);
   EXPECT_FALSE(acceptLanguagesItems[1].blocked);
 
-  EXPECT_EQ("ug", acceptLanguagesItems[2].languageCode);
+  EXPECT_EQ("to", acceptLanguagesItems[2].languageCode);
   EXPECT_FALSE(acceptLanguagesItems[2].supportsTranslate);
   EXPECT_FALSE(acceptLanguagesItems[2].targetLanguage);
   EXPECT_TRUE(acceptLanguagesItems[2].blocked);

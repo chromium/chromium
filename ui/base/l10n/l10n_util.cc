@@ -168,7 +168,7 @@ static const char* const kAcceptLanguageList[] = {
     "ny",      // Nyanja
     "oc",      // Occitan
     "om",      // Oromo
-    "or",      // Oriya
+    "or",      // Odia (Oriya)
     "pa",      // Punjabi
     "pl",      // Polish
     "ps",      // Pashto
@@ -203,7 +203,7 @@ static const char* const kAcceptLanguageList[] = {
     "tr",      // Turkish
     "tt",      // Tatar
     "tw",      // Twi
-    "ug",      // Uighur
+    "ug",      // Uyghur
     "uk",      // Ukrainian
     "ur",      // Urdu
     "uz",      // Uzbek
