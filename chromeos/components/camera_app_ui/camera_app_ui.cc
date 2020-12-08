@@ -244,6 +244,10 @@ CameraAppWindowManager* CameraAppUI::app_window_manager() {
       web_ui()->GetWebContents()->GetBrowserContext());
 }
 
+const GURL& CameraAppUI::url() {
+  return web_ui()->GetWebContents()->GetURL();
+}
+
 WEB_UI_CONTROLLER_TYPE_IMPL(CameraAppUI)
 
 }  // namespace chromeos

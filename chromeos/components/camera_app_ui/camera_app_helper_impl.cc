@@ -8,8 +8,10 @@
 
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/url_util.h"
 #include "ui/aura/window.h"
 
 namespace chromeos_camera {
@@ -37,6 +39,19 @@ bool HasExternalScreen() {
   return false;
 }
 
+base::Optional<uint32_t> ParseIntentIdFromUrl(const GURL& url) {
+  std::string id_str;
+  if (!net::GetValueForKeyInQuery(url, "intentId", &id_str)) {
+    return base::nullopt;
+  }
+
+  uint32_t intent_id;
+  if (!base::StringToUint(id_str, &intent_id)) {
+    return base::nullopt;
+  }
+  return intent_id;
+}
+
 }  // namespace
 
 CameraAppHelperImpl::CameraAppHelperImpl(
@@ -46,6 +61,7 @@ CameraAppHelperImpl::CameraAppHelperImpl(
     : camera_app_ui_(camera_app_ui),
       camera_result_callback_(std::move(camera_result_callback)),
       has_external_screen_(HasExternalScreen()),
+      pending_intent_id_(base::nullopt),
       window_(window) {
   DCHECK(window);
   window->SetProperty(ash::kCanConsumeSystemKeysKey, true);
@@ -58,12 +74,22 @@ CameraAppHelperImpl::~CameraAppHelperImpl() {
   ash::TabletMode::Get()->RemoveObserver(this);
   ash::ScreenBacklight::Get()->RemoveObserver(this);
   display::Screen::GetScreen()->RemoveObserver(this);
+
+  if (pending_intent_id_.has_value()) {
+    camera_result_callback_.Run(*pending_intent_id_,
+                                arc::mojom::CameraIntentAction::CANCEL, {},
+                                base::DoNothing());
+  }
 }
 
 void CameraAppHelperImpl::Bind(
     mojo::PendingReceiver<mojom::CameraAppHelper> receiver) {
   receiver_.reset();
   receiver_.Bind(std::move(receiver));
+
+  if (camera_app_ui_) {
+    pending_intent_id_ = ParseIntentIdFromUrl(camera_app_ui_->url());
+  }
 }
 
 void CameraAppHelperImpl::HandleCameraResult(
@@ -71,6 +97,11 @@ void CameraAppHelperImpl::HandleCameraResult(
     arc::mojom::CameraIntentAction action,
     const std::vector<uint8_t>& data,
     HandleCameraResultCallback callback) {
+  if (pending_intent_id_.has_value() && *pending_intent_id_ == intent_id &&
+      (action == arc::mojom::CameraIntentAction::FINISH ||
+       action == arc::mojom::CameraIntentAction::CANCEL)) {
+    pending_intent_id_ = base::nullopt;
+  }
   camera_result_callback_.Run(intent_id, action, data, std::move(callback));
 }
 

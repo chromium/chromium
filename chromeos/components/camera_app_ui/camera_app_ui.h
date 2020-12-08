@@ -61,6 +61,8 @@ class CameraAppUI : public ui::MojoWebUIController {
 
   CameraAppWindowManager* app_window_manager();
 
+  const GURL& url();
+
  private:
   std::unique_ptr<CameraAppUIDelegate> delegate_;
 

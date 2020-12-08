@@ -10,6 +10,7 @@
 #include "ash/public/cpp/screen_backlight.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "chromeos/components/camera_app_ui/camera_app_helper.mojom.h"
 #include "chromeos/components/camera_app_ui/camera_app_ui.h"
 #include "chromeos/components/camera_app_ui/camera_app_window_state_controller.h"
@@ -89,6 +90,8 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
   CameraResultCallback camera_result_callback_;
 
   bool has_external_screen_;
+
+  base::Optional<uint32_t> pending_intent_id_;
 
   aura::Window* window_;
 

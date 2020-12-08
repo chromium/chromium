@@ -345,12 +345,10 @@ let instance = null;
   }
 
   browserProxy.setupUnloadListener(() => {
-    const intent = bgOps.getIntent();
-    if (intent !== null && !intent.done) {
-      // TODO(crbug.com/1125997): Move the task to ServiceWorker once it is
-      // supported on SWA.
-      intent.cancel();
-    }
+    // For SWA, we don't cancel the unhandled intent here since there is no
+    // guarantee that asynchronous calls in unload listener can be executed
+    // properly. Therefore, we moved the logic for canceling unhandled intent to
+    // Chrome (CameraAppHelper).
     if (appWindow !== null) {
       appWindow.notifyClosed();
     }
