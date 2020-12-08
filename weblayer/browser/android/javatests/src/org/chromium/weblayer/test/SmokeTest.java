@@ -74,9 +74,10 @@ public class SmokeTest {
         PhantomReference<InstrumentationActivity> reference;
         {
             InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                activity.getTab().setFullscreenCallback(new TestFullscreenCallback());
-            });
+            // This installs a fullscreen callback, and is to ensure setting a fullscreen callback
+            // doesn't leak.
+            TestFullscreenCallback fullscreenCallback =
+                    new TestFullscreenCallback(mActivityTestRule);
             mActivityTestRule.recreateActivity();
             boolean destroyed =
                     TestThreadUtils.runOnUiThreadBlockingNoException(() -> activity.isDestroyed());

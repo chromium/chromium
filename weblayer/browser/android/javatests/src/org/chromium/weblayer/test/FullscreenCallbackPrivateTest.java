@@ -40,9 +40,7 @@ public class FullscreenCallbackPrivateTest {
         String url = mActivityTestRule.getTestDataURL("fullscreen.html");
         mActivity = mActivityTestRule.launchShellWithUrl(url);
         Assert.assertNotNull(mActivity);
-        mDelegate = new TestFullscreenCallback();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mActivity.getTab().setFullscreenCallback(mDelegate); });
+        mDelegate = new TestFullscreenCallback(mActivityTestRule);
     }
 
     private TestWebLayer getTestWebLayer() {

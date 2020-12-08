@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.BrowserControlsOffsetCallback;
@@ -31,13 +30,11 @@ public class FullscreenCallbackTest {
     private TestFullscreenCallback mDelegate;
 
     // Launch WL and triggers html fullscreen.
-    private void enterFullscren() {
+    private void enterFullscreen() {
         String url = mActivityTestRule.getTestDataURL("fullscreen.html");
         mActivity = mActivityTestRule.launchShellWithUrl(url);
         Assert.assertNotNull(mActivity);
-        mDelegate = new TestFullscreenCallback();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mActivity.getTab().setFullscreenCallback(mDelegate); });
+        mDelegate = new TestFullscreenCallback(mActivityTestRule);
 
         // First touch enters fullscreen.
         EventUtils.simulateTouchCenterOfView(mActivity.getWindow().getDecorView());
@@ -47,9 +44,8 @@ public class FullscreenCallbackTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/1133893")
     public void testFullscreen() {
-        enterFullscren();
+        enterFullscreen();
         // Second touch exits.
         EventUtils.simulateTouchCenterOfView(mActivity.getWindow().getDecorView());
         mDelegate.waitForExitFullscreen();
@@ -59,7 +55,7 @@ public class FullscreenCallbackTest {
     @Test
     @SmallTest
     public void testExitFullscreenWhenDelegateCleared() {
-        enterFullscren();
+        enterFullscreen();
         // Clearing the FullscreenCallback should exit fullscreen.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mActivity.getTab().setFullscreenCallback(null); });
@@ -70,7 +66,7 @@ public class FullscreenCallbackTest {
     @Test
     @SmallTest
     public void testExitFullscreenUsingRunnable() {
-        enterFullscren();
+        enterFullscreen();
         // Running the runnable supplied to the delegate should exit fullscreen.
         TestThreadUtils.runOnUiThreadBlocking(mDelegate.mExitFullscreenRunnable);
         mDelegate.waitForExitFullscreen();
@@ -80,7 +76,7 @@ public class FullscreenCallbackTest {
     @Test
     @SmallTest
     public void testExitFullscreenWhenTabDestroyed() {
-        enterFullscren();
+        enterFullscreen();
         // Destroying the tab should exit fullscreen.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mActivity.getTab().getBrowser().destroyTab(mActivity.getTab()); });
@@ -94,7 +90,7 @@ public class FullscreenCallbackTest {
     @Test
     @SmallTest
     public void testDestroyFragmentWhileFullscreen() {
-        enterFullscren();
+        enterFullscreen();
         TestThreadUtils.runOnUiThreadBlocking(() -> { mActivity.destroyFragment(); });
     }
 
@@ -121,7 +117,7 @@ public class FullscreenCallbackTest {
         // Ensure the fragment is not recreated as otherwise things bounce around more.
         mActivityTestRule.setRetainInstance(true);
         Assert.assertNotNull(mActivity);
-        mDelegate = new TestFullscreenCallback();
+        mDelegate = new TestFullscreenCallback(mActivityTestRule);
         CallbackHelper callbackHelper = new CallbackHelper();
         // The offsets may move around during rotation. Wait for reattachment before installing
         // the BrowserControlsOffsetCallback.
@@ -133,16 +129,9 @@ public class FullscreenCallbackTest {
                                 new BrowserControlsOffsetCallbackImpl(callbackHelper));
                     }
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mActivity.getTab().setFullscreenCallback(mDelegate); });
-
         EventUtils.simulateTouchCenterOfView(mActivity.getWindow().getDecorView());
         mDelegate.waitForFullscreen();
         Assert.assertEquals(1, mDelegate.mEnterFullscreenCount);
-
-        // There should be a fullscreen element.
-        Assert.assertTrue(mActivityTestRule.executeScriptAndExtractBoolean(
-                "document.fullscreenElement != null"));
 
         // Rotation should trigger the view being totally hidden.
         callbackHelper.waitForFirst();
