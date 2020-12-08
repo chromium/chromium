@@ -12,7 +12,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/discardable_memory_allocator.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/synchronization/lock.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -35,7 +35,8 @@ DISCARDABLE_MEMORY_EXPORT extern const base::Feature kSchedulePeriodicPurge;
 class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
     : public base::DiscardableMemoryAllocator,
       public base::trace_event::MemoryDumpProvider,
-      public base::RefCountedThreadSafe<ClientDiscardableSharedMemoryManager> {
+      public base::RefCountedDeleteOnSequence<
+          ClientDiscardableSharedMemoryManager> {
  public:
   ClientDiscardableSharedMemoryManager(
       mojo::PendingRemote<mojom::DiscardableSharedMemoryManager> manager,
@@ -96,7 +97,10 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
   // These fields are only protected for testing, they would otherwise be
   // private. Everything else should be either public or private.
  protected:
-  friend class base::RefCountedThreadSafe<ClientDiscardableSharedMemoryManager>;
+  friend class base::RefCountedDeleteOnSequence<
+      ClientDiscardableSharedMemoryManager>;
+  friend class base::DeleteHelper<ClientDiscardableSharedMemoryManager>;
+
   ~ClientDiscardableSharedMemoryManager() override;
   ClientDiscardableSharedMemoryManager(
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,

@@ -78,18 +78,7 @@ class TestClientDiscardableSharedMemoryManager
 
 class ClientDiscardableSharedMemoryManagerTest : public testing::Test {
  public:
-  void SetUp() override {
-    client_ =
-        base::MakeRefCounted<TestClientDiscardableSharedMemoryManager>(nullptr);
-  }
-  scoped_refptr<TestClientDiscardableSharedMemoryManager> client_;
-  const size_t page_size_ = base::GetPageSize();
-};
-
-class ClientDiscardableSharedMemoryManagerPeriodicPurgingTest
-    : public ClientDiscardableSharedMemoryManagerTest {
- public:
-  ClientDiscardableSharedMemoryManagerPeriodicPurgingTest()
+  ClientDiscardableSharedMemoryManagerTest()
       : task_env_(base::test::TaskEnvironment::MainThreadType::UI,
                   base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   void SetUp() override {
@@ -97,6 +86,8 @@ class ClientDiscardableSharedMemoryManagerPeriodicPurgingTest
         task_env_.GetMainThreadTaskRunner());
   }
   base::test::TaskEnvironment task_env_;
+  scoped_refptr<TestClientDiscardableSharedMemoryManager> client_;
+  const size_t page_size_ = base::GetPageSize();
 };
 
 // This test allocates a single piece of memory, then verifies that calling
@@ -286,8 +277,7 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest, ReleaseUnlocked) {
 // This tests that memory is actually removed by the periodic purging. We mock a
 // task runner for this test and fast forward to make sure that the memory is
 // purged at the right time.
-TEST_F(ClientDiscardableSharedMemoryManagerPeriodicPurgingTest,
-       ScheduledReleaseUnlocked) {
+TEST_F(ClientDiscardableSharedMemoryManagerTest, ScheduledReleaseUnlocked) {
   base::test::ScopedFeatureList fl;
   fl.InitAndEnableFeature(discardable_memory::kSchedulePeriodicPurge);
   ASSERT_EQ(client_->GetBytesAllocated(), 0u);
@@ -310,7 +300,7 @@ TEST_F(ClientDiscardableSharedMemoryManagerPeriodicPurgingTest,
 
 // Same as the above test, but tests that multiple pieces of memory will be
 // handled properly.
-TEST_F(ClientDiscardableSharedMemoryManagerPeriodicPurgingTest,
+TEST_F(ClientDiscardableSharedMemoryManagerTest,
        ScheduledReleaseUnlockedMultiple) {
   base::test::ScopedFeatureList fl;
   fl.InitAndEnableFeature(discardable_memory::kSchedulePeriodicPurge);
@@ -395,8 +385,7 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest, LockingSuccessUma) {
 
 // Test that a repeating timer for background purging is created when we
 // allocate memory and discarded when we run out of allocated memory.
-TEST_F(ClientDiscardableSharedMemoryManagerPeriodicPurgingTest,
-       SchedulingProactivePurging) {
+TEST_F(ClientDiscardableSharedMemoryManagerTest, SchedulingProactivePurging) {
   base::test::ScopedFeatureList fl;
   fl.InitAndEnableFeature(discardable_memory::kSchedulePeriodicPurge);
   ASSERT_TRUE(client_->TimerIsNull());
@@ -428,7 +417,7 @@ TEST_F(ClientDiscardableSharedMemoryManagerPeriodicPurgingTest,
 
 // This test is similar to the one above, but tests that creating and deleting
 // the timer still works with multiple pieces of allocated memory.
-TEST_F(ClientDiscardableSharedMemoryManagerPeriodicPurgingTest,
+TEST_F(ClientDiscardableSharedMemoryManagerTest,
        SchedulingProactivePurgingMultipleAllocations) {
   base::test::ScopedFeatureList fl;
   fl.InitAndEnableFeature(discardable_memory::kSchedulePeriodicPurge);
