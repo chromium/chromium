@@ -118,6 +118,7 @@ blink_platform_sources("loader") {
     "fetch/unique_identifier.h",
     "fetch/url_loader/request_conversion.cc",
     "fetch/url_loader/request_conversion.h",
+    "fetch/url_loader/web_mojo_url_loader_client.cc",
     "fetch/url_loader/worker_main_script_loader.cc",
     "fetch/url_loader/worker_main_script_loader.h",
     "fetch/url_loader/worker_main_script_loader_client.h",
@@ -195,6 +196,7 @@ source_set("unit_tests") {
     "link_header_test.cc",
     "static_data_navigation_body_loader_test.cc",
     "subresource_integrity_test.cc",
+    "web_mojo_url_loader_client_unittest.cc",
   ]
 
   configs += [ "//third_party/blink/renderer/platform:blink_platform_config" ]

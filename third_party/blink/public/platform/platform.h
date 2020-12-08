@@ -337,6 +337,12 @@ class BLINK_PLATFORM_EXPORT Platform {
                                    WebURLResponse* response,
                                    bool report_security_info,
                                    int request_id) {}
+
+  // Determines whether it is safe to redirect from |from_url| to |to_url|.
+  virtual bool IsRedirectSafe(const GURL& from_url, const GURL& to_url) {
+    return false;
+  }
+
   // Public Suffix List --------------------------------------------------
 
   // May return null on some platforms.

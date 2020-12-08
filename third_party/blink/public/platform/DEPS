@@ -84,3 +84,9 @@ include_rules = [
     "+third_party/blink/renderer/core",
     "+third_party/blink/renderer/platform",
 ]
+
+specific_include_rules = {
+  "web_mojo_url_loader_client.h": [
+    "+services/network/public/mojom/url_loader.mojom.h",
+  ]
+}

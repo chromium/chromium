@@ -228,6 +228,8 @@ source_set("blink_headers") {
     "platform/web_memory_pressure_listener.h",
     "platform/web_mixed_content.h",
     "platform/web_mixed_content_context_type.h",
+    "platform/web_mojo_url_loader_client.h",
+    "platform/web_mojo_url_loader_client_observer.h",
     "platform/web_navigation_body_loader.h",
     "platform/web_network_state_notifier.h",
     "platform/web_policy_container.cc",

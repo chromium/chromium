@@ -25,7 +25,6 @@
 #include "content/common/navigation_params.h"
 #include "content/public/renderer/resource_dispatcher_delegate.h"
 #include "content/renderer/loader/sync_load_context.h"
-#include "content/renderer/loader/url_loader_client_impl.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "net/base/load_flags.h"
@@ -46,6 +45,7 @@
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/sync_load_response.h"
+#include "third_party/blink/public/platform/web_mojo_url_loader_client.h"
 #include "third_party/blink/public/platform/web_request_peer.h"
 
 namespace content {
@@ -131,6 +131,41 @@ ResourceDispatcher::GetPendingRequestInfo(int request_id) {
   return it->second.get();
 }
 
+void ResourceDispatcher::FollowPendingRedirect(
+    PendingRequestInfo* request_info) {
+  if (request_info->has_pending_redirect &&
+      request_info->should_follow_redirect) {
+    request_info->has_pending_redirect = false;
+    // net::URLRequest clears its request_start on redirect, so should we.
+    request_info->local_request_start = base::TimeTicks::Now();
+    // Redirect URL may not be handled by the network service, so force a
+    // restart in case another URLLoaderFactory should handle the URL.
+    if (request_info->redirect_requires_loader_restart) {
+      request_info->url_loader->FollowRedirectForcingRestart();
+    } else {
+      request_info->url_loader->FollowRedirect(
+          request_info->removed_headers, {} /* modified_headers */,
+          {} /* modified_cors_exempt_headers */);
+    }
+  }
+}
+
+void ResourceDispatcher::OnTransferSizeUpdated(int request_id,
+                                               int32_t transfer_size_diff) {
+  DCHECK_GT(transfer_size_diff, 0);
+  PendingRequestInfo* request_info = GetPendingRequestInfo(request_id);
+  if (!request_info)
+    return;
+
+  // TODO(yhirano): Consider using int64_t in
+  // blink::WebRequestPeer::OnTransferSizeUpdated.
+  request_info->peer->OnTransferSizeUpdated(transfer_size_diff);
+  if (!GetPendingRequestInfo(request_id))
+    return;
+  request_info->resource_load_info_notifier_wrapper
+      ->NotifyResourceTransferSizeUpdated(transfer_size_diff);
+}
+
 void ResourceDispatcher::OnUploadProgress(int request_id,
                                           int64_t position,
                                           int64_t size) {
@@ -181,16 +216,6 @@ void ResourceDispatcher::OnReceivedCachedMetadata(int request_id,
   if (data.size()) {
     request_info->peer->OnReceivedCachedMetadata(std::move(data));
   }
-}
-
-void ResourceDispatcher::OnStartLoadingResponseBody(
-    int request_id,
-    mojo::ScopedDataPipeConsumerHandle body) {
-  PendingRequestInfo* request_info = GetPendingRequestInfo(request_id);
-  if (!request_info)
-    return;
-
-  request_info->peer->OnStartLoadingResponseBody(std::move(body));
 }
 
 void ResourceDispatcher::OnReceivedRedirect(
@@ -248,23 +273,14 @@ void ResourceDispatcher::OnReceivedRedirect(
   }
 }
 
-void ResourceDispatcher::FollowPendingRedirect(
-    PendingRequestInfo* request_info) {
-  if (request_info->has_pending_redirect &&
-      request_info->should_follow_redirect) {
-    request_info->has_pending_redirect = false;
-    // net::URLRequest clears its request_start on redirect, so should we.
-    request_info->local_request_start = base::TimeTicks::Now();
-    // Redirect URL may not be handled by the network service, so force a
-    // restart in case another URLLoaderFactory should handle the URL.
-    if (request_info->redirect_requires_loader_restart) {
-      request_info->url_loader->FollowRedirectForcingRestart();
-    } else {
-      request_info->url_loader->FollowRedirect(
-          request_info->removed_headers, {} /* modified_headers */,
-          {} /* modified_cors_exempt_headers */);
-    }
-  }
+void ResourceDispatcher::OnStartLoadingResponseBody(
+    int request_id,
+    mojo::ScopedDataPipeConsumerHandle body) {
+  PendingRequestInfo* request_info = GetPendingRequestInfo(request_id);
+  if (!request_info)
+    return;
+
+  request_info->peer->OnStartLoadingResponseBody(std::move(body));
 }
 
 void ResourceDispatcher::OnRequestComplete(
@@ -315,6 +331,14 @@ void ResourceDispatcher::OnRequestComplete(
   // but the past attempt to change it seems to have caused crashes.
   // (crbug.com/547047)
   peer->OnCompletedRequest(renderer_status);
+}
+
+void ResourceDispatcher::EvictFromBackForwardCache(int request_id) {
+  PendingRequestInfo* request_info = GetPendingRequestInfo(request_id);
+  if (!request_info)
+    return;
+
+  return request_info->peer->EvictFromBackForwardCache();
 }
 
 bool ResourceDispatcher::RemovePendingRequest(
@@ -391,30 +415,6 @@ void ResourceDispatcher::DidChangePriority(int request_id,
   }
 
   request_info->url_loader->SetPriority(new_priority, intra_priority_value);
-}
-
-void ResourceDispatcher::OnTransferSizeUpdated(int request_id,
-                                               int32_t transfer_size_diff) {
-  DCHECK_GT(transfer_size_diff, 0);
-  PendingRequestInfo* request_info = GetPendingRequestInfo(request_id);
-  if (!request_info)
-    return;
-
-  // TODO(yhirano): Consider using int64_t in
-  // blink::WebRequestPeer::OnTransferSizeUpdated.
-  request_info->peer->OnTransferSizeUpdated(transfer_size_diff);
-  if (!GetPendingRequestInfo(request_id))
-    return;
-  request_info->resource_load_info_notifier_wrapper
-      ->NotifyResourceTransferSizeUpdated(transfer_size_diff);
-}
-
-void ResourceDispatcher::EvictFromBackForwardCache(int request_id) {
-  PendingRequestInfo* request_info = GetPendingRequestInfo(request_id);
-  if (!request_info)
-    return;
-
-  return request_info->peer->EvictFromBackForwardCache();
 }
 
 void ResourceDispatcher::SetCorsExemptHeaderList(
@@ -547,9 +547,10 @@ int ResourceDispatcher::StartAsync(
 
   pending_request->previews_state = request->previews_state;
 
-  std::unique_ptr<URLLoaderClientImpl> client(new URLLoaderClientImpl(
-      request_id, this, loading_task_runner,
-      url_loader_factory->BypassRedirectChecks(), request->url));
+  std::unique_ptr<blink::WebMojoURLLoaderClient> client(
+      new blink::WebMojoURLLoaderClient(
+          request_id, this, loading_task_runner,
+          url_loader_factory->BypassRedirectChecks(), request->url));
 
   std::unique_ptr<blink::ThrottlingURLLoader> url_loader =
       blink::ThrottlingURLLoader::CreateLoaderAndStart(
