@@ -40,7 +40,7 @@ if os.getcwd() != self_dir:
   java_path = fix_path(java_path)
 java_cmd = [java_path]
 # This is a simple argparser for jvm, jar, and classpath arguments.
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument('--jar-args')
 parser.add_argument('--jvm-args')
 parser.add_argument('--classpath')
