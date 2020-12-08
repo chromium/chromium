@@ -77,7 +77,6 @@ preprocess_if_expr("preprocess_gen") {
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
     "app.js",
-    "icons.js",
     "nearby_confirmation_page.js",
     "nearby_discovery_page.js",
   ]
@@ -174,7 +173,6 @@ js_library("nearby_discovery_page") {
 html_to_js("web_components") {
   js_files = [
     "app.js",
-    "icons.js",
     "nearby_confirmation_page.js",
     "nearby_discovery_page.js",
   ]
