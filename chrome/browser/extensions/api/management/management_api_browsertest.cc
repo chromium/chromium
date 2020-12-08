@@ -177,11 +177,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
 }
 
-// TODO(https://crbug.com/1132581): This uninstall test is flaky for Service
-// Worker-based extensions. This should be an
-// ExtensionManagementApiTestWithBackgroundType test once that issue is
-// resolved.
-IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest, SelfUninstall) {
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
+                       SelfUninstall) {
   ExtensionTestMessageListener listener1("success", false);
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("management/self_uninstall_helper")));
@@ -190,11 +187,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest, SelfUninstall) {
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
 }
 
-// TODO(https://crbug.com/1132581): This uninstall test is flaky for Service
-// Worker-based extensions. This should be an
-// ExtensionManagementApiTestWithBackgroundType test once that issue is
-// resolved.
-IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        SelfUninstallNoPermissions) {
   ExtensionTestMessageListener listener1("success", false);
   ASSERT_TRUE(LoadExtension(
