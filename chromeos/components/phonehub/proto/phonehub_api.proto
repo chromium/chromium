@@ -85,6 +85,11 @@ enum NotificationImportance {
   HIGH = 5;
 }
 
+enum ProfileType {
+  DEFAULT_PROFILE = 0;
+  WORK_PROFILE = 1;
+}
+
 message PhoneProperties {
   int32 battery_percentage = 1;
   ChargingState charging_state = 2;
@@ -100,6 +105,8 @@ message PhoneProperties {
   NotificationAccessState notification_access_state = 8;
 
   FindMyDeviceRingStatus ring_status = 9;
+
+  ProfileType profile_type = 10;
 }
 
 message App {
