@@ -121,10 +121,12 @@ void SystemTrayModel::ShowNetworkDetailedViewBubble(bool show_by_click) {
 
 void SystemTrayModel::SetPhoneHubManager(
     chromeos::phonehub::PhoneHubManager* phone_hub_manager) {
-  auto* phone_hub_tray = Shell::GetPrimaryRootWindowController()
-                             ->GetStatusAreaWidget()
-                             ->phone_hub_tray();
-  phone_hub_tray->SetPhoneHubManager(phone_hub_manager);
+  for (RootWindowController* root_window_controller :
+       Shell::GetAllRootWindowControllers()) {
+    auto* phone_hub_tray =
+        root_window_controller->GetStatusAreaWidget()->phone_hub_tray();
+    phone_hub_tray->SetPhoneHubManager(phone_hub_manager);
+  }
 
   Shell::Get()
       ->message_center_controller()
