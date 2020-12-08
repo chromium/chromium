@@ -1491,13 +1491,16 @@ void PictureLayerImpl::AdjustRasterScaleForTransformAnimation(
   if (maximum_scale == kNotScaled && starting_scale == kNotScaled)
     return;
 
+  gfx::Size viewport = layer_tree_impl()->GetDeviceViewport().size();
+  if (viewport.IsEmpty())
+    return;
+
   // We rasterize at the maximum scale that will occur during the animation.
   raster_contents_scale_ = std::max(maximum_scale, starting_scale);
   DCHECK_NE(raster_contents_scale_, kNotScaled);
 
   // However we want to avoid excessive memory use. Choose a scale at which this
   // layer's rastered content is not larger than the viewport.
-  gfx::Size viewport = layer_tree_impl()->GetDeviceViewport().size();
   float max_viewport_dimension = std::max(viewport.width(), viewport.height());
   DCHECK(max_viewport_dimension);
   // Use square to compensate for viewports with different aspect ratios.
