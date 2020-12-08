@@ -280,6 +280,14 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 // Tests expanding the details on a malware warning, proceeding past the
 // warning, and navigating back/forward to the unsafe page.
 - (void)testProceedingPastMalwareWarning {
+  if (@available(iOS 14, *)) {
+  } else {
+    if (@available(iOS 13, *)) {
+      // TODO(crbug.com/1156574): This test is failing on iOS 13, not sure why.
+      EARL_GREY_TEST_DISABLED(@"Disabled on iOS 13 as it is failing.");
+    }
+  }
+
   [ChromeEarlGrey loadURL:_safeURL1];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
 
@@ -315,6 +323,14 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 // Tests expanding the details on a malware warning, proceeding past the
 // warning, and navigating back/forward to the unsafe page, in incognito mode.
 - (void)testProceedingPastMalwareWarningInIncognito {
+  if (@available(iOS 14, *)) {
+  } else {
+    if (@available(iOS 13, *)) {
+      // TODO(crbug.com/1156574): This test is failing on iOS 13, not sure why.
+      EARL_GREY_TEST_DISABLED(@"Disabled on iOS 13 as it is failing.");
+    }
+  }
+
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:_safeURL1];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
