@@ -285,12 +285,12 @@ HeadlessWebContentsImpl::HeadlessWebContentsImpl(
     std::unique_ptr<content::WebContents> web_contents,
     HeadlessBrowserContextImpl* browser_context)
     : content::WebContentsObserver(web_contents.get()),
+      browser_context_(browser_context),
+      render_process_host_(web_contents->GetMainFrame()->GetProcess()),
       web_contents_delegate_(new HeadlessWebContentsImpl::Delegate(this)),
       web_contents_(std::move(web_contents)),
       agent_host_(
-          content::DevToolsAgentHost::GetOrCreateFor(web_contents_.get())),
-      browser_context_(browser_context),
-      render_process_host_(web_contents_->GetMainFrame()->GetProcess()) {
+          content::DevToolsAgentHost::GetOrCreateFor(web_contents_.get())) {
 #if BUILDFLAG(ENABLE_PRINTING)
   HeadlessPrintManager::CreateForWebContents(web_contents_.get());
 // TODO(weili): Add support for printing OOPIFs.

@@ -141,6 +141,11 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
       viz::BeginFrameArgs::kStartingFrameNumber;
   bool begin_frame_control_enabled_ = false;
 
+  HeadlessBrowserContextImpl* browser_context_;  // Not owned.
+  // TODO(alexclarke): With OOPIF there may be more than one renderer, we need
+  // to fix this. See crbug.com/715924
+  content::RenderProcessHost* render_process_host_;  // Not owned.
+
   class Delegate;
   std::unique_ptr<Delegate> web_contents_delegate_;
   std::unique_ptr<HeadlessWindowTreeHost> window_tree_host_;
@@ -150,11 +155,6 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   bool devtools_target_ready_notification_sent_ = false;
   bool render_process_exited_ = false;
-
-  HeadlessBrowserContextImpl* browser_context_;      // Not owned.
-  // TODO(alexclarke): With OOPIF there may be more than one renderer, we need
-  // to fix this. See crbug.com/715924
-  content::RenderProcessHost* render_process_host_;  // Not owned.
 
   base::ObserverList<HeadlessWebContents::Observer>::Unchecked observers_;
 
