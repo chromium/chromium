@@ -71,17 +71,17 @@ class CORE_EXPORT SourceListDirective final : public CSPDirective {
                    String* host,
                    int* port,
                    String* path,
-                   CSPSource::WildcardDisposition*,
-                   CSPSource::WildcardDisposition*);
+                   bool* is_host_wildcard,
+                   bool* is_port_wildcard);
   bool ParseScheme(const UChar* begin, const UChar* end, String* scheme);
   static bool ParseHost(const UChar* begin,
                         const UChar* end,
                         String* host,
-                        CSPSource::WildcardDisposition*);
+                        bool* is_host_wildcard);
   bool ParsePort(const UChar* begin,
                  const UChar* end,
                  int* port,
-                 CSPSource::WildcardDisposition*);
+                 bool* is_port_wildcard);
   bool ParsePath(const UChar* begin, const UChar* end, String* path);
   bool ParseNonce(const UChar* begin, const UChar* end, String* nonce);
   bool ParseHash(const UChar* begin,
@@ -105,7 +105,7 @@ class CORE_EXPORT SourceListDirective final : public CSPDirective {
   bool HasSourceMatchInList(const KURL&, ResourceRequest::RedirectStatus) const;
 
   Member<ContentSecurityPolicy> policy_;
-  HeapVector<Member<CSPSource>> list_;
+  WTF::Vector<network::mojom::blink::CSPSourcePtr> list_;
   String directive_name_;
   bool allow_self_;
   bool allow_star_;

@@ -64,7 +64,6 @@ namespace blink {
 class ContentSecurityPolicyResponseHeaders;
 class ConsoleMessage;
 class CSPDirectiveList;
-class CSPSource;
 class DOMWrapperWorld;
 class Element;
 class ExecutionContext;
@@ -443,7 +442,9 @@ class CORE_EXPORT ContentSecurityPolicy final
 
   bool ShouldSendCSPHeader(ResourceType) const;
 
-  CSPSource* GetSelfSource() const { return self_source_; }
+  network::mojom::blink::CSPSource* GetSelfSource() const {
+    return self_source_.get();
+  }
 
   // Whether the main world's CSP should be bypassed based on the current
   // javascript world we are in.
@@ -595,7 +596,7 @@ class CORE_EXPORT ContentSecurityPolicy final
   String disable_eval_error_message_;
   mojom::blink::InsecureRequestPolicy insecure_request_policy_;
 
-  Member<CSPSource> self_source_;
+  network::mojom::blink::CSPSourcePtr self_source_;
   String self_protocol_;
 
   bool supports_wasm_eval_ = false;

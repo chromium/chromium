@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/csp/csp_source.h"
 
+#include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -15,96 +16,28 @@
 
 namespace blink {
 
-constexpr int CSPSource::kPortUnspecified = -1;
+namespace {
 
-CSPSource::CSPSource(ContentSecurityPolicy* policy,
-                     const String& scheme,
-                     const String& host,
-                     int port,
-                     const String& path,
-                     WildcardDisposition host_wildcard,
-                     WildcardDisposition port_wildcard)
-    : policy_(policy),
-      scheme_(scheme.DeprecatedLower()),
-      host_(host),
-      port_(port),
-      path_(path),
-      host_wildcard_(host_wildcard),
-      port_wildcard_(port_wildcard) {}
+enum class SchemeMatchingResult {
+  kNotMatching,
+  kMatchingUpgrade,
+  kMatchingExact
+};
 
-CSPSource::CSPSource(ContentSecurityPolicy* policy, const CSPSource& other)
-    : CSPSource(policy,
-                other.scheme_,
-                other.host_,
-                other.port_,
-                other.path_,
-                other.host_wildcard_,
-                other.port_wildcard_) {}
+enum class PortMatchingResult {
+  kNotMatching,
+  kMatchingWildcard,
+  kMatchingUpgrade,
+  kMatchingExact
+};
 
-bool CSPSource::Matches(const KURL& url,
-                        ResourceRequest::RedirectStatus redirect_status) const {
-  SchemeMatchingResult schemes_match = SchemeMatches(url.Protocol());
-  if (schemes_match == SchemeMatchingResult::kNotMatching)
-    return false;
-  if (IsSchemeOnly())
-    return true;
-  bool paths_match = (redirect_status == RedirectStatus::kFollowedRedirect) ||
-                     PathMatches(url.GetPath());
-  PortMatchingResult ports_match = PortMatches(
-      url.HasPort() ? url.Port() : kPortUnspecified, url.Protocol());
-
-  // if either the scheme or the port would require an upgrade (e.g. from http
-  // to https) then check that both of them can upgrade to ensure that we don't
-  // run into situations where we only upgrade the port but not the scheme or
-  // viceversa
-  if ((RequiresUpgrade(schemes_match) || (RequiresUpgrade(ports_match))) &&
-      (!CanUpgrade(schemes_match) || !CanUpgrade(ports_match))) {
-    return false;
-  }
-
-  return HostMatches(url.Host()) &&
-         ports_match != PortMatchingResult::kNotMatching && paths_match;
-}
-
-bool CSPSource::MatchesAsSelf(const KURL& url) {
-  // https://w3c.github.io/webappsec-csp/#match-url-to-source-expression
-  // Step 4.
-  SchemeMatchingResult schemes_match = SchemeMatches(url.Protocol());
-  bool hosts_match = HostMatches(url.Host());
-  PortMatchingResult ports_match = PortMatches(
-      url.HasPort() ? url.Port() : kPortUnspecified, url.Protocol());
-
-  // check if the origin is exactly matching
-  if (schemes_match == SchemeMatchingResult::kMatchingExact && hosts_match &&
-      (ports_match == PortMatchingResult::kMatchingExact ||
-       ports_match == PortMatchingResult::kMatchingWildcard)) {
-    return true;
-  }
-
-  String self_scheme =
-      (scheme_.IsEmpty() ? policy_->GetSelfProtocol() : scheme_);
-
-  bool ports_match_or_defaults =
-      (ports_match == PortMatchingResult::kMatchingExact ||
-       ((IsDefaultPortForProtocol(port_, self_scheme) ||
-         port_ == kPortUnspecified) &&
-        (!url.HasPort() ||
-         IsDefaultPortForProtocol(url.Port(), url.Protocol()))));
-
-  if (hosts_match && ports_match_or_defaults &&
-      (url.Protocol() == "https" || url.Protocol() == "wss" ||
-       self_scheme == "http")) {
-    return true;
-  }
-
-  return false;
-}
-
-CSPSource::SchemeMatchingResult CSPSource::SchemeMatches(
-    const String& protocol) const {
+SchemeMatchingResult SchemeMatches(
+    const network::mojom::blink::CSPSource& source,
+    const String& protocol,
+    const String& self_protocol) {
   DCHECK_EQ(protocol, protocol.DeprecatedLower());
   const String& scheme =
-      (scheme_.IsEmpty() ? policy_->GetSelfProtocol() : scheme_);
+      (source.scheme.IsEmpty() ? self_protocol : source.scheme);
 
   if (scheme == protocol)
     return SchemeMatchingResult::kMatchingExact;
@@ -117,98 +50,161 @@ CSPSource::SchemeMatchingResult CSPSource::SchemeMatches(
   return SchemeMatchingResult::kNotMatching;
 }
 
-bool CSPSource::HostMatches(const String& host) const {
-  bool match;
-
-  bool equal_hosts = EqualIgnoringASCIICase(host_, host);
-  if (host_wildcard_ == kHasWildcard) {
-    if (host_.IsEmpty()) {
+bool HostMatches(const network::mojom::blink::CSPSource& source,
+                 const String& host) {
+  if (source.is_host_wildcard) {
+    if (source.host.IsEmpty()) {
       // host-part = "*"
-      match = true;
-    } else {
-      // host-part = "*." 1*host-char *( "." 1*host-char )
-      match = host.EndsWithIgnoringCase(String("." + host_));
+      return true;
     }
-  } else {
-    // host-part = 1*host-char *( "." 1*host-char )
-    match = equal_hosts;
+    if (host.EndsWithIgnoringCase(String("." + source.host))) {
+      // host-part = "*." 1*host-char *( "." 1*host-char )
+      return true;
+    }
+    return false;
   }
-
-  return match;
+  return EqualIgnoringASCIICase(source.host, host);
 }
 
-bool CSPSource::PathMatches(const String& url_path) const {
-  if (path_.IsEmpty() || (path_ == "/" && url_path.IsEmpty()))
+bool PathMatches(const network::mojom::blink::CSPSource& source,
+                 const String& url_path) {
+  if (source.path.IsEmpty() || (source.path == "/" && url_path.IsEmpty()))
     return true;
 
   String path =
       DecodeURLEscapeSequences(url_path, DecodeURLMode::kUTF8OrIsomorphic);
 
-  if (path_.EndsWith("/"))
-    return path.StartsWith(path_);
+  if (source.path.EndsWith("/"))
+    return path.StartsWith(source.path);
 
-  return path == path_;
+  return path == source.path;
 }
 
-CSPSource::PortMatchingResult CSPSource::PortMatches(
-    int port,
-    const String& protocol) const {
-  if (port_wildcard_ == kHasWildcard)
+PortMatchingResult PortMatches(const network::mojom::blink::CSPSource& source,
+                               const String& self_protocol,
+                               int port,
+                               const String& protocol) {
+  if (source.is_port_wildcard)
     return PortMatchingResult::kMatchingWildcard;
 
-  if (port == port_) {
-    if (port == kPortUnspecified)
+  if (port == source.port) {
+    if (port == url::PORT_UNSPECIFIED)
       return PortMatchingResult::kMatchingWildcard;
     return PortMatchingResult::kMatchingExact;
   }
 
   bool is_scheme_http;  // needed for detecting an upgrade when the port is 0
-  is_scheme_http = scheme_.IsEmpty() ? policy_->ProtocolEqualsSelf("http")
-                                     : EqualIgnoringASCIICase("http", scheme_);
+  is_scheme_http = source.scheme.IsEmpty()
+                       ? EqualIgnoringASCIICase("http", self_protocol)
+                       : EqualIgnoringASCIICase("http", source.scheme);
 
-  if ((port_ == 80 ||
-       ((port_ == kPortUnspecified || port_ == 443) && is_scheme_http)) &&
-      (port == 443 ||
-       (port == kPortUnspecified && DefaultPortForProtocol(protocol) == 443))) {
+  if ((source.port == 80 ||
+       ((source.port == url::PORT_UNSPECIFIED || source.port == 443) &&
+        is_scheme_http)) &&
+      (port == 443 || (port == url::PORT_UNSPECIFIED &&
+                       DefaultPortForProtocol(protocol) == 443))) {
     return PortMatchingResult::kMatchingUpgrade;
   }
 
-  if (port == kPortUnspecified) {
-    if (IsDefaultPortForProtocol(port_, protocol))
+  if (port == url::PORT_UNSPECIFIED) {
+    if (IsDefaultPortForProtocol(source.port, protocol))
       return PortMatchingResult::kMatchingExact;
-
     return PortMatchingResult::kNotMatching;
   }
 
-  if (port_ == kPortUnspecified) {
+  if (source.port == url::PORT_UNSPECIFIED) {
     if (IsDefaultPortForProtocol(port, protocol))
       return PortMatchingResult::kMatchingExact;
-
     return PortMatchingResult::kNotMatching;
   }
 
   return PortMatchingResult::kNotMatching;
 }
 
-bool CSPSource::IsSchemeOnly() const {
-  return host_.IsEmpty() && (host_wildcard_ == kNoWildcard);
+// Helper inline functions for Port and Scheme MatchingResult enums
+bool inline RequiresUpgrade(const PortMatchingResult result) {
+  return result == PortMatchingResult::kMatchingUpgrade;
+}
+bool inline RequiresUpgrade(const SchemeMatchingResult result) {
+  return result == SchemeMatchingResult::kMatchingUpgrade;
 }
 
-network::mojom::blink::CSPSourcePtr CSPSource::ExposeForNavigationalChecks()
-    const {
-  return network::mojom::blink::CSPSource::New(
-      scheme_ ? scheme_ : "",             // scheme
-      host_ ? host_ : "",                 // host
-      port_ == kPortUnspecified ? -1      /* url::PORT_UNSPECIFIED */
-                                : port_,  // port
-      path_ ? path_ : "",                 // path
-      host_wildcard_ == kHasWildcard,     // is_host_wildcard
-      port_wildcard_ == kHasWildcard      // is_port_wildcard
-  );
+bool inline CanUpgrade(const PortMatchingResult result) {
+  return result == PortMatchingResult::kMatchingUpgrade ||
+         result == PortMatchingResult::kMatchingWildcard;
 }
 
-void CSPSource::Trace(Visitor* visitor) const {
-  visitor->Trace(policy_);
+bool inline CanUpgrade(const SchemeMatchingResult result) {
+  return result == SchemeMatchingResult::kMatchingUpgrade;
+}
+
+}  // namespace
+
+bool CSPSourceMatches(const network::mojom::blink::CSPSource& source,
+                      const String& self_protocol,
+                      const KURL& url,
+                      ResourceRequest::RedirectStatus redirect_status) {
+  SchemeMatchingResult schemes_match =
+      SchemeMatches(source, url.Protocol(), self_protocol);
+  if (schemes_match == SchemeMatchingResult::kNotMatching)
+    return false;
+  if (CSPSourceIsSchemeOnly(source))
+    return true;
+  bool paths_match = (redirect_status == RedirectStatus::kFollowedRedirect) ||
+                     PathMatches(source, url.GetPath());
+  PortMatchingResult ports_match = PortMatches(
+      source, self_protocol, url.HasPort() ? url.Port() : url::PORT_UNSPECIFIED,
+      url.Protocol());
+
+  // if either the scheme or the port would require an upgrade (e.g. from http
+  // to https) then check that both of them can upgrade to ensure that we don't
+  // run into situations where we only upgrade the port but not the scheme or
+  // viceversa
+  if ((RequiresUpgrade(schemes_match) || (RequiresUpgrade(ports_match))) &&
+      (!CanUpgrade(schemes_match) || !CanUpgrade(ports_match))) {
+    return false;
+  }
+
+  return HostMatches(source, url.Host()) &&
+         ports_match != PortMatchingResult::kNotMatching && paths_match;
+}
+
+bool CSPSourceMatchesAsSelf(const network::mojom::blink::CSPSource& source,
+                            const String& self_protocol,
+                            const KURL& url) {
+  // https://w3c.github.io/webappsec-csp/#match-url-to-source-expression
+  // Step 4.
+  SchemeMatchingResult schemes_match =
+      SchemeMatches(source, url.Protocol(), self_protocol);
+  bool hosts_match = HostMatches(source, url.Host());
+  PortMatchingResult ports_match = PortMatches(
+      source, self_protocol, url.HasPort() ? url.Port() : url::PORT_UNSPECIFIED,
+      url.Protocol());
+
+  // check if the origin is exactly matching
+  if (schemes_match == SchemeMatchingResult::kMatchingExact && hosts_match &&
+      (ports_match == PortMatchingResult::kMatchingExact ||
+       ports_match == PortMatchingResult::kMatchingWildcard)) {
+    return true;
+  }
+
+  String self_scheme =
+      (source.scheme.IsEmpty() ? self_protocol : source.scheme);
+
+  bool ports_match_or_defaults =
+      (ports_match == PortMatchingResult::kMatchingExact ||
+       ((IsDefaultPortForProtocol(source.port, self_scheme) ||
+         source.port == url::PORT_UNSPECIFIED) &&
+        (!url.HasPort() ||
+         IsDefaultPortForProtocol(url.Port(), url.Protocol()))));
+
+  return hosts_match && ports_match_or_defaults &&
+         (url.Protocol() == "https" || url.Protocol() == "wss" ||
+          self_scheme == "http");
+}
+
+bool CSPSourceIsSchemeOnly(const network::mojom::blink::CSPSource& source) {
+  return source.host.IsEmpty() && (!source.is_host_wildcard);
 }
 
 }  // namespace blink

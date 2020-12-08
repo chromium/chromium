@@ -178,19 +178,18 @@ void ContentSecurityPolicy::BindToDelegate(
 void ContentSecurityPolicy::SetupSelf(const SecurityOrigin& security_origin) {
   // Ensure that 'self' processes correctly.
   self_protocol_ = security_origin.Protocol();
-  self_source_ = MakeGarbageCollected<CSPSource>(
-      this, self_protocol_, security_origin.Host(),
+  self_source_ = network::mojom::blink::CSPSource::New(
+      self_protocol_, security_origin.Host(),
       security_origin.Port() == DefaultPortForProtocol(self_protocol_)
-          ? CSPSource::kPortUnspecified
+          ? url::PORT_UNSPECIFIED
           : security_origin.Port(),
-      String(), CSPSource::kNoWildcard, CSPSource::kNoWildcard);
+      "", /*is_host_wildcard=*/false, /*is_port_wildcard=*/false);
 }
 
 void ContentSecurityPolicy::SetupSelf(const ContentSecurityPolicy& other) {
   self_protocol_ = other.self_protocol_;
   if (other.self_source_) {
-    self_source_ =
-        MakeGarbageCollected<CSPSource>(this, *(other.self_source_.Get()));
+    self_source_ = other.self_source_.Clone();
   }
 }
 
@@ -294,15 +293,14 @@ void ContentSecurityPolicy::Trace(Visitor* visitor) const {
   visitor->Trace(delegate_);
   visitor->Trace(policies_);
   visitor->Trace(console_messages_);
-  visitor->Trace(self_source_);
 }
 
 void ContentSecurityPolicy::CopyStateFrom(const ContentSecurityPolicy* other) {
   DCHECK(policies_.IsEmpty());
+  SetupSelf(*other);
   for (const auto& policy : other->policies_)
     AddAndReportPolicyFromHeaderValue(policy->Header(), policy->HeaderType(),
                                       policy->HeaderSource());
-  SetupSelf(*other);
 }
 
 void ContentSecurityPolicy::CopyPluginTypesFrom(
@@ -435,9 +433,9 @@ void ContentSecurityPolicy::SetOverrideURLForSelf(const KURL& url) {
   // to an execution context.
   scoped_refptr<const SecurityOrigin> origin = SecurityOrigin::Create(url);
   self_protocol_ = origin->Protocol();
-  self_source_ = MakeGarbageCollected<CSPSource>(
-      this, self_protocol_, origin->Host(), origin->Port(), String(),
-      CSPSource::kNoWildcard, CSPSource::kNoWildcard);
+  self_source_ = network::mojom::blink::CSPSource::New(
+      self_protocol_, origin->Host(), origin->Port(), "",
+      /*is_host_wildcard=*/false, /*is_port_wildcard=*/false);
 }
 
 Vector<CSPHeaderAndType> ContentSecurityPolicy::Headers() const {
@@ -1478,7 +1476,8 @@ bool ContentSecurityPolicy::ShouldSendCSPHeader(ResourceType type) const {
 }
 
 bool ContentSecurityPolicy::UrlMatchesSelf(const KURL& url) const {
-  return self_source_->MatchesAsSelf(url);
+  DCHECK(self_source_);
+  return CSPSourceMatchesAsSelf(*self_source_, self_protocol_, url);
 }
 
 bool ContentSecurityPolicy::ProtocolEqualsSelf(const String& protocol) const {

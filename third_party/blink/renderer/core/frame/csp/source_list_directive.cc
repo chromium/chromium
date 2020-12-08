@@ -160,10 +160,14 @@ void SourceListDirective::Parse(const UChar* begin, const UChar* end) {
     const UChar* begin_source = position;
     SkipWhile<UChar, IsSourceCharacter>(position, end);
 
-    String scheme, host, path;
-    int port = CSPSource::kPortUnspecified;
-    CSPSource::WildcardDisposition host_wildcard = CSPSource::kNoWildcard;
-    CSPSource::WildcardDisposition port_wildcard = CSPSource::kNoWildcard;
+    // We need to initialize all strings, since they can't be null in the mojo
+    // struct.
+    String scheme = "";
+    String host = "";
+    String path = "";
+    int port = url::PORT_UNSPECIFIED;
+    bool host_wildcard = false;
+    bool port_wildcard = false;
 
     if (ParseSource(begin_source, position, &scheme, &host, &port, &path,
                     &host_wildcard, &port_wildcard)) {
@@ -175,8 +179,8 @@ void SourceListDirective::Parse(const UChar* begin, const UChar* end) {
       if (ContentSecurityPolicy::GetDirectiveType(host) !=
           ContentSecurityPolicy::DirectiveType::kUndefined)
         policy_->ReportDirectiveAsSourceExpression(directive_name_, host);
-      list_.push_back(MakeGarbageCollected<CSPSource>(
-          policy_, scheme, host, port, path, host_wildcard, port_wildcard));
+      list_.push_back(network::mojom::blink::CSPSource::New(
+          scheme, host, port, path, host_wildcard, port_wildcard));
     } else {
       policy_->ReportInvalidSourceExpression(
           directive_name_, String(begin_source, static_cast<wtf_size_t>(
@@ -190,15 +194,14 @@ void SourceListDirective::Parse(const UChar* begin, const UChar* end) {
 // source            = scheme ":"
 //                   / ( [ scheme "://" ] host [ port ] [ path ] )
 //                   / "'self'"
-bool SourceListDirective::ParseSource(
-    const UChar* begin,
-    const UChar* end,
-    String* scheme,
-    String* host,
-    int* port,
-    String* path,
-    CSPSource::WildcardDisposition* host_wildcard,
-    CSPSource::WildcardDisposition* port_wildcard) {
+bool SourceListDirective::ParseSource(const UChar* begin,
+                                      const UChar* end,
+                                      String* scheme,
+                                      String* host,
+                                      int* port,
+                                      String* path,
+                                      bool* host_wildcard,
+                                      bool* port_wildcard) {
   if (begin == end)
     return false;
 
@@ -339,7 +342,7 @@ bool SourceListDirective::ParseSource(
     if (!ParsePort(begin_port, begin_path, port, port_wildcard))
       return false;
   } else {
-    *port = CSPSource::kPortUnspecified;
+    *port = url::PORT_UNSPECIFIED;
   }
 
   if (begin_path != end) {
@@ -480,14 +483,13 @@ bool SourceListDirective::ParseScheme(const UChar* begin,
 // host-char         = ALPHA / DIGIT / "-"
 //
 // static
-bool SourceListDirective::ParseHost(
-    const UChar* begin,
-    const UChar* end,
-    String* host,
-    CSPSource::WildcardDisposition* host_wildcard) {
+bool SourceListDirective::ParseHost(const UChar* begin,
+                                    const UChar* end,
+                                    String* host,
+                                    bool* host_wildcard) {
   DCHECK(begin <= end);
   DCHECK(host->IsEmpty());
-  DCHECK(*host_wildcard == CSPSource::kNoWildcard);
+  DCHECK(!*host_wildcard);
 
   if (begin == end)
     return false;
@@ -496,7 +498,7 @@ bool SourceListDirective::ParseHost(
 
   // Parse "*" or [ "*." ].
   if (SkipExactly<UChar>(position, end, '*')) {
-    *host_wildcard = CSPSource::kHasWildcard;
+    *host_wildcard = true;
 
     if (position == end) {
       // "*"
@@ -553,14 +555,13 @@ bool SourceListDirective::ParsePath(const UChar* begin,
 
 // port              = ":" ( 1*DIGIT / "*" )
 //
-bool SourceListDirective::ParsePort(
-    const UChar* begin,
-    const UChar* end,
-    int* port,
-    CSPSource::WildcardDisposition* port_wildcard) {
+bool SourceListDirective::ParsePort(const UChar* begin,
+                                    const UChar* end,
+                                    int* port,
+                                    bool* port_wildcard) {
   DCHECK(begin <= end);
-  DCHECK_EQ(*port, CSPSource::kPortUnspecified);
-  DCHECK(*port_wildcard == CSPSource::kNoWildcard);
+  DCHECK_EQ(*port, url::PORT_UNSPECIFIED);
+  DCHECK(!*port_wildcard);
 
   if (!SkipExactly<UChar>(begin, end, ':'))
     NOTREACHED();
@@ -569,8 +570,8 @@ bool SourceListDirective::ParsePort(
     return false;
 
   if (end - begin == 1 && *begin == '*') {
-    *port = CSPSource::kPortUnspecified;
-    *port_wildcard = CSPSource::kHasWildcard;
+    *port = url::PORT_UNSPECIFIED;
+    *port_wildcard = true;
     return true;
   }
 
@@ -636,9 +637,11 @@ void SourceListDirective::AddSourceHash(
 bool SourceListDirective::HasSourceMatchInList(
     const KURL& url,
     ResourceRequest::RedirectStatus redirect_status) const {
-  for (wtf_size_t i = 0; i < list_.size(); ++i) {
-    if (list_[i]->Matches(url, redirect_status))
+  for (const auto& source : list_) {
+    if (CSPSourceMatches(*source, policy_->GetSelfProtocol(), url,
+                         redirect_status)) {
       return true;
+    }
   }
 
   return false;
@@ -661,7 +664,7 @@ network::mojom::blink::CSPSourceListPtr
 SourceListDirective::ExposeForNavigationalChecks() const {
   WTF::Vector<network::mojom::blink::CSPSourcePtr> sources;
   for (const auto& source : list_)
-    sources.push_back(source->ExposeForNavigationalChecks());
+    sources.push_back(source.Clone());
 
   // We do not need nonces and hashes for navigational checks
   WTF::Vector<WTF::String> nonces;
@@ -675,7 +678,6 @@ SourceListDirective::ExposeForNavigationalChecks() const {
 
 void SourceListDirective::Trace(Visitor* visitor) const {
   visitor->Trace(policy_);
-  visitor->Trace(list_);
   CSPDirective::Trace(visitor);
 }
 

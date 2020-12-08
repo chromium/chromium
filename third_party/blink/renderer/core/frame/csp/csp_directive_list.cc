@@ -980,7 +980,7 @@ void CSPDirectiveList::ParseReportURI(const String& name, const String& value) {
                          return false;
                        }
                        if (MixedContentChecker::IsMixedContent(
-                               policy_->GetSelfSource()->GetScheme(),
+                               policy_->GetSelfSource()->scheme,
                                parsed_endpoint)) {
                          policy_->ReportMixedContentReportURI(endpoint);
                          return true;
@@ -1431,9 +1431,7 @@ CSPDirectiveList::ExposeForNavigationalChecks() const {
   auto policy = network::mojom::blink::ContentSecurityPolicy::New();
 
   policy->self_origin =
-      policy_->GetSelfSource()
-          ? policy_->GetSelfSource()->ExposeForNavigationalChecks()
-          : nullptr;
+      policy_->GetSelfSource() ? policy_->GetSelfSource()->Clone() : nullptr;
   policy->use_reporting_api = use_reporting_api_;
   policy->report_endpoints = report_endpoints_;
   policy->header = network::mojom::blink::ContentSecurityPolicyHeader::New(

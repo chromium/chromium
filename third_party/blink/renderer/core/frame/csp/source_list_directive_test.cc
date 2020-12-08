@@ -26,8 +26,8 @@ class SourceListDirectiveTest : public testing::Test {
     String host;
     const int port;
     String path;
-    CSPSource::WildcardDisposition host_wildcard;
-    CSPSource::WildcardDisposition port_wildcard;
+    bool host_wildcard;
+    bool port_wildcard;
   };
 
   void SetUp() override {
@@ -430,7 +430,7 @@ TEST_F(SourceListDirectiveTest, ParseHost) {
 
   for (const auto& test : cases) {
     String host;
-    CSPSource::WildcardDisposition disposition = CSPSource::kNoWildcard;
+    bool disposition = false;
     Vector<UChar> characters;
     test.sources.AppendTo(characters);
     const UChar* start = characters.data();
