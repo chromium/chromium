@@ -265,6 +265,9 @@ void PhoneStatusView::UpdateBatteryStatus() {
   SetBatteryTooltipText();
   battery_label_->SetText(
       base::FormatPercent(phone_status.battery_percentage()));
+  battery_label_->SetAccessibleName(l10n_util::GetStringFUTF16(
+      IDS_ASH_PHONE_HUB_BATTERY_PERCENTAGE_ACCESSIBLE_TEXT,
+      base::NumberToString16(phone_status.battery_percentage())));
 }
 
 PowerStatus::BatteryImageInfo PhoneStatusView::CalculateBatteryInfo() {

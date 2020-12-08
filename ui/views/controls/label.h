@@ -90,6 +90,12 @@ class VIEWS_EXPORT Label : public View,
   const base::string16& GetText() const;
   virtual void SetText(const base::string16& text);
 
+  // Set the accessibility name that will be announced by the screen reader.
+  // If this function is not called, the screen reader defaults to verbalizing
+  // the text value.
+  void SetAccessibleName(const base::string16& name);
+  const base::string16& GetAccessibleName() const;
+
   // Where the label appears in the UI. Passed in from the constructor. This is
   // a value from views::style::TextContext or an enum that extends it.
   int GetTextContext() const;
@@ -453,6 +459,9 @@ class VIEWS_EXPORT Label : public View,
   int max_width_ = 0;
 
   std::unique_ptr<SelectionController> selection_controller_;
+
+  // Accessibility data.
+  base::string16 accessible_name_;
 
   // Context menu related members.
   ui::SimpleMenuModel context_menu_contents_;

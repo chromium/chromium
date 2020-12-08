@@ -1066,6 +1066,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_BATTERY_STATUS_CHARGING_USB" desc="The tooltip text indicating the phone is currently charging via a USB connection.">
         Charging via USB
       </message>
+      <message name="IDS_ASH_PHONE_HUB_BATTERY_PERCENTAGE_ACCESSIBLE_TEXT" desc="The accessible text of the phone battery percentage displayed in the Phone Hub tray.">
+        Phone battery <ph name="BATTERY_PERCENTAGE">$1<ex>100</ex></ph>%
+      </message>
       <message name="IDS_ASH_PHONE_HUB_BATTERY_SAVER_ON" desc="The tooltip text indicating the phone is currently in battery saver mode.">
         Battery saver mode is on
       </message>

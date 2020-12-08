@@ -605,7 +605,9 @@ TEST_F(LabelTest, TooltipProperty) {
 }
 
 TEST_F(LabelTest, Accessibility) {
-  label()->SetText(ASCIIToUTF16("My special text."));
+  const base::string16 accessible_name = ASCIIToUTF16("A11y text.");
+
+  label()->SetText(ASCIIToUTF16("Displayed text."));
 
   ui::AXNodeData node_data;
   label()->GetAccessibleNodeData(&node_data);
@@ -614,6 +616,33 @@ TEST_F(LabelTest, Accessibility) {
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
   EXPECT_FALSE(
       node_data.HasIntAttribute(ax::mojom::IntAttribute::kRestriction));
+
+  // Setting a custom accessible name overrides the displayed text in
+  // screen reader announcements.
+  label()->SetAccessibleName(accessible_name);
+
+  label()->GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(accessible_name,
+            node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  EXPECT_NE(label()->GetText(),
+            node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+
+  // Changing the displayed text will not impact the non-empty accessible name.
+  label()->SetText(ASCIIToUTF16("Different displayed Text."));
+
+  label()->GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(accessible_name,
+            node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  EXPECT_NE(label()->GetText(),
+            node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+
+  // Clearing the accessible name will cause the screen reader to default to
+  // verbalizing the displayed text.
+  label()->SetAccessibleName(ASCIIToUTF16(""));
+
+  label()->GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(label()->GetText(),
+            node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
 TEST_F(LabelTest, TextChangeWithoutLayout) {

@@ -108,6 +108,19 @@ void Label::SetText(const base::string16& new_text) {
   stored_selection_range_ = gfx::Range::InvalidRange();
 }
 
+void Label::SetAccessibleName(const base::string16& name) {
+  if (name == accessible_name_)
+    return;
+  accessible_name_ = name;
+  OnPropertyChanged(&accessible_name_, kPropertyEffectsNone);
+  NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
+}
+
+const base::string16& Label::GetAccessibleName() const {
+  return accessible_name_.empty() ? full_text_->GetDisplayText()
+                                  : accessible_name_;
+}
+
 int Label::GetTextContext() const {
   return text_context_;
 }
@@ -619,7 +632,7 @@ void Label::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   else
     node_data->role = ax::mojom::Role::kStaticText;
 
-  node_data->SetName(full_text_->GetDisplayText());
+  node_data->SetName(GetAccessibleName());
 }
 
 base::string16 Label::GetTooltipText(const gfx::Point& p) const {
@@ -1210,6 +1223,7 @@ ADD_PROPERTY_METADATA(base::string16, TooltipText)
 ADD_PROPERTY_METADATA(bool, HandlesTooltips)
 ADD_PROPERTY_METADATA(bool, CollapseWhenHidden)
 ADD_PROPERTY_METADATA(int, MaximumWidth)
+ADD_PROPERTY_METADATA(base::string16, AccessibleName)
 END_METADATA
 
 }  // namespace views
