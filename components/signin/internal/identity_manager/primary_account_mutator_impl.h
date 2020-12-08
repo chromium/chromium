@@ -8,10 +8,12 @@
 #include <string>
 
 #include "build/chromeos_buildflags.h"
+#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 
 class AccountTrackerService;
 class PrefService;
+class ProfileOAuth2TokenService;
 class PrimaryAccountManager;
 
 namespace signin {
@@ -20,30 +22,39 @@ namespace signin {
 // PrimaryAccountManager API.
 class PrimaryAccountMutatorImpl : public PrimaryAccountMutator {
  public:
-  PrimaryAccountMutatorImpl(AccountTrackerService* account_tracker,
-                            PrimaryAccountManager* primary_account_manager,
-                            PrefService* pref_service);
+  PrimaryAccountMutatorImpl(
+      AccountTrackerService* account_tracker,
+      ProfileOAuth2TokenService* token_service,
+      PrimaryAccountManager* primary_account_manager,
+      PrefService* pref_service,
+      signin::AccountConsistencyMethod account_consistency);
   ~PrimaryAccountMutatorImpl() override;
 
   // PrimaryAccountMutator implementation.
   bool SetPrimaryAccount(const CoreAccountId& account_id) override;
   void SetUnconsentedPrimaryAccount(const CoreAccountId& account_id) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void RevokeSyncConsent() override;
-#endif
+  void RevokeSyncConsent(signin_metrics::ProfileSignout source_metric,
+                         signin_metrics::SignoutDelete delete_metric) override;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   bool ClearPrimaryAccount(
-      ClearAccountsAction action,
       signin_metrics::ProfileSignout source_metric,
       signin_metrics::SignoutDelete delete_metric) override;
 #endif
 
  private:
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Returns true if revoking the sync consent should instead clear the primary
+  // account.
+  bool RevokeConsentShouldClearPrimaryAccount() const;
+#endif
+
   // Pointers to the services used by the PrimaryAccountMutatorImpl. They
   // *must* outlive this instance.
   AccountTrackerService* account_tracker_ = nullptr;
+  ProfileOAuth2TokenService* token_service_ = nullptr;
   PrimaryAccountManager* primary_account_manager_ = nullptr;
   PrefService* pref_service_ = nullptr;
+  signin::AccountConsistencyMethod account_consistency_;
 };
 
 }  // namespace signin

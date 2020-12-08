@@ -341,8 +341,7 @@ void ProfileMenuView::OnSyncErrorButtonClicked(
       if (auto* account_mutator =
               IdentityManagerFactory::GetForProfile(browser()->profile())
                   ->GetPrimaryAccountMutator()) {
-        account_mutator->ClearPrimaryAccount(
-            signin::PrimaryAccountMutator::ClearAccountsAction::kDefault,
+        account_mutator->RevokeSyncConsent(
             signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS,
             signin_metrics::SignoutDelete::IGNORE_METRIC);
         Hide();

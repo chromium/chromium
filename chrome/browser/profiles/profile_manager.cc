@@ -1848,7 +1848,6 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
                 base::IgnoreResult(
                     &signin::PrimaryAccountMutator::ClearPrimaryAccount),
                 base::Unretained(account_mutator),
-                signin::PrimaryAccountMutator::ClearAccountsAction::kRemoveAll,
                 signin_metrics::AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN,
                 signin_metrics::SignoutDelete::IGNORE_METRIC));
       }

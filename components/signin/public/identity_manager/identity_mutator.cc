@@ -46,14 +46,12 @@ bool JniIdentityMutator::SetPrimaryAccount(
 }
 
 bool JniIdentityMutator::ClearPrimaryAccount(JNIEnv* env,
-                                             jint action,
                                              jint source_metric,
                                              jint delete_metric) {
   PrimaryAccountMutator* primary_account_mutator =
       identity_mutator_->GetPrimaryAccountMutator();
   DCHECK(primary_account_mutator);
   return primary_account_mutator->ClearPrimaryAccount(
-      PrimaryAccountMutator::ClearAccountsAction::kDefault,
       static_cast<signin_metrics::ProfileSignout>(source_metric),
       static_cast<signin_metrics::SignoutDelete>(delete_metric));
 }

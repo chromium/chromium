@@ -49,7 +49,6 @@ class JniIdentityMutator {
   // operation succeeded or not. Depending on |action|, the other accounts known
   // to the IdentityManager may be deleted.
   bool ClearPrimaryAccount(JNIEnv* env,
-                           jint action,
                            jint source_metric,
                            jint delete_metric);
 

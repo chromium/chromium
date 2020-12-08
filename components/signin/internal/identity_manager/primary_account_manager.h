@@ -136,23 +136,14 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
       signin_metrics::ProfileSignout signout_source_metric,
       signin_metrics::SignoutDelete signout_delete_metric);
 
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
   // Signs a user out, removing the preference, erasing all keys
   // associated with the authenticated user, and canceling all auth in progress.
   // Does not remove the accounts from the token service.
-  //
-  // TODO(msarda): This method is only called from within the IdentityManager
-  // and from tests and should be removed.
   void SignOutAndKeepAllAccounts(
       signin_metrics::ProfileSignout signout_source_metric,
       signin_metrics::SignoutDelete signout_delete_metric);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Revokes sync consent from the primary account. The primary account must
-  // have sync consent. After the call a primary account will remain but it will
-  // not have sync consent.
-  void RevokeSyncConsent();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Adds and removes observers.
   void AddObserver(Observer* observer);

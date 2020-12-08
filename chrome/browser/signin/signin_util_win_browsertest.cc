@@ -299,8 +299,7 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, NoReauthAfterSignout) {
     auto* primary_account_mutator =
         IdentityManagerFactory::GetForProfile(profile)
             ->GetPrimaryAccountMutator();
-    primary_account_mutator->ClearPrimaryAccount(
-        signin::PrimaryAccountMutator::ClearAccountsAction::kDefault,
+    primary_account_mutator->RevokeSyncConsent(
         signin_metrics::FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST,
         signin_metrics::SignoutDelete::DELETED);
 

@@ -367,12 +367,11 @@ void PeopleHandler::DisplayGaiaLoginInNewTabOrWindow(
       IdentityManagerFactory::GetForProfile(browser->profile());
 
   syncer::SyncService* service = GetSyncService();
-  if (service && service->HasUnrecoverableError()) {
+  if (service && service->HasUnrecoverableError() &&
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     // When the user has an unrecoverable error, they first have to sign out and
     // then sign in again.
-
-    identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
-        signin::PrimaryAccountMutator::ClearAccountsAction::kDefault,
+    identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
         signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS,
         signin_metrics::SignoutDelete::IGNORE_METRIC);
   }
@@ -635,7 +634,9 @@ void PeopleHandler::HandleTurnOffSync(const base::ListValue* args) {
   DCHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
   DCHECK(signin_util::IsUserSignoutAllowedForProfile(profile_));
 
-  identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent();
+  identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
+      signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS,
+      signin_metrics::SignoutDelete::IGNORE_METRIC);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -674,15 +675,16 @@ void PeopleHandler::HandleSignout(const base::ListValue* args) {
           delete_profile ? signin_metrics::SignoutDelete::DELETED
                          : signin_metrics::SignoutDelete::KEEPING;
 
-      // Use ClearAccountsAction::kDefault: if the primary account is still
-      // valid, it will be removed by the Gaia logout tab
-      // (see http://crbug.com/1068978). If the account is already invalid, drop
-      // the token now (because it's already invalid on the web, so the Gaia
-      // logout tab won't affect it, see http://crbug.com/1114646).
+      // Only revoke the sync consent.
+      // * If the primary account is still valid, then it will be removed by
+      // the Gaia logout tab (see http://crbug.com/1068978).
+      // * If the account is already invalid, drop the token now because it's
+      // already invalid on the web, so the Gaia logout tab won't affect it
+      // (see http://crbug.com/1114646).
+      //
       // This operation may delete the current browser that owns |this| if force
-      // signin is enabled. See https://crbug.com/1153120.
-      identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
-          signin::PrimaryAccountMutator::ClearAccountsAction::kDefault,
+      // signin is enabled (see https://crbug.com/1153120).
+      identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
           signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS, delete_metric);
     } else {
       DCHECK(!delete_profile)
@@ -767,9 +769,7 @@ void PeopleHandler::CloseSyncSetup() {
           if (!sync_service->GetUserSettings()->IsFirstSetupComplete()) {
             IdentityManagerFactory::GetForProfile(profile_)
                 ->GetPrimaryAccountMutator()
-                ->ClearPrimaryAccount(
-                    signin::PrimaryAccountMutator::ClearAccountsAction::
-                        kDefault,
+                ->RevokeSyncConsent(
                     signin_metrics::ABORT_SIGNIN,
                     signin_metrics::SignoutDelete::IGNORE_METRIC);
           }

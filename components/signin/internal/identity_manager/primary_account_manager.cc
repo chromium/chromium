@@ -19,6 +19,7 @@
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/primary_account_policy_manager.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
+#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -290,24 +291,14 @@ void PrimaryAccountManager::SignOutAndRemoveAllAccounts(
                RemoveAccountsOption::kRemoveAllAccounts);
 }
 
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
 void PrimaryAccountManager::SignOutAndKeepAllAccounts(
     signin_metrics::ProfileSignout signout_source_metric,
     signin_metrics::SignoutDelete signout_delete_metric) {
   StartSignOut(signout_source_metric, signout_delete_metric,
                RemoveAccountsOption::kKeepAllAccounts);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void PrimaryAccountManager::RevokeSyncConsent() {
-  DCHECK(HasPrimaryAccount(signin::ConsentLevel::kSync));
-  // TODO(https://crbug.com/1046746): Don't record metrics here.
-  StartSignOut(signin_metrics::ProfileSignout::USER_CLICKED_SIGNOUT_SETTINGS,
-               signin_metrics::SignoutDelete::KEEPING,
-               RemoveAccountsOption::kKeepAllAccounts,
-               /*assert_signout_allowed=*/true);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void PrimaryAccountManager::StartSignOut(
     signin_metrics::ProfileSignout signout_source_metric,

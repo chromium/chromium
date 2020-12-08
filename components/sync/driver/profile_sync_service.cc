@@ -1048,12 +1048,10 @@ void ProfileSyncService::OnActionableError(const SyncProtocolError& error) {
         // GetPrimaryAccountMutator() returns nullptr on ChromeOS only.
         DCHECK(account_mutator);
 
-        // Note that this method is misnamed: It will not actually remove the
-        // primary account, it will just clear the Sync consent bit (i.e. the
-        // account will change from ConsentLevel::kSync to
-        // ConsentLevel::kNotRequired)
-        account_mutator->ClearPrimaryAccount(
-            signin::PrimaryAccountMutator::ClearAccountsAction::kDefault,
+        // Note: On some platforms, revoking the sync consent will also clear
+        // the primary account as transitioning from ConsentLevel::kSync
+        // ConsentLevel::kNotRequired is not supported.
+        account_mutator->RevokeSyncConsent(
             signin_metrics::SERVER_FORCED_DISABLE,
             signin_metrics::SignoutDelete::IGNORE_METRIC);
       }

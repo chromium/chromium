@@ -28,14 +28,6 @@ namespace signin {
 // available at runtime (thus accessors may return null).
 class PrimaryAccountMutator {
  public:
-  // Represents the options for handling the accounts known to the
-  // IdentityManager upon calling ClearPrimaryAccount().
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.identitymanager
-  enum class ClearAccountsAction {
-    kDefault,    // Default action based on internal policy.
-    kRemoveAll,  // Remove all accounts.
-  };
-
   PrimaryAccountMutator() = default;
   virtual ~PrimaryAccountMutator() = default;
 
@@ -66,20 +58,26 @@ class PrimaryAccountMutator {
   virtual void SetUnconsentedPrimaryAccount(
       const CoreAccountId& account_id) = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Revokes sync consent from the primary account. The primary account must
-  // have sync consent. After the call a primary account will remain but it will
-  // not have sync consent.
-  // TODO(https://crbug.com/1046746): Support non-Chrome OS platforms.
-  virtual void RevokeSyncConsent() = 0;
-#endif
+  // Revokes sync consent from the primary account. We distinguish the following
+  // cases:
+  // a. If transitioning from ConsentLevel::kSync to ConsentLevel::kNotRequired
+  //    is supported (e.g. for DICE), then this method only revokes the sync
+  //    consent and the primary account is left at ConsentLevel::kNotRequired
+  //    level.
+  // b. Otherwise this method revokes the sync consent and it also  clears the
+  //    primary account and removes all other accounts via a call to
+  //    ClearPrimaryAccount().
+  //
+  // Note: This method expects that the user already consented for sync.
+  virtual void RevokeSyncConsent(
+      signin_metrics::ProfileSignout source_metric,
+      signin_metrics::SignoutDelete delete_metric) = 0;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Clears the primary account, and returns whether the operation
-  // succeeded or not. Depending on |action|, the other accounts
-  // known to the IdentityManager may be deleted.
+  // Clears the primary account, removes all accounts and revokes the sync
+  // consent. Returns true if the action was successful and false if there
+  // was no primary account set.
   virtual bool ClearPrimaryAccount(
-      ClearAccountsAction action,
       signin_metrics::ProfileSignout source_metric,
       signin_metrics::SignoutDelete delete_metric) = 0;
 #endif

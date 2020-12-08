@@ -513,17 +513,32 @@ TEST_F(PrimaryAccountManagerTest, SetUnconsentedPrimaryAccountInfo) {
   EXPECT_EQ(CoreAccountInfo(), manager_->GetAuthenticatedAccountInfo());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(PrimaryAccountManagerTest, RevokeSyncConsent) {
+TEST_F(PrimaryAccountManagerTest, SignOutAndKeepAllAccounts) {
   CreatePrimaryAccountManager();
   CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
   manager_->SignIn("user@gmail.com");
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 
-  manager_->RevokeSyncConsent();
+  manager_->SignOutAndKeepAllAccounts(
+      signin_metrics::ProfileSignout::SIGNOUT_TEST,
+      signin_metrics::SignoutDelete::IGNORE_METRIC);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kNotRequired));
   EXPECT_EQ(account_id,
             manager_->GetUnconsentedPrimaryAccountInfo().account_id);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(PrimaryAccountManagerTest, SignOutAndRemoveAllAccounts) {
+  CreatePrimaryAccountManager();
+  CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
+  manager_->SignIn("user@gmail.com");
+  EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
+
+  manager_->SignOutAndRemoveAllAccounts(
+      signin_metrics::ProfileSignout::SIGNOUT_TEST,
+      signin_metrics::SignoutDelete::IGNORE_METRIC);
+  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
+  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kNotRequired));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

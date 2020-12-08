@@ -11,6 +11,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
+#include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -19,14 +21,26 @@ namespace signin {
 
 PrimaryAccountMutatorImpl::PrimaryAccountMutatorImpl(
     AccountTrackerService* account_tracker,
+    ProfileOAuth2TokenService* token_service,
     PrimaryAccountManager* primary_account_manager,
-    PrefService* pref_service)
+    PrefService* pref_service,
+    signin::AccountConsistencyMethod account_consistency)
     : account_tracker_(account_tracker),
+      token_service_(token_service),
       primary_account_manager_(primary_account_manager),
-      pref_service_(pref_service) {
+      pref_service_(pref_service),
+      account_consistency_(account_consistency) {
   DCHECK(account_tracker_);
+  DCHECK(token_service_);
   DCHECK(primary_account_manager_);
   DCHECK(pref_service_);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // |account_consistency_| is not used on CHROMEOS_ASH, however it is preferred
+  // to have it defined to avoid a lof of ifdefs in the header file.
+  signin::AccountConsistencyMethod unused = account_consistency_;
+  ALLOW_UNUSED_LOCAL(unused);
+#endif
 }
 
 PrimaryAccountMutatorImpl::~PrimaryAccountMutatorImpl() {}
@@ -69,30 +83,55 @@ void PrimaryAccountMutatorImpl::SetUnconsentedPrimaryAccount(
   primary_account_manager_->SetUnconsentedPrimaryAccountInfo(account_info);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void PrimaryAccountMutatorImpl::RevokeSyncConsent() {
-  primary_account_manager_->RevokeSyncConsent();
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+bool PrimaryAccountMutatorImpl::RevokeConsentShouldClearPrimaryAccount() const {
+  switch (account_consistency_) {
+    case AccountConsistencyMethod::kDice:
+      // If DICE is enabled, then adding and removing accounts is handled from
+      // the Google web services. This means that the user needs to be signed
+      // in to the their Google account on the web in order to be able to sign
+      // out of that accounts. As in most cases, the Google auth cookies are
+      // are derived from the refresh token, which means that the user is signed
+      // out of their Google account on the web when the primary account is in
+      // an auth error. It is therefore important to clear all accounts when
+      // the user revokes their sync consent for a primary account that is in
+      // an auth error as otherwise the user will not be able to remove it from
+      // Chrome.
+      //
+      // TODO(msarda): The logic in this function is platform specific and we
+      // should consider moving it to |SigninManager|.
+      return token_service_->RefreshTokenHasError(
+          primary_account_manager_->GetAuthenticatedAccountId());
+    case AccountConsistencyMethod::kDisabled:
+    case AccountConsistencyMethod::kMirror:
+      return true;
+  }
 }
 #endif
 
+void PrimaryAccountMutatorImpl::RevokeSyncConsent(
+    signin_metrics::ProfileSignout source_metric,
+    signin_metrics::SignoutDelete delete_metric) {
+  DCHECK(primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync));
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  if (RevokeConsentShouldClearPrimaryAccount()) {
+    ClearPrimaryAccount(source_metric, delete_metric);
+    return;
+  }
+#endif
+  primary_account_manager_->SignOutAndKeepAllAccounts(source_metric,
+                                                      delete_metric);
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 bool PrimaryAccountMutatorImpl::ClearPrimaryAccount(
-    ClearAccountsAction action,
     signin_metrics::ProfileSignout source_metric,
     signin_metrics::SignoutDelete delete_metric) {
   if (!primary_account_manager_->HasPrimaryAccount(ConsentLevel::kNotRequired))
     return false;
 
-  switch (action) {
-    case PrimaryAccountMutator::ClearAccountsAction::kDefault:
-      primary_account_manager_->SignOut(source_metric, delete_metric);
-      break;
-    case PrimaryAccountMutator::ClearAccountsAction::kRemoveAll:
-      primary_account_manager_->SignOutAndRemoveAllAccounts(source_metric,
-                                                            delete_metric);
-      break;
-  }
-
+  primary_account_manager_->SignOutAndRemoveAllAccounts(source_metric,
+                                                        delete_metric);
   return true;
 }
 #endif

@@ -82,10 +82,7 @@ source_set("identity_manager") {
 
 if (is_android) {
   java_cpp_enum("identity_manager_enum_javagen") {
-    sources = [
-      "consent_level.h",
-      "primary_account_mutator.h",
-    ]
+    sources = [ "consent_level.h" ]
   }
 }
 

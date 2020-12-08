@@ -39,7 +39,6 @@ import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ClearAccountsAction;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityMutator;
@@ -236,12 +235,12 @@ public class SigninManagerTest {
         // Clearing cookies shouldn't do anything when there's no primary account.
         doReturn(null).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
         mIdentityManager.onAccountsCookieDeletedByUserAction();
-        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt(), anyInt(), anyInt());
+        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt(), anyInt());
 
         // Clearing cookies shouldn't do anything when there's sync account.
         doReturn(ACCOUNT_INFO).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
         mIdentityManager.onAccountsCookieDeletedByUserAction();
-        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt(), anyInt(), anyInt());
+        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt(), anyInt());
 
         // Clearing cookies when there's only an unconsented account should trigger sign-out.
         doReturn(ACCOUNT_INFO)
@@ -250,7 +249,7 @@ public class SigninManagerTest {
         doReturn(null).when(mIdentityManager).getPrimaryAccountInfo(ConsentLevel.SYNC);
         mIdentityManager.onAccountsCookieDeletedByUserAction();
         verify(mIdentityMutator)
-                .clearPrimaryAccount(ClearAccountsAction.DEFAULT,
+                .clearPrimaryAccount(
                         SignoutReason.USER_DELETED_ACCOUNT_COOKIES, SignoutDelete.IGNORE_METRIC);
 
         // Sign-out triggered by wiping account cookies shouldn't wipe data.
@@ -271,8 +270,7 @@ public class SigninManagerTest {
         createSigninManager();
 
         verify(mIdentityMutator)
-                .clearPrimaryAccount(ClearAccountsAction.DEFAULT,
-                        SignoutReason.MOBILE_IDENTITY_CONSISTENCY_ROLLBACK,
+                .clearPrimaryAccount(SignoutReason.MOBILE_IDENTITY_CONSISTENCY_ROLLBACK,
                         SignoutDelete.IGNORE_METRIC);
         verify(mNativeMock).logOutAllAccountsForMobileIdentityConsistencyRollback(anyLong());
 
@@ -292,7 +290,7 @@ public class SigninManagerTest {
 
         createSigninManager();
 
-        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt(), anyInt(), anyInt());
+        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt(), anyInt());
         verify(mNativeMock, never())
                 .logOutAllAccountsForMobileIdentityConsistencyRollback(anyLong());
     }
@@ -314,7 +312,7 @@ public class SigninManagerTest {
             return null;
         })
                 .when(mIdentityMutator)
-                .clearPrimaryAccount(anyInt(), anyInt(), anyInt());
+                .clearPrimaryAccount(anyInt(), anyInt());
 
         createSigninManager();
         mSigninManager.signOut(SignoutReason.SIGNOUT_TEST);

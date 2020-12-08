@@ -141,7 +141,6 @@ void ForceSigninVerifier::CloseAllBrowserWindows() {
   if (!primary_account_mutator)
     return;
   primary_account_mutator->ClearPrimaryAccount(
-      signin::PrimaryAccountMutator::ClearAccountsAction::kRemoveAll,
       signin_metrics::AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN,
       signin_metrics::SignoutDelete::IGNORE_METRIC);
 }

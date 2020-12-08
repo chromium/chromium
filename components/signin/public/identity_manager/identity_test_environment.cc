@@ -309,9 +309,9 @@ IdentityTestEnvironment::FinishBuildIdentityManagerForTests(
                                                  signin_client);
 
   init_params.primary_account_mutator =
-      std::make_unique<PrimaryAccountMutatorImpl>(account_tracker_service.get(),
-                                                  primary_account_manager.get(),
-                                                  pref_service);
+      std::make_unique<PrimaryAccountMutatorImpl>(
+          account_tracker_service.get(), token_service.get(),
+          primary_account_manager.get(), pref_service, account_consistency);
 
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
   init_params.accounts_mutator = std::make_unique<AccountsMutatorImpl>(
