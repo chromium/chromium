@@ -25,6 +25,8 @@ namespace {
 // The default app's histogram name. This is used for logging so do
 // not change the order of this enum.
 // https://docs.google.com/document/d/1WJ-BjlVOM87ygIsdDBCyXxdKw3iS5EtNGm1fWiWhfIs
+// If you're adding to this enum with the intention that it will be logged,
+// update the DefaultAppName enum listing in tools/metrics/histograms/enums.xml.
 enum class DefaultAppName {
   kCalculator = 10,
   kText = 11,
@@ -58,10 +60,11 @@ enum class DefaultAppName {
   // This is our test SWA. It's only installed in tests.
   kMockSystemApp = 39,
   kStadia = 40,
+  kScanningApp = 41,
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kStadia,
+  kMaxValue = kScanningApp,
 };
 
 void RecordDefaultAppLaunch(DefaultAppName default_app_name,
@@ -255,6 +258,10 @@ void RecordAppLaunch(const std::string& app_id,
     RecordDefaultAppLaunch(DefaultAppName::kYouTubeMusic, launch_source);
   else if (app_id == web_app::kStadiaAppId)
     RecordDefaultAppLaunch(DefaultAppName::kStadia, launch_source);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  else if (app_id == web_app::kScanningAppId)
+    RecordDefaultAppLaunch(DefaultAppName::kScanningApp, launch_source);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Above are default apps; below are built-in apps.
 
