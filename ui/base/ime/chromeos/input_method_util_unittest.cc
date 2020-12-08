@@ -36,7 +36,6 @@ class TestableInputMethodUtil : public InputMethodUtil {
 
   // Change access rights.
   using InputMethodUtil::GetInputMethodIdsFromLanguageCodeInternal;
-  using InputMethodUtil::GetIdToDescriptorMapForTesting;
 };
 
 }  // namespace
@@ -384,29 +383,6 @@ TEST_F(InputMethodUtilTest, TestGetLanguageCodesFromInputMethodIds) {
   EXPECT_EQ("en", language_codes[0]);
   EXPECT_EQ("zh-CN", language_codes[1]);
   EXPECT_EQ("fr", language_codes[2]);
-}
-
-// Test all supported descriptors to detect a typo in input_methods.txt.
-TEST_F(InputMethodUtilTest, TestIBusInputMethodText) {
-  const std::map<std::string, InputMethodDescriptor>& id_to_descriptor =
-      util_.GetIdToDescriptorMapForTesting();
-  for (const auto& it : id_to_descriptor) {
-    const std::string language_code = it.second.language_codes().at(0);
-    const base::string16 display_name =
-        l10n_util::GetDisplayNameForLocale(language_code, "en", false);
-    // Only two formats, like "fr" (lower case) and "en-US" (lower-upper), are
-    // allowed. See the text file for details.
-    EXPECT_TRUE(language_code == "fil" || language_code.length() == 2 ||
-                (language_code.length() == 5 && language_code[2] == '-'))
-        << "Invalid language code " << language_code;
-    EXPECT_TRUE(l10n_util::IsValidLocaleSyntax(language_code))
-        << "Invalid language code " << language_code;
-    EXPECT_FALSE(display_name.empty())
-        << "Invalid language code " << language_code;
-    // On error, GetDisplayNameForLocale() returns the |language_code| as-is.
-    EXPECT_NE(language_code, base::UTF16ToUTF8(display_name))
-        << "Invalid language code " << language_code;
-  }
 }
 
 // Test the input method ID migration.

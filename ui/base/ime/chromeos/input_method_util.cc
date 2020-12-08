@@ -791,11 +791,6 @@ void InputMethodUtil::InitXkbInputMethodsForTesting(
   ResetInputMethods(imes);
 }
 
-const InputMethodUtil::InputMethodIdToDescriptorMap&
-InputMethodUtil::GetIdToDescriptorMapForTesting() {
-  return id_to_descriptor_;
-}
-
 InputMethodDescriptor InputMethodUtil::GetFallbackInputMethodDescriptor() {
   std::vector<std::string> layouts;
   layouts.emplace_back("us");

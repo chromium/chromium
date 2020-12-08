@@ -160,9 +160,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodUtil {
       InputMethodType type,
       std::vector<std::string>* out_input_method_ids) const;
 
-  // Gets the id to descriptor map for testing.
-  const InputMethodIdToDescriptorMap& GetIdToDescriptorMapForTesting();
-
  private:
   // Converts a string sent from IBus IME engines, which is written in English,
   // into Chrome's string ID, then pulls internationalized resource string from
