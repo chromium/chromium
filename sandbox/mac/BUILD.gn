@@ -11,6 +11,10 @@ proto_library("seatbelt_proto") {
   sources = [ "seatbelt.proto" ]
 }
 
+source_set("seatbelt_export") {
+  sources = [ "seatbelt_export.h" ]
+}
+
 component("seatbelt") {
   sources = [
     "sandbox_compiler.cc",
@@ -21,10 +25,12 @@ component("seatbelt") {
     "seatbelt.h",
     "seatbelt_exec.cc",
     "seatbelt_exec.h",
-    "seatbelt_export.h",
   ]
   libs = [ "sandbox" ]
-  deps = [ ":seatbelt_proto" ]
+  deps = [
+    ":seatbelt_export",
+    ":seatbelt_proto",
+  ]
   public_deps = [ "//third_party/protobuf:protobuf_lite" ]
   defines = [ "SEATBELT_IMPLEMENTATION" ]
 }
@@ -36,6 +42,7 @@ component("seatbelt_extension") {
     "seatbelt_extension_token.cc",
     "seatbelt_extension_token.h",
   ]
+  deps = [ ":seatbelt_export" ]
   libs = [ "sandbox" ]
   public_deps = [ "//base" ]
   defines = [ "SEATBELT_IMPLEMENTATION" ]
@@ -43,7 +50,6 @@ component("seatbelt_extension") {
 
 component("system_services") {
   sources = [
-    "seatbelt_export.h",
     "system_services.cc",
     "system_services.h",
   ]
@@ -51,6 +57,7 @@ component("system_services") {
     "Carbon.framework",
     "CoreFoundation.framework",
   ]
+  deps = [ ":seatbelt_export" ]
   public_deps = [ "//base" ]
   defines = [ "SEATBELT_IMPLEMENTATION" ]
 }
@@ -74,6 +81,8 @@ test("sandbox_mac_unittests") {
     ":seatbelt_proto",
     "mojom:test_interfaces",
     "//base",
+    "//base/test:test_config",
+    "//base/test:test_support",
     "//mojo/core/test:run_all_unittests",
     "//sandbox/policy:tests",
     "//testing/gtest",

@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
+#include "base/compiler_specific.h"  //nogncheck
 #include "sandbox/mac/seatbelt.pb.h"
 #include "sandbox/mac/seatbelt_export.h"
 

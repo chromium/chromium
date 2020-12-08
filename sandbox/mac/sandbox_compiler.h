@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "sandbox/mac/seatbelt_export.h"
 
 namespace sandbox {
@@ -20,6 +19,8 @@ class SEATBELT_EXPORT SandboxCompiler {
   explicit SandboxCompiler(const std::string& profile_str);
 
   ~SandboxCompiler();
+  SandboxCompiler(const SandboxCompiler& other) = delete;
+  SandboxCompiler& operator=(const SandboxCompiler& other) = delete;
 
   // Inserts a boolean into the parameters key/value map. A duplicate key is not
   // allowed, and will cause the function to return false. The value is not
@@ -41,8 +42,6 @@ class SEATBELT_EXPORT SandboxCompiler {
 
   // The sandbox profile source code.
   const std::string profile_str_;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxCompiler);
 };
 
 }  // namespace sandbox

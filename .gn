@@ -181,7 +181,6 @@ no_check_targets = [
   "//remoting/test:*",  # 20 errors
   "//remoting:*",  # 27 errors
   "//sandbox/linux:*",  # 13 errors
-  "//sandbox/mac:*",  # 14 errors
   "//sandbox/win:*",  # 7 errors
 
   "//third_party/breakpad:*",  # 34 errors
