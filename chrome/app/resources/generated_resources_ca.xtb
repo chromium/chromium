@@ -867,6 +867,7 @@
 <translation id="1954813140452229842">S'ha produït un error en activar l'ús compartit. Comprova les credencials i torna-ho a provar.</translation>
 <translation id="1956050014111002555">El fitxer conté certificats múltiples, però cap d'ells no s'ha importat:</translation>
 <translation id="1956390763342388273">Es penjaran tots els fitxers que hi ha a <ph name="FOLDER_PATH" />. Fes-ho només si confies en el lloc web.</translation>
+<translation id="1960158217849594135">Vols desar el nom d'usuari al teu Compte de Google?</translation>
 <translation id="196040970347962278">Primer, estableix una connexió a Internet</translation>
 <translation id="1962233722219655970">Aquesta pàgina fa servir una aplicació de Native Client que no funciona al vostre ordinador.</translation>
 <translation id="1963227389609234879">Suprimeix-ho tot</translation>
@@ -2752,6 +2753,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="412940972494182898">Executa Flash aquesta vegada</translation>
 <translation id="4130199216115862831">Registre del dispositiu</translation>
 <translation id="4130207949184424187">Aquesta extensió ha canviat la pàgina que es mostra quan feu una cerca des de l'omnibox.</translation>
+<translation id="4130344535649650885">Vols desar la contrasenya al teu Compte de Google?</translation>
 <translation id="4130750466177569591">Accepto</translation>
 <translation id="413121957363593859">Components</translation>
 <translation id="4131410914670010031">Blanc i negre</translation>

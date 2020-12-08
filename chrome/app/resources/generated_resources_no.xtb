@@ -864,6 +864,7 @@
 <translation id="1954813140452229842">Feil ved innsetting av deling. Sjekk legitimasjonen og prøv igjen.</translation>
 <translation id="1956050014111002555">Filen inneholdt flere sertifikater, men ingen av dem ble importert:</translation>
 <translation id="1956390763342388273">Dette fører til at alle filer fra «<ph name="FOLDER_PATH" />» lastes opp. Du bør bare gjøre dette hvis du stoler på nettstedet.</translation>
+<translation id="1960158217849594135">Vil du lagre brukernavnet i Google-kontoen din?</translation>
 <translation id="196040970347962278">Koble til internett først</translation>
 <translation id="1962233722219655970">Denne siden bruker en Native Client-app som ikke fungerer på datamaskinen din.</translation>
 <translation id="1963227389609234879">Fjern alle</translation>
@@ -2749,6 +2750,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="412940972494182898">Kjør Flash denne gangen</translation>
 <translation id="4130199216115862831">Enhetslogg</translation>
 <translation id="4130207949184424187">Denne utvidelsen har endret hvilken side som vises når du søker fra multifunksjonsfeltet.</translation>
+<translation id="4130344535649650885">Vil du lagre passordet i Google-kontoen din?</translation>
 <translation id="4130750466177569591">Godta</translation>
 <translation id="413121957363593859">Komponenter</translation>
 <translation id="4131410914670010031">Svarthvitt</translation>

@@ -867,6 +867,7 @@
 <translation id="1954813140452229842">No se ha podido activar el recurso compartido. Comprueba tus credenciales y vuelve a intentarlo.</translation>
 <translation id="1956050014111002555">El archivo contenía varios certificados, pero no se ha importado ninguno de ellos:</translation>
 <translation id="1956390763342388273">Se subirán todos los archivos de "<ph name="FOLDER_PATH" />". Realiza esta acción únicamente si confías en el sitio web.</translation>
+<translation id="1960158217849594135">¿Guardar nombre de usuario en tu cuenta de Google?</translation>
 <translation id="196040970347962278">Conéctate primero a Internet</translation>
 <translation id="1962233722219655970">Esta página utiliza una aplicación de Native Client que no funciona en tu ordenador.</translation>
 <translation id="1963227389609234879">Eliminar todo</translation>
@@ -2753,6 +2754,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="412940972494182898">Ejecutar Flash esta vez</translation>
 <translation id="4130199216115862831">Registro de dispositivo</translation>
 <translation id="4130207949184424187">Esta extensión ha cambiado la página que se muestra al buscar en el omnibox.</translation>
+<translation id="4130344535649650885">¿Guardar contraseña en tu cuenta de Google?</translation>
 <translation id="4130750466177569591">Acepto</translation>
 <translation id="413121957363593859">Componentes</translation>
 <translation id="4131410914670010031">Blanco y negro</translation>

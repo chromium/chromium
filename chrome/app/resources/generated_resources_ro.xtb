@@ -868,6 +868,7 @@
 <translation id="1954813140452229842">Eroare la montarea dispozitivului de stocare în rețea. Verifică acreditările și încearcă din nou.</translation>
 <translation id="1956050014111002555">Fișierul conținea certificate multiple și niciunul dintre acestea nu a fost importat:</translation>
 <translation id="1956390763342388273">Vor fi încărcate toate fișierele din „<ph name="FOLDER_PATH" />”. Fă acest lucru doar dacă ai încredere în site.</translation>
+<translation id="1960158217849594135">Salvezi numele de utilizator în Contul Google?</translation>
 <translation id="196040970347962278">Mai întâi stabilește o conexiune la internet</translation>
 <translation id="1962233722219655970">Această pagină utilizează o aplicație Client nativ care nu funcționează pe computerul dvs.</translation>
 <translation id="1963227389609234879">Elimină tot</translation>
@@ -2755,6 +2756,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="412940972494182898">Rulează Flash de data asta</translation>
 <translation id="4130199216115862831">Jurnalul dispozitivului</translation>
 <translation id="4130207949184424187">Această extensie a modificat ce pagină se afișează când cauți din caseta polivalentă.</translation>
+<translation id="4130344535649650885">Salvezi parola în Contul Google?</translation>
 <translation id="4130750466177569591">Sunt de acord</translation>
 <translation id="413121957363593859">Componente</translation>
 <translation id="4131410914670010031">Alb-negru</translation>

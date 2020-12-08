@@ -867,6 +867,7 @@
 <translation id="1954813140452229842">Erro ao montar a partilha. Verifique as suas credenciais e tente novamente.</translation>
 <translation id="1956050014111002555">O ficheiro continha vários certificados e nenhum deles foi importado:</translation>
 <translation id="1956390763342388273">Esta ação irá carregar todos os ficheiros de "<ph name="FOLDER_PATH" />". Faça isto apenas se confiar no site.</translation>
+<translation id="1960158217849594135">Pretende guardar o nome de utilizador na sua Conta Google?</translation>
 <translation id="196040970347962278">Estabeleça ligação à Internet primeiro.</translation>
 <translation id="1962233722219655970">Esta página utiliza uma aplicação Native Client que não funciona no computador.</translation>
 <translation id="1963227389609234879">Remover tudo</translation>
@@ -2754,6 +2755,7 @@ Pretende pará-lo?</translation>
 <translation id="412940972494182898">Executar o Flash desta vez</translation>
 <translation id="4130199216115862831">Registo do dispositivo</translation>
 <translation id="4130207949184424187">Esta extensão alterou a página apresentada quando pesquisa a partir da caixa geral.</translation>
+<translation id="4130344535649650885">Pretende guardar a palavra-passe para a sua Conta Google?</translation>
 <translation id="4130750466177569591">Concordo</translation>
 <translation id="413121957363593859">Componentes</translation>
 <translation id="4131410914670010031">Preto e branco</translation>

@@ -869,6 +869,7 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1954813140452229842">Při připojování sdílené složky došlo k chybě. Zkontrolujte identifikační údaje a zkuste to znovu.</translation>
 <translation id="1956050014111002555">Soubor obsahoval více certifikátů, ale žádný z nich nebyl importován:</translation>
 <translation id="1956390763342388273">Touto akcí nahrajete všechny soubory ze složky <ph name="FOLDER_PATH" />. Proveďte ji pouze v případě, že webu důvěřujete.</translation>
+<translation id="1960158217849594135">Chcete uživatelské jméno uložit do svého účtu Google?</translation>
 <translation id="196040970347962278">Nejdřív navažte připojení k internetu</translation>
 <translation id="1962233722219655970">Tato stránka používá aplikaci nativního klienta, která ve vašem počítači nefunguje.</translation>
 <translation id="1963227389609234879">Odstranit vše</translation>
@@ -2754,6 +2755,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="412940972494182898">Tentokrát Flash spustit</translation>
 <translation id="4130199216115862831">Protokol zařízení</translation>
 <translation id="4130207949184424187">Toto rozšíření změnilo stránku, která se zobrazí při vyhledávání z omniboxu.</translation>
+<translation id="4130344535649650885">Chcete heslo uložit do svého účtu Google?</translation>
 <translation id="4130750466177569591">Souhlasím</translation>
 <translation id="413121957363593859">Komponenty</translation>
 <translation id="4131410914670010031">Černobíle</translation>

@@ -868,6 +868,7 @@
 <translation id="1954813140452229842">Villa við að tengja deilt efni. Athugaðu innskráningarupplýsingarnar og reyndu aftur.</translation>
 <translation id="1956050014111002555">Skráin inniheldur mörg vottorð og engin þeirra voru flutt inn:</translation>
 <translation id="1956390763342388273">Öllum skrám í „<ph name="FOLDER_PATH" />“ verður hlaðið upp. Gerðu þetta aðeins ef þú treystir vefsvæðinu.</translation>
+<translation id="1960158217849594135">Á að vista notandanafn Google reikningsins þíns?</translation>
 <translation id="196040970347962278">Settu upp nettengingu fyrst</translation>
 <translation id="1962233722219655970">Þessi síða notast við sérforritað forrit sem virkar ekki í tölvunni þinni.</translation>
 <translation id="1963227389609234879">Fjarlægja allt</translation>
@@ -946,7 +947,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2053312383184521053">Gögn aðgerðaleysis</translation>
 <translation id="2054665754582400095">Viðvera þín</translation>
 <translation id="2055585478631012616">Þú verður skráð(ur) út af þessum vefsvæðum, þar á meðal í opnum flipum</translation>
-<translation id="205560151218727633">Merki Google hjálparans</translation>
+<translation id="205560151218727633">Lógó Google hjálpara</translation>
 <translation id="2058456167109518507">Tæki fannst</translation>
 <translation id="2059913712424898428">Tímabelti</translation>
 <translation id="2060375639911876205">Fjarlægja eSIM-prófíl</translation>
@@ -2755,6 +2756,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="412940972494182898">Keyra Flash í þetta skipti</translation>
 <translation id="4130199216115862831">Annáll tækis</translation>
 <translation id="4130207949184424187">Þessi viðbót hefur breytt því hvaða síða birtist þegar þú leitar með veffangastikunni.</translation>
+<translation id="4130344535649650885">Á að vista aðgangsorðið að Google reikningnum þínum?</translation>
 <translation id="4130750466177569591">Ég samþykki</translation>
 <translation id="413121957363593859">Íhlutir</translation>
 <translation id="4131410914670010031">Svarthvítt</translation>

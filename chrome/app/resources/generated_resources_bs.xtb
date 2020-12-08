@@ -869,6 +869,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1954813140452229842">Greška prilikom aktiviranja dijeljenja. Provjerite akreditive i pokušajte ponovo.</translation>
 <translation id="1956050014111002555">Fajl je sadržavao nekoliko potvrda i nijedna nije uvezena:</translation>
 <translation id="1956390763342388273">Ovim ćete otpremiti sve fajlove iz foldera "<ph name="FOLDER_PATH" />". Učinite to samo ako web lokaciju smatrate pouzdanom.</translation>
+<translation id="1960158217849594135">Sačuvati korisničko ime na Google račun?</translation>
 <translation id="196040970347962278">Prvo uspostavite internetsku vezu</translation>
 <translation id="1962233722219655970">Ova stranica koristi aplikaciju izvornog klijenta koja ne radi na vašem računaru.</translation>
 <translation id="1963227389609234879">Ukloni sve</translation>
@@ -2756,6 +2757,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="412940972494182898">Pokreni Flash ovaj put</translation>
 <translation id="4130199216115862831">Zapisnik uređaja</translation>
 <translation id="4130207949184424187">Ova ekstenzija je promijenila stranicu koja se prikazuje pri pretraživanju iz višenamjenskog okvira.</translation>
+<translation id="4130344535649650885">Sačuvati lozinku na Google račun?</translation>
 <translation id="4130750466177569591">Slažem se</translation>
 <translation id="413121957363593859">Komponente</translation>
 <translation id="4131410914670010031">Crno-bijelo</translation>

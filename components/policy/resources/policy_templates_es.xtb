@@ -285,20 +285,20 @@
 Si habilitas esta política o no la configuras, se habilitará el desplazamiento de una página web a un texto específico a través de la URL.
 
 Si inhabilitas esta política, se inhabilitará el desplazamiento de una página web a un texto específico a través de la URL.</translation>
-<translation id="1469072784237350146">Controla si se permite que los sitios web no seguros envíen solicitudes a puntos de conexión de la red con una privacidad más estricta.
+<translation id="1469072784237350146">Controla si se permite que los sitios web no seguros envíen solicitudes a puntos finales de la red con una privacidad más estricta.
 
           Esta política está relacionada con la especificación CORS-RFC1918. Para obtener más información, visita la página https://wicg.github.io/cors-rfc1918.
 
-          Un punto de conexión de la red tiene una privacidad más estricta si:
+          Un punto final de la red tiene una privacidad más estricta si:
           1) Su dirección IP es localhost y la del otro punto no lo es.
           2) Su dirección IP es privada y la del otro punto es pública.
           En el futuro, en función de la evolución de las especificaciones, esta política podría aplicarse a todas las solicitudes de orígenes cruzados dirigidas a IP privadas o localhost.
 
           Un sitio web se considera seguro si cumple la definición de contexto seguro de la página https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts. De lo contrario, se considerará contexto no seguro.
 
-          Si esta política no se define, o se le asigna el valor "false", el comportamiento predeterminado de las solicitudes desde contextos no seguros a puntos de conexión de la red con una privacidad más estricta dependerá de la configuración personal que el usuario aplique a la función <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />, que puede definirse mediante una prueba pública o en la línea de comandos.
+          Si esta política no se define, o se le asigna el valor "false", el comportamiento predeterminado de las solicitudes desde contextos no seguros a puntos finales de la red con una privacidad más estricta dependerá de la configuración personal que el usuario aplique a la función <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />, que puede definirse mediante una prueba pública o en la línea de comandos.
 
-          Si se le asigna el valor "true" a esta política, los sitios web no seguros podrán enviar solicitudes a cualquier punto de conexión de la red (en función de otras comprobaciones de orígenes cruzados).</translation>
+          Si se le asigna el valor "true" a esta política, los sitios web no seguros podrán enviar solicitudes a cualquier punto final de la red (en función de otras comprobaciones de orígenes cruzados).</translation>
 <translation id="1474273443907024088">Inhabilitar el inicio falso de TLS</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">Si se asigna un valor a esta política, se definirá la lista de dispositivos USB que los usuarios pueden desvincular de su controlador de kernel para utilizarse en la API chrome.usb directamente en una aplicación web. Las entradas son pares de identificador de producto e identificador de proveedor del USB que permiten identificar hardware específico.
@@ -1303,7 +1303,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Nota: Esta política dirige a un archivo XML con el mismo formato que la política <ph name="IEEM_SITELIST_POLICY" /> de <ph name="IE_PRODUCT_NAME" />. Se cargarán las reglas de un archivo XML, sin compartirlas con <ph name="IE_PRODUCT_NAME" />. Puedes consultar más información sobre la política <ph name="IEEM_SITELIST_POLICY" /> de <ph name="IE_PRODUCT_NAME" /> en https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="2949765875529121431">Al establecer la política, se define una lista de nombres de host que quedarán exentos de la comprobación de la política de HSTS, que podría cambiar las solicitudes de http a https. Esta política solo admite nombres de host de una sola etiqueta. Los nombres de host deben canonicalizarse, es decir, cada IDN debe convertirse a su formato de etiqueta A, y todas las letras ASCII deben ser minúsculas. Esta política solo se aplica a los nombres de host incluidos en la lista, no a sus subdominios.</translation>
 <translation id="2952347049958405264">Restricciones:</translation>
-<translation id="2957047180944828740">Especifica si se permite que los sitios web no seguros envíen peticiones a puntos de conexión de la red con una privacidad más estricta.</translation>
+<translation id="2957047180944828740">Especifica si se permite que los sitios web no seguros envíen peticiones a puntos finales de la red con una privacidad más estricta.</translation>
 <translation id="2957506574938329824">No permitir que los sitios web soliciten acceso a los dispositivos Bluetooth a través de la API Bluetooth web</translation>
 <translation id="2957513448235202597">Tipo de cuenta para la autenticación <ph name="HTTP_NEGOTIATE" /></translation>
 <translation id="2959469725686993410">Enviar siempre los puntos de acceso Wi‑Fi al servidor mientras se detecta la zona horaria</translation>
@@ -2249,7 +2249,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 
       Si esta política se inhabilita o no se define, se guardará el historial de navegación.</translation>
 <translation id="4329095223358818804">Permitir que la función de Respuestas rápidas acceda al contenido seleccionado</translation>
-<translation id="4330372709562934569">Permitir que los sitios web de la lista envíen solicitudes a puntos de conexión más privados de la red desde contextos no seguros.</translation>
+<translation id="4330372709562934569">Permitir que los sitios web de la lista envíen solicitudes a puntos finales más privados de la red desde contextos no seguros.</translation>
 <translation id="4332177773549877617">Registrar eventos de descargas de aplicaciones para Android</translation>
 <translation id="4341199399451274159">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />, se especificarán las codificaciones de caracteres admitidas por el proveedor de búsquedas. Las codificaciones son nombres de páginas de códigos, como UTF‑8, GB2312 o ISO-8859‑1. Se intentarán utilizar siguiendo el orden especificado.
 

@@ -870,6 +870,7 @@
 <translation id="1954813140452229842">Klaida įdedant bendrinamą objektą. Patikrinkite prisijungimo duomenis ir bandykite dar kartą.</translation>
 <translation id="1956050014111002555">Faile buvo keli sertifikatai; nė vienas iš jų nebuvo importuotas:</translation>
 <translation id="1956390763342388273">Bus įkelti visi failai iš „<ph name="FOLDER_PATH" />“. Tai atlikite, tik jei svetainė patikima.</translation>
+<translation id="1960158217849594135">Išsaugoti naudotojo vardą „Google“ paskyroje?</translation>
 <translation id="196040970347962278">Pirmiausia užmegzkite interneto ryšį</translation>
 <translation id="1962233722219655970">Šiame puslapyje naudojama programa „Native Client“, kuri neveikia jūsų kompiuteryje.</translation>
 <translation id="1963227389609234879">Pašalinti viską</translation>
@@ -2757,6 +2758,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="412940972494182898">Šį kartą paleisti „Flash“</translation>
 <translation id="4130199216115862831">Įrenginio žurnalas</translation>
 <translation id="4130207949184424187">Šis plėtinys pakeitė, kuris puslapis rodomas ieškant „Omnibox“.</translation>
+<translation id="4130344535649650885">Išsaugoti slaptažodį „Google“ paskyroje?</translation>
 <translation id="4130750466177569591">Sutinku</translation>
 <translation id="413121957363593859">Komponentai</translation>
 <translation id="4131410914670010031">Nespalvotai</translation>

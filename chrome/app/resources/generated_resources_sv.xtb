@@ -867,6 +867,7 @@
 <translation id="1954813140452229842">Det gick inte att montera den delade resursen. Kontrollera användaruppgifterna och försök igen.</translation>
 <translation id="1956050014111002555">Filen innehöll flera certifikat men inga certifikat importerades:</translation>
 <translation id="1956390763342388273">Alla filer från <ph name="FOLDER_PATH" /> laddas upp. Gör bara detta om du litar på webbplatsen.</translation>
+<translation id="1960158217849594135">Vill du spara användarnamnet i Google-kontot?</translation>
 <translation id="196040970347962278">Anslut till internet först</translation>
 <translation id="1962233722219655970">Denna sida använder en Native Client-app som inte fungerar på din dator.</translation>
 <translation id="1963227389609234879">Ta bort alla</translation>
@@ -2754,6 +2755,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="412940972494182898">Kör Flash den här gången</translation>
 <translation id="4130199216115862831">Enhetslogg</translation>
 <translation id="4130207949184424187">Det här tillägget har ändrat vilken sida som visas när du söker i adressfältet.</translation>
+<translation id="4130344535649650885">Vill du spara lösenordet i Google-kontot?</translation>
 <translation id="4130750466177569591">Jag godkänner</translation>
 <translation id="413121957363593859">Komponenter</translation>
 <translation id="4131410914670010031">Svartvitt</translation>

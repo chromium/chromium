@@ -867,6 +867,7 @@
 <translation id="1954813140452229842">Error mounting share. Please check your credentials and try again.</translation>
 <translation id="1956050014111002555">The file contained multiple certificates, none of which were imported:</translation>
 <translation id="1956390763342388273">This will upload all files from '<ph name="FOLDER_PATH" />'. Only do this if you trust the site.</translation>
+<translation id="1960158217849594135">Save username to your Google Account?</translation>
 <translation id="196040970347962278">Establish an Internet connection first</translation>
 <translation id="1962233722219655970">This page uses a Native Client app that doesn't work on your computer.</translation>
 <translation id="1963227389609234879">Remove all</translation>
@@ -2754,6 +2755,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="412940972494182898">Run Flash this time</translation>
 <translation id="4130199216115862831">Device Log</translation>
 <translation id="4130207949184424187">This extension has changed the page that is shown when you search from the Omnibox.</translation>
+<translation id="4130344535649650885">Save password to your Google Account?</translation>
 <translation id="4130750466177569591">I agree</translation>
 <translation id="413121957363593859">Components</translation>
 <translation id="4131410914670010031">Black and white</translation>

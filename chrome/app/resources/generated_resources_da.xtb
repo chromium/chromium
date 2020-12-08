@@ -868,6 +868,7 @@
 <translation id="1954813140452229842">Der opstod en fejl ved anvendelse af deling. Tjek dine loginoplysninger, og prøv igen.</translation>
 <translation id="1956050014111002555">Filen indeholdt flere certifikater, hvoraf ingen af dem blev importeret:</translation>
 <translation id="1956390763342388273">Denne handling uploader alle filer fra "<ph name="FOLDER_PATH" />". Gør kun dette, hvis du har tillid til websitet.</translation>
+<translation id="1960158217849594135">Vil du gemme brugernavnet på din Google-konto?</translation>
 <translation id="196040970347962278">Opret først en internetforbindelse</translation>
 <translation id="1962233722219655970">Denne side bruger en Native Client-app, der ikke virker på din computer.</translation>
 <translation id="1963227389609234879">Slet alle</translation>
@@ -2755,6 +2756,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="412940972494182898">Kør Flash denne gang</translation>
 <translation id="4130199216115862831">Logfil for enheden</translation>
 <translation id="4130207949184424187">Denne udvidelse har ændret, hvilken side der vises, når du søger via omnifeltet.</translation>
+<translation id="4130344535649650885">Vil du gemme adgangskoden på din Google-konto?</translation>
 <translation id="4130750466177569591">Jeg accepterer</translation>
 <translation id="413121957363593859">Komponenter</translation>
 <translation id="4131410914670010031">Sort/hvid</translation>

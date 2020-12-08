@@ -867,6 +867,7 @@
 <translation id="1954813140452229842">連接共用裝置時發生錯誤。請檢查您的憑證，然後再試一次。</translation>
 <translation id="1956050014111002555">檔案含有多個憑證，但全都無法匯入：</translation>
 <translation id="1956390763342388273">此操作會上載「<ph name="FOLDER_PATH" />」中的所有檔案。請只在您信任該網站的情況下執行此操作。</translation>
+<translation id="1960158217849594135">要將使用者名稱儲存至 Google 帳戶嗎？</translation>
 <translation id="196040970347962278">請先建立互聯網連線</translation>
 <translation id="1962233722219655970">這個網頁使用無法在您電腦上運行的 Native Client 應用程式。</translation>
 <translation id="1963227389609234879">全部移除</translation>
@@ -2753,6 +2754,7 @@
 <translation id="412940972494182898">只限這次允許執行 Flash</translation>
 <translation id="4130199216115862831">裝置記錄</translation>
 <translation id="4130207949184424187">擴充功能已變更您使用網址列搜尋時所顯示的頁面。</translation>
+<translation id="4130344535649650885">要將密碼儲存至 Google 帳戶嗎？</translation>
 <translation id="4130750466177569591">我同意</translation>
 <translation id="413121957363593859">組件</translation>
 <translation id="4131410914670010031">黑白</translation>

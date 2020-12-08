@@ -871,6 +871,7 @@
 <translation id="1954813140452229842">حدث خطأ في تحميل المشاركة. يُرجى التحقُّق من بيانات الاعتماد وإعادة المحاولة.</translation>
 <translation id="1956050014111002555">احتوى الملف على شهادات متعددة، لم يتم استيراد أي منها:</translation>
 <translation id="1956390763342388273">سيؤدي ذلك إلى تحميل جميع الملفات من "<ph name="FOLDER_PATH" />"، يُرجى تجنُّب ذلك إذا لم تكن واثقًا من الموقع.</translation>
+<translation id="1960158217849594135">‏هل تريد حفظ اسم المستخدم في حسابك على Google؟</translation>
 <translation id="196040970347962278">يُرجى الاتصال بالإنترنت أولاً.</translation>
 <translation id="1962233722219655970">‏هذه الصفحة تستخدم تطبيق Native Client وهو لا يعمل على جهاز الكمبيوتر التابع لك.</translation>
 <translation id="1963227389609234879">إزالة كلمات المرور كلّها</translation>
@@ -2756,6 +2757,7 @@
 <translation id="412940972494182898">‏تشغيل Flash في الوقت الحالي</translation>
 <translation id="4130199216115862831">سجل الجهاز</translation>
 <translation id="4130207949184424187">غيّرت هذه الإضافة الصفحة التي تظهر عند البحث في المربع متعدد الاستخدامات.</translation>
+<translation id="4130344535649650885">‏هل تريد حفظ كلمة المرور في حسابك على Google؟</translation>
 <translation id="4130750466177569591">أوافق</translation>
 <translation id="413121957363593859">المكونات</translation>
 <translation id="4131410914670010031">أبيض وأسود</translation>

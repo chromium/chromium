@@ -864,6 +864,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1954813140452229842">Fehler beim Bereitstellen der Freigabe. Überprüfen Sie Ihre Anmeldedaten und versuchen Sie es noch einmal.</translation>
 <translation id="1956050014111002555">Die Datei enthielt mehrere Zertifikate, von denen keines importiert wurde:</translation>
 <translation id="1956390763342388273">Hierdurch werden alle Dateien aus "<ph name="FOLDER_PATH" />" hochgeladen. Tun Sie dies nur, wenn Sie die Website als vertrauenswürdig einstufen.</translation>
+<translation id="1960158217849594135">Möchten Sie den Nutzernamen in Ihrem Google-Konto speichern?</translation>
 <translation id="196040970347962278">Zuerst eine Verbindung zum Internet herstellen</translation>
 <translation id="1962233722219655970">Diese Seite verwendet eine Native Client App, die auf Ihrem Computer nicht funktioniert.</translation>
 <translation id="1963227389609234879">Alle entfernen</translation>
@@ -1790,7 +1791,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3016641847947582299">Komponente aktualisiert</translation>
 <translation id="3017079585324758401">Hintergrund</translation>
 <translation id="3019285239893817657">Taste zur Unterseite</translation>
-<translation id="3020183492814296499">Tastenkombinationen</translation>
+<translation id="3020183492814296499">Verknüpfungen</translation>
 <translation id="3020990233660977256">Seriennummer: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Im Akkubetrieb</translation>
 <translation id="3021066826692793094">Schmetterling</translation>
@@ -2750,6 +2751,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="412940972494182898">Diesmal Flash ausführen</translation>
 <translation id="4130199216115862831">Geräteprotokoll</translation>
 <translation id="4130207949184424187">Diese Erweiterung hat die Seite geändert, die bei der Suche über die Omnibox angezeigt wird.</translation>
+<translation id="4130344535649650885">Möchten Sie das Passwort in Ihrem Google-Konto speichern?</translation>
 <translation id="4130750466177569591">Ich stimme zu</translation>
 <translation id="413121957363593859">Komponenten</translation>
 <translation id="4131410914670010031">Schwarz-Weiß</translation>

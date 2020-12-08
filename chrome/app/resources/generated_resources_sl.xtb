@@ -870,6 +870,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1954813140452229842">Napaka pri vpenjanju datotečnega sredstva v skupni rabi. Preverite poverilnice in poskusite znova.</translation>
 <translation id="1956050014111002555">V datoteki je bilo več potrdil in nobeno ni bilo uvoženo:</translation>
 <translation id="1956390763342388273">S tem bodo naložene vse datoteke z mesta »<ph name="FOLDER_PATH" />«. To storite samo, če spletnemu mestu zaupate.</translation>
+<translation id="1960158217849594135">Želite uporabniško ime shraniti v svoj račun Google?</translation>
 <translation id="196040970347962278">Najprej vzpostavite povezavo z internetom</translation>
 <translation id="1962233722219655970">Ta stran uporablja aplikacijo s tehnologijo Native Client, ki ne deluje v vašem računalniku.</translation>
 <translation id="1963227389609234879">Odstrani vse</translation>
@@ -2757,6 +2758,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="412940972494182898">Zaženi Flash samo tokrat</translation>
 <translation id="4130199216115862831">Dnevnik naprave</translation>
 <translation id="4130207949184424187">Zaradi te razširitve se je spremenila stran, ki je prikazana, ko iščete v naslovni vrstici.</translation>
+<translation id="4130344535649650885">Želite geslo shraniti v svoj račun Google?</translation>
 <translation id="4130750466177569591">Strinjam se</translation>
 <translation id="413121957363593859">Komponente</translation>
 <translation id="4131410914670010031">Črno-belo</translation>

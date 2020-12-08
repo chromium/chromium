@@ -867,6 +867,7 @@
 <translation id="1954813140452229842">共有フォルダのマウントエラー。認証情報を確認してもう一度お試しください。</translation>
 <translation id="1956050014111002555">ファイルに含まれる複数の証明書のうち、いずれもインポートできませんでした:</translation>
 <translation id="1956390763342388273">「<ph name="FOLDER_PATH" />」のすべてのファイルがアップロードされます。この操作は、サイトを信頼できる場合にのみ行ってください。</translation>
+<translation id="1960158217849594135">Google アカウントにユーザー名を保存しますか？</translation>
 <translation id="196040970347962278">まずインターネット接続を確立してください</translation>
 <translation id="1962233722219655970">このページは、お使いのパソコンでは動作しないネイティブ クライアント アプリを使用しています。</translation>
 <translation id="1963227389609234879">すべて削除</translation>
@@ -2754,6 +2755,7 @@
 <translation id="412940972494182898">今回は Flash を実行</translation>
 <translation id="4130199216115862831">デバイスログ</translation>
 <translation id="4130207949184424187">この拡張機能により、アドレスバーから検索したときに表示されるページが変更されました。</translation>
+<translation id="4130344535649650885">Google アカウントにパスワードを保存しますか？</translation>
 <translation id="4130750466177569591">同意する</translation>
 <translation id="413121957363593859">コンポーネント</translation>
 <translation id="4131410914670010031">白黒</translation>

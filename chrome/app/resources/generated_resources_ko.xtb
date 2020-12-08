@@ -867,6 +867,7 @@
 <translation id="1954813140452229842">공유를 마운트하는 중에 오류가 발생했습니다. 사용자 인증 정보를 확인한 후 다시 시도해 주세요.</translation>
 <translation id="1956050014111002555">파일에 여러 인증서가 있지만 가져올 수 있는 인증서가 없습니다.</translation>
 <translation id="1956390763342388273">'<ph name="FOLDER_PATH" />'의 모든 파일이 업로드됩니다. 사이트를 신뢰할 수 있을 때만 실행하세요.</translation>
+<translation id="1960158217849594135">Google 계정에 사용자 이름을 저장하시겠습니까?</translation>
 <translation id="196040970347962278">먼저 인터넷에 연결하세요.</translation>
 <translation id="1962233722219655970">이 페이지에서 사용자 컴퓨터에서 작동하지 않는 Native Client 앱을 사용합니다.</translation>
 <translation id="1963227389609234879">모두 삭제</translation>
@@ -2752,6 +2753,7 @@
 <translation id="412940972494182898">이번에만 Flash 실행</translation>
 <translation id="4130199216115862831">기기 로그</translation>
 <translation id="4130207949184424187">검색주소창에서 검색하면 표시되는 페이지가 이 확장 프로그램으로 인해 변경되었습니다.</translation>
+<translation id="4130344535649650885">Google 계정에 비밀번호를 저장하시겠습니까?</translation>
 <translation id="4130750466177569591">동의함</translation>
 <translation id="413121957363593859">컴포넌트</translation>
 <translation id="4131410914670010031">흑백</translation>

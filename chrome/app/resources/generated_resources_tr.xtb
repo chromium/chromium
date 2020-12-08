@@ -867,6 +867,7 @@
 <translation id="1954813140452229842">Paylaşım eklenirken hata oluştu. Lütfen kimlik bilgilerinizi kontrol edin ve tekrar deneyin.</translation>
 <translation id="1956050014111002555">Dosya birden çok sertifika içeriyordu, bunların hiçbiri içe aktarılmadı:</translation>
 <translation id="1956390763342388273">Bu işlem, "<ph name="FOLDER_PATH" />" klasöründeki tüm dosyaları yükleyecek. Bunu yalnızca siteye güveniyorsanız yapın.</translation>
+<translation id="1960158217849594135">Kullanıcı adı Google Hesabınıza kaydedilsin mi?</translation>
 <translation id="196040970347962278">Önce internet bağlantısı kurun</translation>
 <translation id="1962233722219655970">Bu sayfada, bilgisayarınızda çalışmayan bir Native Client uygulaması kullanılmaktadır.</translation>
 <translation id="1963227389609234879">Tümünü Kaldır</translation>
@@ -2754,6 +2755,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="412940972494182898">Flash'ı bu sefer çalıştır</translation>
 <translation id="4130199216115862831">Cihaz Günlüğü</translation>
 <translation id="4130207949184424187">Bu uzantı, Çok Amaçlı Adres Çubuğu'nda arama yaptığınızda gösterilen sayfayı değiştirdi.</translation>
+<translation id="4130344535649650885">Şifre Google Hesabınıza kaydedilsin mi?</translation>
 <translation id="4130750466177569591">Kabul ediyorum</translation>
 <translation id="413121957363593859">Bileşenler</translation>
 <translation id="4131410914670010031">Siyah beyaz</translation>

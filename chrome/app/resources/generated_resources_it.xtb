@@ -867,6 +867,7 @@
 <translation id="1954813140452229842">Errore durante il montaggio della condivisione. Verifica le tue credenziali e riprova.</translation>
 <translation id="1956050014111002555">Il file conteneva più certificati, che non sono stati importati:</translation>
 <translation id="1956390763342388273">Verranno caricati tutti i file da "<ph name="FOLDER_PATH" />". Esegui questa operazione solo se ritieni il sito affidabile.</translation>
+<translation id="1960158217849594135">Vuoi salvare il nome utente sul tuo Account Google?</translation>
 <translation id="196040970347962278">Prima stabilisci una connessione a Internet</translation>
 <translation id="1962233722219655970">Questa pagina utilizza un'app Native Client che non funziona sul tuo computer.</translation>
 <translation id="1963227389609234879">Rimuovi tutto</translation>
@@ -2753,6 +2754,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="412940972494182898">Esegui Flash questa volta</translation>
 <translation id="4130199216115862831">Log dispositivo</translation>
 <translation id="4130207949184424187">Questa estensione ha cambiato la pagina mostrata quando esegui ricerche dalla omnibox.</translation>
+<translation id="4130344535649650885">Vuoi salvare la password sul tuo Account Google?</translation>
 <translation id="4130750466177569591">Accetto</translation>
 <translation id="413121957363593859">Componenti</translation>
 <translation id="4131410914670010031">In bianco e nero</translation>
@@ -6982,7 +6984,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9108692355621501797">L'<ph name="LINK_BEGIN" />Informativa sulla privacy di G Suite for Education<ph name="LINK_END" /> ha lo scopo di aiutare gli utenti di G Suite for Education e i genitori a comprendere quali dati vengono raccolti dal prodotto, perché vengono raccolti e come vengono utilizzati.</translation>
 <translation id="9108808586816295166">Il sistema DNS sicuro potrebbe non essere sempre disponibile</translation>
 <translation id="9109122242323516435">Per liberare spazio, elimina i file dallo spazio di archiviazione del dispositivo.</translation>
-<translation id="9109283579179481106">Collegati alla rete mobile</translation>
+<translation id="9109283579179481106">Connettiti alla rete mobile</translation>
 <translation id="9111102763498581341">Sblocca</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9112748030372401671">Modifica dello sfondo</translation>
