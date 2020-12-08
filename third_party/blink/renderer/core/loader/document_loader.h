@@ -449,6 +449,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   base::Optional<WebOriginPolicy> origin_policy_;
   const scoped_refptr<const SecurityOrigin> requestor_origin_;
   const KURL unreachable_url_;
+  const KURL pre_redirect_url_for_failed_navigations_;
   std::unique_ptr<WebNavigationBodyLoader> body_loader_;
   const network::mojom::IPAddressSpace ip_address_space_ =
       network::mojom::IPAddressSpace::kUnknown;
@@ -482,6 +483,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   bool is_client_redirect_;
   bool replaces_current_history_item_;
   bool data_received_;
+  const bool is_error_page_for_failed_navigation_;
 
   const Member<ContentSecurityPolicy> content_security_policy_;
   mojo::Remote<mojom::blink::ContentSecurityNotifier>

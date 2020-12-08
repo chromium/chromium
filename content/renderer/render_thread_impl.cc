@@ -1037,6 +1037,7 @@ void RenderThreadImpl::RegisterSchemes() {
   WebString error_scheme(WebString::FromASCII(kChromeErrorScheme));
   WebSecurityPolicy::RegisterURLSchemeAsDisplayIsolated(error_scheme);
   WebSecurityPolicy::RegisterURLSchemeAsNotAllowingJavascriptURLs(error_scheme);
+  WebSecurityPolicy::RegisterURLSchemeAsError(error_scheme);
 
   // googlechrome:
   WebString google_chrome_scheme(WebString::FromASCII(kGoogleChromeScheme));

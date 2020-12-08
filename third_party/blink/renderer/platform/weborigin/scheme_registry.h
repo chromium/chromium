@@ -132,6 +132,10 @@ class PLATFORM_EXPORT SchemeRegistry {
   static void RemoveURLSchemeAsAllowedForReferrer(const String& scheme);
   static bool ShouldTreatURLSchemeAsAllowedForReferrer(const String& scheme);
 
+  // Schemes used for internal error pages, for failed navigations.
+  static void RegisterURLSchemeAsError(const String&);
+  static bool ShouldTreatURLSchemeAsError(const String& scheme);
+
   // Allow resources from some schemes to load on a page, regardless of its
   // Content Security Policy.
   enum PolicyAreas : uint32_t {

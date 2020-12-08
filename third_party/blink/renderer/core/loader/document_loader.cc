@@ -170,6 +170,8 @@ DocumentLoader::DocumentLoader(
       origin_policy_(params_->origin_policy),
       requestor_origin_(params_->requestor_origin),
       unreachable_url_(params_->unreachable_url),
+      pre_redirect_url_for_failed_navigations_(
+          params_->pre_redirect_url_for_failed_navigations),
       ip_address_space_(params_->ip_address_space),
       grant_load_local_resources_(params_->grant_load_local_resources),
       force_fetch_cache_mode_(params_->force_fetch_cache_mode),
@@ -197,6 +199,9 @@ DocumentLoader::DocumentLoader(
           load_type_ == WebFrameLoadType::kReplaceCurrentItem &&
           (!frame_->Loader().Opener() || !url_.IsEmpty())),
       data_received_(false),
+      is_error_page_for_failed_navigation_(
+          SchemeRegistry::ShouldTreatURLSchemeAsError(
+              response_.ResponseUrl().Protocol())),
       // The input CSP is null when the CSP check done in the FrameLoader failed
       content_security_policy_(
           content_security_policy
@@ -646,7 +651,7 @@ void DocumentLoader::BodyLoadingFinished(
         probe::ToCoreProbeSink(GetFrame()), main_resource_identifier_, this,
         completion_time, total_encoded_data_length, total_decoded_body_length,
         should_report_corb_blocking);
-    if (response_.IsHTTP()) {
+    if (response_.IsHTTP() || is_error_page_for_failed_navigation_) {
       // The response is being copied here to pass the Encoded and Decoded
       // sizes.
       // TODO(yoav): copy the sizes info directly.
@@ -1827,10 +1832,16 @@ void DocumentLoader::CommitNavigation() {
     document->SetDeferredCompositorCommitIsAllowed(false);
   }
 
-  if (response_.IsHTTP() && navigation_timing_info_) {
+  if ((response_.IsHTTP() || is_error_page_for_failed_navigation_) &&
+      navigation_timing_info_) {
     // The response is being copied here to pass the ServerTiming info.
     // TODO(yoav): copy the ServerTiming info directly.
     navigation_timing_info_->SetFinalResponse(response_);
+    // Make sure we're properly reporting error documents.
+    if (is_error_page_for_failed_navigation_) {
+      navigation_timing_info_->SetInitialURL(
+          pre_redirect_url_for_failed_navigations_);
+    }
   }
 
   {

@@ -238,6 +238,9 @@ struct BLINK_EXPORT WebNavigationParams {
   // history item will contain this URL instead of request's URL.
   // This URL can be retrieved through WebDocumentLoader::UnreachableURL.
   WebURL unreachable_url;
+  // If non-null, this gives the pre-redirect URL in case that we're committing
+  // a failed navigation.
+  WebURL pre_redirect_url_for_failed_navigations;
 
   // The IP address space from which this document was loaded.
   // https://wicg.github.io/cors-rfc1918/#address-space

@@ -3403,6 +3403,12 @@ void RenderFrameImpl::CommitFailedNavigation(
   WebNavigationParams::FillStaticResponse(navigation_params.get(), "text/html",
                                           "UTF-8", error_html);
   navigation_params->unreachable_url = error.url();
+  if (commit_params->redirects.size()) {
+    navigation_params->pre_redirect_url_for_failed_navigations =
+        commit_params->redirects[0];
+  } else {
+    navigation_params->pre_redirect_url_for_failed_navigations = error.url();
+  }
 
   // The error page load (not to confuse with a failed load of original page)
   // was not initiated through BeginNavigation, therefore

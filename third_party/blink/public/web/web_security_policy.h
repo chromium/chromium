@@ -127,6 +127,9 @@ class WebSecurityPolicy {
   BLINK_EXPORT static void RegisterURLSchemeAsAllowedForReferrer(
       const WebString&);
 
+  // Registers an URL scheme as an error page.
+  BLINK_EXPORT static void RegisterURLSchemeAsError(const WebString&);
+
  private:
   WebSecurityPolicy() = delete;
 };

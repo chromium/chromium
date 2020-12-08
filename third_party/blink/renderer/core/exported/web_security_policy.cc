@@ -140,4 +140,8 @@ void WebSecurityPolicy::RegisterURLSchemeAsAllowedForReferrer(
   SchemeRegistry::RegisterURLSchemeAsAllowedForReferrer(scheme);
 }
 
+void WebSecurityPolicy::RegisterURLSchemeAsError(const WebString& scheme) {
+  SchemeRegistry::RegisterURLSchemeAsError(scheme);
+}
+
 }  // namespace blink

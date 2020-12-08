@@ -102,6 +102,7 @@ class URLSchemesRegistry final {
       content_security_policy_bypassing_schemes;
   URLSchemesSet secure_context_bypassing_schemes;
   URLSchemesSet allowed_in_referrer_schemes;
+  URLSchemesSet error_schemes;
   URLSchemesSet wasm_eval_csp_schemes;
 
  private:
@@ -390,6 +391,18 @@ bool SchemeRegistry::ShouldTreatURLSchemeAsAllowedForReferrer(
   if (scheme.IsEmpty())
     return false;
   return GetURLSchemesRegistry().allowed_in_referrer_schemes.Contains(scheme);
+}
+
+void SchemeRegistry::RegisterURLSchemeAsError(const String& scheme) {
+  DCHECK_EQ(scheme, scheme.LowerASCII());
+  GetMutableURLSchemesRegistry().error_schemes.insert(scheme);
+}
+
+bool SchemeRegistry::ShouldTreatURLSchemeAsError(const String& scheme) {
+  DCHECK_EQ(scheme, scheme.LowerASCII());
+  if (scheme.IsEmpty())
+    return false;
+  return GetURLSchemesRegistry().error_schemes.Contains(scheme);
 }
 
 void SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicy(
