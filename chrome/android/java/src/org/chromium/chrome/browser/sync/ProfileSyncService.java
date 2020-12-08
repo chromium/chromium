@@ -573,6 +573,15 @@ public class ProfileSyncService {
                 mNativeProfileSyncServiceAndroid, ProfileSyncService.this, keyRetrievalTrigger);
     }
 
+    /**
+     * @return Whether sync is enabled to sync urls or open tabs with a non custom passphrase.
+     */
+    public boolean isSyncingUrlsWithKeystorePassphrase() {
+        return isEngineInitialized() && getPreferredDataTypes().contains(ModelType.TYPED_URLS)
+                && (getPassphraseType() == PassphraseType.KEYSTORE_PASSPHRASE
+                        || getPassphraseType() == PassphraseType.TRUSTED_VAULT_PASSPHRASE);
+    }
+
     @VisibleForTesting
     public long getNativeProfileSyncServiceForTest() {
         return ProfileSyncServiceJni.get().getProfileSyncServiceForTest(
