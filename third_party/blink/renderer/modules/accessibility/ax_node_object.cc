@@ -3080,6 +3080,14 @@ int AXNodeObject::TextOffsetInFormattingContext(int offset) const {
     return AXObject::TextOffsetInFormattingContext(offset);
   }
 
+  // TODO(crbug.com/1149171): NGInlineOffsetMappingBuilder does not properly
+  // compute offset mappings for empty LayoutText objects. Other text objects
+  // (such as some list markers) are not affected.
+  if (const LayoutText* layout_text = DynamicTo<LayoutText>(layout_obj)) {
+    if (layout_text->GetText().IsEmpty())
+      return AXObject::TextOffsetInFormattingContext(offset);
+  }
+
   LayoutBlockFlow* formatting_context =
       NGOffsetMapping::GetInlineFormattingContextOf(*layout_obj);
   if (!formatting_context || formatting_context == layout_obj)
