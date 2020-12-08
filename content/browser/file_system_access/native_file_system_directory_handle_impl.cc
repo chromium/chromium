@@ -158,6 +158,14 @@ void NativeFileSystemDirectoryHandleImpl::GetEntries(
           base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
   listener->reset_on_disconnect();
 
+  if (GetReadPermissionStatus() != PermissionStatus::GRANTED) {
+    (*listener)->DidReadDirectory(
+        native_file_system_error::FromStatus(
+            NativeFileSystemStatus::kPermissionDenied),
+        {}, false);
+    return;
+  }
+
   DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::ReadDirectory,
       base::BindRepeating(
