@@ -17,13 +17,16 @@ class FakeDoNotDisturbController : public DoNotDisturbController {
 
   // DoNotDisturbController:
   bool IsDndEnabled() const override;
-  void SetDoNotDisturbStateInternal(bool is_dnd_enabled) override;
+  void SetDoNotDisturbStateInternal(bool is_dnd_enabled,
+                                    bool can_request_new_dnd_state) override;
   void RequestNewDoNotDisturbState(bool enabled) override;
+  bool CanRequestNewDndState() const override;
 
   void SetShouldRequestFail(bool should_request_fail);
 
  private:
   bool is_dnd_enabled_ = false;
+  bool can_request_new_dnd_state_ = false;
 
   // Indicates if the connection to the phone is working correctly. If it is
   // true, there is a problem and the phone cannot change its state.

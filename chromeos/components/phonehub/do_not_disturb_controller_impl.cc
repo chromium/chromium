@@ -23,13 +23,25 @@ bool DoNotDisturbControllerImpl::IsDndEnabled() const {
 }
 
 void DoNotDisturbControllerImpl::SetDoNotDisturbStateInternal(
-    bool is_dnd_enabled) {
-  if (is_dnd_enabled == is_dnd_enabled_)
+    bool is_dnd_enabled,
+    bool can_request_new_dnd_state) {
+  if (is_dnd_enabled_ == is_dnd_enabled &&
+      can_request_new_dnd_state_ == can_request_new_dnd_state) {
     return;
+  }
 
-  PA_LOG(INFO) << "Do Not Disturb state updated: " << is_dnd_enabled_ << " => "
-               << is_dnd_enabled;
-  is_dnd_enabled_ = is_dnd_enabled;
+  if (is_dnd_enabled != is_dnd_enabled_) {
+    PA_LOG(INFO) << "Do Not Disturb state updated: " << is_dnd_enabled_
+                 << " => " << is_dnd_enabled;
+    is_dnd_enabled_ = is_dnd_enabled;
+  }
+
+  if (can_request_new_dnd_state != can_request_new_dnd_state_) {
+    PA_LOG(INFO) << "Can request new Do Not Disturb state updated: "
+                 << can_request_new_dnd_state_ << " => "
+                 << can_request_new_dnd_state;
+    can_request_new_dnd_state_ = can_request_new_dnd_state;
+  }
 
   NotifyDndStateChanged();
 }
@@ -40,6 +52,10 @@ void DoNotDisturbControllerImpl::RequestNewDoNotDisturbState(bool enabled) {
 
   PA_LOG(INFO) << "Attempting to set DND state; new value: " << enabled;
   message_sender_->SendUpdateNotificationModeRequest(enabled);
+}
+
+bool DoNotDisturbControllerImpl::CanRequestNewDndState() const {
+  return can_request_new_dnd_state_;
 }
 
 }  // namespace phonehub

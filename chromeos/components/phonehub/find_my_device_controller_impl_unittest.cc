@@ -82,7 +82,7 @@ TEST_F(FindMyDeviceControllerImplTest, RingingStateChanges) {
   // Simulate flipping DoNotDisturb mode to enabled, this should set the
   // FindMyPhone status to kRingingNotAvailable.
   fake_do_not_disturb_controller_->SetDoNotDisturbStateInternal(
-      /*is_dnd_enabled=*/true);
+      /*is_dnd_enabled=*/true, /*can_request_new_dnd_state=*/true);
   EXPECT_EQ(FindMyDeviceController::Status::kRingingNotAvailable,
             GetPhoneRingingStatus());
   // Simulate initiating phone ringing when DoNotDisturb mode is enabled. This
@@ -95,7 +95,7 @@ TEST_F(FindMyDeviceControllerImplTest, RingingStateChanges) {
   // Flip DoNotDisturb back to disabled, expect status to reset back to its
   // previous state.
   fake_do_not_disturb_controller_->SetDoNotDisturbStateInternal(
-      /*is_dnd_enabled=*/false);
+      /*is_dnd_enabled=*/false, /*can_request_new_dnd_state=*/true);
   // Since we previously recorded that the phone should be ringing during
   // DoNotDisturb mode was enabled, we return to that state once DoNotDisturb
   // is disabled.
@@ -117,7 +117,7 @@ TEST_F(FindMyDeviceControllerImplTest, RequestNewRingStatus) {
   // Simulate flipping DoNotDisturb mode to enabled, this should set the
   // FindMyPhone status to kRingingNotAvailable and not send any new messages.
   fake_do_not_disturb_controller_->SetDoNotDisturbStateInternal(
-      /*is_dnd_enabled=*/true);
+      /*is_dnd_enabled=*/true, /*can_request_new_dnd_state=*/true);
   EXPECT_EQ(FindMyDeviceController::Status::kRingingNotAvailable,
             GetPhoneRingingStatus());
 
@@ -130,7 +130,7 @@ TEST_F(FindMyDeviceControllerImplTest, RequestNewRingStatus) {
   // Flip DoNotDisturb mode to disabled, expect that messages are able to be
   // sent again.
   fake_do_not_disturb_controller_->SetDoNotDisturbStateInternal(
-      /*is_dnd_enabled=*/false);
+      /*is_dnd_enabled=*/false, /*can_request_new_dnd_state=*/true);
   EXPECT_EQ(FindMyDeviceController::Status::kRingingOff,
             GetPhoneRingingStatus());
 

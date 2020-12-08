@@ -296,7 +296,8 @@ void MultidevicePhoneHubHandler::HandleEnableDnd(const base::ListValue* args) {
   CHECK(args->GetBoolean(0, &enabled));
   PA_LOG(VERBOSE) << "Setting Do Not Disturb state to " << enabled;
   fake_phone_hub_manager_->fake_do_not_disturb_controller()
-      ->SetDoNotDisturbStateInternal(enabled);
+      ->SetDoNotDisturbStateInternal(enabled,
+                                     /*can_request_new_dnd_state=*/true);
 }
 
 void MultidevicePhoneHubHandler::HandleSetFindMyDeviceStatus(
