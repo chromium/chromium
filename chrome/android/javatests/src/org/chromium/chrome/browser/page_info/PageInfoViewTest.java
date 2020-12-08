@@ -383,6 +383,7 @@ public class PageInfoViewTest {
     @MediumTest
     @Feature({"RenderTest"})
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    @FlakyTest(message = "https://crbug.com/1156285")
     public void testShowCookiesSubpage() throws IOException {
         mActivityTestRule.startMainActivityOnBlankPage();
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
