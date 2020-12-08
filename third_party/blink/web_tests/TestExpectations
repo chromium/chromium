@@ -5871,7 +5871,6 @@ crbug.com/1032681 virtual/disable-frequency-capping-for-overlay-popup-detection/
 
 # Sheriff 2020-12-03
 crbug.com/1154940 [ Win7 ] inspector-protocol/overlay/overlay-persistent-overlays-with-emulation.js [ Pass Failure ]
-crbug.com/1155125 [ Linux ] http/tests/history/replacestate-post-to-get-2.html [ Pass Timeout ]
 
 # Sheriff 2020-12-04
 # Failing on Webkit Linux Leak
