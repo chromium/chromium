@@ -224,8 +224,6 @@ void ConfigureMainFrameWebUIDataSource(content::WebUIDataSource* html_source) {
   html_source->AddResourcePath("kaleidoscope.js", IDR_KALEIDOSCOPE_JS);
   html_source->AddResourcePath("messages.js", IDR_KALEIDOSCOPE_MESSAGES_JS);
 
-  // TODO(beccahughes): Remove
-  html_source->AddResourcePath("utils.js", IDR_KALEIDOSCOPE_UTILS_JS);
   html_source->AddResourcePath("content-worker.js",
                                IDR_KALEIDOSCOPE_CONTENT_WORKER_JS);
 

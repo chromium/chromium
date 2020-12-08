@@ -22,9 +22,8 @@
       <include name="IDR_KALEIDOSCOPE_CONTENT_WORKER_JS" file="${root_gen_dir}/chrome/browser/media/kaleidoscope/internal/resources/ks-content-worker.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_KALEIDOSCOPE_HTML" file="internal/resources/kaleidoscope.html" type="BINDATA" />
       <include name="IDR_KALEIDOSCOPE_ICONS_JS" file="${root_gen_dir}/chrome/browser/media/kaleidoscope/internal/resources/icons.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_KALEIDOSCOPE_JS" file="internal/resources/kaleidoscope.js" type="BINDATA" />
+      <include name="IDR_KALEIDOSCOPE_JS" file="${root_gen_dir}/chrome/browser/media/kaleidoscope/internal/resources/ks-kaleidoscope.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_KALEIDOSCOPE_MESSAGES_JS" file="internal/resources/messages.js" type="BINDATA" />
-      <include name="IDR_KALEIDOSCOPE_UTILS_JS" file="internal/resources/utils.js" type="BINDATA" />
       <include name="IDR_GEOMETRY_MOJOM_LITE_JS" file="${root_gen_dir}/ui/gfx/geometry/mojom/geometry.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_KALEIDOSCOPE_MOJOM_LITE_JS" file="${root_gen_dir}/chrome/browser/media/kaleidoscope/mojom/kaleidoscope.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_KALEIDOSCOPE_NTP_MODULE_JS" file="${root_gen_dir}/chrome/browser/media/kaleidoscope/internal/resources/module/module.js" use_base_dir="false" type="BINDATA" />
