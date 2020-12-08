@@ -241,13 +241,13 @@ void CrostiniApps::OnCrostiniEnabledChanged() {
                                 : apps::mojom::OptionalBool::kFalse;
 
   // The Crostini Terminal app is a hard-coded special case. It is the entry
-  // point to installing other Crostini apps.
+  // point to installing other Crostini apps, and is always in search.
   apps::mojom::AppPtr app = apps::mojom::App::New();
   app->app_type = apps::mojom::AppType::kCrostini;
   app->app_id = crostini::kCrostiniTerminalSystemAppId;
   app->show_in_launcher = show;
   app->show_in_shelf = show;
-  app->show_in_search = show;
+  app->show_in_search = apps::mojom::OptionalBool::kTrue;
   Publish(std::move(app), subscribers_);
 }
 
