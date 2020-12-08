@@ -223,8 +223,11 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
       data->AddState(ax::mojom::State::kFocusable);
   }
 
-  if (!view_->GetEnabled())
+  if (custom_data_.HasIntAttribute(ax::mojom::IntAttribute::kRestriction)) {
+    data->SetRestriction(custom_data_.GetRestriction());
+  } else if (!view_->GetEnabled()) {
     data->SetRestriction(ax::mojom::Restriction::kDisabled);
+  }
 
   if (!view_->GetVisible() && data->role != ax::mojom::Role::kAlert)
     data->AddState(ax::mojom::State::kInvisible);
@@ -283,6 +286,19 @@ void ViewAccessibility::OverrideIsLeaf(bool value) {
 
 void ViewAccessibility::OverrideIsIgnored(bool value) {
   is_ignored_ = value;
+}
+
+void ViewAccessibility::OverrideViewEnablingState(bool enabled) {
+  // Cannot use `AXNodeData::SetRestriction()` which does not store
+  // `ax::mojom::Restriction::kNone`.
+
+  if (custom_data_.HasIntAttribute(ax::mojom::IntAttribute::kRestriction))
+    custom_data_.RemoveIntAttribute(ax::mojom::IntAttribute::kRestriction);
+
+  custom_data_.AddIntAttribute(
+      ax::mojom::IntAttribute::kRestriction,
+      enabled ? static_cast<int>(ax::mojom::Restriction::kNone)
+              : static_cast<int>(ax::mojom::Restriction::kDisabled));
 }
 
 void ViewAccessibility::OverrideBounds(const gfx::RectF& bounds) {

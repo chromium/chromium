@@ -78,6 +78,7 @@ class VIEWS_EXPORT ViewAccessibility {
   void OverrideDescription(const base::string16& description);
   void OverrideIsLeaf(bool value);
   void OverrideIsIgnored(bool value);
+  void OverrideViewEnablingState(bool enabled);
   void OverrideBounds(const gfx::RectF& bounds);
   void OverrideDescribedBy(View* described_by_view);
   void OverrideHasPopup(const ax::mojom::HasPopup has_popup);
