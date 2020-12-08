@@ -64,13 +64,8 @@ class FileMetadata {
 };
 
 PLATFORM_EXPORT bool GetFileSize(const String&, int64_t& result);
-PLATFORM_EXPORT bool GetFileModificationTime(
-    const String&,
-    base::Optional<base::Time>& result);
 PLATFORM_EXPORT bool GetFileMetadata(const String&, FileMetadata&);
 PLATFORM_EXPORT KURL FilePathToURL(const String&);
-
-PLATFORM_EXPORT void RebindFileUtilitiesForTesting();
 
 inline base::Optional<base::Time> NullableTimeToOptionalTime(base::Time time) {
   if (time.is_null())

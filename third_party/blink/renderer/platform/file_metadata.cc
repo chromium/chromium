@@ -78,24 +78,6 @@ bool GetFileSize(const String& path, int64_t& result) {
   return true;
 }
 
-bool GetFileModificationTime(const String& path,
-                             base::Optional<base::Time>& result) {
-  FileMetadata metadata;
-  if (!GetFileMetadata(path, metadata))
-    return false;
-  result = metadata.modification_time;
-  return true;
-}
-
-void RebindFileUtilitiesForTesting() {
-  auto& host = GetFileUtilitiesHost();
-  if (host) {
-    host.Unbind().reset();
-  }
-  Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-      host.BindNewPipeAndPassReceiver());
-}
-
 bool GetFileMetadata(const String& path, FileMetadata& metadata) {
   auto& host = GetFileUtilitiesHost();
   if (!host) {
