@@ -454,18 +454,6 @@
       "use_goma": true
     }
   },
-  "mac_chromium_10.10": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "mac_deterministic_build": true,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
   "mac_chromium_10.12_rel_ng": {
     "gn_args": {
       "dcheck_always_on": true,
