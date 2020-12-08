@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContents;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.components.content_capture.ContentCaptureConsumer;
@@ -593,6 +594,7 @@ public class AwContentCaptureTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/1156418")
     public void testChangeContent() throws Throwable {
         final String response = "<html><head></head><body>"
                 + "<div id='editable_id'>Hello</div>"
