@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_VERSION_UTIL_WIN_H_
-#define CHROME_BROWSER_UI_WEBUI_VERSION_UTIL_WIN_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_VERSION_VERSION_UTIL_WIN_H_
+#define CHROME_BROWSER_UI_WEBUI_VERSION_VERSION_UTIL_WIN_H_
 
 #include <string>
 
@@ -24,4 +24,4 @@ base::string16 GetCohortVersionInfo();
 }  // namespace win
 }  // namespace version_utils
 
-#endif  // CHROME_BROWSER_UI_WEBUI_VERSION_UTIL_WIN_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_VERSION_VERSION_UTIL_WIN_H_

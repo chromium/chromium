@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/flags_ui.h"
+#include "chrome/browser/ui/webui/flags/flags_ui.h"
 
 #include <memory>
 #include <string>
@@ -17,7 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/flags_ui_handler.h"
+#include "chrome/browser/ui/webui/flags/flags_ui_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/flags_ui/flags_ui_constants.h"
@@ -255,12 +255,11 @@ FlagsUI::FlagsUI(content::WebUI* web_ui)
   content::WebUIDataSource::Add(profile, source);
 }
 
-FlagsUI::~FlagsUI() {
-}
+FlagsUI::~FlagsUI() {}
 
 // static
 base::RefCountedMemory* FlagsUI::GetFaviconResourceBytes(
-      ui::ScaleFactor scale_factor) {
+    ui::ScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
       IDR_FLAGS_FAVICON, scale_factor);
 }

@@ -84,7 +84,7 @@
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
 #include "chrome/browser/ui/user_education/feature_promo_snooze_service.h"
-#include "chrome/browser/ui/webui/flags_ui.h"
+#include "chrome/browser/ui/webui/flags/flags_ui.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/ui/webui/print_preview/policy_settings.h"
 #include "chrome/browser/updates/announcement_notification/announcement_notification_service.h"

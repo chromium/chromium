@@ -33,7 +33,7 @@
 #include "chrome/browser/ui/webui/policy_indicator_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
-#include "chrome/browser/ui/webui/version_ui.h"
+#include "chrome/browser/ui/webui/version/version_ui.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/version_handler_win.h"
+#include "chrome/browser/ui/webui/version/version_handler_win.h"
 
 #include "base/test/scoped_os_info_override_win.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
-#include "chrome/browser/ui/webui/version_handler_win.h"
+#include "chrome/browser/ui/webui/version/version_handler_win.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class WebUIWindowsVersion : public testing::Test {

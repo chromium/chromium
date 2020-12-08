@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/invalidations_message_handler.h"
+#include "chrome/browser/ui/webui/invalidations/invalidations_message_handler.h"
 
 #include <utility>
 
@@ -20,7 +20,6 @@
 namespace invalidation {
 class InvalidationLogger;
 }  // namespace invalidation
-
 
 namespace {
 
@@ -54,8 +53,8 @@ void InvalidationsMessageHandler::UIReady(const base::ListValue* args) {
   invalidation::ProfileInvalidationProvider* invalidation_provider =
       GetInvalidationProvider(Profile::FromWebUI(web_ui()));
   if (invalidation_provider) {
-    logger_ = invalidation_provider->GetInvalidationService()->
-        GetInvalidationLogger();
+    logger_ = invalidation_provider->GetInvalidationService()
+                  ->GetInvalidationLogger();
   }
   if (logger_ && !logger_->IsObserverRegistered(this))
     logger_->RegisterObserver(this);

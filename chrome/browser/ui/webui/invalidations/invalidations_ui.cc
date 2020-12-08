@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/invalidations_ui.h"
+#include "chrome/browser/ui/webui/invalidations/invalidations_ui.h"
 
 #include <memory>
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/invalidations_message_handler.h"
+#include "chrome/browser/ui/webui/invalidations/invalidations_message_handler.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/invalidations_resources.h"
 #include "content/public/browser/web_ui.h"
@@ -40,4 +40,4 @@ InvalidationsUI::InvalidationsUI(content::WebUI* web_ui)
   }
 }
 
-InvalidationsUI::~InvalidationsUI() { }
+InvalidationsUI::~InvalidationsUI() {}

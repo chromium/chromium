@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/version_handler.h"
+#include "chrome/browser/ui/webui/version/version_handler.h"
 
 #include <stddef.h>
 
@@ -54,8 +54,7 @@ void GetFilePaths(const base::FilePath& profile_path,
 
 VersionHandler::VersionHandler() {}
 
-VersionHandler::~VersionHandler() {
-}
+VersionHandler::~VersionHandler() {}
 
 void VersionHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_VERSION_HANDLER_CHROMEOS_H_
-#define CHROME_BROWSER_UI_WEBUI_VERSION_HANDLER_CHROMEOS_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_VERSION_VERSION_HANDLER_CHROMEOS_H_
+#define CHROME_BROWSER_UI_WEBUI_VERSION_VERSION_HANDLER_CHROMEOS_H_
 
 #include <string>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/version_handler.h"
+#include "chrome/browser/ui/webui/version/version_handler.h"
 #include "chromeos/dbus/util/version_loader.h"
 
 // VersionHandlerChromeOS is responsible for loading the Chrome OS
@@ -33,4 +33,4 @@ class VersionHandlerChromeOS : public VersionHandler {
   DISALLOW_COPY_AND_ASSIGN(VersionHandlerChromeOS);
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_VERSION_HANDLER_CHROMEOS_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_VERSION_VERSION_HANDLER_CHROMEOS_H_

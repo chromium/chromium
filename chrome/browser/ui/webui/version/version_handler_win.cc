@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/version_handler_win.h"
+#include "chrome/browser/ui/webui/version/version_handler_win.h"
 
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/win/windows_version.h"
-#include "chrome/browser/ui/webui/version_util_win.h"
+#include "chrome/browser/ui/webui/version/version_util_win.h"
 #include "content/public/browser/web_ui.h"
 
 VersionHandlerWindows::VersionHandlerWindows() {}

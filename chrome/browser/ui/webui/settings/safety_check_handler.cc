@@ -18,7 +18,7 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/version_ui.h"
+#include "chrome/browser/ui/webui/version/version_ui.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"

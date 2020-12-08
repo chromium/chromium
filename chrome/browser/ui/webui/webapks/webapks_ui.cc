@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/webapks_ui.h"
+#include "chrome/browser/ui/webui/webapks/webapks_ui.h"
 
 #include <memory>
 #include <string>
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/webapks_handler.h"
+#include "chrome/browser/ui/webui/webapks/webapks_handler.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/webapks_ui_resources.h"
 #include "content/public/browser/web_ui.h"

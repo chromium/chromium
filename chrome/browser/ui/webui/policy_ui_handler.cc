@@ -36,7 +36,7 @@
 #include "chrome/browser/policy/schema_registry_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
-#include "chrome/browser/ui/webui/version_ui.h"
+#include "chrome/browser/ui/webui/version/version_ui.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/grit/chromium_strings.h"
@@ -100,7 +100,7 @@
 #endif
 
 #if defined(OS_WIN)
-#include "chrome/browser/ui/webui/version_util_win.h"
+#include "chrome/browser/ui/webui/version/version_util_win.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

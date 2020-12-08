@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/version_ui.h"
+#include "chrome/browser/ui/webui/version/version_ui.h"
 
 #include <memory>
 
@@ -13,8 +13,8 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/version_handler.h"
-#include "chrome/browser/ui/webui/version_util_win.h"
+#include "chrome/browser/ui/webui/version/version_handler.h"
+#include "chrome/browser/ui/webui/version/version_util_win.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
@@ -40,7 +40,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/webui/version_handler_chromeos.h"
+#include "chrome/browser/ui/webui/version/version_handler_chromeos.h"
 #endif
 
 #if defined(OS_MAC)
@@ -48,7 +48,7 @@
 #endif
 
 #if defined(OS_WIN)
-#include "chrome/browser/ui/webui/version_handler_win.h"
+#include "chrome/browser/ui/webui/version/version_handler_win.h"
 #endif
 
 using content::WebUIDataSource;

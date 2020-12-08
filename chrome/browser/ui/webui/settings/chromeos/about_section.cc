@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/webui/settings/about_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/device_name_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
-#include "chrome/browser/ui/webui/version_ui.h"
+#include "chrome/browser/ui/webui/version/version_ui.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"

@@ -7,7 +7,7 @@
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/ui/webui/flags_ui.h"
+#include "chrome/browser/ui/webui/flags/flags_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "ui/gfx/color_palette.h"

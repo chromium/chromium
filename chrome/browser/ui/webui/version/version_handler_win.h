@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_VERSION_HANDLER_WIN_H_
-#define CHROME_BROWSER_UI_WEBUI_VERSION_HANDLER_WIN_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_VERSION_VERSION_HANDLER_WIN_H_
+#define CHROME_BROWSER_UI_WEBUI_VERSION_VERSION_HANDLER_WIN_H_
 
 #include <string>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/version_handler.h"
+#include "chrome/browser/ui/webui/version/version_handler.h"
 
 // VersionHandlerWindows is responsible for loading the Windows OS version.
 class VersionHandlerWindows : public VersionHandler {
@@ -32,4 +32,4 @@ class VersionHandlerWindows : public VersionHandler {
   DISALLOW_COPY_AND_ASSIGN(VersionHandlerWindows);
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_VERSION_HANDLER_WIN_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_VERSION_VERSION_HANDLER_WIN_H_
