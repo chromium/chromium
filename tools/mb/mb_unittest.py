@@ -319,7 +319,9 @@ class UnitTest(unittest.TestCase):
       actual_ret = mbw.Main(args)
     finally:
       os.environ = prev_env
-    self.assertEqual(actual_ret, ret)
+    self.assertEqual(
+        actual_ret, ret,
+        "ret: %s, out: %s, err: %s" % (actual_ret, mbw.out, mbw.err))
     if out is not None:
       self.assertEqual(mbw.out, out)
     if err is not None:
@@ -714,7 +716,10 @@ class UnitTest(unittest.TestCase):
          "/some/vpython/pkg  git_revision:deadbeef\n"),
     }
 
+    task_json = json.dumps({'tasks': [{'task_id': '00000'}]})
+
     mbw = self.fake_mbw(files=files)
+    mbw.files[mbw.PathJoin(mbw.TempDir(), 'task.json')] = task_json
     original_impl = mbw.ToSrcRelPath
 
     def to_src_rel_path_stub(path):
@@ -726,6 +731,9 @@ class UnitTest(unittest.TestCase):
 
     self.check(['run', '-s', '-c', 'debug_goma', '//out/Default',
                 'base_unittests'], mbw=mbw, ret=0)
+    mbw = self.fake_mbw(files=files)
+    mbw.files[mbw.PathJoin(mbw.TempDir(), 'task.json')] = task_json
+    mbw.ToSrcRelPath = to_src_rel_path_stub
     self.check(['run', '-s', '-c', 'debug_goma', '-d', 'os', 'Win7',
                 '//out/Default', 'base_unittests'], mbw=mbw, ret=0)
 

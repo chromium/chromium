@@ -618,7 +618,7 @@ class MetaBuildWrapper(object):
     # TODO(dpranke): Also, add support for sharding and merging results.
     dimensions = []
     for k, v in self._DefaultDimensions() + self.args.dimensions:
-      dimensions += ['-d', k, v]
+      dimensions += ['-d', '%s=%s' % (k, v)]
 
     archive_json_path = self.ToSrcRelPath(
         '%s/%s.archive.json' % (build_dir, target))
@@ -672,27 +672,47 @@ class MetaBuildWrapper(object):
           file=sys.stderr)
       return 1
 
-    tags = ['--tags=%s' % tag for tag in self.args.tags]
+    tags = ['-tag=%s' % tag for tag in self.args.tags]
 
+    try:
+      json_dir = self.TempDir()
+      json_file = self.PathJoin(json_dir, 'task.json')
+      cmd = [
+          self.PathJoin('tools', 'luci-go', 'swarming'),
+          'trigger',
+          '-isolated',
+          isolated_hash,
+          '-I',
+          'https://' + isolate_server,
+          '-namespace',
+          namespace,
+          '-server',
+          swarming_server,
+          '-tag=purpose:user-debug-mb',
+          '-relative-cwd',
+          self.ToSrcRelPath(build_dir),
+          '-dump-json',
+          json_file,
+      ] + tags + dimensions + ['--'] + list(isolate_cmd)
+      if self.args.extra_args:
+        cmd += self.args.extra_args
+      self.Print('')
+      ret, _, _ = self.Run(cmd, force_verbose=True, buffer_output=False)
+      if ret:
+        return ret
+      task_json = self.ReadFile(json_file)
+      task_id = json.loads(task_json)["tasks"][0]['task_id']
+    finally:
+      if json_dir:
+        self.RemoveDirectory(json_dir)
     cmd = [
-        self.executable,
-        self.PathJoin('tools', 'swarming_client', 'swarming.py'),
-        'run',
-        '-s',
-        isolated_hash,
-        '-I',
-        isolate_server,
-        '--namespace',
-        namespace,
-        '-S',
+        self.PathJoin('tools', 'luci-go', 'swarming'),
+        'collect',
+        '-server',
         swarming_server,
-        '--tags=purpose:user-debug-mb',
-        '--relative-cwd',
-        self.ToSrcRelPath(build_dir),
-    ] + tags + dimensions + ['--raw-cmd', '--'] + list(isolate_cmd)
-    if self.args.extra_args:
-      cmd += self.args.extra_args
-    self.Print('')
+        '-task-output-stdout=console',
+        task_id,
+    ]
     ret, _, _ = self.Run(cmd, force_verbose=True, buffer_output=False)
     return ret
 
