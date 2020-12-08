@@ -21,7 +21,6 @@ import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.Linker;
-import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.memory.MemoryPressureUma;
 import org.chromium.base.process_launcher.ChildProcessServiceDelegate;
 import org.chromium.base.task.PostTask;
@@ -103,27 +102,11 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
 
         JNIUtils.enableSelectiveJniRegistration();
 
-        Linker linker = null;
-        boolean requestedSharedRelro = false;
         if (LibraryLoader.getInstance().useChromiumLinker()) {
             assert mLinkerParams != null;
-            linker = getLinker();
-            requestedSharedRelro = true;
-            linker.initServiceProcess(mLinkerParams.mBaseLoadAddress);
+            getLinker().initServiceProcess(mLinkerParams.mBaseLoadAddress);
         }
-        try {
-            LibraryLoader.getInstance().loadNowOverrideApplicationContext(hostContext);
-        } catch (ProcessInitException e) {
-            if (requestedSharedRelro) {
-                Log.w(TAG,
-                        "Failed to load native library with shared RELRO, "
-                                + "retrying without");
-                linker.disableSharedRelros();
-                LibraryLoader.getInstance().loadNowOverrideApplicationContext(hostContext);
-            } else {
-                throw e;
-            }
-        }
+        LibraryLoader.getInstance().loadNowOverrideApplicationContext(hostContext);
         LibraryLoader.getInstance().registerRendererProcessHistogram();
         initializeLibrary();
     }

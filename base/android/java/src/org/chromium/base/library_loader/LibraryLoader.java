@@ -416,7 +416,6 @@ public class LibraryLoader {
     }
 
     // Helper for loadAlreadyLocked(). Load a native shared library with the Chromium linker.
-    // Records UMA histograms depending on the results of loading.
     private void loadLibraryWithCustomLinker(Linker linker, String library) {
         // Attempt shared RELROs, and if that fails then retry without.
         try {

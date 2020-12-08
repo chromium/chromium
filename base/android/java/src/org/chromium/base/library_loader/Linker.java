@@ -84,17 +84,9 @@ import javax.annotation.concurrent.GuardedBy;
  *
  *  - Before loading the library, setApkFilePath() must be called when loading from the APK.
  *
- *  - A service process shall call either initServiceProcess() or
- *    disableSharedRelros() early (i.e. before loadLibrary() is called).
- *    Otherwise, the linker considers that it is running inside the browser
- *    process. This is because various Chromium projects have vastly
- *    different initialization paths.
- *
- *    disableSharedRelros() completely disables shared RELRO, and loadLibrary()
- *    will behave exactly like System.loadLibrary().
- *
- *    initServiceProcess(baseLoadAddress) indicates that shared RELRO are to be
- *    used in this process.
+ *  - A service process shall call initServiceProcess() early (i.e. before loadLibrary() is
+ *    called). Otherwise, the linker considers that it is running inside the browser process. This
+ *    is because various Chromium projects have vastly different initialization paths.
  *
  *  - The browser is in charge of deciding where in memory each library should
  *    be loaded. This address must be passed to each service process (see
@@ -169,8 +161,8 @@ public abstract class Linker {
      *
      * When relro sharing is not happening:
      * INITIALIZED -> DONE_PROVIDE_RELRO (Browser in case of relro sharing error)
-     * INITIALIZED -> DONE (Other processes, or browser when relro sharing was disabled from the
-     * start, possibly due to a retry after a load failure.)
+     * INITIALIZED -> DONE (Other processes, or browser when relro sharing was disabled, possibly
+     *                      due to a retry after a load failure.)
      */
     @IntDef({State.UNINITIALIZED, State.INITIALIZED, State.DONE_PROVIDE_RELRO, State.DONE})
     @Retention(RetentionPolicy.SOURCE)
@@ -246,19 +238,6 @@ public abstract class Linker {
     }
 
     /**
-     * Call this method before loading any libraries to indicate that this
-     * process shall neither create nor reuse shared RELRO sections.
-     */
-    public final void disableSharedRelros() {
-        if (DEBUG) Log.i(TAG, "disableSharedRelros() called");
-        synchronized (sLock) {
-            mInBrowserProcess = false;
-            ensureInitializedLocked();
-            assert mState == State.INITIALIZED;
-        }
-    }
-
-    /**
      * Obtain a random base load address at which to place loaded libraries.
      *
      * @return new base load address
@@ -324,11 +303,11 @@ public abstract class Linker {
     }
 
     /**
-     * Call this to retrieve the shared RELRO sections created in this process,
-     * after loading the library.
+     * Call this to retrieve the shared RELRO sections created in this process, after loading the
+     * library.
      *
-     * @return a new Bundle instance, or null if RELRO sharing is disabled on
-     * this system, or if initServiceProcess() was called previously.
+     * @return a new Bundle instance, or null if RELRO sharing is disabled via
+     * |isFixedAddressPermitted=false|, or if initServiceProcess() was called previously.
      */
     public final Bundle getSharedRelros() {
         synchronized (sLock) {
