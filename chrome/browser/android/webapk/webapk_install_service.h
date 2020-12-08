@@ -15,8 +15,8 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
-#include "chrome/browser/installable/installable_metrics.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/webapps/installable/installable_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
 
@@ -74,7 +74,7 @@ class WebApkInstallService : public KeyedService {
                     const webapps::ShortcutInfo& shortcut_info,
                     const SkBitmap& primary_icon,
                     bool is_primary_icon_maskable,
-                    WebappInstallSource install_source);
+                    webapps::WebappInstallSource install_source);
 
   // Talks to the Chrome WebAPK server to update a WebAPK on the server and to
   // the Google Play server to install the downloaded WebAPK.

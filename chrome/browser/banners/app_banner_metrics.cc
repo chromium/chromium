@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/installable/installable_logging.h"
+#include "components/webapps/installable/installable_logging.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
 namespace banners {
@@ -60,10 +60,10 @@ void TrackBeforeInstallEvent(int event) {
   base::UmaHistogramSparse(kBeforeInstallEventHistogram, event);
 }
 
-void TrackInstallableStatusCode(InstallableStatusCode code) {
-  DCHECK_LE(NO_ERROR_DETECTED, code);
-  DCHECK_LT(code, MAX_ERROR_CODE);
-  if (code != IN_INCOGNITO) {
+void TrackInstallableStatusCode(webapps::InstallableStatusCode code) {
+  DCHECK_LE(webapps::NO_ERROR_DETECTED, code);
+  DCHECK_LT(code, webapps::MAX_ERROR_CODE);
+  if (code != webapps::IN_INCOGNITO) {
     // Do not log that we are in incognito to UMA.
     base::UmaHistogramSparse(kInstallableStatusCodeHistogram, code);
   }

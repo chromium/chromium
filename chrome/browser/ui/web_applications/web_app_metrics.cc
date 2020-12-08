@@ -10,7 +10,6 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/time/time.h"
 #include "chrome/browser/engagement/site_engagement_service.h"
-#include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "components/webapps/installable/installable_metrics.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
 using DisplayMode = blink::mojom::DisplayMode;
@@ -64,7 +64,8 @@ Optional<int> GetLatestWebAppInstallSource(const AppId& app_id,
   Optional<int> value =
       GetIntWebAppPref(prefs, app_id, kLatestWebAppInstallSource);
   DCHECK_GE(value.value_or(0), 0);
-  DCHECK_LT(value.value_or(0), static_cast<int>(WebappInstallSource::COUNT));
+  DCHECK_LT(value.value_or(0),
+            static_cast<int>(webapps::WebappInstallSource::COUNT));
   return value;
 }
 

@@ -17,10 +17,10 @@
 #include "chrome/browser/banners/app_banner_metrics.h"
 #include "chrome/browser/banners/app_banner_settings_helper.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
-#include "chrome/browser/installable/installable_metrics.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/url_formatter/elide_url.h"
+#include "components/webapps/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/android/java_bitmap.h"
 
@@ -182,8 +182,8 @@ void AddToHomescreenMediator::OnDataAvailable(const webapps::ShortcutInfo& info,
   params_->primary_icon = data_fetcher_->primary_icon();
   params_->has_maskable_primary_icon =
       data_fetcher_->has_maskable_primary_icon();
-  params_->install_source = InstallableMetrics::GetInstallSource(
-      data_fetcher_->web_contents(), InstallTrigger::MENU);
+  params_->install_source = webapps::InstallableMetrics::GetInstallSource(
+      data_fetcher_->web_contents(), webapps::InstallTrigger::MENU);
 
   // AddToHomescreenMediator::OnDataAvailable() is called in the code path
   // to show A2HS dialog from app menu. In this code path, display_icon is

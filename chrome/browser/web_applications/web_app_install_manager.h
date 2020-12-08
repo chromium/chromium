@@ -44,35 +44,35 @@ class WebAppInstallManager final : public InstallManager,
   // InstallManager:
   void LoadWebAppAndCheckManifest(
       const GURL& web_app_url,
-      WebappInstallSource install_source,
+      webapps::WebappInstallSource install_source,
       WebAppManifestCheckCallback callback) override;
   void InstallWebAppFromManifest(content::WebContents* contents,
                                  bool bypass_service_worker_check,
-                                 WebappInstallSource install_source,
+                                 webapps::WebappInstallSource install_source,
                                  WebAppInstallDialogCallback dialog_callback,
                                  OnceInstallCallback callback) override;
   void InstallWebAppFromManifestWithFallback(
       content::WebContents* contents,
       bool force_shortcut_app,
-      WebappInstallSource install_source,
+      webapps::WebappInstallSource install_source,
       WebAppInstallDialogCallback dialog_callback,
       OnceInstallCallback callback) override;
 
   void InstallWebAppFromInfo(
       std::unique_ptr<WebApplicationInfo> web_application_info,
       ForInstallableSite for_installable_site,
-      WebappInstallSource install_source,
+      webapps::WebappInstallSource install_source,
       OnceInstallCallback callback) override;
 
   void InstallWebAppFromInfo(
       std::unique_ptr<WebApplicationInfo> web_application_info,
       ForInstallableSite for_installable_site,
       const base::Optional<InstallParams>& install_params,
-      WebappInstallSource install_source,
+      webapps::WebappInstallSource install_source,
       OnceInstallCallback callback) override;
   void InstallWebAppWithParams(content::WebContents* web_contents,
                                const InstallParams& install_params,
-                               WebappInstallSource install_source,
+                               webapps::WebappInstallSource install_source,
                                OnceInstallCallback callback) override;
   void InstallBookmarkAppFromSync(
       const AppId& bookmark_app_id,

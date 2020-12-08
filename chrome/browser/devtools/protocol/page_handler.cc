@@ -4,8 +4,8 @@
 
 #include "chrome/browser/devtools/protocol/page_handler.h"
 
-#include "chrome/browser/installable/installable_manager.h"
 #include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
+#include "components/webapps/installable/installable_manager.h"
 #include "ui/gfx/image/image.h"
 
 PageHandler::PageHandler(content::WebContents* web_contents,
@@ -53,9 +53,10 @@ protocol::Response PageHandler::SetAdBlockingEnabled(bool enabled) {
 void PageHandler::GetInstallabilityErrors(
     std::unique_ptr<GetInstallabilityErrorsCallback> callback) {
   auto errors = std::make_unique<protocol::Array<std::string>>();
-  InstallableManager* manager =
-      web_contents() ? InstallableManager::FromWebContents(web_contents())
-                     : nullptr;
+  webapps::InstallableManager* manager =
+      web_contents()
+          ? webapps::InstallableManager::FromWebContents(web_contents())
+          : nullptr;
   if (!manager) {
     callback->sendFailure(
         protocol::Response::ServerError("Unable to fetch errors for target"));
@@ -94,9 +95,10 @@ void PageHandler::GotInstallabilityErrors(
 
 void PageHandler::GetManifestIcons(
     std::unique_ptr<GetManifestIconsCallback> callback) {
-  InstallableManager* manager =
-      web_contents() ? InstallableManager::FromWebContents(web_contents())
-                     : nullptr;
+  webapps::InstallableManager* manager =
+      web_contents()
+          ? webapps::InstallableManager::FromWebContents(web_contents())
+          : nullptr;
 
   if (!manager) {
     callback->sendFailure(

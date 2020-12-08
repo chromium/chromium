@@ -535,6 +535,7 @@ test("chromevox_tests") {
     "//chrome/test:test_support_ui",
     "//chrome/test/data:web_ui_test_bindings",
     "//chromeos/constants:constants",
+    "//components/webapps",
     "//content/test:test_support",
     "//extensions/browser:test_support",
     "//testing/gmock",

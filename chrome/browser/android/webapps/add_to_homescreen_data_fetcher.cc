@@ -22,13 +22,13 @@
 #include "chrome/browser/android/shortcut_helper.h"
 #include "chrome/browser/android/webapk/webapk_web_manifest_checker.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
-#include "chrome/browser/installable/installable_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/webapps/android/webapps_icon_utils.h"
+#include "components/webapps/installable/installable_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -49,8 +49,8 @@ GURL GetShortcutUrl(content::WebContents* web_contents) {
       web_contents->GetVisibleURL());
 }
 
-InstallableParams ParamsToPerformManifestAndIconFetch() {
-  InstallableParams params;
+webapps::InstallableParams ParamsToPerformManifestAndIconFetch() {
+  webapps::InstallableParams params;
   params.valid_primary_icon = true;
   params.prefer_maskable_icon =
       webapps::WebappsIconUtils::DoesAndroidSupportMaskableIcons();
@@ -58,8 +58,8 @@ InstallableParams ParamsToPerformManifestAndIconFetch() {
   return params;
 }
 
-InstallableParams ParamsToPerformInstallableCheck() {
-  InstallableParams params;
+webapps::InstallableParams ParamsToPerformInstallableCheck() {
+  webapps::InstallableParams params;
   params.check_eligibility = true;
   params.valid_manifest = true;
   params.has_worker = true;
@@ -120,7 +120,8 @@ AddToHomescreenDataFetcher::AddToHomescreenDataFetcher(
     int data_timeout_ms,
     Observer* observer)
     : content::WebContentsObserver(web_contents),
-      installable_manager_(InstallableManager::FromWebContents(web_contents)),
+      installable_manager_(
+          webapps::InstallableManager::FromWebContents(web_contents)),
       observer_(observer),
       shortcut_info_(GetShortcutUrl(web_contents)),
       has_maskable_primary_icon_(false),
@@ -224,7 +225,7 @@ void AddToHomescreenDataFetcher::OnDataTimedout() {
 }
 
 void AddToHomescreenDataFetcher::OnDidGetManifestAndIcons(
-    const InstallableData& data) {
+    const webapps::InstallableData& data) {
   if (!web_contents())
     return;
 
@@ -269,7 +270,7 @@ void AddToHomescreenDataFetcher::OnDidGetManifestAndIcons(
 }
 
 void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
-    const InstallableData& data) {
+    const webapps::InstallableData& data) {
   StopTimer();
 
   if (!web_contents())

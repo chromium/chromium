@@ -13,6 +13,9 @@ class WebContents;
 
 namespace webapps {
 
+enum class InstallTrigger;
+enum class WebappInstallSource;
+
 // Interface to be implemented by the embedder (such as Chrome or WebLayer) to
 // expose embedder specific logic.
 class WebappsClient {
@@ -27,6 +30,10 @@ class WebappsClient {
 
   virtual security_state::SecurityLevel GetSecurityLevelForWebContents(
       content::WebContents* web_contents) = 0;
+
+  virtual WebappInstallSource GetInstallSource(
+      content::WebContents* web_contents,
+      InstallTrigger trigger) = 0;
 };
 
 }  // namespace webapps

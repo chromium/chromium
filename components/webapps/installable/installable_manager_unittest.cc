@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/installable/installable_manager.h"
+#include "components/webapps/installable/installable_manager.h"
 
 #include "base/feature_list.h"
 #include "base/optional.h"
@@ -13,6 +13,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+
+namespace webapps {
 
 using IconPurpose = blink::mojom::ManifestImageResource_Purpose;
 
@@ -416,3 +418,5 @@ TEST_F(InstallableManagerUnitTest_WindowControlsOverlay,
   EXPECT_TRUE(IsManifestValid(manifest));
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 }
+
+}  // namespace webapps

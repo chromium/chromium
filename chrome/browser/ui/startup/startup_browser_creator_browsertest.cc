@@ -30,7 +30,6 @@
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/infobars/infobar_service.h"
-#include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -78,6 +77,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/webapps/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -1283,7 +1283,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
   web_app::InstallFinalizer& web_app_finalizer = provider->install_finalizer();
 
   web_app::InstallFinalizer::FinalizeOptions options;
-  options.install_source = WebappInstallSource::OMNIBOX_INSTALL_ICON;
+  options.install_source = webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON;
 
   // Install web app set to open as a tab.
   {

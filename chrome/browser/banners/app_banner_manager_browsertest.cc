@@ -21,13 +21,13 @@
 #include "chrome/browser/banners/app_banner_settings_helper.h"
 #include "chrome/browser/engagement/site_engagement_score.h"
 #include "chrome/browser/engagement/site_engagement_service.h"
-#include "chrome/browser/installable/installable_logging.h"
-#include "chrome/browser/installable/installable_manager.h"
-#include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/webapps/installable/installable_logging.h"
+#include "components/webapps/installable/installable_manager.h"
+#include "components/webapps/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -56,11 +56,11 @@ class AppBannerManagerTest : public AppBannerManager {
 
   bool banner_shown() { return banner_shown_.get() && *banner_shown_; }
 
-  WebappInstallSource install_source() {
+  webapps::WebappInstallSource install_source() {
     if (install_source_.get())
       return *install_source_;
 
-    return WebappInstallSource::COUNT;
+    return webapps::WebappInstallSource::COUNT;
   }
 
   void clear_will_show() { banner_shown_.reset(); }
@@ -80,24 +80,25 @@ class AppBannerManagerTest : public AppBannerManager {
   // showing banner), UpdateState(State::PENDING_ENGAGEMENT) (waiting for
   // sufficient engagement), or ShowBannerUi(). Override these methods to
   // capture test status.
-  void Stop(InstallableStatusCode code) override {
+  void Stop(webapps::InstallableStatusCode code) override {
     AppBannerManager::Stop(code);
     ASSERT_FALSE(banner_shown_.get());
     banner_shown_.reset(new bool(false));
-    install_source_.reset(new WebappInstallSource(WebappInstallSource::COUNT));
+    install_source_.reset(
+        new webapps::WebappInstallSource(webapps::WebappInstallSource::COUNT));
     base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                   std::move(on_done_));
   }
 
-  void ShowBannerUi(WebappInstallSource install_source) override {
+  void ShowBannerUi(webapps::WebappInstallSource install_source) override {
     // Fake the call to ReportStatus here - this is usually called in
     // platform-specific code which is not exposed here.
-    ReportStatus(SHOWING_WEB_APP_BANNER);
+    ReportStatus(webapps::SHOWING_WEB_APP_BANNER);
     RecordDidShowBanner();
 
     ASSERT_FALSE(banner_shown_.get());
     banner_shown_.reset(new bool(true));
-    install_source_.reset(new WebappInstallSource(install_source));
+    install_source_.reset(new webapps::WebappInstallSource(install_source));
     base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                   std::move(on_done_));
   }
@@ -152,7 +153,7 @@ class AppBannerManagerTest : public AppBannerManager {
   base::OnceClosure on_banner_prompt_reply_;
 
   std::unique_ptr<bool> banner_shown_;
-  std::unique_ptr<WebappInstallSource> install_source_;
+  std::unique_ptr<webapps::WebappInstallSource> install_source_;
 
   base::WeakPtrFactory<AppBannerManagerTest> weak_factory_{this};
 
@@ -181,11 +182,11 @@ class AppBannerManagerBrowserTest : public AppBannerManagerBrowserTestBase {
     return std::make_unique<AppBannerManagerTest>(web_contents);
   }
 
-  void RunBannerTest(
-      Browser* browser,
-      AppBannerManagerTest* manager,
-      const GURL& url,
-      base::Optional<InstallableStatusCode> expected_code_for_histogram) {
+  void RunBannerTest(Browser* browser,
+                     AppBannerManagerTest* manager,
+                     const GURL& url,
+                     base::Optional<webapps::InstallableStatusCode>
+                         expected_code_for_histogram) {
     base::HistogramTester histograms;
 
     SiteEngagementService* service =
@@ -200,10 +201,10 @@ class AppBannerManagerBrowserTest : public AppBannerManagerBrowserTestBase {
     ui_test_utils::NavigateToURL(&nav_params);
     run_loop.Run();
 
-    EXPECT_EQ(expected_code_for_histogram.value_or(MAX_ERROR_CODE) ==
-                  SHOWING_WEB_APP_BANNER,
+    EXPECT_EQ(expected_code_for_histogram.value_or(webapps::MAX_ERROR_CODE) ==
+                  webapps::SHOWING_WEB_APP_BANNER,
               manager->banner_shown());
-    EXPECT_EQ(WebappInstallSource::COUNT, manager->install_source());
+    EXPECT_EQ(webapps::WebappInstallSource::COUNT, manager->install_source());
 
     // Generally the manager will be in the complete state, however some test
     // cases navigate the page, causing the state to go back to INACTIVE.
@@ -298,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
   RunBannerTest(
       browser(), manager.get(),
       embedded_test_server()->GetURL("/banners/no_manifest_test_page.html"),
-      NO_MANIFEST);
+      webapps::NO_MANIFEST);
 
   // Dynamically add the manifest.
   base::HistogramTester histograms;
@@ -331,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
                     false, AppBannerManager::State::COMPLETE);
   histograms.ExpectTotalCount(banners::kInstallableStatusCodeHistogram, 1);
   histograms.ExpectUniqueSample(banners::kInstallableStatusCodeHistogram,
-                                RENDERER_CANCELLED, 1);
+                                webapps::RENDERER_CANCELLED, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
@@ -362,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
         false, base::nullopt);
     histograms.ExpectTotalCount(banners::kInstallableStatusCodeHistogram, 1);
     histograms.ExpectUniqueSample(banners::kInstallableStatusCodeHistogram,
-                                  RENDERER_CANCELLED, 1);
+                                  webapps::RENDERER_CANCELLED, 1);
   }
   // The pipeline should either have completed, or it is scheduled in the
   // background. Wait for the next prompt request if so.
@@ -382,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, NoManifest) {
   RunBannerTest(
       browser(), manager.get(),
       embedded_test_server()->GetURL("/banners/no_manifest_test_page.html"),
-      NO_MANIFEST);
+      webapps::NO_MANIFEST);
 }
 
 // TODO(crbug.com/1146526): Test is flaky on Mac.
@@ -396,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, MAYBE_MissingManifest) {
       CreateAppBannerManager(browser()));
   RunBannerTest(browser(), manager.get(),
                 GetBannerURLWithManifest("/banners/manifest_missing.json"),
-                MANIFEST_EMPTY);
+                webapps::MANIFEST_EMPTY);
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerInIFrame) {
@@ -405,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerInIFrame) {
   RunBannerTest(
       browser(), manager.get(),
       embedded_test_server()->GetURL("/banners/iframe_test_page.html"),
-      NO_MANIFEST);
+      webapps::NO_MANIFEST);
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, DoesNotShowInIncognito) {
@@ -413,7 +414,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, DoesNotShowInIncognito) {
       OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
   std::unique_ptr<AppBannerManagerTest> manager(
       CreateAppBannerManager(incognito_browser));
-  RunBannerTest(incognito_browser, manager.get(), GetBannerURL(), IN_INCOGNITO);
+  RunBannerTest(incognito_browser, manager.get(), GetBannerURL(),
+                webapps::IN_INCOGNITO);
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
@@ -437,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
 
   histograms.ExpectTotalCount(banners::kMinutesHistogram, 0);
   histograms.ExpectUniqueSample(banners::kInstallableStatusCodeHistogram,
-                                INSUFFICIENT_ENGAGEMENT, 1);
+                                webapps::INSUFFICIENT_ENGAGEMENT, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerNotCreated) {
@@ -462,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerNotCreated) {
 
   histograms.ExpectTotalCount(banners::kMinutesHistogram, 0);
   histograms.ExpectUniqueSample(banners::kInstallableStatusCodeHistogram,
-                                RENDERER_CANCELLED, 1);
+                                webapps::RENDERER_CANCELLED, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerCancelled) {
@@ -490,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerCancelled) {
 
   histograms.ExpectTotalCount(banners::kMinutesHistogram, 0);
   histograms.ExpectUniqueSample(banners::kInstallableStatusCodeHistogram,
-                                RENDERER_CANCELLED, 1);
+                                webapps::RENDERER_CANCELLED, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
@@ -518,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
 
   histograms.ExpectTotalCount(banners::kMinutesHistogram, 1);
   histograms.ExpectUniqueSample(banners::kInstallableStatusCodeHistogram,
-                                SHOWING_WEB_APP_BANNER, 1);
+                                webapps::SHOWING_WEB_APP_BANNER, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
@@ -558,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
 
   histograms.ExpectTotalCount(banners::kMinutesHistogram, 1);
   histograms.ExpectUniqueSample(banners::kInstallableStatusCodeHistogram,
-                                SHOWING_WEB_APP_BANNER, 1);
+                                webapps::SHOWING_WEB_APP_BANNER, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerReprompt) {
@@ -600,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerReprompt) {
 
   histograms.ExpectTotalCount(banners::kMinutesHistogram, 1);
   histograms.ExpectUniqueSample(banners::kInstallableStatusCodeHistogram,
-                                SHOWING_WEB_APP_BANNER, 1);
+                                webapps::SHOWING_WEB_APP_BANNER, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, PreferRelatedAppUnknown) {
@@ -627,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, PreferRelatedChromeApp) {
                                   false /* expected_will_show */,
                                   State::COMPLETE);
   histograms.ExpectUniqueSample(banners::kInstallableStatusCodeHistogram,
-                                PREFER_RELATED_APPLICATIONS, 1);
+                                webapps::PREFER_RELATED_APPLICATIONS, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
@@ -643,31 +645,31 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
                                   false /* expected_will_show */,
                                   State::COMPLETE);
   histograms.ExpectUniqueSample(banners::kInstallableStatusCodeHistogram,
-                                PREFER_RELATED_APPLICATIONS, 1);
+                                webapps::PREFER_RELATED_APPLICATIONS, 1);
 }
 
 namespace {
-class FailingInstallableManager : public InstallableManager {
+class FailingInstallableManager : public webapps::InstallableManager {
  public:
   explicit FailingInstallableManager(content::WebContents* web_contents)
       : InstallableManager(web_contents) {}
 
-  void FailNext(std::unique_ptr<InstallableData> installable_data) {
+  void FailNext(std::unique_ptr<webapps::InstallableData> installable_data) {
     failure_data_ = std::move(installable_data);
   }
 
-  void GetData(const InstallableParams& params,
-               InstallableCallback callback) override {
+  void GetData(const webapps::InstallableParams& params,
+               webapps::InstallableCallback callback) override {
     if (failure_data_) {
       auto temp_data = std::move(failure_data_);
       std::move(callback).Run(*temp_data);
       return;
     }
-    InstallableManager::GetData(params, std::move(callback));
+    webapps::InstallableManager::GetData(params, std::move(callback));
   }
 
  private:
-  std::unique_ptr<InstallableData> failure_data_;
+  std::unique_ptr<webapps::InstallableData> failure_data_;
 };
 
 class AppBannerManagerBrowserTestWithFailableInstallableManager
@@ -708,14 +710,15 @@ IN_PROC_BROWSER_TEST_F(
   GURL test_url = GetBannerURLWithAction("stash_event");
   service->ResetBaseScoreForURL(test_url, 10);
 
-  installable_manager_->FailNext(base::WrapUnique(
-      new InstallableData({MANIFEST_URL_CHANGED}, GURL(), nullptr, GURL(),
-                          nullptr, false, GURL(), nullptr, false, false)));
+  installable_manager_->FailNext(base::WrapUnique(new webapps::InstallableData(
+      {webapps::MANIFEST_URL_CHANGED}, GURL(), nullptr, GURL(), nullptr, false,
+      GURL(), nullptr, false, false)));
 
   // The page should record one failure of MANIFEST_URL_CHANGED, but it should
   // still successfully get to the PENDING_PROMPT state of the pipeline, as it
   // should retry the call to GetData on the InstallableManager.
-  RunBannerTest(browser(), manager.get(), test_url, MANIFEST_URL_CHANGED);
+  RunBannerTest(browser(), manager.get(), test_url,
+                webapps::MANIFEST_URL_CHANGED);
   EXPECT_EQ(manager->state(), AppBannerManager::State::PENDING_PROMPT);
 
   {
@@ -729,7 +732,7 @@ IN_PROC_BROWSER_TEST_F(
 
     histograms.ExpectTotalCount(banners::kMinutesHistogram, 1);
     histograms.ExpectUniqueSample(banners::kInstallableStatusCodeHistogram,
-                                  SHOWING_WEB_APP_BANNER, 1);
+                                  webapps::SHOWING_WEB_APP_BANNER, 1);
   }
 }
 

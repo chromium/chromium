@@ -13,9 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/favicon/favicon_utils.h"
-#include "chrome/browser/installable/installable_manager.h"
-#include "chrome/browser/installable/installable_metrics.h"
-#include "chrome/browser/installable/installable_params.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
@@ -23,6 +20,9 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "components/webapps/installable/installable_manager.h"
+#include "components/webapps/installable/installable_metrics.h"
+#include "components/webapps/installable/installable_params.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace web_app {
@@ -30,7 +30,7 @@ namespace web_app {
 // static
 void PendingAppInstallTask::CreateTabHelpers(
     content::WebContents* web_contents) {
-  InstallableManager::CreateForWebContents(web_contents);
+  webapps::InstallableManager::CreateForWebContents(web_contents);
   SecurityStateTabHelper::CreateForWebContents(web_contents);
   favicon::CreateContentFaviconDriverForWebContents(web_contents);
 }
@@ -218,7 +218,7 @@ void PendingAppInstallTask::InstallPlaceholder(ResultCallback callback) {
   }
 
   InstallFinalizer::FinalizeOptions options;
-  options.install_source = WebappInstallSource::EXTERNAL_POLICY;
+  options.install_source = webapps::WebappInstallSource::EXTERNAL_POLICY;
 
   install_finalizer_->FinalizeInstall(
       web_app_info, options,

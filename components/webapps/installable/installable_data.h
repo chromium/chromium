@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_INSTALLABLE_INSTALLABLE_DATA_H_
-#define CHROME_BROWSER_INSTALLABLE_INSTALLABLE_DATA_H_
+#ifndef COMPONENTS_WEBAPPS_INSTALLABLE_INSTALLABLE_DATA_H_
+#define COMPONENTS_WEBAPPS_INSTALLABLE_INSTALLABLE_DATA_H_
 
 #include <vector>
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "chrome/browser/installable/installable_logging.h"
+#include "components/webapps/installable/installable_logging.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
+
+namespace webapps {
 
 // This struct contains the results of an InstallableManager::GetData call and
 // is passed to an InstallableCallback. Each pointer and reference is owned by
@@ -80,4 +82,6 @@ struct InstallableData {
 
 using InstallableCallback = base::OnceCallback<void(const InstallableData&)>;
 
-#endif  // CHROME_BROWSER_INSTALLABLE_INSTALLABLE_DATA_H_
+}  // namespace webapps
+
+#endif  // COMPONENTS_WEBAPPS_INSTALLABLE_INSTALLABLE_DATA_H_

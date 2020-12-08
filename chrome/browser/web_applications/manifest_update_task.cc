@@ -11,7 +11,6 @@
 
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/installable/installable_manager.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/common/chrome_features.h"
+#include "components/webapps/installable/installable_manager.h"
 #include "content/public/common/content_features.h"
 #include "ui/gfx/skia_util.h"
 
@@ -95,11 +95,11 @@ void ManifestUpdateTask::DidFinishLoad(
     return;
 
   stage_ = Stage::kPendingInstallableData;
-  InstallableParams params;
+  webapps::InstallableParams params;
   params.valid_primary_icon = true;
   params.valid_manifest = true;
   params.check_webapp_manifest_display = false;
-  InstallableManager::FromWebContents(web_contents())
+  webapps::InstallableManager::FromWebContents(web_contents())
       ->GetData(params,
                 base::BindOnce(&ManifestUpdateTask::OnDidGetInstallableData,
                                AsWeakPtr()));
@@ -123,7 +123,8 @@ void ManifestUpdateTask::WebContentsDestroyed() {
   }
 }
 
-void ManifestUpdateTask::OnDidGetInstallableData(const InstallableData& data) {
+void ManifestUpdateTask::OnDidGetInstallableData(
+    const webapps::InstallableData& data) {
   DCHECK_EQ(stage_, Stage::kPendingInstallableData);
 
   if (!data.errors.empty()) {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/installable/fake_installable_manager.h"
+#include "components/webapps/installable/fake_installable_manager.h"
 
 #include <utility>
 #include <vector>
@@ -10,7 +10,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/installable/installable_data.h"
+#include "components/webapps/installable/installable_data.h"
+
+namespace webapps {
 
 FakeInstallableManager::FakeInstallableManager(
     content::WebContents* web_contents)
@@ -71,3 +73,5 @@ FakeInstallableManager::CreateForWebContentsWithManifest(
 
   return installable_manager;
 }
+
+}  // namespace webapps

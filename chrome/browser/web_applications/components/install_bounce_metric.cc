@@ -51,7 +51,7 @@ const char kInstallSource[] = "install_source";
 
 struct InstallMetrics {
   base::Time timestamp;
-  WebappInstallSource source;
+  webapps::WebappInstallSource source;
 };
 
 base::Optional<InstallMetrics> ParseInstallMetricsFromPrefs(
@@ -77,8 +77,8 @@ base::Optional<InstallMetrics> ParseInstallMetricsFromPrefs(
   if (!source || !source->is_int())
     return base::nullopt;
 
-  return InstallMetrics{*timestamp,
-                        static_cast<WebappInstallSource>(source->GetInt())};
+  return InstallMetrics{
+      *timestamp, static_cast<webapps::WebappInstallSource>(source->GetInt())};
 }
 
 void WriteInstallMetricsToPrefs(const InstallMetrics& install_metrics,
@@ -106,9 +106,10 @@ void RegisterInstallBounceMetricProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kWebAppInstallMetrics);
 }
 
-void RecordWebAppInstallationTimestamp(PrefService* pref_service,
-                                       const AppId& app_id,
-                                       WebappInstallSource install_source) {
+void RecordWebAppInstallationTimestamp(
+    PrefService* pref_service,
+    const AppId& app_id,
+    webapps::WebappInstallSource install_source) {
   WriteInstallMetricsToPrefs(InstallMetrics{GetTime(), install_source},
                              pref_service, app_id);
 }
@@ -126,7 +127,7 @@ void RecordWebAppUninstallation(PrefService* pref_service,
     return;
 
   UMA_HISTOGRAM_ENUMERATION("Webapp.Install.InstallBounce", metrics->source,
-                            WebappInstallSource::COUNT);
+                            webapps::WebappInstallSource::COUNT);
 }
 
 }  // namespace web_app

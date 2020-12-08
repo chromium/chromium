@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
-#include "chrome/browser/installable/installable_metrics.h"
+#include "components/webapps/installable/installable_metrics.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace webapps {
@@ -30,7 +30,7 @@ struct AddToHomescreenParams {
   SkBitmap primary_icon;
   bool has_maskable_primary_icon = false;
   std::unique_ptr<webapps::ShortcutInfo> shortcut_info;
-  WebappInstallSource install_source;
+  webapps::WebappInstallSource install_source;
   std::string native_app_package_name;
   base::android::ScopedJavaGlobalRef<jobject> native_app_data;
 

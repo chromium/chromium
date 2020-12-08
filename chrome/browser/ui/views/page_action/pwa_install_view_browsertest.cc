@@ -29,6 +29,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
+#include "components/webapps/installable/installable_metrics.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
@@ -241,7 +242,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
     std::vector<base::Bucket> expected_buckets;
     if (expected_count > 0) {
       expected_buckets.push_back(
-          {static_cast<int>(WebappInstallSource::OMNIBOX_INSTALL_ICON),
+          {static_cast<int>(webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON),
            expected_count});
     }
     EXPECT_EQ(histogram_tester.GetAllSamples("Webapp.Install.InstallBounce"),

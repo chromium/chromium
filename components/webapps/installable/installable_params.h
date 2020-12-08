@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_INSTALLABLE_INSTALLABLE_PARAMS_H_
-#define CHROME_BROWSER_INSTALLABLE_INSTALLABLE_PARAMS_H_
+#ifndef COMPONENTS_WEBAPPS_INSTALLABLE_INSTALLABLE_PARAMS_H_
+#define COMPONENTS_WEBAPPS_INSTALLABLE_INSTALLABLE_PARAMS_H_
+
+namespace webapps {
 
 // This struct specifies the work to be done by the InstallableManager.
 // Data is cached and fetched in the order specified in this struct.
@@ -51,4 +53,6 @@ struct InstallableParams {
   bool is_debug_mode = false;
 };
 
-#endif  // CHROME_BROWSER_INSTALLABLE_INSTALLABLE_PARAMS_H_
+}  // namespace webapps
+
+#endif  // COMPONENTS_WEBAPPS_INSTALLABLE_INSTALLABLE_PARAMS_H_

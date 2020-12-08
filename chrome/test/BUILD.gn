@@ -472,6 +472,7 @@ static_library("test_support") {
       "//build:chromeos_buildflags",
       "//chrome/browser/web_applications:web_applications_on_extensions_test_support",
       "//chrome/browser/web_applications:web_applications_test_support",
+      "//components/webapps",
     ]
     allow_circular_includes_from = [
       "//chrome/browser/web_applications:web_applications_on_extensions_test_support",
@@ -3489,8 +3490,6 @@ test("unit_tests") {
     "../browser/idle/idle_detection_permission_context_unittest.cc",
     "../browser/infobars/mock_infobar_service.cc",
     "../browser/infobars/mock_infobar_service.h",
-    "../browser/installable/installable_manager_unittest.cc",
-    "../browser/installable/installable_task_queue_unittest.cc",
     "../browser/internal_auth_unittest.cc",
     "../browser/language/language_model_manager_factory_unittest.cc",
     "../browser/language/url_language_histogram_factory_unittest.cc",

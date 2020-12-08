@@ -282,7 +282,7 @@ void PendingAppManagerImpl::OnInstalled(
         current_install_->task->install_options());
   }
 
-  // Post a task to avoid InstallableManager crashing and do so before
+  // Post a task to avoid webapps::InstallableManager crashing and do so before
   // running the callback in case the callback tries to install another
   // app.
   PostMaybeStartNext();

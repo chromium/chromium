@@ -21,9 +21,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
-#include "chrome/browser/installable/installable_manager.h"
-#include "chrome/browser/installable/installable_metrics.h"
-#include "chrome/browser/installable/installable_params.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -45,6 +42,8 @@
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/favicon/core/favicon_service.h"
+#include "components/webapps/installable/installable_manager.h"
+#include "components/webapps/installable/installable_metrics.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/management/management_api.h"
@@ -252,7 +251,7 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
 
     provider->install_manager().InstallWebAppFromInfo(
         std::move(web_app_info), web_app::ForInstallableSite::kNo,
-        WebappInstallSource::MANAGEMENT_API,
+        webapps::WebappInstallSource::MANAGEMENT_API,
         base::BindOnce(OnGenerateAppForLinkCompleted,
                        base::RetainedRef(function)));
   }
@@ -373,7 +372,7 @@ void OnWebAppInstallabilityChecked(
           WindowOpenDisposition::NEW_FOREGROUND_TAB, gfx::Rect());
       web_app::CreateWebAppFromManifest(
           containing_contents, /*bypass_service_worker_check=*/true,
-          WebappInstallSource::MANAGEMENT_API,
+          webapps::WebappInstallSource::MANAGEMENT_API,
           base::BindOnce(&OnWebAppInstallCompleted, std::move(callback)));
       return;
   }
@@ -526,7 +525,7 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
   }
 
   provider->install_manager().LoadWebAppAndCheckManifest(
-      web_app_url, WebappInstallSource::MANAGEMENT_API,
+      web_app_url, webapps::WebappInstallSource::MANAGEMENT_API,
       base::BindOnce(&OnWebAppInstallabilityChecked, profile,
                      std::move(callback)));
 }

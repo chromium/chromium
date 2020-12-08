@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/webapps/installable/installable_task_queue.h"
+
 #include <utility>
 
-#include "chrome/browser/installable/installable_task_queue.h"
+namespace webapps {
 
 InstallableTask::InstallableTask() = default;
 
@@ -84,3 +86,5 @@ void InstallableTaskQueue::ResetWithError(InstallableStatusCode code) {
     }
   }
 }
+
+}  // namespace webapps

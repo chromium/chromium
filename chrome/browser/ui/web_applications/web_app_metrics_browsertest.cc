@@ -8,7 +8,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/scoped_mock_clock_override.h"
-#include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -17,6 +16,7 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/webapps/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
   // |InstallWebApp| always sets |OMNIBOX_INSTALL_ICON| as the install source.
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry, UkmEntry::kInstallSourceName,
-      static_cast<int>(WebappInstallSource::OMNIBOX_INSTALL_ICON));
+      static_cast<int>(webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON));
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry, UkmEntry::kDisplayModeName,
       static_cast<int>(DisplayMode::kStandalone));
@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(
   // |InstallWebApp| always sets |OMNIBOX_INSTALL_ICON| as the install source.
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry, UkmEntry::kInstallSourceName,
-      static_cast<int>(WebappInstallSource::OMNIBOX_INSTALL_ICON));
+      static_cast<int>(webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON));
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry, UkmEntry::kDisplayModeName,
       static_cast<int>(DisplayMode::kStandalone));

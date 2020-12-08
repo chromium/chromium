@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_BANNERS_APP_BANNER_METRICS_H_
 #define CHROME_BROWSER_BANNERS_APP_BANNER_METRICS_H_
 
-#include "chrome/browser/installable/installable_logging.h"
+#include "components/webapps/installable/installable_logging.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
 
 namespace banners {
@@ -91,7 +91,7 @@ void TrackInstallEvent(int event);
 void TrackMinutesFromFirstVisitToBannerShown(int minutes);
 void TrackUserResponse(int event);
 void TrackBeforeInstallEvent(int event);
-void TrackInstallableStatusCode(InstallableStatusCode code);
+void TrackInstallableStatusCode(webapps::InstallableStatusCode code);
 void TrackInstallDisplayMode(blink::mojom::DisplayMode display);
 
 }  // namespace banners

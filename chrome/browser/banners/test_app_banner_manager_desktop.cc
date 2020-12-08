@@ -9,7 +9,7 @@
 
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/installable/installable_logging.h"
+#include "components/webapps/installable/installable_data.h"
 #include "content/public/browser/web_contents.h"
 
 namespace banners {
@@ -77,7 +77,7 @@ void TestAppBannerManagerDesktop::AwaitAppInstall() {
 }
 
 void TestAppBannerManagerDesktop::OnDidGetManifest(
-    const InstallableData& result) {
+    const webapps::InstallableData& result) {
   AppBannerManagerDesktop::OnDidGetManifest(result);
 
   // AppBannerManagerDesktop does not call |OnDidPerformInstallableCheck| to
@@ -87,7 +87,7 @@ void TestAppBannerManagerDesktop::OnDidGetManifest(
     SetInstallable(false);
 }
 void TestAppBannerManagerDesktop::OnDidPerformInstallableWebAppCheck(
-    const InstallableData& result) {
+    const webapps::InstallableData& result) {
   AppBannerManagerDesktop::OnDidPerformInstallableWebAppCheck(result);
   SetInstallable(result.errors.empty());
 }

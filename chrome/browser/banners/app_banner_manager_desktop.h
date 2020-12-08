@@ -76,7 +76,7 @@ class AppBannerManagerDesktop
 
   // AppBannerManager overrides.
   bool ShouldAllowWebAppReplacementInstall() override;
-  void ShowBannerUi(WebappInstallSource install_source) override;
+  void ShowBannerUi(webapps::WebappInstallSource install_source) override;
 
   // content::WebContentsObserver override.
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
@@ -92,7 +92,7 @@ class AppBannerManagerDesktop
   void OnWebAppInstalled(const web_app::AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
 
-  void CreateWebApp(WebappInstallSource install_source);
+  void CreateWebApp(webapps::WebappInstallSource install_source);
 
   extensions::ExtensionRegistry* extension_registry_;
 

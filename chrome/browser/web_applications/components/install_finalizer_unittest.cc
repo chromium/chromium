@@ -107,7 +107,7 @@ TEST_F(InstallFinalizerUnitTest, BasicInstallSucceeds) {
   info->start_url = GURL("https://foo.example");
   info->title = base::ASCIIToUTF16("Foo Title");
   InstallFinalizer::FinalizeOptions options;
-  options.install_source = WebappInstallSource::INTERNAL_DEFAULT;
+  options.install_source = webapps::WebappInstallSource::INTERNAL_DEFAULT;
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
@@ -120,7 +120,7 @@ TEST_F(InstallFinalizerUnitTest, InstallStoresLatestWebAppInstallSource) {
   info->start_url = GURL("https://foo.example");
   info->title = base::ASCIIToUTF16("Foo Title");
   InstallFinalizer::FinalizeOptions options;
-  options.install_source = WebappInstallSource::INTERNAL_DEFAULT;
+  options.install_source = webapps::WebappInstallSource::INTERNAL_DEFAULT;
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
@@ -128,8 +128,8 @@ TEST_F(InstallFinalizerUnitTest, InstallStoresLatestWebAppInstallSource) {
       GetIntWebAppPref(profile()->GetPrefs(), result.installed_app_id,
                        kLatestWebAppInstallSource);
   EXPECT_TRUE(install_source.has_value());
-  EXPECT_EQ(static_cast<WebappInstallSource>(*install_source),
-            WebappInstallSource::INTERNAL_DEFAULT);
+  EXPECT_EQ(static_cast<webapps::WebappInstallSource>(*install_source),
+            webapps::WebappInstallSource::INTERNAL_DEFAULT);
 }
 
 }  // namespace web_app

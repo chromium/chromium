@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_INSTALLABLE_INSTALLABLE_MANAGER_H_
-#define CHROME_BROWSER_INSTALLABLE_INSTALLABLE_MANAGER_H_
+#ifndef COMPONENTS_WEBAPPS_INSTALLABLE_INSTALLABLE_MANAGER_H_
+#define COMPONENTS_WEBAPPS_INSTALLABLE_INSTALLABLE_MANAGER_H_
 
 #include <map>
 #include <memory>
@@ -16,10 +16,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
-#include "chrome/browser/installable/installable_data.h"
-#include "chrome/browser/installable/installable_logging.h"
-#include "chrome/browser/installable/installable_params.h"
-#include "chrome/browser/installable/installable_task_queue.h"
+#include "components/webapps/installable/installable_data.h"
+#include "components/webapps/installable/installable_logging.h"
+#include "components/webapps/installable/installable_params.h"
+#include "components/webapps/installable/installable_task_queue.h"
 #include "content/public/browser/installability_error.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
@@ -28,6 +28,8 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
+
+namespace webapps {
 
 // This class is responsible for fetching the resources required to check and
 // install a site.
@@ -266,4 +268,6 @@ class InstallableManager
   DISALLOW_COPY_AND_ASSIGN(InstallableManager);
 };
 
-#endif  // CHROME_BROWSER_INSTALLABLE_INSTALLABLE_MANAGER_H_
+}  // namespace webapps
+
+#endif  // COMPONENTS_WEBAPPS_INSTALLABLE_INSTALLABLE_MANAGER_H_

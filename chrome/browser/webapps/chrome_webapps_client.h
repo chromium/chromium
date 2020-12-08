@@ -10,16 +10,18 @@
 
 namespace webapps {
 
-class ChromeWebappsClient : public webapps::WebappsClient {
+class ChromeWebappsClient : public WebappsClient {
  public:
   ChromeWebappsClient(const ChromeWebappsClient&) = delete;
   ChromeWebappsClient& operator=(const ChromeWebappsClient&) = delete;
 
   static ChromeWebappsClient* GetInstance();
 
-  // webapps::WebappsClient:
+  // WebappsClient:
   security_state::SecurityLevel GetSecurityLevelForWebContents(
       content::WebContents* web_contents) override;
+  WebappInstallSource GetInstallSource(content::WebContents* web_contents,
+                                       InstallTrigger trigger) override;
 
  private:
   friend base::NoDestructor<ChromeWebappsClient>;

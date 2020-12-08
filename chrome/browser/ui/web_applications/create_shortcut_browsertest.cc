@@ -7,7 +7,6 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
-#include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
+#include "components/webapps/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "url/gurl.h"
@@ -80,11 +80,12 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, InstallSourceRecorded) {
     base::Optional<int> install_source = GetIntWebAppPref(
         profile()->GetPrefs(), app_id, kLatestWebAppInstallSource);
     EXPECT_TRUE(install_source.has_value());
-    EXPECT_EQ(static_cast<WebappInstallSource>(*install_source),
-              WebappInstallSource::MENU_CREATE_SHORTCUT);
+    EXPECT_EQ(static_cast<webapps::WebappInstallSource>(*install_source),
+              webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
     histogram_tester.ExpectUniqueSample(
         "Webapp.Install.InstallEvent",
-        static_cast<int>(WebappInstallSource::MENU_CREATE_SHORTCUT), 1);
+        static_cast<int>(webapps::WebappInstallSource::MENU_CREATE_SHORTCUT),
+        1);
   }
 }
 

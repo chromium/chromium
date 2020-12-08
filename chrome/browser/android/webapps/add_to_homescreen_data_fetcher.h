@@ -20,8 +20,10 @@ namespace favicon_base {
 struct FaviconRawBitmapResult;
 }
 
+namespace webapps {
 class InstallableManager;
 struct InstallableData;
+}  // namespace webapps
 
 // Aysnchronously fetches and processes data needed to create a shortcut for an
 // Android Home screen launcher.
@@ -73,10 +75,10 @@ class AddToHomescreenDataFetcher : public content::WebContentsObserver {
   void OnDataTimedout();
 
   // Called when InstallableManager finishes looking for a manifest and icon.
-  void OnDidGetManifestAndIcons(const InstallableData& data);
+  void OnDidGetManifestAndIcons(const webapps::InstallableData& data);
 
   // Called when InstallableManager finishes checking for installability.
-  void OnDidPerformInstallableCheck(const InstallableData& data);
+  void OnDidPerformInstallableCheck(const webapps::InstallableData& data);
 
   // Grabs the favicon for the current URL.
   void FetchFavicon();
@@ -93,7 +95,7 @@ class AddToHomescreenDataFetcher : public content::WebContentsObserver {
                      const SkBitmap& icon_for_view,
                      bool is_icon_generated);
 
-  InstallableManager* installable_manager_;
+  webapps::InstallableManager* installable_manager_;
   Observer* observer_;
 
   // The icons must only be set on the UI thread for thread safety.

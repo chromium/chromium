@@ -9,13 +9,13 @@
 
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "components/webapps/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
@@ -165,7 +165,7 @@ void ApkWebAppInstaller::DoInstall() {
 
   provider->install_manager().InstallWebAppFromInfo(
       std::move(web_app_info_), web_app::ForInstallableSite::kYes,
-      WebappInstallSource::ARC,
+      webapps::WebappInstallSource::ARC,
       base::BindOnce(&ApkWebAppInstaller::OnWebAppCreated,
                      base::Unretained(this), std::move(start_url)));
 }

@@ -531,6 +531,7 @@ static_library("ui") {
     "//components/viz/host",
     "//components/web_cache/browser",
     "//components/web_resource",
+    "//components/webapps",
     "//components/webrtc_logging/browser",
     "//content/app/resources",
     "//content/browser/webrtc/resources",

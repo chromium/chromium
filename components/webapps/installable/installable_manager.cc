@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/installable/installable_manager.h"
+#include "components/webapps/installable/installable_manager.h"
 
 #include <utility>
 
@@ -13,8 +13,8 @@
 #include "base/strings/string_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
-#include "chrome/browser/installable/installable_metrics.h"
 #include "components/security_state/core/security_state.h"
+#include "components/webapps/installable/installable_metrics.h"
 #include "components/webapps/webapps_client.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -35,6 +35,8 @@
 #if defined(OS_ANDROID)
 #include "components/webapps/android/webapps_icon_utils.h"
 #endif
+
+namespace webapps {
 
 namespace {
 
@@ -60,7 +62,7 @@ const int kMinimumPrimaryAdaptiveLauncherIconSizeInPx = 83;
 
 int GetIdealPrimaryIconSizeInPx() {
 #if defined(OS_ANDROID)
-  return webapps::WebappsIconUtils::GetIdealHomescreenIconSizeInPx();
+  return WebappsIconUtils::GetIdealHomescreenIconSizeInPx();
 #else
   return kMinimumPrimaryIconSizeInPx;
 #endif
@@ -68,7 +70,7 @@ int GetIdealPrimaryIconSizeInPx() {
 
 int GetMinimumPrimaryIconSizeInPx() {
 #if defined(OS_ANDROID)
-  return webapps::WebappsIconUtils::GetMinimumHomescreenIconSizeInPx();
+  return WebappsIconUtils::GetMinimumHomescreenIconSizeInPx();
 #else
   return kMinimumPrimaryIconSizeInPx;
 #endif
@@ -76,7 +78,7 @@ int GetMinimumPrimaryIconSizeInPx() {
 
 int GetIdealPrimaryAdaptiveLauncherIconSizeInPx() {
 #if defined(OS_ANDROID)
-  return webapps::WebappsIconUtils::GetIdealAdaptiveLauncherIconSizeInPx();
+  return WebappsIconUtils::GetIdealAdaptiveLauncherIconSizeInPx();
 #else
   return kMinimumPrimaryAdaptiveLauncherIconSizeInPx;
 #endif
@@ -84,7 +86,7 @@ int GetIdealPrimaryAdaptiveLauncherIconSizeInPx() {
 
 int GetIdealSplashIconSizeInPx() {
 #if defined(OS_ANDROID)
-  return webapps::WebappsIconUtils::GetIdealSplashImageSizeInPx();
+  return WebappsIconUtils::GetIdealSplashImageSizeInPx();
 #else
   return kMinimumPrimaryIconSizeInPx;
 #endif
@@ -92,7 +94,7 @@ int GetIdealSplashIconSizeInPx() {
 
 int GetMinimumSplashIconSizeInPx() {
 #if defined(OS_ANDROID)
-  return webapps::WebappsIconUtils::GetMinimumSplashImageSizeInPx();
+  return WebappsIconUtils::GetMinimumSplashImageSizeInPx();
 #else
   return kMinimumPrimaryIconSizeInPx;
 #endif
@@ -285,8 +287,7 @@ bool InstallableManager::IsContentSecure(content::WebContents* web_contents) {
     return false;
 
   return security_state::IsSslCertificateValid(
-      webapps::WebappsClient::Get()->GetSecurityLevelForWebContents(
-          web_contents));
+      WebappsClient::Get()->GetSecurityLevelForWebContents(web_contents));
 }
 
 // static
@@ -695,8 +696,7 @@ void InstallableManager::CheckServiceWorker() {
   service_worker_context_->CheckHasServiceWorker(
       manifest().scope,
       base::BindOnce(&InstallableManager::OnDidCheckHasServiceWorker,
-                     weak_factory_.GetWeakPtr(),
-                     base::TimeTicks::Now()));
+                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
 void InstallableManager::OnDidCheckHasServiceWorker(
@@ -904,3 +904,5 @@ bool InstallableManager::has_worker() {
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(InstallableManager)
+
+}  // namespace webapps

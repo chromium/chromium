@@ -785,6 +785,7 @@ static_library("extensions") {
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/components",
     "//components/site_engagement/core/mojom:mojo_bindings",
+    "//components/webapps",
 
     # TODO(crbug.com/1065748): Remove this dependency:
     "//chrome/browser/web_applications/extensions",

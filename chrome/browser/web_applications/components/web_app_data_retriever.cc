@@ -13,11 +13,11 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/installable/installable_data.h"
-#include "chrome/browser/installable/installable_manager.h"
 #include "chrome/browser/web_applications/components/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "components/webapps/installable/installable_data.h"
+#include "components/webapps/installable/installable_manager.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -83,8 +83,8 @@ void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
     content::WebContents* web_contents,
     bool bypass_service_worker_check,
     CheckInstallabilityCallback callback) {
-  InstallableManager* installable_manager =
-      InstallableManager::FromWebContents(web_contents);
+  webapps::InstallableManager* installable_manager =
+      webapps::InstallableManager::FromWebContents(web_contents);
   DCHECK(installable_manager);
 
   Observe(web_contents);
@@ -94,7 +94,7 @@ void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
   check_installability_callback_ = std::move(callback);
 
   // TODO(crbug.com/829232) Unify with other calls to GetData.
-  InstallableParams params;
+  webapps::InstallableParams params;
   params.check_eligibility = true;
   params.valid_primary_icon = true;
   params.valid_manifest = true;
@@ -176,7 +176,7 @@ void WebAppDataRetriever::OnGetWebPageMetadata(
 }
 
 void WebAppDataRetriever::OnDidPerformInstallableCheck(
-    const InstallableData& data) {
+    const webapps::InstallableData& data) {
   if (ShouldStopRetrieval())
     return;
 

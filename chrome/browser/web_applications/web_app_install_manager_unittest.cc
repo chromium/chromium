@@ -282,7 +282,7 @@ class WebAppInstallManagerTest : public WebAppTest {
     base::RunLoop run_loop;
     install_manager().InstallWebAppFromManifestWithFallback(
         web_contents(), /*force_shortcut_app=*/false,
-        WebappInstallSource::OMNIBOX_INSTALL_ICON,
+        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
         base::BindOnce(TestAcceptDialogCallback),
         base::BindLambdaForTesting(
             [&](const AppId& installed_app_id, InstallResultCode code) {
@@ -332,7 +332,7 @@ class WebAppInstallManagerTest : public WebAppTest {
     base::RunLoop run_loop;
     install_manager().InstallWebAppFromInfo(
         std::move(web_application_info), ForInstallableSite::kYes,
-        WebappInstallSource::SYSTEM_DEFAULT,
+        webapps::WebappInstallSource::SYSTEM_DEFAULT,
         base::BindLambdaForTesting(
             [&](const AppId& installed_app_id, InstallResultCode code) {
               result.app_id = installed_app_id;

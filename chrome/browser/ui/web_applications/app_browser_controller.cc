@@ -10,7 +10,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/installable/installable_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/themes/browser_theme_pack.h"
@@ -33,6 +32,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/security_state/core/security_state.h"
 #include "components/url_formatter/url_formatter.h"
+#include "components/webapps/installable/installable_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -241,7 +241,8 @@ bool AppBrowserController::ShouldShowCustomTabBar() const {
       // Some origins are (such as localhost) are considered secure even when
       // served over non-secure schemes. However, in order to hide the toolbar,
       // the 'considered secure' origin must also be in the app's scope.
-      return out_of_scope || !InstallableManager::IsOriginConsideredSecure(url);
+      return out_of_scope ||
+             !webapps::InstallableManager::IsOriginConsideredSecure(url);
     }
 
     if (is_for_system_web_app()) {
@@ -267,7 +268,7 @@ bool AppBrowserController::ShouldShowCustomTabBar() const {
   // Insecure external web sites show the toolbar.
   // Note: IsContentSecure is false until a navigation is committed.
   if (!last_committed_url.is_empty() && !is_internal_start_url_scheme &&
-      !InstallableManager::IsContentSecure(web_contents)) {
+      !webapps::InstallableManager::IsContentSecure(web_contents)) {
     return true;
   }
 

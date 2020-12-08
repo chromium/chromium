@@ -17,7 +17,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
@@ -32,6 +31,7 @@
 #include "chrome/browser/web_applications/web_app_installation_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "components/webapps/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -42,37 +42,37 @@ namespace {
 // TODO(loyso): Call sites should specify Source explicitly as a part of
 // AppTraits parameter object.
 Source::Type InferSourceFromMetricsInstallSource(
-    WebappInstallSource install_source) {
+    webapps::WebappInstallSource install_source) {
   switch (install_source) {
-    case WebappInstallSource::MENU_BROWSER_TAB:
-    case WebappInstallSource::MENU_CUSTOM_TAB:
-    case WebappInstallSource::AUTOMATIC_PROMPT_BROWSER_TAB:
-    case WebappInstallSource::AUTOMATIC_PROMPT_CUSTOM_TAB:
-    case WebappInstallSource::API_BROWSER_TAB:
-    case WebappInstallSource::API_CUSTOM_TAB:
-    case WebappInstallSource::DEVTOOLS:
-    case WebappInstallSource::MANAGEMENT_API:
-    case WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB:
-    case WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
-    case WebappInstallSource::OMNIBOX_INSTALL_ICON:
-    case WebappInstallSource::SYNC:
-    case WebappInstallSource::MENU_CREATE_SHORTCUT:
+    case webapps::WebappInstallSource::MENU_BROWSER_TAB:
+    case webapps::WebappInstallSource::MENU_CUSTOM_TAB:
+    case webapps::WebappInstallSource::AUTOMATIC_PROMPT_BROWSER_TAB:
+    case webapps::WebappInstallSource::AUTOMATIC_PROMPT_CUSTOM_TAB:
+    case webapps::WebappInstallSource::API_BROWSER_TAB:
+    case webapps::WebappInstallSource::API_CUSTOM_TAB:
+    case webapps::WebappInstallSource::DEVTOOLS:
+    case webapps::WebappInstallSource::MANAGEMENT_API:
+    case webapps::WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB:
+    case webapps::WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
+    case webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON:
+    case webapps::WebappInstallSource::SYNC:
+    case webapps::WebappInstallSource::MENU_CREATE_SHORTCUT:
       return Source::kSync;
 
-    case WebappInstallSource::INTERNAL_DEFAULT:
-    case WebappInstallSource::EXTERNAL_DEFAULT:
+    case webapps::WebappInstallSource::INTERNAL_DEFAULT:
+    case webapps::WebappInstallSource::EXTERNAL_DEFAULT:
       return Source::kDefault;
 
-    case WebappInstallSource::EXTERNAL_POLICY:
+    case webapps::WebappInstallSource::EXTERNAL_POLICY:
       return Source::kPolicy;
 
-    case WebappInstallSource::SYSTEM_DEFAULT:
+    case webapps::WebappInstallSource::SYSTEM_DEFAULT:
       return Source::kSystem;
 
-    case WebappInstallSource::ARC:
+    case webapps::WebappInstallSource::ARC:
       return Source::kWebAppStore;
 
-    case WebappInstallSource::COUNT:
+    case webapps::WebappInstallSource::COUNT:
       NOTREACHED();
       return Source::kSync;
   }

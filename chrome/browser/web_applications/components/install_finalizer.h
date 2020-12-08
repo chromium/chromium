@@ -9,9 +9,9 @@
 
 #include "base/callback_forward.h"
 #include "base/optional.h"
-#include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/web_applications/components/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "components/webapps/installable/installable_metrics.h"
 
 struct WebApplicationInfo;
 class GURL;
@@ -43,7 +43,8 @@ class InstallFinalizer {
     ~FinalizeOptions();
     FinalizeOptions(const FinalizeOptions&);
 
-    WebappInstallSource install_source = WebappInstallSource::COUNT;
+    webapps::WebappInstallSource install_source =
+        webapps::WebappInstallSource::COUNT;
     bool locally_installed = true;
 
     base::Optional<WebAppChromeOsData> chromeos_data;

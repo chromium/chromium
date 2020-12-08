@@ -47,9 +47,9 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
   void AwaitAppInstall();
 
   // AppBannerManager:
-  void OnDidGetManifest(const InstallableData& result) override;
+  void OnDidGetManifest(const webapps::InstallableData& result) override;
   void OnDidPerformInstallableWebAppCheck(
-      const InstallableData& result) override;
+      const webapps::InstallableData& result) override;
   void ResetCurrentPageData() override;
 
   // AppBannerManagerDesktop:

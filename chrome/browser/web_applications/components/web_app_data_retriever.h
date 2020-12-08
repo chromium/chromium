@@ -20,7 +20,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
 class GURL;
-struct InstallableData;
 struct WebApplicationInfo;
 
 namespace blink {
@@ -29,6 +28,10 @@ struct Manifest;
 
 namespace content {
 class WebContents;
+}
+
+namespace webapps {
+struct InstallableData;
 }
 
 namespace web_app {
@@ -84,7 +87,7 @@ class WebAppDataRetriever : content::WebContentsObserver {
           chrome_render_frame,
       int last_committed_nav_entry_unique_id,
       chrome::mojom::WebPageMetadataPtr web_page_metadata);
-  void OnDidPerformInstallableCheck(const InstallableData& data);
+  void OnDidPerformInstallableCheck(const webapps::InstallableData& data);
   void OnIconsDownloaded(bool success, IconsMap icons_map);
 
   void CallCallbackOnError();

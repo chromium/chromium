@@ -33,7 +33,7 @@ AppId InstallDummyWebApp(Profile* profile,
   web_app_info.open_as_window = true;
 
   InstallFinalizer::FinalizeOptions options;
-  options.install_source = WebappInstallSource::EXTERNAL_DEFAULT;
+  options.install_source = webapps::WebappInstallSource::EXTERNAL_DEFAULT;
 
   // In unit tests, we do not have Browser or WebContents instances.
   // Hence we use FinalizeInstall instead of InstallWebAppFromManifest

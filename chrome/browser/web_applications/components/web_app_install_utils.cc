@@ -17,13 +17,13 @@
 #include "chrome/browser/banners/app_banner_manager.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/banners/app_banner_settings_helper.h"
-#include "chrome/browser/installable/installable_data.h"
-#include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/share_target.h"
+#include "components/webapps/installable/installable_data.h"
+#include "components/webapps/installable/installable_metrics.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -403,24 +403,24 @@ void RecordAppBanner(content::WebContents* contents, const GURL& app_url) {
       base::Time::Now());
 }
 
-WebappInstallSource ConvertExternalInstallSourceToInstallSource(
+webapps::WebappInstallSource ConvertExternalInstallSourceToInstallSource(
     ExternalInstallSource external_install_source) {
-  WebappInstallSource install_source;
+  webapps::WebappInstallSource install_source;
   switch (external_install_source) {
     case ExternalInstallSource::kInternalDefault:
-      install_source = WebappInstallSource::INTERNAL_DEFAULT;
+      install_source = webapps::WebappInstallSource::INTERNAL_DEFAULT;
       break;
     case ExternalInstallSource::kExternalDefault:
-      install_source = WebappInstallSource::EXTERNAL_DEFAULT;
+      install_source = webapps::WebappInstallSource::EXTERNAL_DEFAULT;
       break;
     case ExternalInstallSource::kExternalPolicy:
-      install_source = WebappInstallSource::EXTERNAL_POLICY;
+      install_source = webapps::WebappInstallSource::EXTERNAL_POLICY;
       break;
     case ExternalInstallSource::kSystemInstalled:
-      install_source = WebappInstallSource::SYSTEM_DEFAULT;
+      install_source = webapps::WebappInstallSource::SYSTEM_DEFAULT;
       break;
     case ExternalInstallSource::kArc:
-      install_source = WebappInstallSource::ARC;
+      install_source = webapps::WebappInstallSource::ARC;
       break;
   }
 

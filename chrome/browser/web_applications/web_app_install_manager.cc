@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <utility>
-
-#include "base/optional.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
+
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
+#include "components/webapps/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 
 namespace web_app {
@@ -86,7 +87,7 @@ void WebAppInstallManager::Shutdown() {
 
 void WebAppInstallManager::LoadWebAppAndCheckManifest(
     const GURL& web_app_url,
-    WebappInstallSource install_source,
+    webapps::WebappInstallSource install_source,
     WebAppManifestCheckCallback callback) {
   DCHECK(started_);
 
@@ -106,7 +107,7 @@ void WebAppInstallManager::LoadWebAppAndCheckManifest(
 void WebAppInstallManager::InstallWebAppFromManifest(
     content::WebContents* contents,
     bool bypass_service_worker_check,
-    WebappInstallSource install_source,
+    webapps::WebappInstallSource install_source,
     WebAppInstallDialogCallback dialog_callback,
     OnceInstallCallback callback) {
   DCHECK(started_);
@@ -126,7 +127,7 @@ void WebAppInstallManager::InstallWebAppFromManifest(
 void WebAppInstallManager::InstallWebAppFromManifestWithFallback(
     content::WebContents* contents,
     bool force_shortcut_app,
-    WebappInstallSource install_source,
+    webapps::WebappInstallSource install_source,
     WebAppInstallDialogCallback dialog_callback,
     OnceInstallCallback callback) {
   DCHECK(started_);
@@ -145,7 +146,7 @@ void WebAppInstallManager::InstallWebAppFromManifestWithFallback(
 void WebAppInstallManager::InstallWebAppFromInfo(
     std::unique_ptr<WebApplicationInfo> web_application_info,
     ForInstallableSite for_installable_site,
-    WebappInstallSource install_source,
+    webapps::WebappInstallSource install_source,
     OnceInstallCallback callback) {
   InstallWebAppFromInfo(std::move(web_application_info), for_installable_site,
                         base::nullopt, install_source, std::move(callback));
@@ -155,7 +156,7 @@ void WebAppInstallManager::InstallWebAppFromInfo(
     std::unique_ptr<WebApplicationInfo> web_application_info,
     ForInstallableSite for_installable_site,
     const base::Optional<InstallParams>& install_params,
-    WebappInstallSource install_source,
+    webapps::WebappInstallSource install_source,
     OnceInstallCallback callback) {
   DCHECK(started_);
 
@@ -176,7 +177,7 @@ void WebAppInstallManager::InstallWebAppFromInfo(
 void WebAppInstallManager::InstallWebAppWithParams(
     content::WebContents* web_contents,
     const InstallParams& install_params,
-    WebappInstallSource install_source,
+    webapps::WebappInstallSource install_source,
     OnceInstallCallback callback) {
   DCHECK(started_);
 
@@ -254,7 +255,7 @@ void WebAppInstallManager::EnqueueInstallAppFromSync(
   base::OnceClosure start_task = base::BindOnce(
       &WebAppInstallTask::LoadAndInstallWebAppFromManifestWithFallback,
       task->GetWeakPtr(), start_url, EnsureWebContentsCreated(),
-      base::Unretained(url_loader_.get()), WebappInstallSource::SYNC,
+      base::Unretained(url_loader_.get()), webapps::WebappInstallSource::SYNC,
       base::BindOnce(&WebAppInstallManager::OnQueuedTaskCompleted,
                      base::Unretained(this), task.get(),
                      std::move(task_completed_callback)));
@@ -377,7 +378,7 @@ void WebAppInstallManager::
       data_retriever_factory_.Run(), registrar());
 
   InstallFinalizer::FinalizeOptions finalize_options;
-  finalize_options.install_source = WebappInstallSource::SYNC;
+  finalize_options.install_source = webapps::WebappInstallSource::SYNC;
   finalize_options.locally_installed = kLocallyInstallWebAppsOnSync;
 
   base::OnceClosure start_task = base::BindOnce(

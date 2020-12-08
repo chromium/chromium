@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/time/time.h"
-#include "chrome/browser/installable/installable_logging.h"
 
 namespace content {
 class WebContents;

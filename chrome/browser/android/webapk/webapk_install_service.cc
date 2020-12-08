@@ -38,14 +38,14 @@ void WebApkInstallService::InstallAsync(
     const webapps::ShortcutInfo& shortcut_info,
     const SkBitmap& primary_icon,
     bool is_primary_icon_maskable,
-    WebappInstallSource install_source) {
+    webapps::WebappInstallSource install_source) {
   if (IsInstallInProgress(shortcut_info.manifest_url)) {
     ShortcutHelper::ShowWebApkInstallInProgressToast();
     return;
   }
 
   installs_.insert(shortcut_info.manifest_url);
-  InstallableMetrics::TrackInstallEvent(install_source);
+  webapps::InstallableMetrics::TrackInstallEvent(install_source);
 
   ShowInstallInProgressNotification(shortcut_info, primary_icon,
                                     is_primary_icon_maskable);

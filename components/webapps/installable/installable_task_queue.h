@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_INSTALLABLE_INSTALLABLE_TASK_QUEUE_H_
-#define CHROME_BROWSER_INSTALLABLE_INSTALLABLE_TASK_QUEUE_H_
+#ifndef COMPONENTS_WEBAPPS_INSTALLABLE_INSTALLABLE_TASK_QUEUE_H_
+#define COMPONENTS_WEBAPPS_INSTALLABLE_INSTALLABLE_TASK_QUEUE_H_
 
 #include <deque>
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "chrome/browser/installable/installable_data.h"
-#include "chrome/browser/installable/installable_params.h"
+#include "components/webapps/installable/installable_data.h"
+#include "components/webapps/installable/installable_params.h"
+
+namespace webapps {
 
 struct InstallableTask {
   InstallableTask();
@@ -80,4 +82,6 @@ class InstallableTaskQueue {
   std::deque<InstallableTask> paused_tasks_;
 };
 
-#endif  // CHROME_BROWSER_INSTALLABLE_INSTALLABLE_TASK_QUEUE_H_
+}  // namespace webapps
+
+#endif  // COMPONENTS_WEBAPPS_INSTALLABLE_INSTALLABLE_TASK_QUEUE_H_

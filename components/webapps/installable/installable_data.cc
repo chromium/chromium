@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/installable/installable_data.h"
+#include "components/webapps/installable/installable_data.h"
 
 #include <utility>
+
+namespace webapps {
 
 InstallableData::InstallableData(std::vector<InstallableStatusCode> errors,
                                  const GURL& manifest_url,
@@ -28,3 +30,5 @@ InstallableData::InstallableData(std::vector<InstallableStatusCode> errors,
       has_worker(has_worker) {}
 
 InstallableData::~InstallableData() = default;
+
+}  // namespace webapps

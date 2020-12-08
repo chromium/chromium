@@ -22,16 +22,18 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/installable/installable_manager.h"
-#include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/webapps/installable/installable_manager.h"
+#include "components/webapps/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
+
+namespace webapps {
 
 namespace {
 
@@ -76,7 +78,7 @@ class ObserverWaiter : public AddToHomescreenDataFetcher::Observer {
     is_webapk_compatible_ = is_webapk_compatible;
   }
 
-  void OnDataAvailable(const webapps::ShortcutInfo& info,
+  void OnDataAvailable(const ShortcutInfo& info,
                        const SkBitmap& primary_icon) override {
     // This should only be called once.
     EXPECT_FALSE(data_available_);
@@ -564,3 +566,5 @@ TEST_F(AddToHomescreenDataFetcherTest, ManifestNoNameNoShortName) {
   EXPECT_EQ(fetcher->shortcut_info().best_primary_icon_url,
             GURL(kDefaultIconUrl));
 }
+
+}  // namespace webapps

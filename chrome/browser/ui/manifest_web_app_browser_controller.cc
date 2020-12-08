@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/manifest_web_app_browser_controller.h"
 
-#include "chrome/browser/installable/installable_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
+#include "components/webapps/installable/installable_manager.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
@@ -47,7 +47,7 @@ bool ManifestWebAppBrowserController::ShouldShowCustomTabBar() const {
 
   // Show if on a insecure external website. This checks the security level,
   // different from IsOriginSecure which just checks the origin itself.
-  if (!InstallableManager::IsContentSecure(web_contents))
+  if (!webapps::InstallableManager::IsContentSecure(web_contents))
     return true;
 
   return false;

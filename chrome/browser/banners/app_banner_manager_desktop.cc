@@ -200,10 +200,11 @@ bool AppBannerManagerDesktop::ShouldAllowWebAppReplacementInstall() {
   return display_mode == blink::mojom::DisplayMode::kBrowser;
 }
 
-void AppBannerManagerDesktop::ShowBannerUi(WebappInstallSource install_source) {
+void AppBannerManagerDesktop::ShowBannerUi(
+    webapps::WebappInstallSource install_source) {
   RecordDidShowBanner();
   TrackDisplayEvent(DISPLAY_EVENT_WEB_APP_BANNER_CREATED);
-  ReportStatus(SHOWING_APP_INSTALLATION_DIALOG);
+  ReportStatus(webapps::SHOWING_APP_INSTALLATION_DIALOG);
   CreateWebApp(install_source);
 }
 
@@ -243,7 +244,8 @@ void AppBannerManagerDesktop::OnAppRegistrarDestroyed() {
   registrar_observer_.RemoveAll();
 }
 
-void AppBannerManagerDesktop::CreateWebApp(WebappInstallSource install_source) {
+void AppBannerManagerDesktop::CreateWebApp(
+    webapps::WebappInstallSource install_source) {
   content::WebContents* contents = web_contents();
   DCHECK(contents);
 

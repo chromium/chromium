@@ -49,7 +49,7 @@ void AppRegistrar::NotifyWebAppInstalled(const AppId& app_id) {
   for (AppRegistrarObserver& observer : observers_)
     observer.OnWebAppInstalled(app_id);
   // TODO(alancutter): Call RecordWebAppInstallation here when we get access to
-  // the WebappInstallSource in this event.
+  // the webapps::WebappInstallSource in this event.
 }
 
 void AppRegistrar::NotifyWebAppManifestUpdated(const AppId& app_id,

@@ -14,8 +14,6 @@
 #include "base/strings/string16.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/favicon/favicon_utils.h"
-#include "chrome/browser/installable/installable_manager.h"
-#include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
@@ -29,6 +27,8 @@
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/common/chrome_features.h"
+#include "components/webapps/installable/installable_manager.h"
+#include "components/webapps/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -99,7 +99,7 @@ void WebAppInstallTask::SetInstallParams(
 
 void WebAppInstallTask::LoadWebAppAndCheckManifest(
     const GURL& url,
-    WebappInstallSource install_source,
+    webapps::WebappInstallSource install_source,
     WebAppUrlLoader* url_loader,
     LoadWebAppAndCheckManifestCallback callback) {
   DCHECK(url_loader);
@@ -132,7 +132,7 @@ void WebAppInstallTask::LoadWebAppAndCheckManifest(
 void WebAppInstallTask::InstallWebAppFromManifest(
     content::WebContents* contents,
     bool bypass_service_worker_check,
-    WebappInstallSource install_source,
+    webapps::WebappInstallSource install_source,
     InstallManager::WebAppInstallDialogCallback dialog_callback,
     InstallManager::OnceInstallCallback install_callback) {
   DCHECK(AreWebAppsUserInstallable(profile_));
@@ -155,7 +155,7 @@ void WebAppInstallTask::InstallWebAppFromManifest(
 void WebAppInstallTask::InstallWebAppFromManifestWithFallback(
     content::WebContents* contents,
     bool force_shortcut_app,
-    WebappInstallSource install_source,
+    webapps::WebappInstallSource install_source,
     InstallManager::WebAppInstallDialogCallback dialog_callback,
     InstallManager::OnceInstallCallback install_callback) {
   DCHECK(AreWebAppsUserInstallable(profile_));
@@ -176,7 +176,7 @@ void WebAppInstallTask::LoadAndInstallWebAppFromManifestWithFallback(
     const GURL& launch_url,
     content::WebContents* contents,
     WebAppUrlLoader* url_loader,
-    WebappInstallSource install_source,
+    webapps::WebappInstallSource install_source,
     InstallManager::OnceInstallCallback install_callback) {
   DCHECK(AreWebAppsUserInstallable(profile_));
   CheckInstallPreconditions();
@@ -196,7 +196,7 @@ void WebAppInstallTask::LoadAndInstallWebAppFromManifestWithFallback(
 void WebAppInstallTask::InstallWebAppFromInfo(
     std::unique_ptr<WebApplicationInfo> web_application_info,
     ForInstallableSite for_installable_site,
-    WebappInstallSource install_source,
+    webapps::WebappInstallSource install_source,
     InstallManager::OnceInstallCallback callback) {
   CheckInstallPreconditions();
 
@@ -230,7 +230,7 @@ void WebAppInstallTask::InstallWebAppFromInfo(
 void WebAppInstallTask::InstallWebAppWithParams(
     content::WebContents* contents,
     const InstallManager::InstallParams& install_params,
-    WebappInstallSource install_source,
+    webapps::WebappInstallSource install_source,
     InstallManager::OnceInstallCallback install_callback) {
   CheckInstallPreconditions();
 
@@ -293,7 +293,7 @@ std::unique_ptr<content::WebContents> WebAppInstallTask::CreateWebContents(
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(content::WebContents::CreateParams(profile));
 
-  InstallableManager::CreateForWebContents(web_contents.get());
+  webapps::InstallableManager::CreateForWebContents(web_contents.get());
   SecurityStateTabHelper::CreateForWebContents(web_contents.get());
   favicon::CreateContentFaviconDriverForWebContents(web_contents.get());
 
@@ -328,8 +328,8 @@ void WebAppInstallTask::CheckInstallPreconditions() {
 void WebAppInstallTask::RecordInstallEvent() {
   DCHECK(install_source_ != kNoInstallSource);
 
-  if (InstallableMetrics::IsReportableInstallSource(install_source_)) {
-    InstallableMetrics::TrackInstallEvent(install_source_);
+  if (webapps::InstallableMetrics::IsReportableInstallSource(install_source_)) {
+    webapps::InstallableMetrics::TrackInstallEvent(install_source_);
   }
 }
 
@@ -517,7 +517,7 @@ void WebAppInstallTask::OnDidPerformInstallableCheck(
   std::vector<GURL> icon_urls = GetValidIconUrlsToDownload(*web_app_info);
 
   // A system app should always have a manifest icon.
-  if (install_source_ == WebappInstallSource::SYSTEM_DEFAULT) {
+  if (install_source_ == webapps::WebappInstallSource::SYSTEM_DEFAULT) {
     DCHECK(manifest);
     DCHECK(!manifest->icons.empty());
   }
@@ -615,7 +615,7 @@ void WebAppInstallTask::OnDidCheckForIntentToPlayStore(
 
   data_retriever_->GetIcons(
       web_contents(), icon_urls, skip_page_favicons,
-      install_source_ == WebappInstallSource::SYNC
+      install_source_ == webapps::WebappInstallSource::SYNC
           ? WebAppIconDownloader::Histogram::kForSync
           : WebAppIconDownloader::Histogram::kForCreate,
       base::BindOnce(&WebAppInstallTask::OnIconsRetrievedShowDialog,
@@ -641,7 +641,7 @@ void WebAppInstallTask::InstallWebAppFromInfoRetrieveIcons(
   // Skip downloading the page favicons as everything in is the URL list.
   data_retriever_->GetIcons(
       web_contents, icon_urls, /*skip_page_fav_icons=*/true,
-      install_source_ == WebappInstallSource::SYNC
+      install_source_ == webapps::WebappInstallSource::SYNC
           ? WebAppIconDownloader::Histogram::kForSync
           : WebAppIconDownloader::Histogram::kForCreate,
       base::BindOnce(&WebAppInstallTask::OnIconsRetrieved,
@@ -816,7 +816,7 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
   options.os_hooks[OsHookType::kFileHandlers] = true;
   options.os_hooks[OsHookType::kUninstallationViaOsSettings] = true;
 
-  if (install_source_ == WebappInstallSource::SYNC)
+  if (install_source_ == webapps::WebappInstallSource::SYNC)
     options.add_to_quick_launch_bar = false;
 
   if (install_params_) {

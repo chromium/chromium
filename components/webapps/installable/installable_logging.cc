@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/installable/installable_logging.h"
+#include "components/webapps/installable/installable_logging.h"
 
 #include <vector>
 
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/installable/installable_manager.h"
+#include "components/webapps/installable/installable_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+
+namespace webapps {
 
 namespace {
 
@@ -337,3 +339,5 @@ void LogToConsole(content::WebContents* web_contents,
   web_contents->GetMainFrame()->AddMessageToConsole(
       level, GetMessagePrefix() + message);
 }
+
+}  // namespace webapps

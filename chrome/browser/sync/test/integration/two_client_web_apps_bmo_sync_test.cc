@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -29,6 +28,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/webapps/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/app_sorting.h"
@@ -96,7 +96,8 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
 
   AppId InstallAppAsUserInitiated(
       Profile* profile,
-      WebappInstallSource source = WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      webapps::WebappInstallSource source =
+          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       GURL start_url = GURL()) {
     Browser* browser = CreateBrowser(profile);
     if (!start_url.is_valid())
@@ -122,12 +123,13 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
   }
 
   AppId InstallApp(const WebApplicationInfo& info, Profile* profile) {
-    return InstallApp(info, profile, WebappInstallSource::OMNIBOX_INSTALL_ICON);
+    return InstallApp(info, profile,
+                      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   }
 
   AppId InstallApp(const WebApplicationInfo& info,
                    Profile* profile,
-                   WebappInstallSource source) {
+                   webapps::WebappInstallSource source) {
     DCHECK(info.start_url.is_valid());
 
     base::RunLoop run_loop;
@@ -347,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSynced) {
 
   // Install a non-syncing web app.
   AppId app_id = InstallAppAsUserInitiated(
-      GetProfile(0), WebappInstallSource::EXTERNAL_DEFAULT);
+      GetProfile(0), webapps::WebappInstallSource::EXTERNAL_DEFAULT);
 
   // Install a 'dummy' app & wait for installation to ensure sync has processed
   // the initial apps.
@@ -367,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSyncedThenSynced) {
 
   // Install a non-syncing web app.
   AppId app_id = InstallAppAsUserInitiated(
-      GetProfile(0), WebappInstallSource::EXTERNAL_DEFAULT);
+      GetProfile(0), webapps::WebappInstallSource::EXTERNAL_DEFAULT);
 
   // Install the same app as a syncing app on profile 1.
   AppId app_id2 = InstallAppAsUserInitiated(GetProfile(1));
@@ -410,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
 
   // Install a non-syncing web app.
   AppId app_id = InstallAppAsUserInitiated(
-      GetProfile(0), WebappInstallSource::EXTERNAL_POLICY);
+      GetProfile(0), webapps::WebappInstallSource::EXTERNAL_POLICY);
 
   // Install the same app as a syncing app on profile 1.
   AppId app_id2 = InstallAppAsUserInitiated(GetProfile(1));
@@ -478,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, AppSortingFixCollisions) {
   // Install two different apps.
   AppId app_id1 = InstallAppAsUserInitiated(GetProfile(0));
   AppId app_id2 = InstallAppAsUserInitiated(
-      GetProfile(0), WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      GetProfile(0), webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       GetUserInitiatedAppURL2());
 
   ASSERT_NE(app_id1, app_id2);

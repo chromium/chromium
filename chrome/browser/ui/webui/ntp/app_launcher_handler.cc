@@ -37,7 +37,6 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
-#include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -75,6 +74,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/webapps/installable/installable_metrics.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/app_sorting.h"
@@ -1221,7 +1221,7 @@ void AppLauncherHandler::OnFaviconForAppInstallFromLink(
 
   web_app_provider_->install_manager().InstallWebAppFromInfo(
       std::move(web_app), web_app::ForInstallableSite::kUnknown,
-      WebappInstallSource::SYNC, std::move(install_complete_callback));
+      webapps::WebappInstallSource::SYNC, std::move(install_complete_callback));
 }
 
 void AppLauncherHandler::SetAppToBeHighlighted() {

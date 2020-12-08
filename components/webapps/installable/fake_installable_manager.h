@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_INSTALLABLE_FAKE_INSTALLABLE_MANAGER_H_
-#define CHROME_BROWSER_INSTALLABLE_FAKE_INSTALLABLE_MANAGER_H_
+#ifndef COMPONENTS_WEBAPPS_INSTALLABLE_FAKE_INSTALLABLE_MANAGER_H_
+#define COMPONENTS_WEBAPPS_INSTALLABLE_FAKE_INSTALLABLE_MANAGER_H_
 
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/installable/installable_logging.h"
-#include "chrome/browser/installable/installable_manager.h"
+#include "components/webapps/installable/installable_logging.h"
+#include "components/webapps/installable/installable_manager.h"
 #include "url/gurl.h"
-
-struct InstallableData;
 
 namespace blink {
 struct Manifest;
@@ -21,6 +19,9 @@ struct Manifest;
 namespace content {
 class WebContents;
 }
+
+namespace webapps {
+struct InstallableData;
 
 class FakeInstallableManager : public InstallableManager {
  public:
@@ -53,4 +54,6 @@ class FakeInstallableManager : public InstallableManager {
   base::WeakPtrFactory<FakeInstallableManager> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_INSTALLABLE_FAKE_INSTALLABLE_MANAGER_H_
+}  // namespace webapps
+
+#endif  // COMPONENTS_WEBAPPS_INSTALLABLE_FAKE_INSTALLABLE_MANAGER_H_

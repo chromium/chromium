@@ -136,7 +136,7 @@ class BookmarkAppInstallFinalizerTest : public ChromeRenderViewHostTestHarness {
     info->title = base::ASCIIToUTF16(kWebAppTitle);
 
     web_app::InstallFinalizer::FinalizeOptions options;
-    options.install_source = WebappInstallSource::EXTERNAL_POLICY;
+    options.install_source = webapps::WebappInstallSource::EXTERNAL_POLICY;
 
     web_app::AppId app_id;
     base::RunLoop run_loop;
@@ -196,7 +196,7 @@ TEST_F(BookmarkAppInstallFinalizerTest, BasicInstallFails) {
 
   base::RunLoop run_loop;
   web_app::InstallFinalizer::FinalizeOptions options;
-  options.install_source = WebappInstallSource::INTERNAL_DEFAULT;
+  options.install_source = webapps::WebappInstallSource::INTERNAL_DEFAULT;
   bool callback_called = false;
 
   finalizer().FinalizeInstall(
@@ -226,7 +226,7 @@ TEST_F(BookmarkAppInstallFinalizerTest, ConcurrentInstallSucceeds) {
   bool callback1_called = false;
   bool callback2_called = false;
   web_app::InstallFinalizer::FinalizeOptions options;
-  options.install_source = WebappInstallSource::INTERNAL_DEFAULT;
+  options.install_source = webapps::WebappInstallSource::INTERNAL_DEFAULT;
 
   // Start install finalization for the 1st app
   {
@@ -274,7 +274,7 @@ TEST_F(BookmarkAppInstallFinalizerTest, DefaultInstalledSucceeds) {
   info->title = base::ASCIIToUTF16(kWebAppTitle);
 
   web_app::InstallFinalizer::FinalizeOptions options;
-  options.install_source = WebappInstallSource::EXTERNAL_DEFAULT;
+  options.install_source = webapps::WebappInstallSource::EXTERNAL_DEFAULT;
 
   base::RunLoop run_loop;
   finalizer().FinalizeInstall(
@@ -301,7 +301,7 @@ TEST_F(BookmarkAppInstallFinalizerTest, PolicyInstalledSucceeds) {
   info->title = base::ASCIIToUTF16(kWebAppTitle);
 
   web_app::InstallFinalizer::FinalizeOptions options;
-  options.install_source = WebappInstallSource::EXTERNAL_POLICY;
+  options.install_source = webapps::WebappInstallSource::EXTERNAL_POLICY;
 
   base::RunLoop run_loop;
   finalizer().FinalizeInstall(
@@ -326,7 +326,7 @@ TEST_F(BookmarkAppInstallFinalizerTest, NoNetworkInstallForArc) {
   info->start_url = WebAppUrl();
 
   web_app::InstallFinalizer::FinalizeOptions options;
-  options.install_source = WebappInstallSource::ARC;
+  options.install_source = webapps::WebappInstallSource::ARC;
 
   base::RunLoop run_loop;
   finalizer().FinalizeInstall(
@@ -456,7 +456,7 @@ TEST_F(BookmarkAppInstallFinalizerTest, NotLocallyInstalled) {
   info->start_url = WebAppUrl();
 
   web_app::InstallFinalizer::FinalizeOptions options;
-  options.install_source = WebappInstallSource::INTERNAL_DEFAULT;
+  options.install_source = webapps::WebappInstallSource::INTERNAL_DEFAULT;
   options.locally_installed = false;
 
   base::RunLoop run_loop;

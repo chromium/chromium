@@ -25,7 +25,6 @@
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
-#include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
@@ -41,6 +40,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/policy_constants.h"
 #include "components/version_info/channel.h"
+#include "components/webapps/installable/installable_metrics.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
@@ -278,7 +278,7 @@ class ExtensionPolicyTest : public PolicyTest {
     web_app::AppId return_app_id;
     web_app_provider_base()->install_manager().InstallWebAppFromInfo(
         std::move(web_application), web_app::ForInstallableSite::kYes,
-        WebappInstallSource::SYNC,
+        webapps::WebappInstallSource::SYNC,
         base::BindLambdaForTesting(
             [&](const web_app::AppId& app_id, web_app::InstallResultCode code) {
               EXPECT_EQ(code, web_app::InstallResultCode::kSuccessNewInstall);

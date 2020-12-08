@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(WebAppMigrationUserDisplayModeCleanUpBrowserTest,
   ASSERT_TRUE(bookmark_app_finalizer);
 
   InstallFinalizer::FinalizeOptions options;
-  options.install_source = WebappInstallSource::OMNIBOX_INSTALL_ICON;
+  options.install_source = webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON;
 
   // Install bookmark app set to open as window.
   {

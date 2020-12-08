@@ -13,15 +13,15 @@
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "chrome/browser/installable/fake_installable_manager.h"
-#include "chrome/browser/installable/installable_data.h"
-#include "chrome/browser/installable/installable_manager.h"
-#include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/common/chrome_render_frame.mojom-test-utils.h"
 #include "chrome/common/web_page_metadata.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/webapps/installable/fake_installable_manager.h"
+#include "components/webapps/installable/installable_data.h"
+#include "components/webapps/installable/installable_manager.h"
+#include "components/webapps/installable/installable_metrics.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/test/browser_task_environment.h"
@@ -328,8 +328,8 @@ TEST_F(WebAppDataRetrieverTest,
 
   {
     auto manifest = std::make_unique<blink::Manifest>();
-    FakeInstallableManager::CreateForWebContentsWithManifest(
-        web_contents(), NO_MANIFEST, GURL(), std::move(manifest));
+    webapps::FakeInstallableManager::CreateForWebContentsWithManifest(
+        web_contents(), webapps::NO_MANIFEST, GURL(), std::move(manifest));
   }
 
   base::RunLoop run_loop;
@@ -407,9 +407,9 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityAndRetrieveManifest) {
     manifest->scope = manifest_scope;
     manifest->theme_color = manifest_theme_color;
 
-    FakeInstallableManager::CreateForWebContentsWithManifest(
-        web_contents(), NO_ERROR_DETECTED, GURL("https://example.com/manifest"),
-        std::move(manifest));
+    webapps::FakeInstallableManager::CreateForWebContentsWithManifest(
+        web_contents(), webapps::NO_ERROR_DETECTED,
+        GURL("https://example.com/manifest"), std::move(manifest));
   }
 
   base::RunLoop run_loop;
@@ -443,8 +443,8 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityFails) {
 
   {
     auto manifest = std::make_unique<blink::Manifest>();
-    FakeInstallableManager::CreateForWebContentsWithManifest(
-        web_contents(), NO_MANIFEST, GURL(), std::move(manifest));
+    webapps::FakeInstallableManager::CreateForWebContentsWithManifest(
+        web_contents(), webapps::NO_MANIFEST, GURL(), std::move(manifest));
   }
 
   base::RunLoop run_loop;

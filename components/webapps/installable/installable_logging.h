@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_INSTALLABLE_INSTALLABLE_LOGGING_H_
-#define CHROME_BROWSER_INSTALLABLE_INSTALLABLE_LOGGING_H_
+#ifndef COMPONENTS_WEBAPPS_INSTALLABLE_INSTALLABLE_LOGGING_H_
+#define COMPONENTS_WEBAPPS_INSTALLABLE_INSTALLABLE_LOGGING_H_
 
 #include <string>
 
@@ -12,7 +12,9 @@
 namespace content {
 struct InstallabilityError;
 class WebContents;
-}
+}  // namespace content
+
+namespace webapps {
 
 // These values are a central reference for installability errors. The
 // InstallableManager will specify an InstallableStatusCode (or
@@ -75,4 +77,6 @@ void LogToConsole(content::WebContents* web_contents,
                   InstallableStatusCode code,
                   blink::mojom::ConsoleMessageLevel level);
 
-#endif  // CHROME_BROWSER_INSTALLABLE_INSTALLABLE_LOGGING_H_
+}  // namespace webapps
+
+#endif  // COMPONENTS_WEBAPPS_INSTALLABLE_INSTALLABLE_LOGGING_H_

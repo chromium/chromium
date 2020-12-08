@@ -9,12 +9,15 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 
-enum class WebappInstallSource;
 class Browser;
 class Profile;
 
 namespace content {
 class WebContents;
+}
+
+namespace webapps {
+enum class WebappInstallSource;
 }
 
 namespace web_app {
@@ -47,7 +50,7 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
 // |iph_state| indicates whether or not in-product-help prompted this call.
 bool CreateWebAppFromManifest(content::WebContents* web_contents,
                               bool bypass_service_worker_check,
-                              WebappInstallSource install_source,
+                              webapps::WebappInstallSource install_source,
                               WebAppInstalledCallback installed_callback,
                               chrome::PwaInProductHelpState iph_state =
                                   chrome::PwaInProductHelpState::kNotShown);

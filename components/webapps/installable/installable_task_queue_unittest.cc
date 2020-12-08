@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/installable/installable_task_queue.h"
+#include "components/webapps/installable/installable_task_queue.h"
 
-#include "chrome/browser/installable/installable_manager.h"
+#include "components/webapps/installable/installable_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace webapps {
 
 // A POD struct which holds booleans for creating and comparing against
 // a (move-only) InstallableTask.
@@ -109,3 +111,5 @@ TEST_F(InstallableTaskQueueUnitTest, NextDiscardsTask) {
   task_queue.Next();
   EXPECT_FALSE(task_queue.HasCurrent());
 }
+
+}  // namespace webapps
