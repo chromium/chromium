@@ -42906,6 +42906,8 @@ from previous Chrome versions.
   <int value="-1159154050" label="FilesSinglePartitionFormat:enabled"/>
   <int value="-1159151875" label="RecordWebAppDebugInfo:disabled"/>
   <int value="-1158993534" label="PrintScaling:enabled"/>
+  <int value="-1156950420"
+      label="CryptAuthV2DeviceActivityStatusUseConnectivity:enabled"/>
   <int value="-1156179600" label="OmniboxRichEntitySuggestions:enabled"/>
   <int value="-1155543191" label="CopylessPaste:disabled"/>
   <int value="-1154834060" label="OmniboxRichAutocompletion:disabled"/>
@@ -46234,6 +46236,8 @@ from previous Chrome versions.
   <int value="2077917024"
       label="enable-supervised-user-managed-bookmarks-folder"/>
   <int value="2078599705" label="ShelfAppScaling:enabled"/>
+  <int value="2078879219"
+      label="CryptAuthV2DeviceActivityStatusUseConnectivity:disabled"/>
   <int value="2079672348" label="ExperimentalKeyboardLockUI:disabled"/>
   <int value="2081154375" label="AssistantKeyRemapping:disabled"/>
   <int value="2084477383" label="CrostiniDiskResizing:enabled"/>

@@ -211,6 +211,12 @@ const base::Feature kCrostiniEnableDlc{"CrostiniEnableDlc",
 const base::Feature kCryptAuthV2DeviceActivityStatus{
     "CryptAuthV2DeviceActivityStatus", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables use of the connectivity status from Cryptauth's
+// GetDevicesActivityStatus API to sort devices.
+const base::Feature kCryptAuthV2DeviceActivityStatusUseConnectivity{
+    "CryptAuthV2DeviceActivityStatusUseConnectivity",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Disable idle sockets closing on memory pressure for NetworkContexts that
 // belong to Profiles. It only applies to Profiles because the goal is to
 // improve perceived performance of web browsing within the Chrome OS user

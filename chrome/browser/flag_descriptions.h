@@ -2239,6 +2239,9 @@ extern const char kCrostiniResetLxdDbDescription[];
 extern const char kCryptAuthV2DeviceActivityStatusName[];
 extern const char kCryptAuthV2DeviceActivityStatusDescription[];
 
+extern const char kCryptAuthV2DeviceActivityStatusUseConnectivityName[];
+extern const char kCryptAuthV2DeviceActivityStatusUseConnectivityDescription[];
+
 extern const char kCryptAuthV2DeviceSyncName[];
 extern const char kCryptAuthV2DeviceSyncDescription[];
 

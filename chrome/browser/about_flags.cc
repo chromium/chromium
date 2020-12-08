@@ -2825,6 +2825,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCryptAuthV2DeviceActivityStatusName,
      flag_descriptions::kCryptAuthV2DeviceActivityStatusDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kCryptAuthV2DeviceActivityStatus)},
+    {"cryptauth-v2-device-activity-status-use-connectivity",
+     flag_descriptions::kCryptAuthV2DeviceActivityStatusUseConnectivityName,
+     flag_descriptions::
+         kCryptAuthV2DeviceActivityStatusUseConnectivityDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kCryptAuthV2DeviceActivityStatusUseConnectivity)},
     {"cryptauth-v2-devicesync", flag_descriptions::kCryptAuthV2DeviceSyncName,
      flag_descriptions::kCryptAuthV2DeviceSyncDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kCryptAuthV2DeviceSync)},

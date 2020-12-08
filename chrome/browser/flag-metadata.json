@@ -758,6 +758,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "cryptauth-v2-device-activity-status-use-connectivity",
+    "owners": [ "khorimoto", "nohle", "themaxli" ],
+    "expiry_milestone": 93
+  },
+  {
     "name": "cryptauth-v2-devicesync",
     "owners": [ "khorimoto", "nohle" ],
     "expiry_milestone": 93

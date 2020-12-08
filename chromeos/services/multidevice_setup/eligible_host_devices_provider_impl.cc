@@ -149,18 +149,21 @@ void EligibleHostDevicesProviderImpl::OnGetDevicesActivityStatus(
         const device_sync::mojom::DeviceActivityStatusPtr&
             second_activity_status = std::get<1>(*it2);
 
-        if (first_activity_status->connectivity_status ==
-                cryptauthv2::ConnectivityStatus::ONLINE &&
-            second_activity_status->connectivity_status !=
-                cryptauthv2::ConnectivityStatus::ONLINE) {
-          return true;
-        }
+        if (base::FeatureList::IsEnabled(
+                features::kCryptAuthV2DeviceActivityStatusUseConnectivity)) {
+          if (first_activity_status->connectivity_status ==
+                  cryptauthv2::ConnectivityStatus::ONLINE &&
+              second_activity_status->connectivity_status !=
+                  cryptauthv2::ConnectivityStatus::ONLINE) {
+            return true;
+          }
 
-        if (second_activity_status->connectivity_status ==
-                cryptauthv2::ConnectivityStatus::ONLINE &&
-            first_activity_status->connectivity_status !=
-                cryptauthv2::ConnectivityStatus::ONLINE) {
-          return false;
+          if (second_activity_status->connectivity_status ==
+                  cryptauthv2::ConnectivityStatus::ONLINE &&
+              first_activity_status->connectivity_status !=
+                  cryptauthv2::ConnectivityStatus::ONLINE) {
+            return false;
+          }
         }
 
         if (first_activity_status->last_activity_time !=
@@ -173,13 +176,16 @@ void EligibleHostDevicesProviderImpl::OnGetDevicesActivityStatus(
                second_device.remote_device.last_update_time_millis();
       });
 
-  for (auto& host_device : eligible_active_devices_from_last_sync_) {
-    auto it =
-        id_to_activity_status_map.find(host_device.remote_device.instance_id());
-    if (it == id_to_activity_status_map.end()) {
-      continue;
+  if (base::FeatureList::IsEnabled(
+          features::kCryptAuthV2DeviceActivityStatusUseConnectivity)) {
+    for (auto& host_device : eligible_active_devices_from_last_sync_) {
+      auto it = id_to_activity_status_map.find(
+          host_device.remote_device.instance_id());
+      if (it == id_to_activity_status_map.end()) {
+        continue;
+      }
+      host_device.connectivity_status = std::get<1>(*it)->connectivity_status;
     }
-    host_device.connectivity_status = std::get<1>(*it)->connectivity_status;
   }
 }
 

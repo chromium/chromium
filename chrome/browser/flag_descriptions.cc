@@ -3859,6 +3859,12 @@ const char kCryptAuthV2DeviceActivityStatusName[] =
 const char kCryptAuthV2DeviceActivityStatusDescription[] =
     "Use the CryptAuth GetDevicesActivityStatus API to sort devices.";
 
+const char kCryptAuthV2DeviceActivityStatusUseConnectivityName[] =
+    "CryptAuth Device Activity Status: Use connectivity status";
+const char kCryptAuthV2DeviceActivityStatusUseConnectivityDescription[] =
+    "Utilize the connectivity status from the CryptAuth "
+    "GetDevicesActivityStatus API to sort devices.";
+
 const char kCryptAuthV2DeviceSyncName[] = "CryptAuth v2 DeviceSync";
 const char kCryptAuthV2DeviceSyncDescription[] =
     "Use the CryptAuth v2 DeviceSync protocol. Note: v1 DeviceSync will "
