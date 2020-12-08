@@ -26,12 +26,7 @@ int LLVMFuzzerInitialize(int* argc, char*** argv) {
   LEAK_SANITIZER_DISABLED_SCOPE;
   g_page_holder = std::make_unique<DummyPageHolder>().release();
 
-  // Set loader sandbox flags and install a new document so the document
-  // has all possible sandbox flags set on the document already when the
-  // CSP is bound.
   scoped_refptr<SharedBuffer> empty_document_data = SharedBuffer::Create();
-  g_page_holder->GetFrame().Loader().ForceSandboxFlags(
-      network::mojom::blink::WebSandboxFlags::kAll);
   g_page_holder->GetFrame().ForceSynchronousDocumentInstall(
       "text/html", empty_document_data);
   return 0;

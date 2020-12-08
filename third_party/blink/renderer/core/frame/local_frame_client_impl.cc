@@ -744,6 +744,18 @@ void LocalFrameClientImpl::BeginNavigation(
   navigation_info->frame_policy =
       owner ? owner->GetFramePolicy() : FramePolicy();
 
+  // owner->GetFramePolicy() above only contains the sandbox flags defined by
+  // the <iframe> element. It doesn't take into account inheritance from the
+  // parent or the opener. This is not a problem in the general case, because
+  // this attribute is simply dropped! It matter only for the "fake" navigation
+  // to the "fake" initial empty document. It is:
+  // RenderFrameImpl::CommitInitialEmptyDocument().
+  // This one doesn't go toward the browser process, it commits synchronously.
+  // The sandbox flags must be defined. They correspond to the one already in
+  // use for the 'real' initial empty document.
+  navigation_info->frame_policy.sandbox_flags =
+      web_frame_->GetFrame()->Loader().PendingEffectiveSandboxFlags();
+
   navigation_info->href_translate = href_translate;
 
   web_frame_->Client()->BeginNavigation(std::move(navigation_info));

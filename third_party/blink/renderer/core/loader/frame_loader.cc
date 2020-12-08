@@ -216,14 +216,6 @@ ResourceRequest FrameLoader::ResourceRequestForReload(
 FrameLoader::FrameLoader(LocalFrame* frame)
     : frame_(frame),
       progress_tracker_(MakeGarbageCollected<ProgressTracker>(frame)),
-      // Frames need to inherit the sandbox flags of their parent frame.
-      // These can be fixed at construction time, because the only actions that
-      // trigger a sandbox flags change in the parent will necessarily detach
-      // this frame.
-      forced_sandbox_flags_(
-          frame_->Tree().Parent()
-              ? frame_->Tree().Parent()->GetSecurityContext()->GetSandboxFlags()
-              : network::mojom::blink::WebSandboxFlags::kNone),
       dispatching_did_clear_window_object_in_main_world_(false),
       virtual_time_pauser_(
           frame_->GetFrameScheduler()->CreateWebScopedVirtualTimePauser(
@@ -249,10 +241,13 @@ void FrameLoader::Trace(Visitor* visitor) const {
 void FrameLoader::Init() {
   ScriptForbiddenScope forbid_scripts;
 
+  // Load the initial empty document:
   auto navigation_params = std::make_unique<WebNavigationParams>();
   navigation_params->url = KURL(g_empty_string);
   navigation_params->frame_policy =
       frame_->Owner() ? frame_->Owner()->GetFramePolicy() : FramePolicy();
+  navigation_params->frame_policy->sandbox_flags =
+      PendingEffectiveSandboxFlags();
 
   DocumentLoader* new_document_loader = Client()->CreateDocumentLoader(
       frame_, kWebNavigationTypeOther, CreateCSPForInitialEmptyDocument(),
@@ -1552,11 +1547,6 @@ void FrameLoader::RunScriptsAtDocumentElementAvailable() {
   // The frame might be detached at this point.
 }
 
-void FrameLoader::ForceSandboxFlags(
-    network::mojom::blink::WebSandboxFlags flags) {
-  forced_sandbox_flags_ |= flags;
-}
-
 void FrameLoader::DispatchDidClearDocumentOfWindowObject() {
   if (state_ == State::kUninitialized)
     return;
@@ -1593,10 +1583,12 @@ void FrameLoader::DispatchDidClearWindowObjectInMainWorld() {
 
 network::mojom::blink::WebSandboxFlags
 FrameLoader::PendingEffectiveSandboxFlags() const {
-  network::mojom::blink::WebSandboxFlags flags = forced_sandbox_flags_;
-  if (FrameOwner* frame_owner = frame_->Owner())
-    flags |= frame_owner->GetFramePolicy().sandbox_flags;
-  return flags;
+  if (Frame* parent = frame_->Tree().Parent()) {
+    return parent->GetSecurityContext()->GetSandboxFlags() |
+           frame_->Owner()->GetFramePolicy().sandbox_flags;
+  } else {
+    return frame_->OpenerSandboxFlags();
+  }
 }
 
 void FrameLoader::ModifyRequestForCSP(

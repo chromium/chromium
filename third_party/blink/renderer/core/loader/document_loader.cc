@@ -1441,9 +1441,15 @@ void DocumentLoader::DidCommitNavigation() {
 }
 
 network::mojom::blink::WebSandboxFlags DocumentLoader::CalculateSandboxFlags() {
-  auto sandbox_flags = GetFrameLoader().GetForcedSandboxFlags() |
-                       content_security_policy_->GetSandboxMask() |
-                       frame_policy_.sandbox_flags;
+  // The snapshot of the FramePolicy taken, when the navigation started. This
+  // contains the sandbox of the parent/opener and also the sandbox of the
+  // iframe element owning this new document.
+  auto sandbox_flags = frame_policy_.sandbox_flags;
+
+  // The new document's response can further restrict sandbox using the
+  // Content-Security-Policy: sandbox directive:
+  sandbox_flags |= content_security_policy_->GetSandboxMask();
+
   if (archive_) {
     // The URL of a Document loaded from a MHTML archive is controlled by
     // the Content-Location header. This would allow UXSS, since

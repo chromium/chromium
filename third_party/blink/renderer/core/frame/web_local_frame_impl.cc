@@ -1985,7 +1985,20 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
       previous_sibling_frame, insert_type, GetFrameToken(),
       window_agent_factory, interface_registry_, std::move(policy_container)));
   frame_->Tree().SetName(name);
-  frame_->Loader().ForceSandboxFlags(sandbox_flags);
+
+  // See sandbox inheritance: content/browser/renderer_host/sandbox_flags.md
+  //
+  // New documents are either:
+  // 1. The initial empty document:
+  //   a. In a new iframe.
+  //   b. In a new popup.
+  // 2. A document replacing the previous, one via a navigation.
+  //
+  // This is about 1.b. This is used to define sandbox flags for the initial
+  // empty document in a new popup.
+  if (frame_->IsMainFrame())
+    frame_->SetOpenerSandboxFlags(sandbox_flags);
+
   Frame* opener_frame = opener ? ToCoreFrame(*opener) : nullptr;
 
   // We must call init() after frame_ is assigned because it is referenced

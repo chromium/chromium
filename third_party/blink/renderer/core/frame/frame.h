@@ -32,6 +32,7 @@
 #include "base/i18n/rtl.h"
 #include "base/optional.h"
 #include "base/unguessable_token.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/feature_policy/document_policy_features.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy_features.h"
 #include "third_party/blink/public/common/frame/user_activation_state.h"
@@ -253,6 +254,23 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
     return navigation_rate_limiter_;
   }
 
+  // Called to get the opener's sandbox flags if any. This works with disowned
+  // openers, i.e., even if WebFrame::Opener() is nullptr,
+  network::mojom::blink::WebSandboxFlags OpenerSandboxFlags() const {
+    return opener_sandbox_flags_;
+  }
+
+  // Sets the opener's sandbox_flags for the main frame. Once a non-empty
+  // |opener_feature_state| is set, it can no longer be modified (due to the
+  // fact that the original opener which passed down the FeatureState cannot be
+  // modified either).
+  void SetOpenerSandboxFlags(network::mojom::blink::WebSandboxFlags flags) {
+    DCHECK(IsMainFrame());
+    DCHECK_EQ(network::mojom::blink::WebSandboxFlags::kNone,
+              opener_sandbox_flags_);
+    opener_sandbox_flags_ = flags;
+  }
+
   const DocumentPolicyFeatureState& GetRequiredDocumentPolicy() const {
     return required_document_policy_;
   }
@@ -426,6 +444,10 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   Member<LocalFrame> provisional_frame_;
 
   NavigationRateLimiter navigation_rate_limiter_;
+
+  // Sandbox flags inherited from an opener. It is always empty for child
+  // frames.
+  network::mojom::blink::WebSandboxFlags opener_sandbox_flags_;
 
   // The required document policy for any subframes of this frame.
   // Note: current frame's document policy might not conform to
