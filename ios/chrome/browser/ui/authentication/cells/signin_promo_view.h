@@ -26,7 +26,7 @@
 @interface SigninPromoView : UIView
 
 @property(nonatomic, weak) id<SigninPromoViewDelegate> delegate;
-@property(nonatomic) SigninPromoViewMode mode;
+@property(nonatomic) IdentityPromoViewMode mode;
 @property(nonatomic, readonly) UIImageView* imageView;
 @property(nonatomic, readonly) UILabel* textLabel;
 @property(nonatomic, readonly) UIButton* primaryButton;

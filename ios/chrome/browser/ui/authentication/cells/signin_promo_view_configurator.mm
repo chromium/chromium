@@ -63,14 +63,14 @@ using l10n_util::GetNSStringF;
 - (void)configureSigninPromoView:(SigninPromoView*)signinPromoView {
   signinPromoView.closeButton.hidden = !self.hasCloseButton;
   if (!self.userEmail) {
-    signinPromoView.mode = SigninPromoViewModeColdState;
+    signinPromoView.mode = IdentityPromoViewModeNoAccounts;
     NSString* signInString =
         GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_TITLE_SIGNIN);
     signinPromoView.accessibilityLabel = signInString;
     [signinPromoView.primaryButton setTitle:signInString
                                    forState:UIControlStateNormal];
   } else {
-    signinPromoView.mode = SigninPromoViewModeWarmState;
+    signinPromoView.mode = IdentityPromoViewModeSigninWithAccount;
     NSString* name =
         self.userFullName.length ? self.userFullName : self.userEmail;
     base::string16 name16 = SysNSStringToUTF16(name);

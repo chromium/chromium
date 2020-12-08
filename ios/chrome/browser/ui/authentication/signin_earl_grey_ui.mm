@@ -146,11 +146,11 @@ using chrome_test_util::SignOutAccountsButton;
   [[EarlGrey selectElementWithMatcher:buttonMatcher] performAction:grey_tap()];
 }
 
-+ (void)verifySigninPromoVisibleWithMode:(SigninPromoViewMode)mode {
++ (void)verifySigninPromoVisibleWithMode:(IdentityPromoViewMode)mode {
   [self verifySigninPromoVisibleWithMode:mode closeButton:YES];
 }
 
-+ (void)verifySigninPromoVisibleWithMode:(SigninPromoViewMode)mode
++ (void)verifySigninPromoVisibleWithMode:(IdentityPromoViewMode)mode
                              closeButton:(BOOL)closeButton {
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -167,13 +167,13 @@ using chrome_test_util::SignOutAccountsButton;
                                           grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
   switch (mode) {
-    case SigninPromoViewModeColdState:
+    case IdentityPromoViewModeNoAccounts:
       [[EarlGrey
           selectElementWithMatcher:grey_allOf(SecondarySignInButton(),
                                               grey_sufficientlyVisible(), nil)]
           assertWithMatcher:grey_nil()];
       break;
-    case SigninPromoViewModeWarmState:
+    case IdentityPromoViewModeSigninWithAccount:
       if (![ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
         [[EarlGrey
             selectElementWithMatcher:grey_allOf(SecondarySignInButton(),

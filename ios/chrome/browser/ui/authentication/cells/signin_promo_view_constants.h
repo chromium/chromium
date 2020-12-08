@@ -7,12 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger, SigninPromoViewMode) {
+typedef NS_ENUM(NSInteger, IdentityPromoViewMode) {
   // No identity available on the device.
-  SigninPromoViewModeColdState,
-  // At least one identity is available on the device and the user can sign
+  IdentityPromoViewModeNoAccounts,
+  // At least one identity is available on the device and the user can sign in
   // without entering their credentials.
-  SigninPromoViewModeWarmState,
+  IdentityPromoViewModeSigninWithAccount,
 };
 
 extern NSString* const kSigninPromoViewId;

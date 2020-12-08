@@ -202,8 +202,8 @@ const CGFloat kImageViewWidthHeight = 32;
           constraintEqualToConstant:kCloseButtonWidthHeight],
     ]];
     // Default mode.
-    _mode = SigninPromoViewModeColdState;
-    [self activateColdMode];
+    _mode = IdentityPromoViewModeNoAccounts;
+    [self activateNoAccountsMode];
   }
   return self;
 }
@@ -212,24 +212,24 @@ const CGFloat kImageViewWidthHeight = 32;
   _delegate = nil;
 }
 
-- (void)setMode:(SigninPromoViewMode)mode {
+- (void)setMode:(IdentityPromoViewMode)mode {
   if (mode == _mode) {
     return;
   }
   _mode = mode;
   switch (_mode) {
-    case SigninPromoViewModeColdState:
-      [self activateColdMode];
+    case IdentityPromoViewModeNoAccounts:
+      [self activateNoAccountsMode];
       return;
-    case SigninPromoViewModeWarmState:
-      [self activateWarmMode];
+    case IdentityPromoViewModeSigninWithAccount:
+      [self activateSigninWithAccountMode];
       return;
   }
   NOTREACHED();
 }
 
-- (void)activateColdMode {
-  DCHECK_EQ(_mode, SigninPromoViewModeColdState);
+- (void)activateNoAccountsMode {
+  DCHECK_EQ(_mode, IdentityPromoViewModeNoAccounts);
   UIImage* logo = nil;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   logo = [UIImage imageNamed:@"signin_promo_logo_chrome_color"];
@@ -241,13 +241,13 @@ const CGFloat kImageViewWidthHeight = 32;
   _secondaryButton.hidden = YES;
 }
 
-- (void)activateWarmMode {
-  DCHECK_EQ(_mode, SigninPromoViewModeWarmState);
+- (void)activateSigninWithAccountMode {
+  DCHECK_EQ(_mode, IdentityPromoViewModeSigninWithAccount);
   _secondaryButton.hidden = NO;
 }
 
 - (void)setProfileImage:(UIImage*)image {
-  DCHECK_EQ(SigninPromoViewModeWarmState, _mode);
+  DCHECK_EQ(IdentityPromoViewModeSigninWithAccount, _mode);
   self.imageView.image = CircularImageFromImage(image, kProfileImageFixedSize);
 }
 
@@ -270,10 +270,10 @@ const CGFloat kImageViewWidthHeight = 32;
 
 - (void)onPrimaryButtonAction:(id)unused {
   switch (_mode) {
-    case SigninPromoViewModeColdState:
+    case IdentityPromoViewModeNoAccounts:
       [_delegate signinPromoViewDidTapSigninWithNewAccount:self];
       break;
-    case SigninPromoViewModeWarmState:
+    case IdentityPromoViewModeSigninWithAccount:
       [_delegate signinPromoViewDidTapSigninWithDefaultAccount:self];
       break;
   }
@@ -297,7 +297,7 @@ const CGFloat kImageViewWidthHeight = 32;
 - (NSArray<UIAccessibilityCustomAction*>*)accessibilityCustomActions {
   NSMutableArray* actions = [NSMutableArray array];
 
-  if (_mode == SigninPromoViewModeWarmState) {
+  if (_mode == IdentityPromoViewModeSigninWithAccount) {
     NSString* secondaryActionName =
         [self.secondaryButton titleForState:UIControlStateNormal];
     UIAccessibilityCustomAction* secondaryCustomAction =

@@ -20,11 +20,11 @@ TEST_F(SigninPromoViewTest, ChromiumLogoImage) {
   UIWindow* currentWindow = [[UIApplication sharedApplication] keyWindow];
   SigninPromoView* view =
       [[SigninPromoView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
-  view.mode = SigninPromoViewModeColdState;
+  view.mode = IdentityPromoViewModeNoAccounts;
   [currentWindow.rootViewController.view addSubview:view];
   UIImage* chromiumLogo = view.imageView.image;
   EXPECT_NE(nil, chromiumLogo);
-  view.mode = SigninPromoViewModeWarmState;
+  view.mode = IdentityPromoViewModeSigninWithAccount;
   UIImage* customImage = [[UIImage alloc] init];
   [view setProfileImage:customImage];
   EXPECT_NE(nil, view.imageView.image);
@@ -39,9 +39,9 @@ TEST_F(SigninPromoViewTest, SecondaryButtonVisibility) {
   UIWindow* currentWindow = [[UIApplication sharedApplication] keyWindow];
   SigninPromoView* view =
       [[SigninPromoView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
-  view.mode = SigninPromoViewModeColdState;
+  view.mode = IdentityPromoViewModeNoAccounts;
   [currentWindow.rootViewController.view addSubview:view];
   EXPECT_TRUE(view.secondaryButton.hidden);
-  view.mode = SigninPromoViewModeWarmState;
+  view.mode = IdentityPromoViewModeSigninWithAccount;
   EXPECT_FALSE(view.secondaryButton.hidden);
 }
