@@ -172,3 +172,57 @@ TEST_F('SelectToSpeakNavigationControlTest', 'PauseAndResume', function() {
             this.mockTts.pendingUtterances()[0], '1');
       });
 });
+
+TEST_F('SelectToSpeakNavigationControlTest', 'NextSentence', function() {
+  const bodyHtml = `
+      <p id="p1">This is the first. This is the second.</p>'
+    `;
+  this.runWithLoadedTree(
+      this.generateHtmlWithSelectedElement('p1', bodyHtml), async function() {
+        this.triggerReadSelectedText();
+
+        // Speaks the first word.
+        this.mockTts.speakUntilCharIndex(5);
+        assertTrue(this.mockTts.currentlySpeaking());
+        assertEquals(this.mockTts.pendingUtterances().length, 1);
+        this.assertEqualsCollapseWhitespace(
+            this.mockTts.pendingUtterances()[0],
+            'This is the first. This is the second.');
+
+        // Hitting next sentence will start another TTS.
+        await selectToSpeak.onSelectToSpeakPanelAction_(
+            chrome.accessibilityPrivate.SelectToSpeakPanelAction.NEXT_SENTENCE);
+        assertTrue(this.mockTts.currentlySpeaking());
+        assertEquals(this.mockTts.pendingUtterances().length, 1);
+        this.assertEqualsCollapseWhitespace(
+            this.mockTts.pendingUtterances()[0], 'This is the second.');
+      });
+});
+
+TEST_F('SelectToSpeakNavigationControlTest', 'PrevSentence', function() {
+  const bodyHtml = `
+      <p id="p1">First sentence. Second sentence. Third sentence.</p>'
+    `;
+  this.runWithLoadedTree(
+      this.generateHtmlWithSelectedElement('p1', bodyHtml), async function() {
+        this.triggerReadSelectedText();
+
+        // Speaks till the end of the second sentence.
+        this.mockTts.speakUntilCharIndex(33);
+        assertTrue(this.mockTts.currentlySpeaking());
+        assertEquals(this.mockTts.pendingUtterances().length, 1);
+        this.assertEqualsCollapseWhitespace(
+            this.mockTts.pendingUtterances()[0],
+            'First sentence. Second sentence. Third sentence.');
+
+        // Hitting prev sentence will start another TTS.
+        await selectToSpeak.onSelectToSpeakPanelAction_(
+            chrome.accessibilityPrivate.SelectToSpeakPanelAction
+                .PREVIOUS_SENTENCE);
+        assertTrue(this.mockTts.currentlySpeaking());
+        assertEquals(this.mockTts.pendingUtterances().length, 1);
+        this.assertEqualsCollapseWhitespace(
+            this.mockTts.pendingUtterances()[0],
+            'Second sentence. Third sentence.');
+      });
+});

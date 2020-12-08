@@ -39,6 +39,7 @@ run_jsbundler("select_to_speak_copied_files") {
     "select_to_speak.js",
     "select_to_speak_main.js",
     "select_to_speak_options.js",
+    "sentence_utils.js",
     "unchecked.png",
     "word_utils.js",
   ]
@@ -113,6 +114,7 @@ js_type_check("closure_compile") {
     ":prefs_manager",
     ":select_to_speak",
     ":select_to_speak_options",
+    ":sentence_utils",
     ":word_utils",
     "../common:automation_predicate",
     "../common:automation_util",
@@ -131,6 +133,7 @@ js_library("select_to_speak") {
     ":node_utils",
     ":paragraph_utils",
     ":prefs_manager",
+    ":sentence_utils",
     ":word_utils",
     "../common:automation_util",
     "../common:constants",
@@ -161,6 +164,11 @@ js_library("node_utils") {
     ":paragraph_utils",
     "../common:rect_util",
   ]
+  externs_list = [ "$externs_path/automation.js" ]
+}
+
+js_library("sentence_utils") {
+  deps = [ ":paragraph_utils" ]
   externs_list = [ "$externs_path/automation.js" ]
 }
 

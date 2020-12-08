@@ -181,6 +181,47 @@ TEST_F(
     });
 
 TEST_F(
+    'SelectToSpeakParagraphUnitTest', 'FindInlineTextNodeIndexByCharIndex',
+    function() {
+      const staticText = {
+        role: 'staticText',
+        name: 'My name is Bond, James Bond'
+      };
+      const inline1 = {role: 'inlineTextBox', name: 'My name is '};
+      const inline2 = {role: 'inlineTextBox', name: 'Bond, '};
+      const inline3 = {role: 'inlineTextBox', name: 'James Bond'};
+      staticText.children = [inline1, inline2, inline3];
+      assertEquals(
+          ParagraphUtils.findInlineTextNodeIndexByCharacterIndex(staticText, 0),
+          0);
+      assertEquals(
+          ParagraphUtils.findInlineTextNodeIndexByCharacterIndex(
+              staticText, 10),
+          0);
+      assertEquals(
+          ParagraphUtils.findInlineTextNodeIndexByCharacterIndex(
+              staticText, 11),
+          1);
+      assertEquals(
+          ParagraphUtils.findInlineTextNodeIndexByCharacterIndex(
+              staticText, 16),
+          1);
+      assertEquals(
+          ParagraphUtils.findInlineTextNodeIndexByCharacterIndex(
+              staticText, 17),
+          2);
+      assertEquals(
+          ParagraphUtils.findInlineTextNodeIndexByCharacterIndex(
+              staticText, 50),
+          2);
+      staticText.children = [];
+      assertEquals(
+          ParagraphUtils.findInlineTextNodeIndexByCharacterIndex(
+              staticText, 10),
+          -1);
+    });
+
+TEST_F(
     'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupStopsAtNewParagraph',
     function() {
       const root = {role: 'rootWebArea'};

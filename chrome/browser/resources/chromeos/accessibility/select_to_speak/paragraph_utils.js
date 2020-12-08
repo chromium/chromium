@@ -249,11 +249,8 @@ class ParagraphUtils {
 
   /**
    * Determines the inlineTextBox child of a staticText node that appears
-   * at the given character index into the name of the staticText node. Uses
-   * the inlineTextBoxes name length to determine position. For example, if
-   * a staticText has name "abc 123" and two children with names "abc " and
-   * "123", indexes 0-3 would return the first child and indexes 4+ would
-   * return the second child.
+   * at the given character index into the name of the staticText node. See the
+   * |findInlineTextNodeIndexByCharacterIndex| function below.
    * @param {AutomationNode} staticTextNode The staticText node to search.
    * @param {number} index The index into the staticTextNode's name.
    * @return {?AutomationNode} The inlineTextBox node within the staticText
@@ -262,18 +259,43 @@ class ParagraphUtils {
    *    large.
    */
   static findInlineTextNodeByCharacterIndex(staticTextNode, index) {
-    if (staticTextNode.children.length === 0) {
+    const inlineTextNodeIndex =
+        ParagraphUtils.findInlineTextNodeIndexByCharacterIndex(
+            staticTextNode, index);
+    if (inlineTextNodeIndex < 0) {
       return null;
+    }
+    return staticTextNode.children[inlineTextNodeIndex];
+  }
+
+  /**
+   * Determines the inlineTextBox child of a staticText node that appears
+   * at the given character index into the name of the staticText node. Uses
+   * the inlineTextBox's name length to determine position. For example, if
+   * a staticText has name "abc 123" and two children with names "abc " and
+   * "123", indexes 0-3 would return the index of the first child (i.e., 0)
+   * and indexes 4+ would return the index of the second child (i.e., 1).
+   * @param {AutomationNode} staticTextNode The staticText node to search.
+   * @param {number} index The index into the staticTextNode's name.
+   * @return {number} The index of the inlineTextBox node within the
+   *    staticText node that appears at the staticTextNode's name index into
+   *    the staticText node's name, or the last inlineTextBox index in the
+   *    staticText node if the staticTextNode's name index is too large. Return
+   *    a negative number (-1) if the staticTextNode has no children.
+   */
+  static findInlineTextNodeIndexByCharacterIndex(staticTextNode, index) {
+    if (staticTextNode.children.length === 0) {
+      return -1;
     }
     let textLength = 0;
     for (var i = 0; i < staticTextNode.children.length; i++) {
       const node = staticTextNode.children[i];
       if (node.name.length + textLength > index) {
-        return node;
+        return i;
       }
       textLength += node.name.length;
     }
-    return staticTextNode.children[staticTextNode.children.length - 1];
+    return staticTextNode.children.length - 1;
   }
 
   /**

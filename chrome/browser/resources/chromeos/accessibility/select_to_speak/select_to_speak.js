@@ -125,6 +125,9 @@ class SelectToSpeak {
     /** @private {number} */
     this.currentNodeGroupIndex_ = -1;
 
+    /** @private {?ParagraphUtils.NodeGroup} */
+    this.currentNodeGroup_ = null;
+
     /**
      * The indexes within the current node representing the word currently being
      * spoken. Only updated if word highlighting is enabled.
@@ -860,6 +863,12 @@ class SelectToSpeak {
       case SelectToSpeakPanelAction.PREVIOUS_PARAGRAPH:
         this.navigateToNextParagraph_(constants.Dir.BACKWARD);
         break;
+      case SelectToSpeakPanelAction.NEXT_SENTENCE:
+        this.navigateToNextSentence_(constants.Dir.FORWARD);
+        break;
+      case SelectToSpeakPanelAction.PREVIOUS_SENTENCE:
+        this.navigateToNextSentence_(constants.Dir.BACKWARD);
+        break;
       case SelectToSpeakPanelAction.EXIT:
         this.stopAll_();
         break;
@@ -872,6 +881,33 @@ class SelectToSpeak {
       default:
         // TODO(crbug.com/1140216): Implement other actions.
     }
+  }
+
+  /**
+   * Navigate to the next sentence.
+   * @param {constants.Dir} direction whether to find the next sentence or
+   *     previous sentence.
+   * @private
+   */
+  async navigateToNextSentence_(direction) {
+    // An empty node group is not expected and means that the user has not
+    // enqueued any text.
+    if (this.currentNodeGroup_ === null) {
+      return;
+    }
+
+    await this.pause_();
+    const nextSentenceStartInCurrentNodeGroup = SentenceUtils.getSentenceStart(
+        this.currentNodeGroup_, this.navigationState_.currentCharIndex,
+        direction);
+    if (nextSentenceStartInCurrentNodeGroup === null) {
+      // TODO(leileilei): if there is no sentence in the current node group,
+      // move to the next one.
+    } else {
+      this.navigationState_.currentCharIndex =
+          nextSentenceStartInCurrentNodeGroup;
+    }
+    this.resume_();
   }
 
   /**
@@ -1066,7 +1102,10 @@ class SelectToSpeak {
     options.onEvent = (event) => {
       if (event.type === 'start' && nodeGroup.nodes.length > 0) {
         this.updatePauseStatusFromTtsEvent_(false /* shouldPause */);
+        // TODO(leileilei): We can get rid of this.currentBlockParent_ if it is
+        // always equal to currentNodeGroup_.blockParent.
         this.currentBlockParent_ = nodeGroup.blockParent;
+        this.currentNodeGroup_ = nodeGroup;
 
         // Update |currentCharIndex|. Find the first non-space char index in
         // nodeGroup text, or 0 if the text is undefined or the first char is
