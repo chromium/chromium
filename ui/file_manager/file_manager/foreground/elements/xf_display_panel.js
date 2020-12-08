@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {PanelItem} from './xf_panel_item.m.js';
+// #import {util} from '../../common/js/util.m.js';
+
 /**
  * A panel to display a collection of PanelItem.
  * @extends HTMLElement
  */
-class DisplayPanel extends HTMLElement {
+/* #export */ class DisplayPanel extends HTMLElement {
   constructor() {
     super();
     this.createElement_();

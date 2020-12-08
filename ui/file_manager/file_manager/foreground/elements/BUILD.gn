@@ -26,7 +26,6 @@ group("closure_compile") {
     ":closure_compile_internal",
     ":closure_compile_jsmodules",
     ":js_test_gen_html_modules_type_check_auto",
-    ":js_test_gen_html_type_check_auto",
   ]
 }
 
@@ -69,6 +68,10 @@ js_type_check("closure_compile_jsmodules") {
     ":files_toast.m",
     ":files_toggle_ripple.m",
     ":files_tooltip.m",
+    ":xf_button.m",
+    ":xf_circular_progress.m",
+    ":xf_display_panel.m",
+    ":xf_panel_item.m",
   ]
 }
 
@@ -417,17 +420,16 @@ js_unittest("files_toast_unittest.m") {
   ]
 }
 
-js_unittest("files_xf_elements_unittest") {
+js_unittest("files_xf_elements_unittest.m") {
   deps = [
-    ":xf_display_panel",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:webui_resource_test",
+    ":xf_display_panel.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
-}
 
-js_test_gen_html("js_test_gen_html") {
-  deps = [ ":files_xf_elements_unittest" ]
-  html_import = true
+  externs_list = [ "$externs_path/file_manager_private.js" ]
 }
 
 js_library("xf_button") {
@@ -437,7 +439,24 @@ js_library("xf_button") {
   ]
 }
 
+js_library("xf_button.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/xf_button.m.js" ]
+  deps = [
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("xf_circular_progress") {
+}
+
+js_library("xf_circular_progress.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/xf_circular_progress.m.js" ]
+
+  deps = [ "//ui/webui/resources/js:assert.m" ]
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("xf_display_panel") {
@@ -447,11 +466,25 @@ js_library("xf_display_panel") {
   ]
 }
 
+js_library("xf_display_panel.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/xf_display_panel.m.js" ]
+  deps = [
+    ":xf_panel_item.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_modulizer("modulize") {
   input_files = [
     "files_message.js",
     "files_spinner.js",
     "files_password_dialog.js",
+    "xf_button.js",
+    "xf_circular_progress.js",
+    "xf_panel_item.js",
+    "xf_display_panel.js",
   ]
 }
 
@@ -462,6 +495,7 @@ js_test_gen_html("js_test_gen_html_modules") {
     ":files_password_dialog_unittest.m",
     ":files_toast_unittest.m",
     ":files_tooltip_unittest.m",
+    ":files_xf_elements_unittest.m",
   ]
 
   closure_flags =
@@ -478,4 +512,16 @@ js_library("xf_panel_item") {
     ":xf_button",
     ":xf_circular_progress",
   ]
+}
+
+js_library("xf_panel_item.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/xf_panel_item.m.js" ]
+  deps = [
+    ":xf_button.m",
+    ":xf_circular_progress.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }

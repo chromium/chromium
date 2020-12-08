@@ -5,7 +5,7 @@
 /**
  * A button used inside PanelItem with varying display characteristics.
  */
-class PanelButton extends HTMLElement {
+/* #export */ class PanelButton extends HTMLElement {
   constructor() {
     super();
     this.createElement_();

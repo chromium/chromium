@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+
 /**
  * Definition of a circular progress indicator custom element.
  * The element supports two attributes for control - 'radius' and 'progress'.
@@ -11,7 +13,7 @@
  *   element.setAttribute('progress', '50'); to set progress to half complete
  * or alternately, set the 'element.progress' JS property for the same result.
  */
-class CircularProgress extends HTMLElement {
+/* #export */ class CircularProgress extends HTMLElement {
   constructor() {
     super();
     const host = document.createElement('template');
