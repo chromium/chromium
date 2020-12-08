@@ -198,7 +198,12 @@ class Target(object):
     self.GetCommandRunner().RunScp(sources, dest, remote_cmd.COPY_TO_TARGET,
                                    recursive)
 
-  def GetFile(self, source, dest, for_package=None, for_realms=[]):
+  def GetFile(self,
+              source,
+              dest,
+              for_package=None,
+              for_realms=[],
+              recursive=False):
     """Copies a file from the target filesystem to the local filesystem.
 
     source: The path of the file being copied.
@@ -207,11 +212,17 @@ class Target(object):
                  package's isolated /data location.
     for_realms: If specified, identifies the sub-realm of 'sys' under which
                 isolated paths (see |for_package|) are stored.
+    recursive: If true, performs a recursive copy.
     """
     assert type(source) is str
-    self.GetFiles([source], dest, for_package, for_realms)
+    self.GetFiles([source], dest, for_package, for_realms, recursive)
 
-  def GetFiles(self, sources, dest, for_package=None, for_realms=[]):
+  def GetFiles(self,
+               sources,
+               dest,
+               for_package=None,
+               for_realms=[],
+               recursive=False):
     """Copies files from the target filesystem to the local filesystem.
 
     sources: List of remote file paths to copy.
@@ -220,6 +231,7 @@ class Target(object):
                  package's isolated /data location.
     for_realms: If specified, identifies the sub-realm of 'sys' under which
                 isolated paths (see |for_package|) are stored.
+    recursive: If true, performs a recursive copy.
     """
     assert type(sources) is tuple or type(sources) is list
     self._AssertIsStarted()
@@ -228,7 +240,8 @@ class Target(object):
                     sources)
     logging.debug('copy remote:%s => local:%s' % (sources, dest))
     return self.GetCommandRunner().RunScp(sources, dest,
-                                          remote_cmd.COPY_FROM_TARGET)
+                                          remote_cmd.COPY_FROM_TARGET,
+                                          recursive)
 
   def _GetEndpoint(self):
     """Returns a (host, port) tuple for the SSH connection to the target."""

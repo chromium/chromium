@@ -21,9 +21,10 @@ from symbolizer import BuildIdsPaths
 DEFAULT_TEST_SERVER_CONCURRENCY = 4
 
 TEST_DATA_DIR = '/tmp'
-TEST_RESULT_PATH = TEST_DATA_DIR + '/test_summary.json'
-TEST_PERF_RESULT_PATH = TEST_DATA_DIR + '/test_perf_summary.json'
 TEST_FILTER_PATH = TEST_DATA_DIR + '/test_filter.txt'
+TEST_LLVM_PROFILE_PATH = TEST_DATA_DIR + '/llvm-profile'
+TEST_PERF_RESULT_PATH = TEST_DATA_DIR + '/test_perf_summary.json'
+TEST_RESULT_PATH = TEST_DATA_DIR + '/test_summary.json'
 
 TEST_REALM_NAME = 'chromium_tests'
 
@@ -93,6 +94,11 @@ def main():
                       action='store_true',
                       help='Run the test package hermetically using '
                       'run-test-component, rather than run.')
+  parser.add_argument('--code-coverage',
+                      default=False,
+                      action='store_true',
+                      help='Gather code coverage information and place it in '
+                      'the output directory.')
   args = parser.parse_args()
 
   # Flag out_dir is required for tests launched with this script.
@@ -191,6 +197,9 @@ def main():
 
       if test_server:
         test_server.Stop()
+
+      if args.code_coverage:
+        target.GetFile(TEST_LLVM_PROFILE_PATH, args.out_dir, recursive=True)
 
       if args.test_launcher_summary_output:
         target.GetFile(TEST_RESULT_PATH,
