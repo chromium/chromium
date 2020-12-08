@@ -51,19 +51,22 @@ class OAuth2ApiCallFlow {
   // with the request.
   virtual std::string GetRequestTypeForBody(const std::string& body);
 
-  // Called when the API call ends to check whether it succeeded, and decide
-  // which of the following 2 process functions to call. Should be overriden by
-  // subclasses if the expected success response code is not 200 or 204.
+  // Called when the API call ends without network error to check whether the
+  // request succeeded, to decide which of the following 2 process functions to
+  // call. Should be overriden by subclasses if the expected success response
+  // code is not 200 or 204.
   virtual bool IsExpectedSuccessCode(int code) const;
 
   // Sub-classes can expose an appropriate observer interface by implementing
   // these template methods.
-  // Called when the API call finished successfully. |body| may be null.
+  // Called when there is no network error and IsExpectedSuccessCode() returns
+  // true. |body| may be null.
   virtual void ProcessApiCallSuccess(
       const network::mojom::URLResponseHead* head,
       std::unique_ptr<std::string> body) = 0;
 
-  // Called when the API call failed. |head| or |body| might be null.
+  // Called when there is a network error or IsExpectedSuccessCode() returns
+  // false. |head| or |body| might be null.
   virtual void ProcessApiCallFailure(
       int net_error,
       const network::mojom::URLResponseHead* head,
