@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -27,6 +29,9 @@ namespace printing {
 namespace {
 
 constexpr char kDefaultPrinterName[] = "default-test-printer";
+constexpr char kInvalidPrinterName[] = "invalid-test-printer";
+
+constexpr int32_t kCopiesMax = 123;
 
 }  // namespace
 
@@ -82,8 +87,12 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
         /*printer_status=*/0, /*is_default=*/true,
         /*options=*/PrinterBasicInfoOptions{});
 
+    // Only explicitly specify capabilities that we pay attention to in the
+    // tests.
+    auto default_caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
+    default_caps->copies_max = kCopiesMax;
     print_backend_service_->test_print_backend_->AddValidPrinter(
-        kDefaultPrinterName, nullptr, std::move(printer_info));
+        kDefaultPrinterName, std::move(default_caps), std::move(printer_info));
   }
 
   // Public callbacks used by tests.
@@ -94,17 +103,26 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     CheckForQuit();
   }
 
+  void OnDidGetPrinterSemanticCapsAndDefaults(
+      base::Optional<PrinterSemanticCapsAndDefaults>* capture_printer_caps,
+      const base::Optional<PrinterSemanticCapsAndDefaults>& printer_caps) {
+    *capture_printer_caps = printer_caps;
+    CheckForQuit();
+  }
+
   // The following are helper functions for having a wait loop in the test and
-  // exit when expected messages are received.
+  // exit when expected messages are received.  Expect to only have to wait for
+  // one message.
   void WaitUntilCallbackReceived() {
-    if (received_message_) {
-      // Callback happened before even needing to wait.
-      return;
+    // If callback happened before getting here, then no need to wait.
+    if (!received_message_) {
+      base::RunLoop run_loop;
+      quit_callback_ = run_loop.QuitClosure();
+      run_loop.Run();
     }
 
-    base::RunLoop run_loop;
-    quit_callback_ = run_loop.QuitClosure();
-    run_loop.Run();
+    // Reset for possible subsequent test.
+    received_message_ = false;
   }
 
   void CheckForQuit() {
@@ -130,6 +148,7 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
 // without having performed initialization.
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FailWithoutInit) {
   base::Optional<std::string> default_printer_name;
+  base::Optional<PrinterSemanticCapsAndDefaults> printer_caps;
 
   // Safe to use base::Unretained(this) since waiting locally on the callback
   // forces a shorter lifetime than `this`.
@@ -138,6 +157,14 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FailWithoutInit) {
                      base::Unretained(this), &default_printer_name));
   WaitUntilCallbackReceived();
   EXPECT_FALSE(default_printer_name.has_value());
+
+  GetPrintBackendService()->GetPrinterSemanticCapsAndDefaults(
+      kDefaultPrinterName,
+      base::BindOnce(
+          &PrintBackendBrowserTest::OnDidGetPrinterSemanticCapsAndDefaults,
+          base::Unretained(this), &printer_caps));
+  WaitUntilCallbackReceived();
+  EXPECT_FALSE(printer_caps.has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, GetDefaultPrinterName) {
@@ -153,6 +180,33 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, GetDefaultPrinterName) {
   WaitUntilCallbackReceived();
   ASSERT_TRUE(default_printer_name.has_value());
   EXPECT_EQ(default_printer_name.value(), kDefaultPrinterName);
+}
+
+IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest,
+                       GetPrinterSemanticCapsAndDefaults) {
+  base::Optional<PrinterSemanticCapsAndDefaults> printer_caps;
+
+  DoInitAndSetupTestData();
+
+  // Safe to use base::Unretained(this) since waiting locally on the callback
+  // forces a shorter lifetime than `this`.
+  GetPrintBackendService()->GetPrinterSemanticCapsAndDefaults(
+      kDefaultPrinterName,
+      base::BindOnce(
+          &PrintBackendBrowserTest::OnDidGetPrinterSemanticCapsAndDefaults,
+          base::Unretained(this), &printer_caps));
+  WaitUntilCallbackReceived();
+  EXPECT_TRUE(printer_caps.has_value());
+  EXPECT_EQ(printer_caps->copies_max, kCopiesMax);
+
+  // Requesting for an invalid printer should not return capabilities.
+  GetPrintBackendService()->GetPrinterSemanticCapsAndDefaults(
+      kInvalidPrinterName,
+      base::BindOnce(
+          &PrintBackendBrowserTest::OnDidGetPrinterSemanticCapsAndDefaults,
+          base::Unretained(this), &printer_caps));
+  WaitUntilCallbackReceived();
+  EXPECT_FALSE(printer_caps.has_value());
 }
 
 }  // namespace printing

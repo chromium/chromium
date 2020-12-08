@@ -37,4 +37,25 @@ void PrintBackendServiceImpl::GetDefaultPrinterName(
   std::move(callback).Run(print_backend_->GetDefaultPrinterName());
 }
 
+void PrintBackendServiceImpl::GetPrinterSemanticCapsAndDefaults(
+    const std::string& printer_name,
+    mojom::PrintBackendService::GetPrinterSemanticCapsAndDefaultsCallback
+        callback) {
+  if (!print_backend_) {
+    std::move(callback).Run(base::nullopt);
+    return;
+  }
+
+  PrinterSemanticCapsAndDefaults printer_caps;
+  const bool result = print_backend_->GetPrinterSemanticCapsAndDefaults(
+      printer_name, &printer_caps);
+  if (!result) {
+    DLOG(ERROR) << "GetPrinterSemanticCapsAndDefaults failed, last error is "
+                << logging::GetLastSystemErrorCode();
+    std::move(callback).Run(base::nullopt);
+    return;
+  }
+  std::move(callback).Run(std::move(printer_caps));
+}
+
 }  // namespace printing

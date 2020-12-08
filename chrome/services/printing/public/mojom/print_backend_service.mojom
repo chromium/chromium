@@ -4,6 +4,8 @@
 
 module printing.mojom;
 
+import "printing/backend/mojom/print_backend.mojom";
+
 // The main interface to Chrome's Print Backend Service, which performs
 // printer queries and commands to operating system printer drivers in an
 // isolated process.
@@ -16,4 +18,9 @@ interface PrintBackendService {
   // No value for `printer_name` is provided if there is a failure.
   GetDefaultPrinterName()
     => (string? printer_name);
+
+  // Gets the semantic capabilities and defaults for a specific printer.
+  // No value provided for `printer_caps` if there is a failure.
+  GetPrinterSemanticCapsAndDefaults(string printer_name)
+    => (PrinterSemanticCapsAndDefaults? printer_caps);
 };
