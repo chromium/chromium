@@ -41,31 +41,29 @@ const tests = [
     chrome.test.succeed();
   },
 
-  /**
-   * Test that shouldIgnoreKeyEvents correctly searches through the shadow DOM
-   * to find input fields.
-   */
-  function testIgnoreKeyEvents() {
-    // Test that the traversal through the shadow DOM works correctly.
+  function testShouldIgnoreKeyEvents() {
     const viewer = /** @type {!PDFViewerElement} */ (
         document.body.querySelector('pdf-viewer'));
     const toolbar = /** @type {!ViewerPdfToolbarElement} */ (
         viewer.shadowRoot.querySelector('#toolbar'));
+
+    // Test case where an <input> field is focused.
     toolbar.shadowRoot.querySelector('viewer-page-selector')
         .pageSelector.focus();
-    chrome.test.assertTrue(shouldIgnoreKeyEvents(toolbar));
+    chrome.test.assertTrue(shouldIgnoreKeyEvents());
 
-    // Test case where the active element has a shadow root of its own.
+    // Test case where another field is focused.
     const rotateButton =
         document.documentElement.hasAttribute('pdf-viewer-update-enabled') ?
         toolbar.shadowRoot.querySelector(
             'cr-icon-button[iron-icon=\'pdf:rotate-left\']') :
         toolbar.$['rotate-right'];
     rotateButton.focus();
-    chrome.test.assertFalse(shouldIgnoreKeyEvents(toolbar));
+    chrome.test.assertFalse(shouldIgnoreKeyEvents());
 
-    chrome.test.assertFalse(
-        shouldIgnoreKeyEvents(viewer.shadowRoot.querySelector('#plugin')));
+    // Test case where the plugin itself is focused.
+    viewer.shadowRoot.querySelector('#plugin').focus();
+    chrome.test.assertFalse(shouldIgnoreKeyEvents());
 
     chrome.test.succeed();
   },

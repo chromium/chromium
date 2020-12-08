@@ -478,7 +478,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    * @private
    */
   handleKeyEvent_(e) {
-    if (shouldIgnoreKeyEvents(document.activeElement) || e.defaultPrevented) {
+    if (shouldIgnoreKeyEvents() || e.defaultPrevented) {
       return;
     }
 

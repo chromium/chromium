@@ -184,6 +184,7 @@ js_library("pdf_viewer_utils") {
   deps = [
     ":controller",
     ":viewport",
+    "//ui/webui/resources/js:util.m",
   ]
 }
 

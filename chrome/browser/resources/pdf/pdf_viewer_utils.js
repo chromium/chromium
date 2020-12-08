@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+
 import {MessageData} from './controller.js';
 import {LayoutOptions} from './viewport.js';
 
@@ -48,17 +50,11 @@ export let RequiredSaveResult;
 /**
  * Whether keydown events should currently be ignored. Events are ignored when
  * an editable element has focus, to allow for proper editing controls.
- * @param {Element} activeElement The currently selected DOM node.
  * @return {boolean} True if keydown events should be ignored.
  */
-export function shouldIgnoreKeyEvents(activeElement) {
-  while (activeElement.shadowRoot != null &&
-         activeElement.shadowRoot.activeElement != null) {
-    activeElement = activeElement.shadowRoot.activeElement;
-  }
-
-  return (
-      activeElement.isContentEditable ||
+export function shouldIgnoreKeyEvents() {
+  const activeElement = getDeepActiveElement();
+  return activeElement.isContentEditable ||
       (activeElement.tagName === 'INPUT' && activeElement.type !== 'radio') ||
-      activeElement.tagName === 'TEXTAREA');
+      activeElement.tagName === 'TEXTAREA';
 }
