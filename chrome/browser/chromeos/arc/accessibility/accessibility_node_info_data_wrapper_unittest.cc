@@ -315,6 +315,55 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromDescendants) {
       data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
 }
 
+TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromTextProperties) {
+  AXNodeInfoData root;
+  root.id = 10;
+  AccessibilityNodeInfoDataWrapper root_wrapper(tree_source(), &root);
+  SetIdToWrapper(&root_wrapper);
+  SetProperty(&root, AXStringProperty::CLASS_NAME, "");
+  SetProperty(&root, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(&root, AXBooleanProperty::CLICKABLE, true);
+  SetProperty(&root, AXBooleanProperty::FOCUSABLE, true);
+  SetProperty(&root, AXIntListProperty::CHILD_NODE_IDS, std::vector<int>({1}));
+
+  AXNodeInfoData child1;
+  child1.id = 1;
+  AccessibilityNodeInfoDataWrapper child1_wrapper(tree_source(), &child1);
+  SetIdToWrapper(&child1_wrapper);
+
+  // Set all properties that will be used in name computation.
+  SetProperty(&child1, AXStringProperty::TEXT, "text");
+  SetProperty(&child1, AXStringProperty::CONTENT_DESCRIPTION,
+              "content_description");
+  SetProperty(&child1, AXStringProperty::STATE_DESCRIPTION,
+              "state_description");
+
+  AccessibilityNodeInfoDataWrapper wrapper(tree_source(), &root);
+
+  ui::AXNodeData data = CallSerialize(wrapper);
+
+  std::string name;
+
+  ASSERT_TRUE(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_EQ("text", name);
+
+  // Unset TEXT property, and confirm that CONTENT_DESCRIPTION is used as name.
+  SetProperty(&child1, AXStringProperty::TEXT, "");
+  data = CallSerialize(wrapper);
+  ASSERT_TRUE(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_EQ("content_description", name);
+
+  // Unset CONTENT_DESCRIPTION property, and confirm that STATE_DESCRIPTION is
+  // used as name.
+  SetProperty(&child1, AXStringProperty::CONTENT_DESCRIPTION, "");
+  data = CallSerialize(wrapper);
+  ASSERT_TRUE(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_EQ("state_description", name);
+}
+
 TEST_F(AccessibilityNodeInfoDataWrapperTest, TextFieldNameAndValue) {
   AXNodeInfoData node;
   SetProperty(&node, AXStringProperty::CLASS_NAME, "");

@@ -32,6 +32,9 @@ using AXRangeInfoData = mojom::AccessibilityRangeInfoData;
 using AXStringListProperty = mojom::AccessibilityStringListProperty;
 using AXStringProperty = mojom::AccessibilityStringProperty;
 
+constexpr mojom::AccessibilityStringProperty
+    AccessibilityNodeInfoDataWrapper::text_properties_[];
+
 AccessibilityNodeInfoDataWrapper::AccessibilityNodeInfoDataWrapper(
     AXTreeSourceArc* tree_source,
     AXNodeInfoData* node)
@@ -638,10 +641,11 @@ bool AccessibilityNodeInfoDataWrapper::HasCoveringSpan(
 }
 
 bool AccessibilityNodeInfoDataWrapper::HasText() const {
-  // The same properties are checked as ComputeNameFromContentsInternal.
-  return HasNonEmptyStringProperty(node_ptr_,
-                                   AXStringProperty::CONTENT_DESCRIPTION) ||
-         HasNonEmptyStringProperty(node_ptr_, AXStringProperty::TEXT);
+  for (const auto it : text_properties_) {
+    if (HasNonEmptyStringProperty(node_ptr_, it))
+      return true;
+  }
+  return false;
 }
 
 bool AccessibilityNodeInfoDataWrapper::HasAccessibilityFocusableText() const {
@@ -678,18 +682,13 @@ void AccessibilityNodeInfoDataWrapper::ComputeNameFromContentsInternal(
   if (IsVirtualNode() || IsAccessibilityFocusableContainer())
     return;
 
-  // Take the name from either content description or text. It's not clear
-  // whether labeled by should be taken into account here.
   std::string name;
-  if (!GetProperty(AXStringProperty::CONTENT_DESCRIPTION, &name) ||
-      name.empty()) {
-    GetProperty(AXStringProperty::TEXT, &name);
-  }
-
-  // Stop when we get a name for this subtree.
-  if (!name.empty()) {
-    names->push_back(name);
-    return;
+  for (const auto it : text_properties_) {
+    if (GetProperty(it, &name) && !name.empty()) {
+      // Stop when we get a name for this subtree.
+      names->push_back(name);
+      return;
+    }
   }
 
   // Otherwise, continue looking for a name in this subtree.

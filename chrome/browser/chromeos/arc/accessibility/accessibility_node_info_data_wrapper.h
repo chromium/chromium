@@ -90,6 +90,13 @@ class AccessibilityNodeInfoDataWrapper : public AccessibilityInfoDataWrapper {
   mojom::AccessibilityLiveRegionType container_live_status_ =
       mojom::AccessibilityLiveRegionType::NONE;
 
+  // Properties which should be checked for recursive text computation.
+  // It's not clear whether labeled by should be taken into account here.
+  static constexpr mojom::AccessibilityStringProperty text_properties_[3] = {
+      mojom::AccessibilityStringProperty::TEXT,
+      mojom::AccessibilityStringProperty::CONTENT_DESCRIPTION,
+      mojom::AccessibilityStringProperty::STATE_DESCRIPTION};
+
   // This property is a cached value so that we can avoid same computation.
   // mutable because once the value is computed it won't change.
   mutable base::Optional<bool> has_important_property_cache_;
