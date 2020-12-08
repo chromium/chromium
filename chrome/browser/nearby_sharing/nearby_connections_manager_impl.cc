@@ -326,7 +326,11 @@ void NearbyConnectionsManagerImpl::Cancel(int64_t payload_id) {
                                    /*total_bytes=*/0,
                                    /*bytes_transferred=*/0),
         /*upgraded_medium=*/base::nullopt);
-    payload_status_listeners_.erase(it);
+
+    // Erase using the payload ID key instead of the iterator. The
+    // OnStatusUpdate() call might result in iterator invalidation, for example,
+    // if the listener map entry is removed during a resulting payload clean-up.
+    payload_status_listeners_.erase(payload_id);
   }
   nearby_connections_->CancelPayload(
       kServiceId, payload_id,
@@ -345,11 +349,7 @@ void NearbyConnectionsManagerImpl::ClearIncomingPayloads() {
   std::vector<PayloadPtr> payloads;
   for (auto& it : incoming_payloads_) {
     payloads.push_back(std::move(it.second));
-    // Make sure to clean up the raw pointer to the payload listener.
-    auto listener_it = payload_status_listeners_.find(it.first);
-    if (listener_it != payload_status_listeners_.end()) {
-      payload_status_listeners_.erase(listener_it);
-    }
+    payload_status_listeners_.erase(it.first);
   }
 
   file_handler_.ReleaseFilePayloads(std::move(payloads));

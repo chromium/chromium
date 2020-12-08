@@ -762,11 +762,10 @@ void NearbySharingServiceImpl::Cancel(
 }
 
 void NearbySharingServiceImpl::DoCancel(
-    const ShareTarget& share_target,
+    ShareTarget share_target,
     StatusCodesCallback status_codes_callback,
     bool write_cancel_frame) {
   ShareTargetInfo* info = GetShareTargetInfo(share_target);
-
   if (!info || !info->endpoint_id()) {
     NS_LOG(ERROR) << __func__
                   << ": Cancel invoked for unknown share target, returning "
@@ -777,18 +776,13 @@ void NearbySharingServiceImpl::DoCancel(
     return;
   }
 
-  // We immediately inform the user that the transfer has been cancelled because
-  // subsequent disconnections might be interpreted as failure. The
-  // TransferUpdateDecorator will ignore subsequent statuses in favor of this
-  // cancelled status.
-  if (info->transfer_update_callback()) {
-    info->transfer_update_callback()->OnTransferUpdate(
-        share_target, TransferMetadataBuilder()
-                          .set_status(TransferMetadata::Status::kCancelled)
-                          .build());
-  }
-
-  // Before disconnecting, cancel all ongoing payloads.
+  // Cancel all ongoing payload transfers before invoking the transfer update
+  // callback. Invoking the transfer update callback first could result in
+  // payload cleanup before we have a chance to cancel the payload via Nearby
+  // Connections, and the payload tracker might not receive the expected
+  // cancellation signals. Also, note that there might not be any ongoing
+  // payload transfer, for example, if a connection has not been established
+  // yet.
   for (int64_t attachment_id : share_target.GetAttachmentIds()) {
     base::Optional<int64_t> payload_id = GetAttachmentPayloadId(attachment_id);
     if (payload_id) {
@@ -796,15 +790,29 @@ void NearbySharingServiceImpl::DoCancel(
     }
   }
 
-  // If a connection exists, close the connection. Otherwise disconnect from
+  // Inform the user that the transfer has been cancelled before disconnecting
+  // because subsequent disconnections might be interpreted as failure. The
+  // TransferUpdateDecorator will ignore subsequent statuses in favor of this
+  // cancelled status. Note that the transfer update callback might have already
+  // been invoked as a result of the payload cancellations above, but again,
+  // superfluous status updates are handled gracefully by the
+  // TransferUpdateDecorator.
+  if (info->transfer_update_callback()) {
+    info->transfer_update_callback()->OnTransferUpdate(
+        share_target, TransferMetadataBuilder()
+                          .set_status(TransferMetadata::Status::kCancelled)
+                          .build());
+  }
+
+  // If a connection exists, close the connection after a short delay that
+  // allows for final processing by the other device. Otherwise, disconnect from
   // endpoint id directly. Note: A share attempt can be cancelled by the user
-  // before a connection is fully established, so info->connection() might be
-  // null.
+  // before a connection is fully established, in which case, info->connection()
+  // will be null.
   if (info->connection()) {
     info->connection()->SetDisconnectionListener(
         base::BindOnce(&NearbySharingServiceImpl::UnregisterShareTarget,
                        weak_ptr_factory_.GetWeakPtr(), share_target));
-
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&NearbySharingServiceImpl::CloseConnection,
@@ -816,6 +824,7 @@ void NearbySharingServiceImpl::DoCancel(
     }
   } else {
     nearby_connections_manager_->Disconnect(*info->endpoint_id());
+    UnregisterShareTarget(share_target);
   }
 
   std::move(status_codes_callback).Run(StatusCodes::kOk);
@@ -3224,7 +3233,11 @@ void NearbySharingServiceImpl::OnPayloadTransferUpdate(
   if (info && info->transfer_update_callback())
     info->transfer_update_callback()->OnTransferUpdate(share_target, metadata);
 
-  if (TransferMetadata::IsFinalStatus(metadata.status())) {
+  // Cancellation has its own disconnection strategy, possibly adding a delay
+  // before disconnection to provide the other party time to process the
+  // cancellation.
+  if (TransferMetadata::IsFinalStatus(metadata.status()) &&
+      metadata.status() != TransferMetadata::Status::kCancelled) {
     Disconnect(share_target, metadata);
   }
 }
@@ -3400,8 +3413,9 @@ ShareTargetInfo& NearbySharingServiceImpl::GetOrCreateShareTargetInfo(
     info.set_endpoint_id(endpoint_id);
     return info;
   } else {
-    // We need to explicitly remove any previous share target for |endpoint_id|
-    // if one exists, notifying observers that a share target is lost.
+    // We need to explicitly remove any previous share target for
+    // |endpoint_id| if one exists, notifying observers that a share target is
+    // lost.
     const auto it = outgoing_share_target_map_.find(endpoint_id);
     if (it != outgoing_share_target_map_.end() &&
         it->second.id != share_target.id) {
