@@ -7,5 +7,6 @@
 #   https://source.chromium.org/chromium/infra/infra/+/master:go/src/infra/tools/dirmd/proto/dir_metadata.proto
 
 monorail {
-  component: "UI>Input>Text>IME"
+  component: "OS>Inputs"  # for Chrome/Chromium OS only.
+  # For OSes other than Chrome/Chromium OS, please use "UI>Input>Text>IME".
 }
