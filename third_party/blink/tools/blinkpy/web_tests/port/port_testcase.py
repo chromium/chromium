@@ -31,6 +31,7 @@ import collections
 import optparse
 
 from blinkpy.common import exit_codes
+from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.common.system.system_host import SystemHost
@@ -201,7 +202,7 @@ class PortTestCase(LoggingTestCase):
 
         def mock_run_command(args):
             port.host.filesystem.write_binary_file(args[4], mock_image_diff)
-            return 1
+            raise ScriptError(exit_code=1)
 
         # Images are different.
         port._executive = MockExecutive(run_command_fn=mock_run_command)  # pylint: disable=protected-access
@@ -223,7 +224,7 @@ class PortTestCase(LoggingTestCase):
 
     def test_diff_image_crashed(self):
         port = self.make_port()
-        port._executive = MockExecutive(exit_code=2)  # pylint: disable=protected-access
+        port._executive = MockExecutive(should_throw=True, exit_code=2)  # pylint: disable=protected-access
         self.assertEqual(
             port.diff_image('EXPECTED', 'ACTUAL'),
             (None,

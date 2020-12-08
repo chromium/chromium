@@ -425,6 +425,11 @@ bool CreateImageDiff(const Image& image1,
     }
   }
 
+  if (!same) {
+    printf("Found pixels_different: %d, max_channel_diff: %u\n",
+           pixels_different, max_channel_diff);
+  }
+
   if (!fuzzy_diff) {
     return same;
   }
@@ -436,11 +441,9 @@ bool CreateImageDiff(const Image& image1,
 
   // WPT fuzzy matching. This algorithm is equivalent to 'check_pass' in
   // tools/wptrunner/wptrunner/executors/base.py
-  fprintf(stderr, "Found pixels_different: %d, max_channel_diff: %u\n",
-          pixels_different, max_channel_diff);
-  fprintf(stderr, "Allowed pixels different; %d-%d, channel diff: %u-%u\n",
-          fuzzy_allowed_pixels_diff[0], fuzzy_allowed_pixels_diff[1],
-          fuzzy_allowed_max_channel_diff[0], fuzzy_allowed_max_channel_diff[1]);
+  printf("Allowed pixels_different; %d-%d, max_channel_diff: %u-%u\n",
+         fuzzy_allowed_pixels_diff[0], fuzzy_allowed_pixels_diff[1],
+         fuzzy_allowed_max_channel_diff[0], fuzzy_allowed_max_channel_diff[1]);
 
   return ((pixels_different == 0 && fuzzy_allowed_pixels_diff[0] == 0) ||
           (max_channel_diff == 0 && fuzzy_allowed_max_channel_diff[0] == 0) ||

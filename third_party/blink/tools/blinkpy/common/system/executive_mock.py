@@ -148,7 +148,9 @@ class MockExecutive(object):
         if self._exception:
             raise self._exception  # pylint: disable=raising-bad-type
         if self._should_throw:
-            raise ScriptError('MOCK ScriptError', output=self._output)
+            raise ScriptError('MOCK ScriptError',
+                              output=self._output,
+                              exit_code=self._exit_code)
 
         if self._run_command_fn:
             return self._run_command_fn(args)

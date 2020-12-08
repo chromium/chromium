@@ -329,7 +329,34 @@ class Executive(object):
             ignore_stderr=False,
             decode_output=True,
             debug_logging=True):
-        """Popen wrapper for convenience and to work around python bugs."""
+        """Popen wrapper for convenience and to work around python bugs.
+
+        By default, run_command will expect a zero exit code and will return the
+        program output in that case, or throw a ScriptError if the program has a
+        non-zero exit code. This behavior can be changed by setting the
+        appropriate input parameters.
+
+        Args:
+            args: the program arguments. Passed to Popen.
+            cwd: the current working directory for the program. Passed to Popen.
+            env: the environment for the program. Passed to Popen.
+            input: input to give to the program on stdin. Accepts either a file
+                handler (will be passed directly) or a string (will be passed
+                via a pipe).
+            timeout_seconds: maximum time in seconds to wait for the program to
+                terminate; on a timeout the process will be killed
+            error_handler: a custom error handler called with a ScriptError when
+                the program fails. The default handler raises the error.
+            return_exit_code: instead of returning the program output, return
+                the exit code. Setting this makes non-zero exit codes non-fatal
+                (the error_handler will not be called).
+            return_stderr: if True, include stderr in the returned output. If
+                False, stderr will be printed to the console unless ignore_stderr
+                is also True.
+            ignore_stderr: squash stderr so it doesn't appear in the console.
+            decode_output: whether to decode the program output.
+            debug_logging: whether to log details about program execution.
+        """
         assert isinstance(args, list) or isinstance(args, tuple)
         start_time = time.time()
 

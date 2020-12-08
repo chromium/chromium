@@ -46,6 +46,7 @@ from blinkpy.common import find_files
 from blinkpy.common import read_checksum_from_png
 from blinkpy.common import path_finder
 from blinkpy.common.memoized import memoized
+from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.path import abspath_to_uri
 from blinkpy.w3c.wpt_manifest import WPTManifest, MANIFEST_NAME
 from blinkpy.web_tests.layout_package.bot_test_expectations import BotTestExpectationsFactory
@@ -584,15 +585,19 @@ class Port(object):
         result = None
         err_str = None
         try:
-            exit_code = self._executive.run_command(
-                command, return_exit_code=True)
-            if exit_code == 0:
-                # The images are the same.
-                result = None
-            elif exit_code == 1:
+            output = self._executive.run_command(command)
+            # Log the output, to enable user debugging of a diff hidden by fuzzy
+            # expectations. This is useful when tightening fuzzy bounds.
+            if output:
+                _log.debug(output)
+        except ScriptError as error:
+            if error.exit_code == 1:
                 result = self._filesystem.read_binary_file(diff_filename)
+                # Log the output, to enable user debugging of the diff.
+                if error.output:
+                    _log.debug(error.output)
             else:
-                err_str = 'Image diff returned an exit code of %s. See http://crbug.com/278596' % exit_code
+                err_str = 'Image diff returned an exit code of %s. See http://crbug.com/278596' % error.exit_code
         except OSError as error:
             err_str = 'error running image diff: %s' % error
         finally:
