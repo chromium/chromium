@@ -2560,8 +2560,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
       final_visual_viewport_oopif.Intersects(input_bounds_after_scroll_oopif));
 }
 
+// Flaky on Mac, see crbug.com/1156657
+#if defined(OS_MAC)
+#define MAYBE_ScrollClippedFocusedEditableElementIntoView \
+  DISABLED_ScrollClippedFocusedEditableElementIntoView
+#else
+#define MAYBE_ScrollClippedFocusedEditableElementIntoView \
+  ScrollClippedFocusedEditableElementIntoView
+#endif
 IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
-                       ScrollClippedFocusedEditableElementIntoView) {
+                       MAYBE_ScrollClippedFocusedEditableElementIntoView) {
   GURL url_a(embedded_test_server()->GetURL("a.com", kIframeClippedHTML));
   GURL child_url_b(embedded_test_server()->GetURL("b.com", kInputBoxHTML));
 
