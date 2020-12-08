@@ -177,6 +177,18 @@ std::map<uint32_t, Thread> ProcessTypeCollector::ParseThreadTypes(
     } else if (base::StartsWith(cmd, "GpuMemory",
                                 base::CompareCase::SENSITIVE)) {
       thread = Thread::GPU_MEMORY_THREAD;
+    } else if (cmd == "MemoryInfra") {
+      thread = Thread::MEMORY_INFRA_THREAD;
+    } else if (cmd == "Media") {
+      thread = Thread::MEDIA_THREAD;
+    } else if (base::StartsWith(cmd, "DedicatedWorker",
+                                base::CompareCase::SENSITIVE)) {
+      thread = Thread::DEDICATED_WORKER_THREAD;
+    } else if (base::StartsWith(cmd, "ServiceWorker",
+                                base::CompareCase::SENSITIVE)) {
+      thread = Thread::SERVICE_WORKER_THREAD;
+    } else if (base::StartsWith(cmd, "WebRTC", base::CompareCase::SENSITIVE)) {
+      thread = Thread::WEBRTC_THREAD;
     }
 
     thread_types.emplace(tid, thread);
