@@ -11,13 +11,6 @@
 #error "This file requires ARC support."
 #endif
 
-@interface DiscoverFeedViewController ()
-
-// Feed view controller being contained by this view controller.
-@property(nonatomic, strong) UIViewController* discoverFeed;
-
-@end
-
 @implementation DiscoverFeedViewController
 
 - (instancetype)initWithDiscoverFeedViewController:

@@ -5,9 +5,10 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_layout.h"
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -24,6 +25,11 @@
 }
 
 - (CGSize)collectionViewContentSize {
+  if (IsRefactoredNTP()) {
+    // In the refactored NTP, we don't want to extend the view height beyond its
+    // content.
+    return [super collectionViewContentSize];
+  }
   CGFloat collectionViewHeight = self.collectionView.bounds.size.height;
   CGFloat headerHeight = [self firstHeaderHeight];
 

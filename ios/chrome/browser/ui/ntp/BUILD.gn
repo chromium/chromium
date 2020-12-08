@@ -9,6 +9,7 @@ source_set("ntp") {
     "new_tab_page_header_constants.mm",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
+  public_deps = [ ":feature_flags" ]
   deps = [ "//ios/chrome/browser/ui/util" ]
 }
 
@@ -30,6 +31,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/ui/main:scene_state_observer",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web_state_list",
+    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/discover_feed",
     "//ios/public/provider/chrome/browser/voice",
     "//ios/web/public",
   ]

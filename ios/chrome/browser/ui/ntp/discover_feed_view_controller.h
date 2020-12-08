@@ -7,14 +7,20 @@
 
 #import <UIKit/UIKit.h>
 
-// View controller wrapping a Discover feed view controller originating
-// elsewhere.
+// View controller wrapping a Discover feed view controller
+// (|self.discoverFeed|) originating from the provider.
 @interface DiscoverFeedViewController : UIViewController
 
-// Collection view subview that contains the feed articles.
+// Feed view controller being contained by this view controller. This is the
+// view controller that is wrapped by this view controller.
+@property(nonatomic, strong, readonly) UIViewController* discoverFeed;
+
+// Collection view that contains the feed articles. Is a subview of
+// |self.discoverFeed|.
 @property(nonatomic, weak, readonly) UICollectionView* feedCollectionView;
 
-// Initializes view controller with the browser object.
+// Initializes view controller with the Discover feed view controller
+// originating from the Discover feed provider.
 - (instancetype)initWithDiscoverFeedViewController:
     (UIViewController*)discoverFeed NS_DESIGNATED_INITIALIZER;
 

@@ -7,13 +7,22 @@
 
 #import <UIKit/UIKit.h>
 
+@class ContentSuggestionsViewController;
+@class DiscoverFeedViewController;
+
 // View controller containing all the content presented on a standard,
 // non-incognito new tab page.
 @interface NewTabPageViewController : UIViewController
 
-// Initializes view controller with content suggestions.
-- (instancetype)initWithContentSuggestionsViewController:
-    (UIViewController*)contentSuggestionsViewController
+// Initializes view controller with NTP content view controllers.
+// |discoverFeedViewController| represents the Discover feed for suggesting
+// articles. |contentSuggestionsViewController| represents other content
+// suggestions, such as the most visited site tiles.
+- (instancetype)initWithDiscoverFeedViewController:
+                    (DiscoverFeedViewController*)discoverFeedViewController
+                  contentSuggestionsViewController:
+                      (UICollectionViewController*)
+                          contentSuggestionsViewController
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)name

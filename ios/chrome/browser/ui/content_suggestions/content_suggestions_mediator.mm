@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestion_identifier.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
 #import "ios/chrome/browser/ui/content_suggestions/mediator_util.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
 #include "ios/chrome/browser/ui/ntp/ntp_tile_saver.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
@@ -319,7 +320,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   } else if (sectionInfo == self.learnMoreSectionInfo) {
     [convertedSuggestions addObject:self.learnMoreItem];
   } else if (sectionInfo == self.discoverSectionInfo) {
-    if ([self.contentArticlesExpanded value]) {
+    if ([self.contentArticlesExpanded value] && !IsRefactoredNTP()) {
       [convertedSuggestions addObject:self.discoverItem];
     }
   } else if (!IsDiscoverFeedEnabled()) {

@@ -14,10 +14,13 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_observer.h"
+#import "ios/chrome/browser/ui/ntp/discover_feed_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/incognito_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
+#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -35,6 +38,10 @@
 
 // View controller for the regular NTP.
 @property(nonatomic, strong) NewTabPageViewController* ntpViewController;
+
+// View controller wrapping the Discover feed.
+@property(nonatomic, strong)
+    DiscoverFeedViewController* discoverFeedViewController;
 
 // View controller for the incognito NTP.
 @property(nonatomic, strong) IncognitoViewController* incognitoViewController;
@@ -89,9 +96,20 @@
 
     [self.contentSuggestionsCoordinator start];
 
-    self.ntpViewController = [[NewTabPageViewController alloc]
-        initWithContentSuggestionsViewController:
-            self.contentSuggestionsCoordinator.viewController];
+    if (IsRefactoredNTP()) {
+      UIViewController* discoverFeed =
+          ios::GetChromeBrowserProvider()
+              ->GetDiscoverFeedProvider()
+              ->NewFeedViewController(self.browser);
+
+      self.discoverFeedViewController = [[DiscoverFeedViewController alloc]
+          initWithDiscoverFeedViewController:discoverFeed];
+
+      self.ntpViewController = [[NewTabPageViewController alloc]
+          initWithDiscoverFeedViewController:self.discoverFeedViewController
+            contentSuggestionsViewController:self.contentSuggestionsCoordinator
+                                                 .viewController];
+    }
 
     base::RecordAction(base::UserMetricsAction("MobileNTPShowMostVisited"));
     SceneState* sceneState =

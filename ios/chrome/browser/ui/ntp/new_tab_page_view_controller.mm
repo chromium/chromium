@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 
+#import "ios/chrome/browser/ui/ntp/discover_feed_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -14,17 +15,28 @@
 
 @interface NewTabPageViewController ()
 
-// View controller representing the NTP content suggestions.
-@property(nonatomic, strong) UIViewController* contentSuggestionsViewController;
+// View controller representing the Discover feed.
+@property(nonatomic, strong)
+    DiscoverFeedViewController* discoverFeedViewController;
+
+// View controller representing the NTP content suggestions. These suggestions
+// include the most visited site tiles, the shortcut tiles, the fake omnibox and
+// the Google doodle.
+@property(nonatomic, strong)
+    UICollectionViewController* contentSuggestionsViewController;
 
 @end
 
 @implementation NewTabPageViewController
 
-- (instancetype)initWithContentSuggestionsViewController:
-    (UIViewController*)contentSuggestionsViewController {
+- (instancetype)initWithDiscoverFeedViewController:
+                    (DiscoverFeedViewController*)discoverFeedViewController
+                  contentSuggestionsViewController:
+                      (UICollectionViewController*)
+                          contentSuggestionsViewController {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
+    _discoverFeedViewController = discoverFeedViewController;
     _contentSuggestionsViewController = contentSuggestionsViewController;
   }
 
@@ -33,14 +45,41 @@
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  [self.contentSuggestionsViewController willMoveToParentViewController:self];
-  [self addChildViewController:self.contentSuggestionsViewController];
-  [self.view addSubview:self.contentSuggestionsViewController.view];
-  [self.contentSuggestionsViewController didMoveToParentViewController:self];
 
-  self.contentSuggestionsViewController.view
-      .translatesAutoresizingMaskIntoConstraints = NO;
-  AddSameConstraints(self.contentSuggestionsViewController.view, self.view);
+  UIView* discoverFeedView = self.discoverFeedViewController.view;
+
+  [self.discoverFeedViewController willMoveToParentViewController:self];
+  [self addChildViewController:self.discoverFeedViewController];
+  [self.view addSubview:discoverFeedView];
+  [self.discoverFeedViewController didMoveToParentViewController:self];
+
+  discoverFeedView.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSameConstraints(discoverFeedView, self.view);
+
+  [self.contentSuggestionsViewController
+      willMoveToParentViewController:self.discoverFeedViewController
+                                         .discoverFeed];
+  [self.discoverFeedViewController.discoverFeed
+      addChildViewController:self.contentSuggestionsViewController];
+  [self.discoverFeedViewController.feedCollectionView
+      addSubview:self.contentSuggestionsViewController.view];
+  [self.contentSuggestionsViewController
+      didMoveToParentViewController:self.discoverFeedViewController
+                                        .discoverFeed];
+}
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  // Sets an inset to the Discover feed equal to the content suggestions height,
+  // so that the content suggestions could act as the feed header.
+  // TODO(crbug.com/1114792): Handle landscape/iPad layout.
+  UICollectionView* collectionView =
+      self.contentSuggestionsViewController.collectionView;
+  self.contentSuggestionsViewController.view.frame =
+      CGRectMake(0, -collectionView.contentSize.height,
+                 self.view.frame.size.width, collectionView.contentSize.height);
+  self.discoverFeedViewController.feedCollectionView.contentInset =
+      UIEdgeInsetsMake(collectionView.contentSize.height, 0, 0, 0);
 }
 
 @end
