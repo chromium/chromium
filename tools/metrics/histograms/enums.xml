@@ -8933,9 +8933,10 @@ Called by update_bad_message_reasons.py.-->
 <enum name="BrowserProfileType">
   <int value="0" label="Regular"/>
   <int value="1" label="Incognito"/>
-  <int value="2" label="Guest"/>
+  <int value="2" label="Guest (OTR)"/>
   <int value="3" label="System"/>
   <int value="4" label="Other Off The Record"/>
+  <int value="5" label="Guest (Ephemeral)"/>
 </enum>
 
 <enum name="BrowserServicesVerificationResult">

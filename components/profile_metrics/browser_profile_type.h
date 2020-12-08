@@ -15,7 +15,8 @@ enum class BrowserProfileType {
   kGuest = 2,
   kSystem = 3,
   kOtherOffTheRecordProfile = 4,
-  kMaxValue = kOtherOffTheRecordProfile,
+  kEphemeralGuest = 5,
+  kMaxValue = kEphemeralGuest,
 };
 
 }  // namespace profile_metrics
