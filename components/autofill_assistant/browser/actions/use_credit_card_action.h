@@ -44,7 +44,8 @@ class UseCreditCardAction : public Action {
   void OnWaitForElement(const ClientStatus& element_status);
 
   // Called after getting full credit card with its cvc.
-  void OnGetFullCard(std::unique_ptr<autofill::CreditCard> card,
+  void OnGetFullCard(const ClientStatus& status,
+                     std::unique_ptr<autofill::CreditCard> card,
                      const base::string16& cvc);
 
   // Called when the form credit card has been filled.

@@ -877,6 +877,28 @@ message AutofillErrorInfoProto {
 
   // Errors that occurred during fallback filling of autofill fields.
   repeated AutofillFieldError autofill_field_error = 5;
+
+  // These values should match the values in FullCardRequest::FailureType.
+  enum GetFullCardFailureType {
+    UNKNOWN_FAILURE_TYPE = 0;
+
+    // The user closed the prompt. The following scenarios are possible:
+    // 1) The user declined to enter their CVC and closed the prompt.
+    // 2) The user provided their CVC, got auth declined and then closed the
+    //    prompt without attempting a second time.
+    // 3) The user provided their CVC and closed the prompt before waiting for
+    //    the result.
+    PROMPT_CLOSED = 1;
+
+    // The card could not be looked up due to card auth declined or failed.
+    VERIFICATION_DECLINED = 2;
+
+    // The request failed for technical reasons, such as a closing page or lack
+    // of network connection.
+    GENERIC_FAILURE = 3;
+  }
+  // Failure type from the |FullCardRequest|.
+  optional GetFullCardFailureType get_full_card_failure_type = 6;
 }
 
 // Message to report |SetFormFieldValueProto| related errors for debugging

@@ -422,10 +422,8 @@ void ScriptExecutor::OnTermsAndConditionsLinkClicked(
   std::move(callback).Run(link, user_data, user_model);
 }
 
-void ScriptExecutor::GetFullCard(
-    const autofill::CreditCard* credit_card,
-    base::OnceCallback<void(std::unique_ptr<autofill::CreditCard> card,
-                            const base::string16& cvc)> callback) {
+void ScriptExecutor::GetFullCard(const autofill::CreditCard* credit_card,
+                                 GetFullCardCallback callback) {
   DCHECK(credit_card);
 
   // User might be asked to provide the cvc.
@@ -441,10 +439,11 @@ void ScriptExecutor::GetFullCard(
 }
 
 void ScriptExecutor::OnGetFullCard(GetFullCardCallback callback,
+                                   const ClientStatus& status,
                                    std::unique_ptr<autofill::CreditCard> card,
                                    const base::string16& cvc) {
   delegate_->EnterState(AutofillAssistantState::RUNNING);
-  std::move(callback).Run(std::move(card), cvc);
+  std::move(callback).Run(status, std::move(card), cvc);
 }
 
 void ScriptExecutor::Prompt(

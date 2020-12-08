@@ -37,7 +37,6 @@ using ::testing::_;
 using ::testing::Eq;
 using ::testing::Expectation;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::NotNull;
 using ::testing::Pointee;
 using ::testing::Return;
@@ -71,22 +70,26 @@ class UseCreditCardActionTest : public testing::Test {
     ON_CALL(mock_action_delegate_, GetPersonalDataManager)
         .WillByDefault(Return(&mock_personal_data_manager_));
     ON_CALL(mock_action_delegate_, RunElementChecks)
-        .WillByDefault(Invoke([this](BatchElementChecker* checker) {
+        .WillByDefault([this](BatchElementChecker* checker) {
           checker->Run(&mock_web_controller_);
-        }));
+        });
     ON_CALL(mock_action_delegate_, OnShortWaitForElement(_, _))
         .WillByDefault(RunOnceCallback<1>(OkClientStatus(),
                                           base::TimeDelta::FromSeconds(0)));
-    ON_CALL(mock_action_delegate_, OnGetFullCard)
-        .WillByDefault(Invoke([](const autofill::CreditCard* credit_card,
-                                 base::OnceCallback<void(
-                                     std::unique_ptr<autofill::CreditCard> card,
-                                     const base::string16& cvc)>& callback) {
-          std::move(callback).Run(
-              credit_card ? std::make_unique<autofill::CreditCard>(*credit_card)
-                          : nullptr,
-              base::UTF8ToUTF16(kFakeCvc));
-        }));
+    ON_CALL(mock_action_delegate_, GetFullCard)
+        .WillByDefault(
+            [](const autofill::CreditCard* credit_card,
+               base::OnceCallback<void(const ClientStatus&,
+                                       std::unique_ptr<autofill::CreditCard>,
+                                       const base::string16&)> callback) {
+              std::move(callback).Run(
+                  credit_card ? OkClientStatus()
+                              : ClientStatus(GET_FULL_CARD_FAILED),
+                  credit_card
+                      ? std::make_unique<autofill::CreditCard>(*credit_card)
+                      : nullptr,
+                  base::UTF8ToUTF16(kFakeCvc));
+            });
     test_util::MockFindAnyElement(mock_web_controller_);
   }
 

@@ -170,7 +170,8 @@ class ActionDelegate {
           write_callback) = 0;
 
   using GetFullCardCallback =
-      base::OnceCallback<void(std::unique_ptr<autofill::CreditCard> card,
+      base::OnceCallback<void(const ClientStatus& status,
+                              std::unique_ptr<autofill::CreditCard> card,
                               const base::string16& cvc)>;
 
   // Asks for the full card information for |credit_card|. Might require the

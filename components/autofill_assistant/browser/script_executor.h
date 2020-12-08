@@ -430,6 +430,7 @@ class ScriptExecutor : public ActionDelegate,
       UserData* user_data,
       const UserModel* user_model);
   void OnGetFullCard(GetFullCardCallback callback,
+                     const ClientStatus& status,
                      std::unique_ptr<autofill::CreditCard> card,
                      const base::string16& cvc);
   void OnChosen(UserAction::Callback callback,

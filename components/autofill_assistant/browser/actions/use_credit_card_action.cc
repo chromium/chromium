@@ -139,13 +139,15 @@ void UseCreditCardAction::OnWaitForElement(const ClientStatus& element_status) {
 }
 
 void UseCreditCardAction::OnGetFullCard(
+    const ClientStatus& status,
     std::unique_ptr<autofill::CreditCard> card,
     const base::string16& cvc) {
   action_stopwatch_.StartActiveTime();
-  if (!card) {
-    EndAction(ClientStatus(GET_FULL_CARD_FAILED));
+  if (!status.ok()) {
+    EndAction(status);
     return;
   }
+  DCHECK(card);
 
   std::vector<RequiredField> required_fields;
   for (const auto& required_field_proto : proto_.use_card().required_fields()) {
