@@ -551,14 +551,6 @@ void FidoHidDevice::WriteCancel() {
                            base::BindOnce(WriteCancelComplete, connection_));
 }
 
-std::string FidoHidDevice::GetId() const {
-  return GetIdForDevice(*device_info_);
-}
-
-FidoTransportProtocol FidoHidDevice::DeviceTransport() const {
-  return FidoTransportProtocol::kUsbHumanInterfaceDevice;
-}
-
 // VidPidToString returns the device's vendor and product IDs as formatted by
 // the lsusb utility.
 static std::string VidPidToString(const mojom::HidDeviceInfoPtr& device_info) {
@@ -572,6 +564,18 @@ static std::string VidPidToString(const mojom::HidDeviceInfoPtr& device_info) {
                         ((device_info->product_id & 0xff00) >> 8);
   return base::ToLowerASCII(base::HexEncode(&vendor_id, 2) + ":" +
                             base::HexEncode(&product_id, 2));
+}
+
+std::string FidoHidDevice::GetDisplayName() const {
+  return "usb-" + VidPidToString(device_info_);
+}
+
+std::string FidoHidDevice::GetId() const {
+  return GetIdForDevice(*device_info_);
+}
+
+FidoTransportProtocol FidoHidDevice::DeviceTransport() const {
+  return FidoTransportProtocol::kUsbHumanInterfaceDevice;
 }
 
 void FidoHidDevice::DiscoverSupportedProtocolAndDeviceInfo(

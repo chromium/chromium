@@ -62,7 +62,7 @@ FidoCableDevice::~FidoCableDevice() = default;
 
 // static
 std::string FidoCableDevice::GetIdForAddress(const std::string& address) {
-  return "ble:" + address;
+  return "ble-" + address;
 }
 
 std::string FidoCableDevice::GetAddress() {
@@ -118,14 +118,6 @@ void FidoCableDevice::Cancel(CancelToken token) {
 
 std::string FidoCableDevice::GetId() const {
   return GetIdForAddress(connection_->address());
-}
-
-base::string16 FidoCableDevice::GetDisplayName() const {
-  auto* device = connection_->GetBleDevice();
-  if (!device)
-    return base::string16();
-
-  return device->GetNameForDisplay();
 }
 
 FidoTransportProtocol FidoCableDevice::DeviceTransport() const {

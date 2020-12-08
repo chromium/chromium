@@ -115,7 +115,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   void Reset(ResetCallback callback) override;
   void Cancel() override;
   std::string GetId() const override;
-  base::string16 GetDisplayName() const override;
+  std::string GetDisplayName() const override;
   ProtocolVersion SupportedProtocol() const override;
   bool SupportsHMACSecretExtension() const override;
   bool SupportsEnterpriseAttestation() const override;

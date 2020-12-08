@@ -181,11 +181,11 @@ TEST_F(FidoCableDeviceTest, ConnectionFailureTest) {
 
 TEST_F(FidoCableDeviceTest, StaticGetIdTest) {
   std::string address = BluetoothTestBase::kTestDeviceAddress1;
-  EXPECT_EQ("ble:" + address, FidoCableDevice::GetIdForAddress(address));
+  EXPECT_EQ("ble-" + address, FidoCableDevice::GetIdForAddress(address));
 }
 
 TEST_F(FidoCableDeviceTest, GetIdTest) {
-  EXPECT_EQ(std::string("ble:") + BluetoothTestBase::kTestDeviceAddress1,
+  EXPECT_EQ(std::string("ble-") + BluetoothTestBase::kTestDeviceAddress1,
             device()->GetId());
 }
 

@@ -21,9 +21,8 @@ void FidoDevice::TryWink(base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-base::string16 FidoDevice::GetDisplayName() const {
-  const auto id = GetId();
-  return base::string16(id.begin(), id.end());
+std::string FidoDevice::GetDisplayName() const {
+  return GetId();
 }
 
 bool FidoDevice::IsInPairingMode() const {

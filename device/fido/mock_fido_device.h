@@ -77,7 +77,7 @@ class MockFidoDevice : public ::testing::StrictMock<FidoDevice> {
                              DeviceCallback cb) override;
   MOCK_METHOD1(Cancel, void(FidoDevice::CancelToken));
   MOCK_CONST_METHOD0(GetId, std::string(void));
-  MOCK_CONST_METHOD0(GetDisplayName, base::string16(void));
+  MOCK_CONST_METHOD0(GetDisplayName, std::string(void));
   FidoTransportProtocol DeviceTransport() const override;
   base::WeakPtr<FidoDevice> GetWeakPtr() override;
 

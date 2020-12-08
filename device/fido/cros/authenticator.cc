@@ -33,10 +33,6 @@ std::string ChromeOSAuthenticator::GetId() const {
   return "ChromeOSAuthenticator";
 }
 
-base::string16 ChromeOSAuthenticator::GetDisplayName() const {
-  return base::string16(base::ASCIIToUTF16("ChromeOS Authenticator"));
-}
-
 namespace {
 
 // DBus timeout for method calls that doesn't involve user interaction.

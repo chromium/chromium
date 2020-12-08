@@ -201,7 +201,7 @@ void MockFidoDevice::SetDeviceTransport(
 
 void MockFidoDevice::StubGetDisplayName() {
   EXPECT_CALL(*this, GetDisplayName())
-      .WillRepeatedly(testing::Return(base::string16()));
+      .WillRepeatedly(testing::Return(std::string()));
 }
 
 }  // namespace device

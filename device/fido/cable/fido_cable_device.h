@@ -53,7 +53,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDevice : public FidoDevice {
   // FidoDevice:
   void Cancel(CancelToken token) override;
   std::string GetId() const override;
-  base::string16 GetDisplayName() const override;
   FidoTransportProtocol DeviceTransport() const override;
   CancelToken DeviceTransact(std::vector<uint8_t> command,
                              DeviceCallback callback) override;

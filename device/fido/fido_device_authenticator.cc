@@ -951,7 +951,7 @@ std::string FidoDeviceAuthenticator::GetId() const {
   return device_->GetId();
 }
 
-base::string16 FidoDeviceAuthenticator::GetDisplayName() const {
+std::string FidoDeviceAuthenticator::GetDisplayName() const {
   return device_->GetDisplayName();
 }
 

@@ -236,8 +236,14 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   // stored resident keys and any configured PIN.
   virtual void Reset(ResetCallback callback);
   virtual void Cancel() = 0;
+  // GetId returns a unique string representing this device. This string should
+  // be distinct from all other devices concurrently discovered.
   virtual std::string GetId() const = 0;
-  virtual base::string16 GetDisplayName() const = 0;
+  // GetDisplayName returns a string identifying a device to a human, which
+  // might not be unique. For example, |GetDisplayName| could return the VID:PID
+  // of a HID device, but |GetId| could not because two devices can share the
+  // same VID:PID. It defaults to returning the value of |GetId|.
+  virtual std::string GetDisplayName() const;
   virtual ProtocolVersion SupportedProtocol() const;
   virtual bool SupportsCredProtectExtension() const;
   virtual bool SupportsHMACSecretExtension() const;

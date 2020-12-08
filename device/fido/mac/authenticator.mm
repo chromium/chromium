@@ -128,10 +128,6 @@ std::string TouchIdAuthenticator::GetId() const {
   return "TouchIdAuthenticator";
 }
 
-base::string16 TouchIdAuthenticator::GetDisplayName() const {
-  return base::string16();
-}
-
 base::Optional<FidoTransportProtocol>
 TouchIdAuthenticator::AuthenticatorTransport() const {
   return FidoTransportProtocol::kInternal;

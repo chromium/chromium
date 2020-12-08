@@ -475,8 +475,7 @@ void AuthenticatorRequestDialogModel::AddAuthenticator(
   }
 
   AuthenticatorReference authenticator_reference(
-      authenticator.GetId(), authenticator.GetDisplayName(),
-      *authenticator.AuthenticatorTransport());
+      authenticator.GetId(), *authenticator.AuthenticatorTransport());
 
   ephemeral_state_.saved_authenticators_.AddAuthenticator(
       std::move(authenticator_reference));

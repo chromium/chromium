@@ -171,6 +171,10 @@ void FidoAuthenticator::Reset(ResetCallback callback) {
                           base::nullopt);
 }
 
+std::string FidoAuthenticator::GetDisplayName() const {
+  return GetId();
+}
+
 ProtocolVersion FidoAuthenticator::SupportedProtocol() const {
   return ProtocolVersion::kUnknown;
 }

@@ -159,10 +159,6 @@ std::string WinWebAuthnApiAuthenticator::GetId() const {
   return "WinWebAuthnApiAuthenticator";
 }
 
-base::string16 WinWebAuthnApiAuthenticator::GetDisplayName() const {
-  return base::UTF8ToUTF16(GetId());
-}
-
 bool WinWebAuthnApiAuthenticator::IsInPairingMode() const {
   return false;
 }

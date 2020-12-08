@@ -17,14 +17,12 @@
 // from the user via the UI.
 struct AuthenticatorReference {
   AuthenticatorReference(base::StringPiece device_id,
-                         base::StringPiece16 authenticator_display_name,
                          device::FidoTransportProtocol transport);
   AuthenticatorReference(AuthenticatorReference&& data);
   AuthenticatorReference& operator=(AuthenticatorReference&& other);
   ~AuthenticatorReference();
 
   std::string authenticator_id;
-  base::string16 authenticator_display_name;
   device::FidoTransportProtocol transport;
   bool dispatched = false;
 
