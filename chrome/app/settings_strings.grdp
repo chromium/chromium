@@ -1514,6 +1514,12 @@
   <message name="IDS_SETTINGS_CLEAR_DATA" desc="Text for clear browsing data button in Privacy options in the tabbed UI">
     Clear data
   </message>
+  <message name="IDS_SETTINGS_CLEARING_DATA" desc="Accessibility text for after the clear browsing data button is clicked and while the data is being cleared">
+    Clearing data...
+  </message>
+  <message name="IDS_SETTINGS_CLEARED_DATA" desc="Accessibility text for after the data has been cleared">
+    Data cleared.
+  </message>
   <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA" desc="Text for clear browsing data button in Privacy options">
     Clear browsing data
   </message>

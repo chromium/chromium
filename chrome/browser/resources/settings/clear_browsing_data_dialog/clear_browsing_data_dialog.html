@@ -95,6 +95,11 @@
         color: var(--cr-secondary-text-color);
         padding: 16px;
       }
+
+      #clearingDataAlert {
+        clip: rect(0, 0, 0, 0);
+        position: fixed;
+      }
     </style>
 
     <cr-dialog id="clearBrowsingDataDialog"
@@ -235,6 +240,12 @@
                                                clearButtonDisabled_)]]">
             $i18n{clearData}
         </cr-button>
+
+        <!-- The alert must be inside the dialog for it to be read while the
+             dialog is open. -->
+        <div id="clearingDataAlert" role="alert">
+          [[clearingDataAlertString_]]
+        </div>
       </div>
       <template is="dom-if" if="[[shouldShowFooter_(syncStatus.signedIn)]]"
           restamp>

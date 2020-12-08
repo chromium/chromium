@@ -306,7 +306,11 @@ Polymer({
   /** @private */
   onDialogClosed_() {
     Router.getInstance().navigateTo(assert(routes.CLEAR_BROWSER_DATA.parent));
-    focusWithoutInk(assert(this.$$('#clearBrowsingData')));
+    setTimeout(() => {
+      // Focus after a timeout to ensure any a11y messages get read before
+      // screen readers read out the newly focused element.
+      focusWithoutInk(assert(this.$$('#clearBrowsingData')));
+    });
   },
 
   /** @private */

@@ -22,6 +22,7 @@ import '../settings_shared_css.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.m.js';
@@ -120,6 +121,12 @@ Polymer({
     clearingInProgress_: {
       type: Boolean,
       value: false,
+    },
+
+    /** @private */
+    clearingDataAlertString_: {
+      type: String,
+      value: '',
     },
 
     /** @private */
@@ -446,6 +453,7 @@ Polymer({
    */
   clearBrowsingData_: async function() {
     this.clearingInProgress_ = true;
+    this.clearingDataAlertString_ = loadTimeData.getString('clearingData');
     const tab = this.$.tabs.selectedItem;
     const dataTypes = this.getSelectedDataTypes_(tab);
     const timePeriod = tab.querySelector('.time-range-select').pref.value;
@@ -464,6 +472,8 @@ Polymer({
         await this.browserProxy_.clearBrowsingData(
             dataTypes, timePeriod, this.installedApps_);
     this.clearingInProgress_ = false;
+    IronA11yAnnouncer.requestAvailability();
+    this.fire('iron-announce', {text: loadTimeData.getString('clearedData')});
     this.showHistoryDeletionDialog_ = showHistoryNotice;
     // If both the history notice and the passwords notice should be shown, show
     // the history notice first, and then show the passwords notice once the
