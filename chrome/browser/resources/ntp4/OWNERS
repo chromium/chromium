@@ -1,6 +1,3 @@
 file://components/search/OWNERS
 estade@chromium.org
 rbyers@chromium.org
-
-# TEAM: ntp-dev@chromium.org
-# COMPONENT: UI>Browser>NewTabPage
