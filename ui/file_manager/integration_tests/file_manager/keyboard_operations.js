@@ -102,8 +102,9 @@ async function keyboardCopy(path) {
  * Tests deleting a file from the file list.
  *
  * @param {string} path The path to be tested, Downloads or Drive.
+ * @param {boolean} deleteHasDialog whether delete shows confirmation dialog.
  */
-async function keyboardDelete(path) {
+async function keyboardDelete(path, deleteHasDialog) {
   const appId =
       await setupAndWaitUntilReady(path, [ENTRIES.hello], [ENTRIES.hello]);
 
@@ -113,7 +114,9 @@ async function keyboardDelete(path) {
       'deleteFile failed');
 
   // Run the delete entry confirmation dialog.
-  await waitAndAcceptDialog(appId);
+  if (deleteHasDialog) {
+    await waitAndAcceptDialog(appId);
+  }
 
   // Check: the file list should be empty.
   await remoteCall.waitForFiles(appId, []);
@@ -125,8 +128,9 @@ async function keyboardDelete(path) {
  *
  * @param {string} path The path to be tested, Downloads or Drive.
  * @param {string} treeItem The directory tree item selector.
+ * @param {boolean} deleteHasDialog whether delete shows confirmation dialog.
  */
-async function keyboardDeleteFolder(path, treeItem) {
+async function keyboardDeleteFolder(path, treeItem, deleteHasDialog) {
   const appId =
       await setupAndWaitUntilReady(path, [ENTRIES.photos], [ENTRIES.photos]);
 
@@ -142,7 +146,9 @@ async function keyboardDeleteFolder(path, treeItem) {
       'deleteFile failed');
 
   // Run the delete entry confirmation dialog.
-  await waitAndAcceptDialog(appId);
+  if (deleteHasDialog) {
+    await waitAndAcceptDialog(appId);
+  }
 
   // Check: the file list should be empty.
   await remoteCall.waitForFiles(appId, []);
@@ -289,19 +295,21 @@ testcase.keyboardCopyDrive = () => {
 };
 
 testcase.keyboardDeleteDownloads = () => {
-  return keyboardDelete(RootPath.DOWNLOADS);
+  return keyboardDelete(RootPath.DOWNLOADS, /*deleteHasDialog=*/ false);
 };
 
 testcase.keyboardDeleteDrive = () => {
-  return keyboardDelete(RootPath.DRIVE);
+  return keyboardDelete(RootPath.DRIVE, /*deleteHasDialog=*/ true);
 };
 
 testcase.keyboardDeleteFolderDownloads = () => {
-  return keyboardDeleteFolder(RootPath.DOWNLOADS, TREEITEM_DOWNLOADS);
+  return keyboardDeleteFolder(
+      RootPath.DOWNLOADS, TREEITEM_DOWNLOADS, /*deleteHasDialog=*/ false);
 };
 
 testcase.keyboardDeleteFolderDrive = () => {
-  return keyboardDeleteFolder(RootPath.DRIVE, TREEITEM_DRIVE);
+  return keyboardDeleteFolder(
+      RootPath.DRIVE, TREEITEM_DRIVE, /*deleteHasDialog=*/ true);
 };
 
 testcase.renameFileDownloads = () => {
@@ -412,7 +420,7 @@ testcase.keyboardSelectDriveDirectoryTree = async () => {
 testcase.keyboardDisableCopyWhenDialogDisplayed = async () => {
   // Open Files app.
   const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
 
   // Select a file for deletion.
   chrome.test.assertTrue(

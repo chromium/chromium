@@ -848,6 +848,15 @@ const ENTRIES = {
     typeText: 'Folder'
   }),
 
+  dotTrash: new TestEntryInfo({
+    type: EntryType.DIRECTORY,
+    targetPath: '.Trash',
+    lastModifiedTime: 'Jan 1, 2000, 1:00 AM',
+    nameText: '.Trash',
+    sizeText: '--',
+    typeText: 'Folder'
+  }),
+
   deeplyBurriedSmallJpeg: new TestEntryInfo({
     type: EntryType.FILE,
     targetPath: 'A/B/C/deep.jpg',

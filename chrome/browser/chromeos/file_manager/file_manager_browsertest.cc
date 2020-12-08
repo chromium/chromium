@@ -106,11 +106,6 @@ struct TestCase {
     return *this;
   }
 
-  TestCase& EnableTrash() {
-    options.trash = true;
-    return *this;
-  }
-
   // Show the startup browser. Some tests invoke the file picker dialog during
   // the test. Requesting a file picker from a background page is forbidden by
   // the apps platform, and it's a bug that these tests do so.
@@ -1034,9 +1029,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Trash, /* trash.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("trashMoveToTrash").EnableTrash(),
-                      TestCase("trashRestoreFromToast").EnableTrash(),
-                      TestCase("trashRestoreFromTrash").EnableTrash(),
-                      TestCase("trashDeleteFromTrash").EnableTrash()));
+    ::testing::Values(TestCase("trashMoveToTrash"),
+                      TestCase("trashRestoreFromToast"),
+                      TestCase("trashRestoreFromTrash"),
+                      TestCase("trashDeleteFromTrash")));
 
 }  // namespace file_manager

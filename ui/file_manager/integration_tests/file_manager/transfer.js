@@ -304,6 +304,14 @@ const TRANSFER_LOCATIONS = {
         sizeText: '--',
         typeText: 'Folder'
       }),
+      new TestEntryInfo({
+        type: EntryType.DIRECTORY,
+        targetPath: 'Trash',
+        nameText: 'Trash',
+        lastModifiedTime: '...',
+        sizeText: '--',
+        typeText: 'Folder'
+      }),
     ]
   }),
 };
@@ -904,8 +912,9 @@ testcase.transferDeletedFile = async () => {
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'deleteFile', appId, [entry.nameText]));
 
-  // Confirm deletion.
-  await waitAndAcceptDialog(appId);
+  // Wait for completion of file deletion.
+  await remoteCall.waitForElementLost(
+      appId, `#file-list [file-name="${entry.nameText}"]`);
 
   // Paste the file.
   chrome.test.assertTrue(

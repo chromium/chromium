@@ -62,6 +62,7 @@ const BASIC_LOCAL_ENTRY_SET = [
  */
 const BASIC_LOCAL_ENTRY_SET_WITH_HIDDEN = BASIC_LOCAL_ENTRY_SET.concat([
   ENTRIES.hiddenFile,
+  ENTRIES.dotTrash,
 ]);
 
 /**

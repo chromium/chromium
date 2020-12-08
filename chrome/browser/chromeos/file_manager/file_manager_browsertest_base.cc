@@ -737,7 +737,6 @@ std::ostream& operator<<(std::ostream& out,
   PRINT_IF_NOT_DEFAULT(single_partition_format)
   PRINT_IF_NOT_DEFAULT(smbfs)
   PRINT_IF_NOT_DEFAULT(tablet_mode)
-  PRINT_IF_NOT_DEFAULT(trash)
   PRINT_IF_NOT_DEFAULT(zip)
   PRINT_IF_NOT_DEFAULT(zip_no_nacl)
 
@@ -1649,6 +1648,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
   std::vector<base::Feature> enabled_features;
   std::vector<base::Feature> disabled_features;
 
+  // Make sure to run the ARC storage UI toast tests.
+  enabled_features.push_back(arc::kUsbStorageUIFeature);
+
+  // Use Trash in tests.
+  enabled_features.push_back(chromeos::features::kFilesTrash);
+
   if (options.files_swa) {
     enabled_features.push_back(chromeos::features::kFilesSWA);
   } else {
@@ -1658,9 +1663,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
   if (options.arc) {
     arc::SetArcAvailableCommandLineForTesting(command_line);
   }
-
-  // Make sure to run the ARC storage UI toast tests.
-  enabled_features.push_back(arc::kUsbStorageUIFeature);
 
   if (options.documents_provider) {
     enabled_features.push_back(arc::kEnableDocumentsProviderInFilesAppFeature);
@@ -1696,10 +1698,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
 
   if (options.single_partition_format) {
     enabled_features.push_back(chromeos::features::kFilesSinglePartitionFormat);
-  }
-
-  if (options.trash) {
-    enabled_features.push_back(chromeos::features::kFilesTrash);
   }
 
   if (options.enable_holding_space) {

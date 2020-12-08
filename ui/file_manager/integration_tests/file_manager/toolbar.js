@@ -29,10 +29,9 @@ testcase.toolbarDeleteWithMenuItemNoEntrySelected = async () => {
  * dialog.
  */
 testcase.toolbarDeleteButtonKeepFocus = async () => {
-  const entries = [ENTRIES.desktop];
-
   // Open Files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.desktop]);
 
   // Select My Desktop Background.png
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
@@ -86,16 +85,6 @@ testcase.toolbarDeleteEntry = async () => {
   // Click delete button in the toolbar.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId, ['#delete-button']));
-
-
-  // Confirm that the confirmation dialog is shown.
-  await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
-
-  // Press delete button.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseClick', appId, ['button.cr-dialog-ok']),
-      'fakeMouseClick failed');
 
   // Confirm the file is removed.
   await remoteCall.waitForFiles(

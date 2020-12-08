@@ -139,7 +139,8 @@ class Trash {
       return trashDirs;
     }
 
-    trashDirs = await TrashDirs.getTrashDirs(entry.filesystem, config);
+    trashDirs = assert(await TrashDirs.getTrashDirs(
+        entry.filesystem, config, /*create=*/ true));
 
     // Check and remove old items max once per session.
     if (this.inProgress_.has(config.id)) {
@@ -258,7 +259,8 @@ class Trash {
     // Move to last directory in path, making sure dirs are created if needed.
     let dir = trashEntry.filesEntry.filesystem.root;
     for (let i = 0; i < parts.length - 1; i++) {
-      dir = await TrashDirs.getDirectory(dir, parts[i]);
+      dir =
+          assert(await TrashDirs.getDirectory(dir, parts[i], /*create=*/ true));
     }
 
     // Restore filesEntry first, then remove its trash infoEntry.

@@ -81,12 +81,13 @@ class TrashDirs {
    *
    * @param {!DirectoryEntry} dirEntry current directory.
    * @param {string} path name of directory within dirEntry.
-   * @return {!Promise<!DirectoryEntry>} Promise which resolves with
-   *     <dirEntry>/<path>.
+   * @param {boolean} create if true, directory is created if it does not exist.
+   * @return {!Promise<?DirectoryEntry>} Promise which resolves with
+   *     <dirEntry>/<path> or null if entry does not exist and create is false.
    */
-  static getDirectory(dirEntry, path) {
+  static getDirectory(dirEntry, path, create) {
     return new Promise((resolve, reject) => {
-      dirEntry.getDirectory(path, {create: true}, resolve, reject);
+      dirEntry.getDirectory(path, {create}, resolve, () => resolve(null));
     });
   }
 
@@ -95,19 +96,24 @@ class TrashDirs {
    *
    * @param {!FileSystem} fileSystem File system from volume with trash.
    * @param {!TrashConfig} config Config specifying trash dir location.
-   * @return {!Promise<!TrashDirs>} Promise which resolves with trash dirs.
+   * @param {boolean} create if true, dirs are created if they do not exist.
+   * @return {!Promise<?TrashDirs>} Promise which resolves with trash dirs, or
+   *     null if dirs do not exist and create is false.
    */
-  static async getTrashDirs(fileSystem, config) {
+  static async getTrashDirs(fileSystem, config, create) {
     let trashRoot = fileSystem.root;
     const parts = config.trashDir.split('/');
     for (const part of parts) {
       if (part) {
-        trashRoot = await TrashDirs.getDirectory(trashRoot, part);
+        trashRoot = await TrashDirs.getDirectory(trashRoot, part, create);
+        if (!trashRoot) {
+          return null;
+        }
       }
     }
-    const trashFiles = await TrashDirs.getDirectory(trashRoot, 'files');
-    const trashInfo = await TrashDirs.getDirectory(trashRoot, 'info');
-    return new TrashDirs(trashFiles, trashInfo);
+    const files = await TrashDirs.getDirectory(trashRoot, 'files', create);
+    const info = await TrashDirs.getDirectory(trashRoot, 'info', create);
+    return files && info ? new TrashDirs(files, info) : null;
   }
 }
 
@@ -390,8 +396,12 @@ class TrashDirectoryReader {
 
     // Read all of .Trash/files on first call.
     if (!this.infoReader_) {
-      const trashDirs =
-          await TrashDirs.getTrashDirs(this.fileSystem_, this.config_);
+      const trashDirs = await TrashDirs.getTrashDirs(
+          this.fileSystem_, this.config_, /*create=*/ false);
+      // If trash dirs do not yet exist, then return succesful empty read.
+      if (!trashDirs) {
+        return success([]);
+      }
 
       // Get all entries in trash/files.
       const filesReader = trashDirs.files.createReader();

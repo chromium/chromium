@@ -18,8 +18,9 @@ async function selectMyFiles(appId) {
   const downloadsRow = ['Downloads', '--', 'Folder'];
   const playFilesRow = ['Play files', '--', 'Folder'];
   const crostiniRow = ['Linux files', '--', 'Folder'];
+  const trashRow = ['Trash', '--', 'Folder'];
   await remoteCall.waitForFiles(
-      appId, [downloadsRow, playFilesRow, crostiniRow],
+      appId, [downloadsRow, playFilesRow, crostiniRow, trashRow],
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 }
 
@@ -33,6 +34,7 @@ testcase.showMyFiles = async () => {
     'Downloads: SubDirectoryItem',
     'Linux files: FakeItem',
     'Play files: SubDirectoryItem',
+    'Trash: SubDirectoryItem',
     'Google Drive: DriveVolumeItem',
     'My Drive: SubDirectoryItem',
     'Shared with me: SubDirectoryItem',
@@ -317,9 +319,10 @@ testcase.myFilesUpdatesWhenAndroidVolumeMounts = async () => {
   const downloadsRow = ['Downloads', '--', 'Folder'];
   const playFilesRow = ['Play files', '--', 'Folder'];
   const crostiniRow = ['Linux files', '--', 'Folder'];
+  const trashRow = ['Trash', '--', 'Folder'];
   await remoteCall.waitAndClickElement(appId, myFiles);
   await remoteCall.waitForFiles(
-      appId, [downloadsRow, crostiniRow],
+      appId, [downloadsRow, crostiniRow, trashRow],
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Mount Play files volume.
@@ -331,7 +334,7 @@ testcase.myFilesUpdatesWhenAndroidVolumeMounts = async () => {
   // Android volume should automatically appear on directory tree and file list.
   await remoteCall.waitForElement(appId, playFilesTreeItem);
   await remoteCall.waitForFiles(
-      appId, [downloadsRow, crostiniRow, playFilesRow],
+      appId, [downloadsRow, crostiniRow, playFilesRow, trashRow],
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Un-mount Play files volume.
@@ -342,7 +345,7 @@ testcase.myFilesUpdatesWhenAndroidVolumeMounts = async () => {
 
   // Check: Play files should disappear from file list.
   await remoteCall.waitForFiles(
-      appId, [downloadsRow, crostiniRow],
+      appId, [downloadsRow, crostiniRow, trashRow],
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Check: Play files should disappear from directory tree.

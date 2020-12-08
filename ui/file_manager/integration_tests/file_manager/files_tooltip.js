@@ -269,7 +269,7 @@
    */
   testcase.filesTooltipHidesOnDeleteDialogClosed = async () => {
     const appId = await setupAndWaitUntilReady(
-        RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.photos], []);
+        RootPath.DRIVE, [], [ENTRIES.beautiful, ENTRIES.photos]);
 
     const fileListItemQuery = '#file-list li[file-name="Beautiful Song.ogg"]';
     const okButtonQuery = '.cr-dialog-ok';
