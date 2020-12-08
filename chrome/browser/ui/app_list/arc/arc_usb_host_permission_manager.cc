@@ -386,8 +386,10 @@ void ArcUsbHostPermissionManager::MaybeProcessNextPermissionRequest() {
                                *current_request.usb_device_entry())) {
       OnUsbPermissionReceived(std::move(current_request), true);
     } else {
+      const base::string16 device_name =
+          current_request.usb_device_entry()->device_name;
       ShowUsbAccessPermissionDialog(
-          profile_, app_id, current_request.usb_device_entry()->device_name,
+          profile_, app_id, device_name,
           base::BindOnce(&ArcUsbHostPermissionManager::OnUsbPermissionReceived,
                          weak_ptr_factory_.GetWeakPtr(),
                          std::move(current_request)));
