@@ -48,6 +48,8 @@ preprocess_if_expr("preprocess_v2") {
     "nearby_onboarding_page.js",
     "nearby_page_template.html",
     "nearby_page_template.js",
+    "nearby_preview.html",
+    "nearby_preview.js",
     "nearby_progress.html",
     "nearby_progress.js",
     "nearby_share_settings.html",
@@ -73,6 +75,7 @@ preprocess_if_expr("preprocess_v3") {
     "nearby_device.m.js",
     "nearby_onboarding_page.m.js",
     "nearby_page_template.m.js",
+    "nearby_preview.m.js",
     "nearby_progress.m.js",
     "nearby_share_settings.m.js",
     "nearby_share_settings_behavior.m.js",
@@ -90,6 +93,7 @@ js_type_check("closure_compile") {
     ":nearby_device",
     ":nearby_onboarding_page",
     ":nearby_page_template",
+    ":nearby_preview",
     ":nearby_progress",
     ":nearby_share_settings",
     ":nearby_share_settings_behavior",
@@ -139,6 +143,16 @@ js_library("nearby_device") {
 }
 
 js_library("nearby_page_template") {
+}
+
+js_library("nearby_preview") {
+  deps = [
+    "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
+    "//chromeos/services/nearby/public/mojom:nearby_share_target_types_js_library_for_compile",
+    "//third_party/polymer/v1_0/components-chromium/iron-icon:iron-icon-extracted",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:i18n_behavior",
+  ]
 }
 
 js_library("nearby_progress") {
@@ -197,6 +211,7 @@ js_type_check("closure_compile_module") {
     ":nearby_device.m",
     ":nearby_onboarding_page.m",
     ":nearby_page_template.m",
+    ":nearby_preview.m",
     ":nearby_progress.m",
     ":nearby_share_settings.m",
     ":nearby_share_settings_behavior.m",
@@ -212,6 +227,7 @@ group("polymer3_elements") {
     ":nearby_device_module",
     ":nearby_onboarding_page_module",
     ":nearby_page_template_module",
+    ":nearby_preview_module",
     ":nearby_progress_module",
     ":nearby_shared_icons_module",
     ":nearby_shared_share_type_icons_module",
@@ -281,6 +297,18 @@ js_library("nearby_onboarding_page.m") {
 js_library("nearby_page_template.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_page_template.m.js" ]
   extra_deps = [ ":nearby_page_template_module" ]
+}
+
+js_library("nearby_preview.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_preview.m.js" ]
+  deps = [
+    "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
+    "//chromeos/services/nearby/public/mojom:nearby_share_target_types_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+  extra_deps = [ ":nearby_preview_module" ]
 }
 
 js_library("nearby_progress.m") {
@@ -358,6 +386,14 @@ polymer_modulizer("nearby_onboarding_page") {
 polymer_modulizer("nearby_page_template") {
   js_file = "nearby_page_template.js"
   html_file = "nearby_page_template.html"
+  html_type = "dom-module"
+  auto_imports = nearby_shared_auto_imports
+  namespace_rewrites = nearby_shared_namespace_rewrites
+}
+
+polymer_modulizer("nearby_preview") {
+  js_file = "nearby_preview.js"
+  html_file = "nearby_preview.html"
   html_type = "dom-module"
   auto_imports = nearby_shared_auto_imports
   namespace_rewrites = nearby_shared_namespace_rewrites

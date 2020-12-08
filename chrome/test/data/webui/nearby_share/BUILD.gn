@@ -19,7 +19,6 @@ js_type_check("closure_compile") {
     ":fake_mojo_interfaces",
     ":nearby_confirmation_page_test",
     ":nearby_discovery_page_test",
-    ":nearby_preview_test",
     ":nearby_share_app_test",
   ]
 }
@@ -45,15 +44,6 @@ js_library("nearby_discovery_page_test") {
     ":fake_mojo_interfaces",
     "..:chai_assert",
     "//chrome/browser/resources/nearby_share:nearby_discovery_page",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("nearby_preview_test") {
-  deps = [
-    "..:chai_assert",
-    "//chrome/browser/resources/nearby_share:nearby_preview",
-    "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

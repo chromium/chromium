@@ -7,18 +7,10 @@
  * sent to a remote device. The data might be some plain text, a URL or a file.
  */
 
-import './shared/nearby_shared_share_type_icons.m.js';
-
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 Polymer({
   is: 'nearby-preview',
 
   behaviors: [I18nBehavior],
-
-  _template: html`{__html_template__}`,
 
   properties: {
     /**

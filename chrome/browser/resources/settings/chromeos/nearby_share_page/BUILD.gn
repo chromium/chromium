@@ -27,6 +27,7 @@ js_library("nearby_share_confirm_page") {
   deps = [
     "//chrome/browser/resources/nearby_share/shared:nearby_device",
     "//chrome/browser/resources/nearby_share/shared:nearby_page_template",
+    "//chrome/browser/resources/nearby_share/shared:nearby_preview",
     "//chrome/browser/resources/nearby_share/shared:nearby_progress",
   ]
 }
@@ -165,6 +166,7 @@ js_library("nearby_share_confirm_page.m") {
   deps = [
     "//chrome/browser/resources/nearby_share/shared:nearby_device.m",
     "//chrome/browser/resources/nearby_share/shared:nearby_page_template.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_preview.m",
     "//chrome/browser/resources/nearby_share/shared:nearby_progress.m",
   ]
   extra_deps = [ ":nearby_share_confirm_page_module" ]

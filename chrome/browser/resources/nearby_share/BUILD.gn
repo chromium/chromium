@@ -80,7 +80,6 @@ preprocess_if_expr("preprocess_gen") {
     "icons.js",
     "nearby_confirmation_page.js",
     "nearby_discovery_page.js",
-    "nearby_preview.js",
   ]
 }
 
@@ -125,7 +124,6 @@ js_type_check("closure_compile") {
     ":discovery_manager",
     ":nearby_confirmation_page",
     ":nearby_discovery_page",
-    ":nearby_preview",
   ]
 }
 
@@ -149,7 +147,7 @@ js_library("discovery_manager") {
 
 js_library("nearby_confirmation_page") {
   deps = [
-    ":nearby_preview",
+    "./shared:nearby_preview.m",
     "./shared:nearby_progress.m",
     "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -162,7 +160,7 @@ js_library("nearby_confirmation_page") {
 js_library("nearby_discovery_page") {
   deps = [
     ":discovery_manager",
-    ":nearby_preview",
+    "./shared:nearby_preview.m",
     "./shared:nearby_device.m",
     "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/iron-list",
@@ -173,18 +171,11 @@ js_library("nearby_discovery_page") {
   ]
 }
 
-js_library("nearby_preview") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
 html_to_js("web_components") {
   js_files = [
     "app.js",
     "icons.js",
     "nearby_confirmation_page.js",
     "nearby_discovery_page.js",
-    "nearby_preview.js",
   ]
 }

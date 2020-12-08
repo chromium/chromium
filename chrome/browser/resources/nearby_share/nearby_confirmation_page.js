@@ -12,10 +12,10 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
-import './nearby_preview.js';
 import './mojo/nearby_share_target_types.mojom-lite.js';
 import './mojo/nearby_share.mojom-lite.js';
 import './shared/nearby_page_template.m.js';
+import './shared/nearby_preview.m.js';
 import './shared/nearby_progress.m.js';
 import './strings.m.js';
 

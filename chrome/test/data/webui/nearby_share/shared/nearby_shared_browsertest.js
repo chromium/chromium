@@ -129,6 +129,24 @@ TEST_F('NearbyPageTemplateTest', 'All', () => mocha.run());
 /**
  * @extends {NearbySharedBrowserTest}
  */
+var NearbyPreviewTest = class extends NearbySharedBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload + 'shared/nearby_preview.html';
+  }
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      'nearby_preview_test.js',
+    ]);
+  }
+};
+
+TEST_F('NearbyPreviewTest', 'All', () => mocha.run());
+
+/**
+ * @extends {NearbySharedBrowserTest}
+ */
 var NearbyProgressTest = class extends NearbySharedBrowserTest {
   /** @override */
   get browsePreload() {
