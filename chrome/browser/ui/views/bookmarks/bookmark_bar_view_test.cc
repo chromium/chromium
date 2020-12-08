@@ -2291,4 +2291,13 @@ class BookmarkBarViewTest28 : public BookmarkBarViewEventTestBase {
   }
 };
 
-VIEW_TEST(BookmarkBarViewTest28, ClickWithModifierOnFolderOpensAllBookmarks)
+// Flaky on Windows, see crbug.com/1156666
+#if defined(OS_WIN)
+#define MAYBE_ClickWithModifierOnFolderOpensAllBookmarks \
+  DISABLED_ClickWithModifierOnFolderOpensAllBookmarks
+#else
+#define MAYBE_ClickWithModifierOnFolderOpensAllBookmarks \
+  ClickWithModifierOnFolderOpensAllBookmarks
+#endif
+VIEW_TEST(BookmarkBarViewTest28,
+          MAYBE_ClickWithModifierOnFolderOpensAllBookmarks)
