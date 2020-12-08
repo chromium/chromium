@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_configuration.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_location.h"
 #include "third_party/blink/renderer/core/animation/document_animation.h"
+#include "third_party/blink/renderer/core/document_transition/document_create_transition.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fullscreen/document_fullscreen.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
