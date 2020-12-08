@@ -4614,28 +4614,6 @@
             ]
         }
     ],
-    "NavigationPredictorPreconnectSocketCompletionTime": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "preconnect_socket_completion_time_msec": "3000"
-                    },
-                    "enable_features": [
-                        "NavigationPredictorPreconnectSocketCompletionTime"
-                    ]
-                }
-            ]
-        }
-    ],
     "NewUsbBackend": [
         {
             "platforms": [

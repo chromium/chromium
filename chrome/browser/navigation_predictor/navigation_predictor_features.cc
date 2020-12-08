@@ -24,11 +24,6 @@ const base::Feature
         "NavigationPredictorEnablePreconnectOnSameDocumentNavigations",
         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Used for controlling the navigation predictor based preconnect experiments.
-const base::Feature kNavigationPredictorPreconnectSocketCompletionTime{
-    "NavigationPredictorPreconnectSocketCompletionTime",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kNavigationPredictorRendererWarmup{
     "NavigationPredictorRendererWarmup", base::FEATURE_DISABLED_BY_DEFAULT};
 
