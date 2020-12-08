@@ -2047,6 +2047,23 @@ RenderFrameHostImpl::AccessibilityGetWebContentsAccessibility() {
   return view->GetWebContentsAccessibility();
 }
 
+void RenderFrameHostImpl::ValidateStateForBug1146573() {
+  // This implies that a crashed frame has been reinitialized instead of
+  // replaced. The only time this should happen is
+  // InitializeMainRenderFrameForImmediateUse and it resets must_be_replaced_ so
+  // should not trigger this.
+  if (must_be_replaced_ && render_frame_created_) {
+    SCOPED_CRASH_KEY_BOOL(ValidateStateForBug1146573, IsMainFrame,
+                          is_main_frame());
+    SCOPED_CRASH_KEY_BOOL(ValidateStateForBug1146573, ProcessID,
+                          GetProcess()->GetID());
+    SCOPED_CRASH_KEY_BOOL(ValidateStateForBug1146573, RoutingID,
+                          GetRoutingID());
+    NOTREACHED();
+    base::debug::DumpWithoutCrashing();
+  }
+}
+
 void RenderFrameHostImpl::RenderProcessExited(
     RenderProcessHost* host,
     const ChildProcessTerminationInfo& info) {
@@ -2066,6 +2083,7 @@ void RenderFrameHostImpl::RenderProcessExited(
   web_bundle_handle_.reset();
 
   must_be_replaced_ = true;
+  ValidateStateForBug1146573();
   has_committed_any_navigation_ = false;
 
 #if defined(OS_ANDROID)
@@ -2388,6 +2406,7 @@ void RenderFrameHostImpl::SetRenderFrameCreated(bool created) {
 
   bool was_created = render_frame_created_;
   render_frame_created_ = created;
+  ValidateStateForBug1146573();
 
   // Clear all the user data associated with this RenderFrameHost when its
   // RenderFrame is recreated after a crash. Checking
@@ -3207,6 +3226,9 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
     // TODO(https://crbug.com/1146573): Delete this.
     SCOPED_CRASH_KEY_BOOL(Bug1146573, Live, IsRenderFrameLive());
     SCOPED_CRASH_KEY_BOOL(Bug1146573, MustBeReplaced, must_be_replaced());
+    SCOPED_CRASH_KEY_BOOL(Bug1146573, IsMainFrame, is_main_frame());
+    SCOPED_CRASH_KEY_BOOL(Bug1146573, ProcessID, GetProcess()->GetID());
+    SCOPED_CRASH_KEY_BOOL(Bug1146573, RoutingID, GetRoutingID());
     CHECK(ShouldCreateNewHostForSameSiteSubframe());
 
     // The unload handlers already ran for this document during the

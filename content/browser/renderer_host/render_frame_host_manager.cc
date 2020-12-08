@@ -767,6 +767,14 @@ void RenderFrameHostManager::ValidateSpeculativeRenderFrameHostForBug1146573(
                                pending->GetSiteInstance()->GetSiteURL().spec());
     SCOPED_CRASH_KEY_BOOL(ValidateSpeculative, MustBeReplaced,
                           current->must_be_replaced());
+    SCOPED_CRASH_KEY_BOOL(ValidateSpeculative, OldProcessID,
+                          current->GetProcess()->GetID());
+    SCOPED_CRASH_KEY_BOOL(ValidateSpeculative, OldRoutingID,
+                          current->GetRoutingID());
+    SCOPED_CRASH_KEY_BOOL(ValidateSpeculative, NewProcessID,
+                          pending->GetProcess()->GetID());
+    SCOPED_CRASH_KEY_BOOL(ValidateSpeculative, NewRoutingID,
+                          pending->GetRoutingID());
     NOTREACHED();
     base::debug::DumpWithoutCrashing();
   }

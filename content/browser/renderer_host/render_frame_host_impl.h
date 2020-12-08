@@ -2572,6 +2572,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
                                      const ukm::SourceId document_ukm_source_id,
                                      ukm::UkmRecorder* ukm_recorder);
 
+  // TODO(https://crbug.com/1146573): Remove this when the bug is closed.
+  void ValidateStateForBug1146573();
+
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
   // It is kept alive as long as any RenderFrameHosts or RenderFrameProxyHosts
