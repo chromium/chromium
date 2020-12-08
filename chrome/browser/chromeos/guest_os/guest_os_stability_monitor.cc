@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/crostini/crostini_stability_monitor.h"
+#include "chrome/browser/chromeos/guest_os/guest_os_stability_monitor.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 
-namespace crostini {
+namespace guest_os {
 
 const char kCrostiniStabilityHistogram[] = "Crostini.Stability";
 
-CrostiniStabilityMonitor::CrostiniStabilityMonitor(
-    CrostiniManager* crostini_manager)
+GuestOsStabilityMonitor::GuestOsStabilityMonitor(
+    crostini::CrostiniManager* crostini_manager)
     : concierge_observer_(this),
       cicerone_observer_(this),
       seneschal_observer_(this),
@@ -23,96 +23,96 @@ CrostiniStabilityMonitor::CrostiniStabilityMonitor(
       chromeos::DBusThreadManager::Get()->GetConciergeClient();
   DCHECK(concierge_client);
   concierge_client->WaitForServiceToBeAvailable(
-      base::BindOnce(&CrostiniStabilityMonitor::ConciergeStarted,
+      base::BindOnce(&GuestOsStabilityMonitor::ConciergeStarted,
                      weak_ptr_factory_.GetWeakPtr()));
 
   auto* cicerone_client =
       chromeos::DBusThreadManager::Get()->GetCiceroneClient();
   DCHECK(cicerone_client);
   cicerone_client->WaitForServiceToBeAvailable(
-      base::BindOnce(&CrostiniStabilityMonitor::CiceroneStarted,
+      base::BindOnce(&GuestOsStabilityMonitor::CiceroneStarted,
                      weak_ptr_factory_.GetWeakPtr()));
 
   auto* seneschal_client =
       chromeos::DBusThreadManager::Get()->GetSeneschalClient();
   DCHECK(seneschal_client);
   seneschal_client->WaitForServiceToBeAvailable(
-      base::BindOnce(&CrostiniStabilityMonitor::SeneschalStarted,
+      base::BindOnce(&GuestOsStabilityMonitor::SeneschalStarted,
                      weak_ptr_factory_.GetWeakPtr()));
 
   auto* chunneld_client =
       chromeos::DBusThreadManager::Get()->GetChunneldClient();
   DCHECK(chunneld_client);
   chunneld_client->WaitForServiceToBeAvailable(
-      base::BindOnce(&CrostiniStabilityMonitor::ChunneldStarted,
+      base::BindOnce(&GuestOsStabilityMonitor::ChunneldStarted,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  vm_stopped_observer_.Add(crostini_manager);
+  vm_stopped_observer_.Observe(crostini_manager);
 }
 
-CrostiniStabilityMonitor::~CrostiniStabilityMonitor() {}
+GuestOsStabilityMonitor::~GuestOsStabilityMonitor() {}
 
-void CrostiniStabilityMonitor::ConciergeStarted(bool is_available) {
+void GuestOsStabilityMonitor::ConciergeStarted(bool is_available) {
   DCHECK(is_available);
 
   auto* concierge_client =
       chromeos::DBusThreadManager::Get()->GetConciergeClient();
   DCHECK(concierge_client);
-  concierge_observer_.Add(concierge_client);
+  concierge_observer_.Observe(concierge_client);
 }
 
-void CrostiniStabilityMonitor::CiceroneStarted(bool is_available) {
+void GuestOsStabilityMonitor::CiceroneStarted(bool is_available) {
   DCHECK(is_available);
 
   auto* cicerone_client =
       chromeos::DBusThreadManager::Get()->GetCiceroneClient();
   DCHECK(cicerone_client);
-  cicerone_observer_.Add(cicerone_client);
+  cicerone_observer_.Observe(cicerone_client);
 }
 
-void CrostiniStabilityMonitor::SeneschalStarted(bool is_available) {
+void GuestOsStabilityMonitor::SeneschalStarted(bool is_available) {
   DCHECK(is_available);
 
   auto* seneschal_client =
       chromeos::DBusThreadManager::Get()->GetSeneschalClient();
   DCHECK(seneschal_client);
-  seneschal_observer_.Add(seneschal_client);
+  seneschal_observer_.Observe(seneschal_client);
 }
 
-void CrostiniStabilityMonitor::ChunneldStarted(bool is_available) {
+void GuestOsStabilityMonitor::ChunneldStarted(bool is_available) {
   DCHECK(is_available);
 
   auto* chunneld_client =
       chromeos::DBusThreadManager::Get()->GetChunneldClient();
   DCHECK(chunneld_client);
-  chunneld_observer_.Add(chunneld_client);
+  chunneld_observer_.Observe(chunneld_client);
 }
 
-void CrostiniStabilityMonitor::ConciergeServiceStopped() {
+void GuestOsStabilityMonitor::ConciergeServiceStopped() {
   base::UmaHistogramEnumeration(kCrostiniStabilityHistogram,
                                 FailureClasses::ConciergeStopped);
 }
-void CrostiniStabilityMonitor::ConciergeServiceStarted() {}
+void GuestOsStabilityMonitor::ConciergeServiceStarted() {}
 
-void CrostiniStabilityMonitor::CiceroneServiceStopped() {
+void GuestOsStabilityMonitor::CiceroneServiceStopped() {
   base::UmaHistogramEnumeration(kCrostiniStabilityHistogram,
                                 FailureClasses::CiceroneStopped);
 }
-void CrostiniStabilityMonitor::CiceroneServiceStarted() {}
+void GuestOsStabilityMonitor::CiceroneServiceStarted() {}
 
-void CrostiniStabilityMonitor::SeneschalServiceStopped() {
+void GuestOsStabilityMonitor::SeneschalServiceStopped() {
   base::UmaHistogramEnumeration(kCrostiniStabilityHistogram,
                                 FailureClasses::SeneschalStopped);
 }
-void CrostiniStabilityMonitor::SeneschalServiceStarted() {}
+void GuestOsStabilityMonitor::SeneschalServiceStarted() {}
 
-void CrostiniStabilityMonitor::ChunneldServiceStopped() {
+void GuestOsStabilityMonitor::ChunneldServiceStopped() {
   base::UmaHistogramEnumeration(kCrostiniStabilityHistogram,
                                 FailureClasses::ChunneldStopped);
 }
-void CrostiniStabilityMonitor::ChunneldServiceStarted() {}
+void GuestOsStabilityMonitor::ChunneldServiceStarted() {}
 
-void CrostiniStabilityMonitor::OnVmShutdown(const std::string& vm_name) {
+void GuestOsStabilityMonitor::OnVmShutdown(const std::string& vm_name) {
   // CrostiniManager calls this observer method before removing the VM from its
   // tracking list, so this list will tell us what state the VM was believed to
   // be in before the stop signal was received.
@@ -128,4 +128,4 @@ void CrostiniStabilityMonitor::OnVmShutdown(const std::string& vm_name) {
   }
 }
 
-}  // namespace crostini
+}  // namespace guest_os

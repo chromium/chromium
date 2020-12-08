@@ -31,13 +31,13 @@
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
 #include "chrome/browser/chromeos/crostini/crostini_remover.h"
 #include "chrome/browser/chromeos/crostini/crostini_reporting_util.h"
-#include "chrome/browser/chromeos/crostini/crostini_stability_monitor.h"
 #include "chrome/browser/chromeos/crostini/crostini_types.mojom.h"
 #include "chrome/browser/chromeos/crostini/crostini_upgrade_available_notification.h"
 #include "chrome/browser/chromeos/crostini/throttle/crostini_throttle.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_share_path.h"
+#include "chrome/browser/chromeos/guest_os/guest_os_stability_monitor.h"
 #include "chrome/browser/chromeos/policy/powerwash_requirements_checker.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/scheduler_configuration_manager.h"
@@ -152,7 +152,7 @@ CrostiniManager::RestartOptions& CrostiniManager::RestartOptions::operator=(
     RestartOptions&&) = default;
 
 class CrostiniManager::CrostiniRestarter
-    : public crostini::VmShutdownObserver,
+    : public chromeos::VmShutdownObserver,
       public chromeos::disks::DiskMountManager::Observer,
       public chromeos::SchedulerConfigurationManagerBase::Observer {
  public:
@@ -208,7 +208,7 @@ class CrostiniManager::CrostiniRestarter
     }
   }
 
-  // crostini::VmShutdownObserver
+  // chromeos::VmShutdownObserver
   void OnVmShutdown(const std::string& vm_name) override {
     if (ReturnEarlyIfAborted()) {
       return;
@@ -922,8 +922,8 @@ CrostiniManager::CrostiniManager(Profile* profile)
     chromeos::PowerManagerClient::Get()->AddObserver(this);
   }
   CrostiniThrottle::GetForBrowserContext(profile_);
-  crostini_stability_monitor_ =
-      std::make_unique<CrostiniStabilityMonitor>(this);
+  guest_os_stability_monitor_ =
+      std::make_unique<guest_os::GuestOsStabilityMonitor>(this);
 }
 
 CrostiniManager::~CrostiniManager() {
@@ -949,9 +949,9 @@ void CrostiniManager::RemoveDBusObservers() {
   if (chromeos::PowerManagerClient::Get()) {
     chromeos::PowerManagerClient::Get()->RemoveObserver(this);
   }
-  // CrostiniStabilityMonitor needs to be destructed here so it can unregister
+  // GuestOsStabilityMonitor needs to be destructed here so it can unregister
   // itself from the DBus clients that may no longer exist later.
-  crostini_stability_monitor_.reset();
+  guest_os_stability_monitor_.reset();
 }
 
 // static
@@ -2150,10 +2150,12 @@ void CrostiniManager::RemoveUpgradeContainerProgressObserver(
   upgrade_container_progress_observers_.RemoveObserver(observer);
 }
 
-void CrostiniManager::AddVmShutdownObserver(VmShutdownObserver* observer) {
+void CrostiniManager::AddVmShutdownObserver(
+    chromeos::VmShutdownObserver* observer) {
   vm_shutdown_observers_.AddObserver(observer);
 }
-void CrostiniManager::RemoveVmShutdownObserver(VmShutdownObserver* observer) {
+void CrostiniManager::RemoveVmShutdownObserver(
+    chromeos::VmShutdownObserver* observer) {
   vm_shutdown_observers_.RemoveObserver(observer);
 }
 

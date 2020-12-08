@@ -2,24 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_CROSTINI_CROSTINI_STABILITY_MONITOR_H_
-#define CHROME_BROWSER_CHROMEOS_CROSTINI_CROSTINI_STABILITY_MONITOR_H_
+#ifndef CHROME_BROWSER_CHROMEOS_GUEST_OS_GUEST_OS_STABILITY_MONITOR_H_
+#define CHROME_BROWSER_CHROMEOS_GUEST_OS_GUEST_OS_STABILITY_MONITOR_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
+#include "chrome/browser/chromeos/vm_shutdown_observer.h"
 #include "chromeos/dbus/chunneld_client.h"
 #include "chromeos/dbus/cicerone_client.h"
 #include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/seneschal_client.h"
 
-namespace crostini {
+namespace guest_os {
 
 extern const char kCrostiniStabilityHistogram[];
 
 // These values are logged to UMA. Entries should not be renumbered and numeric
 // values should never be reused. Please keep in sync with
-// CrostiniFailureClasses in src/tools/metrics/histograms/enums.xml and the copy
+// GuestOsFailureClasses in src/tools/metrics/histograms/enums.xml and the copy
 // in src/platform2/vm_tools/cicerone/crash_listener_impl.cc
 enum class FailureClasses {
   ConciergeStopped = 0,
@@ -42,17 +43,17 @@ enum class FailureClasses {
   kMaxValue = CrosNotificationdStopped,
 };
 
-class CrostiniStabilityMonitor : chromeos::ConciergeClient::Observer,
-                                 chromeos::CiceroneClient::Observer,
-                                 chromeos::SeneschalClient::Observer,
-                                 chromeos::ChunneldClient::Observer,
-                                 VmShutdownObserver {
+class GuestOsStabilityMonitor : chromeos::ConciergeClient::Observer,
+                                chromeos::CiceroneClient::Observer,
+                                chromeos::SeneschalClient::Observer,
+                                chromeos::ChunneldClient::Observer,
+                                chromeos::VmShutdownObserver {
  public:
-  explicit CrostiniStabilityMonitor(CrostiniManager* crostini_manager);
-  ~CrostiniStabilityMonitor() override;
+  explicit GuestOsStabilityMonitor(crostini::CrostiniManager* crostini_manager);
+  ~GuestOsStabilityMonitor() override;
 
-  CrostiniStabilityMonitor(const CrostiniStabilityMonitor&) = delete;
-  CrostiniStabilityMonitor& operator=(const CrostiniStabilityMonitor&) = delete;
+  GuestOsStabilityMonitor(const GuestOsStabilityMonitor&) = delete;
+  GuestOsStabilityMonitor& operator=(const GuestOsStabilityMonitor&) = delete;
 
   void ConciergeStarted(bool is_available);
   void CiceroneStarted(bool is_available);
@@ -75,31 +76,35 @@ class CrostiniStabilityMonitor : chromeos::ConciergeClient::Observer,
   void ChunneldServiceStopped() override;
   void ChunneldServiceStarted() override;
 
-  //  VmShutdownObserver::
+  //  chromeos::VmShutdownObserver::
   void OnVmShutdown(const std::string& vm_name) override;
 
  private:
-  ScopedObserver<chromeos::ConciergeClient, chromeos::ConciergeClient::Observer>
+  base::ScopedObservation<chromeos::ConciergeClient,
+                          chromeos::ConciergeClient::Observer>
       concierge_observer_;
-  ScopedObserver<chromeos::CiceroneClient, chromeos::CiceroneClient::Observer>
+  base::ScopedObservation<chromeos::CiceroneClient,
+                          chromeos::CiceroneClient::Observer>
       cicerone_observer_;
-  ScopedObserver<chromeos::SeneschalClient, chromeos::SeneschalClient::Observer>
+  base::ScopedObservation<chromeos::SeneschalClient,
+                          chromeos::SeneschalClient::Observer>
       seneschal_observer_;
-  ScopedObserver<chromeos::ChunneldClient, chromeos::ChunneldClient::Observer>
+  base::ScopedObservation<chromeos::ChunneldClient,
+                          chromeos::ChunneldClient::Observer>
       chunneld_observer_;
-  ScopedObserver<CrostiniManager,
-                 VmShutdownObserver,
-                 &CrostiniManager::AddVmShutdownObserver,
-                 &CrostiniManager::RemoveVmShutdownObserver>
+  base::ScopedObservation<crostini::CrostiniManager,
+                          chromeos::VmShutdownObserver,
+                          &crostini::CrostiniManager::AddVmShutdownObserver,
+                          &crostini::CrostiniManager::RemoveVmShutdownObserver>
       vm_stopped_observer_;
 
-  base::WeakPtr<CrostiniManager> crostini_manager_;
+  base::WeakPtr<crostini::CrostiniManager> crostini_manager_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<CrostiniStabilityMonitor> weak_ptr_factory_{this};
+  base::WeakPtrFactory<GuestOsStabilityMonitor> weak_ptr_factory_{this};
 };
 
-}  // namespace crostini
+}  // namespace guest_os
 
-#endif  // CHROME_BROWSER_CHROMEOS_CROSTINI_CROSTINI_STABILITY_MONITOR_H_
+#endif  // CHROME_BROWSER_CHROMEOS_GUEST_OS_GUEST_OS_STABILITY_MONITOR_H_

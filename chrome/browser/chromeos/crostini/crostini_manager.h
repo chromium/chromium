@@ -20,6 +20,7 @@
 #include "chrome/browser/chromeos/crostini/crostini_types.mojom-forward.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/crostini/termina_installer.h"
+#include "chrome/browser/chromeos/vm_shutdown_observer.h"
 #include "chrome/browser/chromeos/vm_starting_observer.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/browser/ui/browser.h"
@@ -38,9 +39,12 @@
 
 class Profile;
 
+namespace guest_os {
+class GuestOsStabilityMonitor;
+}
+
 namespace crostini {
 
-class CrostiniStabilityMonitor;
 class CrostiniUpgradeAvailableNotification;
 
 class LinuxPackageOperationProgressObserver {
@@ -124,12 +128,6 @@ class CrostiniContainerPropertiesObserver : public base::CheckedObserver {
   // Called when a container's OS release version changes.
   virtual void OnContainerOsReleaseChanged(const ContainerId& container_id,
                                            bool can_upgrade) = 0;
-};
-
-class VmShutdownObserver : public base::CheckedObserver {
- public:
-  // Called when the given VM has shutdown.
-  virtual void OnVmShutdown(const std::string& vm_name) = 0;
 };
 
 class ContainerStartedObserver : public base::CheckedObserver {
@@ -503,8 +501,8 @@ class CrostiniManager : public KeyedService,
       UpgradeContainerProgressObserver* observer);
 
   // Add/remove vm shutdown observers.
-  void AddVmShutdownObserver(VmShutdownObserver* observer);
-  void RemoveVmShutdownObserver(VmShutdownObserver* observer);
+  void AddVmShutdownObserver(chromeos::VmShutdownObserver* observer);
+  void RemoveVmShutdownObserver(chromeos::VmShutdownObserver* observer);
 
   // Add/remove vm starting observers.
   void AddVmStartingObserver(chromeos::VmStartingObserver* observer);
@@ -887,7 +885,7 @@ class CrostiniManager : public KeyedService,
   base::ObserverList<UpgradeContainerProgressObserver>::Unchecked
       upgrade_container_progress_observers_;
 
-  base::ObserverList<VmShutdownObserver> vm_shutdown_observers_;
+  base::ObserverList<chromeos::VmShutdownObserver> vm_shutdown_observers_;
   base::ObserverList<chromeos::VmStartingObserver> vm_starting_observers_;
 
   // Only one restarter flow is actually running for a given container, other
@@ -924,7 +922,8 @@ class CrostiniManager : public KeyedService,
 
   base::Time time_of_last_disk_type_metric_;
 
-  std::unique_ptr<CrostiniStabilityMonitor> crostini_stability_monitor_;
+  std::unique_ptr<guest_os::GuestOsStabilityMonitor>
+      guest_os_stability_monitor_;
 
   std::unique_ptr<CrostiniUpgradeAvailableNotification>
       upgrade_available_notification_;

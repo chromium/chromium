@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/crostini/crostini_stability_monitor.h"
+#include "chrome/browser/chromeos/guest_os/guest_os_stability_monitor.h"
 
 #include <memory>
 
@@ -22,17 +22,18 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace crostini {
+namespace guest_os {
 
-class CrostiniStabilityMonitorTest : public testing::Test {
+class GuestOsStabilityMonitorTest : public testing::Test {
  public:
-  CrostiniStabilityMonitorTest() : task_env_() {
+  GuestOsStabilityMonitorTest() : task_env_() {
     chromeos::DBusThreadManager::Initialize();
 
-    // CrostiniManager will create a CrostiniStabilityMonitor for us.
+    // CrostiniManager will create a GuestOsStabilityMonitor for us.
     profile_ = std::make_unique<TestingProfile>();
-    crostini_manager_ = std::make_unique<CrostiniManager>(profile_.get());
-    CrostiniTestHelper::EnableCrostini(profile_.get());
+    crostini_manager_ =
+        std::make_unique<crostini::CrostiniManager>(profile_.get());
+    crostini::CrostiniTestHelper::EnableCrostini(profile_.get());
 
     // When CrostiniStabilityMonitor is initialized, it waits for the DBus
     // services to become available before monitoring them. In tests this
@@ -43,8 +44,8 @@ class CrostiniStabilityMonitorTest : public testing::Test {
     histogram_tester_.ExpectTotalCount(kCrostiniStabilityHistogram, 0);
   }
 
-  ~CrostiniStabilityMonitorTest() override {
-    CrostiniTestHelper::DisableCrostini(profile_.get());
+  ~GuestOsStabilityMonitorTest() override {
+    crostini::CrostiniTestHelper::DisableCrostini(profile_.get());
     crostini_manager_->OnDBusShuttingDownForTesting();
     chromeos::DBusThreadManager::Shutdown();
   }
@@ -66,7 +67,7 @@ class CrostiniStabilityMonitorTest : public testing::Test {
 
     vm_tools::concierge::VmStoppedSignal signal;
     signal.set_name("termina");
-    signal.set_owner_id(CryptohomeIdForProfile(profile_.get()));
+    signal.set_owner_id(crostini::CryptohomeIdForProfile(profile_.get()));
     concierge_client->NotifyVmStopped(signal);
   }
 
@@ -74,11 +75,11 @@ class CrostiniStabilityMonitorTest : public testing::Test {
   // CrostiniManager requires a full browser task environment to run.
   content::BrowserTaskEnvironment task_env_;
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<CrostiniManager> crostini_manager_;
+  std::unique_ptr<crostini::CrostiniManager> crostini_manager_;
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(CrostiniStabilityMonitorTest, ConciergeFailure) {
+TEST_F(GuestOsStabilityMonitorTest, ConciergeFailure) {
   auto* concierge_client = static_cast<chromeos::FakeConciergeClient*>(
       chromeos::DBusThreadManager::Get()->GetConciergeClient());
 
@@ -91,7 +92,7 @@ TEST_F(CrostiniStabilityMonitorTest, ConciergeFailure) {
                                        FailureClasses::ConciergeStopped, 1);
 }
 
-TEST_F(CrostiniStabilityMonitorTest, CiceroneFailure) {
+TEST_F(GuestOsStabilityMonitorTest, CiceroneFailure) {
   auto* cicerone_client = static_cast<chromeos::FakeCiceroneClient*>(
       chromeos::DBusThreadManager::Get()->GetCiceroneClient());
 
@@ -104,7 +105,7 @@ TEST_F(CrostiniStabilityMonitorTest, CiceroneFailure) {
                                        FailureClasses::CiceroneStopped, 1);
 }
 
-TEST_F(CrostiniStabilityMonitorTest, SeneschalFailure) {
+TEST_F(GuestOsStabilityMonitorTest, SeneschalFailure) {
   auto* seneschal_client = static_cast<chromeos::FakeSeneschalClient*>(
       chromeos::DBusThreadManager::Get()->GetSeneschalClient());
 
@@ -117,7 +118,7 @@ TEST_F(CrostiniStabilityMonitorTest, SeneschalFailure) {
                                        FailureClasses::SeneschalStopped, 1);
 }
 
-TEST_F(CrostiniStabilityMonitorTest, ChunneldFailure) {
+TEST_F(GuestOsStabilityMonitorTest, ChunneldFailure) {
   auto* chunneld_client = static_cast<chromeos::FakeChunneldClient*>(
       chromeos::DBusThreadManager::Get()->GetChunneldClient());
 
@@ -130,22 +131,22 @@ TEST_F(CrostiniStabilityMonitorTest, ChunneldFailure) {
                                        FailureClasses::ChunneldStopped, 1);
 }
 
-TEST_F(CrostiniStabilityMonitorTest, UnknownVmStopped) {
+TEST_F(GuestOsStabilityMonitorTest, UnknownVmStopped) {
   SendVmStoppedSignal();
   histogram_tester_.ExpectUniqueSample(kCrostiniStabilityHistogram,
                                        FailureClasses::VmStopped, 0);
 }
 
-TEST_F(CrostiniStabilityMonitorTest, VmStoppedDuringStartup) {
+TEST_F(GuestOsStabilityMonitorTest, VmStoppedDuringStartup) {
   crostini_manager_->AddRunningVmForTesting("termina");
-  crostini_manager_->UpdateVmState("termina", VmState::STARTING);
+  crostini_manager_->UpdateVmState("termina", crostini::VmState::STARTING);
 
   SendVmStoppedSignal();
   histogram_tester_.ExpectUniqueSample(kCrostiniStabilityHistogram,
                                        FailureClasses::VmStopped, 0);
 }
 
-TEST_F(CrostiniStabilityMonitorTest, ExpectedVmStopped) {
+TEST_F(GuestOsStabilityMonitorTest, ExpectedVmStopped) {
   crostini_manager_->AddStoppingVmForTesting("termina");
 
   SendVmStoppedSignal();
@@ -153,7 +154,7 @@ TEST_F(CrostiniStabilityMonitorTest, ExpectedVmStopped) {
                                        FailureClasses::VmStopped, 0);
 }
 
-TEST_F(CrostiniStabilityMonitorTest, UnexpectedVmStopped) {
+TEST_F(GuestOsStabilityMonitorTest, UnexpectedVmStopped) {
   crostini_manager_->AddRunningVmForTesting("termina");
 
   SendVmStoppedSignal();
@@ -161,4 +162,4 @@ TEST_F(CrostiniStabilityMonitorTest, UnexpectedVmStopped) {
                                        FailureClasses::VmStopped, 1);
 }
 
-}  // namespace crostini
+}  // namespace guest_os
