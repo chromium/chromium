@@ -228,7 +228,7 @@ void CloudPolicyClient::Register(const RegistrationParameters& parameters,
 void CloudPolicyClient::RegisterWithCertificate(
     const RegistrationParameters& parameters,
     const std::string& client_id,
-    std::unique_ptr<DMAuth> auth,
+    DMAuth auth,
     const std::string& pem_certificate_chain,
     const std::string& sub_organization) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -288,7 +288,7 @@ void CloudPolicyClient::RegisterWithToken(const std::string& token,
 }
 
 void CloudPolicyClient::OnRegisterWithCertificateRequestSigned(
-    std::unique_ptr<DMAuth> auth,
+    DMAuth auth,
     bool success,
     em::SignedData signed_data) {
   if (!success) {
@@ -434,14 +434,14 @@ void CloudPolicyClient::UploadPolicyValidationReport(
 }
 
 void CloudPolicyClient::FetchRobotAuthCodes(
-    std::unique_ptr<DMAuth> auth,
+    DMAuth auth,
     enterprise_management::DeviceServiceApiAccessRequest::DeviceType
         device_type,
     const std::set<std::string>& oauth_scopes,
     RobotAuthCodeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_registered());
-  DCHECK(auth->has_dm_token());
+  DCHECK(auth.has_dm_token());
 
   std::unique_ptr<DMServerJobConfiguration> config =
       std::make_unique<DMServerJobConfiguration>(
@@ -718,18 +718,18 @@ DeviceManagementService::Job* CloudPolicyClient::CreateNewRealtimeReportingJob(
 }
 
 void CloudPolicyClient::GetDeviceAttributeUpdatePermission(
-    std::unique_ptr<DMAuth> auth,
+    DMAuth auth,
     CloudPolicyClient::StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_registered());
   // This request only works with an OAuth token identifying a user, because
   // DMServer will resolve that user and check if they have permissions to
   // update the device's attributes.
-  DCHECK(auth->has_oauth_token());
+  DCHECK(auth.has_oauth_token());
 
-  const bool has_oauth_token = auth->has_oauth_token();
+  const bool has_oauth_token = auth.has_oauth_token();
   const std::string oauth_token =
-      has_oauth_token ? auth->oauth_token() : std::string();
+      has_oauth_token ? auth.oauth_token() : std::string();
   std::unique_ptr<DMServerJobConfiguration> config =
       std::make_unique<DMServerJobConfiguration>(
           DeviceManagementService::JobConfiguration::
@@ -747,17 +747,17 @@ void CloudPolicyClient::GetDeviceAttributeUpdatePermission(
 }
 
 void CloudPolicyClient::UpdateDeviceAttributes(
-    std::unique_ptr<DMAuth> auth,
+    DMAuth auth,
     const std::string& asset_id,
     const std::string& location,
     CloudPolicyClient::StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_registered());
-  DCHECK(auth->has_oauth_token() || auth->has_enrollment_token());
+  DCHECK(auth.has_oauth_token() || auth.has_enrollment_token());
 
-  const bool has_oauth_token = auth->has_oauth_token();
+  const bool has_oauth_token = auth.has_oauth_token();
   const std::string oauth_token =
-      has_oauth_token ? auth->oauth_token() : std::string();
+      has_oauth_token ? auth.oauth_token() : std::string();
   std::unique_ptr<DMServerJobConfiguration> config =
       std::make_unique<DMServerJobConfiguration>(
           DeviceManagementService::JobConfiguration::TYPE_ATTRIBUTE_UPDATE,

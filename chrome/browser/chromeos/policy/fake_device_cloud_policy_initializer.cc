@@ -10,6 +10,7 @@
 #include "base/sequenced_task_runner.h"
 #include "chromeos/attestation/mock_attestation_flow.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
+#include "components/policy/core/common/cloud/dm_auth.h"
 
 namespace policy {
 
@@ -41,7 +42,7 @@ void FakeDeviceCloudPolicyInitializer::PrepareEnrollment(
     DeviceManagementService* device_management_service,
     chromeos::ActiveDirectoryJoinDelegate* ad_join_delegate,
     const EnrollmentConfig& enrollment_config,
-    std::unique_ptr<DMAuth> auth,
+    DMAuth auth,
     const EnrollmentCallback& enrollment_callback) {
   enrollment_callback_ = enrollment_callback;
 }

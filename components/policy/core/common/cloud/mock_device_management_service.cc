@@ -242,7 +242,7 @@ FakeJobConfiguration::FakeJobConfiguration(
     JobType type,
     const std::string& client_id,
     bool critical,
-    std::unique_ptr<DMAuth> auth_data,
+    DMAuth auth_data,
     base::Optional<std::string> oauth_token,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     FakeCallback callback,

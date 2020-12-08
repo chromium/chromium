@@ -15,7 +15,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/policy/core/common/cloud/dm_auth.h"
 #include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -204,15 +203,14 @@ std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
 
 JobConfigurationBase::JobConfigurationBase(
     JobType type,
-    std::unique_ptr<DMAuth> auth_data,
+    DMAuth auth_data,
     base::Optional<std::string> oauth_token,
     scoped_refptr<network::SharedURLLoaderFactory> factory)
     : type_(type),
       factory_(factory),
       auth_data_(std::move(auth_data)),
       oauth_token_(std::move(oauth_token)) {
-  CHECK(auth_data_ || oauth_token_);
-  CHECK(!auth_data_->has_oauth_token()) << "Use |oauth_token| instead";
+  CHECK(!auth_data_.has_oauth_token()) << "Use |oauth_token| instead";
 
   if (oauth_token_)
     AddParameter(dm_protocol::kParamOAuthToken, *oauth_token_);
@@ -297,24 +295,22 @@ JobConfigurationBase::GetResourceRequest(bool bypass_proxy, int last_error) {
   rr->trusted_params->disable_secure_dns = true;
 
   // If auth data is specified, use it to build the request.
-  if (auth_data_) {
-    if (auth_data_->has_gaia_token()) {
-      rr->headers.SetHeader(
-          dm_protocol::kAuthHeader,
-          std::string(dm_protocol::kServiceTokenAuthHeaderPrefix) +
-              auth_data_->gaia_token());
-    }
-    if (auth_data_->has_dm_token()) {
-      rr->headers.SetHeader(dm_protocol::kAuthHeader,
-                            std::string(dm_protocol::kDMTokenAuthHeaderPrefix) +
-                                auth_data_->dm_token());
-    }
-    if (auth_data_->has_enrollment_token()) {
-      rr->headers.SetHeader(
-          dm_protocol::kAuthHeader,
-          std::string(dm_protocol::kEnrollmentTokenAuthHeaderPrefix) +
-              auth_data_->enrollment_token());
-    }
+  if (auth_data_.has_gaia_token()) {
+    rr->headers.SetHeader(
+        dm_protocol::kAuthHeader,
+        std::string(dm_protocol::kServiceTokenAuthHeaderPrefix) +
+            auth_data_.gaia_token());
+  }
+  if (auth_data_.has_dm_token()) {
+    rr->headers.SetHeader(dm_protocol::kAuthHeader,
+                          std::string(dm_protocol::kDMTokenAuthHeaderPrefix) +
+                              auth_data_.dm_token());
+  }
+  if (auth_data_.has_enrollment_token()) {
+    rr->headers.SetHeader(
+        dm_protocol::kAuthHeader,
+        std::string(dm_protocol::kEnrollmentTokenAuthHeaderPrefix) +
+            auth_data_.enrollment_token());
   }
 
   return rr;

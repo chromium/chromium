@@ -563,7 +563,7 @@ class DeviceCloudPolicyManagerChromeOSEnrollmentTest
         EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
     enrollment_config.mode = with_cert ? EnrollmentConfig::MODE_ATTESTATION
                                        : EnrollmentConfig::MODE_MANUAL;
-    std::unique_ptr<DMAuth> auth =
+    DMAuth auth =
         with_cert ? DMAuth::NoAuth() : DMAuth::FromOAuthToken("auth token");
     initializer_->PrepareEnrollment(
         &device_management_service_, nullptr, enrollment_config,

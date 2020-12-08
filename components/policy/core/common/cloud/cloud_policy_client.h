@@ -24,6 +24,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
+#include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -40,7 +41,6 @@ class SharedURLLoaderFactory;
 namespace policy {
 
 class SigningService;
-class DMAuth;
 class DMServerJobConfiguration;
 
 // Implements the core logic required to talk to the device management service.
@@ -203,7 +203,7 @@ class POLICY_EXPORT CloudPolicyClient {
   // error notification.
   virtual void RegisterWithCertificate(const RegistrationParameters& parameters,
                                        const std::string& client_id,
-                                       std::unique_ptr<DMAuth> auth,
+                                       DMAuth auth,
                                        const std::string& pem_certificate_chain,
                                        const std::string& sub_organization);
 
@@ -255,7 +255,7 @@ class POLICY_EXPORT CloudPolicyClient {
   // the type of the robot account associated with this request.
   // The |callback| will be called when the operation completes.
   virtual void FetchRobotAuthCodes(
-      std::unique_ptr<DMAuth> auth,
+      DMAuth auth,
       enterprise_management::DeviceServiceApiAccessRequest::DeviceType
           device_type,
       const std::set<std::string>& oauth_scopes,
@@ -367,13 +367,12 @@ class POLICY_EXPORT CloudPolicyClient {
   // |auth| to identify user who requests a permission to name a device, calls
   // a |callback| from the enrollment screen to indicate whether the device
   // naming prompt should be shown.
-  void GetDeviceAttributeUpdatePermission(std::unique_ptr<DMAuth> auth,
-                                          StatusCallback callback);
+  void GetDeviceAttributeUpdatePermission(DMAuth auth, StatusCallback callback);
 
   // Sends a device naming information (Asset Id and Location) to the
   // device management server, uses |auth| to identify user who names a device,
   // the |callback| will be called when the operation completes.
-  void UpdateDeviceAttributes(std::unique_ptr<DMAuth> auth,
+  void UpdateDeviceAttributes(DMAuth auth,
                               const std::string& asset_id,
                               const std::string& location,
                               StatusCallback callback);
@@ -595,7 +594,7 @@ class POLICY_EXPORT CloudPolicyClient {
 
   // Callback for siganture of requests.
   void OnRegisterWithCertificateRequestSigned(
-      std::unique_ptr<DMAuth> auth,
+      DMAuth auth,
       bool success,
       enterprise_management::SignedData signed_data);
 

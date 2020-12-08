@@ -114,7 +114,7 @@ class DeviceManagementServiceTestBase : public testing::Test {
   std::unique_ptr<DeviceManagementService::Job> StartJob(
       DeviceManagementService::JobConfiguration::JobType type,
       bool critical,
-      std::unique_ptr<DMAuth> auth_data,
+      DMAuth auth_data,
       base::Optional<std::string> oauth_token,
       const std::string& payload = std::string(),
       DeviceManagementService::Job::RetryMethod method =
@@ -1044,7 +1044,7 @@ class DeviceManagementRequestAuthTest : public DeviceManagementServiceTestBase {
   ~DeviceManagementRequestAuthTest() override = default;
 
   std::unique_ptr<DeviceManagementService::Job> StartJobWithAuthData(
-      std::unique_ptr<DMAuth> auth,
+      DMAuth auth,
       base::Optional<std::string> oauth_token) {
     EXPECT_CALL(*this, OnJobDone(_, DM_STATUS_SUCCESS, _, _));
     EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
@@ -1052,7 +1052,7 @@ class DeviceManagementRequestAuthTest : public DeviceManagementServiceTestBase {
     // Job type is not really relevant for the test.
     std::unique_ptr<DeviceManagementService::Job> job =
         StartJob(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
-                 /*critical=*/false, auth ? std::move(auth) : DMAuth::NoAuth(),
+                 /*critical=*/false, std::move(auth),
                  oauth_token ? *oauth_token : base::Optional<std::string>());
     return job;
   }
@@ -1079,7 +1079,7 @@ class DeviceManagementRequestAuthTest : public DeviceManagementServiceTestBase {
 
 TEST_F(DeviceManagementRequestAuthTest, OnlyOAuthToken) {
   std::unique_ptr<DeviceManagementService::Job> request_job(
-      StartJobWithAuthData(nullptr /* auth */, kOAuthToken));
+      StartJobWithAuthData(DMAuth::NoAuth(), kOAuthToken));
   EXPECT_CALL(*this, OnShouldJobRetry(200, std::string()));
 
   const network::TestURLLoaderFactory::PendingRequest* request =

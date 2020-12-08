@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
+#include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 
@@ -23,7 +24,6 @@ class SharedURLLoaderFactory;
 namespace policy {
 
 class CloudPolicyClient;
-class DMAuth;
 
 // A configuration for sending enterprise_management::DeviceManagementRequest to
 // the DM server.
@@ -41,7 +41,7 @@ class POLICY_EXPORT DMServerJobConfiguration : public JobConfigurationBase {
       JobType type,
       const std::string& cliend_id,
       bool critical,
-      std::unique_ptr<DMAuth> auth_data,
+      DMAuth auth_data,
       base::Optional<std::string> oauth_token,
       scoped_refptr<network::SharedURLLoaderFactory> factory,
       Callback callback);
@@ -51,7 +51,7 @@ class POLICY_EXPORT DMServerJobConfiguration : public JobConfigurationBase {
   DMServerJobConfiguration(JobType type,
                            CloudPolicyClient* client,
                            bool critical,
-                           std::unique_ptr<DMAuth> auth_data,
+                           DMAuth auth_data,
                            base::Optional<std::string> oauth_token,
                            Callback callback);
 
@@ -97,7 +97,7 @@ class POLICY_EXPORT RegistrationJobConfiguration
  public:
   RegistrationJobConfiguration(JobType type,
                                CloudPolicyClient* client,
-                               std::unique_ptr<DMAuth> auth_data,
+                               DMAuth auth_data,
                                base::Optional<std::string> oauth_token,
                                Callback callback);
 

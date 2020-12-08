@@ -130,7 +130,7 @@ class DeviceManagementServiceIntegrationTest
   std::unique_ptr<DeviceManagementService::Job> StartJob(
       DeviceManagementService::JobConfiguration::JobType type,
       bool critical,
-      std::unique_ptr<DMAuth> auth_data,
+      DMAuth auth_data,
       base::Optional<std::string> oauth_token,
       const em::DeviceManagementRequest request) {
     std::string payload;

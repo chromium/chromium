@@ -234,29 +234,27 @@ void EnterpriseEnrollmentHelperImpl::ClearAuth(base::OnceClosure callback) {
         (new TokenRevoker())->Start(oauth_fetcher_->OAuth2RefreshToken());
 
       oauth_fetcher_.reset();
-    } else if (auth_data_ && auth_data_->has_oauth_token()) {
+    } else if (auth_data_.has_oauth_token()) {
       // EnrollUsingToken was called.
-      (new TokenRevoker())->Start(auth_data_->oauth_token());
+      (new TokenRevoker())->Start(auth_data_.oauth_token());
     }
   }
-  auth_data_.reset();
+  auth_data_ = policy::DMAuth::NoAuth();
   chromeos::ProfileHelper::Get()->ClearSigninProfile(
       base::AdaptCallbackForRepeating(base::BindOnce(
           &EnterpriseEnrollmentHelperImpl::OnSigninProfileCleared,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
 }
 
-void EnterpriseEnrollmentHelperImpl::DoEnroll(
-    std::unique_ptr<policy::DMAuth> auth_data) {
-  CHECK(auth_data);
-  DCHECK(!auth_data_ || auth_data_->Equals(*auth_data));
+void EnterpriseEnrollmentHelperImpl::DoEnroll(policy::DMAuth auth_data) {
+  DCHECK(auth_data_.empty() || auth_data_ == auth_data);
   DCHECK(enrollment_config_.is_mode_attestation() ||
          enrollment_config_.mode ==
              policy::EnrollmentConfig::MODE_OFFLINE_DEMO ||
          oauth_status_ == OAUTH_STARTED_WITH_AUTH_CODE ||
          oauth_status_ == OAUTH_STARTED_WITH_TOKEN);
   VLOG(1) << "Enroll with token type: "
-          << static_cast<int>(auth_data->token_type());
+          << static_cast<int>(auth_data.token_type());
   auth_data_ = std::move(auth_data);
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
@@ -278,15 +276,14 @@ void EnterpriseEnrollmentHelperImpl::DoEnroll(
   CHECK(dcp_initializer);
   dcp_initializer->PrepareEnrollment(
       connector->device_management_service(), ad_join_delegate_,
-      enrollment_config_, auth_data_->Clone(),
+      enrollment_config_, auth_data_.Clone(),
       base::Bind(&EnterpriseEnrollmentHelperImpl::OnEnrollmentFinished,
                  weak_ptr_factory_.GetWeakPtr()));
   dcp_initializer->StartEnrollment();
 }
 
 void EnterpriseEnrollmentHelperImpl::GetDeviceAttributeUpdatePermission() {
-  DCHECK(auth_data_);
-  if (!auth_data_->has_oauth_token()) {
+  if (!auth_data_.has_oauth_token()) {
     // Checking whether the device attributes can be updated requires knowning
     // which user is performing enterprise enrollment, because the permission is
     // tied to a user.
@@ -311,7 +308,7 @@ void EnterpriseEnrollmentHelperImpl::GetDeviceAttributeUpdatePermission() {
   policy::CloudPolicyClient* client = policy_manager->core()->client();
 
   client->GetDeviceAttributeUpdatePermission(
-      auth_data_->Clone(),
+      auth_data_.Clone(),
       base::BindOnce(
           &EnterpriseEnrollmentHelperImpl::OnDeviceAttributeUpdatePermission,
           weak_ptr_factory_.GetWeakPtr()));
@@ -320,7 +317,7 @@ void EnterpriseEnrollmentHelperImpl::GetDeviceAttributeUpdatePermission() {
 void EnterpriseEnrollmentHelperImpl::UpdateDeviceAttributes(
     const std::string& asset_id,
     const std::string& location) {
-  DCHECK(auth_data_);
+  DCHECK(!auth_data_.empty());
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   policy::DeviceCloudPolicyManagerChromeOS* policy_manager =
@@ -328,7 +325,7 @@ void EnterpriseEnrollmentHelperImpl::UpdateDeviceAttributes(
   policy::CloudPolicyClient* client = policy_manager->core()->client();
 
   client->UpdateDeviceAttributes(
-      auth_data_->Clone(), asset_id, location,
+      auth_data_.Clone(), asset_id, location,
       base::BindOnce(
           &EnterpriseEnrollmentHelperImpl::OnDeviceAttributeUploadCompleted,
           weak_ptr_factory_.GetWeakPtr()));

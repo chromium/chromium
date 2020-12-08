@@ -11,44 +11,47 @@ namespace policy {
 DMAuth::DMAuth() = default;
 DMAuth::~DMAuth() = default;
 
+DMAuth::DMAuth(DMAuth&& other) = default;
+DMAuth& DMAuth::operator=(DMAuth&& other) = default;
+
 // static
-std::unique_ptr<DMAuth> DMAuth::FromDMToken(const std::string& dm_token) {
-  return base::WrapUnique(new DMAuth(dm_token, DMAuthTokenType::kDm));
+DMAuth DMAuth::FromDMToken(const std::string& dm_token) {
+  return DMAuth(dm_token, DMAuthTokenType::kDm);
 }
 
 // static
-std::unique_ptr<DMAuth> DMAuth::FromGaiaToken(const std::string& gaia_token) {
-  return base::WrapUnique(new DMAuth(gaia_token, DMAuthTokenType::kGaia));
+DMAuth DMAuth::FromGaiaToken(const std::string& gaia_token) {
+  return DMAuth(gaia_token, DMAuthTokenType::kGaia);
 }
 
 // static
-std::unique_ptr<DMAuth> DMAuth::FromOAuthToken(const std::string& oauth_token) {
-  return base::WrapUnique(new DMAuth(oauth_token, DMAuthTokenType::kOauth));
+DMAuth DMAuth::FromOAuthToken(const std::string& oauth_token) {
+  return DMAuth(oauth_token, DMAuthTokenType::kOauth);
 }
 
 // static
-std::unique_ptr<DMAuth> DMAuth::FromEnrollmentToken(
-    const std::string& enrollment_token) {
-  return base::WrapUnique(
-      new DMAuth(enrollment_token, DMAuthTokenType::kEnrollment));
+DMAuth DMAuth::FromEnrollmentToken(const std::string& enrollment_token) {
+  return DMAuth(enrollment_token, DMAuthTokenType::kEnrollment);
 }
 
 // static
-std::unique_ptr<DMAuth> DMAuth::NoAuth() {
-  return std::make_unique<DMAuth>();
+DMAuth DMAuth::NoAuth() {
+  return {};
 }
 
 DMAuth::DMAuth(const std::string& token, DMAuthTokenType token_type)
     : token_(token), token_type_(token_type) {}
 
-std::unique_ptr<DMAuth> DMAuth::Clone() const {
-  std::unique_ptr<DMAuth> result = std::make_unique<DMAuth>();
-  *result = *this;
-  return result;
+bool DMAuth::operator==(const DMAuth& other) const {
+  return token_ == other.token_ && token_type_ == other.token_type_;
 }
 
-bool DMAuth::Equals(const DMAuth& other) const {
-  return token_ == other.token_ && token_type_ == other.token_type_;
+bool DMAuth::operator!=(const DMAuth& other) const {
+  return !(*this == other);
+}
+
+DMAuth DMAuth::Clone() const {
+  return DMAuth(token_, token_type_);
 }
 
 }  // namespace policy

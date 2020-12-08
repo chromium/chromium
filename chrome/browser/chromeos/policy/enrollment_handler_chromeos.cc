@@ -174,7 +174,7 @@ EnrollmentHandlerChromeOS::EnrollmentHandlerChromeOS(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     chromeos::ActiveDirectoryJoinDelegate* ad_join_delegate,
     const EnrollmentConfig& enrollment_config,
-    std::unique_ptr<DMAuth> dm_auth,
+    DMAuth dm_auth,
     const std::string& client_id,
     const std::string& requisition,
     const std::string& sub_organization,
@@ -195,11 +195,11 @@ EnrollmentHandlerChromeOS::EnrollmentHandlerChromeOS(
   CHECK(!client_->is_registered());
   CHECK_EQ(DM_STATUS_SUCCESS, client_->status());
   if (enrollment_config_.is_mode_attestation()) {
-    CHECK(dm_auth_->empty() || dm_auth_->has_enrollment_token());
+    CHECK(dm_auth_.empty() || dm_auth_.has_enrollment_token());
   } else if (enrollment_config.mode == EnrollmentConfig::MODE_OFFLINE_DEMO) {
-    CHECK(dm_auth_->empty());
+    CHECK(dm_auth_.empty());
   } else {
-    CHECK(!dm_auth_->empty());
+    CHECK(!dm_auth_.empty());
   }
   CHECK_NE(enrollment_config.mode == EnrollmentConfig::MODE_OFFLINE_DEMO,
            enrollment_config.offline_policy_path.empty());
@@ -410,7 +410,7 @@ void EnrollmentHandlerChromeOS::StartRegistration() {
   } else if (enrollment_config_.mode == EnrollmentConfig::MODE_OFFLINE_DEMO) {
     StartOfflineDemoEnrollmentFlow();
   } else {
-    client_->Register(*register_params_, client_id_, dm_auth_->oauth_token());
+    client_->Register(*register_params_, client_id_, dm_auth_.oauth_token());
   }
 }
 
@@ -431,7 +431,7 @@ void EnrollmentHandlerChromeOS::HandleRegistrationCertificateResult(
     const std::string& pem_certificate_chain) {
   if (status == chromeos::attestation::ATTESTATION_SUCCESS) {
     client_->RegisterWithCertificate(*register_params_, client_id_,
-                                     dm_auth_->Clone(), pem_certificate_chain,
+                                     dm_auth_.Clone(), pem_certificate_chain,
                                      sub_organization_);
   } else {
     ReportResult(EnrollmentStatus::ForStatus(

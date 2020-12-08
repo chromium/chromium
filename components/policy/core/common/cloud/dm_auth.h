@@ -36,21 +36,29 @@ enum class DMAuthTokenType {
 class POLICY_EXPORT DMAuth {
  public:
   // Static methods for creating DMAuth instances:
-  static std::unique_ptr<DMAuth> FromDMToken(const std::string& dm_token);
-  static std::unique_ptr<DMAuth> FromGaiaToken(const std::string& gaia_token);
-  static std::unique_ptr<DMAuth> FromOAuthToken(const std::string& oauth_token);
-  static std::unique_ptr<DMAuth> FromEnrollmentToken(const std::string& token);
-  static std::unique_ptr<DMAuth> NoAuth();
+  static DMAuth FromDMToken(const std::string& dm_token);
+  static DMAuth FromGaiaToken(const std::string& gaia_token);
+  static DMAuth FromOAuthToken(const std::string& oauth_token);
+  static DMAuth FromEnrollmentToken(const std::string& token);
+  static DMAuth NoAuth();
 
   DMAuth();
   ~DMAuth();
 
+  DMAuth(const DMAuth& other) = delete;
+  DMAuth& operator=(const DMAuth& other) = delete;
+
+  DMAuth(DMAuth&& other);
+  DMAuth& operator=(DMAuth&& other);
+
+  bool operator==(const DMAuth& other) const;
+  bool operator!=(const DMAuth& other) const;
+
   // Creates a copy of DMAuth.
-  std::unique_ptr<DMAuth> Clone() const;
+  DMAuth Clone() const;
 
   // Checks if no authentication is provided.
   bool empty() const { return token_type_ == DMAuthTokenType::kNoAuth; }
-  bool Equals(const DMAuth& other) const;
 
   std::string gaia_token() const {
     DCHECK_EQ(DMAuthTokenType::kGaia, token_type_);
@@ -80,12 +88,9 @@ class POLICY_EXPORT DMAuth {
 
  private:
   DMAuth(const std::string& token, DMAuthTokenType token_type);
-  DMAuth& operator=(const DMAuth&) = default;
 
   std::string token_;
   DMAuthTokenType token_type_ = DMAuthTokenType::kNoAuth;
-
-  DISALLOW_COPY(DMAuth);
 };
 
 }  // namespace policy

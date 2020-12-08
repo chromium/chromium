@@ -38,7 +38,6 @@
 #include "chromeos/tpm/install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
-#include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/prefs/pref_service.h"
 
 namespace chromeos {
@@ -122,7 +121,7 @@ void DeviceCloudPolicyInitializer::PrepareEnrollment(
     DeviceManagementService* device_management_service,
     chromeos::ActiveDirectoryJoinDelegate* ad_join_delegate,
     const EnrollmentConfig& enrollment_config,
-    std::unique_ptr<DMAuth> dm_auth,
+    DMAuth dm_auth,
     const EnrollmentCallback& enrollment_callback) {
   DCHECK(is_initialized_);
   DCHECK(!enrollment_handler_);

@@ -24,6 +24,7 @@
 #include "base/strings/string_split.h"
 #include "base/threading/thread_checker.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -41,8 +42,6 @@ class SharedURLLoaderFactory;
 }
 
 namespace policy {
-
-class DMAuth;
 
 // Used in the Enterprise.DMServerRequestSuccess histogram, shows how many
 // retries we had to do to execute the DeviceManagementRequestJob.
@@ -375,7 +374,7 @@ class POLICY_EXPORT JobConfigurationBase
     : public DeviceManagementService::JobConfiguration {
  protected:
   JobConfigurationBase(JobType type,
-                       std::unique_ptr<DMAuth> auth_data,
+                       DMAuth auth_data,
                        base::Optional<std::string> oauth_token,
                        scoped_refptr<network::SharedURLLoaderFactory> factory);
   ~JobConfigurationBase() override;
@@ -384,7 +383,7 @@ class POLICY_EXPORT JobConfigurationBase
   // already exists its value is replaced.
   void AddParameter(const std::string& name, const std::string& value);
 
-  const DMAuth& GetAuth() { return *auth_data_.get(); }
+  const DMAuth& GetAuth() { return auth_data_; }
 
   // DeviceManagementService::JobConfiguration.
   JobType GetType() override;
@@ -407,7 +406,7 @@ class POLICY_EXPORT JobConfigurationBase
 
   // Auth data that will be passed as 'Authorization' header. Both |auth_data_|
   // and |oauth_token_| can be specified for one request.
-  std::unique_ptr<DMAuth> auth_data_;
+  DMAuth auth_data_;
 
   // OAuth token that will be passed as a query parameter. Both |auth_data_|
   // and |oauth_token_| can be specified for one request.
