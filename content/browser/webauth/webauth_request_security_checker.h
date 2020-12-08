@@ -20,18 +20,6 @@ namespace content {
 
 class RenderFrameHost;
 
-// The following enums correspond to UMA histograms and should not be
-// reassigned.
-enum class RelyingPartySecurityCheckFailure {
-  kOpaqueOrNonSecureOrigin = 0,
-  kRelyingPartyIdInvalid = 1,
-  kAppIdExtensionInvalid = 2,
-  kAppIdExtensionDomainMismatch = 3,
-  kIconUrlInvalid = 4,
-  kCrossOriginMismatch = 5,
-  kMaxValue = kCrossOriginMismatch,
-};
-
 // A centralized class for enforcing security policies that apply to
 // Web Authentication requests to create credentials or get authentication
 // assertions. For security reasons it is important that these checks are
@@ -49,8 +37,6 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
   WebAuthRequestSecurityChecker& operator=(
       const WebAuthRequestSecurityChecker&) = delete;
 
-  static void ReportSecurityCheckFailure(
-      RelyingPartySecurityCheckFailure error);
   static bool OriginIsCryptoTokenExtension(const url::Origin& origin);
 
   // Returns blink::mojom::AuthenticatorStatus::SUCCESS if |origin| is

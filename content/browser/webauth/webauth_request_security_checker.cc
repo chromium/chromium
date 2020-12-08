@@ -110,14 +110,6 @@ WebAuthRequestSecurityChecker::WebAuthRequestSecurityChecker(
     : render_frame_host_(host) {}
 
 WebAuthRequestSecurityChecker::~WebAuthRequestSecurityChecker() = default;
-
-// static
-void WebAuthRequestSecurityChecker::ReportSecurityCheckFailure(
-    RelyingPartySecurityCheckFailure error) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "WebAuthentication.RelyingPartySecurityCheckFailure", error);
-}
-
 // static
 bool WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
     const url::Origin& origin) {
@@ -149,8 +141,6 @@ WebAuthRequestSecurityChecker::ValidateAncestorOrigins(
             ->IsFeatureEnabled(blink::mojom::FeaturePolicyFeature::
                                    kPublicKeyCredentialsGet)) &&
       *is_cross_origin) {
-    ReportSecurityCheckFailure(
-        RelyingPartySecurityCheckFailure::kCrossOriginMismatch);
     return blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
   }
   return blink::mojom::AuthenticatorStatus::SUCCESS;
@@ -163,16 +153,12 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
   blink::mojom::AuthenticatorStatus domain_validation =
       ValidateEffectiveDomain(caller_origin);
   if (domain_validation != blink::mojom::AuthenticatorStatus::SUCCESS) {
-    ReportSecurityCheckFailure(
-        RelyingPartySecurityCheckFailure::kOpaqueOrNonSecureOrigin);
     return domain_validation;
   }
 
   base::Optional<std::string> valid_rp_id =
       GetRelyingPartyId(relying_party_id, caller_origin);
   if (!valid_rp_id) {
-    ReportSecurityCheckFailure(
-        RelyingPartySecurityCheckFailure::kRelyingPartyIdInvalid);
     return blink::mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID;
   }
   return blink::mojom::AuthenticatorStatus::SUCCESS;
@@ -185,8 +171,6 @@ WebAuthRequestSecurityChecker::ValidateAPrioriAuthenticatedUrl(
     return blink::mojom::AuthenticatorStatus::SUCCESS;
 
   if (!url.is_valid()) {
-    ReportSecurityCheckFailure(
-        RelyingPartySecurityCheckFailure::kIconUrlInvalid);
     return blink::mojom::AuthenticatorStatus::INVALID_ICON_URL;
   }
 
@@ -194,8 +178,6 @@ WebAuthRequestSecurityChecker::ValidateAPrioriAuthenticatedUrl(
   if (!url.IsAboutSrcdoc() && !url.IsAboutBlank() &&
       !url.SchemeIs(url::kDataScheme) &&
       !blink::network_utils::IsOriginSecure(url)) {
-    ReportSecurityCheckFailure(
-        RelyingPartySecurityCheckFailure::kIconUrlInvalid);
     return blink::mojom::AuthenticatorStatus::INVALID_ICON_URL;
   }
 

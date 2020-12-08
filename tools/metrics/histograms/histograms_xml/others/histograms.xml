@@ -17295,6 +17295,9 @@ regressions. -->
 
 <histogram name="WebAuthentication.AttestationPromptResult"
     enum="WebAuthenticationAttestationPromptResult" expires_after="2020-11-29">
+  <obsolete>
+    Removed 12/2020.
+  </obsolete>
   <owner>agl@chromium.org</owner>
   <summary>
     Tracks events related to prompting users for permission to pass WebAuthn
@@ -17347,6 +17350,9 @@ regressions. -->
 
 <histogram name="WebAuthentication.CredentialRequestAllowCredentialsCount"
     units="credentials" expires_after="2021-05-16">
+  <obsolete>
+    Removed 12/2020.
+  </obsolete>
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -17357,7 +17363,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebAuthentication.GetAssertionRequestTransport"
-    enum="WebAuthenticationFidoTransport" expires_after="2021-05-16">
+    enum="WebAuthenticationFidoTransport" expires_after="2021-12-01">
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -17368,7 +17374,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebAuthentication.GetAssertionResponseTransport"
-    enum="WebAuthenticationFidoTransport" expires_after="2021-05-16">
+    enum="WebAuthenticationFidoTransport" expires_after="2021-12-01">
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -17378,7 +17384,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebAuthentication.IsUVPlatformAuthenticatorAvailable"
-    enum="Boolean" expires_after="2021-06-30">
+    enum="Boolean" expires_after="2021-12-01">
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -17389,6 +17395,9 @@ regressions. -->
 
 <histogram name="WebAuthentication.MakeCredentialExcludeCredentialsCount"
     units="credentials" expires_after="2021-05-16">
+  <obsolete>
+    Removed 12/2020.
+  </obsolete>
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -17399,7 +17408,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebAuthentication.MakeCredentialRequestTransport"
-    enum="WebAuthenticationFidoTransport" expires_after="2021-05-16">
+    enum="WebAuthenticationFidoTransport" expires_after="2021-12-01">
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -17410,7 +17419,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebAuthentication.MakeCredentialResponseTransport"
-    enum="WebAuthenticationFidoTransport" expires_after="2021-05-30">
+    enum="WebAuthenticationFidoTransport" expires_after="2021-12-01">
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -17422,6 +17431,9 @@ regressions. -->
 <histogram name="WebAuthentication.RelyingPartySecurityCheckFailure"
     enum="WebAuthenticationRelyingPartySecurityCheckFailure"
     expires_after="2020-12-31">
+  <obsolete>
+    Removed 12/2020.
+  </obsolete>
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -17436,6 +17448,9 @@ regressions. -->
 <histogram name="WebAuthentication.U2FAttestationPromptResult"
     enum="WebAuthenticationU2FAttestationPromptResult"
     expires_after="2021-06-06">
+  <obsolete>
+    Removed 12/2020.
+  </obsolete>
   <owner>agl@chromium.org</owner>
   <summary>
     Tracks events related to prompting users for permission to pass U2F

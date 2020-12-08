@@ -52,7 +52,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Bluetooth.Availability.v2" enum="BluetoothAvailability"
-    expires_after="2020-12-31">
+    expires_after="2021-12-31">
   <owner>kenrb@chromium.org</owner>
   <owner>kpaulhamus@chromium.org</owner>
   <summary>

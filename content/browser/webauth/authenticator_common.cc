@@ -95,29 +95,6 @@ const char kU2fRegisterType[] = "navigator.id.finishEnrollment";
 
 namespace {
 
-// AttestationPromptResult enumerates events related to attestation prompts.
-// These values are recorded in an UMA histogram and so should not be
-// reassigned.
-enum class AttestationPromptResult {
-  // kQueried indicates that the embedder was queried in order to determine
-  // whether attestation information should be returned to the origin.
-  kQueried = 0,
-  // kTimeout indicates that a timeout occurred while awaiting the result of an
-  // attestation query.
-  kTimeout = 1,
-  // kAllowed indicates that the query to the embedder was resolved positively.
-  // (E.g. the user clicked to allow, or the embedded allowed immediately by
-  // policy.)
-  kAllowed = 2,
-  // kBlocked indicates that the query to the embedder was resolved negatively.
-  // (E.g. the user clicked to block, or closed the dialog.)
-  kBlocked = 3,
-  // kAbandoned indications that the user closed the tab or navigated away while
-  // the attestation prompt was showing.
-  kAbandoned = 4,
-  kMaxValue = kAbandoned,
-};
-
 // Validates whether the given origin is authorized to use the provided App
 // ID value, mostly according to the rules in
 // https://fidoalliance.org/specs/fido-u2f-v1.2-ps-20170411/fido-appid-and-facets-v1.2-ps-20170411.html#determining-if-a-caller-s-facetid-is-authorized-for-an-appid.
@@ -166,8 +143,6 @@ base::Optional<std::string> ProcessAppIdExtension(std::string appid,
   GURL appid_url = GURL(appid);
   if (!appid_url.is_valid() || appid_url.scheme() != url::kHttpsScheme ||
       appid_url.scheme_piece() != origin.scheme()) {
-    WebAuthRequestSecurityChecker::ReportSecurityCheckFailure(
-        RelyingPartySecurityCheckFailure::kAppIdExtensionInvalid);
     return base::nullopt;
   }
 
@@ -201,9 +176,6 @@ base::Optional<std::string> ProcessAppIdExtension(std::string appid,
        appid_url.EqualsIgnoringRef(kGstatic2))) {
     return appid;
   }
-
-  WebAuthRequestSecurityChecker::ReportSecurityCheckFailure(
-      RelyingPartySecurityCheckFailure::kAppIdExtensionDomainMismatch);
 
   return base::nullopt;
 }
@@ -981,10 +953,6 @@ void AuthenticatorCommon::MakeCredential(
   if (origin_is_crypto_token_extension || disable_ui_)
     request_delegate_->DisableUI();
 
-  UMA_HISTOGRAM_COUNTS_100(
-      "WebAuthentication.MakeCredentialExcludeCredentialsCount",
-      options->exclude_credentials.size());
-
   ctap_make_credential_request_ = device::CtapMakeCredentialRequest(
       client_data_json_, options->relying_party, options->user,
       device::PublicKeyCredentialParams(options->public_key_parameters));
@@ -1160,10 +1128,6 @@ void AuthenticatorCommon::GetAssertion(
     }
     requested_extensions_.insert(RequestExtension::kLargeBlobWrite);
   }
-
-  UMA_HISTOGRAM_COUNTS_100(
-      "WebAuthentication.CredentialRequestAllowCredentialsCount",
-      options->allow_credentials.size());
 
   DCHECK(get_assertion_response_callback_.is_null());
   get_assertion_response_callback_ = std::move(callback);
@@ -1456,8 +1420,6 @@ void AuthenticatorCommon::OnRegisterResponse(
             AttestationErasureOption::kEraseAttestationButIncludeAaguid;
       } else if (attestation !=
                  device::AttestationConveyancePreference::kNone) {
-        UMA_HISTOGRAM_ENUMERATION("WebAuthentication.AttestationPromptResult",
-                                  AttestationPromptResult::kQueried);
         awaiting_attestation_response_ = true;
         request_delegate_->ShouldReturnAttestation(
             relying_party_id_, authenticator,
@@ -1507,8 +1469,6 @@ void AuthenticatorCommon::OnRegisterResponseAttestationDecided(
 
   AttestationErasureOption attestation_erasure;
   if (!attestation_permitted) {
-    UMA_HISTOGRAM_ENUMERATION("WebAuthentication.AttestationPromptResult",
-                              AttestationPromptResult::kBlocked);
     if (is_transport_used_internal) {
       // For internal (platform) authenticators, we do not erase the
       // AAGUID from authenticatorData even if the user declines to
@@ -1520,8 +1480,6 @@ void AuthenticatorCommon::OnRegisterResponseAttestationDecided(
           AttestationErasureOption::kEraseAttestationAndAaguid;
     }
   } else {
-    UMA_HISTOGRAM_ENUMERATION("WebAuthentication.AttestationPromptResult",
-                              AttestationPromptResult::kAllowed);
     attestation_erasure = AttestationErasureOption::kIncludeAttestation;
   }
 
@@ -1703,8 +1661,6 @@ void AuthenticatorCommon::SignalFailureToRequestDelegate(
 void AuthenticatorCommon::OnTimeout() {
   DCHECK(request_delegate_);
   if (awaiting_attestation_response_) {
-    UMA_HISTOGRAM_ENUMERATION("WebAuthentication.AttestationPromptResult",
-                              AttestationPromptResult::kTimeout);
     awaiting_attestation_response_ = false;
   }
 
@@ -1757,8 +1713,6 @@ void AuthenticatorCommon::InvokeCallbackAndCleanup(
 
 void AuthenticatorCommon::Cleanup() {
   if (awaiting_attestation_response_) {
-    UMA_HISTOGRAM_ENUMERATION("WebAuthentication.AttestationPromptResult",
-                              AttestationPromptResult::kAbandoned);
     awaiting_attestation_response_ = false;
   }
 
