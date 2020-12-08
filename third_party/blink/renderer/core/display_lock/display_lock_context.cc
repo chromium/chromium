@@ -145,10 +145,6 @@ void DisplayLockContext::SetRequestedState(EContentVisibility state) {
 
   // Since our state changed, check if we need to create a scoped force update
   // object.
-  // Note that creating this forced object may cause us to dirty style, which is
-  // fine since we are in a style update for this subtree anyway.
-  StyleEngine::AllowMarkStyleDirtyFromRecalcScope scope(
-      element_->GetDocument().GetStyleEngine());
   element_->GetDocument().GetDisplayLockDocumentState().ForceLockIfNeeded(
       element_.Get());
 }
@@ -491,8 +487,12 @@ void DisplayLockContext::NotifyForcedUpdateScopeStarted() {
     // Now that the update is forced, we should ensure that style layout, and
     // prepaint code can reach it via dirty bits. Note that paint isn't a part
     // of this, since |update_forced_| doesn't force paint to happen. See
-    // ShouldPaint().
-    MarkForStyleRecalcIfNeeded();
+    // ShouldPaint(). Also, we could have forced a lock from SetRequestedState
+    // during a style update. If that's the case, don't mark style as dirty
+    // from within style recalc. We rely on `AdjustStyleRecalcChangeForChildren`
+    // instead.
+    if (!document_->InStyleRecalc())
+      MarkForStyleRecalcIfNeeded();
     MarkForLayoutIfNeeded();
     MarkAncestorsForPrePaintIfNeeded();
   }

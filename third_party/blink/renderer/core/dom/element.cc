@@ -221,7 +221,7 @@ class DisplayLockStyleScope {
   StyleRecalcChange AdjustStyleRecalcChangeForChildren(
       StyleRecalcChange change) {
     DCHECK(element_->GetDisplayLockContext());
-    DCHECK(!element_->GetDisplayLockContext()->IsLocked());
+    DCHECK(element_->GetDisplayLockContext()->ShouldStyleChildren());
     return element_->GetDisplayLockContext()
         ->AdjustStyleRecalcChangeForChildren(change);
   }
@@ -3107,7 +3107,7 @@ StyleRecalcChange Element::RecalcOwnStyle(const StyleRecalcChange change) {
     // context and as a result need to process more of the subtree than we would
     // normally. Note that if this is not the first time, then
     // AdjustStyleRecalcChangeForChildren() won't do any adjustments.
-    if (!context->IsLocked())
+    if (context->ShouldStyleChildren())
       child_change = context->AdjustStyleRecalcChangeForChildren(child_change);
   }
 
