@@ -311,9 +311,10 @@ bool ChromePasswordManagerClient::IsFillingEnabled(const GURL& url) const {
 
 bool ChromePasswordManagerClient::IsFillingFallbackEnabled(
     const GURL& url) const {
-  return IsFillingEnabled(url) &&
-         !Profile::FromBrowserContext(web_contents()->GetBrowserContext())
-              ->IsGuestSession();
+  const Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  return IsFillingEnabled(url) && !profile->IsGuestSession() &&
+         !profile->IsEphemeralGuestProfile();
 }
 
 bool ChromePasswordManagerClient::PromptUserToSaveOrUpdatePassword(
@@ -714,7 +715,13 @@ void ChromePasswordManagerClient::PromptUserToEnableAutosignin() {
 }
 
 bool ChromePasswordManagerClient::IsIncognito() const {
-  return web_contents()->GetBrowserContext()->IsOffTheRecord();
+  // TODO(https://crbug.com/1125474): After deprecating off-the-record Guest
+  // profile, update this function for better readability.
+  content::BrowserContext* browser_context =
+      web_contents()->GetBrowserContext();
+  const Profile* profile = Profile::FromBrowserContext(browser_context);
+  return browser_context->IsOffTheRecord() ||
+         profile->IsEphemeralGuestProfile();
 }
 
 const password_manager::PasswordManager*

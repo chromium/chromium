@@ -399,7 +399,7 @@ TEST_F(ChromePasswordManagerClientTest, SavingAndFillingEnabledConditionsTest) {
 }
 
 TEST_F(ChromePasswordManagerClientTest,
-       SavingAndFillingDisabledConditionsInIncognito) {
+       SavingAndFillingDisabledConditionsInOffTheRecord) {
   std::unique_ptr<WebContents> incognito_web_contents(
       content::WebContentsTester::CreateTestWebContents(
           profile()->GetPrimaryOTRProfile(), nullptr));
@@ -423,8 +423,35 @@ TEST_F(ChromePasswordManagerClientTest,
 
   // In guest mode saving is disabled, filling is enabled but there is in fact
   // nothing to fill, manual filling is disabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
+      scoped_feature_list, /*enabled=*/false);
   profile()->SetGuestSession(true);
   profile()->GetPrimaryOTRProfile()->AsTestingProfile()->SetGuestSession(true);
+  EXPECT_FALSE(client->IsSavingAndFillingEnabled(kUrlOn));
+  EXPECT_TRUE(client->IsFillingEnabled(kUrlOn));
+  EXPECT_FALSE(client->IsFillingFallbackEnabled(kUrlOn));
+}
+
+TEST_F(ChromePasswordManagerClientTest,
+       SavingAndFillingDisabledConditionsInEphemeralGuest) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  if (!TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
+          scoped_feature_list, /*enabled=*/true)) {
+    return;
+  }
+
+  std::unique_ptr<WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  auto client =
+      std::make_unique<MockChromePasswordManagerClient>(web_contents.get());
+  EXPECT_CALL(*client, GetMainFrameCertStatus()).WillRepeatedly(Return(0));
+
+  // In guest mode saving is disabled, filling is enabled but there is in fact
+  // nothing to fill, manual filling is disabled.
+  const GURL kUrlOn("https://accounts.google.com");
+  profile()->SetGuestSession(true);
+  profile()->AsTestingProfile()->SetGuestSession(true);
   EXPECT_FALSE(client->IsSavingAndFillingEnabled(kUrlOn));
   EXPECT_TRUE(client->IsFillingEnabled(kUrlOn));
   EXPECT_FALSE(client->IsFillingFallbackEnabled(kUrlOn));
