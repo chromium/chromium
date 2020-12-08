@@ -4683,6 +4683,30 @@
             ]
         }
     ],
+    "NtpRepeatableQueriesDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "NtpRepeatableQueriesAgeThresholdDays": "180",
+                        "NtpRepeatableQueriesFrequencyExponent": "2",
+                        "NtpRepeatableQueriesInsertPosition": "start",
+                        "NtpRepeatableQueriesRecencyHalfLifeSeconds": "604800"
+                    },
+                    "enable_features": [
+                        "NtpRepeatableQueries"
+                    ]
+                }
+            ]
+        }
+    ],
     "NtpWebUIDesktop": [
         {
             "platforms": [
