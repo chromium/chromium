@@ -13,6 +13,7 @@
       "ozone_platform_wayland": true,
       "ozone_platform_x11": false,
       "rtc_use_pipewire": false,
+      "symbol_level": 1,
       "target_os": "linux",
       "use_custom_libcxx": false,
       "use_custom_libcxx_for_host": true,

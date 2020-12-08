@@ -1596,7 +1596,7 @@
     ],
 
     'chromeos_amd64-generic_lacros_official': [
-      'chromeos_amd64-generic', 'amd64-lacros', 'official',
+      'chromeos_amd64-generic', 'amd64-lacros', 'official', 'minimal_symbols',
     ],
 
     'chromeos_amd64-generic_lacros_rel': [
