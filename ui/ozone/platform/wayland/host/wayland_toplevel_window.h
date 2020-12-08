@@ -88,6 +88,7 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   // WaylandExtension:
   void StartWindowDraggingSessionIfNeeded() override;
+  void SetImmersiveFullscreenStatus(bool status) override;
 
   void TriggerStateChanges();
   void SetWindowState(PlatformWindowState state);

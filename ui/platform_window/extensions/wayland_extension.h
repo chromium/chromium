@@ -18,6 +18,12 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
   // platform drag-and-drop session.
   virtual void StartWindowDraggingSessionIfNeeded() = 0;
 
+  // Signals the underneath platform that browser is entering (or exiting)
+  // 'immersive fullscreen mode'.
+  // Under lacros, it controls for instance interaction with the system shelf
+  // widget, when browser goes in fullscreen.
+  virtual void SetImmersiveFullscreenStatus(bool status) = 0;
+
  protected:
   virtual ~WaylandExtension();
 

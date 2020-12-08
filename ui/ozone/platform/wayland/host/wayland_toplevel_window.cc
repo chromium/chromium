@@ -409,6 +409,19 @@ void WaylandToplevelWindow::StartWindowDraggingSessionIfNeeded() {
   connection()->window_drag_controller()->StartDragSession();
 }
 
+void WaylandToplevelWindow::SetImmersiveFullscreenStatus(bool status) {
+  if (aura_surface_) {
+    auto mode = status ? ZAURA_SURFACE_FULLSCREEN_MODE_IMMERSIVE
+                       : ZAURA_SURFACE_FULLSCREEN_MODE_PLAIN;
+    zaura_surface_set_fullscreen_mode(aura_surface_.get(), mode);
+  } else {
+    // TODO(https://crbug.com/1113900): Implement AuraShell support for
+    // non-browser windows and replace this if-else clause by a DCHECK.
+    NOTIMPLEMENTED_LOG_ONCE()
+        << "Implement AuraShell support for non-browser windows.";
+  }
+}
+
 void WaylandToplevelWindow::TriggerStateChanges() {
   if (!shell_surface_)
     return;
@@ -473,8 +486,7 @@ void WaylandToplevelWindow::InitializeAuraShellSurface() {
   if (connection()->zaura_shell() && !aura_surface_) {
     aura_surface_.reset(zaura_shell_get_aura_surface(
         connection()->zaura_shell()->wl_object(), root_surface()->surface()));
-    zaura_surface_set_fullscreen_mode(aura_surface_.get(),
-                                      ZAURA_SURFACE_FULLSCREEN_MODE_IMMERSIVE);
+    SetImmersiveFullscreenStatus(false);
   }
 }
 
