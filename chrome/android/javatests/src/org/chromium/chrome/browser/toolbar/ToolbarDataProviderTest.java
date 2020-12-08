@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
@@ -87,6 +88,7 @@ public class ToolbarDataProviderTest {
 
     @Test
     @MediumTest
+    @FlakyTest(message = "https://crbug.com/1154445")
     public void testNonPrimaryOTRProfileUsedForIncognitoCCT() throws TimeoutException {
         Intent intent = CustomTabsTestUtils.createMinimalIncognitoCustomTabIntent(
                 InstrumentationRegistry.getContext(), "about:blank");
