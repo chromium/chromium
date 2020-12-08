@@ -96,6 +96,7 @@ TEST_F(DelayloadsTest, ChromeDllDelayloadsCheck) {
     "DWrite.dll",
     "ADVAPI32.dll",
     "CRYPT32.dll",
+    "dbghelp.dll",
     "dhcpcsvc.DLL",
     "IPHLPAPI.DLL",
     "ntdll.dll",
