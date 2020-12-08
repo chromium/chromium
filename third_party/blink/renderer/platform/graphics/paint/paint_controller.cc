@@ -79,6 +79,14 @@ void PaintController::RecordScrollHitTestData(
   CheckNewChunk();
 }
 
+void PaintController::RecordSelection(
+    base::Optional<PaintedSelectionBound> start,
+    base::Optional<PaintedSelectionBound> end) {
+  DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
+  DCHECK(start.has_value() || end.has_value());
+  paint_chunker_.AddSelectionToCurrentChunk(start, end);
+}
+
 void PaintController::SetPossibleBackgroundColor(
     const DisplayItemClient& client,
     Color color,

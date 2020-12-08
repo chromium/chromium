@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_PAINT_CHUNKS_TO_CC_LAYER_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "cc/input/layer_selection_bound.h"
 #include "cc/paint/display_item_list.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -75,6 +76,7 @@ class PLATFORM_EXPORT PaintChunksToCcLayer {
   static void UpdateLayerProperties(cc::Layer& layer,
                                     const PropertyTreeState& layer_state,
                                     const PaintChunkSubset&,
+                                    cc::LayerSelection& layer_selection,
                                     PropertyTreeManager* = nullptr);
 };
 

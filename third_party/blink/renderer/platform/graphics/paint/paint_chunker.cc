@@ -154,6 +154,39 @@ bool PaintChunker::AddHitTestDataToCurrentChunk(const PaintChunk::Id& id,
   return created_new_chunk;
 }
 
+void PaintChunker::AddSelectionToCurrentChunk(
+    base::Optional<PaintedSelectionBound> start,
+    base::Optional<PaintedSelectionBound> end) {
+  // We should have painted the selection when calling this method.
+  DCHECK(chunks_);
+  DCHECK(!chunks_->IsEmpty());
+
+  auto& chunk = chunks_->back();
+
+#if DCHECK_IS_ON()
+  if (start) {
+    IntRect edge_rect(start->edge_start, start->edge_end - start->edge_start);
+    DCHECK(chunk.bounds.Contains(edge_rect));
+  }
+
+  if (end) {
+    IntRect edge_rect(end->edge_start, end->edge_end - end->edge_start);
+    DCHECK(chunk.bounds.Contains(edge_rect));
+  }
+#endif
+
+  LayerSelectionData& selection_data = chunk.EnsureLayerSelectionData();
+  if (start) {
+    DCHECK(!selection_data.start);
+    selection_data.start = start;
+  }
+
+  if (end) {
+    DCHECK(!selection_data.end);
+    selection_data.end = end;
+  }
+}
+
 void PaintChunker::CreateScrollHitTestChunk(
     const PaintChunk::Id& id,
     const TransformPaintPropertyNode* scroll_translation,

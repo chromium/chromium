@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
+#include "cc/input/layer_selection_bound.h"
 #include "third_party/blink/renderer/platform/geometry/region.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
@@ -67,6 +68,11 @@ class PLATFORM_EXPORT PaintChunker final {
       const PaintChunk::Id&,
       const TransformPaintPropertyNode* scroll_translation,
       const IntRect&);
+
+  // The id will be used when we need to create a new current chunk.
+  // Otherwise it's ignored. Returns true if a new chunk is added.
+  void AddSelectionToCurrentChunk(base::Optional<PaintedSelectionBound> start,
+                                  base::Optional<PaintedSelectionBound> end);
 
   // Returns true if a new chunk is created.
   bool ProcessBackgroundColorCandidate(const PaintChunk::Id& id,

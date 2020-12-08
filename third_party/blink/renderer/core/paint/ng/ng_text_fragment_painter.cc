@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/ng/ng_text_fragment_painter.h"
 
+#include "cc/input/layer_selection_bound.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/composition_marker.h"
@@ -151,10 +152,18 @@ inline LayoutSelectionStatus ComputeLayoutSelectionStatus(
     const NGInlineCursor& cursor) {
   return cursor.Current()
       .GetLayoutObject()
+      ->GetFrame()
+      ->Selection()
+      .ComputeLayoutSelectionStatus(cursor);
+}
+
+SelectionState ComputeSelectionState(const NGInlineCursor& cursor) {
+  return cursor.Current()
+      .GetLayoutObject()
       ->GetDocument()
       .GetFrame()
       ->Selection()
-      .ComputeLayoutSelectionStatus(cursor);
+      .ComputeLayoutSelectionStateForCursor(cursor.Current());
 }
 
 // TODO(yosin): Remove |ComputeLocalRect| once the transition to
@@ -363,19 +372,20 @@ class SelectionPaintState {
  public:
   explicit SelectionPaintState(const NGInlineCursor& containing_block)
       : selection_status_(ComputeLayoutSelectionStatus(containing_block)),
+        state_(ComputeSelectionState(containing_block)),
         containing_block_(containing_block) {}
 
   const LayoutSelectionStatus& Status() const { return selection_status_; }
 
   const TextPaintStyle& GetSelectionStyle() const { return selection_style_; }
 
+  SelectionState State() const { return state_; }
+
   bool ShouldPaintSelectedTextOnly() const { return paint_selected_text_only_; }
 
   bool ShouldPaintSelectedTextSeparately() const {
     return paint_selected_text_separately_;
   }
-
-  bool IsSelectionRectComputed() const { return selection_rect_.has_value(); }
 
   void ComputeSelectionStyle(const Document& document,
                              const ComputedStyle& style,
@@ -391,10 +401,11 @@ class SelectionPaintState {
   }
 
   PhysicalRect ComputeSelectionRect(const PhysicalOffset& box_offset) {
-    DCHECK(!selection_rect_);
-    selection_rect_ =
-        ComputeLocalSelectionRectForText(containing_block_, selection_status_);
-    selection_rect_->offset += box_offset;
+    if (!selection_rect_) {
+      selection_rect_ = ComputeLocalSelectionRectForText(containing_block_,
+                                                         selection_status_);
+      selection_rect_->offset += box_offset;
+    }
     return *selection_rect_;
   }
 
@@ -445,13 +456,84 @@ class SelectionPaintState {
   }
 
  private:
-  LayoutSelectionStatus selection_status_;
+  const LayoutSelectionStatus selection_status_;
   TextPaintStyle selection_style_;
+  const SelectionState state_;
   base::Optional<PhysicalRect> selection_rect_;
   const NGInlineCursor& containing_block_;
   bool paint_selected_text_only_;
   bool paint_selected_text_separately_;
 };
+
+template <typename Cursor>
+class SelectionBoundsRecorder {
+  STACK_ALLOCATED();
+
+ public:
+  SelectionBoundsRecorder(const Cursor& cursor,
+                          SelectionPaintState& selection,
+                          PaintController& paint_controller,
+                          const PhysicalOffset& box_rect_offset)
+      : cursor_(cursor),
+        selection_(selection),
+        paint_controller_(paint_controller),
+        box_rect_offset_(box_rect_offset) {}
+
+  ~SelectionBoundsRecorder();
+
+ private:
+  const Cursor& cursor_;
+  SelectionPaintState& selection_;
+  PaintController& paint_controller_;
+  const PhysicalOffset& box_rect_offset_;
+};
+
+template <>
+SelectionBoundsRecorder<NGInlineCursor>::~SelectionBoundsRecorder() {
+  DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
+
+  const FrameSelection& frame_selection =
+      cursor_.Current().GetLayoutObject()->GetFrame()->Selection();
+  if (!frame_selection.IsHandleVisible() || frame_selection.IsHidden())
+    return;
+
+  SelectionState state = selection_.State();
+  if (state == SelectionState::kInside || state == SelectionState::kNone)
+    return;
+
+  // TODO(crbug.com/1065049) Handle RTL (i.e. IsTextDirectionRTL) to adjust
+  // the type and edges appropriately (i.e. the right edge of the selection rect
+  // should be used for start's edges).
+  base::Optional<PaintedSelectionBound> start;
+  base::Optional<PaintedSelectionBound> end;
+  auto selection_rect =
+      PixelSnappedIntRect(selection_.ComputeSelectionRect(box_rect_offset_));
+  if (state == SelectionState::kStart ||
+      state == SelectionState::kStartAndEnd) {
+    start.emplace();
+    start->type = gfx::SelectionBound::Type::LEFT;
+    start->edge_start = selection_rect.MinXMinYCorner();
+    start->edge_end = selection_rect.MinXMaxYCorner();
+    // TODO(crbug.com/1065049) Handle the case where selection within input
+    // text is clipped out.
+    start->hidden = false;
+  }
+
+  if (state == SelectionState::kStartAndEnd || state == SelectionState::kEnd) {
+    end.emplace();
+    end->type = gfx::SelectionBound::Type::RIGHT;
+    end->edge_start = selection_rect.MaxXMinYCorner();
+    end->edge_end = selection_rect.MaxXMaxYCorner();
+    end->hidden = false;
+  }
+
+  paint_controller_.RecordSelection(start, end);
+}
+
+template <>
+SelectionBoundsRecorder<NGTextPainterCursor>::~SelectionBoundsRecorder() {
+  NOTREACHED();
+}
 
 // Check if text-emphasis and ruby annotation text are on different sides.
 // See InlineTextBox::GetEmphasisMarkPosition().
@@ -563,12 +645,26 @@ void NGTextFragmentPainter<Cursor>::Paint(const PaintInfo& paint_info,
   // only in BoxPainterBase::PaintFillLayer, which is already within a
   // DrawingRecorder.
   base::Optional<DrawingRecorder> recorder;
+  const auto& display_item_client =
+      AsDisplayItemClient(cursor_, selection.has_value());
+
+  // Ensure the selection bounds are recorded on the paint chunk regardless of
+  // whether the diplay item that contains the actual selection painting is
+  // reused.
+  base::Optional<SelectionBoundsRecorder<Cursor>> selection_recorder;
+  if (UNLIKELY(RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
+               selection && paint_info.phase == PaintPhase::kForeground &&
+               !is_printing)) {
+    selection_recorder.emplace(cursor_, *selection,
+                               paint_info.context.GetPaintController(),
+                               box_rect.offset);
+  }
+
   if (paint_info.phase != PaintPhase::kTextClip) {
-    const auto& display_item_client =
-        AsDisplayItemClient(cursor_, selection.has_value());
     if (DrawingRecorder::UseCachedDrawingIfPossible(
-            paint_info.context, display_item_client, paint_info.phase))
+            paint_info.context, display_item_client, paint_info.phase)) {
       return;
+    }
     recorder.emplace(paint_info.context, display_item_client, paint_info.phase,
                      visual_rect);
   }
@@ -707,8 +803,7 @@ void NGTextFragmentPainter<Cursor>::Paint(const PaintInfo& paint_info,
   if (UNLIKELY(selection && (selection->ShouldPaintSelectedTextOnly() ||
                              selection->ShouldPaintSelectedTextSeparately()))) {
     // Paint only the text that is selected.
-    if (!selection->IsSelectionRectComputed())
-      selection->ComputeSelectionRect(box_rect.offset);
+    selection->ComputeSelectionRect(box_rect.offset);
     if (rotation)
       selection->MapSelectionRectIntoRotatedSpace(*rotation);
     selection->PaintSelectedText(text_painter, length, text_style, node_id);

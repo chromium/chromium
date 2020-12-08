@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "cc/input/layer_selection_bound.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/layer_collections.h"
 #include "cc/layers/picture_layer.h"
@@ -281,6 +282,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
   static void UpdateLayerProperties(cc::Layer&,
                                     const PendingLayer&,
+                                    cc::LayerSelection& layer_selection,
                                     PropertyTreeManager* = nullptr);
 
   void DecompositeTransforms();

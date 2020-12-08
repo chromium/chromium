@@ -1525,6 +1525,9 @@ void LocalFrameView::UpdateCompositedSelectionIfNeeded() {
   if (!RuntimeEnabledFeatures::CompositedSelectionUpdateEnabled())
     return;
 
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
   TRACE_EVENT0("blink", "LocalFrameView::updateCompositedSelectionIfNeeded");
 
   Page* page = GetFrame().GetPage();

@@ -7,6 +7,7 @@
 #include "base/containers/adapters.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/base/features.h"
+#include "cc/input/layer_selection_bound.h"
 #include "cc/layers/layer.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_op_buffer.h"
@@ -985,14 +986,75 @@ static void UpdateTouchActionWheelEventHandlerAndNonFastScrollableRegions(
   layer.SetNonFastScrollableRegion(std::move(non_fast_scrollable_region));
 }
 
+static gfx::Point MapSelectionBoundPoint(const IntPoint& point,
+                                         const PropertyTreeState& layer_state,
+                                         const PropertyTreeState& chunk_state,
+                                         const FloatPoint& layer_offset) {
+  FloatPoint mapped_point =
+      GeometryMapper::SourceToDestinationProjection(chunk_state.Transform(),
+                                                    layer_state.Transform())
+          .MapPoint(FloatPoint(point));
+
+  mapped_point.MoveBy(-layer_offset);
+  gfx::Point out_point(RoundedIntPoint(mapped_point));
+  return out_point;
+}
+
+static cc::LayerSelectionBound
+ConvertPaintedSelectionBoundToLayerSelectionBound(
+    const PaintedSelectionBound& bound,
+    const PropertyTreeState& layer_state,
+    const PropertyTreeState& chunk_state,
+    const FloatPoint& layer_offset) {
+  cc::LayerSelectionBound layer_bound;
+  layer_bound.type = bound.type;
+  layer_bound.hidden = bound.hidden;
+  layer_bound.edge_start = MapSelectionBoundPoint(bound.edge_start, layer_state,
+                                                  chunk_state, layer_offset);
+  layer_bound.edge_end = MapSelectionBoundPoint(bound.edge_end, layer_state,
+                                                chunk_state, layer_offset);
+  return layer_bound;
+}
+
+static void UpdateLayerSelection(cc::Layer& layer,
+                                 const PropertyTreeState& layer_state,
+                                 const PaintChunkSubset& chunks,
+                                 cc::LayerSelection& layer_selection) {
+  gfx::Vector2dF cc_layer_offset = layer.offset_to_transform_parent();
+  FloatPoint layer_offset(cc_layer_offset.x(), cc_layer_offset.y());
+  for (const auto& chunk : chunks) {
+    if (!chunk.layer_selection_data)
+      continue;
+
+    auto chunk_state = chunk.properties.GetPropertyTreeState().Unalias();
+    if (chunk.layer_selection_data->start) {
+      const PaintedSelectionBound& bound =
+          chunk.layer_selection_data->start.value();
+      layer_selection.start = ConvertPaintedSelectionBoundToLayerSelectionBound(
+          bound, layer_state, chunk_state, layer_offset);
+      layer_selection.start.layer_id = layer.id();
+    }
+
+    if (chunk.layer_selection_data->end) {
+      const PaintedSelectionBound& bound =
+          chunk.layer_selection_data->end.value();
+      layer_selection.end = ConvertPaintedSelectionBoundToLayerSelectionBound(
+          bound, layer_state, chunk_state, layer_offset);
+      layer_selection.end.layer_id = layer.id();
+    }
+  }
+}
+
 void PaintChunksToCcLayer::UpdateLayerProperties(
     cc::Layer& layer,
     const PropertyTreeState& layer_state,
     const PaintChunkSubset& chunks,
+    cc::LayerSelection& layer_selection,
     PropertyTreeManager* property_tree_manager) {
   UpdateBackgroundColor(layer, layer_state.Effect(), chunks);
   UpdateTouchActionWheelEventHandlerAndNonFastScrollableRegions(
       layer, layer_state, chunks, property_tree_manager);
+  UpdateLayerSelection(layer, layer_state, chunks, layer_selection);
 }
 
 }  // namespace blink

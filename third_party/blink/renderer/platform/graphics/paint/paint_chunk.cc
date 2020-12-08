@@ -20,6 +20,7 @@ struct SameSizeAsPaintChunk {
   IntRect bounds;
   IntRect drawable_bounds;
   void* hit_test_data;
+  void* layer_selection;
   bool b[2];
 };
 

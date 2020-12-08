@@ -206,9 +206,22 @@ class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(TouchSelectionControllerClientAuraTest);
 };
 
+class TouchSelectionControllerClientAuraCAPFeatureTest
+    : public TouchSelectionControllerClientAuraTest,
+      public testing::WithParamInterface<bool> {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    TouchSelectionControllerClientAuraTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(GetParam()
+                                        ? switches::kEnableBlinkFeatures
+                                        : switches::kDisableBlinkFeatures,
+                                    "CompositeAfterPaint");
+  }
+};
+
 // Tests that long-pressing on a text brings up selection handles and the quick
 // menu properly.
-IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest, BasicSelection) {
+IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
+                       BasicSelection) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
   InitSelectionController();
@@ -241,6 +254,10 @@ IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest, BasicSelection) {
   EXPECT_NE(gfx::RectF(),
             rwhva->selection_controller()->GetVisibleRectBetweenBounds());
 }
+
+INSTANTIATE_TEST_SUITE_P(TouchSelectionForCAPFeatureTests,
+                         TouchSelectionControllerClientAuraCAPFeatureTest,
+                         testing::Bool());
 
 class GestureEventWaiter : public RenderWidgetHost::InputEventObserver {
  public:
@@ -790,7 +807,8 @@ IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
 }
 
 // Tests that the quick menu and touch handles are hidden during an scroll.
-IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest, HiddenOnScroll) {
+IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
+                       HiddenOnScroll) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
   InitSelectionController();
@@ -882,9 +900,24 @@ class TouchSelectionControllerClientAuraScaleFactorTest
   }
 };
 
+class TouchSelectionControllerClientAuraScaleFactorCAPFeatureTest
+    : public TouchSelectionControllerClientAuraScaleFactorTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    TouchSelectionControllerClientAuraScaleFactorTest::SetUpCommandLine(
+        command_line);
+    command_line->AppendSwitchASCII(GetParam()
+                                        ? switches::kEnableBlinkFeatures
+                                        : switches::kDisableBlinkFeatures,
+                                    "CompositeAfterPaint");
+  }
+};
+
 // Tests that selection handles are properly positioned at 2x DSF.
-IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraScaleFactorTest,
-                       SelectionHandleCoordinates) {
+IN_PROC_BROWSER_TEST_P(
+    TouchSelectionControllerClientAuraScaleFactorCAPFeatureTest,
+    SelectionHandleCoordinates) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
   InitSelectionController();
@@ -977,6 +1010,11 @@ IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraScaleFactorTest,
   EXPECT_NE(gfx::RectF(),
             rwhva->selection_controller()->GetVisibleRectBetweenBounds());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    TouchSelectionScaleFactorForCAPFeatureTests,
+    TouchSelectionControllerClientAuraScaleFactorCAPFeatureTest,
+    testing::Bool());
 
 // Tests that insertion handles are properly positioned at 2x DSF.
 IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraScaleFactorTest,

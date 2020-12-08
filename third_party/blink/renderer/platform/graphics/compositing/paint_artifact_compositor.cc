@@ -1150,6 +1150,7 @@ void PaintArtifactCompositor::Update(
   // See if we can de-composite any transforms.
   DecompositeTransforms();
 
+  cc::LayerSelection layer_selection;
   const PendingLayer* previous_pending_layer = nullptr;
   for (auto& pending_layer : pending_layers_) {
     const auto& property_state = pending_layer.property_tree_state;
@@ -1171,7 +1172,8 @@ void PaintArtifactCompositor::Update(
         pending_layer, new_content_layer_clients, new_scroll_hit_test_layers,
         new_scrollbar_layers);
 
-    UpdateLayerProperties(*layer, pending_layer, &property_tree_manager);
+    UpdateLayerProperties(*layer, pending_layer, layer_selection,
+                          &property_tree_manager);
 
     layer->SetLayerTreeHost(root_layer_->layer_tree_host());
 
@@ -1233,6 +1235,9 @@ void PaintArtifactCompositor::Update(
     previous_pending_layer = &pending_layer;
   }
 
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    root_layer_->layer_tree_host()->RegisterSelection(layer_selection);
+
   property_tree_manager.Finalize();
   content_layer_clients_.swap(new_content_layer_clients);
   scroll_hit_test_layers_.swap(new_scroll_hit_test_layers);
@@ -1274,6 +1279,7 @@ void PaintArtifactCompositor::Update(
 void PaintArtifactCompositor::UpdateLayerProperties(
     cc::Layer& layer,
     const PendingLayer& pending_layer,
+    cc::LayerSelection& layer_selection,
     PropertyTreeManager* property_tree_manager) {
   // Properties of foreign layers are managed by their owners.
   if (pending_layer.compositing_type == PendingLayer::kForeignLayer)
@@ -1286,7 +1292,8 @@ void PaintArtifactCompositor::UpdateLayerProperties(
                                   .GetPaintArtifactShared());
   }
   PaintChunksToCcLayer::UpdateLayerProperties(
-      layer, pending_layer.property_tree_state, chunks, property_tree_manager);
+      layer, pending_layer.property_tree_state, chunks, layer_selection,
+      property_tree_manager);
 }
 
 void PaintArtifactCompositor::UpdateRepaintedLayerProperties() const {
@@ -1299,8 +1306,9 @@ void PaintArtifactCompositor::UpdateRepaintedLayerProperties() const {
       continue;
     DCHECK(pending_layer.graphics_layer);
     if (pending_layer.graphics_layer->Repainted()) {
+      cc::LayerSelection layer_selection;
       UpdateLayerProperties(pending_layer.graphics_layer->CcLayer(),
-                            pending_layer);
+                            pending_layer, layer_selection);
     }
   }
 
