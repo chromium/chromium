@@ -1122,6 +1122,18 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
               coep_reporter_)) {
     CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false,
                             blocked_reason);
+    // TODO(https://crbug.com/1154250):  Close the socket here.
+    // For more details see https://crbug.com/1154250#c17.
+    // Item 2 discusses redirect handling.
+    //
+    // "url_request_->AbortAndCloseConnection()" should ideally close the
+    // socket, but unfortunately, URLRequestHttpJob caches redirects in a way
+    // that ignores their response bodies, since they'll never be read. It does
+    // this by calling HttpCache::Transaction::StopCaching(), which also has the
+    // effect of detaching the HttpNetworkTransaction, which owns the socket,
+    // from the HttpCache::Transaction. To fix this, we'd either need to call
+    // StopCaching() later in the process, or make the HttpCache::Transaction
+    // continue to hang onto the HttpNetworkTransaction after this call.
     DeleteSelf();
     return;
   }
@@ -1352,6 +1364,9 @@ void URLLoader::ContinueOnResponseStarted() {
               coep_reporter_)) {
     CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false,
                             blocked_reason);
+    // Close the socket associated with the request, to prevent leaking
+    // information.
+    url_request_->AbortAndCloseConnection();
     DeleteSelf();
     return;
   }
@@ -2070,6 +2085,11 @@ URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb() {
     // Ask the caller to continue processing the request.
     return kContinueRequest;
   }
+
+  // Close the socket associated with the request, to prevent leaking
+  // information.
+  url_request_->AbortAndCloseConnection();
+
   // Delete self and cancel the request - the caller doesn't need to continue.
   //
   // DeleteSelf is posted asynchronously, to make sure that the callers (e.g.

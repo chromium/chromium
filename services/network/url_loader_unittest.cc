@@ -57,6 +57,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_response_info.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
+#include "net/socket/socket_test_util.h"
 #include "net/ssl/client_cert_identity_test_util.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -492,13 +493,19 @@ class URLLoaderTest : public testing::Test {
         net::GetTestCertsDirectory().AppendASCII("quic-root.pem"));
 
     net::QuicSimpleTestServer::Start();
+    net::URLRequestFailedJob::AddUrlHandler();
+  }
+  ~URLLoaderTest() override {
+    net::URLRequestFilter::GetInstance()->ClearHandlers();
+  }
+
+  void SetUp() override {
     net::HttpNetworkSession::Params params;
     auto quic_context = std::make_unique<net::QuicContext>();
     quic_context->params()->origins_to_force_quic_on.insert(
         net::HostPortPair(net::QuicSimpleTestServer::GetHost(),
                           net::QuicSimpleTestServer::GetPort()));
     params.enable_quic = true;
-
     net::URLRequestContextBuilder context_builder;
     context_builder.set_http_network_session_params(params);
     context_builder.set_quic_context(std::move(quic_context));
@@ -507,17 +514,12 @@ class URLLoaderTest : public testing::Test {
     auto test_network_delegate = std::make_unique<net::TestNetworkDelegate>();
     unowned_test_network_delegate_ = test_network_delegate.get();
     context_builder.set_network_delegate(std::move(test_network_delegate));
+    context_builder.set_client_socket_factory_for_testing(GetSocketFactory());
     context_ = context_builder.Build();
     resource_scheduler_client_ = base::MakeRefCounted<ResourceSchedulerClient>(
         kProcessId, kRouteId, &resource_scheduler_,
         context_->network_quality_estimator());
-    net::URLRequestFailedJob::AddUrlHandler();
-  }
-  ~URLLoaderTest() override {
-    net::URLRequestFilter::GetInstance()->ClearHandlers();
-  }
 
-  void SetUp() override {
     test_server_.AddDefaultHandlers(
         base::FilePath(FILE_PATH_LITERAL("services/test/data")));
     // This Unretained is safe because test_server_ is owned by |this|.
@@ -534,18 +536,33 @@ class URLLoaderTest : public testing::Test {
         mock_resolver_proc.get());
   }
 
-  void TearDown() override { net::QuicSimpleTestServer::Shutdown(); }
+  void TearDown() override {
+    context_.reset();
+    net::QuicSimpleTestServer::Shutdown();
+  }
 
-  // Attempts to load |url| and returns the resulting error code. If |body| is
-  // non-NULL, also attempts to read the response body. The advantage of using
-  // |body| instead of calling ReadBody() after Load is that it will load the
-  // response body before URLLoader is complete, so URLLoader completion won't
-  // block on trying to write the body buffer.
+  // Attempts to load |url| and returns the resulting error code.
   int Load(const GURL& url, std::string* body = nullptr) WARN_UNUSED_RESULT {
     DCHECK(!ran_);
 
     ResourceRequest request =
         CreateResourceRequest(!request_body_ ? "GET" : "POST", url);
+
+    if (request_body_)
+      request.request_body = request_body_;
+
+    request.trusted_params->client_security_state.Swap(
+        &request_client_security_state_);
+    return LoadRequest(request, body);
+  }
+
+  // Attempts to load |request| and returns the resulting error code. If |body|
+  // is non-NULL, also attempts to read the response body. The advantage of
+  // using |body| instead of calling ReadBody() after Load is that it will load
+  // the response body before URLLoader is complete, so URLLoader completion
+  // won't block on trying to write the body buffer.
+  int LoadRequest(const ResourceRequest& request,
+                  std::string* body = nullptr) WARN_UNUSED_RESULT {
     uint32_t options = mojom::kURLLoadOptionNone;
     if (send_ssl_with_response_)
       options |= mojom::kURLLoadOptionSendSSLInfoWithResponse;
@@ -562,22 +579,16 @@ class URLLoaderTest : public testing::Test {
           ignore_last_upload_file_);
     }
 
-    if (request_body_)
-      request.request_body = request_body_;
-
-    request.trusted_params->client_security_state.Swap(
-        &request_client_security_state_);
-
     base::RunLoop delete_run_loop;
     mojo::Remote<mojom::URLLoader> loader;
     std::unique_ptr<URLLoader> url_loader;
 
     mojom::URLLoaderFactoryParams params;
     params.process_id = mojom::kBrowserProcessId;
-    params.is_corb_enabled = false;
+    params.is_corb_enabled = corb_enabled_;
     params.client_security_state.Swap(&factory_client_security_state_);
 
-    url::Origin origin = url::Origin::Create(url);
+    url::Origin origin = url::Origin::Create(request.url);
     params.isolation_info =
         net::IsolationInfo::CreateForInternalRequest(origin);
     params.is_trusted = true;
@@ -858,6 +869,9 @@ class URLLoaderTest : public testing::Test {
   // execute once a request reaches the test server.
   virtual void OnServerReceivedRequest(const net::test_server::HttpRequest&) {}
 
+  // Lets subclasses inject a mock ClientSocketFactory.
+  virtual net::ClientSocketFactory* GetSocketFactory() { return nullptr; }
+
  protected:
   void Monitor(const net::test_server::HttpRequest& request) {
     sent_request_ = request;
@@ -885,11 +899,27 @@ class URLLoaderTest : public testing::Test {
   mojom::ClientSecurityStatePtr request_client_security_state_;
   scoped_refptr<ResourceRequestBody> request_body_;
 
+  bool corb_enabled_ = false;
+
   // Used to ensure that methods are called either before or after a request is
   // made, since the test fixture is meant to be used only once.
   bool ran_ = false;
   net::test_server::HttpRequest sent_request_;
   TestURLLoaderClient client_;
+};
+
+class URLLoaderMockSocketTest : public URLLoaderTest {
+ public:
+  URLLoaderMockSocketTest() = default;
+  ~URLLoaderMockSocketTest() override = default;
+
+  // Lets subclasses inject mock ClientSocketFactories.
+  net::ClientSocketFactory* GetSocketFactory() override {
+    return &socket_factory_;
+  }
+
+ protected:
+  net::MockClientSocketFactory socket_factory_;
 };
 
 constexpr int URLLoaderTest::kProcessId;
@@ -6071,6 +6101,223 @@ TEST_F(URLLoaderTest, OnRawRequestClientSecurityStateNotPresent) {
 
   network_service_client.WaitUntilRawRequest(0);
   ASSERT_FALSE(network_service_client.client_security_state());
+}
+
+TEST_F(URLLoaderMockSocketTest,
+       CorbDoesNotCloseSocketsWhenResourcesNotBlocked) {
+  corb_enabled_ = true;
+
+  const net::MockWrite kWrites[] = {
+      net::MockWrite(net::SYNCHRONOUS, 0,
+                     "GET / HTTP/1.1\r\n"
+                     "Host: origin.test\r\n"
+                     "Connection: keep-alive\r\n"
+                     "User-Agent: \r\n"
+                     "Accept-Encoding: gzip, deflate\r\n\r\n"),
+  };
+  net::MockRead kReads[] = {
+      net::MockRead(net::SYNCHRONOUS, 1,
+                    "HTTP/1.1 200 OK\r\n"
+                    "Connection: keep-alive\r\n"
+                    "Content-Length: 5\r\n\r\n"),
+      net::MockRead(net::SYNCHRONOUS, 2, "Hello"),
+  };
+
+  net::SequencedSocketData socket_data(kReads, kWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data);
+
+  GURL url("http://origin.test/");
+  url::Origin initiator =
+      url::Origin::Create(GURL("http://other-origin.test/"));
+
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  request.mode = mojom::RequestMode::kCors;
+  request.request_initiator = initiator;
+  std::string body;
+  EXPECT_EQ(net::OK, LoadRequest(request, &body));
+  EXPECT_EQ(body, "Hello");
+
+  // Socket should still be alive, in the socket pool.
+  EXPECT_TRUE(socket_data.socket());
+}
+
+TEST_F(URLLoaderMockSocketTest, CorbClosesSocketOnReceivingHeaders) {
+  corb_enabled_ = true;
+
+  const net::MockWrite kWrites[] = {
+      net::MockWrite(net::SYNCHRONOUS, 0,
+                     "GET / HTTP/1.1\r\n"
+                     "Host: origin.test\r\n"
+                     "Connection: keep-alive\r\n"
+                     "User-Agent: \r\n"
+                     "Accept-Encoding: gzip, deflate\r\n\r\n"),
+  };
+  net::MockRead kReads[] = {
+      net::MockRead(net::SYNCHRONOUS, 1,
+                    "HTTP/1.1 200 OK\r\n"
+                    "Connection: keep-alive\r\n"
+                    "Cross-Origin-Resource-Policy: same-origin\r\n"
+                    "Content-Length: 23\r\n\r\n"),
+      net::MockRead(net::SYNCHRONOUS, 2, "This should not be read"),
+  };
+
+  net::SequencedSocketData socket_data(kReads, kWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data);
+
+  GURL url("http://origin.test/");
+  url::Origin initiator =
+      url::Origin::Create(GURL("http://other-origin.test/"));
+
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  request.mode = mojom::RequestMode::kCors;
+  request.request_initiator = initiator;
+  std::string body;
+  EXPECT_EQ(net::OK, LoadRequest(request, &body));
+  EXPECT_TRUE(body.empty());
+
+  // Socket should have been destroyed, so it will not be reused.
+  EXPECT_FALSE(socket_data.socket());
+}
+
+TEST_F(URLLoaderMockSocketTest,
+       CorbDoesNotCloseSocketsWhenResourcesNotBlockedAfterSniffingMimeType) {
+  corb_enabled_ = true;
+
+  const net::MockWrite kWrites[] = {
+      net::MockWrite(net::SYNCHRONOUS, 0,
+                     "GET / HTTP/1.1\r\n"
+                     "Host: origin.test\r\n"
+                     "Connection: keep-alive\r\n"
+                     "User-Agent: \r\n"
+                     "Accept-Encoding: gzip, deflate\r\n\r\n"),
+  };
+  net::MockRead kReads[] = {
+      net::MockRead(net::SYNCHRONOUS, 1,
+                    "HTTP/1.1 200 OK\r\n"
+                    "Connection: keep-alive\r\n"
+                    "Content-Type: application/json\r\n"
+                    "Content-Length: 17\r\n\r\n"),
+      net::MockRead(net::SYNCHRONOUS, 2, "Not actually JSON"),
+  };
+
+  net::SequencedSocketData socket_data(kReads, kWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data);
+
+  GURL url("http://origin.test/");
+  url::Origin initiator =
+      url::Origin::Create(GURL("http://other-origin.test/"));
+
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  request.mode = mojom::RequestMode::kCors;
+  request.request_initiator = initiator;
+  std::string body;
+  EXPECT_EQ(net::OK, LoadRequest(request, &body));
+  EXPECT_EQ("Not actually JSON", body);
+
+  // Socket should still be alive, in the socket pool.
+  EXPECT_TRUE(socket_data.socket());
+}
+
+TEST_F(URLLoaderMockSocketTest, CorbClosesSocketOnSniffingMimeType) {
+  corb_enabled_ = true;
+
+  const net::MockWrite kWrites[] = {
+      net::MockWrite(net::SYNCHRONOUS, 0,
+                     "GET / HTTP/1.1\r\n"
+                     "Host: origin.test\r\n"
+                     "Connection: keep-alive\r\n"
+                     "User-Agent: \r\n"
+                     "Accept-Encoding: gzip, deflate\r\n\r\n"),
+  };
+  net::MockRead kReads[] = {
+      net::MockRead(net::SYNCHRONOUS, 1,
+                    "HTTP/1.1 200 OK\r\n"
+                    "Connection: keep-alive\r\n"
+                    "Content-Type: application/json\r\n"
+                    "Content-Length: 9\r\n\r\n"),
+      net::MockRead(net::SYNCHRONOUS, 2, "{\"x\" : 3}"),
+  };
+
+  net::SequencedSocketData socket_data(kReads, kWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data);
+
+  GURL url("http://origin.test/");
+  url::Origin initiator =
+      url::Origin::Create(GURL("http://other-origin.test/"));
+
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  request.mode = mojom::RequestMode::kCors;
+  request.request_initiator = initiator;
+  std::string body;
+  EXPECT_EQ(net::OK, LoadRequest(request, &body));
+  EXPECT_TRUE(body.empty());
+
+  // Socket should have been destroyed, so it will not be reused.
+  EXPECT_FALSE(socket_data.socket());
+}
+
+TEST_F(URLLoaderMockSocketTest, CorpClosesSocket) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->cross_origin_embedder_policy.value =
+      mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kAllow;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  const net::MockWrite kWrites[] = {
+      net::MockWrite(net::SYNCHRONOUS, 0,
+                     "GET / HTTP/1.1\r\n"
+                     "Host: origin.test\r\n"
+                     "Connection: keep-alive\r\n"
+                     "User-Agent: \r\n"
+                     "Accept-Encoding: gzip, deflate\r\n\r\n"),
+  };
+  net::MockRead kReads[] = {
+      net::MockRead(net::SYNCHRONOUS, 1,
+                    "HTTP/1.1 200 OK\r\n"
+                    "Connection: keep-alive\r\n"
+                    "Content-Type: test/plain\r\n"
+                    "Content-Length: 23\r\n\r\n"),
+      net::MockRead(net::SYNCHRONOUS, 2, "This should not be read"),
+  };
+
+  net::SequencedSocketData socket_data(kReads, kWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data);
+
+  GURL url("http://origin.test/");
+  url::Origin initiator =
+      url::Origin::Create(GURL("http://other-origin.test/"));
+
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  request.mode = mojom::RequestMode::kNoCors;
+  request.request_initiator = initiator;
+  EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE, LoadRequest(request));
+
+  // Socket should have been destroyed, so it will not be reused.
+  EXPECT_FALSE(socket_data.socket());
+}
+
+TEST_F(URLLoaderMockSocketTest, PrivateNetworkRequestPolicyClosesSocket) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kBlockFromInsecureToMorePrivate;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  // No data should be read or written. Trying to do so will assert.
+  net::SequencedSocketData socket_data;
+  socket_factory_.AddSocketDataProvider(&socket_data);
+
+  GURL url("http://origin.test/");
+  url::Origin initiator =
+      url::Origin::Create(GURL("http://other-origin.test/"));
+
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  request.mode = mojom::RequestMode::kNoCors;
+  request.request_initiator = initiator;
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
+
+  // Socket should have been destroyed.
+  EXPECT_FALSE(socket_data.socket());
 }
 
 }  // namespace network

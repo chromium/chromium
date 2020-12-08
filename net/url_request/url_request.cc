@@ -866,6 +866,14 @@ void URLRequest::ContinueDespiteLastError() {
   job_->ContinueDespiteLastError();
 }
 
+void URLRequest::AbortAndCloseConnection() {
+  DCHECK_EQ(OK, status_);
+  DCHECK(!has_notified_completion_);
+  DCHECK(job_);
+  job_->CloseConnectionOnDestruction();
+  job_.reset();
+}
+
 void URLRequest::PrepareToRestart() {
   DCHECK(job_.get());
 

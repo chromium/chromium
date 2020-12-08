@@ -63,6 +63,7 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   void Start() override;
   void Kill() override;
   void GetConnectionAttempts(ConnectionAttempts* out) const override;
+  void CloseConnectionOnDestruction() override;
   std::unique_ptr<SourceStream> SetUpSourceStream() override;
 
   RequestPriority priority() const {

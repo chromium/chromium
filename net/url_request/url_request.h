@@ -618,6 +618,24 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // cancel the request instead, call Cancel().
   void ContinueDespiteLastError();
 
+  // Aborts the request (without invoking any completion callbacks) and closes
+  // the current connection, rather than returning it to the socket pool. Only
+  // affects HTTP/1.1 connections and tunnels.
+  //
+  // Intended to be used in cases where socket reuse can potentially leak data
+  // across sites.
+  //
+  // May only be called after Delegate::OnResponseStarted() has been invoked
+  // with net::OK, but before the body has been completely read. After the last
+  // body has been read, the socket may have already been handed off to another
+  // consumer.
+  //
+  // Due to transactions potentially being shared by multiple URLRequests in
+  // some cases, it is possible the socket may not be immediately closed, but
+  // will instead be closed when all URLRequests sharing the socket have been
+  // destroyed.
+  void AbortAndCloseConnection();
+
   // Used to specify the context (cookie store, cache) for this request.
   const URLRequestContext* context() const;
 

@@ -304,4 +304,8 @@ void ThrottlingNetworkTransaction::GetConnectionAttempts(
   network_transaction_->GetConnectionAttempts(out);
 }
 
+void ThrottlingNetworkTransaction::CloseConnectionOnDestruction() {
+  network_transaction_->CloseConnectionOnDestruction();
+}
+
 }  // namespace network

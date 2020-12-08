@@ -240,6 +240,10 @@ class NET_EXPORT URLRequestJob {
   // from the remote party with the actual response headers recieved.
   virtual void SetResponseHeadersCallback(ResponseHeadersCallback callback) {}
 
+  // Causes the current transaction always close its active socket on
+  // destruction. Does not close H2/H3 sessions.
+  virtual void CloseConnectionOnDestruction();
+
   // Given |policy|, |original_referrer|, and |destination|, returns the
   // referrer URL mandated by |request|'s referrer policy.
   //

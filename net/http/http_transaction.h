@@ -206,6 +206,19 @@ class NET_EXPORT_PRIVATE HttpTransaction {
   virtual int ResumeNetworkStart() = 0;
 
   virtual void GetConnectionAttempts(ConnectionAttempts* out) const = 0;
+
+  // Configures the transaction to close the network connection, if any, on
+  // destruction. Intended for cases where keeping the socket alive may leak
+  // data. Does not immediately close the socket. If multiple transactions are
+  // using the same socket, only closes it once all transactions have completed.
+  //
+  // Does not close H2/H3 sessions, but does close H1 tunnels on top of H2/H3
+  // sessions.
+  //
+  // Only applies to currently in-use connections. Does nothing after the last
+  // byte of the response body has been read, as the connection is no longer in
+  // use at that point.
+  virtual void CloseConnectionOnDestruction() = 0;
 };
 
 }  // namespace net

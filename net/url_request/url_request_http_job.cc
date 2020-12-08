@@ -305,6 +305,11 @@ void URLRequestHttpJob::GetConnectionAttempts(ConnectionAttempts* out) const {
     out->clear();
 }
 
+void URLRequestHttpJob::CloseConnectionOnDestruction() {
+  DCHECK(transaction_);
+  transaction_->CloseConnectionOnDestruction();
+}
+
 int URLRequestHttpJob::NotifyConnectedCallback(const TransportInfo& info) {
   return URLRequestJob::NotifyConnected(info);
 }
