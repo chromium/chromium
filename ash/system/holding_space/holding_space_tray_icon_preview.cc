@@ -13,6 +13,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "base/i18n/rtl.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
@@ -28,6 +29,15 @@ namespace {
 
 // Appearance.
 constexpr int kElevation = 2;
+
+// The duration of each of the preview icon bounce animation.
+constexpr base::TimeDelta kBounceAnimationSegmentDuration =
+    base::TimeDelta::FromMilliseconds(250);
+
+// The delay with which preview icon is dropped into the holding space tray
+// icon.
+constexpr base::TimeDelta kBounceAnimationBaseDelay =
+    base::TimeDelta::FromMilliseconds(150);
 
 // Helpers ---------------------------------------------------------------------
 
@@ -191,10 +201,31 @@ void HoldingSpaceTrayIconPreview::AnimateIn(size_t index) {
     parent->StackBelow(layer_.get(), children[children.size() - index - 1]);
   }
 
-  ui::ScopedLayerAnimationSettings animation_settings(layer_->GetAnimator());
-  SetUpAnimation(&animation_settings);
+  gfx::Transform mid_transform(transform_);
+  mid_transform.Translate(0, kTrayItemSize * 0.25f);
 
-  layer_->SetTransform(transform_);
+  ui::ScopedLayerAnimationSettings scoped_settings(layer_->GetAnimator());
+  scoped_settings.SetPreemptionStrategy(
+      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+
+  std::unique_ptr<ui::LayerAnimationSequence> sequence =
+      std::make_unique<ui::LayerAnimationSequence>();
+  sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
+      ui::LayerAnimationElement::TRANSFORM, kBounceAnimationBaseDelay));
+
+  std::unique_ptr<ui::LayerAnimationElement> initial_drop =
+      ui::LayerAnimationElement::CreateTransformElement(
+          mid_transform, kBounceAnimationSegmentDuration);
+  initial_drop->set_tween_type(gfx::Tween::EASE_OUT_4);
+  sequence->AddElement(std::move(initial_drop));
+
+  std::unique_ptr<ui::LayerAnimationElement> rebound =
+      ui::LayerAnimationElement::CreateTransformElement(
+          transform_, kBounceAnimationSegmentDuration);
+  rebound->set_tween_type(gfx::Tween::FAST_OUT_SLOW_IN_3);
+  sequence->AddElement(std::move(rebound));
+
+  layer_->GetAnimator()->StartAnimation(sequence.release());
 }
 
 void HoldingSpaceTrayIconPreview::AnimateOut(

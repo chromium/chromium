@@ -26,6 +26,9 @@ class ANIMATION_EXPORT Tween {
     EASE_OUT,          // Fast in, slow out (default).
     EASE_OUT_2,        // Variant of EASE_OUT that ends slower than EASE_OUT.
     EASE_OUT_3,        // Variant of EASE_OUT that ends slower than EASE_OUT_2.
+    EASE_OUT_4,        // Variant of EASE_OUT that start slower than EASE_OUT_3,
+                       // and ends faster. Best used to lead into a bounce
+                       // animation.
     EASE_IN,           // Slow in, fast out.
     EASE_IN_2,         // Variant of EASE_IN that starts out slower than
                        // EASE_IN.
@@ -36,6 +39,9 @@ class ANIMATION_EXPORT Tween {
     FAST_OUT_SLOW_IN,  // Variant of EASE_IN_OUT which should be used in most
                        // cases.
     FAST_OUT_SLOW_IN_2,  // Variant of FAST_OUT_SLOW_IN that starts out quicker.
+    FAST_OUT_SLOW_IN_3,  // Variant of FAST_OUT_SLOW_IN that starts out quicker
+                         // than FAST_OUT_SLOW_IN_2. Best used for rebound in
+                         // bounce animation.
     LINEAR_OUT_SLOW_IN,  // Variant of EASE_OUT which should be used for
                          // fading in from 0% or motion when entering a scene.
     SLOW_OUT_LINEAR_IN,  // Reverse of LINEAR_OUT_SLOW_IN which should be used
