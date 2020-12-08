@@ -66,6 +66,17 @@ cr.define('settings', function() {
   };
 
   /**
+   * Possible states of Phone Hub's notification access. Access can be
+   * prohibited if the user is using a work profile on their phone.
+   * @enum {number}
+   */
+  /* #export */ const PhoneHubNotificationAccessStatus = {
+    PROHIBITED: 0,
+    AVAILABLE_BUT_NOT_GRANTED: 1,
+    ACCESS_GRANTED: 2,
+  };
+
+  /**
    * Container for the initial data that the page requires in order to display
    * the correct content. It is also used for receiving status updates during
    * use. Note that the host device may be verified (enabled or disabled),
@@ -90,7 +101,7 @@ cr.define('settings', function() {
    *   phoneHubTaskContinuationState: !settings.MultiDeviceFeatureState,
    *   wifiSyncState: !settings.MultiDeviceFeatureState,
    *   isAndroidSmsPairingComplete: boolean,
-   *   isNotificationAccessGranted: boolean
+   *   notificationAccessStatus: !settings.PhoneHubNotificationAccessStatus
    * }}
    */
   /* #export */ let MultiDevicePageContentData;
@@ -101,6 +112,7 @@ cr.define('settings', function() {
     MultiDeviceFeature,
     MultiDeviceFeatureState,
     MultiDevicePageContentData,
+    PhoneHubNotificationAccessStatus,
     SmartLockSignInEnabledState
   };
 });

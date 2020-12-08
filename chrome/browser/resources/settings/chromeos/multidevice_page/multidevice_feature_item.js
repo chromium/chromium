@@ -28,6 +28,11 @@ Polymer({
     subpageRoute: Object,
 
     /**
+     * A tooltip to show over an info icon. If unset, no info icon is shown.
+     */
+    infoTooltip: String,
+
+    /**
      * URLSearchParams for subpage route. No param is provided if it is
      * undefined.
      * @type {URLSearchParams|undefined}
@@ -74,6 +79,14 @@ Polymer({
    */
   hasSubpageClickHandler_() {
     return !!this.subpageRoute && this.isFeatureAllowedByPolicy(this.feature);
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowSeparator_() {
+    return this.hasSubpageClickHandler_() || !!this.infoTooltip;
   },
 
   /** @private */

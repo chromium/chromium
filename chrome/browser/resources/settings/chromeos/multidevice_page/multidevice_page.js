@@ -351,9 +351,19 @@ Polymer({
     // If the feature to enable is Phone Hub Notifications, notification access
     // must have been granted before the feature can be enabled.
     if (feature === settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS &&
-        enabled && !this.pageContentData.isNotificationAccessGranted) {
-      this.showNotificationAccessSetupDialog_ = true;
-      return;
+        enabled) {
+      switch (this.pageContentData.notificationAccessStatus) {
+        case settings.PhoneHubNotificationAccessStatus.PROHIBITED:
+          assertNotReached('Cannot enable notification access; prohibited');
+          return;
+        case settings.PhoneHubNotificationAccessStatus
+            .AVAILABLE_BUT_NOT_GRANTED:
+          this.showNotificationAccessSetupDialog_ = true;
+          return;
+        default:
+          // Fall through and attempt to toggle feature.
+          break;
+      }
     }
 
     // Disabling any feature does not require authentication, and enable some
@@ -440,7 +450,8 @@ Polymer({
   onInitialPageContentDataFetched_(newData) {
     this.onPageContentDataChanged_(newData);
 
-    if (this.pageContentData.isNotificationAccessGranted) {
+    if (this.pageContentData.notificationAccessStatus !==
+        settings.PhoneHubNotificationAccessStatus.AVAILABLE_BUT_NOT_GRANTED) {
       return;
     }
 

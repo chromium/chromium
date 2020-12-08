@@ -62,6 +62,13 @@ Polymer({
    * @private
    */
   resetChecked_() {
+    // If Phone Hub notification access is prohibited, the toggle is always off.
+    if (this.feature === settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS &&
+        this.isPhoneHubNotificationAccessProhibited()) {
+      this.checked_ = false;
+      return;
+    }
+
     this.checked_ = this.getFeatureState(this.feature) ===
         settings.MultiDeviceFeatureState.ENABLED_BY_USER;
   },
