@@ -98,6 +98,11 @@ TEST_F(QuickActionsViewTest, EnableHotspotToggle) {
 }
 
 TEST_F(QuickActionsViewTest, SilencePhoneToggle) {
+  // Allow silence phone to be toggle-able.
+  dnd_controller()->SetDoNotDisturbStateInternal(
+      /*is_dnd_enabled=*/false,
+      /*can_request_new_dnd_state=*/true);
+
   // Initially, silence phone is not enabled.
   EXPECT_FALSE(dnd_controller()->IsDndEnabled());
 

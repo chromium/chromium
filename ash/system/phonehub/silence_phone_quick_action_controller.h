@@ -51,12 +51,17 @@ class ASH_EXPORT SilencePhoneQuickActionController
   void OnDndStateChanged() override;
 
  private:
+  friend class SilencePhoneQuickActionControllerTest;
+
   // All the possible states that the silence phone button can be viewed. Each
   // state has a corresponding icon, labels and tooltip view.
-  enum class ActionState { kOff, kOn };
+  enum class ActionState { kOff, kOn, kDisabled };
 
   // Set the item (including icon, label and tooltips) to a certain state.
   void SetItemState(ActionState state);
+
+  // Retrieves the current state of the QuickActionItem. Used only for testing.
+  ActionState GetItemState();
 
   // Check to see if the requested state is similar to current state of the
   // phone. Make changes to item's state if necessary.

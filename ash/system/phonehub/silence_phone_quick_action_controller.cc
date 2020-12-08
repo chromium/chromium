@@ -58,6 +58,9 @@ QuickActionItem* SilencePhoneQuickActionController::CreateItem() {
 }
 
 void SilencePhoneQuickActionController::OnButtonPressed(bool is_now_enabled) {
+  // Button should not be pressed if it is disabled.
+  DCHECK(state_ != ActionState::kDisabled);
+
   LogQuickActionClick(is_now_enabled ? QuickAction::kToggleQuietModeOff
                                      : QuickAction::kToggleQuietModeOn);
 
@@ -74,13 +77,19 @@ void SilencePhoneQuickActionController::OnButtonPressed(bool is_now_enabled) {
 }
 
 void SilencePhoneQuickActionController::OnDndStateChanged() {
-  state_ =
-      dnd_controller_->IsDndEnabled() ? ActionState::kOn : ActionState::kOff;
-  SetItemState(state_);
+  if (!dnd_controller_->CanRequestNewDndState()) {
+    state_ = ActionState::kDisabled;
+  } else if (dnd_controller_->IsDndEnabled()) {
+    state_ = ActionState::kOn;
+  } else {
+    state_ = ActionState::kOff;
+  }
 
+  SetItemState(state_);
   // If |requested_state_| correctly resembles the current state, reset it and
-  // the timer.
-  if (state_ == requested_state_) {
+  // the timer. Reset also if the state is |kDisabled| since we are not
+  // requesting a state change.
+  if (state_ == requested_state_ || state_ == ActionState::kDisabled) {
     check_requested_state_timer_.reset();
     requested_state_.reset();
   }
@@ -88,21 +97,31 @@ void SilencePhoneQuickActionController::OnDndStateChanged() {
 
 void SilencePhoneQuickActionController::SetItemState(ActionState state) {
   bool icon_enabled;
+  bool button_enabled;
   int state_text_id;
   int sub_label_text;
   switch (state) {
     case ActionState::kOff:
       icon_enabled = false;
+      button_enabled = true;
       state_text_id = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_DISABLED_STATE_TOOLTIP;
       sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_OFF_STATE;
       break;
     case ActionState::kOn:
       icon_enabled = true;
+      button_enabled = true;
       state_text_id = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_ENABLED_STATE_TOOLTIP;
       sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_ON_STATE;
       break;
+    case ActionState::kDisabled:
+      // TODO(1155784): Update disabled view with matching toggle-state colors.
+      icon_enabled = dnd_controller_->IsDndEnabled();
+      button_enabled = false;
+      state_text_id = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_DISABLED_STATE_TOOLTIP;
+      sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_AVAILABLE_STATE;
   }
 
+  item_->SetEnabled(button_enabled);
   item_->SetToggled(icon_enabled);
   item_->SetSubLabel(l10n_util::GetStringUTF16(sub_label_text));
   base::string16 tooltip_state =
@@ -123,6 +142,11 @@ void SilencePhoneQuickActionController::CheckRequestedState() {
 
   check_requested_state_timer_.reset();
   requested_state_.reset();
+}
+
+SilencePhoneQuickActionController::ActionState
+SilencePhoneQuickActionController::GetItemState() {
+  return state_;
 }
 
 }  // namespace ash
