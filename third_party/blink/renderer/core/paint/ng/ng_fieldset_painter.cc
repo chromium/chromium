@@ -105,7 +105,7 @@ void NGFieldsetPainter::PaintBoxDecorationBackground(
           box_decoration_data.GetBackgroundBleedAvoidance())) {
     state_saver.Save();
     FloatRoundedRect border = RoundedBorderGeometry::PixelSnappedRoundedBorder(
-        style, paint_rect, fieldset_.SidesToInclude());
+        style, contracted_rect, fieldset_.SidesToInclude());
     graphics_context.ClipRoundedRect(border);
 
     if (box_decoration_data.GetBackgroundBleedAvoidance() ==
