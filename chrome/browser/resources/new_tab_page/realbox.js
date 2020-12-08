@@ -177,7 +177,21 @@ class RealboxElement extends PolymerElement {
         type: Number,
         value: -1,
       },
+
+      /**
+       * The value of the input element's 'aria-live' attribute.
+       * @type {string}
+       * @private
+       */
+      inputAriaLive_: {
+        type: String,
+        computed: `computeInputAriaLive_(selectedMatch_)`,
+      },
     };
+  }
+
+  computeInputAriaLive_() {
+    return this.selectedMatch_ ? 'off' : 'polite';
   }
 
   constructor() {

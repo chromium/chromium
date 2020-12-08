@@ -96,7 +96,8 @@
 <div id="inputWrapper" on-focusout=onInputWrapperFocusout_
     on-keydown="onInputWrapperKeydown_">
   <input id="input" type="search" autocomplete="off" spellcheck="false"
-      aria-live="polite" placeholder="$i18n{searchBoxHint}"
+      aria-live="[[inputAriaLive_]]" role="combobox"
+      placeholder="$i18n{searchBoxHint}"
       on-copy="onInputCutCopy_" on-cut="onInputCutCopy_"
       on-focus="onInputFocus_" on-blur="onInputBlur_" on-input="onInputInput_"
       on-keydown="onInputKeydown_" on-keyup="onInputKeyup_"

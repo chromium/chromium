@@ -50,7 +50,7 @@ class RealboxMatchElement extends PolymerElement {
        */
       ariaLabel: {
         type: String,
-        computed: `computeAriaLabel_(match)`,
+        computed: `computeAriaLabel_(matchText_, removeButtonIsVisible_)`,
         reflectToAttribute: true,
       },
 
@@ -103,6 +103,27 @@ class RealboxMatchElement extends PolymerElement {
       descriptionHtml_: {
         type: String,
         computed: `computeDescriptionHtml_(match)`,
+      },
+
+      /**
+       * The text content of match used to calculate the 'aria-label' attributes
+       * of the element as well as the remove button.
+       * @type {string}
+       * @private
+       */
+      matchText_: {
+        type: String,
+        computed: `computeMatchText_(match)`,
+      },
+
+      /**
+       * Remove button's 'aria-label' attribute.
+       * @type {string}
+       * @private
+       */
+      removeButtonAriaLabel_: {
+        type: String,
+        computed: `computeRemoveButtonAriaLabel_(matchText_)`,
       },
 
       /**
@@ -213,7 +234,7 @@ class RealboxMatchElement extends PolymerElement {
    * @return {string}
    * @private
    */
-  computeAriaLabel_() {
+  computeMatchText_() {
     if (!this.match) {
       return '';
     }
@@ -222,6 +243,16 @@ class RealboxMatchElement extends PolymerElement {
     return this.match.swapContentsAndDescription ?
         description + this.separatorText_ + contents :
         contents + this.separatorText_ + description;
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computeAriaLabel_() {
+    return this.removeButtonIsVisible_ ?
+        loadTimeData.getStringF('removeSuggestionA11ySuffix', this.matchText_) :
+        this.matchText_;
   }
 
   /**
@@ -274,6 +305,15 @@ class RealboxMatchElement extends PolymerElement {
    */
   computeRemoveButtonIsVisible_() {
     return this.match && this.match.supportsDeletion;
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computeRemoveButtonAriaLabel_() {
+    return loadTimeData.getStringF(
+        'removeSuggestionA11yPrefix', this.matchText_);
   }
 
   /**
