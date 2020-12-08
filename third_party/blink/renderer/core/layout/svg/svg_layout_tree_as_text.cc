@@ -129,16 +129,6 @@ static void WriteNameAndQuotedValue(WTF::TextStream& ts,
   ts << " [" << name << "=\"" << value << "\"]";
 }
 
-static void WriteQuotedSVGResource(WTF::TextStream& ts,
-                                   const char* name,
-                                   const StyleSVGResource* value,
-                                   TreeScope& tree_scope) {
-  DCHECK(value);
-  AtomicString id = SVGURIReference::FragmentIdentifierFromIRIString(
-      value->Url(), tree_scope);
-  WriteNameAndQuotedValue(ts, name, id);
-}
-
 template <typename ValueType>
 static void WriteIfNotDefault(WTF::TextStream& ts,
                               const char* name,
@@ -711,6 +701,22 @@ void Write(WTF::TextStream& ts, const LayoutSVGShape& shape, int indent) {
   WriteResources(ts, shape, indent);
 }
 
+static void WriteSVGResourceReferencePrefix(
+    WTF::TextStream& ts,
+    const char* resource_name,
+    const LayoutSVGResourceContainer* resource_object,
+    const AtomicString& url,
+    const TreeScope& tree_scope,
+    int indent) {
+  AtomicString id =
+      SVGURIReference::FragmentIdentifierFromIRIString(url, tree_scope);
+  WriteIndent(ts, indent);
+  ts << " ";
+  WriteNameAndQuotedValue(ts, resource_name, id);
+  ts << " ";
+  WriteStandardPrefix(ts, *resource_object, 0);
+}
+
 void WriteResources(WTF::TextStream& ts,
                     const LayoutObject& object,
                     int indent) {
@@ -722,12 +728,9 @@ void WriteResources(WTF::TextStream& ts,
   const ComputedStyle& style = object.StyleRef();
   TreeScope& tree_scope = object.GetDocument();
   if (LayoutSVGResourceMasker* masker = resources->Masker()) {
-    WriteIndent(ts, indent);
-    ts << " ";
-    WriteQuotedSVGResource(ts, "masker", style.SvgStyle().MaskerResource(),
-                           tree_scope);
-    ts << " ";
-    WriteStandardPrefix(ts, *masker, 0);
+    WriteSVGResourceReferencePrefix(ts, "masker", masker,
+                                    style.SvgStyle().MaskerResource()->Url(),
+                                    tree_scope, indent);
     ts << " " << masker->ResourceBoundingBox(reference_box, 1) << "\n";
   }
   if (LayoutSVGResourceClipper* clipper = resources->Clipper()) {
@@ -735,13 +738,8 @@ void WriteResources(WTF::TextStream& ts,
     DCHECK_EQ(style.ClipPath()->GetType(), ClipPathOperation::REFERENCE);
     const ReferenceClipPathOperation& clip_path_reference =
         To<ReferenceClipPathOperation>(*style.ClipPath());
-    AtomicString id = SVGURIReference::FragmentIdentifierFromIRIString(
-        clip_path_reference.Url(), tree_scope);
-    WriteIndent(ts, indent);
-    ts << " ";
-    WriteNameAndQuotedValue(ts, "clipPath", id);
-    ts << " ";
-    WriteStandardPrefix(ts, *clipper, 0);
+    WriteSVGResourceReferencePrefix(
+        ts, "clipPath", clipper, clip_path_reference.Url(), tree_scope, indent);
     ts << " " << clipper->ResourceBoundingBox(reference_box) << "\n";
   }
   if (LayoutSVGResourceFilter* filter = GetFilterResourceForSVG(style)) {
@@ -751,13 +749,9 @@ void WriteResources(WTF::TextStream& ts,
     DCHECK_EQ(filter_operation.GetType(), FilterOperation::REFERENCE);
     const auto& reference_filter_operation =
         To<ReferenceFilterOperation>(filter_operation);
-    AtomicString id = SVGURIReference::FragmentIdentifierFromIRIString(
-        reference_filter_operation.Url(), tree_scope);
-    WriteIndent(ts, indent);
-    ts << " ";
-    WriteNameAndQuotedValue(ts, "filter", id);
-    ts << " ";
-    WriteStandardPrefix(ts, *filter, 0);
+    WriteSVGResourceReferencePrefix(ts, "filter", filter,
+                                    reference_filter_operation.Url(),
+                                    tree_scope, indent);
     ts << " " << filter->ResourceBoundingBox(reference_box) << "\n";
   }
 }
