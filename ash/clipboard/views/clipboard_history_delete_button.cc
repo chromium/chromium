@@ -9,6 +9,8 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/scoped_light_mode_as_default.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
@@ -21,7 +23,8 @@ ClipboardHistoryDeleteButton::ClipboardHistoryDeleteButton(
           },
           base::Unretained(listener))) {
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-  SetAccessibleName(base::ASCIIToUTF16(std::string(GetClassName())));
+  SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_DELETE_BUTTON));
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   SetPreferredSize(gfx::Size(ClipboardHistoryViews::kDeleteButtonSizeDip,
