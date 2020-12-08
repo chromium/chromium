@@ -734,47 +734,6 @@ AccessibleNode* AXObject::GetAccessibleNode() const {
   return element->ExistingAccessibleNode();
 }
 
-void AXObject::GetSparseAXAttributes(
-    AXSparseAttributeClient& sparse_attribute_client) const {
-  AXSparseAttributeAOMPropertyClient property_client(*ax_object_cache_,
-                                                     sparse_attribute_client);
-  AccessibleNode* accessible_node = GetAccessibleNode();
-
-  // Virtual nodes for AOM are still tied to the AXTree.
-  if (accessible_node && IsVirtualObject())
-    accessible_node->GetAllAOMProperties(&property_client);
-
-  Element* element = GetElement();
-  if (!element)
-    return;
-
-  AXSparseAttributeSetterMap& ax_sparse_attribute_setter_map =
-      GetSparseAttributeSetterMap();
-  AttributeCollection attributes = element->AttributesWithoutUpdate();
-  HashSet<QualifiedName> set_attributes;
-  for (const Attribute& attr : attributes) {
-    set_attributes.insert(attr.GetName());
-
-    AXSparseAttributeSetter* setter =
-        ax_sparse_attribute_setter_map.at(attr.GetName());
-    if (setter)
-      setter->Run(*this, sparse_attribute_client, attr.Value());
-  }
-  if (!element->DidAttachInternals())
-    return;
-  const auto& internals_attributes =
-      element->EnsureElementInternals().GetAttributes();
-  for (const QualifiedName& attr : internals_attributes.Keys()) {
-    if (set_attributes.Contains(attr))
-      continue;
-    AXSparseAttributeSetter* setter = ax_sparse_attribute_setter_map.at(attr);
-    if (setter) {
-      setter->Run(*this, sparse_attribute_client,
-                  internals_attributes.at(attr));
-    }
-  }
-}
-
 void AXObject::Serialize(ui::AXNodeData* node_data,
                          ui::AXMode accessibility_mode) {
   AccessibilityExpanded expanded = IsExpanded();
@@ -933,7 +892,7 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     SerializeStyleAttributes(node_data);
   }
 
-  SerializePartialSparseAttributes(node_data);
+  SerializeSparseAttributes(node_data);
 
   if (Element* element = this->GetElement()) {
     if (const AtomicString& class_name = element->GetClassAttribute()) {
@@ -1118,7 +1077,7 @@ void AXObject::SerializeStyleAttributes(ui::AXNodeData* node_data) {
   }
 }
 
-void AXObject::SerializePartialSparseAttributes(ui::AXNodeData* node_data) {
+void AXObject::SerializeSparseAttributes(ui::AXNodeData* node_data) {
   if (IsVirtualObject()) {
     AccessibleNode* accessible_node = GetAccessibleNode();
     if (accessible_node) {
@@ -1132,7 +1091,7 @@ void AXObject::SerializePartialSparseAttributes(ui::AXNodeData* node_data) {
   if (!element)
     return;
 
-  TempSetterMap& setter_map = GetTempSetterMap();
+  AXSparseAttributeSetterMap& setter_map = GetAXSparseAttributeSetterMap();
   AttributeCollection attributes = element->AttributesWithoutUpdate();
   HashSet<QualifiedName> set_attributes;
   for (const Attribute& attr : attributes) {

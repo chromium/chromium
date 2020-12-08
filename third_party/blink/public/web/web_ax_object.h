@@ -62,16 +62,6 @@ class WebURL;
 struct WebRect;
 struct WebSize;
 
-class BLINK_EXPORT WebAXSparseAttributeClient {
- public:
-  WebAXSparseAttributeClient() = default;
-  virtual ~WebAXSparseAttributeClient() = default;
-
-  virtual void AddObjectAttribute(WebAXObjectAttribute, const WebAXObject&) = 0;
-  virtual void AddObjectVectorAttribute(WebAXObjectVectorAttribute,
-                                        const WebVector<WebAXObject>&) = 0;
-};
-
 // A container for passing around a reference to AXObject.
 class WebAXObject {
  public:
@@ -136,12 +126,6 @@ class WebAXObject {
 
   BLINK_EXPORT WebAXObject ChildAt(unsigned) const;
   BLINK_EXPORT WebAXObject ParentObject() const;
-
-  // Retrieve accessibility attributes that apply to only a small
-  // fraction of WebAXObjects by passing an implementation of
-  // WebAXSparseAttributeClient, which will be called with only the attributes
-  // that apply to this object.
-  BLINK_EXPORT void GetSparseAXAttributes(WebAXSparseAttributeClient&) const;
 
   // Serialize the properties of this node into |node_data|.
   //

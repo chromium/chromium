@@ -378,59 +378,6 @@ std::unique_ptr<AXProperty> CreateRelatedNodeListProperty(
   return CreateProperty(key, std::move(node_list_value));
 }
 
-class SparseAttributeAXPropertyAdapter
-    : public GarbageCollected<SparseAttributeAXPropertyAdapter>,
-      public AXSparseAttributeClient {
- public:
-  SparseAttributeAXPropertyAdapter(AXObject& ax_object,
-                                   protocol::Array<AXProperty>& properties)
-      : ax_object_(&ax_object), properties_(properties) {}
-
-  void Trace(Visitor* visitor) const { visitor->Trace(ax_object_); }
-
- private:
-  Member<AXObject> ax_object_;
-  protocol::Array<AXProperty>& properties_;
-
-  void AddObjectAttribute(AXObjectAttribute attribute,
-                          AXObject& object) override {
-    switch (attribute) {
-      case AXObjectAttribute::kAriaActiveDescendant:
-        properties_.emplace_back(
-            CreateProperty(AXPropertyNameEnum::Activedescendant,
-                           CreateRelatedNodeListValue(object)));
-        break;
-      case AXObjectAttribute::kAriaErrorMessage:
-        properties_.emplace_back(
-            CreateProperty(AXPropertyNameEnum::Errormessage,
-                           CreateRelatedNodeListValue(object)));
-        break;
-    }
-  }
-
-  void AddObjectVectorAttribute(
-      AXObjectVectorAttribute attribute,
-      HeapVector<Member<AXObject>>* objects) override {
-    switch (attribute) {
-      case AXObjectVectorAttribute::kAriaControls:
-        properties_.emplace_back(CreateRelatedNodeListProperty(
-            AXPropertyNameEnum::Controls, *objects,
-            html_names::kAriaControlsAttr, *ax_object_));
-        break;
-      case AXObjectVectorAttribute::kAriaDetails:
-        properties_.emplace_back(CreateRelatedNodeListProperty(
-            AXPropertyNameEnum::Details, *objects, html_names::kAriaDetailsAttr,
-            *ax_object_));
-        break;
-      case AXObjectVectorAttribute::kAriaFlowTo:
-        properties_.emplace_back(CreateRelatedNodeListProperty(
-            AXPropertyNameEnum::Flowto, *objects, html_names::kAriaFlowtoAttr,
-            *ax_object_));
-        break;
-    }
-  }
-};
-
 void FillRelationships(AXObject& ax_object,
                        protocol::Array<AXProperty>& properties) {
   AXObject::AXObjectVector results;
@@ -451,11 +398,19 @@ void FillRelationships(AXObject& ax_object,
   results.clear();
 }
 
+void GetObjectsFromAXIDs(const AXObjectCacheImpl& cache,
+                         const std::vector<int32_t>& ax_ids,
+                         AXObject::AXObjectVector* ax_objects) {
+  for (const auto& ax_id : ax_ids) {
+    AXObject* ax_object = cache.ObjectFromAXID(ax_id);
+    if (!ax_object)
+      continue;
+    ax_objects->push_back(ax_object);
+  }
+}
+
 void FillSparseAttributes(AXObject& ax_object,
                           protocol::Array<AXProperty>& properties) {
-  SparseAttributeAXPropertyAdapter adapter(ax_object, properties);
-  ax_object.GetSparseAXAttributes(adapter);
-
   ui::AXNodeData node_data;
   ax_object.Serialize(&node_data, ui::kAXModeComplete);
 
@@ -485,6 +440,58 @@ void FillSparseAttributes(AXObject& ax_object,
         CreateProperty(AXPropertyNameEnum::Roledescription,
                        CreateValue(WTF::String(role_description.c_str()),
                                    AXValueTypeEnum::String)));
+  }
+
+  if (node_data.HasIntAttribute(
+          ax::mojom::blink::IntAttribute::kActivedescendantId)) {
+    AXObject* target =
+        ax_object.AXObjectCache().ObjectFromAXID(node_data.GetIntAttribute(
+            ax::mojom::blink::IntAttribute::kActivedescendantId));
+    properties.emplace_back(
+        CreateProperty(AXPropertyNameEnum::Activedescendant,
+                       CreateRelatedNodeListValue(*target)));
+  }
+
+  if (node_data.HasIntAttribute(
+          ax::mojom::blink::IntAttribute::kErrormessageId)) {
+    AXObject* target =
+        ax_object.AXObjectCache().ObjectFromAXID(node_data.GetIntAttribute(
+            ax::mojom::blink::IntAttribute::kErrormessageId));
+    properties.emplace_back(CreateProperty(
+        AXPropertyNameEnum::Errormessage, CreateRelatedNodeListValue(*target)));
+  }
+
+  if (node_data.HasIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kControlsIds)) {
+    const auto ax_ids = node_data.GetIntListAttribute(
+        ax::mojom::blink::IntListAttribute::kControlsIds);
+    AXObject::AXObjectVector ax_objects;
+    GetObjectsFromAXIDs(ax_object.AXObjectCache(), ax_ids, &ax_objects);
+    properties.emplace_back(CreateRelatedNodeListProperty(
+        AXPropertyNameEnum::Controls, ax_objects, html_names::kAriaControlsAttr,
+        ax_object));
+  }
+
+  if (node_data.HasIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kDetailsIds)) {
+    const auto ax_ids = node_data.GetIntListAttribute(
+        ax::mojom::blink::IntListAttribute::kDetailsIds);
+    AXObject::AXObjectVector ax_objects;
+    GetObjectsFromAXIDs(ax_object.AXObjectCache(), ax_ids, &ax_objects);
+    properties.emplace_back(
+        CreateRelatedNodeListProperty(AXPropertyNameEnum::Details, ax_objects,
+                                      html_names::kAriaDetailsAttr, ax_object));
+  }
+
+  if (node_data.HasIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kFlowtoIds)) {
+    const auto ax_ids = node_data.GetIntListAttribute(
+        ax::mojom::blink::IntListAttribute::kFlowtoIds);
+    AXObject::AXObjectVector ax_objects;
+    GetObjectsFromAXIDs(ax_object.AXObjectCache(), ax_ids, &ax_objects);
+    properties.emplace_back(
+        CreateRelatedNodeListProperty(AXPropertyNameEnum::Flowto, ax_objects,
+                                      html_names::kAriaFlowtoAttr, ax_object));
   }
   return;
 }
@@ -686,8 +693,8 @@ std::unique_ptr<AXNode> InspectorAccessibilityAgent::BuildProtocolAXObject(
   FillWidgetProperties(ax_object, *(properties.get()));
   FillWidgetStates(ax_object, *(properties.get()));
   FillRelationships(ax_object, *(properties.get()));
+  FillSparseAttributes(ax_object, *(properties.get()));
 
-  FillSparseAttributes(ax_object, *properties);
   AXObject::NameSources name_sources;
   String computed_name = ax_object.GetName(&name_sources);
   if (!name_sources.IsEmpty()) {

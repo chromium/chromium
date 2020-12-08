@@ -273,29 +273,6 @@ class AttributesCollector {
   DISALLOW_COPY_AND_ASSIGN(AttributesCollector);
 };
 
-class SparseAttributeAdapter : public blink::WebAXSparseAttributeClient {
- public:
-  SparseAttributeAdapter() {}
-  ~SparseAttributeAdapter() override {}
-
-  std::map<blink::WebAXObjectAttribute, blink::WebAXObject> object_attributes;
-  std::map<blink::WebAXObjectVectorAttribute,
-           blink::WebVector<blink::WebAXObject>>
-      object_vector_attributes;
-
- private:
-  void AddObjectAttribute(blink::WebAXObjectAttribute attribute,
-                          const blink::WebAXObject& value) override {
-    object_attributes[attribute] = value;
-  }
-
-  void AddObjectVectorAttribute(
-      blink::WebAXObjectVectorAttribute attribute,
-      const blink::WebVector<blink::WebAXObject>& value) override {
-    object_vector_attributes[attribute] = value;
-  }
-};
-
 }  // namespace
 
 gin::WrapperInfo WebAXObjectProxy::kWrapperInfo = {gin::kEmbedderNativeGin};
@@ -1169,67 +1146,76 @@ bool WebAXObjectProxy::IsClickable() {
 
 v8::Local<v8::Object> WebAXObjectProxy::AriaActiveDescendantElement() {
   UpdateLayout();
-  SparseAttributeAdapter attribute_adapter;
-  accessibility_object_.GetSparseAXAttributes(attribute_adapter);
-  blink::WebAXObject element =
-      attribute_adapter.object_attributes
-          [blink::WebAXObjectAttribute::kAriaActiveDescendant];
-  return factory_->GetOrCreate(element);
+  int ax_id = GetAXNodeData().GetIntAttribute(
+      ax::mojom::IntAttribute::kActivedescendantId);
+
+  if (!ax_id)
+    return v8::Local<v8::Object>();
+
+  blink::WebAXObject web_ax_object = blink::WebAXObject::FromWebDocumentByID(
+      accessibility_object_.GetDocument(), ax_id);
+  return factory_->GetOrCreate(web_ax_object);
 }
 
 v8::Local<v8::Object> WebAXObjectProxy::AriaControlsElementAtIndex(
     unsigned index) {
   UpdateLayout();
-  SparseAttributeAdapter attribute_adapter;
-  accessibility_object_.GetSparseAXAttributes(attribute_adapter);
-  blink::WebVector<blink::WebAXObject> elements =
-      attribute_adapter.object_vector_attributes
-          [blink::WebAXObjectVectorAttribute::kAriaControls];
-  size_t element_count = elements.size();
+  auto ax_ids = GetAXNodeData().GetIntListAttribute(
+      ax::mojom::IntListAttribute::kControlsIds);
+  size_t element_count = ax_ids.size();
+
   if (index >= element_count)
     return v8::Local<v8::Object>();
 
-  return factory_->GetOrCreate(elements[index]);
+  blink::WebAXObject web_ax_object = blink::WebAXObject::FromWebDocumentByID(
+      accessibility_object_.GetDocument(), ax_ids[index]);
+
+  return factory_->GetOrCreate(web_ax_object);
 }
 
 v8::Local<v8::Object> WebAXObjectProxy::AriaDetailsElementAtIndex(
     unsigned index) {
   UpdateLayout();
-  SparseAttributeAdapter attribute_adapter;
-  accessibility_object_.GetSparseAXAttributes(attribute_adapter);
-  blink::WebVector<blink::WebAXObject> elements =
-      attribute_adapter.object_vector_attributes
-          [blink::WebAXObjectVectorAttribute::kAriaDetails];
-  size_t element_count = elements.size();
+  auto ax_ids = GetAXNodeData().GetIntListAttribute(
+      ax::mojom::IntListAttribute::kDetailsIds);
+  size_t element_count = ax_ids.size();
+
   if (index >= element_count)
     return v8::Local<v8::Object>();
 
-  return factory_->GetOrCreate(elements[index]);
+  blink::WebAXObject web_ax_object = blink::WebAXObject::FromWebDocumentByID(
+      accessibility_object_.GetDocument(), ax_ids[index]);
+
+  return factory_->GetOrCreate(web_ax_object);
 }
 
 v8::Local<v8::Object> WebAXObjectProxy::AriaErrorMessageElement() {
   UpdateLayout();
-  SparseAttributeAdapter attribute_adapter;
-  accessibility_object_.GetSparseAXAttributes(attribute_adapter);
-  blink::WebAXObject element =
-      attribute_adapter
-          .object_attributes[blink::WebAXObjectAttribute::kAriaErrorMessage];
-  return factory_->GetOrCreate(element);
+  int ax_id =
+      GetAXNodeData().GetIntAttribute(ax::mojom::IntAttribute::kErrormessageId);
+
+  if (!ax_id)
+    return v8::Local<v8::Object>();
+
+  blink::WebAXObject web_ax_object = blink::WebAXObject::FromWebDocumentByID(
+      accessibility_object_.GetDocument(), ax_id);
+  return factory_->GetOrCreate(web_ax_object);
 }
 
 v8::Local<v8::Object> WebAXObjectProxy::AriaFlowToElementAtIndex(
     unsigned index) {
   UpdateLayout();
-  SparseAttributeAdapter attribute_adapter;
-  accessibility_object_.GetSparseAXAttributes(attribute_adapter);
-  blink::WebVector<blink::WebAXObject> elements =
-      attribute_adapter.object_vector_attributes
-          [blink::WebAXObjectVectorAttribute::kAriaFlowTo];
-  size_t element_count = elements.size();
+  auto ax_ids = GetAXNodeData().GetIntListAttribute(
+      ax::mojom::IntListAttribute::kFlowtoIds);
+  size_t element_count = ax_ids.size();
+
   if (index >= element_count)
     return v8::Local<v8::Object>();
 
-  return factory_->GetOrCreate(elements[index]);
+  blink::WebAXObject web_ax_object = blink::WebAXObject::FromWebDocumentByID(
+      accessibility_object_.GetDocument(), ax_ids[index]);
+
+  return factory_->GetOrCreate(web_ax_object);
 }
 
 v8::Local<v8::Object> WebAXObjectProxy::AriaOwnsElementAtIndex(unsigned index) {

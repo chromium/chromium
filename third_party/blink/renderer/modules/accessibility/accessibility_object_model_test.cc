@@ -264,32 +264,6 @@ TEST_F(AccessibilityObjectModelTest, Grid) {
   EXPECT_EQ(0U, ax_cell2->AriaRowIndex());
 }
 
-class SparseAttributeAdapter : public AXSparseAttributeClient {
-  STACK_ALLOCATED();
-
- public:
-  SparseAttributeAdapter() = default;
-  ~SparseAttributeAdapter() = default;
-
-  HeapHashMap<AXObjectAttribute, Member<AXObject>> object_attributes;
-  HeapHashMap<AXObjectVectorAttribute, Member<HeapVector<Member<AXObject>>>>
-      object_vector_attributes;
-
- private:
-  void AddObjectAttribute(AXObjectAttribute attribute,
-                          AXObject& value) override {
-    ASSERT_TRUE(object_attributes.find(attribute) == object_attributes.end());
-    object_attributes.insert(attribute, &value);
-  }
-
-  void AddObjectVectorAttribute(AXObjectVectorAttribute attribute,
-                                HeapVector<Member<AXObject>>* value) override {
-    ASSERT_TRUE(object_vector_attributes.find(attribute) ==
-                object_vector_attributes.end());
-    object_vector_attributes.insert(attribute, value);
-  }
-};
-
 TEST_F(AccessibilityObjectModelTest, SparseAttributes) {
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
@@ -313,9 +287,6 @@ TEST_F(AccessibilityObjectModelTest, SparseAttributes) {
   auto* cache = AXObjectCache();
   ASSERT_NE(nullptr, cache);
   auto* ax_target = cache->GetOrCreate(target);
-  SparseAttributeAdapter sparse_attributes;
-  ax_target->GetSparseAXAttributes(sparse_attributes);
-
   ui::AXNodeData node_data;
   ax_target->Serialize(&node_data, ui::kAXModeComplete);
 
@@ -323,18 +294,20 @@ TEST_F(AccessibilityObjectModelTest, SparseAttributes) {
                           ax::mojom::blink::StringAttribute::kKeyShortcuts));
   ASSERT_EQ("Widget", node_data.GetStringAttribute(
                           ax::mojom::blink::StringAttribute::kRoleDescription));
+  auto* active_descendant_target =
+      cache->ObjectFromAXID(node_data.GetIntAttribute(
+          ax::mojom::blink::IntAttribute::kActivedescendantId));
+  ASSERT_NE(nullptr, active_descendant_target);
   ASSERT_EQ(ax::mojom::Role::kListBoxOption,
-            sparse_attributes.object_attributes
-                .at(AXObjectAttribute::kAriaActiveDescendant)
-                ->RoleValue());
-  ASSERT_EQ(ax::mojom::Role::kContentInfo,
-            (*sparse_attributes.object_vector_attributes.at(
-                AXObjectVectorAttribute::kAriaDetails))[0]
-                ->RoleValue());
-  ASSERT_EQ(ax::mojom::Role::kArticle,
-            sparse_attributes.object_attributes
-                .at(AXObjectAttribute::kAriaErrorMessage)
-                ->RoleValue());
+            active_descendant_target->RoleValue());
+  auto* aria_details_target =
+      cache->ObjectFromAXID(node_data.GetIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kDetailsIds)[0]);
+  ASSERT_EQ(ax::mojom::Role::kContentInfo, aria_details_target->RoleValue());
+  auto* error_message_target = cache->ObjectFromAXID(node_data.GetIntAttribute(
+      ax::mojom::blink::IntAttribute::kErrormessageId));
+  ASSERT_NE(nullptr, error_message_target);
+  ASSERT_EQ(ax::mojom::Role::kArticle, error_message_target->RoleValue());
 
   target->accessibleNode()->setKeyShortcuts("Ctrl+L");
   target->accessibleNode()->setRoleDescription("Object");
@@ -348,25 +321,26 @@ TEST_F(AccessibilityObjectModelTest, SparseAttributes) {
   target->accessibleNode()->setErrorMessage(
       GetDocument().getElementById("error2")->accessibleNode());
 
-  SparseAttributeAdapter sparse_attributes2;
-  ax_target->GetSparseAXAttributes(sparse_attributes2);
+  ui::AXNodeData node_data2;
+  ax_target->Serialize(&node_data2, ui::kAXModeComplete);
 
   ASSERT_EQ("Ctrl+K", node_data.GetStringAttribute(
                           ax::mojom::blink::StringAttribute::kKeyShortcuts));
   ASSERT_EQ("Widget", node_data.GetStringAttribute(
                           ax::mojom::blink::StringAttribute::kRoleDescription));
+  auto* active_descendant_target2 =
+      cache->ObjectFromAXID(node_data2.GetIntAttribute(
+          ax::mojom::blink::IntAttribute::kActivedescendantId));
   ASSERT_EQ(ax::mojom::Role::kListBoxOption,
-            sparse_attributes2.object_attributes
-                .at(AXObjectAttribute::kAriaActiveDescendant)
-                ->RoleValue());
-  ASSERT_EQ(ax::mojom::Role::kContentInfo,
-            (*sparse_attributes2.object_vector_attributes.at(
-                AXObjectVectorAttribute::kAriaDetails))[0]
-                ->RoleValue());
-  ASSERT_EQ(ax::mojom::Role::kArticle,
-            sparse_attributes2.object_attributes
-                .at(AXObjectAttribute::kAriaErrorMessage)
-                ->RoleValue());
+            active_descendant_target2->RoleValue());
+  auto* aria_details_target2 =
+      cache->ObjectFromAXID(node_data2.GetIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kDetailsIds)[0]);
+  ASSERT_EQ(ax::mojom::Role::kContentInfo, aria_details_target2->RoleValue());
+  auto* error_message_target2 = cache->ObjectFromAXID(node_data.GetIntAttribute(
+      ax::mojom::blink::IntAttribute::kErrormessageId));
+  ASSERT_NE(nullptr, error_message_target2);
+  ASSERT_EQ(ax::mojom::Role::kArticle, error_message_target2->RoleValue());
 }
 
 TEST_F(AccessibilityObjectModelTest, LabeledBy) {

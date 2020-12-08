@@ -80,13 +80,6 @@ enum class AOMFloatProperty;
 enum class AOMRelationProperty;
 enum class AOMRelationListProperty;
 
-class AXSparseAttributeClient {
- public:
-  virtual void AddObjectAttribute(AXObjectAttribute, AXObject&) = 0;
-  virtual void AddObjectVectorAttribute(AXObjectVectorAttribute,
-                                        HeapVector<Member<AXObject>>*) = 0;
-};
-
 class IgnoredReason {
   DISALLOW_NEW();
 
@@ -394,8 +387,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual AccessibleNode* GetAccessibleNode() const;
 
   void TokenVectorFromAttribute(Vector<String>&, const QualifiedName&) const;
-
-  void GetSparseAXAttributes(AXSparseAttributeClient&) const;
 
   // Serialize the properties of this node into |node_data|.
   //
@@ -1322,9 +1313,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void UpdateCachedAttributeValuesIfNeeded() const;
 
   // Helpers for serialization.
-  // TODO(meredithl): Serialize all sparse/table attributes and rename.
-  void SerializePartialSparseAttributes(ui::AXNodeData* node_data);
   void SerializeStyleAttributes(ui::AXNodeData* node_data);
+  void SerializeSparseAttributes(ui::AXNodeData* node_data);
   void SerializeTableAttributes(ui::AXNodeData* node_data);
 
  private:

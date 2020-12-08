@@ -86,31 +86,6 @@ mojom::blink::ScrollAlignment::Behavior ToBlinkScrollAlignmentBehavior(
 }
 }  // namespace
 
-class WebAXSparseAttributeClientAdapter : public AXSparseAttributeClient {
- public:
-  explicit WebAXSparseAttributeClientAdapter(
-      WebAXSparseAttributeClient& attribute_map)
-      : attribute_map_(attribute_map) {}
-  virtual ~WebAXSparseAttributeClientAdapter() = default;
-
- private:
-  WebAXSparseAttributeClient& attribute_map_;
-
-  void AddObjectAttribute(AXObjectAttribute attribute,
-                          AXObject& value) override {
-    attribute_map_.AddObjectAttribute(
-        static_cast<WebAXObjectAttribute>(attribute), WebAXObject(&value));
-  }
-
-  void AddObjectVectorAttribute(AXObjectVectorAttribute attribute,
-                                HeapVector<Member<AXObject>>* value) override {
-    WebVector<WebAXObject> result(value->size());
-    std::copy(value->begin(), value->end(), result.begin());
-    attribute_map_.AddObjectVectorAttribute(
-        static_cast<WebAXObjectVectorAttribute>(attribute), result);
-  }
-};
-
 // A utility class which uses the lifetime of this object to signify when
 // AXObjCache or AXObjectCacheImpl handles programmatic actions.
 class ScopedActionAnnotator {
@@ -255,15 +230,6 @@ WebAXObject WebAXObject::ParentObject() const {
     return WebAXObject();
 
   return WebAXObject(private_->ParentObjectIncludedInTree());
-}
-
-void WebAXObject::GetSparseAXAttributes(
-    WebAXSparseAttributeClient& client) const {
-  if (IsDetached())
-    return;
-
-  WebAXSparseAttributeClientAdapter adapter(client);
-  private_->GetSparseAXAttributes(adapter);
 }
 
 void WebAXObject::Serialize(ui::AXNodeData* node_data,
