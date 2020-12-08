@@ -3456,6 +3456,8 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
     }
   }
   if (num_objects_to_write == 0) {
+    IDB_ASYNC_TRACE_END("IndexedDBBackingStore::Transaction::WriteNewBlobs",
+                        this);
     return std::move(callback).Run(
         BlobWriteResult::kRunPhaseTwoAndReturnResult,
         storage::mojom::WriteBlobToFileResult::kSuccess);
@@ -3479,6 +3481,9 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
         if (result != storage::mojom::WriteBlobToFileResult::kSuccess) {
           auto on_complete = std::move(write_state.on_complete);
           transaction->write_state_.reset();
+          IDB_ASYNC_TRACE_END(
+              "IndexedDBBackingStore::Transaction::WriteNewBlobs",
+              transaction.get());
           std::move(on_complete).Run(BlobWriteResult::kFailure, result);
           return;
         }
@@ -3486,6 +3491,9 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
         if (write_state.calls_left == 0) {
           auto on_complete = std::move(write_state.on_complete);
           transaction->write_state_.reset();
+          IDB_ASYNC_TRACE_END(
+              "IndexedDBBackingStore::Transaction::WriteNewBlobs",
+              transaction.get());
           std::move(on_complete)
               .Run(BlobWriteResult::kRunPhaseTwoAsync, result);
         }
