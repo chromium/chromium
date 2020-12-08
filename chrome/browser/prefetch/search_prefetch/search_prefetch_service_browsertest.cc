@@ -59,6 +59,8 @@ constexpr char kOmniboxSuggestPrefetchSecondItemQuery[] = "porgsandwich";
 constexpr char kOmniboxSuggestNonPrefetchQuery[] = "puffins";
 constexpr char kLoadInSubframe[] = "/load_in_subframe";
 constexpr char kClientHintsURL[] = "/accept_ch_with_lifetime.html";
+constexpr char kThrottleHeader[] = "porgs-header";
+constexpr char kThrottleHeaderValue[] = "porgs-header-value";
 }  // namespace
 
 // A response that hangs after serving the start of the response.
@@ -70,6 +72,99 @@ class HangRequestAfterStart : public net::test_server::BasicHttpResponse {
                     net::test_server::SendCompleteCallback done) override {
     send.Run("HTTP/1.1 200 OK\r\nContent-Length:100\r\n\r\n",
              base::DoNothing());
+  }
+};
+
+// A delegate to cancel prefetch requests by setting |defer| to true.
+class DeferringThrottle : public blink::URLLoaderThrottle {
+ public:
+  DeferringThrottle() = default;
+  ~DeferringThrottle() override = default;
+
+  void WillStartRequest(network::ResourceRequest* request,
+                        bool* defer) override {
+    *defer = true;
+  }
+};
+
+class ThrottleAllContentBrowserClient : public ChromeContentBrowserClient {
+ public:
+  ThrottleAllContentBrowserClient() = default;
+  ~ThrottleAllContentBrowserClient() override = default;
+
+  // ContentBrowserClient overrides:
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+  CreateURLLoaderThrottles(
+      const network::ResourceRequest& request,
+      content::BrowserContext* browser_context,
+      const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+      content::NavigationUIData* navigation_ui_data,
+      int frame_tree_node_id) override {
+    std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+    throttles.push_back(std::make_unique<DeferringThrottle>());
+    return throttles;
+  }
+};
+
+// A delegate to cancel prefetch requests by calling cancel on |delegate_|.
+class CancellingThrottle : public blink::URLLoaderThrottle {
+ public:
+  CancellingThrottle() = default;
+  ~CancellingThrottle() override = default;
+
+  void WillStartRequest(network::ResourceRequest* request,
+                        bool* defer) override {
+    delegate_->CancelWithError(net::ERR_ABORTED);
+  }
+};
+
+class CancelAllContentBrowserClient : public ChromeContentBrowserClient {
+ public:
+  CancelAllContentBrowserClient() = default;
+  ~CancelAllContentBrowserClient() override = default;
+
+  // ContentBrowserClient overrides:
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+  CreateURLLoaderThrottles(
+      const network::ResourceRequest& request,
+      content::BrowserContext* browser_context,
+      const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+      content::NavigationUIData* navigation_ui_data,
+      int frame_tree_node_id) override {
+    std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+    throttles.push_back(std::make_unique<CancellingThrottle>());
+    return throttles;
+  }
+};
+
+// A delegate to add a custom header to prefetches.
+class AddHeaderModifyingThrottle : public blink::URLLoaderThrottle {
+ public:
+  AddHeaderModifyingThrottle() = default;
+  ~AddHeaderModifyingThrottle() override = default;
+
+  void WillStartRequest(network::ResourceRequest* request,
+                        bool* defer) override {
+    request->headers.SetHeader(kThrottleHeader, kThrottleHeaderValue);
+  }
+};
+
+class AddHeaderContentBrowserClient : public ChromeContentBrowserClient {
+ public:
+  AddHeaderContentBrowserClient() = default;
+  ~AddHeaderContentBrowserClient() override = default;
+
+  // ContentBrowserClient overrides:
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+  CreateURLLoaderThrottles(
+      const network::ResourceRequest& request,
+      content::BrowserContext* browser_context,
+      const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+      content::NavigationUIData* navigation_ui_data,
+      int frame_tree_node_id) override {
+    std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+    throttles.push_back(std::make_unique<AddHeaderModifyingThrottle>());
+    return throttles;
   }
 };
 
@@ -538,11 +633,87 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_EQ(1u, search_server_prefetch_request_count());
   // Make sure we don't get client hints headers by default.
   EXPECT_FALSE(base::Contains(headers, "viewport-width"));
+  EXPECT_TRUE(base::Contains(headers, "User-Agent"));
+  ASSERT_TRUE(base::Contains(headers, "Upgrade-Insecure-Requests"));
+  EXPECT_TRUE(base::Contains(headers["Upgrade-Insecure-Requests"], "1"));
 
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       base::ASCIIToUTF16(search_terms));
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kCanBeServed, prefetch_status.value());
+}
+
+IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
+                       PrefetchThrottled) {
+  ThrottleAllContentBrowserClient browser_client;
+  auto* old_client = content::SetBrowserClientForTesting(&browser_client);
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  EXPECT_FALSE(prefetch_status.has_value());
+  content::SetBrowserClientForTesting(old_client);
+}
+
+IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
+                       PrefetchCancelledByThrottle) {
+  CancelAllContentBrowserClient browser_client;
+  auto* old_client = content::SetBrowserClientForTesting(&browser_client);
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  EXPECT_FALSE(prefetch_status.has_value());
+  content::SetBrowserClientForTesting(old_client);
+}
+
+IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
+                       PrefetchThrottleAddsHeader) {
+  AddHeaderContentBrowserClient browser_client;
+  auto* old_client = content::SetBrowserClientForTesting(&browser_client);
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kInFlight, prefetch_status.value());
+
+  WaitUntilStatusChanges(base::ASCIIToUTF16(search_terms));
+
+  auto headers = search_server_requests()[0].headers;
+  EXPECT_EQ(1u, search_server_requests().size());
+  ASSERT_TRUE(base::Contains(headers, kThrottleHeader));
+  EXPECT_TRUE(base::Contains(headers[kThrottleHeader], kThrottleHeaderValue));
+
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kCanBeServed, prefetch_status.value());
+  content::SetBrowserClientForTesting(old_client);
 }
 
 class HeaderObserverContentBrowserClient : public ChromeContentBrowserClient {
