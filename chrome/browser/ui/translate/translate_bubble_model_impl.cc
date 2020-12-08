@@ -105,15 +105,15 @@ void TranslateBubbleModelImpl::SetNeverTranslateLanguage(bool value) {
 }
 
 bool TranslateBubbleModelImpl::ShouldNeverTranslateSite() {
-  return ui_delegate_->IsSiteBlacklisted();
+  return ui_delegate_->IsSiteOnNeverPromptList();
 }
 
 void TranslateBubbleModelImpl::SetNeverTranslateSite(bool value) {
-  ui_delegate_->SetSiteBlacklist(value);
+  ui_delegate_->SetNeverPrompt(value);
 }
 
 bool TranslateBubbleModelImpl::CanBlocklistSite() {
-  return ui_delegate_->CanBlacklistSite();
+  return ui_delegate_->CanAddToNeverPromptList();
 }
 
 bool TranslateBubbleModelImpl::ShouldAlwaysTranslate() const {

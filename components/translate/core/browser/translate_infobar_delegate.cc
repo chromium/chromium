@@ -191,12 +191,13 @@ void TranslateInfoBarDelegate::ToggleTranslatableLanguageByPrefs() {
   ui_delegate_.SetLanguageBlocked(!ui_delegate_.IsLanguageBlocked());
 }
 
+// TODO(crbug.com/1028966): Update this name to use inclusive language.
 bool TranslateInfoBarDelegate::IsSiteBlacklisted() const {
-  return ui_delegate_.IsSiteBlacklisted();
+  return ui_delegate_.IsSiteOnNeverPromptList();
 }
 
 void TranslateInfoBarDelegate::ToggleSiteBlacklist() {
-  ui_delegate_.SetSiteBlacklist(!ui_delegate_.IsSiteBlacklisted());
+  ui_delegate_.SetNeverPrompt(!ui_delegate_.IsSiteOnNeverPromptList());
 }
 
 bool TranslateInfoBarDelegate::ShouldAlwaysTranslate() const {

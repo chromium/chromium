@@ -104,16 +104,18 @@ class TranslateUIDelegate {
   // Sets the value if the current language is blocked.
   void SetLanguageBlocked(bool value);
 
-  // Returns true if the current webpage is blacklisted.
-  bool IsSiteBlacklisted() const;
+  // Returns true if the current webpage should never be prompted for
+  // translation.
+  bool IsSiteOnNeverPromptList() const;
 
-  // Returns true if the site of the current webpage can be blacklisted.
-  bool CanBlacklistSite() const;
+  // Returns true if the site of the current webpage can be put on the never
+  // prompt list.
+  bool CanAddToNeverPromptList() const;
 
-  // Sets the blacklisted state for the host of the current page. If
-  // value is true, the current host will be blacklisted and translations
-  // will not be offered for that site.
-  void SetSiteBlacklist(bool value);
+  // Sets the never-prompt state for the host of the current page. If
+  // value is true, the current host will be blocklisted and translation
+  // prompts will not show for that site.
+  void SetNeverPrompt(bool value);
 
   // Returns true if the webpage in the current original language should be
   // translated into the current target language automatically.

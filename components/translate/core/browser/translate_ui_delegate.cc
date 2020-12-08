@@ -314,17 +314,16 @@ void TranslateUIDelegate::SetLanguageBlocked(bool value) {
   UMA_HISTOGRAM_BOOLEAN(kNeverTranslateLang, value);
 }
 
-// TODO(crbug.com/1028966): Update this name to use inclusive language.
-bool TranslateUIDelegate::IsSiteBlacklisted() const {
+bool TranslateUIDelegate::IsSiteOnNeverPromptList() const {
   std::string host = GetPageHost();
   return !host.empty() && prefs_->IsSiteOnNeverPromptList(host);
 }
 
-bool TranslateUIDelegate::CanBlacklistSite() const {
+bool TranslateUIDelegate::CanAddToNeverPromptList() const {
   return !GetPageHost().empty();
 }
 
-void TranslateUIDelegate::SetSiteBlacklist(bool value) {
+void TranslateUIDelegate::SetNeverPrompt(bool value) {
   std::string host = GetPageHost();
   if (host.empty())
     return;
