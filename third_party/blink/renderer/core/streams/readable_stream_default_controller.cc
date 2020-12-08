@@ -316,10 +316,10 @@ StreamPromiseResolver* ReadableStreamDefaultController::PullSteps(
     //    stream.[[reader]].[[forAuthorCode]]).
     ReadableStreamGenericReader* reader = stream->reader_;
     return StreamPromiseResolver::CreateResolved(
-        script_state, ReadableStream::CreateReadResult(
-                          script_state, chunk, false,
-                          static_cast<ReadableStreamDefaultReader*>(reader)
-                              ->for_author_code_));
+        script_state,
+        ReadableStream::CreateReadResult(
+            script_state, chunk, false,
+            To<ReadableStreamDefaultReader>(reader)->for_author_code_));
   }
 
   // 3. Let pendingPromise be ! ReadableStreamAddReadRequest(stream).
