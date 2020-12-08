@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import './account_manager_shared_css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -19,6 +20,11 @@ Polymer({
         .addEventListener(
             'click',
             () => this.dispatchEvent(new CustomEvent('opened-new-window')));
+  },
+
+  /** @return {boolean} */
+  isSkipCheckboxChecked() {
+    return this.$.checkbox.checked;
   },
 
   /**

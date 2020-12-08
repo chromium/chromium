@@ -22,6 +22,7 @@ js_type_check("closure_compile") {
 js_library("inline_login_app") {
   deps = [
     ":inline_login_browser_proxy",
+    ":welcome_page_app",
     "//chrome/browser/resources/gaia_auth_host:authenticator.m",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

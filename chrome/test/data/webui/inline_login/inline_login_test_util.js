@@ -71,6 +71,9 @@ export class TestInlineLoginBrowserProxy extends TestBrowserProxy {
       'showIncognito',
       'getAccounts',
       'dialogClose',
+      // <if expr="chromeos">
+      'skipWelcomePage',
+      // </if>
     ]);
   }
 
@@ -119,4 +122,11 @@ export class TestInlineLoginBrowserProxy extends TestBrowserProxy {
   dialogClose() {
     this.methodCalled('dialogClose');
   }
+
+  // <if expr="chromeos">
+  /** @override */
+  skipWelcomePage(skip) {
+    this.methodCalled('skipWelcomePage', skip);
+  }
+  // </if>
 }

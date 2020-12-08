@@ -5487,6 +5487,9 @@
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_TITLE" desc="Title for the Welcome screen in Chrome OS 'Add account' dialog.">
     Add a secondary Google Account for <ph name="USER_NAME">$1<ex>John</ex></ph>
   </message>
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_CHECKBOX" desc="Checkbox text for the Welcome screen in Chrome OS 'Add account' dialog. If user checks this checkbox, this screen will not be shown the next time they open the dialog.">
+    Don't remind me next time
+  </message>
   <message name="IDS_ACCOUNT_MANAGER_ERROR_NO_INTERNET_TITLE" desc="Title for the network error screen.">
     No Internet
   </message>

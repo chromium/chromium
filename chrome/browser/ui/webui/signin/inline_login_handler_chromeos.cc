@@ -355,6 +355,10 @@ void InlineLoginHandlerChromeOS::RegisterMessages() {
       "getAccounts",
       base::BindRepeating(&InlineLoginHandlerChromeOS::GetAccountsInSession,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "skipWelcomePage",
+      base::BindRepeating(&InlineLoginHandlerChromeOS::HandleSkipWelcomePage,
+                          base::Unretained(this)));
 }
 
 void InlineLoginHandlerChromeOS::SetExtraInitParams(
@@ -494,6 +498,11 @@ void InlineLoginHandlerChromeOS::OnGetAccounts(
 
   ResolveJavascriptCallback(base::Value(callback_id),
                             std::move(account_emails));
+}
+
+void InlineLoginHandlerChromeOS::HandleSkipWelcomePage(
+    const base::ListValue* args) {
+  // TODO(crbug.com/1144114): write to pref.
 }
 
 }  // namespace chromeos

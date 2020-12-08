@@ -188,6 +188,8 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
      IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_TITLE},
     {"accountManagerDialogWelcomeBody",
      IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY},
+    {"accountManagerDialogWelcomeCheckbox",
+     IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_CHECKBOX},
     {"accountManagerErrorNoInternetTitle",
      IDS_ACCOUNT_MANAGER_ERROR_NO_INTERNET_TITLE},
     {"accountManagerErrorNoInternetBody",
