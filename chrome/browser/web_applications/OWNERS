@@ -13,8 +13,6 @@ ortuno@chromium.org
 
 # OS shortcuts
 tapted@chromium.org
-# COMPONENT: UI>Browser>WebAppInstalls
-# TEAM: web-apps-platform-team@chromium.org
 
 per-file web_app_file_handler*=davidbienvenu@chromium.org
 per-file web_app_file_handler*=jessemckenna@google.com

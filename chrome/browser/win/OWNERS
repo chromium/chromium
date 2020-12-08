@@ -6,5 +6,3 @@ pmonette@chromium.org
 # per-file rules:
 per-file chrome_elf_init*=file://chrome/chrome_elf/OWNERS
 per-file enumerate_modules_model*=finnur@chromium.org
-
-# COMPONENT: Internals>PlatformIntegration
