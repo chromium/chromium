@@ -4,7 +4,7 @@
 
 import {shoppingTasksDescriptor, TaskModuleHandlerProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
-import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
+import {eventToPromise} from 'chrome://test/test_util.m.js';
 
 suite('NewTabPageModulesTaskModuleTest', () => {
   /**
@@ -180,30 +180,25 @@ suite('NewTabPageModulesTaskModuleTest', () => {
     };
     testProxy.handler.setResultFor('getPrimaryTask', Promise.resolve({task}));
 
-    // Arrange.
-    await shoppingTasksDescriptor.initialize();
-    const moduleElement = shoppingTasksDescriptor.element;
-    document.body.append(moduleElement);
-    await flushTasks();
 
     // Act.
-    const waitForDismissEvent = eventToPromise('dismiss-module', moduleElement);
-    const dismissButton =
-        moduleElement.shadowRoot.querySelector('ntp-module-header')
-            .shadowRoot.querySelector('#dismissButton');
-    dismissButton.click();
-    const dismissEvent = await waitForDismissEvent;
-    const toastMessage = dismissEvent.detail.message;
-    const restoreCallback = dismissEvent.detail.restoreCallback;
+    await shoppingTasksDescriptor.initialize();
 
     // Assert.
-    assertEquals('Hello world', toastMessage);
+    assertEquals('function', typeof shoppingTasksDescriptor.actions.dismiss);
+    assertEquals('function', typeof shoppingTasksDescriptor.actions.restore);
+
+    // Act.
+    const toastMessage = shoppingTasksDescriptor.actions.dismiss();
+
+    // Assert.
+    assertEquals('Removed Hello world', toastMessage);
     assertDeepEquals(
         [taskModule.mojom.TaskModuleType.kShopping, 'Hello world'],
         await testProxy.handler.whenCalled('dismissTask'));
 
     // Act.
-    restoreCallback();
+    shoppingTasksDescriptor.actions.restore();
 
     // Assert.
     assertDeepEquals(

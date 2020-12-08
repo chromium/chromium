@@ -10,7 +10,20 @@ import {BrowserProxy} from '../browser_proxy.js';
  */
 
 /**
- * @typedef {function(): !Promise<?HTMLElement>}
+ * @typedef {{
+ *   info: (function()|undefined),
+ *   dismiss: (function():string|undefined),
+ *   restore: (function()|undefined),
+ * }}
+ */
+let Actions;
+
+/**
+ * @typedef {function(): !Promise<?{
+ *    element: !HTMLElement,
+ *    title: string,
+ *    actions: (undefined|Actions),
+ *  }>}
  */
 let InitializeModuleCallback;
 
@@ -25,10 +38,14 @@ export class ModuleDescriptor {
     this.id_ = id;
     /** @private {number} */
     this.heightPx_ = heightPx;
+    /** @private {?string} */
+    this.title_ = null;
     /** @private {HTMLElement} */
     this.element_ = null;
     /** @private {!InitializeModuleCallback} */
     this.initializeCallback_ = initializeCallback;
+    /** @private {?Actions} */
+    this.actions_ = null;
   }
 
   /** @return {string} */
@@ -41,16 +58,29 @@ export class ModuleDescriptor {
     return this.heightPx_;
   }
 
+  /** @return {?string} */
+  get title() {
+    return this.title_;
+  }
+
   /** @return {?HTMLElement} */
   get element() {
     return this.element_;
   }
 
+  /** @return {?Actions} */
+  get actions() {
+    return this.actions_;
+  }
+
   async initialize() {
-    this.element_ = await this.initializeCallback_();
-    if (!this.element_) {
+    const info = await this.initializeCallback_();
+    if (!info) {
       return;
     }
+    this.title_ = info.title;
+    this.element_ = info.element;
+    this.actions_ = info.actions || null;
     BrowserProxy.getInstance().handler.onModuleLoaded(
         this.id_, BrowserProxy.getInstance().now());
   }
