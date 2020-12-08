@@ -54,10 +54,11 @@ class ProfilePicker {
   // Starts the sign-in flow. The layout of the window gets updated for the
   // sign-in flow. At the same time, the new profile is created (with
   // `profile_color`) and the sign-in page is rendered using the new profile.
-  // If the creation of the new profile fails, `switch_failure_callback` gets
-  // called.
-  static void SwitchToSignIn(SkColor profile_color,
-                             base::OnceClosure switch_failure_callback);
+  // `switch_finished_callback` gets informed whether the creation of the new
+  // profile succeeded and the sign-in page gets displayed.
+  static void SwitchToSignIn(
+      SkColor profile_color,
+      base::OnceCallback<void(bool)> switch_finished_callback);
 
   // Finishes the sign-in flow by moving to the sync confirmation screen. It
   // uses the same new profile created by `SwitchToSignIn()`.

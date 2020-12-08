@@ -40,7 +40,8 @@ Polymer({
   /** @override */
   ready() {
     this.addWebUIListener(
-        'load-signin-failed', () => this.handleLoadSigninFailed_());
+        'load-signin-finished',
+        success => this.handleLoadSigninFinished_(success));
     FocusOutlineManager.forDocument(document);
   },
 
@@ -63,8 +64,9 @@ Polymer({
   },
 
   /** @private */
-  handleLoadSigninFailed_() {
-    // TODO(crbug.com/1126913): Show some error message to inform the user.
+  handleLoadSigninFinished_(success) {
+    // TODO(crbug.com/1126913): If failed, show some error message to inform the
+    // user.
     this.loadSigninInProgess_ = false;
   }
 });

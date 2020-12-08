@@ -104,11 +104,12 @@ void ProfilePicker::Show(EntryPoint entry_point) {
 }
 
 // static
-void ProfilePicker::SwitchToSignIn(SkColor profile_color,
-                                   base::OnceClosure switch_failure_callback) {
+void ProfilePicker::SwitchToSignIn(
+    SkColor profile_color,
+    base::OnceCallback<void(bool)> switch_finished_callback) {
   if (g_profile_picker_view) {
     g_profile_picker_view->SwitchToSignIn(profile_color,
-                                          std::move(switch_failure_callback));
+                                          std::move(switch_finished_callback));
   }
 }
 
@@ -259,9 +260,9 @@ void ProfilePickerView::Init(ProfilePicker::EntryPoint entry_point,
 
 void ProfilePickerView::SwitchToSignIn(
     SkColor profile_color,
-    base::OnceClosure switch_failure_callback) {
-  DCHECK(!switch_failure_callback_);
-  switch_failure_callback_ = std::move(switch_failure_callback);
+    base::OnceCallback<void(bool)> switch_finished_callback) {
+  DCHECK(!switch_finished_callback_);
+  switch_finished_callback_ = std::move(switch_finished_callback);
   size_t icon_index = profiles::GetPlaceholderAvatarIndex();
   // Silently create the new profile for browsing on GAIA (so that the sign-in
   // cookies are stored in the right profile).
@@ -279,18 +280,15 @@ void ProfilePickerView::OnProfileForSigninCreated(
     Profile* profile,
     Profile::CreateStatus status) {
   if (status == Profile::CREATE_STATUS_LOCAL_FAIL) {
-    if (switch_failure_callback_)
-      std::move(switch_failure_callback_).Run();
+    if (switch_finished_callback_)
+      std::move(switch_finished_callback_).Run(false);
     return;
   } else if (status != Profile::CREATE_STATUS_INITIALIZED) {
     return;
   }
 
-  // No need to report failure any more, delete the callback.
-  DCHECK(switch_failure_callback_);
-  switch_failure_callback_ = base::OnceClosure();
-
   DCHECK(profile);
+  std::move(switch_finished_callback_).Run(true);
 
   ProfileAttributesEntry* entry = nullptr;
   if (!g_browser_process->profile_manager()

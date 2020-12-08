@@ -46,7 +46,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void HandleGetProfileThemeInfo(const base::ListValue* args);
   void HandleCreateProfile(const base::ListValue* args);
 
-  void OnLoadSigninFailed();
+  void OnLoadSigninFinished(bool success);
   void GatherProfileStatistics(Profile* profile);
   void OnProfileStatisticsReceived(base::FilePath profile_path,
                                    profiles::ProfileCategoryStats result);

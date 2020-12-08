@@ -504,13 +504,13 @@ void ProfilePickerHandler::HandleLoadSignInProfileCreationFlow(
   DCHECK(args->GetList()[0].is_int());
   SkColor profile_color = args->GetList()[0].GetInt();
   ProfilePicker::SwitchToSignIn(
-      profile_color, base::BindOnce(&ProfilePickerHandler::OnLoadSigninFailed,
+      profile_color, base::BindOnce(&ProfilePickerHandler::OnLoadSigninFinished,
                                     weak_factory_.GetWeakPtr()));
 }
 
-void ProfilePickerHandler::OnLoadSigninFailed() {
+void ProfilePickerHandler::OnLoadSigninFinished(bool success) {
   if (IsJavascriptAllowed())
-    FireWebUIListener("load-signin-failed", base::Value());
+    FireWebUIListener("load-signin-finished", base::Value(success));
 }
 
 void ProfilePickerHandler::OnSwitchToProfileComplete(

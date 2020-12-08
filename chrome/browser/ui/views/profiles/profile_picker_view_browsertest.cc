@@ -258,9 +258,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   WaitForLayoutWithoutToolbar();
 
   // Simulate a click on the signin button.
-  base::MockCallback<base::OnceClosure> switch_failure_callback;
-  EXPECT_CALL(switch_failure_callback, Run()).Times(0);
-  ProfilePicker::SwitchToSignIn(kProfileColor, switch_failure_callback.Get());
+  base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
+  EXPECT_CALL(switch_finished_callback, Run(true));
+  ProfilePicker::SwitchToSignIn(kProfileColor, switch_finished_callback.Get());
 
   // The DICE navigation happens in a new web contents (for the profile being
   // created), wait for it.
@@ -320,9 +320,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   WaitForLayoutWithoutToolbar();
 
   // Simulate a click on the signin button.
-  base::MockCallback<base::OnceClosure> switch_failure_callback;
-  EXPECT_CALL(switch_failure_callback, Run()).Times(0);
-  ProfilePicker::SwitchToSignIn(kProfileColor, switch_failure_callback.Get());
+  base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
+  EXPECT_CALL(switch_finished_callback, Run(true));
+  ProfilePicker::SwitchToSignIn(kProfileColor, switch_finished_callback.Get());
 
   // The DICE navigation happens in a new web contents (for the profile being
   // created), wait for it.
@@ -384,9 +384,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   WaitForLayoutWithoutToolbar();
 
   // Simulate a click on the signin button.
-  base::MockCallback<base::OnceClosure> switch_failure_callback;
-  EXPECT_CALL(switch_failure_callback, Run()).Times(0);
-  ProfilePicker::SwitchToSignIn(kProfileColor, switch_failure_callback.Get());
+  base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
+  EXPECT_CALL(switch_finished_callback, Run(true));
+  ProfilePicker::SwitchToSignIn(kProfileColor, switch_finished_callback.Get());
 
   // The DICE navigation happens in a new web contents (for the profile being
   // created), wait for it.
@@ -445,9 +445,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   WaitForLayoutWithoutToolbar();
 
   // Simulate a click on the signin button.
-  base::MockCallback<base::OnceClosure> switch_failure_callback;
-  EXPECT_CALL(switch_failure_callback, Run()).Times(0);
-  ProfilePicker::SwitchToSignIn(kProfileColor, switch_failure_callback.Get());
+  base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
+  EXPECT_CALL(switch_finished_callback, Run(true));
+  ProfilePicker::SwitchToSignIn(kProfileColor, switch_finished_callback.Get());
 
   // The DICE navigation happens in a new web contents (for the profile being
   // created), wait for it.
@@ -505,9 +505,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   WaitForLayoutWithoutToolbar();
 
   // Simulate a click on the signin button.
-  base::MockCallback<base::OnceClosure> switch_failure_callback;
-  EXPECT_CALL(switch_failure_callback, Run()).Times(0);
-  ProfilePicker::SwitchToSignIn(kProfileColor, switch_failure_callback.Get());
+  base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
+  EXPECT_CALL(switch_finished_callback, Run(true));
+  ProfilePicker::SwitchToSignIn(kProfileColor, switch_finished_callback.Get());
 
   // The DICE navigation happens in a new web contents (for the profile being
   // created), wait for it.
@@ -555,9 +555,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   WaitForLayoutWithoutToolbar();
 
   // Simulate a click on the signin button.
-  base::MockCallback<base::OnceClosure> switch_failure_callback;
-  EXPECT_CALL(switch_failure_callback, Run()).Times(0);
-  ProfilePicker::SwitchToSignIn(kProfileColor, switch_failure_callback.Get());
+  base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
+  EXPECT_CALL(switch_finished_callback, Run(true));
+  ProfilePicker::SwitchToSignIn(kProfileColor, switch_finished_callback.Get());
 
   // The DICE navigation happens in a new web contents (for the profile being
   // created), wait for it.
@@ -631,9 +631,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   WaitForLayoutWithoutToolbar();
 
   // Simulate a click on the signin button.
-  base::MockCallback<base::OnceClosure> switch_failure_callback;
-  EXPECT_CALL(switch_failure_callback, Run()).Times(0);
-  ProfilePicker::SwitchToSignIn(kProfileColor, switch_failure_callback.Get());
+  base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
+  EXPECT_CALL(switch_finished_callback, Run(true));
+  ProfilePicker::SwitchToSignIn(kProfileColor, switch_finished_callback.Get());
 
   // The DICE navigation happens in a new web contents (for the profile being
   // created), wait for it.
@@ -702,9 +702,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   WaitForLayoutWithoutToolbar();
 
   // Simulate a click on the signin button.
-  base::MockCallback<base::OnceClosure> switch_failure_callback;
-  EXPECT_CALL(switch_failure_callback, Run()).Times(0);
-  ProfilePicker::SwitchToSignIn(kProfileColor, switch_failure_callback.Get());
+  base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
+  EXPECT_CALL(switch_finished_callback, Run(true));
+  ProfilePicker::SwitchToSignIn(kProfileColor, switch_finished_callback.Get());
 
   // The DICE navigation happens in a new web contents (for the profile being
   // created), wait for it.

@@ -60,7 +60,7 @@ class ProfilePickerView : public views::DialogDelegateView,
 
   // Switches the layout to the sign-in flow (and creates a new profile)
   void SwitchToSignIn(SkColor profile_color,
-                      base::OnceClosure switch_failure_callback);
+                      base::OnceCallback<void(bool)> switch_finished_callback);
   // On creation success for the sign-in profile, it rebuilds the view.
   void OnProfileForSigninCreated(SkColor profile_color,
                                  Profile* new_profile,
@@ -151,7 +151,7 @@ class ProfilePickerView : public views::DialogDelegateView,
   base::TimeDelta extended_account_info_timeout_;
 
   // Not null iff switching to sign-in is in progress.
-  base::OnceClosure switch_failure_callback_;
+  base::OnceCallback<void(bool)> switch_finished_callback_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
