@@ -34,6 +34,10 @@ class ManagementApiNonPersistentApiTest
 
 // Tests chrome.management.uninstallSelf API.
 IN_PROC_BROWSER_TEST_P(ManagementApiNonPersistentApiTest, UninstallSelf) {
+  // TODO(crbug.com/1003597): Flaky for SW based extension.
+  if (GetParam() == ContextType::kServiceWorker)
+    return;
+
   constexpr char kEventPageBackgroundScript[] = R"({"scripts": ["script.js"]})";
   constexpr char kServiceWorkerBackgroundScript[] =
       R"({"service_worker": "script.js"})";
@@ -127,9 +131,8 @@ INSTANTIATE_TEST_SUITE_P(EventPage,
                          ManagementApiNonPersistentApiTest,
                          ::testing::Values(ContextType::kEventPage));
 
-// Flaky: crbug.com/1003597
-// INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-//                          ManagementApiNonPersistentApiTest,
-//                          ::testing::Values(ContextType::kServiceWorker));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         ManagementApiNonPersistentApiTest,
+                         ::testing::Values(ContextType::kServiceWorker));
 
 }  // namespace extensions
