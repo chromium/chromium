@@ -76,6 +76,16 @@ class MockCameraHalClient : public cros::mojom::CameraHalClient {
   DISALLOW_COPY_AND_ASSIGN(MockCameraHalClient);
 };
 
+class MockCameraActiveClientObserver : public CameraActiveClientObserver {
+ public:
+  void OnActiveClientChange(cros::mojom::CameraClientType type,
+                            bool is_active) override {
+    DoOnActiveClientChange(type, is_active);
+  }
+  MOCK_METHOD2(DoOnActiveClientChange,
+               void(cros::mojom::CameraClientType, bool));
+};
+
 }  // namespace
 
 class CameraHalDispatcherImplTest : public ::testing::Test {
@@ -250,6 +260,34 @@ TEST_F(CameraHalDispatcherImplTest, ClientConnectionError) {
                      base::Unretained(dispatcher_), std::move(client)));
 
   // Wait until the clients gets the newly established Mojo channel.
+  DoLoop();
+}
+
+// Test that CameraHalDispatcherImpl correctly fires CameraActiveClientObserver
+// when a camera device is opened or closed by a client.
+TEST_F(CameraHalDispatcherImplTest, CameraActiveClientObserverTest) {
+  MockCameraActiveClientObserver observer;
+  dispatcher_->AddActiveClientObserver(&observer);
+
+  EXPECT_CALL(observer, DoOnActiveClientChange(
+                            cros::mojom::CameraClientType::TESTING, true))
+      .Times(1)
+      .WillOnce(
+          InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
+  dispatcher_->CameraDeviceActivityChange(
+      /*camera_id=*/0, /*opened=*/true, cros::mojom::CameraClientType::TESTING);
+
+  DoLoop();
+
+  EXPECT_CALL(observer, DoOnActiveClientChange(
+                            cros::mojom::CameraClientType::TESTING, false))
+      .Times(1)
+      .WillOnce(
+          InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
+  dispatcher_->CameraDeviceActivityChange(
+      /*camera_id=*/0, /*opened=*/false,
+      cros::mojom::CameraClientType::TESTING);
+
   DoLoop();
 }
 

@@ -216,7 +216,9 @@ void CameraHalDispatcherImpl::UnregisterPluginVmToken(
 CameraHalDispatcherImpl::CameraHalDispatcherImpl()
     : proxy_thread_("CameraProxyThread"),
       blocking_io_thread_("CameraBlockingIOThread"),
-      camera_hal_server_callbacks_(this) {
+      camera_hal_server_callbacks_(this),
+      active_client_observers_(
+          new base::ObserverListThreadSafe<CameraActiveClientObserver>()) {
   // This event is for adding camera category to categories list.
   TRACE_EVENT0("camera", "CameraHalDispatcherImpl");
   base::trace_event::TraceLog::GetInstance()->AddEnabledStateObserver(this);
