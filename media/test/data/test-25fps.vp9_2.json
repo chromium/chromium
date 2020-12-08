@@ -1,5 +1,6 @@
 {
   "profile": "VP9PROFILE_PROFILE2",
+  "bit_depth": 10,
   "width": 320,
   "height": 240,
   "frame_rate": 25,

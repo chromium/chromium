@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/test_data_util.h"
 #include "media/gpu/test/video.h"
@@ -103,14 +104,15 @@ class VideoDecoderTest : public ::testing::Test {
             output_folder, g_env->GetFrameOutputFormat(),
             g_env->GetFrameOutputLimit());
       }
-
-      // VP9 profile 2 supports 10 and 12 bit color depths, but we currently
-      // assume a profile 2 stream contains 10 bit color depth only.
-      // TODO(hiroh): Add bit depth info to Video class and follow it here.
+      if (g_env->Video()->BitDepth() != 8u &&
+          g_env->Video()->BitDepth() != 10u) {
+        LOG(ERROR) << "Unsupported bit depth: "
+                   << base::strict_cast<int>(g_env->Video()->BitDepth());
+        return nullptr;
+      }
       const VideoPixelFormat validation_format =
-          g_env->Video()->Profile() == VP9PROFILE_PROFILE2
-              ? PIXEL_FORMAT_YUV420P10
-              : PIXEL_FORMAT_I420;
+          g_env->Video()->BitDepth() == 10 ? PIXEL_FORMAT_YUV420P10
+                                           : PIXEL_FORMAT_I420;
       frame_processors.push_back(media::test::MD5VideoFrameValidator::Create(
           video->FrameChecksums(), validation_format, std::move(frame_writer)));
     }

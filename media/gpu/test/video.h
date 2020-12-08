@@ -64,6 +64,8 @@ class Video {
   VideoCodec Codec() const;
   // Get the video's codec profile.
   VideoCodecProfile Profile() const;
+  // Get the video's color bit depth.
+  uint8_t BitDepth() const;
   // Get the video's pixel format.
   VideoPixelFormat PixelFormat() const;
   // Get the video frame rate.
@@ -143,9 +145,11 @@ class Video {
   // List of thumbnail checksums.
   std::vector<std::string> thumbnail_checksums_;
 
-  // Video codec and profile for encoded videos.
+  // Video codec, profile and bit depth for encoded videos.
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
   VideoCodec codec_ = kUnknownVideoCodec;
+  uint8_t bit_depth_ = 0u;
+
   // Pixel format for raw videos.
   VideoPixelFormat pixel_format_ = VideoPixelFormat::PIXEL_FORMAT_UNKNOWN;
 

@@ -10,8 +10,10 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/config/gpu_switches.h"
 #include "media/base/bind_to_current_loop.h"
@@ -46,23 +48,22 @@ namespace {
 // Size of the timestamp cache, needs to be large enough for frame-reordering.
 constexpr size_t kTimestampCacheSize = 128;
 
-// Returns the preferred VA_RT_FORMAT for the given |profile|.
-unsigned int GetVaFormatForVideoCodecProfile(VideoCodecProfile profile) {
-  if (profile == VP9PROFILE_PROFILE2 || profile == VP9PROFILE_PROFILE3)
-    return VA_RT_FORMAT_YUV420_10BPP;
-  return VA_RT_FORMAT_YUV420;
-}
-
-gfx::BufferFormat GetBufferFormat(VideoCodecProfile profile) {
+base::Optional<VideoPixelFormat> GetPixelFormatForBitDepth(uint8_t bit_depth) {
+  constexpr auto kSupportedBitDepthAndGfxFormats = base::MakeFixedFlatMap<
+      uint8_t, gfx::BufferFormat>({
 #if defined(USE_OZONE)
-  if (profile == VP9PROFILE_PROFILE2 || profile == VP9PROFILE_PROFILE3)
-    return gfx::BufferFormat::P010;
-  return gfx::BufferFormat::YUV_420_BIPLANAR;
+    {8u, gfx::BufferFormat::YUV_420_BIPLANAR}, {10u, gfx::BufferFormat::P010},
 #else
-  return gfx::BufferFormat::RGBX_8888;
-#endif
+    {8u, gfx::BufferFormat::RGBX_8888},
+#endif  // defined(USE_OZONE)
+  });
+  if (!base::Contains(kSupportedBitDepthAndGfxFormats, bit_depth)) {
+    VLOGF(1) << "Unsupported bit depth: " << base::strict_cast<int>(bit_depth);
+    return base::nullopt;
+  }
+  return GfxBufferFormatToVideoPixelFormat(
+      kSupportedBitDepthAndGfxFormats.at(bit_depth));
 }
-
 }  // namespace
 
 VaapiVideoDecoder::DecodeTask::DecodeTask(scoped_refptr<DecoderBuffer> buffer,
@@ -452,8 +453,7 @@ scoped_refptr<VASurface> VaapiVideoDecoder::CreateSurface() {
       base::BindOnce(&VaapiVideoDecoder::ReleaseVideoFrame, weak_this_);
 
   return new VASurface(surface_id, frame->layout().coded_size(),
-                       GetVaFormatForVideoCodecProfile(profile_),
-                       std::move(release_frame_cb));
+                       va_surface->format(), std::move(release_frame_cb));
 }
 
 void VaapiVideoDecoder::SurfaceReady(scoped_refptr<VASurface> va_surface,
@@ -512,14 +512,17 @@ void VaapiVideoDecoder::ApplyResolutionChange() {
   DCHECK(output_frames_.empty());
   VLOGF(2);
 
+  const uint8_t bit_depth = decoder_->GetBitDepth();
+  const base::Optional<VideoPixelFormat> format =
+      GetPixelFormatForBitDepth(bit_depth);
+  if (!format) {
+    SetState(State::kError);
+    return;
+  }
   const gfx::Rect visible_rect = decoder_->GetVisibleRect();
   const gfx::Size natural_size =
       GetNaturalSize(visible_rect, pixel_aspect_ratio_);
   const gfx::Size pic_size = decoder_->GetPicSize();
-  const base::Optional<VideoPixelFormat> format =
-      GfxBufferFormatToVideoPixelFormat(
-          GetBufferFormat(decoder_->GetProfile()));
-  CHECK(format);
   auto format_fourcc = Fourcc::FromVideoPixelFormat(*format);
   CHECK(format_fourcc);
   if (!frame_pool_->Initialize(

@@ -131,6 +131,7 @@ std::unique_ptr<Video> Video::ConvertToNV12() const {
   new_video->thumbnail_checksums_ = thumbnail_checksums_;
   new_video->profile_ = profile_;
   new_video->codec_ = codec_;
+  new_video->bit_depth_ = bit_depth_;
   new_video->frame_rate_ = frame_rate_;
   new_video->num_frames_ = num_frames_;
   new_video->num_fragments_ = num_fragments_;
@@ -239,6 +240,10 @@ bool Video::Decode() {
     LOG(ERROR) << "Decoding is currently only supported for VP9 videos";
     return false;
   }
+  if (bit_depth_ != 8u) {
+    LOG(ERROR) << "Decoding is currently only supported for 8bpp videos";
+    return false;
+  }
 
   // The VpxVideoDecoder requires running on a SequencedTaskRunner, so we can't
   // decode the video on the main test thread.
@@ -292,6 +297,10 @@ VideoCodec Video::Codec() const {
 
 VideoCodecProfile Video::Profile() const {
   return profile_;
+}
+
+uint8_t Video::BitDepth() const {
+  return bit_depth_;
 }
 
 VideoPixelFormat Video::PixelFormat() const {
@@ -387,6 +396,21 @@ bool Video::LoadMetadata() {
       return false;
     }
     codec_ = converted_codec.value();
+  }
+
+  // Find the video's bit depth. This is optional and only required for encoded
+  // video streams.
+  const base::Value* bit_depth =
+      metadata->FindKeyOfType("bit_depth", base::Value::Type::INTEGER);
+  if (bit_depth) {
+    bit_depth_ = base::checked_cast<uint8_t>(bit_depth->GetInt());
+  } else {
+    if (profile_ == VP9PROFILE_PROFILE2) {
+      LOG(ERROR) << "Bit depth is unspecified for VP9 profile 2";
+      return false;
+    }
+    constexpr uint8_t kDefaultBitDepth = 8u;
+    bit_depth_ = kDefaultBitDepth;
   }
 
   // Find the video's pixel format, only required for raw video streams.
