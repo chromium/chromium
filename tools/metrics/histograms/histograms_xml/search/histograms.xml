@@ -200,7 +200,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.ContextualSearch.ResolveReceived" enum="Boolean"
-    expires_after="M89">
+    expires_after="M91">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -211,7 +211,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.ContextualSearch.ResolveRequested"
-    enum="ContextualSearchGestureIsTap" expires_after="M89">
+    enum="ContextualSearchGestureIsTap" expires_after="M91">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -257,7 +257,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.ContextualSearch.TranslationNeeded"
-    enum="ContextualSearchGestureIsTap" expires_after="M89">
+    enum="ContextualSearchGestureIsTap" expires_after="M91">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -270,7 +270,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.ContextualSearch.TranslationsOptInIPHShown"
-    enum="BooleanPreviouslyShown" expires_after="M89">
+    enum="BooleanPreviouslyShown" expires_after="M91">
   <owner>donnd@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <summary>
@@ -281,7 +281,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.ContextualSearch.TranslationsOptInIPHWorked"
-    enum="BooleanOptedIn" expires_after="M89">
+    enum="BooleanOptedIn" expires_after="M91">
   <owner>donnd@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <summary>
