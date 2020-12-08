@@ -87237,6 +87237,32 @@
        {}
       ]
      ],
+     "no-scrollable-overflow-vertical-rl-2.html": [
+      "895f9bafc621329b95d1bb2fe086602945991cde",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "no-scrollable-overflow-vertical-rl.html": [
+      "13385a2685cb8b6c33c94a9b09186336fda9c61a",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "overflow-body-propagation-001.html": [
       "0998fe68e007d5a46ff11d5ff87fdbad12d1dfe2",
       [
@@ -253368,10 +253394,6 @@
      "604e765da46d85fe8ab85d3097fe7c2cbe00a930",
      []
     ],
-    "idlharness.tentative.window-expected.txt": [
-     "585a51ba727cef9a2f6acd0ecd4de8512969d166",
-     []
-    ],
     "no-require-trusted-types-for-report-only.tentative.html.headers": [
      "aa00fcc15a30ef1f8968be44abc1a9e934a31979",
      []
@@ -254856,7 +254878,7 @@
       ]
      },
      "generate-test-wbns.sh": [
-      "8fc28bb9db7cd9900bee9c3555e7e7d84e41b389",
+      "3c8a3ea68d60522452be94a7f8d0aaf9b11f5c55",
       []
      ],
      "location": {
@@ -254919,6 +254941,10 @@
        []
       ]
      },
+     "urn-uuid.har": [
+      "e0cea3699ae53beedde24dc55287b7d4407083dd",
+      []
+     ],
      "wbn": {
       "__dir__.headers": [
        "21e57b9caca1183ecda6f5d4fb9ebd556abf769a",
@@ -254976,6 +255002,10 @@
       ],
       "subresource.wbn": [
        "eabd994ff8bceaf4ef52b329b4faa158c292af12",
+       []
+      ],
+      "urn-uuid.wbn": [
+       "a4bd3efc9cc73e1405bad5209631e0e1e1f352b5",
        []
       ]
      }
@@ -421126,7 +421156,7 @@
      ]
     ],
     "block-string-assignment-to-DOMWindowTimers-setTimeout-setInterval.tentative.html": [
-     "f36ae94ea10ce95d7087ec22ef4a25f157f7e6a8",
+     "c24715718d17561f779c6df7098f4c0b874675a9",
      [
       null,
       {}
@@ -428295,7 +428325,7 @@
       ]
      ],
      "subresource-loading-from-web-bundle.tentative.html": [
-      "c2de0eb0994f54c65a342b501aa3e9107949faf7",
+      "53a9c1b2cc707271c8d7b0e7fb7385fd59839744",
       [
        null,
        {}
