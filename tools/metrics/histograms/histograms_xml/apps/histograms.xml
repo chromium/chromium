@@ -1014,7 +1014,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListSearchOmniboxResultOpenType"
-    enum="AppListOmniboxResult" expires_after="2020-12-31">
+    enum="AppListOmniboxResult" expires_after="2021-12-31">
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
