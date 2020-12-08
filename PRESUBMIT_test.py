@@ -2157,6 +2157,18 @@ class FuchsiaSecurityOwnerTest(unittest.TestCase):
         'Found OWNERS files that need to be updated for IPC security review ' +
         'coverage.\nPlease update the OWNERS files below:', errors[0].message)
 
+  def testThirdPartyTestsDoNotRequireSecurityOwner(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+      MockAffectedFile('third_party/crashpad/test/tests.cmx',
+                       [
+                         'const char kNoEnforcement[] = "Security?!? Pah!";',
+                       ])]
+    mock_output_api = MockOutputApi()
+    errors = PRESUBMIT.CheckSecurityOwners(
+        mock_input_api, mock_output_api)
+    self.assertEqual([], errors)
+
   def testOtherFuchsiaChangesDoNotRequireSecurityOwner(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [

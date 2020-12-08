@@ -2952,6 +2952,11 @@ def _AddOwnersFilesToCheckForFuchsiaSecurityOwners(input_api, to_check):
       '*.fidl',
   ]
 
+  # Don't check for owners files for changes in these directories.
+  exclude_paths = [
+      'third_party/crashpad/*',
+  ]
+
   def AddPatternToCheck(input_file, pattern):
     owners_file = input_api.os_path.join(
         input_api.os_path.dirname(input_file.LocalPath()), 'OWNERS')
@@ -2971,6 +2976,13 @@ def _AddOwnersFilesToCheckForFuchsiaSecurityOwners(input_api, to_check):
   # for. We should only nag patch authors about per-file rules if a file in that
   # directory would match that pattern.
   for f in input_api.AffectedFiles(include_deletes=False):
+    skip = False
+    for exclude in exclude_paths:
+      if input_api.fnmatch.fnmatch(f.LocalPath(), exclude):
+        skip = True
+    if skip:
+      continue
+
     for pattern in file_patterns:
       if input_api.fnmatch.fnmatch(
           input_api.os_path.basename(f.LocalPath()), pattern):
