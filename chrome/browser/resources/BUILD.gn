@@ -14,6 +14,62 @@ import("//tools/grit/repack.gni")
 
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
 
+group("resources") {
+  public_deps = []
+
+  if (!is_android) {
+    public_deps += [
+      ":component_extension_resources",
+      ":dev_ui_paks",
+      ":gaia_auth_host_resources",
+      ":local_ntp_resources",
+      ":new_tab_page_resources",
+      "bookmarks:bookmarks_resources",
+      "commander:commander_resources",
+      "downloads:downloads_resources",
+      "history:history_resources",
+      "read_later:read_later_resources",
+      "settings:settings_resources",
+      "tab_search:tab_search_resources",
+    ]
+  }
+
+  if (is_chromeos) {
+    public_deps += [
+      ":bluetooth_pairing_dialog_resources",
+      ":multidevice_internals_resources",
+      "chromeos:cellular_setup_resources",
+      "chromeos:multidevice_setup_resources",
+      "chromeos/accessibility:build",
+      "nearby_internals:nearby_internals_resources",
+      "nearby_share:nearby_share_dialog_resources",
+      "settings/chromeos:os_settings_resources",
+    ]
+  }
+
+  if (is_linux || is_chromeos) {
+    public_deps += [ "webui_js_error:webui_js_error_resources" ]
+  }
+
+  if (!is_android && !is_chromeos) {
+    public_deps += [
+      "signin/profile_picker:profile_picker_resources",
+      "welcome:welcome_resources",
+    ]
+  }
+
+  if (enable_extensions) {
+    public_deps += [
+      ":sync_file_system_internals_resources",
+      "extensions:extensions_resources",
+    ]
+  }
+
+  if (enable_print_preview) {
+    public_deps += [ "print_preview:print_preview_resources" ]
+  }
+}
+
 if (enable_js_type_check) {
   group("closure_compile") {
     deps = [
