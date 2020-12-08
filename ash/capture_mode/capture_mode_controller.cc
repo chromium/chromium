@@ -4,8 +4,6 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 
-#include <memory>
-#include <string>
 #include <utility>
 
 #include "ash/capture_mode/capture_mode_metrics.h"

@@ -133,8 +133,7 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
                              bool is_touch,
                              bool is_event_on_capture_bar);
   void OnLocatedEventDragged(const gfx::Point& location_in_root);
-  void OnLocatedEventReleased(const gfx::Point& location_in_root,
-                              bool is_event_on_capture_bar,
+  void OnLocatedEventReleased(bool is_event_on_capture_bar,
                               bool region_intersects_capture_bar);
 
   // Updates the capture region and the capture region widgets depending on the
@@ -207,6 +206,16 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // Updates the capture bar widget with a given opacity. There is a different
   // animation duration and tween type for mouse/touch release.
   void UpdateCaptureBarWidgetOpacity(float opacity, bool on_release);
+
+  // Ensure the user region in |controller_| is within the bounds of the root
+  // window. This is called when creating |this| or when the display bounds have
+  // changed.
+  void ClampCaptureRegionToRootWindowSize();
+
+  // Ends a region selection. Cleans up internal state and updates the cursor,
+  // capture bar opacity and magnifier glass.
+  void EndSelection(bool is_event_on_capture_bar,
+                    bool region_intersects_capture_bar);
 
   CaptureModeController* const controller_;
 

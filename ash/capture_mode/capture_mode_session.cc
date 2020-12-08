@@ -390,6 +390,10 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller)
   parent->layer()->Add(layer());
   layer()->SetBounds(parent->bounds());
 
+  // The last region selected could have been on a larger display. Ensure that
+  // the region is not larger than the current display.
+  ClampCaptureRegionToRootWindowSize();
+
   capture_mode_bar_widget_->Init(
       CreateWidgetParams(parent, CaptureModeBarView::GetBounds(current_root_),
                          "CaptureModeBarWidget"));
@@ -584,10 +588,31 @@ void CaptureModeSession::OnWindowDestroying(aura::Window* window) {
 void CaptureModeSession::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t metrics) {
-  if (metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION) {
-    UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
-                 /*is_touch=*/false);
+  if (!(metrics & (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |
+                   DISPLAY_METRIC_DEVICE_SCALE_FACTOR))) {
+    return;
   }
+
+  EndSelection(/*is_event_on_capture_bar=*/false,
+               /*region_intersects_capture_bar=*/false);
+
+  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+               /*is_touch=*/false);
+
+  // Ensure the region still fits the root window after display changes.
+  ClampCaptureRegionToRootWindowSize();
+
+  // Update the bounds of all created widgets and repaint the entire layer.
+  auto* parent = GetParentContainer(current_root_);
+  DCHECK_EQ(parent->layer(), layer()->parent());
+  layer()->SetBounds(parent->bounds());
+
+  DCHECK(capture_mode_bar_widget_);
+  capture_mode_bar_widget_->SetBounds(
+      CaptureModeBarView::GetBounds(current_root_));
+  if (capture_label_widget_)
+    UpdateCaptureLabelWidget();
+  layer()->SchedulePaint(layer()->bounds());
 }
 
 gfx::Rect CaptureModeSession::GetSelectedWindowBounds() const {
@@ -776,7 +801,7 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
         SetMouseWarpEnabled(*old_mouse_warp_status_);
       old_mouse_warp_status_.reset();
 
-      OnLocatedEventReleased(location, is_event_on_capture_bar,
+      OnLocatedEventReleased(is_event_on_capture_bar,
                              region_intersects_capture_bar);
       break;
     case ui::ET_MOUSE_MOVED:
@@ -928,29 +953,14 @@ void CaptureModeSession::OnLocatedEventDragged(
 }
 
 void CaptureModeSession::OnLocatedEventReleased(
-    const gfx::Point& location_in_root,
     bool is_event_on_capture_bar,
     bool region_intersects_capture_bar) {
-  fine_tune_position_ = FineTunePosition::kNone;
-  anchor_points_.clear();
-
-  is_drag_in_progress_ = false;
-  Shell::Get()->UpdateCursorCompositingEnabled();
-
-  // TODO(richui): update this for tablet mode.
-  UpdateCaptureBarWidgetOpacity(
-      region_intersects_capture_bar && !is_event_on_capture_bar
-          ? kCaptureBarOverlapOpacity
-          : 1.f,
-      /*on_release=*/true);
+  EndSelection(is_event_on_capture_bar, region_intersects_capture_bar);
 
   // Do a repaint to show the affordance circles.
   gfx::Rect damage_region = controller_->user_capture_region();
   damage_region.Inset(gfx::Insets(-kDamageInsetDp));
   layer()->SchedulePaint(damage_region);
-
-  UpdateDimensionsLabelWidget(/*is_resizing=*/false);
-  CloseMagnifierGlass();
 
   if (!is_selecting_region_)
     return;
@@ -1393,6 +1403,31 @@ void CaptureModeSession::UpdateCaptureBarWidgetOpacity(float opacity,
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 
   capture_bar_layer->SetOpacity(opacity);
+}
+
+void CaptureModeSession::ClampCaptureRegionToRootWindowSize() {
+  gfx::Rect new_capture_region = controller_->user_capture_region();
+  new_capture_region.AdjustToFit(current_root_->bounds());
+  controller_->set_user_capture_region(new_capture_region);
+}
+
+void CaptureModeSession::EndSelection(bool is_event_on_capture_bar,
+                                      bool region_intersects_capture_bar) {
+  fine_tune_position_ = FineTunePosition::kNone;
+  anchor_points_.clear();
+
+  is_drag_in_progress_ = false;
+  Shell::Get()->UpdateCursorCompositingEnabled();
+
+  // TODO(richui): Update this for tablet mode.
+  UpdateCaptureBarWidgetOpacity(
+      region_intersects_capture_bar && !is_event_on_capture_bar
+          ? kCaptureBarOverlapOpacity
+          : 1.f,
+      /*on_release=*/true);
+
+  UpdateDimensionsLabelWidget(/*is_resizing=*/false);
+  CloseMagnifierGlass();
 }
 
 }  // namespace ash

@@ -1885,6 +1885,66 @@ TEST_F(CaptureModeTest, TabletTouchCaptureLabelWidgetWindowMode) {
   EXPECT_FALSE(controller->IsActive());
 }
 
+// Tests that after rotating a display, the capture session widgets are updated
+// and the capture region is reset.
+TEST_F(CaptureModeTest, DisplayRotation) {
+  UpdateDisplay("1200x600");
+
+  auto* controller = StartImageRegionCapture();
+  SelectRegion(gfx::Rect(1200, 400));
+
+  // Rotate the primary display by 90 degrees. Test that the region and capture
+  // bar fit within the rotated bounds, and the capture label widget is still
+  // centered in the region.
+  Shell::Get()->display_manager()->SetDisplayRotation(
+      WindowTreeHostManager::GetPrimaryDisplayId(), display::Display::ROTATE_90,
+      display::Display::RotationSource::USER);
+  const gfx::Rect rotated_root_bounds(600, 1200);
+  EXPECT_TRUE(rotated_root_bounds.Contains(controller->user_capture_region()));
+  EXPECT_TRUE(rotated_root_bounds.Contains(
+      GetCaptureModeBarView()->GetBoundsInScreen()));
+  views::Widget* capture_label_widget =
+      CaptureModeSessionTestApi(controller->capture_mode_session())
+          .capture_label_widget();
+  ASSERT_TRUE(capture_label_widget);
+  EXPECT_EQ(controller->user_capture_region().CenterPoint(),
+            capture_label_widget->GetWindowBoundsInScreen().CenterPoint());
+}
+
+TEST_F(CaptureModeTest, DisplayBoundsChange) {
+  UpdateDisplay("1200x600");
+
+  auto* controller = StartImageRegionCapture();
+  SelectRegion(gfx::Rect(1200, 400));
+
+  // Shrink the display. The capture region should shrink, and the capture bar
+  // should be adjusted to be centered.
+  UpdateDisplay("600x600");
+  EXPECT_EQ(gfx::Rect(600, 400), controller->user_capture_region());
+  EXPECT_EQ(300,
+            GetCaptureModeBarView()->GetBoundsInScreen().CenterPoint().x());
+}
+
+TEST_F(CaptureModeTest, ReenterOnSmallerDisplay) {
+  UpdateDisplay("1200x600,1201+0-600x600");
+
+  // Start off with the primary display as the targeted display. Create a region
+  // that fits the primary display but would be too big for the secondary
+  // display.
+  auto* event_generator = GetEventGenerator();
+  MoveMouseToAndUpdateCursorDisplay(gfx::Point(600, 300), event_generator);
+  auto* controller = StartImageRegionCapture();
+  SelectRegion(gfx::Rect(1200, 400));
+  EXPECT_EQ(gfx::Rect(1200, 400), controller->user_capture_region());
+  controller->Stop();
+
+  // Make the secondary display the targeted display. Test that the region has
+  // shrunk to fit the display.
+  MoveMouseToAndUpdateCursorDisplay(gfx::Point(1500, 300), event_generator);
+  StartImageRegionCapture();
+  EXPECT_EQ(gfx::Rect(600, 400), controller->user_capture_region());
+}
+
 // A test class that uses a mock time task environment.
 class CaptureModeMockTimeTest : public CaptureModeTest {
  public:
