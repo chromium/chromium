@@ -5,7 +5,9 @@
 #ifndef CC_TREES_DAMAGE_TRACKER_H_
 #define CC_TREES_DAMAGE_TRACKER_H_
 
+#include <algorithm>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "cc/cc_export.h"
@@ -97,11 +99,11 @@ class CC_EXPORT DamageTracker {
   void AccumulateDamageFromRenderSurface(
       RenderSurfaceImpl* render_surface,
       std::vector<std::pair<RenderSurfaceImpl*, gfx::Rect>>&
-          surfaces_with_backdrop_blur_filter);
+          surfaces_with_no_damage_under);
   void ComputeSurfaceDamage(
       RenderSurfaceImpl* render_surface,
       std::vector<std::pair<RenderSurfaceImpl*, gfx::Rect>>&
-          surfaces_with_backdrop_blur_filter);
+          surfaces_with_no_damage_under);
   void ExpandDamageInsideRectWithFilters(const gfx::Rect& pre_filter_rect,
                                          const FilterOperations& filters);
 

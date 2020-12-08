@@ -106,10 +106,11 @@ void DamageTracker::UpdateDamageTracking(LayerTreeImpl* layer_tree_impl) {
     render_surface->damage_tracker()->PrepareForUpdate();
   }
 
-  // Surfaces with backdrop blur filter that might be potentially optimized with
-  // caching, paired with each's surface rect in target space.
+  // A vector of surfaces paired with each's surface rect in target space, used
+  // for potential optimization with caching when no damage from under a surface
+  // intersects its rect.
   std::vector<std::pair<RenderSurfaceImpl*, gfx::Rect>>
-      surfaces_with_backdrop_blur_filter;
+      surfaces_with_no_damage_under;
 
   EffectTree& effect_tree = layer_tree_impl->property_trees()->effect_tree;
   int current_target_effect_id = EffectTree::kContentsRootNodeId;
@@ -132,10 +133,10 @@ void DamageTracker::UpdateDamageTracking(LayerTreeImpl* layer_tree_impl) {
         RenderSurfaceImpl* current_target =
             effect_tree.GetRenderSurface(current_target_effect_id);
         current_target->damage_tracker()->ComputeSurfaceDamage(
-            current_target, surfaces_with_backdrop_blur_filter);
+            current_target, surfaces_with_no_damage_under);
         RenderSurfaceImpl* parent_target = current_target->render_target();
         parent_target->damage_tracker()->AccumulateDamageFromRenderSurface(
-            current_target, surfaces_with_backdrop_blur_filter);
+            current_target, surfaces_with_no_damage_under);
         current_target_effect_id =
             effect_tree.Node(current_target_effect_id)->target_id;
       }
@@ -157,22 +158,22 @@ void DamageTracker::UpdateDamageTracking(LayerTreeImpl* layer_tree_impl) {
       effect_tree.GetRenderSurface(current_target_effect_id);
   while (true) {
     current_target->damage_tracker()->ComputeSurfaceDamage(
-        current_target, surfaces_with_backdrop_blur_filter);
+        current_target, surfaces_with_no_damage_under);
     if (current_target->EffectTreeIndex() == EffectTree::kContentsRootNodeId)
       break;
     RenderSurfaceImpl* next_target = current_target->render_target();
     next_target->damage_tracker()->AccumulateDamageFromRenderSurface(
-        current_target, surfaces_with_backdrop_blur_filter);
+        current_target, surfaces_with_no_damage_under);
     current_target = next_target;
   }
 
-  DCHECK(surfaces_with_backdrop_blur_filter.empty());
+  DCHECK(surfaces_with_no_damage_under.empty());
 }
 
 void DamageTracker::ComputeSurfaceDamage(
     RenderSurfaceImpl* render_surface,
     std::vector<std::pair<RenderSurfaceImpl*, gfx::Rect>>&
-        surfaces_with_backdrop_blur_filter) {
+        surfaces_with_no_damage_under) {
   // All damage from contributing layers and surfaces must already have been
   // added to damage_for_this_update_ through calls to AccumulateDamageFromLayer
   // and AccumulateDamageFromRenderSurface.
@@ -209,17 +210,17 @@ void DamageTracker::ComputeSurfaceDamage(
   // frame.
   current_damage_.Union(damage_for_this_update_);
 
-  if (!surfaces_with_backdrop_blur_filter.empty()) {
+  if (!surfaces_with_no_damage_under.empty()) {
     gfx::Rect leftover_damage_rect;
     bool valid = damage_from_leftover_rects.GetAsRect(&leftover_damage_rect);
     std::vector<std::pair<RenderSurfaceImpl*, gfx::Rect>>::iterator it =
-        surfaces_with_backdrop_blur_filter.begin();
-    while (it != surfaces_with_backdrop_blur_filter.end()) {
+        surfaces_with_no_damage_under.begin();
+    while (it != surfaces_with_no_damage_under.end()) {
       RenderSurfaceImpl* surface = it->first;
       if (surface->render_target() == render_surface) {
         surface->set_intersects_damage_under(
             !valid || it->second.Intersects(leftover_damage_rect));
-        it = surfaces_with_backdrop_blur_filter.erase(it);
+        it = surfaces_with_no_damage_under.erase(it);
       } else {
         ++it;
       }
@@ -410,7 +411,7 @@ void DamageTracker::AccumulateDamageFromLayer(LayerImpl* layer) {
 void DamageTracker::AccumulateDamageFromRenderSurface(
     RenderSurfaceImpl* render_surface,
     std::vector<std::pair<RenderSurfaceImpl*, gfx::Rect>>&
-        surfaces_with_backdrop_blur_filter) {
+        surfaces_with_no_damage_under) {
   // There are two ways a "descendant surface" can damage regions of the "target
   // surface":
   //   1. Property change:
@@ -447,7 +448,7 @@ void DamageTracker::AccumulateDamageFromRenderSurface(
     gfx::Rect damage_on_target;
     bool valid = damage_for_this_update_.GetAsRect(&damage_on_target);
     if (valid && !damage_on_target.Intersects(surface_rect_in_target_space)) {
-      surfaces_with_backdrop_blur_filter.emplace_back(
+      surfaces_with_no_damage_under.emplace_back(
           std::make_pair(render_surface, surface_rect_in_target_space));
     } else {
       render_surface->set_intersects_damage_under(true);
