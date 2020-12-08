@@ -1256,6 +1256,12 @@ void ChromeBrowserMainPartsChromeos::PostMainMessageLoopRun() {
     }
   }
 
+#if BUILDFLAG(PLATFORM_CFM)
+  // Cleanly shutdown all Chromebox For Meetings services before DBus and other
+  // critical services are destroyed
+  chromeos::cfm::ShutdownCfmServices();
+#endif  // BUILDFLAG(PLATFORM_CFM)
+
   // Cleans up dbus services depending on ash.
   dbus_services_->PreAshShutdown();
 

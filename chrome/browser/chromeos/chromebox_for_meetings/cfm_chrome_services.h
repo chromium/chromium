@@ -17,6 +17,10 @@ namespace cfm {
 // |CfmServiceContext| granting hotline access to services.
 void InitializeCfmServices();
 
+// Removes the observers for service interface requests by the
+// |CfmServiceContext| removing hotline access to services.
+void ShutdownCfmServices();
+
 }  // namespace cfm
 }  // namespace chromeos
 

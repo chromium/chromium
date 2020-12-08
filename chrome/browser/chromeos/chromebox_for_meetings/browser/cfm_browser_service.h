@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_CHROMEOS_CHROMEBOX_FOR_MEETINGS_BROWSER_CFM_BROWSER_SERVICE_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/no_destructor.h"
 #include "chrome/browser/chromeos/chromebox_for_meetings/service_adaptor.h"
 #include "chromeos/dbus/chromebox_for_meetings/cfm_observer.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_browser.mojom.h"
@@ -24,15 +23,14 @@ class CfmBrowserService : public CfmObserver,
  public:
   CfmBrowserService(const CfmBrowserService&) = delete;
   CfmBrowserService& operator=(const CfmBrowserService&) = delete;
-  ~CfmBrowserService() override;
 
-  // Returns the global instance
-  static CfmBrowserService* GetInstance();
+  // Manage singleton instance.
+  static void Initialize();
+  static void Shutdown();
+  static CfmBrowserService* Get();
+  static bool IsInitialized();
 
  protected:
-  friend class base::NoDestructor<CfmBrowserService>;
-  CfmBrowserService();
-
   // Forward |CfmObserver| implementation
   bool ServiceRequestReceived(const std::string& interface_name) override;
 
@@ -46,6 +44,9 @@ class CfmBrowserService : public CfmObserver,
   virtual void OnMojoDisconnect();
 
  private:
+  CfmBrowserService();
+  ~CfmBrowserService() override;
+
   ServiceAdaptor service_adaptor_;
   mojo::ReceiverSet<mojom::CfmBrowser> receivers_;
 };

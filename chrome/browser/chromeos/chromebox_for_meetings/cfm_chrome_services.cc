@@ -16,7 +16,15 @@ void InitializeCfmServices() {
     return;
   }
 
-  CfmHotlineClient::Get()->AddObserver(CfmBrowserService::GetInstance());
+  CfmBrowserService::Initialize();
+}
+
+void ShutdownCfmServices() {
+  if (!features::IsCfmMojoEnabled() || !CfmHotlineClient::Get()) {
+    return;
+  }
+
+  CfmBrowserService::Shutdown();
 }
 
 }  // namespace cfm
