@@ -44,6 +44,7 @@ class ASH_EXPORT LogoutButtonTray : public TrayBackgroundView,
   base::string16 GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* prefs) override;
