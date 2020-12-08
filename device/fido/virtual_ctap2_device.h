@@ -189,6 +189,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     // and reports in the pinProtocols field of the authenticatorGetInfo
     // response.
     PINUVAuthProtocol pin_protocol = PINUVAuthProtocol::kV1;
+
+    // override_response_map allows overriding the response for a given command
+    // with a given code. The actual command won't be executed.
+    base::flat_map<CtapRequestCommand, CtapDeviceResponseCode>
+        override_response_map;
   };
 
   VirtualCtap2Device();

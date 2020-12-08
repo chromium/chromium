@@ -705,12 +705,20 @@ FidoDevice::CancelToken VirtualCtap2Device::DeviceTransact(
     return 0;
   }
 
+  const CtapRequestCommand ctap_command =
+      static_cast<CtapRequestCommand>(cmd_type);
+  if (config_.override_response_map.contains(ctap_command)) {
+    ReturnCtap2Response(std::move(cb),
+                        config_.override_response_map.at(ctap_command), {});
+    return 0;
+  }
+
   const auto request_bytes = base::make_span(command).subspan(1);
   CtapDeviceResponseCode response_code =
       CtapDeviceResponseCode::kCtap1ErrInvalidCommand;
   std::vector<uint8_t> response_data;
 
-  switch (static_cast<CtapRequestCommand>(cmd_type)) {
+  switch (ctap_command) {
     case CtapRequestCommand::kAuthenticatorGetInfo:
       if (!request_bytes.empty()) {
         ReturnCtap2Response(std::move(cb),

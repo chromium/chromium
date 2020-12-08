@@ -476,9 +476,6 @@ void GetAssertionRequestHandler::HavePINUVAuthTokenResultForAuthenticator(
     FidoAuthenticator* authenticator,
     AuthTokenRequester::Result result,
     base::Optional<pin::TokenResponse> token_response) {
-  DCHECK_EQ(state_, State::kWaitingForToken);
-  DCHECK_EQ(selected_authenticator_for_pin_uv_auth_token_, authenticator);
-
   base::Optional<GetAssertionStatus> error;
   switch (result) {
     case AuthTokenRequester::Result::kPreTouchUnsatisfiableRequest:
@@ -505,6 +502,10 @@ void GetAssertionRequestHandler::HavePINUVAuthTokenResultForAuthenticator(
     case AuthTokenRequester::Result::kSuccess:
       break;
   }
+
+  // Pre touch events should be handled above.
+  DCHECK_EQ(state_, State::kWaitingForToken);
+  DCHECK_EQ(selected_authenticator_for_pin_uv_auth_token_, authenticator);
   if (error) {
     state_ = State::kFinished;
     std::move(completion_callback_).Run(*error, base::nullopt, authenticator);
