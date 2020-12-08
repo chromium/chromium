@@ -128,18 +128,13 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
       std::make_unique<PinnedFilesContainer>(&delegate_));
   bubble_container->SetFlexForChild(pinned_files_container_, 1);
   SetupViewLayer(pinned_files_container_);
+  pinned_files_container_->Init();
 
   // Add recent files container.
   recent_files_container_ = bubble_container->AddChildView(
       std::make_unique<RecentFilesContainer>(&delegate_));
   SetupViewLayer(recent_files_container_);
-
-  // Populate both containers if holding space model has already been attached.
-  HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
-  if (model) {
-    pinned_files_container_->OnHoldingSpaceModelAttached(model);
-    recent_files_container_->OnHoldingSpaceModelAttached(model);
-  }
+  recent_files_container_->Init();
 
   // Show the bubble.
   bubble_wrapper_ = std::make_unique<TrayBubbleWrapper>(

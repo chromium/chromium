@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_HOLDING_SPACE_PINNED_FILES_CONTAINER_H_
-#define ASH_SYSTEM_HOLDING_SPACE_PINNED_FILES_CONTAINER_H_
+#ifndef ASH_SYSTEM_HOLDING_SPACE_SCREEN_CAPTURES_SECTION_H_
+#define ASH_SYSTEM_HOLDING_SPACE_SCREEN_CAPTURES_SECTION_H_
 
 #include <map>
 
@@ -15,21 +15,18 @@ class Label;
 
 namespace ash {
 
-class HoldingSpaceItemChipsContainer;
 class HoldingSpaceItemView;
 
-// Container for pinned files that the user adds to the holding space bubble.
-class PinnedFilesContainer : public HoldingSpaceItemViewsContainer {
+// Section for screen captures in the `RecentFilesContainer`.
+class ScreenCapturesSection : public HoldingSpaceItemViewsContainer {
  public:
-  explicit PinnedFilesContainer(HoldingSpaceItemViewDelegate* delegate);
-  PinnedFilesContainer(const PinnedFilesContainer& other) = delete;
-  PinnedFilesContainer& operator=(const PinnedFilesContainer& other) = delete;
-  ~PinnedFilesContainer() override;
-
-  // Initializes the container.
-  void Init();
+  explicit ScreenCapturesSection(HoldingSpaceItemViewDelegate* delegate);
+  ScreenCapturesSection(const ScreenCapturesSection& other) = delete;
+  ScreenCapturesSection& operator=(const ScreenCapturesSection& other) = delete;
+  ~ScreenCapturesSection() override;
 
   // HoldingSpaceItemViewsContainer:
+  void ChildVisibilityChanged(views::View* child) override;
   void ViewHierarchyChanged(const views::ViewHierarchyChangedDetails&) override;
   bool ContainsHoldingSpaceItemView(const HoldingSpaceItem* item) override;
   bool ContainsHoldingSpaceItemViews() override;
@@ -40,13 +37,20 @@ class PinnedFilesContainer : public HoldingSpaceItemViewsContainer {
   void AnimateOut(ui::LayerAnimationObserver* observer) override;
 
  private:
+  void AddHoldingSpaceScreenCaptureView(const HoldingSpaceItem* item);
+  void AddHoldingSpaceDownloadView(const HoldingSpaceItem* item);
+  void OnScreenCapturesContainerViewHierarchyChanged(
+      const views::ViewHierarchyChangedDetails& details);
+  void OnDownloadsContainerViewHierarchyChanged(
+      const views::ViewHierarchyChangedDetails& details);
+
   // Owned by view hierarchy.
-  views::Label* empty_prompt_label_ = nullptr;
-  HoldingSpaceItemChipsContainer* item_chips_container_ = nullptr;
+  views::View* container_ = nullptr;
+  views::Label* label_ = nullptr;
 
   std::map<std::string, HoldingSpaceItemView*> views_by_item_id_;
 };
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_HOLDING_SPACE_PINNED_FILES_CONTAINER_H_
+#endif  // ASH_SYSTEM_HOLDING_SPACE_SCREEN_CAPTURES_SECTION_H_

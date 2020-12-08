@@ -2,34 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_HOLDING_SPACE_PINNED_FILES_CONTAINER_H_
-#define ASH_SYSTEM_HOLDING_SPACE_PINNED_FILES_CONTAINER_H_
+#ifndef ASH_SYSTEM_HOLDING_SPACE_DOWNLOADS_SECTION_H_
+#define ASH_SYSTEM_HOLDING_SPACE_DOWNLOADS_SECTION_H_
 
 #include <map>
 
 #include "ash/system/holding_space/holding_space_item_views_container.h"
-
-namespace views {
-class Label;
-}  // namespace views
 
 namespace ash {
 
 class HoldingSpaceItemChipsContainer;
 class HoldingSpaceItemView;
 
-// Container for pinned files that the user adds to the holding space bubble.
-class PinnedFilesContainer : public HoldingSpaceItemViewsContainer {
+// Section for downloads in the `RecentFilesContainer`.
+class DownloadsSection : public HoldingSpaceItemViewsContainer {
  public:
-  explicit PinnedFilesContainer(HoldingSpaceItemViewDelegate* delegate);
-  PinnedFilesContainer(const PinnedFilesContainer& other) = delete;
-  PinnedFilesContainer& operator=(const PinnedFilesContainer& other) = delete;
-  ~PinnedFilesContainer() override;
-
-  // Initializes the container.
-  void Init();
+  explicit DownloadsSection(HoldingSpaceItemViewDelegate* delegate);
+  DownloadsSection(const DownloadsSection& other) = delete;
+  DownloadsSection& operator=(const DownloadsSection& other) = delete;
+  ~DownloadsSection() override;
 
   // HoldingSpaceItemViewsContainer:
+  void ChildVisibilityChanged(views::View* child) override;
   void ViewHierarchyChanged(const views::ViewHierarchyChangedDetails&) override;
   bool ContainsHoldingSpaceItemView(const HoldingSpaceItem* item) override;
   bool ContainsHoldingSpaceItemViews() override;
@@ -41,12 +35,12 @@ class PinnedFilesContainer : public HoldingSpaceItemViewsContainer {
 
  private:
   // Owned by view hierarchy.
-  views::Label* empty_prompt_label_ = nullptr;
-  HoldingSpaceItemChipsContainer* item_chips_container_ = nullptr;
+  HoldingSpaceItemChipsContainer* container_ = nullptr;
+  views::View* header_ = nullptr;
 
   std::map<std::string, HoldingSpaceItemView*> views_by_item_id_;
 };
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_HOLDING_SPACE_PINNED_FILES_CONTAINER_H_
+#endif  // ASH_SYSTEM_HOLDING_SPACE_DOWNLOADS_SECTION_H_

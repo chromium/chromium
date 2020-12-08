@@ -133,6 +133,12 @@ PinnedFilesContainer::PinnedFilesContainer(
 
 PinnedFilesContainer::~PinnedFilesContainer() = default;
 
+void PinnedFilesContainer::Init() {
+  HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
+  if (model)
+    OnHoldingSpaceModelAttached(model);
+}
+
 void PinnedFilesContainer::ViewHierarchyChanged(
     const views::ViewHierarchyChangedDetails& details) {
   // We only care about `item_chips_container_` becoming empty and non-empty.
