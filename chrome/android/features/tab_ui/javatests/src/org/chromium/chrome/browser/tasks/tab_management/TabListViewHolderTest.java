@@ -620,6 +620,20 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
                 tab, fetcher, View.GONE, EXPECTED_PRICE_STRING, EXPECTED_PREVIOUS_PRICE_STRING);
     }
 
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testPriceStringTurnFeatureOff() {
+        Tab tab = MockTab.createAndInitialize(1, false);
+        MockShoppingPersistedTabDataFetcher fetcher = new MockShoppingPersistedTabDataFetcher(tab);
+        fetcher.setPriceStrings(EXPECTED_PRICE_STRING, EXPECTED_PREVIOUS_PRICE_STRING);
+        testPriceString(
+                tab, fetcher, View.VISIBLE, EXPECTED_PRICE_STRING, EXPECTED_PREVIOUS_PRICE_STRING);
+        mGridModel.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, null);
+        PriceCardView priceCardView = mTabGridView.findViewById(R.id.price_info_box_outer);
+        Assert.assertEquals(View.GONE, priceCardView.getVisibility());
+    }
+
     private void testPriceString(Tab tab, MockShoppingPersistedTabDataFetcher fetcher,
             int expectedVisibility, String expectedCurrentPrice, String expectedPreviousPrice) {
         TabUiFeatureUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);

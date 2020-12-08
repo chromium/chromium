@@ -218,11 +218,11 @@ class TabGridViewBinder {
                 pageInfoButton.getPrimaryTextView().setText(query);
             }
         } else if (TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER == propertyKey) {
+            PriceCardView priceCardView =
+                    (PriceCardView) view.fastFindViewById(R.id.price_info_box_outer);
             if (model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER) != null) {
                 model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER)
                         .fetch((shoppingPersistedTabData) -> {
-                            PriceCardView priceCardView = (PriceCardView) view.fastFindViewById(
-                                    R.id.price_info_box_outer);
                             if (shoppingPersistedTabData.getPriceDrop() == null) {
                                 priceCardView.setVisibility(View.GONE);
                             } else {
@@ -232,6 +232,8 @@ class TabGridViewBinder {
                                 priceCardView.setVisibility(View.VISIBLE);
                             }
                         });
+            } else {
+                priceCardView.setVisibility(View.GONE);
             }
         } else if (TabProperties.PAGE_INFO_LISTENER == propertyKey) {
             TabListMediator.TabActionListener listener =
