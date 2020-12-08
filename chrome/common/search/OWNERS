@@ -1,5 +1,4 @@
 file://chrome/browser/search/OWNERS
-# COMPONENT: UI>Browser>NewTabPage
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS

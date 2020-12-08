@@ -8,6 +8,3 @@ per-file *.mojom=file://ipc/SECURITY_OWNERS
 
 per-file *_mojom_traits*.*=set noparent
 per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS
-
-# COMPONENT: Platform>Extensions
-# TEAM: chromium-extensions@chromium.org

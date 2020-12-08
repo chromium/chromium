@@ -3,5 +3,3 @@ grt@chromium.org
 robertshield@chromium.org
 
 per-file policy_path_parser.*=file://chrome/browser/policy/OWNERS
-
-# COMPONENT: Internals>Installer

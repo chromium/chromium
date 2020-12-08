@@ -9,5 +9,3 @@ per-file *_param_traits*.*=file://ipc/SECURITY_OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
-
-# COMPONENT: UI>Browser>Import
