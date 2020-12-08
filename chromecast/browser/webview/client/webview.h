@@ -40,19 +40,30 @@ class WebviewClient : public exo::wayland::clients::ClientBase {
   using WebviewRequestResponseClient =
       ::grpc::ClientReaderWriterInterface<chromecast::webview::WebviewRequest,
                                           chromecast::webview::WebviewResponse>;
-  struct Webview {
-    Webview();
-    ~Webview();
+  struct Surface {
+    Surface();
+    virtual ~Surface();
+    bool isWebview = false;
     std::unique_ptr<ClientBase::Buffer> buffer;
     std::unique_ptr<wl_surface> surface;
     std::unique_ptr<wl_subsurface> subsurface;
+  };
+
+  struct Webview : public Surface {
+    Webview();
+    ~Webview() override;
+    static Webview* FromSurface(Surface* surface);
     std::unique_ptr<WebviewRequestResponseClient> client;
     std::unique_ptr<::grpc::ClientContext> context;
   };
 
   void AllocateBuffers(const InitParams& params);
   void CreateWebview(const std::vector<std::string>& tokens);
-  void DestroyWebview(const std::vector<std::string>& tokens);
+  void CreateSurface(const std::vector<std::string>& tokens);
+  bool SetupSurface(const std::vector<std::string>& tokens,
+                    Surface* surface,
+                    int* id);
+  void DestroySurface(const std::vector<std::string>& tokens);
   void HandleDown(void* data,
                   struct wl_touch* wl_touch,
                   uint32_t serial,
@@ -79,12 +90,14 @@ class WebviewClient : public exo::wayland::clients::ClientBase {
                 uint32_t time,
                 int32_t id) override;
   void InputCallback();
-  void ListActiveWebviews();
+  void ListActiveSurfaces();
   void Paint();
   void SendBackRequest(const std::vector<std::string>& tokens);
   void SendForwardRequest(const std::vector<std::string>& tokens);
   void SendNavigationRequest(const std::vector<std::string>& tokens);
-  void SendResizeRequest(const std::vector<std::string>& tokens);
+  void SendResizeRequest(Webview* webview, int width, int height);
+  void HandleResizeRequest(const std::vector<std::string>& tokens);
+  void HandleFillSurfaceColor(const std::vector<std::string>& tokens);
   void SendKeyRequest(const std::vector<std::string>& tokens);
 
   void SendTouchInput(const Webview* webview,
@@ -106,7 +119,7 @@ class WebviewClient : public exo::wayland::clients::ClientBase {
   int32_t bo_usage_ = 0;
 
   const Webview* focused_webview_;
-  std::map<int, std::unique_ptr<Webview>> webviews_;
+  std::map<int, std::unique_ptr<Surface>> surfaces_;
   std::map<int32_t, gfx::Point> points_;
 
   std::unique_ptr<wl_callback> frame_callback_;

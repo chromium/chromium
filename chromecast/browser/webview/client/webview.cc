@@ -16,6 +16,8 @@
 #include "base/time/time.h"
 #include "chromecast/browser/webview/proto/webview.pb.h"
 #include "third_party/grpc/src/include/grpcpp/grpcpp.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -28,6 +30,7 @@ constexpr int kGrpcMaxReconnectBackoffMs = 1000;
 
 constexpr char kBackCommand[] = "back";
 constexpr char kCreateCommand[] = "create";
+constexpr char kCreateSurfaceCommand[] = "create_surface";
 constexpr char kDestroyCommand[] = "destroy";
 constexpr char kForwardCommand[] = "forward";
 constexpr char kListCommand[] = "list";
@@ -35,6 +38,7 @@ constexpr char kNavigateCommand[] = "navigate";
 constexpr char kResizeCommand[] = "resize";
 constexpr char kPositionCommand[] = "position";
 constexpr char kKeyCommand[] = "key";
+constexpr char kFillCommand[] = "fill";
 
 void FrameCallback(void* data, wl_callback* callback, uint32_t time) {
   WebviewClient* webview_client = static_cast<WebviewClient*>(data);
@@ -57,9 +61,23 @@ using chromecast::webview::TouchInput;
 using chromecast::webview::WebviewRequest;
 using chromecast::webview::WebviewResponse;
 
-WebviewClient::Webview::Webview() {}
+WebviewClient::Webview::Webview() {
+  isWebview = true;
+}
 
 WebviewClient::Webview::~Webview() {}
+
+WebviewClient::Surface::Surface() {}
+
+WebviewClient::Surface::~Surface() {}
+
+WebviewClient::Webview* WebviewClient::Webview::FromSurface(
+    WebviewClient::Surface* surface) {
+  if (!surface->isWebview) {
+    return nullptr;
+  }
+  return static_cast<Webview*>(surface);
+}
 
 WebviewClient::WebviewClient()
     : task_runner_(base::ThreadTaskRunnerHandle::Get()),
@@ -125,27 +143,40 @@ void WebviewClient::AllocateBuffers(const InitParams& params) {
   }
 }
 
-void WebviewClient::CreateWebview(const std::vector<std::string>& tokens) {
+bool WebviewClient::SetupSurface(const std::vector<std::string>& tokens,
+                                 Surface* surface,
+                                 int* id) {
   if (tokens.size() != 2) {
     LOG(ERROR) << "Usage: create [ID]";
-    return;
+    return false;
   }
 
-  int id;
-  if (!base::StringToInt(tokens[1], &id)) {
+  if (!base::StringToInt(tokens[1], id)) {
     LOG(ERROR) << "ID is not an int";
-    return;
-  } else if (webviews_.find(id) != webviews_.end()) {
-    LOG(ERROR) << "Webview with ID " << tokens[1] << " already exists";
-    return;
+    return false;
+  } else if (surfaces_.find(*id) != surfaces_.end()) {
+    LOG(ERROR) << "Surface with ID " << tokens[1] << " already exists";
+    return false;
   }
 
-  std::unique_ptr<Webview> webview = std::make_unique<Webview>();
+  surface->buffer = CreateBuffer(gfx::Size(1, 1), drm_format_, bo_usage_);
 
-  webview->buffer = CreateBuffer(gfx::Size(1, 1), drm_format_, bo_usage_);
-
-  webview->surface.reset(static_cast<wl_surface*>(
+  surface->surface.reset(static_cast<wl_surface*>(
       wl_compositor_create_surface(globals_.compositor.get())));
+
+  surface->subsurface.reset(wl_subcompositor_get_subsurface(
+      globals_.subcompositor.get(), surface->surface.get(), surface_.get()));
+  wl_subsurface_set_sync(surface->subsurface.get());
+
+  return true;
+}
+
+void WebviewClient::CreateWebview(const std::vector<std::string>& tokens) {
+  std::unique_ptr<Webview> webview = std::make_unique<Webview>();
+  int id;
+  if (!SetupSurface(tokens, webview.get(), &id)) {
+    return;
+  }
 
   webview->context = std::make_unique<::grpc::ClientContext>();
   webview->client = stub_->CreateWebview(webview->context.get());
@@ -164,10 +195,6 @@ void WebviewClient::CreateWebview(const std::vector<std::string>& tokens) {
     return;
   }
 
-  webview->subsurface.reset(wl_subcompositor_get_subsurface(
-      globals_.subcompositor.get(), webview->surface.get(), surface_.get()));
-  wl_subsurface_set_sync(webview->subsurface.get());
-
   std::unique_ptr<zaura_surface> aura_surface;
   aura_surface.reset(zaura_shell_get_aura_surface(globals_.aura_shell.get(),
                                                   webview->surface.get()));
@@ -177,16 +204,25 @@ void WebviewClient::CreateWebview(const std::vector<std::string>& tokens) {
   }
   zaura_surface_set_client_surface_id(aura_surface.get(), id);
 
-  webviews_[id] = std::move(webview);
+  surfaces_[id] = std::move(webview);
 }
 
-void WebviewClient::DestroyWebview(const std::vector<std::string>& tokens) {
+void WebviewClient::CreateSurface(const std::vector<std::string>& tokens) {
+  std::unique_ptr<Surface> surface = std::make_unique<Surface>();
+  int id;
+  if (!SetupSurface(tokens, surface.get(), &id)) {
+    return;
+  }
+  surfaces_[id] = std::move(surface);
+}
+
+void WebviewClient::DestroySurface(const std::vector<std::string>& tokens) {
   int id;
   if (tokens.size() != 2 || !base::StringToInt(tokens[1], &id)) {
     LOG(ERROR) << "Usage: destroy [ID]";
     return;
   }
-  webviews_.erase(id);
+  surfaces_.erase(id);
 }
 
 void WebviewClient::HandleDown(void* data,
@@ -200,17 +236,17 @@ void WebviewClient::HandleDown(void* data,
   gfx::Point touch_point(wl_fixed_to_int(x), wl_fixed_to_int(y));
 
   auto iter = std::find_if(
-      webviews_.begin(), webviews_.end(),
-      [surface](const std::pair<const int, std::unique_ptr<Webview>>& pair) {
+      surfaces_.begin(), surfaces_.end(),
+      [surface](const std::pair<const int, std::unique_ptr<Surface>>& pair) {
         const auto& webview = pair.second;
         return webview->surface.get() == surface;
       });
-  if (iter == webviews_.end()) {
+  if (iter == surfaces_.end() || !Webview::FromSurface(iter->second.get())) {
     focused_webview_ = nullptr;
     return;
   }
 
-  const Webview* webview = iter->second.get();
+  const Webview* webview = Webview::FromSurface(iter->second.get());
   focused_webview_ = webview;
   SendTouchInput(focused_webview_, touch_point.x(), touch_point.y(),
                  ui::ET_TOUCH_PRESSED, time, id);
@@ -300,14 +336,16 @@ void WebviewClient::InputCallback() {
 
   if (tokens[0] == kCreateCommand)
     CreateWebview(tokens);
+  else if (tokens[0] == kCreateSurfaceCommand)
+    CreateSurface(tokens);
   else if (tokens[0] == kDestroyCommand)
-    DestroyWebview(tokens);
+    DestroySurface(tokens);
   else if (tokens[0] == kListCommand)
-    ListActiveWebviews();
+    ListActiveSurfaces();
   else if (tokens[1] == kNavigateCommand)
     SendNavigationRequest(tokens);
   else if (tokens[1] == kResizeCommand)
-    SendResizeRequest(tokens);
+    HandleResizeRequest(tokens);
   else if (tokens[1] == kPositionCommand)
     SetPosition(tokens);
   else if (tokens[1] == kBackCommand)
@@ -316,14 +354,16 @@ void WebviewClient::InputCallback() {
     SendForwardRequest(tokens);
   else if (tokens[1] == kKeyCommand)
     SendKeyRequest(tokens);
+  else if (tokens[1] == kFillCommand)
+    HandleFillSurfaceColor(tokens);
 
   std::cout << "Enter command: ";
   std::cout.flush();
 }
 
-void WebviewClient::ListActiveWebviews() {
-  for (const auto& pair : webviews_)
-    std::cout << pair.first << std::endl;
+void WebviewClient::ListActiveSurfaces() {
+  for (const auto& pair : surfaces_)
+    std::cout << "Surface: " << pair.first << std::endl;
 }
 
 void WebviewClient::Paint() {
@@ -348,14 +388,14 @@ void WebviewClient::Paint() {
   static wl_callback_listener frame_listener = {FrameCallback};
   wl_callback_add_listener(frame_callback_.get(), &frame_listener, this);
 
-  for (const auto& pair : webviews_) {
-    Webview* webview = pair.second.get();
-    wl_surface_set_buffer_scale(webview->surface.get(), scale_);
-    wl_surface_damage(webview->surface.get(), 0, 0, surface_size_.width(),
+  for (const auto& pair : surfaces_) {
+    Surface* surface = pair.second.get();
+    wl_surface_set_buffer_scale(surface->surface.get(), scale_);
+    wl_surface_damage(surface->surface.get(), 0, 0, surface_size_.width(),
                       surface_size_.height());
-    wl_surface_attach(webview->surface.get(), webview->buffer->buffer.get(), 0,
+    wl_surface_attach(surface->surface.get(), surface->buffer->buffer.get(), 0,
                       0);
-    wl_surface_commit(webview->surface.get());
+    wl_surface_commit(surface->surface.get());
   }
 
   wl_surface_commit(surface_.get());
@@ -370,12 +410,15 @@ void WebviewClient::SchedulePaint() {
 void WebviewClient::SendBackRequest(const std::vector<std::string>& tokens) {
   int id;
   if (tokens.size() != 2 || !base::StringToInt(tokens[0], &id) ||
-      webviews_.find(id) == webviews_.end()) {
+      surfaces_.find(id) == surfaces_.end()) {
     LOG(ERROR) << "Usage: [ID] back";
     return;
   }
 
-  const auto& webview = webviews_[id];
+  const Webview* webview = Webview::FromSurface(surfaces_[id].get());
+  if (!webview)
+    return;
+
   WebviewRequest back_request;
   back_request.mutable_go_back();
   if (!webview->client->Write(back_request)) {
@@ -386,12 +429,15 @@ void WebviewClient::SendBackRequest(const std::vector<std::string>& tokens) {
 void WebviewClient::SendForwardRequest(const std::vector<std::string>& tokens) {
   int id;
   if (tokens.size() != 2 || !base::StringToInt(tokens[0], &id) ||
-      webviews_.find(id) == webviews_.end()) {
+      surfaces_.find(id) == surfaces_.end()) {
     LOG(ERROR) << "Usage: [ID] forward";
     return;
   }
 
-  const auto& webview = webviews_[id];
+  const Webview* webview = Webview::FromSurface(surfaces_[id].get());
+  if (!webview)
+    return;
+
   WebviewRequest forward_request;
   forward_request.mutable_go_forward();
   if (!webview->client->Write(forward_request)) {
@@ -403,12 +449,15 @@ void WebviewClient::SendNavigationRequest(
     const std::vector<std::string>& tokens) {
   int id;
   if (tokens.size() != 3 || !base::StringToInt(tokens[0], &id) ||
-      webviews_.find(id) == webviews_.end()) {
+      surfaces_.find(id) == surfaces_.end()) {
     LOG(ERROR) << "Usage: [ID] navigate [URL]";
     return;
   }
 
-  const auto& webview = webviews_[id];
+  const Webview* webview = Webview::FromSurface(surfaces_[id].get());
+  if (!webview)
+    return;
+
   WebviewRequest load_url_request;
   load_url_request.mutable_navigate()->set_url(tokens[2]);
   if (!webview->client->Write(load_url_request)) {
@@ -416,17 +465,41 @@ void WebviewClient::SendNavigationRequest(
   }
 }
 
-void WebviewClient::SendResizeRequest(const std::vector<std::string>& tokens) {
+void WebviewClient::HandleResizeRequest(
+    const std::vector<std::string>& tokens) {
   int id, width, height;
   if (tokens.size() != 4 || !base::StringToInt(tokens[0], &id) ||
-      webviews_.find(id) == webviews_.end() ||
       !base::StringToInt(tokens[2], &width) ||
       !base::StringToInt(tokens[3], &height)) {
     LOG(ERROR) << "Usage: [ID] resize [WIDTH] [HEIGHT]";
     return;
   }
 
-  const auto& webview = webviews_[id];
+  if (surfaces_.find(id) != surfaces_.end()) {
+    Webview* webview = Webview::FromSurface(surfaces_[id].get());
+    if (webview) {
+      SendResizeRequest(webview, width, height);
+    } else {
+      surfaces_[id]->buffer =
+          CreateBuffer(gfx::Size(width, height), drm_format_, bo_usage_);
+    }
+  }
+}
+
+void WebviewClient::HandleFillSurfaceColor(
+    const std::vector<std::string>& tokens) {
+  int id;
+  uint32_t color;
+  if (tokens.size() != 3 || !base::StringToInt(tokens[0], &id) ||
+      !base::HexStringToUInt(tokens[2], &color) ||
+      surfaces_.find(id) == surfaces_.end()) {
+    LOG(ERROR) << "Usage: [ID] " << kFillCommand << " [ARGB] (e.g. FF000000)";
+    return;
+  }
+  surfaces_[id]->buffer->sk_surface->getCanvas()->clear(color);
+}
+
+void WebviewClient::SendResizeRequest(Webview* webview, int width, int height) {
   WebviewRequest resize_request;
   resize_request.mutable_resize()->set_width(width);
   resize_request.mutable_resize()->set_height(height);
@@ -446,12 +519,14 @@ void WebviewClient::SendKeyRequest(const std::vector<std::string>& tokens) {
     return;
   }
 
-  const auto& webview = webviews_[id];
+  const Webview* webview = Webview::FromSurface(surfaces_[id].get());
+  if (!webview)
+    return;
 
-  SendKeyEvent(webview.get(), base::Time::Now().ToDeltaSinceWindowsEpoch(),
-               tokens[2], true);
-  SendKeyEvent(webview.get(), base::Time::Now().ToDeltaSinceWindowsEpoch(),
-               tokens[2], false);
+  SendKeyEvent(webview, base::Time::Now().ToDeltaSinceWindowsEpoch(), tokens[2],
+               true);
+  SendKeyEvent(webview, base::Time::Now().ToDeltaSinceWindowsEpoch(), tokens[2],
+               false);
 }
 
 void WebviewClient::SendKeyEvent(const Webview* webview,
@@ -501,14 +576,18 @@ void WebviewClient::SendTouchInput(const Webview* webview,
 void WebviewClient::SetPosition(const std::vector<std::string>& tokens) {
   int id, x, y;
   if (tokens.size() != 4 || !base::StringToInt(tokens[0], &id) ||
-      webviews_.find(id) == webviews_.end() ||
       !base::StringToInt(tokens[2], &x) || !base::StringToInt(tokens[3], &y)) {
     LOG(ERROR) << "Usage: [ID] position [X] [Y]";
     return;
   }
 
-  const auto& webview = webviews_[id];
-  wl_subsurface_set_position(webview->subsurface.get(), x, y);
+  Surface* surface = nullptr;
+  if (surfaces_.find(id) != surfaces_.end()) {
+    surface = surfaces_[id].get();
+  } else {
+    LOG(ERROR) << "Cannont find surface with ID: " << id;
+  }
+  wl_subsurface_set_position(surface->subsurface.get(), x, y);
 }
 
 void WebviewClient::TakeExclusiveAccess() {
