@@ -225,15 +225,19 @@ class TabGridViewBinder {
                         .fetch((shoppingPersistedTabData) -> {
                             if (shoppingPersistedTabData.getPriceDrop() == null) {
                                 priceCardView.setVisibility(View.GONE);
+                                model.set(TabProperties.PRICE_DROP, null);
                             } else {
                                 priceCardView.setPriceStrings(
                                         shoppingPersistedTabData.getPriceDrop().price,
                                         shoppingPersistedTabData.getPriceDrop().previousPrice);
                                 priceCardView.setVisibility(View.VISIBLE);
+                                model.set(TabProperties.PRICE_DROP,
+                                        shoppingPersistedTabData.getPriceDrop());
                             }
                         });
             } else {
                 priceCardView.setVisibility(View.GONE);
+                model.set(TabProperties.PRICE_DROP, null);
             }
         } else if (TabProperties.PAGE_INFO_LISTENER == propertyKey) {
             TabListMediator.TabActionListener listener =

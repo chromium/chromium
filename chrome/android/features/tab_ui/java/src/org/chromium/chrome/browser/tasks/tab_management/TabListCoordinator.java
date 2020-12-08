@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
+import org.chromium.chrome.browser.tasks.tab_management.PriceWelcomeMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.tab_ui.R;
@@ -48,7 +49,8 @@ import java.util.List;
 /**
  * Coordinator for showing UI for a list of tabs. Can be used in GRID or STRIP modes.
  */
-public class TabListCoordinator implements Destroyable {
+public class TabListCoordinator
+        implements PriceWelcomeMessageService.PriceWelcomeMessageProvider, Destroyable {
     /**
      * Modes of showing the list of tabs.
      *
@@ -339,6 +341,13 @@ public class TabListCoordinator implements Destroyable {
     }
 
     /**
+     * @return The index of the model list where the PriceWelcomeMessage should be inserted.
+     */
+    int getPriceWelcomeMessageIndex() {
+        return mModel.size();
+    }
+
+    /**
      * @return The container {@link androidx.recyclerview.widget.RecyclerView} that is showing the
      *         tab list UI.
      */
@@ -443,5 +452,16 @@ public class TabListCoordinator implements Destroyable {
      */
     void removeSpecialListItem(@UiType int uiType, int itemIdentifier) {
         mMediator.removeSpecialItemFromModel(uiType, itemIdentifier);
+    }
+
+    // PriceWelcomeMessageService.PriceWelcomeMessageProvider implementation.
+    @Override
+    public PriceTabData getFirstTabShowingPriceCard() {
+        return mModel.getFirstTabShowingPriceCard();
+    }
+
+    @Override
+    public int getTabIndexFromTabId(int tabId) {
+        return mModel.indexFromId(tabId);
     }
 }

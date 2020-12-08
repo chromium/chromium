@@ -65,8 +65,10 @@ import java.util.List;
  * The Mediator that is responsible for resetting the tab grid or carousel based on visibility and
  * model changes.
  */
-class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView.VisibilityListener,
-                                     TabListMediator.GridCardOnClickListenerProvider {
+class TabSwitcherMediator
+        implements TabSwitcher.Controller, TabListRecyclerView.VisibilityListener,
+                   TabListMediator.GridCardOnClickListenerProvider,
+                   PriceWelcomeMessageService.PriceWelcomeMessageReviewActionProvider {
     private static final String TAG = "TabSwitcherMediator";
 
     // This should be the same as TabListCoordinator.GRID_LAYOUT_SPAN_COUNT for the selected tab
@@ -776,6 +778,11 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         if (mOnTabSelectingListener != null) {
             mOnTabSelectingListener.onTabSelecting(LayoutManagerImpl.time(), tabId);
         }
+    }
+
+    @Override
+    public void scrollToBindingTab(int tabIndex) {
+        mContainerViewModel.set(TabListContainerProperties.INITIAL_SCROLL_INDEX, tabIndex);
     }
 
     private boolean ableToOpenDialog(Tab tab) {

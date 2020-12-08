@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.IPH;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.PRICE_WELCOME;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.TAB_SUGGESTION;
 
 import android.content.Context;
@@ -103,6 +104,11 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
                 assert data instanceof IphMessageService.IphMessageData;
                 return IphMessageCardViewModel.create(mContext, this::invalidateShownMessage,
                         (IphMessageService.IphMessageData) data);
+            case PRICE_WELCOME:
+                assert data instanceof PriceWelcomeMessageService.PriceWelcomeMessageData;
+                return PriceWelcomeMessageCardViewModel.create(mContext,
+                        this::invalidateShownMessage,
+                        (PriceWelcomeMessageService.PriceWelcomeMessageData) data);
             default:
                 return new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
                         .with(MessageCardViewProperties.IS_INCOGNITO, false)

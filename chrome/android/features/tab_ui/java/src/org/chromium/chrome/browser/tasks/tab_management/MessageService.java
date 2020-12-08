@@ -18,13 +18,15 @@ import java.lang.annotation.RetentionPolicy;
  * understands.
  */
 public class MessageService {
-    @IntDef({MessageType.TAB_SUGGESTION, MessageType.IPH, MessageType.ALL})
+    @IntDef({MessageType.TAB_SUGGESTION, MessageType.IPH, MessageType.PRICE_WELCOME,
+            MessageType.ALL})
     @Retention(RetentionPolicy.SOURCE)
     public @interface MessageType {
         int FOR_TESTING = 0;
         int TAB_SUGGESTION = 1;
         int IPH = 2;
-        int ALL = 3;
+        int PRICE_WELCOME = 3;
+        int ALL = 4;
     }
 
     /**

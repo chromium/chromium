@@ -90,6 +90,22 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             this.price = price;
             this.previousPrice = previousPrice;
         }
+
+        @Override
+        public boolean equals(Object object) {
+            if (!(object instanceof PriceDrop)) return false;
+            PriceDrop priceDrop = (PriceDrop) object;
+            return this.price.equals(priceDrop.price)
+                    && this.previousPrice.equals(priceDrop.previousPrice);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = 17;
+            result = 31 * result + (price == null ? 0 : price.hashCode());
+            result = 31 * result + (previousPrice == null ? 0 : previousPrice.hashCode());
+            return result;
+        }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
