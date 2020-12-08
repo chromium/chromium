@@ -298,6 +298,20 @@ struct IDLOnBeforeUnloadEventHandler final
     : public IDLBaseHelper<EventListener*> {};
 struct IDLOnErrorEventHandler final : public IDLBaseHelper<EventListener*> {};
 
+// IDL optional types
+//
+// IDLOptional represents an optional argument and supports a conversion from
+// ES undefined to "missing" special value.  The "missing" value might be
+// represented in Blink as base::nullopt, nullptr, 0, etc. depending on a Blink
+// type.
+//
+// Note that IDLOptional is not meant to represent an optional dictionary
+// member.
+template <typename T>
+struct IDLOptional final : public IDLBase {
+  using ImplType = void;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_IDL_TYPES_H_

@@ -244,11 +244,13 @@ const auto ${arg1_value} = arg1_value_maybe_enum.value();
                                    cg_context.attribute.idl_type))
         return
 
-    for index, argument in enumerate(cg_context.function_like.arguments):
-        name = name_style.arg_f("arg{}_{}", index + 1, argument.identifier)
+    for argument in cg_context.function_like.arguments:
+        name = name_style.arg_f("arg{}_{}", argument.index + 1,
+                                argument.identifier)
         if argument.is_variadic:
             code_node.register_code_symbol(
-                make_v8_to_blink_value_variadic(name, "${info}", index,
+                make_v8_to_blink_value_variadic(name, "${info}",
+                                                argument.index,
                                                 argument.idl_type))
         else:
             v8_value = "${{info}}[{}]".format(argument.index)
@@ -256,8 +258,7 @@ const auto ${arg1_value} = arg1_value_maybe_enum.value();
                 make_v8_to_blink_value(name,
                                        v8_value,
                                        argument.idl_type,
-                                       argument_index=index,
-                                       default_value=argument.default_value,
+                                       argument=argument,
                                        cg_context=cg_context))
 
 
@@ -2435,7 +2436,7 @@ if (${info}.ShouldThrowOnError()) {
             "blink_property_value",
             "${v8_property_value}",
             cg_context.indexed_property_setter.arguments[1].idl_type,
-            argument_index=2))
+            argument=cg_context.indexed_property_setter.arguments[1]))
 
     body.extend([
         TextNode("""\
@@ -2797,7 +2798,7 @@ if (!is_creating) {
             "blink_property_value",
             "${v8_property_value}",
             cg_context.named_property_setter.arguments[1].idl_type,
-            argument_index=2))
+            argument=cg_context.named_property_setter.arguments[1]))
 
     if "Custom" in cg_context.named_property_setter.extended_attributes:
         text = _format(

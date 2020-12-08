@@ -242,7 +242,21 @@ def blink_type_info(idl_type, use_new_union=False):
     assert False, "Unknown type: {}".format(idl_type.syntactic_form)
 
 
-def native_value_tag(idl_type):
+def native_value_tag(idl_type, argument=None):
+    """Returns the tag type of NativeValueTraits."""
+    assert isinstance(idl_type, web_idl.IdlType)
+    assert argument is None or isinstance(argument, web_idl.Argument)
+
+    if (idl_type.is_optional
+            and not (idl_type.is_nullable or
+                     (argument and argument.default_value) or
+                     (argument and argument == argument.owner.arguments[-1]))):
+        return "IDLOptional<{}>".format(_native_value_tag_impl(idl_type))
+
+    return _native_value_tag_impl(idl_type)
+
+
+def _native_value_tag_impl(idl_type):
     """Returns the tag type of NativeValueTraits."""
     assert isinstance(idl_type, web_idl.IdlType)
 
@@ -280,15 +294,16 @@ def native_value_tag(idl_type):
 
     if real_type.is_sequence:
         return "IDLSequence<{}>".format(
-            native_value_tag(real_type.element_type))
+            _native_value_tag_impl(real_type.element_type))
 
     if real_type.is_frozen_array:
-        return "IDLArray<{}>".format(native_value_tag(real_type.element_type))
+        return "IDLArray<{}>".format(
+            _native_value_tag_impl(real_type.element_type))
 
     if real_type.is_record:
         return "IDLRecord<{}, {}>".format(
-            native_value_tag(real_type.key_type),
-            native_value_tag(real_type.value_type))
+            _native_value_tag_impl(real_type.key_type),
+            _native_value_tag_impl(real_type.value_type))
 
     if real_type.is_promise:
         return "IDLPromise"
@@ -300,7 +315,8 @@ def native_value_tag(idl_type):
         return "IDLUnionNotINT<{}>".format(class_name)
 
     if real_type.is_nullable:
-        return "IDLNullable<{}>".format(native_value_tag(real_type.inner_type))
+        return "IDLNullable<{}>".format(
+            _native_value_tag_impl(real_type.inner_type))
 
     assert False, "Unknown type: {}".format(idl_type.syntactic_form)
 
@@ -369,6 +385,9 @@ def make_default_value_expr(idl_type, default_value):
       else
         var = ${assignment_value};
     """
+    assert isinstance(idl_type, web_idl.IdlType)
+    assert (default_value is None
+            or isinstance(default_value, web_idl.LiteralConstant))
     assert default_value.is_type_compatible_with(idl_type)
 
     class DefaultValueExpr:
@@ -520,8 +539,7 @@ def make_default_value_expr(idl_type, default_value):
 def make_v8_to_blink_value(blink_var_name,
                            v8_value_expr,
                            idl_type,
-                           argument_index=None,
-                           default_value=None,
+                           argument=None,
                            cg_context=None):
     """
     Returns a SymbolNode whose definition converts a v8::Value to a Blink value.
@@ -529,9 +547,7 @@ def make_v8_to_blink_value(blink_var_name,
     assert isinstance(blink_var_name, str)
     assert isinstance(v8_value_expr, str)
     assert isinstance(idl_type, web_idl.IdlType)
-    assert (argument_index is None or isinstance(argument_index, (int, long)))
-    assert (default_value is None
-            or isinstance(default_value, web_idl.LiteralConstant))
+    assert argument is None or isinstance(argument, web_idl.Argument)
 
     T = TextNode
     F = lambda *args, **kwargs: T(_format(*args, **kwargs))
@@ -565,26 +581,28 @@ def make_v8_to_blink_value(blink_var_name,
             v8_value_expr)
 
     def create_definition(symbol_node):
-        if argument_index is None:
+        if argument is None:
             func_name = "NativeValue"
             arguments = ["${isolate}", v8_value_expr, "${exception_state}"]
         else:
             func_name = "ArgumentValue"
             arguments = [
                 "${isolate}",
-                str(argument_index),
+                str(argument.index),
                 v8_value_expr,
                 "${exception_state}",
             ]
         if "StringContext" in idl_type.effective_annotations:
             arguments.append("${execution_context_of_document_tree}")
-        blink_value_expr = _format(
-            "NativeValueTraits<{_1}>::{_2}({_3})",
-            _1=native_value_tag(idl_type),
-            _2=func_name,
-            _3=", ".join(arguments))
-        default_expr = (make_default_value_expr(idl_type, default_value)
-                        if default_value else None)
+        blink_value_expr = _format("NativeValueTraits<{_1}>::{_2}({_3})",
+                                   _1=native_value_tag(idl_type, argument),
+                                   _2=func_name,
+                                   _3=", ".join(arguments))
+        if argument and argument.default_value:
+            default_expr = make_default_value_expr(idl_type,
+                                                   argument.default_value)
+        else:
+            default_expr = None
         exception_exit_node = CxxUnlikelyIfNode(
             cond="${exception_state}.HadException()", body=T("return;"))
 
@@ -598,7 +616,8 @@ def make_v8_to_blink_value(blink_var_name,
             "decltype(NativeValueTraits<{}>::NativeValue("
             "std::declval<v8::Isolate*>(), "
             "std::declval<v8::Local<v8::Value>>(), "
-            "std::declval<ExceptionState&>()))", native_value_tag(idl_type))
+            "std::declval<ExceptionState&>()))",
+            native_value_tag(idl_type, argument))
         if default_expr and default_expr.is_initialization_lightweight:
             pattern = "{} ${{{}}}{{{}}};"
             args = [
