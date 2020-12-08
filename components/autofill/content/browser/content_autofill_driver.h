@@ -63,7 +63,7 @@ class ContentAutofillDriver : public AutofillDriver,
       content::RenderFrameHost* render_frame_host,
       AutofillClient* client,
       const std::string& app_locale,
-      AutofillManager::AutofillDownloadManagerState enable_download_manager,
+      AutofillHandler::AutofillDownloadManagerState enable_download_manager,
       AutofillProvider* provider);
   ~ContentAutofillDriver() override;
 
@@ -181,7 +181,9 @@ class ContentAutofillDriver : public AutofillDriver,
   void RemoveHandler(
       const content::RenderWidgetHost::KeyPressEventCallback& handler) override;
 
-  void SetAutofillProvider(AutofillProvider* provider);
+  void SetAutofillProvider(
+      AutofillProvider* provider,
+      AutofillHandler::AutofillDownloadManagerState enable_download_manager);
 
   // Returns whether navigator.credentials.get({otp: {transport:"sms"}}) has
   // been used.

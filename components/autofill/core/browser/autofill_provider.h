@@ -69,6 +69,8 @@ class AutofillProvider {
 
   virtual void OnHidePopup(AutofillHandlerProxy* handler) = 0;
 
+  virtual void OnServerPredictionsAvailable(AutofillHandlerProxy* handler) = 0;
+
   virtual void Reset(AutofillHandlerProxy* handler) = 0;
 
   void SendFormDataToRenderer(AutofillHandlerProxy* handler,

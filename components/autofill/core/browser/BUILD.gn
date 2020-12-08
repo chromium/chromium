@@ -623,6 +623,7 @@ source_set("unit_tests") {
     "autofill_profile_sync_util_unittest.cc",
     "autofill_profile_validation_util_unittest.cc",
     "autofill_profile_validator_unittest.cc",
+    "autofill_provider_unittest.cc",
     "autofill_regexes_unittest.cc",
     "autofill_subject_unittest.cc",
     "autofill_type_unittest.cc",

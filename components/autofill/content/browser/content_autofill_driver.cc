@@ -61,7 +61,7 @@ ContentAutofillDriver::ContentAutofillDriver(
     content::RenderFrameHost* render_frame_host,
     AutofillClient* client,
     const std::string& app_locale,
-    AutofillManager::AutofillDownloadManagerState enable_download_manager,
+    AutofillHandler::AutofillDownloadManagerState enable_download_manager,
     AutofillProvider* provider)
     : render_frame_host_(render_frame_host),
       autofill_manager_(nullptr),
@@ -70,7 +70,7 @@ ContentAutofillDriver::ContentAutofillDriver(
   // AutofillManager isn't used if provider is valid, Autofill provider is
   // currently used by Android WebView only.
   if (provider) {
-    SetAutofillProvider(provider);
+    SetAutofillProvider(provider, enable_download_manager);
   } else {
     SetAutofillManager(std::make_unique<AutofillManager>(
         this, client, app_locale, enable_download_manager));
@@ -158,8 +158,10 @@ void ContentAutofillDriver::SendFormDataToRenderer(
 
 void ContentAutofillDriver::PropagateAutofillPredictions(
     const std::vector<FormStructure*>& forms) {
-  autofill_manager_->client()->PropagateAutofillPredictions(render_frame_host_,
-                                                            forms);
+  AutofillHandler* handler =
+      autofill_manager_ ? autofill_manager_ : autofill_handler_.get();
+  DCHECK(handler);
+  handler->PropagateAutofillPredictions(render_frame_host_, forms);
 }
 
 void ContentAutofillDriver::HandleParsedForms(
@@ -402,9 +404,11 @@ void ContentAutofillDriver::RemoveHandler(
   view->GetRenderWidgetHost()->RemoveKeyPressEventCallback(handler);
 }
 
-void ContentAutofillDriver::SetAutofillProvider(AutofillProvider* provider) {
-  autofill_handler_ =
-      std::make_unique<AutofillHandlerProxy>(this, log_manager_, provider);
+void ContentAutofillDriver::SetAutofillProvider(
+    AutofillProvider* provider,
+    AutofillHandler::AutofillDownloadManagerState enable_download_manager) {
+  autofill_handler_ = std::make_unique<AutofillHandlerProxy>(
+      this, log_manager_, provider, enable_download_manager);
   GetAutofillAgent()->SetUserGestureRequired(false);
   GetAutofillAgent()->SetSecureContextRequired(true);
   GetAutofillAgent()->SetFocusRequiresScroll(false);
@@ -450,7 +454,8 @@ void ContentAutofillDriver::ReportAutofillWebOTPMetrics(
 
 void ContentAutofillDriver::SetAutofillProviderForTesting(
     AutofillProvider* provider) {
-  SetAutofillProvider(provider);
+  SetAutofillProvider(provider, AutofillHandler::AutofillDownloadManagerState::
+                                    DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
   // AutofillManager isn't used if provider is valid.
   autofill_manager_ = nullptr;
 }

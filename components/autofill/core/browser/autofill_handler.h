@@ -123,6 +123,12 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
   // Invoked when the options of a select element in the |form| changed.
   virtual void SelectFieldOptionsDidChange(const FormData& form) = 0;
 
+  // Invoked when the field type predictions are downloaded from the autofill
+  // server.
+  virtual void PropagateAutofillPredictions(
+      content::RenderFrameHost* rfh,
+      const std::vector<FormStructure*>& forms) = 0;
+
   // Resets cache.
   virtual void Reset();
 

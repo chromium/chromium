@@ -355,6 +355,11 @@ void AutofillProviderAndroid::OnHidePopup(AutofillHandlerProxy* handler) {
   }
 }
 
+void AutofillProviderAndroid::OnServerPredictionsAvailable(
+    AutofillHandlerProxy* handler) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+}
+
 void AutofillProviderAndroid::Reset(AutofillHandlerProxy* handler) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (handler == handler_.get()) {

@@ -10,12 +10,14 @@ namespace autofill {
 
 using base::TimeTicks;
 
-AutofillHandlerProxy::AutofillHandlerProxy(AutofillDriver* driver,
-                                           LogManager* log_manager,
-                                           AutofillProvider* provider)
+AutofillHandlerProxy::AutofillHandlerProxy(
+    AutofillDriver* driver,
+    LogManager* log_manager,
+    AutofillProvider* provider,
+    AutofillHandler::AutofillDownloadManagerState enable_download_manager)
     : AutofillHandler(driver,
                       log_manager,
-                      DISABLE_AUTOFILL_DOWNLOAD_MANAGER,
+                      enable_download_manager,
                       version_info::Channel::UNKNOWN),
       provider_(provider) {}
 
@@ -90,7 +92,16 @@ void AutofillHandlerProxy::OnHidePopup() {
 
 void AutofillHandlerProxy::SelectFieldOptionsDidChange(const FormData& form) {}
 
+void AutofillHandlerProxy::PropagateAutofillPredictions(
+    content::RenderFrameHost* rfh,
+    const std::vector<FormStructure*>& forms) {
+  has_server_prediction_ = true;
+  provider_->OnServerPredictionsAvailable(this);
+}
+
 void AutofillHandlerProxy::Reset() {
+  AutofillHandler::Reset();
+  has_server_prediction_ = false;
   provider_->Reset(this);
 }
 

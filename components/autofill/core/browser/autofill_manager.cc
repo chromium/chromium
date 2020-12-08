@@ -1388,6 +1388,12 @@ void AutofillManager::SelectFieldOptionsDidChange(const FormData& form) {
     TriggerRefill(form);
 }
 
+void AutofillManager::PropagateAutofillPredictions(
+    content::RenderFrameHost* rfh,
+    const std::vector<FormStructure*>& forms) {
+  client_->PropagateAutofillPredictions(rfh, forms);
+}
+
 void AutofillManager::OnCreditCardFetched(bool did_succeed,
                                           const CreditCard* credit_card,
                                           const base::string16& cvc) {

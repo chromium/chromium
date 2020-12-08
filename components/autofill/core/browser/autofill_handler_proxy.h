@@ -15,9 +15,11 @@ class AutofillProvider;
 // This class forwards AutofillHandler calls to AutofillProvider.
 class AutofillHandlerProxy : public AutofillHandler {
  public:
-  AutofillHandlerProxy(AutofillDriver* driver,
-                       LogManager* log_manager,
-                       AutofillProvider* provider);
+  AutofillHandlerProxy(
+      AutofillDriver* driver,
+      LogManager* log_manager,
+      AutofillProvider* provider,
+      AutofillHandler::AutofillDownloadManagerState enable_download_manager);
   ~AutofillHandlerProxy() override;
 
   void OnFocusNoLongerOnForm(bool had_interacted_form) override;
@@ -35,6 +37,8 @@ class AutofillHandlerProxy : public AutofillHandler {
   base::WeakPtr<AutofillHandlerProxy> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
+
+  bool has_server_prediction() const { return has_server_prediction_; }
 
  protected:
   void OnFormSubmittedImpl(const FormData& form,
@@ -74,7 +78,12 @@ class AutofillHandlerProxy : public AutofillHandler {
   void OnAfterProcessParsedForms(
       const std::set<FormType>& form_types) override {}
 
+  void PropagateAutofillPredictions(
+      content::RenderFrameHost* rfh,
+      const std::vector<FormStructure*>& forms) override;
+
  private:
+  bool has_server_prediction_ = false;
   AutofillProvider* provider_;
   base::WeakPtrFactory<AutofillHandlerProxy> weak_ptr_factory_{this};
 

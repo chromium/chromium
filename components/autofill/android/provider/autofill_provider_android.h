@@ -68,6 +68,7 @@ class AutofillProviderAndroid : public AutofillProvider {
   void OnFormsSeen(AutofillHandlerProxy* handler,
                    const std::vector<FormData>& forms) override;
   void OnHidePopup(AutofillHandlerProxy* handler) override;
+  void OnServerPredictionsAvailable(AutofillHandlerProxy* handler) override;
 
   void Reset(AutofillHandlerProxy* handler) override;
 
