@@ -89,7 +89,7 @@ class ReportClientTest : public testing::Test {
         std::move(mock_user_manager));
 #endif  // OS_CHROMEOS
     // Provide a mock cloud policy client.
-    auto client_ = std::make_unique<policy::MockCloudPolicyClient>();
+    client_ = std::make_unique<policy::MockCloudPolicyClient>();
     client_->SetDMToken(
         policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
     test_reporting_ =
