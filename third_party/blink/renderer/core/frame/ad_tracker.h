@@ -110,7 +110,8 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
                          const String& script_name,
                          int script_id);
   void DidExecuteScript();
-  bool IsKnownAdScript(ExecutionContext* execution_context, const String& url);
+  bool IsKnownAdScript(ExecutionContext*, const String& url);
+  bool IsKnownAdScriptForCheckedContext(ExecutionContext&, const String& url);
   void AppendToKnownAdScripts(ExecutionContext&, const String& url);
 
   Member<LocalFrame> local_root_;

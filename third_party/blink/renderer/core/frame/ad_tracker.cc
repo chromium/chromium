@@ -213,7 +213,9 @@ bool AdTracker::CalculateIfAdSubresource(
     const FetchInitiatorInfo& initiator_info,
     bool known_ad) {
   // Check if the document loading the resource is an ad.
-  known_ad = known_ad || IsKnownAdExecutionContext(execution_context);
+  const bool is_ad_execution_context =
+      IsKnownAdExecutionContext(execution_context);
+  known_ad = known_ad || is_ad_execution_context;
 
   // We skip script checking for stylesheet-initiated resource requests as the
   // stack may represent the cause of a style recalculation rather than the
@@ -232,7 +234,7 @@ bool AdTracker::CalculateIfAdSubresource(
   // contexts, because any script executed inside an ad context is considered an
   // ad script by IsKnownAdScript.
   if (resource_type == ResourceType::kScript && known_ad &&
-      !IsKnownAdExecutionContext(execution_context)) {
+      !is_ad_execution_context) {
     AppendToKnownAdScripts(*execution_context, request.Url().GetString());
   }
 
@@ -286,7 +288,7 @@ bool AdTracker::IsAdScriptInStack(StackType stack_type) {
   // (e.g., when v8 is executed) but not the entire stack. For a small cost we
   // can also check the top of the stack (this is much cheaper than getting the
   // full stack from v8).
-  return IsKnownAdScript(execution_context, ScriptAtTopOfStack());
+  return IsKnownAdScriptForCheckedContext(*execution_context, String());
 }
 
 bool AdTracker::IsKnownAdScript(ExecutionContext* execution_context,
@@ -297,13 +299,25 @@ bool AdTracker::IsKnownAdScript(ExecutionContext* execution_context,
   if (IsKnownAdExecutionContext(execution_context))
     return true;
 
-  if (url.IsEmpty())
-    return false;
+  return IsKnownAdScriptForCheckedContext(*execution_context, url);
+}
 
-  auto it = known_ad_scripts_.find(execution_context);
+bool AdTracker::IsKnownAdScriptForCheckedContext(
+    ExecutionContext& execution_context,
+    const String& url) {
+  DCHECK(!IsKnownAdExecutionContext(&execution_context));
+  auto it = known_ad_scripts_.find(&execution_context);
   if (it == known_ad_scripts_.end())
     return false;
-  return it->value.Contains(url);
+
+  if (it->value.IsEmpty())
+    return false;
+
+  // Delay calling ScriptAtTopOfStack() as much as possible due to its cost.
+  String script_url = url.IsNull() ? ScriptAtTopOfStack() : url;
+  if (script_url.IsEmpty())
+    return false;
+  return it->value.Contains(script_url);
 }
 
 // This is a separate function for testing purposes.
