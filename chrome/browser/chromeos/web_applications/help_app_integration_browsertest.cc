@@ -357,8 +357,9 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ShowParentalControls) {
 }
 
 // Test that the Help App delegate uses the local search service methods.
+// Flaky on CrOS, see crbug.com/1156713
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
-                       HelpAppV2UsesLocalSearchServiceMethods) {
+                       DISABLED_HelpAppV2UsesLocalSearchServiceMethods) {
   WaitForTestSystemAppInstall();
   content::WebContents* web_contents = LaunchApp(web_app::SystemAppType::HELP);
 
