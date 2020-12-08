@@ -13,6 +13,7 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.NetError;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
 
@@ -52,18 +53,20 @@ public class AwWebContentsObserver extends WebContentsObserver {
     }
 
     @Override
-    public void didFinishLoad(long frameId, String validatedUrl, boolean isMainFrame) {
+    public void didFinishLoad(long frameId, GURL url, boolean isKnownValid, boolean isMainFrame) {
+        String validatedUrl = isKnownValid ? url.getSpec() : url.getPossiblyInvalidSpec();
         if (isMainFrame && getClientIfNeedToFireCallback(validatedUrl) != null) {
             mLastDidFinishLoadUrl = validatedUrl;
         }
     }
 
     @Override
-    public void didStopLoading(String validatedUrl) {
-        if (validatedUrl.length() == 0) validatedUrl = ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL;
-        AwContentsClient client = getClientIfNeedToFireCallback(validatedUrl);
-        if (client != null && validatedUrl.equals(mLastDidFinishLoadUrl)) {
-            client.getCallbackHelper().postOnPageFinished(validatedUrl);
+    public void didStopLoading(GURL gurl, boolean isKnownValid) {
+        String url = isKnownValid ? gurl.getSpec() : gurl.getPossiblyInvalidSpec();
+        if (url.length() == 0) url = ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL;
+        AwContentsClient client = getClientIfNeedToFireCallback(url);
+        if (client != null && url.equals(mLastDidFinishLoadUrl)) {
+            client.getCallbackHelper().postOnPageFinished(url);
             mLastDidFinishLoadUrl = null;
         }
     }
@@ -76,7 +79,8 @@ public class AwWebContentsObserver extends WebContentsObserver {
     }
 
     @Override
-    public void didFailLoad(boolean isMainFrame, @NetError int errorCode, String failingUrl) {
+    public void didFailLoad(boolean isMainFrame, @NetError int errorCode, GURL failingGurl) {
+        String failingUrl = failingGurl.getPossiblyInvalidSpec();
         AwContentsClient client = mAwContentsClient.get();
         if (client == null) return;
         String unreachableWebDataUrl = AwContentsStatics.getUnreachableWebDataUrl();
@@ -109,7 +113,7 @@ public class AwWebContentsObserver extends WebContentsObserver {
     public void didFinishNavigation(NavigationHandle navigation) {
         String url = navigation.getUrlString();
         if (navigation.errorCode() != NetError.OK && !navigation.isDownload()) {
-            didFailLoad(navigation.isInMainFrame(), navigation.errorCode(), url);
+            didFailLoad(navigation.isInMainFrame(), navigation.errorCode(), navigation.getUrl());
         }
 
         if (!navigation.hasCommitted()) return;

@@ -10,6 +10,7 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnReceivedErrorHelper;
+import org.chromium.url.GURL;
 
 /**
  * The default WebContentsObserver used by ContentView tests. The below callbacks can be
@@ -52,21 +53,21 @@ public class TestWebContentsObserver extends WebContentsObserver {
      * stop working!
      */
     @Override
-    public void didStartLoading(String url) {
+    public void didStartLoading(GURL url) {
         super.didStartLoading(url);
-        mOnPageStartedHelper.notifyCalled(url);
+        mOnPageStartedHelper.notifyCalled(url.getPossiblyInvalidSpec());
     }
 
     @Override
-    public void didStopLoading(String url) {
-        super.didStopLoading(url);
-        mOnPageFinishedHelper.notifyCalled(url);
+    public void didStopLoading(GURL url, boolean isKnownValid) {
+        super.didStopLoading(url, isKnownValid);
+        mOnPageFinishedHelper.notifyCalled(url.getPossiblyInvalidSpec());
     }
 
     @Override
-    public void didFailLoad(boolean isMainFrame, int errorCode, String failingUrl) {
+    public void didFailLoad(boolean isMainFrame, int errorCode, GURL failingUrl) {
         super.didFailLoad(isMainFrame, errorCode, failingUrl);
-        mOnReceivedErrorHelper.notifyCalled(errorCode, "Error " + errorCode, failingUrl);
+        mOnReceivedErrorHelper.notifyCalled(errorCode, "Error " + errorCode, failingUrl.getSpec());
     }
 
     @Override

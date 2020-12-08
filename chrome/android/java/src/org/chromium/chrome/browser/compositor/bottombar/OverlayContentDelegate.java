@@ -43,9 +43,8 @@ public class OverlayContentDelegate {
 
     /**
      * Called when content started loading in the panel.
-     * @param url The URL that is loading.
      */
-    public void onContentLoadStarted(String url) {}
+    public void onContentLoadStarted() {}
 
     /**
      * Called when the navigation entry has been committed.

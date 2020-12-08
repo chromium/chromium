@@ -13,6 +13,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 /**
  * PaymentHandlerToolbar mediator, which is responsible for receiving events from the view and
@@ -70,7 +71,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
     // WebContentsObserver:
     @Override
-    public void didFinishLoad(long frameId, String validatedUrl, boolean isMainFrame) {
+    public void didFinishLoad(long frameId, GURL url, boolean isKnownValid, boolean isMainFrame) {
         // Hides the Progress Bar after a delay to make sure it is rendered for at least
         // a few frames, otherwise its completion won't be visually noticeable.
         mHideProgressBarHandler = new Handler();
@@ -81,7 +82,7 @@ import org.chromium.ui.modelutil.PropertyModel;
     }
 
     @Override
-    public void didFailLoad(boolean isMainFrame, int errorCode, String failingUrl) {
+    public void didFailLoad(boolean isMainFrame, int errorCode, GURL failingUrl) {
         mModel.set(PaymentHandlerToolbarProperties.PROGRESS_VISIBLE, false);
     }
 

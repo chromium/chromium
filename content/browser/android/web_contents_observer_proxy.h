@@ -62,7 +62,7 @@ class WebContentsObserverProxy : public WebContentsObserver {
   void WebContentsDestroyed() override;
   void DidChangeThemeColor() override;
   void MediaEffectivelyFullscreenChanged(bool is_fullscreen) override;
-  void SetToBaseURLForDataURLIfNeeded(std::string* url);
+  bool SetToBaseURLForDataURLIfNeeded(GURL* url);
   void ViewportFitChanged(blink::mojom::ViewportFit value) override;
   void OnWebContentsFocused(RenderWidgetHost*) override;
   void OnWebContentsLostFocus(RenderWidgetHost*) override;

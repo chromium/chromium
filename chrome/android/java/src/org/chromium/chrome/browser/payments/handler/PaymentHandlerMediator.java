@@ -30,6 +30,7 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.payments.mojom.PaymentEventResponseType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -274,7 +275,7 @@ import java.lang.annotation.RetentionPolicy;
 
     // Implement WebContentsObserver:
     @Override
-    public void didFailLoad(boolean isMainFrame, int errorCode, String failingUrl) {
+    public void didFailLoad(boolean isMainFrame, int errorCode, GURL failingUrl) {
         if (!isMainFrame) return;
         mHandler.post(() -> {
             mCloseReason = CloseReason.FAIL_LOAD;

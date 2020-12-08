@@ -35,6 +35,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.url.GURL;
 
 /**
  * Content container for an OverlayPanel. This class is responsible for the management of the
@@ -349,8 +350,8 @@ public class OverlayPanelContent {
         mWebContentsObserver =
                 new WebContentsObserver(mWebContents) {
                     @Override
-                    public void didStartLoading(String url) {
-                        mContentDelegate.onContentLoadStarted(url);
+                    public void didStartLoading(GURL url) {
+                        mContentDelegate.onContentLoadStarted();
                     }
 
                     @Override

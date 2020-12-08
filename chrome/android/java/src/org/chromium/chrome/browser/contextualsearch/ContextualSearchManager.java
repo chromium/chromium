@@ -1039,7 +1039,7 @@ public class ContextualSearchManager
         }
 
         @Override
-        public void onContentLoadStarted(String url) {
+        public void onContentLoadStarted() {
             mDidPromoteSearchNavigation = false;
         }
 

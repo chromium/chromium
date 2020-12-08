@@ -9,7 +9,6 @@ import android.graphics.Picture;
 import android.net.http.SslError;
 
 import org.chromium.android_webview.AwConsoleMessage;
-import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
