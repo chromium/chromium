@@ -623,22 +623,6 @@ public class JsJavaInteractionTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
-    public void testAddWebMessageListener_dontInjectWhenMatchesImplicitRules() throws Throwable {
-        // allowedOriginRules is an empty String array, shouldn't inject the object to any frame.
-        addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[0], mListener);
-
-        // following are some origins allowed by implicit rules.
-        Assert.assertFalse(isJsObjectInjectedWhenLoadingUrl("http://127.0.0.1", JS_OBJECT_NAME));
-        Assert.assertFalse(isJsObjectInjectedWhenLoadingUrl("https://127.0.0.1", JS_OBJECT_NAME));
-        Assert.assertFalse(isJsObjectInjectedWhenLoadingUrl("http://localhost", JS_OBJECT_NAME));
-        Assert.assertFalse(isJsObjectInjectedWhenLoadingUrl("http://169.254.0.1", JS_OBJECT_NAME));
-        Assert.assertFalse(isJsObjectInjectedWhenLoadingUrl("http://localhost6", JS_OBJECT_NAME));
-        Assert.assertFalse(isJsObjectInjectedWhenLoadingUrl("http://[::1]", JS_OBJECT_NAME));
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"AndroidWebView", "JsJavaInteraction"})
     public void testAddWebMessageListener_NonOverlappingSetOfOrigins() throws Throwable {
         final String[] allowedOriginRules1 =
                 new String[] {"https://www.example.com", "https://www.allowed.com"};
