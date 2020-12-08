@@ -471,6 +471,11 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
   DCHECK(initialized_);
 #endif
 
+  // If we don't have a node, then ignore the node object.
+  // TODO(vmpstr/aleventhal): Investigate how this can happen.
+  if (!GetNode())
+    return true;
+
   // All nodes must have an unignored parent within their tree under
   // kRootWebArea, so force kRootWebArea to always be unignored.
   if (role_ == ax::mojom::blink::Role::kRootWebArea)
