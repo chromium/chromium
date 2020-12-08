@@ -1063,6 +1063,11 @@ gfx::Rect OverlayWindowViews::GetWorkAreaForWindow() const {
 }
 
 void OverlayWindowViews::UpdateMaxSize(const gfx::Rect& work_area) {
+  // An empty |work_area| is not valid, but it is sometimes reported as a
+  // transient value.
+  if (work_area.IsEmpty())
+    return;
+
   max_size_ = gfx::Size(work_area.width() / 2, work_area.height() / 2);
 
   if (!native_widget())

@@ -268,3 +268,11 @@ TEST_F(OverlayWindowViewsTest, UpdateMaximumSize) {
   EXPECT_EQ(gfx::Size(500, 500), overlay_window().GetBounds().size());
   EXPECT_EQ(gfx::Size(500, 500), overlay_window().GetMaximumSize());
 }
+
+TEST_F(OverlayWindowViewsTest, IgnoreInvalidMaximumSize) {
+  ASSERT_EQ(gfx::Size(500, 500), overlay_window().GetMaximumSize());
+
+  SetDisplayWorkArea({0, 0, 0, 0});
+  overlay_window().OnNativeWidgetMove();
+  EXPECT_EQ(gfx::Size(500, 500), overlay_window().GetMaximumSize());
+}
