@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import android.content.res.Configuration;
 import android.view.ActionMode;
 import android.view.View;
 
@@ -26,6 +27,7 @@ import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -33,6 +35,7 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -48,8 +51,9 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  * <p>The coordinator creates and owns elements within this component.
  */
 
-public final class LocationBarCoordinator
-        implements LocationBar, NativeInitObserver, OmniboxSuggestionsDropdownEmbedder {
+public final class LocationBarCoordinator implements LocationBar, NativeInitObserver,
+                                                     OmniboxSuggestionsDropdownEmbedder,
+                                                     AutocompleteDelegate {
     /** Identifies coordinators with methods specific to a device type. */
     public interface SubCoordinator extends Destroyable {}
 
@@ -128,11 +132,10 @@ public final class LocationBarCoordinator
         mUrlCoordinator =
                 new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
-                        mLocationBarMediator);
-        mAutocompleteCoordinator =
-                new AutocompleteCoordinator(mLocationBarLayout, mLocationBarMediator, this,
-                        mUrlCoordinator, activityLifecycleDispatcher, modalDialogManagerSupplier,
-                        activityTabProvider, shareDelegateSupplier, locationBarDataProvider);
+                        mLocationBarMediator, windowAndroid.getKeyboardDelegate());
+        mAutocompleteCoordinator = new AutocompleteCoordinator(mLocationBarLayout, this, this,
+                mUrlCoordinator, activityLifecycleDispatcher, modalDialogManagerSupplier,
+                activityTabProvider, shareDelegateSupplier, locationBarDataProvider);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator = new StatusCoordinator(isTablet(), statusView, mUrlCoordinator,
                 incognitoStateProvider, modalDialogManagerSupplier, locationBarDataProvider);
@@ -151,6 +154,7 @@ public final class LocationBarCoordinator
                 }));
 
         mLocationBarLayout.addUrlFocusChangeListener(mAutocompleteCoordinator);
+        mLocationBarLayout.addUrlFocusChangeListener(mUrlCoordinator);
         mLocationBarLayout.initialize(mAutocompleteCoordinator, mUrlCoordinator, mStatusCoordinator,
                 locationBarDataProvider, windowDelegate, windowAndroid,
                 mLocationBarMediator.getVoiceRecognitionHandler(), assistantVoiceSearchSupplier);
@@ -277,6 +281,75 @@ public final class LocationBarCoordinator
     @Override
     public View getAlignmentView() {
         return isTablet() ? mLocationBarLayout : null;
+    }
+
+    // AutocompleteDelegate implementation.
+
+    @Override
+    public void onUrlTextChanged() {
+        mLocationBarMediator.onUrlTextChanged();
+    }
+
+    @Override
+    public void onSuggestionsChanged(String autocompleteText, boolean defaultMatchIsSearch) {
+        mLocationBarMediator.onSuggestionsChanged(autocompleteText, defaultMatchIsSearch);
+    }
+
+    @Override
+    public void onSuggestionsHidden() {
+        mLocationBarMediator.onSuggestionsHidden();
+    }
+
+    @Override
+    public void setKeyboardVisibility(boolean shouldShow, boolean delayHide) {
+        mUrlCoordinator.setKeyboardVisibility(shouldShow, delayHide);
+    }
+
+    @Override
+    public boolean isKeyboardActive() {
+        return KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(
+                       mLocationBarLayout.getContext(), mUrlBar)
+                || (mLocationBarLayout.getContext().getResources().getConfiguration().keyboard
+                        == Configuration.KEYBOARD_QWERTY);
+    }
+
+    @Override
+    public void loadUrl(String url, int transition, long inputStart) {
+        mLocationBarMediator.loadUrl(url, transition, inputStart);
+    }
+
+    @Override
+    public void loadUrlWithPostData(
+            String url, int transition, long inputStart, String postDataType, byte[] postData) {
+        mLocationBarMediator.loadUrlWithPostData(
+                url, transition, inputStart, postDataType, postData);
+    }
+
+    @Override
+    public boolean didFocusUrlFromFakebox() {
+        return mLocationBarMediator.didFocusUrlFromFakebox();
+    }
+
+    @Override
+    public boolean isUrlBarFocused() {
+        return mLocationBarMediator.isUrlBarFocused();
+    }
+
+    @Override
+    public boolean didFocusUrlFromQueryTiles() {
+        return mLocationBarMediator.didFocusUrlFromQueryTiles();
+    }
+
+    @Override
+    public void clearOmniboxFocus() {
+        mLocationBarMediator.clearOmniboxFocus();
+    }
+
+    @Override
+    public void setOmniboxEditingText(String text) {
+        mUrlCoordinator.setUrlBarData(UrlBarData.forNonUrlText(text), UrlBar.ScrollType.NO_SCROLL,
+                UrlBarCoordinator.SelectionState.SELECT_END);
+        mLocationBarMediator.updateButtonVisibility();
     }
 
     /**

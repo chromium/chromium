@@ -17,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -53,7 +52,6 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
-import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 
@@ -65,8 +63,6 @@ import java.util.List;
  * search terms.
  */
 public class LocationBarLayout extends FrameLayout implements OnClickListener {
-    private static final int KEYBOARD_HIDE_DELAY_MS = 150;
-    private static final int KEYBOARD_MODE_CHANGE_DELAY_MS = 300;
 
     protected ImageButton mDeleteButton;
     protected ImageButton mMicButton;
@@ -85,7 +81,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
     protected StatusCoordinator mStatusCoordinator;
 
     private WindowAndroid mWindowAndroid;
-    private WindowDelegate mWindowDelegate;
 
     private String mOriginalUrl = "";
 
@@ -105,8 +100,7 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
     protected CompositeTouchDelegate mCompositeTouchDelegate;
 
     private OneshotSupplier<AssistantVoiceSearchService> mAssistantVoiceSearchServiceSupplier;
-    private Runnable mKeyboardResizeModeTask;
-    private Runnable mKeyboardHideTask;
+
     private TemplateUrlServiceObserver mTemplateUrlObserver;
 
     public LocationBarLayout(Context context, AttributeSet attrs) {
@@ -207,7 +201,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         mAutocompleteCoordinator = autocompleteCoordinator;
         mUrlCoordinator = urlCoordinator;
         mStatusCoordinator = statusCoordinator;
-        mWindowDelegate = windowDelegate;
         mWindowAndroid = windowAndroid;
         mLocationBarDataProvider = locationBarDataProvider;
         mVoiceRecognitionHandler = voiceRecognitionHandler;
@@ -296,12 +289,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         mStatusCoordinator.updateStatusIcon();
         // Update the URL in case the scheme change triggers a URL emphasis change.
         setUrl(mLocationBarDataProvider.getCurrentUrl());
-    }
-
-    /* package */ boolean isKeyboardActive() {
-        return KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(getContext(), this)
-                || (getContext().getResources().getConfiguration().keyboard
-                        == Configuration.KEYBOARD_QWERTY);
     }
 
     /* package */ void onSuggestionsHidden() {}
@@ -767,7 +754,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
      * @param hasFocus Whether focus was gained.
      */
     protected void handleUrlFocusAnimation(boolean hasFocus) {
-        removeCallbacks(mKeyboardResizeModeTask);
         if (hasFocus) mUrlFocusedWithoutAnimations = false;
         for (UrlFocusChangeListener listener : mUrlFocusChangeListeners) {
             listener.onUrlFocusChange(hasFocus);
@@ -986,70 +972,9 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
      * @param hasFocus Whether the URL field has gained focus.
      */
     protected void finishUrlFocusChange(boolean hasFocus) {
-        setKeyboardVisibility(hasFocus, true);
+        mUrlCoordinator.setKeyboardVisibility(hasFocus, true);
         setUrlFocusChangeInProgress(false);
         updateShouldAnimateIconChanges();
-    }
-
-    /**
-     * Controls keyboard visibility.
-     * TODO(https://crbug.com/1060729): This should be relocated to UrlBar component.
-     *
-     * @param showKeyboard Whether the soft keyboard should be shown.
-     * @param shouldDelayHiding When true, keyboard hide operation will be delayed slightly to
-     *         improve the animation smoothness.
-     */
-    /* package */ void setKeyboardVisibility(boolean showKeyboard, boolean shouldDelayHiding) {
-        // Cancel pending jobs to prevent any possibility of keyboard flicker.
-        if (mKeyboardHideTask != null) {
-            removeCallbacks(mKeyboardHideTask);
-        }
-
-        // Note: due to nature of this mechanism, we may occasionally experience subsequent requests
-        // to show or hide keyboard anyway. This may happen when we schedule keyboard hide, and
-        // receive a second request to hide the keyboard instantly.
-        if (showKeyboard) {
-            setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN, /* delay */ false);
-            getWindowAndroid().getKeyboardDelegate().showKeyboard(mUrlBar);
-        } else {
-            // The animation rendering may not yet be 100% complete and hiding the keyboard makes
-            // the animation quite choppy.
-            // clang-format off
-            mKeyboardHideTask = () -> {
-                getWindowAndroid().getKeyboardDelegate().hideKeyboard(mUrlBar);
-                mKeyboardHideTask = null;
-            };
-            // clang-format on
-            postDelayed(mKeyboardHideTask, shouldDelayHiding ? KEYBOARD_HIDE_DELAY_MS : 0);
-            // Convert the keyboard back to resize mode (delay the change for an arbitrary amount
-            // of time in hopes the keyboard will be completely hidden before making this change).
-            setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE, /* delay */ true);
-        }
-    }
-
-    /**
-     * @param softInputMode The software input resize mode.
-     * @param delay Delay the change in input mode.
-     */
-    private void setSoftInputMode(final int softInputMode, boolean delay) {
-        if (mKeyboardResizeModeTask != null) {
-            removeCallbacks(mKeyboardResizeModeTask);
-            mKeyboardResizeModeTask = null;
-        }
-
-        if (mWindowDelegate == null || mWindowDelegate.getWindowSoftInputMode() == softInputMode) {
-            return;
-        }
-
-        if (delay) {
-            mKeyboardResizeModeTask = () -> {
-                mWindowDelegate.setWindowSoftInputMode(softInputMode);
-                mKeyboardResizeModeTask = null;
-            };
-            postDelayed(mKeyboardResizeModeTask, KEYBOARD_MODE_CHANGE_DELAY_MS);
-        } else {
-            mWindowDelegate.setWindowSoftInputMode(softInputMode);
-        }
     }
 
     public void setVoiceRecognitionHandlerForTesting(

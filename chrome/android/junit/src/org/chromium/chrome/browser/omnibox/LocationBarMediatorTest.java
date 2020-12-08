@@ -84,7 +84,7 @@ public class LocationBarMediatorTest {
     @Mock
     private UrlBarCoordinator mUrlCoordinator;
     @Mock
-    private StatusCoordinator mStatusCoordintor;
+    private StatusCoordinator mStatusCoordinator;
     @Mock
     private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
     @Mock
@@ -111,7 +111,7 @@ public class LocationBarMediatorTest {
         mMediator = new LocationBarMediator(mLocationBarLayout, mLocationBarDataProvider,
                 mAssistantVoiceSearchSupplier, mProfileSupplier, mPrivacyPreferencesManager,
                 mOverrideUrlLoadingDelegate, mLocaleManager);
-        mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordintor);
+        mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         SearchEngineLogoUtils.setDelegateForTesting(mSearchEngineDelegate);
     }
 

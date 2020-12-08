@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -53,8 +52,8 @@ import java.util.List;
  * Mediator for the LocationBar component. Intended location for LocationBar business logic;
  * currently, migration of this logic out of LocationBarLayout is in progress.
  */
-class LocationBarMediator implements LocationBarDataProvider.Observer, AutocompleteDelegate,
-                                     FakeboxDelegate, VoiceRecognitionHandler.Delegate,
+class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDelegate,
+                                     VoiceRecognitionHandler.Delegate,
                                      AssistantVoiceSearchService.Observer, UrlBarDelegate,
                                      OnKeyListener {
     private final LocationBarLayout mLocationBarLayout;
@@ -149,25 +148,6 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, Autocompl
         mLocationBarLayout.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
     }
 
-    // Private methods
-
-    private void setProfile(Profile profile) {
-        if (profile == null || !mNativeInitialized) return;
-        mAutocompleteCoordinator.setAutocompleteProfile(profile);
-        mOmniboxPrerender.initializeForProfile(profile);
-
-        mLocationBarLayout.setShowIconsWhenUrlFocused(
-                SearchEngineLogoUtils.shouldShowSearchEngineLogo(profile.isOffTheRecord()));
-    }
-
-    private void focusCurrentTab() {
-        assert mLocationBarDataProvider != null;
-        if (mLocationBarDataProvider.hasTab()) {
-            View view = mLocationBarDataProvider.getTab().getView();
-            if (view != null) view.requestFocus();
-        }
-    }
-
     /*package */ void updateVisualsForState() {
         mLocationBarLayout.onPrimaryColorChanged();
     }
@@ -194,7 +174,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, Autocompl
                 mLocationBarLayout.setUrlBarText(mLocationBarDataProvider.getUrlBarData(),
                         UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_ALL);
             }
-            setKeyboardVisibility(false, false);
+            mUrlCoordinator.setKeyboardVisibility(false, false);
         } else {
             mLocationBarLayout.setUrl(mLocationBarDataProvider.getCurrentUrl());
         }
@@ -202,6 +182,131 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, Autocompl
 
     /*package */ void updateStatusIcon() {
         mLocationBarLayout.updateStatusIcon();
+    }
+
+    /* package */ void onUrlTextChanged() {
+        mLocationBarLayout.onUrlTextChanged();
+    }
+
+    /* package */ void onSuggestionsChanged(String autocompleteText, boolean defaultMatchIsSearch) {
+        mLocationBarLayout.onSuggestionsChanged();
+        // TODO (https://crbug.com/1152501): Refactor the LBM/LBC relationship such that LBM doesn't
+        // need to communicate with other coordinators like this.
+        mStatusCoordinator.onDefaultMatchClassified(defaultMatchIsSearch);
+        String userText = mUrlCoordinator.getTextWithoutAutocomplete();
+        if (mUrlCoordinator.shouldAutocomplete()) {
+            mUrlCoordinator.setAutocompleteText(userText, autocompleteText);
+        }
+
+        mLocationBarLayout.onSuggestionsChanged();
+        if (mNativeInitialized
+                && !CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_INSTANT)
+                && mPrivacyPreferencesManager.shouldPrerender()
+                && mLocationBarDataProvider.hasTab()) {
+            mOmniboxPrerender.prerenderMaybe(userText, mLocationBarLayout.getOriginalUrl(),
+                    mAutocompleteCoordinator.getCurrentNativeAutocompleteResult(),
+                    mProfileSupplier.get(), mLocationBarDataProvider.getTab());
+        }
+    }
+
+    /* package */ void onSuggestionsHidden() {
+        mLocationBarLayout.onSuggestionsHidden();
+    }
+
+    /* package */ void loadUrl(String url, int transition, long inputStart) {
+        loadUrlWithPostData(url, transition, inputStart, null, null);
+    }
+
+    /* package */ void loadUrlWithPostData(
+            String url, int transition, long inputStart, String postDataType, byte[] postData) {
+        assert mLocationBarDataProvider != null;
+        Tab currentTab = mLocationBarDataProvider.getTab();
+
+        // The code of the rest of this class ensures that this can't be called until the native
+        // side is initialized
+        assert mNativeInitialized : "Loading URL before native side initialized";
+
+        // TODO(crbug.com/1085812): Should be taking a full loaded LoadUrlParams.
+        if (mOverrideUrlLoadingDelegate.willHandleLoadUrlWithPostData(url, transition, postDataType,
+                    postData, mLocationBarDataProvider.isIncognito())) {
+            return;
+        }
+
+        if (currentTab != null
+                && (currentTab.isNativePage()
+                        || UrlUtilities.isNTPUrl(currentTab.getUrlString()))) {
+            NewTabPageUma.recordOmniboxNavigation(url, transition);
+            // Passing in an empty string should not do anything unless the user is at the NTP.
+            // Since the NTP has no url, pressing enter while clicking on the URL bar should refresh
+            // the page as it does when you click and press enter on any other site.
+            if (url.isEmpty()) url = currentTab.getUrlString();
+        }
+
+        // Loads the |url| in a new tab or the current ContentView and gives focus to the
+        // ContentView.
+        if (currentTab != null && !url.isEmpty()) {
+            LoadUrlParams loadUrlParams = new LoadUrlParams(url);
+            loadUrlParams.setVerbatimHeaders(GeolocationHeader.getGeoHeader(url, currentTab));
+            loadUrlParams.setTransitionType(transition | PageTransition.FROM_ADDRESS_BAR);
+            if (inputStart != 0) {
+                loadUrlParams.setInputStartTimestamp(inputStart);
+            }
+
+            if (!TextUtils.isEmpty(postDataType)) {
+                StringBuilder headers = new StringBuilder();
+                String prevHeader = loadUrlParams.getVerbatimHeaders();
+                if (prevHeader != null && !prevHeader.isEmpty()) {
+                    headers.append(prevHeader);
+                    headers.append("\r\n");
+                }
+                loadUrlParams.setExtraHeaders(new HashMap<String, String>() {
+                    { put("Content-Type", postDataType); }
+                });
+                headers.append(loadUrlParams.getExtraHttpRequestHeadersString());
+                loadUrlParams.setVerbatimHeaders(headers.toString());
+            }
+
+            if (postData != null && postData.length != 0) {
+                loadUrlParams.setPostData(ResourceRequestBody.createFromBytes(postData));
+            }
+
+            currentTab.loadUrl(loadUrlParams);
+            RecordUserAction.record("MobileOmniboxUse");
+        }
+        mLocaleManager.recordLocaleBasedSearchMetrics(false, url, transition);
+
+        focusCurrentTab();
+    }
+
+    /* package */ boolean didFocusUrlFromFakebox() {
+        return mLocationBarLayout.didFocusUrlFromFakebox();
+    }
+
+    /* package */ boolean didFocusUrlFromQueryTiles() {
+        return mLocationBarLayout.didFocusUrlFromQueryTiles();
+    }
+
+    /* package */ void updateButtonVisibility() {
+        mLocationBarLayout.updateButtonVisibility();
+    }
+
+    // Private methods
+
+    private void setProfile(Profile profile) {
+        if (profile == null || !mNativeInitialized) return;
+        mAutocompleteCoordinator.setAutocompleteProfile(profile);
+        mOmniboxPrerender.initializeForProfile(profile);
+
+        mLocationBarLayout.setShowIconsWhenUrlFocused(
+                SearchEngineLogoUtils.shouldShowSearchEngineLogo(profile.isOffTheRecord()));
+    }
+
+    private void focusCurrentTab() {
+        assert mLocationBarDataProvider != null;
+        if (mLocationBarDataProvider.hasTab()) {
+            View view = mLocationBarDataProvider.getTab().getView();
+            if (view != null) view.requestFocus();
+        }
     }
 
     // LocationBarData.Observer implementation
@@ -272,137 +377,14 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, Autocompl
         mLocationBarLayout.removeUrlFocusChangeListener(listener);
     }
 
-    // AutocompleteDelegate implementation.
-
-    @Override
-    public void onUrlTextChanged() {
-        mLocationBarLayout.onUrlTextChanged();
-    }
-
-    @Override
-    public void onSuggestionsChanged(String autocompleteText, boolean defaultMatchIsSearch) {
-        mStatusCoordinator.onDefaultMatchClassified(defaultMatchIsSearch);
-        String userText = mUrlCoordinator.getTextWithoutAutocomplete();
-        if (mUrlCoordinator.shouldAutocomplete()) {
-            mUrlCoordinator.setAutocompleteText(userText, autocompleteText);
-        }
-
-        mLocationBarLayout.onSuggestionsChanged();
-        if (mNativeInitialized
-                && !CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_INSTANT)
-                && mPrivacyPreferencesManager.shouldPrerender()
-                && mLocationBarDataProvider.hasTab()) {
-            mOmniboxPrerender.prerenderMaybe(userText, mLocationBarLayout.getOriginalUrl(),
-                    mAutocompleteCoordinator.getCurrentNativeAutocompleteResult(),
-                    mProfileSupplier.get(), mLocationBarDataProvider.getTab());
-        }
-    }
-
-    @Override
-    public void onSuggestionsHidden() {
-        mLocationBarLayout.onSuggestionsHidden();
-    }
-
-    @Override
-    public void setKeyboardVisibility(boolean shouldShow, boolean delayHide) {
-        mLocationBarLayout.setKeyboardVisibility(shouldShow, delayHide);
-    }
-
-    @Override
-    public boolean isKeyboardActive() {
-        return mLocationBarLayout.isKeyboardActive();
-    }
-
-    @Override
-    public void loadUrl(String url, @PageTransition int transition, long inputStart) {
-        loadUrlWithPostData(url, transition, inputStart, null, null);
-    }
-
-    @Override
-    public void loadUrlWithPostData(
-            String url, int transition, long inputStart, String postDataType, byte[] postData) {
-        assert mLocationBarDataProvider != null;
-        Tab currentTab = mLocationBarDataProvider.getTab();
-
-        // The code of the rest of this class ensures that this can't be called until the native
-        // side is initialized
-        assert mNativeInitialized : "Loading URL before native side initialized";
-
-        // TODO(crbug.com/1085812): Should be taking a full loaded LoadUrlParams.
-        if (mOverrideUrlLoadingDelegate.willHandleLoadUrlWithPostData(url, transition, postDataType,
-                    postData, mLocationBarDataProvider.isIncognito())) {
-            return;
-        }
-
-        if (currentTab != null
-                && (currentTab.isNativePage()
-                        || UrlUtilities.isNTPUrl(currentTab.getUrlString()))) {
-            NewTabPageUma.recordOmniboxNavigation(url, transition);
-            // Passing in an empty string should not do anything unless the user is at the NTP.
-            // Since the NTP has no url, pressing enter while clicking on the URL bar should refresh
-            // the page as it does when you click and press enter on any other site.
-            if (url.isEmpty()) url = currentTab.getUrlString();
-        }
-
-        // Loads the |url| in a new tab or the current ContentView and gives focus to the
-        // ContentView.
-        if (currentTab != null && !url.isEmpty()) {
-            LoadUrlParams loadUrlParams = new LoadUrlParams(url);
-            loadUrlParams.setVerbatimHeaders(GeolocationHeader.getGeoHeader(url, currentTab));
-            loadUrlParams.setTransitionType(transition | PageTransition.FROM_ADDRESS_BAR);
-            if (inputStart != 0) {
-                loadUrlParams.setInputStartTimestamp(inputStart);
-            }
-
-            if (!TextUtils.isEmpty(postDataType)) {
-                StringBuilder headers = new StringBuilder();
-                String prevHeader = loadUrlParams.getVerbatimHeaders();
-                if (prevHeader != null && !prevHeader.isEmpty()) {
-                    headers.append(prevHeader);
-                    headers.append("\r\n");
-                }
-                loadUrlParams.setExtraHeaders(new HashMap<String, String>() {
-                    { put("Content-Type", postDataType); }
-                });
-                headers.append(loadUrlParams.getExtraHttpRequestHeadersString());
-                loadUrlParams.setVerbatimHeaders(headers.toString());
-            }
-
-            if (postData != null && postData.length != 0) {
-                loadUrlParams.setPostData(ResourceRequestBody.createFromBytes(postData));
-            }
-
-            currentTab.loadUrl(loadUrlParams);
-            RecordUserAction.record("MobileOmniboxUse");
-        }
-        mLocaleManager.recordLocaleBasedSearchMetrics(false, url, transition);
-
-        focusCurrentTab();
-    }
-
-    @Override
-    public boolean didFocusUrlFromFakebox() {
-        return mLocationBarLayout.didFocusUrlFromFakebox();
-    }
-
     @Override
     public boolean isUrlBarFocused() {
         return mLocationBarLayout.isUrlBarFocused();
     }
 
     @Override
-    public boolean didFocusUrlFromQueryTiles() {
-        return mLocationBarLayout.didFocusUrlFromQueryTiles();
-    }
-
-    @Override
     public void clearOmniboxFocus() {
         mLocationBarLayout.clearOmniboxFocus();
-    }
-
-    @Override
-    public void setOmniboxEditingText(String text) {
-        mLocationBarLayout.setOmniboxEditingText(text);
     }
 
     // AssistantVoiceSearchService.Observer implementation.

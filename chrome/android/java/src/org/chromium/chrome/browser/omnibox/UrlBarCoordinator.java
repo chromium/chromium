@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox;
 
 import android.text.TextWatcher;
 import android.view.ActionMode;
+import android.view.WindowManager;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -25,7 +27,12 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Coordinates the interactions with the UrlBar text component.
  */
-public class UrlBarCoordinator implements UrlBarEditingTextStateProvider {
+public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFocusChangeListener {
+    private static final int KEYBOARD_HIDE_DELAY_MS = 150;
+    private static final int KEYBOARD_MODE_CHANGE_DELAY_MS = 300;
+
+    private static final Runnable NO_OP_RUNNABLE = () -> {};
+
     /** Specified how the text should be selected when focused. */
     @IntDef({SelectionState.SELECT_ALL, SelectionState.SELECT_END})
     @Retention(RetentionPolicy.SOURCE)
@@ -39,6 +46,10 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider {
 
     private UrlBar mUrlBar;
     private UrlBarMediator mMediator;
+    private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
+    private WindowDelegate mWindowDelegate;
+    private Runnable mKeyboardResizeModeTask = NO_OP_RUNNABLE;
+    private Runnable mKeyboardHideTask = NO_OP_RUNNABLE;
 
     /**
      * Constructs a coordinator for the given UrlBar view.
@@ -50,11 +61,16 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider {
      * @param focusChangeCallback The callback that will be notified when focus changes on the
      *         UrlBar.
      * @param delegate The primary delegate for the UrlBar view.
+     * @param keyboardVisibilityDelegate Delegate that allows querying and changing the keyboard's
+     *         visibility.
      */
     public UrlBarCoordinator(@NonNull UrlBar urlBar, @Nullable WindowDelegate windowDelegate,
             @NonNull ActionMode.Callback actionModeCallback,
-            @NonNull Callback<Boolean> focusChangeCallback, @NonNull UrlBarDelegate delegate) {
+            @NonNull Callback<Boolean> focusChangeCallback, @NonNull UrlBarDelegate delegate,
+            @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate) {
         mUrlBar = urlBar;
+        mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
+        mWindowDelegate = windowDelegate;
 
         PropertyModel model =
                 new PropertyModel.Builder(UrlBarProperties.ALL_KEYS)
@@ -70,6 +86,8 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider {
     public void destroy() {
         mMediator.destroy();
         mMediator = null;
+        mUrlBar.removeCallbacks(mKeyboardResizeModeTask);
+        mUrlBar.removeCallbacks(mKeyboardHideTask);
         mUrlBar.destroy();
         mUrlBar = null;
     }
@@ -143,5 +161,66 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider {
     @Override
     public String getTextWithoutAutocomplete() {
         return mUrlBar.getTextWithoutAutocomplete();
+    }
+
+    // LocationBarLayout.UrlFocusChangeListener implementation.
+    @Override
+    public void onUrlFocusChange(boolean hasFocus) {
+        mUrlBar.removeCallbacks(mKeyboardResizeModeTask);
+    }
+
+    /**
+     * Controls keyboard visibility.
+     *
+     * @param showKeyboard Whether the soft keyboard should be shown.
+     * @param shouldDelayHiding When true, keyboard hide operation will be delayed slightly to
+     *         improve the animation smoothness.
+     */
+    /* package */ void setKeyboardVisibility(boolean showKeyboard, boolean shouldDelayHiding) {
+        // Cancel pending jobs to prevent any possibility of keyboard flicker.
+        mUrlBar.removeCallbacks(mKeyboardHideTask);
+
+        // Note: due to nature of this mechanism, we may occasionally experience subsequent requests
+        // to show or hide keyboard anyway. This may happen when we schedule keyboard hide, and
+        // receive a second request to hide the keyboard instantly.
+        if (showKeyboard) {
+            setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN, /* delay */ false);
+            mKeyboardVisibilityDelegate.showKeyboard(mUrlBar);
+        } else {
+            // The animation rendering may not yet be 100% complete and hiding the keyboard makes
+            // the animation quite choppy.
+            // clang-format off
+            mKeyboardHideTask = () -> {
+                mKeyboardVisibilityDelegate.hideKeyboard(mUrlBar);
+                mKeyboardHideTask = NO_OP_RUNNABLE;
+            };
+            // clang-format on
+            mUrlBar.postDelayed(mKeyboardHideTask, shouldDelayHiding ? KEYBOARD_HIDE_DELAY_MS : 0);
+            // Convert the keyboard back to resize mode (delay the change for an arbitrary amount
+            // of time in hopes the keyboard will be completely hidden before making this change).
+            setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE, /* delay */ true);
+        }
+    }
+
+    /**
+     * @param softInputMode The software input resize mode.
+     * @param delay Delay the change in input mode.
+     */
+    private void setSoftInputMode(final int softInputMode, boolean delay) {
+        mUrlBar.removeCallbacks(mKeyboardResizeModeTask);
+
+        if (mWindowDelegate == null || mWindowDelegate.getWindowSoftInputMode() == softInputMode) {
+            return;
+        }
+
+        if (delay) {
+            mKeyboardResizeModeTask = () -> {
+                mWindowDelegate.setWindowSoftInputMode(softInputMode);
+                mKeyboardResizeModeTask = NO_OP_RUNNABLE;
+            };
+            mUrlBar.postDelayed(mKeyboardResizeModeTask, KEYBOARD_MODE_CHANGE_DELAY_MS);
+        } else {
+            mWindowDelegate.setWindowSoftInputMode(softInputMode);
+        }
     }
 }
