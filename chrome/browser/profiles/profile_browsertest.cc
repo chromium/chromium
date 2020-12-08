@@ -26,6 +26,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -40,6 +41,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -222,6 +224,28 @@ void SpinThreads() {
   // directory that contains them has been deleted.
   base::ThreadPoolInstance::Get()->FlushForTesting();
 }
+
+class BrowserCloseObserver : public BrowserListObserver {
+ public:
+  explicit BrowserCloseObserver(Browser* browser) : browser_(browser) {
+    BrowserList::AddObserver(this);
+  }
+  ~BrowserCloseObserver() override { BrowserList::RemoveObserver(this); }
+
+  void Wait() { run_loop_.Run(); }
+
+  // BrowserListObserver implementation.
+  void OnBrowserRemoved(Browser* browser) override {
+    if (browser == browser_)
+      run_loop_.Quit();
+  }
+
+ private:
+  Browser* browser_;
+  base::RunLoop run_loop_;
+
+  DISALLOW_COPY_AND_ASSIGN(BrowserCloseObserver);
+};
 
 }  // namespace
 
@@ -921,6 +945,30 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
 }
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+
+// TODO(https://crbug.com/1125474): Expand to cover ChromeOS.
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ProfileLifetimeTestUnderOneMinute) {
+  base::HistogramTester tester;
+  Browser* browser = CreateGuestBrowser();
+  BrowserCloseObserver close_observer(browser);
+
+  BrowserList::CloseAllBrowsersWithProfile(browser->profile());
+  close_observer.Wait();
+  tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 0, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ProfileLifetimeTestOneHour) {
+  base::HistogramTester tester;
+  Browser* browser = CreateGuestBrowser();
+  BrowserCloseObserver close_observer(browser);
+
+  browser->profile()->SetCreationTimeForTesting(
+      base::Time::Now() - base::TimeDelta::FromSeconds(60) * 60);
+  BrowserList::CloseAllBrowsersWithProfile(browser->profile());
+  close_observer.Wait();
+  tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 60, 1);
+}
+
 class EphemeralGuestProfileBrowserTest : public ProfileBrowserTest {
  public:
   EphemeralGuestProfileBrowserTest() {
@@ -940,6 +988,30 @@ IN_PROC_BROWSER_TEST_F(EphemeralGuestProfileBrowserTest, TestProfileType) {
   EXPECT_FALSE(guest_profile->IsOffTheRecord());
   EXPECT_FALSE(guest_profile->IsGuestSession());
   EXPECT_TRUE(guest_profile->IsEphemeralGuestProfile());
+}
+
+IN_PROC_BROWSER_TEST_F(EphemeralGuestProfileBrowserTest,
+                       ProfileLifetimeTestUnderOneMinute) {
+  base::HistogramTester tester;
+  Browser* browser = CreateGuestBrowser();
+  BrowserCloseObserver close_observer(browser);
+
+  BrowserList::CloseAllBrowsersWithProfile(browser->profile());
+  close_observer.Wait();
+  tester.ExpectUniqueSample("Profile.Guest.Ephemeral.Lifetime", 0, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(EphemeralGuestProfileBrowserTest,
+                       ProfileLifetimeTestOneHour) {
+  base::HistogramTester tester;
+  Browser* browser = CreateGuestBrowser();
+  BrowserCloseObserver close_observer(browser);
+
+  browser->profile()->SetCreationTimeForTesting(
+      base::Time::Now() - base::TimeDelta::FromSeconds(60) * 60);
+  BrowserList::CloseAllBrowsersWithProfile(browser->profile());
+  close_observer.Wait();
+  tester.ExpectUniqueSample("Profile.Guest.Ephemeral.Lifetime", 60, 1);
 }
 
 // Tests if ephemeral Guest profile paths are persistent as long as one does not

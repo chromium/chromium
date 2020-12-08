@@ -19,6 +19,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
@@ -1994,8 +1995,20 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
       return;
   }
 
-  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile())
+  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile()) {
+    auto duration = base::Time::Now() - profile->GetCreationTime();
+    if (profile->IsEphemeralGuestProfile()) {
+      base::UmaHistogramCustomCounts(
+          "Profile.Guest.Ephemeral.Lifetime", duration.InMinutes(), 1,
+          base::TimeDelta::FromDays(28).InMinutes(), 100);
+    } else {
+      base::UmaHistogramCustomCounts(
+          "Profile.Guest.OTR.Lifetime", duration.InMinutes(), 1,
+          base::TimeDelta::FromDays(28).InMinutes(), 100);
+    }
+
     CleanUpGuestProfile();
+  }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   ProfileAttributesEntry* entry;
