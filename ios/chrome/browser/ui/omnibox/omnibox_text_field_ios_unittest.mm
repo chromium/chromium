@@ -138,7 +138,13 @@ TEST_F(OmniboxTextFieldTest, enterPreEditState_preEditTextAlignment_change) {
   [textfield_ resignFirstResponder];
 }
 
-TEST_F(OmniboxTextFieldTest, SelectedRanges) {
+// TODO:(crbug.com/1156541): Re-enable this test on devices.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_SelectedRanges SelectedRanges
+#else
+#define MAYBE_SelectedRanges FLAKY_SelectedRanges
+#endif
+TEST_F(OmniboxTextFieldTest, MAYBE_SelectedRanges) {
   base::FilePath test_data_directory;
   ASSERT_TRUE(base::PathService::Get(ios::DIR_TEST_DATA, &test_data_directory));
   base::FilePath test_file = test_data_directory.Append(
