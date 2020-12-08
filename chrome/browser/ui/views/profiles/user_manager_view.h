@@ -12,64 +12,14 @@
 #include "base/macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_window.h"
-#include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/user_manager.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class ScopedKeepAlive;
 class UserManagerView;
-
-class UserManagerProfileDialogDelegate
-    : public views::DialogDelegateView,
-      public UserManagerProfileDialog::BaseDialogDelegate,
-      public ChromeWebModalDialogManagerDelegate,
-      public web_modal::WebContentsModalDialogHost {
- public:
-  UserManagerProfileDialogDelegate(UserManagerView* parent,
-                                   views::WebView* web_view,
-                                   const std::string& email_address,
-                                   const GURL& url);
-  ~UserManagerProfileDialogDelegate() override;
-
-  // UserManagerProfileDialog::BaseDialogDelegate
-  void CloseDialog() override;
-
-  // Display the local error message inside login window.
-  void DisplayErrorMessage();
-
-  // ChromeWebModalDialogManagerDelegate
-  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
-      override;
-
-  // web_modal::WebContentsModalDialogHost
-  gfx::NativeView GetHostView() const override;
-  gfx::Point GetDialogPosition(const gfx::Size& size) override;
-  gfx::Size GetMaximumDialogSize() override;
-  void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
-  void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
-
- private:
-  UserManagerProfileDialogDelegate();
-
-  // Before its destruction, tells its parent container to reset its reference
-  // to the UserManagerProfileDialogDelegate.
-  void OnDialogDestroyed();
-
-  // views::DialogDelegate:
-  gfx::Size CalculatePreferredSize() const override;
-  ui::ModalType GetModalType() const override;
-  void DeleteDelegate() override;
-  views::View* GetInitiallyFocusedView() override;
-
-  UserManagerView* parent_;  // Not owned.
-  views::WebView* web_view_;
-  const std::string email_address_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserManagerProfileDialogDelegate);
-};
+class UserManagerProfileDialogDelegate;
 
 namespace views {
 class WebView;

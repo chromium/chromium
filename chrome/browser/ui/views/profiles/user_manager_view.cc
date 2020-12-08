@@ -10,7 +10,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -20,7 +19,6 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -28,13 +26,13 @@
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_manager.h"
+#include "chrome/browser/ui/views/profiles/user_manager_profile_dialog_delegate.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
-#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -65,102 +63,6 @@ UserManagerView* g_user_manager_view = nullptr;
 base::OnceClosure* g_user_manager_shown_callback_for_testing = nullptr;
 bool g_is_user_manager_view_under_construction = false;
 }  // namespace
-
-// Delegate---------------------------------------------------------------
-
-UserManagerProfileDialogDelegate::UserManagerProfileDialogDelegate(
-    UserManagerView* parent,
-    views::WebView* web_view,
-    const std::string& email_address,
-    const GURL& url)
-    : parent_(parent), web_view_(web_view), email_address_(email_address) {
-  SetHasWindowSizeControls(true);
-  SetTitle(IDS_PROFILES_GAIA_SIGNIN_TITLE);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
-  set_use_custom_frame(false);
-
-  AddChildView(web_view_);
-  SetLayoutManager(std::make_unique<views::FillLayout>());
-
-  web_view_->GetWebContents()->SetDelegate(this);
-
-  ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
-      web_view_->GetWebContents(),
-      autofill::ChromeAutofillClient::FromWebContents(
-          web_view_->GetWebContents()));
-
-  web_modal::WebContentsModalDialogManager::CreateForWebContents(
-      web_view_->GetWebContents());
-  web_modal::WebContentsModalDialogManager::FromWebContents(
-      web_view_->GetWebContents())
-      ->SetDelegate(this);
-
-  web_view_->LoadInitialURL(url);
-
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::USER_MANAGER_PROFILE);
-}
-
-UserManagerProfileDialogDelegate::~UserManagerProfileDialogDelegate() {}
-
-gfx::Size UserManagerProfileDialogDelegate::CalculatePreferredSize() const {
-  return gfx::Size(UserManagerProfileDialog::kDialogWidth,
-                   UserManagerProfileDialog::kDialogHeight);
-}
-
-void UserManagerProfileDialogDelegate::DisplayErrorMessage() {
-  web_view_->LoadInitialURL(GURL(chrome::kChromeUISigninErrorURL));
-}
-
-web_modal::WebContentsModalDialogHost*
-UserManagerProfileDialogDelegate::GetWebContentsModalDialogHost() {
-  return this;
-}
-
-gfx::NativeView UserManagerProfileDialogDelegate::GetHostView() const {
-  return GetWidget()->GetNativeView();
-}
-
-gfx::Point UserManagerProfileDialogDelegate::GetDialogPosition(
-    const gfx::Size& size) {
-  gfx::Size widget_size = GetWidget()->GetWindowBoundsInScreen().size();
-  return gfx::Point(std::max(0, (widget_size.width() - size.width()) / 2),
-                    std::max(0, (widget_size.height() - size.height()) / 2));
-}
-
-gfx::Size UserManagerProfileDialogDelegate::GetMaximumDialogSize() {
-  return GetWidget()->GetWindowBoundsInScreen().size();
-}
-
-void UserManagerProfileDialogDelegate::AddObserver(
-    web_modal::ModalDialogHostObserver* observer) {}
-
-void UserManagerProfileDialogDelegate::RemoveObserver(
-    web_modal::ModalDialogHostObserver* observer) {}
-
-ui::ModalType UserManagerProfileDialogDelegate::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
-}
-
-void UserManagerProfileDialogDelegate::DeleteDelegate() {
-  OnDialogDestroyed();
-  delete this;
-}
-
-views::View* UserManagerProfileDialogDelegate::GetInitiallyFocusedView() {
-  return static_cast<views::View*>(web_view_);
-}
-
-void UserManagerProfileDialogDelegate::CloseDialog() {
-  OnDialogDestroyed();
-  GetWidget()->Close();
-}
-
-void UserManagerProfileDialogDelegate::OnDialogDestroyed() {
-  if (parent_) {
-    parent_->OnDialogDestroyed();
-    parent_ = nullptr;
-  }
-}
 
 // UserManager -----------------------------------------------------------------
 
@@ -385,7 +287,7 @@ void UserManagerView::ShowDialog(content::BrowserContext* browser_context,
   // The dialog delegate will be deleted when the widget closes. The created
   // WebView's lifetime is managed by the delegate.
   delegate_ = new UserManagerProfileDialogDelegate(
-      this, new views::WebView(browser_context), email, url);
+      this, std::make_unique<views::WebView>(browser_context), url);
   gfx::NativeView parent = g_user_manager_view->GetWidget()->GetNativeView();
   views::DialogDelegate::CreateDialogWidget(delegate_, nullptr, parent);
   delegate_->GetWidget()->Show();
