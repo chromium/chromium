@@ -1222,8 +1222,7 @@ TEST_F(PartitionAllocTest, MAYBE_PartialPageFreelists) {
       (slot_span->bucket->num_system_pages_per_slot_span * SystemPageSize()) /
       (very_small_size + kExtraAllocSize);
   first_slot_span_slots =
-      (SystemPageSize() + very_small_size + kExtraAllocSize - 1) /
-      (very_small_size + kExtraAllocSize);
+      SystemPageSize() / (very_small_size + kExtraAllocSize);
   EXPECT_EQ(total_slots - first_slot_span_slots,
             slot_span->num_unprovisioned_slots);
 
