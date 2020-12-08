@@ -4,7 +4,6 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
@@ -27,8 +26,8 @@ public class NfcCategory extends SiteSettingsCategory {
     }
 
     @Override
-    protected String getMessageIfNotSupported(Activity activity) {
-        return activity.getResources().getString(R.string.android_nfc_unsupported);
+    protected String getMessageIfNotSupported(Context context) {
+        return context.getResources().getString(R.string.android_nfc_unsupported);
     }
 
     @Override
@@ -42,7 +41,7 @@ public class NfcCategory extends SiteSettingsCategory {
     }
 
     @Override
-    protected String getMessageForEnablingOsGlobalPermission(Activity activity) {
-        return activity.getResources().getString(R.string.android_nfc_off_globally);
+    protected String getMessageForEnablingOsGlobalPermission(Context context) {
+        return context.getResources().getString(R.string.android_nfc_off_globally);
     }
 }

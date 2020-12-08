@@ -28,7 +28,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.weblayer.SettingsTestUtils;
 import org.chromium.weblayer.SiteSettingsActivity;
 
@@ -87,7 +86,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @MinWebLayerVersion(84)
-    @DisabledTest(message = "TODO(crbug.com/1150676): Fix flakiness.")
     public void testSingleSiteSoundPopupLaunches() throws InterruptedException {
         mSettingsTestRule.launchActivity(SettingsTestUtils.createIntentForSiteSettingsSingleWebsite(
                 mSettingsTestRule.getContext(), PROFILE_NAME, /*isIncognito=*/false, GOOGLE_URL));
@@ -100,7 +98,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @MinWebLayerVersion(84)
-    @DisabledTest(message = "TODO(crbug.com/1150676): Fix flakiness.")
     public void testSingleSiteClearPopupLaunches() throws InterruptedException {
         mSettingsTestRule.launchActivity(SettingsTestUtils.createIntentForSiteSettingsSingleWebsite(
                 mSettingsTestRule.getContext(), PROFILE_NAME, /*isIncognito=*/false, GOOGLE_URL));
@@ -114,7 +111,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @MinWebLayerVersion(84)
-    @DisabledTest(message = "TODO(crbug.com/1128184): Fix flakiness.")
     public void testSingleSiteLocationAccess() throws InterruptedException {
         try {
             Intents.init();
@@ -123,12 +119,12 @@ public class SiteSettingsTest {
                             mSettingsTestRule.getContext(), PROFILE_NAME, /*isIncognito=*/false,
                             GOOGLE_URL));
 
-            onView(withText("Location")).perform(click());
-
             Matcher<Intent> settingsMatcher =
                     IntentMatchers.hasAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
             intending(settingsMatcher)
                     .respondWith(new ActivityResult(Activity.RESULT_OK, new Intent()));
+
+            onView(withText("Location")).perform(click());
 
             intended(settingsMatcher);
         } finally {

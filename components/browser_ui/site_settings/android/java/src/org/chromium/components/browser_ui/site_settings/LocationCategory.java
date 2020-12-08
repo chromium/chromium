@@ -4,7 +4,6 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -49,9 +48,9 @@ public class LocationCategory extends SiteSettingsCategory {
     }
 
     @Override
-    protected String getMessageForEnablingOsGlobalPermission(Activity activity) {
-        Resources resources = activity.getResources();
-        if (enabledForChrome(activity)) {
+    protected String getMessageForEnablingOsGlobalPermission(Context context) {
+        Resources resources = context.getResources();
+        if (enabledForChrome(context)) {
             return resources.getString(R.string.android_location_off_globally);
         }
         return resources.getString(R.string.android_location_also_off_globally);

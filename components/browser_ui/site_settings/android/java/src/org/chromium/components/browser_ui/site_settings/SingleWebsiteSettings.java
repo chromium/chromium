@@ -751,7 +751,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             Preference osWarning = findPreference(PREF_OS_PERMISSIONS_WARNING);
             Preference osWarningExtra = findPreference(PREF_OS_PERMISSIONS_WARNING_EXTRA);
             categoryWithWarning.configurePermissionIsOffPreferences(osWarning, osWarningExtra,
-                    getActivity(), false, getSiteSettingsClient().getAppName());
+                    getContext(), false, getSiteSettingsClient().getAppName());
             if (osWarning.getTitle() == null) {
                 preferenceScreen.removePreference(osWarning);
             } else if (osWarningExtra.getTitle() == null) {
@@ -816,7 +816,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             return false;
         }
         return SiteSettingsCategory.createFromType(browserContextHandle, type)
-                .showPermissionBlockedMessage(getActivity());
+                .showPermissionBlockedMessage(getContext());
     }
 
     private boolean hasUsagePreferences() {
@@ -890,7 +890,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                 getSiteSettingsClient().getBrowserContextHandle(), contentType);
         if (category != null && value != null && value != ContentSettingValues.BLOCK
                 && !category.enabledInAndroid(getActivity())) {
-            preference.setIcon(category.getDisabledInAndroidIcon(getActivity()));
+            preference.setIcon(category.getDisabledInAndroidIcon(getContext()));
             preference.setEnabled(false);
         } else {
             preference.setIcon(getContentSettingsIcon(contentType, value, true));

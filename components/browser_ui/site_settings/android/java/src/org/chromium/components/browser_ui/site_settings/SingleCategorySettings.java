@@ -587,7 +587,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                 mCategory.getContentSettingsType(), primaryPattern, secondaryPattern, setting);
 
         String hostname = primaryPattern.equals(SITE_WILDCARD) ? secondaryPattern : primaryPattern;
-        Toast.makeText(getActivity(),
+        Toast.makeText(getContext(),
                      String.format(getContext().getString(R.string.website_settings_add_site_toast),
                              hostname),
                      Toast.LENGTH_SHORT)
@@ -840,7 +840,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         PreferenceGroup allowedGroup = (PreferenceGroup) screen.findPreference(ALLOWED_GROUP);
         PreferenceGroup blockedGroup = (PreferenceGroup) screen.findPreference(BLOCKED_GROUP);
         PreferenceGroup managedGroup = (PreferenceGroup) screen.findPreference(MANAGED_GROUP);
-        boolean permissionBlockedByOs = mCategory.showPermissionBlockedMessage(getActivity());
+        boolean permissionBlockedByOs = mCategory.showPermissionBlockedMessage(getContext());
 
         if (mRequiresTriStateSetting) {
             screen.removePreference(binaryToggle);
@@ -936,8 +936,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         // Show the link to system settings since permission is disabled.
         ChromeBasePreference osWarning = new ChromeBasePreference(getStyledContext(), null);
         ChromeBasePreference osWarningExtra = new ChromeBasePreference(getStyledContext(), null);
-        mCategory.configurePermissionIsOffPreferences(osWarning, osWarningExtra, getActivity(),
-                true, getSiteSettingsClient().getAppName());
+        mCategory.configurePermissionIsOffPreferences(osWarning, osWarningExtra, getContext(), true,
+                getSiteSettingsClient().getAppName());
         if (osWarning.getTitle() != null) {
             osWarning.setKey(SingleWebsiteSettings.PREF_OS_PERMISSIONS_WARNING);
             screen.addPreference(osWarning);
@@ -1033,11 +1033,11 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
     private void showManagedToast() {
         if (mCategory.isManagedByCustodian()) {
-            ManagedPreferencesUtils.showManagedByParentToast(getActivity(),
+            ManagedPreferencesUtils.showManagedByParentToast(getContext(),
                     new SingleCategoryManagedPreferenceDelegate(
                             getSiteSettingsClient().getManagedPreferenceDelegate()));
         } else {
-            ManagedPreferencesUtils.showManagedByAdministratorToast(getActivity());
+            ManagedPreferencesUtils.showManagedByAdministratorToast(getContext());
         }
     }
 

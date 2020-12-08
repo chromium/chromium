@@ -4,7 +4,6 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -343,21 +342,21 @@ public class SiteSettingsCategory {
      * @param osWarningExtra A preference to hold any additional permission warning (if any). After
      *                       calling this method, if osWarningExtra has no title, the preference
      *                       should not be added to the preference screen.
-     * @param activity The current activity.
+     * @param context The current context.
      * @param specificCategory Whether the warnings refer to a single category or is an aggregate
      *                         for many permissions.
      * @param appName The name of the app to use in warning strings.
      */
     public void configurePermissionIsOffPreferences(Preference osWarning, Preference osWarningExtra,
-            Activity activity, boolean specificCategory, String appName) {
-        Intent perAppIntent = getIntentToEnableOsPerAppPermission(activity);
-        Intent globalIntent = getIntentToEnableOsGlobalPermission(activity);
+            Context context, boolean specificCategory, String appName) {
+        Intent perAppIntent = getIntentToEnableOsPerAppPermission(context);
+        Intent globalIntent = getIntentToEnableOsGlobalPermission(context);
         String perAppMessage =
-                getMessageForEnablingOsPerAppPermission(activity, !specificCategory, appName);
-        String globalMessage = getMessageForEnablingOsGlobalPermission(activity);
-        String unsupportedMessage = getMessageIfNotSupported(activity);
+                getMessageForEnablingOsPerAppPermission(context, !specificCategory, appName);
+        String globalMessage = getMessageForEnablingOsGlobalPermission(context);
+        String unsupportedMessage = getMessageIfNotSupported(context);
 
-        Resources resources = activity.getResources();
+        Resources resources = context.getResources();
         int color = ApiCompatibilityUtils.getColor(resources, R.color.default_control_color_active);
         ForegroundColorSpan linkSpan = new ForegroundColorSpan(color);
 
@@ -368,13 +367,13 @@ public class SiteSettingsCategory {
             osWarning.setIntent(perAppIntent);
 
             if (!specificCategory) {
-                osWarning.setIcon(getDisabledInAndroidIcon(activity));
+                osWarning.setIcon(getDisabledInAndroidIcon(context));
             }
         }
 
         if (!supportedGlobally()) {
             osWarningExtra.setTitle(unsupportedMessage);
-            osWarningExtra.setIcon(getDisabledInAndroidIcon(activity));
+            osWarningExtra.setIcon(getDisabledInAndroidIcon(context));
         } else if (globalIntent != null) {
             SpannableString messageWithLink = SpanApplier.applySpans(
                     globalMessage, new SpanInfo("<link>", "</link>", linkSpan));
@@ -383,7 +382,7 @@ public class SiteSettingsCategory {
 
             if (!specificCategory) {
                 if (perAppIntent == null) {
-                    osWarningExtra.setIcon(getDisabledInAndroidIcon(activity));
+                    osWarningExtra.setIcon(getDisabledInAndroidIcon(context));
                 } else {
                     Drawable transparent = new ColorDrawable(Color.TRANSPARENT);
                     osWarningExtra.setIcon(transparent);
@@ -395,12 +394,12 @@ public class SiteSettingsCategory {
     /**
      * Returns the icon for permissions that have been disabled by Android.
      */
-    Drawable getDisabledInAndroidIcon(Activity activity) {
+    Drawable getDisabledInAndroidIcon(Context context) {
         Drawable icon = ApiCompatibilityUtils.getDrawable(
-                activity.getResources(), R.drawable.exclamation_triangle);
+                context.getResources(), R.drawable.exclamation_triangle);
         icon.mutate();
         int disabledColor = ApiCompatibilityUtils.getColor(
-                activity.getResources(), R.color.default_control_color_active);
+                context.getResources(), R.color.default_control_color_active);
         icon.setColorFilter(disabledColor, PorterDuff.Mode.SRC_IN);
         return icon;
     }
@@ -424,7 +423,7 @@ public class SiteSettingsCategory {
      * Returns the message to display when permission is not supported.
      */
     @Nullable
-    protected String getMessageIfNotSupported(Activity activity) {
+    protected String getMessageIfNotSupported(Context context) {
         return null;
     }
 
@@ -486,7 +485,7 @@ public class SiteSettingsCategory {
      * @param plural Whether it applies to one per-app permission or multiple.
      */
     protected String getMessageForEnablingOsPerAppPermission(
-            Activity activity, boolean plural, String appName) {
+            Context context, boolean plural, String appName) {
         @ContentSettingsType
         int type = this.getContentSettingsType();
         int permission_string = R.string.android_permission_off;
@@ -501,14 +500,14 @@ public class SiteSettingsCategory {
         } else if (type == ContentSettingsType.NOTIFICATIONS) {
             permission_string = R.string.android_notifications_permission_off;
         }
-        return activity.getResources().getString(
+        return context.getResources().getString(
                 plural ? R.string.android_permission_off_plural : permission_string, appName);
     }
 
     /**
      * Returns the message to display when per-app permission is blocked.
      */
-    protected String getMessageForEnablingOsGlobalPermission(Activity activity) {
+    protected String getMessageForEnablingOsGlobalPermission(Context context) {
         return null;
     }
 
