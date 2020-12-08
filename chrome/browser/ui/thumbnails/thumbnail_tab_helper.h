@@ -11,18 +11,18 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/thumbnails/thumbnail_capture_info.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
-#include "components/viz/host/client_frame_sink_video_capturer.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
+class BackgroundThumbnailCapturer;
 class ThumbnailScheduler;
 
 class ThumbnailTabHelper
-    : public content::WebContentsUserData<ThumbnailTabHelper>,
-      public viz::mojom::FrameSinkVideoConsumer {
+    : public content::WebContentsUserData<ThumbnailTabHelper> {
  public:
   ~ThumbnailTabHelper() override;
 
@@ -35,23 +35,6 @@ class ThumbnailTabHelper
   // Metrics enums and helper functions:
   enum class CaptureType;
   static void RecordCaptureType(CaptureType type);
-
-  // Describes how a thumbnail bitmap should be generated from a target surface.
-  // All sizes are in pixels, not DIPs.
-  struct ThumbnailCaptureInfo {
-    // The total source size (including scrollbars).
-    gfx::Size source_size;
-
-    // Insets for scrollbars in the source image that should probably be
-    // ignored for thumbnailing purposes.
-    gfx::Insets scrollbar_insets;
-
-    // Cropping rectangle for the source canvas, in pixels.
-    gfx::Rect copy_rect;
-
-    // Size of the target bitmap in pixels.
-    gfx::Size target_size;
-  };
 
   explicit ThumbnailTabHelper(content::WebContents* contents);
 
@@ -70,14 +53,6 @@ class ThumbnailTabHelper
   void StoreThumbnail(CaptureType type, const SkBitmap& bitmap);
 
   // viz::mojom::FrameSinkVideoConsumer:
-  void OnFrameCaptured(
-      base::ReadOnlySharedMemoryRegion data,
-      ::media::mojom::VideoFrameInfoPtr info,
-      const gfx::Rect& content_rect,
-      mojo::PendingRemote<::viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
-          callbacks) override;
-  void OnStopped() override;
-  void OnLog(const std::string& /*message*/) override {}
 
   // Returns the dimensions of the multipurpose thumbnail that should be
   // captured from an entire webpage. Can be cropped or compressed later.
@@ -93,12 +68,10 @@ class ThumbnailTabHelper
   // Copy info from the most recent frame we have captured.
   ThumbnailCaptureInfo last_frame_capture_info_;
 
-  // Captures frames from the WebContents while it's hidden. The capturer count
-  // of the WebContents is incremented/decremented when a capturer is set/unset.
-  std::unique_ptr<viz::ClientFrameSinkVideoCapturer> video_capturer_;
-
   // Private implementation of state tracking.
   std::unique_ptr<TabStateTracker> state_;
+
+  std::unique_ptr<BackgroundThumbnailCapturer> background_capturer_;
 
   // Times for computing metrics.
   base::TimeTicks start_video_capture_time_;
