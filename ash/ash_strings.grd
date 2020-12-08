@@ -1207,7 +1207,7 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_CONNECTED_DEVICE_SETTINGS_LABEL" desc="Label for the settings button in the Phone Hub UI that lets users know that the button routes to the Chrome OS Settings app page for connected devices (e.g. to disable Phone Hub features, enable/disable Smartlock, etc)">
         Connected devices settings
       </message>
-      <message name="IDS_ASH_PHONE_HUB_SILENCE_BUTTON_NOT_AVAILABLE_TOOLTIP" translateable="false" desc="Tooltip message that indicates to the user that the Silence Phone feature is disabled because their phone is on a work profile.">
+      <message name="IDS_ASH_PHONE_HUB_SILENCE_BUTTON_NOT_AVAILABLE_TOOLTIP" desc="Tooltip message that indicates to the user that the Silence Phone feature is disabled because their phone is on a work profile.">
         Silence phone is not available on work profile
       </message>
 
