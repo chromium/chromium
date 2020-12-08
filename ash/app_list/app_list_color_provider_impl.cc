@@ -222,6 +222,12 @@ SkColor AppListColorProviderImpl::GetFolderItemFocusRingColor() const {
       gfx::kGoogleBlue600);
 }
 
+SkColor AppListColorProviderImpl::GetPrimaryIconColor(
+    SkColor default_color) const {
+  return DeprecatedGetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconColorPrimary, default_color);
+}
+
 float AppListColorProviderImpl::GetFolderBackgrounBlurSigma() const {
   return static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault);
 }

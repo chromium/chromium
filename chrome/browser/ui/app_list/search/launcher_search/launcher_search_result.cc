@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/file_icon_util.h"
@@ -79,7 +80,9 @@ void LauncherSearchResult::Initialize() {
   SetResultType(ResultType::kLauncher);
   SetMetricsType(ash::LAUNCHER_SEARCH_PROVIDER_RESULT);
 
-  SetIcon(ash::GetIconFromType(icon_type_));
+  SetIcon(ash::GetIconFromType(
+      icon_type_, ash::AppListColorProvider::Get()->GetPrimaryIconColor(
+                      gfx::kGoogleGrey700)));
 }
 
 std::string LauncherSearchResult::GetSearchResultId() {

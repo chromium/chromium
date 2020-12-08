@@ -5,6 +5,7 @@
 #include "ash/clipboard/views/clipboard_history_file_item_view.h"
 
 #include "ash/public/cpp/file_icon_util.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/files/file_path.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view_class_properties.h"
@@ -33,7 +34,10 @@ std::unique_ptr<ClipboardHistoryFileItemView::ContentsView>
 ClipboardHistoryFileItemView::CreateContentsView() {
   auto file_icon = std::make_unique<views::ImageView>();
   const std::string copied_file_name = base::UTF16ToUTF8(text());
-  file_icon->SetImage(GetIconForPath(base::FilePath(copied_file_name)));
+  file_icon->SetImage(GetIconForPath(
+      base::FilePath(copied_file_name),
+      ash::AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary)));
   file_icon->SetImageSize(kIconSize);
   file_icon->SetProperty(views::kMarginsKey, kIconMargin);
   auto contents_view = ClipboardHistoryTextItemView::CreateContentsView();

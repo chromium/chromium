@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/app_list/test/test_app_list_color_provider.h"
+#include "ash/public/cpp/test/test_app_list_color_provider.h"
 
 #include "ui/gfx/color_palette.h"
 
@@ -138,6 +138,11 @@ SkColor TestAppListColorProvider::GetFocusRingColor() const {
 
 SkColor TestAppListColorProvider::GetFolderItemFocusRingColor() const {
   return gfx::kGoogleBlue600;
+}
+
+SkColor TestAppListColorProvider::GetPrimaryIconColor(
+    SkColor default_color) const {
+  return default_color;
 }
 
 float TestAppListColorProvider::GetFolderBackgrounBlurSigma() const {

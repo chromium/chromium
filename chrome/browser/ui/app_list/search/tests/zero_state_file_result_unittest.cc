@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/app_list/search/zero_state_file_result.h"
 
+#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,6 +24,7 @@ class ZeroStateFileResultTest : public testing::Test {
 
   ~ZeroStateFileResultTest() override = default;
 
+  ash::TestAppListColorProvider app_list_color_provider_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<Profile> profile_;
 };

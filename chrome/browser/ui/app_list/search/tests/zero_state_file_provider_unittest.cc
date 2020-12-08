@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/app_list/search/zero_state_file_provider.h"
 
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -37,8 +38,13 @@ class ZeroStateFileProviderTest : public testing::Test {
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
     provider_ = std::make_unique<ZeroStateFileProvider>(profile_.get());
+    app_list_color_provider_ =
+        std::make_unique<ash::TestAppListColorProvider>();
+
     Wait();
   }
+
+  void TearDown() override { app_list_color_provider_.reset(); }
 
   base::FilePath Path(const std::string& filename) {
     return profile_->GetPath().AppendASCII(filename);
@@ -64,6 +70,7 @@ class ZeroStateFileProviderTest : public testing::Test {
 
   std::unique_ptr<Profile> profile_;
   std::unique_ptr<ZeroStateFileProvider> provider_;
+  std::unique_ptr<ash::TestAppListColorProvider> app_list_color_provider_;
 };
 
 TEST_F(ZeroStateFileProviderTest, NoResultsWithQuery) {

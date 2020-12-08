@@ -56,24 +56,18 @@ ASH_PUBLIC_EXPORT int GetChipResourceIdForIconType(IconType icon);
 
 }  // namespace internal
 
-// Returns the file type icon for the specified `filepath`. Note that `color` is
-// only used if the file type icon does not provide its own color.
-ASH_PUBLIC_EXPORT gfx::ImageSkia GetIconForPath(
-    const base::FilePath& filepath,
-    SkColor color = gfx::kGoogleGrey700);
+// Returns the file type icon for the specified `filepath`.
+ASH_PUBLIC_EXPORT gfx::ImageSkia GetIconForPath(const base::FilePath& filepath,
+                                                SkColor color);
 
-// Returns the file type chip icon for the specified `filepath`. Note that
-// `color` is only used if the file type chip icon does not provide its own
-// color.
+// Returns the file type chip icon for the specified `filepath`.
 ASH_PUBLIC_EXPORT gfx::ImageSkia GetChipIconForPath(
     const base::FilePath& filepath,
-    SkColor color = gfx::kGoogleGrey700);
+    SkColor color);
 
-// Returns the file type icon for the specified `icon_type`. Note that `color`
-// is only used if the file type icon does not provide its own color.
-ASH_PUBLIC_EXPORT gfx::ImageSkia GetIconFromType(
-    const std::string& icon_type,
-    SkColor color = gfx::kGoogleGrey700);
+// Returns the file type icon for the specified `icon_type`.
+ASH_PUBLIC_EXPORT gfx::ImageSkia GetIconFromType(const std::string& icon_type,
+                                                 SkColor color);
 
 }  // namespace ash
 

@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/file_icon_util.h"
 #include "base/bind.h"
@@ -72,10 +73,14 @@ FileResult::FileResult(const std::string& schema,
   SetDisplayType(display_type);
   switch (display_type) {
     case DisplayType::kChip:
-      SetChipIcon(ash::GetChipIconForPath(filepath));
+      SetChipIcon(ash::GetChipIconForPath(
+          filepath, ash::AppListColorProvider::Get()->GetPrimaryIconColor(
+                        /*default_color*/ gfx::kGoogleGrey700)));
       break;
     case DisplayType::kList:
-      SetIcon(ash::GetIconForPath(filepath));
+      SetIcon(ash::GetIconForPath(
+          filepath, ash::AppListColorProvider::Get()->GetPrimaryIconColor(
+                        /*default_color*/ gfx::kGoogleGrey700)));
       break;
     default:
       NOTREACHED();

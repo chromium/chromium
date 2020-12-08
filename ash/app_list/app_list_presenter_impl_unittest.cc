@@ -9,11 +9,11 @@
 #include <vector>
 
 #include "ash/app_list/test/app_list_test_view_delegate.h"
-#include "ash/app_list/test/test_app_list_color_provider.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "ash/wm/container_finder.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
