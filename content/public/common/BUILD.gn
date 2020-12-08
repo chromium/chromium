@@ -151,7 +151,6 @@ source_set("common_sources") {
     "sandbox_init.h",
     "sandboxed_process_launcher_delegate.cc",
     "sandboxed_process_launcher_delegate.h",
-    "service_manager_connection.h",
     "socket_permission_request.h",
     "stop_find_action.h",
     "storage_quota_params.h",

@@ -159,6 +159,7 @@ cast_source_set("browser_base") {
     "service/cast_service_simple.h",
     "service_connector.cc",
     "service_connector.h",
+    "service_manager_connection.cc",
     "service_manager_connection.h",
     "service_manager_context.cc",
     "service_manager_context.h",
