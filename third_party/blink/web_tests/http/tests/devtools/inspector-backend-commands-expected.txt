@@ -1,7 +1,7 @@
 Tests correctness of promisified protocol commands.
 
 error: Request Profiler.commandError failed. {"message":"this is the error message"}
-commandError: catch result: {"message":"this is the error message"}
+commandError: then result: null
 commandArgs0: then result: undefined
 error: Protocol Error: Extra 1 arguments in a call to method 'Profiler.commandArgs0'.
 commandArgs0: then result: null

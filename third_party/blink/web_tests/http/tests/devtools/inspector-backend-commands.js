@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests correctness of promisified protocol commands.\n`);
 
-  Protocol.test.suppressRequestErrors = false;
+  ProtocolClient.test.suppressRequestErrors = false;
   function dumpArgument(name, value) {
     TestRunner.addResult(name + ' result: ' + (typeof value === 'string' ? value : JSON.stringify(value)));
   }
@@ -47,20 +47,20 @@
     }]
   };
   // The protocol definition above is not used, but is left as a reference for commands below.
-  Protocol.inspectorBackend.registerCommand('Profiler.commandArgs0', [], [], false);
-  Protocol.inspectorBackend.registerCommand(
-      'Profiler.commandArgs1Rets0', [{'name': 'arg1', 'type': 'number', 'optional': false}], [], false);
-  Protocol.inspectorBackend.registerCommand(
-      'Profiler.commandArgs1Rets1', [{'name': 'arg1', 'type': 'object', 'optional': false}], ['arg1'], false);
-  Protocol.inspectorBackend.registerCommand(
+  ProtocolClient.inspectorBackend.registerCommand('Profiler.commandArgs0', [], []);
+  ProtocolClient.inspectorBackend.registerCommand(
+      'Profiler.commandArgs1Rets0', [{'name': 'arg1', 'type': 'number', 'optional': false}], []);
+  ProtocolClient.inspectorBackend.registerCommand(
+      'Profiler.commandArgs1Rets1', [{'name': 'arg1', 'type': 'object', 'optional': false}], ['arg1']);
+  ProtocolClient.inspectorBackend.registerCommand(
       'Profiler.commandArgs3Rets3',
       [
         {'name': 'arg1', 'type': 'object', 'optional': false}, {'name': 'arg2', 'type': 'number', 'optional': true},
         {'name': 'arg3', 'type': 'string', 'optional': true}
       ],
-      ['arg1', 'arg2', 'arg3'], false);
-  Protocol.inspectorBackend.registerCommand(
-      'Profiler.commandError', [{'name': 'error', 'type': 'object', 'optional': false}], [], false);
+      ['arg1', 'arg2', 'arg3']);
+  ProtocolClient.inspectorBackend.registerCommand(
+      'Profiler.commandError', [{'name': 'error', 'type': 'object', 'optional': false}], []);
 
   var sendMessageToBackendOriginal = InspectorFrontendHost.sendMessageToBackend;
   InspectorFrontendHost.sendMessageToBackend = sendMessageToBackendLoopback;
