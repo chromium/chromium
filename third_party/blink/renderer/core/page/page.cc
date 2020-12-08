@@ -955,7 +955,15 @@ void Page::WillCloseAnimationHost(LocalFrameView* view) {
 void Page::WillBeDestroyed() {
   Frame* main_frame = main_frame_;
 
-  main_frame->Detach(FrameDetachType::kRemove);
+  // TODO(https://crbug.com/838348): Sadly, there are situations where Blink may
+  // attempt to detach a main frame twice due to a bug. That rewinds
+  // FrameLifecycle from kDetached to kDetaching, but GetPage() will already be
+  // null. Since Detach() has already happened, just skip the actual Detach()
+  // call to try to limit the side effects of this bug on the rest of frame
+  // detach.
+  if (main_frame->GetPage()) {
+    main_frame->Detach(FrameDetachType::kRemove);
+  }
 
   DCHECK(AllPages().Contains(this));
   AllPages().erase(this);
