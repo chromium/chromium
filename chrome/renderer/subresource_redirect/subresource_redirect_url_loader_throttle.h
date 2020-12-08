@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "chrome/renderer/subresource_redirect/public_resource_decider_agent.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
@@ -25,10 +26,30 @@ class SubresourceRedirectURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
   using RedirectDecisionCallback = base::OnceCallback<void(bool)>;
 
+  // Different states the subresource redirection can be in.
+  enum class RedirectState {
+    kNone,
+
+    // The redirect decision is pending from the underlying decider.
+    kRedirectDecisionPending,
+
+    // Redirect was disallowed by the underlying decider e.g., robots rules
+    // decider.
+    kRedirectNotAllowedByDecider,
+
+    // The subresource request was redirected to attempt to compress it.
+    kRedirectAttempted,
+
+    // Failed due to http response codes, net errors, and the subresource was
+    // fetched from original origin.
+    kRedirectFailed
+  };
+
   static std::unique_ptr<SubresourceRedirectURLLoaderThrottle>
   MaybeCreateThrottle(const blink::WebURLRequest& request, int render_frame_id);
 
-  explicit SubresourceRedirectURLLoaderThrottle(int render_frame_id);
+  SubresourceRedirectURLLoaderThrottle(int render_frame_id,
+                                       bool allowed_to_redirect);
   ~SubresourceRedirectURLLoaderThrottle() override;
 
   SubresourceRedirectURLLoaderThrottle(
@@ -58,51 +79,11 @@ class SubresourceRedirectURLLoaderThrottle : public blink::URLLoaderThrottle {
   // Overridden to do nothing as the default implementation is NOT_REACHED()
   void DetachFromCurrentSequence() override;
 
-  // Determine whether the image url should be redirected. When the
-  // determination can be made immediately, the decision should be returned.
-  // Otherwise base::nullopt should be returned and the callback should be
-  // invoked with the decision asynchronously.
-  virtual base::Optional<bool> ShouldRedirectImage(
-      const GURL& url,
-      RedirectDecisionCallback callback) = 0;
-
-  // Indicates the subresource redirect failed, and the image will be fetched
-  // directly from the  origin instead. The failures can be due to non-2xx
-  // http responses or other net errors
-  virtual void OnRedirectedLoadCompleteWithError() = 0;
-
-  // Notifies the image load finished.
-  virtual void RecordMetricsOnLoadFinished(const GURL& url,
-                                           int64_t content_length) = 0;
-
-  content::RenderFrame* GetRenderFrame() const {
-    return content::RenderFrame::FromRoutingID(render_frame_id_);
-  }
-
  private:
-  // Different states the subresource redirection can be in.
-  enum class RedirectState {
-    kNone,
-
-    // The redirect decision is pending from the underlying decider.
-    kDeciderDecisionPending,
-
-    // Redirect was disallowed by the underlying decider e.g., robots rules
-    // decider.
-    kDeciderDisallowed,
-
-    // The decider allowed redirect, and was attempted.
-    kRedirectAttempted,
-
-    // Failed due to http response codes, net errors, and the subresource was
-    // fetched from original origin.
-    kRedirectFailed
-  };
-
-  friend class TestPublicImageHintsURLLoaderThrottle;
+  friend class SubresourceRedirectPublicImageHintsDeciderAgentTest;
 
   // Callback to notify the decision of decider subclasses.
-  void NotifyRedirectDeciderDecision(bool is_allowed);
+  void NotifyRedirectDeciderDecision(RedirectResult);
 
   // Start the timer for redirect fetch timeout.
   void StartRedirectTimeoutTimer();
@@ -118,6 +99,10 @@ class SubresourceRedirectURLLoaderThrottle : public blink::URLLoaderThrottle {
 
   // Timer to detect whether the response from compression server has timed out.
   std::unique_ptr<base::OneShotTimer> redirect_timeout_timer_;
+
+  // Whether the subresource can be redirected or not and what was the reason if
+  // its not eligible.
+  RedirectResult redirect_result_;
 
   // Used to get a weak pointer to |this|.
   base::WeakPtrFactory<SubresourceRedirectURLLoaderThrottle> weak_ptr_factory_{

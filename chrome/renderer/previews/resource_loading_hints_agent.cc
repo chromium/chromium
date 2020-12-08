@@ -8,7 +8,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
-#include "chrome/renderer/subresource_redirect/subresource_redirect_hints_agent.h"
+#include "chrome/renderer/subresource_redirect/public_image_hints_decider_agent.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/platform/web_loading_hints_provider.h"
 #include "third_party/blink/public/platform/web_string.h"

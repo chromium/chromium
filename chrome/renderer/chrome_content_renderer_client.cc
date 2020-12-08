@@ -60,7 +60,7 @@
 #include "chrome/renderer/plugins/pdf_plugin_placeholder.h"
 #include "chrome/renderer/plugins/plugin_uma.h"
 #include "chrome/renderer/previews/resource_loading_hints_agent.h"
-#include "chrome/renderer/subresource_redirect/subresource_redirect_hints_agent.h"
+#include "chrome/renderer/subresource_redirect/public_image_hints_decider_agent.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_params.h"
 #include "chrome/renderer/sync_encryption_keys_extension.h"
 #include "chrome/renderer/url_loader_throttle_provider_impl.h"
@@ -607,7 +607,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
   new previews::ResourceLoadingHintsAgent(associated_interfaces, render_frame);
 
   if (subresource_redirect::IsPublicImageHintsBasedCompressionEnabled())
-    new subresource_redirect::SubresourceRedirectHintsAgent(
+    new subresource_redirect::PublicImageHintsDeciderAgent(
         associated_interfaces, render_frame);
 
   if (translate::IsSubFrameTranslationEnabled()) {

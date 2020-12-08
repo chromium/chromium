@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/subresource_redirect/subresource_redirect_hints_agent.h"
+#include "chrome/renderer/subresource_redirect/public_image_hints_decider_agent.h"
 
 #include "base/metrics/field_trial_params.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_params.h"
@@ -16,39 +16,44 @@
 
 namespace subresource_redirect {
 
-SubresourceRedirectHintsAgent::SubresourceRedirectHintsAgent(
-    blink::AssociatedInterfaceRegistry* associated_interfaces,
-    content::RenderFrame* render_frame)
-    : content::RenderFrameObserver(render_frame),
-      content::RenderFrameObserverTracker<SubresourceRedirectHintsAgent>(
-          render_frame) {
-  DCHECK(render_frame);
-  DCHECK(IsPublicImageHintsBasedCompressionEnabled());
-  // base::Unretained is safe here because |this| is created for the RenderFrame
-  // never destroyed.
-  associated_interfaces->AddInterface(
-      base::BindRepeating(&SubresourceRedirectHintsAgent::BindHintsReceiver,
-                          base::Unretained(this)));
+namespace {
+
+// Returns the url spec with username, password, ref fragment stripped to be
+// useful for public URL decision making.
+std::string GetURLForPublicDecision(const GURL& url) {
+  GURL::Replacements rep;
+  rep.ClearRef();
+  rep.ClearPassword();
+  rep.ClearUsername();
+  return url.ReplaceComponents(rep).spec();
 }
 
-SubresourceRedirectHintsAgent::~SubresourceRedirectHintsAgent() = default;
+}  // namespace
 
-bool SubresourceRedirectHintsAgent::IsMainFrame() const {
+PublicImageHintsDeciderAgent::PublicImageHintsDeciderAgent(
+    blink::AssociatedInterfaceRegistry* associated_interfaces,
+    content::RenderFrame* render_frame)
+    : PublicResourceDeciderAgent(associated_interfaces, render_frame) {
+  DCHECK(IsPublicImageHintsBasedCompressionEnabled());
+}
+
+PublicImageHintsDeciderAgent::~PublicImageHintsDeciderAgent() = default;
+
+bool PublicImageHintsDeciderAgent::IsMainFrame() const {
   return render_frame()->IsMainFrame();
 }
 
-void SubresourceRedirectHintsAgent::DidStartNavigation(
+void PublicImageHintsDeciderAgent::DidStartNavigation(
     const GURL& url,
     base::Optional<blink::WebNavigationType> navigation_type) {
   if (!IsMainFrame())
     return;
   // Clear the hints when a navigation starts, so that hints from previous
   // navigation do not apply in case the same renderframe is reused.
-  public_image_urls_.clear();
-  public_image_urls_received_ = false;
+  public_image_urls_ = base::nullopt;
 }
 
-void SubresourceRedirectHintsAgent::ReadyToCommitNavigation(
+void PublicImageHintsDeciderAgent::ReadyToCommitNavigation(
     blink::WebDocumentLoader* document_loader) {
   if (!IsMainFrame())
     return;
@@ -57,64 +62,62 @@ void SubresourceRedirectHintsAgent::ReadyToCommitNavigation(
   // destroyed.
   hint_receive_timeout_timer_.Start(
       FROM_HERE, base::TimeDelta::FromSeconds(GetHintsReceiveTimeout()),
-      base::BindOnce(&SubresourceRedirectHintsAgent::OnHintsReceiveTimeout,
+      base::BindOnce(&PublicImageHintsDeciderAgent::OnHintsReceiveTimeout,
                      base::Unretained(this)));
 }
 
-void SubresourceRedirectHintsAgent::OnDestruct() {
+void PublicImageHintsDeciderAgent::OnDestruct() {
   delete this;
 }
 
-void SubresourceRedirectHintsAgent::SetCompressPublicImagesHints(
+void PublicImageHintsDeciderAgent::SetCompressPublicImagesHints(
     mojom::CompressPublicImagesHintsPtr images_hints) {
   if (!IsMainFrame())
     return;
-  DCHECK(public_image_urls_.empty());
-  DCHECK(!public_image_urls_received_);
+  DCHECK(!public_image_urls_);
   public_image_urls_ = images_hints->image_urls;
-  public_image_urls_received_ = true;
   hint_receive_timeout_timer_.Stop();
   RecordImageHintsUnavailableMetrics();
 }
 
-SubresourceRedirectHintsAgent::RedirectResult
-SubresourceRedirectHintsAgent::ShouldRedirectImage(const GURL& url) const {
-  if (!public_image_urls_received_) {
+base::Optional<RedirectResult>
+PublicImageHintsDeciderAgent::ShouldRedirectSubresource(
+    const GURL& url,
+    ShouldRedirectDecisionCallback callback) {
+  if (!public_image_urls_)
     return RedirectResult::kIneligibleImageHintsUnavailable;
-  }
 
-  GURL::Replacements rep;
-  rep.ClearRef();
-  // TODO(rajendrant): Skip redirection if the URL contains username or password
-  if (public_image_urls_.find(url.ReplaceComponents(rep).spec()) !=
-      public_image_urls_.end()) {
+  if (public_image_urls_->find(GetURLForPublicDecision(url)) !=
+      public_image_urls_->end()) {
     return RedirectResult::kRedirectable;
   }
 
   return RedirectResult::kIneligibleMissingInImageHints;
 }
 
-void SubresourceRedirectHintsAgent::RecordMetricsOnLoadFinished(
+void PublicImageHintsDeciderAgent::RecordMetricsOnLoadFinished(
     const GURL& url,
     int64_t content_length,
     RedirectResult redirect_result) {
   if (redirect_result == RedirectResult::kIneligibleImageHintsUnavailable) {
-    GURL::Replacements rep;
-    rep.ClearRef();
     unavailable_image_hints_urls_.insert(
-        std::make_pair(url.ReplaceComponents(rep).spec(), content_length));
+        std::make_pair(GetURLForPublicDecision(url), content_length));
     return;
   }
   RecordMetrics(content_length, redirect_result);
 }
 
-void SubresourceRedirectHintsAgent::ClearImageHints() {
-  public_image_urls_.clear();
+void PublicImageHintsDeciderAgent::ClearImageHints() {
+  if (public_image_urls_)
+    public_image_urls_->clear();
 }
 
-void SubresourceRedirectHintsAgent::RecordMetrics(
+void PublicImageHintsDeciderAgent::RecordMetrics(
     int64_t content_length,
     RedirectResult redirect_result) const {
+  // TODO(1156757): Reduce the number of ukm records, by aggregating the
+  // image bytes per RedirectResult and then recording once every k seconds, or
+  // k images.
   if (!render_frame() || !render_frame()->GetWebFrame())
     return;
 
@@ -132,12 +135,12 @@ void SubresourceRedirectHintsAgent::RecordMetrics(
       public_image_compression_data_use.SetIneligibleImageHintsUnavailableBytes(
           content_length);
       break;
-    case RedirectResult::kIneligibleImageHintsUnavailableButRedirectableBytes:
+    case RedirectResult::kIneligibleImageHintsUnavailableButRedirectable:
       public_image_compression_data_use
           .SetIneligibleImageHintsUnavailableButCompressibleBytes(
               content_length);
       break;
-    case RedirectResult::kIneligibleImageHintsUnavailableAndMissingInHintsBytes:
+    case RedirectResult::kIneligibleImageHintsUnavailableAndMissingInHints:
       public_image_compression_data_use
           .SetIneligibleImageHintsUnavailableAndMissingInHintsBytes(
               content_length);
@@ -146,7 +149,9 @@ void SubresourceRedirectHintsAgent::RecordMetrics(
       public_image_compression_data_use.SetIneligibleMissingInImageHintsBytes(
           content_length);
       break;
-    case RedirectResult::kIneligibleOtherImage:
+    case RedirectResult::kUnknown:
+    case RedirectResult::kIneligibleRedirectFailed:
+    case RedirectResult::kIneligibleBlinkDisallowed:
       public_image_compression_data_use.SetIneligibleOtherImageBytes(
           content_length);
       break;
@@ -159,20 +164,21 @@ void SubresourceRedirectHintsAgent::RecordMetrics(
   public_image_compression_data_use.Record(ukm_recorder.get());
 }
 
-void SubresourceRedirectHintsAgent::OnHintsReceiveTimeout() {
+void PublicImageHintsDeciderAgent::OnHintsReceiveTimeout() {
   RecordImageHintsUnavailableMetrics();
 }
 
-void SubresourceRedirectHintsAgent::RecordImageHintsUnavailableMetrics() {
+void PublicImageHintsDeciderAgent::RecordImageHintsUnavailableMetrics() {
   for (const auto& resource : unavailable_image_hints_urls_) {
     auto redirect_result = RedirectResult::kIneligibleImageHintsUnavailable;
-    if (public_image_urls_received_) {
-      if (public_image_urls_.find(resource.first) != public_image_urls_.end()) {
-        redirect_result = RedirectResult::
-            kIneligibleImageHintsUnavailableButRedirectableBytes;
+    if (public_image_urls_) {
+      if (public_image_urls_->find(resource.first) !=
+          public_image_urls_->end()) {
+        redirect_result =
+            RedirectResult::kIneligibleImageHintsUnavailableButRedirectable;
       } else {
-        redirect_result = RedirectResult::
-            kIneligibleImageHintsUnavailableAndMissingInHintsBytes;
+        redirect_result =
+            RedirectResult::kIneligibleImageHintsUnavailableAndMissingInHints;
       }
     }
     RecordMetrics(resource.second, redirect_result);
@@ -180,21 +186,10 @@ void SubresourceRedirectHintsAgent::RecordImageHintsUnavailableMetrics() {
   unavailable_image_hints_urls_.clear();
 }
 
-void SubresourceRedirectHintsAgent::NotifyHttpsImageCompressionFetchFailed(
+void PublicImageHintsDeciderAgent::NotifyCompressedResourceFetchFailed(
     base::TimeDelta retry_after) {
-  if (!subresource_redirect_service_remote_) {
-    render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
-        &subresource_redirect_service_remote_);
-  }
-  subresource_redirect_service_remote_->NotifyCompressedImageFetchFailed(
-      retry_after);
+  PublicResourceDeciderAgent::NotifyCompressedResourceFetchFailed(retry_after);
   ClearImageHints();
-}
-
-void SubresourceRedirectHintsAgent::BindHintsReceiver(
-    mojo::PendingAssociatedReceiver<mojom::SubresourceRedirectHintsReceiver>
-        receiver) {
-  subresource_redirect_hints_receiver_.Bind(std::move(receiver));
 }
 
 }  // namespace subresource_redirect
