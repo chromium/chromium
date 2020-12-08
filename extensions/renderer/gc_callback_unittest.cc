@@ -65,21 +65,22 @@ class GCCallbackTest : public testing::TestWithParam<CallbackType> {
     v8::Isolate* isolate = script_context->isolate();
     v8::HandleScope handle_scope(isolate);
     v8::Local<v8::Object> object = v8::Object::New(isolate);
-    base::Closure fallback;
+    base::OnceClosure fallback;
     if (has_fallback())
-      fallback = base::Bind(SetToTrue, fallback_invoked);
+      fallback = base::BindOnce(SetToTrue, fallback_invoked);
     if (GetParam() == JS) {
       v8::Local<v8::FunctionTemplate> unreachable_function =
-          gin::CreateFunctionTemplate(isolate,
-                                      base::Bind(SetToTrue, callback_invoked));
+          gin::CreateFunctionTemplate(
+              isolate, base::BindRepeating(SetToTrue, callback_invoked));
       v8::Local<v8::Context> v8_context = isolate->GetCurrentContext();
       return new GCCallback(
           script_context, object,
           unreachable_function->GetFunction(v8_context).ToLocalChecked(),
-          fallback);
+          std::move(fallback));
     }
     return new GCCallback(script_context, object,
-                          base::Bind(SetToTrue, callback_invoked), fallback);
+                          base::BindOnce(SetToTrue, callback_invoked),
+                          std::move(fallback));
   }
 
   bool has_fallback() const {

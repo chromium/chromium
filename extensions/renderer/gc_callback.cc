@@ -17,28 +17,32 @@ namespace extensions {
 GCCallback::GCCallback(ScriptContext* context,
                        const v8::Local<v8::Object>& object,
                        const v8::Local<v8::Function>& callback,
-                       const base::Closure& fallback)
-    : GCCallback(context, object, callback, base::Closure(), fallback) {}
+                       base::OnceClosure fallback)
+    : GCCallback(context,
+                 object,
+                 callback,
+                 base::Closure(),
+                 std::move(fallback)) {}
 
 GCCallback::GCCallback(ScriptContext* context,
                        const v8::Local<v8::Object>& object,
-                       const base::Closure& callback,
-                       const base::Closure& fallback)
+                       base::OnceClosure callback,
+                       base::OnceClosure fallback)
     : GCCallback(context,
                  object,
                  v8::Local<v8::Function>(),
-                 callback,
-                 fallback) {}
+                 std::move(callback),
+                 std::move(fallback)) {}
 
 GCCallback::GCCallback(ScriptContext* context,
                        const v8::Local<v8::Object>& object,
                        const v8::Local<v8::Function> v8_callback,
-                       const base::Closure& closure_callback,
-                       const base::Closure& fallback)
+                       base::OnceClosure closure_callback,
+                       base::OnceClosure fallback)
     : context_(context),
       object_(context->isolate(), object),
-      closure_callback_(closure_callback),
-      fallback_(fallback) {
+      closure_callback_(std::move(closure_callback)),
+      fallback_(std::move(fallback)) {
   DCHECK(closure_callback_ || !v8_callback.IsEmpty());
   if (!v8_callback.IsEmpty())
     v8_callback_.Reset(context->isolate(), v8_callback);
@@ -80,14 +84,14 @@ void GCCallback::RunCallback() {
     context_->SafeCallFunction(
         v8::Local<v8::Function>::New(isolate, v8_callback_), 0, nullptr);
   } else if (closure_callback_) {
-    closure_callback_.Run();
+    std::move(closure_callback_).Run();
   }
   delete this;
 }
 
 void GCCallback::OnContextInvalidated() {
   if (!fallback_.is_null())
-    fallback_.Run();
+    std::move(fallback_).Run();
   delete this;
 }
 

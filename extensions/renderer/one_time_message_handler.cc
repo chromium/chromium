@@ -299,9 +299,10 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
 
   new GCCallback(
       script_context, response_function,
-      base::Bind(&OneTimeMessageHandler::OnResponseCallbackCollected,
-                 weak_factory_.GetWeakPtr(), script_context, target_port_id),
-      base::Closure());
+      base::BindOnce(&OneTimeMessageHandler::OnResponseCallbackCollected,
+                     weak_factory_.GetWeakPtr(), script_context,
+                     target_port_id),
+      base::OnceClosure());
 
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Value> v8_message =
