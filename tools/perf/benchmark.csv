@@ -3,6 +3,7 @@ See the following link for directions for making changes to this data:,https://b
 Googlers can view additional information about internal perf infrastructure at,https://goto.google.com/chrome-benchmarking-sheet
 Benchmark name,Individual owners,Component,Documentation,Tags
 UNSCHEDULED_blink_perf.service_worker,"shimazu@chromium.org, falken@chromium.org, ting.shao@intel.com",Blink>ServiceWorker,https://bit.ly/blink-perf-benchmarks,
+UNSCHEDULED_loading.mbi,blink-isolation-dev@chromium.org,Blink>Internals>Modularization,https://bit.ly/loading-benchmarks,many_agents
 base_perftests,"skyostil@chromium.org, gab@chromium.org",Internals>SequenceManager,https://chromium.googlesource.com/chromium/src/+/HEAD/base/README.md#performance-testing,
 blink_perf.accessibility,dmazzoni@chromium.org,Blink>Accessibility,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.bindings,"jbroman@chromium.org, yukishiino@chromium.org, haraken@chromium.org",Blink>Bindings,https://bit.ly/blink-perf-benchmarks,all

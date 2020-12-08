@@ -79,3 +79,27 @@ class LoadingMobile(_LoadingBase):
   @classmethod
   def Name(cls):
     return 'loading.mobile'
+
+
+@benchmark.Info(emails=['blink-isolation-dev@chromium.org'],
+                component='Blink>Internals>Modularization',
+                documentation_url='https://bit.ly/loading-benchmarks')
+class LoadingMBI(_LoadingBase):
+  """ A benchmark measuring loading performance of the sites the MBI team cares
+  about. """
+  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
+  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
+  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
+  SUPPORTED_PLATFORM_TAGS = [platforms.MOBILE]
+  SUPPORTED_PLATFORMS = [story.expectations.ALL_MOBILE]
+
+  def CreateStorySet(self, options):
+    return page_sets.LoadingMobileStorySet(
+        cache_temperatures=[cache_temperature.ANY],
+        cache_temperatures_for_pwa=[],
+        traffic_settings=[traffic_setting.NONE, traffic_setting.REGULAR_3G],
+        include_tags=['many_agents'])
+
+  @classmethod
+  def Name(cls):
+    return 'UNSCHEDULED_loading.mbi'
