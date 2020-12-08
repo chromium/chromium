@@ -90,12 +90,6 @@ interface KaleidoscopeDataProvider {
   // Will trigger a feedback dialog to be displayed.
   SendFeedback();
 
-  // Gets the collections from the backend to be displayed. Takes a credential
-  // instance and a string that contains the request to be sent to the server.
-  // The request is the GetCollectionsRequest proto here: go/ks-media-proto.
-  GetCollections(Credentials credentials, string request)
-      => (GetCollectionsResponse response);
-
   // Gets a list of stored providers that will be used to filter the
   // recommendations on the server if the user is signed out. They are arbitary
   // strings that are provided by the server, stored locally and then retrieved
@@ -122,6 +116,29 @@ interface KaleidoscopeDataProvider {
   // Update the selection the user made as to whether they want this Media Feed
   // displayed in Kaleidoscope.
   UpdateFeedUserStatus(int64 feed_id, media_feeds.mojom.FeedUserStatus status);
+};
+
+// Provides data for the Kaleidoscope NTP module.
+interface KaleidoscopeNTPDataProvider {
+  // Returns all the Media Feeds that Kaleidoscope might decide to show.
+  // Returned feeds will be appropriate for the |tab|.
+  GetTopMediaFeeds(KaleidoscopeTab tab) => (array<media_feeds.mojom.MediaFeed> feeds);
+
+  // Returns all the items from the Media Feeds Store that can be displayed for
+  // continue watching. Returned items will be appropriate for the |tab|.
+  GetContinueWatchingMediaFeedItems(KaleidoscopeTab tab) => (array<media_feeds.mojom.MediaFeedItem> items);
+
+  // Gets the collections from the backend to be displayed. Takes a credential
+  // instance and a string that contains the request to be sent to the server.
+  // The request is the GetCollectionsRequest proto here: go/ks-media-proto.
+  GetCollections(Credentials credentials, string request)
+      => (GetCollectionsResponse response);
+
+  // Gets a list of stored providers that will be used to filter the
+  // recommendations on the server if the user is signed out. They are arbitary
+  // strings that are provided by the server, stored locally and then retrieved
+  // when Kaleidoscope is loaded.
+  GetSignedOutProviders() => (array<string> providers);
 };
 
 // Handles identity related tasks.

@@ -76,7 +76,7 @@ class NewTabPageUI
   // media::mojom::KaleidoscopeNTPDataProvider mojo interface passing the
   // pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<media::mojom::KaleidoscopeDataProvider>
+      mojo::PendingReceiver<media::mojom::KaleidoscopeNTPDataProvider>
           pending_receiver);
 
   // Instantiates the implementor of the

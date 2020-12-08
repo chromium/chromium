@@ -26,10 +26,15 @@ class KaleidoscopeMetricsRecorder;
 class Profile;
 
 class KaleidoscopeDataProviderImpl
-    : public media::mojom::KaleidoscopeDataProvider {
+    : public media::mojom::KaleidoscopeDataProvider,
+      public media::mojom::KaleidoscopeNTPDataProvider {
  public:
   KaleidoscopeDataProviderImpl(
       mojo::PendingReceiver<media::mojom::KaleidoscopeDataProvider> receiver,
+      Profile* profile,
+      KaleidoscopeMetricsRecorder* metrics_recorder);
+  KaleidoscopeDataProviderImpl(
+      mojo::PendingReceiver<media::mojom::KaleidoscopeNTPDataProvider> receiver,
       Profile* profile,
       KaleidoscopeMetricsRecorder* metrics_recorder);
 
@@ -39,14 +44,19 @@ class KaleidoscopeDataProviderImpl
   ~KaleidoscopeDataProviderImpl() override;
 
   // media::mojom::KaleidoscopeDataProvider implementation.
-  void GetTopMediaFeeds(media::mojom::KaleidoscopeTab tab,
-                        GetTopMediaFeedsCallback callback) override;
-  void GetMediaFeedContents(int64_t feed_id,
-                            media::mojom::KaleidoscopeTab tab,
-                            GetMediaFeedContentsCallback callback) override;
+  void GetTopMediaFeeds(
+      media::mojom::KaleidoscopeTab tab,
+      media::mojom::KaleidoscopeDataProvider::GetTopMediaFeedsCallback callback)
+      override;
+  void GetMediaFeedContents(
+      int64_t feed_id,
+      media::mojom::KaleidoscopeTab tab,
+      media::mojom::KaleidoscopeDataProvider::GetMediaFeedContentsCallback
+          callback) override;
   void GetContinueWatchingMediaFeedItems(
       media::mojom::KaleidoscopeTab tab,
-      GetContinueWatchingMediaFeedItemsCallback callback) override;
+      media::mojom::KaleidoscopeDataProvider::
+          GetContinueWatchingMediaFeedItemsCallback callback) override;
   void GetShouldShowFirstRunExperience(
       GetShouldShowFirstRunExperienceCallback cb) override;
   void SetFirstRunExperienceStep(
@@ -64,7 +74,9 @@ class KaleidoscopeDataProviderImpl
   void GetCollections(media::mojom::CredentialsPtr credentials,
                       const std::string& request,
                       GetCollectionsCallback cb) override;
-  void GetSignedOutProviders(GetSignedOutProvidersCallback cb) override;
+  void GetSignedOutProviders(
+      media::mojom::KaleidoscopeDataProvider::GetSignedOutProvidersCallback cb)
+      override;
   void SetSignedOutProviders(
       const std::vector<std::string>& providers) override;
   void RecordTimeTakenToStartWatchHistogram(base::TimeDelta time) override;
@@ -76,12 +88,16 @@ class KaleidoscopeDataProviderImpl
  private:
   media_history::MediaHistoryKeyedService* GetMediaHistoryService();
 
+  KaleidoscopeDataProviderImpl(Profile* profile,
+                               KaleidoscopeMetricsRecorder* metrics_recorder);
+
   void OnGotMediaFeedContents(
       GetMediaFeedContentsCallback callback,
       const int64_t feed_id,
       std::vector<media_feeds::mojom::MediaFeedItemPtr> items);
   void OnGotContinueWatchingMediaFeedItems(
-      GetContinueWatchingMediaFeedItemsCallback callback,
+      media::mojom::KaleidoscopeDataProvider::
+          GetContinueWatchingMediaFeedItemsCallback callback,
       std::vector<media_feeds::mojom::MediaFeedItemPtr> items);
 
   signin::IdentityManager* identity_manager_;
@@ -91,6 +107,8 @@ class KaleidoscopeDataProviderImpl
   KaleidoscopeMetricsRecorder* const metrics_recorder_;
 
   mojo::Receiver<media::mojom::KaleidoscopeDataProvider> receiver_;
+
+  mojo::Receiver<media::mojom::KaleidoscopeNTPDataProvider> ntp_receiver_;
 
   base::WeakPtrFactory<KaleidoscopeDataProviderImpl> weak_ptr_factory{this};
 };

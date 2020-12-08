@@ -387,7 +387,7 @@ void NewTabPageUI::BindInterface(
 }
 
 void NewTabPageUI::BindInterface(
-    mojo::PendingReceiver<media::mojom::KaleidoscopeDataProvider>
+    mojo::PendingReceiver<media::mojom::KaleidoscopeNTPDataProvider>
         pending_page_handler) {
   kaleidoscope_data_provider_ = std::make_unique<KaleidoscopeDataProviderImpl>(
       std::move(pending_page_handler), profile_, nullptr);

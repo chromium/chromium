@@ -65,9 +65,25 @@ KaleidoscopeDataProviderImpl::KaleidoscopeDataProviderImpl(
     mojo::PendingReceiver<media::mojom::KaleidoscopeDataProvider> receiver,
     Profile* profile,
     KaleidoscopeMetricsRecorder* metrics_recorder)
+    : KaleidoscopeDataProviderImpl(profile, metrics_recorder) {
+  receiver_.Bind(std::move(receiver));
+}
+
+KaleidoscopeDataProviderImpl::KaleidoscopeDataProviderImpl(
+    mojo::PendingReceiver<media::mojom::KaleidoscopeNTPDataProvider> receiver,
+    Profile* profile,
+    KaleidoscopeMetricsRecorder* metrics_recorder)
+    : KaleidoscopeDataProviderImpl(profile, metrics_recorder) {
+  ntp_receiver_.Bind(std::move(receiver));
+}
+
+KaleidoscopeDataProviderImpl::KaleidoscopeDataProviderImpl(
+    Profile* profile,
+    KaleidoscopeMetricsRecorder* metrics_recorder)
     : profile_(profile),
       metrics_recorder_(metrics_recorder),
-      receiver_(this, std::move(receiver)) {
+      receiver_(this),
+      ntp_receiver_(this) {
   DCHECK(profile);
 
   identity_manager_ = IdentityManagerFactory::GetForProfile(profile_);
@@ -164,7 +180,7 @@ void KaleidoscopeDataProviderImpl::GetHighWatchTimeOrigins(
 
 void KaleidoscopeDataProviderImpl::GetTopMediaFeeds(
     media::mojom::KaleidoscopeTab tab,
-    GetTopMediaFeedsCallback callback) {
+    media::mojom::KaleidoscopeDataProvider::GetTopMediaFeedsCallback callback) {
   GetMediaHistoryService()->GetMediaFeeds(
       media_history::MediaHistoryKeyedService::GetMediaFeedsRequest::
           CreateTopFeedsForDisplay(
@@ -178,7 +194,8 @@ void KaleidoscopeDataProviderImpl::GetTopMediaFeeds(
 void KaleidoscopeDataProviderImpl::GetMediaFeedContents(
     int64_t feed_id,
     media::mojom::KaleidoscopeTab tab,
-    GetMediaFeedContentsCallback callback) {
+    media::mojom::KaleidoscopeDataProvider::GetMediaFeedContentsCallback
+        callback) {
   GetMediaHistoryService()->GetMediaFeedItems(
       media_history::MediaHistoryKeyedService::GetMediaFeedItemsRequest::
           CreateItemsForFeed(
@@ -193,7 +210,8 @@ void KaleidoscopeDataProviderImpl::GetMediaFeedContents(
 
 void KaleidoscopeDataProviderImpl::GetContinueWatchingMediaFeedItems(
     media::mojom::KaleidoscopeTab tab,
-    GetContinueWatchingMediaFeedItemsCallback callback) {
+    media::mojom::KaleidoscopeDataProvider::
+        GetContinueWatchingMediaFeedItemsCallback callback) {
   GetMediaHistoryService()->GetMediaFeedItems(
       media_history::MediaHistoryKeyedService::GetMediaFeedItemsRequest::
           CreateItemsForContinueWatching(
@@ -227,7 +245,7 @@ void KaleidoscopeDataProviderImpl::GetCollections(
 }
 
 void KaleidoscopeDataProviderImpl::GetSignedOutProviders(
-    GetSignedOutProvidersCallback cb) {
+    media::mojom::KaleidoscopeDataProvider::GetSignedOutProvidersCallback cb) {
   DCHECK(!identity_manager_->HasPrimaryAccount(
       signin::ConsentLevel::kNotRequired));
 
@@ -313,7 +331,8 @@ void KaleidoscopeDataProviderImpl::OnGotMediaFeedContents(
 }
 
 void KaleidoscopeDataProviderImpl::OnGotContinueWatchingMediaFeedItems(
-    GetContinueWatchingMediaFeedItemsCallback callback,
+    media::mojom::KaleidoscopeDataProvider::
+        GetContinueWatchingMediaFeedItemsCallback callback,
     std::vector<media_feeds::mojom::MediaFeedItemPtr> items) {
   std::set<int64_t> ids;
   for (auto& item : items)
