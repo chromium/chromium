@@ -486,12 +486,18 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, VisibleDeskChangeCount) {
   // Swipe enough so that our third and fourth desk screenshots are taken, and
   // then swipe so that the fourth desk is fully shown. There should be 3
   // visible desk changes in total.
-  ASSERT_TRUE(
-      animator()->UpdateSwipeAnimation(-touchpad_swipe_length_for_desk_change));
+  base::Optional<int> new_index =
+      animator()->UpdateSwipeAnimation(-touchpad_swipe_length_for_desk_change);
+  ASSERT_TRUE(new_index.has_value());
+  animator()->PrepareForEndingDeskScreenshot(*new_index);
   TakeEndingDeskScreenshotAndWait();
-  ASSERT_TRUE(
-      animator()->UpdateSwipeAnimation(-touchpad_swipe_length_for_desk_change));
+
+  new_index =
+      animator()->UpdateSwipeAnimation(-touchpad_swipe_length_for_desk_change);
+  ASSERT_TRUE(new_index.has_value());
+  animator()->PrepareForEndingDeskScreenshot(*new_index);
   TakeEndingDeskScreenshotAndWait();
+
   animator()->UpdateSwipeAnimation(-3 * touchpad_swipe_length_for_desk_change);
   EXPECT_EQ(3, visible_desk_changed_count());
 
