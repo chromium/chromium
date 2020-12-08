@@ -647,10 +647,15 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     HoldingSpace, /* holding_space.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("holdingSpaceWelcomeBannerWithFeatureDisabled")
-                          .EnableHoldingSpace(false),
-                      TestCase("holdingSpaceWelcomeBannerWithFeatureEnabled")
-                          .EnableHoldingSpace(true)));
+    ::testing::Values(
+        TestCase("holdingSpaceWelcomeBannerWithFeatureDisabled")
+            .EnableHoldingSpace(false),
+        TestCase("holdingSpaceWelcomeBannerWithFeatureEnabled")
+            .EnableHoldingSpace(true),
+        TestCase("holdingSpaceWelcomeBannerWontShowAfterBeingDismissed")
+            .EnableHoldingSpace(true),
+        TestCase("holdingSpaceWelcomeBannerWontShowAfterReachingLimit")
+            .EnableHoldingSpace(true)));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Transfer, /* transfer.js */

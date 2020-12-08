@@ -21,10 +21,25 @@ const DRIVE_WARNING_DISMISSED_KEY = 'driveSpaceWarningDismissed';
 const DOWNLOADS_WARNING_DISMISSED_KEY = 'downloadsSpaceWarningDismissed';
 
 /**
+ * Key in localStorage to store the number of times the holding space welcome
+ * banner has shown. Note that if the user explicitly dismisses the banner then
+ * the value at this key will be `HOLDING_SPACE_WELCOME_BANNER_COUNTER_LIMIT`.
+ * @type {string}
+ */
+const HOLDING_SPACE_WELCOME_BANNER_COUNTER_KEY =
+    'holdingSpaceWelcomeBannerCounter';
+
+/**
  * Key in localStorage to store the number of sessions the Offline Info banner
  * message has shown in.
  */
 const OFFLINE_INFO_BANNER_COUNTER_KEY = 'driveOfflineInfoBannerCounter';
+
+/**
+ * Maximum times the holding space welcome banner could have shown.
+ * @type {number}
+ */
+const HOLDING_SPACE_WELCOME_BANNER_COUNTER_LIMIT = 3;
 
 /**
  * Maximum times Drive Welcome banner could have shown.
@@ -99,6 +114,11 @@ class Banners extends cr.EventTarget {
         'drive-connection-changed', this.onDriveConnectionChanged_.bind(this));
 
     chrome.storage.onChanged.addListener(this.onStorageChange_.bind(this));
+
+    /** @private {number} */
+    this.holdingSpaceWelcomeBannerCounter_ =
+        HOLDING_SPACE_WELCOME_BANNER_COUNTER_LIMIT;
+
     this.welcomeHeaderCounter_ = WELCOME_HEADER_COUNTER_LIMIT;
     this.warningDismissedCounter_ = 0;
     this.downloadsWarningDismissedTime_ = 0;
@@ -118,6 +138,7 @@ class Banners extends cr.EventTarget {
     this.ready_ = new Promise((resolve, reject) => {
       chrome.storage.local.get(
           [
+            HOLDING_SPACE_WELCOME_BANNER_COUNTER_KEY,
             WELCOME_HEADER_COUNTER_KEY,
             DRIVE_WARNING_DISMISSED_KEY,
             DOWNLOADS_WARNING_DISMISSED_KEY,
@@ -130,6 +151,10 @@ class Banners extends cr.EventTarget {
                   chrome.runtime.lastError.message);
               return;
             }
+            this.holdingSpaceWelcomeBannerCounter_ =
+                parseInt(
+                    values[HOLDING_SPACE_WELCOME_BANNER_COUNTER_KEY], 10) ||
+                0;
             this.welcomeHeaderCounter_ =
                 parseInt(values[WELCOME_HEADER_COUNTER_KEY], 10) || 0;
             this.warningDismissedCounter_ =
@@ -142,6 +167,7 @@ class Banners extends cr.EventTarget {
             // If it's in test, override the counter to show the header by
             // force.
             if (chrome.test) {
+              this.holdingSpaceWelcomeBannerCounter_ = 0;
               this.welcomeHeaderCounter_ = 0;
               this.warningDismissedCounter_ = 0;
               this.offlineInfoBannerCounter_ = 0;
@@ -179,6 +205,17 @@ class Banners extends cr.EventTarget {
     /** @const @private {!HTMLElement} */
     this.holdingSpaceWelcomeBanner_ =
         queryRequiredElement('.holding-space-welcome', this.document_);
+  }
+
+  /**
+   * @param {number} value How many times the holding space welcome banner
+   * has shown.
+   * @private
+   */
+  setHoldingSpaceWelcomeBannerCounter_(value) {
+    const values = {};
+    values[HOLDING_SPACE_WELCOME_BANNER_COUNTER_KEY] = value;
+    chrome.storage.local.set(values);
   }
 
   /**
@@ -220,6 +257,11 @@ class Banners extends cr.EventTarget {
    * @private
    */
   onStorageChange_(changes, areaName) {
+    if (areaName == 'local' &&
+        HOLDING_SPACE_WELCOME_BANNER_COUNTER_KEY in changes) {
+      this.holdingSpaceWelcomeBannerCounter_ =
+          changes[HOLDING_SPACE_WELCOME_BANNER_COUNTER_KEY].newValue;
+    }
     if (areaName == 'local' && WELCOME_HEADER_COUNTER_KEY in changes) {
       this.welcomeHeaderCounter_ = changes[WELCOME_HEADER_COUNTER_KEY].newValue;
     }
@@ -506,6 +548,10 @@ class Banners extends cr.EventTarget {
   closeHoldingSpaceWelcomeBanner_() {
     assert(util.isHoldingSpaceEnabled());
     this.cleanupHoldingSpaceWelcomeBanner_();
+
+    // Stop showing the welcome banner.
+    this.setHoldingSpaceWelcomeBannerCounter_(
+        HOLDING_SPACE_WELCOME_BANNER_COUNTER_LIMIT);
   }
 
   /**
@@ -562,10 +608,32 @@ class Banners extends cr.EventTarget {
    * @private
    */
   async maybeShowHoldingSpaceWelcomeBanner_() {
-    if (util.isHoldingSpaceEnabled()) {
-      await this.ready_;
-      this.prepareAndShowHoldingSpaceWelcomeBanner_();
+    if (!util.isHoldingSpaceEnabled()) {
+      return;
     }
+
+    await this.ready_;
+
+    // The holding space banner should not be shown after having been shown
+    // enough times to reach the defined limit. Note that if the user explicitly
+    // dismisses the banner the counter will be set to the limit to prevent any
+    // additional showings.
+    if (this.holdingSpaceWelcomeBannerCounter_ >=
+        HOLDING_SPACE_WELCOME_BANNER_COUNTER_LIMIT) {
+      return;
+    }
+
+    // If the holding space banner is already showing, don't increment the count
+    // of how many times it has been shown since this is likely only occurring
+    // due to directory change or some other event in which the banner never
+    // disappeared from the user's view.
+    if (!this.holdingSpaceWelcomeBanner_.hasAttribute('hidden')) {
+      return;
+    }
+
+    this.setHoldingSpaceWelcomeBannerCounter_(
+        this.holdingSpaceWelcomeBannerCounter_ + 1);
+    this.prepareAndShowHoldingSpaceWelcomeBanner_();
   }
 
   /**
