@@ -149,6 +149,33 @@ void GPUDevice::OnDeviceLostError(const char* message) {
   }
 }
 
+void GPUDevice::OnCreateReadyRenderPipelineCallback(
+    ScriptPromiseResolver* resolver,
+    WGPUCreateReadyPipelineStatus status,
+    WGPURenderPipeline render_pipeline,
+    const char* message) {
+  switch (status) {
+    case WGPUCreateReadyPipelineStatus_Success: {
+      resolver->Resolve(
+          MakeGarbageCollected<GPURenderPipeline>(this, render_pipeline));
+      break;
+    }
+
+    case WGPUCreateReadyPipelineStatus_Error:
+    case WGPUCreateReadyPipelineStatus_DeviceLost:
+    case WGPUCreateReadyPipelineStatus_DeviceDestroyed:
+    case WGPUCreateReadyPipelineStatus_Unknown: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kOperationError, message));
+      break;
+    }
+
+    default: {
+      NOTREACHED();
+    }
+  }
+}
+
 void GPUDevice::OnCreateReadyComputePipelineCallback(
     ScriptPromiseResolver* resolver,
     WGPUCreateReadyPipelineStatus status,
@@ -237,6 +264,36 @@ GPURenderPipeline* GPUDevice::createRenderPipeline(
 GPUComputePipeline* GPUDevice::createComputePipeline(
     const GPUComputePipelineDescriptor* descriptor) {
   return GPUComputePipeline::Create(this, descriptor);
+}
+
+ScriptPromise GPUDevice::createReadyRenderPipeline(
+    ScriptState* script_state,
+    const GPURenderPipelineDescriptor* descriptor) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
+  OwnedRenderPipelineDescriptor dawn_desc_info;
+  v8::Isolate* isolate = script_state->GetIsolate();
+  ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
+                                 "GPUVertexStateDescriptor");
+  ConvertToDawnType(isolate, descriptor, &dawn_desc_info, exception_state);
+  if (exception_state.HadException()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kOperationError,
+        "Error in parsing GPURenderPipelineDescriptor"));
+  } else {
+    auto* callback =
+        BindDawnCallback(&GPUDevice::OnCreateReadyRenderPipelineCallback,
+                         WrapPersistent(this), WrapPersistent(resolver));
+    GetProcs().deviceCreateReadyRenderPipeline(
+        GetHandle(), &dawn_desc_info.dawn_desc, callback->UnboundCallback(),
+        callback->AsUserdata());
+  }
+
+  // WebGPU guarantees that promises are resolved in finite time so we need to
+  // ensure commands are flushed.
+  EnsureFlush();
+  return promise;
 }
 
 ScriptPromise GPUDevice::createReadyComputePipeline(

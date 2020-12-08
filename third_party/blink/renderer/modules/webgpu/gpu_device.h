@@ -92,6 +92,9 @@ class GPUDevice final : public EventTargetWithInlineData,
       const GPURenderPipelineDescriptor* descriptor);
   GPUComputePipeline* createComputePipeline(
       const GPUComputePipelineDescriptor* descriptor);
+  ScriptPromise createReadyRenderPipeline(
+      ScriptState* script_state,
+      const GPURenderPipelineDescriptor* descriptor);
   ScriptPromise createReadyComputePipeline(
       ScriptState* script_state,
       const GPUComputePipelineDescriptor* descriptor);
@@ -126,6 +129,10 @@ class GPUDevice final : public EventTargetWithInlineData,
                                WGPUErrorType type,
                                const char* message);
 
+  void OnCreateReadyRenderPipelineCallback(ScriptPromiseResolver* resolver,
+                                           WGPUCreateReadyPipelineStatus status,
+                                           WGPURenderPipeline render_pipeline,
+                                           const char* message);
   void OnCreateReadyComputePipelineCallback(
       ScriptPromiseResolver* resolver,
       WGPUCreateReadyPipelineStatus status,
