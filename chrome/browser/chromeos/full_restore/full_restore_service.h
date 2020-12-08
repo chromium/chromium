@@ -19,6 +19,15 @@ namespace full_restore {
 
 class NewUserRestorePrefHandler;
 
+extern const char kRestoreForCrashNotificationId[];
+extern const char kRestoreNotificationId[];
+
+// The restore notification button index.
+enum class RestoreNotificationButtonIndex {
+  kRestore = 0,
+  kCancel,
+};
+
 // The FullRestoreService class calls AppService and Window Management
 // interfaces to restore the app launchings and app windows.
 //

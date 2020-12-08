@@ -22,22 +22,11 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-namespace {
-
-constexpr char kRestoreForCrashNotificationId[] =
-    "restore_for_crash_notification";
-constexpr char kRestoreNotificationId[] = "restore_notification";
-
-// The restore notification button index.
-enum class RestoreNotificationButtonIndex {
-  kRestore = 0,
-  kCancel,
-};
-
-}  // namespace
-
 namespace chromeos {
 namespace full_restore {
+
+const char kRestoreForCrashNotificationId[] = "restore_for_crash_notification";
+const char kRestoreNotificationId[] = "restore_notification";
 
 FullRestoreService::FullRestoreService(Profile* profile) : profile_(profile) {
   // If the system crashed before reboot, show the restore notification.
