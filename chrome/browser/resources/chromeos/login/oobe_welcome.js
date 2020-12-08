@@ -6,6 +6,10 @@
  * @fileoverview Polymer element for displaying material design OOBE.
  */
 
+'use strict';
+
+(function() {
+
 /** @const {string} */
 const DEFAULT_CHROMEVOX_HINT_LOCALE = 'en-US';
 
@@ -17,10 +21,27 @@ const DEFAULT_CHROMEVOX_HINT_LOCALE = 'en-US';
 const DEFAULT_CHROMEVOX_HINT_VOICE_EXTENSION_ID =
     'gjjabgpgjpampikjhjpfhneeoapjbjaf';
 
+/**
+ * UI mode for the dialog.
+ * @enum {string}
+ */
+const UIState = {
+  GREETING: 'greeting',
+  LANGUAGE: 'language',
+  ACCESSIBILITY: 'accessibility',
+  TIMEZONE: 'timezone',
+  ADVANCED_OPTIONS: 'advanced-options',
+};
+
 Polymer({
   is: 'oobe-welcome-element',
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+  behaviors: [
+    OobeI18nBehavior,
+    OobeDialogHostBehavior,
+    LoginScreenBehavior,
+    MultiStepBehavior,
+  ],
 
   properties: {
     /**
@@ -127,6 +148,12 @@ Polymer({
    */
   configuration_applied_: false,
 
+  defaultUIStep() {
+    return UIState.GREETING;
+  },
+
+  UI_STEPS: UIState,
+
   /** @override */
   ready() {
     this.initializeLoginScreen('WelcomeScreen', {
@@ -144,13 +171,6 @@ Polymer({
     this.debuggingLinkVisible_ =
         data && 'isDeveloperMode' in data && data['isDeveloperMode'];
 
-    cr.ui.login.invokePolymerMethod(this.$.welcomeScreen, 'onBeforeShow');
-
-    let activeScreen = this.getActiveScreen_();
-    activeScreen.hidden = false;
-    if (activeScreen.show)
-      activeScreen.show();
-
     window.setTimeout(this.applyOobeConfiguration_.bind(this), 0);
   },
 
@@ -158,7 +178,6 @@ Polymer({
    * Event handler that is invoked just before the screen is hidden.
    */
   onBeforeHide() {
-    this.hideAllScreens_();
     this.cleanupChromeVoxHint_();
   },
 
@@ -252,59 +271,6 @@ Polymer({
   },
 
   /**
-   * Hides all screens to help switching from one screen to another.
-   * @private
-   */
-  hideAllScreens_() {
-    this.$.welcomeScreen.hidden = true;
-
-    var screens = Polymer.dom(this.root).querySelectorAll('oobe-dialog');
-    for (var i = 0; i < screens.length; ++i) {
-      screens[i].hidden = true;
-    }
-  },
-
-  /**
-   * Shows given screen.
-   * @param id String Screen ID.
-   * @private
-   */
-  showScreen_(id) {
-    this.hideAllScreens_();
-
-    var screen = this.$[id];
-    assert(screen);
-    screen.hidden = false;
-    if (screen.show)
-      screen.show();
-  },
-
-  /**
-   * Returns active screen object.
-   * @private
-   */
-  getActiveScreen_() {
-    var screens = Polymer.dom(this.root).querySelectorAll('oobe-dialog');
-    for (var i = 0; i < screens.length; ++i) {
-      if (!screens[i].hidden)
-        return screens[i];
-    }
-    return this.$.welcomeScreen;
-  },
-
-  focus() {
-    this.getActiveScreen_().focus();
-  },
-
-  /**
-   * Handles "visible" event.
-   * @private
-   */
-  onAnimationFinish_() {
-    this.focus();
-  },
-
-  /**
    * Returns true if timezone button should be visible.
    * @private
    */
@@ -337,7 +303,7 @@ Polymer({
    */
   onWelcomeLaunchAdvancedOptions_() {
     this.cancelChromeVoxHint_();
-    this.showScreen_('oobeAdvancedOptionsScreen');
+    this.setUIStep(UIState.ADVANCED_OPTIONS);
   },
 
   /**
@@ -347,7 +313,7 @@ Polymer({
    */
   onWelcomeSelectLanguageButtonClicked_() {
     this.cancelChromeVoxHint_();
-    this.showScreen_('languageScreen');
+    this.setUIStep(UIState.LANGUAGE);
   },
 
   /**
@@ -357,7 +323,7 @@ Polymer({
    */
   onWelcomeAccessibilityButtonClicked_() {
     this.cancelChromeVoxHint_();
-    this.showScreen_('accessibilityScreen');
+    this.setUIStep(UIState.ACCESSIBILITY);
   },
 
   /**
@@ -367,7 +333,7 @@ Polymer({
    */
   onWelcomeTimezoneButtonClicked_() {
     this.cancelChromeVoxHint_();
-    this.showScreen_('timezoneScreen');
+    this.setUIStep(UIState.TIMEZONE);
   },
 
   /**
@@ -532,7 +498,7 @@ Polymer({
    * @private
    */
   closeLanguageSection_() {
-    this.showScreen_('welcomeScreen');
+    this.setUIStep(UIState.GREETING);
   },
 
   /** ******************** Accessibility section ******************* */
@@ -543,7 +509,7 @@ Polymer({
    * @private
    */
   closeAccessibilitySection_() {
-    this.showScreen_('welcomeScreen');
+    this.setUIStep(UIState.GREETING);
   },
 
   /**
@@ -572,7 +538,7 @@ Polymer({
    * @private
    */
   closeTimezoneSection_() {
-    this.showScreen_('welcomeScreen');
+    this.setUIStep(UIState.GREETING);
   },
 
   /**
@@ -597,7 +563,7 @@ Polymer({
    * @private
    */
   closeAdvancedOptionsSection_() {
-    this.showScreen_('welcomeScreen');
+    this.setUIStep(UIState.GREETING);
   },
 
   /**
@@ -766,3 +732,4 @@ Polymer({
     this.voicesChangedListenerMaybeGiveChromeVoxHint_ = null;
   }
 });
+})();
