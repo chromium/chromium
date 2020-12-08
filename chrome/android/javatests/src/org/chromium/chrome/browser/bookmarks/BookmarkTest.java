@@ -64,8 +64,8 @@ import org.chromium.chrome.browser.bookmarks.BookmarkPromoHeader.PromoState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
-import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
+import org.chromium.chrome.browser.offlinepages.OfflineTestUtil;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -250,20 +250,16 @@ public class BookmarkTest {
         });
     }
 
-    private void waitForOfflinePageSaved(String url) throws Exception {
-        CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            OfflinePageBridge bridge =
-                    OfflinePageBridge.getForProfile(Profile.getLastUsedRegularProfile());
-            bridge.getAllPages((items) -> {
-                for (OfflinePageItem item : items) {
-                    if (url.startsWith(item.getUrl())) {
-                        callbackHelper.notifyCalled();
-                    }
+    private void waitForOfflinePageSaved(String url) {
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            List<OfflinePageItem> pages = OfflineTestUtil.getAllPages();
+            for (OfflinePageItem item : pages) {
+                if (url.startsWith(item.getUrl())) {
+                    return true;
                 }
-            });
+            }
+            return false;
         });
-        callbackHelper.waitForFirst();
     }
 
     @Test
