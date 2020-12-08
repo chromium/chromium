@@ -284,9 +284,6 @@ defaults = args.defaults(
     bucket = args.COMPUTE,
     executable = args.COMPUTE,
     triggered_by = args.COMPUTE,
-
-    # Forward on luci.builder.defaults so users have a consistent interface
-    **{a: getattr(luci.builder.defaults, a) for a in dir(luci.builder.defaults)}
 )
 
 def builder(
