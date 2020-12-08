@@ -633,8 +633,8 @@ void WebURLLoaderImpl::Context::Start(
   uint32_t loader_options = network::mojom::kURLLoadOptionNone;
   if (!no_mime_sniffing) {
     loader_options |= network::mojom::kURLLoadOptionSniffMimeType;
-    throttles.push_back(
-        std::make_unique<blink::MimeSniffingThrottle>(freezable_task_runner_));
+    throttles.push_back(std::make_unique<blink::MimeSniffingThrottle>(
+        unfreezable_task_runner_));
   }
 
   if (sync_load_response) {
@@ -659,8 +659,11 @@ void WebURLLoaderImpl::Context::Start(
 
   TRACE_EVENT_WITH_FLOW0("loading", "WebURLLoaderImpl::Context::Start", this,
                          TRACE_EVENT_FLAG_FLOW_OUT);
+  // If we use freezable_task_runner_, we won't call
+  // URLLoaderClientImpl::OnStartLoadingResponseBody until after bfcache
+  // restore. Is this OK?
   request_id_ = resource_dispatcher_->StartAsync(
-      std::move(request), requestor_id, freezable_task_runner_,
+      std::move(request), requestor_id, unfreezable_task_runner_,
       GetTrafficAnnotationTag(resource_type), loader_options, std::move(peer),
       url_loader_factory_, std::move(throttles),
       std::move(resource_load_info_notifier_wrapper));

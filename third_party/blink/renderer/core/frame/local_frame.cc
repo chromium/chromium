@@ -2359,8 +2359,10 @@ bool LocalFrame::IsLoadDeferred() {
 }
 
 WebURLLoader::DeferType LocalFrame::GetLoadDeferType() {
-  if (GetPage()->GetPageScheduler()->IsInBackForwardCache())
+  if (GetPage()->GetPageScheduler()->IsInBackForwardCache() &&
+      base::FeatureList::IsEnabled(features::kLoadingTasksUnfreezable)) {
     return WebURLLoader::DeferType::kDeferredWithBackForwardCache;
+  }
   if (paused_ || frozen_)
     return WebURLLoader::DeferType::kDeferred;
   return WebURLLoader::DeferType::kNotDeferred;
@@ -2384,10 +2386,7 @@ void LocalFrame::DidFreeze() {
     DomWindow()->SetIsInBackForwardCache(true);
   }
 
-  WebURLLoader::DeferType defer =
-      GetPage()->GetPageScheduler()->IsInBackForwardCache()
-          ? WebURLLoader::DeferType::kDeferredWithBackForwardCache
-          : WebURLLoader::DeferType::kDeferred;
+  WebURLLoader::DeferType defer = GetLoadDeferType();
   GetDocument()->Fetcher()->SetDefersLoading(defer);
   Loader().SetDefersLoading(defer);
 }

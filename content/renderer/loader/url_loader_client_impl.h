@@ -74,6 +74,12 @@ class CONTENT_EXPORT URLLoaderClientImpl final
       mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
+  void EvictFromBackForwardCache();
+  bool IsDeferredWithBackForwardCache() {
+    return deferred_state_ ==
+           blink::WebURLLoader::DeferType::kDeferredWithBackForwardCache;
+  }
+
   const GURL& last_loaded_url() const { return last_loaded_url_; }
 
  private:

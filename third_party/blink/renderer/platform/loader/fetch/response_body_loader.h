@@ -8,6 +8,7 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
@@ -89,14 +90,20 @@ class PLATFORM_EXPORT ResponseBodyLoader final
   // drained data pipe. This function cannot be called when suspended.
   void Abort();
 
-  // Suspendes loading.
-  void Suspend();
+  // Suspends loading.
+  void Suspend(WebURLLoader::DeferType suspended_state);
 
   // Resumes loading.
   void Resume();
 
   bool IsAborted() const { return aborted_; }
-  bool IsSuspended() const { return suspended_; }
+  bool IsSuspended() const {
+    return suspended_state_ != WebURLLoader::DeferType::kNotDeferred;
+  }
+  bool IsSuspendedForBackForwardCache() const {
+    return suspended_state_ ==
+           WebURLLoader::DeferType::kDeferredWithBackForwardCache;
+  }
   bool IsDrained() const { return drained_; }
 
   void EvictFromBackForwardCacheIfDrained();
@@ -124,22 +131,22 @@ class PLATFORM_EXPORT ResponseBodyLoader final
   // BytesConsumer::Client implementation.
   void OnStateChange() override;
   String DebugName() const override { return "ResponseBodyLoader"; }
-  // When |buffer_data_while_suspended_| is true, we'll save the response body
-  // read when suspended.
+  // When |buffer_data_while_suspended_for_bfcache_| is true, we'll save the
+  // response body read when suspended.
   Member<Buffer> body_buffer_;
   Member<BytesConsumer> bytes_consumer_;
   Member<DelegatingBytesConsumer> delegating_bytes_consumer_;
   const Member<ResponseBodyLoaderClient> client_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  WebURLLoader::DeferType suspended_state_ =
+      WebURLLoader::DeferType::kNotDeferred;
   bool started_ = false;
   bool aborted_ = false;
-  bool suspended_ = false;
   bool drained_ = false;
   bool finish_signal_is_pending_ = false;
   bool fail_signal_is_pending_ = false;
   bool cancel_signal_is_pending_ = false;
   bool in_two_phase_read_ = false;
-  const bool buffer_data_while_suspended_;
 };
 
 }  // namespace blink
