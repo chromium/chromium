@@ -3,5 +3,3 @@ file://components/sync/OWNERS
 per-file profile_sync_service_android*=nyquist@chromium.org
 per-file *web_app*=file://chrome/browser/web_applications/OWNERS
 per-file wifi_configuration*=file://chromeos/components/sync_wifi/OWNERS
-
-# COMPONENT: Services>Sync
