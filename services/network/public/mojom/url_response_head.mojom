@@ -219,4 +219,10 @@ struct URLResponseHead {
   // is propagated to the renderer and set on recursive prefetch requests
   // (see corresponding documentation in url_loader.mojom).
   mojo_base.mojom.UnguessableToken? recursive_prefetch_token;
+
+  // Aliases, if any, for the destination URL, as read from DNS CNAME records.
+  // The first entry of `dns_aliases`, if it exists, is the canonical name.
+  // The alias chain is preserved in reverse order, from canonical name (i.e.
+  // address record name) through to query name.
+  array<string> dns_aliases;
 };
