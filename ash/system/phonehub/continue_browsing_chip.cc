@@ -138,7 +138,17 @@ void ContinueBrowsingChip::ButtonPressed() {
   NewWindowDelegate::GetInstance()->NewTabWithUrl(
       url_, /*from_user_interaction=*/true);
 
-  Shell::GetPrimaryRootWindowController()
+  // Close Phone Hub bubble in current display.
+  views::Widget* const widget = GetWidget();
+  // |widget| is null when this function is called before the view is added to a
+  // widget (in unit tests).
+  if (!widget)
+    return;
+  int64_t current_display_id =
+      display::Screen::GetScreen()
+          ->GetDisplayNearestWindow(widget->GetNativeWindow())
+          .id();
+  Shell::GetRootWindowControllerWithDisplayId(current_display_id)
       ->GetStatusAreaWidget()
       ->phone_hub_tray()
       ->CloseBubble();
