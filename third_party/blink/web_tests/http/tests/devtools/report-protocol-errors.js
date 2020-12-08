@@ -5,6 +5,12 @@
 (async function() {
   TestRunner.addResult(`Tests that InspectorBackendDispatcher is catching incorrect messages.\n`);
 
+  function trimErrorMessage(message) {
+    if (message.error && message.error.data) {
+      message.error.data = message.error.data.replace(/at position \d+/, "<somewhere>");
+    }
+    return message;
+  }
 
   var messages = [
     'some wrong string',
@@ -30,9 +36,9 @@
 
   var numberOfReports = 0;
 
-  Protocol.InspectorBackend.reportProtocolError = function(error, message) {
+  ProtocolClient.InspectorBackend.reportProtocolError = function(error, message) {
     if (numberOfReports < messages.length) {
-      TestRunner.addObject(message);
+      TestRunner.addObject(trimErrorMessage(message));
       TestRunner.addResult('-------------------------------------------------------');
     }
 

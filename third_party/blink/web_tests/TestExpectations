@@ -1738,9 +1738,7 @@ crbug.com/400841 media/video-canvas-draw.html [ Failure ]
 crbug.com/1032016 http/tests/devtools/sources/debugger-breakpoints/breakpoints-ui-shifted-breakpoint.js [ Pass Failure Timeout ]
 
 # Renaming front_end/protocol to front_end/protocol_client requires a 3-way change. Temporarliy disable web tests that use |Protocol|
-crbug.com/1011811 http/tests/devtools/report-protocol-errors.js [ Pass Failure ]
-crbug.com/1047760 http/tests/devtools/screen-orientation-override.js [ Pass Failure Timeout ]
-crbug.com/1011811 http/tests/devtools/elements/styles-1/cached-sync-computed-styles.js [ Pass Failure ]
+crbug.com/1047760 http/tests/devtools/screen-orientation-override.js [ Pass Timeout ]
 
 # switching to apache-win32: needs triaging.
 crbug.com/528062 [ Win ] http/tests/css/missing-repaint-after-slow-style-sheet.pl [ Failure ]

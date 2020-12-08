@@ -48,7 +48,7 @@ Tests that InspectorBackendDispatcher is catching incorrect messages.
 {
     error : {
         code : -32602
-        data : "nodeId: integer value expected"
+        data : "Failed to deserialize params - CBOR: map start expected <somewhere>"
         message : "Invalid parameters"
     }
     id : 4
@@ -57,7 +57,7 @@ Tests that InspectorBackendDispatcher is catching incorrect messages.
 {
     error : {
         code : -32602
-        data : "nodeId: integer value expected"
+        data : "Failed to deserialize params - CBOR: map start expected <somewhere>"
         message : "Invalid parameters"
     }
     id : 5
@@ -66,7 +66,7 @@ Tests that InspectorBackendDispatcher is catching incorrect messages.
 {
     error : {
         code : -32602
-        data : "nodeId: integer value expected"
+        data : "Failed to deserialize params.nodeId - BINDINGS: mandatory field missing <somewhere>"
         message : "Invalid parameters"
     }
     id : 6
@@ -75,7 +75,7 @@ Tests that InspectorBackendDispatcher is catching incorrect messages.
 {
     error : {
         code : -32602
-        data : "nodeId: integer value expected"
+        data : "Failed to deserialize params.nodeId - BINDINGS: int32 value expected <somewhere>"
         message : "Invalid parameters"
     }
     id : 7

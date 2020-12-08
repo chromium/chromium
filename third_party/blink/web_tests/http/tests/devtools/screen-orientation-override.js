@@ -8,7 +8,7 @@
 
   await TestRunner.navigatePromise('resources/screen-orientation-resource.html');
 
-  Protocol.test.suppressRequestErrors = false;
+  ProtocolClient.test.suppressRequestErrors = false;
   function addDumpResult(next) {
     TestRunner.evaluateInPage('dump()', dumpCallback);
 

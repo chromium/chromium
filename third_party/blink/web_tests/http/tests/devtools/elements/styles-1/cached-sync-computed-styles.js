@@ -35,7 +35,7 @@
   function step1(node) {
     var callsLeft = 2;
     nodeId = node.id;
-    TestRunner.addSniffer(Protocol.SessionRouter.prototype, 'sendMessage', onBackendCall, true);
+    TestRunner.addSniffer(ProtocolClient.SessionRouter.prototype, 'sendMessage', onBackendCall, true);
     TestRunner.cssModel.computedStylePromise(nodeId).then(styleCallback);
     TestRunner.cssModel.computedStylePromise(nodeId).then(styleCallback);
     function styleCallback() {
