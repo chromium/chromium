@@ -42054,6 +42054,7 @@ from previous Chrome versions.
   <int value="-1919683750" label="EnableOopPrintDrivers:disabled"/>
   <int value="-1919199528"
       label="AlwaysShowServerCardsInSyncTransport:disabled"/>
+  <int value="-1917031398" label="OmniboxNativeVoiceSuggestProvider:disabled"/>
   <int value="-1916060206" label="enable-display-zoom-setting"/>
   <int value="-1915854488" label="enable-offline-pages"/>
   <int value="-1913801713"
@@ -45612,6 +45613,7 @@ from previous Chrome versions.
   <int value="1479248574" label="disable-voice-input"/>
   <int value="1481562816" label="disable-password-link"/>
   <int value="1482039233" label="SearchSuggestionsOnLocalNtp:disabled"/>
+  <int value="1482245628" label="OmniboxNativeVoiceSuggestProvider:enabled"/>
   <int value="1482839038" label="AutofillCreditCardAuthentication:enabled"/>
   <int value="1483980996" label="MacSyscallSandbox:enabled"/>
   <int value="1486171015" label="disable-fill-on-account-select"/>

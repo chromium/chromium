@@ -76,6 +76,7 @@ extern const base::Feature kOnDeviceHeadProviderNonIncognito;
 extern const base::Feature kOmniboxExperimentalSuggestScoring;
 extern const base::Feature kHistoryQuickProviderAblateInMemoryURLIndexCacheFile;
 extern const base::Feature kDisableCGIParamMatching;
+extern const base::Feature kNativeVoiceSuggestProvider;
 
 // Suggestions UI - these affect the UI or function of the suggestions popup.
 extern const base::Feature kAdaptiveSuggestionsCount;

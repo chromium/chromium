@@ -3624,6 +3624,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "omnibox-native-voice-suggestions-provider",
+    "owners": [ "ender", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 93
+  },
+  {
     "name": "omnibox-on-device-head-suggestions-incognito",
     "owners": [ "cechen", "suggest-2g@google.com" ],
     "expiry_milestone": 90

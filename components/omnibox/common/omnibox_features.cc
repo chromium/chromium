@@ -274,6 +274,10 @@ const base::Feature kHistoryQuickProviderAblateInMemoryURLIndexCacheFile{
 const base::Feature kDisableCGIParamMatching{"OmniboxDisableCGIParamMatching",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, uses the native VoiceSuggestProvider. Android-specific.
+const base::Feature kNativeVoiceSuggestProvider{
+    "OmniboxNativeVoiceSuggestProvider", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, inputs may match bookmark paths. These path matches won't
 // contribute to scoring. E.g. 'planets jupiter' can suggest a bookmark titled
 // 'Jupiter' with URL 'en.wikipedia.org/wiki/Jupiter' located in a path
