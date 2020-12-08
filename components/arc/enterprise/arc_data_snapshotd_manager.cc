@@ -479,6 +479,15 @@ void ArcDataSnapshotdManager::LoadSnapshot(const std::string& account_id,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void ArcDataSnapshotdManager::UpdateUi(int percent) {
+  if (!bridge_) {
+    OnUiUpdated(false /* success */);
+    return;
+  }
+  bridge_->Update(percent, base::BindOnce(&ArcDataSnapshotdManager::OnUiUpdated,
+                                          weak_ptr_factory_.GetWeakPtr()));
+}
+
 void ArcDataSnapshotdManager::OnSnapshotsCleared(bool success) {
   switch (state_) {
     case State::kBlockedUi:
@@ -554,7 +563,9 @@ void ArcDataSnapshotdManager::OnDaemonStopped(base::OnceClosure callback,
 void ArcDataSnapshotdManager::Update(int percent) {
   DCHECK_EQ(state_, State::kMgsLaunched);
 
-  // TODO(pbond): wire up to arc-data-snapshotd.
+  EnsureDaemonStarted(base::BindOnce(&ArcDataSnapshotdManager::UpdateUi,
+                                     weak_ptr_factory_.GetWeakPtr(), percent));
+
   if (percent == 100) {
     // Stop tracking apps, 100% of required apps got installed.
     // The snapshot can be taken right away.
@@ -635,6 +646,11 @@ void ArcDataSnapshotdManager::OnUnexpectedArcDataRemoveRequested() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   OnSnapshotTaken(false /* success */);
+}
+
+void ArcDataSnapshotdManager::OnUiUpdated(bool success) {
+  if (!success)
+    LOG(ERROR) << "Failed to update UI progress bar.";
 }
 
 std::string ArcDataSnapshotdManager::GetCryptohomeAccountId() {

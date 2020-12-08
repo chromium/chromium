@@ -243,6 +243,7 @@ class ArcDataSnapshotdManager final
   void ClearSnapshot(bool last, base::OnceCallback<void(bool)> callback);
   void TakeSnapshot(const std::string& account_id);
   void LoadSnapshot(const std::string& account_id, base::OnceClosure callback);
+  void UpdateUi(int percent);
 
   // Called once the outdated snapshots were removed or ensured that there are
   // no outdated snapshots.
@@ -271,6 +272,9 @@ class ArcDataSnapshotdManager final
 
   // Called once unexpected ARC data removal is requested,
   void OnUnexpectedArcDataRemoveRequested();
+
+  // Called once a progress bar is updated.
+  void OnUiUpdated(bool success);
 
   // Returns non-empty account ID string if a MGS is active.
   // Otherwise returns an empty string.

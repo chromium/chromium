@@ -503,13 +503,17 @@ TEST_F(ArcDataSnapshotdManagerBasicTest, TakeSnapshotSuccess) {
   LoginAsPublicSession();
   manager->OnSessionStateChanged();
 
+  ExpectStartDaemon(true /* success */);
   ExpectStartTrackingApps();
   EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kMgsLaunched);
   // Installed 10% of tracking apps.
   apps_tracker()->update_callback().Run(10 /* percent */);
+  // Need to run until idle to ensure D-Bus bridge is set up and available.
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(manager->bridge());
+
   EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kMgsLaunched);
   // Expect to stop ARC.
-  ExpectStartDaemon(true /*success */);
   // Expect daemon to stop once the snapshot is taken.
   ExpectStopDaemon(true /* success */);
   // Finished ARC tracking.
