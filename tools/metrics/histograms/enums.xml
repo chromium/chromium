@@ -11831,13 +11831,6 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="deflate"/>
 </enum>
 
-<enum name="CompromiseType">
-  <int value="0"
-      label="Leaked - If the credentials was leaked by a data breach."/>
-  <int value="1"
-      label="Phished - If the credentials was reused on a phishing site."/>
-</enum>
-
 <enum name="ComputeCurrentSigninStatus">
   <obsolete>
     Deprecated as of Jun 2016. The enum was added for debugging purpose and is
@@ -38280,6 +38273,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="33" label="Ran by google.com/support/ (deprecated)"/>
   <int value="34" label="Displayed by google.com/intl/ (deprecated)"/>
   <int value="35" label="Ran by google.com/intl/ (deprecated)"/>
+</enum>
+
+<enum name="InsecureCredentialsType">
+  <int value="0" label="Leaked"/>
+  <int value="1" label="Phished"/>
+  <int value="2" label="Weak"/>
+  <int value="3" label="Reused"/>
 </enum>
 
 <enum name="InsecureDownloadExtensions">

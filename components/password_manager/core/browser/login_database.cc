@@ -58,10 +58,10 @@ using autofill::GaiaIdHash;
 namespace password_manager {
 
 // The current version number of the login database schema.
-const int kCurrentVersionNumber = 28;
+constexpr int kCurrentVersionNumber = 29;
 // The oldest version of the schema such that a legacy Chrome client using that
 // version can still read/write the current database.
-const int kCompatibleVersionNumber = 28;
+constexpr int kCompatibleVersionNumber = 29;
 
 base::Pickle SerializeValueElementPairs(const ValueElementVector& vec) {
   base::Pickle p;
@@ -187,10 +187,11 @@ enum DatabaseInitError {
   DATABASE_INIT_ERROR_COUNT,
 };
 
-// Struct to hold table builder for "logins", "sync_entities_metadata", and
-// "sync_model_metadata" tables.
+// Struct to hold table builder for "logins", "insecure_credentials",
+// "sync_entities_metadata", and "sync_model_metadata" tables.
 struct SQLTableBuilders {
   SQLTableBuilder* logins;
+  SQLTableBuilder* insecure_credentials;
   SQLTableBuilder* sync_entities_metadata;
   SQLTableBuilder* sync_model_metadata;
 };
@@ -299,6 +300,10 @@ bool ClearAllSyncMetadata(sql::Database* db) {
 void SealVersion(SQLTableBuilders builders, unsigned expected_version) {
   unsigned logins_version = builders.logins->SealVersion();
   DCHECK_EQ(expected_version, logins_version);
+
+  unsigned insecure_credentials_version =
+      builders.insecure_credentials->SealVersion();
+  DCHECK_EQ(expected_version, insecure_credentials_version);
 
   unsigned sync_entities_metadata_version =
       builders.sync_entities_metadata->SealVersion();
@@ -420,7 +425,7 @@ void InitializeBuilders(SQLTableBuilders builders) {
   SealVersion(builders, /*expected_version=*/24u);
 
   // Version 25. Introduce date_last_used column to replace the preferred
-  // column. MigrateLogins() will take care of migrating the data.
+  // column. MigrateDatabase() will take care of migrating the data.
   builders.logins->AddColumn("date_last_used", "INTEGER NOT NULL DEFAULT 0");
   SealVersion(builders, /*expected_version=*/25u);
 
@@ -436,6 +441,18 @@ void InitializeBuilders(SQLTableBuilders builders) {
   // Version 28.
   builders.logins->DropColumn("preferred");
   SealVersion(builders, /*expected_version=*/28u);
+
+  // Version 29.
+  // Migrate the compromised credentials from "compromised_credentials" to the
+  // new table "insecure credentials" with a foreign key to the logins table.
+  builders.insecure_credentials->AddColumnToUniqueKey("parent_id", "INTEGER",
+                                                      "logins");
+  builders.insecure_credentials->AddColumnToUniqueKey("insecurity_type",
+                                                      "INTEGER NOT NULL");
+  builders.insecure_credentials->AddColumn("create_time", "INTEGER NOT NULL");
+  builders.insecure_credentials->AddColumn("is_muted",
+                                           "INTEGER NOT NULL DEFAULT 0");
+  SealVersion(builders, /*expected_version=*/29u);
 
   DCHECK_EQ(static_cast<size_t>(COLUMN_NUM), builders.logins->NumberOfColumns())
       << "Adjust LoginDatabaseTableColumns if you change column definitions "
@@ -488,14 +505,55 @@ bool LoginsTablePostMigrationStepCallback(sql::Database* db,
   return true;
 }
 
+bool InsecureCredentialsPostMigrationStepCallback(
+    SQLTableBuilder* insecure_credentials_builder,
+    sql::Database* db,
+    unsigned new_version) {
+  if (new_version == 29) {
+    if (!insecure_credentials_builder->CreateTable(db)) {
+      LOG(ERROR) << "Failed to create the 'insecure_credentials' table";
+      LogDatabaseInitError(INIT_COMPROMISED_CREDENTIALS_ERROR);
+      return false;
+    }
+    if (!db->DoesTableExist("compromised_credentials"))
+      return true;
+    // The 'compromised_credentials' table must be migrated to
+    // 'insecure_credentials'.
+    constexpr char select_compromised[] =
+        "SELECT "
+        "id, create_time, compromise_type FROM compromised_credentials "
+        "INNER JOIN logins ON "
+        "compromised_credentials.url = logins.signon_realm AND "
+        "compromised_credentials.username = logins.username_value";
+    const std::string insert_statement = base::StringPrintf(
+        "INSERT OR REPLACE INTO %s "
+        "(parent_id, create_time, insecurity_type) %s",
+        InsecureCredentialsTable::kTableName, select_compromised);
+    constexpr char drop_table_statement[] =
+        "DROP TABLE compromised_credentials";
+    sql::Transaction transaction(db);
+    if (!(transaction.Begin() && db->Execute(insert_statement.c_str()) &&
+          db->Execute(drop_table_statement) && transaction.Commit())) {
+      return false;
+    }
+  }
+  return true;
+}
+
 // Call this after having called InitializeBuilders(), to migrate the database
 // from the current version to kCurrentVersionNumber.
-bool MigrateLogins(unsigned current_version,
-                   SQLTableBuilders builders,
-                   sql::Database* db) {
+bool MigrateDatabase(unsigned current_version,
+                     SQLTableBuilders builders,
+                     sql::Database* db) {
   if (!builders.logins->MigrateFrom(
           current_version, db,
           base::BindRepeating(&LoginsTablePostMigrationStepCallback)))
+    return false;
+
+  if (!builders.insecure_credentials->MigrateFrom(
+          current_version, db,
+          base::BindRepeating(&InsecureCredentialsPostMigrationStepCallback,
+                              builders.insecure_credentials)))
     return false;
 
   if (!builders.sync_entities_metadata->MigrateFrom(current_version, db))
@@ -655,42 +713,39 @@ bool LoginDatabase::Init() {
   }
 
   SQLTableBuilder logins_builder("logins");
+  SQLTableBuilder insecure_credentials_builder(
+      InsecureCredentialsTable::kTableName);
   SQLTableBuilder sync_entities_metadata_builder("sync_entities_metadata");
   SQLTableBuilder sync_model_metadata_builder("sync_model_metadata");
-  SQLTableBuilders builders = {&logins_builder, &sync_entities_metadata_builder,
+  SQLTableBuilders builders = {&logins_builder, &insecure_credentials_builder,
+                               &sync_entities_metadata_builder,
                                &sync_model_metadata_builder};
   InitializeBuilders(builders);
   InitializeStatementStrings(logins_builder);
 
-  if (!db_.DoesTableExist("logins")) {
-    if (!logins_builder.CreateTable(&db_)) {
-      VLOG(0) << "Failed to create the 'logins' table";
-      transaction.Rollback();
-      db_.Close();
-      return false;
-    }
+  if (!logins_builder.CreateTable(&db_)) {
+    LOG(ERROR) << "Failed to create the 'logins' table";
+    transaction.Rollback();
+    db_.Close();
+    return false;
   }
 
-  if (!db_.DoesTableExist("sync_entities_metadata")) {
-    if (!sync_entities_metadata_builder.CreateTable(&db_)) {
-      VLOG(0) << "Failed to create the 'sync_entities_metadata' table";
-      transaction.Rollback();
-      db_.Close();
-      return false;
-    }
+  if (!sync_entities_metadata_builder.CreateTable(&db_)) {
+    LOG(ERROR) << "Failed to create the 'sync_entities_metadata' table";
+    transaction.Rollback();
+    db_.Close();
+    return false;
   }
 
-  if (!db_.DoesTableExist("sync_model_metadata")) {
-    if (!sync_model_metadata_builder.CreateTable(&db_)) {
-      VLOG(0) << "Failed to create the 'sync_model_metadata' table";
-      transaction.Rollback();
-      db_.Close();
-      return false;
-    }
+  if (!sync_model_metadata_builder.CreateTable(&db_)) {
+    LOG(ERROR) << "Failed to create the 'sync_model_metadata' table";
+    transaction.Rollback();
+    db_.Close();
+    return false;
   }
 
   stats_table_.Init(&db_);
-  compromised_credentials_table_.Init(&db_);
+  insecure_credentials_table_.Init(&db_);
   field_info_table_.Init(&db_);
 
   int current_version = meta_table_.GetVersionNumber();
@@ -698,8 +753,21 @@ bool LoginDatabase::Init() {
 
   // If the file on disk is an older database version, bring it up to date.
   if (migration_success && current_version < kCurrentVersionNumber) {
-    migration_success = MigrateLogins(
+    migration_success = MigrateDatabase(
         base::checked_cast<unsigned>(current_version), builders, &db_);
+  }
+  // Enforce that 'insecure_credentials' is created only after the 'logins'
+  // table was created and migrated to the latest version. This guarantees the
+  // existence of the `id` column in the `logins` table which was introduced
+  // only in version 20 and is referenced by `insecure_credentials` table. The
+  // table will be created here for a new profile. For an old profile it's
+  // created in MigrateDatabase above.
+  if (migration_success && !insecure_credentials_builder.CreateTable(&db_)) {
+    LOG(ERROR) << "Failed to create the 'insecure_credentials' table";
+    LogDatabaseInitError(INIT_COMPROMISED_CREDENTIALS_ERROR);
+    transaction.Rollback();
+    db_.Close();
+    return false;
   }
   if (migration_success && current_version <= 15) {
     migration_success = stats_table_.MigrateToVersion(16);
@@ -736,19 +804,6 @@ bool LoginDatabase::Init() {
   if (db_.DoesTableExist("leaked_credentials")) {
     if (!db_.Execute("DROP TABLE leaked_credentials")) {
       LOG(ERROR) << "Unable to create the stats table.";
-      transaction.Rollback();
-      db_.Close();
-      return false;
-    }
-  }
-
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordCheck) ||
-      base::FeatureList::IsEnabled(
-          safe_browsing::kPasswordProtectionShowDomainsForSavedPasswords)) {
-    if (!compromised_credentials_table_.CreateTableIfNecessary()) {
-      LogDatabaseInitError(INIT_COMPROMISED_CREDENTIALS_ERROR);
-      LOG(ERROR) << "Unable to create the compromised credentials table.";
       transaction.Rollback();
       db_.Close();
       return false;
@@ -1092,7 +1147,7 @@ void LoginDatabase::ReportMetrics(const std::string& sync_username,
   ReportBubbleSuppressionMetrics();
   ReportDuplicateCredentialsMetrics();
 
-  compromised_credentials_table_.ReportMetrics(bulk_check_done);
+  insecure_credentials_table_.ReportMetrics(bulk_check_done);
 }
 
 PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,

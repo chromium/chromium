@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_COMPROMISED_CREDENTIALS_TABLE_H_
-#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_COMPROMISED_CREDENTIALS_TABLE_H_
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_INSECURE_CREDENTIALS_TABLE_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_INSECURE_CREDENTIALS_TABLE_H_
 
 #include "base/callback.h"
 #include "base/macros.h"
@@ -20,12 +20,18 @@ namespace password_manager {
 
 using BulkCheckDone = base::StrongAlias<class BulkCheckDoneTag, bool>;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class CompromiseType {
   // If the credentials was leaked by a data breach.
   kLeaked = 0,
-  // If the credentials was reused on a phishing site.
+  // If the credentials was entered on a phishing site.
   kPhished = 1,
-  kMaxValue = kPhished
+  // If the password is weak.
+  kWeak = 2,
+  // If the password is reused for other accounts.
+  kReused = 3,
+  kMaxValue = kReused
 };
 
 enum class RemoveCompromisedCredentialsReason {
@@ -40,6 +46,18 @@ enum class RemoveCompromisedCredentialsReason {
 
 // Represents information about the particular compromised credentials.
 struct CompromisedCredentials {
+  CompromisedCredentials();
+  CompromisedCredentials(std::string signon_realm,
+                         base::string16 username,
+                         base::Time create_time,
+                         CompromiseType compromise_type,
+                         bool is_muted);
+  CompromisedCredentials(const CompromisedCredentials& rhs);
+  CompromisedCredentials(CompromisedCredentials&& rhs);
+  CompromisedCredentials& operator=(const CompromisedCredentials& rhs);
+  CompromisedCredentials& operator=(CompromisedCredentials&& rhs);
+  ~CompromisedCredentials();
+
   // The signon_realm of the website where the credentials were compromised.
   std::string signon_realm;
   // The value of the compromised username.
@@ -48,6 +66,8 @@ struct CompromisedCredentials {
   base::Time create_time;
   // The type of the credentials that was compromised.
   CompromiseType compromise_type = CompromiseType::kLeaked;
+  // Whether the problem was explicitly muted by the user.
+  bool is_muted = false;
   // The store in which those credentials are stored.
   PasswordForm::Store in_store = PasswordForm::Store::kNotSet;
 };
@@ -56,29 +76,19 @@ bool operator==(const CompromisedCredentials& lhs,
                 const CompromisedCredentials& rhs);
 
 // Represents the 'compromised credentials' table in the Login Database.
-class CompromisedCredentialsTable {
+class InsecureCredentialsTable {
  public:
-  CompromisedCredentialsTable() = default;
-  ~CompromisedCredentialsTable() = default;
+  static const char kTableName[];
+
+  InsecureCredentialsTable() = default;
+  ~InsecureCredentialsTable() = default;
 
   // Initializes |db_|.
   void Init(sql::Database* db);
 
-  // Creates the compromised credentials table if it doesn't exist.
-  bool CreateTableIfNecessary();
-
-  // Adds information about the compromised credentials. Returns true if the SQL
-  // completed successfully.
+  // Adds information about the compromised credentials. Returns true
+  // if the SQL completed successfully and an item was created.
   bool AddRow(const CompromisedCredentials& compromised_credentials);
-
-  // Updates the row that has |old_signon_realm| and |old_username| with
-  // |new_signon_realm| and |new_username|. If the row does not exist, the
-  // method will not do anything. Returns true if the SQL completed
-  // successfully.
-  bool UpdateRow(const std::string& new_signon_realm,
-                 const base::string16& new_username,
-                 const std::string& old_signon_realm,
-                 const base::string16& old_username) const;
 
   // Removes information about the credentials compromised for |username| on
   // |signon_realm|. |reason| is the reason why the credentials is removed from
@@ -88,20 +98,6 @@ class CompromisedCredentialsTable {
                  const base::string16& username,
                  RemoveCompromisedCredentialsReason reason);
 
-  // Removes information about the credentials compromised for |username| and
-  // |compromise_type| on |signon_realm|. |reason| is the reason why the
-  // credentials is removed from the table. Returns true if the SQL completed
-  // successfully. Also logs the compromise type in UMA.
-  bool RemoveRowByCompromiseType(const std::string& signon_realm,
-                                 const base::string16& username,
-                                 const CompromiseType& compromise_type,
-                                 RemoveCompromisedCredentialsReason reason);
-
-  // Gets all the rows in the database for the |username| and |signon_realm|.
-  std::vector<CompromisedCredentials> GetRows(
-      const std::string& signon_realm,
-      const base::string16& username) const;
-
   // Gets all the rows in the database for |signon_realm|.
   std::vector<CompromisedCredentials> GetRows(
       const std::string& signon_realm) const;
@@ -110,6 +106,7 @@ class CompromisedCredentialsTable {
   // inclusive and |remove_end| exclusive. If |url_filter| is not null, only
   // compromised credentials for matching signon_realms are removed. Returns
   // true if the SQL completed successfully.
+  // TODO(crbug/1137775): remove the method.
   bool RemoveRowsByUrlAndTime(
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time remove_begin,
@@ -123,18 +120,11 @@ class CompromisedCredentialsTable {
   void ReportMetrics(BulkCheckDone bulk_check_done);
 
  private:
-  // Gets the row in the database for the |username|, |signon_realm|, and
-  // |compromise_type|.
-  std::vector<CompromisedCredentials> GetRowByCompromiseType(
-      const std::string& signon_realm,
-      const base::string16& username,
-      const CompromiseType& compromise_type) const;
-
   sql::Database* db_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(CompromisedCredentialsTable);
+  DISALLOW_COPY_AND_ASSIGN(InsecureCredentialsTable);
 };
 
 }  // namespace password_manager
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_COMPROMISED_CREDENTIALS_TABLE_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_INSECURE_CREDENTIALS_TABLE_H_

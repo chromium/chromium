@@ -228,18 +228,7 @@ bool PasswordStoreDefault::AddCompromisedCredentialsImpl(
     const CompromisedCredentials& credentials) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   return login_db_ &&
-         login_db_->compromised_credentials_table().AddRow(credentials);
-}
-
-bool PasswordStoreDefault::RemoveCompromisedCredentialsByCompromiseTypeImpl(
-    const std::string& signon_realm,
-    const base::string16& username,
-    const CompromiseType& compromise_type,
-    RemoveCompromisedCredentialsReason reason) {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
-  return login_db_ &&
-         login_db_->compromised_credentials_table().RemoveRowByCompromiseType(
-             signon_realm, username, compromise_type, reason);
+         login_db_->insecure_credentials_table().AddRow(credentials);
 }
 
 bool PasswordStoreDefault::RemoveCompromisedCredentialsImpl(
@@ -247,7 +236,7 @@ bool PasswordStoreDefault::RemoveCompromisedCredentialsImpl(
     const base::string16& username,
     RemoveCompromisedCredentialsReason reason) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
-  return login_db_ && login_db_->compromised_credentials_table().RemoveRow(
+  return login_db_ && login_db_->insecure_credentials_table().RemoveRow(
                           signon_realm, username, reason);
 }
 
@@ -255,7 +244,7 @@ std::vector<CompromisedCredentials>
 PasswordStoreDefault::GetAllCompromisedCredentialsImpl() {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   std::vector<CompromisedCredentials> compromised_credentials =
-      login_db_ ? login_db_->compromised_credentials_table().GetAllRows()
+      login_db_ ? login_db_->insecure_credentials_table().GetAllRows()
                 : std::vector<CompromisedCredentials>();
   PasswordForm::Store store = IsAccountStore()
                                   ? PasswordForm::Store::kAccountStore
@@ -270,9 +259,8 @@ PasswordStoreDefault::GetMatchingCompromisedCredentialsImpl(
     const std::string& signon_realm) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   std::vector<CompromisedCredentials> compromised_credentials =
-      login_db_
-          ? login_db_->compromised_credentials_table().GetRows(signon_realm)
-          : std::vector<CompromisedCredentials>();
+      login_db_ ? login_db_->insecure_credentials_table().GetRows(signon_realm)
+                : std::vector<CompromisedCredentials>();
   PasswordForm::Store store = IsAccountStore()
                                   ? PasswordForm::Store::kAccountStore
                                   : PasswordForm::Store::kProfileStore;
@@ -287,7 +275,7 @@ bool PasswordStoreDefault::RemoveCompromisedCredentialsByUrlAndTimeImpl(
     base::Time remove_end) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   return login_db_ &&
-         login_db_->compromised_credentials_table().RemoveRowsByUrlAndTime(
+         login_db_->insecure_credentials_table().RemoveRowsByUrlAndTime(
              url_filter, remove_begin, remove_end);
 }
 

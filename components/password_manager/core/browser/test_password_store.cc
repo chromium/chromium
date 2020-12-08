@@ -12,7 +12,7 @@
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/password_manager/core/browser/compromised_credentials_table.h"
+#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
@@ -349,20 +349,6 @@ bool TestPasswordStore::RemoveCompromisedCredentialsImpl(
            credential.username == username;
   });
 
-  return old_size != compromised_credentials_.size();
-}
-
-bool TestPasswordStore::RemoveCompromisedCredentialsByCompromiseTypeImpl(
-    const std::string& signon_realm,
-    const base::string16& username,
-    const CompromiseType& compromise_type,
-    RemoveCompromisedCredentialsReason reason) {
-  const size_t old_size = compromised_credentials_.size();
-  base::EraseIf(compromised_credentials_, [&](const auto& credential) {
-    return credential.signon_realm == signon_realm &&
-           credential.username == username &&
-           credential.compromise_type == compromise_type;
-  });
   return old_size != compromised_credentials_.size();
 }
 

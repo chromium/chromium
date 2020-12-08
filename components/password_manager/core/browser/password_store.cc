@@ -30,8 +30,8 @@
 #include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/compromised_credentials_consumer.h"
 #include "components/password_manager/core/browser/compromised_credentials_observer.h"
-#include "components/password_manager/core/browser/compromised_credentials_table.h"
 #include "components/password_manager/core/browser/field_info_table.h"
+#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -394,20 +394,6 @@ void PasswordStore::RemoveCompromisedCredentials(
   auto callback =
       base::BindOnce(&PasswordStore::RemoveCompromisedCredentialsImpl, this,
                      signon_realm, username, reason);
-  ScheduleTask(base::BindOnce(
-      &PasswordStore::InvokeAndNotifyAboutCompromisedPasswordsChange, this,
-      std::move(callback)));
-}
-
-void PasswordStore::RemoveCompromisedCredentialsByCompromiseType(
-    const std::string& signon_realm,
-    const base::string16& username,
-    const CompromiseType& compromise_type,
-    RemoveCompromisedCredentialsReason reason) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  auto callback = base::BindOnce(
-      &PasswordStore::RemoveCompromisedCredentialsByCompromiseTypeImpl, this,
-      signon_realm, username, compromise_type, reason);
   ScheduleTask(base::BindOnce(
       &PasswordStore::InvokeAndNotifyAboutCompromisedPasswordsChange, this,
       std::move(callback)));

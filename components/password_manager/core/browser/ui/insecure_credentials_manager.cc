@@ -17,7 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/compromised_credentials_table.h"
+#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
@@ -67,6 +67,10 @@ InsecureCredentialTypeFlags ConvertCompromiseType(CompromiseType type) {
       return InsecureCredentialTypeFlags::kCredentialLeaked;
     case CompromiseType::kPhished:
       return InsecureCredentialTypeFlags::kCredentialPhished;
+    case CompromiseType::kWeak:
+      return InsecureCredentialTypeFlags::kWeakCredential;
+    case CompromiseType::kReused:
+      return InsecureCredentialTypeFlags::kReusedCredential;
   }
   NOTREACHED();
 }
@@ -261,12 +265,9 @@ void InsecureCredentialsManager::SaveCompromisedCredential(
         CanonicalizeUsername(saved_password.username_value) ==
             canonicalized_username) {
       GetStoreFor(saved_password)
-          .AddCompromisedCredentials({
-              .signon_realm = saved_password.signon_realm,
-              .username = saved_password.username_value,
-              .create_time = base::Time::Now(),
-              .compromise_type = CompromiseType::kLeaked,
-          });
+          .AddCompromisedCredentials(CompromisedCredentials(
+              saved_password.signon_realm, saved_password.username_value,
+              base::Time::Now(), CompromiseType::kLeaked, false));
     }
   }
 }

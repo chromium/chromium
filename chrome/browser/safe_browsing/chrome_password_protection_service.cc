@@ -40,8 +40,8 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/password_manager/core/browser/compromised_credentials_table.h"
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
+#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -1743,8 +1743,9 @@ void ChromePasswordProtectionService::PersistPhishedSavedPasswordCredential(
       continue;
     }
     password_store->AddCompromisedCredentials(
-        {credential.signon_realm, credential.username, base::Time::Now(),
-         password_manager::CompromiseType::kPhished});
+        password_manager::CompromisedCredentials(
+            credential.signon_realm, credential.username, base::Time::Now(),
+            password_manager::CompromiseType::kPhished, false));
   }
 }
 

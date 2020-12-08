@@ -363,16 +363,12 @@ TEST_F(PasswordStoreTest, RemoveLoginsCreatedBetweenCallbackIsCalled) {
 // Verify that when a login is removed that the corresponding row is also
 // removed from the compromised credentials table.
 TEST_F(PasswordStoreTest, CompromisedCredentialsObserverOnRemoveLogin) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(password_manager::features::kPasswordCheck);
-  CompromisedCredentials compromised_credentials = {
+  CompromisedCredentials compromised_credentials(
       kTestWebRealm1, base::ASCIIToUTF16("username_value_1"),
-      base::Time::FromTimeT(1), CompromiseType::kLeaked};
+      base::Time::FromTimeT(1), CompromiseType::kLeaked, false);
 
   scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
   store->Init(nullptr);
-
-  store->AddCompromisedCredentials(compromised_credentials);
 
   /* clang-format off */
   static const PasswordFormData kTestCredential =
@@ -387,6 +383,7 @@ TEST_F(PasswordStoreTest, CompromisedCredentialsObserverOnRemoveLogin) {
   std::unique_ptr<PasswordForm> test_form(
       FillPasswordFormWithData(kTestCredential));
   store->AddLogin(*test_form);
+  store->AddCompromisedCredentials(compromised_credentials);
   WaitForPasswordStore();
 
   MockCompromisedCredentialsConsumer consumer;
@@ -406,15 +403,11 @@ TEST_F(PasswordStoreTest, CompromisedCredentialsObserverOnRemoveLogin) {
 // Verify that when a login password is updated that the corresponding row is
 // removed from the compromised credentials table.
 TEST_F(PasswordStoreTest, CompromisedCredentialsObserverOnLoginUpdated) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(password_manager::features::kPasswordCheck);
-  CompromisedCredentials compromised_credentials = {
+  CompromisedCredentials compromised_credentials(
       kTestWebRealm1, base::ASCIIToUTF16("username_value_1"),
-      base::Time::FromTimeT(1), CompromiseType::kLeaked};
+      base::Time::FromTimeT(1), CompromiseType::kLeaked, false);
   scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
   store->Init(nullptr);
-
-  store->AddCompromisedCredentials(compromised_credentials);
 
   /* clang-format off */
   PasswordFormData kTestCredential =
@@ -429,6 +422,7 @@ TEST_F(PasswordStoreTest, CompromisedCredentialsObserverOnLoginUpdated) {
   std::unique_ptr<PasswordForm> test_form(
       FillPasswordFormWithData(kTestCredential));
   store->AddLogin(*test_form);
+  store->AddCompromisedCredentials(compromised_credentials);
   WaitForPasswordStore();
 
   MockCompromisedCredentialsConsumer consumer;
@@ -448,15 +442,11 @@ TEST_F(PasswordStoreTest, CompromisedCredentialsObserverOnLoginUpdated) {
 // Verify that when a login password is added with the password changed that the
 // corresponding row is removed from the compromised credentials table.
 TEST_F(PasswordStoreTest, CompromisedCredentialsObserverOnLoginAdded) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(password_manager::features::kPasswordCheck);
-  CompromisedCredentials compromised_credentials = {
+  CompromisedCredentials compromised_credentials(
       kTestWebRealm1, base::ASCIIToUTF16("username_value_1"),
-      base::Time::FromTimeT(1), CompromiseType::kLeaked};
+      base::Time::FromTimeT(1), CompromiseType::kLeaked, false);
   scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
   store->Init(nullptr);
-
-  store->AddCompromisedCredentials(compromised_credentials);
 
   /* clang-format off */
   PasswordFormData kTestCredential =
@@ -471,6 +461,7 @@ TEST_F(PasswordStoreTest, CompromisedCredentialsObserverOnLoginAdded) {
   std::unique_ptr<PasswordForm> test_form(
       FillPasswordFormWithData(kTestCredential));
   store->AddLogin(*test_form);
+  store->AddCompromisedCredentials(compromised_credentials);
   WaitForPasswordStore();
 
   MockCompromisedCredentialsConsumer consumer;
@@ -489,16 +480,26 @@ TEST_F(PasswordStoreTest, CompromisedCredentialsObserverOnLoginAdded) {
 
 TEST_F(PasswordStoreTest,
        CompromisedPasswordObserverOnCompromisedCredentialAdded) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kPasswordCheck);
   MockDatabaseCompromisedCredentialsObserver observer;
 
-  CompromisedCredentials compromised_credentials = {
+  constexpr PasswordFormData kTestCredentials = {PasswordForm::Scheme::kHtml,
+                                                 kTestWebRealm1,
+                                                 kTestWebRealm1,
+                                                 "",
+                                                 L"",
+                                                 L"",
+                                                 L"",
+                                                 L"username_value_1",
+                                                 L"password",
+                                                 kTestLastUsageTime,
+                                                 1};
+  CompromisedCredentials compromised_credentials(
       kTestWebRealm1, base::ASCIIToUTF16("username_value_1"),
-      base::Time::FromTimeT(1), CompromiseType::kLeaked};
+      base::Time::FromTimeT(1), CompromiseType::kLeaked, false);
 
   scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
   store->Init(nullptr);
+  store->AddLogin(*FillPasswordFormWithData(kTestCredentials));
   store->AddDatabaseCompromisedCredentialsObserver(&observer);
 
   // Expect a notification after adding a credential.
@@ -516,16 +517,27 @@ TEST_F(PasswordStoreTest,
 
 TEST_F(PasswordStoreTest,
        CompromisedPasswordObserverOnCompromisedCredentialRemoved) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kPasswordCheck);
   MockDatabaseCompromisedCredentialsObserver observer;
 
-  CompromisedCredentials compromised_credentials = {
+  constexpr PasswordFormData kTestCredentials = {PasswordForm::Scheme::kHtml,
+                                                 kTestWebRealm1,
+                                                 kTestWebRealm1,
+                                                 "",
+                                                 L"",
+                                                 L"",
+                                                 L"",
+                                                 L"username_value_1",
+                                                 L"password",
+                                                 kTestLastUsageTime,
+                                                 1};
+
+  CompromisedCredentials compromised_credentials(
       kTestWebRealm1, base::ASCIIToUTF16("username_value_1"),
-      base::Time::FromTimeT(1), CompromiseType::kLeaked};
+      base::Time::FromTimeT(1), CompromiseType::kLeaked, false);
 
   scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
   store->Init(nullptr);
+  store->AddLogin(*FillPasswordFormWithData(kTestCredentials));
   store->AddCompromisedCredentials(compromised_credentials);
   WaitForPasswordStore();
 
@@ -550,16 +562,26 @@ TEST_F(PasswordStoreTest,
 
 TEST_F(PasswordStoreTest,
        CompromisedPasswordObserverOnCompromisedCredentialRemovedByTime) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kPasswordCheck);
   MockDatabaseCompromisedCredentialsObserver observer;
 
-  CompromisedCredentials compromised_credentials = {
+  CompromisedCredentials compromised_credentials(
       kTestWebRealm1, base::ASCIIToUTF16("username_value_1"),
-      base::Time::FromTimeT(1), CompromiseType::kLeaked};
+      base::Time::FromTimeT(1), CompromiseType::kLeaked, false);
+  constexpr PasswordFormData kTestCredentials = {PasswordForm::Scheme::kHtml,
+                                                 kTestWebRealm1,
+                                                 kTestWebRealm1,
+                                                 "",
+                                                 L"",
+                                                 L"",
+                                                 L"",
+                                                 L"username_value_1",
+                                                 L"password",
+                                                 kTestLastUsageTime,
+                                                 1};
 
   scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
   store->Init(nullptr);
+  store->AddLogin(*FillPasswordFormWithData(kTestCredentials));
   store->AddCompromisedCredentials(compromised_credentials);
   WaitForPasswordStore();
 
@@ -1468,17 +1490,24 @@ TEST_F(PasswordStoreTest, ReportMetricsForNonSyncPassword) {
 }
 
 TEST_F(PasswordStoreTest, GetAllCompromisedCredentials) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(password_manager::features::kPasswordCheck);
-  CompromisedCredentials compromised_credentials = {
-      "https://example.com/", base::ASCIIToUTF16("username"),
-      base::Time::FromTimeT(1), CompromiseType::kLeaked};
-  CompromisedCredentials compromised_credentials2 = {
-      "https://2.example.com/", base::ASCIIToUTF16("username2"),
-      base::Time::FromTimeT(2), CompromiseType::kLeaked};
-
+  constexpr PasswordFormData kTestCredentials[] = {
+      {PasswordForm::Scheme::kHtml, "https://example.com/",
+       "https://example.com/", "", L"", L"", L"", L"username", L"password",
+       kTestLastUsageTime, 1},
+      {PasswordForm::Scheme::kHtml, "https://2.example.com/",
+       "https://2.example.com/", "", L"", L"", L"", L"username2", L"topsecret",
+       kTestLastUsageTime, 1}};
   scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
   store->Init(nullptr);
+
+  for (const auto& data : kTestCredentials)
+    store->AddLogin(*FillPasswordFormWithData(data));
+  CompromisedCredentials compromised_credentials(
+      "https://example.com/", base::ASCIIToUTF16("username"),
+      base::Time::FromTimeT(1), CompromiseType::kLeaked, false);
+  CompromisedCredentials compromised_credentials2(
+      "https://2.example.com/", base::ASCIIToUTF16("username2"),
+      base::Time::FromTimeT(2), CompromiseType::kLeaked, false);
 
   store->AddCompromisedCredentials(compromised_credentials);
   store->AddCompromisedCredentials(compromised_credentials2);
@@ -1504,17 +1533,23 @@ TEST_F(PasswordStoreTest, GetAllCompromisedCredentials) {
 // Test GetMatchingCompromisedCredentials when affiliation service isn't
 // available.
 TEST_F(PasswordStoreTest, GetMatchingCompromisedWithoutAffiliations) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(password_manager::features::kPasswordCheck);
   scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
   store->Init(nullptr);
 
-  CompromisedCredentials credentials1 = {
+  constexpr PasswordFormData kTestCredentials[] = {
+      {PasswordForm::Scheme::kHtml, kTestWebRealm1, kTestWebRealm1, "", L"",
+       L"", L"", L"username_value", L"password", kTestLastUsageTime, 1},
+      {PasswordForm::Scheme::kHtml, kTestWebRealm2, kTestWebRealm2, "", L"",
+       L"", L"", L"username_value", L"topsecret", kTestLastUsageTime, 1}};
+  for (const auto& data : kTestCredentials)
+    store->AddLogin(*FillPasswordFormWithData(data));
+
+  CompromisedCredentials credentials1(
       kTestWebRealm1, base::ASCIIToUTF16("username_value"),
-      base::Time::FromTimeT(1), CompromiseType::kLeaked};
-  CompromisedCredentials credentials2 = {
+      base::Time::FromTimeT(1), CompromiseType::kLeaked, false);
+  CompromisedCredentials credentials2(
       kTestWebRealm2, base::ASCIIToUTF16("username_value"),
-      base::Time::FromTimeT(2), CompromiseType::kLeaked};
+      base::Time::FromTimeT(2), CompromiseType::kLeaked, false);
   for (const auto& credentials : {credentials1, credentials2})
     store->AddCompromisedCredentials(credentials);
 
@@ -1530,20 +1565,28 @@ TEST_F(PasswordStoreTest, GetMatchingCompromisedWithoutAffiliations) {
 // Test GetMatchingCompromisedCredentials with some matching Android
 // credentials.
 TEST_F(PasswordStoreTest, GetMatchingCompromisedWithAffiliations) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(password_manager::features::kPasswordCheck);
   scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
   store->Init(nullptr);
 
-  CompromisedCredentials credentials1 = {
+  constexpr PasswordFormData kTestCredentials[] = {
+      {PasswordForm::Scheme::kHtml, kTestWebRealm1, kTestWebRealm1, "", L"",
+       L"", L"", L"username_value", L"password", kTestLastUsageTime, 1},
+      {PasswordForm::Scheme::kHtml, kTestAndroidRealm1, kTestAndroidRealm1, "",
+       L"", L"", L"", L"username_value_1", L"topsecret", kTestLastUsageTime, 1},
+      {PasswordForm::Scheme::kHtml, kTestWebRealm2, kTestWebRealm2, "", L"",
+       L"", L"", L"username_value_2", L"topsecret2", kTestLastUsageTime, 1}};
+  for (const auto& data : kTestCredentials)
+    store->AddLogin(*FillPasswordFormWithData(data));
+
+  CompromisedCredentials credentials1(
       kTestWebRealm1, base::ASCIIToUTF16("username_value"),
-      base::Time::FromTimeT(1), CompromiseType::kLeaked};
-  CompromisedCredentials credentials2 = {
+      base::Time::FromTimeT(1), CompromiseType::kLeaked, false);
+  CompromisedCredentials credentials2(
       kTestAndroidRealm1, base::ASCIIToUTF16("username_value_1"),
-      base::Time::FromTimeT(2), CompromiseType::kPhished};
-  CompromisedCredentials credentials3 = {
+      base::Time::FromTimeT(2), CompromiseType::kPhished, false);
+  CompromisedCredentials credentials3(
       kTestWebRealm2, base::ASCIIToUTF16("username_value_2"),
-      base::Time::FromTimeT(3), CompromiseType::kLeaked};
+      base::Time::FromTimeT(3), CompromiseType::kLeaked, false);
   for (const auto& credentials : {credentials1, credentials2, credentials3})
     store->AddCompromisedCredentials(credentials);
 
@@ -1564,94 +1607,31 @@ TEST_F(PasswordStoreTest, GetMatchingCompromisedWithAffiliations) {
   store->ShutdownOnUIThread();
 }
 
-TEST_F(PasswordStoreTest, RemovePhishedCredentialsByCompromiseType) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(password_manager::features::kPasswordCheck);
-  CompromisedCredentials leaked_credentials = {
-      "https://example.com/", base::ASCIIToUTF16("username"),
-      base::Time::FromTimeT(100), CompromiseType::kLeaked};
-  CompromisedCredentials phished_credentials = {
-      "https://example.com/", base::ASCIIToUTF16("username"),
-      base::Time::FromTimeT(200), CompromiseType::kPhished};
-
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
-  store->Init(nullptr);
-
-  store->AddCompromisedCredentials(leaked_credentials);
-  store->AddCompromisedCredentials(phished_credentials);
-
-  MockCompromisedCredentialsConsumer consumer;
-  EXPECT_CALL(consumer, OnGetCompromisedCredentials(UnorderedElementsAre(
-                            leaked_credentials, phished_credentials)));
-  store->GetAllCompromisedCredentials(&consumer);
-  WaitForPasswordStore();
-  testing::Mock::VerifyAndClearExpectations(&consumer);
-
-  store->RemoveCompromisedCredentialsByCompromiseType(
-      "https://example.com/", base::ASCIIToUTF16("username"),
-      CompromiseType::kPhished,
-      RemoveCompromisedCredentialsReason::kMarkSiteAsLegitimate);
-  WaitForPasswordStore();
-
-  EXPECT_CALL(consumer,
-              OnGetCompromisedCredentials(ElementsAre(leaked_credentials)));
-  store->GetAllCompromisedCredentials(&consumer);
-  WaitForPasswordStore();
-
-  store->ShutdownOnUIThread();
-}
-
-TEST_F(PasswordStoreTest, RemoveLeakedCredentialsByCompromiseType) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(password_manager::features::kPasswordCheck);
-  CompromisedCredentials leaked_credentials = {
-      "https://example.com/", base::ASCIIToUTF16("username"),
-      base::Time::FromTimeT(100), CompromiseType::kLeaked};
-  CompromisedCredentials phished_credentials = {
-      "https://example.com/", base::ASCIIToUTF16("username"),
-      base::Time::FromTimeT(200), CompromiseType::kPhished};
-
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
-  store->Init(nullptr);
-
-  store->AddCompromisedCredentials(leaked_credentials);
-  store->AddCompromisedCredentials(phished_credentials);
-
-  MockCompromisedCredentialsConsumer consumer;
-  EXPECT_CALL(consumer, OnGetCompromisedCredentials(UnorderedElementsAre(
-                            leaked_credentials, phished_credentials)));
-  store->GetAllCompromisedCredentials(&consumer);
-  WaitForPasswordStore();
-  testing::Mock::VerifyAndClearExpectations(&consumer);
-
-  store->RemoveCompromisedCredentialsByCompromiseType(
-      "https://example.com/", base::ASCIIToUTF16("username"),
-      CompromiseType::kLeaked,
-      RemoveCompromisedCredentialsReason::kMarkSiteAsLegitimate);
-
-  EXPECT_CALL(consumer,
-              OnGetCompromisedCredentials(ElementsAre(phished_credentials)));
-  store->GetAllCompromisedCredentials(&consumer);
-  WaitForPasswordStore();
-
-  store->ShutdownOnUIThread();
-}
-
 TEST_F(PasswordStoreTest, RemoveCompromisedCredentialsCreatedBetween) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(password_manager::features::kPasswordCheck);
-  CompromisedCredentials compromised_credentials1 = {
+  CompromisedCredentials compromised_credentials1(
       "https://example1.com/", base::ASCIIToUTF16("username1"),
-      base::Time::FromTimeT(100), CompromiseType::kLeaked};
-  CompromisedCredentials compromised_credentials2 = {
+      base::Time::FromTimeT(100), CompromiseType::kLeaked, false);
+  CompromisedCredentials compromised_credentials2(
       "https://2.example.com/", base::ASCIIToUTF16("username2"),
-      base::Time::FromTimeT(200), CompromiseType::kLeaked};
-  CompromisedCredentials compromised_credentials3 = {
+      base::Time::FromTimeT(200), CompromiseType::kLeaked, false);
+  CompromisedCredentials compromised_credentials3(
       "https://example3.com/", base::ASCIIToUTF16("username3"),
-      base::Time::FromTimeT(300), CompromiseType::kLeaked};
+      base::Time::FromTimeT(300), CompromiseType::kLeaked, false);
 
   scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
   store->Init(nullptr);
+  constexpr PasswordFormData kTestCredentials[] = {
+      {PasswordForm::Scheme::kHtml, "https://example1.com/",
+       "https://example1.com/", "", L"", L"", L"", L"username1", L"password",
+       kTestLastUsageTime, 1},
+      {PasswordForm::Scheme::kHtml, "https://2.example.com/",
+       "https://2.example.com/", "", L"", L"", L"", L"username2", L"topsecret",
+       kTestLastUsageTime, 1},
+      {PasswordForm::Scheme::kHtml, "https://example3.com/",
+       "https://example3.com/", "", L"", L"", L"", L"username3", L"topsecret2",
+       kTestLastUsageTime, 1}};
+  for (const auto& data : kTestCredentials)
+    store->AddLogin(*FillPasswordFormWithData(data));
 
   store->AddCompromisedCredentials(compromised_credentials1);
   store->AddCompromisedCredentials(compromised_credentials2);
@@ -1686,15 +1666,12 @@ TEST_F(PasswordStoreTest, RemoveCompromisedCredentialsCreatedBetween) {
 // Test that updating a password in the store deletes the corresponding
 // compromised record synchronously.
 TEST_F(PasswordStoreTest, RemoveCompromisedCredentialsSyncOnUpdate) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(password_manager::features::kPasswordCheck);
-
   scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
   store->Init(nullptr);
 
-  CompromisedCredentials compromised_credentials = {
+  CompromisedCredentials compromised_credentials(
       kTestWebRealm1, base::ASCIIToUTF16("username1"),
-      base::Time::FromTimeT(100), CompromiseType::kLeaked};
+      base::Time::FromTimeT(100), CompromiseType::kLeaked, false);
   constexpr PasswordFormData kTestCredential = {PasswordForm::Scheme::kHtml,
                                                 kTestWebRealm1,
                                                 kTestWebOrigin1,
@@ -1707,8 +1684,8 @@ TEST_F(PasswordStoreTest, RemoveCompromisedCredentialsSyncOnUpdate) {
                                                 10,
                                                 5};
   std::unique_ptr<PasswordForm> form(FillPasswordFormWithData(kTestCredential));
-  store->AddCompromisedCredentials(compromised_credentials);
   store->AddLogin(*form);
+  store->AddCompromisedCredentials(compromised_credentials);
   WaitForPasswordStore();
 
   // Update the password value and immediately get the compromised passwords.
@@ -1725,15 +1702,12 @@ TEST_F(PasswordStoreTest, RemoveCompromisedCredentialsSyncOnUpdate) {
 // Test that deleting a password in the store deletes the corresponding
 // compromised record synchronously.
 TEST_F(PasswordStoreTest, RemoveCompromisedCredentialsSyncOnDelete) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(password_manager::features::kPasswordCheck);
-
   scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
   store->Init(nullptr);
 
-  CompromisedCredentials compromised_credentials = {
+  CompromisedCredentials compromised_credentials(
       kTestWebRealm1, base::ASCIIToUTF16("username1"),
-      base::Time::FromTimeT(100), CompromiseType::kLeaked};
+      base::Time::FromTimeT(100), CompromiseType::kLeaked, false);
   constexpr PasswordFormData kTestCredential = {PasswordForm::Scheme::kHtml,
                                                 kTestWebRealm1,
                                                 kTestWebOrigin1,
@@ -1746,8 +1720,8 @@ TEST_F(PasswordStoreTest, RemoveCompromisedCredentialsSyncOnDelete) {
                                                 10,
                                                 5};
   std::unique_ptr<PasswordForm> form(FillPasswordFormWithData(kTestCredential));
-  store->AddCompromisedCredentials(compromised_credentials);
   store->AddLogin(*form);
+  store->AddCompromisedCredentials(compromised_credentials);
   WaitForPasswordStore();
 
   // Delete the password and immediately get the compromised passwords.

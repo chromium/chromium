@@ -1,8 +1,7 @@
-PRAGMA foreign_keys=OFF;
 BEGIN TRANSACTION;
 CREATE TABLE meta(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR);
-INSERT INTO "meta" VALUES('last_compatible_version','28');
-INSERT INTO "meta" VALUES('version','28');
+INSERT INTO "meta" VALUES('last_compatible_version','29');
+INSERT INTO "meta" VALUES('version','29');
 CREATE TABLE logins (
 origin_url VARCHAR NOT NULL,
 action_url VARCHAR,
@@ -120,19 +119,26 @@ CREATE TABLE sync_model_metadata (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   metadata VARCHAR NOT NULL
 );
-CREATE TABLE compromised_credentials (
-  url VARCHAR NOT NULL,
-  username VARCHAR NOT NULL,
-  create_time INTEGER NOT NULL,
-  compromise_type INTEGER NOT NULL,
-  UNIQUE (url, username, compromise_type));
-CREATE INDEX compromised_credentials_index ON compromised_credentials (url,
-  username, compromise_type);
-INSERT INTO "compromised_credentials"
- (url,username,create_time,compromise_type) VALUES(
-'http://example.com', /* url */
-'user', /* username */
+CREATE TABLE insecure_credentials (
+parent_id INTEGER REFERENCES logins ON UPDATE CASCADE ON DELETE CASCADE
+  DEFERRABLE INITIALLY DEFERRED,
+compromise_type INTEGER NOT NULL,
+create_time INTEGER NOT NULL,
+is_muted INTEGER NOT NULL DEFAULT 0,
+UNIQUE (parent_id, compromise_type));
+CREATE INDEX foreign_key_index ON insecure_credentials (parent_id);
+INSERT INTO "insecure_credentials"
+  (parent_id,compromise_type,create_time,is_muted) VALUES(
+1, /* parent_id */
+0, /* compromise_type */
 13047423600000000, /* create_time */
-0 /* compromise_type */
+0 /* is_muted */
+);
+INSERT INTO "insecure_credentials"
+  (parent_id,compromise_type,create_time,is_muted) VALUES(
+1, /* parent_id */
+1, /* compromise_type */
+13047423600000000, /* create_time */
+0 /* is_muted */
 );
 COMMIT;

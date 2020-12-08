@@ -58,7 +58,8 @@ std::string ComputeColumnSuffix(bool is_primary_key,
     DCHECK(!is_primary_key);
     suffix += " REFERENCES ";
     suffix += parent_table;
-    suffix += " ON UPDATE CASCADE ON DELETE CASCADE";
+    suffix +=
+        " ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED";
   }
   return suffix;
 }
@@ -456,7 +457,6 @@ bool SQLTableBuilder::MigrateToNextFrom(unsigned old_version,
             : base::StringPrintf(
                   "CREATE TABLE %s (%s, %s)", temp_table_name.c_str(),
                   names_of_all_columns.c_str(), constraints.c_str());
-
     sql::Transaction transaction(db);
     if (!(transaction.Begin() && db->Execute(create_table_statement.c_str()) &&
           db->Execute(base::StringPrintf(

@@ -12,7 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/compromised_credentials_table.h"
+#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -58,12 +58,12 @@ using StrictMockInsecureCredentialsManagerObserver =
     ::testing::StrictMock<MockInsecureCredentialsManagerObserver>;
 
 CompromisedCredentials MakeCompromised(
-    base::StringPiece signon_realm,
+    std::string signon_realm,
     base::StringPiece username,
     CompromiseType type = CompromiseType::kLeaked) {
-  return {.signon_realm = std::string(signon_realm),
-          .username = base::ASCIIToUTF16(username),
-          .compromise_type = type};
+  return CompromisedCredentials(std::move(signon_realm),
+                                base::ASCIIToUTF16(username), base::Time(),
+                                type, false);
 }
 
 PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
@@ -218,41 +218,6 @@ TEST_F(InsecureCredentialsManagerTest,
   store().AddCompromisedCredentials(credentials[0]);
   RunUntilIdle();
   EXPECT_THAT(store().compromised_credentials(), ElementsAreArray(credentials));
-}
-
-// Tests removing a compromised credentials by compromise type triggers an
-// observer works as expected.
-TEST_F(InsecureCredentialsManagerTest,
-       NotifyObserversAboutRemovingCompromisedCredentialsByCompromisedType) {
-  CompromisedCredentials phished_credentials =
-      MakeCompromised(kExampleCom, kUsername1, CompromiseType::kPhished);
-  CompromisedCredentials leaked_credentials =
-      MakeCompromised(kExampleCom, kUsername1, CompromiseType::kLeaked);
-
-  StrictMockInsecureCredentialsManagerObserver observer;
-  provider().AddObserver(&observer);
-  EXPECT_CALL(observer, OnCompromisedCredentialsChanged);
-  store().AddCompromisedCredentials(phished_credentials);
-  RunUntilIdle();
-  EXPECT_CALL(observer, OnCompromisedCredentialsChanged);
-  store().AddCompromisedCredentials(leaked_credentials);
-  RunUntilIdle();
-
-  EXPECT_CALL(observer, OnCompromisedCredentialsChanged).Times(1);
-  store().RemoveCompromisedCredentialsByCompromiseType(
-      phished_credentials.signon_realm, phished_credentials.username,
-      CompromiseType::kPhished, RemoveCompromisedCredentialsReason::kRemove);
-  RunUntilIdle();
-  EXPECT_THAT(store().compromised_credentials(),
-              ElementsAre(leaked_credentials));
-
-  EXPECT_CALL(observer, OnCompromisedCredentialsChanged).Times(1);
-  store().RemoveCompromisedCredentialsByCompromiseType(
-      leaked_credentials.signon_realm, leaked_credentials.username,
-      CompromiseType::kLeaked, RemoveCompromisedCredentialsReason::kRemove);
-  RunUntilIdle();
-  EXPECT_THAT(store().compromised_credentials(), IsEmpty());
-  provider().RemoveObserver(&observer);
 }
 
 // Tests whether adding and removing an observer works as expected.

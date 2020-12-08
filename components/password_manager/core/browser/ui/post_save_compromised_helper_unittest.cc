@@ -29,12 +29,11 @@ constexpr char kUsername2[] = "user2";
 CompromisedCredentials CreateCompromised(
     base::StringPiece username,
     PasswordForm::Store store = PasswordForm::Store::kProfileStore) {
-  return CompromisedCredentials{
-      .signon_realm = kSignonRealm,
-      .username = base::ASCIIToUTF16(username),
-      .compromise_type = CompromiseType::kLeaked,
-      .in_store = store,
-  };
+  CompromisedCredentials compromised(kSignonRealm, base::ASCIIToUTF16(username),
+                                     base::Time(), CompromiseType::kLeaked,
+                                     false);
+  compromised.in_store = store;
+  return compromised;
 }
 
 }  // namespace

@@ -23,8 +23,8 @@
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
-#include "components/password_manager/core/browser/compromised_credentials_table.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
+#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_detector_consumer.h"
@@ -287,14 +287,6 @@ class PasswordStore : protected PasswordStoreSync,
   void RemoveCompromisedCredentials(const std::string& signon_realm,
                                     const base::string16& username,
                                     RemoveCompromisedCredentialsReason reason);
-
-  // Removes information about credentials compromised on |signon_realm| for
-  // |username| and |compromise_type|.
-  void RemoveCompromisedCredentialsByCompromiseType(
-      const std::string& signon_realm,
-      const base::string16& username,
-      const CompromiseType& compromise_type,
-      RemoveCompromisedCredentialsReason reason);
 
   // Retrieves all compromised credentials and notifies |consumer| on
   // completion. The request will be cancelled if the consumer is destroyed.
@@ -566,11 +558,6 @@ class PasswordStore : protected PasswordStoreSync,
   virtual bool RemoveCompromisedCredentialsImpl(
       const std::string& signon_realm,
       const base::string16& username,
-      RemoveCompromisedCredentialsReason reason) = 0;
-  virtual bool RemoveCompromisedCredentialsByCompromiseTypeImpl(
-      const std::string& signon_realm,
-      const base::string16& username,
-      const CompromiseType& compromised_type,
       RemoveCompromisedCredentialsReason reason) = 0;
   virtual std::vector<CompromisedCredentials>
   GetAllCompromisedCredentialsImpl() = 0;

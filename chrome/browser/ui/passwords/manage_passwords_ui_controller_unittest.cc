@@ -212,11 +212,9 @@ password_manager::PasswordForm BuildFormFromLoginAndURL(
 }
 
 CompromisedCredentials CreateCompromised(const PasswordForm& form) {
-  return CompromisedCredentials{
-      .signon_realm = form.signon_realm,
-      .username = form.username_value,
-      .compromise_type = password_manager::CompromiseType::kLeaked,
-  };
+  return CompromisedCredentials(
+      form.signon_realm, form.username_value, base::Time(),
+      password_manager::CompromiseType::kLeaked, false);
 }
 
 }  // namespace

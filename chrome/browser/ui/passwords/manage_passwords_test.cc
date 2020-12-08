@@ -153,10 +153,9 @@ void ManagePasswordsTest::SetupMoreToFixState() {
       PasswordStoreFactory::GetForProfile(browser()->profile(),
                                           ServiceAccessType::IMPLICIT_ACCESS);
   // This is an unrelated compromised credential that should still be fixed.
-  password_manager::CompromisedCredentials compromised = {
-      .signon_realm = "https://somesite.com/",
-      .username = ASCIIToUTF16(kTestUsername),
-  };
+  password_manager::CompromisedCredentials compromised(
+      "https://somesite.com/", ASCIIToUTF16(kTestUsername), base::Time(),
+      password_manager::CompromiseType::kLeaked, false);
   password_store->AddCompromisedCredentials(compromised);
   SetupPendingPassword();
   GetController()->SavePassword(password_form_.username_value,
@@ -173,14 +172,12 @@ void ManagePasswordsTest::SetupUnsafeState() {
       PasswordStoreFactory::GetForProfile(browser()->profile(),
                                           ServiceAccessType::IMPLICIT_ACCESS);
   // This is an unrelated compromised credential that should still be fixed.
-  password_manager::CompromisedCredentials some_compromised = {
-      .signon_realm = "https://somesite.com/",
-      .username = ASCIIToUTF16(kTestUsername),
-  };
-  password_manager::CompromisedCredentials current_compromised = {
-      .signon_realm = password_form_.signon_realm,
-      .username = password_form_.username_value,
-  };
+  password_manager::CompromisedCredentials some_compromised(
+      "https://somesite.com/", ASCIIToUTF16(kTestUsername), base::Time(),
+      password_manager::CompromiseType::kLeaked, false);
+  password_manager::CompromisedCredentials current_compromised(
+      password_form_.signon_realm, password_form_.username_value, base::Time(),
+      password_manager::CompromiseType::kLeaked, false);
   password_store->AddCompromisedCredentials(some_compromised);
   password_store->AddCompromisedCredentials(current_compromised);
   SetupPendingPassword();
@@ -237,10 +234,9 @@ std::unique_ptr<PasswordFormManager> ManagePasswordsTest::CreateFormManager() {
           base::WrapUnique(new password_manager::StubFormSaver)),
       nullptr /*  metrics_recorder */);
 
-  password_manager::CompromisedCredentials compromised = {
-      .signon_realm = password_form_.signon_realm,
-      .username = password_form_.username_value,
-  };
+  password_manager::CompromisedCredentials compromised(
+      password_form_.signon_realm, password_form_.username_value, base::Time(),
+      password_manager::CompromiseType::kLeaked, false);
   fetcher_.set_compromised({compromised});
 
   fetcher_.NotifyFetchCompleted();

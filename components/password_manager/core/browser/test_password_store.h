@@ -15,7 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
-#include "components/password_manager/core/browser/compromised_credentials_table.h"
+#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -118,11 +118,6 @@ class TestPasswordStore : public PasswordStore {
   std::vector<InteractionsStats> GetAllSiteStatsImpl() override;
   bool AddCompromisedCredentialsImpl(
       const CompromisedCredentials& compromised_credentials) override;
-  bool RemoveCompromisedCredentialsByCompromiseTypeImpl(
-      const std::string& signon_realm,
-      const base::string16& username,
-      const CompromiseType& compromise_type,
-      RemoveCompromisedCredentialsReason reason) override;
   bool RemoveCompromisedCredentialsImpl(
       const std::string& signon_realm,
       const base::string16& username,

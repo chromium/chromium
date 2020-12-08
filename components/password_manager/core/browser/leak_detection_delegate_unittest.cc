@@ -347,9 +347,9 @@ TEST_F(LeakDetectionDelegateTest, LeakHistoryAddCredentials) {
   delegate_interface->OnLeakDetectionDone(
       /*is_leaked=*/true, form.url, form.username_value, form.password_value);
 
-  const CompromisedCredentials compromised_credentials = {
+  const CompromisedCredentials compromised_credentials(
       GetSignonRealm(form.url), form.username_value, base::Time::Now(),
-      CompromiseType::kLeaked};
+      CompromiseType::kLeaked, false);
   EXPECT_CALL(*store(), AddCompromisedCredentialsImpl(compromised_credentials));
   WaitForPasswordStore();
 }

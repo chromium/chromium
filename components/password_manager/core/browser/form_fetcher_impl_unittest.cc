@@ -419,8 +419,9 @@ TEST_P(FormFetcherImplTest, CompromisedCredentials) {
   Fetch();
   form_fetcher_->AddConsumer(&consumer_);
   const std::vector<CompromisedCredentials> credentials = {
-      {form_digest_.signon_realm, base::ASCIIToUTF16("username_value"),
-       base::Time::FromTimeT(1), CompromiseType::kLeaked}};
+      CompromisedCredentials(
+          form_digest_.signon_realm, base::ASCIIToUTF16("username_value"),
+          base::Time::FromTimeT(1), CompromiseType::kLeaked, false)};
   static_cast<CompromisedCredentialsConsumer*>(form_fetcher_.get())
       ->OnGetCompromisedCredentials(credentials);
   EXPECT_THAT(form_fetcher_->GetCompromisedCredentials(),
@@ -488,9 +489,9 @@ TEST_P(FormFetcherImplTest, FetchStatistics) {
 }
 
 TEST_P(FormFetcherImplTest, FetchCompromised) {
-  CompromisedCredentials credentials = {
+  CompromisedCredentials credentials(
       form_digest_.signon_realm, base::ASCIIToUTF16("username_value"),
-      base::Time::FromTimeT(1), CompromiseType::kLeaked};
+      base::Time::FromTimeT(1), CompromiseType::kLeaked, false);
   std::vector<CompromisedCredentials> list = {credentials};
   EXPECT_CALL(*mock_store_,
               GetMatchingCompromisedCredentialsImpl(form_digest_.signon_realm))
@@ -810,8 +811,9 @@ TEST_P(FormFetcherImplTest, Clone_Compromised) {
   store_consumer()->OnGetPasswordStoreResultsFrom(
       mock_store_.get(), std::vector<std::unique_ptr<PasswordForm>>());
   const std::vector<CompromisedCredentials> credentials = {
-      {form_digest_.signon_realm, base::ASCIIToUTF16("username_value"),
-       base::Time::FromTimeT(1), CompromiseType::kLeaked}};
+      CompromisedCredentials(
+          form_digest_.signon_realm, base::ASCIIToUTF16("username_value"),
+          base::Time::FromTimeT(1), CompromiseType::kLeaked, false)};
   static_cast<CompromisedCredentialsConsumer*>(form_fetcher_.get())
       ->OnGetCompromisedCredentials(credentials);
 

@@ -211,12 +211,9 @@ class SafetyCheckMediatorTest : public PlatformTest {
   password_manager::CompromisedCredentials MakeCompromised(
       base::StringPiece signon_realm,
       base::StringPiece username) {
-    return {
-        std::string(signon_realm),
-        base::ASCIIToUTF16(username),
-        base::Time::Now(),
-        CompromiseType::kLeaked,
-    };
+    return password_manager::CompromisedCredentials(
+        std::string(signon_realm), base::ASCIIToUTF16(username),
+        base::Time::Now(), CompromiseType::kLeaked, false);
   }
 
   TestPasswordStore& GetTestStore() {

@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "components/password_manager/core/browser/compromised_credentials_table.h"
+#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_store.h"
 
@@ -76,11 +76,6 @@ class PasswordStoreDefault : public PasswordStore {
   bool RemoveCompromisedCredentialsImpl(
       const std::string& signon_realm,
       const base::string16& username,
-      RemoveCompromisedCredentialsReason reason) override;
-  bool RemoveCompromisedCredentialsByCompromiseTypeImpl(
-      const std::string& signon_realm,
-      const base::string16& username,
-      const CompromiseType& compromise_type,
       RemoveCompromisedCredentialsReason reason) override;
   std::vector<CompromisedCredentials> GetAllCompromisedCredentialsImpl()
       override;

@@ -16,8 +16,8 @@
 #include "base/pickle.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/compromised_credentials_table.h"
 #include "components/password_manager/core/browser/field_info_table.h"
+#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/browser/password_store_sync.h"
@@ -203,8 +203,8 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   bool CommitTransaction();
 
   StatisticsTable& stats_table() { return stats_table_; }
-  CompromisedCredentialsTable& compromised_credentials_table() {
-    return compromised_credentials_table_;
+  InsecureCredentialsTable& insecure_credentials_table() {
+    return insecure_credentials_table_;
   }
 
   FieldInfoTable& field_info_table() { return field_info_table_; }
@@ -339,7 +339,7 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   sql::MetaTable meta_table_;
   StatisticsTable stats_table_;
   FieldInfoTable field_info_table_;
-  CompromisedCredentialsTable compromised_credentials_table_;
+  InsecureCredentialsTable insecure_credentials_table_;
 
   // These cached strings are used to build SQL statements.
   std::string add_statement_;

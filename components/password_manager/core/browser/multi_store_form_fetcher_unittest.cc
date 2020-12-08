@@ -441,15 +441,17 @@ TEST_F(MultiStoreFormFetcherTest, MovingToAccountStoreIsBlocked) {
 
 TEST_F(MultiStoreFormFetcherTest, CompromisedCredentials) {
   Fetch();
-  const CompromisedCredentials profile_store_compromised_credentials{
+  CompromisedCredentials profile_store_compromised_credentials(
       form_digest_.signon_realm, base::ASCIIToUTF16("profile_username"),
-      base::Time::FromTimeT(1), CompromiseType::kLeaked,
-      PasswordForm::Store::kProfileStore};
+      base::Time::FromTimeT(1), CompromiseType::kLeaked, false);
+  profile_store_compromised_credentials.in_store =
+      PasswordForm::Store::kProfileStore;
 
-  const CompromisedCredentials account_store_compromised_credentials{
+  CompromisedCredentials account_store_compromised_credentials(
       form_digest_.signon_realm, base::ASCIIToUTF16("account_username"),
-      base::Time::FromTimeT(1), CompromiseType::kLeaked,
-      PasswordForm::Store::kAccountStore};
+      base::Time::FromTimeT(1), CompromiseType::kLeaked, false);
+  account_store_compromised_credentials.in_store =
+      PasswordForm::Store::kAccountStore;
 
   static_cast<CompromisedCredentialsConsumer*>(form_fetcher_.get())
       ->OnGetCompromisedCredentials({profile_store_compromised_credentials});
