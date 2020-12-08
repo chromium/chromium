@@ -27,6 +27,10 @@ class ExternalVkImageSkiaRepresentation : public SharedImageRepresentationSkia {
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
+  sk_sp<SkPromiseImageTexture> BeginWriteAccess(
+      std::vector<GrBackendSemaphore>* begin_semaphores,
+      std::vector<GrBackendSemaphore>* end_semaphores,
+      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
   void EndWriteAccess(sk_sp<SkSurface> surface) override;
   sk_sp<SkPromiseImageTexture> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,

@@ -324,13 +324,22 @@ class WrappedSkImageRepresentation : public SharedImageRepresentationSkia {
     return surface;
   }
 
-  void EndWriteAccess(sk_sp<SkSurface> surface) override {
-    DCHECK_EQ(surface.get(), write_surface_);
-    surface->getCanvas()->restoreToCount(1);
-    surface.reset();
-    write_surface_ = nullptr;
+  sk_sp<SkPromiseImageTexture> BeginWriteAccess(
+      std::vector<GrBackendSemaphore>* begin_semaphores,
+      std::vector<GrBackendSemaphore>* end_semaphores,
+      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
+    return wrapped_sk_image()->promise_texture();
+  }
 
-    DCHECK(wrapped_sk_image()->SkSurfaceUnique());
+  void EndWriteAccess(sk_sp<SkSurface> surface) override {
+    if (surface) {
+      DCHECK_EQ(surface.get(), write_surface_);
+      surface->getCanvas()->restoreToCount(1);
+      surface.reset();
+      write_surface_ = nullptr;
+
+      DCHECK(wrapped_sk_image()->SkSurfaceUnique());
+    }
   }
 
   sk_sp<SkPromiseImageTexture> BeginReadAccess(

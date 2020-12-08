@@ -77,6 +77,17 @@ class TestSharedImageRepresentationSkia : public SharedImageRepresentationSkia {
     return SkSurface::MakeRasterN32Premul(size().width(), size().height(),
                                           &props);
   }
+  sk_sp<SkPromiseImageTexture> BeginWriteAccess(
+      std::vector<GrBackendSemaphore>* begin_semaphores,
+      std::vector<GrBackendSemaphore>* end_semaphores,
+      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
+    if (!static_cast<TestSharedImageBacking*>(backing())->can_access()) {
+      return nullptr;
+    }
+    GrBackendTexture backend_tex(size().width(), size().height(),
+                                 GrMipMapped::kNo, GrMockTextureInfo());
+    return SkPromiseImageTexture::Make(backend_tex);
+  }
   void EndWriteAccess(sk_sp<SkSurface> surface) override {}
   sk_sp<SkPromiseImageTexture> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,

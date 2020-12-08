@@ -247,13 +247,21 @@ class GPU_GLES2_EXPORT SharedImageRepresentationSkia
                       SharedImageRepresentationSkia* representation,
                       sk_sp<SkSurface> surface,
                       std::unique_ptr<GrBackendSurfaceMutableState> end_state);
+    ScopedWriteAccess(base::PassKey<SharedImageRepresentationSkia> pass_key,
+                      SharedImageRepresentationSkia* representation,
+                      sk_sp<SkPromiseImageTexture> promise_image_texture,
+                      std::unique_ptr<GrBackendSurfaceMutableState> end_state);
     ~ScopedWriteAccess();
 
     SkSurface* surface() const { return surface_.get(); }
+    SkPromiseImageTexture* promise_image_texture() const {
+      return promise_image_texture_.get();
+    }
     GrBackendSurfaceMutableState* end_state() const { return end_state_.get(); }
 
    private:
     sk_sp<SkSurface> surface_;
+    sk_sp<SkPromiseImageTexture> promise_image_texture_;
     std::unique_ptr<GrBackendSurfaceMutableState> end_state_;
   };
 
@@ -289,12 +297,14 @@ class GPU_GLES2_EXPORT SharedImageRepresentationSkia
       const SkSurfaceProps& surface_props,
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      AllowUnclearedAccess allow_uncleared);
+      AllowUnclearedAccess allow_uncleared,
+      bool use_sk_surface = true);
 
   std::unique_ptr<ScopedWriteAccess> BeginScopedWriteAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      AllowUnclearedAccess allow_uncleared);
+      AllowUnclearedAccess allow_uncleared,
+      bool use_sk_surface = true);
 
   // Note: See BeginReadAccess below for a description of the semaphore
   // parameters.
@@ -326,6 +336,11 @@ class GPU_GLES2_EXPORT SharedImageRepresentationSkia
       const SkSurfaceProps& surface_props,
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores);
+  virtual sk_sp<SkPromiseImageTexture> BeginWriteAccess(
+      std::vector<GrBackendSemaphore>* begin_semaphores,
+      std::vector<GrBackendSemaphore>* end_semaphores,
+      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) = 0;
+  // TODO(jochin): Ensure each implementation accounts for null a SkSurface.
   virtual void EndWriteAccess(sk_sp<SkSurface> surface) = 0;
 
   // Begin the read access. The implementations should insert semaphores into

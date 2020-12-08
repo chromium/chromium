@@ -583,6 +583,11 @@ class RasterDecoderImpl final : public RasterDecoder,
                              GLuint shm_offset,
                              GLuint shm_size,
                              const volatile GLbyte* mailbox);
+  bool DoWritePixelsINTERNALDirectTextureUpload(
+      SharedImageRepresentationSkia* dest_shared_image,
+      const SkImageInfo& src_info,
+      const void* pixel_data,
+      size_t row_bytes);
   void DoReadbackImagePixelsINTERNAL(GLint src_x,
                                      GLint src_y,
                                      GLuint dst_width,
@@ -638,7 +643,10 @@ class RasterDecoderImpl final : public RasterDecoder,
       SkSurface* surface,
       std::vector<GrBackendSemaphore> signal_semaphores) {
     if (signal_semaphores.empty()) {
-      surface->flush();
+      if (surface)
+        surface->flush();
+      else
+        gr_context()->flush();
       return;
     }
 
@@ -651,7 +659,12 @@ class RasterDecoderImpl final : public RasterDecoder,
     };
     gpu::AddVulkanCleanupTaskForSkiaFlush(
         shared_context_state_->vk_context_provider(), &flush_info);
-    auto result = surface->flush(flush_info);
+
+    GrSemaphoresSubmitted result;
+    if (surface)
+      result = surface->flush(flush_info);
+    else
+      result = gr_context()->flush(flush_info);
     // If the |signal_semaphores| is empty, we can deferred the queue
     // submission.
     DCHECK_EQ(result, GrSemaphoresSubmitted::kYes);
@@ -2415,6 +2428,31 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
     return;
   }
 
+  size_t byte_size = src_info.computeByteSize(row_bytes);
+  if (byte_size > UINT32_MAX) {
+    LOCAL_SET_GL_ERROR(
+        GL_INVALID_VALUE, "glWritePixels",
+        "Cannot request a memory chunk larger than UINT32_MAX bytes");
+    return;
+  }
+
+  // The pixels are stored after the serialized SkColorSpace + padding
+  void* pixel_data =
+      GetSharedMemoryAs<void*>(shm_id, shm_offset + pixels_offset, byte_size);
+  if (!pixel_data) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixels",
+                       "Couldn't retrieve pixel data.");
+    return;
+  }
+
+  // Try a direct texture upload without using SkSurface.
+  if (gfx::Size(src_width, src_height) == dest_shared_image->size() &&
+      x_offset == 0 && y_offset == 0 &&
+      DoWritePixelsINTERNALDirectTextureUpload(
+          dest_shared_image.get(), src_info, pixel_data, row_bytes)) {
+    return;
+  }
+
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
 
@@ -2440,22 +2478,6 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
     }
   }
 
-  size_t byte_size = src_info.computeByteSize(row_bytes);
-  if (byte_size > UINT32_MAX) {
-    LOCAL_SET_GL_ERROR(
-        GL_INVALID_VALUE, "glWritePixels",
-        "Cannot request a memory chunk larger than UINT32_MAX bytes");
-    return;
-  }
-
-  // The pixels are stored after the serialized SkColorSpace + padding
-  void* pixel_data =
-      GetSharedMemoryAs<void*>(shm_id, shm_offset + pixels_offset, byte_size);
-  if (!pixel_data) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixels",
-                       "Couldn't retrieve pixel data.");
-    return;
-  }
   auto* canvas = dest_scoped_access->surface()->getCanvas();
   bool written =
       canvas->writePixels(src_info, pixel_data, row_bytes, x_offset, y_offset);
@@ -2470,6 +2492,43 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
     dest_shared_image->SetClearedRect(
         gfx::Rect(x_offset, y_offset, src_width, src_height));
   }
+}
+
+bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(
+    SharedImageRepresentationSkia* dest_shared_image,
+    const SkImageInfo& src_info,
+    const void* pixel_data,
+    size_t row_bytes) {
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+
+  // Allow uncleared access, as we manually handle clear tracking.
+  std::unique_ptr<SharedImageRepresentationSkia::ScopedWriteAccess>
+      dest_scoped_access = dest_shared_image->BeginScopedWriteAccess(
+          &begin_semaphores, &end_semaphores,
+          SharedImageRepresentation::AllowUnclearedAccess::kYes,
+          false /*use_sk_surface*/);
+  if (!dest_scoped_access) {
+    return false;
+  }
+  if (!begin_semaphores.empty()) {
+    bool result = shared_context_state_->gr_context()->wait(
+        begin_semaphores.size(), begin_semaphores.data(),
+        /*deleteSemaphoresAfterWait=*/false);
+    DCHECK(result);
+  }
+
+  SkPixmap pixmap(src_info, pixel_data, row_bytes);
+  bool written = gr_context()->updateBackendTexture(
+      dest_scoped_access->promise_image_texture()->backendTexture(), &pixmap,
+      /*levels=*/1, dest_shared_image->surface_origin(), nullptr, nullptr);
+
+  FlushAndSubmitIfNecessary(nullptr, std::move(end_semaphores));
+  if (written && !dest_shared_image->IsCleared()) {
+    dest_shared_image->SetClearedRect(
+        gfx::Rect(src_info.width(), src_info.height()));
+  }
+  return written;
 }
 
 void RasterDecoderImpl::DoReadbackImagePixelsINTERNAL(

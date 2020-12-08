@@ -106,6 +106,15 @@ SharedImageRepresentationSkia::ScopedWriteAccess::ScopedWriteAccess(
       surface_(std::move(surface)),
       end_state_(std::move(end_state)) {}
 
+SharedImageRepresentationSkia::ScopedWriteAccess::ScopedWriteAccess(
+    base::PassKey<SharedImageRepresentationSkia> /* pass_key */,
+    SharedImageRepresentationSkia* representation,
+    sk_sp<SkPromiseImageTexture> promise_image_texture,
+    std::unique_ptr<GrBackendSurfaceMutableState> end_state)
+    : ScopedAccessBase(representation),
+      promise_image_texture_(std::move(promise_image_texture)),
+      end_state_(std::move(end_state)) {}
+
 SharedImageRepresentationSkia::ScopedWriteAccess::~ScopedWriteAccess() {
   representation()->EndWriteAccess(std::move(surface_));
 }
@@ -116,35 +125,49 @@ SharedImageRepresentationSkia::BeginScopedWriteAccess(
     const SkSurfaceProps& surface_props,
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
-    AllowUnclearedAccess allow_uncleared) {
+    AllowUnclearedAccess allow_uncleared,
+    bool use_sk_surface) {
   if (allow_uncleared != AllowUnclearedAccess::kYes && !IsCleared()) {
     LOG(ERROR) << "Attempt to write to an uninitialized SharedImage";
     return nullptr;
   }
 
   std::unique_ptr<GrBackendSurfaceMutableState> end_state;
-  sk_sp<SkSurface> surface =
-      BeginWriteAccess(final_msaa_count, surface_props, begin_semaphores,
-                       end_semaphores, &end_state);
-  if (!surface)
+  if (use_sk_surface) {
+    sk_sp<SkSurface> surface =
+        BeginWriteAccess(final_msaa_count, surface_props, begin_semaphores,
+                         end_semaphores, &end_state);
+    if (!surface)
+      return nullptr;
+
+    backing()->OnWriteSucceeded();
+
+    return std::make_unique<ScopedWriteAccess>(
+        base::PassKey<SharedImageRepresentationSkia>(), this,
+        std::move(surface), std::move(end_state));
+  }
+  sk_sp<SkPromiseImageTexture> promise_image_texture =
+      BeginWriteAccess(begin_semaphores, end_semaphores, &end_state);
+  if (!promise_image_texture)
     return nullptr;
 
   backing()->OnWriteSucceeded();
 
   return std::make_unique<ScopedWriteAccess>(
-      base::PassKey<SharedImageRepresentationSkia>(), this, std::move(surface),
-      std::move(end_state));
+      base::PassKey<SharedImageRepresentationSkia>(), this,
+      std::move(promise_image_texture), std::move(end_state));
 }
 
 std::unique_ptr<SharedImageRepresentationSkia::ScopedWriteAccess>
 SharedImageRepresentationSkia::BeginScopedWriteAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
-    AllowUnclearedAccess allow_uncleared) {
+    AllowUnclearedAccess allow_uncleared,
+    bool use_sk_surface) {
   return BeginScopedWriteAccess(
       0 /* final_msaa_count */,
       SkSurfaceProps(0 /* flags */, kUnknown_SkPixelGeometry), begin_semaphores,
-      end_semaphores, allow_uncleared);
+      end_semaphores, allow_uncleared, use_sk_surface);
 }
 
 SharedImageRepresentationSkia::ScopedReadAccess::ScopedReadAccess(

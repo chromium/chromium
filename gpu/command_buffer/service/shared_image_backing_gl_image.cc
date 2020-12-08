@@ -194,13 +194,29 @@ sk_sp<SkSurface> SharedImageRepresentationSkiaImpl::BeginWriteAccess(
   return surface;
 }
 
+sk_sp<SkPromiseImageTexture>
+SharedImageRepresentationSkiaImpl::BeginWriteAccess(
+    std::vector<GrBackendSemaphore>* begin_semaphores,
+    std::vector<GrBackendSemaphore>* end_semaphores,
+    std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
+  CheckContext();
+  if (client_) {
+    DCHECK(context_state_->GrContextIsGL());
+    if (!client_->SharedImageRepresentationGLTextureBeginAccess())
+      return nullptr;
+  }
+  return promise_texture_;
+}
+
 void SharedImageRepresentationSkiaImpl::EndWriteAccess(
     sk_sp<SkSurface> surface) {
-  DCHECK_EQ(surface.get(), write_surface_);
-  DCHECK(surface->unique());
-  CheckContext();
-  // TODO(ericrk): Keep the surface around for re-use.
-  write_surface_ = nullptr;
+  if (surface) {
+    DCHECK_EQ(surface.get(), write_surface_);
+    DCHECK(surface->unique());
+    CheckContext();
+    // TODO(ericrk): Keep the surface around for re-use.
+    write_surface_ = nullptr;
+  }
 
   if (client_)
     client_->SharedImageRepresentationGLTextureEndAccess(false /* readonly */);
