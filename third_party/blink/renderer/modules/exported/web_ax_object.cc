@@ -1519,8 +1519,7 @@ bool WebAXObject::MaybeUpdateLayoutAndCheckValidity(
     return false;
 
   if (document->NeedsLayoutTreeUpdate() || document->View()->NeedsLayout() ||
-      document->Lifecycle().GetState() <
-          DocumentLifecycle::kCompositingAssignmentsClean) {
+      document->Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean) {
     // Note: this always alters the lifecycle, because
     // RunAccessibilityLifecyclePhase() will be called.
     if (!document->View()->UpdateAllLifecyclePhasesExceptPaint(

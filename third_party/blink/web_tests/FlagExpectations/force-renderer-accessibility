@@ -5,9 +5,6 @@
 # Expectations for --force-renderer-accessibility
 # crbug.com/1138028 tracks the removal of these failure expectations
 
-compositing/iframes/content-visibility-hidden-frame.html [ Crash ]
-compositing/iframes/content-visibility-hidden-div-with-frame.html [ Crash ]
-wpt_internal/display-lock/css-content-visibility/accessibility/content-visibility-accessibility-004.html [ Crash ]
 inspector-protocol/css/css-get-platform-fonts-display-locked.js [ Crash ]
 fast/css-generated-content/first-letter-in-nested-before-table.html [ Crash ]
 fast/css/first-letter-removed-added.html [ Crash ]
