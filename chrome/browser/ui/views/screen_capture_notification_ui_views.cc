@@ -87,9 +87,6 @@ class ScreenCaptureNotificationUIViews : public ScreenCaptureNotificationUI,
   views::ClientView* CreateClientView(views::Widget* widget) override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
-  base::string16 GetWindowTitle() const override;
-  bool ShouldShowWindowTitle() const override;
-  bool ShouldShowCloseButton() const override;
   bool CanActivate() const override;
 
   // views::ViewObserver:
@@ -106,19 +103,18 @@ class ScreenCaptureNotificationUIViews : public ScreenCaptureNotificationUI,
   base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       bounds_observations_{this};
   NotificationBarClientView* client_view_ = nullptr;
-  views::ImageView* gripper_ = nullptr;
-  views::Label* label_ = nullptr;
   views::View* source_button_ = nullptr;
   views::View* stop_button_ = nullptr;
   views::View* hide_link_ = nullptr;
-  const base::string16 text_;
 
   DISALLOW_COPY_AND_ASSIGN(ScreenCaptureNotificationUIViews);
 };
 
 ScreenCaptureNotificationUIViews::ScreenCaptureNotificationUIViews(
-    const base::string16& text)
-    : text_(text) {
+    const base::string16& text) {
+  SetShowCloseButton(false);
+  SetShowTitle(false);
+  SetTitle(text);
   set_owned_by_client();
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -128,9 +124,12 @@ ScreenCaptureNotificationUIViews::ScreenCaptureNotificationUIViews(
   auto gripper = std::make_unique<views::ImageView>();
   gripper->SetImage(ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
       IDR_SCREEN_CAPTURE_NOTIFICATION_GRIP));
-  gripper_ = AddChildView(std::move(gripper));
+  AddChildView(std::move(gripper));
 
-  label_ = AddChildView(std::make_unique<views::Label>());
+  auto label = std::make_unique<views::Label>(text);
+  label->SetElideBehavior(gfx::ELIDE_MIDDLE);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  AddChildView(std::move(label));
 
   base::string16 source_text =
       l10n_util::GetStringUTF16(IDS_MEDIA_SCREEN_CAPTURE_NOTIFICATION_SOURCE);
@@ -181,10 +180,6 @@ gfx::NativeViewId ScreenCaptureNotificationUIViews::OnStarted(
 
   if (source_callback_.is_null())
     source_button_->SetVisible(false);
-
-  label_->SetElideBehavior(gfx::ELIDE_MIDDLE);
-  label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label_->SetText(text_);
 
   views::Widget* widget = new views::Widget;
 
@@ -252,18 +247,6 @@ ScreenCaptureNotificationUIViews::CreateNonClientFrameView(
       new views::BubbleBorder(views::BubbleBorder::NONE,
                               views::BubbleBorder::SMALL_SHADOW, color)));
   return frame;
-}
-
-base::string16 ScreenCaptureNotificationUIViews::GetWindowTitle() const {
-  return text_;
-}
-
-bool ScreenCaptureNotificationUIViews::ShouldShowWindowTitle() const {
-  return false;
-}
-
-bool ScreenCaptureNotificationUIViews::ShouldShowCloseButton() const {
-  return false;
 }
 
 bool ScreenCaptureNotificationUIViews::CanActivate() const {
