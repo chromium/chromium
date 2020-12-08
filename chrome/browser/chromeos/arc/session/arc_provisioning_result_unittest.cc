@@ -9,23 +9,55 @@
 
 namespace arc {
 
-TEST(ArcProvisioningResultTest, HasSignInResult) {
+TEST(ArcProvisioningResultTest, SignInError) {
   ArcProvisioningResult result1(ArcStopReason::CRASH);
-  EXPECT_FALSE(result1.has_sign_in_result());
-
-  ArcProvisioningResult result2(arc::mojom::ArcSignInResult::NewSuccess(
-      arc::mojom::ArcSignInSuccess::SUCCESS));
-  EXPECT_TRUE(result2.has_sign_in_result());
-}
-
-TEST(ArcProvisioningResultTest, HasSignInError) {
-  ArcProvisioningResult result1(ArcStopReason::CRASH);
-  EXPECT_FALSE(result1.has_sign_in_error());
+  EXPECT_FALSE(result1.sign_in_error());
 
   ArcProvisioningResult result2(arc::mojom::ArcSignInResult::NewError(
       arc::mojom::ArcSignInError::NewGeneralError(
           arc::mojom::GeneralSignInError::CHROME_SERVER_COMMUNICATION_ERROR)));
-  EXPECT_TRUE(result2.has_sign_in_error());
+  EXPECT_TRUE(result2.sign_in_error());
+}
+
+TEST(ArcProvisioningResultTest, GmsSignInError) {
+  ArcProvisioningResult result1(ArcStopReason::CRASH);
+  EXPECT_FALSE(result1.gms_sign_in_error());
+
+  ArcProvisioningResult result2(arc::mojom::ArcSignInResult::NewError(
+      arc::mojom::ArcSignInError::NewGeneralError(
+          arc::mojom::GeneralSignInError::CHROME_SERVER_COMMUNICATION_ERROR)));
+  EXPECT_FALSE(result2.gms_sign_in_error());
+
+  ArcProvisioningResult result3(arc::mojom::ArcSignInResult::NewError(
+      arc::mojom::ArcSignInError::NewSignInError(
+          arc::mojom::GMSSignInError::GMS_SIGN_IN_TIMEOUT)));
+
+  EXPECT_EQ(result3.gms_sign_in_error(),
+            arc::mojom::GMSSignInError::GMS_SIGN_IN_TIMEOUT);
+}
+
+TEST(ArcProvisioningResultTest, GmsCheckInError) {
+  ArcProvisioningResult result1(ArcStopReason::CRASH);
+  EXPECT_FALSE(result1.gms_check_in_error());
+
+  ArcProvisioningResult result2(arc::mojom::ArcSignInResult::NewError(
+      arc::mojom::ArcSignInError::NewCheckInError(
+          arc::mojom::GMSCheckInError::GMS_CHECK_IN_INTERNAL_ERROR)));
+
+  EXPECT_EQ(result2.gms_check_in_error(),
+            arc::mojom::GMSCheckInError::GMS_CHECK_IN_INTERNAL_ERROR);
+}
+
+TEST(ArcProvisioningResultTest, CloudProvisionFlowError) {
+  ArcProvisioningResult result1(ArcStopReason::CRASH);
+  EXPECT_FALSE(result1.cloud_provision_flow_error());
+
+  ArcProvisioningResult result2(arc::mojom::ArcSignInResult::NewError(
+      arc::mojom::ArcSignInError::NewCloudProvisionFlowError(
+          arc::mojom::CloudProvisionFlowError::ERROR_ACCOUNT_NOT_ALLOWLISTED)));
+
+  EXPECT_EQ(result2.cloud_provision_flow_error(),
+            arc::mojom::CloudProvisionFlowError::ERROR_ACCOUNT_NOT_ALLOWLISTED);
 }
 
 TEST(ArcProvisioningResultTest, Success) {
@@ -41,22 +73,22 @@ TEST(ArcProvisioningResultTest, Success) {
   EXPECT_TRUE(result3.is_success());
 }
 
-TEST(ArcProvisioningResultTest, Stopped) {
+TEST(ArcProvisioningResultTest, StopReason) {
   ArcProvisioningResult result1(arc::mojom::ArcSignInResult::NewSuccess(
       arc::mojom::ArcSignInSuccess::SUCCESS));
-  EXPECT_FALSE(result1.is_stopped());
+  EXPECT_FALSE(result1.stop_reason());
 
   ArcProvisioningResult result2(ArcStopReason::CRASH);
-  EXPECT_TRUE(result2.is_stopped());
+  EXPECT_EQ(ArcStopReason::CRASH, result2.stop_reason());
 
   ArcProvisioningResult result3(ArcStopReason::SHUTDOWN);
-  EXPECT_TRUE(result3.is_stopped());
+  EXPECT_EQ(ArcStopReason::SHUTDOWN, result3.stop_reason());
 
   ArcProvisioningResult result4(ArcStopReason::GENERIC_BOOT_FAILURE);
-  EXPECT_TRUE(result4.is_stopped());
+  EXPECT_EQ(ArcStopReason::GENERIC_BOOT_FAILURE, result4.stop_reason());
 
   ArcProvisioningResult result5(ArcStopReason::LOW_DISK_SPACE);
-  EXPECT_TRUE(result5.is_stopped());
+  EXPECT_EQ(ArcStopReason::LOW_DISK_SPACE, result5.stop_reason());
 }
 
 TEST(ArcProvisioningResultTest, Timedout) {
@@ -67,30 +99,16 @@ TEST(ArcProvisioningResultTest, Timedout) {
   EXPECT_TRUE(result2.is_timedout());
 }
 
-TEST(ArcProvisioningResultTest, HasGeneralError) {
+TEST(ArcProvisioningResultTest, GeneralError) {
   ArcProvisioningResult result1(ArcStopReason::CRASH);
-  EXPECT_FALSE(result1.has_general_error(
-      arc::mojom::GeneralSignInError::CHROME_SERVER_COMMUNICATION_ERROR));
+  EXPECT_FALSE(result1.general_error());
 
   ArcProvisioningResult result2(arc::mojom::ArcSignInResult::NewError(
       arc::mojom::ArcSignInError::NewGeneralError(
           arc::mojom::GeneralSignInError::CHROME_SERVER_COMMUNICATION_ERROR)));
-  EXPECT_TRUE(result2.has_general_error(
-      arc::mojom::GeneralSignInError::CHROME_SERVER_COMMUNICATION_ERROR));
-}
 
-TEST(ArcProvisioningResultTest, StopReason) {
-  ArcProvisioningResult result1(ArcStopReason::CRASH);
-  EXPECT_EQ(ArcStopReason::CRASH, result1.stop_reason());
-
-  ArcProvisioningResult result2(ArcStopReason::SHUTDOWN);
-  EXPECT_EQ(ArcStopReason::SHUTDOWN, result2.stop_reason());
-
-  ArcProvisioningResult result3(ArcStopReason::GENERIC_BOOT_FAILURE);
-  EXPECT_EQ(ArcStopReason::GENERIC_BOOT_FAILURE, result3.stop_reason());
-
-  ArcProvisioningResult result4(ArcStopReason::LOW_DISK_SPACE);
-  EXPECT_EQ(ArcStopReason::LOW_DISK_SPACE, result4.stop_reason());
+  EXPECT_EQ(result2.general_error(),
+            arc::mojom::GeneralSignInError::CHROME_SERVER_COMMUNICATION_ERROR);
 }
 
 }  // namespace arc

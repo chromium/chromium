@@ -7,6 +7,7 @@
 
 #include <ostream>
 
+#include "base/optional.h"
 #include "components/arc/mojom/auth.mojom.h"
 #include "components/arc/session/arc_stop_reason.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -27,34 +28,35 @@ class ArcProvisioningResult {
   ArcProvisioningResult(ArcProvisioningResult&& other);
   ~ArcProvisioningResult();
 
-  // Returns true if signin_result from ARC is present.
-  bool has_sign_in_result() const;
+  // Returns gms sign-in error if sign-in result has it.
+  base::Optional<mojom::GMSSignInError> gms_sign_in_error() const;
 
-  // Returns the result of provisioning from inside ARC.
-  const mojom::ArcSignInResult* sign_in_result() const;
+  // Returns gms check-in error if sign-in result has it.
+  base::Optional<mojom::GMSCheckInError> gms_check_in_error() const;
 
-  // Returns true if signin_result is present with an error.
-  bool has_sign_in_error() const;
+  // Returns cloud provision flow error if sign-in result has it.
+  base::Optional<mojom::CloudProvisionFlowError> cloud_provision_flow_error()
+      const;
 
   // Returns the error of signin_result coming from ARC.
   const mojom::ArcSignInError* sign_in_error() const;
 
-  // Returns true if result has given general sign-in error.
-  bool has_general_error(mojom::GeneralSignInError error) const;
+  // Returns general sign-in error if result has it.
+  base::Optional<mojom::GeneralSignInError> general_error() const;
 
   // Returns true if provisioning was successful.
   bool is_success() const;
 
-  // Returns true if ARC provisioning was stopped pre-maturely.
-  bool is_stopped() const;
-
-  // Returns the reason for ARC stopped event.
-  ArcStopReason stop_reason() const;
+  // Returns the reason for ARC stopped event if it exists.
+  base::Optional<ArcStopReason> stop_reason() const;
 
   // Returns true if ARC provisioning timed out in Chrome.
   bool is_timedout() const;
 
  private:
+  // Returns the result of provisioning from inside ARC.
+  const mojom::ArcSignInResult* sign_in_result() const;
+
   absl::variant<mojom::ArcSignInResultPtr,
                 ArcStopReason,
                 ChromeProvisioningTimeout>

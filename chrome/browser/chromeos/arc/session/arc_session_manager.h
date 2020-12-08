@@ -213,7 +213,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // On provisioning completion (regardless of whether successfully done or
   // not), this is called with its status. On success, is_success() of
   // |result| returns true, otherwise ArcSignInResult can be retrieved from
-  // get() if sign-in result came from ARC or is_stopped()
+  // get() if sign-in result came from ARC or stop_reason()
   // will indicate that ARC stopped prematurely and provisioning could
   // not finish successfully. is_timedout() indicates that operation timed
   // out.

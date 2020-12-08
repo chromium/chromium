@@ -222,31 +222,30 @@ void UpdateSecondaryAccountSilentAuthCodeUMA(OptInSilentAuthCode state) {
 
 ProvisioningStatus GetProvisioningStatus(
     const ArcProvisioningResult& provisioning_result) {
-  if (provisioning_result.is_stopped())
+  if (provisioning_result.stop_reason())
     return ProvisioningStatus::ARC_STOPPED;
 
   if (provisioning_result.is_timedout())
     return ProvisioningStatus::CHROME_PROVISIONING_TIMEOUT;
 
-  const mojom::ArcSignInResult* result = provisioning_result.sign_in_result();
-  if (result->is_success())
+  if (provisioning_result.is_success())
     return ProvisioningStatus::SUCCESS;
 
-  if (result->get_error()->is_cloud_provision_flow_error())
+  if (provisioning_result.cloud_provision_flow_error())
     return ProvisioningStatus::CLOUD_PROVISION_FLOW_ERROR;
 
-  if (result->get_error()->is_check_in_error())
+  if (provisioning_result.gms_check_in_error())
     return ProvisioningStatus::GMS_CHECK_IN_ERROR;
 
-  if (result->get_error()->is_sign_in_error())
+  if (provisioning_result.gms_sign_in_error())
     return ProvisioningStatus::GMS_SIGN_IN_ERROR;
 
-  if (result->get_error()->is_general_error()) {
+  if (provisioning_result.general_error()) {
 #define MAP_GENERAL_ERROR(name)         \
   case mojom::GeneralSignInError::name: \
     return ProvisioningStatus::name
 
-    switch (result->get_error()->get_general_error()) {
+    switch (provisioning_result.general_error().value()) {
       MAP_GENERAL_ERROR(UNKNOWN_ERROR);
       MAP_GENERAL_ERROR(MOJO_VERSION_MISMATCH);
       MAP_GENERAL_ERROR(GENERIC_PROVISIONING_TIMEOUT);

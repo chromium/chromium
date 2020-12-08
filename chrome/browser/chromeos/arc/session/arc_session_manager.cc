@@ -371,6 +371,47 @@ ArcSupportHost::Error GetCloudProvisionFlowError(
   }
 }
 
+ArcSupportHost::Error GetSupportHostError(const ArcProvisioningResult& result) {
+  if (result.gms_sign_in_error() ==
+      mojom::GMSSignInError::GMS_SIGN_IN_NETWORK_ERROR) {
+    return ArcSupportHost::Error::SIGN_IN_NETWORK_ERROR;
+  }
+
+  if (result.gms_sign_in_error() ==
+      mojom::GMSSignInError::GMS_SIGN_IN_BAD_AUTHENTICATION) {
+    return ArcSupportHost::Error::SIGN_IN_BAD_AUTHENTICATION_ERROR;
+  }
+
+  if (result.gms_sign_in_error())
+    return ArcSupportHost::Error::SIGN_IN_SERVICE_UNAVAILABLE_ERROR;
+
+  if (result.gms_check_in_error())
+    return ArcSupportHost::Error::SIGN_IN_GMS_NOT_AVAILABLE_ERROR;
+
+  if (result.cloud_provision_flow_error()) {
+    return GetCloudProvisionFlowError(
+        result.cloud_provision_flow_error().value());
+  }
+
+  if (result.general_error() ==
+      mojom::GeneralSignInError::CHROME_SERVER_COMMUNICATION_ERROR) {
+    return ArcSupportHost::Error::SERVER_COMMUNICATION_ERROR;
+  }
+
+  if (result.general_error() ==
+      mojom::GeneralSignInError::NO_NETWORK_CONNECTION) {
+    return ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR;
+  }
+
+  if (result.general_error() == mojom::GeneralSignInError::ARC_DISABLED)
+    return ArcSupportHost::Error::ANDROID_MANAGEMENT_REQUIRED_ERROR;
+
+  if (result.stop_reason() == ArcStopReason::LOW_DISK_SPACE)
+    return ArcSupportHost::Error::LOW_DISK_SPACE_ERROR;
+
+  return ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR;
+}
+
 ArcSessionManager::ExpansionResult ExpandPropertyFilesAndReadSaltInternal(
     const base::FilePath& source_path,
     const base::FilePath& dest_path,
@@ -578,9 +619,6 @@ void ArcSessionManager::OnProvisioningFinished(
     return;
   }
 
-  const mojom::ArcSignInError* sign_in_error =
-      result.has_sign_in_error() ? result.sign_in_error() : nullptr;
-
   // Due asynchronous nature of stopping the ARC instance,
   // OnProvisioningFinished may arrive after setting the |State::STOPPED| state
   // and |State::Active| is not guaranteed to be set here.
@@ -601,8 +639,8 @@ void ArcSessionManager::OnProvisioningFinished(
   if (scoped_opt_in_tracker_ && !provisioning_successful)
     scoped_opt_in_tracker_->TrackError();
 
-  if (result.has_general_error(
-          mojom::GeneralSignInError::CHROME_SERVER_COMMUNICATION_ERROR)) {
+  if (result.general_error() ==
+      mojom::GeneralSignInError::CHROME_SERVER_COMMUNICATION_ERROR) {
     // TODO(poromov): Consider ARC PublicSession offline mode.
     // Currently ARC session will be exited below, while the main user session
     // will be kept alive without Android apps.
@@ -626,15 +664,13 @@ void ArcSessionManager::OnProvisioningFinished(
                              provisioning_successful, profile_);
     UpdateProvisioningStatusUMA(GetProvisioningStatus(result), profile_);
 
-    if (sign_in_error) {
-      if (sign_in_error->is_cloud_provision_flow_error()) {
-        UpdateCloudProvisionFlowErrorUMA(
-            sign_in_error->get_cloud_provision_flow_error(), profile_);
-      } else if (sign_in_error->is_sign_in_error()) {
-        UpdateGMSSignInErrorUMA(sign_in_error->get_sign_in_error(), profile_);
-      } else if (sign_in_error->is_check_in_error()) {
-        UpdateGMSCheckInErrorUMA(sign_in_error->get_check_in_error(), profile_);
-      }
+    if (result.gms_sign_in_error()) {
+      UpdateGMSSignInErrorUMA(result.gms_sign_in_error().value(), profile_);
+    } else if (result.gms_check_in_error()) {
+      UpdateGMSCheckInErrorUMA(result.gms_check_in_error().value(), profile_);
+    } else if (result.cloud_provision_flow_error()) {
+      UpdateCloudProvisionFlowErrorUMA(
+          result.cloud_provision_flow_error().value(), profile_);
     }
 
     if (!provisioning_successful)
@@ -675,69 +711,38 @@ void ArcSessionManager::OnProvisioningFinished(
     return;
   }
 
-  ArcSupportHost::Error support_error;
   VLOG(1) << "ARC provisioning failed: " << result << ".";
-  if (sign_in_error && sign_in_error->is_sign_in_error() &&
-      sign_in_error->get_sign_in_error() ==
-          mojom::GMSSignInError::GMS_SIGN_IN_NETWORK_ERROR) {
-    support_error = ArcSupportHost::Error::SIGN_IN_NETWORK_ERROR;
-  } else if (sign_in_error && sign_in_error->is_sign_in_error() &&
-             sign_in_error->get_sign_in_error() ==
-                 mojom::GMSSignInError::GMS_SIGN_IN_BAD_AUTHENTICATION) {
-    support_error = ArcSupportHost::Error::SIGN_IN_BAD_AUTHENTICATION_ERROR;
-  } else if (sign_in_error && sign_in_error->is_sign_in_error()) {
-    support_error = ArcSupportHost::Error::SIGN_IN_SERVICE_UNAVAILABLE_ERROR;
-  } else if (sign_in_error && sign_in_error->is_check_in_error()) {
-    support_error = ArcSupportHost::Error::SIGN_IN_GMS_NOT_AVAILABLE_ERROR;
-  } else if (sign_in_error && sign_in_error->is_cloud_provision_flow_error()) {
-    support_error = GetCloudProvisionFlowError(
-        sign_in_error->get_cloud_provision_flow_error());
-  } else if (result.has_general_error(mojom::GeneralSignInError::
-                                          CHROME_SERVER_COMMUNICATION_ERROR)) {
-    support_error = ArcSupportHost::Error::SERVER_COMMUNICATION_ERROR;
-  } else if (result.has_general_error(
-                 mojom::GeneralSignInError::NO_NETWORK_CONNECTION)) {
-    support_error = ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR;
-  } else if (result.has_general_error(
-                 mojom::GeneralSignInError::ARC_DISABLED)) {
-    support_error = ArcSupportHost::Error::ANDROID_MANAGEMENT_REQUIRED_ERROR;
-  } else if (result.is_stopped()) {
-    support_error = result.stop_reason() == ArcStopReason::LOW_DISK_SPACE
-                        ? ArcSupportHost::Error::LOW_DISK_SPACE_ERROR
-                        : ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR;
-  } else {
-    support_error = ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR;
-  }
 
   // When ARC provisioning fails due to Chrome failing to talk to server, we
   // don't need to keep the ARC session running as the logs necessary to
   // investigate are already present. ARC session will not provide any useful
   // context.
-  if (result.is_stopped() ||
-      result.has_general_error(
-          mojom::GeneralSignInError::CHROME_SERVER_COMMUNICATION_ERROR)) {
+  if (result.stop_reason() ||
+      result.general_error() ==
+          mojom::GeneralSignInError::CHROME_SERVER_COMMUNICATION_ERROR) {
     if (profile_->GetPrefs()->HasPrefPath(prefs::kArcSignedIn))
       profile_->GetPrefs()->SetBoolean(prefs::kArcSignedIn, false);
     VLOG(1) << "Stopping ARC due to provisioning failure";
     ShutdownSession();
   }
 
-  if ((sign_in_error && sign_in_error->is_cloud_provision_flow_error()) ||
+  if (result.cloud_provision_flow_error() ||
       // OVERALL_SIGN_IN_TIMEOUT might be an indication that ARC believes it is
       // fully setup, but Chrome does not.
       result.is_timedout() ||
       // Just to be safe, remove data if we don't know the cause.
-      result.has_general_error(mojom::GeneralSignInError::UNKNOWN_ERROR)) {
+      result.general_error() == mojom::GeneralSignInError::UNKNOWN_ERROR) {
     VLOG(1) << "ARC provisioning failed permanently. Removing user data";
     RequestArcDataRemoval();
   }
 
   base::Optional<int> error_code;
+  ArcSupportHost::Error support_error = GetSupportHostError(result);
   if (support_error == ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR) {
     error_code = static_cast<std::underlying_type_t<ProvisioningStatus>>(
         GetProvisioningStatus(result));
-  } else if (sign_in_error) {
-    error_code = GetSignInErrorCode(sign_in_error);
+  } else if (result.sign_in_error()) {
+    error_code = GetSignInErrorCode(result.sign_in_error());
   }
   ShowArcSupportHostError({support_error, error_code} /* error_info */,
                           true /* should_show_send_feedback */);

@@ -19,45 +19,65 @@ ArcProvisioningResult::ArcProvisioningResult(ArcProvisioningResult&& other) =
     default;
 ArcProvisioningResult::~ArcProvisioningResult() = default;
 
-bool ArcProvisioningResult::has_sign_in_result() const {
-  return absl::holds_alternative<mojom::ArcSignInResultPtr>(result_);
+base::Optional<mojom::GMSSignInError> ArcProvisioningResult::gms_sign_in_error()
+    const {
+  if (!sign_in_error() || !sign_in_error()->is_sign_in_error())
+    return base::nullopt;
+
+  return sign_in_error()->get_sign_in_error();
 }
 
-const mojom::ArcSignInResult* ArcProvisioningResult::sign_in_result() const {
-  DCHECK(has_sign_in_result());
-  return absl::get<mojom::ArcSignInResultPtr>(result_).get();
+base::Optional<mojom::GMSCheckInError>
+ArcProvisioningResult::gms_check_in_error() const {
+  if (!sign_in_error() || !sign_in_error()->is_check_in_error())
+    return base::nullopt;
+
+  return sign_in_error()->get_check_in_error();
 }
 
-bool ArcProvisioningResult::has_sign_in_error() const {
-  return has_sign_in_result() && sign_in_result()->is_error();
+base::Optional<mojom::CloudProvisionFlowError>
+ArcProvisioningResult::cloud_provision_flow_error() const {
+  if (!sign_in_error() || !sign_in_error()->is_cloud_provision_flow_error())
+    return base::nullopt;
+
+  return sign_in_error()->get_cloud_provision_flow_error();
 }
 
 const mojom::ArcSignInError* ArcProvisioningResult::sign_in_error() const {
-  DCHECK(has_sign_in_error());
+  if (!sign_in_result() || !sign_in_result()->is_error())
+    return nullptr;
+
   return sign_in_result()->get_error().get();
 }
 
+base::Optional<mojom::GeneralSignInError> ArcProvisioningResult::general_error()
+    const {
+  if (!sign_in_error() || !sign_in_error()->is_general_error())
+    return base::nullopt;
+
+  return sign_in_error()->get_general_error();
+}
+
 bool ArcProvisioningResult::is_success() const {
-  return has_sign_in_result() && sign_in_result()->is_success();
+  return sign_in_result() && sign_in_result()->is_success();
 }
 
-bool ArcProvisioningResult::has_general_error(
-    mojom::GeneralSignInError error) const {
-  return has_sign_in_error() && sign_in_error()->is_general_error() &&
-         sign_in_error()->get_general_error() == error;
-}
+base::Optional<ArcStopReason> ArcProvisioningResult::stop_reason() const {
+  if (!absl::holds_alternative<ArcStopReason>(result_))
+    return base::nullopt;
 
-bool ArcProvisioningResult::is_stopped() const {
-  return absl::holds_alternative<ArcStopReason>(result_);
-}
-
-ArcStopReason ArcProvisioningResult::stop_reason() const {
-  DCHECK(is_stopped());
   return absl::get<ArcStopReason>(result_);
 }
 
 bool ArcProvisioningResult::is_timedout() const {
   return absl::holds_alternative<ChromeProvisioningTimeout>(result_);
+}
+
+const mojom::ArcSignInResult* ArcProvisioningResult::sign_in_result() const {
+  if (!absl::holds_alternative<mojom::ArcSignInResultPtr>(result_))
+    return nullptr;
+
+  return absl::get<mojom::ArcSignInResultPtr>(result_).get();
 }
 
 std::ostream& operator<<(std::ostream& os,
