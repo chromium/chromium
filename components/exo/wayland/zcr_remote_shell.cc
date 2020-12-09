@@ -134,6 +134,18 @@ gfx::Rect ScaleBoundsToPixelSnappedToParent(
   return gfx::Rect(new_x, new_y, new_right - new_x, new_bottom - new_y);
 }
 
+void ScaleSkRegion(const SkRegion& src, float scale, SkRegion* dst) {
+  SkRegion::Iterator iter(src);
+  for (; !iter.done(); iter.next()) {
+    SkIRect r;
+    r.fLeft = base::ClampFloor(iter.rect().fLeft * scale);
+    r.fTop = base::ClampFloor(iter.rect().fTop * scale);
+    r.fRight = base::ClampCeil(iter.rect().fRight * scale);
+    r.fBottom = base::ClampCeil(iter.rect().fBottom * scale);
+    dst->op(r, SkRegion::kUnion_Op);
+  }
+}
+
 ash::ShelfLayoutManager* GetShelfLayoutManagerForDisplay(
     const display::Display& display) {
   auto* root = ash::Shell::GetRootWindowForDisplayId(display.id());
@@ -608,16 +620,19 @@ void remote_surface_unset_pip_original_window(wl_client* client,
 void remote_surface_set_system_gesture_exclusion(wl_client* client,
                                                  wl_resource* resource,
                                                  wl_resource* region_resource) {
-  auto* widget = GetUserDataAs<ShellSurfaceBase>(resource)->GetWidget();
+  auto* shell_surface = GetUserDataAs<ClientControlledShellSurface>(resource);
+  auto* widget = shell_surface->GetWidget();
   if (!widget) {
     LOG(ERROR) << "no widget found for setting system gesture exclusion";
     return;
   }
 
   if (region_resource) {
-    widget->GetNativeWindow()->SetProperty(
-        ash::kSystemGestureExclusionKey,
-        new SkRegion(*GetUserDataAs<SkRegion>(region_resource)));
+    SkRegion* dst = new SkRegion;
+    ScaleSkRegion(*GetUserDataAs<SkRegion>(region_resource),
+                  shell_surface->GetClientToDpScale(), dst);
+    widget->GetNativeWindow()->SetProperty(ash::kSystemGestureExclusionKey,
+                                           dst);
   } else {
     widget->GetNativeWindow()->ClearProperty(ash::kSystemGestureExclusionKey);
   }
