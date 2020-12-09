@@ -132,14 +132,18 @@ void TextInput::ClearCompositionText() {
   delegate_->SetCompositionText(composition_);
 }
 
-void TextInput::InsertText(const base::string16& text) {
+void TextInput::InsertText(const base::string16& text,
+                           InsertTextCursorBehavior cursor_behavior) {
+  // TODO(crbug.com/1155331): Handle |cursor_behavior| correctly.
   delegate_->Commit(text);
 }
 
 void TextInput::InsertChar(const ui::KeyEvent& event) {
   base::char16 ch = event.GetCharacter();
   if (u_isprint(ch)) {
-    InsertText(base::string16(1, ch));
+    InsertText(
+        base::string16(1, ch),
+        ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
     return;
   }
   // TextInput is currently used only for Lacros, and this is the

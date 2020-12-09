@@ -261,7 +261,9 @@ class AppListViewTest : public views::ViewsTestBase,
         view_->app_list_main_view()->search_box_view()->search_box();
     // Set new text as if it is typed by a user.
     search_box->SetText(base::string16());
-    search_box->InsertText(base::UTF8ToUTF16(text));
+    search_box->InsertText(
+        base::UTF8ToUTF16(text),
+        ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   }
 
   int ShelfSize() const { return delegate_->GetShelfSize(); }
@@ -656,7 +658,9 @@ class AppListViewFocusTest : public views::ViewsTestBase,
             ? base::UTF8ToUTF16(
                   "\xd8\xa7\xd8\xae\xd8\xaa\xd8\xa8\xd8\xa7\xd8\xb1")
             : base::UTF8ToUTF16("test");
-    textfield->InsertText(text);
+    textfield->InsertText(
+        text,
+        ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
     views::View* next_view = next_view =
         view_->GetWidget()->GetFocusManager()->GetNextFocusableView(
             textfield, view_->GetWidget(), false, false);
@@ -871,7 +875,9 @@ TEST_F(AppListViewFocusTest, TabFocusTraversalInHalfState) {
 
   // Type something in search box to transition to HALF state and populate
   // fake search results.
-  search_box_view()->search_box()->InsertText(base::ASCIIToUTF16("test"));
+  search_box_view()->search_box()->InsertText(
+      base::ASCIIToUTF16("test"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ(app_list_view()->app_list_state(), ash::AppListViewState::kHalf);
   constexpr int kTileResults = 3;
   constexpr int kListResults = 2;
@@ -926,7 +932,9 @@ TEST_F(AppListViewFocusTest, CloseButtonClearsSearchOnEnter) {
 
   // Type something in search box to transition to HALF state and populate
   // fake search results.
-  search_box_view()->search_box()->InsertText(base::ASCIIToUTF16("test"));
+  search_box_view()->search_box()->InsertText(
+      base::ASCIIToUTF16("test"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ(app_list_view()->app_list_state(), ash::AppListViewState::kHalf);
   constexpr int kTileResults = 3;
   constexpr int kListResults = 2;
@@ -979,7 +987,9 @@ TEST_P(AppListViewFocusTest, LeftRightFocusTraversalInHalfState) {
           ? base::UTF8ToUTF16(
                 "\xd8\xa7\xd8\xae\xd8\xaa\xd8\xa8\xd8\xa7\xd8\xb1")
           : base::UTF8ToUTF16("test");
-  search_box_view()->search_box()->InsertText(text);
+  search_box_view()->search_box()->InsertText(
+      text,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ(app_list_view()->app_list_state(), ash::AppListViewState::kHalf);
 
   constexpr int kTileResults = 6;
@@ -1109,7 +1119,9 @@ TEST_F(AppListViewFocusTest, VerticalFocusTraversalInHalfState) {
 
   // Type something in search box to transition to HALF state and populate
   // fake search results.
-  search_box_view()->search_box()->InsertText(base::ASCIIToUTF16("test"));
+  search_box_view()->search_box()->InsertText(
+      base::ASCIIToUTF16("test"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ(app_list_view()->app_list_state(), ash::AppListViewState::kHalf);
   constexpr int kTileResults = 3;
   constexpr int kListResults = 2;
@@ -1242,7 +1254,9 @@ TEST_F(AppListViewFocusTest, FocusResetAfterStateTransition) {
 
   // Type something in search box to transition to HALF state and populate
   // fake search results.
-  search_box_view()->search_box()->InsertText(base::ASCIIToUTF16("test"));
+  search_box_view()->search_box()->InsertText(
+      base::ASCIIToUTF16("test"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   const int kTileResults = 3;
   const int kListResults = 2;
   SetUpSearchResults(kTileResults, kListResults);
@@ -1322,7 +1336,9 @@ TEST_F(AppListViewFocusTest, RedirectFocusToSearchBox) {
 TEST_F(AppListViewFocusTest, SearchBoxTextUpdatesOnResultFocus) {
   Show();
   views::Textfield* search_box = search_box_view()->search_box();
-  search_box->InsertText(base::ASCIIToUTF16("TestText"));
+  search_box->InsertText(
+      base::ASCIIToUTF16("TestText"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
 
   // Set up test results with unique titles
   ClearSearchResults();
@@ -1351,7 +1367,9 @@ TEST_F(AppListViewFocusTest, SearchBoxTextUpdatesOnResultFocus) {
 // not focused.
 TEST_F(AppListViewFocusTest, CtrlASelectsAllTextInSearchbox) {
   Show();
-  search_box_view()->search_box()->InsertText(base::ASCIIToUTF16("test"));
+  search_box_view()->search_box()->InsertText(
+      base::ASCIIToUTF16("test"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ(app_list_view()->app_list_state(), ash::AppListViewState::kHalf);
   constexpr int kTileResults = 3;
   constexpr int kListResults = 2;
@@ -1389,7 +1407,9 @@ TEST_F(AppListViewFocusTest, FirstResultSelectedAfterSearchResultsUpdated) {
 
   // Type something in search box to transition to HALF state and populate
   // fake list results.
-  search_box_view()->search_box()->InsertText(base::ASCIIToUTF16("test"));
+  search_box_view()->search_box()->InsertText(
+      base::ASCIIToUTF16("test"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   const int kListResults = 2;
   SetUpSearchResults(0, kListResults);
   SearchResultListView* list_view =
@@ -1445,7 +1465,9 @@ TEST_F(AppListViewFocusTest, HittingEnterWhenFocusOnSearchBox) {
 
   // Type something in search box to transition to HALF state and populate
   // fake list results. Then hit Enter key.
-  search_box_view()->search_box()->InsertText(base::UTF8ToUTF16("test"));
+  search_box_view()->search_box()->InsertText(
+      base::UTF8ToUTF16("test"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   const int kListResults = 2;
   SetUpSearchResults(0, kListResults);
   SimulateKeyPress(ui::VKEY_RETURN, false);
@@ -1717,7 +1739,9 @@ TEST_F(AppListViewTest, TypingPeekingToHalf) {
 
   Show();
   search_box->SetText(base::string16());
-  search_box->InsertText(base::UTF8ToUTF16("nice"));
+  search_box->InsertText(
+      base::UTF8ToUTF16("nice"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
 
   ASSERT_EQ(ash::AppListViewState::kHalf, view_->app_list_state());
 }
@@ -1732,7 +1756,9 @@ TEST_F(AppListViewTest, TypingFullscreenToFullscreenSearch) {
       view_->app_list_main_view()->search_box_view()->search_box();
 
   search_box->SetText(base::string16());
-  search_box->InsertText(base::UTF8ToUTF16("https://youtu.be/dQw4w9WgXcQ"));
+  search_box->InsertText(
+      base::UTF8ToUTF16("https://youtu.be/dQw4w9WgXcQ"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
 
   ASSERT_EQ(ash::AppListViewState::kFullscreenSearch, view_->app_list_state());
 }
@@ -1745,7 +1771,9 @@ TEST_F(AppListViewTest, TypingTabletModeFullscreenSearch) {
 
   Show();
   search_box->SetText(base::string16());
-  search_box->InsertText(base::UTF8ToUTF16("cool!"));
+  search_box->InsertText(
+      base::UTF8ToUTF16("cool!"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
 
   ASSERT_EQ(ash::AppListViewState::kFullscreenSearch, view_->app_list_state());
 }
@@ -2159,7 +2187,9 @@ TEST_F(AppListViewTest, DISABLED_SearchResultsTest) {
 
   base::string16 search_text = base::UTF8ToUTF16("test");
   main_view->search_box_view()->search_box()->SetText(base::string16());
-  main_view->search_box_view()->search_box()->InsertText(search_text);
+  main_view->search_box_view()->search_box()->InsertText(
+      search_text,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   // Check that the current search is using |search_text|.
   EXPECT_EQ(search_text, delegate_->GetSearchModel()->search_box()->text());
   EXPECT_EQ(search_text, main_view->search_box_view()->search_box()->GetText());
@@ -2178,7 +2208,9 @@ TEST_F(AppListViewTest, DISABLED_SearchResultsTest) {
 
   base::string16 new_search_text = base::UTF8ToUTF16("apple");
   main_view->search_box_view()->search_box()->SetText(base::string16());
-  main_view->search_box_view()->search_box()->InsertText(new_search_text);
+  main_view->search_box_view()->search_box()->InsertText(
+      new_search_text,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   // Check that the current search is using |new_search_text|.
   EXPECT_EQ(new_search_text, delegate_->GetSearchModel()->search_box()->text());
   EXPECT_EQ(new_search_text,
@@ -2231,7 +2263,9 @@ TEST_F(AppListViewTest, DISABLED_BackTest) {
   // Show the search results.
   base::string16 new_search_text = base::UTF8ToUTF16("apple");
   search_box_view->search_box()->SetText(base::string16());
-  search_box_view->search_box()->InsertText(new_search_text);
+  search_box_view->search_box()->InsertText(
+      new_search_text,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   contents_view->Layout();
   EXPECT_TRUE(IsStateShown(ash::AppListState::kStateSearchResults));
   EXPECT_NO_FATAL_FAILURE(CheckView(search_box_view->back_button()));
@@ -2337,7 +2371,9 @@ TEST_F(AppListViewTest, BackAction) {
 
   // Select the second page and open search results page.
   apps_grid_view()->pagination_model()->SelectPage(1, false);
-  search_box_view()->search_box()->InsertText(base::UTF8ToUTF16("A"));
+  search_box_view()->search_box()->InsertText(
+      base::UTF8ToUTF16("A"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ(ash::AppListViewState::kFullscreenSearch, view_->app_list_state());
   EXPECT_EQ(1, apps_grid_view()->pagination_model()->selected_page());
 
@@ -2413,7 +2449,9 @@ TEST_F(AppListViewFocusTest, ShowEmbeddedAssistantUI) {
 
   // Type something in search box to transition to HALF state and populate
   // fake list results. Then hit Enter key.
-  search_box_view()->search_box()->InsertText(base::UTF8ToUTF16("test"));
+  search_box_view()->search_box()->InsertText(
+      base::UTF8ToUTF16("test"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   const int kListResults = 2;
   const int kIndexOpenAssistantUi = 1;
   SetUpSearchResultsForAssistantUI(kListResults, kIndexOpenAssistantUi);

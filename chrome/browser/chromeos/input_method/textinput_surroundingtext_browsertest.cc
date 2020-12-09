@@ -43,12 +43,16 @@ IN_PROC_BROWSER_TEST_F(TextInput_SurroundingTextChangedTest,
 
   ASSERT_TRUE(helper.GetTextInputClient());
 
-  helper.GetTextInputClient()->InsertText(sample_text1);
+  helper.GetTextInputClient()->InsertText(
+      sample_text1,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   helper.WaitForSurroundingTextChanged(sample_text1, expected_range1);
   EXPECT_EQ(sample_text1, helper.GetSurroundingText());
   EXPECT_EQ(expected_range1, helper.GetSelectionRange());
 
-  helper.GetTextInputClient()->InsertText(sample_text2);
+  helper.GetTextInputClient()->InsertText(
+      sample_text2,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   helper.WaitForSurroundingTextChanged(surrounding_text2, expected_range2);
   EXPECT_EQ(surrounding_text2, helper.GetSurroundingText());
   EXPECT_EQ(expected_range2, helper.GetSelectionRange());
@@ -84,7 +88,9 @@ IN_PROC_BROWSER_TEST_F(TextInput_SurroundingTextChangedTest,
   helper.GetTextInputClient()->SetCompositionText(composition_text);
   ASSERT_TRUE(helper.GetTextInputClient()->HasCompositionText());
   // TODO(nona): Make sure there is no IPC from renderer.
-  helper.GetTextInputClient()->InsertText(sample_text);
+  helper.GetTextInputClient()->InsertText(
+      sample_text,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   helper.GetTextInputClient()->ClearCompositionText();
 
   ASSERT_FALSE(helper.GetTextInputClient()->HasCompositionText());

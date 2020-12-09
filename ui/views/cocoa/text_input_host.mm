@@ -265,7 +265,9 @@ void TextInputHost::InsertText(const base::string16& text, bool as_character) {
     text_input_client_->InsertChar(ui::KeyEvent(
         text[0], ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_NONE));
   } else {
-    text_input_client_->InsertText(text);
+    text_input_client_->InsertText(
+        text,
+        ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   }
 }
 

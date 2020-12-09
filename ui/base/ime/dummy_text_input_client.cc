@@ -44,7 +44,9 @@ void DummyTextInputClient::ClearCompositionText() {
   SetCompositionText(CompositionText());
 }
 
-void DummyTextInputClient::InsertText(const base::string16& text) {
+void DummyTextInputClient::InsertText(
+    const base::string16& text,
+    InsertTextCursorBehavior cursor_behavior) {
   insert_text_history_.push_back(text);
 }
 

@@ -375,7 +375,9 @@ TEST_F(LoginPasswordViewTestFeatureEnabled,
   // remains visible.
   generator->PressKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   EXPECT_EQ(test_api.textfield()->GetTextInputType(), ui::TEXT_INPUT_TYPE_NULL);
-  test_api.textfield()->InsertText(base::ASCIIToUTF16("test"));
+  test_api.textfield()->InsertText(
+      base::ASCIIToUTF16("test"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ(test_api.textfield()->GetTextInputType(), ui::TEXT_INPUT_TYPE_NULL);
 
   // Click again on the display password button to hide the password.
@@ -387,7 +389,9 @@ TEST_F(LoginPasswordViewTestFeatureEnabled,
 
   // Type manually and programmatically, and check if the password textfield
   // remains invisible.
-  test_api.textfield()->InsertText(base::ASCIIToUTF16("test"));
+  test_api.textfield()->InsertText(
+      base::ASCIIToUTF16("test"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ(test_api.textfield()->GetTextInputType(),
             ui::TEXT_INPUT_TYPE_PASSWORD);
 }
@@ -409,7 +413,9 @@ TEST_F(LoginPasswordViewTestFeatureEnabled,
   EXPECT_TRUE(is_password_field_empty_);
   EXPECT_FALSE(test_api.display_password_button()->GetEnabled());
 
-  test_api.textfield()->InsertText(base::ASCIIToUTF16("test"));
+  test_api.textfield()->InsertText(
+      base::ASCIIToUTF16("test"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_FALSE(is_password_field_empty_);
   EXPECT_TRUE(test_api.display_password_button()->GetEnabled());
   view_->Clear();

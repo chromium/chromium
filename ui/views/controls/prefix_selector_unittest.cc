@@ -63,27 +63,43 @@ class PrefixSelectorTest : public ViewsTestBase {
 };
 
 TEST_F(PrefixSelectorTest, PrefixSelect) {
-  selector_->InsertText(ASCIIToUTF16("an"));
+  selector_->InsertText(
+      ASCIIToUTF16("an"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ(1, delegate_.GetSelectedRow());
 
   // Invoke OnViewBlur() to reset time.
   selector_->OnViewBlur();
-  selector_->InsertText(ASCIIToUTF16("a"));
+  selector_->InsertText(
+      ASCIIToUTF16("a"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ(0, delegate_.GetSelectedRow());
 
   selector_->OnViewBlur();
-  selector_->InsertText(ASCIIToUTF16("g"));
+  selector_->InsertText(
+      ASCIIToUTF16("g"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ(3, delegate_.GetSelectedRow());
 
   selector_->OnViewBlur();
-  selector_->InsertText(ASCIIToUTF16("b"));
-  selector_->InsertText(ASCIIToUTF16("a"));
+  selector_->InsertText(
+      ASCIIToUTF16("b"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  selector_->InsertText(
+      ASCIIToUTF16("a"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ(2, delegate_.GetSelectedRow());
 
   selector_->OnViewBlur();
-  selector_->InsertText(ASCIIToUTF16("\t"));
-  selector_->InsertText(ASCIIToUTF16("b"));
-  selector_->InsertText(ASCIIToUTF16("a"));
+  selector_->InsertText(
+      ASCIIToUTF16("\t"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  selector_->InsertText(
+      ASCIIToUTF16("b"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  selector_->InsertText(
+      ASCIIToUTF16("a"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ(2, delegate_.GetSelectedRow());
 }
 

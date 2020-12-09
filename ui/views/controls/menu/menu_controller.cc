@@ -2835,7 +2835,9 @@ void MenuController::SelectByChar(base::char16 character) {
 
   if (IsReadonlyCombobox() ||
       MenuConfig::instance().all_menus_use_prefix_selection) {
-    item->GetSubmenu()->GetPrefixSelector()->InsertText(char_array);
+    item->GetSubmenu()->GetPrefixSelector()->InsertText(
+        char_array,
+        ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   } else {
     // If no mnemonics found, look at first character of titles.
     details = FindChildForMnemonic(item, key, &TitleMatchesMnemonic);

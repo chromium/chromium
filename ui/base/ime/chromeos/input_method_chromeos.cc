@@ -579,7 +579,9 @@ void InputMethodChromeOS::ProcessInputMethodResult(ui::KeyEvent* event,
         client->InsertChar(ch_event);
       }
     } else {
-      client->InsertText(result_text_);
+      client->InsertText(
+          result_text_,
+          TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
       composing_text_ = false;
     }
   }
@@ -651,7 +653,9 @@ void InputMethodChromeOS::CommitText(const std::string& text) {
   // focused text input client does not support text input.
   if (!handling_key_event_ && !IsTextInputTypeNone()) {
     if (!SendFakeProcessKeyEvent(true))
-      GetTextInputClient()->InsertText(utf16_text);
+      GetTextInputClient()->InsertText(
+          utf16_text,
+          TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
     SendFakeProcessKeyEvent(false);
     result_text_.clear();
   }

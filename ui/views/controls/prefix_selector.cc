@@ -49,7 +49,9 @@ uint32_t PrefixSelector::ConfirmCompositionText(bool keep_selection) {
 
 void PrefixSelector::ClearCompositionText() {}
 
-void PrefixSelector::InsertText(const base::string16& text) {
+void PrefixSelector::InsertText(const base::string16& text,
+                                InsertTextCursorBehavior cursor_behavior) {
+  // TODO(crbug.com/1155331): Handle |cursor_behavior| correctly.
   OnTextInput(text);
 }
 

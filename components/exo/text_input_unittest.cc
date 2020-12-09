@@ -266,7 +266,8 @@ TEST_F(TextInputTest, Commit) {
   base::string16 s = base::ASCIIToUTF16("commit text");
 
   EXPECT_CALL(*delegate(), Commit(s)).Times(1);
-  text_input()->InsertText(s);
+  text_input()->InsertText(
+      s, ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
 }
 
 TEST_F(TextInputTest, InsertChar) {

@@ -73,7 +73,8 @@ class KeyboardShortcutViewTest : public ash::AshTestBase {
     if (::isalnum(static_cast<int>(key_code))) {
       base::char16 character = ::tolower(static_cast<int>(key_code));
       GetSearchBoxView()->search_box()->InsertText(
-          base::string16(1, character));
+          base::string16(1, character),
+          ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
     }
   }
 

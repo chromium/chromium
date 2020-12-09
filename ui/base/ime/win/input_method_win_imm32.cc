@@ -227,7 +227,9 @@ LRESULT InputMethodWinImm32::OnImeComposition(HWND window_handle,
   ui::CompositionText composition;
   if (imm32_manager_.GetResult(window_handle, lparam, &composition.text)) {
     if (!IsTextInputTypeNone())
-      GetTextInputClient()->InsertText(composition.text);
+      GetTextInputClient()->InsertText(
+          composition.text,
+          ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
     imm32_manager_.ResetComposition(window_handle);
     // Fall though and try reading the composition string.
     // Japanese IMEs send a message containing both GCS_RESULTSTR and

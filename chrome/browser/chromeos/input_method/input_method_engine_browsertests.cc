@@ -165,7 +165,8 @@ class TestTextInputClient : public ui::DummyTextInputClient {
  private:
   // ui::DummyTextInputClient:
   bool ShouldDoLearning() override { return true; }
-  void InsertText(const base::string16& text) override {
+  void InsertText(const base::string16& text,
+                  InsertTextCursorBehavior cursor_behavior) override {
     inserted_text_ = text;
     run_loop_.Quit();
   }

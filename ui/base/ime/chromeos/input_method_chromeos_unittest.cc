@@ -283,7 +283,9 @@ class InputMethodChromeOSTest : public internal::InputMethodDelegate,
   void ClearCompositionText() override {
     composition_text_ = CompositionText();
   }
-  void InsertText(const base::string16& text) override {
+  void InsertText(
+      const base::string16& text,
+      TextInputClient::InsertTextCursorBehavior cursor_behavior) override {
     inserted_text_ = text;
   }
   void InsertChar(const KeyEvent& event) override {

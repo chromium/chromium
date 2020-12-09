@@ -438,7 +438,9 @@ void ArcImeService::ClearCompositionText() {
   }
 }
 
-void ArcImeService::InsertText(const base::string16& text) {
+void ArcImeService::InsertText(const base::string16& text,
+                               InsertTextCursorBehavior cursor_behavior) {
+  // TODO(crbug.com/1155331): Handle |cursor_behavior| correctly.
   InvalidateSurroundingTextAndSelectionRange();
   has_composition_text_ = false;
   ime_bridge_->SendInsertText(text);

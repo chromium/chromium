@@ -237,7 +237,9 @@ class TextInputClientForTesting : public DummyTextInputClient {
     composition_text.clear();
   }
 
-  void InsertText(const base::string16& text) override {
+  void InsertText(
+      const base::string16& text,
+      TextInputClient::InsertTextCursorBehavior cursor_behavior) override {
     if (HasCompositionText()) {
       TestResult::GetInstance()->RecordAction(
           base::ASCIIToUTF16("compositionend"));

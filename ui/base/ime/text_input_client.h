@@ -83,10 +83,17 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
   // Removes current composition text.
   virtual void ClearCompositionText() = 0;
 
+  enum class InsertTextCursorBehavior {
+    // Move cursor to the position after the last character in the text.
+    // e.g. for "hello", the cursor will be right after "o".
+    kMoveCursorAfterText,
+  };
+
   // Inserts a given text at the insertion point. Current composition text or
   // selection will be removed. This method should never be called when the
   // current text input type is TEXT_INPUT_TYPE_NONE.
-  virtual void InsertText(const base::string16& text) = 0;
+  virtual void InsertText(const base::string16& text,
+                          InsertTextCursorBehavior cursor_behavior) = 0;
 
   // Inserts a single char at the insertion point. Unlike above InsertText()
   // method, this method takes an |event| parameter indicating

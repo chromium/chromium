@@ -41,7 +41,9 @@ class MockTextInputClient : public TextInputClient {
   MOCK_METHOD1(SetCompositionText, void(const ui::CompositionText&));
   MOCK_METHOD1(ConfirmCompositionText, uint32_t(bool));
   MOCK_METHOD0(ClearCompositionText, void());
-  MOCK_METHOD1(InsertText, void(const base::string16&));
+  MOCK_METHOD2(InsertText,
+               void(const base::string16&,
+                    TextInputClient::InsertTextCursorBehavior cursor_behavior));
   MOCK_METHOD1(InsertChar, void(const ui::KeyEvent&));
   MOCK_CONST_METHOD0(GetTextInputType, ui::TextInputType());
   MOCK_CONST_METHOD0(GetTextInputMode, ui::TextInputMode());

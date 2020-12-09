@@ -256,7 +256,9 @@ TEST_F(ArcImeServiceTest, HasCompositionText) {
 
   instance_->SetCompositionText(composition);
   EXPECT_TRUE(instance_->HasCompositionText());
-  instance_->InsertText(base::UTF8ToUTF16("another text"));
+  instance_->InsertText(
+      base::UTF8ToUTF16("another text"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_FALSE(instance_->HasCompositionText());
 
   instance_->SetCompositionText(composition);

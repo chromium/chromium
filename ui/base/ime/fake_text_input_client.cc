@@ -27,7 +27,9 @@ uint32_t FakeTextInputClient::ConfirmCompositionText(bool keep_selection) {
 
 void FakeTextInputClient::ClearCompositionText() {}
 
-void FakeTextInputClient::InsertText(const base::string16& text) {}
+void FakeTextInputClient::InsertText(
+    const base::string16& text,
+    TextInputClient::InsertTextCursorBehavior cursor_behavior) {}
 
 void FakeTextInputClient::InsertChar(const KeyEvent& event) {}
 

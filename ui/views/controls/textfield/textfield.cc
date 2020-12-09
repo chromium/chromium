@@ -1566,7 +1566,8 @@ void Textfield::ClearCompositionText() {
   OnAfterUserAction();
 }
 
-void Textfield::InsertText(const base::string16& new_text) {
+void Textfield::InsertText(const base::string16& new_text,
+                           InsertTextCursorBehavior cursor_behavior) {
   base::string16 filtered_new_text;
   std::copy_if(new_text.begin(), new_text.end(),
                std::back_inserter(filtered_new_text), IsValidCharToInsert);
@@ -1575,6 +1576,7 @@ void Textfield::InsertText(const base::string16& new_text) {
       filtered_new_text.empty())
     return;
 
+  // TODO(crbug.com/1155331): Handle |cursor_behavior| correctly.
   OnBeforeUserAction();
   skip_input_method_cancel_composition_ = true;
   model_->InsertText(filtered_new_text);

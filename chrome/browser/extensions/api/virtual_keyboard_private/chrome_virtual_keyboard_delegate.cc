@@ -202,7 +202,9 @@ bool ChromeVirtualKeyboardDelegate::InsertText(const base::string16& text) {
   if (!tic || tic->GetTextInputType() == ui::TEXT_INPUT_TYPE_NONE)
     return false;
 
-  tic->InsertText(text);
+  tic->InsertText(
+      text,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   return true;
 }
 

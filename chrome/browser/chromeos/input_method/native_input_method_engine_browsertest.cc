@@ -355,7 +355,9 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestUserEmail) {
   const base::string16 expected_result_text =
       base::UTF8ToUTF16("my email is johnwayne@me.xyz");
 
-  helper.GetTextInputClient()->InsertText(prefix_text);
+  helper.GetTextInputClient()->InsertText(
+      prefix_text,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   helper.WaitForSurroundingTextChanged(prefix_text);
   histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Match",
                                       AssistiveType::kPersonalEmail, 1);
@@ -396,7 +398,9 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   const base::string16 expected_result_text =
       base::UTF8ToUTF16("my email is john@abc.com");
 
-  helper.GetTextInputClient()->InsertText(prefix_text);
+  helper.GetTextInputClient()->InsertText(
+      prefix_text,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   helper.WaitForSurroundingTextChanged(prefix_text);
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.TimeToDismiss.PersonalInfo", 0);
@@ -405,7 +409,9 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   // This down and enter should make no effect.
   DispatchKeyPress(ui::VKEY_DOWN, false);
   DispatchKeyPress(ui::VKEY_RETURN, false);
-  helper.GetTextInputClient()->InsertText(base::UTF8ToUTF16("john@abc.com"));
+  helper.GetTextInputClient()->InsertText(
+      base::UTF8ToUTF16("john@abc.com"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   helper.WaitForSurroundingTextChanged(expected_result_text);
 
   EXPECT_EQ(expected_result_text, helper.GetSurroundingText());
@@ -438,7 +444,9 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestUserName) {
   const base::string16 expected_result_text =
       base::UTF8ToUTF16("my name is John Wayne");
 
-  helper.GetTextInputClient()->InsertText(prefix_text);
+  helper.GetTextInputClient()->InsertText(
+      prefix_text,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   helper.WaitForSurroundingTextChanged(prefix_text);
   histogram_tester.ExpectUniqueSample(
       "InputMethod.Assistive.Disabled.PersonalInfo", DisabledReason::kNone, 1);
@@ -448,7 +456,9 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestUserName) {
                                       AssistiveType::kPersonalName, 1);
 
   // Keep typing
-  helper.GetTextInputClient()->InsertText(base::UTF8ToUTF16("jo"));
+  helper.GetTextInputClient()->InsertText(
+      base::UTF8ToUTF16("jo"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   helper.WaitForSurroundingTextChanged(base::UTF8ToUTF16("my name is jo"));
 
   DispatchKeyPress(ui::VKEY_DOWN, false);
@@ -499,7 +509,9 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestEmoji) {
   const base::string16 prefix_text = base::UTF8ToUTF16("happy ");
   const base::string16 expected_result_text = base::UTF8ToUTF16("happy 😀");
 
-  helper.GetTextInputClient()->InsertText(prefix_text);
+  helper.GetTextInputClient()->InsertText(
+      prefix_text,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   helper.WaitForSurroundingTextChanged(prefix_text);
   // Selects first emoji.
   DispatchKeyPress(ui::VKEY_DOWN, false);
@@ -530,10 +542,14 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   const base::string16 prefix_text = base::UTF8ToUTF16("happy ");
   const base::string16 expected_result_text = base::UTF8ToUTF16("happy a");
 
-  helper.GetTextInputClient()->InsertText(prefix_text);
+  helper.GetTextInputClient()->InsertText(
+      prefix_text,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   helper.WaitForSurroundingTextChanged(prefix_text);
   // Types something random to dismiss emoji
-  helper.GetTextInputClient()->InsertText(base::UTF8ToUTF16("a"));
+  helper.GetTextInputClient()->InsertText(
+      base::UTF8ToUTF16("a"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   helper.WaitForSurroundingTextChanged(expected_result_text);
 
   histogram_tester.ExpectTotalCount("InputMethod.Assistive.TimeToDismiss.Emoji",
@@ -676,7 +692,9 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
   const base::string16 prefix_text = base::UTF8ToUTF16("corrected ");
-  helper.GetTextInputClient()->InsertText(prefix_text);
+  helper.GetTextInputClient()->InsertText(
+      prefix_text,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   helper.WaitForSurroundingTextChanged(prefix_text);
 
   engine_.OnAutocorrect("typed", "corrected", 0);
@@ -705,7 +723,9 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, RevertsAutocorrect) {
   const base::string16 corrected_text =
       base::UTF8ToUTF16("hello corrected world");
   const base::string16 typed_text = base::UTF8ToUTF16("hello typed world");
-  helper.GetTextInputClient()->InsertText(corrected_text);
+  helper.GetTextInputClient()->InsertText(
+      corrected_text,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   helper.WaitForSurroundingTextChanged(corrected_text);
   EXPECT_EQ(ui::IMEBridge::Get()
                 ->GetInputContextHandler()
@@ -744,7 +764,9 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   SetUpTextInput(helper);
   const base::string16 corrected_text = base::UTF8ToUTF16("corrected");
   const base::string16 typed_text = base::UTF8ToUTF16("typed");
-  helper.GetTextInputClient()->InsertText(corrected_text);
+  helper.GetTextInputClient()->InsertText(
+      corrected_text,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   helper.WaitForSurroundingTextChanged(corrected_text);
   EXPECT_EQ(ui::IMEBridge::Get()
                 ->GetInputContextHandler()

@@ -942,21 +942,29 @@ TEST_F(TreeViewTest, ExpandOrSelectChild) {
 TEST_F(TreeViewTest, SelectOnKeyStroke) {
   tree_->SetModel(&model_);
   tree_->ExpandAll(model_.GetRoot());
-  selector()->InsertText(ASCIIToUTF16("b"));
+  selector()->InsertText(
+      ASCIIToUTF16("b"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ("b", GetSelectedNodeTitle());
   EXPECT_EQ("b", GetSelectedAccessibilityViewName());
-  selector()->InsertText(ASCIIToUTF16("1"));
+  selector()->InsertText(
+      ASCIIToUTF16("1"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ("b1", GetSelectedNodeTitle());
   EXPECT_EQ("b1", GetSelectedAccessibilityViewName());
 
   // Invoke OnViewBlur() to reset time.
   selector()->OnViewBlur();
-  selector()->InsertText(ASCIIToUTF16("z"));
+  selector()->InsertText(
+      ASCIIToUTF16("z"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ("b1", GetSelectedNodeTitle());
   EXPECT_EQ("b1", GetSelectedAccessibilityViewName());
 
   selector()->OnViewBlur();
-  selector()->InsertText(ASCIIToUTF16("a"));
+  selector()->InsertText(
+      ASCIIToUTF16("a"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ("a", GetSelectedNodeTitle());
   EXPECT_EQ("a", GetSelectedAccessibilityViewName());
 }

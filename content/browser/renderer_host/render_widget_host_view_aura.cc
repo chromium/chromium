@@ -1139,15 +1139,19 @@ void RenderWidgetHostViewAura::ClearCompositionText() {
   has_composition_text_ = false;
 }
 
-void RenderWidgetHostViewAura::InsertText(const base::string16& text) {
+void RenderWidgetHostViewAura::InsertText(
+    const base::string16& text,
+    InsertTextCursorBehavior cursor_behavior) {
   DCHECK_NE(GetTextInputType(), ui::TEXT_INPUT_TYPE_NONE);
 
   if (text_input_manager_ && text_input_manager_->GetActiveWidget()) {
-    if (text.length())
+    if (text.length()) {
+      // TODO(crbug.com/1155331): Handle |cursor_behavior| correctly.
       text_input_manager_->GetActiveWidget()->ImeCommitText(
           text, std::vector<ui::ImeTextSpan>(), gfx::Range::InvalidRange(), 0);
-    else if (has_composition_text_)
+    } else if (has_composition_text_) {
       text_input_manager_->GetActiveWidget()->ImeFinishComposingText(false);
+    }
   }
   has_composition_text_ = false;
 }

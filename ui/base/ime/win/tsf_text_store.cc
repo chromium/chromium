@@ -1437,7 +1437,9 @@ void TSFTextStore::CommitTextAndEndCompositionIfAny(size_t old_size,
       composition_text.selection.set_end(new_committed_string.size());
       text_input_client_->SetCompositionText(composition_text);
     }
-    text_input_client_->InsertText(new_committed_string);
+    text_input_client_->InsertText(
+        new_committed_string,
+        ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   } else {
     text_input_client_->ClearCompositionText();
   }

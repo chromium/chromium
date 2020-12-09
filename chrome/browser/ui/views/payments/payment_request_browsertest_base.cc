@@ -708,7 +708,9 @@ void PaymentRequestBrowserTestBase::SetEditorTextfieldValue(
           EditorViewController::GetInputFieldViewId(type)));
   DCHECK(textfield);
   textfield->SetText(base::string16());
-  textfield->InsertText(value);
+  textfield->InsertText(
+      value,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   textfield->OnBlur();
 }
 
