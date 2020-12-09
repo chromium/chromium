@@ -9,6 +9,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/v8_target_cpu.gni")
 import("//build/toolchain/cc_wrapper.gni")
 import("//build/toolchain/goma.gni")
+import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 
 if (is_nacl) {
@@ -147,10 +148,15 @@ template("gcc_toolchain") {
       }
     }
 
-    # When the invoker has explicitly overridden use_goma or cc_wrapper in the
-    # toolchain args, use those values, otherwise default to the global one.
-    # This works because the only reasonable override that toolchains might
-    # supply for these values are to force-disable them.
+    # When the invoker has explicitly overridden user_rbe, use_goma or
+    # cc_wrapper in the toolchain args, use those values, otherwise default
+    # to the global one.  This works because the only reasonable override
+    # that toolchains might supply for these values are to force-disable them.
+    if (defined(toolchain_args.use_rbe)) {
+      toolchain_uses_rbe = toolchain_args.use_rbe
+    } else {
+      toolchain_uses_rbe = use_rbe
+    }
     if (defined(toolchain_args.use_goma)) {
       toolchain_uses_goma = toolchain_args.use_goma
     } else {
@@ -161,6 +167,10 @@ template("gcc_toolchain") {
     } else {
       toolchain_cc_wrapper = cc_wrapper
     }
+    assert(!(toolchain_uses_rbe && toolchain_uses_goma),
+           "Goma and RBE can't be used together.")
+    assert(!(toolchain_cc_wrapper != "" && toolchain_uses_rbe),
+           "RBE and cc_wrapper can't be used together.")
     assert(!(toolchain_cc_wrapper != "" && toolchain_uses_goma),
            "Goma and cc_wrapper can't be used together.")
 
@@ -172,9 +182,11 @@ template("gcc_toolchain") {
     # wrapper will have picked up gomacc via cmd-line arg. So need to prepend
     # gomacc in that case.
     goma_path = "$goma_dir/gomacc"
-    if (toolchain_uses_goma &&
-        (!defined(invoker_toolchain_args.needs_gomacc_path_arg) ||
-         !invoker_toolchain_args.needs_gomacc_path_arg)) {
+    if (toolchain_uses_rbe) {
+      compiler_prefix = "${cc_rewrapper} "
+    } else if (toolchain_uses_goma &&
+               (!defined(invoker_toolchain_args.needs_gomacc_path_arg) ||
+                !invoker_toolchain_args.needs_gomacc_path_arg)) {
       compiler_prefix = "${goma_path} "
     } else {
       compiler_prefix = "${toolchain_cc_wrapper} "
