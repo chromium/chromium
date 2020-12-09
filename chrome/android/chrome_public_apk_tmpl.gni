@@ -173,17 +173,6 @@ template("chrome_public_common_apk_or_module_tmpl") {
     # https://crbug.com/636448
     resource_exclusion_regex += "|${_material_package}/xml.*badge_"
     _material_package = "*com_google_android_material*"
-    resource_exclusion_exceptions += [
-      # AppBarLayout
-      "${_material_package}design_appbar_*",
-
-      # TabLayout
-      "${_material_package}_tab*",
-
-      # TextInputLayout
-      "${_material_package}/design_text_*",
-      "${_material_package}/text_*",
-    ]
 
     # Remove unneeded entries from material design values.xml files.
     resource_values_filter_rules = [ "${_material_package}:[Tt]oolbarLayout" ]
