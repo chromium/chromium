@@ -29,9 +29,12 @@ std::set<IPAddress> ParseIPs(const std::set<base::StringPiece>& ip_strs) {
 
 // static
 const DohProviderEntry::List& DohProviderEntry::GetList() {
+  // See /net/docs/adding_doh_providers.md for instructions on modifying this
+  // DoH provider list.
+  //
   // The provider names in these entries should be kept in sync with the
   // DohProviderId histogram suffix list in
-  // tools/metrics/histograms/histograms.xml.
+  // tools/metrics/histograms/histograms_xml/histogram_suffixes_list.xml.
   static const base::NoDestructor<DohProviderEntry::List> providers{{
       new DohProviderEntry("AlekBergNl", DohProviderIdForHistogram::kAlekBergNl,
                            {} /* ip_strs */, {} /* dns_over_tls_hostnames */,
