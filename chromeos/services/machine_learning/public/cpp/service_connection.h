@@ -94,6 +94,13 @@ class ServiceConnection {
       mojom::MachineLearningService::LoadGrammarCheckerCallback
           result_callback) = 0;
 
+  // Instruct ML daemon to load a SODA model.
+  virtual void LoadSpeechRecognizer(
+      mojom::SodaConfigPtr soda_config,
+      mojo::PendingRemote<mojom::SodaClient> soda_client,
+      mojo::PendingReceiver<mojom::SodaRecognizer> soda_recognizer,
+      mojom::MachineLearningService::LoadSpeechRecognizerCallback callback) = 0;
+
  protected:
   ServiceConnection() = default;
   virtual ~ServiceConnection() {}

@@ -19,6 +19,7 @@
 #include "chromeos/services/machine_learning/public/mojom/text_classifier.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace chromeos {
 namespace machine_learning {
@@ -37,7 +38,8 @@ class FakeServiceConnectionImpl : public ServiceConnection,
                                   public mojom::TextClassifier,
                                   public mojom::HandwritingRecognizer,
                                   public mojom::GrammarChecker,
-                                  public mojom::GraphExecutor {
+                                  public mojom::GraphExecutor,
+                                  public mojom::SodaRecognizer {
  public:
   FakeServiceConnectionImpl();
   ~FakeServiceConnectionImpl() override;
@@ -76,6 +78,13 @@ class FakeServiceConnectionImpl : public ServiceConnection,
   void LoadGrammarChecker(
       mojo::PendingReceiver<mojom::GrammarChecker> receiver,
       mojom::MachineLearningService::LoadGrammarCheckerCallback callback)
+      override;
+
+  void LoadSpeechRecognizer(
+      mojom::SodaConfigPtr soda_config,
+      mojo::PendingRemote<mojom::SodaClient> soda_client,
+      mojo::PendingReceiver<mojom::SodaRecognizer> soda_recognizer,
+      mojom::MachineLearningService::LoadSpeechRecognizerCallback callback)
       override;
 
   // mojom::Model:
@@ -166,6 +175,12 @@ class FakeServiceConnectionImpl : public ServiceConnection,
   void Check(mojom::GrammarCheckerQueryPtr query,
              mojom::GrammarChecker::CheckCallback callback) override;
 
+  // mojom::SpeechRecognizer
+  void AddAudio(const std::vector<uint8_t>& audio) override;
+  void Stop() override;
+  void Start() override;
+  void MarkDone() override;
+
  private:
   void ScheduleCall(base::OnceClosure call);
   void HandleLoadBuiltinModelCall(
@@ -204,16 +219,27 @@ class FakeServiceConnectionImpl : public ServiceConnection,
       mojom::MachineLearningService::LoadGrammarCheckerCallback callback);
   void HandleGrammarCheckerQuery(mojom::GrammarCheckerQueryPtr query,
                                  mojom::GrammarChecker::CheckCallback callback);
+  void HandleLoadSpeechRecognizer(
+      mojo::PendingRemote<mojom::SodaClient> soda_client,
+      mojo::PendingReceiver<mojom::SodaRecognizer> soda_recognizer,
+      mojom::MachineLearningService::LoadSpeechRecognizerCallback callback);
+
+  void HandleStop();
+  void HandleStart();
+  void HandleMarkDone();
 
   mojo::ReceiverSet<mojom::Model> model_receivers_;
   mojo::ReceiverSet<mojom::GraphExecutor> graph_receivers_;
   mojo::ReceiverSet<mojom::TextClassifier> text_classifier_receivers_;
   mojo::ReceiverSet<mojom::HandwritingRecognizer> handwriting_receivers_;
   mojo::ReceiverSet<mojom::GrammarChecker> grammar_checker_receivers_;
+  mojo::ReceiverSet<mojom::SodaRecognizer> soda_recognizer_receivers_;
+  mojo::RemoteSet<mojom::SodaClient> soda_client_remotes_;
   mojom::TensorPtr output_tensor_;
   mojom::LoadHandwritingModelResult load_handwriting_model_result_;
   mojom::LoadModelResult load_model_result_;
   mojom::LoadModelResult load_text_classifier_result_;
+  mojom::LoadModelResult load_soda_result_;
   mojom::CreateGraphExecutorResult create_graph_executor_result_;
   mojom::ExecuteResult execute_result_;
   std::vector<mojom::TextAnnotationPtr> annotate_result_;

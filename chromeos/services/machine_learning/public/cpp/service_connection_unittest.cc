@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
@@ -91,6 +92,32 @@ TEST_F(ServiceConnectionTest, LoadHandwritingModelWithSpec) {
       mojom::HandwritingRecognizerSpec::New("en"),
       handwriting_recognizer.BindNewPipeAndPassReceiver(),
       base::BindOnce([](mojom::LoadModelResult result) {}));
+}
+
+class TestSodaClient : public mojom::SodaClient {};
+
+// Tests that LoadSpeechRecognizer runs OK without a crash in a basic Mojo
+// Environment.
+TEST_F(ServiceConnectionTest, LoadSpeechRecognizerAndCallback) {
+  mojo::Remote<mojom::SodaRecognizer> soda_recognizer;
+  TestSodaClient test_client;
+  FakeServiceConnectionImpl fake_service_connection;
+  ServiceConnection::UseFakeServiceConnectionForTesting(
+      &fake_service_connection);
+  mojo::Receiver<mojom::SodaClient> soda_client{&test_client};
+  bool callback_done = false;
+  auto config = mojom::SodaConfig::New();
+  base::RunLoop run_loop;
+  ServiceConnection::GetInstance()->LoadSpeechRecognizer(
+      std::move(config), soda_client.BindNewPipeAndPassRemote(),
+      soda_recognizer.BindNewPipeAndPassReceiver(),
+      base::BindLambdaForTesting([&](mojom::LoadModelResult result) {
+        callback_done = true;
+        EXPECT_EQ(result, mojom::LoadModelResult::OK);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  ASSERT_TRUE(callback_done);
 }
 
 // Tests that LoadGrammarChecker runs OK (no crash) in a basic Mojo environment.

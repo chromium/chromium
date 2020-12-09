@@ -17,6 +17,7 @@ FakeServiceConnectionImpl::FakeServiceConnectionImpl()
       load_handwriting_model_result_(mojom::LoadHandwritingModelResult::OK),
       load_model_result_(mojom::LoadModelResult::OK),
       load_text_classifier_result_(mojom::LoadModelResult::OK),
+      load_soda_result_(mojom::LoadModelResult::OK),
       create_graph_executor_result_(mojom::CreateGraphExecutorResult::OK),
       execute_result_(mojom::ExecuteResult::OK),
       async_mode_(false) {}
@@ -90,6 +91,16 @@ void FakeServiceConnectionImpl::LoadGrammarChecker(
   ScheduleCall(base::BindOnce(
       &FakeServiceConnectionImpl::HandleLoadGrammarChecker,
       base::Unretained(this), std::move(receiver), std::move(callback)));
+}
+void FakeServiceConnectionImpl::LoadSpeechRecognizer(
+    mojom::SodaConfigPtr soda_config,
+    mojo::PendingRemote<mojom::SodaClient> soda_client,
+    mojo::PendingReceiver<mojom::SodaRecognizer> soda_recognizer,
+    mojom::MachineLearningService::LoadSpeechRecognizerCallback callback) {
+  ScheduleCall(
+      base::BindOnce(&FakeServiceConnectionImpl::HandleLoadSpeechRecognizer,
+                     base::Unretained(this), std::move(soda_client),
+                     std::move(soda_recognizer), std::move(callback)));
 }
 
 void FakeServiceConnectionImpl::Execute(
@@ -304,13 +315,37 @@ void FakeServiceConnectionImpl::Check(
       &FakeServiceConnectionImpl::HandleGrammarCheckerQuery,
       base::Unretained(this), std::move(query), std::move(callback)));
 }
+void FakeServiceConnectionImpl::HandleStop() {
+  // Do something on the client
+}
+
+void FakeServiceConnectionImpl::HandleStart() {
+  // Do something on the client.
+}
+
+void FakeServiceConnectionImpl::HandleMarkDone() {
+  HandleStop();
+}
+
+void FakeServiceConnectionImpl::AddAudio(const std::vector<uint8_t>& audio) {}
+void FakeServiceConnectionImpl::Stop() {
+  ScheduleCall(base::BindOnce(&FakeServiceConnectionImpl::HandleStop,
+                              base::Unretained(this)));
+}
+void FakeServiceConnectionImpl::Start() {
+  ScheduleCall(base::BindOnce(&FakeServiceConnectionImpl::HandleStart,
+                              base::Unretained(this)));
+}
+void FakeServiceConnectionImpl::MarkDone() {
+  ScheduleCall(base::BindOnce(&FakeServiceConnectionImpl::HandleMarkDone,
+                              base::Unretained(this)));
+}
 
 void FakeServiceConnectionImpl::HandleLoadHandwritingModel(
     mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
     mojom::MachineLearningService::LoadHandwritingModelCallback callback) {
   if (load_handwriting_model_result_ == mojom::LoadHandwritingModelResult::OK)
     handwriting_receivers_.Add(this, std::move(receiver));
-
   std::move(callback).Run(load_handwriting_model_result_);
 }
 
@@ -337,6 +372,16 @@ void FakeServiceConnectionImpl::HandleLoadGrammarChecker(
     grammar_checker_receivers_.Add(this, std::move(receiver));
 
   std::move(callback).Run(load_model_result_);
+}
+void FakeServiceConnectionImpl::HandleLoadSpeechRecognizer(
+    mojo::PendingRemote<mojom::SodaClient> soda_client,
+    mojo::PendingReceiver<mojom::SodaRecognizer> soda_recognizer,
+    mojom::MachineLearningService::LoadSpeechRecognizerCallback callback) {
+  if (load_soda_result_ == mojom::LoadModelResult::OK) {
+    soda_recognizer_receivers_.Add(this, std::move(soda_recognizer));
+    soda_client_remotes_.Add(std::move(soda_client));
+  }
+  std::move(callback).Run(load_soda_result_);
 }
 
 void FakeServiceConnectionImpl::HandleGrammarCheckerQuery(

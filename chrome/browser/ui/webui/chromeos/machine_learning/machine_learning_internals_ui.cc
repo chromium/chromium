@@ -43,6 +43,9 @@ MachineLearningInternalsUI::MachineLearningInternalsUI(
       {IDR_MACHINE_LEARNING_INTERNALS_PAGE_HANDLER_MOJO_JS,
        "chrome/browser/ui/webui/chromeos/machine_learning/"
        "machine_learning_internals_page_handler.mojom-lite.js"},
+      {IDR_MACHINE_LEARNING_INTERNALS_SODA_MOJO_JS,
+       "chromeos/services/machine_learning/public/mojom/"
+       "soda.mojom-lite.js"},
 
       {IDR_MACHINE_LEARNING_INTERNALS_TENSOR_MOJO_JS,
        "chromeos/services/machine_learning/public/mojom/tensor.mojom-lite.js"},

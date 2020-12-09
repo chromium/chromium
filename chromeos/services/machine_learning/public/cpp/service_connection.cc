@@ -61,6 +61,13 @@ class ServiceConnectionImpl : public ServiceConnection {
       mojom::MachineLearningService::LoadGrammarCheckerCallback result_callback)
       override;
 
+  void LoadSpeechRecognizer(
+      mojom::SodaConfigPtr soda_config,
+      mojo::PendingRemote<mojom::SodaClient> soda_client,
+      mojo::PendingReceiver<mojom::SodaRecognizer> soda_recognizer,
+      mojom::MachineLearningService::LoadSpeechRecognizerCallback callback)
+      override;
+
  private:
   // Binds the top level interface |machine_learning_service_| to an
   // implementation in the ML Service daemon, if it is not already bound. The
@@ -140,6 +147,18 @@ void ServiceConnectionImpl::LoadGrammarChecker(
   BindMachineLearningServiceIfNeeded();
   machine_learning_service_->LoadGrammarChecker(std::move(receiver),
                                                 std::move(result_callback));
+}
+
+void ServiceConnectionImpl::LoadSpeechRecognizer(
+    mojom::SodaConfigPtr soda_config,
+    mojo::PendingRemote<mojom::SodaClient> soda_client,
+    mojo::PendingReceiver<mojom::SodaRecognizer> soda_recognizer,
+    mojom::MachineLearningService::LoadSpeechRecognizerCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  BindMachineLearningServiceIfNeeded();
+  machine_learning_service_->LoadSpeechRecognizer(
+      std::move(soda_config), std::move(soda_client),
+      std::move(soda_recognizer), std::move(callback));
 }
 
 void ServiceConnectionImpl::BindMachineLearningServiceIfNeeded() {

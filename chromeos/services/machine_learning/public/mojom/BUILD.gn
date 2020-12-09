@@ -12,6 +12,7 @@ mojom("mojom") {
     "handwriting_recognizer_requestor.mojom",
     "machine_learning_service.mojom",
     "model.mojom",
+    "soda.mojom",
     "tensor.mojom",
     "text_classifier.mojom",
   ]
