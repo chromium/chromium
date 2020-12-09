@@ -327,11 +327,9 @@ public class LibraryLoader {
     }
 
     /**
-     * Loads the library and blocks until the load completes. The caller is responsible
-     * for subsequently calling ensureInitialized().
-     * May be called on any thread, but should only be called once. Note the thread
-     * this is called on will be the thread that runs the native code's static initializers.
-     * See the comment in doInBackground() for more considerations on this.
+     * Loads the library and blocks until the load completes. The caller is responsible for
+     * subsequently calling ensureInitialized(). May be called on any thread, but should only be
+     * called once.
      */
     public void loadNow() {
         loadNowOverrideApplicationContext(ContextUtils.getApplicationContext());
