@@ -51,7 +51,7 @@ class FileOperationHandler {
    * @private
    */
   onCopyProgress_(event) {
-    const EventType = fileOperationUtil.EventRouter.EventType;
+    const EventType = FileOperationProgressEvent.EventType;
     event = /** @type {FileOperationProgressEvent} */ (event);
 
     // Update progress center.
@@ -129,7 +129,7 @@ class FileOperationHandler {
    * @private
    */
   onDeleteProgress_(event) {
-    const EventType = fileOperationUtil.EventRouter.EventType;
+    const EventType = FileOperationProgressEvent.EventType;
     event = /** @type {FileOperationProgressEvent} */ (event);
 
     // Update progress center.
@@ -224,7 +224,7 @@ class FileOperationHandler {
    * @private
    */
   static getMessage_(event) {
-    if (event.reason === fileOperationUtil.EventRouter.EventType.ERROR) {
+    if (event.reason === FileOperationProgressEvent.EventType.ERROR) {
       switch (event.error.code) {
         case util.FileOperationErrorType.TARGET_EXISTS:
           let name = event.error.data.name;

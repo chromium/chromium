@@ -143,7 +143,7 @@ class FileOperationManagerImpl {
       }
       task.requestCancel();
       this.eventRouter_.sendProgressEvent(
-          fileOperationUtil.EventRouter.EventType.CANCELED,
+          FileOperationProgressEvent.EventType.CANCELED,
           this.getTaskStatus(task), task.taskId);
       this.pendingCopyTasks_.splice(i, 1);
     }
@@ -164,7 +164,7 @@ class FileOperationManagerImpl {
       // If the task is not on progress, remove it immediately.
       if (i !== 0) {
         this.eventRouter_.sendDeleteEvent(
-            fileOperationUtil.EventRouter.EventType.CANCELED, task);
+            FileOperationProgressEvent.EventType.CANCELED, task);
         this.deleteTasks_.splice(i, 1);
       }
     }
@@ -273,7 +273,7 @@ class FileOperationManagerImpl {
     }
 
     this.eventRouter_.sendProgressEvent(
-        fileOperationUtil.EventRouter.EventType.BEGIN, this.getTaskStatus(task),
+        FileOperationProgressEvent.EventType.BEGIN, this.getTaskStatus(task),
         task.taskId);
 
     task.initialize(() => {
@@ -320,9 +320,9 @@ class FileOperationManagerImpl {
           /** @type {!DirectoryEntry} */ (task.targetDirEntry));
       if (volumeInfo === null) {
         this.eventRouter_.sendProgressEvent(
-            fileOperationUtil.EventRouter.EventType.ERROR,
+            FileOperationProgressEvent.EventType.ERROR,
             this.getTaskStatus(task), task.taskId,
-            new fileOperationUtil.Error(
+            new FileOperationError(
                 util.FileOperationErrorType.FILESYSTEM_ERROR,
                 util.createDOMError(util.FileError.NOT_FOUND_ERR)));
 
@@ -347,7 +347,7 @@ class FileOperationManagerImpl {
 
     const onTaskProgress = function(task) {
       this.eventRouter_.sendProgressEvent(
-          fileOperationUtil.EventRouter.EventType.PROGRESS,
+          FileOperationProgressEvent.EventType.PROGRESS,
           this.getTaskStatus(task), task.taskId);
     }.bind(this, nextTask);
 
@@ -362,8 +362,8 @@ class FileOperationManagerImpl {
       delete this.runningCopyTasks_[volumeId];
 
       const reason = err.data.name === util.FileError.ABORT_ERR ?
-          fileOperationUtil.EventRouter.EventType.CANCELED :
-          fileOperationUtil.EventRouter.EventType.ERROR;
+          FileOperationProgressEvent.EventType.CANCELED :
+          FileOperationProgressEvent.EventType.ERROR;
       this.eventRouter_.sendProgressEvent(
           reason, this.getTaskStatus(task), task.taskId, err);
       this.serviceAllTasks_();
@@ -374,7 +374,7 @@ class FileOperationManagerImpl {
       delete this.runningCopyTasks_[volumeId];
 
       this.eventRouter_.sendProgressEvent(
-          fileOperationUtil.EventRouter.EventType.SUCCESS,
+          FileOperationProgressEvent.EventType.SUCCESS,
           this.getTaskStatus(task), task.taskId);
       this.serviceAllTasks_();
     }.bind(this, nextTaskVolumeId);
@@ -383,7 +383,7 @@ class FileOperationManagerImpl {
     this.runningCopyTasks_[nextTaskVolumeId] = nextTask;
 
     this.eventRouter_.sendProgressEvent(
-        fileOperationUtil.EventRouter.EventType.PROGRESS,
+        FileOperationProgressEvent.EventType.PROGRESS,
         this.getTaskStatus(nextTask), nextTask.taskId);
     nextTask.run(onEntryChanged, onTaskProgress, onTaskSuccess, onTaskError);
   }
@@ -452,7 +452,7 @@ class FileOperationManagerImpl {
     group.run(() => {
       this.deleteTasks_.push(task);
       this.eventRouter_.sendDeleteEvent(
-          fileOperationUtil.EventRouter.EventType.BEGIN, task);
+          FileOperationProgressEvent.EventType.BEGIN, task);
       if (this.deleteTasks_.length === 1) {
         this.serviceAllDeleteTasks_();
       }
@@ -502,7 +502,7 @@ class FileOperationManagerImpl {
         return;
       }
       this.eventRouter_.sendDeleteEvent(
-          fileOperationUtil.EventRouter.EventType.PROGRESS, task);
+          FileOperationProgressEvent.EventType.PROGRESS, task);
 
       // Operation will be either delete, or restore.
       let operation;
@@ -546,7 +546,7 @@ class FileOperationManagerImpl {
 
     // Send an event and finish the async steps.
     queue.run(inCallback => {
-      const EventType = fileOperationUtil.EventRouter.EventType;
+      const EventType = FileOperationProgressEvent.EventType;
       let reason;
       if (error) {
         reason = EventType.ERROR;
@@ -557,7 +557,7 @@ class FileOperationManagerImpl {
       }
       this.eventRouter_.sendDeleteEvent(
           reason, task,
-          new fileOperationUtil.Error(
+          new FileOperationError(
               util.FileOperationErrorType.FILESYSTEM_ERROR, error));
       inCallback();
       callback();
@@ -584,8 +584,8 @@ class FileOperationManagerImpl {
     const zipTask = new fileOperationUtil.ZipTask(
         this.generateTaskId(), selectionEntries, dirEntry, dirEntry);
     this.eventRouter_.sendProgressEvent(
-        fileOperationUtil.EventRouter.EventType.BEGIN,
-        this.getTaskStatus(zipTask), zipTask.taskId);
+        FileOperationProgressEvent.EventType.BEGIN, this.getTaskStatus(zipTask),
+        zipTask.taskId);
     zipTask.initialize(() => {
       this.pendingCopyTasks_.push(zipTask);
       this.serviceAllTasks_();

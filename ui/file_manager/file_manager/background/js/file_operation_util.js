@@ -3,6 +3,21 @@
 // found in the LICENSE file.
 
 /**
+ * @fileoverview
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
+ */
+
+// clang-format off
+// #import {FileOperationProgressEvent, FileOperationError} from '../../common/js/file_operation_common.m.js';
+// #import {TrashEntry} from '../../common/js/trash.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {metadataProxy} from './metadata_proxy.m.js';
+// #import {AsyncUtil} from '../../common/js/async_util.m.js';
+// #import {util} from '../../common/js/util.m.js';
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// clang-format on
+
+/**
  * Utilities for file operations.
  */
 const fileOperationUtil = {};
@@ -44,8 +59,8 @@ fileOperationUtil.resolvePath = (root, path) => {
  * @param {string} relativePath The path to be deduplicated.
  * @param {function(string)=} opt_successCallback Callback run with the
  *     deduplicated path on success.
- * @param {function(fileOperationUtil.Error)=} opt_errorCallback Callback run
- *     on error.
+ * @param {function(FileOperationError)=} opt_errorCallback
+ *     Callback run on error.
  * @return {Promise} Promise fulfilled with available path.
  */
 fileOperationUtil.deduplicatePath =
@@ -83,7 +98,7 @@ fileOperationUtil.deduplicatePath =
         if (error instanceof Error) {
           return Promise.reject(error);
         }
-        return Promise.reject(new fileOperationUtil.Error(
+        return Promise.reject(new FileOperationError(
             util.FileOperationErrorType.FILESYSTEM_ERROR, error));
       });
       if (opt_successCallback) {
@@ -657,8 +672,8 @@ fileOperationUtil.Task = class {
    * @param {function()} progressCallback Callback invoked periodically during
    *     the operation.
    * @param {function()} successCallback Callback run on success.
-   * @param {function(fileOperationUtil.Error)} errorCallback Callback run on
-   *     error.
+   * @param {function(FileOperationError)} errorCallback Callback
+   *     run on error.
    */
   run(entryChangedCallback, progressCallback, successCallback, errorCallback) {}
 
@@ -818,7 +833,7 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
    * @param {function()} progressCallback Callback invoked periodically during
    *     the copying.
    * @param {function()} successCallback On success.
-   * @param {function(fileOperationUtil.Error)} errorCallback On error.
+   * @param {function(FileOperationError)} errorCallback On error.
    * @override
    */
   run(entryChangedCallback, progressCallback, successCallback, errorCallback) {
@@ -843,7 +858,7 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
       };
 
       const onFilesystemError = err => {
-        errorCallback(new fileOperationUtil.Error(
+        errorCallback(new FileOperationError(
             util.FileOperationErrorType.FILESYSTEM_ERROR, err));
       };
 
@@ -912,7 +927,7 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
         this.sourceEntries,
         (callback, entry, index) => {
           if (this.cancelRequested_) {
-            errorCallback(new fileOperationUtil.Error(
+            errorCallback(new FileOperationError(
                 util.FileOperationErrorType.FILESYSTEM_ERROR,
                 util.createDOMError(util.FileError.ABORT_ERR)));
             return;
@@ -984,7 +999,7 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
    * @param {function(string, number)} progressCallback Callback invoked
    *     periodically during the copying.
    * @param {function()} successCallback On success.
-   * @param {function(fileOperationUtil.Error)} errorCallback On error.
+   * @param {function(FileOperationError)} errorCallback On error.
    * @private
    */
   processEntry_(
@@ -993,7 +1008,7 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
     fileOperationUtil.deduplicatePath(
         destinationEntry, sourceEntry.name, destinationName => {
           if (this.cancelRequested_) {
-            errorCallback(new fileOperationUtil.Error(
+            errorCallback(new FileOperationError(
                 util.FileOperationErrorType.FILESYSTEM_ERROR,
                 util.createDOMError(util.FileError.ABORT_ERR)));
             return;
@@ -1007,7 +1022,7 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
               },
               error => {
                 this.cancelCallback_ = null;
-                errorCallback(new fileOperationUtil.Error(
+                errorCallback(new FileOperationError(
                     util.FileOperationErrorType.FILESYSTEM_ERROR, error));
               });
         }, errorCallback);
@@ -1073,7 +1088,7 @@ fileOperationUtil.MoveTask = class extends fileOperationUtil.Task {
    * @param {function()} progressCallback Callback invoked periodically during
    *     the moving.
    * @param {function()} successCallback On success.
-   * @param {function(fileOperationUtil.Error)} errorCallback On error.
+   * @param {function(FileOperationError)} errorCallback On error.
    * @override
    */
   run(entryChangedCallback, progressCallback, successCallback, errorCallback) {
@@ -1086,7 +1101,7 @@ fileOperationUtil.MoveTask = class extends fileOperationUtil.Task {
         this.sourceEntries,
         (callback, entry, index) => {
           if (this.cancelRequested_) {
-            errorCallback(new fileOperationUtil.Error(
+            errorCallback(new FileOperationError(
                 util.FileOperationErrorType.FILESYSTEM_ERROR,
                 util.createDOMError(util.FileError.ABORT_ERR)));
             return;
@@ -1116,7 +1131,7 @@ fileOperationUtil.MoveTask = class extends fileOperationUtil.Task {
    * @param {function(util.EntryChangedKind, Entry)} entryChangedCallback
    *     Callback invoked when an entry is changed.
    * @param {function()} successCallback On success.
-   * @param {function(fileOperationUtil.Error)} errorCallback On error.
+   * @param {function(FileOperationError)} errorCallback On error.
    * @private
    */
   static processEntry_(
@@ -1136,7 +1151,7 @@ fileOperationUtil.MoveTask = class extends fileOperationUtil.Task {
                 successCallback();
               },
               error => {
-                errorCallback(new fileOperationUtil.Error(
+                errorCallback(new FileOperationError(
                     util.FileOperationErrorType.FILESYSTEM_ERROR, error));
               });
         }, errorCallback);
@@ -1203,7 +1218,7 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
    * @param {function()} progressCallback Callback invoked periodically during
    *     the moving.
    * @param {function()} successCallback On complete.
-   * @param {function(fileOperationUtil.Error)} errorCallback On error.
+   * @param {function(FileOperationError)} errorCallback On error.
    * @override
    */
   run(entryChangedCallback, progressCallback, successCallback, errorCallback) {
@@ -1238,7 +1253,7 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
                 successCallback();
               },
               error => {
-                errorCallback(new fileOperationUtil.Error(
+                errorCallback(new FileOperationError(
                     util.FileOperationErrorType.FILESYSTEM_ERROR, error));
               });
         }, errorCallback);
@@ -1274,20 +1289,6 @@ fileOperationUtil.Status;
  */
 fileOperationUtil.DeleteTask;
 
-/**
- * Error class used to report problems with a copy operation.
- * If the code is UNEXPECTED_SOURCE_FILE, data should be a path of the file.
- * If the code is TARGET_EXISTS, data should be the existing Entry.
- * If the code is FILESYSTEM_ERROR, data should be the FileError.
- *
- * @param {util.FileOperationErrorType} code Error type.
- * @param {string|Entry|DOMError} data Additional data.
- * @constructor
- */
-fileOperationUtil.Error = function(code, data) {
-  this.code = code;
-  this.data = data;
-};
 
 /**
  * Manages Event dispatching.
@@ -1309,15 +1310,15 @@ fileOperationUtil.EventRouter = class extends cr.EventTarget {
    * Dispatches a simple "copy-progress" event with reason and current
    * FileOperationManager status. If it is an ERROR event, error should be set.
    *
-   * @param {fileOperationUtil.EventRouter.EventType} type Event type.
+   * @param {FileOperationProgressEvent.EventType} type Event type.
    * @param {!fileOperationUtil.Status} status Current FileOperationManager's
    *     status. See also FileOperationManager.Task.getStatus().
    * @param {string} taskId ID of task related with the event.
-   * @param {fileOperationUtil.Error=} opt_error The info for the error. This
-   *     should be set iff the reason is "ERROR".
+   * @param {FileOperationError=} opt_error The info for the
+   *     error. This should be set iff the reason is "ERROR".
    */
   sendProgressEvent(type, status, taskId, opt_error) {
-    const EventType = fileOperationUtil.EventRouter.EventType;
+    const EventType = FileOperationProgressEvent.EventType;
     // Before finishing operation, dispatch pending entries-changed events.
     if (type === EventType.SUCCESS || type === EventType.CANCELED) {
       this.entryChangedEventRateLimiter_.runImmediately();
@@ -1385,9 +1386,9 @@ fileOperationUtil.EventRouter = class extends cr.EventTarget {
   /**
    * Dispatches an event to notify entries are changed for delete task.
    *
-   * @param {fileOperationUtil.EventRouter.EventType} reason Event type.
+   * @param {FileOperationProgressEvent.EventType} reason Event type.
    * @param {!Object} task Delete task related with the event.
-   * @param {fileOperationUtil.Error=} error
+   * @param {FileOperationError=} error
    */
   sendDeleteEvent(reason, task, error) {
     const event =
@@ -1410,18 +1411,6 @@ fileOperationUtil.EventRouter = class extends cr.EventTarget {
     event.trashedEntries = task.trashedEntries;
     this.dispatchEvent(event);
   }
-};
-
-/**
- * Types of events emitted by the EventRouter.
- * @enum {string}
- */
-fileOperationUtil.EventRouter.EventType = {
-  BEGIN: 'BEGIN',
-  CANCELED: 'CANCELED',
-  ERROR: 'ERROR',
-  PROGRESS: 'PROGRESS',
-  SUCCESS: 'SUCCESS'
 };
 
 /**
@@ -1585,3 +1574,6 @@ fileOperationUtil.Speedometer = class {
     this.lastTimestamp_ = currentTime;
   }
 };
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {fileOperationUtil};

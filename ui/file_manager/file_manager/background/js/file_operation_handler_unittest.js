@@ -79,7 +79,7 @@ function testCopySuccess() {
   fileOperationManager.dispatchEvent(
       /** @type {!Event} */ (Object.assign(new Event('copy-progress'), {
         taskId: 'TASK_ID',
-        reason: fileOperationUtil.EventRouter.EventType.BEGIN,
+        reason: FileOperationProgressEvent.EventType.BEGIN,
         status: {
           operationType: 'COPY',
           numRemainingItems: 1,
@@ -102,7 +102,7 @@ function testCopySuccess() {
   fileOperationManager.dispatchEvent(
       /** @type {!Event} */ (Object.assign(new Event('copy-progress'), {
         taskId: 'TASK_ID',
-        reason: fileOperationUtil.EventRouter.EventType.SUCCESS,
+        reason: FileOperationProgressEvent.EventType.SUCCESS,
         status: {
           operationType: 'COPY',
         },
@@ -126,7 +126,7 @@ function testCopyCancel() {
   fileOperationManager.dispatchEvent(
       /** @type {!Event} */ (Object.assign(new Event('copy-progress'), {
         taskId: 'TASK_ID',
-        reason: fileOperationUtil.EventRouter.EventType.BEGIN,
+        reason: FileOperationProgressEvent.EventType.BEGIN,
         status: {
           operationType: 'COPY',
           numRemainingItems: 1,
@@ -148,7 +148,7 @@ function testCopyCancel() {
   fileOperationManager.cancelEvent =
       /** @type {!Event} */ (Object.assign(new Event('copy-progress'), {
         taskId: 'TASK_ID',
-        reason: fileOperationUtil.EventRouter.EventType.CANCELED,
+        reason: FileOperationProgressEvent.EventType.CANCELED,
         status: {
           operationType: 'COPY',
         },
@@ -175,7 +175,7 @@ function testCopyTargetExistsError() {
   fileOperationManager.dispatchEvent(
       /** @type {!Event} */ (Object.assign(new Event('copy-progress'), {
         taskId: 'TASK_ID',
-        reason: fileOperationUtil.EventRouter.EventType.ERROR,
+        reason: FileOperationProgressEvent.EventType.ERROR,
         status: {
           operationType: 'COPY',
         },
@@ -204,7 +204,7 @@ function testCopyFileSystemError() {
   fileOperationManager.dispatchEvent(
       /** @type {!Event} */ (Object.assign(new Event('copy-progress'), {
         taskId: 'TASK_ID',
-        reason: fileOperationUtil.EventRouter.EventType.ERROR,
+        reason: FileOperationProgressEvent.EventType.ERROR,
         status: {
           operationType: 'COPY',
         },
@@ -233,7 +233,7 @@ function testCopyUnexpectedError() {
   fileOperationManager.dispatchEvent(
       /** @type {!Event} */ (Object.assign(new Event('copy-progress'), {
         taskId: 'TASK_ID',
-        reason: fileOperationUtil.EventRouter.EventType.ERROR,
+        reason: FileOperationProgressEvent.EventType.ERROR,
         status: {
           operationType: 'COPY',
         },

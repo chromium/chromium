@@ -25,6 +25,7 @@ group("closure_compile") {
 js_type_check("closure_compile_module") {
   deps = [
     ":async_util",
+    ":file_operation_common",
     ":file_type",
     ":files_app_entry_types",
     ":importer_common",
@@ -43,12 +44,14 @@ js_type_check("closure_compile_jsmodules") {
   uses_js_modules = true
   deps = [
     ":async_util.m",
+    ":file_operation_common.m",
     ":file_type.m",
     ":files_app_entry_types.m",
     ":lru_cache.m",
     ":metrics.m",
     ":metrics_base.m",
     ":mock_entry.m",
+    ":trash.m",
     ":util.m",
   ]
 }
@@ -127,6 +130,21 @@ js_unittest("file_type_unittest.m") {
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/base/js:volume_manager_types.m",
   ]
+}
+
+js_library("file_operation_common") {
+  deps = [ ":util" ]
+  externs_list = [ "//ui/file_manager/externs/files_app_entry_interfaces.js" ]
+}
+
+js_library("file_operation_common.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/common/js/file_operation_common.m.js" ]
+  deps = [
+    ":util.m",
+    "//ui/file_manager/externs:files_app_entry_interfaces.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 # These importer files actually belong here. Nothing outside the Files app uses
@@ -244,6 +262,21 @@ js_library("trash") {
   ]
 }
 
+js_library("trash.m") {
+  sources =
+      [ "$root_gen_dir/ui/file_manager/file_manager/common/js/trash.m.js" ]
+  deps = [
+    ":files_app_entry_types.m",
+    ":util.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:files_app_entry_interfaces.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("unittest_util") {
   testonly = true
 
@@ -342,11 +375,13 @@ js_modulizer("modulize") {
     "async_util.js",
     "file_type.js",
     "files_app_entry_types.js",
+    "file_operation_common.js",
     "lru_cache.js",
     "metrics.js",
     "metrics_base.js",
     "mock_entry.js",
     "util.js",
+    "trash.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites

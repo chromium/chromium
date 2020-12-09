@@ -77,6 +77,7 @@ js_type_check("closure_compile_jsmodules") {
     ":app_windows.m",
     ":background_base.m",
     ":entry_location_impl.m",
+    ":file_operation_util.m",
     ":metadata_proxy.m",
     ":test_util_base.m",
     ":volume_info_impl.m",
@@ -122,7 +123,6 @@ js_library("closure_compile_externs") {
     "//ui/file_manager/externs/background/progress_center.js",
     "//ui/file_manager/externs/background_window.js",
     "//ui/file_manager/externs/css_rule.js",
-    "//ui/file_manager/externs/file_operation_progress_event.js",
     "//ui/file_manager/externs/launcher_search_provider.js",
     "//ui/file_manager/externs/platform.js",
     "//ui/file_manager/externs/progress_center_panel.js",
@@ -362,6 +362,7 @@ js_library("file_operation_manager") {
     ":file_operation_util",
     ":trash",
     ":volume_manager_factory",
+    "//ui/file_manager/file_manager/common/js:file_operation_common",
     "//ui/webui/resources/js:cr",
     "//ui/webui/resources/js/cr:event_target",
   ]
@@ -383,11 +384,25 @@ js_library("file_operation_util") {
   deps = [
     ":metadata_proxy",
     "//ui/file_manager/file_manager/common/js:async_util",
+    "//ui/file_manager/file_manager/common/js:file_operation_common",
     "//ui/file_manager/file_manager/common/js:trash",
     "//ui/file_manager/file_manager/common/js:util",
   ]
-  externs_list =
-      [ "//ui/file_manager/externs/file_operation_progress_event.js" ]
+}
+
+js_library("file_operation_util.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/background/js/file_operation_util.m.js" ]
+  deps = [
+    ":metadata_proxy.m",
+    "//ui/file_manager/file_manager/common/js:async_util.m",
+    "//ui/file_manager/file_manager/common/js:file_operation_common.m",
+    "//ui/file_manager/file_manager/common/js:trash.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js/cr:event_target.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("metadata_proxy") {
@@ -828,6 +843,7 @@ js_modulizer("modulize") {
     "volume_manager_factory.js",
     "volume_manager_impl.js",
     "volume_manager_util.js",
+    "file_operation_util.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites

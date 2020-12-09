@@ -11,6 +11,7 @@
 // <include src="../../common/js/progress_center_common.js">
 // <include src="../../common/js/importer_common.js">
 // <include src="../../common/js/trash.js">
+// <include src="../../common/js/file_operation_common.js">
 // <include src="metadata_proxy.js">
 // <include src="crostini.js">
 // <include src="device_handler.js">
