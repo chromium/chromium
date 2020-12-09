@@ -351,6 +351,11 @@ ci.console_view(
     },
 )
 
+ci.console_view(
+    name = "metadata.exporter",
+    header = None,
+)
+
 # The chromium.clang console includes some entries for builders from the chrome project
 [branches.console_view_entry(
     builder = "chrome:ci/{}".format(name),
@@ -4514,6 +4519,8 @@ ci.linux_builder(
 
 ci.linux_builder(
     name = "metadata-exporter",
+    console_view = "metadata.exporter",
+    console_view_entry = ci.console_view_entry(),
     executable = "recipe:chromium_export_metadata",
     service_account = "component-mapping-updater@chops-service-accounts.iam.gserviceaccount.com",
     notifies = ["metadata-mapping"],

@@ -32,7 +32,6 @@ exec("./swangle.try.star")
 # )
 
 branches.exec("./consoles/android.packager.star")
-branches.exec("./consoles/metadata.exporter.star")
 branches.exec("./consoles/sheriff.ios.star")
 
 branches.exec("./fallback-cq.star")
