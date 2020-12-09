@@ -156,12 +156,13 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver {
   AccountInfo MakeAccountAvailableWithCookies(const std::string& email,
                                               const std::string& gaia_id);
 
-  // Clears the primary account if present, with |policy| used to determine
-  // whether to keep or remove all accounts. On non-ChromeOS, results in the
-  // firing of the IdentityManager and PrimaryAccountManager callbacks for
-  // signout. Blocks until the primary account is cleared.
-  void ClearPrimaryAccount(
-      ClearPrimaryAccountPolicy policy = ClearPrimaryAccountPolicy::DEFAULT);
+  // Revokes sync consent from the primary account: the primary account is left
+  // at ConsentLevel::kNotRequired.
+  void RevokeSyncConsent();
+
+  // Clears the primary account, removes all accounts and revokes the sync
+  // consent. Blocks until the primary account is cleared.
+  void ClearPrimaryAccount();
 
   // Makes an account available for the given email address, generating a GAIA
   // ID and refresh token that correspond uniquely to that email address. Blocks

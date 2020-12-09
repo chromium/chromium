@@ -31,8 +31,7 @@ class BookmarkBubbleViewBrowserTest : public DialogBrowserTest {
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->profile());
     if (name == "bookmark_details") {
-      signin::ClearPrimaryAccount(identity_manager,
-                                  signin::ClearPrimaryAccountPolicy::DEFAULT);
+      signin::ClearPrimaryAccount(identity_manager);
     } else {
       constexpr char kTestUserEmail[] = "testuser@gtest.com";
       signin::MakePrimaryAccountAvailable(identity_manager, kTestUserEmail);

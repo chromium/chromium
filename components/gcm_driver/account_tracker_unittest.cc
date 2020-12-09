@@ -264,15 +264,7 @@ class AccountTrackerTest : public testing::Test {
 // functionality dependent on that callback firing are not relevant on ChromeOS
 // and should simply not run on that platform.
 #if !defined(OS_CHROMEOS)
-  void NotifyLogoutOfPrimaryAccountOnly() {
-    identity_test_env_.ClearPrimaryAccount(
-        signin::ClearPrimaryAccountPolicy::KEEP_ALL_ACCOUNTS);
-  }
-
-  void NotifyLogoutOfAllAccounts() {
-    identity_test_env_.ClearPrimaryAccount(
-        signin::ClearPrimaryAccountPolicy::REMOVE_ALL_ACCOUNTS);
-  }
+  void NotifyLogoutOfAllAccounts() { identity_test_env_.ClearPrimaryAccount(); }
 #endif
 
   CoreAccountInfo AddAccountWithToken(const std::string& email) {

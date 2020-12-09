@@ -535,9 +535,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   // Clear the primary account to put Sync into transport mode again.
   // Note: Clearing the primary account without also signing out isn't exposed
   // to the user, so this shouldn't happen. Still best to cover it here.
-  signin::ClearPrimaryAccount(
-      IdentityManagerFactory::GetForProfile(GetProfile(0)),
-      signin::ClearPrimaryAccountPolicy::KEEP_ALL_ACCOUNTS);
+  signin::RevokeSyncConsent(
+      IdentityManagerFactory::GetForProfile(GetProfile(0)));
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 

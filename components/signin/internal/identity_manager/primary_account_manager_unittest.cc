@@ -24,7 +24,6 @@
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
 #include "components/signin/internal/identity_manager/primary_account_policy_manager.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
@@ -45,7 +44,6 @@ class PrimaryAccountManagerTest : public testing::Test,
         token_service_(
             &user_prefs_,
             std::make_unique<FakeProfileOAuth2TokenServiceDelegate>()),
-        account_consistency_(signin::AccountConsistencyMethod::kDisabled),
         num_successful_signins_(0),
         num_unconsented_account_changed_(0) {
     AccountFetcherService::RegisterPrefs(user_prefs_.registry());
@@ -99,7 +97,7 @@ class PrimaryAccountManagerTest : public testing::Test,
 
     manager_ = std::make_unique<PrimaryAccountManager>(
         &test_signin_client_, &token_service_, &account_tracker_,
-        account_consistency_, std::move(policy_manager));
+        std::move(policy_manager));
     manager_->Initialize(&local_state_);
     manager_->AddObserver(this);
   }
@@ -144,7 +142,6 @@ class PrimaryAccountManagerTest : public testing::Test,
   std::unique_ptr<PrimaryAccountManager> manager_;
   std::vector<std::string> oauth_tokens_fetched_;
   std::vector<std::string> cookies_;
-  signin::AccountConsistencyMethod account_consistency_;
   int num_successful_signins_;
   int num_unconsented_account_changed_;
 };
@@ -155,8 +152,9 @@ TEST_F(PrimaryAccountManagerTest, SignOut) {
   CoreAccountId main_account_id =
       AddToAccountTracker("account_id", "user@gmail.com");
   manager_->SignIn("user@gmail.com");
-  manager_->SignOut(signin_metrics::SIGNOUT_TEST,
-                    signin_metrics::SignoutDelete::IGNORE_METRIC);
+  manager_->SignOutAndRemoveAllAccounts(
+      signin_metrics::SIGNOUT_TEST,
+      signin_metrics::SignoutDelete::IGNORE_METRIC);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_TRUE(manager_->GetAuthenticatedAccountInfo().email.empty());
   EXPECT_TRUE(manager_->GetAuthenticatedAccountId().empty());
@@ -182,72 +180,14 @@ TEST_F(PrimaryAccountManagerTest, SignOutRevoke) {
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_EQ(main_account_id, manager_->GetAuthenticatedAccountId());
 
-  manager_->SignOut(signin_metrics::SIGNOUT_TEST,
-                    signin_metrics::SignoutDelete::IGNORE_METRIC);
+  manager_->SignOutAndRemoveAllAccounts(
+      signin_metrics::SIGNOUT_TEST,
+      signin_metrics::SignoutDelete::IGNORE_METRIC);
 
   // Tokens are revoked.
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_TRUE(token_service_.GetAccounts().empty());
 }
-
-// kRemoveAuthenticatedAccountIfInError isn't supported on Android.
-#if !defined(OS_ANDROID)
-TEST_F(PrimaryAccountManagerTest, SignOutDiceNoRevoke) {
-  account_consistency_ = signin::AccountConsistencyMethod::kDice;
-  CreatePrimaryAccountManager();
-  CoreAccountId main_account_id =
-      AddToAccountTracker("main_id", "user@gmail.com");
-  CoreAccountId other_account_id =
-      AddToAccountTracker("other_id", "other@gmail.com");
-  token_service_.UpdateCredentials(main_account_id, "token");
-  token_service_.UpdateCredentials(other_account_id, "token");
-  manager_->SignIn("user@gmail.com");
-  EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
-  EXPECT_EQ(main_account_id, manager_->GetAuthenticatedAccountId());
-
-  manager_->SignOut(signin_metrics::SIGNOUT_TEST,
-                    signin_metrics::SignoutDelete::IGNORE_METRIC);
-
-  // Tokens are not revoked.
-  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
-  std::vector<CoreAccountId> expected_tokens = {main_account_id,
-                                                other_account_id};
-  EXPECT_EQ(expected_tokens, token_service_.GetAccounts());
-  // Unconsented primary account is not reset.
-  EXPECT_EQ(main_account_id,
-            manager_->GetUnconsentedPrimaryAccountInfo().account_id);
-}
-
-TEST_F(PrimaryAccountManagerTest, SignOutDiceWithError) {
-  account_consistency_ = signin::AccountConsistencyMethod::kDice;
-  CreatePrimaryAccountManager();
-  CoreAccountId main_account_id =
-      AddToAccountTracker("main_id", "user@gmail.com");
-  CoreAccountId other_account_id =
-      AddToAccountTracker("other_id", "other@gmail.com");
-  token_service_.UpdateCredentials(main_account_id, "token");
-  token_service_.UpdateCredentials(other_account_id, "token");
-  manager_->SignIn("user@gmail.com");
-
-  GoogleServiceAuthError error(
-      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
-  token_service_.UpdateAuthErrorForTesting(main_account_id, error);
-  token_service_.UpdateAuthErrorForTesting(other_account_id, error);
-  ASSERT_TRUE(token_service_.RefreshTokenHasError(main_account_id));
-  ASSERT_TRUE(token_service_.RefreshTokenHasError(other_account_id));
-
-  EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
-  EXPECT_EQ(main_account_id, manager_->GetAuthenticatedAccountId());
-
-  manager_->SignOut(signin_metrics::SIGNOUT_TEST,
-                    signin_metrics::SignoutDelete::IGNORE_METRIC);
-
-  // Only main token is revoked.
-  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
-  std::vector<CoreAccountId> expected_tokens = {other_account_id};
-  EXPECT_EQ(expected_tokens, token_service_.GetAccounts());
-}
-#endif
 
 TEST_F(PrimaryAccountManagerTest, SignOutWhileProhibited) {
   CreatePrimaryAccountManager();
@@ -258,12 +198,14 @@ TEST_F(PrimaryAccountManagerTest, SignOutWhileProhibited) {
   AddToAccountTracker("gaia_id", "user@gmail.com");
   manager_->SignIn("user@gmail.com");
   signin_client()->set_is_signout_allowed(false);
-  manager_->SignOut(signin_metrics::SIGNOUT_TEST,
-                    signin_metrics::SignoutDelete::IGNORE_METRIC);
+  manager_->SignOutAndRemoveAllAccounts(
+      signin_metrics::SIGNOUT_TEST,
+      signin_metrics::SignoutDelete::IGNORE_METRIC);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   signin_client()->set_is_signout_allowed(true);
-  manager_->SignOut(signin_metrics::SIGNOUT_TEST,
-                    signin_metrics::SignoutDelete::IGNORE_METRIC);
+  manager_->SignOutAndRemoveAllAccounts(
+      signin_metrics::SIGNOUT_TEST,
+      signin_metrics::SignoutDelete::IGNORE_METRIC);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 }
 
@@ -279,8 +221,9 @@ TEST_F(PrimaryAccountManagerTest, UnconsentedSignOutWhileProhibited) {
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kNotRequired));
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   signin_client()->set_is_signout_allowed(false);
-  manager_->SignOut(signin_metrics::SIGNOUT_TEST,
-                    signin_metrics::SignoutDelete::IGNORE_METRIC);
+  manager_->SignOutAndRemoveAllAccounts(
+      signin_metrics::SIGNOUT_TEST,
+      signin_metrics::SignoutDelete::IGNORE_METRIC);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kNotRequired));
 }
 

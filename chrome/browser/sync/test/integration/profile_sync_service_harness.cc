@@ -243,9 +243,7 @@ void ProfileSyncServiceHarness::ResetSyncForPrimaryAccount() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 void ProfileSyncServiceHarness::SignOutPrimaryAccount() {
   DCHECK(!username_.empty());
-  signin::ClearPrimaryAccount(
-      IdentityManagerFactory::GetForProfile(profile_),
-      signin::ClearPrimaryAccountPolicy::REMOVE_ALL_ACCOUNTS);
+  signin::ClearPrimaryAccount(IdentityManagerFactory::GetForProfile(profile_));
 }
 #endif  // !OS_CHROMEOS
 

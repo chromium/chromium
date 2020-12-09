@@ -506,8 +506,8 @@ class IdentityManager : public KeyedService,
   friend AccountInfo MakePrimaryAccountAvailable(
       IdentityManager* identity_manager,
       const std::string& email);
-  friend void ClearPrimaryAccount(IdentityManager* identity_manager,
-                                  ClearPrimaryAccountPolicy policy);
+  friend void RevokeSyncConsent(IdentityManager* identity_manager);
+  friend void ClearPrimaryAccount(IdentityManager* identity_manager);
   friend AccountInfo MakeAccountAvailable(IdentityManager* identity_manager,
                                           const std::string& email);
   friend AccountInfo MakeAccountAvailableWithCookies(

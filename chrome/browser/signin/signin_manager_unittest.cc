@@ -171,9 +171,7 @@ TEST_F(SigninManagerTest, UnconsentedPrimaryAccountNotChangedOnSignout) {
   VerifyAndResetCallExpectations();
   // Tests that OnUnconsentedPrimaryAccountChanged is never called.
   EXPECT_CALL(observer(), BeforePrimaryAccountCleared(account_info)).Times(1);
-  // Clear primary account but do not delete the account.
-  identity_test_env()->ClearPrimaryAccount(
-      ClearPrimaryAccountPolicy::KEEP_ALL_ACCOUNTS);
+  identity_test_env()->RevokeSyncConsent();
   // Primary account is cleared, but unconsented account is not.
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
   EXPECT_EQ(account_info, identity_manager()->GetPrimaryAccountInfo(
@@ -332,10 +330,10 @@ TEST_F(SigninManagerTest,
   EXPECT_CALL(observer(),
               OnUnconsentedPrimaryAccountChanged(first_account_info))
       .Times(1);
-  identity_test_env()->ClearPrimaryAccount(
-      ClearPrimaryAccountPolicy::KEEP_ALL_ACCOUNTS);
+  identity_test_env()->RevokeSyncConsent();
   // Primary account is cleared, but unconsented account is not.
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
+  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_EQ(first_account_info, identity_manager()->GetPrimaryAccountInfo(
                                     ConsentLevel::kNotRequired));
   // OnUnconsentedPrimaryAccountChanged was fired.
@@ -357,8 +355,7 @@ TEST_F(SigninManagerTest, ClearPrimaryAccountAndSignOut) {
   EXPECT_CALL(observer(), BeforePrimaryAccountCleared(account_info)).Times(1);
   EXPECT_CALL(observer(), OnUnconsentedPrimaryAccountChanged(CoreAccountInfo()))
       .Times(1);
-  identity_test_env()->ClearPrimaryAccount(
-      ClearPrimaryAccountPolicy::REMOVE_ALL_ACCOUNTS);
+  identity_test_env()->ClearPrimaryAccount();
   VerifyAndResetCallExpectations();
 }
 

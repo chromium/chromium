@@ -26,17 +26,6 @@ class GoogleServiceAuthError;
 // code to use IdentityTestEnvironment.
 namespace signin {
 
-// Controls whether to keep or remove accounts when clearing the primary
-// account.
-enum class ClearPrimaryAccountPolicy {
-  // Use the default internal policy.
-  DEFAULT,
-  // Explicitly keep all accounts.
-  KEEP_ALL_ACCOUNTS,
-  // Explicitly remove all accounts.
-  REMOVE_ALL_ACCOUNTS
-};
-
 struct CookieParamsForTest {
   std::string email;
   std::string gaia_id;
@@ -86,14 +75,15 @@ void RemoveRefreshTokenForPrimaryAccount(IdentityManager* identity_manager);
 AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
                                         const std::string& email);
 
-// Clears the primary account if present, with |policy| used to determine
-// whether to keep or remove all accounts. On non-ChromeOS, results in the
-// firing of the IdentityManager and PrimaryAccountManager callbacks for
-// signout. Blocks until the primary account is cleared.
+// Revokes sync consent from the primary account: the primary account is left
+// at ConsentLevel::kNotRequired.
 // NOTE: See disclaimer at top of file re: direct usage.
-void ClearPrimaryAccount(
-    IdentityManager* identity_manager,
-    ClearPrimaryAccountPolicy policy = ClearPrimaryAccountPolicy::DEFAULT);
+void RevokeSyncConsent(IdentityManager* identity_manager);
+
+// Clears the primary account, removes all accounts and revokes the sync
+// consent. Blocks until the primary account is cleared.
+// NOTE: See disclaimer at top of file re: direct usage.
+void ClearPrimaryAccount(IdentityManager* identity_manager);
 
 // Makes an account available for the given email address, generating a GAIA ID
 // and refresh token that correspond uniquely to that email address. Blocks

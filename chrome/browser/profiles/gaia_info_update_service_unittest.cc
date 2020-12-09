@@ -194,8 +194,7 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOffKeepAllAccounts) {
                                     info.account_id, "GAIA_IMAGE_URL_WITH_SIZE",
                                     gaia_picture);
   // Turn off sync but stay logged in.
-  identity_test_env()->ClearPrimaryAccount(
-      signin::ClearPrimaryAccountPolicy::KEEP_ALL_ACCOUNTS);
+  identity_test_env()->RevokeSyncConsent();
   ASSERT_TRUE(identity_test_env()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kNotRequired));
   // Verify that the GAIA name and picture, and picture URL are not cleared

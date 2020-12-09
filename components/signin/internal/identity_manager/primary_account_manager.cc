@@ -29,15 +29,11 @@ PrimaryAccountManager::PrimaryAccountManager(
     SigninClient* client,
     ProfileOAuth2TokenService* token_service,
     AccountTrackerService* account_tracker_service,
-    signin::AccountConsistencyMethod account_consistency,
     std::unique_ptr<PrimaryAccountPolicyManager> policy_manager)
     : client_(client),
       token_service_(token_service),
       account_tracker_service_(account_tracker_service),
       initialized_(false),
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-      account_consistency_(account_consistency),
-#endif
       policy_manager_(std::move(policy_manager)) {
   DCHECK(client_);
   DCHECK(account_tracker_service_);
@@ -274,16 +270,6 @@ void PrimaryAccountManager::RemoveObserver(Observer* observer) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-void PrimaryAccountManager::SignOut(
-    signin_metrics::ProfileSignout signout_source_metric,
-    signin_metrics::SignoutDelete signout_delete_metric) {
-  RemoveAccountsOption remove_option =
-      (account_consistency_ == signin::AccountConsistencyMethod::kDice)
-          ? RemoveAccountsOption::kRemoveAuthenticatedAccountIfInError
-          : RemoveAccountsOption::kRemoveAllAccounts;
-  StartSignOut(signout_source_metric, signout_delete_metric, remove_option);
-}
-
 void PrimaryAccountManager::SignOutAndRemoveAllAccounts(
     signin_metrics::ProfileSignout signout_source_metric,
     signin_metrics::SignoutDelete signout_delete_metric) {
@@ -365,15 +351,6 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
       token_service_->RevokeAllCredentials(
           signin_metrics::SourceForRefreshTokenOperation::
               kPrimaryAccountManager_ClearAccount);
-      break;
-    case RemoveAccountsOption::kRemoveAuthenticatedAccountIfInError:
-      if (token_service_->RefreshTokenHasError(account_info.account_id)) {
-        SetUnconsentedPrimaryAccountInfo(CoreAccountInfo());
-        token_service_->RevokeCredentials(
-            account_info.account_id,
-            signin_metrics::SourceForRefreshTokenOperation::
-                kPrimaryAccountManager_ClearAccount);
-      }
       break;
     case RemoveAccountsOption::kKeepAllAccounts:
       // Do nothing.

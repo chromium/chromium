@@ -190,8 +190,20 @@ AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
   return primary_account_info.value();
 }
 
-void ClearPrimaryAccount(IdentityManager* identity_manager,
-                         ClearPrimaryAccountPolicy policy) {
+void RevokeSyncConsent(IdentityManager* identity_manager) {
+  if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSync))
+    return;
+
+  base::RunLoop run_loop;
+  TestIdentityManagerObserver signout_observer(identity_manager);
+  signout_observer.SetOnPrimaryAccountClearedCallback(run_loop.QuitClosure());
+  identity_manager->GetPrimaryAccountManager()->SignOutAndKeepAllAccounts(
+      signin_metrics::SIGNOUT_TEST,
+      signin_metrics::SignoutDelete::IGNORE_METRIC);
+  run_loop.Run();
+}
+
+void ClearPrimaryAccount(IdentityManager* identity_manager) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(blundell): If we ever need this functionality on ChromeOS (which seems
   // unlikely), plumb this through to just clear the primary account info
@@ -201,44 +213,17 @@ void ClearPrimaryAccount(IdentityManager* identity_manager,
   if (!identity_manager->HasPrimaryAccount(ConsentLevel::kNotRequired))
     return;
 
-  if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSync)) {
-    PrimaryAccountManager* primary_account_manager =
-        identity_manager->GetPrimaryAccountManager();
-    primary_account_manager->SetUnconsentedPrimaryAccountInfo(
-        CoreAccountInfo());
-    RemoveRefreshTokenForAccount(
-        identity_manager,
-        identity_manager->GetPrimaryAccountId(ConsentLevel::kNotRequired));
-    return;
-  }
-
+  bool wait_for_primary_acount_cleared_notification =
+      identity_manager->HasPrimaryAccount(ConsentLevel::kSync);
   base::RunLoop run_loop;
   TestIdentityManagerObserver signout_observer(identity_manager);
   signout_observer.SetOnPrimaryAccountClearedCallback(run_loop.QuitClosure());
+  identity_manager->GetPrimaryAccountManager()->SignOutAndRemoveAllAccounts(
+      signin_metrics::SIGNOUT_TEST,
+      signin_metrics::SignoutDelete::IGNORE_METRIC);
 
-  PrimaryAccountManager* primary_account_manager =
-      identity_manager->GetPrimaryAccountManager();
-  signin_metrics::ProfileSignout signout_source_metric =
-      signin_metrics::SIGNOUT_TEST;
-  signin_metrics::SignoutDelete signout_delete_metric =
-      signin_metrics::SignoutDelete::IGNORE_METRIC;
-
-  switch (policy) {
-    case ClearPrimaryAccountPolicy::DEFAULT:
-      primary_account_manager->SignOut(signout_source_metric,
-                                       signout_delete_metric);
-      break;
-    case ClearPrimaryAccountPolicy::KEEP_ALL_ACCOUNTS:
-      primary_account_manager->SignOutAndKeepAllAccounts(signout_source_metric,
-                                                         signout_delete_metric);
-      break;
-    case ClearPrimaryAccountPolicy::REMOVE_ALL_ACCOUNTS:
-      primary_account_manager->SignOutAndRemoveAllAccounts(
-          signout_source_metric, signout_delete_metric);
-      break;
-  }
-
-  run_loop.Run();
+  if (wait_for_primary_acount_cleared_notification)
+    run_loop.Run();
 #endif
 }
 

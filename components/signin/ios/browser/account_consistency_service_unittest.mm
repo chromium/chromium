@@ -189,8 +189,7 @@ class AccountConsistencyServiceTest : public PlatformTest {
   }
 
   void SignOut() {
-    signin::ClearPrimaryAccount(identity_test_env_->identity_manager(),
-                                signin::ClearPrimaryAccountPolicy::DEFAULT);
+    signin::ClearPrimaryAccount(identity_test_env_->identity_manager());
     WaitUntilAllCookieRequestsAreApplied();
   }
 

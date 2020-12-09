@@ -398,7 +398,7 @@ class IdentityManagerTest : public testing::Test {
 #endif
     auto primary_account_manager = std::make_unique<PrimaryAccountManager>(
         &signin_client_, token_service.get(), account_tracker_service.get(),
-        account_consistency, std::move(policy_manager));
+        std::move(policy_manager));
 
     // Passing this switch ensures that the new PrimaryAccountManager starts
     // with a clean slate. Otherwise PrimaryAccountManager::Initialize will use
@@ -556,7 +556,7 @@ TEST_F(IdentityManagerTest, PrimaryAccountInfoAtStartup) {
 // Test that the user signing in results in firing of the IdentityManager
 // observer callback and the IdentityManager's state being updated.
 TEST_F(IdentityManagerTest, PrimaryAccountInfoAfterSignin) {
-  ClearPrimaryAccount(identity_manager(), ClearPrimaryAccountPolicy::DEFAULT);
+  ClearPrimaryAccount(identity_manager());
 
   SetPrimaryAccount(identity_manager(), kTestEmail);
 
@@ -589,14 +589,14 @@ TEST_F(IdentityManagerTest, PrimaryAccountInfoAfterSignin) {
 // Test that the user signing out results in firing of the IdentityManager
 // observer callback and the IdentityManager's state being updated.
 TEST_F(IdentityManagerTest, PrimaryAccountInfoAfterSigninAndSignout) {
-  ClearPrimaryAccount(identity_manager(), ClearPrimaryAccountPolicy::DEFAULT);
+  ClearPrimaryAccount(identity_manager());
   // First ensure that the user is signed in from the POV of the
   // IdentityManager.
   SetPrimaryAccount(identity_manager(), kTestEmail);
 
   // Sign the user out and check that the IdentityManager responds
   // appropriately.
-  ClearPrimaryAccount(identity_manager(), ClearPrimaryAccountPolicy::DEFAULT);
+  ClearPrimaryAccount(identity_manager());
 
   CoreAccountInfo primary_account_from_cleared_callback =
       identity_manager_observer()->PrimaryAccountFromClearedCallback();
@@ -627,7 +627,7 @@ TEST_F(IdentityManagerTest, PrimaryAccountInfoAfterSigninAndSignout) {
 // without signing out.
 TEST_F(IdentityManagerTest,
        PrimaryAccountInfoAfterSigninAndRefreshTokenRemoval) {
-  ClearPrimaryAccount(identity_manager(), ClearPrimaryAccountPolicy::DEFAULT);
+  ClearPrimaryAccount(identity_manager());
   // First ensure that the user is signed in from the POV of the
   // IdentityManager.
   SetPrimaryAccount(identity_manager(), kTestEmail);
@@ -668,7 +668,7 @@ TEST_F(IdentityManagerTest, HasPrimaryAccount) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Signing out should cause IdentityManager to recognize that there is no
   // longer a primary account.
-  ClearPrimaryAccount(identity_manager(), ClearPrimaryAccountPolicy::DEFAULT);
+  ClearPrimaryAccount(identity_manager());
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(ConsentLevel::kNotRequired));
@@ -1581,7 +1581,7 @@ TEST_F(IdentityManagerTest, CallbackSentOnSecondaryAccountRefreshTokenRemoval) {
 TEST_F(
     IdentityManagerTest,
     CallbackSentOnSecondaryAccountRefreshTokenUpdateWithValidTokenWhenNoPrimaryAccount) {
-  ClearPrimaryAccount(identity_manager(), ClearPrimaryAccountPolicy::DEFAULT);
+  ClearPrimaryAccount(identity_manager());
 
   // Add an unconsented primary account, incl. proper cookies.
   AccountInfo expected_account_info = MakeAccountAvailableWithCookies(
@@ -1598,7 +1598,7 @@ TEST_F(
 TEST_F(
     IdentityManagerTest,
     CallbackSentOnSecondaryAccountRefreshTokenUpdateWithInvalidTokenWhenNoPrimaryAccount) {
-  ClearPrimaryAccount(identity_manager(), ClearPrimaryAccountPolicy::DEFAULT);
+  ClearPrimaryAccount(identity_manager());
 
   // Add an unconsented primary account, incl. proper cookies.
   AccountInfo expected_account_info = MakeAccountAvailableWithCookies(
@@ -1617,7 +1617,7 @@ TEST_F(
 
 TEST_F(IdentityManagerTest,
        CallbackSentOnSecondaryAccountRefreshTokenRemovalWhenNoPrimaryAccount) {
-  ClearPrimaryAccount(identity_manager(), ClearPrimaryAccountPolicy::DEFAULT);
+  ClearPrimaryAccount(identity_manager());
 
   // Add an unconsented primary account, incl. proper cookies.
   AccountInfo expected_account_info = MakeAccountAvailableWithCookies(

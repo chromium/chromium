@@ -74,7 +74,7 @@ void PrimaryAccountPolicyManagerImpl::OnGoogleServicesUsernamePatternChanged(
           primary_account_manager->GetAuthenticatedAccountInfo().email)) {
     // Signed in user is invalid according to the current policy so sign
     // the user out.
-    primary_account_manager->SignOut(
+    primary_account_manager->SignOutAndRemoveAllAccounts(
         signin_metrics::GOOGLE_SERVICE_NAME_PATTERN_CHANGED,
         signin_metrics::SignoutDelete::IGNORE_METRIC);
   }
@@ -89,7 +89,7 @@ void PrimaryAccountPolicyManagerImpl::OnSigninAllowedPrefChanged(
   if (!IsSigninAllowed() &&
       primary_account_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     VLOG(0) << "IsSigninAllowed() set to false, signing out the user";
-    primary_account_manager->SignOut(
+    primary_account_manager->SignOutAndRemoveAllAccounts(
         signin_metrics::SIGNOUT_PREF_CHANGED,
         signin_metrics::SignoutDelete::IGNORE_METRIC);
   }
