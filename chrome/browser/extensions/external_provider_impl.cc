@@ -706,9 +706,11 @@ void ExternalProviderImpl::CreateExternalProviders(
 
   // Extensions provided by recommended policies.
   if (external_recommended_loader.get()) {
-    provider_list->push_back(std::make_unique<ExternalProviderImpl>(
+    auto recommended_provider = std::make_unique<ExternalProviderImpl>(
         service, external_recommended_loader, profile, crx_location,
-        Manifest::EXTERNAL_PREF_DOWNLOAD, Extension::NO_FLAGS));
+        Manifest::EXTERNAL_PREF_DOWNLOAD, Extension::NO_FLAGS);
+    recommended_provider->set_auto_acknowledge(true);
+    provider_list->push_back(std::move(recommended_provider));
   }
 
   // In tests don't install extensions from default external sources.

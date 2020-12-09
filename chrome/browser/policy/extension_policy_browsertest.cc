@@ -1658,11 +1658,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   // Verifies that extensions that are recommended-installed by policies are
   // installed, can be disabled but not uninstalled.
 
-  // External extensions are initially disabled for windows and MacOS. The users
-  // are prompted before enabling them. Explicitly override the flag with
-  // 'false' to disable prompting.
+  // Recommended-installed extensions should auto-enable on install without a
+  // user prompt.
   extensions::FeatureSwitch::ScopedOverride external_prompt_override(
-      extensions::FeatureSwitch::prompt_for_external_extensions(), false);
+      extensions::FeatureSwitch::prompt_for_external_extensions(), true);
 
   ExtensionRequestInterceptor interceptor;
 
@@ -1697,7 +1696,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
                nullptr);
   extensions::TestExtensionRegistryObserver observer(registry);
   UpdateProviderPolicy(policies);
-  observer.WaitForExtensionWillBeInstalled();
+  observer.WaitForExtensionInstalled();
   EXPECT_TRUE(registry->GetExtensionById(
       kGoodCrxId, extensions::ExtensionRegistry::ENABLED));
 
