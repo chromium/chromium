@@ -342,18 +342,6 @@
   <message name="IDS_OS_SETTINGS_TAG_SYNC_TURN_ON_ALT1" desc="Text for search result item which, when clicked, navigates the user to sync settings, with an option to turn on syncing. Alternate phrase for: 'Turn on sync'">
     Enable sync
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_KERBEROS" desc="Text for search result item which, when clicked, navigates the user to Kerberos (authentication mechanism) account settings.">
-    Kerberos settings
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_KERBEROS_ADD" desc="Text for search result item which, when clicked, navigates the user to Kerberos (authentication mechanism) account settings, with an option to add a new ticket.">
-    Add Kerberos ticket
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_KERBEROS_REMOVE" desc="Text for search result item which, when clicked, navigates the user to Kerberos (authentication mechanism) account settings, with an option to remove an existing ticket.">
-    Remove Kerberos ticket
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_KERBEROS_ACTIVE" desc="Text for search result item which, when clicked, navigates the user to Kerberos (authentication mechanism) account settings, with an option to set the active ticket.">
-    Set active Kerberos ticket
-  </message>
   <message name="IDS_OS_SETTINGS_TAG_FINGERPRINT" desc="Text for search result item which, when clicked, navigates the user to fingerprint authentication settings.">
     Fingerprint settings
   </message>
@@ -392,6 +380,23 @@
   </message>
   <message name="IDS_OS_SETTINGS_TAG_GOOGLE_DRIVE_SEARCH_SUGGESTIONS" desc="Text for search result item which, when clicked, navigates the user to Google services settings, with a toggle to enable/disable a feature which provides suggestions to visit Google Drive items when the user types in the address bar.">
     Google Drive search suggestions
+  </message>
+
+  <!-- Kerberos section. -->
+  <message name="IDS_OS_SETTINGS_TAG_KERBEROS_SECTION" desc="Text for search result item which, when clicked, navigates the user to Kerberos (authentication mechanism) settings section.">
+    Kerberos
+  </message>
+   <message name="IDS_OS_SETTINGS_TAG_KERBEROS" desc="Text for search result item which, when clicked, navigates the user to Kerberos (authentication mechanism) account settings.">
+    Kerberos settings
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_KERBEROS_ADD" desc="Text for search result item which, when clicked, navigates the user to Kerberos (authentication mechanism) account settings, with an option to add a new ticket.">
+    Add Kerberos ticket
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_KERBEROS_REMOVE" desc="Text for search result item which, when clicked, navigates the user to Kerberos (authentication mechanism) account settings, with an option to remove an existing ticket.">
+    Remove Kerberos ticket
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_KERBEROS_ACTIVE" desc="Text for search result item which, when clicked, navigates the user to Kerberos (authentication mechanism) account settings, with an option to set the active ticket.">
+    Set active Kerberos ticket
   </message>
 
   <!-- Device section. -->

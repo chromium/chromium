@@ -19,7 +19,36 @@ namespace {
 
 const std::vector<SearchConcept>& GetKerberosSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      // TODO(fsandrade): add Kerberos search tags here.
+      {IDS_OS_SETTINGS_TAG_KERBEROS_SECTION,
+       mojom::kKerberosSectionPath,
+       mojom::SearchResultIcon::kAuthKey,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSection,
+       {.section = mojom::Section::kKerberos}},
+      {IDS_OS_SETTINGS_TAG_KERBEROS,
+       mojom::kKerberosAccountsV2SubpagePath,
+       mojom::SearchResultIcon::kAuthKey,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSubpage,
+       {.subpage = mojom::Subpage::kKerberosAccountsV2}},
+      {IDS_OS_SETTINGS_TAG_KERBEROS_ADD,
+       mojom::kKerberosAccountsV2SubpagePath,
+       mojom::SearchResultIcon::kAuthKey,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kAddKerberosTicketV2}},
+      {IDS_OS_SETTINGS_TAG_KERBEROS_REMOVE,
+       mojom::kKerberosAccountsV2SubpagePath,
+       mojom::SearchResultIcon::kAuthKey,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kRemoveKerberosTicketV2}},
+      {IDS_OS_SETTINGS_TAG_KERBEROS_ACTIVE,
+       mojom::kKerberosAccountsV2SubpagePath,
+       mojom::SearchResultIcon::kAuthKey,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kSetActiveKerberosTicketV2}},
   });
   return *tags;
 }
