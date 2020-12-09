@@ -130,7 +130,8 @@ public class PiiElider {
         try {
             Class.forName(url, false, ContextUtils.getApplicationContext().getClassLoader());
             return true;
-        } catch (ClassNotFoundException e) {
+        } catch (Throwable e) {
+            // Some examples: ClassNotFoundException, NoClassDefFoundException, VerifyError.
         }
         return false;
     }
