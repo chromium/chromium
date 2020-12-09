@@ -65,11 +65,11 @@ void LogSendResult(bool success, const NearbyShareHttpStatus& http_status) {
   } else {
     NS_LOG(WARNING) << ss.str();
   }
-  base::UmaHistogramBoolean("Nearby.Share.InstantMessaging.SendExpress.Result",
-                            success);
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.InstantMessaging.SendExpress.Result", success);
   if (!success) {
     base::UmaHistogramSparse(
-        "Nearby.Share.InstantMessaging.SendExpress.Result.FailureReason",
+        "Nearby.Connections.InstantMessaging.SendExpress.Result.FailureReason",
         http_status.GetResultCodeForMetrics());
   }
 }

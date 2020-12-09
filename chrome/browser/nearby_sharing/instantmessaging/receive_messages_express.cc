@@ -59,14 +59,15 @@ void LogReceiveResult(bool success, const network::SimpleURLLoader* loader) {
   ss << "Instant messaging receive express "
      << (success ? "succeeded." : "failed.");
   base::UmaHistogramBoolean(
-      "Nearby.Share.InstantMessaging.ReceiveExpress.Result", success);
+      "Nearby.Connections.InstantMessaging.ReceiveExpress.Result", success);
   if (loader) {
     NearbyShareHttpStatus http_status(loader->NetError(),
                                       loader->ResponseInfo());
     ss << " HTTP status: " << http_status;
     if (!success) {
       base::UmaHistogramSparse(
-          "Nearby.Share.InstantMessaging.ReceiveExpress.Result.FailureReason",
+          "Nearby.Connections.InstantMessaging.ReceiveExpress.Result."
+          "FailureReason",
           http_status.GetResultCodeForMetrics());
     }
   } else {
