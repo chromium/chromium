@@ -160,6 +160,7 @@ public abstract class FragmentHostingRemoteFragmentImpl extends RemoteFragmentIm
         mContext = createRemoteFragmentContext(embedderContext);
         mFragmentController =
                 FragmentController.createController(new RemoteFragmentHostCallback(this));
+        mFragmentController.attachHost(null);
 
         // Some appcompat functionality depends on Fragments being hosted from within an
         // AppCompatActivity, which performs some static initialization. Even if we're running
@@ -172,10 +173,7 @@ public abstract class FragmentHostingRemoteFragmentImpl extends RemoteFragmentIm
     @Override
     public void onCreate(Bundle savedInstanceState) {
         StrictModeWorkaround.apply();
-        mFragmentController.attachHost(null);
-
         super.onCreate(savedInstanceState);
-
         mFragmentController.dispatchCreate();
     }
 
@@ -198,6 +196,14 @@ public abstract class FragmentHostingRemoteFragmentImpl extends RemoteFragmentIm
         StrictModeWorkaround.apply();
         super.onDetach();
         mContext = null;
+
+        // If the Fragment is retained, onDestory won't be called during configuration changes. We
+        // have to create a new FragmentController that's attached to the correct Context when
+        // reattaching this Fragment, so destroy the existing one here.
+        if (!mFragmentController.getSupportFragmentManager().isDestroyed()) {
+            mFragmentController.dispatchDestroy();
+            assert mFragmentController.getSupportFragmentManager().isDestroyed();
+        }
     }
 
     @Override
