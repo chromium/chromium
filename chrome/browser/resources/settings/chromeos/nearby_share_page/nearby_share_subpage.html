@@ -20,6 +20,25 @@
 <dom-module id="settings-nearby-share-subpage">
   <template>
     <style include="cr-shared-style settings-shared iron-flex">
+      #help {
+        align-items: flex-start;
+        padding-block-start: 12px;
+      }
+
+      #helpIcon {
+        --iron-icon-fill-color: var(--google-grey-600);
+        height: 16px;
+        margin-inline-end: 8px;
+        padding: 2px;
+        width: 16px;
+      }
+
+      #helpText {
+        --cr-link-color: var(--google-blue-600);
+        color: var(--google-grey-600);
+        font-size: 13px;
+        line-height: 20px;
+      }
     </style>
     <div id="toggleRow" class="cr-row first" on-click="onEnableTap_" actionable>
       <div id="onOff" class="flex cr-padded-text"
@@ -102,6 +121,14 @@
           on-close="onDataUsageDialogClose_">
       </nearby-share-data-usage-dialog>
     </template>
+    <div id="help" class="settings-box">
+      <iron-icon id="helpIcon" icon="nearby20:info"></iron-icon>
+      <!-- TODO(vecore) add correct help link -->
+      <settings-localized-link id="helpText"
+          localized-string="$i18n{nearbyShareSettingsHelpCaption}"
+          link-url="https://google.com">
+      </settings-localized-link>
+    </div>
     <template is="dom-if" if="[[showReceiveDialog_]]" restamp>
       <nearby-share-receive-dialog id="receiveDialog"
           on-close="onReceiveDialogClose_" settings="{{settings}}">
