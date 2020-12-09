@@ -14,6 +14,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_util.h"
 #include "components/language/core/common/locale_util.h"
@@ -84,6 +85,30 @@ void LanguagePrefs::ResetFluentLanguagesToDefaults() {
 void LanguagePrefs::ResetEmptyFluentLanguagesToDefault() {
   if (NumFluentLanguages() == 0)
     ResetFluentLanguagesToDefaults();
+}
+
+void LanguagePrefs::GetAcceptLanguagesList(
+    std::vector<std::string>* languages) const {
+  DCHECK(languages);
+  DCHECK(languages->empty());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const std::string& key = language::prefs::kPreferredLanguages;
+#else
+  const std::string& key = language::prefs::kAcceptLanguages;
+#endif
+
+  *languages = base::SplitString(prefs_->GetString(key), ",",
+                                 base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+}
+
+void LanguagePrefs::SetAcceptLanguagesList(
+    const std::vector<std::string>& languages) {
+  std::string languages_str = base::JoinString(languages, ",");
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  prefs_->SetString(language::prefs::kPreferredLanguages, languages_str);
+#endif
+
+  prefs_->SetString(language::prefs::kAcceptLanguages, languages_str);
 }
 
 // static

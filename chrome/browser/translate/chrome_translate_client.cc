@@ -157,14 +157,8 @@ ChromeTranslateClient::per_frame_translate_driver() {
 // static
 std::unique_ptr<translate::TranslatePrefs>
 ChromeTranslateClient::CreateTranslatePrefs(PrefService* prefs) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const char* preferred_languages_prefs = language::prefs::kPreferredLanguages;
-#else
-  const char* preferred_languages_prefs = NULL;
-#endif
   std::unique_ptr<translate::TranslatePrefs> translate_prefs(
-      new translate::TranslatePrefs(prefs, language::prefs::kAcceptLanguages,
-                                    preferred_languages_prefs));
+      new translate::TranslatePrefs(prefs));
 
   // We need to obtain the country here, since it comes from VariationsService.
   // components/ does not have access to that.

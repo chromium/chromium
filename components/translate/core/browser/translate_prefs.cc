@@ -22,7 +22,6 @@
 #include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/language/core/common/language_util.h"
@@ -81,7 +80,7 @@ void PurgeUnsupportedLanguagesInLanguageFamily(base::StringPiece language,
 
 }  // namespace
 
-const char kForceTriggerTranslateCount[] =
+const char TranslatePrefs::kPrefForceTriggerTranslateCount[] =
     "translate_force_trigger_on_english_count_for_backoff_1";
 const char TranslatePrefs::kPrefNeverPromptSitesDeprecated[] =
     "translate_site_blacklist";
@@ -190,17 +189,9 @@ TranslateLanguageInfo& TranslateLanguageInfo::operator=(
 TranslateLanguageInfo& TranslateLanguageInfo::operator=(
     TranslateLanguageInfo&&) noexcept = default;
 
-TranslatePrefs::TranslatePrefs(PrefService* user_prefs,
-                               const char* accept_languages_pref,
-                               const char* preferred_languages_pref)
-    : accept_languages_pref_(accept_languages_pref),
-      prefs_(user_prefs),
+TranslatePrefs::TranslatePrefs(PrefService* user_prefs)
+    : prefs_(user_prefs),
       language_prefs_(std::make_unique<language::LanguagePrefs>(user_prefs)) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  preferred_languages_pref_ = preferred_languages_pref;
-#else
-  DCHECK(!preferred_languages_pref);
-#endif
   MigrateNeverPromptSites();
   ResetEmptyBlockedLanguagesToDefaults();
 }
@@ -278,7 +269,7 @@ void TranslatePrefs::AddToLanguageList(base::StringPiece input_language,
   // Add the language to the list.
   if (!base::Contains(languages, chrome_language)) {
     languages.push_back(chrome_language);
-    UpdateLanguageList(languages);
+    language_prefs_->SetAcceptLanguagesList(languages);
   }
 }
 
@@ -303,7 +294,7 @@ void TranslatePrefs::RemoveFromLanguageList(base::StringPiece input_language) {
 
     languages.erase(it);
     PurgeUnsupportedLanguagesInLanguageFamily(chrome_language, &languages);
-    UpdateLanguageList(languages);
+    language_prefs_->SetAcceptLanguagesList(languages);
 
     // We should unblock the language if this was the last one from the same
     // language family.
@@ -384,12 +375,12 @@ void TranslatePrefs::RearrangeLanguage(
       return;
   }
 
-  UpdateLanguageList(languages);
+  language_prefs_->SetAcceptLanguagesList(languages);
 }
 
 void TranslatePrefs::SetLanguageOrder(
     const std::vector<std::string>& new_order) {
-  UpdateLanguageList(new_order);
+  language_prefs_->SetAcceptLanguagesList(new_order);
 }
 
 // static
@@ -735,28 +726,7 @@ void TranslatePrefs::ResetDenialState() {
 
 void TranslatePrefs::GetLanguageList(
     std::vector<std::string>* const languages) const {
-  DCHECK(languages);
-  DCHECK(languages->empty());
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const std::string& key = preferred_languages_pref_;
-#else
-  const std::string& key = accept_languages_pref_;
-#endif
-
-  *languages = base::SplitString(prefs_->GetString(key), ",",
-                                 base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-}
-
-void TranslatePrefs::UpdateLanguageList(
-    const std::vector<std::string>& languages) {
-  std::string languages_str = base::JoinString(languages, ",");
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  prefs_->SetString(preferred_languages_pref_, languages_str);
-#endif
-
-  prefs_->SetString(accept_languages_pref_, languages_str);
+  language_prefs_->GetAcceptLanguagesList(languages);
 }
 
 bool TranslatePrefs::CanTranslateLanguage(
@@ -811,19 +781,19 @@ std::string TranslatePrefs::GetRecentTargetLanguage() const {
 }
 
 int TranslatePrefs::GetForceTriggerOnEnglishPagesCount() const {
-  return prefs_->GetInteger(kForceTriggerTranslateCount);
+  return prefs_->GetInteger(kPrefForceTriggerTranslateCount);
 }
 
 void TranslatePrefs::ReportForceTriggerOnEnglishPages() {
   int current_count = GetForceTriggerOnEnglishPagesCount();
   if (current_count != -1 && current_count < std::numeric_limits<int>::max())
-    prefs_->SetInteger(kForceTriggerTranslateCount, current_count + 1);
+    prefs_->SetInteger(kPrefForceTriggerTranslateCount, current_count + 1);
 }
 
 void TranslatePrefs::ReportAcceptedAfterForceTriggerOnEnglishPages() {
   int current_count = GetForceTriggerOnEnglishPagesCount();
   if (current_count != -1)
-    prefs_->SetInteger(kForceTriggerTranslateCount, -1);
+    prefs_->SetInteger(kPrefForceTriggerTranslateCount, -1);
 }
 
 // static
@@ -853,7 +823,7 @@ void TranslatePrefs::RegisterProfilePrefs(
   registry->RegisterStringPref(kPrefTranslateRecentTarget, "",
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(
-      kForceTriggerTranslateCount, 0,
+      kPrefForceTriggerTranslateCount, 0,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
 #if defined(OS_ANDROID) || defined(OS_IOS)

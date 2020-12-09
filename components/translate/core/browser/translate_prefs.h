@@ -17,7 +17,6 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "url/gurl.h"
 
@@ -159,11 +158,7 @@ class TranslatePrefs {
     kDown
   };
 
-  // |preferred_languages_pref| is only used on Chrome OS, other platforms must
-  // pass NULL.
-  TranslatePrefs(PrefService* user_prefs,
-                 const char* accept_languages_pref,
-                 const char* preferred_languages_pref);
+  explicit TranslatePrefs(PrefService* user_prefs);
 
   ~TranslatePrefs();
 
@@ -335,7 +330,6 @@ class TranslatePrefs {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(TranslatePrefsTest, UpdateLanguageList);
   FRIEND_TEST_ALL_PREFIXES(TranslatePrefsTest,
                            UpdateLanguageListFeatureEnabled);
   FRIEND_TEST_ALL_PREFIXES(TranslatePrefsTest, BlockLanguage);
@@ -353,9 +347,6 @@ class TranslatePrefs {
   FRIEND_TEST_ALL_PREFIXES(TranslatePrefsTest, MoveLanguageDown);
   friend class TranslatePrefsTest;
 
-  // Updates the language list of the language settings.
-  void UpdateLanguageList(const std::vector<std::string>& languages);
-
   void ResetBlockedLanguagesToDefault();
   void ClearNeverPromptSiteList();
   void ClearAlwaysTranslateLanguagePairs();
@@ -369,14 +360,6 @@ class TranslatePrefs {
   size_t GetListSize(const char* pref_id) const;
 
   bool IsDictionaryEmpty(const char* pref_id) const;
-
-  // Path to the preference storing the accept languages.
-  const std::string accept_languages_pref_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Path to the preference storing the preferred languages.
-  // Only used on ChromeOS.
-  std::string preferred_languages_pref_;
-#endif
 
   // Retrieves the dictionary mapping the number of times translation has been
   // denied for a language, creating it if necessary.

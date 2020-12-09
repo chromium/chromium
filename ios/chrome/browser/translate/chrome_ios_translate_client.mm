@@ -82,8 +82,7 @@ ChromeIOSTranslateClient::~ChromeIOSTranslateClient() {
 std::unique_ptr<translate::TranslatePrefs>
 ChromeIOSTranslateClient::CreateTranslatePrefs(PrefService* prefs) {
   return std::unique_ptr<translate::TranslatePrefs>(
-      new translate::TranslatePrefs(prefs, language::prefs::kAcceptLanguages,
-                                    nullptr));
+      new translate::TranslatePrefs(prefs));
 }
 
 translate::TranslateManager* ChromeIOSTranslateClient::GetTranslateManager() {

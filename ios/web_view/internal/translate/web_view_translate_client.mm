@@ -112,9 +112,7 @@ PrefService* WebViewTranslateClient::GetPrefs() {
 
 std::unique_ptr<translate::TranslatePrefs>
 WebViewTranslateClient::GetTranslatePrefs() {
-  return std::make_unique<translate::TranslatePrefs>(
-      GetPrefs(), language::prefs::kAcceptLanguages,
-      /*preferred_languages_pref=*/nullptr);
+  return std::make_unique<translate::TranslatePrefs>(GetPrefs());
 }
 
 translate::TranslateAcceptLanguages*

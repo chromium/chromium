@@ -38,9 +38,7 @@
 }
 
 - (void)resetTranslationSettings {
-  translate::TranslatePrefs translatePrefs(
-      _prefService, language::prefs::kAcceptLanguages,
-      /*preferred_languages_pref=*/nullptr);
+  translate::TranslatePrefs translatePrefs(_prefService);
   translatePrefs.ResetToDefaults();
 }
 

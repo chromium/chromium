@@ -34,8 +34,7 @@ PrefService* MockTranslateClient::GetPrefs() {
 }
 
 std::unique_ptr<TranslatePrefs> MockTranslateClient::GetTranslatePrefs() {
-  return std::make_unique<TranslatePrefs>(prefs_, accept_languages_prefs,
-                                          preferred_languages_prefs);
+  return std::make_unique<TranslatePrefs>(prefs_);
 }
 
 }  // namespace testing

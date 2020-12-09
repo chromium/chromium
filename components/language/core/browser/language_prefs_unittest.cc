@@ -14,6 +14,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/language/core/browser/language_prefs_test_util.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -39,6 +40,13 @@ class LanguagePrefsTest : public testing::Test {
       : prefs_(new sync_preferences::TestingPrefServiceSyncable()) {
     LanguagePrefs::RegisterProfilePrefs(prefs_->registry());
     language_prefs_.reset(new language::LanguagePrefs(prefs_.get()));
+  }
+
+  void SetUp() override {
+    prefs_->SetString(language::prefs::kAcceptLanguages, std::string());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    prefs_->SetString(language::prefs::kPreferredLanguages, std::string());
+#endif
   }
 
   void ExpectFluentLanguageListContent(
@@ -158,4 +166,33 @@ TEST_F(LanguagePrefsTest, GetFirstLanguageTest) {
   EXPECT_EQ("", language::GetFirstLanguage(""));
 }
 
+TEST_F(LanguagePrefsTest, UpdateLanguageList) {
+  language::test::AcceptLanguagesTester content_languages_tester =
+      language::test::AcceptLanguagesTester(prefs_.get());
+  // Empty update.
+  std::vector<std::string> languages;
+  language_prefs_->SetAcceptLanguagesList(languages);
+  content_languages_tester.ExpectLanguagePrefs("");
+
+  // One language.
+  languages = {"en"};
+  language_prefs_->SetAcceptLanguagesList(languages);
+  content_languages_tester.ExpectLanguagePrefs("en");
+
+  // More than one language.
+  languages = {"en", "ja", "it"};
+  language_prefs_->SetAcceptLanguagesList(languages);
+  content_languages_tester.ExpectLanguagePrefs("en,ja,it");
+
+  // Locale-specific codes.
+  // The list is exanded by adding the base languagese.
+  languages = {"en-US", "ja", "en-CA", "fr-CA"};
+  language_prefs_->SetAcceptLanguagesList(languages);
+  content_languages_tester.ExpectLanguagePrefs("en-US,ja,en-CA,fr-CA");
+
+  // List already expanded.
+  languages = {"en-US", "en", "fr", "fr-CA"};
+  language_prefs_->SetAcceptLanguagesList(languages);
+  content_languages_tester.ExpectLanguagePrefs("en-US,en,fr,fr-CA");
+}
 }  // namespace language

@@ -120,6 +120,7 @@ source_set("unit_tests") {
     "//components/assist_ranker/proto",
     "//components/infobars/core",
     "//components/language/core/browser",
+    "//components/language/core/browser:test_support",
     "//components/language/core/common:common",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
