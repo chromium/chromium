@@ -11,6 +11,9 @@
       file="modules/kaleidoscope/module.js" type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_MODULES_MODULE_DESCRIPTOR_JS"
       file="modules/module_descriptor.js" type="BINDATA" />
+  <include name="IDR_NEW_TAB_PAGE_MODULES_MODULE_HEADER_JS"
+      file="${root_gen_dir}/chrome/browser/resources/new_tab_page/modules/module_header.js"
+      use_base_dir="false" type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_MODULES_MODULES_JS"
       file="modules/modules.js" type="BINDATA" preprocess="true"/>
   <include name="IDR_NEW_TAB_PAGE_MODULES_MODULE_REGISTRY_JS"

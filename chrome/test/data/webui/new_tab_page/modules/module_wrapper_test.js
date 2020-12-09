@@ -22,12 +22,10 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
     moduleWrapper.descriptor = {
       id: 'foo',
       heightPx: 100,
-      title: 'Foo Title',
       element: moduleElement,
     };
 
     // Assert.
-    assertEquals('Foo Title', moduleWrapper.$.title.textContent);
     assertEquals(100, $$(moduleWrapper, '#moduleElement').offsetHeight);
     assertDeepEquals(
         moduleElement, $$(moduleWrapper, '#moduleElement').children[0]);
@@ -38,14 +36,12 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
     moduleWrapper.descriptor = {
       id: 'foo',
       heightPx: 100,
-      title: 'Foo Title',
       element: moduleElement,
     };
     assertThrows(() => {
       moduleWrapper.descriptor = {
         id: 'foo',
         heightPx: 100,
-        title: 'Foo Title',
         element: moduleElement,
       };
     });

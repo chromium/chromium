@@ -1,8 +1,15 @@
 <style include="cr-hidden-style">
   :host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+  }
+
+  #moduleContent {
     box-sizing: border-box;
     display: block;
-    height: 100%;
+    flex-grow: 1;
     padding-inline-end: 15px;
     padding-inline-start: 15px;
     width: 100%;
@@ -170,31 +177,38 @@
     text-decoration: none;
   }
 </style>
-<div id="taskItems">
-  <template is="dom-repeat" id="taskItemsRepeat" items="[[task.taskItems]]"
-      on-dom-change="onDomChange_">
-    <a class="task-item" href="[[item.targetUrl.url]]"
-        on-click="onTaskItemClick_" on-auxclick="onTaskItemClick_">
-      <div class="image-background">
-        <div class="image-container">
-          <img is="ntp-img" auto-src="[[item.imageUrl.url]]"></img>
+<ntp-module-header module-id="[[id]]"
+    show-info-button on-info-button-click="onInfoButtonClick_"
+    show-dismiss-button on-dismiss-button-click="onDismissButtonClick_">
+  [[task.title]]
+</ntp-module-header>
+<div id="moduleContent">
+  <div id="taskItems">
+    <template is="dom-repeat" id="taskItemsRepeat" items="[[task.taskItems]]"
+        on-dom-change="onDomChange_">
+      <a class="task-item" href="[[item.targetUrl.url]]"
+          on-click="onTaskItemClick_" on-auxclick="onTaskItemClick_">
+        <div class="image-background">
+          <div class="image-container">
+            <img is="ntp-img" auto-src="[[item.imageUrl.url]]"></img>
+          </div>
         </div>
-      </div>
-      <div class="price" hidden$="[[!item.price]]">[[item.price]]</div>
-      <div class="name" title="[[item.name]]">[[item.name]]</div>
-      <div class="info">[[item.info]]</div>
-    </a>
-  </template>
-</div>
-<div id="relatedSearches">
-  <template is="dom-repeat" id="relatedSearchesRepeat"
-      items="[[task.relatedSearches]]" on-dom-change="onDomChange_">
-    <a class="pill" href="[[item.targetUrl.url]]" on-click="onPillClick_"
-        on-auxclick="onPillClick_">
-      <div class="loupe"></div>
-      <div class="search-text">[[item.text]]</div>
-    </a>
-  </template>
+        <div class="price" hidden$="[[!item.price]]">[[item.price]]</div>
+        <div class="name" title="[[item.name]]">[[item.name]]</div>
+        <div class="info">[[item.info]]</div>
+      </a>
+    </template>
+  </div>
+  <div id="relatedSearches">
+    <template is="dom-repeat" id="relatedSearchesRepeat"
+        items="[[task.relatedSearches]]" on-dom-change="onDomChange_">
+      <a class="pill" href="[[item.targetUrl.url]]" on-click="onPillClick_"
+          on-auxclick="onPillClick_">
+        <div class="loupe"></div>
+        <div class="search-text">[[item.text]]</div>
+      </a>
+    </template>
+  </div>
 </div>
 <template is="dom-if" if="[[showInfoDialog]]" restamp>
   <cr-dialog show-on-attach>

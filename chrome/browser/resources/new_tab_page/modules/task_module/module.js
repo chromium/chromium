@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import '../../img.js';
+import '../module_header.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 import {TaskModuleHandlerProxy} from './task_module_handler_proxy.js';
@@ -27,6 +27,9 @@ class TaskModuleElement extends PolymerElement {
 
   static get properties() {
     return {
+      /** @type {string} */
+      id: String,
+
       /** @type {!taskModule.mojom.TaskModuleType} */
       taskModuleType: {
         type: Number,
@@ -82,8 +85,33 @@ class TaskModuleElement extends PolymerElement {
   }
 
   /** @private */
+  onInfoButtonClick_() {
+    this.showInfoDialog = true;
+  }
+
+  /** @private */
   onCloseClick_() {
     this.showInfoDialog = false;
+  }
+
+  /** @private */
+  onDismissButtonClick_() {
+    TaskModuleHandlerProxy.getInstance().handler.dismissTask(
+        this.taskModuleType, this.task.name);
+    this.dispatchEvent(new CustomEvent('dismiss-module', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        message: this.task.name,
+        restoreCallback: this.onRestore_.bind(this),
+      },
+    }));
+  }
+
+  /** @private */
+  onRestore_() {
+    TaskModuleHandlerProxy.getInstance().handler.restoreTask(
+        this.taskModuleType, this.task.name);
   }
 
   /** @private */
@@ -106,8 +134,8 @@ class TaskModuleElement extends PolymerElement {
 
 customElements.define(TaskModuleElement.is, TaskModuleElement);
 
-/** @return {!Promise<?{element: !HTMLElement, title: string}>} */
-async function createModule(taskModuleType) {
+/** @return {!Promise<?HTMLElement>} */
+async function createModule(id, taskModuleType) {
   const {task} =
       await TaskModuleHandlerProxy.getInstance().handler.getPrimaryTask(
           taskModuleType);
@@ -117,34 +145,20 @@ async function createModule(taskModuleType) {
   const element = new TaskModuleElement();
   element.taskModuleType = taskModuleType;
   element.task = task;
-  return {
-    element: element,
-    title: task.title,
-    actions: {
-      info: () => {
-        element.showInfoDialog = true;
-      },
-      dismiss: () => {
-        TaskModuleHandlerProxy.getInstance().handler.dismissTask(
-            taskModuleType, task.name);
-        return loadTimeData.getStringF('dismissModuleToastMessage', task.name);
-      },
-      restore: () => {
-        TaskModuleHandlerProxy.getInstance().handler.restoreTask(
-            taskModuleType, task.name);
-      },
-    },
-  };
+  element.id = id;
+  return element;
 }
 
 /** @type {!ModuleDescriptor} */
 export const recipeTasksDescriptor = new ModuleDescriptor(
     /*id=*/ 'recipe_tasks',
-    /*heightPx=*/ 206,
-    createModule.bind(null, taskModule.mojom.TaskModuleType.kRecipe));
+    /*heightPx=*/ 260,
+    createModule.bind(
+        null, 'recipe_tasks', taskModule.mojom.TaskModuleType.kRecipe));
 
 /** @type {!ModuleDescriptor} */
 export const shoppingTasksDescriptor = new ModuleDescriptor(
     /*id=*/ 'shopping_tasks',
-    /*heightPx=*/ 270,
-    createModule.bind(null, taskModule.mojom.TaskModuleType.kShopping));
+    /*heightPx=*/ 324,
+    createModule.bind(
+        null, 'shopping_tasks', taskModule.mojom.TaskModuleType.kShopping));
