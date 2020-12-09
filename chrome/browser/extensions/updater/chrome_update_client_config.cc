@@ -5,10 +5,17 @@
 #include "chrome/browser/extensions/updater/chrome_update_client_config.h"
 
 #include <algorithm>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/version.h"
 #include "chrome/browser/component_updater/component_updater_utils.h"
 #include "chrome/browser/extensions/updater/extension_update_client_command_line_config_policy.h"
@@ -51,10 +58,14 @@ class ExtensionActivityDataService final
   ~ExtensionActivityDataService() override = default;
 
   // update_client::ActivityDataService:
-  bool GetActiveBit(const std::string& id) const override;
+  void GetActiveBits(const std::vector<std::string>& ids,
+                     base::OnceCallback<void(const std::set<std::string>&)>
+                         callback) const override;
+  void GetAndClearActiveBits(
+      const std::vector<std::string>& ids,
+      base::OnceCallback<void(const std::set<std::string>&)> callback) override;
   int GetDaysSinceLastActive(const std::string& id) const override;
   int GetDaysSinceLastRollCall(const std::string& id) const override;
-  void ClearActiveBit(const std::string& id) override;
 
  private:
   // This member is not owned by this class, it's owned by a profile keyed
@@ -77,8 +88,16 @@ ExtensionActivityDataService::ExtensionActivityDataService(
   DCHECK(extension_prefs_);
 }
 
-bool ExtensionActivityDataService::GetActiveBit(const std::string& id) const {
-  return extension_prefs_->GetActiveBit(id);
+void ExtensionActivityDataService::GetActiveBits(
+    const std::vector<std::string>& ids,
+    base::OnceCallback<void(const std::set<std::string>&)> callback) const {
+  std::set<std::string> actives;
+  for (const auto& id : ids) {
+    if (extension_prefs_->GetActiveBit(id))
+      actives.insert(id);
+  }
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), actives));
 }
 
 int ExtensionActivityDataService::GetDaysSinceLastActive(
@@ -91,8 +110,17 @@ int ExtensionActivityDataService::GetDaysSinceLastRollCall(
   return CalculatePingDays(extension_prefs_->LastPingDay(id));
 }
 
-void ExtensionActivityDataService::ClearActiveBit(const std::string& id) {
-  extension_prefs_->SetActiveBit(id, false);
+void ExtensionActivityDataService::GetAndClearActiveBits(
+    const std::vector<std::string>& ids,
+    base::OnceCallback<void(const std::set<std::string>&)> callback) {
+  std::set<std::string> actives;
+  for (const auto& id : ids) {
+    if (extension_prefs_->GetActiveBit(id))
+      actives.insert(id);
+    extension_prefs_->SetActiveBit(id, false);
+  }
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), actives));
 }
 
 }  // namespace

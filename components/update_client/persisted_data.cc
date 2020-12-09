@@ -4,12 +4,17 @@
 
 #include "components/update_client/persisted_data.h"
 
+#include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/guid.h"
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -103,32 +108,41 @@ base::Value* PersistedData::GetOrCreateAppKey(const std::string& id,
   return app;
 }
 
-void PersistedData::SetDateLastRollCall(const std::vector<std::string>& ids,
-                                        int datenum) {
+void PersistedData::SetDateLastDataHelper(
+    const std::vector<std::string>& ids,
+    int datenum,
+    base::OnceClosure callback,
+    const std::set<std::string>& active_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!pref_service_ || datenum < 0)
-    return;
   DictionaryPrefUpdate update(pref_service_, kPersistedDataPreference);
   for (const auto& id : ids) {
     base::Value* app_key = GetOrCreateAppKey(id, update.Get());
     app_key->SetIntKey("dlrc", datenum);
     app_key->SetStringKey("pf", base::GenerateGUID());
-  }
-}
-
-void PersistedData::SetDateLastActive(const std::vector<std::string>& ids,
-                                      int datenum) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!pref_service_ || datenum < 0)
-    return;
-  DictionaryPrefUpdate update(pref_service_, kPersistedDataPreference);
-  for (const auto& id : ids) {
-    if (GetActiveBit(id)) {
-      base::Value* app_key = GetOrCreateAppKey(id, update.Get());
+    if (active_ids.find(id) != active_ids.end()) {
       app_key->SetIntKey("dla", datenum);
-      activity_data_service_->ClearActiveBit(id);
     }
   }
+  std::move(callback).Run();
+}
+
+void PersistedData::SetDateLastData(const std::vector<std::string>& ids,
+                                    int datenum,
+                                    base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!pref_service_ || datenum < 0) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                     std::move(callback));
+    return;
+  }
+  if (!activity_data_service_) {
+    SetDateLastDataHelper(ids, datenum, std::move(callback), {});
+    return;
+  }
+  activity_data_service_->GetAndClearActiveBits(
+      ids, base::BindOnce(&PersistedData::SetDateLastDataHelper,
+                          base::Unretained(this), ids, datenum,
+                          std::move(callback)));
 }
 
 void PersistedData::SetString(const std::string& id,
@@ -156,8 +170,17 @@ void PersistedData::SetCohortHint(const std::string& id,
   SetString(id, "cohorthint", cohort_hint);
 }
 
-bool PersistedData::GetActiveBit(const std::string& id) const {
-  return activity_data_service_ && activity_data_service_->GetActiveBit(id);
+void PersistedData::GetActiveBits(
+    const std::vector<std::string>& ids,
+    base::OnceCallback<void(const std::set<std::string>&)> callback) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!activity_data_service_) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), std::set<std::string>{}));
+    return;
+  }
+  activity_data_service_->GetActiveBits(ids, std::move(callback));
 }
 
 int PersistedData::GetDaysSinceLastRollCall(const std::string& id) const {

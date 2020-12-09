@@ -221,11 +221,12 @@ protocol_request::UpdateCheck MakeProtocolUpdateCheck(bool is_update_disabled) {
 }
 
 protocol_request::Ping MakeProtocolPing(const std::string& app_id,
-                                        const PersistedData* metadata) {
+                                        const PersistedData* metadata,
+                                        bool active) {
   DCHECK(metadata);
   protocol_request::Ping ping;
 
-  if (metadata->GetActiveBit(app_id)) {
+  if (active) {
     const int date_last_active = metadata->GetDateLastActive(app_id);
     if (date_last_active != kDateUnknown) {
       ping.date_last_active = date_last_active;

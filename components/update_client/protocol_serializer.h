@@ -68,7 +68,8 @@ protocol_request::App MakeProtocolApp(
 protocol_request::UpdateCheck MakeProtocolUpdateCheck(bool is_update_disabled);
 
 protocol_request::Ping MakeProtocolPing(const std::string& app_id,
-                                        const PersistedData* metadata);
+                                        const PersistedData* metadata,
+                                        bool active);
 
 class ProtocolSerializer {
  public:

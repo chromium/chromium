@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_PERSISTED_DATA_H_
 #define COMPONENTS_UPDATE_CLIENT_PERSISTED_DATA_H_
 
+#include <set>
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
@@ -59,20 +61,15 @@ class PersistedData {
   // "" indicates that there is no recorded freshness value for the |id|.
   std::string GetPingFreshness(const std::string& id) const;
 
-  // Records the DateLastRollCall for the specified |ids|. |datenum| must be a
-  // non-negative integer: calls with a negative |datenum| are simply ignored.
-  // Calls to SetDateLastRollCall that occur prior to the persisted data store
-  // has been fully initialized are ignored. Also sets the PingFreshness.
-  void SetDateLastRollCall(const std::vector<std::string>& ids, int datenum);
-
-  // Records the DateLastActive for the specified |ids|. |datenum| must be a
-  // non-negative integer: calls with a negative |datenum| are simply ignored.
-  // Calls to SetDateLastActive that occur prior to the persisted data store
-  // has been fully initialized or the active bit of the |ids| are not set
-  // are ignored.
-  // This function also clears the active bits of the specified |ids| if they
-  // are set.
-  void SetDateLastActive(const std::vector<std::string>& ids, int datenum);
+  // Records the DateLastRollcall for the specified `ids`. Also records
+  // DateLastActive, if the ids have active bits currently set, and then clears
+  // those bits. Rotates PingFreshness. Then, calls `callback` on the calling
+  // sequence. Calls with a negative `datenum` or that occur prior to the
+  // initialization of the persisted data store will simply post the callback
+  // immediately.
+  void SetDateLastData(const std::vector<std::string>& ids,
+                       int datenum,
+                       base::OnceClosure callback);
 
   // This is called only via update_client's RegisterUpdateClientPreferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -91,8 +88,11 @@ class PersistedData {
   void SetCohortHint(const std::string& id, const std::string& cohort_hint);
   void SetCohortName(const std::string& id, const std::string& cohort_name);
 
-  // Returns true if the active bit of the specified |id| is set.
-  bool GetActiveBit(const std::string& id) const;
+  // Calls `callback` with the subset of `ids` that are active. The callback
+  // is called on the calling sequence.
+  void GetActiveBits(
+      const std::vector<std::string>& ids,
+      base::OnceCallback<void(const std::set<std::string>&)> callback) const;
 
   // The following two functions returns the number of days since the last
   // time the client checked for update/was active.
@@ -128,6 +128,11 @@ class PersistedData {
   void SetString(const std::string& id,
                  const std::string& key,
                  const std::string& value);
+
+  void SetDateLastDataHelper(const std::vector<std::string>& ids,
+                             int datenum,
+                             base::OnceClosure callback,
+                             const std::set<std::string>& active_ids);
 
   SEQUENCE_CHECKER(sequence_checker_);
   PrefService* pref_service_;

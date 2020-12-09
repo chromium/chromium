@@ -154,6 +154,8 @@ static_library("test_support") {
   sources = [
     "net/url_loader_post_interceptor.cc",
     "net/url_loader_post_interceptor.h",
+    "test_activity_data_service.cc",
+    "test_activity_data_service.h",
     "test_configurator.cc",
     "test_configurator.h",
     "test_installer.cc",

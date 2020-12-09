@@ -10,14 +10,15 @@
 #include <vector>
 
 #include "base/optional.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/update_client/activity_data_service.h"
 #include "components/update_client/persisted_data.h"
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/protocol_serializer.h"
+#include "components/update_client/test_activity_data_service.h"
 #include "components/update_client/updater_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -31,6 +32,7 @@ TEST(SerializeRequestJSON, Serialize) {
   // When no updater state is provided, then check that the elements and
   // attributes related to the updater state are not serialized.
 
+  base::test::TaskEnvironment env;
   std::vector<base::Value> events;
   events.push_back(Value(Value::Type::DICTIONARY));
   events.push_back(Value(Value::Type::DICTIONARY));
@@ -42,13 +44,14 @@ TEST(SerializeRequestJSON, Serialize) {
   PersistedData::RegisterPrefs(pref->registry());
   auto metadata = std::make_unique<PersistedData>(pref.get(), nullptr);
   std::vector<std::string> items = {"id1"};
-  metadata->SetDateLastRollCall(items, 1234);
+  test::SetDateLastData(metadata.get(), items, 1234);
 
   std::vector<protocol_request::App> apps;
   apps.push_back(MakeProtocolApp(
       "id1", base::Version("1.0"), "brand1", "source1", "location1", "fp1",
       {{"attr1", "1"}, {"attr2", "2"}}, "c1", "ch1", "cn1", "test", {0, 1},
-      MakeProtocolUpdateCheck(true), MakeProtocolPing("id1", metadata.get())));
+      MakeProtocolUpdateCheck(true),
+      MakeProtocolPing("id1", metadata.get(), {})));
   apps.push_back(
       MakeProtocolApp("id2", base::Version("2.0"), std::move(events)));
 
@@ -79,6 +82,7 @@ TEST(SerializeRequestJSON, Serialize) {
 }
 
 TEST(SerializeRequestJSON, DownloadPreference) {
+  base::test::TaskEnvironment env;
   // Verifies that an empty |download_preference| is not serialized.
   const auto serializer = std::make_unique<ProtocolSerializerJSON>();
   auto request = serializer->Serialize(
@@ -96,6 +100,7 @@ TEST(SerializeRequestJSON, DownloadPreference) {
 // When present, updater state attributes are only serialized for Google builds,
 // except the |domainjoined| attribute, which is serialized in all cases.
 TEST(SerializeRequestJSON, UpdaterStateAttributes) {
+  base::test::TaskEnvironment env;
   const auto serializer = std::make_unique<ProtocolSerializerJSON>();
   UpdaterState::Attributes attributes;
   attributes["ismachine"] = "1";
