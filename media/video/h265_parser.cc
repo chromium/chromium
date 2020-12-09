@@ -548,8 +548,8 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
     TRUE_OR_RETURN(width_crop.ValueOrDefault(0) <
                    sps->pic_width_in_luma_samples);
     base::CheckedNumeric<int> height_crop = sps->conf_win_top_offset;
-    width_crop += sps->conf_win_bottom_offset;
-    width_crop *= sps->sub_height_c;
+    height_crop += sps->conf_win_bottom_offset;
+    height_crop *= sps->sub_height_c;
     if (!height_crop.IsValid())
       return kInvalidStream;
     TRUE_OR_RETURN(height_crop.ValueOrDefault(0) <
