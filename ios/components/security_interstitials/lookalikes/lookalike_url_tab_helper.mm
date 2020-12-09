@@ -8,6 +8,7 @@
 #include "components/lookalikes/core/features.h"
 #include "components/lookalikes/core/lookalike_url_ui_util.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
+#include "components/reputation/core/safety_tips_config.h"
 #include "components/ukm/ios/ukm_url_recorder.h"
 #include "components/url_formatter/spoof_checks/top_domains/top_domain_util.h"
 #include "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
@@ -67,6 +68,20 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
   LookalikeUrlTabAllowList* allow_list =
       LookalikeUrlTabAllowList::FromWebState(web_state());
   if (allow_list->IsDomainAllowed(response_url.host())) {
+    std::move(callback).Run(CreateAllowDecision());
+    return;
+  }
+
+  // Fetch the component allowlist.
+  const auto* proto = reputation::GetSafetyTipsRemoteConfigProto();
+  // When there's no proto (like at browser start), fail-safe and don't block.
+  if (!proto) {
+    std::move(callback).Run(CreateAllowDecision());
+    return;
+  }
+  // If the URL is in the component updater allowlist, don't show any warning.
+  if (reputation::IsUrlAllowlistedBySafetyTipsComponent(
+          proto, response_url.GetWithEmptyPath())) {
     std::move(callback).Run(CreateAllowDecision());
     return;
   }

@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/lookalikes/core/features.h"
+#include "components/reputation/core/safety_tip_test_utils.h"
 #include "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
 #include "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
@@ -67,6 +68,7 @@ class LookalikeUrlTabHelperTest : public PlatformTest {
 // Also tests that UMA records correctly.
 TEST_F(LookalikeUrlTabHelperTest, ShouldAllowResponse) {
   GURL lookalike_url("https://xn--googl-fsa.com/");
+  reputation::InitializeSafetyTipConfig();
 
   // Lookalike IDNs should be blocked.
   EXPECT_FALSE(ShouldAllowResponseUrl(lookalike_url, /*main_frame=*/true)
@@ -94,10 +96,22 @@ TEST_F(LookalikeUrlTabHelperTest, ShouldAllowResponse) {
   histogram_tester_.ExpectTotalCount(lookalikes::kHistogramName, 1);
 }
 
+// Tests that ShouldAllowResponse properly allows lookalike navigations
+// when the domain has been allowlisted by the Safety Tips component.
+TEST_F(LookalikeUrlTabHelperTest, ShouldAllowResponseForAllowlistedDomains) {
+  GURL lookalike_url("https://xn--googl-fsa.com/");
+  reputation::InitializeSafetyTipConfig();
+  reputation::SetSafetyTipAllowlistPatterns({"xn--googl-fsa.com/"}, {});
+
+  EXPECT_TRUE(ShouldAllowResponseUrl(lookalike_url, /*main_frame=*/true)
+                  .ShouldAllowNavigation());
+}
+
 // Tests that ShouldAllowResponse properly blocks lookalike navigations
 // to IDNs when the feature is enabled.
 TEST_F(LookalikeUrlTabHelperTest, ShouldAllowResponseForPunycode) {
   GURL lookalike_url("https://ɴoτ-τoρ-ďoᛖaiɴ.com/");
+  reputation::InitializeSafetyTipConfig();
 
   base::test::ScopedFeatureList feature_list_disabled;
   feature_list_disabled.InitAndDisableFeature(
