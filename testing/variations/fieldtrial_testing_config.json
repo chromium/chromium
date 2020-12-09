@@ -4878,7 +4878,6 @@
                         "OmniboxDynamicMaxAutocomplete",
                         "OmniboxEntitySuggestionsReduceLatency",
                         "OmniboxLocalZeroSuggestAgeThreshold",
-                        "OmniboxLocalZeroSuggestForAuthenticatedUsers",
                         "OmniboxLocalZeroSuggestFrecencyRanking",
                         "OmniboxMaxURLMatches",
                         "OmniboxMaxZeroSuggestMatches",
@@ -4890,9 +4889,12 @@
                         "OmniboxRichEntitySuggestions",
                         "OmniboxTrendingZeroPrefixSuggestionsOnNTP",
                         "OmniboxUIExperimentMaxAutocompleteMatches",
-                        "OmniboxZeroSuggestCaching",
                         "QueryInOmnibox",
                         "SearchSuggestChips"
+                    ],
+                    "disable_features": [
+                        "OmniboxLocalZeroSuggestForAuthenticatedUsers",
+                        "OmniboxZeroSuggestCaching"
                     ]
                 }
             ]
@@ -4920,7 +4922,10 @@
                         "OmniboxMaxZeroSuggestMatches",
                         "OmniboxOnFocusSuggestionsContextualWebOnContent",
                         "OmniboxTrendingZeroPrefixSuggestionsOnNTP",
-                        "OmniboxUIExperimentMaxAutocompleteMatches",
+                        "OmniboxUIExperimentMaxAutocompleteMatches"
+                    ],
+                    "disable_features": [
+                        "OmniboxLocalZeroSuggestForAuthenticatedUsers",
                         "OmniboxZeroSuggestCaching"
                     ]
                 }
