@@ -69,7 +69,8 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
                 CompositorViewHolder compositorViewHolder, Context context,
                 @NonNull WebContents webContents,
                 ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
-                ApplicationViewportInsetSupplier bottomInsetProvider, boolean isChromeCustomTab,
+                ApplicationViewportInsetSupplier bottomInsetProvider,
+                ActivityTabProvider activityTabProvider, boolean isChromeCustomTab,
                 @NonNull String initialUrl, Map<String, String> parameters, String experimentIds,
                 @Nullable String callerAccount, @Nullable String userName) {}
 

@@ -46,7 +46,8 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
             BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
             Context context, @NonNull WebContents webContents,
             ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
-            ApplicationViewportInsetSupplier bottomInsetProvider, boolean isChromeCustomTab,
+            ApplicationViewportInsetSupplier bottomInsetProvider,
+            ActivityTabProvider activityTabProvider, boolean isChromeCustomTab,
             @NonNull String initialUrl, Map<String, String> parameters, String experimentIds,
             @Nullable String callerAccount, @Nullable String userName) {
         if (shouldStartTriggerScript(parameters)) {
@@ -80,8 +81,9 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
                 AssistantTriggerScriptBridge triggerScriptBridge =
                         new AssistantTriggerScriptBridge();
                 triggerScriptBridge.start(bottomSheetController, context,
-                        keyboardVisibilityDelegate, bottomInsetProvider, webContents, initialUrl,
-                        parameters, experimentIds, new AssistantTriggerScriptBridge.Delegate() {
+                        keyboardVisibilityDelegate, bottomInsetProvider, activityTabProvider,
+                        webContents, initialUrl, parameters, experimentIds,
+                        new AssistantTriggerScriptBridge.Delegate() {
                             @Override
                             public void onTriggerScriptFinished(
                                     @LiteScriptFinishedState int finishedState) {

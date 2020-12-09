@@ -277,9 +277,21 @@ void TriggerScriptCoordinator::OnVisibilityChanged(
   if (web_contents_visible_ == visible) {
     return;
   }
-
   web_contents_visible_ = visible;
-  if (web_contents_visible_) {
+  OnEffectiveVisibilityChanged();
+}
+
+void TriggerScriptCoordinator::OnTabInteractabilityChanged(bool interactable) {
+  if (web_contents_interactable_ == interactable) {
+    return;
+  }
+  web_contents_interactable_ = interactable;
+  OnEffectiveVisibilityChanged();
+}
+
+void TriggerScriptCoordinator::OnEffectiveVisibilityChanged() {
+  bool visible = web_contents_visible_ && web_contents_interactable_;
+  if (visible) {
     // Restore UI on tab switch. NOTE: an arbitrary amount of time can pass
     // between tab-hide and tab-show. It is not guaranteed that the trigger
     // script that was shown before is still available, hence we need to fetch
@@ -293,7 +305,7 @@ void TriggerScriptCoordinator::OnVisibilityChanged(
   }
 
   for (Observer& observer : observers_) {
-    observer.OnWebContentsVisibilityChanged(visible);
+    observer.OnVisibilityChanged(visible);
   }
 }
 
