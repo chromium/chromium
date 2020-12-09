@@ -29,9 +29,9 @@ http_archive(
 # Google benchmark.
 http_archive(
     name = "com_github_google_benchmark",
-    urls = ["https://github.com/google/benchmark/archive/16703ff83c1ae6d53e5155df3bb3ab0bc96083be.zip"],
-    strip_prefix = "benchmark-16703ff83c1ae6d53e5155df3bb3ab0bc96083be",
-    sha256 = "59f918c8ccd4d74b6ac43484467b500f1d64b40cc1010daa055375b322a43ba3",
+    urls = ["https://github.com/google/benchmark/archive/bf585a2789e30585b4e3ce6baf11ef2750b54677.zip"],  # 2020-11-26T11:14:03Z
+    strip_prefix = "benchmark-bf585a2789e30585b4e3ce6baf11ef2750b54677",
+    sha256 = "2a778d821997df7d8646c9c59b8edb9a573a6e04c534c01892a40aa524a7b68c",
 )
 
 # C++ rules for Bazel.

@@ -910,6 +910,7 @@ struct btree_iterator {
   using key_type = typename Node::key_type;
   using size_type = typename Node::size_type;
   using params_type = typename Node::params_type;
+  using is_map_container = typename params_type::is_map_container;
 
   using node_type = Node;
   using normal_node = typename std::remove_const<Node>::type;
@@ -921,7 +922,7 @@ struct btree_iterator {
   using slot_type = typename params_type::slot_type;
 
   using iterator =
-      btree_iterator<normal_node, normal_reference, normal_pointer>;
+     btree_iterator<normal_node, normal_reference, normal_pointer>;
   using const_iterator =
       btree_iterator<const_node, const_reference, const_pointer>;
 
@@ -938,20 +939,19 @@ struct btree_iterator {
   btree_iterator(Node *n, int p) : node(n), position(p) {}
 
   // NOTE: this SFINAE allows for implicit conversions from iterator to
-  // const_iterator, but it specifically avoids defining copy constructors so
-  // that btree_iterator can be trivially copyable. This is for performance and
-  // binary size reasons.
+  // const_iterator, but it specifically avoids hiding the copy constructor so
+  // that the trivial one will be used when possible.
   template <typename N, typename R, typename P,
             absl::enable_if_t<
                 std::is_same<btree_iterator<N, R, P>, iterator>::value &&
                     std::is_same<btree_iterator, const_iterator>::value,
                 int> = 0>
-  btree_iterator(const btree_iterator<N, R, P> &other)  // NOLINT
+  btree_iterator(const btree_iterator<N, R, P> other)  // NOLINT
       : node(other.node), position(other.position) {}
 
  private:
   // This SFINAE allows explicit conversions from const_iterator to
-  // iterator, but also avoids defining a copy constructor.
+  // iterator, but also avoids hiding the copy constructor.
   // NOTE: the const_cast is safe because this constructor is only called by
   // non-const methods and the container owns the nodes.
   template <typename N, typename R, typename P,
@@ -959,7 +959,7 @@ struct btree_iterator {
                 std::is_same<btree_iterator<N, R, P>, const_iterator>::value &&
                     std::is_same<btree_iterator, iterator>::value,
                 int> = 0>
-  explicit btree_iterator(const btree_iterator<N, R, P> &other)
+  explicit btree_iterator(const btree_iterator<N, R, P> other)
       : node(const_cast<node_type *>(other.node)), position(other.position) {}
 
   // Increment/decrement the iterator.
@@ -1022,6 +1022,8 @@ struct btree_iterator {
   }
 
  private:
+  friend iterator;
+  friend const_iterator;
   template <typename Params>
   friend class btree;
   template <typename Tree>
@@ -1032,8 +1034,6 @@ struct btree_iterator {
   friend class btree_map_container;
   template <typename Tree>
   friend class btree_multiset_container;
-  template <typename N, typename R, typename P>
-  friend struct btree_iterator;
   template <typename TreeType, typename CheckerType>
   friend class base_checker;
 
@@ -1122,7 +1122,8 @@ class btree {
   using const_reference = typename Params::const_reference;
   using pointer = typename Params::pointer;
   using const_pointer = typename Params::const_pointer;
-  using iterator = btree_iterator<node_type, reference, pointer>;
+  using iterator =
+      typename btree_iterator<node_type, reference, pointer>::iterator;
   using const_iterator = typename iterator::const_iterator;
   using reverse_iterator = std::reverse_iterator<iterator>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
@@ -1135,7 +1136,11 @@ class btree {
  private:
   // For use in copy_or_move_values_in_order.
   const value_type &maybe_move_from_iterator(const_iterator it) { return *it; }
-  value_type &&maybe_move_from_iterator(iterator it) { return std::move(*it); }
+  value_type &&maybe_move_from_iterator(iterator it) {
+    // This is a destructive operation on the other container so it's safe for
+    // us to const_cast and move from the keys here even if it's a set.
+    return std::move(const_cast<value_type &>(*it));
+  }
 
   // Copies or moves (depending on the template parameter) the values in
   // other into this btree in their order in other. This btree must be empty

@@ -58,7 +58,6 @@ using ::absl::cord_internal::kMaxFlatLength;
 using ::absl::cord_internal::CONCAT;
 using ::absl::cord_internal::EXTERNAL;
 using ::absl::cord_internal::FLAT;
-using ::absl::cord_internal::MAX_FLAT_TAG;
 using ::absl::cord_internal::SUBSTRING;
 
 namespace cord_internal {
@@ -91,6 +90,15 @@ inline CordRepExternal* CordRep::external() {
 inline const CordRepExternal* CordRep::external() const {
   assert(tag == EXTERNAL);
   return static_cast<const CordRepExternal*>(this);
+}
+
+inline CordRepFlat* CordRep::flat() {
+  assert(tag >= FLAT);
+  return static_cast<CordRepFlat*>(this);
+}
+inline const CordRepFlat* CordRep::flat() const {
+  assert(tag >= FLAT);
+  return static_cast<const CordRepFlat*>(this);
 }
 
 }  // namespace cord_internal
@@ -457,7 +465,7 @@ static inline bool PrepareAppendRegion(CordRep* root, char** region,
   }
 
   const size_t in_use = dst->length;
-  const size_t capacity = static_cast<CordRepFlat*>(dst)->Capacity();
+  const size_t capacity = dst->flat()->Capacity();
   if (in_use == capacity) {
     *region = nullptr;
     *size = 0;
@@ -539,7 +547,7 @@ void Cord::InlineRep::GetAppendRegion(char** region, size_t* size) {
 // will return true.
 static bool RepMemoryUsageLeaf(const CordRep* rep, size_t* total_mem_usage) {
   if (rep->tag >= FLAT) {
-    *total_mem_usage += static_cast<const CordRepFlat*>(rep)->AllocatedSize();
+    *total_mem_usage += rep->flat()->AllocatedSize();
     return true;
   }
   if (rep->tag == EXTERNAL) {
@@ -637,7 +645,7 @@ Cord& Cord::operator=(absl::string_view src) {
     return *this;
   }
   if (tree != nullptr && tree->tag >= FLAT &&
-      static_cast<CordRepFlat*>(tree)->Capacity() >= length &&
+      tree->flat()->Capacity() >= length &&
       tree->refcount.IsOne()) {
     // Copy in place if the existing FLAT node is reusable.
     memmove(tree->data, data, length);
@@ -694,7 +702,7 @@ void Cord::InlineRep::AppendArray(const char* src_data, size_t src_size) {
     const size_t size2 = inline_length + src_size / 10;
     root = CordRepFlat::New(std::max<size_t>(size1, size2));
     appended = std::min(
-        src_size, static_cast<CordRepFlat*>(root)->Capacity() - inline_length);
+        src_size, root->flat()->Capacity() - inline_length);
     memcpy(root->data, data_.as_chars, inline_length);
     memcpy(root->data + inline_length, src_data, appended);
     root->length = inline_length + appended;
@@ -1785,7 +1793,7 @@ static void DumpNode(CordRep* rep, bool include_data, std::ostream* os) {
           *os << absl::CEscape(std::string(rep->external()->base, rep->length));
         *os << "]\n";
       } else {
-        *os << "FLAT cap=" << static_cast<CordRepFlat*>(rep)->Capacity()
+        *os << "FLAT cap=" << rep->flat()->Capacity()
             << " [";
         if (include_data)
           *os << absl::CEscape(std::string(rep->data, rep->length));
@@ -1835,7 +1843,7 @@ static bool VerifyNode(CordRep* root, CordRep* start_node,
       }
     } else if (node->tag >= FLAT) {
       ABSL_INTERNAL_CHECK(
-          node->length <= static_cast<CordRepFlat*>(node)->Capacity(),
+          node->length <= node->flat()->Capacity(),
           ReportError(root, node));
     } else if (node->tag == EXTERNAL) {
       ABSL_INTERNAL_CHECK(node->external()->base != nullptr,

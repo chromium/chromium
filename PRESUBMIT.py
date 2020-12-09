@@ -618,7 +618,8 @@ _BANNED_CPP_FUNCTIONS = (
         're2::RE2 instead (crbug.com/755321)',
       ),
       True,
-      (),
+      # Abseil's benchmarks never linked into chrome.
+      ['third_party/abseil-cpp/.*_benchmark.cc'],
     ),
     (
       r'/\bstd::stoi\b',

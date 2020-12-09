@@ -149,6 +149,8 @@ struct CordRep {
   inline const CordRepSubstring* substring() const;
   inline CordRepExternal* external();
   inline const CordRepExternal* external() const;
+  inline CordRepFlat* flat();
+  inline const CordRepFlat* flat() const;
 };
 
 struct CordRepConcat : public CordRep {

@@ -52,6 +52,7 @@ def _UpdateAbseilInChromium(abseil_dir, chromium_dir):
  logging.info('Syncing abseil in chromium/src/third_party...')
  exclude = [
    '*BUILD.gn',
+   'DIR_METADATA',
    'README.chromium',
    'OWNERS',
    '.gitignore',

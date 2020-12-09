@@ -298,9 +298,10 @@ class Storage {
   // Storage Constructors and Destructor
   // ---------------------------------------------------------------------------
 
-  Storage() : metadata_() {}
+  Storage() : metadata_(allocator_type(), /* size and is_allocated */ 0) {}
 
-  explicit Storage(const allocator_type& alloc) : metadata_(alloc, {}) {}
+  explicit Storage(const allocator_type& alloc)
+      : metadata_(alloc, /* size and is_allocated */ 0) {}
 
   ~Storage() {
     pointer data = GetIsAllocated() ? GetAllocatedData() : GetInlinedData();

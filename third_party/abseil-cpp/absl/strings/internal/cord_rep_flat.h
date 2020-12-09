@@ -43,7 +43,7 @@ static constexpr size_t kMaxFlatSize = 4096;
 static constexpr size_t kMaxFlatLength = kMaxFlatSize - kFlatOverhead;
 static constexpr size_t kMinFlatLength = kMinFlatSize - kFlatOverhead;
 
-static constexpr size_t AllocatedSizeToTagUnchecked(size_t size) {
+constexpr size_t AllocatedSizeToTagUnchecked(size_t size) {
   return (size <= 1024) ? size / 8 : 128 + size / 32 - 1024 / 32;
 }
 
@@ -51,12 +51,12 @@ static_assert(kMinFlatSize / 8 >= FLAT, "");
 static_assert(AllocatedSizeToTagUnchecked(kMaxFlatSize) <= MAX_FLAT_TAG, "");
 
 // Helper functions for rounded div, and rounding to exact sizes.
-static size_t DivUp(size_t n, size_t m) { return (n + m - 1) / m; }
-static size_t RoundUp(size_t n, size_t m) { return DivUp(n, m) * m; }
+constexpr size_t DivUp(size_t n, size_t m) { return (n + m - 1) / m; }
+constexpr size_t RoundUp(size_t n, size_t m) { return DivUp(n, m) * m; }
 
 // Returns the size to the nearest equal or larger value that can be
 // expressed exactly as a tag value.
-static size_t RoundUpForTag(size_t size) {
+inline size_t RoundUpForTag(size_t size) {
   return RoundUp(size, (size <= 1024) ? 8 : 32);
 }
 
@@ -64,19 +64,19 @@ static size_t RoundUpForTag(size_t size) {
 // does not exactly match a 'tag expressible' size value. The result is
 // undefined if the size exceeds the maximum size that can be encoded in
 // a tag, i.e., if size is larger than TagToAllocatedSize(<max tag>).
-static uint8_t AllocatedSizeToTag(size_t size) {
+inline uint8_t AllocatedSizeToTag(size_t size) {
   const size_t tag = AllocatedSizeToTagUnchecked(size);
   assert(tag <= MAX_FLAT_TAG);
   return tag;
 }
 
 // Converts the provided tag to the corresponding allocated size
-static constexpr size_t TagToAllocatedSize(uint8_t tag) {
+constexpr size_t TagToAllocatedSize(uint8_t tag) {
   return (tag <= 128) ? (tag * 8) : (1024 + (tag - 128) * 32);
 }
 
 // Converts the provided tag to the corresponding available data length
-static constexpr size_t TagToLength(uint8_t tag) {
+constexpr size_t TagToLength(uint8_t tag) {
   return TagToAllocatedSize(tag) - kFlatOverhead;
 }
 

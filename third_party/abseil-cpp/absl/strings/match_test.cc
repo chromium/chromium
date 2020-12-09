@@ -66,6 +66,23 @@ TEST(MatchTest, Contains) {
   EXPECT_FALSE(absl::StrContains("", "a"));
 }
 
+TEST(MatchTest, ContainsChar) {
+  absl::string_view a("abcdefg");
+  absl::string_view b("abcd");
+  EXPECT_TRUE(absl::StrContains(a, 'a'));
+  EXPECT_TRUE(absl::StrContains(a, 'b'));
+  EXPECT_TRUE(absl::StrContains(a, 'e'));
+  EXPECT_FALSE(absl::StrContains(a, 'h'));
+
+  EXPECT_TRUE(absl::StrContains(b, 'a'));
+  EXPECT_TRUE(absl::StrContains(b, 'b'));
+  EXPECT_FALSE(absl::StrContains(b, 'e'));
+  EXPECT_FALSE(absl::StrContains(b, 'h'));
+
+  EXPECT_FALSE(absl::StrContains("", 'a'));
+  EXPECT_FALSE(absl::StrContains("", 'a'));
+}
+
 TEST(MatchTest, ContainsNull) {
   const std::string s = "foo";
   const char* cs = "foo";

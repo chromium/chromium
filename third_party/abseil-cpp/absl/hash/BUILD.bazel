@@ -82,6 +82,24 @@ cc_test(
     ],
 )
 
+cc_binary(
+    name = "hash_benchmark",
+    testonly = 1,
+    srcs = ["hash_benchmark.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    tags = ["benchmark"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":hash",
+        "//absl/base:core_headers",
+        "//absl/random",
+        "//absl/strings:cord",
+        "//absl/strings:cord_test_helpers",
+        "@com_github_google_benchmark//:benchmark_main",
+    ],
+)
+
 cc_library(
     name = "spy_hash_state",
     testonly = 1,

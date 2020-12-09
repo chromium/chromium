@@ -630,6 +630,45 @@ cc_test(
     ],
 )
 
+cc_binary(
+    name = "raw_hash_set_benchmark",
+    testonly = 1,
+    srcs = ["internal/raw_hash_set_benchmark.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    tags = ["benchmark"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":hash_function_defaults",
+        ":raw_hash_set",
+        "//absl/base:raw_logging_internal",
+        "//absl/strings:str_format",
+        "@com_github_google_benchmark//:benchmark_main",
+    ],
+)
+
+cc_binary(
+    name = "raw_hash_set_probe_benchmark",
+    testonly = 1,
+    srcs = ["internal/raw_hash_set_probe_benchmark.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = select({
+        "//conditions:default": [],
+    }) + ABSL_DEFAULT_LINKOPTS,
+    tags = ["benchmark"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":flat_hash_map",
+        ":hash_function_defaults",
+        ":hashtable_debug",
+        ":raw_hash_set",
+        "//absl/random",
+        "//absl/random:distributions",
+        "//absl/strings",
+        "//absl/strings:str_format",
+    ],
+)
+
 cc_test(
     name = "raw_hash_set_allocator_test",
     size = "small",
@@ -674,6 +713,22 @@ cc_test(
         "//absl/base:raw_logging_internal",
         "//absl/types:span",
         "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_binary(
+    name = "layout_benchmark",
+    testonly = 1,
+    srcs = ["internal/layout_benchmark.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    tags = ["benchmark"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":layout",
+        "//absl/base:core_headers",
+        "//absl/base:raw_logging_internal",
+        "@com_github_google_benchmark//:benchmark_main",
     ],
 )
 
