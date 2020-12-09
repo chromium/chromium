@@ -28,6 +28,7 @@ let totalTimeUsedInSend = 0;
 let numberOfSendCalls = 0;
 let maxTimeUsedInSend = 0;
 let sendStartTime = 0;
+let currentThroughput = 0;
 
 sendButton.addEventListener('click', createConnection);
 
@@ -190,6 +191,8 @@ function receiveChannelCallback(event) {
 
 function onReceiveMessageCallback(event) {
   receiveProgress.value += event.data.length;
+  currentThroughput = receiveProgress.value / (performance.now() - sendStartTime);
+  console.log('Current Throughput is:', currentThroughput, 'bytes/sec')
 
   // Workaround for a bug in Chrome which prevents the closing event from being raised by the
   // remote side. Also a workaround for Firefox which does not send all pending data when closing

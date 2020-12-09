@@ -51,6 +51,11 @@ class DataChannel(WebrtcPage):
         'bytes',
         'receiveProgress.value',
         description='Amount of data transferred by data channel in 10 seconds')
+    self.AddJavaScriptMeasurement(
+        'data_throughput',
+        'bytesPerSecond',
+        'currentThroughput',
+        description='Throughput of the data transfer.')
 
 
 class CanvasCapturePeerConnection(WebrtcPage):
