@@ -1063,8 +1063,8 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
                shdr->GetStRefPicSet(sps).num_positive_pics -
                shdr->num_long_term_sps));
         }
-        IN_RANGE_OR_RETURN(shdr->num_long_term_sps + shdr->num_long_term_pics,
-                           0, kMaxLongTermRefPicSets);
+        IN_RANGE_OR_RETURN(shdr->num_long_term_pics, 0,
+                           kMaxLongTermRefPicSets - shdr->num_long_term_sps);
         for (int i = 0; i < shdr->num_long_term_sps + shdr->num_long_term_pics;
              ++i) {
           if (i < shdr->num_long_term_sps) {
