@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.signin.account_picker;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -139,6 +140,14 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         String continueAsButtonText = mActivity.getString(R.string.signin_promo_continue_as,
                 accountProfileData.getGivenNameOrFullNameOrEmail());
         mContinueAsButton.setText(continueAsButtonText);
+        mAccountPickerTitle.setFocusable(true);
+    }
+
+    /**
+     * Set A11y focus on title
+     */
+    void setAccessibilityFocusOnTitle() {
+        mAccountPickerTitle.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 
     /**

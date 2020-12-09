@@ -80,6 +80,7 @@ class AccountPickerBottomSheetViewBinder {
                 throw new IllegalArgumentException(
                         "Cannot bind AccountPickerBottomSheetView for the view state:" + viewState);
         }
+        view.setAccessibilityFocusOnTitle();
     }
 
     private static @StringRes int getTitleId(@ViewState int viewState) {
