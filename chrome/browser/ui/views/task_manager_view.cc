@@ -159,7 +159,9 @@ bool TaskManagerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
 }
 
 views::View* TaskManagerView::GetInitiallyFocusedView() {
-  return nullptr;
+  // Set initial focus to |table_view_| so that screen readers can navigate the
+  // UI when the dialog is opened without having to manually assign focus first.
+  return tab_table_;
 }
 
 bool TaskManagerView::ExecuteWindowsCommand(int command_id) {
