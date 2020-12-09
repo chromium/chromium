@@ -43,6 +43,11 @@ copy_dir("copy_libs_common_res_splash_to_upload_dir") {
   destination_dir = "${upload_dir}/res"
 }
 
+copy_dir("copy_components_libs_common_res_splash_to_upload_dir") {
+  source_dir = "//components/webapk/android/libs/common/res_splash"
+  destination_dir = "${upload_dir}/res"
+}
+
 copy_ex("copy_extra_files_to_upload_dir") {
   dest = upload_dir
 
@@ -66,6 +71,7 @@ copy_ex("copy_extra_files_to_upload_dir") {
 
 group("prepare_webapk_shell_upload_dir") {
   deps = [
+    ":copy_components_libs_common_res_splash_to_upload_dir",
     ":copy_extra_files_to_upload_dir",
     ":copy_libs_common_res_splash_to_upload_dir",
     ":copy_res_app_icon_to_upload_dir",
