@@ -118,7 +118,8 @@ void BorealisContextManagerImpl::Complete(BorealisStartupResult result,
                                           std::string error_or_empty) {
   startup_result_ = result;
   startup_error_ = error_or_empty;
-  RecordBorealisStartupResultHistogram(result);
+  if (result != BorealisStartupResult::kCancelled || !task_queue_.empty())
+    RecordBorealisStartupResultHistogram(result);
 
   while (!callback_queue_.empty()) {
     ResultCallback callback = std::move(callback_queue_.front());
