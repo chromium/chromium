@@ -140,9 +140,9 @@ void ScriptInjectionManager::RFOHelper::DidCreateNewDocument() {
 
 void ScriptInjectionManager::RFOHelper::DidCreateDocumentElement() {
   ExtensionFrameHelper::Get(render_frame())
-      ->ScheduleAtDocumentStart(
-          base::Bind(&ScriptInjectionManager::RFOHelper::StartInjectScripts,
-                     weak_factory_.GetWeakPtr(), UserScript::DOCUMENT_START));
+      ->ScheduleAtDocumentStart(base::BindOnce(
+          &ScriptInjectionManager::RFOHelper::StartInjectScripts,
+          weak_factory_.GetWeakPtr(), UserScript::DOCUMENT_START));
 }
 
 void ScriptInjectionManager::RFOHelper::DidFailProvisionalLoad() {
@@ -170,8 +170,8 @@ void ScriptInjectionManager::RFOHelper::DidFinishDocumentLoad() {
   DCHECK(content::RenderThread::Get());
   ExtensionFrameHelper::Get(render_frame())
       ->ScheduleAtDocumentEnd(
-          base::Bind(&ScriptInjectionManager::RFOHelper::StartInjectScripts,
-                     weak_factory_.GetWeakPtr(), UserScript::DOCUMENT_END));
+          base::BindOnce(&ScriptInjectionManager::RFOHelper::StartInjectScripts,
+                         weak_factory_.GetWeakPtr(), UserScript::DOCUMENT_END));
 
   // We try to run idle in two places: a delayed task here and in response to
   // ContentRendererClient::RunScriptsAtDocumentIdle(). DidFinishDocumentLoad()
@@ -192,8 +192,8 @@ void ScriptInjectionManager::RFOHelper::DidFinishDocumentLoad() {
 
   ExtensionFrameHelper::Get(render_frame())
       ->ScheduleAtDocumentIdle(
-          base::Bind(&ScriptInjectionManager::RFOHelper::RunIdle,
-                     weak_factory_.GetWeakPtr()));
+          base::BindOnce(&ScriptInjectionManager::RFOHelper::RunIdle,
+                         weak_factory_.GetWeakPtr()));
 }
 
 void ScriptInjectionManager::RFOHelper::WillDetach() {
@@ -435,8 +435,8 @@ void ScriptInjectionManager::TryToInject(
   // ScriptInjections, so is guaranteed to outlive them.
   switch (injection->TryToInject(
       run_location, scripts_run_info,
-      base::Bind(&ScriptInjectionManager::OnInjectionFinished,
-                 base::Unretained(this)))) {
+      base::BindOnce(&ScriptInjectionManager::OnInjectionFinished,
+                     base::Unretained(this)))) {
     case ScriptInjection::INJECTION_WAITING:
       pending_injections_.push_back(std::move(injection));
       break;

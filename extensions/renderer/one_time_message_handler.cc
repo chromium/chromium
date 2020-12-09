@@ -280,8 +280,8 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
   // listener return `true` if they intend to respond asynchronously; otherwise
   // we close the port.
   auto callback = std::make_unique<OneTimeMessageCallback>(
-      base::Bind(&OneTimeMessageHandler::OnOneTimeMessageResponse,
-                 weak_factory_.GetWeakPtr(), target_port_id));
+      base::BindOnce(&OneTimeMessageHandler::OnOneTimeMessageResponse,
+                     weak_factory_.GetWeakPtr(), target_port_id));
   v8::Local<v8::External> external = v8::External::New(isolate, callback.get());
   v8::Local<v8::Function> response_function;
 

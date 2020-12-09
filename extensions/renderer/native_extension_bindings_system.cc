@@ -469,15 +469,16 @@ NativeExtensionBindingsSystem::NativeExtensionBindingsSystem(
           base::BindRepeating(&GetContextOwner),
           base::BindRepeating(&APIActivityLogger::LogAPICall),
           base::BindRepeating(&AddConsoleError),
-          APILastError(base::Bind(&GetLastErrorParents),
-                       base::Bind(&AddConsoleError))),
+          APILastError(base::BindRepeating(&GetLastErrorParents),
+                       base::BindRepeating(&AddConsoleError))),
       messaging_service_(this) {
-  api_system_.RegisterCustomType("storage.StorageArea",
-                                 base::Bind(&StorageArea::CreateStorageArea));
+  api_system_.RegisterCustomType(
+      "storage.StorageArea",
+      base::BindRepeating(&StorageArea::CreateStorageArea));
   api_system_.RegisterCustomType("types.ChromeSetting",
-                                 base::Bind(&ChromeSetting::Create));
+                                 base::BindRepeating(&ChromeSetting::Create));
   api_system_.RegisterCustomType("contentSettings.ContentSetting",
-                                 base::Bind(&ContentSetting::Create));
+                                 base::BindRepeating(&ContentSetting::Create));
   api_system_.GetHooksForAPI("webRequest")
       ->SetDelegate(std::make_unique<WebRequestHooks>());
   api_system_.GetHooksForAPI("declarativeContent")
@@ -523,8 +524,8 @@ void NativeExtensionBindingsSystem::DidCreateScriptContext(
   context->module_system()->SetGetInternalAPIHook(
       get_internal_api_.Get(isolate));
   context->module_system()->SetJSBindingUtilGetter(
-      base::Bind(&NativeExtensionBindingsSystem::GetJSBindingUtil,
-                 weak_factory_.GetWeakPtr()));
+      base::BindRepeating(&NativeExtensionBindingsSystem::GetJSBindingUtil,
+                          weak_factory_.GetWeakPtr()));
 
   UpdateBindingsForContext(context);
 }

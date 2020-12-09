@@ -155,7 +155,8 @@ class ModuleSystem : public ObjectBackedNativeHandler {
   void SetGetInternalAPIHook(v8::Local<v8::FunctionTemplate> get_internal_api);
 
   using JSBindingUtilGetter =
-      base::Callback<void(v8::Local<v8::Context>, v8::Local<v8::Value>*)>;
+      base::RepeatingCallback<void(v8::Local<v8::Context>,
+                                   v8::Local<v8::Value>*)>;
   void SetJSBindingUtilGetter(const JSBindingUtilGetter& getter);
 
  protected:

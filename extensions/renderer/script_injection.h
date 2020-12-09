@@ -43,7 +43,7 @@ class ScriptInjection {
     INJECTION_WAITING
   };
 
-  using CompletionCallback = base::Callback<void(ScriptInjection*)>;
+  using CompletionCallback = base::OnceCallback<void(ScriptInjection*)>;
 
   // Return the id of the injection host associated with the given world.
   static std::string GetHostIdForIsolatedWorld(int world_id);
@@ -66,10 +66,9 @@ class ScriptInjection {
   // |run_location_|).
   // If INJECTION_BLOCKED is returned, |async_completion_callback| will be
   // called upon completion.
-  InjectionResult TryToInject(
-      UserScript::RunLocation current_location,
-      ScriptsRunInfo* scripts_run_info,
-      const CompletionCallback& async_completion_callback);
+  InjectionResult TryToInject(UserScript::RunLocation current_location,
+                              ScriptsRunInfo* scripts_run_info,
+                              CompletionCallback async_completion_callback);
 
   // Called when permission for the given injection has been granted.
   // Returns INJECTION_FINISHED if injection has injected or will never inject,

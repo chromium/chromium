@@ -111,13 +111,13 @@ class ExtensionFrameHelper
   // notification, e.g. from RenderFrameObserver::DidCreateDocumentElement.
   // Otherwise the callback is never invoked, or invoked for a document that you
   // were not expecting.
-  void ScheduleAtDocumentStart(const base::Closure& callback);
+  void ScheduleAtDocumentStart(base::OnceClosure callback);
 
   // Schedule a callback, to be run at the next RunScriptsAtDocumentEnd call.
-  void ScheduleAtDocumentEnd(const base::Closure& callback);
+  void ScheduleAtDocumentEnd(base::OnceClosure callback);
 
   // Schedule a callback, to be run at the next RunScriptsAtDocumentIdle call.
-  void ScheduleAtDocumentIdle(const base::Closure& callback);
+  void ScheduleAtDocumentIdle(base::OnceClosure callback);
 
  private:
   // RenderFrameObserver implementation.
@@ -178,13 +178,13 @@ class ExtensionFrameHelper
   bool did_create_current_document_element_;
 
   // Callbacks to be run at the next RunScriptsAtDocumentStart notification.
-  std::vector<base::Closure> document_element_created_callbacks_;
+  std::vector<base::OnceClosure> document_element_created_callbacks_;
 
   // Callbacks to be run at the next RunScriptsAtDocumentEnd notification.
-  std::vector<base::Closure> document_load_finished_callbacks_;
+  std::vector<base::OnceClosure> document_load_finished_callbacks_;
 
   // Callbacks to be run at the next RunScriptsAtDocumentIdle notification.
-  std::vector<base::Closure> document_idle_callbacks_;
+  std::vector<base::OnceClosure> document_idle_callbacks_;
 
   bool delayed_main_world_script_initialization_ = false;
 

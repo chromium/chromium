@@ -183,7 +183,7 @@ ScriptInjection::~ScriptInjection() {
 ScriptInjection::InjectionResult ScriptInjection::TryToInject(
     UserScript::RunLocation current_location,
     ScriptsRunInfo* scripts_run_info,
-    const CompletionCallback& async_completion_callback) {
+    CompletionCallback async_completion_callback) {
   if (current_location < run_location_)
     return INJECTION_WAITING;  // Wait for the right location.
 
@@ -212,7 +212,7 @@ ScriptInjection::InjectionResult ScriptInjection::TryToInject(
       // If the injection is blocked, we need to set the manager so we can
       // notify it upon completion.
       if (result == INJECTION_BLOCKED)
-        async_completion_callback_ = async_completion_callback;
+        async_completion_callback_ = std::move(async_completion_callback);
       return result;
   }
 
@@ -376,7 +376,7 @@ void ScriptInjection::OnJsInjectionCompleted(
     injector_->OnInjectionComplete(std::move(execution_result_), run_location_,
                                    render_frame_);
     // Warning: this object can be destroyed after this line!
-    async_completion_callback_.Run(this);
+    std::move(async_completion_callback_).Run(this);
   }
 }
 

@@ -693,9 +693,10 @@ void Dispatcher::DispatchEvent(const std::string& extension_id,
                                const EventFilteringInfo* filtering_info) const {
   script_context_set_->ForEach(
       extension_id, nullptr,
-      base::Bind(&NativeExtensionBindingsSystem::DispatchEventInContext,
-                 base::Unretained(bindings_system_.get()), event_name,
-                 &event_args, filtering_info));
+      base::BindRepeating(
+          &NativeExtensionBindingsSystem::DispatchEventInContext,
+          base::Unretained(bindings_system_.get()), event_name, &event_args,
+          filtering_info));
 }
 
 void Dispatcher::InvokeModuleSystemMethod(content::RenderFrame* render_frame,
@@ -705,7 +706,8 @@ void Dispatcher::InvokeModuleSystemMethod(content::RenderFrame* render_frame,
                                           const base::ListValue& args) {
   script_context_set_->ForEach(
       extension_id, render_frame,
-      base::Bind(&CallModuleMethod, module_name, function_name, &args));
+      base::BindRepeating(&CallModuleMethod, module_name, function_name,
+                          &args));
 }
 
 // static
@@ -983,8 +985,9 @@ void Dispatcher::UnloadExtension(const std::string& extension_id) {
   // themselves.
   script_context_set_->ForEach(
       extension_id, nullptr,
-      base::Bind(&NativeExtensionBindingsSystem::WillReleaseScriptContext,
-                 base::Unretained(bindings_system_.get())));
+      base::BindRepeating(
+          &NativeExtensionBindingsSystem::WillReleaseScriptContext,
+          base::Unretained(bindings_system_.get())));
   script_context_set_->OnExtensionUnloaded(extension_id);
 
   // Update the available bindings for the remaining contexts. These may have

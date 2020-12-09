@@ -23,14 +23,14 @@ namespace {
 class LoadWatcher : public content::RenderFrameObserver {
  public:
   LoadWatcher(content::RenderFrame* frame,
-              const base::Callback<void(bool)>& callback)
-      : content::RenderFrameObserver(frame), callback_(callback) {}
+              base::OnceCallback<void(bool)> callback)
+      : content::RenderFrameObserver(frame), callback_(std::move(callback)) {}
 
   void DidCreateDocumentElement() override {
     // Defer the callback instead of running it now to avoid re-entrancy caused
     // by the JavaScript callback.
     ExtensionFrameHelper::Get(render_frame())
-        ->ScheduleAtDocumentStart(base::Bind(callback_, true));
+        ->ScheduleAtDocumentStart(base::BindOnce(std::move(callback_), true));
     delete this;
   }
 
@@ -38,14 +38,14 @@ class LoadWatcher : public content::RenderFrameObserver {
     // Use PostTask to avoid running user scripts while handling this
     // DidFailProvisionalLoad notification.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback_, false));
+        FROM_HERE, base::BindOnce(std::move(callback_), false));
     delete this;
   }
 
   void OnDestruct() override { delete this; }
 
  private:
-  base::Callback<void(bool)> callback_;
+  base::OnceCallback<void(bool)> callback_;
 
   DISALLOW_COPY_AND_ASSIGN(LoadWatcher);
 };
@@ -85,17 +85,17 @@ void RenderFrameObserverNatives::OnDocumentElementCreated(
 
   v8::Global<v8::Function> v8_callback(context()->isolate(),
                                        args[1].As<v8::Function>());
-  base::Callback<void(bool)> callback(
-      base::Bind(&RenderFrameObserverNatives::InvokeCallback,
-                 weak_ptr_factory_.GetWeakPtr(), base::Passed(&v8_callback)));
+  auto callback(base::BindOnce(&RenderFrameObserverNatives::InvokeCallback,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               base::Passed(&v8_callback)));
   if (ExtensionFrameHelper::Get(frame)->did_create_current_document_element()) {
     // If the document element is already created, then we can call the callback
     // immediately (though use PostTask to ensure that the callback is called
     // asynchronously).
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback, true));
+        FROM_HERE, base::BindOnce(std::move(callback), true));
   } else {
-    new LoadWatcher(frame, callback);
+    new LoadWatcher(frame, std::move(callback));
   }
 
   args.GetReturnValue().Set(true);

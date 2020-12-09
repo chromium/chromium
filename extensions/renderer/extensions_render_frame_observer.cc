@@ -87,8 +87,8 @@ ExtensionsRenderFrameObserver::ExtensionsRenderFrameObserver(
     service_manager::BinderRegistry* registry)
     : content::RenderFrameObserver(render_frame) {
   registry->AddInterface(
-      base::Bind(&ExtensionsRenderFrameObserver::BindAppWindowReceiver,
-                 base::Unretained(this)));
+      base::BindRepeating(&ExtensionsRenderFrameObserver::BindAppWindowReceiver,
+                          base::Unretained(this)));
 }
 
 ExtensionsRenderFrameObserver::~ExtensionsRenderFrameObserver() {
