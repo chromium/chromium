@@ -578,7 +578,7 @@ void DiceTurnSyncOnHelper::FinishSyncSetupAndDelete(
         consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
       break;
     }
-    case LoginUIService::ABORT_SIGNIN:
+    case LoginUIService::ABORT_SYNC:
       auto* primary_account_mutator =
           identity_manager_->GetPrimaryAccountMutator();
       DCHECK(primary_account_mutator);

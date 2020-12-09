@@ -213,7 +213,7 @@ void TurnSyncOnHelper::FinishSyncSetup(
           account_id);
       break;
     }
-    case LoginUIService::ABORT_SIGNIN:
+    case LoginUIService::ABORT_SYNC:
       // Chrome OS users stay signed in even if sync setup is cancelled.
       break;
   }

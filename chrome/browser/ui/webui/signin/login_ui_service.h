@@ -42,8 +42,8 @@ class LoginUIService : public KeyedService {
     SYNC_WITH_DEFAULT_SETTINGS,
     // Show the user the sync settings before starting sync.
     CONFIGURE_SYNC_FIRST,
-    // The signing process was aborted, don't start sync or show settings.
-    ABORT_SIGNIN,
+    // Turn sync on process was aborted, don't start sync or show settings.
+    ABORT_SYNC,
   };
 
   // Interface for obervers of LoginUIService.

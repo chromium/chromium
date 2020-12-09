@@ -101,7 +101,7 @@ void SyncConfirmationHandler::HandleGoToSettings(const base::ListValue* args) {
 
 void SyncConfirmationHandler::HandleUndo(const base::ListValue* args) {
   did_user_explicitly_interact_ = true;
-  CloseModalSigninWindow(LoginUIService::ABORT_SIGNIN);
+  CloseModalSigninWindow(LoginUIService::ABORT_SYNC);
 }
 
 void SyncConfirmationHandler::HandleAccountImageRequest(
@@ -205,7 +205,7 @@ void SyncConfirmationHandler::CloseModalSigninWindow(
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_WithDefaultSyncSettings"));
       break;
-    case LoginUIService::ABORT_SIGNIN:
+    case LoginUIService::ABORT_SYNC:
       base::RecordAction(base::UserMetricsAction("Signin_Undo_Signin"));
       break;
   }

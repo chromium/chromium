@@ -149,7 +149,7 @@ TEST_F(TurnSyncOnHelperTest, UserClicksCancel) {
   BrowserList::SetLastActive(browser());
 
   // Simulate the user clicking "Cancel".
-  helper.OnSyncConfirmationUIClosed(LoginUIService::ABORT_SIGNIN);
+  helper.OnSyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
 
   // Setup is not complete and we didn't show settings.
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));

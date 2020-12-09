@@ -396,8 +396,8 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, UndoSignin) {
   WaitForPrefValue(profile()->GetPrefs(), prefs::kShowHomeButton,
                    base::Value(true));
 
-  // Undo the signin.
-  ConfirmSync(LoginUIService::ABORT_SIGNIN);
+  // Cancel sync.
+  ConfirmSync(LoginUIService::ABORT_SYNC);
   // Policy is reverted.
   WaitForPrefValue(profile()->GetPrefs(), prefs::kShowHomeButton,
                    base::Value(false));

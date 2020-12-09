@@ -460,7 +460,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
   DiceTurnSyncOnHelper::SigninChoice enterprise_choice_ =
       DiceTurnSyncOnHelper::SIGNIN_CHOICE_CANCEL;
   LoginUIService::SyncConfirmationUIClosedResult sync_confirmation_result_ =
-      LoginUIService::SyncConfirmationUIClosedResult::ABORT_SIGNIN;
+      LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC;
   bool run_delegate_callbacks_ = true;
 
   // Expected delegate calls.

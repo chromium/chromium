@@ -74,7 +74,7 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
   SyncConfirmationHandlerTest()
       : did_user_explicitly_interact_(false),
         on_sync_confirmation_ui_closed_called_(false),
-        sync_confirmation_ui_closed_result_(LoginUIService::ABORT_SIGNIN),
+        sync_confirmation_ui_closed_result_(LoginUIService::ABORT_SYNC),
         web_ui_(new content::TestWebUI),
         login_ui_service_observer_(this) {}
 
@@ -280,7 +280,7 @@ TEST_F(SyncConfirmationHandlerTest, TestHandleUndo) {
   did_user_explicitly_interact_ = true;
 
   EXPECT_TRUE(on_sync_confirmation_ui_closed_called_);
-  EXPECT_EQ(LoginUIService::ABORT_SIGNIN, sync_confirmation_ui_closed_result_);
+  EXPECT_EQ(LoginUIService::ABORT_SYNC, sync_confirmation_ui_closed_result_);
   EXPECT_EQ(1, user_action_tester()->GetActionCount("Signin_Undo_Signin"));
   EXPECT_EQ(0, user_action_tester()->GetActionCount(
       "Signin_Signin_WithDefaultSyncSettings"));
