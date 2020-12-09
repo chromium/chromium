@@ -487,7 +487,8 @@ bool AudioManagerAndroid::UseAAudio() {
   if (!base::FeatureList::IsEnabled(features::kUseAAudioDriver))
     return false;
 
-  if (!base::android::BuildInfo::GetInstance()->is_at_least_q()) {
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_Q) {
     // We need APIs that weren't added until API Level 28. Also, AAudio crashes
     // on Android P, so only consider Q and above.
     return false;
