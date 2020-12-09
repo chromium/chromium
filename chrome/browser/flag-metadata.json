@@ -4304,7 +4304,7 @@
   },
   {
     "name": "screen-time-integration-ios",
-    "owners": [ "edchin", "bling-flags@google.com@google.com" ],
+    "owners": [ "edchin", "bling-flags@google.com" ],
     "expiry_milestone": 92
   },
   {
@@ -4972,22 +4972,22 @@
   },
   {
     "name": "web-view-native-context-menu",
-    "owners": ["gambard","bling-flags@google.com@google.com"],
+    "owners": ["gambard","bling-flags@google.com"],
     "expiry_milestone": 90
   },
   {
     "name": "webpage-alternative-text-zoom",
-    "owners": [ "rkgibson@google.com", "bling-flags@google.com@google.com" ],
+    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 86
   },
   {
     "name": "webpage-default-zoom-from-dynamic-type",
-    "owners": [ "rkgibson@google.com", "bling-flags@google.com@google.com" ],
+    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 87
   },
   {
     "name": "webpage-text-accessibility",
-    "owners": [ "rkgibson@google.com", "bling-flags@google.com@google.com" ],
+    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 86
   },
   {
