@@ -20,6 +20,7 @@ R8 is a proguard-like optimizer that also has the ability to dex.
 
 Local Modifications:
 * Refer to commit descriptions within "patches" directory.
+  * Plus: https://r8-review.googlesource.com/c/r8/+/56708
 * Added "playground" directory for quick "how does this optimize" tests.
 * Removed references to ConcurrentHashMap in desugar_jdk_libs.json.
 
