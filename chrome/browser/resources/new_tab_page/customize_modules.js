@@ -27,13 +27,13 @@ class CustomizeModulesElement extends PolymerElement {
   static get properties() {
     return {
       /** @private */
-      hide_: {
+      show_: {
         type: Boolean,
         reflectToAttribute: true,
       },
 
       /** @private */
-      hideManagedByPolicy_: {
+      showManagedByPolicy_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('modulesVisibleManagedByPolicy'),
       },
@@ -42,7 +42,7 @@ class CustomizeModulesElement extends PolymerElement {
       selected_: {
         type: Boolean,
         reflectToAttribute: true,
-        computed: 'computeSelected_(hide_, hideManagedByPolicy_)',
+        computed: 'computeSelected_(show_, showManagedByPolicy_)',
       },
     };
   }
@@ -59,7 +59,7 @@ class CustomizeModulesElement extends PolymerElement {
     this.setModulesVisibleListenerId_ =
         BrowserProxy.getInstance().callbackRouter.setModulesVisible.addListener(
             visible => {
-              this.hide_ = !visible;
+              this.show_ = visible;
             });
     BrowserProxy.getInstance().handler.updateModulesVisible();
   }
@@ -85,7 +85,7 @@ class CustomizeModulesElement extends PolymerElement {
   }
 
   apply() {
-    BrowserProxy.getInstance().handler.setModulesVisible(!this.hide_);
+    BrowserProxy.getInstance().handler.setModulesVisible(this.show_);
   }
 
   /**
@@ -93,15 +93,7 @@ class CustomizeModulesElement extends PolymerElement {
    * @private
    */
   computeSelected_() {
-    return this.hide_ && !this.hideManagedByPolicy_;
-  }
-
-  /**
-   * @param {!CustomEvent<boolean>} e
-   * @private
-   */
-  onHideChange_(e) {
-    this.hide_ = e.detail;
+    return this.show_ && !this.showManagedByPolicy_;
   }
 }
 

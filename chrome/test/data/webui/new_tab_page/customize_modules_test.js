@@ -7,6 +7,7 @@ import 'chrome://new-tab-page/lazy_load.js';
 import {$$, BrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertNotStyle, assertStyle, createTestProxy} from 'chrome://test/new_tab_page/test_support.js';
+import {flushTasks} from 'chrome://test/test_util.m.js';
 
 suite('NewTabPageCustomizeModulesTest', () => {
   /**
@@ -23,31 +24,37 @@ suite('NewTabPageCustomizeModulesTest', () => {
   });
 
   [true, false].forEach(visible => {
-    test('toggle hide calls handler', async () => {
+    test('toggle show calls handler', async () => {
       // Arrange.
       const customizeModules = document.createElement('ntp-customize-modules');
       document.body.appendChild(customizeModules);
       testProxy.callbackRouterRemote.setModulesVisible(visible);
 
+      // setModulesVisible sets visible to true, but customizeModules' show_
+      // isn't immediately updated after. Using flushForTesting ensures
+      // everything from the callback is done updating before proceeding.
+      await testProxy.callbackRouterRemote.$.flushForTesting();
+
       // Act.
-      customizeModules.$.hideToggle.click();
+      customizeModules.$.showToggle.click();
       customizeModules.apply();
 
       // Assert.
-      assertEquals(1, testProxy.handler.getCallCount('setModulesVisible'));
+      assertEquals(
+          !visible, await testProxy.handler.whenCalled('setModulesVisible'));
       assertStyle(
           $$(customizeModules, 'cr-policy-indicator'), 'display', 'none');
     });
   });
 
-  test('policy disables hide toggle', () => {
+  test('policy disables show toggle', () => {
     // Act.
     loadTimeData.overrideValues({modulesVisibleManagedByPolicy: true});
     const customizeModules = document.createElement('ntp-customize-modules');
     document.body.appendChild(customizeModules);
 
     // Assert.
-    assertTrue(customizeModules.$.hideToggle.disabled);
+    assertTrue(customizeModules.$.showToggle.disabled);
     assertNotStyle(
         $$(customizeModules, 'cr-policy-indicator'), 'display', 'none');
   });
