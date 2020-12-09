@@ -29,7 +29,7 @@ ProducerHost::~ProducerHost() {
   producer_endpoint_.reset();
 }
 
-bool ProducerHost::Initialize(
+ProducerHost::InitializationResult ProducerHost::Initialize(
     mojo::PendingRemote<mojom::ProducerClient> producer_client,
     perfetto::TracingService* service,
     const std::string& name,
@@ -43,7 +43,7 @@ bool ProducerHost::Initialize(
   auto shm = std::make_unique<MojoSharedMemory>(std::move(shared_memory));
   // We may fail to map the buffer provided by the ProducerClient.
   if (!shm->start()) {
-    return false;
+    return InitializationResult::kSmbMappingFailed;
   }
 
   size_t shm_size = shm->size();
@@ -56,10 +56,15 @@ bool ProducerHost::Initialize(
       shared_memory_buffer_page_size_bytes, std::move(shm));
 
   // In some cases, the service may deny the producer connection (e.g. if too
-  // many producers are registered). The service will adopt the shared memory
-  // buffer provided by the ProducerClient as long as it is correctly sized.
-  if (!producer_endpoint_ || producer_endpoint_->shared_memory() != shm_raw) {
-    return false;
+  // many producers are registered).
+  if (!producer_endpoint_) {
+    return InitializationResult::kProducerEndpointConstructionFailed;
+  }
+
+  // The service will adopt the shared memory buffer provided by the
+  // ProducerClient as long as it is correctly sized.
+  if (producer_endpoint_->shared_memory() != shm_raw) {
+    return InitializationResult::kSmbNotAdopted;
   }
 
   // When we are in-process, we don't use the in-process arbiter perfetto would
@@ -81,7 +86,7 @@ bool ProducerHost::Initialize(
     }
   }
 
-  return true;
+  return InitializationResult::kSuccess;
 }
 
 void ProducerHost::OnConnect() {

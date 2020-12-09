@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -89,19 +90,37 @@ void PerfettoService::ConnectToProducerHost(
     mojo::ScopedSharedBufferHandle shared_memory,
     uint64_t shared_memory_buffer_page_size_bytes) {
   if (!shared_memory.is_valid()) {
-    mojo::ReportBadMessage("Producer connection request without valid SMB");
+    // Connection requests should always include an SMB.
+    mojo::ReportBadMessage("Producer connection request without SMB");
     return;
   }
 
   auto new_producer = std::make_unique<ProducerHost>(&perfetto_task_runner_);
   uint32_t producer_pid = receivers_.current_context();
   DCHECK(shared_memory.is_valid());
-  if (!new_producer->Initialize(
-          std::move(producer_client), service_.get(),
-          base::StrCat({mojom::kPerfettoProducerNamePrefix,
-                        base::NumberToString(producer_pid)}),
-          std::move(shared_memory), shared_memory_buffer_page_size_bytes)) {
-    mojo::ReportBadMessage("Producer connection failed");
+  ProducerHost::InitializationResult result = new_producer->Initialize(
+      std::move(producer_client), service_.get(),
+      base::StrCat({mojom::kPerfettoProducerNamePrefix,
+                    base::NumberToString(producer_pid)}),
+      std::move(shared_memory), shared_memory_buffer_page_size_bytes);
+
+  base::UmaHistogramEnumeration("Tracing.ProducerHostInitializationResult",
+                                result);
+
+  if (result == ProducerHost::InitializationResult::kSmbNotAdopted) {
+    // When everything else succeeds, but the SMB was not accepted, the producer
+    // must be misbehaving. SMBs are not accepted only if they are incorrectly
+    // sized, but SMB/page sizes are constants in Chromium.
+    mojo::ReportBadMessage("Producer connection request with invalid SMB");
+    return;
+  }
+
+  if (result != ProducerHost::InitializationResult::kSuccess) {
+    // In other failure scenarios, the tracing service may have encountered an
+    // internal error not caused by a misbehaving producer, e.g. we have too
+    // many producers registered or mapping the SMB failed (crbug/1154344). In
+    // these cases, we have no choice but to ignore the failure and cancel the
+    // producer connection by dropping |new_producer|.
     return;
   }
 

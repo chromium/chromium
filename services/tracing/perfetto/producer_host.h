@@ -37,15 +37,26 @@ class ProducerHost : public tracing::mojom::ProducerHost,
   explicit ProducerHost(PerfettoTaskRunner*);
   ~ProducerHost() override;
 
+  // Keep in sync with tools/metrics/histograms/enums.xml. These values are
+  // persisted to logs. Entries should not be renumbered and numeric values
+  // should never be reused.
+  enum class InitializationResult {
+    kSuccess = 0,
+    kSmbMappingFailed = 1,
+    kSmbNotAdopted = 2,
+    kProducerEndpointConstructionFailed = 3,
+    kMaxValue = kProducerEndpointConstructionFailed
+  };
+
   // Called by the ProducerService to register the Producer with Perfetto,
   // connect to the corresponding remote ProducerClient, and setup the provided
-  // shared memory buffer for tracing data exchange. Returns false if the
-  // service failed to connect the producer or adopt the provided SMB.
-  bool Initialize(mojo::PendingRemote<mojom::ProducerClient> producer_client,
-                  perfetto::TracingService* service,
-                  const std::string& name,
-                  mojo::ScopedSharedBufferHandle shared_memory,
-                  uint64_t shared_memory_buffer_page_size_bytes);
+  // shared memory buffer for tracing data exchange.
+  InitializationResult Initialize(
+      mojo::PendingRemote<mojom::ProducerClient> producer_client,
+      perfetto::TracingService* service,
+      const std::string& name,
+      mojo::ScopedSharedBufferHandle shared_memory,
+      uint64_t shared_memory_buffer_page_size_bytes);
 
   // perfetto::Producer implementation.
   // Gets called by perfetto::TracingService to toggle specific data sources
