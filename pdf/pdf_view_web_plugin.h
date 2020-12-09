@@ -128,6 +128,12 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   blink::WebPluginParams initial_params_;
   blink::WebPluginContainer* container_ = nullptr;
 
+  // The background color of the PDF viewer.
+  uint32_t background_color_ = 0;
+  // The blank space above the first page of the document reserved for the
+  // toolbar.
+  int top_toolbar_height_in_viewport_coords_ = 0;
+
   base::WeakPtrFactory<PdfViewWebPlugin> weak_factory_{this};
 };
 

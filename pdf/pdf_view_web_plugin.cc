@@ -103,8 +103,19 @@ bool PdfViewWebPlugin::Initialize(blink::WebPluginContainer* container) {
 
   std::string stream_url;
   for (size_t i = 0; i < initial_params_.attribute_names.size(); ++i) {
-    if (initial_params_.attribute_names[i] == "stream-url")
+    if (initial_params_.attribute_names[i] == "stream-url") {
       stream_url = initial_params_.attribute_values[i].Utf8();
+    } else if (initial_params_.attribute_names[i] == "background-color") {
+      if (!base::HexStringToUInt(initial_params_.attribute_values[i].Utf8(),
+                                 &background_color_)) {
+        return false;
+      }
+    } else if (initial_params_.attribute_names[i] == "top-toolbar-height") {
+      if (!base::StringToInt(initial_params_.attribute_values[i].Utf8(),
+                             &top_toolbar_height_in_viewport_coords_)) {
+        return false;
+      }
+    }
   }
 
   // Contents of `initial_params_` no longer needed.
@@ -268,7 +279,7 @@ bool PdfViewWebPlugin::IsPrintPreview() {
 }
 
 uint32_t PdfViewWebPlugin::GetBackgroundColor() {
-  return 0;
+  return background_color_;
 }
 
 void PdfViewWebPlugin::IsSelectingChanged(bool is_selecting) {}
