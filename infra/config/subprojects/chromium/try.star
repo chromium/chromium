@@ -1007,6 +1007,7 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "linux-ozone-rel",
     branch_selector = branches.STANDARD_MILESTONE,
+    builderless = not settings.is_master,
     main_list_view = "try",
     tryjob = try_.job(),
 )
