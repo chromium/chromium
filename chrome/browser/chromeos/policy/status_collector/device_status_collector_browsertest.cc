@@ -2256,14 +2256,15 @@ TEST_F(DeviceStatusCollectorTest, TpmStatusReporting) {
             device_status_.tpm_status_info().attestation_prepared());
   EXPECT_EQ(enrollment_status_reply->enrolled(),
             device_status_.tpm_status_info().attestation_enrolled());
-  EXPECT_EQ(da_info_reply->dictionary_attack_counter(),
+  EXPECT_EQ(static_cast<int32_t>(da_info_reply->dictionary_attack_counter()),
             device_status_.tpm_status_info().dictionary_attack_counter());
-  EXPECT_EQ(da_info_reply->dictionary_attack_threshold(),
+  EXPECT_EQ(static_cast<int32_t>(da_info_reply->dictionary_attack_threshold()),
             device_status_.tpm_status_info().dictionary_attack_threshold());
   EXPECT_EQ(
       da_info_reply->dictionary_attack_lockout_in_effect(),
       device_status_.tpm_status_info().dictionary_attack_lockout_in_effect());
-  EXPECT_EQ(da_info_reply->dictionary_attack_lockout_seconds_remaining(),
+  EXPECT_EQ(static_cast<int32_t>(
+                da_info_reply->dictionary_attack_lockout_seconds_remaining()),
             device_status_.tpm_status_info()
                 .dictionary_attack_lockout_seconds_remaining());
   EXPECT_EQ(false, device_status_.tpm_status_info().boot_lockbox_finalized());
@@ -2296,7 +2297,7 @@ TEST_F(DeviceStatusCollectorTest, TpmStatusReportingAnyDBusError) {
   da_info_reply->set_dictionary_attack_counter(5);
   GetStatus();
   // Reset the error status.
-  EXPECT_EQ(da_info_reply->dictionary_attack_counter(),
+  EXPECT_EQ(static_cast<int32_t>(da_info_reply->dictionary_attack_counter()),
             device_status_.tpm_status_info().dictionary_attack_counter());
   // Reset the error status.
   enrollment_status_reply->set_status(::attestation::STATUS_SUCCESS);
