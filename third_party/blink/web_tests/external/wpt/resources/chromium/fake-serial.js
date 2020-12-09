@@ -93,11 +93,13 @@ class FakeSerialPort {
       ringIndicator: false,
       dataSetReady: false
     };
+    this.inputSignalFailure_ = false;
     this.outputSignals_ = {
       dataTerminalReady: false,
       requestToSend: false,
       break: false
     };
+    this.outputSignalFailure_ = false;
   }
 
   open(options, client) {
@@ -170,8 +172,16 @@ class FakeSerialPort {
     this.inputSignals_ = signals;
   }
 
+  simulateInputSignalFailure(fail) {
+    this.inputSignalFailure_ = fail;
+  }
+
   get outputSignals() {
     return this.outputSignals_;
+  }
+
+  simulateOutputSignalFailure(fail) {
+    this.outputSignalFailure_ = fail;
   }
 
   writable() {
@@ -241,6 +251,10 @@ class FakeSerialPort {
   }
 
   async getControlSignals() {
+    if (this.inputSignalFailure_) {
+      return {signals: null};
+    }
+
     const signals = {
       dcd: this.inputSignals_.dataCarrierDetect,
       cts: this.inputSignals_.clearToSend,
@@ -251,6 +265,10 @@ class FakeSerialPort {
   }
 
   async setControlSignals(signals) {
+    if (this.outputSignalFailure_) {
+      return {success: false};
+    }
+
     if (signals.hasDtr) {
       this.outputSignals_.dataTerminalReady = signals.dtr;
     }

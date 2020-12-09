@@ -188,8 +188,8 @@ interface SerialPort {
   // all buffered data to be transmitted by the port.
   Drain() => ();
 
-  // Reads current control signals (DCD, CTS, etc.).
-  GetControlSignals() => (SerialPortControlSignals signals);
+  // Reads current control signals (DCD, CTS, etc.). Returns null on failure.
+  GetControlSignals() => (SerialPortControlSignals? signals);
 
   // Sets one or more control signals and returns result.
   SetControlSignals(SerialHostControlSignals signals) => (bool success);

@@ -41,3 +41,23 @@ serial_test(async (t, fake) => {
   signals = await port.getSignals();
   assert_object_equals(signals, expectedSignals, 'DSR set');
 }, 'getSignals() returns the current state of input control signals');
+
+serial_test(async (t, fake) => {
+  const {port, fakePort} = await getFakeSerialPort(fake);
+  await port.open({baudRate: 9600});
+
+  fakePort.simulateInputSignalFailure(true);
+  await promise_rejects_dom(t, 'NetworkError', port.getSignals());
+
+  fakePort.simulateInputSignalFailure(false);
+  const expectedSignals = {
+    dataCarrierDetect: false,
+    clearToSend: false,
+    ringIndicator: false,
+    dataSetReady: false
+  };
+  const signals = await port.getSignals();
+  assert_object_equals(signals, expectedSignals);
+
+  await port.close();
+}, 'getSignals() rejects on failure');
