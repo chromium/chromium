@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #import "base/ios/block_types.h"
-#include "base/metrics/histogram_macros.h"
 #include "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
@@ -25,29 +24,6 @@ const NSTimeInterval kBubbleEngagementDuration = 30.0;
 
 // Delay before posting the VoiceOver notification.
 const CGFloat kVoiceOverAnnouncementDelay = 1;
-
-// The name for the histogram that tracks why a bubble was dismissed.
-const char kBubbleDismissalHistogramName[] = "IOS.IPHBubbleDismissalReason";
-
-// Reasosn for why a bubble is dismissed. This enum backs a histogram, and
-// therefore entries should not be renumbered and numeric values should never
-// be reused.
-enum class BubbleDismissalReason {
-  // The dismissal timer dismissed the bubble.
-  kTimerDismissal = 0,
-  // A tap inside the bubble dismissed the bubble.
-  kTapInsideBubble = 1,
-  // A tap outside the bubble dismissed the bubble.
-  kTapOutsideBubble = 2,
-  // The count of entries in the enum.
-  kCount
-};
-
-// Log the reason for why the bubble was dismissed.
-void LogBubbleDismissalReason(BubbleDismissalReason reason) {
-  UMA_HISTOGRAM_ENUMERATION(kBubbleDismissalHistogramName, reason,
-                            BubbleDismissalReason::kCount);
-}
 
 }  // namespace
 
@@ -257,19 +233,16 @@ void LogBubbleDismissalReason(BubbleDismissalReason reason) {
 
 // Invoked by tapping inside the bubble. Dismisses the bubble.
 - (void)tapInsideBubbleRecognized:(id)sender {
-  LogBubbleDismissalReason(BubbleDismissalReason::kTapInsideBubble);
   [self dismissAnimated:YES];
 }
 
 // Invoked by tapping outside the bubble. Dismisses the bubble.
 - (void)tapOutsideBubbleRecognized:(id)sender {
-  LogBubbleDismissalReason(BubbleDismissalReason::kTapOutsideBubble);
   [self dismissAnimated:YES];
 }
 
 // Automatically dismisses the bubble view when |bubbleDismissalTimer| fires.
 - (void)bubbleDismissalTimerFired:(id)sender {
-  LogBubbleDismissalReason(BubbleDismissalReason::kTimerDismissal);
   [self dismissAnimated:YES];
 }
 

@@ -8990,6 +8990,9 @@ Called by update_bad_message_reasons.py.-->
 </enum>
 
 <enum name="BubbleDismissalReason">
+  <obsolete>
+    Deprecated 12/2020 as it is no longer used for analysis.
+  </obsolete>
   <int value="0" label="The timer dismissed the bubble."/>
   <int value="1" label="A tap inside the bubble caused dismissal."/>
   <int value="2" label="A tap outside the bubble caused dismissal."/>

@@ -369,6 +369,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.IPHBubbleDismissalReason" enum="BubbleDismissalReason"
     expires_after="M77">
+  <obsolete>
+    Deprecated 12/2020 as it is no longer used for analysis.
+  </obsolete>
   <owner>pkl@chromium.org</owner>
   <summary>
     Tracks the reason for why the In Product Help bubble was dismissed.
