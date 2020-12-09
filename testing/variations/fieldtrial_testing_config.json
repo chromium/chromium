@@ -8218,6 +8218,21 @@
             ]
         }
     ],
+    "WebRTC-Video-QualityScaling": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled-29,95,149,205,24,37,26,36,0.9995,0.9999,1"
+                }
+            ]
+        }
+    ],
     "WebRTC-Vp9ExternalRefCtrl": [
         {
             "platforms": [
