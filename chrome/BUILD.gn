@@ -494,7 +494,7 @@ if (is_win) {
   compiled_action("chrome_app_strings") {
     tool = "//chrome/tools/build/mac:infoplist_strings_tool"
 
-    inputs = [ chrome_version_file ]
+    inputs = []
 
     outputs = []
 
@@ -519,7 +519,7 @@ if (is_win) {
           "-b",
           "${branding_path_component}_strings",
           "-v",
-          rebase_path(chrome_version_file, root_build_dir),
+          chrome_version_full,
           "-g",
           rebase_path("$root_gen_dir/chrome", root_build_dir),
           "-o",

@@ -27,36 +27,6 @@
 
 namespace {
 
-NSString* ApplicationVersionString(const char* version_file_path) {
-  NSError* error = nil;
-  NSString* path_string = [NSString stringWithUTF8String:version_file_path];
-  NSString* version_file =
-      [NSString stringWithContentsOfFile:path_string
-                                encoding:NSUTF8StringEncoding
-                                   error:&error];
-  if (!version_file || error) {
-    fprintf(stderr, "Failed to load version file: %s\n",
-            [[error description] UTF8String]);
-    return nil;
-  }
-
-  int major = 0, minor = 0, build = 0, patch = 0;
-  NSScanner* scanner = [NSScanner scannerWithString:version_file];
-  if ([scanner scanString:@"MAJOR=" intoString:nil] &&
-      [scanner scanInt:&major] &&
-      [scanner scanString:@"MINOR=" intoString:nil] &&
-      [scanner scanInt:&minor] &&
-      [scanner scanString:@"BUILD=" intoString:nil] &&
-      [scanner scanInt:&build] &&
-      [scanner scanString:@"PATCH=" intoString:nil] &&
-      [scanner scanInt:&patch]) {
-    return [NSString stringWithFormat:@"%d.%d.%d.%d",
-            major, minor, build, patch];
-  }
-  fprintf(stderr, "Failed to parse version file\n");
-  return nil;
-}
-
 ui::DataPack* LoadResourceDataPack(const char* dir_path,
                                    const char* branding_strings_name,
                                    const char* locale_name) {
@@ -154,7 +124,7 @@ const char kAppType_Helper[] = "helper";  // Helper app
 
 int main(int argc, char* const argv[]) {
   @autoreleasepool {
-    const char* version_file_path = NULL;
+    const char* version_string = NULL;
     const char* grit_output_dir = NULL;
     const char* branding_strings_name = NULL;
     const char* output_dir = NULL;
@@ -168,7 +138,7 @@ int main(int argc, char* const argv[]) {
           app_type = optarg;
           break;
         case 'v':
-          version_file_path = optarg;
+          version_string = optarg;
           break;
         case 'g':
           grit_output_dir = optarg;
@@ -197,7 +167,7 @@ int main(int argc, char* const argv[]) {
     } while (false)
 
     // Check our args
-    CHECK_ARG(!version_file_path, "Missing VERSION file path");
+    CHECK_ARG(!version_string, "Missing version string");
     CHECK_ARG(!grit_output_dir, "Missing grit output dir path");
     CHECK_ARG(!output_dir, "Missing path to write InfoPlist.strings files");
     CHECK_ARG(!branding_strings_name, "Missing branding strings file name");
@@ -210,13 +180,6 @@ int main(int argc, char* const argv[]) {
     int lang_list_count = argc;
 
     base::i18n::InitializeICU();
-
-    // Parse the version file and build our string
-    NSString* version_string = ApplicationVersionString(version_file_path);
-    if (!version_string) {
-      fprintf(stderr, "ERROR: failed to get a version string");
-      exit(1);
-    }
 
     NSFileManager* fm = [NSFileManager defaultManager];
 
@@ -260,7 +223,7 @@ int main(int argc, char* const argv[]) {
       // For now, assume this is ok for all languages. If we need to, this could
       // be moved into generated_resources.grd and fetched.
       NSString* get_info = [NSString
-          stringWithFormat:@"%@ %@, %@", name, version_string, copyright];
+          stringWithFormat:@"%@ %s, %@", name, version_string, copyright];
 
       // Generate the InfoPlist.strings file contents.
       NSDictionary<NSString*, NSString*>* infoplist_strings = @{
