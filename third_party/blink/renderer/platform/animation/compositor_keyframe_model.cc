@@ -26,8 +26,7 @@ CompositorKeyframeModel::CompositorKeyframeModel(
     compositor_target_property::Type target_property,
     int keyframe_model_id,
     int group_id,
-    const AtomicString& custom_property_name,
-    CompositorPaintWorkletInput::NativePropertyType native_property_type) {
+    const AtomicString& custom_property_name) {
   if (!keyframe_model_id)
     keyframe_model_id = AnimationIdProvider::NextKeyframeModelId();
   if (!group_id)
@@ -35,8 +34,7 @@ CompositorKeyframeModel::CompositorKeyframeModel(
 
   keyframe_model_ = KeyframeModel::Create(
       curve.CloneToAnimationCurve(), keyframe_model_id, group_id,
-      target_property, custom_property_name.Utf8().data(),
-      native_property_type);
+      target_property, custom_property_name.Utf8().data());
 }
 
 CompositorKeyframeModel::~CompositorKeyframeModel() = default;

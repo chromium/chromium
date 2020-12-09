@@ -438,8 +438,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                               float maximum_scale,
                               float starting_scale) override;
   void OnCustomPropertyMutated(
-      PaintWorkletInput::PropertyKey property_key,
-      PaintWorkletInput::PropertyValue property_value) override;
+      ElementId element_id,
+      const std::string& custom_property_name,
+      PaintWorkletInput::PropertyValue custom_property_value) override;
 
   void ScrollOffsetAnimationFinished() override;
   gfx::ScrollOffset GetScrollOffsetForAnimation(

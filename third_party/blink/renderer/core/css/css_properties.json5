@@ -1197,7 +1197,6 @@
       name: "background-color",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
       interpolable: true,
-      compositable: true,
       field_group: "background",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],

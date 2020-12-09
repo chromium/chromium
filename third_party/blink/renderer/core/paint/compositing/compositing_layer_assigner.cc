@@ -208,7 +208,7 @@ CompositingLayerAssigner::GetReasonsPreventingSquashing(
            .SubtreeWillChangeContents() &&
        squashing_layer.GetLayoutObject()
            .StyleRef()
-           .RequiresPropertyNodeForAnimation()) ||
+           .IsRunningAnimationOnCompositor()) ||
       squashing_layer.GetLayoutObject()
           .StyleRef()
           .ShouldCompositeForCurrentAnimations())

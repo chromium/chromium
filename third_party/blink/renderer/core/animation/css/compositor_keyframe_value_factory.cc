@@ -34,8 +34,7 @@ static CompositorKeyframeValue* CreateFromTransformProperties(
 
 CompositorKeyframeValue* CompositorKeyframeValueFactory::Create(
     const PropertyHandle& property,
-    const ComputedStyle& style,
-    double offset) {
+    const ComputedStyle& style) {
   const CSSProperty& css_property = property.GetCSSProperty();
 #if DCHECK_IS_ON()
   // Variables are conditionally interpolable and compositable.
@@ -67,9 +66,6 @@ CompositorKeyframeValue* CompositorKeyframeValueFactory::Create(
     case CSSPropertyID::kScale: {
       return CreateFromTransformProperties(style.Scale(), style.EffectiveZoom(),
                                            nullptr);
-    }
-    case CSSPropertyID::kBackgroundColor: {
-      return MakeGarbageCollected<CompositorKeyframeDouble>(offset);
     }
     case CSSPropertyID::kVariable: {
       if (!RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled()) {

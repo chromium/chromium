@@ -57,11 +57,10 @@ std::unique_ptr<KeyframeModel> KeyframeModel::Create(
     int keyframe_model_id,
     int group_id,
     int target_property_id,
-    const std::string& custom_property_name,
-    PaintWorkletInput::NativePropertyType native_property_type) {
-  return base::WrapUnique(new KeyframeModel(
-      std::move(curve), keyframe_model_id, group_id, target_property_id,
-      custom_property_name, native_property_type));
+    const std::string& custom_property_name) {
+  return base::WrapUnique(new KeyframeModel(std::move(curve), keyframe_model_id,
+                                            group_id, target_property_id,
+                                            custom_property_name));
 }
 
 std::unique_ptr<KeyframeModel> KeyframeModel::CreateImplInstance(
@@ -71,7 +70,7 @@ std::unique_ptr<KeyframeModel> KeyframeModel::CreateImplInstance(
   DCHECK(!is_controlling_instance_);
   std::unique_ptr<KeyframeModel> to_return(
       new KeyframeModel(curve_->Clone(), id_, group_, target_property_id_,
-                        custom_property_name_, native_property_type_));
+                        custom_property_name_));
   to_return->element_id_ = element_id_;
   to_return->run_state_ = initial_run_state;
   to_return->iterations_ = iterations_;
@@ -88,19 +87,15 @@ std::unique_ptr<KeyframeModel> KeyframeModel::CreateImplInstance(
   return to_return;
 }
 
-KeyframeModel::KeyframeModel(
-    std::unique_ptr<AnimationCurve> curve,
-    int keyframe_model_id,
-    int group_id,
-    int target_property_id,
-    const std::string& custom_property_name,
-    PaintWorkletInput::NativePropertyType native_property_type)
+KeyframeModel::KeyframeModel(std::unique_ptr<AnimationCurve> curve,
+                             int keyframe_model_id,
+                             int group_id,
+                             int target_property_id,
+                             const std::string& custom_property_name)
     : curve_(std::move(curve)),
       id_(keyframe_model_id),
       group_(group_id),
       target_property_id_(target_property_id),
-      custom_property_name_(custom_property_name),
-      native_property_type_(native_property_type),
       run_state_(WAITING_FOR_TARGET_AVAILABILITY),
       iterations_(1),
       iteration_start_(0),
@@ -112,7 +107,8 @@ KeyframeModel::KeyframeModel(
       is_controlling_instance_(false),
       is_impl_only_(false),
       affects_active_elements_(true),
-      affects_pending_elements_(true) {
+      affects_pending_elements_(true),
+      custom_property_name_(custom_property_name) {
   DCHECK(custom_property_name_.empty() ||
          target_property_id_ == TargetProperty::CSS_CUSTOM_PROPERTY);
 }

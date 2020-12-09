@@ -38,8 +38,8 @@ ElementId CalculateTargetElementId(const ElementAnimations* element_animations,
 
 bool UsingPaintWorklet(int property_index) {
   // The set of properties where its animation uses paint worklet infra.
-  return property_index == TargetProperty::CSS_CUSTOM_PROPERTY ||
-         property_index == TargetProperty::NATIVE_PROPERTY;
+  return property_index == TargetProperty::BACKGROUND_COLOR ||
+         property_index == TargetProperty::CSS_CUSTOM_PROPERTY;
 }
 
 }  // namespace
@@ -225,14 +225,13 @@ void ElementAnimations::NotifyClientFloatAnimated(
     KeyframeModel* keyframe_model) {
   switch (keyframe_model->target_property_id()) {
     case TargetProperty::CSS_CUSTOM_PROPERTY:
-    case TargetProperty::NATIVE_PROPERTY:
       // Custom properties are only tracked on the pending tree, where they may
       // be used as inputs for PaintWorklets (which are only dispatched from the
       // pending tree). As such, we don't need to notify in the case where a
       // KeyframeModel only affects active elements.
       if (KeyframeModelAffectsPendingElements(keyframe_model))
         OnCustomPropertyAnimated(PaintWorkletInput::PropertyValue(value),
-                                 keyframe_model, target_property_id);
+                                 keyframe_model);
       break;
     case TargetProperty::OPACITY: {
       float opacity = base::ClampToRange(value, 0.0f, 1.0f);
@@ -278,7 +277,7 @@ void ElementAnimations::NotifyClientColorAnimated(
   DCHECK_EQ(keyframe_model->target_property_id(),
             TargetProperty::CSS_CUSTOM_PROPERTY);
   OnCustomPropertyAnimated(PaintWorkletInput::PropertyValue(value),
-                           keyframe_model, target_property_id);
+                           keyframe_model);
 }
 
 void ElementAnimations::NotifyClientTransformOperationsAnimated(
@@ -482,20 +481,13 @@ void ElementAnimations::OnOpacityAnimated(ElementListType list_type,
 }
 
 void ElementAnimations::OnCustomPropertyAnimated(
-    PaintWorkletInput::PropertyValue property_value,
-    KeyframeModel* keyframe_model,
-    int target_property_id) {
+    PaintWorkletInput::PropertyValue custom_prop_value,
+    KeyframeModel* keyframe_model) {
   DCHECK(animation_host_);
   DCHECK(animation_host_->mutator_host_client());
-  ElementId id = CalculateTargetElementId(this, keyframe_model);
-  PaintWorkletInput::PropertyKey property_key =
-      target_property_id == TargetProperty::NATIVE_PROPERTY
-          ? PaintWorkletInput::PropertyKey(
-                keyframe_model->native_property_type(), id)
-          : PaintWorkletInput::PropertyKey(
-                keyframe_model->custom_property_name(), id);
   animation_host_->mutator_host_client()->OnCustomPropertyMutated(
-      std::move(property_key), std::move(property_value));
+      CalculateTargetElementId(this, keyframe_model),
+      keyframe_model->custom_property_name(), std::move(custom_prop_value));
 }
 
 void ElementAnimations::OnTransformAnimated(ElementListType list_type,

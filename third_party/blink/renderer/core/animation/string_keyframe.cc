@@ -340,7 +340,7 @@ bool StringKeyframe::CSSPropertySpecificKeyframe::
                                     const ComputedStyle* parent_style) const {
   compositor_keyframe_value_cache_ =
       StyleResolver::CreateCompositorKeyframeValueSnapshot(
-          element, base_style, parent_style, property, value_.Get(), offset_);
+          element, base_style, parent_style, property, value_.Get());
   return true;
 }
 

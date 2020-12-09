@@ -28,8 +28,8 @@ BackgroundColorPaintImageGeneratorImpl::BackgroundColorPaintImageGeneratorImpl(
 
 scoped_refptr<Image> BackgroundColorPaintImageGeneratorImpl::Paint(
     const FloatSize& container_size,
-    const Node* node) {
-  return background_color_paint_worklet_->Paint(container_size, node);
+    SkColor color) {
+  return background_color_paint_worklet_->Paint(container_size, color);
 }
 
 void BackgroundColorPaintImageGeneratorImpl::Shutdown() {

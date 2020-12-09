@@ -18,8 +18,7 @@ class CompositorKeyframeValueFactory {
 
  public:
   static CompositorKeyframeValue* Create(const PropertyHandle&,
-                                         const ComputedStyle&,
-                                         double offset);
+                                         const ComputedStyle&);
 };
 
 }  // namespace blink

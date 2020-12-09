@@ -1333,7 +1333,7 @@ TEST_P(AnimationCompositorAnimationsTest, CanStartEffectOnCompositorBasic) {
       MakeGarbageCollected<StringKeyframeEffectModel>(non_css_frames_vector);
   EXPECT_TRUE(CanStartEffectOnCompositor(timing_, *non_css_frames) &
               CompositorAnimations::kAnimationAffectsNonCSSProperties);
-  EXPECT_TRUE(non_css_frames->RequiresPropertyNode());
+  EXPECT_TRUE(non_css_frames->HasNonVariableProperty());
   // NB: Important that non_css_frames_vector goes away and cleans up
   // before fake_name.
 }
@@ -1736,7 +1736,7 @@ TEST_P(AnimationCompositorAnimationsTest,
             keyframe_model->TargetProperty());
   EXPECT_EQ(keyframe_model->GetCustomPropertyNameForTesting(),
             property_name.Utf8().data());
-  EXPECT_FALSE(effect->RequiresPropertyNode());
+  EXPECT_FALSE(effect->HasNonVariableProperty());
 }
 
 TEST_P(AnimationCompositorAnimationsTest,

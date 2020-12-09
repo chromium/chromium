@@ -78,8 +78,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       const ComputedStyle& base_style,
       const ComputedStyle* parent_style,
       const PropertyHandle&,
-      const CSSValue*,
-      double offset);
+      const CSSValue*);
 
   scoped_refptr<ComputedStyle> PseudoStyleForElement(
       Element*,

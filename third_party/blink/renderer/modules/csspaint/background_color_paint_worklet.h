@@ -17,7 +17,6 @@ namespace blink {
 
 class Image;
 class LocalFrame;
-class Node;
 
 class MODULES_EXPORT BackgroundColorPaintWorklet : public NativePaintWorklet {
   DISALLOW_COPY_AND_ASSIGN(BackgroundColorPaintWorklet);
@@ -29,7 +28,7 @@ class MODULES_EXPORT BackgroundColorPaintWorklet : public NativePaintWorklet {
   ~BackgroundColorPaintWorklet() final;
 
   // The |container_size| is without subpixel snapping.
-  scoped_refptr<Image> Paint(const FloatSize& container_size, const Node*);
+  scoped_refptr<Image> Paint(const FloatSize& container_size, SkColor color);
 };
 
 }  // namespace blink

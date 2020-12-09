@@ -96,15 +96,15 @@ bool KeyframeEffectModelBase::Sample(
 
 namespace {
 
-static const size_t num_compositable_properties = 8;
+static const size_t num_compositable_properties = 7;
 
 const CSSProperty** CompositableProperties() {
   static const CSSProperty*
       kCompositableProperties[num_compositable_properties] = {
-          &GetCSSPropertyOpacity(),        &GetCSSPropertyRotate(),
-          &GetCSSPropertyScale(),          &GetCSSPropertyTransform(),
-          &GetCSSPropertyTranslate(),      &GetCSSPropertyFilter(),
-          &GetCSSPropertyBackdropFilter(), &GetCSSPropertyBackgroundColor()};
+          &GetCSSPropertyOpacity(),       &GetCSSPropertyRotate(),
+          &GetCSSPropertyScale(),         &GetCSSPropertyTransform(),
+          &GetCSSPropertyTranslate(),     &GetCSSPropertyFilter(),
+          &GetCSSPropertyBackdropFilter()};
   return kCompositableProperties;
 }
 
@@ -351,13 +351,11 @@ void KeyframeEffectModelBase::EnsureKeyframeGroups() const {
   }
 }
 
-bool KeyframeEffectModelBase::RequiresPropertyNode() const {
+bool KeyframeEffectModelBase::HasNonVariableProperty() const {
   for (const auto& keyframe : keyframes_) {
     for (const auto& property : keyframe->Properties()) {
       if (!property.IsCSSProperty() ||
-          (property.GetCSSProperty().PropertyID() != CSSPropertyID::kVariable &&
-           property.GetCSSProperty().PropertyID() !=
-               CSSPropertyID::kBackgroundColor))
+          property.GetCSSProperty().PropertyID() != CSSPropertyID::kVariable)
         return true;
     }
   }
