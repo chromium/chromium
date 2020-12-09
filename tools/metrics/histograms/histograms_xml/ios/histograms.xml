@@ -281,6 +281,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.DragAndDrop.DragContent" enum="DragContent"
     expires_after="2020-03-01">
+  <obsolete>
+    Removed 12/2020 as it is no longer needed for analysis.
+  </obsolete>
   <owner>jif@chromium.org</owner>
   <summary>
     The type of content that the user is dragging into Chrome. Because a drag

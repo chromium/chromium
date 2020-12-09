@@ -180,8 +180,6 @@ source_set("metrics_browser_agent") {
 source_set("metrics_internal") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "drag_and_drop_recorder.h",
-    "drag_and_drop_recorder.mm",
     "first_user_action_recorder.cc",
     "first_user_action_recorder.h",
     "new_tab_page_uma.h",

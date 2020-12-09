@@ -19605,6 +19605,9 @@ Called by update_document_policy_enum.py.-->
 </enum>
 
 <enum name="DragContent">
+  <obsolete>
+    Deprecated 12/2020.
+  </obsolete>
   <int value="0" label="Unknown"/>
   <int value="1" label="Image"/>
   <int value="2" label="URL"/>
