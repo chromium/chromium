@@ -280,27 +280,28 @@ bool IsAAForcedOff(const DrawQuad* quad) {
   }
 }
 
-SkFilterQuality GetFilterQuality(const DrawQuad* quad) {
-  bool nearest_neighbor;
+bool UseNearestNeighborSampling(const DrawQuad* quad) {
   switch (quad->material) {
     case DrawQuad::Material::kPictureContent:
-      nearest_neighbor = PictureDrawQuad::MaterialCast(quad)->nearest_neighbor;
-      break;
+      return PictureDrawQuad::MaterialCast(quad)->nearest_neighbor;
     case DrawQuad::Material::kTextureContent:
-      nearest_neighbor = TextureDrawQuad::MaterialCast(quad)->nearest_neighbor;
-      break;
+      return TextureDrawQuad::MaterialCast(quad)->nearest_neighbor;
     case DrawQuad::Material::kTiledContent:
-      nearest_neighbor = TileDrawQuad::MaterialCast(quad)->nearest_neighbor;
-      break;
+      return TileDrawQuad::MaterialCast(quad)->nearest_neighbor;
     default:
-      // Other quad types do not expose filter quality, so default to bilinear
-      // TODO(penghuang): figure out how to set correct filter quality for YUV
-      // and video stream quads.
-      nearest_neighbor = false;
-      break;
+      // Other quad types do not expose nearest_neighbor.
+      return false;
   }
+}
 
-  return nearest_neighbor ? kNone_SkFilterQuality : kLow_SkFilterQuality;
+SkFilterQuality GetFilterQuality(const DrawQuad* quad) {
+  if (UseNearestNeighborSampling(quad))
+    return kNone_SkFilterQuality;
+
+  // Default to bilinear if the quad doesn't specify nearest_neighbor.
+  // TODO(penghuang): figure out how to set correct filter quality for YUV and
+  // video stream quads.
+  return kLow_SkFilterQuality;
 }
 
 // Returns kFast if sampling outside of vis_tex_coords due to AA or bilerp will
@@ -1330,6 +1331,12 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
   if (quad->material == DrawQuad::Material::kAggregatedRenderPass ||
       quad->material == DrawQuad::Material::kDebugBorder ||
       quad->material == DrawQuad::Material::kPictureContent)
+    return nullptr;
+
+  // If the quad specifies nearest-neighbor scaling then there could be two
+  // scaling operations at different quality levels. This requires drawing to an
+  // intermediate render pass. See https://crbug.com/1155338.
+  if (UseNearestNeighborSampling(quad))
     return nullptr;
 
   if (quad->material == DrawQuad::Material::kTextureContent) {
