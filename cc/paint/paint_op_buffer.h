@@ -44,6 +44,8 @@ class ClientPaintCache;
 class ImageProvider;
 class ServicePaintCache;
 
+// TODO(aaronhk) I think this can be removed when the SkMatrix functions are
+// removed (crbug.com/1155544)
 class CC_PAINT_EXPORT ThreadsafeMatrix : public SkMatrix {
  public:
   explicit ThreadsafeMatrix(const SkMatrix& matrix) : SkMatrix(matrix) {
@@ -122,7 +124,7 @@ struct CC_PAINT_EXPORT PlaybackParams {
   explicit PlaybackParams(ImageProvider* image_provider);
   PlaybackParams(
       ImageProvider* image_provider,
-      const SkMatrix& original_ctm,
+      const SkM44& original_ctm,
       CustomDataRasterCallback custom_callback = CustomDataRasterCallback(),
       DidDrawOpCallback did_draw_op_callback = DidDrawOpCallback());
   ~PlaybackParams();
@@ -131,8 +133,7 @@ struct CC_PAINT_EXPORT PlaybackParams {
   PlaybackParams& operator=(const PlaybackParams& other);
 
   ImageProvider* image_provider;
-  // TODO(aaronhk) turn this into an SkM44
-  SkMatrix original_ctm;
+  SkM44 original_ctm;
   CustomDataRasterCallback custom_callback;
   DidDrawOpCallback did_draw_op_callback;
   base::Optional<bool> save_layer_alpha_should_preserve_lcd_text;

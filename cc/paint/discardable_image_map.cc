@@ -96,7 +96,7 @@ class DiscardableImageGenerator {
     // Prevent PaintOpBuffers from having side effects back into the canvas.
     SkAutoCanvasRestore save_restore(canvas, true);
 
-    PlaybackParams params(nullptr, canvas->getTotalMatrix());
+    PlaybackParams params(nullptr, canvas->getLocalToDevice());
     // TODO(khushalsagar): Optimize out save/restore blocks if there are no
     // images in the draw ops between them.
     for (auto* op : PaintOpBuffer::Iterator(buffer)) {

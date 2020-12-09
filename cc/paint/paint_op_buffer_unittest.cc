@@ -3545,7 +3545,7 @@ TEST(PaintOpBufferTest, CustomData) {
     buffer.push<CustomDataOp>(9999u);
     testing::StrictMock<MockCanvas> canvas;
     EXPECT_CALL(canvas, onCustomCallback(&canvas, 9999)).Times(1);
-    buffer.Playback(&canvas, PlaybackParams(nullptr, SkMatrix::I(),
+    buffer.Playback(&canvas, PlaybackParams(nullptr, SkM44(),
                                             base::BindRepeating(
                                                 &MockCanvas::onCustomCallback,
                                                 base::Unretained(&canvas))));

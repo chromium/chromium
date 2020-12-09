@@ -311,10 +311,10 @@ std::ostream& operator<<(std::ostream& os, PaintOpType type) {
 }
 
 PlaybackParams::PlaybackParams(ImageProvider* image_provider)
-    : PlaybackParams(image_provider, SkMatrix::I()) {}
+    : PlaybackParams(image_provider, SkM44()) {}
 
 PlaybackParams::PlaybackParams(ImageProvider* image_provider,
-                               const SkMatrix& original_ctm,
+                               const SkM44& original_ctm,
                                CustomDataRasterCallback custom_callback,
                                DidDrawOpCallback did_draw_op_callback)
     : image_provider(image_provider),
@@ -1740,17 +1740,13 @@ void ScaleOp::Raster(const ScaleOp* op,
 void SetMatrixOp::Raster(const SetMatrixOp* op,
                          SkCanvas* canvas,
                          const PlaybackParams& params) {
-  canvas->setMatrix(SkMatrix::Concat(params.original_ctm, op->matrix));
+  canvas->setMatrix(SkM44(op->matrix) * params.original_ctm);
 }
 
 void SetMatrix44Op::Raster(const SetMatrix44Op* op,
                            SkCanvas* canvas,
                            const PlaybackParams& params) {
-  // TODO(aaronhk) when PlaybackParams stores an SKM44:
-  // setMatrix(op->matrix * params.original_ctm)
-  SkM44 result_matrix = SkM44(params.original_ctm);
-  result_matrix.postConcat(op->matrix);
-  canvas->setMatrix(result_matrix);
+  canvas->setMatrix(op->matrix * params.original_ctm);
 }
 
 void SetNodeIdOp::Raster(const SetNodeIdOp* op,
@@ -2858,7 +2854,7 @@ void PaintOpBuffer::Playback(SkCanvas* canvas,
   // translate(x, y), then draw a paint record with a SetMatrix(identity),
   // the translation should be preserved instead of clobbering the top level
   // transform.  This could probably be done more efficiently.
-  PlaybackParams new_params(params.image_provider, canvas->getTotalMatrix(),
+  PlaybackParams new_params(params.image_provider, canvas->getLocalToDevice(),
                             params.custom_callback,
                             params.did_draw_op_callback);
   new_params.save_layer_alpha_should_preserve_lcd_text =

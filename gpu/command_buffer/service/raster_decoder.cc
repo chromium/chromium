@@ -3030,7 +3030,7 @@ void RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
   alignas(
       cc::PaintOpBuffer::PaintOpAlign) char data[sizeof(cc::LargestPaintOp)];
 
-  cc::PlaybackParams playback_params(nullptr, SkMatrix::I());
+  cc::PlaybackParams playback_params(nullptr, SkM44());
   TransferCacheDeserializeHelperImpl impl(raster_decoder_id_, transfer_cache());
   cc::PaintOp::DeserializeOptions options(
       &impl, paint_cache_.get(), font_manager_->strike_client(),

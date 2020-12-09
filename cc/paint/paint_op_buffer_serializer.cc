@@ -35,7 +35,7 @@ class ScopedFlagsOverride {
 PlaybackParams MakeParams(const SkCanvas* canvas) {
   // We don't use an ImageProvider here since the ops are played onto a no-draw
   // canvas for state tracking and don't need decoded images.
-  return PlaybackParams(nullptr, canvas->getTotalMatrix());
+  return PlaybackParams(nullptr, canvas->getLocalToDevice());
 }
 
 // Use half of the max int as the extent for the SkNoDrawCanvas. The correct

@@ -253,7 +253,7 @@ void DisplayItemList::AddToValue(base::trace_event::TracedValue* state,
   if (include_items) {
     state->BeginArray("items");
 
-    PlaybackParams params(nullptr, SkMatrix::I());
+    PlaybackParams params(nullptr, SkM44());
     std::map<size_t, gfx::Rect> visual_rects = rtree_.GetAllBoundsForTracing();
     for (const PaintOp* op : PaintOpBuffer::Iterator(&paint_op_buffer_)) {
       state->BeginDictionary();

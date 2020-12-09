@@ -270,7 +270,7 @@ void SkiaPaintCanvas::drawImage(const PaintImage& image,
   }
 
   const PaintFlags* raster_flags = scoped_flags ? scoped_flags->flags() : flags;
-  PlaybackParams params(image_provider_, canvas_->getTotalMatrix());
+  PlaybackParams params(image_provider_, canvas_->getLocalToDevice());
   DrawImageOp draw_image_op(image, left, top, nullptr);
   DrawImageOp::RasterWithFlags(&draw_image_op, raster_flags, canvas_, params);
   FlushAfterDrawIfNeeded();
@@ -290,7 +290,7 @@ void SkiaPaintCanvas::drawImageRect(const PaintImage& image,
   }
 
   const PaintFlags* raster_flags = scoped_flags ? scoped_flags->flags() : flags;
-  PlaybackParams params(image_provider_, canvas_->getTotalMatrix());
+  PlaybackParams params(image_provider_, canvas_->getLocalToDevice());
   DrawImageRectOp draw_image_rect_op(image, src, dst, flags, constraint);
   DrawImageRectOp::RasterWithFlags(&draw_image_rect_op, raster_flags, canvas_,
                                    params);
@@ -373,7 +373,7 @@ void SkiaPaintCanvas::drawPicture(
           ? base::BindRepeating(&SkiaPaintCanvas::FlushAfterDrawIfNeeded,
                                 base::Unretained(this))
           : PlaybackParams::DidDrawOpCallback();
-  PlaybackParams params(image_provider_, canvas_->getTotalMatrix(),
+  PlaybackParams params(image_provider_, canvas_->getLocalToDevice(),
                         custom_raster_callback, did_draw_op_cb);
   record->Playback(canvas_, params);
 }

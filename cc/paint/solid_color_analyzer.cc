@@ -236,6 +236,7 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
         : iter(iter), original_ctm(original_ctm), save_count(save_count) {}
 
     PaintOpBuffer::CompositeIterator iter;
+    // TODO(aaronhk) should be an SkM44 crbug.com/1155544
     const SkMatrix original_ctm;
     int save_count = 0;
   };
@@ -263,7 +264,7 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
     }
 
     const PaintOp* op = *frame.iter;
-    PlaybackParams params(nullptr, frame.original_ctm);
+    PlaybackParams params(nullptr, SkM44(frame.original_ctm));
     switch (op->GetType()) {
       case PaintOpType::DrawRecord: {
         const DrawRecordOp* record_op = static_cast<const DrawRecordOp*>(op);
