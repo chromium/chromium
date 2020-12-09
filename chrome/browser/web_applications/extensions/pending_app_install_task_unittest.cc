@@ -206,17 +206,6 @@ class TestPendingAppInstallFinalizer : public InstallFinalizer {
             }));
   }
 
-  bool CanUserUninstallFromSync(const AppId& app_id) const override {
-    NOTIMPLEMENTED();
-    return false;
-  }
-
-  void UninstallWebAppFromSyncByUser(
-      const AppId& app_dd,
-      UninstallWebAppCallback callback) override {
-    NOTIMPLEMENTED();
-  }
-
   bool CanUserUninstallExternalApp(const AppId& app_id) const override {
     NOTIMPLEMENTED();
     return false;

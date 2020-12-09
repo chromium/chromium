@@ -400,18 +400,6 @@ class WebAppInstallManagerTest : public WebAppTest {
     return result;
   }
 
-  bool UninstallWebAppFromSyncByUser(const AppId& app_id) {
-    bool result = false;
-    base::RunLoop run_loop;
-    finalizer().UninstallWebAppFromSyncByUser(
-        app_id, base::BindLambdaForTesting([&](bool uninstalled) {
-          result = uninstalled;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return result;
-  }
-
   bool UninstallExternalAppByUser(const AppId& app_id) {
     bool result = false;
     base::RunLoop run_loop;
@@ -893,7 +881,6 @@ TEST_F(WebAppInstallManagerTest, PolicyAndUser_UninstallExternalWebApp) {
       external_app_url, app_id, ExternalInstallSource::kExternalPolicy);
   InitRegistrarWithApp(std::move(policy_and_user_app));
 
-  EXPECT_TRUE(finalizer().CanUserUninstallFromSync(app_id));
   EXPECT_FALSE(finalizer().WasExternalAppUninstalledByUser(app_id));
 
   bool observer_uninstall_called = false;
@@ -913,63 +900,8 @@ TEST_F(WebAppInstallManagerTest, PolicyAndUser_UninstallExternalWebApp) {
 
   EXPECT_TRUE(registrar().GetAppById(app_id));
   EXPECT_FALSE(observer_uninstall_called);
-  EXPECT_TRUE(finalizer().CanUserUninstallFromSync(app_id));
   EXPECT_FALSE(finalizer().WasExternalAppUninstalledByUser(app_id));
   EXPECT_TRUE(finalizer().CanUserUninstallExternalApp(app_id));
-
-  // Uninstall user app last.
-  file_utils().SetNextDeleteFileRecursivelyResult(true);
-
-  EXPECT_TRUE(UninstallWebAppFromSyncByUser(app_id));
-
-  EXPECT_FALSE(registrar().GetAppById(app_id));
-  EXPECT_TRUE(observer_uninstall_called);
-  EXPECT_FALSE(finalizer().CanUserUninstallFromSync(app_id));
-  EXPECT_FALSE(finalizer().WasExternalAppUninstalledByUser(app_id));
-  EXPECT_FALSE(finalizer().CanUserUninstallExternalApp(app_id));
-}
-
-TEST_F(WebAppInstallManagerTest, PolicyAndUser_UninstallWebAppFromSyncByUser) {
-  std::unique_ptr<WebApp> policy_and_user_app =
-      CreateWebApp(GURL("https://example.com/path"), Source::kSync,
-                   /*user_display_mode=*/DisplayMode::kStandalone);
-  policy_and_user_app->AddSource(Source::kPolicy);
-
-  const AppId app_id = policy_and_user_app->app_id();
-  const GURL external_app_url("https://example.com/path/policy");
-
-  externally_installed_app_prefs().Insert(
-      external_app_url, app_id, ExternalInstallSource::kExternalPolicy);
-  InitRegistrarWithApp(std::move(policy_and_user_app));
-
-  EXPECT_TRUE(finalizer().CanUserUninstallFromSync(app_id));
-  EXPECT_FALSE(finalizer().CanUserUninstallExternalApp(app_id));
-
-  bool observer_uninstall_called = false;
-  WebAppInstallObserver observer(&registrar());
-  observer.SetWebAppUninstalledDelegate(
-      base::BindLambdaForTesting([&](const AppId& uninstalled_app_id) {
-        observer_uninstall_called = true;
-      }));
-
-  // Uninstall user app first.
-  EXPECT_TRUE(UninstallWebAppFromSyncByUser(app_id));
-
-  EXPECT_TRUE(registrar().GetAppById(app_id));
-  EXPECT_FALSE(observer_uninstall_called);
-  EXPECT_FALSE(finalizer().CanUserUninstallFromSync(app_id));
-  EXPECT_FALSE(finalizer().WasExternalAppUninstalledByUser(app_id));
-  EXPECT_FALSE(finalizer().CanUserUninstallExternalApp(app_id));
-
-  // Uninstall policy app last.
-  file_utils().SetNextDeleteFileRecursivelyResult(true);
-
-  EXPECT_TRUE(UninstallExternalWebAppByUrl(
-      external_app_url, ExternalInstallSource::kExternalPolicy));
-  EXPECT_FALSE(registrar().GetAppById(app_id));
-  EXPECT_TRUE(observer_uninstall_called);
-  EXPECT_FALSE(finalizer().WasExternalAppUninstalledByUser(app_id));
-  EXPECT_FALSE(finalizer().CanUserUninstallExternalApp(app_id));
 }
 
 TEST_F(WebAppInstallManagerTest, DefaultAndUser_UninstallExternalAppByUser) {

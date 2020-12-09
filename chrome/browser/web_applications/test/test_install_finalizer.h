@@ -41,9 +41,6 @@ class TestInstallFinalizer final : public InstallFinalizer {
       const GURL& app_url,
       ExternalInstallSource external_install_source,
       UninstallWebAppCallback callback) override;
-  bool CanUserUninstallFromSync(const AppId& app_id) const override;
-  void UninstallWebAppFromSyncByUser(const AppId& app_id,
-                                     UninstallWebAppCallback callback) override;
   bool CanUserUninstallExternalApp(const AppId& app_id) const override;
   void UninstallExternalAppByUser(const AppId& app_id,
                                   UninstallWebAppCallback callback) override;

@@ -156,22 +156,6 @@ void BookmarkAppInstallFinalizer::UninstallExternalWebApp(
   UninstallExtension(app_id, std::move(callback));
 }
 
-bool BookmarkAppInstallFinalizer::CanUserUninstallFromSync(
-    const web_app::AppId& app_id) const {
-  // Bookmark apps don't support app installation from different sources.
-  // The old system uninstalls extension completely, the implementation is
-  // the same:
-  return CanUserUninstallExternalApp(app_id);
-}
-
-void BookmarkAppInstallFinalizer::UninstallWebAppFromSyncByUser(
-    const web_app::AppId& app_id,
-    UninstallWebAppCallback callback) {
-  // Bookmark apps don't support app installation from different sources.
-  // Uninstall extension completely:
-  UninstallExtension(app_id, std::move(callback));
-}
-
 bool BookmarkAppInstallFinalizer::CanUserUninstallExternalApp(
     const web_app::AppId& app_id) const {
   const Extension* app = GetEnabledExtension(app_id);

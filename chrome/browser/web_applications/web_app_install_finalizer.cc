@@ -219,20 +219,6 @@ void WebAppInstallFinalizer::UninstallExternalWebApp(
   UninstallWebAppOrRemoveSource(app_id, source, std::move(callback));
 }
 
-bool WebAppInstallFinalizer::CanUserUninstallFromSync(
-    const AppId& app_id) const {
-  DCHECK(started_);
-  const WebApp* app = GetWebAppRegistrar().GetAppById(app_id);
-  return app ? app->IsSynced() : false;
-}
-
-void WebAppInstallFinalizer::UninstallWebAppFromSyncByUser(
-    const AppId& app_id,
-    UninstallWebAppCallback callback) {
-  DCHECK(CanUserUninstallFromSync(app_id));
-  UninstallWebAppOrRemoveSource(app_id, Source::kSync, std::move(callback));
-}
-
 bool WebAppInstallFinalizer::CanUserUninstallExternalApp(
     const AppId& app_id) const {
   DCHECK(started_);

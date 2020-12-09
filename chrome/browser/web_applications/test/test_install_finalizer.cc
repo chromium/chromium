@@ -75,17 +75,6 @@ void TestInstallFinalizer::UninstallExternalWebAppByUrl(
                      }));
 }
 
-bool TestInstallFinalizer::CanUserUninstallFromSync(const AppId& app_id) const {
-  NOTIMPLEMENTED();
-  return false;
-}
-
-void TestInstallFinalizer::UninstallWebAppFromSyncByUser(
-    const AppId& app_url,
-    UninstallWebAppCallback callback) {
-  NOTIMPLEMENTED();
-}
-
 bool TestInstallFinalizer::CanUserUninstallExternalApp(
     const AppId& app_id) const {
   NOTIMPLEMENTED();
