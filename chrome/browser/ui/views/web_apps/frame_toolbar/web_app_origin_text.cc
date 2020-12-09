@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/web_apps/web_app_origin_text.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_origin_text.h"
 
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/browser/ui/views/web_apps/web_app_frame_toolbar_view.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -66,17 +66,17 @@ void WebAppOriginText::StartFadeAnimation() {
 
   // Fade in.
   auto opacity_keyframe = ui::LayerAnimationElement::CreateOpacityElement(
-      1, WebAppFrameToolbarView::kOriginFadeInDuration);
+      1, WebAppToolbarButtonContainer::kOriginFadeInDuration);
   opacity_keyframe->set_tween_type(kTweenType);
   opacity_sequence->AddElement(std::move(opacity_keyframe));
 
   // Pause.
   opacity_sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
-      0, WebAppFrameToolbarView::kOriginPauseDuration));
+      0, WebAppToolbarButtonContainer::kOriginPauseDuration));
 
   // Fade out.
   opacity_keyframe = ui::LayerAnimationElement::CreateOpacityElement(
-      0, WebAppFrameToolbarView::kOriginFadeOutDuration);
+      0, WebAppToolbarButtonContainer::kOriginFadeOutDuration);
   opacity_keyframe->set_tween_type(kTweenType);
   opacity_sequence->AddElement(std::move(opacity_keyframe));
 
@@ -86,7 +86,7 @@ void WebAppOriginText::StartFadeAnimation() {
       FROM_HERE,
       base::BindOnce(&WebAppOriginText::AnimationComplete,
                      weak_factory_.GetWeakPtr()),
-      WebAppFrameToolbarView::OriginTotalDuration());
+      WebAppToolbarButtonContainer::OriginTotalDuration());
 
   NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
 }

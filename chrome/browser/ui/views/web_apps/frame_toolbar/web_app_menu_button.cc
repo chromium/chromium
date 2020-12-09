@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/web_apps/web_app_menu_button.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
-#include "chrome/browser/ui/views/web_apps/web_app_frame_toolbar_view.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/grit/generated_resources.h"
@@ -64,14 +64,15 @@ void WebAppMenuButton::SetColor(SkColor color) {
 
 void WebAppMenuButton::StartHighlightAnimation() {
   GetInkDrop()->SetHoverHighlightFadeDuration(
-      WebAppFrameToolbarView::kOriginFadeInDuration);
+      WebAppToolbarButtonContainer::kOriginFadeInDuration);
   GetInkDrop()->SetHovered(true);
   GetInkDrop()->UseDefaultHoverHighlightFadeDuration();
 
-  highlight_off_timer_.Start(FROM_HERE,
-                             WebAppFrameToolbarView::kOriginFadeInDuration +
-                                 WebAppFrameToolbarView::kOriginPauseDuration,
-                             this, &WebAppMenuButton::FadeHighlightOff);
+  highlight_off_timer_.Start(
+      FROM_HERE,
+      WebAppToolbarButtonContainer::kOriginFadeInDuration +
+          WebAppToolbarButtonContainer::kOriginPauseDuration,
+      this, &WebAppMenuButton::FadeHighlightOff);
 }
 
 void WebAppMenuButton::ButtonPressed(const ui::Event& event) {
@@ -93,7 +94,7 @@ SkColor WebAppMenuButton::GetInkDropBaseColor() const {
 void WebAppMenuButton::FadeHighlightOff() {
   if (!ShouldEnterHoveredState()) {
     GetInkDrop()->SetHoverHighlightFadeDuration(
-        WebAppFrameToolbarView::kOriginFadeOutDuration);
+        WebAppToolbarButtonContainer::kOriginFadeOutDuration);
     GetInkDrop()->SetHovered(false);
     GetInkDrop()->UseDefaultHoverHighlightFadeDuration();
   }

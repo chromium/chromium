@@ -18,8 +18,9 @@
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/web_apps/web_app_frame_toolbar_view.h"
-#include "chrome/browser/ui/views/web_apps/web_app_menu_button.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -136,7 +137,7 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
   }
   ImmersiveModeController* controller() { return controller_; }
   base::TimeDelta titlebar_animation_delay() {
-    return WebAppFrameToolbarView::kTitlebarAnimationDelay;
+    return WebAppToolbarButtonContainer::kTitlebarAnimationDelay;
   }
 
  private:

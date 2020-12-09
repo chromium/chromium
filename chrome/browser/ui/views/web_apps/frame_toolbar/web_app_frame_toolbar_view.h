@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_FRAME_TOOLBAR_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_FRAME_TOOLBAR_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_FRAME_TOOLBAR_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_FRAME_TOOLBAR_VIEW_H_
 
 #include <utility>
 #include <vector>
@@ -24,29 +24,14 @@ class Widget;
 class BrowserView;
 class ContentSettingImageView;
 class PageActionIconController;
-
-#if defined(OS_MAC)
-constexpr int kWebAppMenuMargin = 7;
-#endif
+class WebAppNavigationButtonContainer;
+class WebAppToolbarButtonContainer;
 
 // A container for web app buttons in the title bar.
 class WebAppFrameToolbarView : public views::AccessiblePaneView,
                                public ToolbarButtonProvider {
  public:
   static const char kViewClassName[];
-
-  // Timing parameters for the origin fade animation.
-  // These control how long it takes for the origin text and menu button
-  // highlight to fade in, pause then fade out.
-  static constexpr base::TimeDelta kOriginFadeInDuration =
-      base::TimeDelta::FromMilliseconds(800);
-  static constexpr base::TimeDelta kOriginPauseDuration =
-      base::TimeDelta::FromMilliseconds(2500);
-  static constexpr base::TimeDelta kOriginFadeOutDuration =
-      base::TimeDelta::FromMilliseconds(800);
-
-  // The total duration of the origin fade animation.
-  static base::TimeDelta OriginTotalDuration();
 
   WebAppFrameToolbarView(views::Widget* widget, BrowserView* browser_view);
   ~WebAppFrameToolbarView() override;
@@ -85,7 +70,6 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   ToolbarButton* GetBackButton() override;
   ReloadButton* GetReloadButton() override;
 
-  static void DisableAnimationForTesting();
   views::View* GetLeftContainerForTesting();
   views::View* GetRightContainerForTesting();
   PageActionIconController* GetPageActionIconControllerForTesting();
@@ -100,12 +84,6 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   friend class WebAppNonClientFrameViewAshTest;
   friend class ImmersiveModeControllerChromeosWebAppBrowserTest;
   friend class WebAppAshInteractiveUITest;
-
-  // Duration to wait before starting the opening animation.
-  static constexpr base::TimeDelta kTitlebarAnimationDelay =
-      base::TimeDelta::FromMilliseconds(750);
-
-  class ContentSettingsContainer;
 
   views::View* GetContentSettingContainerForTesting();
 
@@ -124,20 +102,17 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   SkColor inactive_background_color_ = gfx::kPlaceholderColor;
   SkColor inactive_foreground_color_ = gfx::kPlaceholderColor;
 
-  class NavigationButtonContainer;
-  class ToolbarButtonContainer;
-
   // All remaining members are owned by the views hierarchy.
 
   // The navigation container is only created when display mode is minimal-ui.
-  NavigationButtonContainer* left_container_ = nullptr;
+  WebAppNavigationButtonContainer* left_container_ = nullptr;
 
   // Empty container used by the parent frame to layout additional elements.
   views::View* center_container_ = nullptr;
 
-  ToolbarButtonContainer* right_container_ = nullptr;
+  WebAppToolbarButtonContainer* right_container_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(WebAppFrameToolbarView);
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_FRAME_TOOLBAR_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_FRAME_TOOLBAR_VIEW_H_

@@ -13,7 +13,7 @@
 #include "base/numerics/ranges.h"
 #include "base/stl_util.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/views/web_apps/web_app_frame_toolbar_view.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/common/chrome_switches.h"
 #include "ui/gfx/font.h"
 #include "ui/views/controls/button/image_button.h"

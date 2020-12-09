@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_MENU_BUTTON_H_
-#define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_MENU_BUTTON_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_MENU_BUTTON_H_
+#define CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_MENU_BUTTON_H_
 
 #include "base/strings/string16.h"
 #include "base/timer/timer.h"
@@ -51,4 +51,4 @@ class WebAppMenuButton : public AppMenuButton {
   DISALLOW_COPY_AND_ASSIGN(WebAppMenuButton);
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_MENU_BUTTON_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_MENU_BUTTON_H_

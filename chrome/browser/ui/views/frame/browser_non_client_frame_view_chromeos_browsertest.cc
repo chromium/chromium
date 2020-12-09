@@ -60,8 +60,9 @@
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/extension_toolbar_menu_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/web_apps/web_app_frame_toolbar_view.h"
-#include "chrome/browser/ui/views/web_apps/web_app_menu_button.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
@@ -860,7 +861,7 @@ class WebAppNonClientFrameViewAshTest
   void SetUpOnMainThread() override {
     TopChromeMdParamTest<BrowserActionsBarBrowserTest>::SetUpOnMainThread();
 
-    WebAppFrameToolbarView::DisableAnimationForTesting();
+    WebAppToolbarButtonContainer::DisableAnimationForTesting();
 
     // Start secure local server.
     host_resolver()->AddRule("*", "127.0.0.1");

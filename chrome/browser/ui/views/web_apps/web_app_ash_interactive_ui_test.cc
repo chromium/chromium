@@ -8,8 +8,9 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
-#include "chrome/browser/ui/views/web_apps/web_app_frame_toolbar_view.h"
-#include "chrome/browser/ui/views/web_apps/web_app_menu_button.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -35,7 +36,7 @@ class WebAppAshInteractiveUITest : public web_app::WebAppControllerBrowserTest {
         static_cast<ImmersiveModeControllerChromeos*>(controller_)
             ->controller())
         .SetupForTest();
-    WebAppFrameToolbarView::DisableAnimationForTesting();
+    WebAppToolbarButtonContainer::DisableAnimationForTesting();
   }
 
   void CheckWebAppMenuClickable() {
