@@ -164,6 +164,8 @@ void TranslateMetricsLoggerImpl::LogTranslationStarted() {
 
   current_state_is_translated_ = true;
   is_translation_in_progress_ = true;
+
+  time_of_last_translation_start_ = clock_->NowTicks();
 }
 
 void TranslateMetricsLoggerImpl::LogTranslationFinished(
@@ -172,6 +174,13 @@ void TranslateMetricsLoggerImpl::LogTranslationFinished(
   if (error_type == TranslateErrors::NONE) {
     UpdateTimeTranslated(previous_state_is_translated_, is_foreground_);
     num_translations_++;
+
+    // Calculate the time it took to complete this translation, and check if is
+    // the the longest translation for this page load.
+    base::TimeDelta time_of_translation =
+        clock_->NowTicks() - time_of_last_translation_start_;
+    if (time_of_translation > max_time_to_translate_)
+      max_time_to_translate_ = time_of_translation;
   } else {
     // If the translation fails, then undo the change to the current state.
     current_state_is_translated_ = previous_state_is_translated_;

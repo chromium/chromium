@@ -62,6 +62,11 @@ class TranslateMetricsLoggerImplTest : public ::testing::Test {
               total_time_not_translated);
   }
 
+  void CheckMaxTimeToTranslate(base::TimeDelta expected_max_time_to_translate) {
+    EXPECT_EQ(translate_metrics_logger_->max_time_to_translate_,
+              expected_max_time_to_translate);
+  }
+
  private:
   // Test target.
   std::unique_ptr<TranslateMetricsLoggerImpl> translate_metrics_logger_;
@@ -465,6 +470,74 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTargetLanguage) {
   histogram_tester()->ExpectUniqueSample(
       kTranslatePageLoadNumTargetLanguageChanges, num_target_language_changes,
       1);
+}
+
+TEST_F(TranslateMetricsLoggerImplTest, LogMaxTimeToTranslate) {
+  // Set constants for this test.
+  base::SimpleTestTickClock test_clock;
+
+  constexpr base::TimeDelta default_delay = base::TimeDelta::FromSeconds(100);
+  constexpr base::TimeDelta zero_delay = base::TimeDelta::FromSeconds(0);
+
+  // Simulate sucessfully translating a page.
+  translate_metrics_logger()->SetInternalClockForTesting(&test_clock);
+
+  translate_metrics_logger()->LogTranslationStarted();
+  test_clock.Advance(default_delay);
+  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NONE);
+
+  translate_metrics_logger()->RecordMetrics(true);
+
+  CheckMaxTimeToTranslate(default_delay);
+
+  // Simulate an error with the translation. In this case the value of the
+  // maximum time to translate should stay zero.
+  ResetTest();
+  translate_metrics_logger()->SetInternalClockForTesting(&test_clock);
+
+  translate_metrics_logger()->LogTranslationStarted();
+  test_clock.Advance(default_delay);
+  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NETWORK);
+
+  translate_metrics_logger()->RecordMetrics(true);
+
+  CheckMaxTimeToTranslate(zero_delay);
+
+  // Simulate a translation that doesn't finish. The maximum time to translate
+  // should also be zero here.
+  ResetTest();
+  translate_metrics_logger()->SetInternalClockForTesting(&test_clock);
+
+  translate_metrics_logger()->LogTranslationStarted();
+  test_clock.Advance(default_delay);
+
+  translate_metrics_logger()->RecordMetrics(true);
+
+  CheckMaxTimeToTranslate(zero_delay);
+
+  // Simulate multiple translations (some with errors). The maximum time to
+  // translate should only be from translations without an error.i
+  const struct {
+    base::TimeDelta time_to_translate;
+    TranslateErrors::Type translate_error_type;
+  } kTests[] = {
+      {base::TimeDelta::FromSeconds(100), TranslateErrors::NONE},
+      {base::TimeDelta::FromSeconds(200), TranslateErrors::NETWORK},
+      {base::TimeDelta::FromSeconds(400), TranslateErrors::NONE},
+      {base::TimeDelta::FromSeconds(500), TranslateErrors::NETWORK},
+      {base::TimeDelta::FromSeconds(300), TranslateErrors::NONE},
+  };
+
+  for (const auto& test : kTests) {
+    translate_metrics_logger()->LogTranslationStarted();
+    test_clock.Advance(test.time_to_translate);
+    translate_metrics_logger()->LogTranslationFinished(
+        test.translate_error_type);
+  }
+
+  translate_metrics_logger()->RecordMetrics(true);
+
+  CheckMaxTimeToTranslate(base::TimeDelta::FromSeconds(400));
 }
 
 }  // namespace testing

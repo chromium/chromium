@@ -158,6 +158,14 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   int num_translations_ = 0;
   int num_reversions_ = 0;
 
+  // Used to track the time it takes to translate. Specifically this will be the
+  // time between when LogTranslationStarted is called and
+  // LogTranslationFinished is called. It will therefore include all aspects of
+  // translation include: loading the translate script, loading dependent
+  // libraries, and running the translate script.
+  base::TimeTicks time_of_last_translation_start_;
+  base::TimeDelta max_time_to_translate_;
+
   // Tracks the amount of time the page is in the foreground and either
   // translated or not translated.
   const base::TickClock* clock_;
