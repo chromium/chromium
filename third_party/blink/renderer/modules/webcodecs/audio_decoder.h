@@ -77,6 +77,12 @@ class MODULES_EXPORT AudioDecoder : public DecoderTemplate<AudioDecoderTraits> {
                               const AudioDecoderInit*,
                               ExceptionState&);
 
+  // For use by MediaSource and by ::MakeMediaConfig.
+  static CodecConfigEval MakeMediaAudioDecoderConfig(
+      const ConfigType& config,
+      MediaConfigType& out_media_config,
+      String& out_console_message);
+
   AudioDecoder(ScriptState*, const AudioDecoderInit*, ExceptionState&);
   ~AudioDecoder() override = default;
 

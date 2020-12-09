@@ -13,7 +13,9 @@
 #include "third_party/blink/public/platform/web_media_source.h"
 
 namespace media {
+class AudioDecoderConfig;
 class ChunkDemuxer;
+class VideoDecoderConfig;
 
 class MEDIA_BLINK_EXPORT WebMediaSourceImpl : public blink::WebMediaSource {
  public:
@@ -21,9 +23,16 @@ class MEDIA_BLINK_EXPORT WebMediaSourceImpl : public blink::WebMediaSource {
   ~WebMediaSourceImpl() override;
 
   // blink::WebMediaSource implementation.
-  AddStatus AddSourceBuffer(const blink::WebString& content_type,
-                            const blink::WebString& codecs,
-                            blink::WebSourceBuffer** source_buffer) override;
+  std::unique_ptr<blink::WebSourceBuffer> AddSourceBuffer(
+      const blink::WebString& content_type,
+      const blink::WebString& codecs,
+      AddStatus& out_status /* out */) override;
+  std::unique_ptr<blink::WebSourceBuffer> AddSourceBuffer(
+      std::unique_ptr<AudioDecoderConfig> audio_config,
+      AddStatus& out_status /* out */) override;
+  std::unique_ptr<blink::WebSourceBuffer> AddSourceBuffer(
+      std::unique_ptr<VideoDecoderConfig> video_config,
+      AddStatus& out_status /* out */) override;
   double Duration() override;
   void SetDuration(double duration) override;
   void MarkEndOfStream(EndOfStreamStatus status) override;

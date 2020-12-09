@@ -95,20 +95,15 @@ VideoDecoder* VideoDecoder::Create(ScriptState* script_state,
                                             exception_state);
 }
 
-VideoDecoder::VideoDecoder(ScriptState* script_state,
-                           const VideoDecoderInit* init,
-                           ExceptionState& exception_state)
-    : DecoderTemplate<VideoDecoderTraits>(script_state, init, exception_state) {
-  UseCounter::Count(ExecutionContext::From(script_state),
-                    WebFeature::kWebCodecs);
-}
-
-CodecConfigEval VideoDecoder::MakeMediaConfig(const ConfigType& config,
-                                              MediaConfigType* out_media_config,
-                                              String* out_console_message) {
-  DCHECK(out_media_config);
-  DCHECK(out_console_message);
-
+// static
+CodecConfigEval VideoDecoder::MakeMediaVideoDecoderConfig(
+    const ConfigType& config,
+    MediaConfigType& out_media_config,
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+    std::unique_ptr<media::H264ToAnnexBBitstreamConverter>& out_h264_converter,
+    std::unique_ptr<media::mp4::AVCDecoderConfigurationRecord>& out_h264_avcc,
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+    String& out_console_message) {
   bool is_codec_ambiguous = true;
   media::VideoCodec codec = media::kUnknownVideoCodec;
   media::VideoCodecProfile profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
@@ -119,17 +114,17 @@ CodecConfigEval VideoDecoder::MakeMediaConfig(const ConfigType& config,
       &color_space);
 
   if (!parse_succeeded) {
-    *out_console_message = "Failed to parse codec string.";
+    out_console_message = "Failed to parse codec string.";
     return CodecConfigEval::kInvalid;
   }
 
   if (is_codec_ambiguous) {
-    *out_console_message = "Codec string is ambiguous.";
+    out_console_message = "Codec string is ambiguous.";
     return CodecConfigEval::kInvalid;
   }
 
   if (!media::IsSupportedVideoType({codec, profile, level, color_space})) {
-    *out_console_message = "Configuration is not supported.";
+    out_console_message = "Configuration is not supported.";
     return CodecConfigEval::kUnsupported;
   }
 
@@ -154,26 +149,28 @@ CodecConfigEval VideoDecoder::MakeMediaConfig(const ConfigType& config,
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   if (codec == media::kCodecH264) {
     if (extra_data.empty()) {
-      *out_console_message =
+      out_console_message =
           "H.264 configuration must include an avcC description.";
       return CodecConfigEval::kInvalid;
     }
 
-    h264_avcc_ = std::make_unique<media::mp4::AVCDecoderConfigurationRecord>();
-    h264_converter_ = std::make_unique<media::H264ToAnnexBBitstreamConverter>();
-    if (!h264_converter_->ParseConfiguration(
+    out_h264_avcc =
+        std::make_unique<media::mp4::AVCDecoderConfigurationRecord>();
+    out_h264_converter =
+        std::make_unique<media::H264ToAnnexBBitstreamConverter>();
+    if (!out_h264_converter->ParseConfiguration(
             extra_data.data(), static_cast<uint32_t>(extra_data.size()),
-            h264_avcc_.get())) {
-      *out_console_message = "Failed to parse avcC.";
+            out_h264_avcc.get())) {
+      out_console_message = "Failed to parse avcC.";
       return CodecConfigEval::kInvalid;
     }
   } else {
-    h264_avcc_.reset();
-    h264_converter_.reset();
+    out_h264_avcc.reset();
+    out_h264_converter.reset();
   }
 #else
   if (codec == media::kCodecH264) {
-    *out_console_message = "H.264 decoding is not supported.";
+    out_console_message = "H.264 decoding is not supported.";
     return CodecConfigEval::kUnsupported;
   }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -183,13 +180,34 @@ CodecConfigEval VideoDecoder::MakeMediaConfig(const ConfigType& config,
   // match.
   gfx::Size size = gfx::Size(1280, 720);
 
-  out_media_config->Initialize(codec, profile,
-                               media::VideoDecoderConfig::AlphaMode::kIsOpaque,
-                               color_space, media::kNoTransformation, size,
-                               gfx::Rect(gfx::Point(), size), size, extra_data,
-                               media::EncryptionScheme::kUnencrypted);
+  out_media_config.Initialize(codec, profile,
+                              media::VideoDecoderConfig::AlphaMode::kIsOpaque,
+                              color_space, media::kNoTransformation, size,
+                              gfx::Rect(gfx::Point(), size), size, extra_data,
+                              media::EncryptionScheme::kUnencrypted);
 
   return CodecConfigEval::kSupported;
+}
+
+VideoDecoder::VideoDecoder(ScriptState* script_state,
+                           const VideoDecoderInit* init,
+                           ExceptionState& exception_state)
+    : DecoderTemplate<VideoDecoderTraits>(script_state, init, exception_state) {
+  UseCounter::Count(ExecutionContext::From(script_state),
+                    WebFeature::kWebCodecs);
+}
+
+CodecConfigEval VideoDecoder::MakeMediaConfig(const ConfigType& config,
+                                              MediaConfigType* out_media_config,
+                                              String* out_console_message) {
+  DCHECK(out_media_config);
+  DCHECK(out_console_message);
+  return MakeMediaVideoDecoderConfig(config, *out_media_config,
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+                                     h264_converter_ /* out */,
+                                     h264_avcc_ /* out */,
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+                                     *out_console_message);
 }
 
 media::StatusOr<scoped_refptr<media::DecoderBuffer>>

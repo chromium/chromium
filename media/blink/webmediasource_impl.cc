@@ -5,7 +5,9 @@
 #include "media/blink/webmediasource_impl.h"
 
 #include "base/guid.h"
+#include "media/base/audio_decoder_config.h"
 #include "media/base/mime_util.h"
+#include "media/base/video_decoder_config.h"
 #include "media/blink/websourcebuffer_impl.h"
 #include "media/filters/chunk_demuxer.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -31,19 +33,47 @@ WebMediaSourceImpl::WebMediaSourceImpl(ChunkDemuxer* demuxer)
 
 WebMediaSourceImpl::~WebMediaSourceImpl() = default;
 
-WebMediaSource::AddStatus WebMediaSourceImpl::AddSourceBuffer(
+std::unique_ptr<blink::WebSourceBuffer> WebMediaSourceImpl::AddSourceBuffer(
     const blink::WebString& content_type,
     const blink::WebString& codecs,
-    blink::WebSourceBuffer** source_buffer) {
+    WebMediaSource::AddStatus& out_status /* out */) {
   std::string id = base::GenerateGUID();
 
-  WebMediaSource::AddStatus result = static_cast<WebMediaSource::AddStatus>(
+  out_status = static_cast<WebMediaSource::AddStatus>(
       demuxer_->AddId(id, content_type.Utf8(), codecs.Utf8()));
 
-  if (result == WebMediaSource::kAddStatusOk)
-    *source_buffer = new WebSourceBufferImpl(id, demuxer_);
+  if (out_status == WebMediaSource::kAddStatusOk)
+    return std::make_unique<WebSourceBufferImpl>(id, demuxer_);
 
-  return result;
+  return nullptr;
+}
+
+std::unique_ptr<blink::WebSourceBuffer> WebMediaSourceImpl::AddSourceBuffer(
+    std::unique_ptr<AudioDecoderConfig> audio_config,
+    WebMediaSource::AddStatus& out_status /* out */) {
+  std::string id = base::GenerateGUID();
+
+  out_status = static_cast<WebMediaSource::AddStatus>(
+      demuxer_->AddId(id, std::move(audio_config)));
+
+  if (out_status == WebMediaSource::kAddStatusOk)
+    return std::make_unique<WebSourceBufferImpl>(id, demuxer_);
+
+  return nullptr;
+}
+
+std::unique_ptr<blink::WebSourceBuffer> WebMediaSourceImpl::AddSourceBuffer(
+    std::unique_ptr<VideoDecoderConfig> video_config,
+    WebMediaSource::AddStatus& out_status /* out */) {
+  std::string id = base::GenerateGUID();
+
+  out_status = static_cast<WebMediaSource::AddStatus>(
+      demuxer_->AddId(id, std::move(video_config)));
+
+  if (out_status == WebMediaSource::kAddStatusOk)
+    return std::make_unique<WebSourceBufferImpl>(id, demuxer_);
+
+  return nullptr;
 }
 
 double WebMediaSourceImpl::Duration() {

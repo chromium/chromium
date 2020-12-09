@@ -624,6 +624,34 @@ void ChunkDemuxer::CancelPendingSeek(TimeDelta seek_time) {
   RunSeekCB_Locked(PIPELINE_OK);
 }
 
+ChunkDemuxer::Status ChunkDemuxer::AddId(
+    const std::string& id,
+    std::unique_ptr<AudioDecoderConfig> audio_config) {
+  DCHECK(audio_config);
+  DVLOG(1) << __func__ << " id="
+           << " audio_config=" << audio_config->AsHumanReadableString();
+  base::AutoLock auto_lock(lock_);
+
+  // TODO(crbug.com/1144908): Build a new kind of templated StreamParser subtype
+  // which emits configs and streamparserbuffers almost trivially when directed
+  // to by ChunkDemuxer/SourceBufferState. Replace the following:
+  return kReachedIdLimit;
+}
+
+ChunkDemuxer::Status ChunkDemuxer::AddId(
+    const std::string& id,
+    std::unique_ptr<VideoDecoderConfig> video_config) {
+  DCHECK(video_config);
+  DVLOG(1) << __func__ << " id="
+           << " video_config=" << video_config->AsHumanReadableString();
+  base::AutoLock auto_lock(lock_);
+
+  // TODO(crbug.com/1144908): Build a new kind of templated StreamParser subtype
+  // which emits configs and streamparserbuffers almost trivially when directed
+  // to by ChunkDemuxer/SourceBufferState. Replace the following:
+  return kReachedIdLimit;
+}
+
 ChunkDemuxer::Status ChunkDemuxer::AddId(const std::string& id,
                                          const std::string& content_type,
                                          const std::string& codecs) {

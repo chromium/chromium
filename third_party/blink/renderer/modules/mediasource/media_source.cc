@@ -8,7 +8,9 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "media/base/audio_decoder_config.h"
 #include "media/base/logging_override_if_enabled.h"
+#include "media/base/video_decoder_config.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
@@ -27,6 +29,9 @@
 #include "third_party/blink/renderer/modules/mediasource/same_thread_media_source_attachment.h"
 #include "third_party/blink/renderer/modules/mediasource/same_thread_media_source_tracer.h"
 #include "third_party/blink/renderer/modules/mediasource/source_buffer_track_base_supplement.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_decoder.h"
+#include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_decoder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -38,6 +43,11 @@
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+#include "media/filters/h264_to_annex_b_bitstream_converter.h"
+#include "media/formats/mp4/box_definitions.h"
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 using blink::WebMediaSource;
 using blink::WebSourceBuffer;
@@ -207,10 +217,11 @@ SourceBuffer* MediaSource::addSourceBuffer(const String& type,
   SourceBuffer* source_buffer = nullptr;
 
   // Note, here we must be open, therefore we must have an attachment.
-  if (!RunUnlessElementGoneOrClosingUs(
-          WTF::Bind(&MediaSource::AddSourceBuffer_Locked, WrapPersistent(this),
-                    type, WTF::Unretained(&exception_state),
-                    WTF::Unretained(&source_buffer)))) {
+  if (!RunUnlessElementGoneOrClosingUs(WTF::Bind(
+          &MediaSource::AddSourceBuffer_Locked, WrapPersistent(this), type,
+          nullptr /* audio_config */, nullptr /* video_config */,
+          WTF::Unretained(&exception_state),
+          WTF::Unretained(&source_buffer)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     LogAndThrowDOMException(exception_state,
@@ -225,26 +236,125 @@ SourceBuffer* MediaSource::AddSourceBufferUsingConfig(
     const SourceBufferConfig* config,
     ExceptionState& exception_state) {
   DVLOG(2) << __func__ << " this=" << this;
-  // TODO(crbug.com/1144908): Validate allowed in current state (and take lock
-  // at appropriate point), unwrap the config, validate it, create sourcebuffer,
-  // etc.
-  exception_state.ThrowTypeError(
-      "unimplemented - see https://crbug.com/1144908");
-  return nullptr;
+  DCHECK(config);
+
+  // Precisely one of the multiple keys in SourceBufferConfig must be set.
+  int num_set = 0;
+  if (config->hasAudioConfig())
+    num_set++;
+  if (config->hasVideoConfig())
+    num_set++;
+  if (num_set != 1) {
+    LogAndThrowTypeError(
+        exception_state,
+        "SourceBufferConfig must have precisely one media type");
+    return nullptr;
+  }
+
+  // Determine if the config is valid and supported by creating the necessary
+  // media decoder configs using WebCodecs converters. This implies that codecs
+  // supported by WebCodecs are also supported by MSE, though MSE may require
+  // more precise information in the encoded chunks (such as video chunk
+  // duration).
+  // TODO(crbug.com/1144908): WebCodecs' determination of decoder configuration
+  // support may be changed to be async and thus might also motivate making this
+  // method async.
+  std::unique_ptr<media::AudioDecoderConfig> audio_config;
+  std::unique_ptr<media::VideoDecoderConfig> video_config;
+  String console_message;
+  CodecConfigEval eval;
+
+  if (config->hasAudioConfig()) {
+    audio_config = std::make_unique<media::AudioDecoderConfig>();
+    eval = AudioDecoder::MakeMediaAudioDecoderConfig(*(config->audioConfig()),
+                                                     *audio_config /* out */,
+                                                     console_message /* out */);
+  } else {
+    DCHECK(config->hasVideoConfig());
+    video_config = std::make_unique<media::VideoDecoderConfig>();
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+    // TODO(crbug.com/1144908): Give these to the resulting SourceBuffer for use
+    // in converting h264 EncodedVideoChunks. Probably best if these details are
+    // put into a new WebCodecs VideoDecoderHelper abstraction (or similar),
+    // since this top-level MediaSource impl shouldn't need to worry about the
+    // details of specific codec bitstream conversions (nor should the
+    // underlying implementation be depended upon to redo work done already
+    // in WebCodecs decoder configuration validation.)
+    std::unique_ptr<media::H264ToAnnexBBitstreamConverter> h264_converter;
+    std::unique_ptr<media::mp4::AVCDecoderConfigurationRecord> h264_avcc;
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+    eval = VideoDecoder::MakeMediaVideoDecoderConfig(
+        *(config->videoConfig()), *video_config /* out */,
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+        h264_converter /* out */, h264_avcc /* out */,
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+        console_message /* out */);
+  }
+
+  switch (eval) {
+    case CodecConfigEval::kInvalid:
+      LogAndThrowTypeError(exception_state, console_message);
+      return nullptr;
+    case CodecConfigEval::kUnsupported:
+      LogAndThrowDOMException(exception_state,
+                              DOMExceptionCode::kNotSupportedError,
+                              console_message);
+      return nullptr;
+    case CodecConfigEval::kSupported:
+      // Good, let's proceed.
+      break;
+  }
+
+  // If the readyState attribute is not in the "open" state then throw an
+  // InvalidStateError exception and abort these steps.
+  if (!IsOpen()) {
+    LogAndThrowDOMException(exception_state,
+                            DOMExceptionCode::kInvalidStateError,
+                            "The MediaSource's readyState is not 'open'.");
+    return nullptr;
+  }
+
+  // Do remainder of steps only if attachment is usable and underlying demuxer
+  // is protected from destruction (applicable especially for MSE-in-Worker
+  // case).
+  SourceBuffer* source_buffer = nullptr;
+  String null_type;
+
+  // Note, here we must be open, therefore we must have an attachment.
+  if (!RunUnlessElementGoneOrClosingUs(
+          WTF::Bind(&MediaSource::AddSourceBuffer_Locked, WrapPersistent(this),
+                    null_type, std::move(audio_config), std::move(video_config),
+                    WTF::Unretained(&exception_state),
+                    WTF::Unretained(&source_buffer)))) {
+    // TODO(https://crbug.com/878133): Determine in specification what the
+    // specific, app-visible, exception should be for this case.
+    LogAndThrowDOMException(exception_state,
+                            DOMExceptionCode::kInvalidStateError,
+                            "Worker MediaSource attachment is closing");
+  }
+
+  return source_buffer;
 }
 
 void MediaSource::AddSourceBuffer_Locked(
     const String& type,
+    std::unique_ptr<media::AudioDecoderConfig> audio_config,
+    std::unique_ptr<media::VideoDecoderConfig> video_config,
     ExceptionState* exception_state,
     SourceBuffer** created_buffer,
     MediaSourceAttachmentSupplement::ExclusiveKey pass_key) {
   AssertAttachmentsMutexHeldIfCrossThreadForDebugging();
 
   // 5. Create a new SourceBuffer object and associated resources.
+  // TODO(crbug.com/1144908): Plumb the configs through into a new logic in
+  // WebSourceBuffer and SourceBufferState such that configs and encoded chunks
+  // can be buffered, with appropriate invocations of the
+  // InitializationSegmentReceived and AppendError methods.
   ContentType content_type(type);
   String codecs = content_type.Parameter("codecs");
-  std::unique_ptr<WebSourceBuffer> web_source_buffer =
-      CreateWebSourceBuffer(content_type.GetType(), codecs, *exception_state);
+  std::unique_ptr<WebSourceBuffer> web_source_buffer = CreateWebSourceBuffer(
+      content_type.GetType(), codecs, std::move(audio_config),
+      std::move(video_config), *exception_state);
 
   if (!web_source_buffer) {
     DCHECK(exception_state->CodeAs<DOMExceptionCode>() ==
@@ -1282,17 +1392,44 @@ void MediaSource::DetachWorkerOnContextDestruction_Locked(
 std::unique_ptr<WebSourceBuffer> MediaSource::CreateWebSourceBuffer(
     const String& type,
     const String& codecs,
+    std::unique_ptr<media::AudioDecoderConfig> audio_config,
+    std::unique_ptr<media::VideoDecoderConfig> video_config,
     ExceptionState& exception_state) {
   AssertAttachmentsMutexHeldIfCrossThreadForDebugging();
 
-  WebSourceBuffer* web_source_buffer = nullptr;
+  std::unique_ptr<WebSourceBuffer> web_source_buffer;
+  WebMediaSource::AddStatus add_status;
+  if (audio_config) {
+    DCHECK(!video_config);
+    DCHECK(type.IsNull() && codecs.IsNull());
+    web_source_buffer = web_media_source_->AddSourceBuffer(
+        std::move(audio_config), add_status /* out */);
+    DCHECK_NE(add_status, WebMediaSource::kAddStatusNotSupported);
+  } else if (video_config) {
+    DCHECK(type.IsNull() && codecs.IsNull());
+    web_source_buffer = web_media_source_->AddSourceBuffer(
+        std::move(video_config), add_status /* out */);
+    DCHECK_NE(add_status, WebMediaSource::kAddStatusNotSupported);
+  } else {
+    DCHECK(!type.IsNull());
+    web_source_buffer =
+        web_media_source_->AddSourceBuffer(type, codecs, add_status /* out */);
+  }
 
-  switch (
-      web_media_source_->AddSourceBuffer(type, codecs, &web_source_buffer)) {
+  switch (add_status) {
     case WebMediaSource::kAddStatusOk:
-      return base::WrapUnique(web_source_buffer);
+      DCHECK(web_source_buffer);
+      return web_source_buffer;
     case WebMediaSource::kAddStatusNotSupported:
+      // DCHECKs, above, ensure this case doesn't occur for the WebCodecs config
+      // overloads of WebMediaSource::AddSourceBuffer(). This case can only
+      // occur for the |type| and |codecs| version of that method.
       DCHECK(!web_source_buffer);
+      // TODO(crbug.com/1144908): Are we certain that if we originally had an
+      // audio_config or video_config, above, that it should be supported? In
+      // that case, we could possibly add some DCHECK here if attempt to use
+      // them failed in this case.
+      //
       // 2.2
       // https://dvcs.w3.org/hg/html-media/raw-file/default/media-source/media-source.html#widl-MediaSource-addSourceBuffer-SourceBuffer-DOMString-type
       // Step 2: If type contains a MIME type ... that is not supported with the

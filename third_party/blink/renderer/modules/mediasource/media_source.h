@@ -24,6 +24,11 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
+namespace media {
+class AudioDecoderConfig;
+class VideoDecoderConfig;
+}  // namespace media
+
 namespace blink {
 
 class EventQueue;
@@ -172,6 +177,8 @@ class MediaSource final : public EventTargetWithInlineData,
   // also require the same, since they can be called from within these methods.
   void AddSourceBuffer_Locked(
       const String& type /* in */,
+      std::unique_ptr<media::AudioDecoderConfig> audio_config /* in */,
+      std::unique_ptr<media::VideoDecoderConfig> video_config /* in */,
       ExceptionState* exception_state /* in/out */,
       SourceBuffer** created_buffer /* out */,
       MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */)
@@ -194,10 +201,12 @@ class MediaSource final : public EventTargetWithInlineData,
 
   bool IsUpdating() const;
 
-  std::unique_ptr<WebSourceBuffer> CreateWebSourceBuffer(const String& type,
-                                                         const String& codecs,
-                                                         ExceptionState&)
-      LOCKS_EXCLUDED(attachment_link_lock_);
+  std::unique_ptr<WebSourceBuffer> CreateWebSourceBuffer(
+      const String& type,
+      const String& codecs,
+      std::unique_ptr<media::AudioDecoderConfig> audio_config,
+      std::unique_ptr<media::VideoDecoderConfig> video_config,
+      ExceptionState&) LOCKS_EXCLUDED(attachment_link_lock_);
   void ScheduleEvent(const AtomicString& event_name);
   static void RecordIdentifiabilityMetric(ExecutionContext* context,
                                           const String& type,

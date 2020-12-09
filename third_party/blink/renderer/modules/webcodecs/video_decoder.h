@@ -86,6 +86,17 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
                               const VideoDecoderInit*,
                               ExceptionState&);
 
+  // For use by MediaSource and by ::MakeMediaConfig.
+  static CodecConfigEval MakeMediaVideoDecoderConfig(
+      const ConfigType& config,
+      MediaConfigType& out_media_config,
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+      std::unique_ptr<media::H264ToAnnexBBitstreamConverter>&
+          out_h264_converter,
+      std::unique_ptr<media::mp4::AVCDecoderConfigurationRecord>& out_h264_avcc,
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+      String& out_console_message);
+
   VideoDecoder(ScriptState*, const VideoDecoderInit*, ExceptionState&);
   ~VideoDecoder() override = default;
 

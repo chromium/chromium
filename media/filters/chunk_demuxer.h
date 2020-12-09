@@ -33,6 +33,9 @@ class MEDIA_EXPORT SourceBufferStream;
 
 namespace media {
 
+class AudioDecoderConfig;
+class VideoDecoderConfig;
+
 class MEDIA_EXPORT ChunkDemuxerStream : public DemuxerStream {
  public:
   using BufferQueue = base::circular_deque<scoped_refptr<StreamParserBuffer>>;
@@ -241,9 +244,19 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   // |codecs|.  kReachedIdLimit is returned if the demuxer cannot handle another
   // ID right now.  kNotSupported is returned if |content_type| and |codecs| is
   // not a supported format.
+  // The |audio_config| and |video_config| overloads behave similarly, except
+  // the caller must provide valid, supported decoder configs; those overloads'
+  // usage indicates that we intend to append WebCodecs encoded audio or video
+  // chunks for this ID.
   Status AddId(const std::string& id,
                const std::string& content_type,
                const std::string& codecs);
+  // TODO(crbug.com/1144908): Consider templating the following two if they
+  // continue to be so similar except for specific decoder config type.
+  Status AddId(const std::string& id,
+               std::unique_ptr<AudioDecoderConfig> audio_config);
+  Status AddId(const std::string& id,
+               std::unique_ptr<VideoDecoderConfig> video_config);
 
   // Notifies a caller via |tracks_updated_cb| that the set of media tracks
   // for a given |id| has changed.

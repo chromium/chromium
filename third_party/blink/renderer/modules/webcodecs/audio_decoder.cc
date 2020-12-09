@@ -81,34 +81,28 @@ AudioDecoder* AudioDecoder::Create(ScriptState* script_state,
                                             exception_state);
 }
 
-AudioDecoder::AudioDecoder(ScriptState* script_state,
-                           const AudioDecoderInit* init,
-                           ExceptionState& exception_state)
-    : DecoderTemplate<AudioDecoderTraits>(script_state, init, exception_state) {
-  UseCounter::Count(ExecutionContext::From(script_state),
-                    WebFeature::kWebCodecs);
-}
-
-CodecConfigEval AudioDecoder::MakeMediaConfig(const ConfigType& config,
-                                              MediaConfigType* out_media_config,
-                                              String* out_console_message) {
+// static
+CodecConfigEval AudioDecoder::MakeMediaAudioDecoderConfig(
+    const ConfigType& config,
+    MediaConfigType& out_media_config,
+    String& out_console_message) {
   media::AudioCodec codec = media::kUnknownAudioCodec;
   bool is_codec_ambiguous = true;
   bool parse_succeeded = ParseAudioCodecString("", config.codec().Utf8(),
                                                &is_codec_ambiguous, &codec);
 
   if (!parse_succeeded) {
-    *out_console_message = "Failed to parse codec string.";
+    out_console_message = "Failed to parse codec string.";
     return CodecConfigEval::kInvalid;
   }
 
   if (is_codec_ambiguous) {
-    *out_console_message = "Codec string is ambiguous.";
+    out_console_message = "Codec string is ambiguous.";
     return CodecConfigEval::kInvalid;
   }
 
   if (!media::IsSupportedAudioType({codec})) {
-    *out_console_message = "Configuration is not supported.";
+    out_console_message = "Configuration is not supported.";
     return CodecConfigEval::kUnsupported;
   }
 
@@ -136,12 +130,29 @@ CodecConfigEval AudioDecoder::MakeMediaConfig(const ConfigType& config,
           : media::GuessChannelLayout(config.numberOfChannels());
 
   // TODO(chcunningham): Add sample format to IDL.
-  out_media_config->Initialize(
+  out_media_config.Initialize(
       codec, media::kSampleFormatPlanarF32, channel_layout, config.sampleRate(),
       extra_data, media::EncryptionScheme::kUnencrypted,
       base::TimeDelta() /* seek preroll */, 0 /* codec delay */);
 
   return CodecConfigEval::kSupported;
+}
+
+AudioDecoder::AudioDecoder(ScriptState* script_state,
+                           const AudioDecoderInit* init,
+                           ExceptionState& exception_state)
+    : DecoderTemplate<AudioDecoderTraits>(script_state, init, exception_state) {
+  UseCounter::Count(ExecutionContext::From(script_state),
+                    WebFeature::kWebCodecs);
+}
+
+CodecConfigEval AudioDecoder::MakeMediaConfig(const ConfigType& config,
+                                              MediaConfigType* out_media_config,
+                                              String* out_console_message) {
+  DCHECK(out_media_config);
+  DCHECK(out_console_message);
+  return MakeMediaAudioDecoderConfig(config, *out_media_config,
+                                     *out_console_message);
 }
 
 media::StatusOr<scoped_refptr<media::DecoderBuffer>>
