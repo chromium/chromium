@@ -79,6 +79,9 @@ ASH_PUBLIC_EXPORT extern const base::Feature kNewDragSpecInLauncher;
 // Enables rich entity formatting for Omnibox results in the launcher.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableOmniboxRichEntities;
 
+// Enables normalization of search results in the launcher.
+ASH_PUBLIC_EXPORT extern const base::Feature kEnableLauncherSearchNormalization;
+
 bool ASH_PUBLIC_EXPORT IsAppDataSearchEnabled();
 bool ASH_PUBLIC_EXPORT IsSettingsShortcutSearchEnabled();
 bool ASH_PUBLIC_EXPORT IsAppListSearchAutocompleteEnabled();
@@ -97,6 +100,7 @@ bool ASH_PUBLIC_EXPORT IsLauncherSettingsSearchEnabled();
 bool ASH_PUBLIC_EXPORT IsAggregatedMlSearchRankingEnabled();
 bool ASH_PUBLIC_EXPORT IsNewDragSpecInLauncherEnabled();
 bool ASH_PUBLIC_EXPORT IsOmniboxRichEntitiesEnabled();
+bool ASH_PUBLIC_EXPORT IsLauncherSearchNormalizationEnabled();
 
 std::string ASH_PUBLIC_EXPORT AnswerServerUrl();
 std::string ASH_PUBLIC_EXPORT AnswerServerQuerySuffix();

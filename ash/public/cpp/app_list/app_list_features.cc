@@ -53,6 +53,9 @@ const base::Feature kNewDragSpecInLauncher{"NewDragSpecInLauncher",
 const base::Feature kEnableOmniboxRichEntities{
     "EnableOmniboxRichEntities", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kEnableLauncherSearchNormalization{
+    "EnableLauncherSearchNormalization", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsAppDataSearchEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppDataSearch);
 }
@@ -119,6 +122,10 @@ bool IsNewDragSpecInLauncherEnabled() {
 
 bool IsOmniboxRichEntitiesEnabled() {
   return base::FeatureList::IsEnabled(kEnableOmniboxRichEntities);
+}
+
+bool IsLauncherSearchNormalizationEnabled() {
+  return base::FeatureList::IsEnabled(kEnableLauncherSearchNormalization);
 }
 
 std::string AppSearchResultRankerPredictorName() {
