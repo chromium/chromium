@@ -6943,6 +6943,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"continuous-search", flag_descriptions::kContinuousSearchName,
      flag_descriptions::kContinuousSearchDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(continuous_search::features::kContinuousSearch)},
+
+    {"enable-experimental-accessibility-labels",
+     flag_descriptions::kExperimentalAccessibilityLabelsName,
+     flag_descriptions::kExperimentalAccessibilityLabelsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kExperimentalAccessibilityLabels)},
 #endif  // defined(OS_ANDROID)
 
     // TODO(crbug.com/1155358): Enable Chrome Labs for ChromeOS

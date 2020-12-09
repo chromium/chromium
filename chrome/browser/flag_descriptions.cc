@@ -1065,6 +1065,12 @@ const char kExpensiveBackgroundTimerThrottlingName[] =
 const char kExpensiveBackgroundTimerThrottlingDescription[] =
     "Enables intervention to limit CPU usage of background timers to 1%.";
 
+const char kExperimentalAccessibilityLabelsName[] =
+    "Experimental Accessibility Labels";
+const char kExperimentalAccessibilityLabelsDescription[] =
+    "Enables experimental accessibility labels feature. Note that this only "
+    "enables the feature, and enabling the service is a profile preference.";
+
 const char kExperimentalExtensionApisName[] = "Experimental Extension APIs";
 const char kExperimentalExtensionApisDescription[] =
     "Enables experimental extension APIs. Note that the extension gallery "
