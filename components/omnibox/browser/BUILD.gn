@@ -209,6 +209,8 @@ static_library("browser") {
     "url_prefix.h",
     "verbatim_match.cc",
     "verbatim_match.h",
+    "voice_suggest_provider.cc",
+    "voice_suggest_provider.h",
     "zero_suggest_provider.cc",
     "zero_suggest_provider.h",
     "zero_suggest_verbatim_match_provider.cc",
@@ -537,6 +539,7 @@ source_set("unit_tests") {
     "tailored_word_break_iterator_unittest.cc",
     "titled_url_match_utils_unittest.cc",
     "url_prefix_unittest.cc",
+    "voice_suggest_provider_unittest.cc",
     "zero_suggest_provider_unittest.cc",
     "zero_suggest_verbatim_match_provider_unittest.cc",
   ]

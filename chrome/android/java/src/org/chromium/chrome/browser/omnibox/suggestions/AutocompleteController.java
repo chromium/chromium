@@ -45,6 +45,7 @@ public class AutocompleteController {
     private final VoiceSuggestionProvider mVoiceSuggestionProvider = new VoiceSuggestionProvider();
 
     private boolean mUseCachedZeroSuggestResults;
+    private boolean mEnableNativeVoiceSuggestProvider;
     private boolean mWaitingForSuggestionsToCache;
 
     /**
@@ -80,6 +81,8 @@ public class AutocompleteController {
             return;
         }
 
+        mEnableNativeVoiceSuggestProvider = ChromeFeatureList.isEnabled(
+                ChromeFeatureList.OMNIBOX_NATIVE_VOICE_SUGGEST_PROVIDER);
         mNativeAutocompleteControllerAndroid =
                 AutocompleteControllerJni.get().init(AutocompleteController.this, profile);
     }
@@ -251,19 +254,23 @@ public class AutocompleteController {
     protected void onSuggestionsReceived(AutocompleteResult autocompleteResult,
             String inlineAutocompleteText, long currentNativeAutocompleteResult) {
         assert mListener != null : "Ensure a listener is set prior generating suggestions.";
+        final AutocompleteResult originalResult = autocompleteResult;
+
         // Run through new providers to get an updated list of suggestions.
-        AutocompleteResult resultsWithVoiceSuggestions = new AutocompleteResult(
-                mVoiceSuggestionProvider.addVoiceSuggestions(
-                        autocompleteResult.getSuggestionsList(), MAX_VOICE_SUGGESTION_COUNT),
-                autocompleteResult.getGroupsDetails());
+        if (!mEnableNativeVoiceSuggestProvider) {
+            autocompleteResult = new AutocompleteResult(
+                    mVoiceSuggestionProvider.addVoiceSuggestions(
+                            autocompleteResult.getSuggestionsList(), MAX_VOICE_SUGGESTION_COUNT),
+                    autocompleteResult.getGroupsDetails());
+        }
 
         mCurrentNativeAutocompleteResult = currentNativeAutocompleteResult;
 
         // Notify callbacks of suggestions.
-        mListener.onSuggestionsReceived(resultsWithVoiceSuggestions, inlineAutocompleteText);
+        mListener.onSuggestionsReceived(autocompleteResult, inlineAutocompleteText);
 
         if (mWaitingForSuggestionsToCache) {
-            CachedZeroSuggestionsManager.saveToCache(autocompleteResult);
+            CachedZeroSuggestionsManager.saveToCache(originalResult);
         }
     }
 
@@ -303,7 +310,20 @@ public class AutocompleteController {
      * @param results A list containing the results of a voice recognition.
      */
     void onVoiceResults(@Nullable List<VoiceResult> results) {
-        mVoiceSuggestionProvider.setVoiceResults(results);
+        if (!mEnableNativeVoiceSuggestProvider) {
+            mVoiceSuggestionProvider.setVoiceResults(results);
+        } else {
+            if (results == null || results.size() == 0) return;
+            final int count = Math.min(results.size(), MAX_VOICE_SUGGESTION_COUNT);
+            String[] voiceMatches = new String[count];
+            float[] confidenceScores = new float[count];
+            for (int i = 0; i < count; i++) {
+                voiceMatches[i] = results.get(i).getMatch();
+                confidenceScores[i] = results.get(i).getConfidence();
+            }
+            AutocompleteControllerJni.get().setVoiceMatches(
+                    mNativeAutocompleteControllerAndroid, voiceMatches, confidenceScores);
+        }
     }
 
     /**
@@ -421,6 +441,8 @@ public class AutocompleteController {
                 long nativeAutocompleteControllerAndroid, AutocompleteController caller, GURL url);
         void groupSuggestionsBySearchVsURL(
                 long nativeAutocompleteControllerAndroid, int firstIndex, int lastIndex);
+        void setVoiceMatches(long nativeAutocompleteControllerAndroid, String[] matches,
+                float[] confidenceScores);
         /**
          * Given a search query, this will attempt to see if the query appears to be portion of a
          * properly formed URL.  If it appears to be a URL, this will return the fully qualified

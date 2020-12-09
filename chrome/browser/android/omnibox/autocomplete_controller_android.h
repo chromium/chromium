@@ -128,6 +128,12 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
         content::BrowserContext* profile) const override;
   };
 
+  // Pass detected voice matches down to VoiceSuggestionsProvider.
+  void SetVoiceMatches(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobjectArray>& j_voice_matches,
+      const base::android::JavaParamRef<jfloatArray>& j_confidence_scores);
+
  private:
   ~AutocompleteControllerAndroid() override;
   void InitJNI(JNIEnv* env, jobject obj);

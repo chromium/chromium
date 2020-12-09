@@ -153,6 +153,7 @@ class AutocompleteProvider
     TYPE_QUERY_TILE = 1 << 12,
     TYPE_MOST_VISITED_SITES = 1 << 13,
     TYPE_VERBATIM_MATCH = 1 << 14,
+    TYPE_VOICE_SUGGEST = 1 << 15,
   };
 
   explicit AutocompleteProvider(Type type);

@@ -31,6 +31,7 @@ class HistoryURLProvider;
 class KeywordProvider;
 class SearchProvider;
 class TemplateURLService;
+class VoiceSuggestProvider;
 class ZeroSuggestProvider;
 class OnDeviceHeadProvider;
 
@@ -161,6 +162,9 @@ class AutocompleteController : public AutocompleteProviderListener,
   KeywordProvider* keyword_provider() const { return keyword_provider_; }
   SearchProvider* search_provider() const { return search_provider_; }
   ClipboardProvider* clipboard_provider() const { return clipboard_provider_; }
+  VoiceSuggestProvider* voice_suggest_provider() const {
+    return voice_suggest_provider_;
+  }
 
   const AutocompleteInput& input() const { return input_; }
   const AutocompleteResult& result() const { return result_; }
@@ -301,6 +305,8 @@ class AutocompleteController : public AutocompleteProviderListener,
   OnDeviceHeadProvider* on_device_head_provider_;
 
   ClipboardProvider* clipboard_provider_;
+
+  VoiceSuggestProvider* voice_suggest_provider_;
 
   // Input passed to Start.
   AutocompleteInput input_;

@@ -50,6 +50,7 @@
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/omnibox/browser/voice_suggest_provider.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
@@ -529,6 +530,29 @@ void AutocompleteControllerAndroid::NotifySuggestionsReceived(
   Java_AutocompleteController_onSuggestionsReceived(
       env, java_bridge, autocomplete_result.GetOrCreateJavaObject(env),
       inline_text, j_autocomplete_result_raw_ptr);
+}
+
+void AutocompleteControllerAndroid::SetVoiceMatches(
+    JNIEnv* env,
+    const JavaParamRef<jobjectArray>& j_voice_matches,
+    const JavaParamRef<jfloatArray>& j_confidence_scores) {
+  auto* const voice_suggest_provider =
+      autocomplete_controller_->voice_suggest_provider();
+  DCHECK(voice_suggest_provider)
+      << "Voice matches received with no registered VoiceSuggestProvider. "
+      << "Either disable voice input, or provision VoiceSuggestProvider.";
+
+  std::vector<base::string16> voice_matches;
+  std::vector<float> confidence_scores;
+  AppendJavaStringArrayToStringVector(env, j_voice_matches, &voice_matches);
+  JavaFloatArrayToFloatVector(env, j_confidence_scores, &confidence_scores);
+  DCHECK(voice_matches.size() == confidence_scores.size());
+
+  voice_suggest_provider->ClearCache();
+  for (size_t index = 0; index < voice_matches.size(); ++index) {
+    voice_suggest_provider->AddVoiceSuggestion(voice_matches[index],
+                                               confidence_scores[index]);
+  }
 }
 
 bool AutocompleteControllerAndroid::IsValidMatch(JNIEnv* env,
