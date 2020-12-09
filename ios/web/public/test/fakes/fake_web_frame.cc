@@ -75,9 +75,16 @@ bool FakeWebFrame::CallJavaScriptFunction(
   if (!success) {
     return false;
   }
-  const base::Value* js_result = result_map_[name].get();
-  base::PostTask(FROM_HERE, {WebThread::UI},
-                 base::BindOnce(std::move(callback), js_result));
+
+  if (force_timeout_) {
+    base::PostDelayedTask(FROM_HERE, {web::WebThread::UI},
+                          base::BindOnce(std::move(callback), nullptr),
+                          timeout);
+  } else {
+    const base::Value* js_result = result_map_[name].get();
+    base::PostTask(FROM_HERE, {WebThread::UI},
+                   base::BindOnce(std::move(callback), js_result));
+  }
   return true;
 }
 

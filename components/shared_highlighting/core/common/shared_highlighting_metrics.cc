@@ -72,6 +72,16 @@ void LogGenerateErrorIFrame() {
   LogLinkGenerationErrorReason(LinkGenerationError::kIFrame);
 }
 
+void LogGenerateSuccessLatency(base::TimeDelta latency) {
+  base::UmaHistogramTimes("SharedHighlights.LinkGenerated.TimeToGenerate",
+                          latency);
+}
+
+void LogGenerateErrorLatency(base::TimeDelta latency) {
+  base::UmaHistogramTimes("SharedHighlights.LinkGenerated.Error.TimeToGenerate",
+                          latency);
+}
+
 void LogLinkOpenedUkmEvent(ukm::SourceId source_id,
                            const GURL& referrer,
                            bool success) {

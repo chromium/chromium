@@ -69,9 +69,11 @@ using shared_highlighting::LinkGenerationError;
     LinkGenerationError error = response.error.value();
     shared_highlighting::LogLinkGeneratedErrorUkmEvent(response.sourceID,
                                                        error);
+    shared_highlighting::LogGenerateErrorLatency(response.latency);
     [self linkGenerationFailedWithError:error];
   } else {
     shared_highlighting::LogLinkGeneratedSuccessUkmEvent(response.sourceID);
+    shared_highlighting::LogGenerateSuccessLatency(response.latency);
     [self shareLinkToText:response.payload];
   }
 }

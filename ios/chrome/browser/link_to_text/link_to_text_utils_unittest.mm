@@ -8,6 +8,7 @@
 
 #import "base/values.h"
 #import "ios/chrome/browser/link_to_text/link_generation_outcome.h"
+#import "ios/chrome/browser/link_to_text/link_to_text_constants.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
@@ -74,6 +75,17 @@ TEST_F(LinkToTextUtilsTest, ParseRect) {
   copied_value = rect_value.Clone();
   copied_value.RemoveKey("height");
   EXPECT_FALSE(ParseRect(&copied_value).has_value());
+}
+
+// Tests that IsLinkGenerationTimeout returns the right values based on
+// different input values.
+TEST_F(LinkToTextUtilsTest, IsLinkGenerationTimeout) {
+  EXPECT_TRUE(IsLinkGenerationTimeout(
+      base::TimeDelta::FromMilliseconds(kLinkGenerationTimeoutInMs)));
+  EXPECT_TRUE(IsLinkGenerationTimeout(
+      base::TimeDelta::FromMilliseconds(kLinkGenerationTimeoutInMs + 1)));
+  EXPECT_FALSE(IsLinkGenerationTimeout(
+      base::TimeDelta::FromMilliseconds(kLinkGenerationTimeoutInMs - 1)));
 }
 
 }  // namespace link_to_text

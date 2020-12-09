@@ -29,9 +29,11 @@ class WebState;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Parses a serialized response stored in |value| into a LinkToTextResponse
-// instance.
+// instance, along with the associated |webState| and |latency| for generating
+// the response.
 + (instancetype)linkToTextResponseWithValue:(const base::Value*)value
-                                   webState:(web::WebState*)webState;
+                                   webState:(web::WebState*)webState
+                                    latency:(base::TimeDelta)latency;
 
 // Response payload. Nil when an error occurred.
 @property(nonatomic, readonly) LinkToTextPayload* payload;
@@ -44,6 +46,9 @@ class WebState;
 
 // Source ID for the associated WebState.
 @property(nonatomic, readonly) ukm::SourceId sourceID;
+
+// Time taken to generate a link.
+@property(nonatomic, readonly) base::TimeDelta latency;
 
 @end
 

@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/link_to_text/link_generation_outcome.h"
 
 namespace base {
+class TimeDelta;
 class Value;
 }  // namespace base
 
@@ -41,9 +42,12 @@ shared_highlighting::LinkGenerationError OutcomeToError(
 // returned.
 base::Optional<CGRect> ParseRect(const base::Value* value);
 
-// Converts a given |webViewRect| into its browser coordinates counterpart. Uses
-// the given |webState| to do the conversion.
-CGRect ConvertToBrowserRect(CGRect webViewRect, web::WebState* webState);
+// Converts a given |web_view_rect| into its browser coordinates counterpart.
+// Uses the given |web_state| to do the conversion.
+CGRect ConvertToBrowserRect(CGRect web_view_rect, web::WebState* web_state);
+
+// Returns YES if |latency| exceeds the timeout limit for link generation.
+BOOL IsLinkGenerationTimeout(base::TimeDelta latency);
 
 }  // namespace link_to_text
 

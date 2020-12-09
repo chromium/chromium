@@ -25,72 +25,93 @@ using shared_highlighting::TextFragment;
 
 @interface LinkToTextResponse ()
 
-// Initializes an object with a |sourceID| representing the current WebState.
+// Initializes an object with a |sourceID| representing the current WebState,
+// along with the |latency| for link generation.
 - (instancetype)initWithSourceID:(ukm::SourceId)sourceID
+                         latency:(base::TimeDelta)latency
     NS_DESIGNATED_INITIALIZER;
 
 // Initializes an object with the given |payload| of the link generation
-// request, and a |sourceID| representing the current WebState.
+// request, a |sourceID| representing the current WebState and the |latency| for
+// link generation.
 - (instancetype)initWithPayload:(LinkToTextPayload*)payload
-                       sourceID:(ukm::SourceId)sourceID;
+                       sourceID:(ukm::SourceId)sourceID
+                        latency:(base::TimeDelta)latency;
 
 // Initializes an object with the given |error| which occurred while trying to
-// generate a link, and a |sourceID| representing the current WebState.
+// generate a link, a |sourceID| representing the current WebState and the
+// |latency| for link generation.
 - (instancetype)initWithError:(LinkGenerationError)error
-                     sourceID:(ukm::SourceId)sourceID;
+                     sourceID:(ukm::SourceId)sourceID
+                      latency:(base::TimeDelta)latency;
 
 @end
 
 @implementation LinkToTextResponse
 
-- (instancetype)initWithSourceID:(ukm::SourceId)sourceID {
+- (instancetype)initWithSourceID:(ukm::SourceId)sourceID
+                         latency:(base::TimeDelta)latency {
   if (self = [super init]) {
     _sourceID = sourceID;
+    _latency = latency;
   }
   return self;
 }
 
 - (instancetype)initWithPayload:(LinkToTextPayload*)payload
-                       sourceID:(ukm::SourceId)sourceID {
+                       sourceID:(ukm::SourceId)sourceID
+                        latency:(base::TimeDelta)latency {
   DCHECK(payload);
   DCHECK(sourceID != ukm::kInvalidSourceId);
-  if (self = [self initWithSourceID:sourceID]) {
+  if (self = [self initWithSourceID:sourceID latency:latency]) {
     _payload = payload;
   }
   return self;
 }
 
 - (instancetype)initWithError:(LinkGenerationError)error
-                     sourceID:(ukm::SourceId)sourceID {
-  if (self = [self initWithSourceID:sourceID]) {
+                     sourceID:(ukm::SourceId)sourceID
+                      latency:(base::TimeDelta)latency {
+  if (self = [self initWithSourceID:sourceID latency:latency]) {
     _error = error;
   }
   return self;
 }
 
 + (instancetype)linkToTextResponseWithValue:(const base::Value*)value
-                                   webState:(web::WebState*)webState {
+                                   webState:(web::WebState*)webState
+                                    latency:(base::TimeDelta)latency {
   if (!webState) {
-    return [LinkToTextResponse linkToTextResponseWithUnknownError];
+    return [LinkToTextResponse
+        linkToTextResponseWithUnknownErrorAndLatency:latency];
   }
 
   ukm::SourceId sourceID = ukm::GetSourceIdForWebStateDocument(webState);
 
   if (!link_to_text::IsValidDictValue(value)) {
-    return [self linkToTextResponseWithUnknownErrorAndSourceID:sourceID];
+    if (link_to_text::IsLinkGenerationTimeout(latency)) {
+      return [[self alloc] initWithError:LinkGenerationError::kTimeout
+                                sourceID:sourceID
+                                 latency:latency];
+    }
+
+    return [self linkToTextResponseWithUnknownErrorAndSourceID:sourceID
+                                                       latency:latency];
   }
 
   base::Optional<LinkGenerationOutcome> outcome =
       link_to_text::ParseStatus(value->FindDoubleKey("status"));
   if (!outcome.has_value()) {
-    return [self linkToTextResponseWithUnknownErrorAndSourceID:sourceID];
+    return [self linkToTextResponseWithUnknownErrorAndSourceID:sourceID
+                                                       latency:latency];
   }
 
   if (outcome.value() != LinkGenerationOutcome::kSuccess) {
     // Convert to Error.
     return [[self alloc]
         initWithError:link_to_text::OutcomeToError(outcome.value())
-             sourceID:sourceID];
+             sourceID:sourceID
+              latency:latency];
   }
 
   // Attempts to parse a payload from the response.
@@ -104,7 +125,8 @@ using shared_highlighting::TextFragment;
   // All values must be present to have a valid payload.
   if (!title || !fragment || !selectedText || !sourceRect) {
     // Library replied Success but some values are missing.
-    return [self linkToTextResponseWithUnknownErrorAndSourceID:sourceID];
+    return [self linkToTextResponseWithUnknownErrorAndSourceID:sourceID
+                                                       latency:latency];
   }
 
   // Create the deep-link.
@@ -118,20 +140,26 @@ using shared_highlighting::TextFragment;
         sourceView:webState->GetView()
         sourceRect:link_to_text::ConvertToBrowserRect(sourceRect.value(),
                                                       webState)];
-  return [[self alloc] initWithPayload:payload sourceID:sourceID];
+  return [[self alloc] initWithPayload:payload
+                              sourceID:sourceID
+                               latency:latency];
 }
 
 #pragma mark - Private
 
-+ (instancetype)linkToTextResponseWithUnknownError {
++ (instancetype)linkToTextResponseWithUnknownErrorAndLatency:
+    (base::TimeDelta)latency {
   return [[self alloc] initWithError:LinkGenerationError::kUnknown
-                            sourceID:ukm::kInvalidSourceId];
+                            sourceID:ukm::kInvalidSourceId
+                             latency:latency];
 }
 
-+ (instancetype)linkToTextResponseWithUnknownErrorAndSourceID:
-    (ukm::SourceId)sourceID {
++ (instancetype)
+    linkToTextResponseWithUnknownErrorAndSourceID:(ukm::SourceId)sourceID
+                                          latency:(base::TimeDelta)latency {
   return [[self alloc] initWithError:LinkGenerationError::kUnknown
-                            sourceID:sourceID];
+                            sourceID:sourceID
+                             latency:latency];
 }
 
 @end
