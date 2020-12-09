@@ -5,7 +5,9 @@
 import {eventToPromise} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.m.js';
 import {FittingType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/constants.js';
 import {PDFViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer.js';
+import {isMac} from 'chrome://resources/js/cr.m.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+
 import {createWheelEvent} from './test_util.js';
 
 const viewer = /** @type {!PDFViewerElement} */ (
@@ -101,7 +103,23 @@ const tests = [
     chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
 
     chrome.test.succeed();
-  }
+  },
+  async function testZoomKeyboardShortcutsDisabled() {
+    await ensureFullscreen();
+
+    async function keydown(key) {
+      const whenKeydown = eventToPromise('keydown', viewer);
+      pressAndReleaseKeyOn(viewer, 0, isMac ? 'meta' : 'ctrl', key);
+      return await whenKeydown;
+    }
+
+    let e = await keydown('=');
+    chrome.test.assertTrue(e.defaultPrevented);
+    e = await keydown('-');
+    chrome.test.assertTrue(e.defaultPrevented);
+
+    chrome.test.succeed();
+  },
 ];
 
 chrome.test.runTests(tests);

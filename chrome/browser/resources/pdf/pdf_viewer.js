@@ -491,8 +491,17 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       return;
     }
 
-    // Disable further key handling when in Presentation mode.
     if (document.fullscreenElement !== null) {
+      // Disable zoom shortcuts in Presentation mode.
+      let hasModifier = e.ctrlKey;
+      // <if expr="is_macosx">
+      hasModifier = e.metaKey;
+      // </if>
+      if (hasModifier && (e.key === '=' || e.key === '-')) {
+        e.preventDefault();
+      }
+
+      // Disable further key handling when in Presentation mode.
       return;
     }
 
