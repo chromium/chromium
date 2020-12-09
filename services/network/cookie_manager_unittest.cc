@@ -372,7 +372,7 @@ class CookieManagerTest : public testing::Test {
     url_request_context_ = std::make_unique<net::URLRequestContext>();
     url_request_context_->set_cookie_store(cookie_monster_.get());
     cookie_service_ = std::make_unique<CookieManager>(
-        url_request_context_.get(), nullptr /* preloaded_first_party_sets */,
+        url_request_context_.get(), nullptr /* first_party_sets */,
         std::move(cleanup_store), nullptr);
     cookie_service_->AddReceiver(
         cookie_service_remote_.BindNewPipeAndPassReceiver());

@@ -409,7 +409,7 @@ NetworkContext::NetworkContext(
                             session_cleanup_cookie_store);
   url_request_context_ = url_request_context_owner_.url_request_context.get();
   cookie_manager_ = std::make_unique<CookieManager>(
-      url_request_context_, network_service_->preloaded_first_party_sets(),
+      url_request_context_, network_service_->first_party_sets(),
       std::move(session_cleanup_cookie_store),
       std::move(params_->cookie_manager_params));
 

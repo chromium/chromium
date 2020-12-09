@@ -18,8 +18,8 @@ source_set("first_party_sets") {
   sources = [
     "first_party_set_parser.cc",
     "first_party_set_parser.h",
-    "preloaded_first_party_sets.cc",
-    "preloaded_first_party_sets.h",
+    "first_party_sets.cc",
+    "first_party_sets.h",
   ]
 
   deps = [
@@ -62,7 +62,7 @@ source_set("tests") {
 
   sources = [
     "first_party_set_parser_unittest.cc",
-    "preloaded_first_party_sets_unittest.cc",
+    "first_party_sets_unittest.cc",
   ]
 
   deps = [

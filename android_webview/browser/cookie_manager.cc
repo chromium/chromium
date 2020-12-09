@@ -357,8 +357,7 @@ net::CookieStore* CookieManager::GetCookieStore() {
             : network::mojom::CookieAccessDelegateType::ALWAYS_LEGACY;
     cookie_store_->SetCookieAccessDelegate(
         std::make_unique<network::CookieAccessDelegateImpl>(
-            cookie_access_delegate_type,
-            nullptr /* preloaded_first_party_sets */));
+            cookie_access_delegate_type, nullptr /* first_party_sets */));
   }
 
   return cookie_store_.get();

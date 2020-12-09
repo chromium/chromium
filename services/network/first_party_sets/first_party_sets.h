@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_FIRST_PARTY_SETS_PRELOADED_FIRST_PARTY_SETS_H_
-#define SERVICES_NETWORK_FIRST_PARTY_SETS_PRELOADED_FIRST_PARTY_SETS_H_
+#ifndef SERVICES_NETWORK_FIRST_PARTY_SETS_FIRST_PARTY_SETS_H_
+#define SERVICES_NETWORK_FIRST_PARTY_SETS_FIRST_PARTY_SETS_H_
 
 #include <map>
 #include <memory>
@@ -15,16 +15,16 @@
 
 namespace network {
 
-// Class PreloadedFirstPartySets is a pseudo-singleton owned by NetworkService;
-// it stores all known information about preloaded First-Party Sets state. This
-// information is updated by the component updater via |ParseAndSet|.
-class PreloadedFirstPartySets {
+// Class FirstPartySets is a pseudo-singleton owned by NetworkService; it stores
+// all known information about First-Party Sets state. This information is
+// updated by the component updater via |ParseAndSet|.
+class FirstPartySets {
  public:
-  PreloadedFirstPartySets();
-  ~PreloadedFirstPartySets();
+  FirstPartySets();
+  ~FirstPartySets();
 
-  PreloadedFirstPartySets(const PreloadedFirstPartySets&) = delete;
-  PreloadedFirstPartySets& operator=(const PreloadedFirstPartySets&) = delete;
+  FirstPartySets(const FirstPartySets&) = delete;
+  FirstPartySets& operator=(const FirstPartySets&) = delete;
 
   void SetManuallySpecifiedSet(const std::string& flag_value);
 
@@ -74,4 +74,4 @@ class PreloadedFirstPartySets {
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_FIRST_PARTY_SETS_PRELOADED_FIRST_PARTY_SETS_H_
+#endif  // SERVICES_NETWORK_FIRST_PARTY_SETS_FIRST_PARTY_SETS_H_

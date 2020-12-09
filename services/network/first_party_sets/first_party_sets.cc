@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/first_party_sets/preloaded_first_party_sets.h"
+#include "services/network/first_party_sets/first_party_sets.h"
 
 #include <memory>
 
@@ -52,12 +52,11 @@ CanonicalizeSet(const std::vector<std::string>& origins) {
 
 }  // namespace
 
-PreloadedFirstPartySets::PreloadedFirstPartySets() = default;
+FirstPartySets::FirstPartySets() = default;
 
-PreloadedFirstPartySets::~PreloadedFirstPartySets() = default;
+FirstPartySets::~FirstPartySets() = default;
 
-void PreloadedFirstPartySets::SetManuallySpecifiedSet(
-    const std::string& flag_value) {
+void FirstPartySets::SetManuallySpecifiedSet(const std::string& flag_value) {
   manually_specified_set_ = CanonicalizeSet(base::SplitString(
       flag_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
 
@@ -65,7 +64,7 @@ void PreloadedFirstPartySets::SetManuallySpecifiedSet(
 }
 
 base::flat_map<net::SchemefulSite, net::SchemefulSite>*
-PreloadedFirstPartySets::ParseAndSet(base::StringPiece raw_sets) {
+FirstPartySets::ParseAndSet(base::StringPiece raw_sets) {
   std::unique_ptr<base::flat_map<net::SchemefulSite, net::SchemefulSite>>
       parsed = FirstPartySetParser::ParsePreloadedSets(raw_sets);
   if (parsed) {
@@ -79,7 +78,7 @@ PreloadedFirstPartySets::ParseAndSet(base::StringPiece raw_sets) {
   return &sets_;
 }
 
-bool PreloadedFirstPartySets::IsContextSamePartyWithSite(
+bool FirstPartySets::IsContextSamePartyWithSite(
     const net::SchemefulSite& site,
     const net::SchemefulSite& top_frame_site,
     const std::set<net::SchemefulSite>& party_context) const {
@@ -97,12 +96,12 @@ bool PreloadedFirstPartySets::IsContextSamePartyWithSite(
          base::ranges::all_of(party_context, is_owned_by_site_owner);
 }
 
-bool PreloadedFirstPartySets::IsInNontrivialFirstPartySet(
+bool FirstPartySets::IsInNontrivialFirstPartySet(
     const net::SchemefulSite& site) const {
   return base::Contains(sets_, site);
 }
 
-void PreloadedFirstPartySets::ApplyManuallySpecifiedSet() {
+void FirstPartySets::ApplyManuallySpecifiedSet() {
   if (!manually_specified_set_)
     return;
 

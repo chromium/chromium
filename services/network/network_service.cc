@@ -50,7 +50,7 @@
 #include "net/url_request/url_request_context.h"
 #include "services/network/crl_set_distributor.h"
 #include "services/network/dns_config_change_manager.h"
-#include "services/network/first_party_sets/preloaded_first_party_sets.h"
+#include "services/network/first_party_sets/first_party_sets.h"
 #include "services/network/http_auth_cache_copier.h"
 #include "services/network/legacy_tls_config_distributor.h"
 #include "services/network/net_log_exporter.h"
@@ -373,9 +373,9 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
 
   trust_token_key_commitments_ = std::make_unique<TrustTokenKeyCommitments>();
 
-  preloaded_first_party_sets_ = std::make_unique<PreloadedFirstPartySets>();
+  first_party_sets_ = std::make_unique<FirstPartySets>();
   if (command_line->HasSwitch(switches::kUseFirstPartySet)) {
-    preloaded_first_party_sets_->SetManuallySpecifiedSet(
+    first_party_sets_->SetManuallySpecifiedSet(
         command_line->GetSwitchValueASCII(switches::kUseFirstPartySet));
   }
 
@@ -788,7 +788,7 @@ void NetworkService::BindTestInterface(
 }
 
 void NetworkService::SetPreloadedFirstPartySets(const std::string& raw_sets) {
-  preloaded_first_party_sets_->ParseAndSet(raw_sets);
+  first_party_sets_->ParseAndSet(raw_sets);
 }
 
 std::unique_ptr<net::HttpAuthHandlerFactory>
