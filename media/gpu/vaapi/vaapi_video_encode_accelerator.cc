@@ -28,7 +28,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/format_utils.h"
 #include "media/base/unaligned_shared_memory.h"
@@ -67,12 +66,10 @@ constexpr unsigned int kTargetBitratePercentage = 90;
 // requirements.
 gfx::Size GetInputFrameSize(VideoPixelFormat format,
                             const gfx::Size& visible_size) {
-  std::unique_ptr<::gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory =
-      ::gpu::GpuMemoryBufferFactory::CreateNativeType(nullptr);
   // Get a VideoFrameLayout of a graphic buffer with the same gfx::BufferUsage
   // as camera stack.
   base::Optional<VideoFrameLayout> layout = GetPlatformVideoFrameLayout(
-      gpu_memory_buffer_factory.get(), format, visible_size,
+      /*gpu_memory_buffer_factory=*/nullptr, format, visible_size,
       gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE);
   if (!layout || layout->planes().empty()) {
     VLOGF(1) << "Failed to allocate VideoFrameLayout";
@@ -234,7 +231,7 @@ VaapiVideoEncodeAccelerator::VaapiVideoEncodeAccelerator()
       // TODO(akahuang): Change to use SequencedTaskRunner to see if the
       // performance is affected.
       encoder_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+          {base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, base::MayBlock()},
           base::SingleThreadTaskRunnerThreadMode::DEDICATED)) {
   VLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
