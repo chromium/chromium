@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/services/printing/public/mojom/printing_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -25,12 +26,12 @@ class PrintingService : public mojom::PrintingService {
       mojo::PendingReceiver<mojom::PdfNupConverter> receiver) override;
   void BindPdfToPwgRasterConverter(
       mojo::PendingReceiver<mojom::PdfToPwgRasterConverter> receiver) override;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void BindPdfFlattener(
       mojo::PendingReceiver<mojom::PdfFlattener> receiver) override;
   void BindPdfThumbnailer(
       mojo::PendingReceiver<mojom::PdfThumbnailer> receiver) override;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(OS_WIN)
   void BindPdfToEmfConverterFactory(
       mojo::PendingReceiver<mojom::PdfToEmfConverterFactory> receiver) override;

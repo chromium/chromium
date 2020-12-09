@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 
@@ -13,6 +14,7 @@ source_set("file_util") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//chrome/common/safe_browsing",
     "//chrome/common/safe_browsing:archive_analyzer_results",
     "//chrome/common/safe_browsing:rar_analyzer",
@@ -26,7 +28,7 @@ source_set("file_util") {
     "//mojo/public/mojom/base",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "zip_file_creator.cc",
       "zip_file_creator.h",

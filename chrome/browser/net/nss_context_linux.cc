@@ -20,7 +20,7 @@ net::NSSCertDatabase* GetNSSCertDatabaseForResourceContext(
   // is only run on a single thread.
   CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(crbug.com/1147032): remove the CHECK after the certificates settings
   // page is updated.
   CHECK(false) << "Currently disabled for Lacros-Chrome.";

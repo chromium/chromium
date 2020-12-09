@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
@@ -22,7 +23,7 @@ mojom("mojom") {
     "//url/mojom:url_mojom_gurl",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "pdf_flattener.mojom",
       "pdf_thumbnailer.mojom",

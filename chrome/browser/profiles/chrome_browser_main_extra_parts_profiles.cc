@@ -190,7 +190,7 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #endif
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/cert_db_initializer_factory.h"
 #endif
 
@@ -439,7 +439,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   WebDataServiceFactory::GetInstance();
   webrtc_event_logging::WebRtcEventLogManagerKeyedServiceFactory::GetInstance();
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   CertDbInitializerFactory::GetInstance();
 #endif
 }

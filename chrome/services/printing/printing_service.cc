@@ -5,11 +5,12 @@
 #include "chrome/services/printing/printing_service.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/services/printing/pdf_nup_converter.h"
 #include "chrome/services/printing/pdf_to_pwg_raster_converter.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/services/printing/pdf_flattener.h"
 #include "chrome/services/printing/pdf_thumbnailer.h"
 #endif
@@ -40,7 +41,7 @@ void PrintingService::BindPdfToPwgRasterConverter(
       std::move(receiver));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PrintingService::BindPdfFlattener(
     mojo::PendingReceiver<mojom::PdfFlattener> receiver) {
   mojo::MakeSelfOwnedReceiver(std::make_unique<printing::PdfFlattener>(),
@@ -52,7 +53,7 @@ void PrintingService::BindPdfThumbnailer(
   mojo::MakeSelfOwnedReceiver(std::make_unique<printing::PdfThumbnailer>(),
                               std::move(receiver));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN)
 void PrintingService::BindPdfToEmfConverterFactory(

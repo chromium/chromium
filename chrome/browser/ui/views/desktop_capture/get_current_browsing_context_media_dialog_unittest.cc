@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -236,7 +237,7 @@ TEST_F(GetCurrentBrowsingContextMediaDialogTest,
   EXPECT_EQ(kResultId, WaitForDialogDone());
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(GetCurrentBrowsingContextMediaDialogTest, PressingDefaultButtonCancels) {
   CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/true,
               /*is_closed_called=*/true);

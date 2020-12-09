@@ -14,7 +14,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/webshare/chromeos/sharesheet_client.h"
 #endif
@@ -30,7 +30,7 @@ class ShareServiceBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     webshare::SharesheetClient::SetSharesheetCallbackForTesting(
         base::BindRepeating(&ShareServiceBrowserTest::AcceptShareRequest));
 #endif
@@ -42,7 +42,7 @@ class ShareServiceBrowserTest : public InProcessBrowserTest {
 #endif
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   static void AcceptShareRequest(content::WebContents* web_contents,
                                  const std::vector<base::FilePath>& file_paths,
                                  const std::vector<std::string>& content_types,

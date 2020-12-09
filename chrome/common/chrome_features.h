@@ -240,8 +240,8 @@ extern const base::Feature kEnableAmbientAuthenticationInIncognito;
     defined(OS_MAC)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kEnableEphemeralGuestProfilesOnDesktop;
-#endif  // defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
-        // defined(OS_MAC)
+#endif  // defined(OS_WIN) || (defined(OS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS_LACROS)) ||  defined(OS_MAC)
 
 #if defined(OS_WIN)
 COMPONENT_EXPORT(CHROME_FEATURES)

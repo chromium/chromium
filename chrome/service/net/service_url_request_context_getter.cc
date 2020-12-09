@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/service/service_process.h"
 #include "components/version_info/version_info.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
@@ -22,7 +23,7 @@
 #include <sys/utsname.h>
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #error "Not supported on ChromeOS"
 #endif
 

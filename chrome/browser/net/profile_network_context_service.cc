@@ -577,13 +577,13 @@ ProfileNetworkContextService::CreateClientCertStore() {
                           kCryptoModulePasswordClientAuth));
 #elif defined(USE_NSS_CERTS)
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!profile_->IsMainProfile()) {
     // TODO(crbug.com/1148298): return some cert store for secondary profiles in
     // Lacros-Chrome.
     return nullptr;
   }
-#endif  // BUILDFLAG(IS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   return std::make_unique<net::ClientCertStoreNSS>(
       base::BindRepeating(&CreateCryptoModuleBlockingPasswordDelegate,

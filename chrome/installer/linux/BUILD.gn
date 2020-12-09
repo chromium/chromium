@@ -4,6 +4,7 @@
 
 import("//build/config/c++/c++.gni")
 import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/sysroot.gni")
@@ -113,7 +114,8 @@ action_foreach("calculate_deb_dependencies") {
     target_cpu,
     "deb_{{source_name_part}}.deps",
   ]
-  if (is_linux && target_cpu == "x64" && enable_distro_version_check) {
+  if ((is_linux || is_chromeos_lacros) && target_cpu == "x64" &&
+      enable_distro_version_check) {
     args += [ "--distro-check" ]
   }
 }
@@ -147,7 +149,8 @@ action_foreach("calculate_rpm_dependencies") {
     "rpm_{{source_name_part}}.deps",
   ]
   args += rebase_path(packaging_files_shlibs, root_build_dir)
-  if (is_linux && target_cpu == "x64" && enable_distro_version_check) {
+  if ((is_linux || is_chromeos_lacros) && target_cpu == "x64" &&
+      enable_distro_version_check) {
     args += [ "--distro-check" ]
   }
 }
@@ -292,7 +295,7 @@ copy("theme_files") {
   outputs = [ "$root_out_dir/installer/theme/{{source_file_part}}" ]
 }
 
-if (!is_chromeos) {
+if (!is_chromeos_ash) {
   copy("rpm_packaging_files") {
     visibility = [ ":*" ]
     sources = [
@@ -355,7 +358,7 @@ group("installer_deps") {
   if (enable_swiftshader) {
     public_deps += [ ":swiftshader_libs" ]
   }
-  if (!is_chromeos) {
+  if (!is_chromeos_ash) {
     public_deps += [ ":rpm_packaging_files" ]
   }
 }
@@ -422,7 +425,7 @@ template("linux_package") {
     ]
   }
 
-  if (!is_chromeos) {
+  if (!is_chromeos_ash) {
     rpm_target_name = "${target_name}_rpm"
     action(rpm_target_name) {
       visibility = [ ":*" ]
@@ -511,7 +514,7 @@ template("linux_package") {
 
   group(target_name) {
     deps = [ ":$deb_target_name" ]
-    if (!is_chromeos) {
+    if (!is_chromeos_ash) {
       deps += [ ":$rpm_target_name" ]
       if (enable_snap_package) {
         deps += [ ":$snap_target_name" ]

@@ -527,7 +527,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, AppSortingFixCollisions) {
 }
 
 // Flaky on Linux TSan (crbug.com/1108172).
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && defined(THREAD_SANITIZER)
+#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+    defined(THREAD_SANITIZER)
 #define MAYBE_UninstallSynced DISABLED_UninstallSynced
 #else
 #define MAYBE_UninstallSynced UninstallSynced

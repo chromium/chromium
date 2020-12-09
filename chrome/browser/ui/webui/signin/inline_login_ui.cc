@@ -182,7 +182,7 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
     {"title", IDS_CHROME_SIGNIN_TITLE},
     {"accessibleCloseButtonLabel", IDS_SIGNIN_ACCESSIBLE_CLOSE_BUTTON},
     {"accessibleBackButtonLabel", IDS_SIGNIN_ACCESSIBLE_BACK_BUTTON},
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"ok", IDS_APP_OK},
     {"accountManagerDialogWelcomeTitle",
      IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_TITLE},
@@ -202,7 +202,7 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
   };
   AddLocalizedStringsBulk(source, kLocalizedStrings);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   source->AddBoolean("isAccountManagementFlowsV2Enabled",
                      chromeos::features::IsAccountManagementFlowsV2Enabled());
 

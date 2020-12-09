@@ -5,6 +5,8 @@
 #ifndef CHROME_APP_CHROME_COMMAND_IDS_H_
 #define CHROME_APP_CHROME_COMMAND_IDS_H_
 
+#include "build/chromeos_buildflags.h"
+
 // This file lists all the command IDs understood by e.g. the browser.
 // It is used by Windows RC files, Mac NIB files, and other platforms too.
 
@@ -61,7 +63,8 @@
 #define IDC_ALL_WINDOWS_FRONT           34048
 #define IDC_NAME_WINDOW                 34049
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define IDC_USE_SYSTEM_TITLE_BAR        34051
 #define IDC_RESTORE_WINDOW              34052
 #endif
@@ -75,7 +78,7 @@
 #define IDC_SITE_SETTINGS               34062
 #define IDC_WEB_APP_MENU_APP_INFO    34063
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Terminal system app commands
 #define IDC_TERMINAL_SPLIT_HORIZONTAL   34070
 #define IDC_TERMINAL_SPLIT_VERTICAL     34071
@@ -410,7 +413,7 @@
 #define IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS 52411
 #define IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE_ONCE 52412
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Quick Answers context menu items.
 #define IDC_CONTENT_CONTEXT_QUICK_ANSWERS_INLINE_ANSWER 52413
 #define IDC_CONTENT_CONTEXT_QUICK_ANSWERS_INLINE_QUERY 52414

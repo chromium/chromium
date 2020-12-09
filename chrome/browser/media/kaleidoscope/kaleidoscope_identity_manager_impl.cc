@@ -5,6 +5,7 @@
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_identity_manager_impl.h"
 
 #include "base/callback.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -146,7 +147,7 @@ void KaleidoscopeIdentityManagerImpl::SignIn() {
       signin::ConsentLevel::kNotRequired);
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
       signin_metrics::AccessPoint::ACCESS_POINT_KALEIDOSCOPE);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void KaleidoscopeIdentityManagerImpl::AddObserver(

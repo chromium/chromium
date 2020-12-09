@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
@@ -25,7 +26,7 @@ if (use_cups) {
 
   # Fuzzer target only available on fuzzing builds.
   # TODO(crbug.com/831914): Enable this fuzzer once its running on CrOS only.
-  if (false) {  # use_fuzzing_engine && is_chromeos
+  if (false) {  # use_fuzzing_engine && is_chromeos_ash
     fuzzer_test("ipp_message_parser_fuzzer") {
       sources = [ "ipp_message_parser_fuzzer.cc" ]
       deps = [ ":cpp" ]

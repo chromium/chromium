@@ -36,7 +36,7 @@
 #include "chrome/common/chrome_descriptors.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/common/channel_info.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/version_info/version_info.h"
@@ -68,7 +68,7 @@ void ChromeCrashReporterClient::Create() {
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 bool ChromeCrashReporterClient::ShouldPassCrashLoopBefore(
     const std::string& process_type) {
@@ -104,9 +104,9 @@ void ChromeCrashReporterClient::GetProductNameAndVersion(
   DCHECK(version);
 #if defined(OS_ANDROID)
   *product_name = "Chrome_Android";
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   *product_name = "Chrome_ChromeOS";
-#elif BUILDFLAG(IS_LACROS)
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
   *product_name = "Chrome_Lacros";
 #else  // defined(OS_LINUX
 #if !defined(ADDRESS_SANITIZER)
@@ -160,7 +160,7 @@ bool ChromeCrashReporterClient::GetCollectStatsConsent() {
   bool is_official_chrome_build = false;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool is_guest_session = base::CommandLine::ForCurrentProcess()->HasSwitch(
       chromeos::switches::kGuestSession);
   bool is_stable_channel =
@@ -172,7 +172,7 @@ bool ChromeCrashReporterClient::GetCollectStatsConsent() {
             << " so returning false";
     return false;
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_ANDROID)
   // TODO(jcivelli): we should not initialize the crash-reporter when it was not

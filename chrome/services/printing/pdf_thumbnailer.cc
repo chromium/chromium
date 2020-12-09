@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
+#include "build/chromeos_buildflags.h"
 #include "pdf/pdf.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -29,7 +30,7 @@ PdfThumbnailer::PdfThumbnailer() = default;
 
 PdfThumbnailer::~PdfThumbnailer() = default;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PdfThumbnailer::GetThumbnail(printing::mojom::ThumbParamsPtr params,
                                   base::ReadOnlySharedMemoryRegion pdf_region,
                                   GetThumbnailCallback callback) {
@@ -82,6 +83,6 @@ void PdfThumbnailer::GetThumbnail(printing::mojom::ThumbParamsPtr params,
   DCHECK_EQ(height_px, result.height());
   std::move(callback).Run(result);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace printing

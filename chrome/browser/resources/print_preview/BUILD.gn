@@ -249,7 +249,7 @@ js_library("print_preview") {
     "ui:settings_select",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "data:print_server_store" ]
   }
 }

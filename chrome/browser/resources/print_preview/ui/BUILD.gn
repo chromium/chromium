@@ -542,7 +542,7 @@ js_library("print_preview_search_box") {
   ]
 }
 
-if (is_chromeos) {
+if (is_chromeos_ash) {
   js_library("provisional_destination_resolver") {
     deps = [
       "../data:destination",

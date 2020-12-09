@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/locales.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
@@ -57,7 +58,7 @@ template("chrome_repack_percent") {
       sources += [ "$root_gen_dir/ui/views/resources/views_resources_${percent}_percent.pak" ]
       deps += [ "//ui/views/resources" ]
     }
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [
         "$root_gen_dir/ash/app_list/resources/app_list_resources_${percent}_percent.pak",
         "$root_gen_dir/ash/login/resources/login_resources_${percent}_percent.pak",
@@ -169,7 +170,7 @@ template("chrome_extra_paks") {
         deps += [ "//chrome/browser/resources:preinstalled_web_apps_resources" ]
       }
     }
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [
         "$root_gen_dir/ash/public/cpp/resources/ash_public_unscaled_resources.pak",
         "$root_gen_dir/chrome/bluetooth_pairing_dialog_resources.pak",
@@ -238,7 +239,7 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources/webui_js_error:webui_js_error_resources",
       ]
     }
-    if (!is_android && !is_chromeos) {
+    if (!is_android && !is_chromeos_ash) {
       sources += [
         "$root_gen_dir/chrome/profile_picker_resources.pak",
         "$root_gen_dir/chrome/welcome_resources.pak",

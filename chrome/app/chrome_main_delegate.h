@@ -85,7 +85,7 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   // the reporting pipeline.
   std::unique_ptr<HeapProfilerController> heap_profiler_controller_;
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<chromeos::LacrosChromeServiceImpl> lacros_chrome_service_;
 #endif
 

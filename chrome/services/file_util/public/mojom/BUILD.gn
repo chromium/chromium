@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
@@ -16,7 +17,7 @@ mojom("mojom") {
 
   public_deps = [ "//mojo/public/mojom/base" ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [ "zip_file_creator.mojom" ]
     public_deps += [ "//components/services/filesystem/public/mojom" ]
   }

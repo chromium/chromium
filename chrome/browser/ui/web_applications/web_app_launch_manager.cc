@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -61,7 +62,7 @@
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #endif
 
@@ -106,7 +107,7 @@ NavigateParams NavigateParamsForShareTarget(
   NavigateParams nav_params(browser, share_target.action,
                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::vector<std::string> names;
   std::vector<std::string> values;
   std::vector<std::string> filenames;

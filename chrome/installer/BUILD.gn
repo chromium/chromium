@@ -8,9 +8,8 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/sysroot.gni")
 
 declare_args() {
-  enable_linux_installer =
-      is_linux && !is_chromeos && !is_component_build && use_sysroot &&
-      !using_sanitizer && !chromeos_is_browser_only
+  enable_linux_installer = is_linux && !is_component_build && use_sysroot &&
+                           !using_sanitizer && !is_chromeos_lacros
 }
 
 # Meta-target that forwards to the installer of the correct type (if any).

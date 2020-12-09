@@ -704,10 +704,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<chromeos::cellular_setup::CellularSetupDialogUI>;
 // TODO(crbug.com/1147032): The certificates settings page is temporarily
 // disabled for Lacros-Chrome until a better solution is found.
-#if !BUILDFLAG(IS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   if (url.host_piece() == chrome::kChromeUICertificateManagerHost)
     return &NewWebUI<chromeos::CertificateManagerDialogUI>;
-#endif  // !BUILDFLAG(IS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
   if (base::FeatureList::IsEnabled(
           chromeos::features::kConnectivityDiagnosticsWebUi) &&
       url.host_piece() == chromeos::kChromeUIConnectivityDiagnosticsHost) {

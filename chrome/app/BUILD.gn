@@ -19,6 +19,7 @@ if (is_android) {
 # This target is for dependency tracking for the command ID header.
 source_set("command_ids") {
   sources = [ "chrome_command_ids.h" ]
+  deps = [ "//build:chromeos_buildflags" ]
 }
 
 # TODO: put back in chrome/browser if necessary. http://crbug.com/771801.
@@ -166,7 +167,7 @@ static_library("test_support") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       "//chrome/browser/chromeos",
       "//chromeos",
@@ -174,7 +175,7 @@ static_library("test_support") {
     ]
   }
 
-  if (chromeos_is_browser_only) {
+  if (is_chromeos_lacros) {
     deps += [ "//chromeos/lacros" ]
   }
 

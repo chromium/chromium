@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -31,7 +32,9 @@ void RegisterRunOnOsLoginAndPostCallback(RegisterRunOnOsLoginCallback callback,
 
 namespace internals {
 
-#if !(defined(OS_WIN) || defined(OS_LINUX))
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if !(defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)))
 // TODO(crbug.com/897302): This boilerplate function is used for platforms
 // that don't support Run On OS Login. Currently the feature is supported on
 // Windows and Linux.

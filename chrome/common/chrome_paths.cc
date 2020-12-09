@@ -363,7 +363,7 @@ bool PathProvider(int key, base::FilePath* result) {
         return false;
       cur = cur.Append(kComponentUpdatedWidevineCdmHint);
       break;
-#endif  // (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+#endif  // (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) &&
         // BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
 
     case chrome::FILE_RESOURCES_PACK:  // Falls through.

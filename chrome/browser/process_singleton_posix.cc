@@ -85,6 +85,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/process_singleton_lock_posix.h"
 #include "chrome/grit/chromium_strings.h"

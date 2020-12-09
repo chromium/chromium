@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/safe_browsing/buildflags.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -15,7 +16,7 @@
 #include "chrome/services/file_util/safe_archive_analyzer.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/services/file_util/zip_file_creator.h"
 #endif
 
@@ -25,7 +26,7 @@ FileUtilService::FileUtilService(
 
 FileUtilService::~FileUtilService() = default;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void FileUtilService::BindZipFileCreator(
     mojo::PendingReceiver<chrome::mojom::ZipFileCreator> receiver) {
   mojo::MakeSelfOwnedReceiver(std::make_unique<chrome::ZipFileCreator>(),

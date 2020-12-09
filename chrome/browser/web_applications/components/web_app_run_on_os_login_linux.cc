@@ -8,6 +8,7 @@
 
 #include "base/files/file_util.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut_linux.h"
 
@@ -16,7 +17,7 @@ namespace web_app {
 namespace internals {
 
 bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   base::FilePath shortcut_data_dir = GetShortcutDataDir(shortcut_info);
 
   ShortcutLocations locations;
@@ -33,7 +34,7 @@ bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info) {
 bool UnregisterRunOnOsLogin(const std::string& app_id,
                             const base::FilePath& profile_path,
                             const base::string16& shortcut_title) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 

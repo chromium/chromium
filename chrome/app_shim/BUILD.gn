@@ -20,6 +20,7 @@ source_set("app_shim") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//chrome:strings",
     "//chrome/app:command_ids",
     "//chrome/browser/ui",

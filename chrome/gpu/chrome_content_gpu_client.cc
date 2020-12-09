@@ -12,13 +12,14 @@
 #include "base/time/time.h"
 #include "base/token.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/gpu/browser_exposed_gpu_interfaces.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/service_names.mojom.h"
 #include "media/media_buildflags.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/cdm_factory_daemon.mojom.h"
 #include "components/arc/video_accelerator/protected_buffer_manager.h"
@@ -28,7 +29,7 @@
 
 ChromeContentGpuClient::ChromeContentGpuClient()
     : main_thread_profiler_(ThreadProfiler::CreateAndStartOnMainThread()) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   protected_buffer_manager_ = new arc::ProtectedBufferManager();
 #endif
 }
@@ -36,7 +37,7 @@ ChromeContentGpuClient::ChromeContentGpuClient()
 ChromeContentGpuClient::~ChromeContentGpuClient() {}
 
 void ChromeContentGpuClient::GpuServiceInitialized() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ui::OzonePlatform::GetInstance()
       ->GetSurfaceFactoryOzone()
       ->SetGetProtectedNativePixmapDelegate(base::BindRepeating(
@@ -88,9 +89,9 @@ void ChromeContentGpuClient::PostCompositorThreadCreated(
                      metrics::CallStackProfileParams::COMPOSITOR_THREAD));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 scoped_refptr<arc::ProtectedBufferManager>
 ChromeContentGpuClient::GetProtectedBufferManager() {
   return protected_buffer_manager_;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

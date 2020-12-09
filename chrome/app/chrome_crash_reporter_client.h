@@ -5,6 +5,8 @@
 #ifndef CHROME_APP_CHROME_CRASH_REPORTER_CLIENT_H_
 #define CHROME_APP_CHROME_CRASH_REPORTER_CLIENT_H_
 
+#include "build/chromeos_buildflags.h"
+
 #if !defined(OS_WIN)
 
 #include <memory>
@@ -19,7 +21,7 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
  public:
   static void Create();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // If true, processes of this type should pass crash-loop-before down to the
   // crash reporter and to their children (if the children's type is a process
   // type that wants crash-loop-before).

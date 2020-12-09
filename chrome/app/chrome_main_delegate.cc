@@ -27,6 +27,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/chrome_resource_bundle_helper.h"
 #include "chrome/browser/defaults.h"
@@ -114,7 +115,7 @@
 #include "components/nacl/zygote/nacl_fork_delegate_linux.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/system/sys_info.h"
 #include "chrome/browser/chromeos/boot_times_recorder.h"
 #include "chrome/browser/chromeos/dbus/dbus_helper.h"
@@ -175,7 +176,7 @@
 #include "components/gwp_asan/client/gwp_asan.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/lacros_chrome_service_delegate_impl.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #endif
@@ -189,7 +190,7 @@ base::LazyInstance<ChromeContentUtilityClient>::DestructorAtExit
 
 extern int NaClMain(const content::MainFunctionParams&);
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 extern int CloudPrintServiceProcessMain(const content::MainFunctionParams&);
 #endif
 
@@ -338,7 +339,9 @@ bool HandleVersionSwitches(const base::CommandLine& command_line) {
   return false;
 }
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Show the man page if --help or -h is on the command line.
 void HandleHelpSwitches(const base::CommandLine& command_line) {
   if (command_line.HasSwitch(switches::kHelp) ||
@@ -348,7 +351,7 @@ void HandleHelpSwitches(const base::CommandLine& command_line) {
     PLOG(FATAL) << "execlp failed";
   }
 }
-#endif  // defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !defined(OS_MAC) && !defined(OS_ANDROID)
 void SIGTERMProfilingShutdown(int signal) {
@@ -524,7 +527,7 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   // a ChromeNetworkDelegate attached that selectively allows cookies again.
   net::URLRequest::SetDefaultCookiePolicyToBlock();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // The feature list depends on BrowserPolicyConnectorChromeOS which depends
   // on DBus, so initialize it here. Some D-Bus clients may depend on feature
   // list, so initialize them separately later at the end of this function.
@@ -543,12 +546,12 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   chrome_feature_list_creator->SetApplicationLocale(actual_locale);
   chrome_feature_list_creator->OverrideCachedUIStrings();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Initialize D-Bus clients that depend on feature list.
   chromeos::InitializeFeatureListDependentDBus();
 #endif
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   // LacrosChromeServiceImpl instance is needs the sequence of the main thread,
   // and needs to be created earlier than incoming Mojo invitation handling.
   lacros_chrome_service_ = std::make_unique<chromeos::LacrosChromeServiceImpl>(
@@ -603,7 +606,7 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
   }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Threading features.
   base::PlatformThread::InitThreadPostFieldTrial();
 #endif
@@ -634,7 +637,7 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
     heap_profiler_controller_ = std::make_unique<HeapProfilerController>();
     heap_profiler_controller_->Start();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::ConfigureSwap();
     chromeos::InitializeKstaled();
 
@@ -654,7 +657,7 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
 }
 
 bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::BootTimesRecorder::Get()->SaveChromeMainStats();
 #endif
 
@@ -721,7 +724,9 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
     *exit_code = 0;
     return true;  // Got a --version switch; exit with a success error code.
   }
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // This will directly exit if the user asked for help.
   HandleHelpSwitches(command_line);
 #endif
@@ -746,7 +751,7 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
 #endif  // defined(OS_WIN)
 
   chrome::RegisterPathProvider();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::RegisterPathProvider();
 #endif
 #if BUILDFLAG(ENABLE_NACL) && (defined(OS_LINUX) || defined(OS_CHROMEOS))
@@ -787,7 +792,7 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
   }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Initialize primary user homedir (in multi-profile session) as it may be
   // passed as a command line switch.
   base::FilePath homedir;
@@ -955,7 +960,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
   // Register component_updater PathProvider after DIR_USER_DATA overidden by
   // command line flags. Maybe move the chrome PathProvider down here also?
   int alt_preinstalled_components_dir =
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       chromeos::DIR_PREINSTALLED_COMPONENTS;
 #else
       chrome::DIR_INTERNAL_PLUGINS;
@@ -1000,7 +1005,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
     // the --lang flag to pass the value of the PrefService in here. Maybe
     // this value could be passed in a different way.
     std::string locale = command_line.GetSwitchValueASCII(switches::kLang);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (process_type == switches::kZygoteProcess) {
       DCHECK(locale.empty());
       // See comment at ReadAppLocale() for why we do this.
@@ -1132,7 +1137,7 @@ int ChromeMainDelegate::RunProcess(
   NOTREACHED();  // Android provides a subclass and shares no code here.
 #else
   static const MainFunction kMainFunctions[] = {
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !BUILDFLAG(IS_CHROMEOS_ASH)
     {switches::kCloudPrintServiceProcess, CloudPrintServiceProcessMain},
 #endif
 
@@ -1173,8 +1178,8 @@ void ChromeMainDelegate::ProcessExiting(const std::string& process_type) {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 void ChromeMainDelegate::ZygoteStarting(
     std::vector<std::unique_ptr<content::ZygoteForkDelegate>>* delegates) {
-#if defined(OS_CHROMEOS)
-    chromeos::InitHugepagesAndMlockSelf();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  chromeos::InitHugepagesAndMlockSelf();
 #endif
 
 #if BUILDFLAG(ENABLE_NACL)

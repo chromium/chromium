@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -63,7 +64,7 @@ template("chrome_repack_locales") {
           [ "${root_gen_dir}/components/omnibox/resources/omnibox_resources_" ]
       deps += [ "//components/omnibox/resources:omnibox_resources" ]
     }
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       source_patterns += [
         "${root_gen_dir}/ash/shortcut_viewer/strings/shortcut_viewer_strings_",
         "${root_gen_dir}/ash/strings/ash_strings_",
