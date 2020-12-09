@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 8: Unsafe JavaScript attempt to initiate navigation for frame with URL 'http://127.0.0.1:8000/security/frameNavigation/xss-DENIED-top-navigation-without-user-gesture.html' from frame with URL 'http://localhost:8000/security/frameNavigation/resources/iframe-that-performs-top-navigation-without-user-gesture.html'. The frame attempting navigation is targeting its top-level window, but is neither same-origin with its target nor has it received a user gesture. See https://www.chromestatus.com/features/5851021045661696.
+CONSOLE ERROR: line 8: Unsafe attempt to initiate navigation for frame with URL 'http://127.0.0.1:8000/security/frameNavigation/xss-DENIED-top-navigation-without-user-gesture.html' from frame with URL 'http://localhost:8000/security/frameNavigation/resources/iframe-that-performs-top-navigation-without-user-gesture.html'. The frame attempting navigation is targeting its top-level window, but is neither same-origin with its target nor has it received a user gesture. See https://www.chromestatus.com/features/5851021045661696.
 
 
 

@@ -720,10 +720,9 @@ void LocalFrame::PrintNavigationErrorMessage(const Frame& target_frame,
                     ->GetSecurityOrigin()
                     ->ToString() +
                 "'";
-  String message =
-      "Unsafe JavaScript attempt to initiate navigation for frame " +
-      target_frame_description + " from frame with URL '" +
-      GetDocument()->Url().GetString() + "'. " + reason + "\n";
+  String message = "Unsafe attempt to initiate navigation for frame " +
+                   target_frame_description + " from frame with URL '" +
+                   GetDocument()->Url().GetString() + "'. " + reason + "\n";
 
   DomWindow()->PrintErrorMessage(message);
 }

@@ -9859,7 +9859,7 @@ TEST_F(WebFrameTest, CrossDomainAccessErrorsUseCallingWindow) {
   ASSERT_EQ(1u, popup_web_frame_client.messages.size());
   EXPECT_TRUE(std::string::npos !=
               popup_web_frame_client.messages[0].text.Utf8().find(
-                  "Unsafe JavaScript attempt to initiate navigation"));
+                  "Unsafe attempt to initiate navigation"));
 
   // Try setting a cross-origin iframe element's source to a javascript: URL,
   // and check that this error is also printed on the calling window.

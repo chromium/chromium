@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 6: Unsafe JavaScript attempt to initiate navigation for frame with URL 'sandboxed-iframe-navigation-source.html'. The frame attempting navigation is sandboxed, and is therefore disallowed from navigating its ancestors.
+CONSOLE ERROR: line 6: Unsafe attempt to initiate navigation for frame with URL 'sandboxed-iframe-navigation-source.html'. The frame attempting navigation is sandboxed, and is therefore disallowed from navigating its ancestors.
 
 CONSOLE ERROR: line 6: Uncaught SecurityError: Failed to execute 'replace' on 'Location': The current window does not have permission to navigate the target frame to 'sandboxed-iframe-navigated.html'.
 This test verifies that a sandboxed IFrame cannot navigate an ancestor in the frame tree by assigning the location attribute.
