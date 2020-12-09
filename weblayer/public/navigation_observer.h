@@ -7,6 +7,11 @@
 
 class GURL;
 
+namespace base {
+class TimeDelta;
+class TimeTicks;
+}  // namespace base
+
 namespace weblayer {
 class Navigation;
 
@@ -97,6 +102,15 @@ class NavigationObserver {
   // This is fired after each navigation has completed to indicate that the
   // first paint after a non-empty layout has finished.
   virtual void OnFirstContentfulPaint() {}
+
+  // Similar to OnFirstContentfulPaint but contains timing information from the
+  // renderer process to better align with the Navigation Timing API.
+  // |navigation_start| is the navigation start time.
+  // |first_contentful_paint| is the duration to first contentful paint from
+  // navigation start.
+  virtual void OnFirstContentfulPaint(
+      const base::TimeTicks& navigation_start,
+      const base::TimeDelta& first_contentful_paint) {}
 
   // Called after each navigation to indicate that the old page is no longer
   // being rendered. Note this is not ordered with respect to

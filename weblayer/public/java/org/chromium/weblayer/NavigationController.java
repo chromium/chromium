@@ -379,6 +379,15 @@ public class NavigationController {
         }
 
         @Override
+        public void onFirstContentfulPaint2(
+                long navigationStartMs, long firstContentfulPaintDurationMs) {
+            StrictModeWorkaround.apply();
+            for (NavigationCallback callback : mCallbacks) {
+                callback.onFirstContentfulPaint(navigationStartMs, firstContentfulPaintDurationMs);
+            }
+        }
+
+        @Override
         public void onOldPageNoLongerRendered(String uri) {
             StrictModeWorkaround.apply();
             for (NavigationCallback callback : mCallbacks) {
