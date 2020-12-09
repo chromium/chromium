@@ -556,9 +556,10 @@ void UserMediaRequest::OnMediaStreamInitialized(MediaStream* stream) {
   for (const auto& video_track : video_tracks)
     video_track->SetConstraints(video_);
 
-  callbacks_->OnSuccess(nullptr, stream);
   RecordIdentifiabilityMetric(surface_, GetExecutionContext(),
                               IdentifiabilityBenignStringToken(g_empty_string));
+  // After this call, the execution context may be invalid.
+  callbacks_->OnSuccess(nullptr, stream);
   is_resolved_ = true;
 }
 
@@ -568,11 +569,12 @@ void UserMediaRequest::FailConstraint(const String& constraint_name,
   DCHECK(!is_resolved_);
   if (!GetExecutionContext())
     return;
+  RecordIdentifiabilityMetric(surface_, GetExecutionContext(),
+                              IdentifiabilityBenignStringToken(message));
+  // After this call, the execution context may be invalid.
   callbacks_->OnError(
       nullptr, DOMExceptionOrOverconstrainedError::FromOverconstrainedError(
                    OverconstrainedError::Create(constraint_name, message)));
-  RecordIdentifiabilityMetric(surface_, GetExecutionContext(),
-                              IdentifiabilityBenignStringToken(message));
   is_resolved_ = true;
 }
 
@@ -611,12 +613,13 @@ void UserMediaRequest::Fail(Error name, const String& message) {
     default:
       NOTREACHED();
   }
+  RecordIdentifiabilityMetric(surface_, GetExecutionContext(),
+                              IdentifiabilityBenignStringToken(message));
+  // After this call, the execution context may be invalid.
   callbacks_->OnError(
       nullptr,
       DOMExceptionOrOverconstrainedError::FromDOMException(
           MakeGarbageCollected<DOMException>(exception_code, message)));
-  RecordIdentifiabilityMetric(surface_, GetExecutionContext(),
-                              IdentifiabilityBenignStringToken(message));
   is_resolved_ = true;
 }
 
