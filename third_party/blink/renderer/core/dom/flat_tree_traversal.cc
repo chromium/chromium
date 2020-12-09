@@ -296,7 +296,7 @@ bool FlatTreeTraversal::ContainsIncludingPseudoElement(
   return false;
 }
 
-Node* FlatTreeTraversal::PreviousSkippingChildren(const Node& node) {
+Node* FlatTreeTraversal::PreviousAbsoluteSibling(const Node& node) {
   if (Node* previous_sibling = TraversePreviousSibling(node))
     return previous_sibling;
   return TraversePreviousAncestorSibling(node);

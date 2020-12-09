@@ -832,12 +832,11 @@ bool AXLayoutObject::CanIgnoreTextAsEmpty() const {
   if (!layout_text->IsAllCollapsibleWhitespace())
     return false;
 
-  // Will now look at sibling nodes.
-  // Using "skipping children" methods as we need the closest element to the
+  // Will now look at sibling nodes. We need the closest element to the
   // whitespace markup-wise, e.g. tag1 in these examples:
   // [whitespace] <tag1><tag2>x</tag2></tag1>
   // <span>[whitespace]</span> <tag1><tag2>x</tag2></tag1>
-  Node* prev_node = FlatTreeTraversal::PreviousSkippingChildren(*node);
+  Node* prev_node = FlatTreeTraversal::PreviousAbsoluteSibling(*node);
   if (!prev_node)
     return true;
 

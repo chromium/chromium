@@ -124,8 +124,8 @@ Node* NodeTraversal::Previous(const Node& current, const Node* stay_within) {
   return current.parentNode();
 }
 
-Node* NodeTraversal::PreviousSkippingChildren(const Node& current,
-                                              const Node* stay_within) {
+Node* NodeTraversal::PreviousAbsoluteSibling(const Node& current,
+                                             const Node* stay_within) {
   if (current == stay_within)
     return nullptr;
   if (current.previousSibling())

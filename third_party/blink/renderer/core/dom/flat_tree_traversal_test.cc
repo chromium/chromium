@@ -261,9 +261,9 @@ TEST_F(FlatTreeTraversalTest, commonAncestor) {
 }
 
 // Test case for
-//  - nextSkippingChildren
-//  - previousSkippingChildren
-TEST_F(FlatTreeTraversalTest, nextSkippingChildren) {
+//  - NextSkippingChildren
+//  - PreviousAbsoluteSibling
+TEST_F(FlatTreeTraversalTest, SkippingChildrenFunctions) {
   const char* main_html =
       "<div id='m0'>m0</div>"
       "<div id='m1'>"
@@ -297,27 +297,26 @@ TEST_F(FlatTreeTraversalTest, nextSkippingChildren) {
 
   // Main tree node to main tree node
   EXPECT_EQ(*m1, FlatTreeTraversal::NextSkippingChildren(*m0));
-  EXPECT_EQ(*m0, FlatTreeTraversal::PreviousSkippingChildren(*m1));
+  EXPECT_EQ(*m0, FlatTreeTraversal::PreviousAbsoluteSibling(*m1));
 
   // Distribute node to main tree node
   EXPECT_EQ(*m2, FlatTreeTraversal::NextSkippingChildren(*m10));
-  EXPECT_EQ(*m1, FlatTreeTraversal::PreviousSkippingChildren(*m2));
+  EXPECT_EQ(*m1, FlatTreeTraversal::PreviousAbsoluteSibling(*m2));
 
   // Distribute node to node in shadow tree
   EXPECT_EQ(*s11, FlatTreeTraversal::NextSkippingChildren(*m11));
-  EXPECT_EQ(m11_slot_parent, FlatTreeTraversal::PreviousSkippingChildren(*s11));
+  EXPECT_EQ(*m11_slot_parent, FlatTreeTraversal::PreviousAbsoluteSibling(*s11));
 
   // Node in shadow tree to distributed node
   EXPECT_EQ(*s11, FlatTreeTraversal::NextSkippingChildren(*m11));
-  EXPECT_EQ(*m11_slot_parent,
-            FlatTreeTraversal::PreviousSkippingChildren(*s11));
+  EXPECT_EQ(*m11_slot_parent, FlatTreeTraversal::PreviousAbsoluteSibling(*s11));
 
   EXPECT_EQ(*m10_slot_parent, FlatTreeTraversal::NextSkippingChildren(*s120));
-  EXPECT_EQ(*s120, FlatTreeTraversal::PreviousSkippingChildren(*m10));
+  EXPECT_EQ(*s120, FlatTreeTraversal::PreviousAbsoluteSibling(*m10));
 
   // Node in shadow tree to main tree
   EXPECT_EQ(*m2, FlatTreeTraversal::NextSkippingChildren(*s12));
-  EXPECT_EQ(*m1, FlatTreeTraversal::PreviousSkippingChildren(*m2));
+  EXPECT_EQ(*m1, FlatTreeTraversal::PreviousAbsoluteSibling(*m2));
 }
 
 TEST_F(FlatTreeTraversalTest, AncestorsOf) {

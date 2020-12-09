@@ -74,9 +74,12 @@ class NodeTraversal {
   // current one in document order
   static Node* Previous(const Node&, const Node* stay_within = nullptr);
 
-  // Like previous, but skips children and starts with the next sibling.
-  static Node* PreviousSkippingChildren(const Node&,
-                                        const Node* stay_within = nullptr);
+  // Returns the previous direct sibling of the node, if there is one. If not,
+  // it will traverse up the ancestor chain until it finds an ancestor
+  // that has a previous sibling, returning that sibling. Or nullptr if none.
+  // See comment for |FlatTreeTraversal::PreviousAbsoluteSibling| for details.
+  static Node* PreviousAbsoluteSibling(const Node&,
+                                       const Node* stay_within = nullptr);
 
   // Like next, but visits parents after their children.
   static Node* NextPostOrder(const Node&, const Node* stay_within = nullptr);

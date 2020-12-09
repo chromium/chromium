@@ -875,9 +875,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, EndIsStartofNextBlock) {
 // Where [] indicate selection. In this case, when the selection is adjusted, we
 // want to ensure it correctly traverses the tree back to the previous text node
 // and not to the <div>(sibling of second <p>).
-//
-// crbug.com/1154308 - checks the use of Previous instead of
-// PreviousSkippingChildren in TextFragmentSelectorGenerator::AdjustSelection
+// See crbug.com/1154308 for more context.
 TEST_F(TextFragmentSelectorGeneratorTest, PrevNodeIsSiblingsChild) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -911,9 +909,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, PrevNodeIsSiblingsChild) {
 // Where [] indicate selection. In this case, when the selection is adjusted, we
 // want to ensure it correctly traverses the tree back to the previous text by
 // correctly skipping the invisible div but not skipping the second <p>.
-//
-// crbug.com/1154308 - checks the use of Previous instead of
-// PreviousSkippingChildren in FindBuffer::BackwardVisibleTextNode
+// See crbug.com/1154308 for more context.
 TEST_F(TextFragmentSelectorGeneratorTest, PrevPrevNodeIsSiblingsChild) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");

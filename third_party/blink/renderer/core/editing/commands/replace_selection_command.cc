@@ -411,7 +411,7 @@ inline void ReplaceSelectionCommand::InsertedNodes::WillRemoveNode(Node& node) {
         NodeTraversal::NextSkippingChildren(*first_node_inserted_);
   } else if (last_node_inserted_ == node) {
     last_node_inserted_ =
-        NodeTraversal::PreviousSkippingChildren(*last_node_inserted_);
+        NodeTraversal::PreviousAbsoluteSibling(*last_node_inserted_);
   }
   if (node.contains(ref_node_))
     ref_node_ = NodeTraversal::NextSkippingChildren(node);

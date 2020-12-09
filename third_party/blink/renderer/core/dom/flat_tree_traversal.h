@@ -85,17 +85,38 @@ class CORE_EXPORT FlatTreeTraversal {
   // the children, this function returns |nullptr|.
   static Node* ChildAt(const Node&, unsigned index);
 
-  // Flat tree version of |NodeTraversal::nextSkippingChildren()|. This
-  // function is similar to |next()| but skips child nodes of a specified
-  // node.
+  // Flat tree version of |NodeTraversal::NextSkippingChildren()|. This
+  // function is similar to |Next()| but skips the child nodes of the specified
+  // node. E.g. for this tree:
+  //        0
+  //      /   \
+  //     1     4
+  //    / \   / \
+  //   2   3 5   6
+  // NextSkippingChildren(1) will return 4.
+  // NextSkippingChildren(3) will return 4.
+  // NextSkippingChildren(2) will return 3.
+  // NextSkippingChildren(4) will return nullptr.
   static Node* NextSkippingChildren(const Node&);
   static Node* NextSkippingChildren(const Node&, const Node* stay_within);
 
   static Node* FirstWithin(const Node& current) { return FirstChild(current); }
 
-  // Flat tree version of |NodeTraversal::previousSkippingChildren()|
-  // similar to |previous()| but skipping child nodes of the specified node.
-  static Node* PreviousSkippingChildren(const Node&);
+  // Flat tree version of |NodeTraversal::PreviousAbsoluteSibling()|. This
+  // function returns the previous direct sibling of the node, if there is one.
+  // If not, it will traverse up the ancestor chain until it finds an ancestor
+  // that has a previous sibling, returning that sibling. Or nullptr if none.
+  // E.g. for this tree:
+  //        0
+  //      /   \
+  //     1     4
+  //    / \   / \
+  //   2   3 5   6
+  // PreviousAbsoluteSibling(5) will return 1.
+  // PreviousAbsoluteSibling(4) will return 1.
+  // PreviousAbsoluteSibling(6) will return 5.
+  // PreviousAbsoluteSibling(2) will return nullptr.
+  static Node* PreviousAbsoluteSibling(const Node&);
 
   // Like previous, but visits parents before their children.
   static Node* PreviousPostOrder(const Node&,
