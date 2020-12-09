@@ -15,10 +15,15 @@
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "base/values.h"
+#include "chrome/browser/chromeos/login/test/device_state_mixin.h"
+#include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/scoped_test_system_nss_key_slot_mixin.h"
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_test_base.h"
 #include "chrome/browser/net/nss_context.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/constants/chromeos_switches.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -32,6 +37,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/test.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/cert/nss_cert_database.h"
@@ -42,16 +48,10 @@ namespace extensions {
 
 namespace {
 
-// This message sent from a browsertest to the background script to test the API
-// behavior for an extension running in a user session with system token
-// enabled.
-constexpr char kUserSessionWithSystemTokenEnabledMode[] =
-    "User session with system token enabled mode.";
-// This message sent from a browsertest to the background script to test the API
-// behavior for an extension running in a user session with system token
-// disabled.
-constexpr char kUserSessionWithSystemTokenDisabledMode[] =
-    "User session with system token disabled mode.";
+// The ID of the enterprise.platformKeys API test extension. The code location
+// of the extension is:
+// chrome/test/data/extensions/api_test/enterprise_platform_keys/
+constexpr char kExtensionId[] = "aecpbnckhoppanpmefllkdkohionpmig";
 
 // The test extension has a certificate referencing this private key which will
 // be stored in the user's token in the test setup.
@@ -136,6 +136,44 @@ base::FilePath GetExtensionPemFileName() {
           "extensions/api_test/enterprise_platform_keys.pem"));
 }
 
+// Returns the profile into which login-screen extensions are force-installed.
+Profile* GetOriginalSigninProfile() {
+  return chromeos::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
+}
+
+enum class TestingMode {
+  kUserSessionWithSystemTokenEnabledMode,
+  kUserSessionWithSystemTokenDisabledMode,
+  kLoginScreenMode
+};
+
+// Note: The strings returned by this function must match the strings defined in
+// the .js test file (c/t/d/e/api_test/enterprise_platform_keys/background.js)
+std::string TestingModeToString(TestingMode mode) {
+  switch (mode) {
+    case TestingMode::kUserSessionWithSystemTokenEnabledMode:
+      return "User session with system token enabled mode.";
+    case TestingMode::kUserSessionWithSystemTokenDisabledMode:
+      return "User session with system token disabled mode.";
+    case TestingMode::kLoginScreenMode:
+      return "Login screen mode.";
+  }
+}
+
+// Sends a message to the test extension to specify the type of the tests to
+// run.
+void RunTests(Profile* profile, TestingMode mode) {
+  api::test::OnMessage::Info info;
+  info.data = TestingModeToString(mode);
+
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::FOR_TEST,
+      extensions::api::test::OnMessage::kEventName,
+      api::test::OnMessage::Create(info), profile);
+  extensions::EventRouter::Get(profile)->DispatchEventToExtension(
+      kExtensionId, std::move(event));
+}
+
 void ImportPrivateKeyPKCS8ToSlot(const unsigned char* pkcs8_der,
                                  size_t pkcs8_der_size,
                                  PK11SlotInfo* slot) {
@@ -184,7 +222,7 @@ class EnterprisePlatformKeysTest
 
     // Enable the WebCrypto API.
     command_line->AppendSwitch(
-        switches::kEnableExperimentalWebPlatformFeatures);
+        ::switches::kEnableExperimentalWebPlatformFeatures);
   }
 
   void SetUpOnMainThread() override {
@@ -205,17 +243,17 @@ class EnterprisePlatformKeysTest
   }
 
  protected:
-  std::string GetTestMode() {
+  TestingMode GetTestingMode() {
     // Only if the system token exists, and the current user is of the same
     // domain as the device is enrolled to, the system token is available to the
     // extension.
     if (system_token_status() == SystemTokenStatus::EXISTS &&
         enrollment_status() == EnrollmentStatus::ENROLLED &&
         user_status() == UserStatus::MANAGED_AFFILIATED_DOMAIN) {
-      return kUserSessionWithSystemTokenEnabledMode;
+      return TestingMode::kUserSessionWithSystemTokenEnabledMode;
     }
 
-    return kUserSessionWithSystemTokenDisabledMode;
+    return TestingMode::kUserSessionWithSystemTokenDisabledMode;
   }
 
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
@@ -254,18 +292,10 @@ IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, Basic) {
       GetExtensionDirName(), GetExtensionPemFileName(),
       ExtensionForceInstallMixin::WaitMode::kBackgroundPageFirstLoad,
       &extension_id));
-
-  api::test::OnMessage::Info info;
-  info.data = GetTestMode();
-
-  auto event = std::make_unique<extensions::Event>(
-      extensions::events::FOR_TEST,
-      extensions::api::test::OnMessage::kEventName,
-      api::test::OnMessage::Create(info), profile());
-  extensions::EventRouter::Get(profile())->DispatchEventToExtension(
-      extension_id, std::move(event));
+  ASSERT_EQ(kExtensionId, extension_id);
 
   extensions::ResultCatcher catcher;
+  RunTests(profile(), GetTestingMode());
   ASSERT_TRUE(catcher.GetNextResult());
 }
 
@@ -306,6 +336,65 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
       "'enterprise.platformKeys' is not allowed for specified install "
       "location.",
       extension->install_warnings()[0].message);
+}
+
+class EnterprisePlatformKeysLoginScreenTest
+    : public MixinBasedInProcessBrowserTest {
+ public:
+  EnterprisePlatformKeysLoginScreenTest() = default;
+  EnterprisePlatformKeysLoginScreenTest(
+      const EnterprisePlatformKeysLoginScreenTest&) = delete;
+  EnterprisePlatformKeysLoginScreenTest& operator=(
+      const EnterprisePlatformKeysLoginScreenTest&) = delete;
+  ~EnterprisePlatformKeysLoginScreenTest() override = default;
+
+ protected:
+  ExtensionForceInstallMixin* extension_force_install_mixin() {
+    return &extension_force_install_mixin_;
+  }
+
+ private:
+  void SetUp() override {
+    chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance()
+        ->SetTestingMode(true);
+
+    MixinBasedInProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+
+    extension_force_install_mixin_.InitWithDeviceStateMixin(
+        GetOriginalSigninProfile(), &device_state_mixin_);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
+
+    command_line->AppendSwitch(chromeos::switches::kLoginManager);
+    command_line->AppendSwitchASCII(switches::kAllowlistedExtensionID,
+                                    kExtensionId);
+  }
+
+  chromeos::DeviceStateMixin device_state_mixin_{
+      &mixin_host_,
+      chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+  chromeos::ScopedTestSystemNSSKeySlotMixin system_nss_key_slot_mixin_{
+      &mixin_host_};
+  ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
+};
+
+IN_PROC_BROWSER_TEST_F(EnterprisePlatformKeysLoginScreenTest, Basic) {
+  extensions::ExtensionId extension_id;
+  ASSERT_TRUE(extension_force_install_mixin()->ForceInstallFromSourceDir(
+      GetExtensionDirName(), GetExtensionPemFileName(),
+      ExtensionForceInstallMixin::WaitMode::kBackgroundPageFirstLoad,
+      &extension_id));
+  ASSERT_EQ(kExtensionId, extension_id);
+
+  extensions::ResultCatcher catcher;
+  RunTests(GetOriginalSigninProfile(), TestingMode::kLoginScreenMode);
+  ASSERT_TRUE(catcher.GetNextResult());
 }
 
 }  // namespace extensions
