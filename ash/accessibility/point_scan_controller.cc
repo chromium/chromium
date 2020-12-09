@@ -14,7 +14,9 @@ namespace {
 constexpr float kHorizontalScanTimeSecs = 20;
 constexpr float kVerticalScanTimeSecs = 20;
 constexpr float kHorizontalRangeScanTimeSecs = 30;
+constexpr float kVerticalRangeScanTimeSecs = 20;
 constexpr int kDefaultRangeWidthDips = 150;
+constexpr float kDefaultRangeHeightDips = 120;
 
 }  // namespace
 
@@ -24,6 +26,7 @@ PointScanController::PointScanController() {
   horizontal_line_layer_info_.animation_rate = kHorizontalScanTimeSecs;
   horizontal_range_layer_info_.animation_rate = kHorizontalRangeScanTimeSecs;
   vertical_line_layer_info_.animation_rate = kVerticalScanTimeSecs;
+  vertical_range_layer_info_.animation_rate = kVerticalRangeScanTimeSecs;
 }
 
 PointScanController::~PointScanController() = default;
@@ -48,12 +51,23 @@ void PointScanController::StartHorizontalLineScan() {
   horizontal_line_layer_->StartHorizontalScanning();
 }
 
-void PointScanController::Pause() {
-  state_ = PointScanState::kVerticalScanning;
+void PointScanController::StartVerticalRangeScan() {
+  state_ = PointScanState::kVerticalRangeScanning;
   horizontal_line_layer_->PauseHorizontalScanning();
+  vertical_range_layer_.reset(new PointScanLayer(this));
+  vertical_range_layer_info_.offset_bound =
+      vertical_range_layer_->GetBounds().height() - kDefaultRangeHeightDips;
+  vertical_range_layer_->StartVerticalRangeScanning();
+}
+
+void PointScanController::StartVerticalLineScan() {
+  state_ = PointScanState::kVerticalScanning;
+  vertical_range_layer_->PauseVerticalRangeScanning();
   vertical_line_layer_.reset(new PointScanLayer(this));
+  vertical_line_layer_info_.offset = vertical_range_layer_info_.offset;
+  vertical_line_layer_info_.offset_start = vertical_range_layer_info_.offset;
   vertical_line_layer_info_.offset_bound =
-      vertical_line_layer_->GetBounds().height();
+      vertical_range_layer_info_.offset + kDefaultRangeHeightDips;
   vertical_line_layer_->StartVerticalScanning();
 }
 
@@ -68,7 +82,10 @@ base::Optional<gfx::PointF> PointScanController::OnPointSelect() {
       StartHorizontalLineScan();
       return base::nullopt;
     case PointScanState::kHorizontalScanning:
-      Pause();
+      StartVerticalRangeScan();
+      return base::nullopt;
+    case PointScanState::kVerticalRangeScanning:
+      StartVerticalLineScan();
       return base::nullopt;
     case PointScanState::kVerticalScanning:
       Stop();
@@ -82,8 +99,9 @@ base::Optional<gfx::PointF> PointScanController::OnPointSelect() {
 bool PointScanController::IsPointScanEnabled() {
   switch (state_) {
     case PointScanState::kHorizontalRangeScanning:
-    case PointScanState::kVerticalScanning:
     case PointScanState::kHorizontalScanning:
+    case PointScanState::kVerticalRangeScanning:
+    case PointScanState::kVerticalScanning:
       return true;
     case PointScanState::kOff:
       return false;
@@ -114,6 +132,11 @@ void PointScanController::AnimateLine(base::TimeTicks timestamp) {
     horizontal_line_layer_->SetSubpixelPositionOffset(
         gfx::Vector2dF(horizontal_line_layer_info_.offset, 0.0));
     UpdateTimeInfo(&horizontal_line_layer_info_, timestamp);
+  } else if (vertical_range_layer_->IsMoving()) {
+    ComputeOffset(&vertical_range_layer_info_, timestamp);
+    vertical_range_layer_->SetSubpixelPositionOffset(
+        gfx::Vector2dF(0.0, vertical_range_layer_info_.offset));
+    UpdateTimeInfo(&vertical_range_layer_info_, timestamp);
   } else if (vertical_line_layer_->IsMoving()) {
     ComputeOffset(&vertical_line_layer_info_, timestamp);
     vertical_line_layer_->SetSubpixelPositionOffset(

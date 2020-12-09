@@ -23,10 +23,13 @@ class PointScanLayer : public AccessibilityLayer {
   // an x-coordinate.
   void StartHorizontalRangeScanning();
   void StartHorizontalScanning();
-  void PauseHorizontalRangeScanning();
-  void PauseHorizontalScanning();
+  void StartVerticalRangeScanning();
   void StartVerticalScanning();
+  void PauseHorizontalScanning();
+  void PauseHorizontalRangeScanning();
   void PauseVerticalScanning();
+  void PauseVerticalRangeScanning();
+
   gfx::Rect GetBounds() const;
   bool IsMoving() const;
 
@@ -54,6 +57,8 @@ class PointScanLayer : public AccessibilityLayer {
   bool is_moving_ = false;
 
   bool is_range_scan_ = false;
+
+  bool is_horizontal_range_ = false;
 };
 
 }  // namespace ash

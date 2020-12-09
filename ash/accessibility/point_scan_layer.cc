@@ -21,6 +21,7 @@ namespace ash {
 namespace {
 const int kDefaultStrokeWidth = 6;
 constexpr int kDefaultRangeWidthDips = 150;
+constexpr int kDefaultRangeHeightDips = 120;
 
 display::Display GetPrimaryDisplay() {
   DCHECK(display::Screen::GetScreen());
@@ -44,11 +45,29 @@ void PointScanLayer::StartHorizontalRangeScanning() {
   bounds_.set_origin(line_.start);
   line_.end = end;
   is_moving_ = true;
+  is_horizontal_range_ = true;
 }
 
 void PointScanLayer::StartHorizontalScanning() {
   is_range_scan_ = false;
   gfx::Point end = bounds_.bottom_left();
+  bounds_.set_origin(line_.start);
+  line_.end = end;
+  is_moving_ = true;
+  is_horizontal_range_ = false;
+}
+
+void PointScanLayer::StartVerticalRangeScanning() {
+  is_range_scan_ = true;
+  gfx::Point end = bounds_.top_right();
+  bounds_.set_origin(line_.start);
+  line_.end = end;
+  is_moving_ = true;
+}
+
+void PointScanLayer::StartVerticalScanning() {
+  is_range_scan_ = false;
+  gfx::Point end = bounds_.top_right();
   bounds_.set_origin(line_.start);
   line_.end = end;
   is_moving_ = true;
@@ -62,11 +81,8 @@ void PointScanLayer::PauseHorizontalScanning() {
   is_moving_ = false;
 }
 
-void PointScanLayer::StartVerticalScanning() {
-  gfx::Point end = bounds_.top_right();
-  bounds_.set_origin(line_.start);
-  line_.end = end;
-  is_moving_ = true;
+void PointScanLayer::PauseVerticalRangeScanning() {
+  is_moving_ = false;
 }
 
 void PointScanLayer::PauseVerticalScanning() {
@@ -102,8 +118,13 @@ void PointScanLayer::OnPaintLayer(const ui::PaintContext& context) {
   SkPath path;
 
   if (is_range_scan_) {
-    path.moveTo(line_.start.x() + kDefaultRangeWidthDips, line_.start.y());
-    path.lineTo(line_.end.x() + kDefaultRangeWidthDips, line_.end.y());
+    if (is_horizontal_range_) {
+      path.moveTo(line_.start.x() + kDefaultRangeWidthDips, line_.start.y());
+      path.lineTo(line_.end.x() + kDefaultRangeWidthDips, line_.end.y());
+    } else {
+      path.moveTo(line_.start.x(), line_.start.y() + kDefaultRangeHeightDips);
+      path.lineTo(line_.end.x(), line_.end.y() + kDefaultRangeHeightDips);
+    }
   }
 
   path.moveTo(line_.start.x(), line_.start.y());

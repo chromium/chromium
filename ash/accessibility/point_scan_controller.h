@@ -30,6 +30,8 @@ class ASH_EXPORT PointScanController : public AccessibilityLayerDelegate {
     kHorizontalRangeScanning,
     // Point scanning is currently scanning horizontally.
     kHorizontalScanning,
+    // Point scanning is currently range scanning vertically.
+    kVerticalRangeScanning,
     // Point scanning is currently scanning vertically.
     kVerticalScanning,
     // Point scanning is not scanning.
@@ -40,7 +42,8 @@ class ASH_EXPORT PointScanController : public AccessibilityLayerDelegate {
   // user input.
   void StartHorizontalRangeScan();
   void StartHorizontalLineScan();
-  void Pause();
+  void StartVerticalRangeScan();
+  void StartVerticalLineScan();
   void Stop();
   base::Optional<gfx::PointF> OnPointSelect();
   bool IsPointScanEnabled();
@@ -58,6 +61,8 @@ class ASH_EXPORT PointScanController : public AccessibilityLayerDelegate {
   std::unique_ptr<PointScanLayer> horizontal_range_layer_;
   PointScanLayerAnimationInfo horizontal_line_layer_info_;
   std::unique_ptr<PointScanLayer> horizontal_line_layer_;
+  PointScanLayerAnimationInfo vertical_range_layer_info_;
+  std::unique_ptr<PointScanLayer> vertical_range_layer_;
   PointScanLayerAnimationInfo vertical_line_layer_info_;
   std::unique_ptr<PointScanLayer> vertical_line_layer_;
 
