@@ -600,6 +600,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram base="true" name="Sync.ModelTypeUndecryptablePendingUpdatesDropped"
+    units="SyncEntity" expires_after="2021-06-05">
+  <owner>victorvianna@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    Records the number of entities dropped when the data type decided that a
+    certain encryption key was lost and dropped all pending updates encrypted
+    with it. Future updates encrypted with such key will also be ignored by the
+    data type, but those are *not* counted in this metric.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Sync.ModelTypeUpdateDrop" enum="SyncModelTypes"
     expires_after="2021-05-01">
 <!-- Name completed by histogram_suffixes name="SyncModelTypeUpdateDrop" -->

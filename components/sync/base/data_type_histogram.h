@@ -22,6 +22,7 @@ enum class UpdateDropReason {
   kTombstoneInFullUpdate,
   kTombstoneForNonexistentInIncrementalUpdate,
   kDecryptionPending,
+  kDecryptionPendingForTooLong,
   kFailedToDecrypt
 };
 

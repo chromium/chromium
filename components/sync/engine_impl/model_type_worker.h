@@ -103,8 +103,6 @@ class ModelTypeWorker : public UpdateHandler,
   std::unique_ptr<CommitContribution> GetContribution(
       size_t max_entries) override;
 
-  bool HasLocalChangesForTest() const;
-
   // An alternative way to drive sending data to the processor, that should be
   // called when a new encryption mechanism is ready.
   void EncryptionAcceptedMaybeApplyUpdates();
@@ -118,6 +116,12 @@ class ModelTypeWorker : public UpdateHandler,
   size_t EstimateMemoryUsage() const;
 
   base::WeakPtr<ModelTypeWorker> AsWeakPtr();
+
+  bool HasLocalChangesForTest() const;
+
+  void SetMinGuResponsesToIgnoreKeyForTest(int min_gu_responses_to_ignore_key) {
+    min_gu_responses_to_ignore_key_ = min_gu_responses_to_ignore_key;
+  }
 
  private:
   struct UnknownEncryptionKeyInfo {
@@ -204,8 +208,18 @@ class ModelTypeWorker : public UpdateHandler,
   // response body.
   void OnFullCommitFailure(SyncCommitError commit_error);
 
-  // Removes |unknown_encryption_keys_| that no longer fit the definition of
-  // an unknown key, and returns their info.
+  // Returns true for keys that have remained unknown for so long that they are
+  // not expected to arrive anytime soon. The worker ignores incoming updates
+  // encrypted with them, and drops pending ones on the next GetUpdatesResponse.
+  // Those keys remain in |unknown_encryption_keys_by_name_|.
+  bool ShouldIgnoreUpdatesEncryptedWith(const std::string& key_name);
+
+  // If |key_name| should be ignored (cf. ShouldIgnoreUpdatesEncryptedWith()),
+  // drops elements of |entries_pending_decryption_| encrypted with it.
+  void MaybeDropPendingUpdatesEncryptedWith(const std::string& key_name);
+
+  // Removes elements of |unknown_encryption_keys_by_name_| that no longer fit
+  // the definition of an unknown key, and returns their info.
   std::vector<UnknownEncryptionKeyInfo> RemoveKeysNoLongerUnknown();
 
   ModelType type_;
@@ -234,10 +248,12 @@ class ModelTypeWorker : public UpdateHandler,
   // TODO(crbug.com/1109221): Use a name mentioning "updates" and "server id".
   std::map<std::string, sync_pb::SyncEntity> entries_pending_decryption_;
 
-  // A key is unknown if it encrypts a subset of |entries_pending_decryption_|.
-  // It'll be added here when the worker receives the first update entity
+  // A key is said to be unknown if one of these is true:
+  // a) It encrypts some updates(s) in |entries_pending_decryption_|.
+  // b) (a) happened for so long that the worker dropped those updates in an
+  // attempt to unblock itself (cf. ShouldIgnoreUpdatesEncryptedWith()).
+  // The key is added here when the worker receives the first update entity
   // encrypted with it.
-  // TODO(crbug.com/1109221): Enlarge this concept to cover ignored keys.
   std::map<std::string, UnknownEncryptionKeyInfo>
       unknown_encryption_keys_by_name_;
 
@@ -248,6 +264,11 @@ class ModelTypeWorker : public UpdateHandler,
   // Indicates if processor has local changes. Processor only nudges worker once
   // and worker might not be ready to commit entities at the time.
   bool has_local_changes_ = false;
+
+  // Remains constant in production code. Can be overridden in tests.
+  // |UnknownEncryptionKeyInfo::gu_responses_while_should_have_been_known| must
+  // be above this value before updates encrypted with the key are ignored.
+  int min_gu_responses_to_ignore_key_;
 
   // Cancellation signal is used to cancel blocking operation on engine
   // shutdown.

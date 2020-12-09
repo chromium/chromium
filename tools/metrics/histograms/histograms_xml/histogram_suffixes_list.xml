@@ -18427,6 +18427,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Sync.ModelTypeMemoryKB"/>
   <affected-histogram name="Sync.ModelTypeStoreCommitWriteBatchOutcome"/>
   <affected-histogram name="Sync.ModelTypeTimeUntilEncryptionKeyFound"/>
+  <affected-histogram name="Sync.ModelTypeUndecryptablePendingUpdatesDropped"/>
   <affected-histogram name="Sync.NonReflectionUpdateFreshnessPossiblySkewed">
     <obsolete>
       Deprecated 06/2019. Replaced by
@@ -18532,6 +18533,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="DecryptionPending"
       label="Decryption keys are missing at the moment (it is queued for
              later decryption which may or may not happen)."/>
+  <suffix name="DecryptionPendingForTooLong"
+      label="Decryption keys were missing for so long that the update was
+             ignored."/>
   <suffix name="FailedToDecrypt"
       label="Decryption is not successful (maybe the data is corrupt)."/>
   <suffix name="InconsistentClientTag"

@@ -23,4 +23,10 @@ const base::Feature kSyncSupportTrustedVaultPassphrase{
 const base::Feature kSyncTriggerFullKeystoreMigration{
     "SyncTriggerFullKeystoreMigration", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Causes Sync to ignore updates encrypted with keys that have been missing for
+// too long from this client; Sync will proceed normally as if those updates
+// didn't exist.
+const base::Feature kIgnoreSyncEncryptionKeysLongMissing{
+    "IgnoreSyncEncryptionKeysLongMissing", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace switches

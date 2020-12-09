@@ -25,6 +25,8 @@ std::string GetHistogramSuffixForUpdateDropReason(UpdateDropReason reason) {
       return "TombstoneForNonexistentInIncrementalUpdate";
     case UpdateDropReason::kDecryptionPending:
       return "DecryptionPending";
+    case UpdateDropReason::kDecryptionPendingForTooLong:
+      return "DecryptionPendingForTooLong";
     case UpdateDropReason::kFailedToDecrypt:
       return "FailedToDecrypt";
   }
