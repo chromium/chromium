@@ -99,25 +99,6 @@ TEST_F(StyleResolverTest, AnimationBaseComputedStyle) {
   EXPECT_EQ(20, resolver.StyleForElement(div)->FontSize());
 }
 
-TEST_F(StyleResolverTest, ShadowDOMV0Crash) {
-  GetDocument().documentElement()->setInnerHTML(R"HTML(
-    <style>
-      span { display: contents; }
-    </style>
-    <summary><span id="outer"><span id="inner"></b></b></summary>
-  )HTML");
-
-  Element* outer = GetDocument().getElementById("outer");
-  Element* inner = GetDocument().getElementById("inner");
-  ShadowRoot& outer_root = outer->CreateV0ShadowRootForTesting();
-  ShadowRoot& inner_root = inner->CreateV0ShadowRootForTesting();
-  outer_root.setInnerHTML("<content>");
-  inner_root.setInnerHTML("<span>");
-
-  // Test passes if it doesn't crash.
-  UpdateAllLifecyclePhasesForTest();
-}
-
 TEST_F(StyleResolverTest, HasEmUnits) {
   GetDocument().documentElement()->setInnerHTML("<div id=div>Test</div>");
   UpdateAllLifecyclePhasesForTest();

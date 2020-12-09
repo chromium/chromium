@@ -903,22 +903,6 @@ TEST_F(StyleEngineTest, RuleSetInvalidationHostContext) {
             kRuleSetInvalidationFullRecalc);
 }
 
-TEST_F(StyleEngineTest, RuleSetInvalidationV0BoundaryCrossing) {
-  GetDocument().body()->setInnerHTML("<div id=host></div>");
-  Element* host = GetDocument().getElementById("host");
-  ASSERT_TRUE(host);
-
-  ShadowRoot& shadow_root =
-      host->AttachShadowRootInternal(ShadowRootType::kOpen);
-
-  shadow_root.setInnerHTML("<div></div><div class=a></div><div></div>");
-  UpdateAllLifecyclePhases();
-
-  EXPECT_EQ(ScheduleInvalidationsForRules(
-                shadow_root, ".a ::content span { background: green}"),
-            kRuleSetInvalidationFullRecalc);
-}
-
 TEST_F(StyleEngineTest, HasViewportDependentMediaQueries) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>div {}</style>
@@ -2034,14 +2018,19 @@ TEST_F(StyleEngineTest, GetComputedStyleOutsideFlatTreeCrash) {
       body, div { display: contents }
       div::before { display: contents; content: "" }
     </style>
-    <div id=inner></div>
+    <div id=host>
+      <!-- no slots here -->
+    </host>
+    <div id=non-slotted></div>
   )HTML");
 
-  GetDocument().documentElement()->CreateV0ShadowRootForTesting();
+  GetDocument().getElementById("host")->AttachShadowRootInternal(
+      ShadowRootType::kOpen);
   UpdateAllLifecyclePhases();
   GetDocument().body()->EnsureComputedStyle();
-  GetDocument().getElementById("inner")->SetInlineStyleProperty(
-      CSSPropertyID::kColor, "blue");
+  GetDocument()
+      .getElementById("non-slotted")
+      ->SetInlineStyleProperty(CSSPropertyID::kColor, "blue");
   UpdateAllLifecyclePhases();
 }
 
@@ -2711,30 +2700,6 @@ TEST_F(StyleEngineTest, SlottedWithEnsuredStyleOutsideFlatTree) {
   GetDocument().GetSlotAssignmentEngine().RecalcSlotAssignments();
   EXPECT_EQ(span, GetStyleRecalcRoot());
   EXPECT_FALSE(span->GetComputedStyle());
-}
-
-TEST_F(StyleEngineTest, RecalcEnsuredStyleOutsideFlatTreeV0) {
-  GetDocument().body()->setInnerHTML(R"HTML(
-    <div id="host"><span></span></div>
-  )HTML");
-
-  auto* host = GetDocument().getElementById("host");
-  auto* span = To<Element>(host->firstChild());
-
-  host->CreateV0ShadowRootForTesting();
-  UpdateAllLifecyclePhases();
-
-  EXPECT_FALSE(span->FlatTreeParentForChildDirty());
-
-  // Ensure style outside the flat tree.
-  const ComputedStyle* style = span->EnsureComputedStyle();
-  ASSERT_TRUE(style);
-  EXPECT_TRUE(style->IsEnsuredOutsideFlatTree());
-  EXPECT_EQ(EDisplay::kInline, style->Display());
-
-  span->SetInlineStyleProperty(CSSPropertyID::kDisplay, "block");
-  EXPECT_FALSE(GetStyleRecalcRoot());
-  EXPECT_FALSE(GetDocument().body()->ChildNeedsStyleRecalc());
 }
 
 TEST_F(StyleEngineTest, ForceReattachRecalcRootAttachShadow) {
