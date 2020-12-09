@@ -6,9 +6,11 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "base/bind.h"
+#include "base/containers/flat_map.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/camera_mic/vm_camera_mic_manager_factory.h"
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
@@ -27,6 +29,12 @@ using testing::UnorderedElementsAre;
 using VmType = chromeos::VmCameraMicManager::VmType;
 using DeviceType = chromeos::VmCameraMicManager::DeviceType;
 
+constexpr VmType kCrostiniVm = VmType::kCrostiniVm;
+constexpr VmType kPluginVm = VmType::kPluginVm;
+
+constexpr DeviceType kCamera = DeviceType::kCamera;
+constexpr DeviceType kMic = DeviceType::kMic;
+
 class FakeNotificationDisplayService : public NotificationDisplayService {
  public:
   FakeNotificationDisplayService() = default;
@@ -36,13 +44,12 @@ class FakeNotificationDisplayService : public NotificationDisplayService {
       NotificationHandler::Type notification_type,
       const message_center::Notification& notification,
       std::unique_ptr<NotificationCommon::Metadata> metadata) override {
-    notification_id_to_notifier_id_[notification.id()] =
-        notification.notifier_id().id;
+    notification_ids_.insert(notification.id());
   }
 
   void Close(NotificationHandler::Type notification_type,
              const std::string& notification_id) override {
-    size_t count = notification_id_to_notifier_id_.erase(notification_id);
+    size_t count = notification_ids_.erase(notification_id);
     CHECK(count == 1);
   }
 
@@ -50,15 +57,19 @@ class FakeNotificationDisplayService : public NotificationDisplayService {
   void AddObserver(Observer* observer) override {}
   void RemoveObserver(Observer* observer) override {}
 
-  size_t CountNotifier(const std::string& notifier) {
-    return std::count_if(
-        notification_id_to_notifier_id_.begin(),
-        notification_id_to_notifier_id_.end(),
-        [&notifier](auto& pair) { return pair.second == notifier; });
-  }
+  const std::set<std::string>& notification_ids() { return notification_ids_; }
 
  private:
-  std::map<std::string, std::string> notification_id_to_notifier_id_;
+  std::set<std::string> notification_ids_;
+};
+
+using DeviceActiveMap = base::flat_map<DeviceType, bool>;
+using ActiveMap = base::flat_map<VmType, DeviceActiveMap>;
+
+struct IsActiveTestParam {
+  ActiveMap active_map;
+  DeviceActiveMap device_expectations;
+  DeviceActiveMap notification_expectations;
 };
 
 }  // namespace
@@ -67,6 +78,31 @@ namespace chromeos {
 
 class VmCameraMicManagerTest : public testing::Test {
  public:
+  // Define here to access `VmCameraMicManager` private members.
+  using NotificationType = VmCameraMicManager::NotificationType;
+  static constexpr NotificationType kMicNotification =
+      VmCameraMicManager::kMicNotification;
+  static constexpr NotificationType kCameraNotification =
+      VmCameraMicManager::kCameraNotification;
+  static constexpr NotificationType kCameraWithMicNotification =
+      VmCameraMicManager::kCameraWithMicNotification;
+  struct NotificationTestParam {
+    ActiveMap active_map;
+    std::set<std::string> expected_notifications;
+
+    NotificationTestParam(
+        const ActiveMap& active_map,
+        const std::vector<std::pair<VmType, NotificationType>>& notifications) {
+      this->active_map = active_map;
+      for (const auto& vm_notification : notifications) {
+        auto result =
+            expected_notifications.insert(VmCameraMicManager::GetNotificationId(
+                vm_notification.first, vm_notification.second));
+        CHECK(result.second);
+      }
+    }
+  };
+
   VmCameraMicManagerTest() {
     // Make the profile the primary one.
     auto mock_user_manager =
@@ -92,6 +128,16 @@ class VmCameraMicManagerTest : public testing::Test {
         VmCameraMicManagerFactory::GetForProfile(&testing_profile_);
   }
 
+  void SetActive(const ActiveMap& active_map) {
+    for (const auto& vm_and_device_active_map : active_map) {
+      for (const auto& device_active : vm_and_device_active_map.second) {
+        vm_camera_mic_manager_->SetActive(vm_and_device_active_map.first,
+                                          device_active.first,
+                                          device_active.second);
+      }
+    }
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile testing_profile_;
@@ -104,100 +150,170 @@ class VmCameraMicManagerTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(VmCameraMicManagerTest);
 };
 
-TEST_F(VmCameraMicManagerTest, GetActive) {
-  EXPECT_FALSE(vm_camera_mic_manager_->GetActive(VmType::kCrostiniVm,
-                                                 DeviceType::kCamera));
-  EXPECT_FALSE(vm_camera_mic_manager_->GetActive(VmType::kPluginVm,
-                                                 DeviceType::kCamera));
+// Test `GetDeviceActive()` and `IsNotificationActive()`.
+class VmCameraMicManagerIsActiveTest
+    : public VmCameraMicManagerTest,
+      public testing::WithParamInterface<IsActiveTestParam> {};
 
-  vm_camera_mic_manager_->SetActive(VmType::kCrostiniVm, DeviceType::kCamera,
-                                    true);
-  EXPECT_TRUE(vm_camera_mic_manager_->GetActive(VmType::kCrostiniVm,
-                                                DeviceType::kCamera));
-  EXPECT_FALSE(vm_camera_mic_manager_->GetActive(VmType::kPluginVm,
-                                                 DeviceType::kCamera));
+TEST_P(VmCameraMicManagerIsActiveTest, IsNotificationActive) {
+  SetActive(GetParam().active_map);
 
-  vm_camera_mic_manager_->SetActive(VmType::kPluginVm, DeviceType::kCamera,
-                                    true);
-  EXPECT_TRUE(vm_camera_mic_manager_->GetActive(VmType::kCrostiniVm,
-                                                DeviceType::kCamera));
-  EXPECT_TRUE(vm_camera_mic_manager_->GetActive(VmType::kPluginVm,
-                                                DeviceType::kCamera));
+  for (const auto& device_and_expectation : GetParam().device_expectations) {
+    EXPECT_EQ(
+        vm_camera_mic_manager_->GetDeviceActive(device_and_expectation.first),
+        device_and_expectation.second);
+  }
 
-  vm_camera_mic_manager_->SetActive(VmType::kPluginVm, DeviceType::kCamera,
-                                    false);
-  EXPECT_TRUE(vm_camera_mic_manager_->GetActive(VmType::kCrostiniVm,
-                                                DeviceType::kCamera));
-  EXPECT_FALSE(vm_camera_mic_manager_->GetActive(VmType::kPluginVm,
-                                                 DeviceType::kCamera));
+  for (const auto& device_and_expectation :
+       GetParam().notification_expectations) {
+    EXPECT_EQ(vm_camera_mic_manager_->IsNotificationActive(
+                  device_and_expectation.first),
+              device_and_expectation.second);
+  }
 }
 
-TEST_F(VmCameraMicManagerTest, GetDeviceActive) {
-  EXPECT_FALSE(vm_camera_mic_manager_->GetDeviceActive(DeviceType::kCamera));
-  EXPECT_FALSE(vm_camera_mic_manager_->GetDeviceActive(DeviceType::kMic));
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    VmCameraMicManagerIsActiveTest,
+    testing::Values(
+        IsActiveTestParam{
+            /*active_map=*/{
+                {kCrostiniVm, {{kCamera, 0}, {kMic, 0}}},
+                {kPluginVm, {{kCamera, 0}, {kMic, 0}}},
+            },
+            /*device_expectations=*/{{kCamera, 0}, {kMic, 0}},
+            /*notificatoin_expectations=*/{{kCamera, 0}, {kMic, 0}},
+        },
+        IsActiveTestParam{
+            /*active_map=*/{
+                {kCrostiniVm, {{kCamera, 0}, {kMic, 0}}},
+                {kPluginVm, {{kCamera, 1}, {kMic, 0}}},
+            },
+            /*device_expectations=*/{{kCamera, 1}, {kMic, 0}},
+            /*notificatoin_expectations=*/{{kCamera, 1}, {kMic, 0}},
+        },
+        IsActiveTestParam{
+            /*active_map=*/{
+                {kCrostiniVm, {{kCamera, 1}, {kMic, 0}}},
+                {kPluginVm, {{kCamera, 0}, {kMic, 0}}},
+            },
+            /*device_expectations=*/{{kCamera, 1}, {kMic, 0}},
+            /*notificatoin_expectations=*/{{kCamera, 1}, {kMic, 0}},
+        },
+        IsActiveTestParam{
+            /*active_map=*/{
+                {kCrostiniVm, {{kCamera, 0}, {kMic, 1}}},
+                {kPluginVm, {{kCamera, 0}, {kMic, 0}}},
+            },
+            /*device_expectations=*/{{kCamera, 0}, {kMic, 1}},
+            /*notificatoin_expectations=*/{{kCamera, 0}, {kMic, 1}},
+        },
+        // Only a crostini "camera icon" notification is displayed.
+        IsActiveTestParam{
+            /*active_map=*/{
+                {kCrostiniVm, {{kCamera, 1}, {kMic, 1}}},
+                {kPluginVm, {{kCamera, 0}, {kMic, 0}}},
+            },
+            /*device_expectations=*/{{kCamera, 1}, {kMic, 1}},
+            /*notificatoin_expectations=*/{{kCamera, 1}, {kMic, 0}},
+        },
+        // Crostini "camera icon" notification and pluginvm mic notification are
+        // displayed.
+        IsActiveTestParam{
+            /*active_map=*/{
+                {kCrostiniVm, {{kCamera, 1}, {kMic, 1}}},
+                {kPluginVm, {{kCamera, 0}, {kMic, 1}}},
+            },
+            /*device_expectations=*/{{kCamera, 1}, {kMic, 1}},
+            /*notificatoin_expectations=*/{{kCamera, 1}, {kMic, 1}},
+        },
+        // Crostini "camera icon" notification and pluginvm camera notification
+        // are displayed.
+        IsActiveTestParam{
+            /*active_map=*/{
+                {kCrostiniVm, {{kCamera, 1}, {kMic, 1}}},
+                {kPluginVm, {{kCamera, 1}, {kMic, 0}}},
+            },
+            /*device_expectations=*/{{kCamera, 1}, {kMic, 1}},
+            /*notificatoin_expectations=*/{{kCamera, 1}, {kMic, 0}},
+        },
+        // Crostini camera notification and pluginvm mic notification are
+        // displayed.
+        IsActiveTestParam{
+            /*active_map=*/{
+                {kCrostiniVm, {{kCamera, 1}, {kMic, 0}}},
+                {kPluginVm, {{kCamera, 0}, {kMic, 1}}},
+            },
+            /*device_expectations=*/{{kCamera, 1}, {kMic, 1}},
+            /*notificatoin_expectations=*/{{kCamera, 1}, {kMic, 1}},
+        },
+        // Crostini and pluginvm "camera icon" notifications are displayed.
+        IsActiveTestParam{
+            /*active_map=*/{
+                {kCrostiniVm, {{kCamera, 1}, {kMic, 1}}},
+                {kPluginVm, {{kCamera, 1}, {kMic, 1}}},
+            },
+            /*device_expectations=*/{{kCamera, 1}, {kMic, 1}},
+            /*notificatoin_expectations=*/{{kCamera, 1}, {kMic, 0}},
+        }));
 
-  vm_camera_mic_manager_->SetActive(VmType::kPluginVm, DeviceType::kCamera,
-                                    true);
-  EXPECT_TRUE(vm_camera_mic_manager_->GetDeviceActive(DeviceType::kCamera));
-  EXPECT_FALSE(vm_camera_mic_manager_->GetDeviceActive(DeviceType::kMic));
+class VmCameraMicManagerNotificationTest
+    : public VmCameraMicManagerTest,
+      public testing::WithParamInterface<
+          VmCameraMicManagerTest::NotificationTestParam> {
+ public:
+  static std::vector<NotificationTestParam> GetTestValues() {
+    return {
+        {
+            /*active_map=*/{
+                {kCrostiniVm, {{kCamera, 0}, {kMic, 0}}},
+                {kPluginVm, {{kCamera, 0}, {kMic, 0}}},
+            },
+            /*expected_notifications=*/{},
+        },
+        {
+            /*active_map=*/{
+                {kCrostiniVm, {{kCamera, 1}, {kMic, 0}}},
+                {kPluginVm, {{kCamera, 0}, {kMic, 0}}},
+            },
+            /*expected_notifications=*/{{kCrostiniVm, kCameraNotification}},
+        },
+        {
+            /*active_map=*/{
+                {kCrostiniVm, {{kCamera, 1}, {kMic, 0}}},
+                {kPluginVm, {{kCamera, 0}, {kMic, 1}}},
+            },
+            /*expected_notifications=*/
+            {
+                {kCrostiniVm, kCameraNotification},
+                {kPluginVm, kMicNotification},
+            },
+        },
+        {
+            /*active_map=*/{
+                {kCrostiniVm, {{kCamera, 1}, {kMic, 0}}},
+                {kPluginVm, {{kCamera, 1}, {kMic, 1}}},
+            },
+            /*expected_notifications=*/
+            {
+                {kCrostiniVm, kCameraNotification},
+                {kPluginVm, kCameraWithMicNotification},
+            },
+        },
+    };
+  }
+};
 
-  vm_camera_mic_manager_->SetActive(VmType::kCrostiniVm, DeviceType::kCamera,
-                                    true);
-  EXPECT_TRUE(vm_camera_mic_manager_->GetDeviceActive(DeviceType::kCamera));
-  EXPECT_FALSE(vm_camera_mic_manager_->GetDeviceActive(DeviceType::kMic));
-
-  vm_camera_mic_manager_->SetActive(VmType::kPluginVm, DeviceType::kCamera,
-                                    false);
-  EXPECT_TRUE(vm_camera_mic_manager_->GetDeviceActive(DeviceType::kCamera));
-  EXPECT_FALSE(vm_camera_mic_manager_->GetDeviceActive(DeviceType::kMic));
-
-  vm_camera_mic_manager_->SetActive(VmType::kCrostiniVm, DeviceType::kCamera,
-                                    false);
-  EXPECT_FALSE(vm_camera_mic_manager_->GetDeviceActive(DeviceType::kCamera));
-  EXPECT_FALSE(vm_camera_mic_manager_->GetDeviceActive(DeviceType::kMic));
+TEST_P(VmCameraMicManagerNotificationTest, SetActive) {
+  const NotificationTestParam& param = GetParam();
+  SetActive(param.active_map);
+  EXPECT_EQ(fake_display_service_->notification_ids(),
+            param.expected_notifications);
 }
 
-TEST_F(VmCameraMicManagerTest, SetActiveTriggerNotifications) {
-  EXPECT_EQ(fake_display_service_->CountNotifier(ash::kVmCameraNotifierId), 0);
-  EXPECT_EQ(fake_display_service_->CountNotifier(ash::kVmMicNotifierId), 0);
-
-  vm_camera_mic_manager_->SetActive(VmType::kCrostiniVm, DeviceType::kCamera,
-                                    true);
-  EXPECT_EQ(fake_display_service_->CountNotifier(ash::kVmCameraNotifierId), 1);
-  EXPECT_EQ(fake_display_service_->CountNotifier(ash::kVmMicNotifierId), 0);
-
-  vm_camera_mic_manager_->SetActive(VmType::kPluginVm, DeviceType::kCamera,
-                                    true);
-  EXPECT_EQ(fake_display_service_->CountNotifier(ash::kVmCameraNotifierId), 2);
-  EXPECT_EQ(fake_display_service_->CountNotifier(ash::kVmMicNotifierId), 0);
-
-  vm_camera_mic_manager_->SetActive(VmType::kPluginVm, DeviceType::kMic, true);
-  EXPECT_EQ(fake_display_service_->CountNotifier(ash::kVmCameraNotifierId), 2);
-  EXPECT_EQ(fake_display_service_->CountNotifier(ash::kVmMicNotifierId), 1);
-
-  // No new notification for already active (VmType, DeviceType) combination.
-  vm_camera_mic_manager_->SetActive(VmType::kPluginVm, DeviceType::kMic, true);
-  EXPECT_EQ(fake_display_service_->CountNotifier(ash::kVmCameraNotifierId), 2);
-  EXPECT_EQ(fake_display_service_->CountNotifier(ash::kVmMicNotifierId), 1);
-
-  vm_camera_mic_manager_->SetActive(VmType::kCrostiniVm, DeviceType::kCamera,
-                                    false);
-  EXPECT_EQ(fake_display_service_->CountNotifier(ash::kVmCameraNotifierId), 1);
-  EXPECT_EQ(fake_display_service_->CountNotifier(ash::kVmMicNotifierId), 1);
-
-  vm_camera_mic_manager_->SetActive(VmType::kPluginVm, DeviceType::kMic, false);
-  EXPECT_EQ(fake_display_service_->CountNotifier(ash::kVmCameraNotifierId), 1);
-  EXPECT_EQ(fake_display_service_->CountNotifier(ash::kVmMicNotifierId), 0);
-
-  // Ignore already inactive (VmType, DeviceType) combination.
-  vm_camera_mic_manager_->SetActive(VmType::kPluginVm, DeviceType::kMic, false);
-  EXPECT_EQ(fake_display_service_->CountNotifier(ash::kVmCameraNotifierId), 1);
-  EXPECT_EQ(fake_display_service_->CountNotifier(ash::kVmMicNotifierId), 0);
-
-  vm_camera_mic_manager_->SetActive(VmType::kPluginVm, DeviceType::kCamera,
-                                    false);
-  EXPECT_EQ(fake_display_service_->CountNotifier(ash::kVmCameraNotifierId), 0);
-  EXPECT_EQ(fake_display_service_->CountNotifier(ash::kVmMicNotifierId), 0);
-}
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    VmCameraMicManagerNotificationTest,
+    testing::ValuesIn(VmCameraMicManagerNotificationTest::GetTestValues()));
 
 }  // namespace chromeos

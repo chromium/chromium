@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_CHROMEOS_CAMERA_MIC_VM_CAMERA_MIC_MANAGER_H_
 #define CHROME_BROWSER_CHROMEOS_CAMERA_MIC_VM_CAMERA_MIC_MANAGER_H_
 
+#include <bitset>
 #include <memory>
+
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
@@ -32,6 +34,7 @@ class VmCameraMicManager : public KeyedService {
   enum class DeviceType {
     kMic,
     kCamera,
+    kMaxValue = kCamera,
   };
 
   class Observer : public base::CheckedObserver {
@@ -51,13 +54,37 @@ class VmCameraMicManager : public KeyedService {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  void SetActive(VmType vm, DeviceType device, bool active);
-  bool GetActive(VmType vm, DeviceType device) const;
   // Return true if any of the VMs is using the device.
+  //
+  // TODO(b/167491603): Rename to `IsDeviceActive()` for consistency.
   bool GetDeviceActive(DeviceType device) const;
 
+  // When a VM is using both camera and mic, we only show a single "camera and
+  // mic" notification, which is considered a camera notification but not a mic
+  // notification because it uses the camera icon. So, if only "camera only" or
+  // "camera and mic" notifications are shown, this function returns true for
+  // `kCamera` but false for `kMic`. If a "mic only" notification is shown, this
+  // function returns true for `kMic`.
+  //
+  // TODO(b/167491603): We need to switch the indicator displaying logic to use
+  // this function instead.
+  bool IsNotificationActive(DeviceType device) const;
+
  private:
-  using ActiveMap = base::flat_map<std::pair<VmType, DeviceType>, bool>;
+  friend class VmCameraMicManagerTest;
+
+  using NotificationType =
+      std::bitset<static_cast<size_t>(DeviceType::kMaxValue) + 1>;
+  using NotificationMap = base::flat_map<VmType, NotificationType>;
+
+  static constexpr NotificationType kNoNotification{};
+  static constexpr NotificationType kMicNotification{
+      1 << static_cast<size_t>(DeviceType::kMic)};
+  static constexpr NotificationType kCameraNotification{
+      1 << static_cast<size_t>(DeviceType::kCamera)};
+  static constexpr NotificationType kCameraWithMicNotification{
+      (1 << static_cast<size_t>(DeviceType::kMic)) |
+      (1 << static_cast<size_t>(DeviceType::kCamera))};
 
   class VmNotificationObserver : public message_center::NotificationObserver {
    public:
@@ -79,15 +106,18 @@ class VmCameraMicManager : public KeyedService {
     base::WeakPtrFactory<VmNotificationObserver> weak_ptr_factory_{this};
   };
 
+  static std::string GetNotificationId(VmType vm, NotificationType type);
+
+  void SetActive(VmType vm, DeviceType device, bool active);
   void NotifyActiveChanged();
 
-  void OpenNotification(VmType vm, DeviceType device);
-  void CloseNotification(VmType vm, DeviceType device);
+  void OpenNotification(VmType vm, NotificationType type);
+  void CloseNotification(VmType vm, NotificationType type);
 
   Profile* const profile_;
   VmNotificationObserver crostini_vm_notification_observer_;
   VmNotificationObserver plugin_vm_notification_observer_;
-  ActiveMap active_map_;
+  NotificationMap notification_map_;
 
   base::RetainingOneShotTimer observer_timer_;
   base::ObserverList<Observer> observers_;

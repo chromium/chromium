@@ -25,6 +25,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -48,32 +49,16 @@ void OpenPluginVmSettings(Profile* profile) {
                                 AppManagementEntryPoint::kNotificationPluginVm);
 }
 
-std::string GetNotificationId(VmCameraMicManager::VmType vm,
-                              VmCameraMicManager::DeviceType device) {
-  std::string id = kNotificationIdPrefix;
-
-  switch (vm) {
-    case VmCameraMicManager::VmType::kCrostiniVm:
-      id.append("-crostini");
-      break;
-    case VmCameraMicManager::VmType::kPluginVm:
-      id.append("-pluginvm");
-      break;
-  }
-
-  switch (device) {
-    case VmCameraMicManager::DeviceType::kCamera:
-      id.append("-camera");
-      break;
-    case VmCameraMicManager::DeviceType::kMic:
-      id.append("-mic");
-      break;
-  }
-
-  return id;
-}
-
 }  // namespace
+
+constexpr VmCameraMicManager::NotificationType
+    VmCameraMicManager::kNoNotification;
+constexpr VmCameraMicManager::NotificationType
+    VmCameraMicManager::kMicNotification;
+constexpr VmCameraMicManager::NotificationType
+    VmCameraMicManager::kCameraNotification;
+constexpr VmCameraMicManager::NotificationType
+    VmCameraMicManager::kCameraWithMicNotification;
 
 VmCameraMicManager* VmCameraMicManager::GetForProfile(Profile* profile) {
   return VmCameraMicManagerFactory::GetForProfile(profile);
@@ -97,40 +82,61 @@ VmCameraMicManager::VmCameraMicManager(Profile* profile)
   DCHECK(ProfileHelper::IsPrimaryProfile(profile));
 
   for (VmType vm : {VmType::kCrostiniVm, VmType::kPluginVm}) {
-    for (DeviceType device : {DeviceType::kMic, DeviceType::kCamera}) {
-      active_map_[std::make_pair(vm, device)] = false;
-    }
+    notification_map_[vm] = {};
   }
 }
 
 VmCameraMicManager::~VmCameraMicManager() = default;
 
 void VmCameraMicManager::SetActive(VmType vm, DeviceType device, bool active) {
-  auto active_it = active_map_.find(std::make_pair(vm, device));
-  CHECK(active_it != active_map_.end());
-  if (active_it->second != active) {
-    if (!observer_timer_.IsRunning()) {
-      observer_timer_.Reset();
-    }
-    active_it->second = active;
-    if (active) {
-      OpenNotification(vm, device);
-    } else {
-      CloseNotification(vm, device);
-    }
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  NotificationType& notification_type = notification_map_[vm];
+  const NotificationType old_notification_type = notification_type;
+  notification_type.set(static_cast<size_t>(device), active);
+  if (old_notification_type == notification_type)
+    return;
+
+  if (!observer_timer_.IsRunning()) {
+    observer_timer_.Reset();
+  }
+
+  // We always show 0 or 1 notifications for a VM, so here we just need to close
+  // the previous one if it exists and open the new one if necessary.
+  if (old_notification_type != kNoNotification) {
+    CloseNotification(vm, old_notification_type);
+  }
+  if (notification_type != kNoNotification) {
+    OpenNotification(vm, notification_type);
   }
 }
 
-bool VmCameraMicManager::GetActive(VmType vm, DeviceType device) const {
-  auto active_it = active_map_.find(std::make_pair(vm, device));
-  CHECK(active_it != active_map_.end());
-  return active_it->second;
+bool VmCameraMicManager::GetDeviceActive(DeviceType device) const {
+  for (const auto& vm_notification : notification_map_) {
+    const NotificationType& notification_type = vm_notification.second;
+    if (notification_type[static_cast<size_t>(device)]) {
+      return true;
+    }
+  }
+  return false;
 }
 
-bool VmCameraMicManager::GetDeviceActive(DeviceType device) const {
-  for (auto& type_active : active_map_) {
-    if (type_active.first.second == device && type_active.second) {
-      return true;
+bool VmCameraMicManager::IsNotificationActive(DeviceType device) const {
+  for (const auto& vm_notification : notification_map_) {
+    const NotificationType& notification_type = vm_notification.second;
+    switch (device) {
+      case DeviceType::kMic:
+        if (notification_type == kMicNotification) {
+          return true;
+        }
+        break;
+      case DeviceType::kCamera:
+        // Both the "camera only" and "camera and mic" notifications use the
+        // camera icon.
+        if (notification_type[static_cast<size_t>(DeviceType::kCamera)]) {
+          return true;
+        }
+        break;
     }
   }
   return false;
@@ -150,29 +156,51 @@ void VmCameraMicManager::NotifyActiveChanged() {
   }
 }
 
-void VmCameraMicManager::OpenNotification(VmType vm, DeviceType device) {
+std::string VmCameraMicManager::GetNotificationId(VmType vm,
+                                                  NotificationType type) {
+  std::string id = kNotificationIdPrefix;
+
+  switch (vm) {
+    case VmType::kCrostiniVm:
+      id.append("-crostini");
+      break;
+    case VmType::kPluginVm:
+      id.append("-pluginvm");
+      break;
+  }
+
+  id.append(type.to_string());
+
+  return id;
+}
+
+void VmCameraMicManager::OpenNotification(VmType vm, NotificationType type) {
+  DCHECK_NE(type, kNoNotification);
   if (!base::FeatureList::IsEnabled(
           features::kVmCameraMicIndicatorsAndNotifications)) {
     return;
   }
 
-  int source_id;
+  // TODO(b/167491603): Rename this notifier id and remove useless ones.
+  const char* notifier_id = ash::kVmCameraNotifierId;
+
   const gfx::VectorIcon* source_icon = nullptr;
-  const char* notifier_id = nullptr;
+  int source_id;
   int message_id;
-  switch (device) {
-    case VmCameraMicManager::DeviceType::kCamera:
+  if (type[static_cast<size_t>(DeviceType::kCamera)]) {
+    source_icon = &::vector_icons::kVideocamIcon;
+    if (type[static_cast<size_t>(DeviceType::kMic)]) {
+      source_id = IDS_CAMERA_MIC_NOTIFICATION_SOURCE;
+      message_id = IDS_APP_USING_CAMERA_MIC_NOTIFICATION_MESSAGE;
+    } else {
       source_id = IDS_CAMERA_NOTIFICATION_SOURCE;
-      source_icon = &::vector_icons::kVideocamIcon;
-      notifier_id = ash::kVmCameraNotifierId;
       message_id = IDS_APP_USING_CAMERA_NOTIFICATION_MESSAGE;
-      break;
-    case VmCameraMicManager::DeviceType::kMic:
-      source_id = IDS_MIC_NOTIFICATION_SOURCE;
-      source_icon = &::vector_icons::kMicIcon;
-      notifier_id = ash::kVmMicNotifierId;
-      message_id = IDS_APP_USING_MIC_NOTIFICATION_MESSAGE;
-      break;
+    }
+  } else {
+    DCHECK_EQ(type, kMicNotification);
+    source_icon = &::vector_icons::kMicIcon;
+    source_id = IDS_MIC_NOTIFICATION_SOURCE;
+    message_id = IDS_APP_USING_MIC_NOTIFICATION_MESSAGE;
   }
 
   int app_name_id;
@@ -188,8 +216,6 @@ void VmCameraMicManager::OpenNotification(VmType vm, DeviceType device) {
       break;
   }
 
-  // TODO(b/167491603): check if NotificationPriority should be higher than
-  // default.
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.vector_small_image = source_icon;
   rich_notification_data.pinned = true;
@@ -197,7 +223,7 @@ void VmCameraMicManager::OpenNotification(VmType vm, DeviceType device) {
       l10n_util::GetStringUTF16(IDS_INTERNAL_APP_SETTINGS));
 
   message_center::Notification notification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, GetNotificationId(vm, device),
+      message_center::NOTIFICATION_TYPE_SIMPLE, GetNotificationId(vm, type),
       /*title=*/
       l10n_util::GetStringFUTF16(message_id,
                                  l10n_util::GetStringUTF16(app_name_id)),
@@ -216,13 +242,14 @@ void VmCameraMicManager::OpenNotification(VmType vm, DeviceType device) {
       /*metadata=*/nullptr);
 }
 
-void VmCameraMicManager::CloseNotification(VmType vm, DeviceType device) {
+void VmCameraMicManager::CloseNotification(VmType vm, NotificationType type) {
+  DCHECK_NE(type, kNoNotification);
   if (!base::FeatureList::IsEnabled(
           features::kVmCameraMicIndicatorsAndNotifications)) {
     return;
   }
   NotificationDisplayService::GetForProfile(profile_)->Close(
-      NotificationHandler::Type::TRANSIENT, GetNotificationId(vm, device));
+      NotificationHandler::Type::TRANSIENT, GetNotificationId(vm, type));
 }
 
 VmCameraMicManager::VmNotificationObserver::VmNotificationObserver(
