@@ -115,7 +115,10 @@ std::unique_ptr<EventMetrics> EventMetrics::Create(
     base::Optional<ScrollUpdateType> scroll_update_type,
     base::Optional<ui::ScrollInputType> scroll_input_type,
     base::TimeTicks timestamp) {
-  DCHECK(!timestamp.is_null());
+  // TODO(crbug.com/1157090): We expect that `timestamp` is not null, but there
+  // seems to be some tests that are emitting events with null timestamp. We
+  // should investigate and try to fix those cases and add a `DCHECK` here to
+  // assert `timestamp` is not null.
 
   std::unique_ptr<EventMetrics> metrics =
       CreateInternal(type, scroll_update_type, scroll_input_type, timestamp,
