@@ -189,9 +189,11 @@ SingleUsernameVoteData::SingleUsernameVoteData(SingleUsernameVoteData&& other) =
 SingleUsernameVoteData::~SingleUsernameVoteData() = default;
 
 VotesUploader::VotesUploader(PasswordManagerClient* client,
-                             bool is_possible_change_password_form)
+                             bool is_possible_change_password_form,
+                             autofill::FormSignature form_signature)
     : client_(client),
-      is_possible_change_password_form_(is_possible_change_password_form) {}
+      is_possible_change_password_form_(is_possible_change_password_form),
+      initial_observed_form_signature_(form_signature) {}
 
 VotesUploader::VotesUploader(const VotesUploader& other) = default;
 VotesUploader::~VotesUploader() = default;
@@ -298,6 +300,7 @@ bool VotesUploader::UploadPasswordVote(
   // re-uses credentials, a vote about the saved form is sent. If the user saves
   // credentials, the observed and pending forms are the same.
   FormStructure form_structure(form_to_upload.form_data);
+  form_structure.set_form_signature(initial_observed_form_signature_);
   form_structure.set_submission_event(submitted_form.submission_event);
 
   ServerFieldTypeSet available_field_types;
@@ -402,6 +405,7 @@ void VotesUploader::UploadFirstLoginVotes(
   }
 
   FormStructure form_structure(form_to_upload.form_data);
+  form_structure.set_form_signature(initial_observed_form_signature_);
   form_structure.set_submission_event(form_to_upload.submission_event);
 
   FieldTypeMap field_types = {

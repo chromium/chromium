@@ -54,7 +54,8 @@ struct SingleUsernameVoteData {
 class VotesUploader {
  public:
   VotesUploader(PasswordManagerClient* client,
-                bool is_possible_change_password_form);
+                bool is_possible_change_password_form,
+                autofill::FormSignature form_signature);
   VotesUploader(const VotesUploader& other);
   ~VotesUploader();
 
@@ -168,6 +169,11 @@ class VotesUploader {
     single_username_vote_data_.emplace(renderer_id, form_predictions);
   }
 
+  void set_initial_form_signature(
+      autofill::FormSignature observed_form_signature) {
+    initial_observed_form_signature_ = observed_form_signature;
+  }
+
  private:
   // The outcome of the form classifier.
   enum FormClassifierOutcome {
@@ -244,6 +250,10 @@ class VotesUploader {
   // Maps a unique renderer ID to the initial value of the fields of an
   // observed form.
   std::map<autofill::FieldRendererId, base::string16> initial_values_;
+
+  // Form signature of the initially observed form. Used to send votes on
+  // dynamic password forms.
+  autofill::FormSignature initial_observed_form_signature_;
 
   base::Optional<SingleUsernameVoteData> single_username_vote_data_;
 };

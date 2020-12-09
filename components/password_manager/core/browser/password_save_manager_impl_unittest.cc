@@ -198,7 +198,9 @@ class PasswordSaveManagerImplTest : public testing::Test,
                                     public testing::WithParamInterface<bool> {
  public:
   PasswordSaveManagerImplTest()
-      : votes_uploader_(&client_, false /* is_possible_change_password_form */),
+      : votes_uploader_(&client_,
+                        false /* is_possible_change_password_form */,
+                        autofill::FormSignature()),
         task_runner_(new TestMockTimeTaskRunner) {
     GURL origin = GURL("https://accounts.google.com/a/ServiceLoginAuth");
     GURL action = GURL("https://accounts.google.com/a/ServiceLogin");
@@ -301,6 +303,9 @@ class PasswordSaveManagerImplTest : public testing::Test,
         /*pref_service=*/nullptr);
     auto mock_form_saver = std::make_unique<NiceMock<MockFormSaver>>();
     mock_form_saver_ = mock_form_saver.get();
+
+    votes_uploader_.set_initial_form_signature(
+        CalculateFormSignature(observed_form_));
 
     if (!GetParam()) {
       password_save_manager_impl_ =

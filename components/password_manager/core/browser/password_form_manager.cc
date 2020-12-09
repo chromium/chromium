@@ -894,7 +894,10 @@ PasswordFormManager::PasswordFormManager(
       password_save_manager_(std::move(password_save_manager)),
       // TODO(https://crbug.com/831123): set correctly
       // |is_possible_change_password_form| in |votes_uploader_| constructor
-      votes_uploader_(client, false /* is_possible_change_password_form */) {
+      votes_uploader_(client,
+                      false /* is_possible_change_password_form */,
+                      observed_form() ? CalculateFormSignature(*observed_form())
+                                      : FormSignature()) {
   form_fetcher_->AddConsumer(this);
   if (!metrics_recorder_) {
     metrics_recorder_ = base::MakeRefCounted<PasswordFormMetricsRecorder>(

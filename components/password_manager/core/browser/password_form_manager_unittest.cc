@@ -2847,6 +2847,30 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
   EXPECT_TRUE(parsed_submitted_form.username_value.empty());
 }
 
+// Tests that if the initially observed form differs from the submitted form,
+// voting data should contain the initial form signature.
+TEST_P(PasswordFormManagerTest, VotingOnDynamicallyChangedForm) {
+  PasswordForm initial_form;
+  initial_form.form_data = non_password_form_;
+  CreateFormManager(non_password_form_);
+  fetcher_->NotifyFetchCompleted();
+
+  // Simulate observing form change.
+  form_manager_->FillForm(observed_form_, {});
+
+  // Simulate form filling and submission.
+  EXPECT_TRUE(
+      form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr));
+
+  EXPECT_CALL(
+      mock_autofill_download_manager_,
+      StartUploadRequest(SignatureIsSameAs(initial_form), _, _, _, _, _));
+
+  EXPECT_TRUE(CalculateFormSignature(initial_form.form_data).value() !=
+              CalculateFormSignature(submitted_form_).value());
+  form_manager_->Save();
+}
+
 }  // namespace
 
 }  // namespace password_manager
