@@ -37,6 +37,7 @@ import org.chromium.base.test.util.CloseableOnMainThread;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
@@ -219,6 +220,7 @@ public class HistoryActivityTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1157189")
     public void testOpenSelectedItems() throws Exception {
         toggleItemSelection(2);
         toggleItemSelection(3);
