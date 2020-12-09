@@ -206,34 +206,17 @@ void ScreenManagerAsh::BindReceiver(
 
 void ScreenManagerAsh::DeprecatedTakeScreenSnapshot(
     DeprecatedTakeScreenSnapshotCallback callback) {
-  GetScreenCapturerImpl()->TakeSnapshot(
-      GetScreenCapturerImpl()->GetPrimaryRootWindowId(),
-      base::BindOnce(
-          [](DeprecatedTakeScreenSnapshotCallback callback, bool success,
-             const SkBitmap& bitmap) {
-            // Ignore |success| param.
-            std::move(callback).Run(BitmapFromSkBitmap(bitmap));
-          },
-          std::move(callback)));
+  NOTIMPLEMENTED();
 }
-
 void ScreenManagerAsh::DeprecatedListWindows(
     DeprecatedListWindowsCallback callback) {
-  GetWindowCapturerImpl()->ListSources(std::move(callback));
+  NOTIMPLEMENTED();
 }
-
 void ScreenManagerAsh::DeprecatedTakeWindowSnapshot(
     uint64_t id,
     DeprecatedTakeWindowSnapshotCallback callback) {
-  GetWindowCapturerImpl()->TakeSnapshot(
-      id, base::BindOnce(
-              [](DeprecatedTakeWindowSnapshotCallback callback, bool success,
-                 const SkBitmap& bitmap) {
-                std::move(callback).Run(success, BitmapFromSkBitmap(bitmap));
-              },
-              std::move(callback)));
+  NOTIMPLEMENTED();
 }
-
 void ScreenManagerAsh::GetScreenCapturer(
     mojo::PendingReceiver<mojom::SnapshotCapturer> receiver) {
   GetScreenCapturerImpl()->BindReceiver(std::move(receiver));

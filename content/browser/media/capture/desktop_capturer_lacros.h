@@ -12,10 +12,6 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
-namespace crosapi {
-struct Bitmap;
-}  // namespace crosapi
-
 namespace content {
 
 // This class is responsible for communicating with ash-chrome to get snapshots
@@ -50,7 +46,6 @@ class DesktopCapturerLacros : public webrtc::DesktopCapturer {
   // Callback for when ash-chrome returns a snapshot of the screen or window as
   // a bitmap.
   void DidTakeSnapshot(bool success, const SkBitmap& snapshot);
-  void DeprecatedDidTakeSnapshot(bool success, crosapi::Bitmap snapshot);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -76,8 +71,8 @@ class DesktopCapturerLacros : public webrtc::DesktopCapturer {
   // The remote connection to the screen manager.
   mojo::Remote<crosapi::mojom::ScreenManager> screen_manager_;
 
-  // Only set if we are using a newer screen manager. Otherwise, we fallback to
-  // the deprecated methods.
+  // A remote for an ash interface that is responsible for either capturing
+  // screen snapshots or window snapshots.
   mojo::Remote<crosapi::mojom::SnapshotCapturer> snapshot_capturer_;
 
 #if DCHECK_IS_ON()

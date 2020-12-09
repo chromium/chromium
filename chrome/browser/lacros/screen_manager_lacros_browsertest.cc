@@ -109,60 +109,6 @@ class ScreenManagerLacrosBrowserTest : public InProcessBrowserTest {
 };
 
 // Tests that taking a screen snapshot via crosapi works.
-IN_PROC_BROWSER_TEST_F(ScreenManagerLacrosBrowserTest,
-                       DeprecatedTakeScreenSnapshot) {
-  BindScreenManager();
-  crosapi::Bitmap snapshot;
-  {
-    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    screen_manager_->DeprecatedTakeScreenSnapshot(&snapshot);
-  }
-  // Verify the snapshot is non-empty.
-  EXPECT_GT(snapshot.height, 0u);
-  EXPECT_GT(snapshot.width, 0u);
-  EXPECT_GT(snapshot.pixels.size(), 0u);
-}
-
-// Tests that taking a screen snapshot via crosapi works.
-// This test makes the browser load a page with specific title, and then scans
-// through a list of windows to look for the window with the expected title.
-// This test cannot simply assert exactly 1 window is present because currently
-// in lacros_chrome_browsertests, different browser tests share the same
-// ash-chrome, so a window could come from any one of them.
-IN_PROC_BROWSER_TEST_F(ScreenManagerLacrosBrowserTest,
-                       DeprecatedTakeWindowSnapshot) {
-  GURL url(std::string("data:text/html,") + kLacrosPageTitleHTML);
-  ui_test_utils::NavigateToURL(browser(), url);
-
-  BindScreenManager();
-
-  auto list_windows = base::BindRepeating(
-      [](mojo::Remote<crosapi::mojom::ScreenManager>* screen_manager,
-         std::vector<crosapi::mojom::SnapshotSourcePtr>* windows) {
-        mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-        (*screen_manager)->DeprecatedListWindows(windows);
-      },
-      &screen_manager_);
-
-  uint64_t window_id;
-  bool found_window = FindTestWindow(std::move(list_windows), &window_id);
-  ASSERT_TRUE(found_window);
-
-  bool success = false;
-  crosapi::Bitmap snapshot;
-  {
-    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    screen_manager_->DeprecatedTakeWindowSnapshot(window_id, &success,
-                                                  &snapshot);
-  }
-  ASSERT_TRUE(success);
-  // Verify the snapshot is non-empty.
-  EXPECT_GT(snapshot.height, 0u);
-  EXPECT_GT(snapshot.width, 0u);
-  EXPECT_GT(snapshot.pixels.size(), 0u);
-}
-
-// Tests that taking a screen snapshot via crosapi works.
 IN_PROC_BROWSER_TEST_F(ScreenManagerLacrosBrowserTest, ScreenCapturer) {
   BindScreenManager();
 

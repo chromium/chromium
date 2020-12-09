@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/crosapi/cpp/bitmap.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -79,65 +78,6 @@ class ScreenManagerAshBrowserTest : public InProcessBrowserTest {
   // Affine to background sequence.
   std::unique_ptr<SMRemote> screen_manager_remote_;
 };
-
-// Tests that taking a screen snapshot works.
-IN_PROC_BROWSER_TEST_F(ScreenManagerAshBrowserTest,
-                       DeprecatedTakeScreenSnapshot) {
-  base::RunLoop run_loop;
-  Bitmap snapshot;
-
-  // Take a snapshot on a background sequence. The call is blocking, so when it
-  // finishes, we can also unblock the main thread.
-  auto take_snapshot_background = base::BindOnce(
-      [](SMRemote* remote, Bitmap* snapshot) {
-        mojo::ScopedAllowSyncCallForTesting allow_sync;
-        (*remote)->DeprecatedTakeScreenSnapshot(snapshot);
-      },
-      screen_manager_remote_.get(), &snapshot);
-  background_sequence_->PostTaskAndReply(
-      FROM_HERE, std::move(take_snapshot_background), run_loop.QuitClosure());
-  run_loop.Run();
-
-  // Check that the screenshot has the right dimensions.
-  aura::Window* primary_window =
-      browser()->window()->GetNativeWindow()->GetRootWindow();
-  EXPECT_EQ(int{snapshot.width}, primary_window->bounds().width());
-  EXPECT_EQ(int{snapshot.height}, primary_window->bounds().height());
-}
-
-IN_PROC_BROWSER_TEST_F(ScreenManagerAshBrowserTest,
-                       DeprecatedTakeWindowSnapshot) {
-  base::RunLoop run_loop;
-  bool success;
-  Bitmap snapshot;
-
-  // Take a snapshot on a background sequence. The call is blocking, so when it
-  // finishes, we can also unblock the main thread.
-  auto take_snapshot_background = base::BindOnce(
-      [](SMRemote* remote, bool* success, Bitmap* snapshot) {
-        mojo::ScopedAllowSyncCallForTesting allow_sync;
-        std::vector<mojom::SnapshotSourcePtr> windows;
-        (*remote)->DeprecatedListWindows(&windows);
-
-        // There should be exactly 1 window.
-        ASSERT_EQ(1u, windows.size());
-
-        (*remote)->DeprecatedTakeWindowSnapshot(windows[0]->id, success,
-                                                snapshot);
-      },
-      screen_manager_remote_.get(), &success, &snapshot);
-  background_sequence_->PostTaskAndReply(
-      FROM_HERE, std::move(take_snapshot_background), run_loop.QuitClosure());
-  run_loop.Run();
-
-  // Check that the IPC succeeded.
-  ASSERT_TRUE(success);
-
-  // Check that the screenshot has the right dimensions.
-  aura::Window* window = browser()->window()->GetNativeWindow();
-  EXPECT_EQ(int{snapshot.width}, window->bounds().width());
-  EXPECT_EQ(int{snapshot.height}, window->bounds().height());
-}
 
 IN_PROC_BROWSER_TEST_F(ScreenManagerAshBrowserTest, ScreenCapturer) {
   base::RunLoop run_loop;

@@ -46,27 +46,12 @@ interface SnapshotCapturer {
 // interface in the future.
 [Stable, Uuid="95c3035c-5c63-45e3-8ec8-dd2a344c7dc2"]
 interface ScreenManager {
-  // DEPRECATED. Use |GetScreenCapturer| instead.
-  //
-  // This method assumes that there's exactly one screen. The implementation
-  // of this method takes a screenshot and converts it into a bitmap. Each
-  // pixel is represented by 4 bytes [RGBA].
-  //
-  // The media screen capture implementation assumes that every platform
-  // provides a synchronous method to take a snapshot of the screen.
+  // DEPRECATED. Unimplemented and unused. Delete this once deletion is
+  // supported. https://crbug.com/1156872.
   [Sync]
   DeprecatedTakeScreenSnapshot@0() => (Bitmap snapshot);
-
-  // DEPRECATED. Use |GetWindowCapturer| instead.
-  //
-  // Returns a list of visible, focusable top-level windows.
   [Sync]
   DeprecatedListWindows@1() => (array<SnapshotSource> windows);
-
-  // DEPRECATED. Use |GetWindowCapturer| instead.
-  //
-  // Take a screenshot of a window with an id from ListWindows. If |success|
-  // is false, then the window no longer exists.
   [Sync]
   DeprecatedTakeWindowSnapshot@2(uint64 id) => (bool success, Bitmap snapshot);
 
