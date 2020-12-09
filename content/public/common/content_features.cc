@@ -620,6 +620,12 @@ const base::Feature kSharedArrayBuffer {
       base::FEATURE_ENABLED_BY_DEFAULT
 #endif
 };
+// Convenience feature for developers testing SABs and Cross-origin Isolation.
+// Disables both SharedArrayBuffer and WebAssemblyThreads features, so SABs
+// require COOP+COEP isolation.
+// TODO(bbudge) Remove after reverse origin trial. See https://crbug.com/923807
+const base::Feature kRestrictSharedArrayBuffer{
+    "RestrictSharedArrayBuffer", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Signed HTTP Exchange prefetch cache for navigations
 // https://crbug.com/968427

@@ -147,6 +147,7 @@ CONTENT_EXPORT extern const base::Feature kServiceWorkerPrefersUnusedProcess;
 CONTENT_EXPORT extern const base::Feature
     kServiceWorkerTerminationOnNoControllee;
 CONTENT_EXPORT extern const base::Feature kSharedArrayBuffer;
+CONTENT_EXPORT extern const base::Feature kRestrictSharedArrayBuffer;
 CONTENT_EXPORT extern const base::Feature
     kSignedExchangePrefetchCacheForNavigations;
 CONTENT_EXPORT extern const base::Feature

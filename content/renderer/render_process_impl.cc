@@ -152,9 +152,9 @@ RenderProcessImpl::RenderProcessImpl()
   // desktop, site isolation is optional while we migrate existing apps to use
   // COOP+COEP.
   bool enableSharedArrayBuffer = false;
+  bool enableWebAssemblyThreads = false;
   if (base::FeatureList::IsEnabled(features::kWebAssemblyThreads)) {
-    constexpr char kWasmThreadsFlag[] = "--experimental-wasm-threads";
-    v8::V8::SetFlagsFromString(kWasmThreadsFlag, sizeof(kWasmThreadsFlag));
+    enableWebAssemblyThreads = true;
     enableSharedArrayBuffer = true;
   } else {
     bool processIscrossOriginIsolated =
@@ -165,6 +165,15 @@ RenderProcessImpl::RenderProcessImpl()
         processIscrossOriginIsolated;
   }
 
+  if (base::FeatureList::IsEnabled(features::kRestrictSharedArrayBuffer)) {
+    // Both SABs and Wasm threads should be disabled for developer testing.
+    enableWebAssemblyThreads = false;
+    enableSharedArrayBuffer = false;
+  }
+  if (enableWebAssemblyThreads) {
+    constexpr char kWasmThreadsFlag[] = "--experimental-wasm-threads";
+    v8::V8::SetFlagsFromString(kWasmThreadsFlag, sizeof(kWasmThreadsFlag));
+  }
   if (enableSharedArrayBuffer) {
     constexpr char kSABFlag[] = "--harmony-sharedarraybuffer";
     v8::V8::SetFlagsFromString(kSABFlag, sizeof(kSABFlag));
