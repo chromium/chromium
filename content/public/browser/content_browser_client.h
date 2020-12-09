@@ -123,6 +123,8 @@ enum class OriginPolicyState;
 class SharedURLLoaderFactory;
 namespace mojom {
 class TrustedHeaderClient;
+class URLLoader;
+class URLLoaderClient;
 }  // namespace mojom
 }  // namespace network
 
@@ -250,7 +252,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   using IsClipboardPasteAllowedCallback =
       base::OnceCallback<void(ClipboardPasteAllowed)>;
 
-  virtual ~ContentBrowserClient() {}
+  virtual ~ContentBrowserClient() = default;
 
   // Allows the embedder to set any number of custom BrowserMainParts
   // implementations for the browser startup code. See comments in
@@ -1452,6 +1454,24 @@ class CONTENT_EXPORT ContentBrowserClient {
       int frame_tree_node_id,
       const scoped_refptr<network::SharedURLLoaderFactory>&
           network_loader_factory);
+
+  // Callback to handle a request for a URLLoader.
+  using URLLoaderRequestHandler = base::OnceCallback<void(
+      const network::ResourceRequest& resource_request,
+      mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client)>;
+
+  // Allows the embedder to return a callback that is capable of loading a
+  // service worker navigation preload request. Similar to
+  // |WillCreateURLLoaderRequestInterceptors()|, but only allows for synchronous
+  // decisions of whether to handle the preload request with no fallback. As a
+  // result of being synchronous, the embedder can decide which, if there are
+  // multiple, URLLoader handlers is appropriate. If the embedder returns a null
+  // callback, the default behavior will be used to fetch the request.
+  virtual URLLoaderRequestHandler
+  CreateURLLoaderHandlerForServiceWorkerNavigationPreload(
+      int frame_tree_node_id,
+      const network::ResourceRequest& resource_request);
 
   // Called when the NetworkService, accessible through
   // content::GetNetworkService(), is created. Implementations should avoid

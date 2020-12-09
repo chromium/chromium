@@ -18,6 +18,7 @@
 #include "content/browser/devtools/service_worker_devtools_agent_host.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"
+#include "content/browser/loader/single_request_url_loader_factory.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
@@ -756,6 +757,21 @@ bool ServiceWorkerFetchDispatcher::MaybeStartNavigationPreload(
       url_loader_client_to_pass;
   url_loader_client->Bind(&url_loader_client_to_pass);
   mojo::PendingRemote<network::mojom::URLLoader> url_loader;
+
+  // Allow the embedder to intercept the URLLoader request if necessary. This
+  // must be a synchronous decision by the embedder. In the future, we may wish
+  // to support asynchronous decisions using |URLLoaderRequestInterceptor| in
+  // the same fashion that they are used for navigation requests.
+  ContentBrowserClient::URLLoaderRequestHandler embedder_url_loader_handler =
+      GetContentClient()
+          ->browser()
+          ->CreateURLLoaderHandlerForServiceWorkerNavigationPreload(
+              frame_tree_node_id, resource_request);
+
+  if (!embedder_url_loader_handler.is_null()) {
+    factory = base::MakeRefCounted<content::SingleRequestURLLoaderFactory>(
+        std::move(embedder_url_loader_handler));
+  }
 
   factory->CreateLoaderAndStart(
       url_loader.InitWithNewPipeAndPassReceiver(), -1 /* routing_id? */,

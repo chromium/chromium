@@ -21,18 +21,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 
-namespace {
-
-Profile* ProfileFromFrameTreeNodeID(int frame_tree_node_id) {
-  content::WebContents* web_contents =
-      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  if (!web_contents)
-    return nullptr;
-  return Profile::FromBrowserContext(web_contents->GetBrowserContext());
-}
-
-}  // namespace
-
 SearchPrefetchURLLoaderInterceptor::SearchPrefetchURLLoaderInterceptor(
     int frame_tree_node_id)
     : frame_tree_node_id_(frame_tree_node_id) {}
@@ -40,55 +28,26 @@ SearchPrefetchURLLoaderInterceptor::SearchPrefetchURLLoaderInterceptor(
 SearchPrefetchURLLoaderInterceptor::~SearchPrefetchURLLoaderInterceptor() =
     default;
 
-void SearchPrefetchURLLoaderInterceptor::MaybeCreateLoader(
+// static
+std::unique_ptr<SearchPrefetchURLLoader>
+SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
     const network::ResourceRequest& tentative_resource_request,
-    content::BrowserContext* browser_context,
-    content::URLLoaderRequestInterceptor::LoaderCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  DCHECK(!loader_callback_);
-  loader_callback_ = std::move(callback);
-
+    int frame_tree_node_id) {
   content::WebContents* web_contents =
-      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
+      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
   // Make sure this is for a navigation.
   if (!web_contents) {
-    DoNotInterceptPrefetchedNavigation();
-    return;
+    return nullptr;
   }
+
   // Only intercept main frame requests.
   content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
-  if (!main_frame || main_frame->GetFrameTreeNodeId() != frame_tree_node_id_) {
-    DoNotInterceptPrefetchedNavigation();
-    return;
+  if (!main_frame || main_frame->GetFrameTreeNodeId() != frame_tree_node_id) {
+    return nullptr;
   }
 
-  url_ = tentative_resource_request.url;
-
-  std::unique_ptr<SearchPrefetchURLLoader> prefetch =
-      GetPrefetchedResponse(url_);
-  if (!prefetch) {
-    DoNotInterceptPrefetchedNavigation();
-    return;
-  }
-
-  InterceptPrefetchedNavigation(std::move(prefetch));
-}
-
-void SearchPrefetchURLLoaderInterceptor::InterceptPrefetchedNavigation(
-    std::unique_ptr<SearchPrefetchURLLoader> prefetch) {
-  std::move(loader_callback_).Run(prefetch->ServingResponseHandler());
-  // url_loader manages its own lifetime once bound to the mojo pipes.
-  prefetch.release();
-}
-
-void SearchPrefetchURLLoaderInterceptor::DoNotInterceptPrefetchedNavigation() {
-  std::move(loader_callback_).Run({});
-}
-
-std::unique_ptr<SearchPrefetchURLLoader>
-SearchPrefetchURLLoaderInterceptor::GetPrefetchedResponse(const GURL& url) {
-  auto* profile = ProfileFromFrameTreeNodeID(frame_tree_node_id_);
+  auto* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   if (!profile)
     return nullptr;
 
@@ -97,5 +56,28 @@ SearchPrefetchURLLoaderInterceptor::GetPrefetchedResponse(const GURL& url) {
   if (!service)
     return nullptr;
 
-  return service->TakePrefetchResponse(url);
+  return service->TakePrefetchResponse(tentative_resource_request.url);
+}
+
+void SearchPrefetchURLLoaderInterceptor::MaybeCreateLoader(
+    const network::ResourceRequest& tentative_resource_request,
+    content::BrowserContext* browser_context,
+    content::URLLoaderRequestInterceptor::LoaderCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::unique_ptr<SearchPrefetchURLLoader> prefetch =
+      MaybeCreateLoaderForRequest(tentative_resource_request,
+                                  frame_tree_node_id_);
+  if (!prefetch) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  auto* raw_prefetch = prefetch.get();
+
+  // Hand ownership of the loader to the callback, when the callback runs,
+  // mojo connection termination will manage it. If the callback is deleted,
+  // the loader will be deleted.
+  std::move(callback).Run(
+      raw_prefetch->ServingResponseHandler(std::move(prefetch)));
 }

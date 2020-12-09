@@ -46,7 +46,8 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
 
  private:
   // SearchPrefetchURLLoader:
-  SearchPrefetchURLLoader::RequestHandler ServingResponseHandler() override;
+  SearchPrefetchURLLoader::RequestHandler ServingResponseHandler(
+      std::unique_ptr<SearchPrefetchURLLoader> loader) override;
 
   // network::mojom::URLLoader:
   void FollowRedirect(
@@ -78,8 +79,11 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
 
   // Sets up mojo forwarding to the navigation path. Resumes
   // |network_url_loader_| calls. Serves the start of the response to the
-  // navigation path.
+  // navigation path. After this method is called, |this| manages its own
+  // lifetime; |loader| points to |this| and can be released once the mojo
+  // connection is set up.
   void SetUpForwardingClient(
+      std::unique_ptr<SearchPrefetchURLLoader> loader,
       const network::ResourceRequest&,
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client);

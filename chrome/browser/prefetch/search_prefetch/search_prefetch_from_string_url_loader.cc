@@ -78,21 +78,27 @@ void SearchPrefetchFromStringURLLoader::TransferRawData() {
 }
 
 SearchPrefetchURLLoader::RequestHandler
-SearchPrefetchFromStringURLLoader::ServingResponseHandler() {
+SearchPrefetchFromStringURLLoader::ServingResponseHandler(
+    std::unique_ptr<SearchPrefetchURLLoader> loader) {
   return base::BindOnce(&SearchPrefetchFromStringURLLoader::BindAndStart,
-                        weak_ptr_factory_.GetWeakPtr());
+                        weak_ptr_factory_.GetWeakPtr(), std::move(loader));
 }
 
 void SearchPrefetchFromStringURLLoader::BindAndStart(
+    std::unique_ptr<SearchPrefetchURLLoader> loader,
     const network::ResourceRequest& request,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
   DCHECK(!receiver_.is_bound());
+
+  // At this point, we are bound to the mojo receiver, so we can release
+  // |loader|, which points to |this|.
   receiver_.Bind(std::move(receiver));
   receiver_.set_disconnect_handler(
       base::BindOnce(&SearchPrefetchFromStringURLLoader::OnMojoDisconnect,
                      weak_ptr_factory_.GetWeakPtr()));
   client_.Bind(std::move(client));
+  loader.release();
 
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;

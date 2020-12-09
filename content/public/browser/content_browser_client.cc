@@ -808,6 +808,13 @@ ContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
   return std::vector<std::unique_ptr<URLLoaderRequestInterceptor>>();
 }
 
+ContentBrowserClient::URLLoaderRequestHandler
+ContentBrowserClient::CreateURLLoaderHandlerForServiceWorkerNavigationPreload(
+    int frame_tree_node_id,
+    const network::ResourceRequest& resource_request) {
+  return ContentBrowserClient::URLLoaderRequestHandler();
+}
+
 void ContentBrowserClient::OnNetworkServiceCreated(
     network::mojom::NetworkService* network_service) {}
 

@@ -43,7 +43,8 @@ class SearchPrefetchFromStringURLLoader : public network::mojom::URLLoader,
       const SearchPrefetchFromStringURLLoader&) = delete;
 
   // SearchPrefetchURLLoader:
-  SearchPrefetchURLLoader::RequestHandler ServingResponseHandler() override;
+  SearchPrefetchURLLoader::RequestHandler ServingResponseHandler(
+      std::unique_ptr<SearchPrefetchURLLoader> loader) override;
 
  private:
   // network::mojom::URLLoader:
@@ -58,8 +59,11 @@ class SearchPrefetchFromStringURLLoader : public network::mojom::URLLoader,
   void ResumeReadingBodyFromNet() override;
 
   // Binds |this| to the mojo handlers and starts the network request using
-  // |request|. After this method is called, |this| manages its own lifetime.
+  // |request|. After this method is called, |this| manages its own lifetime;
+  // |loader| points to |this| and can be released once the mojo connection is
+  // set up.
   void BindAndStart(
+      std::unique_ptr<SearchPrefetchURLLoader> loader,
       const network::ResourceRequest& request,
       mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client);

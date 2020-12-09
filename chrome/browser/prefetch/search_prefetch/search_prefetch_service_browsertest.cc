@@ -37,6 +37,8 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -49,6 +51,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "url/gurl.h"
 
 namespace {
@@ -61,6 +64,7 @@ constexpr char kLoadInSubframe[] = "/load_in_subframe";
 constexpr char kClientHintsURL[] = "/accept_ch_with_lifetime.html";
 constexpr char kThrottleHeader[] = "porgs-header";
 constexpr char kThrottleHeaderValue[] = "porgs-header-value";
+constexpr char kServiceWorkerUrl[] = "/navigation_preload.js";
 }  // namespace
 
 // A response that hangs after serving the start of the response.
@@ -358,6 +362,14 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
     DevToolsWindowTesting::CloseDevToolsWindowSync(window_);
   }
 
+  // Allows the search server to serve |content| with |content_type| when
+  // |relative_url| is requested.
+  void RegisterStaticFile(const std::string& relative_url,
+                          const std::string& content,
+                          const std::string& content_type) {
+    static_files_[relative_url] = std::make_pair(content, content_type);
+  }
+
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleSearchRequest(
       const net::test_server::HttpRequest& request) {
@@ -383,6 +395,15 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
         base::BindOnce(&SearchPrefetchBaseBrowserTest::
                            MonitorSearchResourceRequestOnUIThread,
                        base::Unretained(this), request, is_prefetch));
+
+    if (base::Contains(static_files_, request.relative_url)) {
+      std::unique_ptr<net::test_server::BasicHttpResponse> resp =
+          std::make_unique<net::test_server::BasicHttpResponse>();
+      resp->set_code(net::HTTP_OK);
+      resp->set_content(static_files_[request.relative_url].first);
+      resp->set_content_type(static_files_[request.relative_url].second);
+      return resp;
+    }
 
     // If this is an embedded search for load in iframe, parse out the iframe
     // URL and serve it as an iframe in the returned HTML.
@@ -508,6 +529,11 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
 
   // When set to true, serves a response that hangs after the start of the body.
   bool hang_requests_after_start_ = false;
+
+  // Test cases can add path, content, content type tuples to be served.
+  std::map<std::string /* path */,
+           std::pair<std::string /* content */, std::string /* content_type */>>
+      static_files_;
 
   DevToolsWindow* window_ = nullptr;
 };
@@ -1604,6 +1630,77 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                                    request.relative_url.find(search_terms) !=
                                        std::string::npos;
                           }));
+}
+
+void RunFirstParam(base::RepeatingClosure closure, bool success) {
+  ASSERT_TRUE(success);
+  closure.Run();
+}
+
+IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
+                       ServiceWorkerServedPrefetchWithPreload) {
+  const GURL worker_url = GetSearchServerQueryURLWithNoQuery(kServiceWorkerUrl);
+  const std::string kEnableNavigationPreloadScript = R"(
+      self.addEventListener('activate', event => {
+          event.waitUntil(self.registration.navigationPreload.enable());
+        });
+      self.addEventListener('fetch', event => {
+          if (event.preloadResponse !== undefined) {
+            event.respondWith(async function() {
+              const response = await event.preloadResponse;
+              if (response) return response;
+              return fetch(event.request);
+          });
+          }
+        });)";
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  RegisterStaticFile(kServiceWorkerUrl, kEnableNavigationPreloadScript,
+                     "text/javascript");
+
+  auto* service_worker_context =
+      browser()
+          ->profile()
+          ->GetDefaultStoragePartition(browser()->profile())
+          ->GetServiceWorkerContext();
+
+  base::RunLoop run_loop;
+  blink::mojom::ServiceWorkerRegistrationOptions options(
+      GetSearchServerQueryURLWithNoQuery("/"),
+      blink::mojom::ScriptType::kClassic,
+      blink::mojom::ServiceWorkerUpdateViaCache::kImports);
+  service_worker_context->RegisterServiceWorker(
+      worker_url, options,
+      base::BindOnce(&RunFirstParam, run_loop.QuitClosure()));
+  run_loop.Run();
+
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  WaitUntilStatusChanges(base::ASCIIToUTF16(search_terms));
+
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kCanBeServed, prefetch_status.value());
+
+  ui_test_utils::NavigateToURL(browser(), prefetch_url);
+
+  auto inner_html = GetDocumentInnerHTML();
+
+  EXPECT_FALSE(base::Contains(inner_html, "regular"));
+  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+  EXPECT_FALSE(prefetch_status.has_value());
 }
 
 // True means that responses are streamed, false means full responses must be

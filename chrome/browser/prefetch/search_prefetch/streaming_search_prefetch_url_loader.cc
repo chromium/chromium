@@ -50,14 +50,16 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
 StreamingSearchPrefetchURLLoader::~StreamingSearchPrefetchURLLoader() = default;
 
 SearchPrefetchURLLoader::RequestHandler
-StreamingSearchPrefetchURLLoader::ServingResponseHandler() {
+StreamingSearchPrefetchURLLoader::ServingResponseHandler(
+    std::unique_ptr<SearchPrefetchURLLoader> loader) {
   DCHECK(!streaming_prefetch_request_);
   return base::BindOnce(
       &StreamingSearchPrefetchURLLoader::SetUpForwardingClient,
-      weak_factory_.GetWeakPtr());
+      weak_factory_.GetWeakPtr(), std::move(loader));
 }
 
 void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
+    std::unique_ptr<SearchPrefetchURLLoader> loader,
     const network::ResourceRequest& resource_request,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client) {
@@ -67,10 +69,14 @@ void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
 
   network_url_loader_->SetPriority(resource_request.priority, -1);
 
+  // At this point, we are bound to the mojo receiver, so we can release
+  // |loader|, which points to |this|.
   receiver_.Bind(std::move(receiver));
   receiver_.set_disconnect_handler(
       base::BindOnce(&StreamingSearchPrefetchURLLoader::OnMojoDisconnect,
                      weak_factory_.GetWeakPtr()));
+  loader.release();
+
   forwarding_client_.Bind(std::move(forwarding_client));
 
   if (!resource_request.report_raw_headers) {

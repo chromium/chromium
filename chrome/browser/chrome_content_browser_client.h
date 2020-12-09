@@ -499,6 +499,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       int frame_tree_node_id,
       const scoped_refptr<network::SharedURLLoaderFactory>&
           network_loader_factory) override;
+  content::ContentBrowserClient::URLLoaderRequestHandler
+  CreateURLLoaderHandlerForServiceWorkerNavigationPreload(
+      int frame_tree_node_id,
+      const network::ResourceRequest& resource_request) override;
   bool WillInterceptWebSocket(content::RenderFrameHost* frame) override;
   void CreateWebSocket(
       content::RenderFrameHost* frame,

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_URL_LOADER_H_
 #define CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_URL_LOADER_H_
 
+#include <memory>
+
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -22,7 +24,12 @@ class SearchPrefetchURLLoader {
       mojo::PendingRemote<network::mojom::URLLoaderClient> client)>;
 
   // Called when the response should be served to the user. Returns a handler.
-  virtual RequestHandler ServingResponseHandler() = 0;
+  // |loader| is the owning pointer to |this|. It needs to be stored within the
+  // returned |RequestHandler| to allow |this| to be owned by the callback.
+  // This allows ownership until the callback is run, which then should have
+  // ownership owned via a mojo connection.
+  virtual RequestHandler ServingResponseHandler(
+      std::unique_ptr<SearchPrefetchURLLoader> loader) = 0;
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_URL_LOADER_H_

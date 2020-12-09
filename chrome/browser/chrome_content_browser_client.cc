@@ -103,6 +103,7 @@
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader_interceptor.h"
 #include "chrome/browser/previews/previews_content_util.h"
 #include "chrome/browser/previews/previews_service.h"
@@ -4804,6 +4805,33 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
   }
 
   return interceptors;
+}
+
+content::ContentBrowserClient::URLLoaderRequestHandler
+ChromeContentBrowserClient::
+    CreateURLLoaderHandlerForServiceWorkerNavigationPreload(
+        int frame_tree_node_id,
+        const network::ResourceRequest& resource_request) {
+  content::ContentBrowserClient::URLLoaderRequestHandler callback;
+
+  // If search prefetch is disabled, nothing needs to be handled.
+  if (!SearchPrefetchServiceIsEnabled()) {
+    return callback;
+  }
+
+  std::unique_ptr<SearchPrefetchURLLoader> loader =
+      SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
+          resource_request, frame_tree_node_id);
+  if (!loader) {
+    return callback;
+  }
+
+  auto* raw_loader = loader.get();
+
+  // Hand ownership of the loader to the callback, when it runs, mojo will
+  // manage it. If the callback is deleted, the loader will be deleted.
+  callback = raw_loader->ServingResponseHandler(std::move(loader));
+  return callback;
 }
 
 bool ChromeContentBrowserClient::WillInterceptWebSocket(
