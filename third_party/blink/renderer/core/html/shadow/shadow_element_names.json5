@@ -53,7 +53,7 @@
       Symbol: "kIdSearchClearButton",
     },
     {
-      name: "passwrod-reveal",
+      name: "password-reveal",
       Symbol: "kIdPasswordRevealButton",
     },
     {
