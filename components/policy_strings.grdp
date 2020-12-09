@@ -528,6 +528,9 @@ Additional details:
   <message name="IDS_POLICY_INVALID_VALUE"  desc="Text explaining that the policy value is invalid">
     Policy value is not valid.
   </message>
+  <message name="IDS_POLICY_IGNORED_MANDATORY_REPORTING_POLICY" desc="Text explaining that the policy MetricsReportingEnabled can not be forced to enabled anymore">
+    This policy cannot be set to "True" and be mandatory, therefore it was changed to recommended.
+  </message>
   <if expr="not is_macosx">
     <message name="IDS_POLICY_SPELLCHECK_UNKNOWN_LANGUAGE" desc="Warning message in the policy summary page for the spellcheck policies when a language is unrecognized or unsupported.">
       List entry "<ph name="LANGUAGE_ID">$1<ex>xx-YY</ex></ph>": Unknown or unsupported language.

@@ -156,6 +156,18 @@ void RemapRenamedPolicies(PolicyMap* policies) {
   }
 }
 
+// Metrics should not be enforced so if this policy is set as mandatory
+// downgrade it to a recommended level policy.
+void DowngradeMetricsReportingToRecommendedPolicy(PolicyMap* policies) {
+  PolicyMap::Entry* policy =
+      policies->GetMutable(policy::key::kMetricsReportingEnabled);
+  if (policy && policy->level != POLICY_LEVEL_RECOMMENDED && policy->value() &&
+      policy->value()->is_bool() && policy->value()->GetBool()) {
+    policy->level = POLICY_LEVEL_RECOMMENDED;
+    policy->AddError(IDS_POLICY_IGNORED_MANDATORY_REPORTING_POLICY);
+  }
+}
+
 // Returns the string values of |policy|. Returns an empty set if the values are
 // not strings.
 base::flat_set<std::string> GetStringListPolicyItems(
@@ -357,6 +369,8 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
     provided_bundle.CopyFrom(provider->policies());
     RemapProxyPolicies(&provided_bundle.Get(chrome_namespace));
     RemapRenamedPolicies(&provided_bundle.Get(chrome_namespace));
+    DowngradeMetricsReportingToRecommendedPolicy(
+        &provided_bundle.Get(chrome_namespace));
     bundle.MergeFrom(provided_bundle);
   }
 
